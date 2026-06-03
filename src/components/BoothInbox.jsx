@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { useGame, acceptedMethods, PAYMENT_METHODS } from '../game/store'
+import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP } from '../game/store'
 import { fmtMoney, cardValue } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
@@ -62,6 +62,13 @@ export default function BoothInbox() {
 
       <div className="toolbar" style={{ marginTop: 12 }}>
         <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}>📅 Day {currentDay}</span>
+        {/* Inbox fill indicator — the inbox holds INBOX_CAP orders; once full, the
+            oldest unanswered orders drop off, so flag when it's getting close. */}
+        <span className="pill" style={inbox.length >= INBOX_CAP - 1
+          ? { background:'#ff9f4322', color:'#ff9f43' }
+          : { background:'#3b6cff22', color:'#9db8ff' }}>
+          📨 Inbox {inbox.length}/{INBOX_CAP}{inbox.length >= INBOX_CAP ? ' · full!' : inbox.length >= INBOX_CAP - 1 ? ' · nearly full' : ''}
+        </span>
         <button className="btn" style={{ flex:'none', maxWidth: 150 }} onClick={passDay}>⏭️ Next day</button>
         <span className="muted" style={{ fontSize: 12 }}>Pass a day to bring in orders (attending a show passes several at once).</span>
       </div>
@@ -83,7 +90,12 @@ export default function BoothInbox() {
 
       <div className="toolbar" style={{ marginTop: 4 }}>
         <span className="muted" style={{ fontSize: 13 }}>You accept:</span>
-        {Object.entries(PAYMENT_METHODS).map(([k, m]) => (
+        {Object.entries(PAYMENT_METHODS)
+          // Cash is an in-person-only method (unlocked by the storefront). Online
+          // buyers never hand you cash, so don't show it as a locked rail here
+          // until you actually have a physical store.
+          .filter(([k]) => k !== 'cash' || hasStore)
+          .map(([k, m]) => (
           <span key={k} className="pill" style={{ opacity: accepted.has(k) ? 1 : 0.35 }}>
             {m.icon} {m.short}{accepted.has(k) ? '' : ' 🔒'}
           </span>

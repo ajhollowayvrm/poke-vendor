@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useGame } from '../game/store'
+import { useGame, dayOrderChance } from '../game/store'
 import { generateCalendar, SHOW_TIERS } from '../game/shows'
 import { fmtMoney } from '../game/engine'
 
@@ -9,6 +9,7 @@ export default function Calendar({ onAttend }) {
   const cash = useGame(s => s.cash)
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
+  const upgrades = useGame(s => s.upgrades)
 
   const allShows = useMemo(() => generateCalendar(notoriety, showSeed), [notoriety, showSeed])
   // Only shows on or after today are attendable; earlier ones have passed.
@@ -44,6 +45,10 @@ export default function Calendar({ onAttend }) {
           const tier = SHOW_TIERS[show.tierKey]
           const canAfford = cash >= tier.entryFee
           const endsDay = Math.min(30, show.day + tier.days - 1)
+          // Expected online orders during the show's run (rough), and whether the
+          // player would MISS them (no Smartphone to manage online while away).
+          const expOnline = dayOrderChance('online', notoriety) * tier.days
+          const onlineCovered = !!upgrades.smartphone
           return (
             <div key={show.id} className={`calcard ${show.locked ? 'locked' : ''} ${show.day === currentDay ? 'today' : ''}`} style={{ borderLeftColor: tier.color }}>
               <div className="calday">
@@ -55,6 +60,13 @@ export default function Calendar({ onAttend }) {
               <div className="muted" style={{ fontSize: 12 }}>
                 Cards ~{fmtMoney(tier.valueBand[0])}–{fmtMoney(tier.valueBand[1])} · {Math.round(tier.traffic * 100)}% traffic
               </div>
+              {!show.locked && (
+                <div className="muted" style={{ fontSize: 11.5, color: onlineCovered ? 'var(--green)' : '#ff9f43' }}>
+                  {onlineCovered
+                    ? `📱 ~${expOnline.toFixed(expOnline < 1 ? 1 : 0)} online order${expOnline >= 1.5 ? 's' : ''} handled while away`
+                    : `⚠️ ~${expOnline.toFixed(expOnline < 1 ? 1 : 0)} online order${expOnline >= 1.5 ? 's' : ''} may arrive home — missed without a 📱 Smartphone`}
+                </div>
+              )}
               <div style={{ marginTop: 'auto', paddingTop: 10 }}>
                 {show.locked ? (
                   <button className="btn" disabled>🔒 Notoriety {tier.minNotoriety}</button>

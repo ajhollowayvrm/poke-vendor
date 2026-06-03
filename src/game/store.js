@@ -45,7 +45,7 @@ function appendFeeMsg(msg, fee, payMethod) {
 }
 
 const CALENDAR_DAYS = 30
-const INBOX_CAP = 8
+export const INBOX_CAP = 8
 
 // --- Daily goals -----------------------------------------------------------
 // Pool of small objectives; 2–3 roll each game-day. Reward scales a touch with
@@ -76,7 +76,7 @@ function makeDailyGoals(noto) {
 // Per-day probability that a home order arrives on each channel.
 // Flat & sparse early (a fresh vendor barely gets orders), ramping with
 // notoriety toward a cap. e.g. online: ~0.08/day at noto 0 → ~0.85 at noto 200.
-function dayOrderChance(channel, notoriety) {
+export function dayOrderChance(channel, notoriety) {
   const floor = channel === 'online' ? 0.08 : 0.04 // chance at notoriety 0
   const cap   = channel === 'online' ? 0.85 : 0.65
   const ramp  = Math.min(1, notoriety / 200)        // 0→1 across the fame curve
@@ -93,11 +93,12 @@ function advanceDaysWith(set, get, days, away) {
   const walkinOK = away ? !!s.upgrades.staff : true
   const accepted = acceptedMethods(s.upgrades) // buyers prefer methods you can take
   let missedOnline = 0, missedWalkin = 0
+  let onlineCount = 0
   const newOrders = []
   for (let i = 0; i < days; i++) {
     // online channel
     if (Math.random() < dayOrderChance('online', noto)) {
-      if (onlineOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online' })
+      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store)
@@ -105,6 +106,14 @@ function advanceDaysWith(set, get, days, away) {
       if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin', accepted), channel: 'walkin' })
       else missedWalkin++
     }
+  }
+  // NEW-PLAYER GUARANTEE: a fresh vendor at notoriety 0 can otherwise go 10–15 days
+  // with no online orders (1-in-12/day) and feel like nothing's happening. If you've
+  // never received an online order and these are home days, guarantee your first one
+  // by the end of the first few days so the loop actually starts.
+  if (onlineOK && onlineCount === 0 && (s.onlineOrdersEver || 0) === 0 && s.currentDay + days <= 5) {
+    newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online', _firstOrder: true })
+    onlineCount++
   }
   // advance the day counter, rolling months as needed
   let d = s.currentDay + days, seed = s.showSeed, months = s.monthsElapsed
@@ -142,6 +151,7 @@ function advanceDaysWith(set, get, days, away) {
   }
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
+    onlineOrdersEver: (st.onlineOrdersEver || 0) + onlineCount,
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
     consignments: remainingConsign,
     listings: remainingListings,
@@ -193,6 +203,7 @@ export const useGame = create(persist((set, get) => ({
   currentDay: 1,           // calendar day; attending a show advances this
   monthsElapsed: 0,        // how many calendars have rolled (for display)
   boothInbox: [],          // pending encounters waiting at your home shop
+  onlineOrdersEver: 0,     // lifetime online orders received → drives the new-player guarantee
   showsAttended: 0,
   generousActs: 0,
   gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
@@ -600,13 +611,13 @@ export const useGame = create(persist((set, get) => ({
   reset() {
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
-      notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
+      notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 7,
+  version: 8,
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state
@@ -642,6 +653,11 @@ export const useGame = create(persist((set, get) => ({
     }
     if (version < 7) {
       state.listings = state.listings ?? []
+    }
+    if (version < 8) {
+      // Backfill the lifetime online-order counter. Existing saves are mid-game, so
+      // assume they've already had their first order (don't re-trigger the guarantee).
+      state.onlineOrdersEver = state.onlineOrdersEver ?? ((state.currentDay ?? 1) > 5 ? 1 : 0)
     }
     return state
   },

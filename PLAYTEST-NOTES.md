@@ -91,6 +91,22 @@ and rejected.
 - **Surface `arch.vibe`** — already done: VendorBooth shows "This vendor is {vibe}…"
   above the Haggle button.
 
+### Home shop / orders pass (2026-06-03)
+32. **New-player order drought fixed** — track `onlineOrdersEver`; if you've never
+    had an online order and you're within the first 5 days (home), guarantee your
+    first one. Sim: avg days-to-first-order at noto 0 drops ~12.6 → ≤5 (forced in
+    ~67% of fresh playthroughs). Persist v8 backfills the counter for old saves.
+33. **Inbox fill indicator** — Orders tab shows `📨 Inbox N/8`, turning amber at
+    "nearly full" / "full!" so you know orders will start dropping off.
+34. **Missed-order estimate on show cards** — each unlocked show now shows the
+    expected online orders over its run and whether they'd be missed (no 📱).
+    Green "handled while away" if you have a Smartphone, amber warning if not.
+35. **Show-attendance confirmation** — attending now pops a confirm with the fee,
+    days passed, and the missed-orders warning before charging/burning days.
+    Verified: declining leaves cash + day untouched.
+36. **Cash hidden on the online Orders tab** — the "You accept" row no longer lists
+    Cash (an in-person-only rail) until you own a storefront.
+
 ---
 
 ## 💡 Improvement backlog (NOT implemented — awaiting your call)
@@ -103,18 +119,6 @@ and rejected.
 - **Crack-a-slab** mechanic (regrade gamble, small chance to come back lower),
   **bulk submission discount**, and **per-card grading history** on the modal.
 - **Warn when grading fee > card value** before the player wastes a fee.
-
-### Home shop / orders (home-flipper)
-- **New-player order drought** — at notoriety 0, online order chance is ~1-in-12
-  days; players can go 10–15 days with nothing. Guarantee ≥1 order in the first
-  few days.
-- **Inbox fill indicator** (e.g. "3/8") and **missed-order estimate** on show cards
-  ("~1–2 online orders may arrive while you're away").
-- **Show-attendance confirmation** — `attendShow` charges the fee and burns days
-  immediately with no confirm. Risky on the portrait/mobile layout (fat-finger).
-  Add an "Attend for $X? Passes N days, miss home orders without a Smartphone."
-- **Cash shown as a locked method on the online Orders tab** — online buyers never
-  pay cash; hide it until a storefront exists.
 
 ### Economy (flipper + exploit-hunter)
 - The core sell-path arithmetic was independently verified CORRECT (quick-sell 80%,
