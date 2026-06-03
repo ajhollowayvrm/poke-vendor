@@ -60,6 +60,37 @@ and rejected.
 20. **Prices re-fetched** — ran `fetch-data.mjs`; 508 card prices refreshed from live
     TCGplayer / TCGCSV.
 
+### Shows / floor pass (2026-06-03)
+21. **Walk-up frequency capped** — base cooldown 9s → **15s** and a hard **3
+    walk-ups per show day** cap (tending your own booth via ★/Enter doesn't count).
+    Cap + cooldown reset each show day.
+22. **Name collisions eliminated** — vendor names and "City Venue" names are now
+    drawn without replacement (seeded Fisher–Yates). Overflow vendors get a unique
+    "II/III" suffix. Verified live: 16/16 unique booth names, all-unique venues.
+23. **Visitor flavor matched to encounter kind** — "got fleeced/scammed" visitors
+    only appear in the fleeced branch; everyone else draws from a neutral pool.
+24. **Payment methods pre-filtered to what you accept** — buyers now prefer a method
+    you can take, so deals stop dying at resolution with "Sale lost". Verified: a
+    Venmo-only player saw 0/2419 non-Venmo in-person offers.
+25. **Booth counts scaled up** — Meetup 5→**16**, up through Worlds 32→**72**, so a
+    local meetup no longer feels like a ghost town.
+26. **Aspirational locked shows on the calendar** — the next 1–2 still-locked tiers
+    always appear as 🔒 targets even at notoriety 0. Verified live (Card Shop Event
+    @15, Regional @40 shown locked at noto 0).
+27. **Lowballer "pride walk"** — low-flex fleecers/sharps no longer fold to a
+    near-market offer on round 0; they posture (a dedicated counter + line) and
+    only deal from round 1. Verified: fleecer 0 accepts @round0, accepts @round1;
+    fair dealer accepts immediately.
+28. **Haggle dialogue variety** — 4 line templates per situation (open/accept/walk/
+    counter, plus posturing lines for the pride walk), picked at random.
+29. **Show-floor keyboard interact** — Enter/Space now bumps an adjacent booth /
+    tends your own. Hint updated to "Enter or tap a booth to shop".
+30. **Haggle Offer-button disabled logic tidied** — now simply `disabled={!better}`
+    for both sides (was a sell-side no-op ternary).
+31. **NPC↔player collision** — wandering NPCs no longer step onto the player's tile.
+- **Surface `arch.vibe`** — already done: VendorBooth shows "This vendor is {vibe}…"
+  above the Haggle button.
+
 ---
 
 ## 💡 Improvement backlog (NOT implemented — awaiting your call)
@@ -72,29 +103,6 @@ and rejected.
 - **Crack-a-slab** mechanic (regrade gamble, small chance to come back lower),
   **bulk submission discount**, and **per-card grading history** on the modal.
 - **Warn when grading fee > card value** before the player wastes a fee.
-
-### Shows / floor (show-circuit vet + haggler)
-- **Encounter frequency is too high** even after the cooldown fix — consider capping
-  at ~3 walk-ups per show and/or a longer base cooldown.
-- **Vendor & venue name collisions** — two "Rip City" tables / same venue twice in a
-  month. Pick names without replacement per show.
-- **Visitor flavor ↔ encounter-kind mismatch** — a "just got fleeced" visitor can
-  present a price quiz. Pick the visitor name inside each encounter branch.
-- **Offers use payment methods the player can't accept**, failing only at resolution
-  ("Sale lost"). Pre-filter to accepted methods, or soften ("OK paying by card").
-- **5 booths at a Local Meetup feels empty** (real meetups: 15–30). Scale booth
-  counts and differentiate hall layouts by tier (tight room vs convention floor).
-- **All shows at notoriety 0 are Local Meetups** — show 1–2 locked higher-tier shows
-  on the calendar as aspirational targets.
-- **Lowballer/fleecer accepts market in round 1** — archetype doesn't deliver its
-  vibe. Add a "pride walk" when the player counters at/near market on round 0.
-- **Surface `arch.vibe`** in the booth popup before the player commits to haggling.
-- **Haggle dialogue variety** — 4–5 line templates per side instead of one.
-- **Show-floor keyboard interact** — add Enter/Space to bump an adjacent booth
-  (desktop currently requires a mouse click on the tile).
-- **Haggle Offer-button disabled logic** (Haggle.jsx:83) is a convoluted ternary —
-  on the sell side it's never disabled. Minor UX tidy.
-- **NPC↔player collision** — NPCs can walk through the player avatar.
 
 ### Home shop / orders (home-flipper)
 - **New-player order drought** — at notoriety 0, online order chance is ~1-in-12

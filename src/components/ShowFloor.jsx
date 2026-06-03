@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { useGame } from '../game/store'
+import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI } from '../game/shows'
 import { openPack, rarityRank, cardValue, fmtMoney, SETS } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 
 const TILE = 52
-const ENCOUNTER_COOLDOWN = 9000 // ms between booth walk-ups
+const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
+const MAX_WALKUPS_PER_DAY = 3    // cap unsolicited walk-ups per show day
 // A pull worth announcing to the whole hall: SIR-or-better, any special foil, or grail.
 const ANNOUNCE_RANK = rarityRank('Special Illustration Rare')
 function isBigPull(card) {
@@ -26,6 +27,10 @@ export default function ShowFloor({ show, onLeave }) {
   const { grid, cols, rows, playerAt } = layout
 
   const [pos, setPos] = useState(() => ({ x: playerAt.x, y: playerAt.y + 1 }))
+  // mirror of pos for the NPC drift interval (so it sees the live player tile
+  // without re-subscribing the interval on every step).
+  const posRef = useRef(pos)
+  useEffect(() => { posRef.current = pos }, [pos])
   const [openBooth, setOpenBooth] = useState(null)
   const [encounter, setEncounter] = useState(null)
   const [toast, setToast] = useState(null)
@@ -34,6 +39,11 @@ export default function ShowFloor({ show, onLeave }) {
   // seed with mount time so the cooldown window opens on entry — gives the player
   // a grace period to look around before the first walk-up fires (was 0 = instant).
   const lastEncounterRef = useRef(Date.now())
+  // cap unsolicited walk-ups per show day so the floor doesn't feel like a gauntlet.
+  // (Tending your own booth via the ★ / Enter doesn't count against this.)
+  const walkupsRef = useRef(0)
+  useEffect(() => { walkupsRef.current = 0; lastEncounterRef.current = Date.now() }, [showDay])
+  const accepted = useMemo(() => acceptedMethods(upgrades), [upgrades])
 
   // NPC shoppers wandering the aisles (visual atmosphere). Some are ripping packs.
   const addNotoriety = useGame(s => s.addNotoriety)
@@ -54,6 +64,7 @@ export default function ShowFloor({ show, onLeave }) {
         const nx = n.x + dx, ny = n.y + dy
         if (nx <= 0 || ny <= 0 || nx >= cols - 1 || ny >= rows - 1) return n
         if (grid[ny][nx] !== 0) return n // only walk open floor
+        if (nx === posRef.current.x && ny === posRef.current.y) return n // don't walk through the player
         return { ...n, x: nx, y: ny, face: dx < 0 ? -1 : dx > 0 ? 1 : n.face }
       }))
     }, 700)
@@ -96,19 +107,20 @@ export default function ShowFloor({ show, onLeave }) {
   useEffect(() => {
     const id = setInterval(() => {
       if (encounter || openBooth || boothAlert) return
+      if (walkupsRef.current >= MAX_WALKUPS_PER_DAY) return // hit the per-day cap
       if (Date.now() - lastEncounterRef.current < ENCOUNTER_COOLDOWN) return
       // chance per 3s tick after cooldown: scales with the show's traffic and a
       // capped notoriety bonus so small shows stay calm even when you're famous.
       const notoBonus = Math.min(0.5, notoriety / 300)
       const chance = Math.min(0.85, 0.12 * tier.traffic * (1 + notoBonus))
       if (Math.random() < chance) {
-        const enc = boothEncounter(notoriety, useGame.getState().collection)
-        if (upgrades.ticker) { setBoothAlert(enc); lastEncounterRef.current = Date.now() }
-        else if (atPlayerBooth(pos, playerAt)) { setEncounter({ enc, atBooth: true }); lastEncounterRef.current = Date.now() }
+        const enc = boothEncounter(notoriety, useGame.getState().collection, 'show', accepted)
+        if (upgrades.ticker) { setBoothAlert(enc); lastEncounterRef.current = Date.now(); walkupsRef.current++ }
+        else if (atPlayerBooth(pos, playerAt)) { setEncounter({ enc, atBooth: true }); lastEncounterRef.current = Date.now(); walkupsRef.current++ }
       }
     }, 3000)
     return () => clearInterval(id)
-  }, [encounter, openBooth, boothAlert, notoriety, upgrades.ticker, pos, playerAt, tier.traffic])
+  }, [encounter, openBooth, boothAlert, notoriety, upgrades.ticker, pos, playerAt, tier.traffic, accepted])
 
   // One step in a direction: walk onto floor, or interact with a bumped booth.
   const move = useCallback((dx, dy) => {
@@ -124,9 +136,24 @@ export default function ShowFloor({ show, onLeave }) {
     })
   }, [grid, cols, rows, openBooth, encounter, booths])
 
-  // Keyboard movement (desktop).
+  // Interact with whatever's adjacent: a neighboring booth → shop it; your own
+  // booth (or just standing near it) → tend it. Mirrors a tap on an adjacent tile.
+  const interact = useCallback(() => {
+    if (openBooth || encounter) return
+    for (const [dx, dy] of [[0,-1],[0,1],[-1,0],[1,0]]) {
+      const cell = grid[pos.y + dy]?.[pos.x + dx]
+      if (typeof cell === 'number' && cell >= 100) { setOpenBooth(booths[cell - 100]); return }
+      if (cell === 'P') { triggerPlayerBooth(); return }
+    }
+    if (atPlayerBooth(pos, playerAt)) triggerPlayerBooth() // standing on/at your stand
+  }, [grid, pos, booths, openBooth, encounter, playerAt])
+
+  // Keyboard movement + interact (desktop).
   useEffect(() => {
     function onKey(e) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault(); interact(); return
+      }
       const d = { ArrowUp: [0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0],
         w:[0,-1], s:[0,1], a:[-1,0], d:[1,0], W:[0,-1], S:[0,1], A:[-1,0], D:[1,0] }[e.key]
       if (!d) return
@@ -135,7 +162,7 @@ export default function ShowFloor({ show, onLeave }) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [move])
+  }, [move, interact])
 
   // Tap-to-move (mobile): tap a tile → step one toward it; tap an adjacent booth → open it.
   const tapTile = useCallback((tx, ty) => {
@@ -153,7 +180,7 @@ export default function ShowFloor({ show, onLeave }) {
 
   function triggerPlayerBooth() {
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
-    const enc = boothEncounter(notoriety, useGame.getState().collection)
+    const enc = boothEncounter(notoriety, useGame.getState().collection, 'show', accepted)
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now()
   }
@@ -165,7 +192,7 @@ export default function ShowFloor({ show, onLeave }) {
         <button className="btn alt" style={{ flex:'none' }} onClick={onLeave}>← Leave show</button>
         <span className="pill" style={{ background: tier.color+'33', color: tier.color }}>{show.name} · {tier.name}</span>
         {tier.days > 1 && <span className="pill">Show day {showDay} / {tier.days}</span>}
-        <span className="muted floorhint" style={{ fontSize: 12 }}>WASD / tap to walk · tap a booth to shop · {booths.length} vendors</span>
+        <span className="muted floorhint" style={{ fontSize: 12 }}>WASD / tap to walk · Enter or tap a booth to shop · {booths.length} vendors</span>
         {tier.days > 1 && showDay < tier.days && (
           <button className="btn" style={{ flex:'none', maxWidth: 170, marginLeft:'auto' }}
             onClick={() => { setShowDay(d => d + 1); setPos({ x: playerAt.x, y: playerAt.y + 1 }); flash(`Day ${showDay + 1} of the show — fresh vendors arrive.`) }}>

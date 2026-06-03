@@ -91,17 +91,18 @@ function advanceDaysWith(set, get, days, away) {
   const hasStore = !!s.upgrades.storefront
   const onlineOK = away ? !!s.upgrades.smartphone : true
   const walkinOK = away ? !!s.upgrades.staff : true
+  const accepted = acceptedMethods(s.upgrades) // buyers prefer methods you can take
   let missedOnline = 0, missedWalkin = 0
   const newOrders = []
   for (let i = 0; i < days; i++) {
     // online channel
     if (Math.random() < dayOrderChance('online', noto)) {
-      if (onlineOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'online'), channel: 'online' })
+      if (onlineOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online' })
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store)
     if (hasStore && Math.random() < dayOrderChance('walkin', noto)) {
-      if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin'), channel: 'walkin' })
+      if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin', accepted), channel: 'walkin' })
       else missedWalkin++
     }
   }

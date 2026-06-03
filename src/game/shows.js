@@ -8,13 +8,15 @@ import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SETS,
 // many other shoppers wander the floor. `days` is how long the show takes —
 // attending advances the calendar by that much, so bigger shows cost you the
 // smaller shows happening during that window (the opportunity cost).
+// `booths` scaled up toward real-world floor sizes (a local meetup is ~15–30
+// tables, not 5) and spread so each tier feels distinctly bigger than the last.
 export const SHOW_TIERS = {
-  meetup:   { name: 'Local Meetup',     minNotoriety: 0,   entryFee: 5,    days: 1, booths: 5,  npcs: 4,  valueBand: [0.5, 25],     traffic: 1.0, color: '#5ec98a' },
-  shop:     { name: 'Card Shop Event',  minNotoriety: 15,  entryFee: 12,   days: 1, booths: 8,  npcs: 8,  valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
-  regional: { name: 'Regional Show',    minNotoriety: 40,  entryFee: 30,   days: 2, booths: 12, npcs: 16, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
-  national: { name: 'National Expo',    minNotoriety: 80,  entryFee: 75,   days: 2, booths: 18, npcs: 28, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
-  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  days: 3, booths: 24, npcs: 40, valueBand: [200, 50000],  traffic: 4.5, color: '#7cf0ff' },
-  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, days: 4, booths: 32, npcs: 60, valueBand: [1000, 1000000], traffic: 6.0, color: '#ffd700' },
+  meetup:   { name: 'Local Meetup',     minNotoriety: 0,   entryFee: 5,    days: 1, booths: 16, npcs: 12, valueBand: [0.5, 25],     traffic: 1.0, color: '#5ec98a' },
+  shop:     { name: 'Card Shop Event',  minNotoriety: 15,  entryFee: 12,   days: 1, booths: 22, npcs: 18, valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
+  regional: { name: 'Regional Show',    minNotoriety: 40,  entryFee: 30,   days: 2, booths: 32, npcs: 30, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
+  national: { name: 'National Expo',    minNotoriety: 80,  entryFee: 75,   days: 2, booths: 44, npcs: 48, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
+  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  days: 3, booths: 56, npcs: 64, valueBand: [200, 50000],  traffic: 4.5, color: '#7cf0ff' },
+  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, days: 4, booths: 72, npcs: 90, valueBand: [1000, 1000000], traffic: 6.0, color: '#ffd700' },
 }
 
 export const CALENDAR_DAYS = 30
@@ -32,12 +34,24 @@ function rng(seed) { // deterministic per-show generator
   return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
 }
 function pickR(r, arr) { return arr[Math.floor(r() * arr.length)] }
+// Deterministic Fisher–Yates shuffle (uses the show's seeded rng), so we can draw
+// names WITHOUT replacement — no two booths named "Rip City", no duplicate venues.
+function shuffleR(r, arr) {
+  const b = [...arr]
+  for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]] }
+  return b
+}
 
 // Generate a stable calendar of upcoming shows for the next ~30 game-days.
 export function generateCalendar(notoriety, seed = 7) {
   const r = rng(seed)
   const shows = []
   const tierKeys = Object.keys(SHOW_TIERS)
+  // Draw "City Venue" names without replacement so the month never lists the same
+  // venue twice. There are CITIES×VENUES combos, far more than ~30 days of shows.
+  const venueOrder = shuffleR(r, CITIES.flatMap(c => VENUES.map(v => `${c} ${v}`)))
+  let vi = 0
+  const nextVenue = () => venueOrder[vi++ % venueOrder.length]
   for (let day = 1; day <= 30; day += 1) {
     if (r() > 0.42) continue // not every day has a show
     // choose a tier the player might qualify for; bias toward unlocked tiers
@@ -48,13 +62,35 @@ export function generateCalendar(notoriety, seed = 7) {
       id: `show-${seed}-${day}`,
       day,
       tierKey,
-      name: `${pickR(r, CITIES)} ${pickR(r, VENUES)}`,
+      name: nextVenue(),
       tier: tier.name,
       locked: notoriety < tier.minNotoriety,
       seed: (seed * 131 + day * 17) >>> 0,
     })
   }
-  return shows
+  // Aspirational targets: make sure the player always sees 1–2 still-locked
+  // higher tiers on the calendar as something to climb toward (otherwise a level-0
+  // player only ever sees Local Meetups). We slot them onto otherwise-empty days.
+  const lockedTiers = tierKeys.filter(k => notoriety < SHOW_TIERS[k].minNotoriety)
+  const aspirational = lockedTiers.slice(0, 2) // the next two tiers up
+  const usedDays = new Set(shows.map(s => s.day))
+  let placed = 0
+  for (let day = 6; day <= 30 && placed < aspirational.length; day += 7) {
+    if (usedDays.has(day)) continue
+    const tierKey = aspirational[placed]
+    const tier = SHOW_TIERS[tierKey]
+    shows.push({
+      id: `show-${seed}-asp-${day}`,
+      day, tierKey,
+      name: nextVenue(),
+      tier: tier.name,
+      locked: true,
+      seed: (seed * 131 + day * 17) >>> 0,
+    })
+    usedDays.add(day)
+    placed++
+  }
+  return shows.sort((a, b) => a.day - b.day)
 }
 
 // --- Vendor generation -------------------------------------------------------
@@ -76,7 +112,7 @@ export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
 //   their  = their current price, market = fair value, yourOffer = your counter
 //   flex   = archetype flex, round = 0-based round index (patience shrinks)
 // Returns { accept, counter, walk } — accept their take, a counter to consider, or walkaway.
-export function haggleRound({ side, their, market, yourOffer, flex, round }) {
+export function haggleRound({ side, their, market, yourOffer, flex, round, archKey }) {
   // best price they'd ever agree to = market nudged by remaining flex
   const patience = Math.max(0, flex * (1 - round * 0.34)) // they get firmer each round
   const floorPrice = side === 'buy'
@@ -84,6 +120,21 @@ export function haggleRound({ side, their, market, yourOffer, flex, round }) {
     : Math.min(market * 1.05, their + (market - their) * (flex)) // selling: won't pay much over market
   // how good is your offer for them?
   const goodForThem = side === 'buy' ? yourOffer >= floorPrice : yourOffer <= floorPrice
+  // PRIDE WALK: low-flex sharks/lowballers won't fold to a near-market offer on
+  // the very first round — it'd betray their whole vibe. They posture instead,
+  // countering off their opening price so you have to actually work them down.
+  const proud = (archKey === 'fleecer' || archKey === 'sharp') && flex <= 0.45
+  if (proud && round === 0 && goodForThem) {
+    const nearMarket = side === 'buy'
+      ? yourOffer <= market * 1.12   // you're trying to buy at ~market or below
+      : yourOffer >= market * 0.88   // you're trying to sell at ~market or above
+    if (nearMarket) {
+      const counter = side === 'buy'
+        ? round2(Math.max(floorPrice, their - (their - yourOffer) * 0.2)) // barely budge
+        : round2(Math.min(floorPrice, their + (yourOffer - their) * 0.2))
+      return { counter, pride: true }
+    }
+  }
   if (goodForThem) return { accept: true }
   // too aggressive → chance they walk, scaling with how far past their limit you pushed
   const overreach = side === 'buy'
@@ -104,6 +155,12 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
   const tier = SHOW_TIERS[show.tierKey]
   const [lo, hi] = tier.valueBand
   const n = tier.booths
+  // Draw vendor names without replacement. If a show has more booths than names,
+  // wrap to a fresh shuffle and tag with a "II"/"III" suffix so every full name
+  // is still unique (no two bare "Rip City" tables).
+  const nameOrder = shuffleR(r, VENDOR_NAMES)
+  const SUFFIX = ['', ' II', ' III', ' IV']
+  const vendorName = (i) => nameOrder[i % nameOrder.length] + SUFFIX[Math.floor(i / nameOrder.length)] || nameOrder[i % nameOrder.length]
   const booths = []
   for (let i = 0; i < n; i++) {
     const arch = pickR(r, ARCHETYPES)
@@ -131,7 +188,7 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
     for (let k = 0; k < featuredN; k++) byVal[k]._highlight = true
     booths.push({
       id: `${show.id}-b${i}`,
-      name: pickR(r, VENDOR_NAMES) + (i ? ` #${i+1}` : ''),
+      name: vendorName(i),
       archetype: arch.key,
       archLabel: arch.label,
       vibe: arch.vibe,
@@ -151,37 +208,61 @@ export const NPC_EMOJI = ['🧑','👩','👨','🧓','👵','🧔','👱','👲
 // Each option has: text, effect fn name + payload resolved by the showStore.
 // We return data only; the store applies effects so persistence stays centralized.
 
-// Visitor flavor by channel.
+// Visitor flavor by channel. Split into pools that match the encounter KIND so a
+// "just got fleeced next door" visitor never shows up asking a calm price-quiz:
+//   base    — neutral browsers/buyers, safe for any encounter
+//   fleeced — only used by the "someone got fleeced" branch
+// Each channel's general pool = base (the fleeced flavor is added per-branch).
 const VISITOR_NAMES = {
   show: ['a wide-eyed kid','a seasoned collector','a nervous first-timer','a hyped teenager',
     'an old-school player','a parent shopping for their kid','a competitive grinder','a casual browser',
-    'a livestreamer','a bargain hunter','a returning customer','someone who just got fleeced next door'],
+    'a livestreamer','a bargain hunter','a returning customer'],
   walkin: ['a regular','a kid with birthday money','a local collector','a curious passer-by',
-    'a parent and their kid','a dadda after work','a TikTok follower who found your shop','a deck-builder'],
+    'a parent and their kid','a dad after work','a TikTok follower who found your shop','a deck-builder'],
   online: ['a Reddit buyer','an eBay watcher','a Discord trader','an Instagram DM','a Facebook Marketplace user',
     'a Mercari shopper','a TCGplayer buyer','a forum lurker','a Twitter mutual'],
+}
+// Visitors specific to the "got fleeced/scammed" branch.
+const FLEECED_VISITORS = {
+  show: ['someone who just got fleeced next door','a kid who overpaid at another booth','a collector burned on a bad trade'],
+  walkin: ['a neighbor who got scammed online','a regular who paid too much elsewhere'],
+  online: ['a trader who just got burned','a buyer scammed in a Discord deal','someone who overpaid on eBay'],
+}
+function visitorFor(channel, kind) {
+  if (kind === 'fleeced') return pickAny(null, FLEECED_VISITORS[channel] || FLEECED_VISITORS.show)
+  return pickAny(null, VISITOR_NAMES[channel] || VISITOR_NAMES.show)
 }
 // Online buyers can\'t hand you cash or tap. In-person can use anything.
 const ONLINE_METHODS = ['venmo', 'paypal', 'card']
 const INPERSON_METHODS = ['cash', 'venmo', 'card', 'paypal', 'tap']
 
 function pickAny(r, arr) { return arr[Math.floor((r ?? Math.random)() * arr.length)] }
-function pickPayMethod(channel) {
-  return pickAny(null, channel === 'online' ? ONLINE_METHODS : INPERSON_METHODS)
+// Pick a payment method the buyer prefers, biased toward what YOU can actually
+// accept so deals don't fail at resolution. `accepted` is the player's accepted
+// set (from acceptedMethods()); when present, we only offer methods you can take
+// unless the channel has none in common (then fall back so the encounter still
+// has a method, and the UI softens the message). Venmo is always accepted.
+function pickPayMethod(channel, accepted) {
+  const pool = channel === 'online' ? ONLINE_METHODS : INPERSON_METHODS
+  if (accepted) {
+    const ok = pool.filter(m => accepted.has(m))
+    if (ok.length) return pickAny(null, ok)
+  }
+  return pickAny(null, pool)
 }
 
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
-export function boothEncounter(notoriety, playerCollection, channel = 'show') {
+export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null) {
   const roll = Math.random()
-  const visitor = pickAny(null, VISITOR_NAMES[channel] || VISITOR_NAMES.show)
   const online = channel === 'online'
 
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
   if (roll < 0.22) {
+    const visitor = visitorFor(channel, 'fleeced')
     const want = cardInValueRange(2, 20)
-    const pay = pickPayMethod(channel)
+    const pay = pickPayMethod(channel, accepted)
     return {
       kind: 'fleeced',
       title: online ? `${cap(visitor)} messages you, frustrated` : `${cap(visitor)} approaches, looking dejected`,
@@ -202,11 +283,12 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show') {
 
   // 2) Lowball / good offer ON one of your cards
   if (roll < 0.5 && playerCollection.length) {
+    const visitor = visitorFor(channel, 'offer')
     const target = pickAny(null, playerCollection)
     const market = cardValue(target) // grade-aware — offers track the card's real worth
     const good = Math.random() > 0.5
     const offer = Math.round(market * (good ? (1.05 + Math.random()*0.4) : (0.4 + Math.random()*0.3)) * 100) / 100
-    const pay = pickPayMethod(channel)
+    const pay = pickPayMethod(channel, accepted)
     const m = PAY_LABEL(pay)
     return {
       kind: 'offer',
@@ -229,6 +311,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show') {
 
   // 3) A question about a card
   if (roll < 0.72) {
+    const visitor = visitorFor(channel, 'question')
     const q = cardInValueRange(0.5, 150)
     const realMid = rawValue(q)
     const correct = realMid
@@ -252,7 +335,8 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show') {
   }
 
   // 4) Generic browse → small sale chance
-  const pay = pickPayMethod(channel)
+  const visitor = visitorFor(channel, 'browse')
+  const pay = pickPayMethod(channel, accepted)
   return {
     kind: 'browse',
     title: online ? `${cap(visitor)} is scrolling your listings` : `${cap(visitor)} stops to browse your case`,

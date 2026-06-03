@@ -4,6 +4,24 @@ import { fmtMoney } from '../game/engine'
 
 const MAX_ROUNDS = 3
 
+// A few line templates per situation so haggling doesn't read identically every
+// time. {p} is filled with the relevant price. Picked at random per line.
+const LINES = {
+  openBuy:   ['It\'s {p}.', 'I can let it go for {p}.', 'Asking {p} for this one.', 'Yours for {p}.'],
+  openSell:  ['I\'ll give you {p}.', 'I can do {p} for it.', 'How about {p}?', '{p}, cash in hand.'],
+  accept:    ['Deal.', 'Done — pleasure doing business.', 'Sold. Nice one.', 'You got it.'],
+  walk:      ['We\'re done here. 🚪', 'Forget it — no deal.', 'Pass. Good luck elsewhere.', 'Yeah, that\'s a no.'],
+  counterBuy:['Best I can do is {p}.', 'I can come down to {p}.', 'Meet me at {p}?', 'Tell you what — {p}.'],
+  counterSell:['I can go to {p}.', 'I\'ll stretch to {p}.', 'How about {p}, then?', 'Up to {p}, final-ish.'],
+  pride:     ['Ha — at that price? I\'ll do {p}, take it or leave it.', 'Not a chance. {p} is me being generous.',
+              'You\'re funny. {p}, and that\'s me posturing.', 'For YOU? {p}. Don\'t insult me.'],
+}
+function line(key, price) {
+  const arr = LINES[key] || ['{p}']
+  const t = arr[Math.floor(Math.random() * arr.length)]
+  return price == null ? t : t.replace('{p}', fmtMoney(price))
+}
+
 // Negotiation modal. props:
 //   side: 'buy' (you buy from vendor) | 'sell' (vendor buys from you)
 //   card, market (fair value), start (their opening price), archKey, vendorName
@@ -12,7 +30,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   const arch = archetype(archKey)
   const [their, setTheir] = useState(start)
   const [round, setRound] = useState(0)
-  const [log, setLog] = useState([`${vendorName}: "${side === 'buy' ? `It's ${fmtMoney(start)}.` : `I'll give you ${fmtMoney(start)}.`}"`])
+  const [log, setLog] = useState([`${vendorName}: "${line(side === 'buy' ? 'openBuy' : 'openSell', start)}"`])
   const [done, setDone] = useState(false)
 
   // suggested counter: nudge toward your favor from their current price
@@ -26,29 +44,27 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
 
   function send() {
     if (done) return
-    const res = haggleRound({ side, their, market, yourOffer: offer, flex: arch.flex, round })
+    const res = haggleRound({ side, their, market, yourOffer: offer, flex: arch.flex, round, archKey })
     if (res.accept) {
-      setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "Deal."`])
+      setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "${line('accept')}"`])
       setDone(true)
       setTimeout(() => onDeal(offer), 600)
       return
     }
     if (res.walk) {
-      setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "We're done here." 🚪`])
+      setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "${line('walk')}"`])
       setDone(true)
       setTimeout(() => onClose(), 900)
       return
     }
-    // counter
+    // counter (a "pride" counter gets the posturing line templates)
     const nextRound = round + 1
     setTheir(res.counter)
     setRound(nextRound)
-    setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "${side==='buy'?`Best I can do is ${fmtMoney(res.counter)}.`:`I can go to ${fmtMoney(res.counter)}.`}"`])
+    const key = res.pride ? 'pride' : side === 'buy' ? 'counterBuy' : 'counterSell'
+    setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "${line(key, res.counter)}"`])
     // re-seed your next offer between your last and their new price
     setOffer(side === 'buy' ? Math.max(0.25, Math.round(((offer + res.counter)/2)*100)/100) : Math.round(((offer + res.counter)/2)*100)/100)
-    if (nextRound >= MAX_ROUNDS) {
-      // final: you can only take their last price or leave
-    }
   }
 
   const outOfRounds = round >= MAX_ROUNDS
@@ -80,7 +96,10 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
               </div>
             </div>
             <div className="row" style={{ marginTop: 12 }}>
-              {!outOfRounds && <button className="btn gold" disabled={!better && side==='buy' ? offer>their : false} onClick={send}>Offer {fmtMoney(offer)}</button>}
+              {/* Disable when your offer isn't an improvement on their standing
+                  price (same rule for buy and sell — `better` already encodes the
+                  correct direction per side). Take-their-price is always available. */}
+              {!outOfRounds && <button className="btn gold" disabled={!better} onClick={send}>Offer {fmtMoney(offer)}</button>}
               {/* always allow taking their standing price */}
               <button className="btn" onClick={() => onDeal(their)}>Take {fmtMoney(their)}</button>
               <button className="btn alt" onClick={onClose}>Walk away</button>
