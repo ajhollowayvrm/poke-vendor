@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank } from './engine'
+import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 
 const STARTING_CASH = 2000
@@ -465,6 +465,33 @@ export const useGame = create(persist((set, get) => ({
     get().bumpGoal('grade', 1)
   },
 
+  // Submit several raw cards at once for a bulk per-card discount (stacks with
+  // loyalty). Charges the total up front; each card resolves on its own timer.
+  submitGradesBulk(uids, tierKey) {
+    const tier = GRADING[tierKey]
+    if (!tier || !uids?.length) return
+    const cards = get().collection.filter(c => uids.includes(c.uid) && !c.grade)
+    if (!cards.length) return
+    const before = graderTier(get().gradesSubmitted)
+    const feePer = gradingFee(tierKey, get().gradesSubmitted, cards.length)
+    const total = round2(feePer * cards.length)
+    if (!get().spend(total)) return
+    const uidSet = new Set(cards.map(c => c.uid))
+    const readyAt = Date.now() + tier.days * DAY_MS_SIM
+    set(s => ({
+      collection: s.collection.filter(c => !uidSet.has(c.uid)),
+      gradesSubmitted: s.gradesSubmitted + cards.length,
+      pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, readyAt, paidFee: feePer }))],
+    }))
+    const bulk = bulkDiscount(cards.length)
+    const notes = [before.discount > 0 ? `${Math.round(before.discount*100)}% loyalty` : null,
+      bulk > 0 ? `${Math.round(bulk*100)}% bulk` : null].filter(Boolean).join(' + ')
+    get().log('grade-submit', `Bulk-submitted ${cards.length} cards (${tier.name}, $${feePer.toFixed(2)}/ea${notes ? `, ${notes} off` : ''})`, -total)
+    const after = graderTier(get().gradesSubmitted)
+    if (after.key !== before.key) get().log('grade-tier', `Grader loyalty: reached ${after.name} (${Math.round(after.discount*100)}% off future fees)`, 0)
+    get().bumpGoal('grade', cards.length)
+  },
+
   // Called on a tick to resolve grades whose timers elapsed.
   resolveGrades() {
     const now = Date.now()
@@ -472,8 +499,13 @@ export const useGame = create(persist((set, get) => ({
     if (!ready.length) return []
     const luck = get().upgrades.loupe ? 0.08 : 0
     const resolved = ready.map(p => {
-      const graded = { ...p.card, grade: rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null) }
-      return graded
+      const grade = rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null)
+      // Append to a per-card grading history so the modal can show "this card was
+      // graded PSA X (Standard, $Y) on day Z". (One entry today, but the array is
+      // future-proof for a crack-a-slab regrade mechanic.)
+      const entry = { overall: grade.overall, tier: p.tierKey, fee: grade.fee, gradedAt: grade.gradedAt }
+      const gradeHistory = [...(p.card.gradeHistory || []), entry]
+      return { ...p.card, grade, gradeHistory }
     })
     set(s => ({
       pendingGrades: s.pendingGrades.filter(p => now < p.readyAt),

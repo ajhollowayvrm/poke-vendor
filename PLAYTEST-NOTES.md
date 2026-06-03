@@ -107,18 +107,26 @@ and rejected.
 36. **Cash hidden on the online Orders tab** — the "You accept" row no longer lists
     Cash (an in-person-only rail) until you own a storefront.
 
+### Grading pass (2026-06-03)
+37. **Subgrades gated to PSA 9/10** — the centering/corners/edges/surface breakdown
+    only renders for grades ≥9 (matches real PSA; lower grades get just the
+    overall). Verified live: PSA 6 shows no subgrades, PSA 10 shows all four.
+38. **Economy fee $30 → $20** — early-game grading isn't pointless until cards clear
+    ~$50 anymore.
+39. **Bulk submission discount** — new Bulk-submit panel on the Grader tab: select N
+    raw cards, get a per-card discount (3+ → 8%, 5+ → 15%, 10+ → 25%), stacking
+    multiplicatively with loyalty. New `submitGradesBulk` action. Verified live:
+    3 cards billed $18.40/ea = $55.20.
+40. **Per-card grading history** — each card now carries a `gradeHistory`; the modal
+    shows "PSA X · Tier · $Y fee" lines. (Array is future-proof for crack-a-slab.)
+41. **Fee-vs-value warning** — when the cheapest fee ≥ the card's raw value, the modal
+    warns "Grading costs more than this card is worth… not worth grading." Verified
+    live on a $0.20 common.
+- **Crack-a-slab** (regrade gamble) — deferred at AJ's call; not implemented.
+
 ---
 
 ## 💡 Improvement backlog (NOT implemented — awaiting your call)
-
-### Grading (grader)
-- **Subgrades shown on every grade** — real PSA only subgrades 9/10; this is
-  BGS-style. Either gate subgrades to 9/10 or rename to "BGS-style".
-- **Economy fee $30** vs real PSA ~$20 (makes early-game grading pointless until
-  cards clear ~$50). Consider $18–25 base.
-- **Crack-a-slab** mechanic (regrade gamble, small chance to come back lower),
-  **bulk submission discount**, and **per-card grading history** on the modal.
-- **Warn when grading fee > card value** before the player wastes a fee.
 
 ### Economy (flipper + exploit-hunter)
 - The core sell-path arithmetic was independently verified CORRECT (quick-sell 80%,

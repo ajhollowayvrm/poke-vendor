@@ -53,13 +53,27 @@ export default function CardModal({ card, onClose }) {
                   <b style={{fontSize:28}}>PSA {g.overall}</b>{' '}
                   <span style={{fontWeight:700}}>{g.overall===10?'GEM MINT':g.overall>=9?'MINT':g.overall>=7?'NM':'graded'}</span>
                 </div>
-                <div className="subgrades">
-                  {['centering','corners','edges','surface'].map(k => (
-                    <div className="sg" key={k}><span>{k[0].toUpperCase()+k.slice(1)}</span><b>{g[k]}</b></div>
-                  ))}
-                </div>
+                {/* Real PSA only prints subgrades on 9s and 10s; lower grades get
+                    just the overall. Gate the breakdown to match. */}
+                {g.overall >= 9 && (
+                  <div className="subgrades">
+                    {['centering','corners','edges','surface'].map(k => (
+                      <div className="sg" key={k}><span>{k[0].toUpperCase()+k.slice(1)}</span><b>{g[k]}</b></div>
+                    ))}
+                  </div>
+                )}
                 <p style={{fontSize:15}}>Graded value: <b style={{color:'var(--green)'}}>${cardValue(card).toFixed(2)}</b>
                   <span className="muted"> (raw ${rawValue(card).toFixed(2)})</span></p>
+                {card.gradeHistory?.length > 0 && (
+                  <div className="grade-history">
+                    <div className="muted" style={{ fontSize: 11, textTransform:'uppercase', letterSpacing:'.5px', fontWeight:700 }}>Grading history</div>
+                    {card.gradeHistory.map((h, i) => (
+                      <div key={i} className="muted" style={{ fontSize: 12 }}>
+                        • PSA {h.overall} · {GRADING[h.tier]?.name || h.tier}{h.fee != null ? ` · $${h.fee.toFixed(2)} fee` : ''}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             ) : (
               <p style={{ fontSize: 15 }}>Market value: <b style={{ color: 'var(--green)' }}>${rawValue(card).toFixed(2)}</b></p>
@@ -134,6 +148,13 @@ export default function CardModal({ card, onClose }) {
                 {card.condition && CONDITIONS[card.condition] && CONDITIONS[card.condition].maxGrade < 10 && (
                   <p style={{ fontSize: 11.5, marginTop: 6, color: CONDITIONS[card.condition].color }}>
                     ⚠️ {CONDITIONS[card.condition].label} — this card can grade at most PSA {CONDITIONS[card.condition].maxGrade}.
+                  </p>
+                )}
+                {/* Don't let the player burn a fee on a card worth less than grading it.
+                    Compare the cheapest (economy) fee against the raw value. */}
+                {gradingFee('economy', submitted) >= rawValue(card) && (
+                  <p style={{ fontSize: 11.5, marginTop: 6, color: 'var(--red)' }}>
+                    ⚠️ Grading costs more than this card is worth (${rawValue(card).toFixed(2)} raw). Even a PSA 10 likely won't clear the fee — not worth grading.
                   </p>
                 )}
                 <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>

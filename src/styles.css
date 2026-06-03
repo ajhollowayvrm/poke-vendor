@@ -250,6 +250,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .tier-node.reached { opacity: 1; color: var(--tc); border-color: var(--tc); }
 .tier-node.current { box-shadow: 0 0 0 2px var(--tc); }
 
+/* ---------- Bulk grade submission ---------- */
+.bulk-submit { background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius: 14px; padding: 14px 16px; margin: 0 0 18px; }
+.bulk-card { position: relative; cursor: pointer; border:1px solid transparent; border-radius: 10px;
+  padding: 4px; transition: border-color .15s, background .15s; display:flex; flex-direction:column; gap:2px; }
+.bulk-card:hover { border-color: var(--line); }
+.bulk-card.picked { border-color: var(--green); background: #36d39914; }
+.bulk-check { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 999px;
+  background: var(--green); color: #07140c; font-weight: 900; font-size: 13px; display:flex;
+  align-items:center; justify-content:center; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+
+/* ---------- Per-card grading history (card modal) ---------- */
+.grade-history { margin: 8px 0 2px; padding: 8px 10px; background:#0c0f1a; border:1px solid var(--line);
+  border-radius: 10px; display:flex; flex-direction:column; gap:2px; }
+
 /* ---------- Vendor showcase / bulk bin ---------- */
 .showcase-head { font-weight: 800; font-size: 15px; margin: 6px 0 2px; }
 .showcase-head .muted { font-weight: 600; font-size: 12px; }

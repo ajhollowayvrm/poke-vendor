@@ -392,9 +392,22 @@ export function cardValue(card) { return card.grade ? gradedValue(card) : rawVal
 // `fee` is the LIST price (before your loyalty discount). Raised so early
 // grading stings; the relationship below brings effective fees back down.
 export const GRADING = {
-  economy: { name: 'Economy', fee: 30, days: 45 },
+  economy: { name: 'Economy', fee: 20, days: 45 },
   standard: { name: 'Standard', fee: 60, days: 20 },
   express:  { name: 'Express',  fee: 130, days: 5 },
+}
+
+// Bulk submission discount: sending several cards in one batch cuts the per-card
+// fee (real grading bulk tiers work the same way). Stacks with loyalty discount.
+// Keyed by batch size thresholds, low → high.
+export const BULK_TIERS = [
+  { min: 10, discount: 0.25 },
+  { min: 5,  discount: 0.15 },
+  { min: 3,  discount: 0.08 },
+]
+export function bulkDiscount(count) {
+  for (const t of BULK_TIERS) if (count >= t.min) return t.discount
+  return 0
 }
 
 // ---- Grader loyalty: volume builds a relationship that cuts fees ----
@@ -414,11 +427,15 @@ export function graderTier(submitted) {
 export function nextGraderTier(submitted) {
   return GRADER_TIERS.find(t => t.min > submitted) || null
 }
-// Effective fee for a service tier given how many cards you've submitted total.
-export function gradingFee(tierKey, submitted) {
+// Effective per-card fee for a service tier given how many cards you've submitted
+// total (loyalty) and, optionally, how many you're submitting in this batch (bulk).
+// The two discounts stack multiplicatively (you don't get more than 100% off).
+export function gradingFee(tierKey, submitted, batchCount = 1) {
   if (!GRADING[tierKey]) return 0
   const base = GRADING[tierKey].fee
-  return round2(base * (1 - graderTier(submitted).discount))
+  const loyalty = graderTier(submitted).discount
+  const bulk = bulkDiscount(batchCount)
+  return round2(base * (1 - loyalty) * (1 - bulk))
 }
 // Roll subgrades. Better cards (by value) get a slightly tighter distribution,
 // simulating that valuable cards are often handled carefully — but it's mostly luck.

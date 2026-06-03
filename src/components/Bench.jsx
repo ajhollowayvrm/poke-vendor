@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useGame, DAY_MS_SIM } from '../game/store'
-import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee } from '../game/engine'
+import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney } from '../game/engine'
+import CardTile from './CardTile'
 
 export default function Bench() {
   const pending = useGame(s => s.pendingGrades)
   const submitted = useGame(s => s.gradesSubmitted)
+  const collection = useGame(s => s.collection)
+  const cash = useGame(s => s.cash)
   const resolveGrades = useGame(s => s.resolveGrades)
+  const submitGradesBulk = useGame(s => s.submitGradesBulk)
   const [, tick] = useState(0)
 
   useEffect(() => {
@@ -17,8 +21,11 @@ export default function Bench() {
   return (
     <>
       <GraderRelationship submitted={submitted} />
+
+      <BulkSubmit collection={collection} submitted={submitted} cash={cash} onSubmit={submitGradesBulk} />
+
       {pending.length === 0 ? (
-        <div className="empty">No cards at the grader. Submit a card from its detail view to grade it. 🔬</div>
+        <div className="empty">No cards at the grader. Submit cards above, or from a card's detail view. 🔬</div>
       ) : (
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
           {pending.map((p, i) => {
@@ -43,6 +50,81 @@ export default function Bench() {
         </div>
       )}
     </>
+  )
+}
+
+// Multi-select raw cards and submit them in one batch for a per-card bulk discount.
+function BulkSubmit({ collection, submitted, cash, onSubmit }) {
+  const [open, setOpen] = useState(false)
+  const [tierKey, setTierKey] = useState('economy')
+  const [picked, setPicked] = useState(() => new Set())
+
+  // Only raw (ungraded) cards can be graded.
+  const raw = useMemo(() => collection.filter(c => !c.grade), [collection])
+  const count = picked.size
+  const feePer = gradingFee(tierKey, submitted, count || 1)
+  const total = +(feePer * count).toFixed(2)
+  const bulk = bulkDiscount(count)
+
+  function toggle(uid) {
+    setPicked(p => { const n = new Set(p); n.has(uid) ? n.delete(uid) : n.add(uid); return n })
+  }
+  function submit() {
+    onSubmit([...picked], tierKey)
+    setPicked(new Set()); setOpen(false)
+  }
+
+  if (!raw.length) return null
+
+  return (
+    <div className="bulk-submit">
+      <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <b>📦 Bulk submit</b>
+          <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>
+            Send several at once for a per-card discount: {BULK_TIERS.slice().reverse().map((t, i) => `${t.min}+ → ${Math.round(t.discount*100)}% off`).join(' · ')}
+          </span>
+        </div>
+        <button className="btn alt" style={{ flex: 'none', maxWidth: 170 }} onClick={() => setOpen(o => !o)}>
+          {open ? 'Hide' : 'Bulk submit cards'}
+        </button>
+      </div>
+
+      {open && (
+        <>
+          <div className="row" style={{ margin: '10px 0', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span className="muted" style={{ fontSize: 13 }}>Service:</span>
+            {Object.entries(GRADING).map(([key, t]) => (
+              <button key={key} className={`tab ${tierKey === key ? 'active' : ''}`} onClick={() => setTierKey(key)}>
+                {t.name} · ~{t.days}d
+              </button>
+            ))}
+          </div>
+
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', maxHeight: 360, overflowY: 'auto' }}>
+            {raw.map(c => (
+              <div key={c.uid} className={`bulk-card ${picked.has(c.uid) ? 'picked' : ''}`} onClick={() => toggle(c.uid)}>
+                <CardTile card={c} interactive={false} />
+                <div className="muted" style={{ fontSize: 10.5, textAlign: 'center' }}>raw {fmtMoney(rawValue(c))}</div>
+                {picked.has(c.uid) && <span className="bulk-check">✓</span>}
+              </div>
+            ))}
+          </div>
+
+          <div className="row" style={{ marginTop: 12, alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span className="pill">{count} selected</span>
+            {bulk > 0 && <span className="pill" style={{ background: '#36d39922', color: 'var(--green)' }}>{Math.round(bulk*100)}% bulk discount</span>}
+            <span className="muted" style={{ fontSize: 13 }}>
+              {count ? <>{fmtMoney(feePer)}/card × {count} = <b>{fmtMoney(total)}</b></> : 'Pick cards to grade'}
+            </span>
+            <button className="btn gold" style={{ flex: 'none', maxWidth: 220, marginLeft: 'auto' }}
+              disabled={!count || cash < total} onClick={submit}>
+              Submit {count || ''} {count === 1 ? 'card' : 'cards'} · {fmtMoney(total)}
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 
