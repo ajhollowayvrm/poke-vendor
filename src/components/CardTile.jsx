@@ -10,9 +10,42 @@ const RARITY_COLOR = {
 
 export function rarityColor(r) { return RARITY_COLOR[r] || '#9aa3bf' }
 
+// Short PSA grade descriptor for the slab label.
+function gradeLabel(g) {
+  return g >= 10 ? 'GEM MINT' : g >= 9 ? 'MINT' : g >= 8 ? 'NM-MT' : g >= 7 ? 'NEAR MINT'
+    : g >= 5 ? 'EXCELLENT' : g >= 3 ? 'VG' : 'GOOD'
+}
+
 export default function CardTile({ card, onClick, interactive = true, noBorder = false }) {
   const hit = isHit(card) || card._isHit
   const foil = card.foil
+
+  // Graded cards render as a PSA-style SLAB: a glossy plastic case with a label
+  // header (grade + descriptor) above the encased art. The grade tier tints the gloss.
+  if (card.grade) {
+    const g = card.grade.overall
+    const gemmint = g >= 10
+    return (
+      <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
+        <div className={`cardtile slab grade-${g} ${gemmint ? 'slab-gem' : ''}`} onClick={onClick}>
+          <div className="slab-shine" aria-hidden="true" />
+          <div className="slab-label">
+            <div className="slab-brand">PSA</div>
+            <div className="slab-grade">
+              <b>{g}</b>
+              <span>{gradeLabel(g)}</span>
+            </div>
+            <div className="slab-cert">{card.name}</div>
+          </div>
+          <div className="slab-window">
+            <img src={card.img} alt={card.name} loading="lazy" />
+          </div>
+          <span className="price">{fmtMoney(cardValue(card))}</span>
+        </div>
+      </HoloCard>
+    )
+  }
+
   // The card border is tinted by rarity (foil/grail take precedence). `noBorder`
   // drops it entirely (used in the collection grid, where the user wants clean art).
   const edge = foil ? foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity)
@@ -23,7 +56,6 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
         <span className="tag" style={{ color: edge }}>
           {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}
         </span>
-        {card.grade && <span className="gradechip">PSA {card.grade.overall}</span>}
         {!card.grade && card.condition && card.condition !== 'NM' && (
           <span className="condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
         )}

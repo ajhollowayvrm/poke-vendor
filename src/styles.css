@@ -66,6 +66,66 @@ button { font-family: inherit; cursor: pointer; }
   font-size:11px; padding:2px 6px; border-radius:6px; }
 @keyframes sheen { 0%{background-position:0% 0%} 100%{background-position:-200% -200%} }
 
+/* ---------- Graded SLAB (PSA-style plastic case) ---------- */
+.cardtile.slab {
+  --slab-accent: #d11f2e; /* red PSA label; gem-mint overrides to gold below */
+  overflow: visible; cursor: pointer; background: transparent; border: 0;
+  padding: 7px 7px 9px; border-radius: 10px;
+  /* the plastic shell: cool translucent gradient + crisp beveled edges */
+  background:
+    linear-gradient(150deg, #fdfdff 0%, #e4e9f2 18%, #cfd6e4 50%, #eef1f7 82%, #d7dde9 100%);
+  box-shadow:
+    inset 0 0 0 1px #ffffffcc,            /* inner highlight rim */
+    inset 0 0 0 3px #b9c2d4,              /* bevel */
+    0 2px 3px #fff6 inset,
+    0 10px 22px #0007, 0 2px 6px #0006;   /* drop shadow off the page */
+}
+.cardtile.slab .slab-shine {
+  position: absolute; inset: 0; border-radius: 10px; pointer-events: none; z-index: 6;
+  background: linear-gradient(115deg, transparent 30%, #ffffffaa 45%, #ffffff22 52%, transparent 60%);
+  background-size: 250% 250%; mix-blend-mode: screen; opacity: .55;
+  transition: background-position .15s; background-position: 100% 100%;
+}
+.holocard:hover .cardtile.slab .slab-shine { background-position: 0% 0%; } /* gloss sweeps on hover */
+
+/* Label header */
+.cardtile.slab .slab-label {
+  position: relative; z-index: 5; display: grid; grid-template-columns: auto 1fr;
+  grid-template-areas: "brand grade" "cert cert"; align-items: center; gap: 0 8px;
+  background: var(--slab-accent); color: #fff; border-radius: 5px 5px 3px 3px;
+  padding: 5px 8px 5px; box-shadow: inset 0 -1px 0 #0004, 0 1px 2px #0005;
+}
+.cardtile.slab .slab-brand {
+  grid-area: brand; font-weight: 900; font-size: 15px; letter-spacing: 1px; line-height: 1;
+  font-family: Georgia, 'Times New Roman', serif; text-shadow: 0 1px 1px #0006;
+}
+.cardtile.slab .slab-grade { grid-area: grade; justify-self: end; display: flex; align-items: baseline; gap: 5px; }
+.cardtile.slab .slab-grade b { font-size: 19px; font-weight: 900; line-height: 1; }
+.cardtile.slab .slab-grade span { font-size: 9px; font-weight: 800; letter-spacing: .5px; }
+.cardtile.slab .slab-cert {
+  grid-area: cert; font-size: 9px; font-weight: 700; opacity: .92; margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border-top: 1px solid #ffffff44; padding-top: 3px; letter-spacing: .2px;
+}
+
+/* The inset window holding the encased card */
+.cardtile.slab .slab-window {
+  position: relative; z-index: 5; margin-top: 6px; border-radius: 4px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px #0003, inset 0 0 8px #0004, 0 1px 0 #fff8;
+  background: #0c0f1a;
+}
+.cardtile.slab .slab-window img { width: 100%; display: block; }
+.cardtile.slab .price { z-index: 7; }
+
+/* Gem-mint 10s get a gold label + warmer plastic */
+.cardtile.slab.slab-gem {
+  --slab-accent: #b8860b;
+  background: linear-gradient(150deg, #fffdf2 0%, #efe6c9 18%, #e3d6a8 50%, #fbf6e4 82%, #e8dcb6 100%);
+  box-shadow: inset 0 0 0 1px #fffde8, inset 0 0 0 3px #d8c483,
+    0 10px 24px #0007, 0 0 18px #ffcb0533, 0 2px 6px #0006;
+}
+.cardtile.slab.slab-gem .slab-brand { color: #fff; }
+
 /* ---------- Card wrapper (3D tilt only — no holo overlay) ---------- */
 .holocard { position: relative; transform-style: preserve-3d; will-change: transform; border-radius: 12px; }
 .holocard > img, .holocard .cardtile { display:block; border-radius: 12px; }
