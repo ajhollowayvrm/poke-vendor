@@ -18,7 +18,8 @@ export default function CardModal({ card, onClose }) {
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="detailflex">
-          <HoloCard card={card} maxTilt={18} className="modal-holo">
+          <HoloCard card={card} maxTilt={18} className="modal-holo"
+            extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
             <img src={card.imgLarge || card.img} alt={card.name} />
           </HoloCard>
           <div style={{ flex: 1, minWidth: 240 }}>

@@ -12,10 +12,14 @@ export function rarityColor(r) { return RARITY_COLOR[r] || '#9aa3bf' }
 export default function CardTile({ card, onClick, interactive = true }) {
   const hit = isHit(card) || card._isHit
   const foil = card.foil
+  // The card border is tinted by rarity (foil/grail take precedence) — this is
+  // now the *only* rarity cue on the card face, since the holo overlay is gone.
+  const edge = foil ? foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity)
   return (
     <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
-      <div className={`cardtile ${hit ? 'r-hit' : ''} ${card._grail ? 'r-grail' : ''} ${foil ? 'foil-'+foil.key : ''}`} onClick={onClick}>
-        <span className="tag" style={{ color: foil ? foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
+      <div className={`cardtile rarity-edge ${hit ? 'r-hit' : ''} ${card._grail ? 'r-grail' : ''} ${foil ? 'foil-'+foil.key : ''}`}
+        onClick={onClick} style={{ '--rarity': edge }}>
+        <span className="tag" style={{ color: edge }}>
           {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}
         </span>
         {card.grade && <span className="gradechip">PSA {card.grade.overall}</span>}

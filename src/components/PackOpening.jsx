@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, packPrice, fmtMoney } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, packPrice, fmtMoney, rarityRank } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
@@ -157,11 +157,16 @@ export default function PackOpening({ set, product, onExit }) {
         <>
           {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
           <div className={`reveal-row ${isGod ? 'god' : ''}`}>
-            {pulls.map((c, i) => (
-              <HoloCard key={c.uid} card={c} className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''}`}>
-                <img src={c.img} alt={c.name} />
-              </HoloCard>
-            ))}
+            {pulls.map((c, i) => {
+              const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+              const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')
+              return (
+                <HoloCard key={c.uid} card={c} extraStyle={{ '--rarity': edge }}
+                  className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
+                  <img src={c.img} alt={c.name} />
+                </HoloCard>
+              )
+            })}
           </div>
           {phase === 'done' && (
             <div style={{ textAlign: 'center' }}>
