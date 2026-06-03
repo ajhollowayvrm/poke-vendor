@@ -288,6 +288,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .bulk-bar-actions .btn { flex: 0 0 auto; }
 .bulk-list-group { display: flex; align-items: center; gap: 6px; }
 .bulk-list-group input[type=range] { width: 78px; }
+.bulk-grade-group { display: flex; align-items: center; gap: 6px; }
+.bulk-grade-group select { flex: 0 0 auto; max-width: 150px; }
 
 @media (max-width: 640px) {
   /* keep the bar clear of the floating bottom nav */

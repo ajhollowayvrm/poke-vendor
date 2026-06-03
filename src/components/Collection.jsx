@@ -24,6 +24,7 @@ export default function Collection({ onPick }) {
   const [selectMode, setSelectMode] = useState(false)
   const [picked, setPicked] = useState(() => new Set())
   const [listMult, setListMult] = useState(1.1) // ask multiplier for bulk "list on site"
+  const [gradeTier, setGradeTier] = useState('economy') // service tier for bulk grading
   const [toast, setToast] = useState(null)
 
   const raw = useMemo(() => collection.filter(c => !c.grade), [collection])
@@ -61,7 +62,7 @@ export default function Collection({ onPick }) {
   const count = selCards.length
   // grading is raw-only; selecting graded cards just can't be graded
   const rawSelected = selCards.filter(c => !c.grade)
-  const gradeFeePer = gradingFee('economy', submitted, rawSelected.length || 1)
+  const gradeFeePer = gradingFee(gradeTier, submitted, rawSelected.length || 1)
   const gradeTotal = +(gradeFeePer * rawSelected.length).toFixed(2)
   const gradeBulk = bulkDiscount(rawSelected.length)
 
@@ -152,14 +153,21 @@ export default function Collection({ onPick }) {
           </div>
           <div className="bulk-bar-actions">
             {rawSelected.length > 0 && (
-              <button className="btn alt" onClick={() => {
-                const n = rawSelected.length
-                submitGradesBulk(rawSelected.map(c => c.uid), 'economy')
-                flash(`Submitted ${n} card${n>1?'s':''} to Economy grading${gradeBulk ? ` (${Math.round(gradeBulk*100)}% bulk off)` : ''}.`)
-                exitSelect()
-              }}>
-                🔬 Grade ({fmtMoney(gradeTotal)}{gradeBulk ? `, −${Math.round(gradeBulk*100)}%` : ''})
-              </button>
+              <div className="bulk-grade-group">
+                <select value={gradeTier} onClick={e => e.stopPropagation()} onChange={e => setGradeTier(e.target.value)}>
+                  {Object.entries(GRADING).map(([key, t]) => (
+                    <option key={key} value={key}>{t.name} · ~{t.days}d</option>
+                  ))}
+                </select>
+                <button className="btn alt" onClick={() => {
+                  const n = rawSelected.length
+                  submitGradesBulk(rawSelected.map(c => c.uid), gradeTier)
+                  flash(`Submitted ${n} card${n>1?'s':''} to ${GRADING[gradeTier].name} grading${gradeBulk ? ` (${Math.round(gradeBulk*100)}% bulk off)` : ''}.`)
+                  exitSelect()
+                }}>
+                  🔬 Grade ({fmtMoney(gradeTotal)}{gradeBulk ? `, −${Math.round(gradeBulk*100)}%` : ''})
+                </button>
+              </div>
             )}
             <div className="bulk-list-group">
               <button className="btn" onClick={() => {
