@@ -21,7 +21,7 @@ const TAB_LABEL = { shop: 'Shop', shows: 'Shows', myshop: 'Orders', upgrades: 'U
 
 export default function App() {
   const [tab, setTab] = useState('shop')
-  const [ripping, setRipping] = useState(null)   // a set object when opening packs
+  const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
   const [activeShow, setActiveShow] = useState(null) // show being attended
   const cash = useGame(s => s.cash)
@@ -38,22 +38,24 @@ export default function App() {
     return () => clearInterval(id)
   }, [resolveGrades])
 
-  // Buy any sealed product. A single booster pack opens the animated rip;
-  // multi-pack products rip instantly into the collection.
+  // Buy any sealed product. A single booster pack always opens the animated rip.
+  // Multi-pack products: if "open one at a time" is on, rip each pack with the
+  // animation (you can fast-forward); otherwise open the whole thing instantly.
   function buyProduct(set, product) {
     if (cash < product.price) return alert(`Not enough cash for ${product.type}!`)
-    if (product.packs === 1 && !product.bonus) {
-      spend(product.price)
-      setRipping(set)
+    const oneByOne = useGame.getState().settings.openSealedOneByOne
+    const animated = product.packs === 1 || oneByOne
+    if (animated) {
+      if (!spend(product.price)) return
+      useGame.getState().log('buy', `Bought ${product.type} (${set.name})`, -product.price)
+      setRipping({ set, product })
       setTab('shop')
       return
     }
     if (!spend(product.price)) return
     const all = openProduct(set, product)
     all.forEach(c => (c._isHit = isHit(c)))
-    addPulls(all, `${product.type} · ${set.name}`)
-    // count extra packs toward stats (addPulls already counted 1)
-    if (product.packs > 1) useGame.setState(s => ({ stats: { ...s.stats, packsOpened: s.stats.packsOpened + (product.packs - 1) } }))
+    addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal
     useGame.getState().log('buy', `Opened ${product.type} (${set.name})`, -product.price)
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
@@ -99,7 +101,7 @@ export default function App() {
       </div>
 
       {tab === 'shop' && (ripping
-        ? <PackOpening set={ripping} onExit={() => setRipping(null)} />
+        ? <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
         : <Shop cash={cash} onBuy={buyProduct} />)}
 
       {tab === 'shows' && <Calendar onAttend={attendShow} />}

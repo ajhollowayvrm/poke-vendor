@@ -5,6 +5,8 @@ import { useGame } from '../game/store'
 export default function Settings() {
   const reset = useGame(s => s.reset)
   const log = useGame(s => s.log)
+  const openSealedOneByOne = useGame(s => s.settings.openSealedOneByOne)
+  const setSetting = useGame(s => s.setSetting)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [progress, setProgress] = useState(null)
   const [result, setResult] = useState(null)
@@ -29,7 +31,27 @@ export default function Settings() {
 
   return (
     <>
-      <h3 style={{ margin: '18px 0 4px' }}>Card prices</h3>
+      <h3 style={{ margin: '18px 0 4px' }}>Gameplay</h3>
+      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        How sealed product with multiple packs (booster boxes, bundles, ETBs…) opens.
+      </p>
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Open multi-pack product one pack at a time</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {openSealedOneByOne
+              ? 'On — each pack rips with the full animation; you can fast-forward the rest anytime.'
+              : 'Off — the whole box rips instantly into your collection (faster).'}
+          </div>
+        </div>
+        <button className={`btn ${openSealedOneByOne ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          role="switch" aria-checked={openSealedOneByOne}
+          onClick={() => setSetting('openSealedOneByOne', !openSealedOneByOne)}>
+          {openSealedOneByOne ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <h3 style={{ margin: '28px 0 4px' }}>Card prices</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
         Pull the latest TCGplayer market prices for all {SETS.length} loaded sets, live from pokemontcg.io.
         Updates values across the shop, your collection, vendor booths, and offers. No rebuild needed.

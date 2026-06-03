@@ -187,6 +187,9 @@ export const useGame = create(persist((set, get) => ({
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
+  settings: { openSealedOneByOne: false }, // false = rip whole product at once (default); true = one pack at a time
+
+  setSetting(key, value) { set(s => ({ settings: { ...s.settings, [key]: value } })) },
 
   // --- notoriety / upgrades ---
   addNotoriety(n) {
@@ -236,7 +239,7 @@ export const useGame = create(persist((set, get) => ({
         collection: [...cards, ...s.collection],
         stats: {
           ...s.stats,
-          packsOpened: s.stats.packsOpened + 1,
+          packsOpened: s.stats.packsOpened + packs,
           cardsPulled: s.stats.cardsPulled + cards.length,
           hits: s.stats.hits + hits,
           bestPull: best,
@@ -510,11 +513,12 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], wantList: [], dailyGoals: [], goalsDay: 0 })
+      consignments: [], wantList: [], dailyGoals: [], goalsDay: 0,
+      settings: { openSealedOneByOne: false } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 4,
+  version: 5,
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state
@@ -539,6 +543,9 @@ export const useGame = create(persist((set, get) => ({
       // backfill condition on any existing cards
       const fix = c => ({ ...c, condition: c.condition ?? 'NM' })
       state.collection = (state.collection ?? []).map(fix)
+    }
+    if (version < 5) {
+      state.settings = state.settings ?? { openSealedOneByOne: false }
     }
     return state
   },

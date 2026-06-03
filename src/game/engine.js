@@ -195,15 +195,15 @@ export const CONDITIONS = {
   MP:  { key: 'MP',  label: 'Moderately Played', short: 'MP', mult: 0.45, maxGrade: 6, color: '#ff9f43' },
   DMG: { key: 'DMG', label: 'Damaged',    short: 'DMG', mult: 0.20, maxGrade: 4,  color: '#ff5e6c' },
 }
-// Roll a condition. `source`: 'sealed' (fresh from a pack — mostly NM),
-// 'floor' (a single off a show table — more played), 'grail' (handled fresh).
+// Roll a condition. `source`: 'sealed' (fresh from a pack — always NM; any flaws
+// only show up as lower subgrades at grading time), 'floor' (a single off a show
+// table — handled/played, varies), 'grail' (handled fresh).
 function rollCondition(source = 'sealed') {
+  // Cards out of a sealed pack are always Near Mint. A pack-fresh card is never
+  // "lightly played" — defects are surface/centering flaws that the grader catches.
+  if (source !== 'floor') return 'NM'
   const r = Math.random()
-  if (source === 'floor') {
-    if (r < 0.45) return 'NM'; if (r < 0.78) return 'LP'; if (r < 0.95) return 'MP'; return 'DMG'
-  }
-  // sealed: pack-fresh, overwhelmingly NM with the odd whitened/dinged edge
-  if (r < 0.88) return 'NM'; if (r < 0.98) return 'LP'; return 'MP'
+  if (r < 0.45) return 'NM'; if (r < 0.78) return 'LP'; if (r < 0.95) return 'MP'; return 'DMG'
 }
 
 let _uid = 0
@@ -438,10 +438,16 @@ export function openProduct(set, product) {
     all.push(...pack)
   }
   // Bonus promo: a guaranteed hit-tier card (ETBs/tins/premiums include one).
-  if (product.bonus === 'promo') {
-    const byR = cardsByRarity(set)
-    const promoPool = byR['Ultra Rare'] || byR['Illustration Rare'] || byR['Double Rare'] || byR['Rare Holo']
-    if (promoPool?.length) { const c = instance(pick(promoPool)); c._promo = true; all.push(c) }
-  }
+  const promo = makeProductPromo(set, product)
+  if (promo) all.push(promo)
   return all
+}
+
+// Mint the guaranteed bonus promo for a product (null if it has no bonus).
+export function makeProductPromo(set, product) {
+  if (product.bonus !== 'promo') return null
+  const byR = cardsByRarity(set)
+  const promoPool = byR['Ultra Rare'] || byR['Illustration Rare'] || byR['Double Rare'] || byR['Rare Holo']
+  if (!promoPool?.length) return null
+  const c = instance(pick(promoPool)); c._promo = true; return c
 }
