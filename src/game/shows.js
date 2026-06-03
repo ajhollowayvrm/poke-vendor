@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, rawValue, round2, SETS, rarityRank } from './engine'
+import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SETS, rarityRank } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -116,14 +116,17 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
       // ~15% of stock are "hits" pulled from the upper band; rest is the bulk bin.
       if (arch.key === 'whale' || roll > 0.85) card = gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3))
       else card = cardInValueRange(lo, hi * (0.4 + r() * 0.6))
-      let ask = rawValue(card) * arch.sellMult
-      if (arch.key === 'newbie' && r() > 0.7) ask = rawValue(card) * 0.5 // mispriced gem!
+      // Price against the card's TRUE value (grade-aware) — a slabbed gem is
+      // worth its graded value, not its raw value, so the ask tracks that.
+      const worth = cardValue(card)
+      let ask = worth * arch.sellMult
+      if (arch.key === 'newbie' && r() > 0.7) ask = worth * 0.5 // mispriced gem!
       card._ask = Math.max(0.25, Math.round(ask * 100) / 100)
-      card._mispriced = arch.key === 'newbie' && ask < rawValue(card) * 0.7
+      card._mispriced = arch.key === 'newbie' && ask < worth * 0.7
       stock.push(card)
     }
     // Highlight the booth's 1–3 priciest pieces as featured "showcase" cards.
-    const byVal = [...stock].sort((a, b) => rawValue(b) - rawValue(a))
+    const byVal = [...stock].sort((a, b) => cardValue(b) - cardValue(a))
     const featuredN = Math.min(3, byVal.length)
     for (let k = 0; k < featuredN; k++) byVal[k]._highlight = true
     booths.push({
@@ -200,7 +203,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show') {
   // 2) Lowball / good offer ON one of your cards
   if (roll < 0.5 && playerCollection.length) {
     const target = pickAny(null, playerCollection)
-    const market = rawValue(target)
+    const market = cardValue(target) // grade-aware — offers track the card's real worth
     const good = Math.random() > 0.5
     const offer = Math.round(market * (good ? (1.05 + Math.random()*0.4) : (0.4 + Math.random()*0.3)) * 100) / 100
     const pay = pickPayMethod(channel)

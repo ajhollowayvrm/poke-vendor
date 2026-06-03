@@ -275,16 +275,42 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   -webkit-background-clip:text; background-clip:text; color:transparent; animation: godshine 3s linear infinite; }
 .godbanner small { display:block; font-size: 12px; font-weight:700; color: var(--gold); letter-spacing:0; margin-top:2px; }
 @keyframes godshine { 0%{background-position:0% 0} 100%{background-position:300% 0} }
-/* Poké Ball / Master Ball special-finish callout during a rip */
-.foilbanner { text-align:center; font-weight:900; font-size: 18px; letter-spacing:.3px; color: var(--foil, var(--gold));
-  padding: 6px 14px; border-radius: 12px; border: 1px solid var(--foil);
-  background: color-mix(in srgb, var(--foil) 14%, transparent);
-  box-shadow: 0 0 22px color-mix(in srgb, var(--foil) 45%, transparent);
-  animation: foilpop .5s cubic-bezier(.2,1.4,.5,1); }
-.foilbanner small { display:block; font-size: 12px; font-weight:700; opacity:.9; letter-spacing:0; margin-top:2px; }
 @keyframes foilpop { 0%{opacity:0; transform:scale(.7)} 60%{opacity:1; transform:scale(1.08)} 100%{transform:scale(1)} }
 .reveal-row.god { padding: 14px; border-radius: 16px; background: radial-gradient(circle at 50% 30%, #ffd84d18, transparent 70%);
   box-shadow: 0 0 0 1px #ffd84d44, 0 0 60px #ff3df022 inset; }
+
+/* ---------- Rip layout: now-revealing (left) · cards (center) · hits (right) ---------- */
+.rip-layout { display:flex; gap: 16px; align-items: flex-start; justify-content:center; width:100%; max-width: 1100px; }
+.rip-center { flex: 1 1 auto; display:flex; flex-direction:column; align-items:center; gap: 16px; min-width: 0; }
+.rip-side { flex: 0 0 200px; background: linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--line); border-radius: 14px; padding: 12px; align-self: stretch; }
+.rip-side-head { font-size: 11px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color: var(--muted); margin-bottom: 10px; }
+/* left: the card currently landing */
+.rip-now-card { text-align:center; animation: foilpop .35s cubic-bezier(.2,1.4,.5,1); }
+.rip-now-card img { width: 100%; border-radius: 10px; border: 2px solid var(--rarity, var(--line));
+  box-shadow: 0 0 22px color-mix(in srgb, var(--rarity) 40%, transparent); }
+.rip-now-name { font-weight: 800; font-size: 13px; margin-top: 8px; line-height: 1.2; }
+.rip-now-meta { font-size: 11px; font-weight: 700; margin-top: 2px; }
+.rip-now-val { font-size: 14px; font-weight: 900; color: var(--green); margin-top: 4px; }
+/* right: running hit list */
+.rip-hits-list { display:flex; flex-direction:column; gap: 8px; max-height: 460px; overflow-y: auto; }
+.rip-hit-row { display:flex; align-items:center; gap: 8px; padding: 6px; border-radius: 10px;
+  background: #ffffff08; border-left: 3px solid var(--rarity, var(--line)); animation: hitrowin .3s ease-out; }
+.rip-hit-row img { width: 30px; border-radius: 4px; flex:none; }
+.rip-hit-info { flex: 1; min-width: 0; }
+.rip-hit-name { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rip-hit-meta { font-size: 10px; font-weight: 700; }
+.rip-hit-val { font-size: 12px; font-weight: 800; color: var(--green); flex:none; }
+@keyframes hitrowin { from{opacity:0; transform: translateX(8px)} to{opacity:1; transform:none} }
+/* stack the side panels under the cards on narrow screens */
+@media (max-width: 860px) {
+  .rip-layout { flex-direction: column; align-items: stretch; }
+  .rip-side { flex: none; }
+  .rip-now-card img { max-width: 160px; }
+  .rip-now-card { display:flex; flex-direction:column; align-items:center; }
+  .rip-hits-list { max-height: 220px; flex-direction: row; flex-wrap: wrap; }
+  .rip-hit-row { flex: 1 1 45%; }
+}
 
 /* ---------- Shop product list ---------- */
 .prodlist { display:flex; flex-direction:column; gap:6px; margin-top:auto; }

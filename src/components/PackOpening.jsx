@@ -18,7 +18,8 @@ export default function PackOpening({ set, product, onExit }) {
   const [shown, setShown] = useState(0)
   const [burst, setBurst] = useState(false)
   const [isGod, setIsGod] = useState(false)
-  const [foilAlert, setFoilAlert] = useState(null) // {label, color} for a Poké/Master Ball callout
+  const [current, setCurrent] = useState(null)    // the card being revealed right now (side callout)
+  const [hits, setHits] = useState([])            // every hit/foil pulled this whole rip (right list)
   const [finished, setFinished] = useState(false) // whole product done
   const [extra, setExtra] = useState([])          // promo + fast-forwarded packs (for the summary)
   const addPulls = useGame(s => s.addPulls)
@@ -35,7 +36,7 @@ export default function PackOpening({ set, product, onExit }) {
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
     setIsGod(god)
-    setFoilAlert(null)
+    setCurrent(null)
     setPulls(cards)
     setPhase('shaking')
     setTimeout(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : 900))
@@ -51,17 +52,19 @@ export default function PackOpening({ set, product, onExit }) {
     const c = cards[i]
     const special = c._isHit || c.foil
     if (special) { setBurst(true); setTimeout(() => setBurst(false), ms(1200)) }
-    // Call out a special-finish pull (Poké Ball / Master Ball) as it lands.
-    if (c.foil) setFoilAlert({ label: c.foil.label, badge: c.foil.badge, color: c.foil.color, name: c.name })
+    // Side callout: name every card as it lands, and accumulate hits/foils.
+    setCurrent(c)
+    if (special) setHits(h => [c, ...h])
     const delay = special ? 1100 : 520
     setTimeout(() => revealNext(cards, i + 1), ms(delay))
   }
 
   // Reset reveal state for the next pack in the sequence.
+  // Keeps `hits` — they accumulate across the whole product, not per pack.
   function resetForNext() {
     committed.current = false
     autoRipped.current = false
-    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setFoilAlert(null)
+    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setCurrent(null)
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -94,6 +97,7 @@ export default function PackOpening({ set, product, onExit }) {
       promo._isHit = isHit(promo)
       addPulls([promo], `${product.type} promo · ${set.name}`, 0) // promo isn't a pack
       setExtra(e => [...e, promo])
+      if (promo._isHit || promo.foil) setHits(h => [promo, ...h])
     }
     setFinished(true)
   }
@@ -112,6 +116,8 @@ export default function PackOpening({ set, product, onExit }) {
     fast.forEach(c => { c._isHit = isHit(c) })
     if (fast.length) addPulls(fast, set.name, remaining)
     setExtra(e => [...e, ...fast])
+    const fastHits = fast.filter(c => c._isHit || c.foil)
+    if (fastHits.length) setHits(h => [...fastHits, ...h])
     addBonusAndFinish()
   }
 
@@ -182,55 +188,113 @@ export default function PackOpening({ set, product, onExit }) {
       {(phase === 'revealing' || phase === 'done') && (
         <>
           {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
-          {foilAlert && !isGod && (
-            <div className="foilbanner" style={{ '--foil': foilAlert.color }}>
-              {foilAlert.badge} — <b>{foilAlert.name}</b>!
-              <small>You pulled a {foilAlert.label} ✨</small>
+          <div className="rip-layout">
+            {/* LEFT — live callout naming every card as it reveals */}
+            <NowRevealing card={current} />
+
+            {/* CENTER — the reveal row + pack-done controls */}
+            <div className="rip-center">
+              <div className={`reveal-row ${isGod ? 'god' : ''}`}>
+                {pulls.map((c, i) => {
+                  const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+                  const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')
+                  return (
+                    <HoloCard key={c.uid} card={c} extraStyle={{ '--rarity': edge }}
+                      className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
+                      <img src={c.img} alt={c.name} />
+                    </HoloCard>
+                  )
+                })}
+              </div>
+              {phase === 'done' && (
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 15, marginBottom: 8 }}>
+                    Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
+                    <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                      ({profit >= 0 ? '+' : ''}{fmtMoney(profit)} vs {fmtMoney(packPrice(set))} cost)
+                    </span>
+                  </div>
+                  <div className="row" style={{ justifyContent: 'center' }}>
+                    {multi ? (
+                      <button className="btn gold" style={{ maxWidth: 200 }} onClick={nextPack}>
+                        {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
+                      </button>
+                    ) : (
+                      <>
+                        <button className="btn gold" style={{ maxWidth: 180 }} onClick={resetForNext}>
+                          Rip another ({fmtMoney(packPrice(set))})
+                        </button>
+                        <button className="btn alt" style={{ maxWidth: 160 }} onClick={onExit}>Done →</button>
+                      </>
+                    )}
+                  </div>
+                  <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>
+                    Cards added to your collection. Best pull:{' '}
+                    <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-          <div className={`reveal-row ${isGod ? 'god' : ''}`}>
-            {pulls.map((c, i) => {
-              const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
-              const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')
-              return (
-                <HoloCard key={c.uid} card={c} extraStyle={{ '--rarity': edge }}
-                  className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
-                  <img src={c.img} alt={c.name} />
-                </HoloCard>
-              )
-            })}
+
+            {/* RIGHT — running list of hits for the whole rip */}
+            <HitList hits={hits} />
           </div>
-          {phase === 'done' && (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 15, marginBottom: 8 }}>
-                Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
-                <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                  ({profit >= 0 ? '+' : ''}{fmtMoney(profit)} vs {fmtMoney(packPrice(set))} cost)
-                </span>
-              </div>
-              <div className="row" style={{ justifyContent: 'center' }}>
-                {multi ? (
-                  <button className="btn gold" style={{ maxWidth: 200 }} onClick={nextPack}>
-                    {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
-                  </button>
-                ) : (
-                  <>
-                    <button className="btn gold" style={{ maxWidth: 180 }} onClick={resetForNext}>
-                      Rip another ({fmtMoney(packPrice(set))})
-                    </button>
-                    <button className="btn alt" style={{ maxWidth: 160 }} onClick={onExit}>Done →</button>
-                  </>
-                )}
-              </div>
-              <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>
-                Cards added to your collection. Best pull:{' '}
-                <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
-              </p>
-            </div>
-          )}
         </>
       )}
     </div>
+  )
+}
+
+// Left-side callout: names the card currently being revealed, tinted by rarity.
+function NowRevealing({ card }) {
+  return (
+    <aside className="rip-side rip-now">
+      <div className="rip-side-head">Now revealing</div>
+      {card ? (() => {
+        const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
+        const label = card.foil ? card.foil.label
+          : card.grade ? `PSA ${card.grade.overall} · ${card.rarity}`
+          : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
+        return (
+          <div className="rip-now-card" style={{ '--rarity': edge }}>
+            <img src={card.img} alt={card.name} />
+            <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
+            <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
+            <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
+          </div>
+        )
+      })() : <div className="muted" style={{ fontSize: 12 }}>Tearing it open…</div>}
+    </aside>
+  )
+}
+
+// Right-side running tally of every hit/foil pulled this rip.
+function HitList({ hits }) {
+  return (
+    <aside className="rip-side rip-hits">
+      <div className="rip-side-head">Hits {hits.length ? `(${hits.length})` : ''}</div>
+      {hits.length === 0 ? (
+        <div className="muted" style={{ fontSize: 12 }}>No hits yet — fingers crossed. 🤞</div>
+      ) : (
+        <div className="rip-hits-list">
+          {hits.map((c, i) => {
+            const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+            return (
+              <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
+                <img src={c.img} alt="" />
+                <div className="rip-hit-info">
+                  <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
+                  <div className="rip-hit-meta" style={{ color: edge }}>
+                    {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
+                  </div>
+                </div>
+                <div className="rip-hit-val">{fmtMoney(cardValue(c))}</div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </aside>
   )
 }
 

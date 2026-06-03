@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGame } from '../game/store'
-import { rawValue, fmtMoney } from '../game/engine'
+import { cardValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
 import Haggle from './Haggle'
 
@@ -18,7 +18,7 @@ export default function VendorBooth({ booth, onClose, flash }) {
   function buyAt(card, price) {
     if (buyFromVendor(card, price)) {
       setStock(s => s.filter(c => c.uid !== card.uid))
-      flash(`Bought ${card.name} for ${fmtMoney(price)}${price < rawValue(card)*0.85 ? ' — great deal!' : ''}`)
+      flash(`Bought ${card.name} for ${fmtMoney(price)}${price < cardValue(card)*0.85 ? ' — great deal!' : ''}`)
     }
   }
   function sellAt(card, price) {
@@ -27,19 +27,20 @@ export default function VendorBooth({ booth, onClose, flash }) {
   }
 
   function renderBuy(card, featured) {
-    const deal = card._ask < rawValue(card) * 0.85
+    const mkt = cardValue(card) // grade-aware true value
+    const deal = card._ask < mkt * 0.85
     return (
       <div key={card.uid} className={`vendoritem ${featured ? 'featured' : ''}`}>
         <CardTile card={card} interactive={false} />
         <div className="askrow">
           <span className="ask">{fmtMoney(card._ask)}</span>
           {seeDeals && deal && <span className="dealtag">DEAL</span>}
-          {seeDeals && !deal && card._ask > rawValue(card)*1.2 && <span className="overtag">OVER</span>}
+          {seeDeals && !deal && card._ask > mkt*1.2 && <span className="overtag">OVER</span>}
         </div>
-        <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(rawValue(card))}</div>
+        <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(mkt)}</div>
         <div className="row" style={{ gap: 6 }}>
           <button className="btn" disabled={cash < card._ask} onClick={() => buyAt(card, card._ask)}>Buy</button>
-          <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'buy', card, market: rawValue(card), start: card._ask })}>Haggle</button>
+          <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'buy', card, market: mkt, start: card._ask })}>Haggle</button>
         </div>
       </div>
     )
@@ -79,13 +80,14 @@ export default function VendorBooth({ booth, onClose, flash }) {
           collection.length === 0 ? <p className="muted">You have nothing to sell.</p> :
           <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))' }}>
             {collection.slice(0, 24).map(card => {
-              const offer = Math.round(rawValue(card) * booth.buyMult * 100) / 100
+              const mkt = cardValue(card)
+              const offer = Math.round(mkt * booth.buyMult * 100) / 100
               return (
                 <div key={card.uid} className="vendoritem">
                   <CardTile card={card} interactive={false} />
                   <div className="row" style={{ gap: 6 }}>
                     <button className="btn alt" onClick={() => sellAt(card, offer)}>Sell {fmtMoney(offer)}</button>
-                    <button className="btn" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'sell', card, market: rawValue(card), start: offer })}>Haggle</button>
+                    <button className="btn" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'sell', card, market: mkt, start: offer })}>Haggle</button>
                   </div>
                 </div>
               )
