@@ -56,12 +56,14 @@ export default function App() {
     const animated = product.packs === 1 || oneByOne
     if (animated) {
       if (!spend(product.price)) return
+      useGame.getState().recordSetSpend(set.id, product.price)
       useGame.getState().log('buy', `Bought ${product.type} (${set.name})`, -product.price)
       setRipping({ set, product })
       setTab('shop')
       return
     }
     if (!spend(product.price)) return
+    useGame.getState().recordSetSpend(set.id, product.price)
     const all = openProduct(set, product)
     all.forEach(c => (c._isHit = isHit(c)))
     addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal

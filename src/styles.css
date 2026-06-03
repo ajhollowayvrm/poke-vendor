@@ -268,6 +268,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .grade-history { margin: 8px 0 2px; padding: 8px 10px; background:#0c0f1a; border:1px solid var(--line);
   border-radius: 10px; display:flex; flex-direction:column; gap:2px; }
 
+/* ---------- Per-set analytics (Stats page) ---------- */
+.setanalytics { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.set-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1fr; gap: 8px;
+  padding: 9px 12px; align-items: center; font-variant-numeric: tabular-nums; font-size: 14px; }
+.set-row:not(.set-head):nth-child(even) { background: #ffffff06; }
+.set-row > span:not(.set-name) { text-align: right; }
+.set-head { background: var(--panel2); color: var(--dim); font-weight: 700; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .4px; }
+.set-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) {
+  .set-row { grid-template-columns: 1.6fr 1fr 1fr 0.7fr; font-size: 13px; padding: 8px 10px; }
+  /* drop Pulled + Packs columns on narrow screens (header + cells alike) */
+  .set-row > :nth-child(3), .set-row > :nth-child(6) { display: none; }
+}
+
 /* ---------- Collection multi-select + bulk-action bar ---------- */
 .coll-cell { position: relative; }
 .coll-cell.selectable { cursor: pointer; border-radius: 12px; transition: box-shadow .12s, background .12s; }

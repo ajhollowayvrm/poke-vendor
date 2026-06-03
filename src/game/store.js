@@ -5,6 +5,27 @@ import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from '
 
 const STARTING_CASH = 2000
 
+// Card ids are "<setId>-<number>" (e.g. "me4-2"); the set id is everything before
+// the last hyphen so multi-hyphen set ids like "sv8pt5" survive.
+function setIdOf(card) {
+  const id = card?.id
+  if (!id) return null
+  const i = id.lastIndexOf('-')
+  return i > 0 ? id.slice(0, i) : id
+}
+// Merge a delta into a per-set ledger entry. Returns a new bySet object.
+function bumpSet(bySet, setId, delta) {
+  if (!setId) return bySet
+  const cur = bySet[setId] || { spent: 0, pulledValue: 0, packsOpened: 0, cardsPulled: 0, hits: 0 }
+  return { ...bySet, [setId]: {
+    spent: round2(cur.spent + (delta.spent || 0)),
+    pulledValue: round2(cur.pulledValue + (delta.pulledValue || 0)),
+    packsOpened: cur.packsOpened + (delta.packsOpened || 0),
+    cardsPulled: cur.cardsPulled + (delta.cardsPulled || 0),
+    hits: cur.hits + (delta.hits || 0),
+  } }
+}
+
 // --- Payment methods ---------------------------------------------------------
 // You start accepting only Venmo. Buyers each prefer a method; if you can't take
 // it, the sale falls through. Some methods are unlocked by upgrades.
@@ -203,6 +224,10 @@ export const useGame = create(persist((set, get) => ({
   pendingGrades: [],       // {card, readyAt, tier}
   history: [],             // {t, type, detail, amount}
   stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
+  // Per-set ledger: { [setId]: { spent, pulledValue, packsOpened, cardsPulled, hits } }.
+  // `spent` = cash put into that set's sealed product; `pulledValue` = market value of
+  // everything ripped from it. Drives the per-set analytics on the Stats page.
+  bySet: {},
 
   notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
   upgrades: {},            // { signage:true, ... }
@@ -263,6 +288,11 @@ export const useGame = create(persist((set, get) => ({
   earn(amount) {
     set(s => ({ cash: round2(s.cash + amount), stats: { ...s.stats, earned: round2(s.stats.earned + amount) } }))
   },
+  // Attribute a sealed-product purchase to its set for the per-set ledger.
+  recordSetSpend(setId, amount) {
+    if (!setId || !amount) return
+    set(s => ({ bySet: bumpSet(s.bySet, setId, { spent: amount }) }))
+  },
 
   addPulls(cards, setName, packs = 1) {
     set(s => {
@@ -272,8 +302,19 @@ export const useGame = create(persist((set, get) => ({
       const foils = cards.filter(c => c.foil)
       const bestFoil = foils.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestFoil)
       const godPacks = (s.stats.godPacks || 0) + (cards._god || cards.some(c => c._fromGod) ? 1 : 0)
+      // Fold pulled cards into the per-set ledger (grouped by set, in case a single
+      // rip spans sets). Packs are attributed to the first card's set.
+      let bySet = s.bySet
+      const firstSet = setIdOf(cards[0])
+      for (const c of cards) {
+        bySet = bumpSet(bySet, setIdOf(c), {
+          pulledValue: cardValue(c), cardsPulled: 1, hits: c._isHit ? 1 : 0,
+        })
+      }
+      if (firstSet) bySet = bumpSet(bySet, firstSet, { packsOpened: packs })
       return {
         collection: [...cards, ...s.collection],
+        bySet,
         stats: {
           ...s.stats,
           packsOpened: s.stats.packsOpened + packs,
@@ -705,14 +746,14 @@ export const useGame = create(persist((set, get) => ({
 
   reset() {
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
-      stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
+      stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 9,
+  version: 10,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -768,6 +809,11 @@ export const useGame = create(persist((set, get) => ({
       // Backfill the lifetime online-order counter. Existing saves are mid-game, so
       // assume they've already had their first order (don't re-trigger the guarantee).
       state.onlineOrdersEver = state.onlineOrdersEver ?? ((state.currentDay ?? 1) > 5 ? 1 : 0)
+    }
+    if (version < 10) {
+      // Per-set ledger is new — start it empty for existing saves (history before
+      // this version isn't attributable to a set, so we begin tracking from now).
+      state.bySet = state.bySet ?? {}
     }
     return state
   },
