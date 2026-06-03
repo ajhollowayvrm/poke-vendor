@@ -77,20 +77,20 @@ button { font-family: inherit; cursor: pointer; }
 .holo-foil { opacity:0; }
 /* Kept deliberately subtle so the card ART stays the star — the foil is an
    accent over it, not a veil. Tune these opacities to taste. */
-.lvl-1 .holo-foil, .lvl-2 .holo-foil, .lvl-3 .holo-foil { opacity:.30; }
+.lvl-1 .holo-foil, .lvl-2 .holo-foil, .lvl-3 .holo-foil { opacity:.22; }
 .lvl-1 .holo-foil { background:
-  repeating-linear-gradient(115deg, #ffffff18 0 6px, transparent 6px 14px),
-  radial-gradient(120% 120% at var(--mx) var(--my), #b6f0ff44, transparent 60%); }
-.lvl-2 .holo-foil { opacity:.40; background:
-  repeating-linear-gradient(115deg, #ff5e6c2a 0 8px, #3b6cff2a 8px 16px, #36d3992a 16px 24px),
-  radial-gradient(130% 130% at var(--mx) var(--my), #ffffff66, transparent 55%); background-blend-mode: color-dodge; }
-.lvl-3 .holo-foil { opacity:.50; background:
+  repeating-linear-gradient(115deg, #ffffff14 0 6px, transparent 6px 14px),
+  radial-gradient(120% 120% at var(--mx) var(--my), #b6f0ff3a, transparent 62%); }
+.lvl-2 .holo-foil { opacity:.30; background:
+  repeating-linear-gradient(115deg, #ff5e6c22 0 8px, #3b6cff22 8px 16px, #36d39922 16px 24px),
+  radial-gradient(130% 130% at var(--mx) var(--my), #ffffff55, transparent 58%); background-blend-mode: color-dodge; }
+.lvl-3 .holo-foil { opacity:.38; background:
   conic-gradient(from 0deg at var(--mx) var(--my), #ff5e6c, #ffcb05, #36d399, #3b6cff, #ff3df0, #ff5e6c),
-  repeating-linear-gradient(110deg, #ffffff18 0 4px, transparent 4px 10px);
-  background-blend-mode: overlay; filter: saturate(1.15); }
+  repeating-linear-gradient(110deg, #ffffff14 0 4px, transparent 4px 10px);
+  background-blend-mode: overlay; filter: saturate(1.1); }
 /* dynamic glare follows the cursor */
 .holo-glare { background: radial-gradient(circle at var(--mx) var(--my),
-  rgba(255,255,255,var(--glare-o)), transparent 45%); opacity: .6; }
+  rgba(255,255,255,var(--glare-o)), transparent 45%); opacity: .5; }
 /* twinkling sparkle field for chase cards */
 .holo-sparkle { background-image:
   radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent),
@@ -100,7 +100,7 @@ button { font-family: inherit; cursor: pointer; }
   radial-gradient(2px 2px at 55% 15%, #fff, transparent),
   radial-gradient(1.5px 1.5px at 30% 65%, #fff, transparent);
   background-size: 120% 120%; animation: twinkle 2.2s ease-in-out infinite; mix-blend-mode: screen; }
-@keyframes twinkle { 0%,100%{opacity:.15} 50%{opacity:.55} }
+@keyframes twinkle { 0%,100%{opacity:.12} 50%{opacity:.42} }
 /* gentle idle shimmer so cards look alive even without hover */
 .holocard.idle-anim .holo-glare { animation: idleSheen 4s linear infinite; }
 @keyframes idleSheen { 0%{--mx:0%;--my:0%} 50%{--mx:100%;--my:100%} 100%{--mx:0%;--my:0%} }
@@ -128,6 +128,23 @@ button { font-family: inherit; cursor: pointer; }
 .reveal-card img { width:100%; display:block; border-radius: 11px; }
 .reveal-card.hit.shown { box-shadow: 0 0 30px #ffcb05cc, 0 0 0 2px var(--gold); animation: hitpulse 1.2s ease-out; }
 @keyframes hitpulse { 0%{transform:scale(.82)} 40%{transform:scale(1.12)} 100%{transform:scale(1)} }
+
+/* Chase-on-reveal flourish: the foil briefly FLARES to full intensity as the
+   card lands, then settles to its calm resting opacity. Keeps the "wow" in the
+   moment without leaving the card face permanently loud. Runs once. */
+.reveal-card.hit.shown .holo-foil { animation: foilFlare 1.4s ease-out 1; }
+@keyframes foilFlare {
+  0%   { opacity: 0;    filter: brightness(2) saturate(1.6); }
+  22%  { opacity: 1;    filter: brightness(1.8) saturate(1.5); }
+  100% { opacity: .38;  filter: none; }
+}
+/* lvl-3 chases get an extra rainbow rim-light pulse on landing */
+.reveal-card.hit.shown.lvl-3 { animation: hitpulse 1.2s ease-out, chaseRim 1.6s ease-out 1; }
+@keyframes chaseRim {
+  0%   { box-shadow: 0 0 0 2px var(--gold), 0 0 60px 8px #ff3df0aa, 0 0 90px 16px #3b6cff88; }
+  45%  { box-shadow: 0 0 0 2px var(--gold), 0 0 44px 4px #ffcb05cc; }
+  100% { box-shadow: 0 0 30px #ffcb05cc, 0 0 0 2px var(--gold); }
+}
 .hitburst { position:fixed; inset:0; pointer-events:none; z-index:60; }
 
 /* Modal */

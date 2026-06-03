@@ -30,7 +30,7 @@ export default function HoloCard({ card, children, maxTilt = 14, className = '',
       transform: `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.06)`,
       '--mx': `${px * 100}%`,
       '--my': `${py * 100}%`,
-      '--glare-o': level ? 0.32 : 0.16,
+      '--glare-o': level ? 0.26 : 0.13,
       transition: 'transform .05s',
     })
   }, [interactive, maxTilt, level])
