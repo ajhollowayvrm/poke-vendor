@@ -22,6 +22,8 @@ export default function PackOpening({ set, product, onExit }) {
   const [hits, setHits] = useState([])            // every hit/foil pulled this whole rip (right list)
   const [finished, setFinished] = useState(false) // whole product done
   const [extra, setExtra] = useState([])          // promo + fast-forwarded packs (for the summary)
+  const [ripValue, setRipValue] = useState(0)     // cumulative card value across the WHOLE rip
+  const [packsOpened, setPacksOpened] = useState(0) // how many packs we've fully opened this rip
   const addPulls = useGame(s => s.addPulls)
   const committed = useRef(false)
   const autoRipped = useRef(false)                 // did we already auto-rip the current idle pack?
@@ -44,7 +46,13 @@ export default function PackOpening({ set, product, onExit }) {
 
   function revealNext(cards, i) {
     if (i >= cards.length) {
-      if (!committed.current) { committed.current = true; addPulls(cards, set.name) }
+      if (!committed.current) {
+        committed.current = true
+        addPulls(cards, set.name)
+        // fold this pack into the running rip tally (value-per-rip)
+        setRipValue(v => v + cards.reduce((a, c) => a + cardValue(c), 0))
+        setPacksOpened(n => n + 1)
+      }
       if (cards._god) { setBurst(true); setTimeout(() => setBurst(false), 3000) } // big finale
       setPhase('done'); return
     }
@@ -97,6 +105,7 @@ export default function PackOpening({ set, product, onExit }) {
       promo._isHit = isHit(promo)
       addPulls([promo], `${product.type} promo · ${set.name}`, 0) // promo isn't a pack
       setExtra(e => [...e, promo])
+      setRipValue(v => v + cardValue(promo)) // promo counts toward the rip's total value
       if (promo._isHit || promo.foil) setHits(h => [promo, ...h])
     }
     setFinished(true)
@@ -116,10 +125,18 @@ export default function PackOpening({ set, product, onExit }) {
     fast.forEach(c => { c._isHit = isHit(c) })
     if (fast.length) addPulls(fast, set.name, remaining)
     setExtra(e => [...e, ...fast])
+    // fold the fast-forwarded packs into the running rip tally
+    setRipValue(v => v + fast.reduce((a, c) => a + cardValue(c), 0))
+    setPacksOpened(n => n + remaining)
     const fastHits = fast.filter(c => c._isHit || c.foil)
     if (fastHits.length) setHits(h => [...fastHits, ...h])
     addBonusAndFinish()
   }
+
+  // Running value-per-rip: what the whole product cost vs what's come out so far.
+  // (Hoisted above the `finished` return so the summary screen can use it too.)
+  const ripCost = product?.price ?? packPrice(set) * totalPacks
+  const ripProfit = ripValue - ripCost
 
   if (finished) {
     const promo = extra.find(c => c._promo)
@@ -129,6 +146,12 @@ export default function PackOpening({ set, product, onExit }) {
           <h2 style={{ marginBottom: 6 }}>✓ Opened {product?.type || 'pack'} — {set.name}</h2>
           <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
             All {totalPacks} pack{totalPacks > 1 ? 's' : ''}{promo ? ' + promo' : ''} are in your collection.
+          </p>
+          <p style={{ fontSize: 15, margin: '6px 0' }}>
+            Total pulled <b style={{ color: 'var(--green)' }}>{fmtMoney(ripValue)}</b>{' '}
+            <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
+              ({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)} vs {fmtMoney(ripCost)} spent)
+            </span>
           </p>
           {promo && (
             <p className="muted" style={{ fontSize: 13 }}>
@@ -156,6 +179,12 @@ export default function PackOpening({ set, product, onExit }) {
       {multi && (
         <div className="pack-progress">
           <span className="pill" style={{ background: '#3b6cff22', color: '#9db8ff' }}>📦 Pack {packNo} of {totalPacks}</span>
+          {packsOpened > 0 && (
+            <span className="pill" style={{ background: '#36d39922', color: 'var(--green)' }}
+              title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
+              💰 Rip {fmtMoney(ripValue)} <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
+            </span>
+          )}
           {product?.bonus && <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
           {(phase === 'idle' || phase === 'done') && remainingToOpen >= 2 && (
             <button className="btn alt" style={{ flex: 'none', maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
@@ -208,12 +237,21 @@ export default function PackOpening({ set, product, onExit }) {
               </div>
               {phase === 'done' && (
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 15, marginBottom: 8 }}>
+                  <div style={{ fontSize: 15, marginBottom: multi ? 4 : 8 }}>
                     Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
                     <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>
                       ({profit >= 0 ? '+' : ''}{fmtMoney(profit)} vs {fmtMoney(packPrice(set))} cost)
                     </span>
                   </div>
+                  {multi && (
+                    <div style={{ fontSize: 14, marginBottom: 8 }}>
+                      Rip so far <b style={{ color: 'var(--green)' }}>{fmtMoney(ripValue)}</b>{' '}
+                      <span className="muted">across {packsOpened} pack{packsOpened === 1 ? '' : 's'}</span>{' '}
+                      <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                        ({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)} vs {fmtMoney(ripCost)} spent)
+                      </span>
+                    </div>
+                  )}
                   <div className="row" style={{ justifyContent: 'center' }}>
                     {multi ? (
                       <button className="btn gold" style={{ maxWidth: 200 }} onClick={nextPack}>
