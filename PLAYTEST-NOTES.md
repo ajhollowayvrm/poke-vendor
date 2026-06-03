@@ -162,10 +162,13 @@ and rejected.
 ### New-player UX
 - **No onboarding** — a first-time tooltip/highlight sequence ("Buy → Rip → Sell →
   Next day") and a "?" on notoriety explaining what it drives.
-- **Mobile nav affordance** — the tab strip *does* scroll (`overflow-x:auto`) but
-  there's no visual cue and the brand/balance siblings crowd it at 390px. Add a
-  scroll hint or condense to icons.
 - **Tooltips** for `RH` (reverse holo), Booster vs Sleeved Pack, "Orders (1)".
+
+> ✅ **Mobile nav affordance — DONE (2026-06-03).** At ≤640px the cramped top tab
+> strip is hidden and replaced by a fixed floating bottom nav (icon + small label,
+> horizontally scrollable, pending/inbox badges, safe-area padding). Pure CSS
+> media-query — no userAgent sniffing, responds to resize. Verified live at 390px:
+> top tabs gone, bottom nav pinned, tapping switches tabs; desktop unchanged.
 
 ---
 

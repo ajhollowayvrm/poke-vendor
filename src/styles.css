@@ -31,6 +31,9 @@ button { font-family: inherit; cursor: pointer; }
   white-space: nowrap; padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 14px; }
 .tab.active { background: var(--accent2); color: #fff; }
 .tab:hover:not(.active) { color: var(--txt); background: #ffffff10; }
+
+/* Mobile bottom nav — hidden on desktop, shown fixed at <=640px (see media query). */
+.bottomnav { display: none; }
 .pill { background:#ffffff14; color:var(--dim); border-radius:999px; padding:3px 9px; font-size:12px; font-weight:700;}
 
 /* Cards grid */
@@ -390,10 +393,37 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 }
 
 @media (max-width: 640px) {
-  .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right)); }
+  .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right));
+    /* leave room so content clears the fixed bottom nav (bar + safe-area) */
+    padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
   .topbar { gap: 10px; padding: 10px 12px; }
   .brand { font-size: 17px; }
   .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
+  /* the in-bar tab strip is replaced by the floating bottom nav on phones */
+  .topbar .tabs { display: none; }
+
+  .bottomnav {
+    display: flex; gap: 2px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, var(--panel), var(--panel2));
+    border-top: 1px solid var(--line); box-shadow: 0 -6px 24px #0007;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .bottomnav::-webkit-scrollbar { display: none; }
+  .bnav-btn {
+    flex: 0 0 auto; min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: transparent; border: 0; color: var(--dim); padding: 5px 8px 3px; border-radius: 12px;
+    font-weight: 700; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .bnav-btn.active { color: #fff; background: var(--accent2); }
+  .bnav-btn:active { transform: scale(.95); }
+  .bnav-icon { position: relative; font-size: 20px; line-height: 1; }
+  .bnav-label { font-size: 10.5px; line-height: 1; }
+  .bnav-badge {
+    position: absolute; top: -5px; right: -10px; min-width: 15px; height: 15px; padding: 0 3px;
+    border-radius: 999px; background: var(--red, #ff5e6c); color: #fff; font-size: 9.5px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; line-height: 1;
+  }
   .tab { padding: 7px 11px; font-size: 13px; }
 
   /* denser card grids so more fits per row on a phone */

@@ -19,6 +19,9 @@ import { SHOW_TIERS } from './game/shows'
 const TABS = ['shop', 'shows', 'myshop', 'upgrades', 'collection', 'prices', 'bench', 'stats', 'settings']
 const TAB_LABEL = { shop: 'Shop', shows: 'Shows', myshop: 'Orders', upgrades: 'Upgrades',
   collection: 'Collection', prices: 'Prices', bench: 'Grader', stats: 'Stats', settings: 'Settings' }
+// Icons for the mobile bottom nav (label is shown small underneath).
+const TAB_ICON = { shop: '🛒', shows: '🎪', myshop: '📨', upgrades: '⬆️',
+  collection: '🗂️', prices: '🏷️', bench: '🔬', stats: '📊', settings: '⚙️' }
 
 export default function App() {
   const [tab, setTab] = useState('shop')
@@ -89,6 +92,9 @@ export default function App() {
     setActiveShow(show)
   }
 
+  // Switch tabs — also bail out of an in-progress pack rip so the new tab renders.
+  function selectTab(t) { setRipping(null); setTab(t) }
+
   // If attending a show, the floor takes over the whole view.
   if (activeShow) {
     return (
@@ -105,7 +111,7 @@ export default function App() {
         <div className="brand">Poké<b>Vendor</b></div>
         <div className="tabs">
           {TABS.map(t => (
-            <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => { setRipping(null); setTab(t) }}>
+            <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
               {TAB_LABEL[t]}
               {t === 'bench' && pendingCount ? ` (${pendingCount})` : ''}
               {t === 'myshop' && inboxCount ? ` (${inboxCount})` : ''}
@@ -132,6 +138,20 @@ export default function App() {
       {tab === 'settings' && <Settings />}
 
       {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+
+      {/* Mobile-only floating bottom nav (top tab strip is hidden at <=640px).
+          Icon + small label; horizontally scrollable for the full tab set. */}
+      <nav className="bottomnav" aria-label="Primary">
+        {TABS.map(t => {
+          const badge = t === 'bench' ? pendingCount : t === 'myshop' ? inboxCount : 0
+          return (
+            <button key={t} className={`bnav-btn ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
+              <span className="bnav-icon">{TAB_ICON[t]}{badge ? <span className="bnav-badge">{badge}</span> : null}</span>
+              <span className="bnav-label">{TAB_LABEL[t]}</span>
+            </button>
+          )
+        })}
+      </nav>
     </div>
   )
 }
