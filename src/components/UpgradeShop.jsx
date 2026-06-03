@@ -1,10 +1,18 @@
+import { useState, useCallback } from 'react'
 import { useGame, UPGRADES, PAYMENT_METHODS, acceptedMethods } from '../game/store'
+import { fmtMoney } from '../game/engine'
 
 export default function UpgradeShop() {
   const cash = useGame(s => s.cash)
   const owned = useGame(s => s.upgrades)
   const buy = useGame(s => s.buyUpgrade)
   const accepted = acceptedMethods(owned)
+  const [toast, setToast] = useState(null)
+  const flash = useCallback(m => { setToast(m); setTimeout(() => setToast(null), 2800) }, [])
+
+  function purchase(key, u) {
+    if (buy(key)) flash(`${u.icon} ${u.name} unlocked — ${fmtMoney(u.cost)} spent.`)
+  }
 
   return (
     <>
@@ -33,11 +41,12 @@ export default function UpgradeShop() {
               <div className="meta" style={{ flex: 1 }}>{u.desc}</div>
               {have ? <button className="btn" disabled>✓ Owned</button>
                 : needsUnmet ? <button className="btn" disabled>🔒 Needs {UPGRADES[u.needs].name}</button>
-                : <button className="btn gold" disabled={cash < u.cost} onClick={() => buy(key)}>Buy · ${u.cost}</button>}
+                : <button className="btn gold" disabled={cash < u.cost} onClick={() => purchase(key, u)}>Buy · ${u.cost}</button>}
             </div>
           )
         })}
       </div>
+      {toast && <div className="toast">{toast}</div>}
     </>
   )
 }

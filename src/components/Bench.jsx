@@ -12,10 +12,13 @@ export default function Bench() {
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
   const [, tick] = useState(0)
 
+  // Only run the resolve/progress tick while cards are actually being graded —
+  // no point churning re-renders every 250ms with an empty queue.
   useEffect(() => {
+    if (pending.length === 0) return
     const id = setInterval(() => { resolveGrades(); tick(t => t + 1) }, 250)
     return () => clearInterval(id)
-  }, [resolveGrades])
+  }, [resolveGrades, pending.length])
 
   const now = Date.now()
   return (

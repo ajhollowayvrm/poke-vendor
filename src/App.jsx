@@ -33,12 +33,16 @@ export default function App() {
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection)).length)
   const notoriety = useGame(s => s.notoriety)
   const resolveGrades = useGame(s => s.resolveGrades)
+  const hasPendingGrades = useGame(s => s.pendingGrades.length > 0)
 
-  // resolve grades whenever app is mounted (in case Bench tab isn't open)
+  // Resolve grades whenever the app is mounted (in case the Bench tab isn't open),
+  // but only spin the interval while cards are actually at the grader — no point
+  // ticking every second with an empty queue.
   useEffect(() => {
+    if (!hasPendingGrades) return
     const id = setInterval(resolveGrades, 1000)
     return () => clearInterval(id)
-  }, [resolveGrades])
+  }, [resolveGrades, hasPendingGrades])
 
   // Buy any sealed product. A single booster pack always opens the animated rip.
   // Multi-pack products: if "open one at a time" is on, rip each pack with the

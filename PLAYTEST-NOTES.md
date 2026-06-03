@@ -124,6 +124,22 @@ and rejected.
     live on a $0.20 common.
 - **Crack-a-slab** (regrade gamble) — deferred at AJ's call; not implemented.
 
+### Upgrades pass (2026-06-03)
+42. **Glass Cases now covers `counter`** — the +12% display-case bump applies to any
+    sale of a card from your case (sellOwned, browseSale, AND counter). Left off
+    `sellMint` by design — that's a give-at-cost kindness, not a display sale.
+43. **Charity Banner gated to generous acts** — the +50% notoriety boost now only
+    fires on genuinely generous acts (give-a-card-free, sell-at-cost to a burned
+    buyer) via a `generous` flag on `addNotoriety`, matching its copy. Ordinary
+    sales no longer get the boost.
+44. **Copy tightened** — Dealer Network now mentions the DEAL/OVER price flags;
+    Charity Banner spells out what counts as a generous act.
+45. **Purchase feedback toast** — buying an upgrade now flashes "🪧 X unlocked — $Y
+    spent." Verified live (Signage, −$150, button → ✓ Owned).
+46. **Grade-resolve intervals guarded** — both the app-level 1s resolver and the
+    Bench 250ms tick now only run while cards are actually at the grader (gated on
+    `pendingGrades.length`), eliminating idle re-render churn.
+
 ---
 
 ## 💡 Improvement backlog (NOT implemented — awaiting your call)
@@ -138,17 +154,6 @@ and rejected.
   copy ("from 80% of market") or raise the min to 1.0.
 - **Save integrity** — on load, dedupe any uid appearing in more than one of
   collection/pendingGrades/listings/consignments (only matters if leaderboards land).
-
-### Upgrades (growth)
-- **Glass Cases +12% bump** applies to `sellOwned`/`browseSale` but not
-  `sellMint`/`counter`. Judgment call — should a buyer paying you always benefit
-  from the display case? (Left unchanged pending your call.)
-- **Charity Banner** boosts ALL notoriety gains, not just generous acts; **Dealer
-  Network** description omits the (useful) OVER-price warning. Tighten copy.
-- **No purchase feedback** — buying an upgrade only flips the button to "Owned";
-  add a toast.
-- **`resolveGrades` 1s interval runs unconditionally** even with no pending grades —
-  cheap to guard; reduces idle re-render churn.
 
 ### New-player UX
 - **No onboarding** — a first-time tooltip/highlight sequence ("Buy → Rip → Sell →

@@ -186,8 +186,8 @@ export const UPGRADES = {
   cases:    { name: 'Glass Display Cases',  cost: 500,  desc: 'Offers on your cards come in ~12% higher.', icon: '🗄️' },
   ticker:   { name: 'Visitor Ticker',       cost: 200,  desc: 'Alerts you when someone is at your stand while you browse a show hall.', icon: '🔔' },
   loupe:    { name: "Jeweler's Loupe",      cost: 450,  desc: 'Slightly better grade odds when you submit cards.', icon: '🔍' },
-  network:  { name: 'Dealer Network',       cost: 1500, desc: 'Famous vendors reveal their best stock to you.', icon: '🤝' },
-  banner:   { name: 'Charity Banner',       cost: 300, desc: 'Generous acts grant +50% extra notoriety.', icon: '🎗️' },
+  network:  { name: 'Dealer Network',       cost: 1500, desc: 'Famous vendors reveal their best stock — and flag underpriced DEALS and OVER-priced asks so you never overpay.', icon: '🤝' },
+  banner:   { name: 'Charity Banner',       cost: 300, desc: 'Generous acts (giving cards away, fair deals) grant +50% extra notoriety.', icon: '🎗️' },
 }
 
 export const useGame = create(persist((set, get) => ({
@@ -219,10 +219,13 @@ export const useGame = create(persist((set, get) => ({
   setSetting(key, value) { set(s => ({ settings: { ...s.settings, [key]: value } })) },
 
   // --- notoriety / upgrades ---
-  addNotoriety(n) {
+  // `generous` = this gain came from a kind/generous act (giving a card, a fair
+  // deal). The Charity Banner only boosts THOSE, matching its copy — not every
+  // notoriety tick from ordinary sales.
+  addNotoriety(n, generous = false) {
     if (!n) return
     let amt = n
-    if (n > 0 && get().upgrades.banner) amt = Math.round(n * 1.5)
+    if (n > 0 && generous && get().upgrades.banner) amt = Math.round(n * 1.5)
     set(s => ({ notoriety: Math.max(0, round2(s.notoriety + amt)) }))
   },
   buyUpgrade(key) {
@@ -541,8 +544,8 @@ export const useGame = create(persist((set, get) => ({
     let msg = effect.msg || ''
     switch (effect.type) {
       case 'giveFromStockOrMint': {
-        // give a card away free — costs you nothing but inventory goodwill
-        s.addNotoriety(effect.notoriety)
+        // give a card away free — a generous act (Charity Banner boosts it)
+        s.addNotoriety(effect.notoriety, true)
         s.log('give', `Gave away a ${effect.card.name} for free`, 0)
         set(st => ({ generousActs: st.generousActs + 1 }))
         get().bumpGoal('help', 1)
@@ -553,7 +556,8 @@ export const useGame = create(persist((set, get) => ({
         if (blocked) { s.addNotoriety(-1); s.log('lost-sale', blocked, 0); return blocked }
         const { net, fee } = processingFee(effect.price, effect.payMethod)
         s.earn(net)
-        s.addNotoriety(effect.notoriety)
+        // selling at cost to a burned buyer is a generous/fair act
+        s.addNotoriety(effect.notoriety, true)
         s.log('sell', `Sold a ${effect.card.name} at cost (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
         msg = appendFeeMsg(msg, fee, effect.payMethod)
         get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
@@ -583,7 +587,11 @@ export const useGame = create(persist((set, get) => ({
         if (Math.random() < (effect.chance ?? 0.5)) {
           const card = get().collection.find(c => c.uid === effect.uid)
           if (card) {
-            const { net, fee } = processingFee(effect.price, effect.payMethod)
+            // A counter is a normal sale of a card from your case — the display-case
+            // bump applies here too (was previously missed).
+            let price = effect.price
+            if (get().upgrades.cases) price = round2(price * 1.12)
+            const { net, fee } = processingFee(price, effect.payMethod)
             set(st => ({ collection: st.collection.filter(c => c.uid !== effect.uid) }))
             s.earn(net); s.addNotoriety(effect.notoriety)
             s.log('sell', `Countered and sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
