@@ -19,7 +19,6 @@ export default function Collection({ onPick }) {
   const listManyOnSite = useGame(s => s.listManyOnSite)
   const consignMany = useGame(s => s.consignMany)
 
-  const [section, setSection] = useState('raw') // raw | graded
   const [sort, setSort] = useState('value')
   const [selectMode, setSelectMode] = useState(false)
   const [picked, setPicked] = useState(() => new Set())
@@ -28,14 +27,15 @@ export default function Collection({ onPick }) {
   const [toast, setToast] = useState(null)
 
   const raw = useMemo(() => collection.filter(c => !c.grade), [collection])
-  const graded = useMemo(() => collection.filter(c => c.grade), [collection])
 
+  // One unified list of EVERYTHING — raw cards and graded slabs mixed together
+  // (the slab look already distinguishes graded at a glance). Value-sort floats
+  // the slabs up naturally by their graded value.
   const view = useMemo(() => {
-    const base = section === 'graded' ? graded : raw
-    return [...base].sort((a, b) => sort === 'value' ? cardValue(b) - cardValue(a)
+    return [...collection].sort((a, b) => sort === 'value' ? cardValue(b) - cardValue(a)
       : sort === 'rarity' ? rarityRank(b.rarity) - rarityRank(a.rarity)
       : a.name.localeCompare(b.name))
-  }, [raw, graded, section, sort])
+  }, [collection, sort])
 
   const quickSellRate = useGame(s => s.quickSellRate)
   const bulk = raw.filter(c => !c._isHit)
@@ -56,7 +56,7 @@ export default function Collection({ onPick }) {
     setPicked(p => p.size === view.length ? new Set() : new Set(view.map(c => c.uid)))
   }
 
-  // Selected cards (in the current section) + derived totals for the action bar.
+  // Selected cards + derived totals for the action bar.
   const selCards = useMemo(() => view.filter(c => picked.has(c.uid)), [view, picked])
   const selValue = selCards.reduce((a, c) => a + cardValue(c), 0)
   const count = selCards.length
@@ -101,12 +101,8 @@ export default function Collection({ onPick }) {
         </div>
       )}
 
-      <div className="tabs" style={{ margin: '8px 0 4px' }}>
-        <button className={`tab ${section==='raw'?'active':''}`} onClick={() => { setSection('raw'); clearSel() }}>Raw cards ({raw.length})</button>
-        <button className={`tab ${section==='graded'?'active':''}`} onClick={() => { setSection('graded'); clearSel() }}>Graded ({graded.length})</button>
-      </div>
-
-      <div className="toolbar">
+      <div className="toolbar" style={{ marginTop: 8 }}>
+        <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}>{collection.length} card{collection.length === 1 ? '' : 's'}</span>
         <select value={sort} onChange={e => setSort(e.target.value)}>
           <option value="value">Sort: Value</option><option value="rarity">Sort: Rarity</option>
           <option value="name">Sort: Name</option>
@@ -120,12 +116,12 @@ export default function Collection({ onPick }) {
             {picked.size === view.length && view.length ? 'Deselect all' : `Select all (${view.length})`}
           </button>
         )}
-        {!selectMode && section === 'raw' && buylistBulk.length > 0 && (
+        {!selectMode && buylistBulk.length > 0 && (
           <button className="btn alt" style={{ flex: 'none', marginLeft: 'auto' }}
             title={`Dump all bulk to a shop's buylist at ${Math.round(buylistRate*100)}% of market — instant cash`}
             onClick={sellToBuylist}>Buylist {buylistBulk.length} → {fmtMoney(buylistVal)}</button>
         )}
-        {!selectMode && section === 'raw' && bulk.length > 0 && (
+        {!selectMode && bulk.length > 0 && (
           <button className="btn gold" style={{ flex: 'none', marginLeft: buylistBulk.length ? 0 : 'auto' }}
             title="Quick-sell all raw commons/uncommons (non-hits) instantly"
             onClick={sellAllUngraded}>Sell {bulk.length} raw → {fmtMoney(bulkVal)}</button>
@@ -133,7 +129,7 @@ export default function Collection({ onPick }) {
       </div>
 
       {view.length === 0 ? (
-        <div className="empty">{section === 'graded' ? 'No graded cards yet — send a hit to the Grader. 🏅' : 'No raw cards right now.'}</div>
+        <div className="empty">No cards yet — head to the Shop and rip a pack. 📦</div>
       ) : (
         <div className="grid coll-grid">
           {view.map(c => (
