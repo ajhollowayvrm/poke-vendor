@@ -134,7 +134,7 @@ function Shop({ cash, onBuy }) {
             <div className="product" key={set.id}>
               {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
               <h3>{set.name}</h3>
-              <div className="meta">{set.series} · {set.printedTotal} cards</div>
+              <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
               <div className="prodlist">
                 {products.map(p => (
                   <button key={p.type} className="prodbtn" disabled={cash < p.price} onClick={() => onBuy(set, p)}

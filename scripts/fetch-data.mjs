@@ -34,7 +34,9 @@ function classifyProduct(name) {
   if (/booster bundle$/.test(n))            return { type: 'Booster Bundle', icon: '🎟️', packs: 6, bonus: null }
   if (/surprise box$/.test(n))              return { type: 'Surprise Box', icon: '🎁', packs: 8, bonus: 'promo' }
   if (/mini tin/.test(n))                   return { type: 'Mini Tin', icon: '🥫', packs: 2, bonus: 'promo' }
-  if (/3-pack blister|three pack blister/.test(n)) return { type: '3-Pack Blister', icon: '🪟', packs: 3, bonus: 'promo' }
+  // Real SV 3-pack blisters ship a fixed coin/energy/checklane card, not a hit-tier
+  // promo — so no bonus. (ETBs / tins / premiums are the ones with a real promo.)
+  if (/3-pack blister|three pack blister/.test(n)) return { type: '3-Pack Blister', icon: '🪟', packs: 3, bonus: null }
   if (/2-pack blister|two pack blister/.test(n))   return { type: '2-Pack Blister', icon: '🪟', packs: 2, bonus: 'promo' }
   if (/sleeved booster pack$|checklane/.test(n))   return { type: 'Sleeved Pack', icon: '🛡️', packs: 1, bonus: null }
   if (/booster pack$/.test(n))              return { type: 'Booster Pack', icon: '🎴', packs: 1, bonus: null }

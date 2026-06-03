@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -15,6 +15,12 @@ export default function CardModal({ card, onClose }) {
   const submitted = useGame(s => s.gradesSubmitted)
   const [listing, setListing] = useState(false) // showing the list-on-site picker?
   const [askMult, setAskMult] = useState(1.1)
+  // close on Escape — clicking the backdrop already closes; this adds keyboard parity
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
   if (!card) return null
   const g = card.grade
   const tier = graderTier(submitted)
@@ -25,6 +31,7 @@ export default function CardModal({ card, onClose }) {
   return (
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <div className="detailflex">
           <HoloCard card={card} maxTilt={18} className="modal-holo"
             extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>

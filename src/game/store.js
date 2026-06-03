@@ -432,6 +432,7 @@ export const useGame = create(persist((set, get) => ({
 
   submitGrade(uid, tierKey) {
     const tier = GRADING[tierKey]
+    if (!tier) return
     const card = get().collection.find(c => c.uid === uid)
     if (!card || card.grade) return
     const before = graderTier(get().gradesSubmitted)
@@ -442,7 +443,8 @@ export const useGame = create(persist((set, get) => ({
       gradesSubmitted: s.gradesSubmitted + 1,
     }))
     const readyAt = Date.now() + tier.days * DAY_MS_SIM
-    set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyAt }] }))
+    // remember the fee actually paid so the resolved grade records it, not list price
+    set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyAt, paidFee: fee }] }))
     const disc = before.discount > 0 ? ` (${Math.round(before.discount*100)}% loyalty off)` : ''
     get().log('grade-submit', `Submitted ${card.name} (${tier.name}, $${fee.toFixed(2)}${disc})`, -fee)
     // crossed into a new loyalty tier?
@@ -458,7 +460,7 @@ export const useGame = create(persist((set, get) => ({
     if (!ready.length) return []
     const luck = get().upgrades.loupe ? 0.08 : 0
     const resolved = ready.map(p => {
-      const graded = { ...p.card, grade: rollGrade(p.card, p.tierKey, luck) }
+      const graded = { ...p.card, grade: rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null) }
       return graded
     })
     set(s => ({

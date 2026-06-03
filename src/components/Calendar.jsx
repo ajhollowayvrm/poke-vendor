@@ -74,13 +74,16 @@ export default function Calendar({ onAttend }) {
 
 export function NotorietyBar({ n }) {
   const tiers = Object.values(SHOW_TIERS)
-  const pct = Math.min(100, n)
+  // Scale the whole bar to the highest tier requirement so every unlock marker
+  // (Invitational, Worlds) is visible and proportional — not all pinned at 100%.
+  const scale = Math.max(100, ...tiers.map(t => t.minNotoriety)) || 100
+  const pct = Math.min(100, (n / scale) * 100)
   return (
     <div style={{ flex: 1, minWidth: 160, maxWidth: 360 }}>
       <div style={{ background: '#0c0f1a', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
         <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#5ec98a,#ff9f43,#ff3df0)', transition: 'width .4s' }} />
         {tiers.map(t => t.minNotoriety > 0 && (
-          <span key={t.name} title={t.name} style={{ position: 'absolute', top: -2, left: `${Math.min(100, t.minNotoriety)}%`, width: 2, height: 16, background: n >= t.minNotoriety ? '#fff' : '#ffffff44' }} />
+          <span key={t.name} title={t.name} style={{ position: 'absolute', top: -2, left: `${Math.min(100, (t.minNotoriety / scale) * 100)}%`, width: 2, height: 16, background: n >= t.minNotoriety ? '#fff' : '#ffffff44' }} />
         ))}
       </div>
     </div>

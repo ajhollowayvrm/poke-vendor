@@ -3,8 +3,9 @@ import HoloCard from './HoloCard'
 
 const RARITY_COLOR = {
   'Common': '#9aa3bf', 'Uncommon': '#5ec98a', 'Rare': '#5aa0ff', 'Rare Holo': '#7c5cff',
-  'Double Rare': '#ff9f43', 'Illustration Rare': '#ff79c6', 'Ultra Rare': '#ff6b6b',
-  'Special Illustration Rare': '#ffd84d', 'Hyper Rare': '#ffcb05', 'Mega Hyper Rare': '#ff3df0',
+  'Double Rare': '#ff9f43', 'ACE SPEC Rare': '#ff5470', 'Illustration Rare': '#ff79c6',
+  'Ultra Rare': '#ff6b6b', 'Special Illustration Rare': '#ffd84d', 'Hyper Rare': '#ffcb05',
+  'MEGA_ATTACK_RARE': '#ff7ae0', 'Mega Hyper Rare': '#ff3df0', 'Black White Rare': '#c0c8d6',
 }
 
 export function rarityColor(r) { return RARITY_COLOR[r] || '#9aa3bf' }
@@ -34,7 +35,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
 }
 
 function shortRarity(r) {
-  return ({ 'Common':'C','Uncommon':'U','Rare':'R','Rare Holo':'HOLO','Double Rare':'2★',
-    'Illustration Rare':'IR','Ultra Rare':'UR','Special Illustration Rare':'SIR',
-    'Hyper Rare':'HR','Mega Hyper Rare':'MEGA' }[r]) || r
+  return ({ 'Common':'C','Uncommon':'U','Rare':'R','Rare Holo':'HOLO','Double Rare':'ex',
+    'ACE SPEC Rare':'ACE','Illustration Rare':'IR','Ultra Rare':'UR','Special Illustration Rare':'SIR',
+    'Hyper Rare':'HR','MEGA_ATTACK_RARE':'M-ATK','Mega Hyper Rare':'MEGA','Black White Rare':'BW' }[r]) || r
 }

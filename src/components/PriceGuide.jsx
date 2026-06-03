@@ -31,7 +31,7 @@ export default function PriceGuide() {
 
       <div className="toolbar">
         <select value={setId} onChange={e => { setSetId(e.target.value); setQ('') }}>
-          {SETS.map(s => <option key={s.id} value={s.id}>{s.name} ({s.cards.length})</option>)}
+          {SETS.map(s => <option key={s.id} value={s.id}>{s.name} ({s.cards.length} total)</option>)}
         </select>
         <input className="search" placeholder="Search cards…" value={q} onChange={e => setQ(e.target.value)} />
         <select value={sort} onChange={e => setSort(e.target.value)}>

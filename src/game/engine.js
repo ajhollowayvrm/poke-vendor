@@ -7,8 +7,8 @@ export const FETCHED_AT = data.fetchedAt
 // Rarity tiers ordered low → high, used for sorting/coloring and "hit" detection.
 export const RARITY_ORDER = [
   'Common', 'Uncommon', 'Rare', 'Rare Holo', 'Double Rare',
-  'Illustration Rare', 'Ultra Rare', 'Special Illustration Rare',
-  'Hyper Rare', 'Mega Hyper Rare',
+  'ACE SPEC Rare', 'Illustration Rare', 'Ultra Rare', 'Special Illustration Rare',
+  'Hyper Rare', 'MEGA_ATTACK_RARE', 'Mega Hyper Rare', 'Black White Rare',
 ]
 export function rarityRank(r) {
   const i = RARITY_ORDER.indexOf(r)
@@ -35,6 +35,12 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 // Mega-era expansions in this snapshot) use the SV-era baseline.
 
 // SV-era baseline — Card Shop Live (1,728 packs) + DigitalTQ (676 packs).
+//   rare    — the guaranteed "Rare or higher" slot.
+//   reverse — the reverse-holo slot (usually ordinary RH, sometimes an upgrade).
+//   aceSpec — sets WITH an ACE SPEC subset put one in roughly 1 in 5 packs, in
+//             place of the reverse holo. Skipped entirely for sets that have none.
+//   chase   — a small additional shot at a set's top "special" rarities
+//             (MEGA_ATTACK / Black White), which ride alongside the reverse slot.
 const BASELINE_RATES = {
   rare: [
     { rarity: 'Double Rare', p: 0.1405 },  // 1 in 7
@@ -46,6 +52,11 @@ const BASELINE_RATES = {
     { rarity: 'Hyper Rare',                p: 0.0185 }, // 1 in 54
     { rarity: 'Mega Hyper Rare',           p: 0.0035 }, // chase — ~1 in 285
   ],
+  aceSpec: 0.20, // ~1 in 5 packs in sets that have an ACE SPEC subset
+  chase: [
+    { rarity: 'MEGA_ATTACK_RARE', p: 0.0090 }, // Mega-era ultra-chase — ~1 in 111
+    { rarity: 'Black White Rare', p: 0.0040 }, // top chase — ~1 in 250
+  ],
 }
 
 // Special foil patterns (applied to an otherwise-normal card in the reverse slot,
@@ -53,9 +64,12 @@ const BASELINE_RATES = {
 //   pokeball  — Poké Ball foil  (~1 in 3 packs)         · modest premium
 //   masterball — Master Ball foil (~1 in 19 packs)       · big premium, chase pattern
 // God pack — the whole pack is high-rarity hits. Community-estimated ~1 in 2,500.
+// Multipliers reflect real secondary-market premiums on the pattern:
+//   Poké Ball foil    — trades ~2.5–4× the base card (common but desirable)  → 3×
+//   Master Ball foil  — the chase pattern, ~40–80× base                       → 55×
 const FOIL = {
-  pokeball:   { key: 'pokeball',  label: 'Poké Ball Foil',  badge: '⦿ POKÉ BALL',  mult: 1.6, color: '#ff6b6b' },
-  masterball: { key: 'masterball', label: 'Master Ball Foil', badge: '◉ MASTER BALL', mult: 6.0, color: '#a06bff' },
+  pokeball:   { key: 'pokeball',  label: 'Poké Ball Foil',  badge: '⦿ POKÉ BALL',  mult: 3.0,  color: '#ff6b6b' },
+  masterball: { key: 'masterball', label: 'Master Ball Foil', badge: '◉ MASTER BALL', mult: 55.0, color: '#a06bff' },
 }
 
 // Per-set overrides (keyed by set id). Only sets with real published data differ.
@@ -77,6 +91,7 @@ const SET_RATES = {
       { ...FOIL.masterball, p: 0.0526 }, // 1 in 19
       { ...FOIL.pokeball,   p: 0.3333 }, // 1 in 3
     ],
+    aceSpec: 0.20, // PE has a 6-card ACE SPEC subset — ~1 in 5 packs
     godPack: 1 / 2500,
   },
   // Black Bolt — Illustration Rares abundant (~1 in 6); generous overall.
@@ -95,6 +110,9 @@ const SET_RATES = {
     foils: [
       { ...FOIL.pokeball, p: 0.3056 }, // ~30.6%
     ],
+    chase: [
+      { rarity: 'Black White Rare', p: 0.0040 }, // the set's lone top chase — ~1 in 250
+    ],
     godPack: 1 / 3000,
   },
 }
@@ -102,7 +120,7 @@ function ratesFor(set) { return SET_RATES[set.id] || BASELINE_RATES }
 
 // Highest-rarity cards in a set, for stuffing a god pack with hits.
 function topRarityPool(byR) {
-  for (const r of ['Mega Hyper Rare','Hyper Rare','Special Illustration Rare','Ultra Rare','Illustration Rare','Double Rare']) {
+  for (const r of ['Black White Rare','Mega Hyper Rare','MEGA_ATTACK_RARE','Hyper Rare','Special Illustration Rare','Ultra Rare','Illustration Rare','Double Rare']) {
     if (byR[r]?.length) return { rarity: r, pool: byR[r] }
   }
   return null
@@ -143,9 +161,10 @@ export function openPack(set) {
   }
 
   const pulls = []
-  // 4 commons + 3 uncommons
+  // Real SV / Mega-era pack = 4 commons + 4 uncommons + 1 reverse + 1 rare = 10.
+  // (The historical "energy" slot is folded into the extra common/uncommon here.)
   for (let i = 0; i < 4; i++) pulls.push(instance(pick(commons)))
-  for (let i = 0; i < 3; i++) pulls.push(instance(pick(uncommons)))
+  for (let i = 0; i < 4; i++) pulls.push(instance(pick(uncommons)))
 
   // RARE slot — Double/Ultra Rare upgrade, else Rare Holo, else plain Rare.
   const rareHit = rollSlot(byR, rates.rare)
@@ -154,18 +173,29 @@ export function openPack(set) {
     || (byR['Rare']?.length ? pick(byR['Rare']) : pick(uncommons))
   pulls.push(instance(rareCard))
 
-  // REVERSE slot — IR/SIR/Hyper/chase upgrade > special foil > ordinary reverse holo.
-  const revHit = rollSlot(byR, rates.reverse)
-  if (revHit) {
-    pulls.push(instance(revHit))
+  // Top-end chase shot (MEGA_ATTACK / Black White) — a rare extra upgrade that can
+  // ride in addition to the normal reverse slot when the set has those rarities.
+  const chaseHit = rates.chase ? rollSlot(byR, rates.chase) : null
+  if (chaseHit) pulls.push(instance(chaseHit))
+
+  // REVERSE slot. Sets with an ACE SPEC subset land one ~1 in 5 packs in this slot;
+  // otherwise it's an IR/SIR/Hyper upgrade > special foil > ordinary reverse holo.
+  const aceSpecPool = byR['ACE SPEC Rare']
+  if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
+    pulls.push(instance(pick(aceSpecPool)))
   } else {
-    const revPool = [...(byR['Common']||[]), ...(byR['Uncommon']||[]), ...(byR['Rare']||[])]
-    if (revPool.length) {
-      const c = instance(pick(revPool))
-      const foil = rates.foils ? rollFoil(rates.foils) : null
-      if (foil) c.foil = foil          // Poké Ball / Master Ball pattern
-      else c.reverse = true            // ordinary reverse holo
-      pulls.push(c)
+    const revHit = rollSlot(byR, rates.reverse)
+    if (revHit) {
+      pulls.push(instance(revHit))
+    } else {
+      const revPool = [...(byR['Common']||[]), ...(byR['Uncommon']||[]), ...(byR['Rare']||[])]
+      if (revPool.length) {
+        const c = instance(pick(revPool))
+        const foil = rates.foils ? rollFoil(rates.foils) : null
+        if (foil) c.foil = foil          // Poké Ball / Master Ball pattern
+        else c.reverse = true            // ordinary reverse holo
+        pulls.push(c)
+      }
     }
   }
 
@@ -275,8 +305,8 @@ for (const s of SETS) for (const c of s.cards) if (c.price != null) CANONICAL_PR
 export function rawValue(card) {
   const override = PRICE_OVERRIDES[card.id]
   let base = override ?? card.price ?? CANONICAL_PRICE[card.id] ?? estimateByRarity(card.rarity)
-  if (card.foil) base *= card.foil.mult // Poké Ball (1.6×) / Master Ball (6×) premium
-  else if (card.reverse) base *= 1.4     // ordinary reverse holo premium
+  if (card.foil) base *= card.foil.mult // Poké Ball (3×) / Master Ball (55×) premium
+  else if (card.reverse) base *= reverseMult(card.rarity) // reverse holo: small on commons, larger on rares
   // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
   if (!card.grade && card.condition && CONDITIONS[card.condition]) base *= CONDITIONS[card.condition].mult
   return Math.max(0.02, round2(base))
@@ -329,6 +359,17 @@ export async function refreshPrices(onProgress) {
   }
   return { updated, total, fetchedAt: new Date().toISOString() }
 }
+// Reverse-holo premium scales with rarity: a reverse-holo common is barely worth
+// more than the base, while a reverse-holo rare commands a real premium.
+function reverseMult(r) {
+  switch (r) {
+    case 'Common':   return 1.05
+    case 'Uncommon': return 1.10
+    case 'Rare':     return 1.40
+    case 'Rare Holo':return 1.50
+    default:         return 1.30 // anything fancier than a rare
+  }
+}
 function estimateByRarity(r) {
   const table = { 'Common':0.08,'Uncommon':0.12,'Rare':0.25,'Rare Holo':1.0,
     'Double Rare':2.5,'Illustration Rare':4,'Ultra Rare':6,
@@ -337,7 +378,7 @@ function estimateByRarity(r) {
 }
 
 // Graded value multiplier by PSA grade (rough market behavior).
-const GRADE_MULT = { 10: 4.0, 9: 1.8, 8: 1.1, 7: 0.8, 6: 0.6, 5: 0.5, 4: 0.4, 3: 0.35, 2: 0.3, 1: 0.25 }
+const GRADE_MULT = { 10: 5.0, 9: 1.8, 8: 1.1, 7: 0.8, 6: 0.6, 5: 0.5, 4: 0.4, 3: 0.35, 2: 0.3, 1: 0.25 }
 export function gradedValue(card) {
   if (!card.grade) return rawValue(card)
   const mult = GRADE_MULT[card.grade.overall] ?? 1
@@ -375,33 +416,45 @@ export function nextGraderTier(submitted) {
 }
 // Effective fee for a service tier given how many cards you've submitted total.
 export function gradingFee(tierKey, submitted) {
+  if (!GRADING[tierKey]) return 0
   const base = GRADING[tierKey].fee
   return round2(base * (1 - graderTier(submitted).discount))
 }
 // Roll subgrades. Better cards (by value) get a slightly tighter distribution,
 // simulating that valuable cards are often handled carefully — but it's mostly luck.
-export function rollGrade(card, tier, luck = 0) {
+export function rollGrade(card, tier, luck = 0, paidFee = null) {
   // luck (0..~0.1) shifts the distribution toward higher grades — e.g. the loupe.
+  // It nudges each cutoff up proportionally rather than subtracting from the roll,
+  // so the lower tail (6 and below) stays reachable instead of becoming impossible.
   const sub = () => {
-    const r = Math.random() - luck
-    // skew toward 8-10 but real chance of lower
-    if (r < 0.30) return 10
-    if (r < 0.62) return 9
-    if (r < 0.82) return 8
-    if (r < 0.92) return 7
-    if (r < 0.97) return 6
+    const r = Math.random()
+    const b = (p) => p + luck * (1 - p) // pull each cutoff toward 1 by `luck`
+    if (r < b(0.30)) return 10
+    if (r < b(0.62)) return 9
+    if (r < b(0.82)) return 8
+    if (r < b(0.92)) return 7
+    if (r < b(0.97)) return 6
     return 4 + Math.floor(Math.random()*2)
   }
-  // condition caps how high this card can possibly grade (a played card won't gem)
+  // condition caps how high this card can possibly grade (a played card won't gem).
+  // For capped (played) cards, re-center the roll so subgrades spread BELOW the cap
+  // instead of all clipping to it — a Damaged card should range PSA 1-4, not always 4.
   const cap = card.condition && CONDITIONS[card.condition] ? CONDITIONS[card.condition].maxGrade : 10
-  const capSub = () => Math.min(sub(), cap)
+  const capSub = () => {
+    const s = sub()
+    if (s <= cap) return s
+    // rolled above the cap: land somewhere in the realistic band below it
+    const spread = cap >= 10 ? 0 : Math.min(3, cap - 1)
+    return cap - Math.floor(Math.random() * (spread + 1))
+  }
   const centering = capSub(), corners = capSub(), edges = capSub(), surface = capSub()
   // PSA overall ≈ limited by the lowest subgrade, with some weighting
   const min = Math.min(centering, corners, edges, surface)
   const avg = (centering + corners + edges + surface) / 4
   let overall = Math.round(Math.min(min + 1, avg))
   overall = Math.max(1, Math.min(cap, Math.min(overall, min === 10 ? 10 : min + 1)))
-  return { overall, centering, corners, edges, surface, fee: GRADING[tier].fee, tier, gradedAt: Date.now() }
+  // record the fee the player actually paid (after loyalty discount), not list price
+  return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier, gradedAt: Date.now() }
 }
 
 export function round2(n) { return Math.round(n * 100) / 100 }

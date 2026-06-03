@@ -31,7 +31,9 @@ export default function ShowFloor({ show, onLeave }) {
   const [toast, setToast] = useState(null)
   const [boothAlert, setBoothAlert] = useState(null)
   const resolveEncounter = useGame(s => s.resolveEncounter)
-  const lastEncounterRef = useRef(0)
+  // seed with mount time so the cooldown window opens on entry — gives the player
+  // a grace period to look around before the first walk-up fires (was 0 = instant).
+  const lastEncounterRef = useRef(Date.now())
 
   // NPC shoppers wandering the aisles (visual atmosphere). Some are ripping packs.
   const addNotoriety = useGame(s => s.addNotoriety)
