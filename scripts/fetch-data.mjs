@@ -75,6 +75,45 @@ async function getJSON(url) {
   throw new Error('too many retries ' + url)
 }
 
+// Fetch SINGLE-card prices for a TCGCSV group → { collectorNumber: price }.
+// Used as a fallback when pokemontcg.io has no price yet (brand-new sets).
+// TCGCSV identifies singles by extendedData "Number" like "116/086"; we key on
+// the printed collector number ("116"). Prefer Holofoil → Normal → Reverse Holo
+// to match the headline finish (mirrors bestPrice's finish order).
+const FINISH_RANK = { 'Holofoil': 0, 'Normal': 1, 'Reverse Holofoil': 2 }
+async function fetchSingles(groupId) {
+  if (!groupId) return {}
+  let prods, prices
+  try {
+    prods = (await getJSON(`${TCGCSV}/${groupId}/products`)).results || []
+    prices = (await getJSON(`${TCGCSV}/${groupId}/prices`)).results || []
+  } catch (e) {
+    console.log(`    (singles fetch failed for group ${groupId}: ${e.message})`)
+    return {}
+  }
+  // best market price per productId, by finish preference
+  const bestByProduct = {}
+  for (const pr of prices) {
+    const m = pr.marketPrice ?? pr.midPrice
+    if (!m) continue
+    const rank = FINISH_RANK[pr.subTypeName] ?? 9
+    const cur = bestByProduct[pr.productId]
+    if (!cur || rank < cur.rank) bestByProduct[pr.productId] = { price: m, rank }
+  }
+  const byNumber = {}
+  for (const p of prods) {
+    const ext = Object.fromEntries((p.extendedData || []).map(e => [e.name, e.value]))
+    if (!ext.Number) continue // not a single card
+    const best = bestByProduct[p.productId]
+    if (!best) continue
+    const num = String(ext.Number).split('/')[0].replace(/^0+/, '') || '0' // "116/086" → "116"
+    const price = Math.round(best.price * 100) / 100
+    // keep the highest-priced match for a given number (handles dup printings)
+    if (byNumber[num] == null || price > byNumber[num]) byNumber[num] = price
+  }
+  return byNumber
+}
+
 // Fetch + classify sealed products for a TCGCSV group. Returns one entry per
 // product TYPE (cheapest representative), with current market price.
 async function fetchSealed(groupId) {
@@ -148,6 +187,19 @@ async function main() {
       // best available market price across finishes
       price: bestPrice(c),
     }))
+    // Fallback: brand-new sets often have no prices on pokemontcg.io yet. Pull
+    // real single-card prices from TCGCSV (same source as sealed) and fill the gaps.
+    const missing = slim.filter(c => c.price == null).length
+    if (missing && SET_GROUP[set.id]) {
+      const singles = await fetchSingles(SET_GROUP[set.id])
+      let filled = 0
+      for (const c of slim) {
+        if (c.price != null) continue
+        const key = String(c.number).replace(/^0+/, '') || '0'
+        if (singles[key] != null) { c.price = singles[key]; filled++ }
+      }
+      console.log(`    singles fallback: filled ${filled}/${missing} missing prices from TCGCSV`)
+    }
     const products = await fetchSealed(SET_GROUP[set.id])
     if (products.length) console.log(`    sealed: ${products.map(p => p.type).join(', ')}`)
     out.push({

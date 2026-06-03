@@ -265,9 +265,16 @@ export function gradedCardInRange(min, max, grade) {
 // update market values live (browser → pokemontcg.io) without rebuilding.
 const PRICE_OVERRIDES = {}
 
+// Canonical price for every card id from the current bundled data. Cards pulled
+// before a data refresh have an old (possibly null) price baked into the saved
+// instance; this lets rawValue heal them to the current real price by id, rather
+// than falling back to a flat rarity estimate.
+const CANONICAL_PRICE = {}
+for (const s of SETS) for (const c of s.cards) if (c.price != null) CANONICAL_PRICE[c.id] = c.price
+
 export function rawValue(card) {
   const override = PRICE_OVERRIDES[card.id]
-  let base = override ?? card.price ?? estimateByRarity(card.rarity)
+  let base = override ?? card.price ?? CANONICAL_PRICE[card.id] ?? estimateByRarity(card.rarity)
   if (card.foil) base *= card.foil.mult // Poké Ball (1.6×) / Master Ball (6×) premium
   else if (card.reverse) base *= 1.4     // ordinary reverse holo premium
   // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
