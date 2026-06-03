@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney } from '../game/engine'
 import { useGame } from '../game/store'
-import { rarityColor } from './CardTile'
+import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
 
 export default function CardModal({ card, onClose }) {
@@ -35,7 +35,19 @@ export default function CardModal({ card, onClose }) {
         <div className="detailflex">
           <HoloCard card={card} maxTilt={18} className="modal-holo"
             extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
-            <img src={card.imgLarge || card.img} alt={card.name} />
+            {g ? (
+              <div className={`cardtile slab grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`}>
+                <div className="slab-shine" aria-hidden="true" />
+                <div className="slab-label">
+                  <div className="slab-brand">PSA</div>
+                  <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
+                  <div className="slab-cert">{card.name}</div>
+                </div>
+                <div className="slab-window"><img src={card.imgLarge || card.img} alt={card.name} /></div>
+              </div>
+            ) : (
+              <img src={card.imgLarge || card.img} alt={card.name} />
+            )}
           </HoloCard>
           <div style={{ flex: 1, minWidth: 240 }}>
             <h2>{card.name}</h2>
@@ -51,7 +63,7 @@ export default function CardModal({ card, onClose }) {
               <>
                 <div className="banner" style={{background:'#fff', color:'#111', borderColor:'#ddd', textAlign:'center'}}>
                   <b style={{fontSize:28}}>PSA {g.overall}</b>{' '}
-                  <span style={{fontWeight:700}}>{g.overall===10?'GEM MINT':g.overall>=9?'MINT':g.overall>=7?'NM':'graded'}</span>
+                  <span style={{fontWeight:700}}>{gradeLabel(g.overall)}</span>
                 </div>
                 {/* Real PSA only prints subgrades on 9s and 10s; lower grades get
                     just the overall. Gate the breakdown to match. */}

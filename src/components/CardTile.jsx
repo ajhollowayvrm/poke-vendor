@@ -10,10 +10,10 @@ const RARITY_COLOR = {
 
 export function rarityColor(r) { return RARITY_COLOR[r] || '#9aa3bf' }
 
-// Short PSA grade descriptor for the slab label.
-function gradeLabel(g) {
-  return g >= 10 ? 'GEM MINT' : g >= 9 ? 'MINT' : g >= 8 ? 'NM-MT' : g >= 7 ? 'NEAR MINT'
-    : g >= 5 ? 'EXCELLENT' : g >= 3 ? 'VG' : 'GOOD'
+// Short PSA grade descriptor for the slab label (official compact abbreviations).
+export function gradeLabel(g) {
+  return g >= 10 ? 'GEM-MT' : g >= 9 ? 'MINT' : g >= 8 ? 'NM-MT' : g >= 7 ? 'NM'
+    : g >= 6 ? 'EX-MT' : g >= 5 ? 'EX' : g >= 4 ? 'VG-EX' : g >= 3 ? 'VG' : g >= 2 ? 'GOOD' : 'PR'
 }
 
 export default function CardTile({ card, onClick, interactive = true, noBorder = false }) {
