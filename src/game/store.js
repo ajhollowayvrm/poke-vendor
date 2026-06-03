@@ -38,10 +38,17 @@ function methodLabel(key) {
   return m ? `${m.icon} ${m.short}` : 'cash'
 }
 function feeNote(fee) { return fee > 0 ? ` − $${fee.toFixed(2)} fee` : '' }
-function appendFeeMsg(msg, fee, payMethod) {
+function appendFeeMsg(msg, fee, payMethod, net = null) {
   if (fee <= 0) return msg
   const m = PAYMENT_METHODS[payMethod]
-  return `${msg} (${m?.short || 'processing'} took $${fee.toFixed(2)} in fees.)`.trim()
+  let out = `${msg} (${m?.short || 'processing'} took $${fee.toFixed(2)} in fees.)`.trim()
+  // When a fee rail eats the whole sale, nudge toward a fee-free method next time.
+  if (net != null && net <= 0.005) out += ' 💡 That tiny sale netted ~$0 — fee-free rails (Venmo/Cash) keep the cents on sub-$1 cards.'
+  return out
+}
+// True when this gross on this rail would net ~nothing after fees.
+export function netsZero(gross, payMethod) {
+  return processingFee(gross, payMethod).net <= 0.005 && gross > 0
 }
 
 const CALENDAR_DAYS = 30
@@ -559,7 +566,7 @@ export const useGame = create(persist((set, get) => ({
         // selling at cost to a burned buyer is a generous/fair act
         s.addNotoriety(effect.notoriety, true)
         s.log('sell', `Sold a ${effect.card.name} at cost (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
-        msg = appendFeeMsg(msg, fee, effect.payMethod)
+        msg = appendFeeMsg(msg, fee, effect.payMethod, net)
         get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
         break
       }
@@ -576,7 +583,7 @@ export const useGame = create(persist((set, get) => ({
           s.addNotoriety(effect.notoriety)
           s.log('sell', `Sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
           msg = msg + (get().upgrades.cases ? ' (display case bumped the price.)' : '')
-          msg = appendFeeMsg(msg, fee, effect.payMethod)
+          msg = appendFeeMsg(msg, fee, effect.payMethod, net)
           get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
         }
         break
@@ -595,7 +602,7 @@ export const useGame = create(persist((set, get) => ({
             set(st => ({ collection: st.collection.filter(c => c.uid !== effect.uid) }))
             s.earn(net); s.addNotoriety(effect.notoriety)
             s.log('sell', `Countered and sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
-            msg = appendFeeMsg(msg, fee, effect.payMethod)
+            msg = appendFeeMsg(msg, fee, effect.payMethod, net)
           }
         } else { msg = 'They balk at your counter and walk away.' }
         break
@@ -657,7 +664,22 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 8,
+  version: 9,
+  // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
+  // more than one bucket (collection / pendingGrades / listings / consignments) — a
+  // card can only be in one place at a time. First-seen wins, in that priority order.
+  merge(persisted, current) {
+    const state = { ...current, ...(persisted || {}) }
+    const seen = new Set()
+    const keepFlat = (arr) => (arr || []).filter(c => c?.uid && !seen.has(c.uid) && seen.add(c.uid))
+    const keepWrapped = (arr) => (arr || []).filter(e => e?.card?.uid && !seen.has(e.card.uid) && seen.add(e.card.uid))
+    // priority: collection first, then in-flight buckets
+    state.collection = keepFlat(state.collection)
+    state.pendingGrades = keepWrapped(state.pendingGrades)
+    state.listings = keepWrapped(state.listings)
+    state.consignments = keepWrapped(state.consignments)
+    return state
+  },
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state

@@ -87,7 +87,7 @@ export default function CardModal({ card, onClose }) {
                 </button>
                 <button className="btn alt sellopt" onClick={() => setListing(true)}>
                   <b>List on your site ↗</b>
-                  <small>Set your price — market or higher; sells over time (faster with notoriety), 5% fee</small>
+                  <small>Set your price — from 80% of market; sells over time (faster with notoriety), 5% fee</small>
                 </button>
                 <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
                   <b>Consign ↗</b>

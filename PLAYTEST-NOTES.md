@@ -140,20 +140,24 @@ and rejected.
     Bench 250ms tick now only run while cards are actually at the grader (gated on
     `pendingGrades.length`), eliminating idle re-render churn.
 
+### Economy pass (2026-06-03)
+> Core sell-path arithmetic was already verified correct (quick-sell 80%, list −5%,
+> consign 1.05–1.20× −12%, buylist 55%, condition scaling, fees) — no exploits.
+47. **List-slider copy aligned** — the "List on your site" subtext now reads "from
+    80% of market" (the slider min stays 0.8; selling below market for a faster/
+    surer sale is a legit play). Verified live.
+48. **Tiny-sale fee-free hint** — when a sale nets ~$0 because a flat card-rail fee
+    eats the gross, the result message nudges toward Venmo/Cash. New `netsZero`
+    helper; threaded into sellMint/sellOwned/counter. (Verified by unit test:
+    $0.20 via card → net $0, via Venmo → net $0.20.) No hard block.
+49. **Save-integrity dedupe on load** — a `merge` hook runs every load and dedupes
+    any card uid appearing in more than one bucket (collection > pendingGrades >
+    listings > consignments, first-seen wins). Persist bumped to v9. Verified: a
+    uid seeded into both collection and consignments survived only in collection.
+
 ---
 
 ## 💡 Improvement backlog (NOT implemented — awaiting your call)
-
-### Economy (flipper + exploit-hunter)
-- The core sell-path arithmetic was independently verified CORRECT (quick-sell 80%,
-  list −5%, consign 1.05–1.20× −12%, buylist 55%, condition scaling, processing
-  fees). No money exploits reachable through normal play.
-- **Sub-$0.30 card-rail sale nets $0** (fee ≥ gross). Not wrong, but consider
-  rejecting it or auto-suggesting a fee-free rail.
-- **Listing slider `min="0.8"`** contradicts the "market or higher" copy — align the
-  copy ("from 80% of market") or raise the min to 1.0.
-- **Save integrity** — on load, dedupe any uid appearing in more than one of
-  collection/pendingGrades/listings/consignments (only matters if leaderboards land).
 
 ### New-player UX
 - **No onboarding** — a first-time tooltip/highlight sequence ("Buy → Rip → Sell →
