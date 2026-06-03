@@ -215,7 +215,14 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
 /* ---------- Settings ---------- */
 .setting-card { display:flex; align-items:center; gap: 16px; background: linear-gradient(180deg,var(--panel),var(--panel2));
-  border:1px solid var(--line); border-radius: 14px; padding: 16px; }
+  border:1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+/* segmented control (e.g. rip speed) */
+.seg { display:inline-flex; border:1px solid var(--line); border-radius: 10px; overflow:hidden; }
+.seg .segbtn { background: #ffffff10; color: var(--txt); border:none; padding: 8px 12px; font-weight:700;
+  font-size: 13px; cursor:pointer; border-left:1px solid var(--line); }
+.seg .segbtn:first-child { border-left:none; }
+.seg .segbtn:hover { background:#ffffff1e; }
+.seg .segbtn.on { background: linear-gradient(135deg,#ffd84d,#ffb000); color:#3a2b00; }
 
 /* ---------- Storefront / payments / channels ---------- */
 .chanbadge { align-self: flex-start; font-size: 10px; font-weight: 800; border: 1px solid; border-radius: 999px;
@@ -268,6 +275,14 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   -webkit-background-clip:text; background-clip:text; color:transparent; animation: godshine 3s linear infinite; }
 .godbanner small { display:block; font-size: 12px; font-weight:700; color: var(--gold); letter-spacing:0; margin-top:2px; }
 @keyframes godshine { 0%{background-position:0% 0} 100%{background-position:300% 0} }
+/* Poké Ball / Master Ball special-finish callout during a rip */
+.foilbanner { text-align:center; font-weight:900; font-size: 18px; letter-spacing:.3px; color: var(--foil, var(--gold));
+  padding: 6px 14px; border-radius: 12px; border: 1px solid var(--foil);
+  background: color-mix(in srgb, var(--foil) 14%, transparent);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--foil) 45%, transparent);
+  animation: foilpop .5s cubic-bezier(.2,1.4,.5,1); }
+.foilbanner small { display:block; font-size: 12px; font-weight:700; opacity:.9; letter-spacing:0; margin-top:2px; }
+@keyframes foilpop { 0%{opacity:0; transform:scale(.7)} 60%{opacity:1; transform:scale(1.08)} 100%{transform:scale(1)} }
 .reveal-row.god { padding: 14px; border-radius: 16px; background: radial-gradient(circle at 50% 30%, #ffd84d18, transparent 70%);
   box-shadow: 0 0 0 1px #ffd84d44, 0 0 60px #ff3df022 inset; }
 

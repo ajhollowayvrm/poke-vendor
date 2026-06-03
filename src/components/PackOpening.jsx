@@ -10,16 +10,22 @@ import HoloCard from './HoloCard'
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
 export default function PackOpening({ set, product, onExit }) {
   const totalPacks = product?.packs ?? 1
+  const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
+  const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
   const [packNo, setPackNo] = useState(1)        // 1-based, which pack we're on
   const [phase, setPhase] = useState('idle')
   const [pulls, setPulls] = useState([])
   const [shown, setShown] = useState(0)
   const [burst, setBurst] = useState(false)
   const [isGod, setIsGod] = useState(false)
+  const [foilAlert, setFoilAlert] = useState(null) // {label, color} for a Poké/Master Ball callout
   const [finished, setFinished] = useState(false) // whole product done
   const [extra, setExtra] = useState([])          // promo + fast-forwarded packs (for the summary)
   const addPulls = useGame(s => s.addPulls)
   const committed = useRef(false)
+  const autoRipped = useRef(false)                 // did we already auto-rip the current idle pack?
+  const speed = Math.max(0.25, ripSpeed)           // guard against absurd values
+  const ms = (n) => n / speed                      // scale a delay by rip speed
 
   const last = packNo >= totalPacks
 
@@ -29,9 +35,10 @@ export default function PackOpening({ set, product, onExit }) {
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
     setIsGod(god)
+    setFoilAlert(null)
     setPulls(cards)
     setPhase('shaking')
-    setTimeout(() => { setPhase('revealing'); revealNext(cards, 0) }, god ? 1500 : 900)
+    setTimeout(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : 900))
   }
 
   function revealNext(cards, i) {
@@ -43,15 +50,18 @@ export default function PackOpening({ set, product, onExit }) {
     setShown(i + 1)
     const c = cards[i]
     const special = c._isHit || c.foil
-    if (special) { setBurst(true); setTimeout(() => setBurst(false), 1200) }
+    if (special) { setBurst(true); setTimeout(() => setBurst(false), ms(1200)) }
+    // Call out a special-finish pull (Poké Ball / Master Ball) as it lands.
+    if (c.foil) setFoilAlert({ label: c.foil.label, badge: c.foil.badge, color: c.foil.color, name: c.name })
     const delay = special ? 1100 : 520
-    setTimeout(() => revealNext(cards, i + 1), delay)
+    setTimeout(() => revealNext(cards, i + 1), ms(delay))
   }
 
   // Reset reveal state for the next pack in the sequence.
   function resetForNext() {
     committed.current = false
-    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false)
+    autoRipped.current = false
+    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setFoilAlert(null)
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -60,6 +70,22 @@ export default function PackOpening({ set, product, onExit }) {
     setPackNo(n => n + 1)
     resetForNext()
   }
+
+  // Auto-advance: in one-by-one mode, after a pack finishes wait ~3s then move on;
+  // when that lands us on a fresh idle pack, auto-rip it. The user can still click
+  // through manually — any manual nextPack/rip just pre-empts the timer.
+  useEffect(() => {
+    if (!autoAdvance || totalPacks <= 1) return
+    if (phase === 'done' && !last) {
+      const t = setTimeout(() => nextPack(), ms(3000))
+      return () => clearTimeout(t)
+    }
+    if (phase === 'idle' && packNo > 1 && !autoRipped.current) {
+      autoRipped.current = true
+      const t = setTimeout(() => rip(), ms(600))
+      return () => clearTimeout(t)
+    }
+  }, [phase, packNo, autoAdvance, last, totalPacks, speed])
 
   // Mint the product's guaranteed promo (if any), add it, and finish.
   function addBonusAndFinish() {
@@ -156,6 +182,12 @@ export default function PackOpening({ set, product, onExit }) {
       {(phase === 'revealing' || phase === 'done') && (
         <>
           {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
+          {foilAlert && !isGod && (
+            <div className="foilbanner" style={{ '--foil': foilAlert.color }}>
+              {foilAlert.badge} — <b>{foilAlert.name}</b>!
+              <small>You pulled a {foilAlert.label} ✨</small>
+            </div>
+          )}
           <div className={`reveal-row ${isGod ? 'god' : ''}`}>
             {pulls.map((c, i) => {
               const edge = c.foil ? c.foil.color : rarityColor(c.rarity)

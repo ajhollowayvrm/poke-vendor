@@ -2,10 +2,16 @@ import { useState } from 'react'
 import { refreshPrices, FETCHED_AT, SETS } from '../game/engine'
 import { useGame } from '../game/store'
 
+const RIP_SPEEDS = [
+  { v: 0.5, label: 'Slow' }, { v: 1, label: 'Normal' }, { v: 2, label: 'Fast' }, { v: 4, label: 'Turbo' },
+]
+
 export default function Settings() {
   const reset = useGame(s => s.reset)
   const log = useGame(s => s.log)
   const openSealedOneByOne = useGame(s => s.settings.openSealedOneByOne)
+  const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
+  const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
   const setSetting = useGame(s => s.setSetting)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [progress, setProgress] = useState(null)
@@ -48,6 +54,37 @@ export default function Settings() {
           role="switch" aria-checked={openSealedOneByOne}
           onClick={() => setSetting('openSealedOneByOne', !openSealedOneByOne)}>
           {openSealedOneByOne ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Rip speed</div>
+          <div className="muted" style={{ fontSize: 12 }}>How fast cards reveal during the animated rip.</div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          {RIP_SPEEDS.map(s => (
+            <button key={s.v} className={`segbtn ${ripSpeed === s.v ? 'on' : ''}`}
+              onClick={() => setSetting('ripSpeed', s.v)}>{s.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Auto-open next pack</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {!openSealedOneByOne
+              ? 'Only applies in one-at-a-time mode (turn that on above).'
+              : autoAdvance
+                ? 'On — after a pack finishes it waits a few seconds, then rips the next one for you.'
+                : 'Off — you click “Next pack” yourself between packs.'}
+          </div>
+        </div>
+        <button className={`btn ${autoAdvance ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          role="switch" aria-checked={autoAdvance} disabled={!openSealedOneByOne}
+          onClick={() => setSetting('autoAdvance', !autoAdvance)}>
+          {autoAdvance ? 'On' : 'Off'}
         </button>
       </div>
 
