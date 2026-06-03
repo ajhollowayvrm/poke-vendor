@@ -268,6 +268,35 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .grade-history { margin: 8px 0 2px; padding: 8px 10px; background:#0c0f1a; border:1px solid var(--line);
   border-radius: 10px; display:flex; flex-direction:column; gap:2px; }
 
+/* ---------- Collection multi-select + bulk-action bar ---------- */
+.coll-cell { position: relative; }
+.coll-cell.selectable { cursor: pointer; border-radius: 12px; transition: box-shadow .12s, background .12s; }
+.coll-cell.selectable:hover { box-shadow: 0 0 0 1px var(--line); }
+.coll-cell.picked { box-shadow: 0 0 0 2px var(--green); background: #36d39914; }
+/* swallow tile clicks in select mode so toggling never opens the modal */
+.coll-cell.selectable :where(.cardtile, img) { pointer-events: none; }
+.coll-check { position: absolute; top: 8px; right: 8px; z-index: 5; width: 24px; height: 24px; border-radius: 999px;
+  background: var(--green); color: #07140c; font-weight: 900; font-size: 14px; display:flex;
+  align-items:center; justify-content:center; box-shadow: 0 1px 5px rgba(0,0,0,.5); }
+
+.bulk-bar { position: sticky; bottom: 14px; z-index: 40; margin-top: 16px;
+  background: linear-gradient(180deg, var(--panel), var(--panel2)); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px; box-shadow: 0 10px 34px #0008;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.bulk-bar-summary { font-size: 14px; white-space: nowrap; }
+.bulk-bar-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; align-items: center; }
+.bulk-bar-actions .btn { flex: 0 0 auto; }
+.bulk-list-group { display: flex; align-items: center; gap: 6px; }
+.bulk-list-group input[type=range] { width: 78px; }
+
+@media (max-width: 640px) {
+  /* keep the bar clear of the floating bottom nav */
+  .bulk-bar { position: fixed; left: 10px; right: 10px; bottom: calc(80px + env(safe-area-inset-bottom));
+    margin-top: 0; }
+  .bulk-bar-actions { margin-left: 0; width: 100%; }
+  .bulk-bar-actions .btn { flex: 1 1 auto; }
+}
+
 /* ---------- Vendor showcase / bulk bin ---------- */
 .showcase-head { font-weight: 800; font-size: 15px; margin: 6px 0 2px; }
 .showcase-head .muted { font-weight: 600; font-size: 12px; }

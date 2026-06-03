@@ -62,8 +62,11 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
   const [tierKey, setTierKey] = useState('economy')
   const [picked, setPicked] = useState(() => new Set())
 
-  // Only raw (ungraded) cards can be graded.
-  const raw = useMemo(() => collection.filter(c => !c.grade), [collection])
+  // Only raw (ungraded) cards can be graded — sorted by value (highest first) so
+  // the cards worth grading surface at the top of the picker.
+  const raw = useMemo(
+    () => collection.filter(c => !c.grade).sort((a, b) => rawValue(b) - rawValue(a)),
+    [collection])
   const count = picked.size
   const feePer = gradingFee(tierKey, submitted, count || 1)
   const total = +(feePer * count).toFixed(2)

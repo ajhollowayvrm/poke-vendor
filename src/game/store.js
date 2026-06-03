@@ -403,6 +403,54 @@ export const useGame = create(persist((set, get) => ({
     return { net, daysLeft }
   },
 
+  // --- Bulk actions on a selected set of cards (Collection multi-select) -------
+  // Quick-sell every selected card at the quick-sell rate, in one go.
+  quickSellMany(uids) {
+    const ids = new Set(uids)
+    const toSell = get().collection.filter(c => ids.has(c.uid))
+    if (!toSell.length) return 0
+    const rate = get().quickSellRate
+    const total = round2(toSell.reduce((a, c) => a + cardValue(c) * rate, 0))
+    set(s => ({ collection: s.collection.filter(c => !ids.has(c.uid)) }))
+    get().earn(total)
+    get().log('sell', `Quick-sold ${toSell.length} cards @ ${Math.round(rate*100)}%`, total)
+    get().bumpGoal('sell', toSell.length); get().bumpGoal('profit', total)
+    return total
+  },
+  // List every selected card on your site at the same askMult (each rolls its own
+  // sell/expire outcome). Returns how many were listed.
+  listManyOnSite(uids, askMult) {
+    const ids = new Set(uids)
+    const cards = get().collection.filter(c => ids.has(c.uid))
+    if (!cards.length) return 0
+    const newListings = cards.map(card => {
+      const q = get().listingQuote(card, askMult)
+      return { card, ask: q.ask, net: q.net, askMult, daysLeft: q.days, willSell: Math.random() < q.sellChance }
+    })
+    set(s => ({
+      collection: s.collection.filter(c => !ids.has(c.uid)),
+      listings: [...(s.listings || []), ...newListings],
+    }))
+    get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market`, 0)
+    return cards.length
+  },
+  // Consign every selected card (each sells in 2–6 days for a bit above market −12%).
+  consignMany(uids) {
+    const ids = new Set(uids)
+    const cards = get().collection.filter(c => ids.has(c.uid))
+    if (!cards.length) return 0
+    const newConsigns = cards.map(card => {
+      const sellsFor = round2(cardValue(card) * (1.05 + Math.random() * 0.15))
+      return { card, net: round2(sellsFor * 0.88), daysLeft: 2 + Math.floor(Math.random() * 5) }
+    })
+    set(s => ({
+      collection: s.collection.filter(c => !ids.has(c.uid)),
+      consignments: [...s.consignments, ...newConsigns],
+    }))
+    get().log('consign', `Consigned ${cards.length} cards`, 0)
+    return cards.length
+  },
+
   // Which of your cards satisfy this want?
   cardsForWant(want) { return get().collection.filter(c => cardMatchesWant(c, want)) },
   // Fulfill a want with a specific owned card → premium payout + notoriety + stat.
