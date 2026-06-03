@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank } from './engine'
-import { boothEncounter, makeWant, cardMatchesWant } from './shows'
+import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 
-const STARTING_CASH = 100
+const STARTING_CASH = 2000
 
 // --- Payment methods ---------------------------------------------------------
 // You start accepting only Venmo. Buyers each prefer a method; if you can't take
@@ -489,6 +489,12 @@ export const useGame = create(persist((set, get) => ({
       default:
         s.addNotoriety(effect.notoriety || 0)
     }
+    // A sale may have removed a card that a pending inbox order was about — drop
+    // any now-stale orders so you never see an offer for a card you no longer own.
+    set(st => {
+      const pruned = st.boothInbox.filter(enc => encounterStillValid(enc, st.collection))
+      return pruned.length === st.boothInbox.length ? {} : { boothInbox: pruned }
+    })
     return msg
   },
 

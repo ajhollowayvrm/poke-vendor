@@ -207,6 +207,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show') {
     const m = PAY_LABEL(pay)
     return {
       kind: 'offer',
+      ownedUid: target.uid, // so the encounter can be re-validated if you sell it first
       title: online ? `${cap(visitor)} wants your ${target.name}` : `${cap(visitor)} eyes your ${target.name}`,
       body: good
         ? `"That ${target.name} is exactly what I need. I'll give you $${offer.toFixed(2)}, paying by ${m}." (Market: $${market.toFixed(2)})`
@@ -261,6 +262,15 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show') {
         effect: { type: 'browseSale', payMethod: pay, chance: 0.3, notoriety: 0, msg: 'They look around quietly.' } },
     ],
   }
+}
+
+// An "offer" encounter is built around a specific card you own. If you sell that
+// card before responding (e.g. an online order sits in your inbox while you're at
+// a show), the encounter is stale — it'd talk about a card you no longer have.
+// This returns true only when the encounter still makes sense for `collection`.
+export function encounterStillValid(enc, collection) {
+  if (!enc || !enc.ownedUid) return true // doesn't reference one of your cards
+  return collection.some(c => c.uid === enc.ownedUid)
 }
 
 const PAY_LABELS = { venmo:'Venmo', cash:'cash', paypal:'PayPal', card:'card', tap:'tap-to-pay' }

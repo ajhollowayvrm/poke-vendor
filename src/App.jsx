@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney } from './game/engine'
 import { useGame } from './game/store'
+import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
 import Collection from './components/Collection'
 import CardModal from './components/CardModal'
@@ -28,7 +29,8 @@ export default function App() {
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
   const pendingCount = useGame(s => s.pendingGrades.length)
-  const inboxCount = useGame(s => s.boothInbox.length)
+  // only count orders still valid (card not since sold) so the tab badge matches the list
+  const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection)).length)
   const notoriety = useGame(s => s.notoriety)
   const resolveGrades = useGame(s => s.resolveGrades)
 

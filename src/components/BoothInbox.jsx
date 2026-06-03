@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS } from '../game/store'
 import { fmtMoney, cardValue } from '../game/engine'
+import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
 import CardTile from './CardTile'
 
@@ -23,7 +24,13 @@ export default function BoothInbox() {
   const fulfillWant = useGame(s => s.fulfillWant)
   const dailyGoals = useGame(s => s.dailyGoals)
   const ensureDailyGoals = useGame(s => s.ensureDailyGoals)
+  const collection = useGame(s => s.collection)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
+  // Drop orders whose card you no longer own (e.g. sold it at a show) — keep the
+  // original index so clearing/responding still targets the right inbox slot.
+  const validInbox = useMemo(
+    () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection)),
+    [inbox, collection])
   const [active, setActive] = useState(null) // {enc, idx}
   const [wantPick, setWantPick] = useState(null) // a want being fulfilled
   const [toast, setToast] = useState(null)
@@ -114,11 +121,11 @@ export default function BoothInbox() {
         </div>
       )}
 
-      {inbox.length === 0 ? (
+      {validInbox.length === 0 ? (
         <div className="empty">No orders waiting. Hit <b>Next day</b> (or attend a show) to bring customers in. 📨</div>
       ) : (
         <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', marginTop: 14 }}>
-          {inbox.map((enc, i) => {
+          {validInbox.map(({ enc, i }) => {
             const badge = CHANNEL_BADGE[enc.channel] || CHANNEL_BADGE.online
             return (
               <div key={i} className="product" style={{ cursor:'pointer' }} onClick={() => setActive({ enc, idx: i })}>
