@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, rawValue } from './engine'
+import { cardInValueRange, gradedCardInRange, rawValue, round2, SETS, rarityRank } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -59,13 +59,43 @@ export function generateCalendar(notoriety, seed = 7) {
 
 // --- Vendor generation -------------------------------------------------------
 // Each booth has a personality that colors prices, encounters, and stock.
+// `flex` = how far (fraction toward fair market) a vendor will haggle from their
+// opening price before walking. Fair dealers bend a lot; lowballers barely move.
 const ARCHETYPES = [
-  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, vibe: 'friendly and reasonable' },
-  { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, vibe: 'shrewd, always angling' },
-  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  vibe: 'only deals in the big stuff' },
-  { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, vibe: 'eager but green' },
-  { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  vibe: 'notorious for ripping people off' },
+  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable' },
+  { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, flex: 0.45, vibe: 'shrewd, always angling' },
+  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'only deals in the big stuff' },
+  { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, flex: 0.65, vibe: 'eager but green' },
+  { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  flex: 0.20, vibe: 'notorious for ripping people off' },
 ]
+const ARCH_BY_KEY = Object.fromEntries(ARCHETYPES.map(a => [a.key, a]))
+export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
+
+// Resolve one haggle round. side 'buy' = you're buying from them (lower is better
+// for you); 'sell' = they're buying from you (higher is better for you).
+//   their  = their current price, market = fair value, yourOffer = your counter
+//   flex   = archetype flex, round = 0-based round index (patience shrinks)
+// Returns { accept, counter, walk } — accept their take, a counter to consider, or walkaway.
+export function haggleRound({ side, their, market, yourOffer, flex, round }) {
+  // best price they'd ever agree to = market nudged by remaining flex
+  const patience = Math.max(0, flex * (1 - round * 0.34)) // they get firmer each round
+  const floorPrice = side === 'buy'
+    ? Math.max(market, their - (their - market) * (flex)) // buying: they won't go below ~market
+    : Math.min(market * 1.05, their + (market - their) * (flex)) // selling: won't pay much over market
+  // how good is your offer for them?
+  const goodForThem = side === 'buy' ? yourOffer >= floorPrice : yourOffer <= floorPrice
+  if (goodForThem) return { accept: true }
+  // too aggressive → chance they walk, scaling with how far past their limit you pushed
+  const overreach = side === 'buy'
+    ? (floorPrice - yourOffer) / Math.max(1, floorPrice)
+    : (yourOffer - floorPrice) / Math.max(1, floorPrice)
+  if (overreach > 0.4 + patience) return { walk: true }
+  // otherwise they meet you partway toward your offer
+  const counter = side === 'buy'
+    ? round2(Math.max(floorPrice, their - (their - yourOffer) * (0.35 + patience)))
+    : round2(Math.min(floorPrice, their + (yourOffer - their) * (0.35 + patience)))
+  return { counter }
+}
 
 // `dayOffset` re-rolls the floor for each day of a multi-day show — different
 // vendors/stock show up day to day.
@@ -239,3 +269,52 @@ function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1) }
 function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b }
 
 export { rawValue }
+
+// --- Want-list collectors --------------------------------------------------
+// A collector posts a specific need; fill it from your collection for an
+// above-market premium + notoriety. Two kinds: a named card, or "any <rarity>
+// from <set>". Bigger asks pay a fatter premium.
+const COLLECTOR_NAMES = ['Marco the completist','a binder grinder','an Eeveelution superfan','a vintage hound',
+  'a set-builder','a deep-pocketed whale','a nostalgic dad','a rising streamer','a master-set chaser','a local legend']
+const WANT_RARITIES = ['Illustration Rare','Ultra Rare','Special Illustration Rare','Hyper Rare']
+
+function wpick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+
+// Make one want. `rich` (high notoriety) skews toward pricier asks.
+export function makeWant(rich = false) {
+  const who = wpick(COLLECTOR_NAMES)
+  const daysLeft = 4 + Math.floor(Math.random() * 6) // 4–9 days to fill
+  // 55% named card, 45% "any rarity from set"
+  if (Math.random() < 0.55) {
+    const all = SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) > (rich ? 8 : 1)))
+    const card = wpick(all)
+    const premium = 1.25 + Math.random() * (rich ? 0.6 : 0.3) // 1.25–1.85×
+    return {
+      id: `w${Math.floor(Math.random()*1e9).toString(36)}`,
+      kind: 'card', who, daysLeft,
+      cardId: card.id, cardName: card.name, img: card.img,
+      premiumMult: round2(premium),
+      notoriety: 3 + Math.floor((card.price ?? 0) / 20),
+      desc: `${cap(who)} wants a ${card.name}`,
+    }
+  }
+  const set = wpick(SETS)
+  const rar = wpick(WANT_RARITIES)
+  const premium = 1.2 + Math.random() * (rich ? 0.4 : 0.25)
+  return {
+    id: `w${Math.floor(Math.random()*1e9).toString(36)}`,
+    kind: 'rarity', who, daysLeft,
+    setId: set.id, setName: set.name, rarity: rar,
+    premiumMult: round2(premium),
+    notoriety: rar === 'Special Illustration Rare' || rar === 'Hyper Rare' ? 6 : 3,
+    desc: `${cap(who)} wants any ${rar} from ${set.name}`,
+  }
+}
+
+// Does a collection card satisfy a want?
+export function cardMatchesWant(card, want) {
+  if (card.grade) return false // they want a raw single to slot in a binder
+  if (want.kind === 'card') return card.id === want.cardId
+  if (want.kind === 'rarity') return card.setId === want.setId && card.rarity === want.rarity
+  return false
+}

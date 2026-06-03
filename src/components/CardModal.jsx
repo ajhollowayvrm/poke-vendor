@@ -1,10 +1,11 @@
-import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier } from '../game/engine'
+import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 
 export default function CardModal({ card, onClose }) {
   const sellCard = useGame(s => s.sellCard)
+  const consign = useGame(s => s.consignCard)
   const submitGrade = useGame(s => s.submitGrade)
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
@@ -24,7 +25,10 @@ export default function CardModal({ card, onClose }) {
             <h2>{card.name}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
               <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{card.rarity}</span>
-              {card.reverse ? ' · Reverse Holo' : ''} · #{card.number}
+              {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{card.number}
+              {!g && card.condition && CONDITIONS[card.condition] && (
+                <> · <span style={{ color: CONDITIONS[card.condition].color, fontWeight: 800 }}>{CONDITIONS[card.condition].label}</span></>
+              )}
             </p>
 
             {g ? (
@@ -47,7 +51,11 @@ export default function CardModal({ card, onClose }) {
 
             <div className="row" style={{ marginTop: 14 }}>
               <button className="btn gold" onClick={() => { sellCard(card.uid); onClose() }}>
-                Sell for ${cardValue(card).toFixed(2)}
+                Sell now · ${cardValue(card).toFixed(2)}
+              </button>
+              <button className="btn alt" title="List with a consignment service — sells in a few days for a bit above market, minus a 12% fee"
+                onClick={() => { consign(card.uid); onClose() }}>
+                Consign ↗
               </button>
             </div>
 
@@ -73,6 +81,11 @@ export default function CardModal({ card, onClose }) {
                     )
                   })}
                 </div>
+                {card.condition && CONDITIONS[card.condition] && CONDITIONS[card.condition].maxGrade < 10 && (
+                  <p style={{ fontSize: 11.5, marginTop: 6, color: CONDITIONS[card.condition].color }}>
+                    ⚠️ {CONDITIONS[card.condition].label} — this card can grade at most PSA {CONDITIONS[card.condition].maxGrade}.
+                  </p>
+                )}
                 <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>
                   A high grade can multiply value 2–4×; low grades hurt — it's a gamble.
                   {next

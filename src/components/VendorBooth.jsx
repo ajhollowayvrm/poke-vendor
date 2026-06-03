@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGame } from '../game/store'
 import { rawValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
+import Haggle from './Haggle'
 
 export default function VendorBooth({ booth, onClose, flash }) {
   const cash = useGame(s => s.cash)
@@ -10,22 +11,19 @@ export default function VendorBooth({ booth, onClose, flash }) {
   const collection = useGame(s => s.collection)
   const [stock, setStock] = useState(booth.stock)
   const [tab, setTab] = useState('buy')
+  const [haggle, setHaggle] = useState(null) // { side, card, market, start }
 
-  // network upgrade reveals whether a card is a deal
   const seeDeals = upgrades.network
 
-  function buy(card) {
-    if (buyFromVendor(card, card._ask)) {
+  function buyAt(card, price) {
+    if (buyFromVendor(card, price)) {
       setStock(s => s.filter(c => c.uid !== card.uid))
-      flash(`Bought ${card.name} for ${fmtMoney(card._ask)}${card._mispriced ? ' — what a steal!' : ''}`)
+      flash(`Bought ${card.name} for ${fmtMoney(price)}${price < rawValue(card)*0.85 ? ' — great deal!' : ''}`)
     }
   }
-
-  // what this vendor will pay for YOUR cards
-  function sellTo(card) {
-    const offer = Math.round(rawValue(card) * booth.buyMult * 100) / 100
-    useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price: offer, notoriety: 0, msg: '' })
-    flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(offer)}`)
+  function sellAt(card, price) {
+    useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price, notoriety: 0, msg: '' })
+    flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(price)}`)
   }
 
   function renderBuy(card, featured) {
@@ -39,7 +37,10 @@ export default function VendorBooth({ booth, onClose, flash }) {
           {seeDeals && !deal && card._ask > rawValue(card)*1.2 && <span className="overtag">OVER</span>}
         </div>
         <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(rawValue(card))}</div>
-        <button className="btn" disabled={cash < card._ask} onClick={() => buy(card)}>Buy</button>
+        <div className="row" style={{ gap: 6 }}>
+          <button className="btn" disabled={cash < card._ask} onClick={() => buyAt(card, card._ask)}>Buy</button>
+          <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'buy', card, market: rawValue(card), start: card._ask })}>Haggle</button>
+        </div>
       </div>
     )
   }
@@ -51,7 +52,7 @@ export default function VendorBooth({ booth, onClose, flash }) {
           <h2 style={{ marginRight:'auto' }}>{booth.name}</h2>
           <span className="pill">{booth.archLabel}</span>
         </div>
-        <p className="muted" style={{ marginTop: 2 }}>This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> of market for cards.</p>
+        <p className="muted" style={{ marginTop: 2 }}>This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> of market for cards. Try to <b>haggle</b> — but push too hard and they'll walk.</p>
 
         <div className="tabs" style={{ margin: '10px 0' }}>
           <button className={`tab ${tab==='buy'?'active':''}`} onClick={()=>setTab('buy')}>Their stock ({stock.length})</button>
@@ -77,18 +78,35 @@ export default function VendorBooth({ booth, onClose, flash }) {
         ) : (
           collection.length === 0 ? <p className="muted">You have nothing to sell.</p> :
           <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))' }}>
-            {collection.slice(0, 24).map(card => (
-              <div key={card.uid} className="vendoritem">
-                <CardTile card={card} interactive={false} />
-                <button className="btn alt" onClick={() => sellTo(card)}>
-                  Sell {fmtMoney(rawValue(card)*booth.buyMult)}
-                </button>
-              </div>
-            ))}
+            {collection.slice(0, 24).map(card => {
+              const offer = Math.round(rawValue(card) * booth.buyMult * 100) / 100
+              return (
+                <div key={card.uid} className="vendoritem">
+                  <CardTile card={card} interactive={false} />
+                  <div className="row" style={{ gap: 6 }}>
+                    <button className="btn alt" onClick={() => sellAt(card, offer)}>Sell {fmtMoney(offer)}</button>
+                    <button className="btn" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'sell', card, market: rawValue(card), start: offer })}>Haggle</button>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
         <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
       </div>
+
+      {haggle && (
+        <Haggle
+          side={haggle.side} card={haggle.card} market={haggle.market} start={haggle.start}
+          archKey={booth.archetype} vendorName={booth.name}
+          onClose={() => setHaggle(null)}
+          onDeal={(price) => {
+            if (haggle.side === 'buy') buyAt(haggle.card, price)
+            else sellAt(haggle.card, price)
+            setHaggle(null)
+          }}
+        />
+      )}
     </div>
   )
 }

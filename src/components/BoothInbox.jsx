@@ -1,6 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS } from '../game/store'
+import { fmtMoney, cardValue } from '../game/engine'
 import Encounter from './Encounter'
+import CardTile from './CardTile'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
   walkin: { label: 'Walk-in', icon: '🏬', color: '#ffcb05' } }
@@ -16,7 +18,14 @@ export default function BoothInbox() {
   const clearItem = useGame(s => s.clearInboxItem)
   const resolveEncounter = useGame(s => s.resolveEncounter)
   const nextDay = useGame(s => s.nextDay)
+  const wantList = useGame(s => s.wantList)
+  const cardsForWant = useGame(s => s.cardsForWant)
+  const fulfillWant = useGame(s => s.fulfillWant)
+  const dailyGoals = useGame(s => s.dailyGoals)
+  const ensureDailyGoals = useGame(s => s.ensureDailyGoals)
+  useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
   const [active, setActive] = useState(null) // {enc, idx}
+  const [wantPick, setWantPick] = useState(null) // a want being fulfilled
   const [toast, setToast] = useState(null)
 
   const hasStore = !!upgrades.storefront
@@ -50,6 +59,21 @@ export default function BoothInbox() {
         <span className="muted" style={{ fontSize: 12 }}>Pass a day to bring in orders (attending a show passes several at once).</span>
       </div>
 
+      {dailyGoals.length > 0 && (
+        <div className="goals">
+          <div className="goals-head">🎯 Today's goals</div>
+          <div className="goals-row">
+            {dailyGoals.map((g, i) => (
+              <div key={i} className={`goal ${g.done ? 'done' : ''}`}>
+                <div className="goal-label">{g.done ? '✓ ' : ''}{g.label}</div>
+                <div className="goal-bar"><div style={{ width: `${Math.min(100, 100*g.progress/g.target)}%` }} /></div>
+                <div className="goal-reward">{g.progress}/{g.target} · {g.cash ? `$${g.cash}` : ''}{g.cash && g.noto ? ' + ' : ''}{g.noto ? `${g.noto}★` : ''}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="toolbar" style={{ marginTop: 4 }}>
         <span className="muted" style={{ fontSize: 13 }}>You accept:</span>
         {Object.entries(PAYMENT_METHODS).map(([k, m]) => (
@@ -66,6 +90,29 @@ export default function BoothInbox() {
         <span className="pill" style={{ opacity: upgrades.smartphone ? 1 : 0.35 }}>📱 Online {upgrades.smartphone ? 'covered' : 'missed 🔒'}</span>
         <span className="pill" style={{ opacity: upgrades.staff ? 1 : 0.35 }}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
       </div>
+
+      {wantList.length > 0 && (
+        <div className="wants">
+          <div className="wants-head">📋 Want list <span className="muted">— collectors looking for cards; fill one for an above-market premium</span></div>
+          <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))' }}>
+            {wantList.map(w => {
+              const matches = cardsForWant(w)
+              return (
+                <div key={w.id} className={`product want ${matches.length ? 'fillable' : ''}`}>
+                  {w.img && <img src={w.img} alt="" style={{ width: 56, borderRadius: 8, alignSelf:'center' }} />}
+                  <h3 style={{ fontSize: 14, margin: 0 }}>{w.desc}</h3>
+                  <div className="meta" style={{ flex:1 }}>
+                    Pays <b style={{ color:'var(--green)' }}>+{Math.round((w.premiumMult-1)*100)}%</b> over market · +{w.notoriety}★ · expires in {w.daysLeft}d
+                  </div>
+                  {matches.length
+                    ? <button className="btn gold" onClick={() => setWantPick(w)}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
+                    : <button className="btn" disabled>You don't have it</button>}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {inbox.length === 0 ? (
         <div className="empty">No orders waiting. Hit <b>Next day</b> (or attend a show) to bring customers in. 📨</div>
@@ -87,6 +134,28 @@ export default function BoothInbox() {
       )}
       {toast && <div className="toast">{toast}</div>}
       {active && <Encounter data={active.enc} onPick={pick} />}
+
+      {wantPick && (
+        <div className="modalbg" onClick={() => setWantPick(null)}>
+          <div className="modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
+            <h2 style={{ fontSize: 18, marginBottom: 2 }}>Fill: {wantPick.desc}</h2>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — they pay {Math.round(wantPick.premiumMult*100)}% of its market value, +{wantPick.notoriety} notoriety.</p>
+            <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
+              {cardsForWant(wantPick).map(c => (
+                <div key={c.uid} className="vendoritem">
+                  <CardTile card={c} interactive={false} />
+                  <button className="btn gold" onClick={() => {
+                    const r = fulfillWant(wantPick.id, c.uid)
+                    if (r) flash(`Filled the want — earned ${fmtMoney(r.payout)} (+${wantPick.notoriety}★)`)
+                    setWantPick(null)
+                  }}>Give · {fmtMoney(cardValue(c) * wantPick.premiumMult)}</button>
+                </div>
+              ))}
+            </div>
+            <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setWantPick(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier } from './engine'
-import { boothEncounter } from './shows'
+import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank } from './engine'
+import { boothEncounter, makeWant, cardMatchesWant } from './shows'
 
 const STARTING_CASH = 100
 
@@ -46,6 +46,33 @@ function appendFeeMsg(msg, fee, payMethod) {
 
 const CALENDAR_DAYS = 30
 const INBOX_CAP = 8
+
+// --- Daily goals -----------------------------------------------------------
+// Pool of small objectives; 2–3 roll each game-day. Reward scales a touch with
+// notoriety. Progress is bumped by gameplay actions and auto-pays on completion.
+const GOAL_POOL = [
+  { key: 'sell',   label: n => `Sell ${n} card${n>1?'s':''}`,        targets: [2,3,4],  cash: 25, noto: 1 },
+  { key: 'grade',  label: n => `Submit ${n} card${n>1?'s':''} to grade`, targets: [1,2], cash: 30, noto: 1 },
+  { key: 'rip',    label: n => `Rip ${n} pack${n>1?'s':''}`,         targets: [3,5,8],  cash: 20, noto: 1 },
+  { key: 'buy',    label: n => `Buy ${n} card${n>1?'s':''} from a vendor`, targets: [1,2], cash: 25, noto: 1 },
+  { key: 'help',   label: () => `Make someone's day (give a card free)`, targets: [1], cash: 0, noto: 4 },
+  { key: 'want',   label: n => `Fill ${n} collector want${n>1?'s':''}`, targets: [1], cash: 40, noto: 2 },
+  { key: 'attend', label: () => `Attend a card show`,                targets: [1], cash: 30, noto: 1 },
+  { key: 'profit', label: n => `Earn $${n} in sales`,               targets: [100,250], cash: 30, noto: 1 },
+]
+function makeDailyGoals(noto) {
+  const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
+  const count = 2 + (Math.random() < 0.5 ? 1 : 0) // 2–3 goals
+  const mult = 1 + noto / 150 // rewards scale gently with fame
+  return shuffled.slice(0, count).map(g => {
+    const target = g.targets[Math.floor(Math.random() * g.targets.length)]
+    return {
+      key: g.key, target, progress: 0, done: false,
+      label: g.label(target),
+      cash: Math.round(g.cash * mult), noto: g.noto,
+    }
+  })
+}
 // Per-day probability that a home order arrives on each channel.
 // Flat & sparse early (a fresh vendor barely gets orders), ramping with
 // notoriety toward a cap. e.g. online: ~0.08/day at noto 0 → ~0.85 at noto 200.
@@ -86,10 +113,30 @@ function advanceDaysWith(set, get, days, away) {
     months += 1
     get().log('month', `A new month of shows begins.`, 0)
   }
+  // resolve consignments whose timer elapsed over the days passed
+  let soldProceeds = 0
+  const remainingConsign = []
+  for (const c of s.consignments) {
+    const left = c.daysLeft - days
+    if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
+    else remainingConsign.push({ ...c, daysLeft: left })
+  }
+  // age out want-lists, then maybe post new collector wants (scaled by notoriety)
+  let wants = s.wantList.map(w => ({ ...w, daysLeft: w.daysLeft - days })).filter(w => w.daysLeft > 0)
+  const maxWants = 2 + Math.floor(noto / 80) // more fame → more collectors seek you out
+  const wantChancePerDay = 0.25 + noto / 300
+  for (let i = 0; i < days && wants.length < maxWants; i++) {
+    if (Math.random() < wantChancePerDay) wants = [makeWant(noto >= 120), ...wants]
+  }
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
+    consignments: remainingConsign,
+    wantList: wants,
+    dailyGoals: makeDailyGoals(noto), // fresh goals each new day
+    goalsDay: d,
   }))
+  if (soldProceeds > 0) get().earn(soldProceeds)
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
   return { added: newOrders.length, missedOnline, missedWalkin }
@@ -136,6 +183,10 @@ export const useGame = create(persist((set, get) => ({
   showsAttended: 0,
   generousActs: 0,
   gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
+  consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
+  wantList: [],            // active collector wants (see want-list section)
+  dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
+  goalsDay: 0,             // which day dailyGoals were generated for
 
   // --- notoriety / upgrades ---
   addNotoriety(n) {
@@ -173,10 +224,14 @@ export const useGame = create(persist((set, get) => ({
     set(s => ({ cash: round2(s.cash + amount), stats: { ...s.stats, earned: round2(s.stats.earned + amount) } }))
   },
 
-  addPulls(cards, setName) {
+  addPulls(cards, setName, packs = 1) {
     set(s => {
       const hits = cards.filter(c => c._isHit).length
       const best = cards.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestPull)
+      // track best foil pulled (by value) for the stats page
+      const foils = cards.filter(c => c.foil)
+      const bestFoil = foils.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestFoil)
+      const godPacks = (s.stats.godPacks || 0) + (cards._god || cards.some(c => c._fromGod) ? 1 : 0)
       return {
         collection: [...cards, ...s.collection],
         stats: {
@@ -185,10 +240,13 @@ export const useGame = create(persist((set, get) => ({
           cardsPulled: s.stats.cardsPulled + cards.length,
           hits: s.stats.hits + hits,
           bestPull: best,
+          bestFoil: bestFoil ?? s.stats.bestFoil,
+          godPacks,
         },
       }
     })
     get().log('rip', `Opened ${setName}`, 0)
+    get().bumpGoal('rip', packs)
   },
 
   sellCard(uid) {
@@ -198,6 +256,7 @@ export const useGame = create(persist((set, get) => ({
     set(s => ({ collection: s.collection.filter(c => c.uid !== uid) }))
     get().earn(v)
     get().log('sell', `${card.grade ? 'PSA '+card.grade.overall+' ' : ''}${card.name}`, v)
+    get().bumpGoal('sell', 1); get().bumpGoal('profit', v)
   },
 
   sellAllUngraded() {
@@ -207,6 +266,86 @@ export const useGame = create(persist((set, get) => ({
     set(s => ({ collection: s.collection.filter(c => c.grade || c._isHit) }))
     get().earn(total)
     get().log('sell', `Bulk sold ${toSell.length} commons/uncommons`, total)
+  },
+
+  // Buylist: instantly dump ALL raw bulk (commons/uncommons/rares, no hits/graded)
+  // to a shop at a flat buylist rate — fast cash, well under market.
+  buylistRate: 0.55,
+  sellToBuylist() {
+    const { collection, buylistRate } = get()
+    const isBulk = c => !c.grade && !c._isHit && !c.foil && rarityRank(c.rarity) < rarityRank('Double Rare')
+    const toSell = collection.filter(isBulk)
+    if (!toSell.length) return 0
+    const total = round2(toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0))
+    set(s => ({ collection: s.collection.filter(c => !isBulk(c)) }))
+    get().earn(total)
+    get().log('sell', `Buylisted ${toSell.length} bulk cards @ ${Math.round(buylistRate*100)}%`, total)
+    return total
+  },
+
+  // Consign a card: a service lists it; it sells in 2–6 game-days for a bit ABOVE
+  // market, minus a 12% consignment fee. Removes from collection now, pays later.
+  consignCard(uid) {
+    const card = get().collection.find(c => c.uid === uid)
+    if (!card) return false
+    const sellsFor = round2(cardValue(card) * (1.05 + Math.random() * 0.15)) // 1.05–1.20× market
+    const net = round2(sellsFor * 0.88) // 12% consignment fee
+    const daysLeft = 2 + Math.floor(Math.random() * 5) // 2–6 days
+    set(s => ({
+      collection: s.collection.filter(c => c.uid !== uid),
+      consignments: [...s.consignments, { card, net, daysLeft }],
+    }))
+    get().log('consign', `Consigned ${card.name} — nets ${'$'+net.toFixed(2)} in ~${daysLeft}d`, 0)
+    return { net, daysLeft }
+  },
+
+  // Which of your cards satisfy this want?
+  cardsForWant(want) { return get().collection.filter(c => cardMatchesWant(c, want)) },
+  // Fulfill a want with a specific owned card → premium payout + notoriety + stat.
+  fulfillWant(wantId, uid) {
+    const want = get().wantList.find(w => w.id === wantId)
+    const card = get().collection.find(c => c.uid === uid)
+    if (!want || !card || !cardMatchesWant(card, want)) return false
+    const payout = round2(cardValue(card) * want.premiumMult)
+    set(s => ({
+      collection: s.collection.filter(c => c.uid !== uid),
+      wantList: s.wantList.filter(w => w.id !== wantId),
+      stats: { ...s.stats, wantsFilled: (s.stats.wantsFilled || 0) + 1 },
+    }))
+    get().earn(payout)
+    get().addNotoriety(want.notoriety)
+    get().log('want', `Filled ${want.who}'s want with ${card.name} (+${Math.round(want.premiumMult*100)}% premium)`, payout)
+    get().bumpGoal('want', 1)
+    return { payout }
+  },
+
+  // Ensure a fresh set of goals exists (called on mount if none yet).
+  ensureDailyGoals() {
+    if (!get().dailyGoals.length || get().goalsDay !== get().currentDay) {
+      set(s => ({ dailyGoals: makeDailyGoals(s.notoriety), goalsDay: s.currentDay }))
+    }
+  },
+  // Advance any daily goal matching `key` by `amount`; auto-complete + pay.
+  bumpGoal(key, amount = 1) {
+    const goals = get().dailyGoals
+    if (!goals.length) return
+    let paidCash = 0, paidNoto = 0, completed = null
+    const next = goals.map(g => {
+      if (g.key !== key || g.done) return g
+      const progress = g.progress + amount
+      if (progress >= g.target) {
+        paidCash += g.cash; paidNoto += g.noto; completed = g
+        return { ...g, progress: g.target, done: true }
+      }
+      return { ...g, progress }
+    })
+    set({ dailyGoals: next })
+    if (completed) {
+      if (paidCash) get().earn(paidCash)
+      if (paidNoto) get().addNotoriety(paidNoto)
+      set(s => ({ stats: { ...s.stats, goalsCompleted: (s.stats.goalsCompleted || 0) + 1 } }))
+      get().log('goal', `Daily goal complete: ${completed.label}${paidCash?` (+$${paidCash})`:''}${paidNoto?` (+${paidNoto}★)`:''}`, paidCash || 0)
+    }
   },
 
   submitGrade(uid, tierKey) {
@@ -227,6 +366,7 @@ export const useGame = create(persist((set, get) => ({
     // crossed into a new loyalty tier?
     const after = graderTier(get().gradesSubmitted)
     if (after.key !== before.key) get().log('grade-tier', `Grader loyalty: reached ${after.name} (${Math.round(after.discount*100)}% off future fees)`, 0)
+    get().bumpGoal('grade', 1)
   },
 
   // Called on a tick to resolve grades whose timers elapsed.
@@ -254,6 +394,7 @@ export const useGame = create(persist((set, get) => ({
     set(s => ({ collection: [bought, ...s.collection] }))
     get().log('buy', `Bought ${card.name} from a vendor`, -price)
     if (card._mispriced) get().addNotoriety(1) // you spotted a deal
+    get().bumpGoal('buy', 1)
     return true
   },
 
@@ -276,6 +417,7 @@ export const useGame = create(persist((set, get) => ({
         s.addNotoriety(effect.notoriety)
         s.log('give', `Gave away a ${effect.card.name} for free`, 0)
         set(st => ({ generousActs: st.generousActs + 1 }))
+        get().bumpGoal('help', 1)
         break
       }
       case 'sellMint': {
@@ -286,6 +428,7 @@ export const useGame = create(persist((set, get) => ({
         s.addNotoriety(effect.notoriety)
         s.log('sell', `Sold a ${effect.card.name} at cost (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
         msg = appendFeeMsg(msg, fee, effect.payMethod)
+        get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
         break
       }
       case 'sellOwned': {
@@ -302,6 +445,7 @@ export const useGame = create(persist((set, get) => ({
           s.log('sell', `Sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
           msg = msg + (get().upgrades.cases ? ' (display case bumped the price.)' : '')
           msg = appendFeeMsg(msg, fee, effect.payMethod)
+          get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
         }
         break
       }
@@ -355,6 +499,7 @@ export const useGame = create(persist((set, get) => ({
   // upgrades; otherwise they're missed. Any other shows in the window are skipped.
   attendShowDays(showDay, days) {
     set(s => ({ showsAttended: s.showsAttended + 1 }))
+    get().bumpGoal('attend', 1) // credit today's "attend a show" goal before the day rolls
     // days waiting until the show opens (home, not away) + the show's run (away)
     const wait = Math.max(0, showDay - get().currentDay)
     if (wait > 0) advanceDaysWith(set, get, wait, false)
@@ -364,11 +509,12 @@ export const useGame = create(persist((set, get) => ({
   reset() {
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
-      notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], showsAttended: 0, generousActs: 0, gradesSubmitted: 0 })
+      notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
+      consignments: [], wantList: [], dailyGoals: [], goalsDay: 0 })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 3,
+  version: 4,
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state
@@ -384,6 +530,15 @@ export const useGame = create(persist((set, get) => ({
       state.currentDay = state.currentDay ?? 1
       state.monthsElapsed = state.monthsElapsed ?? 0
       state.gradesSubmitted = state.gradesSubmitted ?? 0
+    }
+    if (version < 4) {
+      state.consignments = state.consignments ?? []
+      state.wantList = state.wantList ?? []
+      state.dailyGoals = state.dailyGoals ?? []
+      state.goalsDay = state.goalsDay ?? 0
+      // backfill condition on any existing cards
+      const fix = c => ({ ...c, condition: c.condition ?? 'NM' })
+      state.collection = (state.collection ?? []).map(fix)
     }
     return state
   },

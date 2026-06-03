@@ -186,12 +186,33 @@ function foilWeight(c) {
   return 0
 }
 
+// --- Card condition --------------------------------------------------------
+// Every raw card has a condition. It multiplies value AND caps the PSA grade it
+// can earn (you can't get a 10 out of a played card). Graded cards ignore this.
+export const CONDITIONS = {
+  NM:  { key: 'NM',  label: 'Near Mint',  short: 'NM',  mult: 1.0,  maxGrade: 10, color: '#36d399' },
+  LP:  { key: 'LP',  label: 'Lightly Played', short: 'LP', mult: 0.72, maxGrade: 8,  color: '#9db8ff' },
+  MP:  { key: 'MP',  label: 'Moderately Played', short: 'MP', mult: 0.45, maxGrade: 6, color: '#ff9f43' },
+  DMG: { key: 'DMG', label: 'Damaged',    short: 'DMG', mult: 0.20, maxGrade: 4,  color: '#ff5e6c' },
+}
+// Roll a condition. `source`: 'sealed' (fresh from a pack — mostly NM),
+// 'floor' (a single off a show table — more played), 'grail' (handled fresh).
+function rollCondition(source = 'sealed') {
+  const r = Math.random()
+  if (source === 'floor') {
+    if (r < 0.45) return 'NM'; if (r < 0.78) return 'LP'; if (r < 0.95) return 'MP'; return 'DMG'
+  }
+  // sealed: pack-fresh, overwhelmingly NM with the odd whitened/dinged edge
+  if (r < 0.88) return 'NM'; if (r < 0.98) return 'LP'; return 'MP'
+}
+
 let _uid = 0
-export function instance(card) {
+export function instance(card, source = 'sealed') {
   return {
     uid: `c${Date.now().toString(36)}${(_uid++).toString(36)}`,
     ...card,
     reverse: false,
+    condition: card.condition ?? rollCondition(source),
     grade: null, // null | {overall, centering, corners, edges, surface, fee, gradedAt}
   }
 }
@@ -211,20 +232,21 @@ const GRAIL_BASES = ALL_CARDS.filter(c => rarityRank(c.rarity) >= rarityRank('Sp
 // band, themed as a vintage/iconic chase piece.
 export function cardInValueRange(min, max) {
   // Grail territory: requested value is beyond anything in the real dataset.
+  // Grails are pristine (NM) — a six-figure card in the wild is mint/slabbed.
   if (min > REAL_PRICE_CEILING && GRAIL_BASES.length) {
     const base = pick(GRAIL_BASES)
     const price = round2(min + Math.random() * (max - min))
-    return instance({ ...base, price, _grail: true })
+    return instance({ ...base, price, _grail: true, condition: 'NM' })
   }
   const pool = ALL_CARDS.filter(c => {
     const v = c.price ?? 0
     return v >= min && v <= max
   })
-  if (pool.length) return instance(pick(pool))
+  if (pool.length) return instance(pick(pool), 'floor') // singles in the wild vary in condition
   // fallback: nearest by value
   const sorted = [...ALL_CARDS].sort((a, b) =>
     Math.abs((a.price ?? 0) - (min + max) / 2) - Math.abs((b.price ?? 0) - (min + max) / 2))
-  return instance(sorted[0])
+  return instance(sorted[0], 'floor')
 }
 
 // A graded copy of a real card (used for premium vendor stock / encounters).
@@ -233,6 +255,7 @@ export function gradedCardInRange(min, max, grade) {
   // true grail; for normal bands, a high grade implies a cheaper raw base.
   const floor = min > REAL_PRICE_CEILING ? min : min / (grade >= 9 ? 3 : 1)
   const c = cardInValueRange(floor, max)
+  c.condition = 'NM' // it's slabbed; condition is locked in by the grade
   c.grade = { overall: grade, centering: grade, corners: grade, edges: grade, surface: grade, tier: 'standard', gradedAt: Date.now() }
   return c
 }
@@ -247,6 +270,8 @@ export function rawValue(card) {
   let base = override ?? card.price ?? estimateByRarity(card.rarity)
   if (card.foil) base *= card.foil.mult // Poké Ball (1.6×) / Master Ball (6×) premium
   else if (card.reverse) base *= 1.4     // ordinary reverse holo premium
+  // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
+  if (!card.grade && card.condition && CONDITIONS[card.condition]) base *= CONDITIONS[card.condition].mult
   return Math.max(0.02, round2(base))
 }
 
@@ -360,12 +385,15 @@ export function rollGrade(card, tier, luck = 0) {
     if (r < 0.97) return 6
     return 4 + Math.floor(Math.random()*2)
   }
-  const centering = sub(), corners = sub(), edges = sub(), surface = sub()
+  // condition caps how high this card can possibly grade (a played card won't gem)
+  const cap = card.condition && CONDITIONS[card.condition] ? CONDITIONS[card.condition].maxGrade : 10
+  const capSub = () => Math.min(sub(), cap)
+  const centering = capSub(), corners = capSub(), edges = capSub(), surface = capSub()
   // PSA overall ≈ limited by the lowest subgrade, with some weighting
   const min = Math.min(centering, corners, edges, surface)
   const avg = (centering + corners + edges + surface) / 4
   let overall = Math.round(Math.min(min + 1, avg))
-  overall = Math.max(1, Math.min(10, Math.min(overall, min === 10 ? 10 : min + 1)))
+  overall = Math.max(1, Math.min(cap, Math.min(overall, min === 10 ? 10 : min + 1)))
   return { overall, centering, corners, edges, surface, fee: GRADING[tier].fee, tier, gradedAt: Date.now() }
 }
 

@@ -1,4 +1,4 @@
-import { cardValue, isHit, fmtMoney } from '../game/engine'
+import { cardValue, isHit, fmtMoney, CONDITIONS } from '../game/engine'
 import HoloCard from './HoloCard'
 
 const RARITY_COLOR = {
@@ -19,6 +19,9 @@ export default function CardTile({ card, onClick, interactive = true }) {
           {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}
         </span>
         {card.grade && <span className="gradechip">PSA {card.grade.overall}</span>}
+        {!card.grade && card.condition && card.condition !== 'NM' && (
+          <span className="condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
+        )}
         <img src={card.img} alt={card.name} loading="lazy" />
         <span className="price">{fmtMoney(cardValue(card))}</span>
       </div>
