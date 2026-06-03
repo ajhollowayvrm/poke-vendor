@@ -108,27 +108,46 @@ export default function ShowFloor({ show, onLeave }) {
     return () => clearInterval(id)
   }, [encounter, openBooth, boothAlert, notoriety, upgrades.ticker, pos, playerAt, tier.traffic])
 
-  // Movement
+  // One step in a direction: walk onto floor, or interact with a bumped booth.
+  const move = useCallback((dx, dy) => {
+    if (openBooth || encounter) return
+    setPos(p => {
+      const nx = p.x + dx, ny = p.y + dy
+      if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) return p
+      const cell = grid[ny][nx]
+      if (cell === 1) return p
+      if (typeof cell === 'number' && cell >= 100) { setOpenBooth(booths[cell - 100]); return p }
+      if (cell === 'P') { triggerPlayerBooth(); return p }
+      return { x: nx, y: ny }
+    })
+  }, [grid, cols, rows, openBooth, encounter, booths])
+
+  // Keyboard movement (desktop).
   useEffect(() => {
     function onKey(e) {
-      if (openBooth || encounter) return
       const d = { ArrowUp: [0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0],
         w:[0,-1], s:[0,1], a:[-1,0], d:[1,0], W:[0,-1], S:[0,1], A:[-1,0], D:[1,0] }[e.key]
       if (!d) return
       e.preventDefault()
-      setPos(p => {
-        const nx = p.x + d[0], ny = p.y + d[1]
-        if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) return p
-        const cell = grid[ny][nx]
-        if (cell === 1) return p
-        if (typeof cell === 'number' && cell >= 100) { setOpenBooth(booths[cell - 100]); return p }
-        if (cell === 'P') { triggerPlayerBooth(); return p }
-        return { x: nx, y: ny }
-      })
+      move(d[0], d[1])
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [grid, cols, rows, openBooth, encounter, booths])
+  }, [move])
+
+  // Tap-to-move (mobile): tap a tile → step one toward it; tap an adjacent booth → open it.
+  const tapTile = useCallback((tx, ty) => {
+    if (openBooth || encounter) return
+    const cell = grid[ty]?.[tx]
+    const adj = Math.abs(tx - pos.x) + Math.abs(ty - pos.y) === 1
+    // adjacent booth / your booth → interact immediately
+    if (adj && typeof cell === 'number' && cell >= 100) { setOpenBooth(booths[cell - 100]); return }
+    if (adj && cell === 'P') { triggerPlayerBooth(); return }
+    // otherwise step one tile toward the tapped spot (prefer the larger axis)
+    const ddx = tx - pos.x, ddy = ty - pos.y
+    if (Math.abs(ddx) >= Math.abs(ddy)) move(Math.sign(ddx), 0)
+    else move(0, Math.sign(ddy))
+  }, [grid, pos, booths, openBooth, encounter, move])
 
   function triggerPlayerBooth() {
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
@@ -144,7 +163,7 @@ export default function ShowFloor({ show, onLeave }) {
         <button className="btn alt" style={{ flex:'none' }} onClick={onLeave}>← Leave show</button>
         <span className="pill" style={{ background: tier.color+'33', color: tier.color }}>{show.name} · {tier.name}</span>
         {tier.days > 1 && <span className="pill">Show day {showDay} / {tier.days}</span>}
-        <span className="muted" style={{ fontSize: 12 }}>WASD to walk · bump a booth · {booths.length} vendors</span>
+        <span className="muted floorhint" style={{ fontSize: 12 }}>WASD / tap to walk · tap a booth to shop · {booths.length} vendors</span>
         {tier.days > 1 && showDay < tier.days && (
           <button className="btn" style={{ flex:'none', maxWidth: 170, marginLeft:'auto' }}
             onClick={() => { setShowDay(d => d + 1); setPos({ x: playerAt.x, y: playerAt.y + 1 }); flash(`Day ${showDay + 1} of the show — fresh vendors arrive.`) }}>
@@ -161,7 +180,13 @@ export default function ShowFloor({ show, onLeave }) {
       )}
 
       <div className="floorscroll">
-        <div className="floor" style={{ width: cols*TILE, height: rows*TILE }}>
+        <div className="floor" style={{ width: cols*TILE, height: rows*TILE }}
+          onClick={(e) => {
+            const r = e.currentTarget.getBoundingClientRect()
+            const tx = Math.floor((e.clientX - r.left) / TILE)
+            const ty = Math.floor((e.clientY - r.top) / TILE)
+            tapTile(tx, ty)
+          }}>
           {grid.map((row, y) => row.map((cell, x) => {
             const isWall = cell === 1
             const boothIdx = typeof cell === 'number' && cell >= 100 ? cell - 100 : null
@@ -190,6 +215,15 @@ export default function ShowFloor({ show, onLeave }) {
 
           <div className="avatar" style={{ left: pos.x*TILE+TILE*0.15, top: pos.y*TILE+TILE*0.1, width: TILE*0.7, height: TILE*0.8 }}>🧍</div>
         </div>
+      </div>
+
+      {/* On-screen D-pad for touch devices (hidden on desktop via CSS). */}
+      <div className="dpad" aria-hidden="true">
+        <button className="dpad-btn up"    onClick={() => move(0,-1)}>▲</button>
+        <button className="dpad-btn left"  onClick={() => move(-1,0)}>◀</button>
+        <button className="dpad-btn act"   onClick={() => { if (!openBooth && !encounter) triggerPlayerBooth() }} title="Tend your booth">★</button>
+        <button className="dpad-btn right" onClick={() => move(1,0)}>▶</button>
+        <button className="dpad-btn down"  onClick={() => move(0,1)}>▼</button>
       </div>
 
       {announce && (
