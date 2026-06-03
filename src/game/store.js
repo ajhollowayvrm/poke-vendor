@@ -121,6 +121,17 @@ function advanceDaysWith(set, get, days, away) {
     if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
     else remainingConsign.push({ ...c, daysLeft: left })
   }
+  // resolve your own-site listings: when the timer elapses, a listing either
+  // SELLS (pays net) or EXPIRES unsold (you can relist or pull it). The outcome
+  // was decided at list time (l.willSell) so the preview odds are honest.
+  const remainingListings = []
+  for (const l of (s.listings || [])) {
+    if (l.expired) { remainingListings.push(l); continue } // already expired, awaiting your action
+    const left = l.daysLeft - days
+    if (left > 0) { remainingListings.push({ ...l, daysLeft: left }); continue }
+    if (l.willSell) { soldProceeds = round2(soldProceeds + l.net); get().log('sell', `Listing sold: ${l.card.name} for $${l.net.toFixed(2)}`, l.net) }
+    else { remainingListings.push({ ...l, daysLeft: 0, expired: true }); get().log('listing', `Listing expired unsold: ${l.card.name} (priced too high) — relist or pull it.`, 0) }
+  }
   // age out want-lists, then maybe post new collector wants (scaled by notoriety)
   let wants = s.wantList.map(w => ({ ...w, daysLeft: w.daysLeft - days })).filter(w => w.daysLeft > 0)
   const maxWants = 2 + Math.floor(noto / 80) // more fame → more collectors seek you out
@@ -132,6 +143,7 @@ function advanceDaysWith(set, get, days, away) {
     currentDay: d, showSeed: seed, monthsElapsed: months,
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
     consignments: remainingConsign,
+    listings: remainingListings,
     wantList: wants,
     dailyGoals: makeDailyGoals(noto), // fresh goals each new day
     goalsDay: d,
@@ -184,6 +196,7 @@ export const useGame = create(persist((set, get) => ({
   generousActs: 0,
   gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
   consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
+  listings: [],            // {card, ask, net, askMult, daysLeft, willSell, expired?} — your own-site listings
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
@@ -254,23 +267,87 @@ export const useGame = create(persist((set, get) => ({
     get().bumpGoal('rip', packs)
   },
 
-  sellCard(uid) {
+  // Quick sell (TCGplayer-style): instant cash, but ALWAYS below market — you pay
+  // for the convenience. Listing on your own site (below) can match or beat market.
+  quickSellRate: 0.80,
+  quickSell(uid) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return
-    const v = cardValue(card)
+    const v = round2(cardValue(card) * get().quickSellRate)
     set(s => ({ collection: s.collection.filter(c => c.uid !== uid) }))
     get().earn(v)
-    get().log('sell', `${card.grade ? 'PSA '+card.grade.overall+' ' : ''}${card.name}`, v)
+    get().log('sell', `Quick-sold ${card.grade ? 'PSA '+card.grade.overall+' ' : ''}${card.name} @ ${Math.round(get().quickSellRate*100)}%`, v)
     get().bumpGoal('sell', 1); get().bumpGoal('profit', v)
   },
 
+  // Quote a self-listing at `askMult`× market: expected days-to-sell and the
+  // chance it actually sells (vs sitting). Higher asks pay more but sell slower
+  // and less reliably; notoriety speeds sales and makes high asks viable.
+  // Returns { ask, fee, net, days, sellChance }.
+  listingQuote(card, askMult) {
+    const market = cardValue(card)
+    const noto = get().notoriety
+    const ask = round2(market * askMult)
+    const fee = round2(ask * 0.05)          // ~5% marketplace fee
+    const net = round2(ask - fee)
+    // base wait shrinks with notoriety (~9d at 0 rep → ~2d once well-known)
+    const base = 9 - Math.min(7, noto / 25)
+    // asking above market adds days; at/under market is quick
+    const premiumDays = Math.max(0, (askMult - 1)) * 22
+    const days = Math.max(1, Math.round(base + premiumDays))
+    // sell odds: ~at/under market almost always sells; far above market often sits.
+    // notoriety widens how high you can push before it stops selling.
+    const ceiling = 1.15 + noto / 200       // ask multiple you can hit reliably
+    const over = Math.max(0, askMult - ceiling)
+    const sellChance = Math.max(0.15, Math.min(0.98, 1 - over * 1.1))
+    return { market, ask, fee, net, days, sellChance }
+  },
+
+  // List a card on your own site at `askMult`× market. Decides sell/expire now
+  // (honest odds), removes from collection, pays net on day-advance if it sells.
+  listOnSite(uid, askMult) {
+    const card = get().collection.find(c => c.uid === uid)
+    if (!card) return false
+    const q = get().listingQuote(card, askMult)
+    const willSell = Math.random() < q.sellChance
+    const listing = { card, ask: q.ask, net: q.net, askMult, daysLeft: q.days, willSell }
+    set(s => ({
+      collection: s.collection.filter(c => c.uid !== uid),
+      listings: [...(s.listings || []), listing],
+    }))
+    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market) — ~${q.days}d`, 0)
+    return q
+  },
+
+  // Relist an expired listing — rolls a fresh outcome at the same ask.
+  relistListing(idx) {
+    const l = get().listings[idx]
+    if (!l || !l.expired) return
+    const q = get().listingQuote(l.card, l.askMult)
+    const willSell = Math.random() < q.sellChance
+    set(s => ({ listings: s.listings.map((x, i) => i === idx
+      ? { ...x, expired: false, daysLeft: q.days, willSell, ask: q.ask, net: q.net } : x) }))
+    get().log('listing', `Relisted ${l.card.name} — ~${q.days}d`, 0)
+  },
+
+  // Pull a listing back into your collection (e.g. an expired one, or to reprice).
+  pullListing(idx) {
+    const l = get().listings[idx]
+    if (!l) return
+    set(s => ({
+      collection: [l.card, ...s.collection],
+      listings: s.listings.filter((_, i) => i !== idx),
+    }))
+    get().log('listing', `Pulled ${l.card.name} off the market`, 0)
+  },
+
   sellAllUngraded() {
-    const { collection } = get()
+    const { collection, quickSellRate } = get()
     const toSell = collection.filter(c => !c.grade && !c._isHit)
-    const total = round2(toSell.reduce((a, c) => a + cardValue(c), 0))
+    const total = round2(toSell.reduce((a, c) => a + cardValue(c) * quickSellRate, 0))
     set(s => ({ collection: s.collection.filter(c => c.grade || c._isHit) }))
     get().earn(total)
-    get().log('sell', `Bulk sold ${toSell.length} commons/uncommons`, total)
+    get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ${Math.round(quickSellRate*100)}%`, total)
   },
 
   // Buylist: instantly dump ALL raw bulk (commons/uncommons/rares, no hits/graded)
@@ -521,12 +598,12 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], wantList: [], dailyGoals: [], goalsDay: 0,
+      consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 6,
+  version: 7,
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state
@@ -559,6 +636,9 @@ export const useGame = create(persist((set, get) => ({
       state.settings = { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ...(state.settings || {}) }
       state.settings.ripSpeed = state.settings.ripSpeed ?? 1
       state.settings.autoAdvance = state.settings.autoAdvance ?? false
+    }
+    if (version < 7) {
+      state.listings = state.listings ?? []
     }
     return state
   },

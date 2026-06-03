@@ -1,18 +1,26 @@
-import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS } from '../game/engine'
+import { useState } from 'react'
+import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 
 export default function CardModal({ card, onClose }) {
-  const sellCard = useGame(s => s.sellCard)
+  const quickSell = useGame(s => s.quickSell)
+  const quickSellRate = useGame(s => s.quickSellRate)
   const consign = useGame(s => s.consignCard)
+  const listOnSite = useGame(s => s.listOnSite)
+  const listingQuote = useGame(s => s.listingQuote)
   const submitGrade = useGame(s => s.submitGrade)
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
+  const [listing, setListing] = useState(false) // showing the list-on-site picker?
+  const [askMult, setAskMult] = useState(1.1)
   if (!card) return null
   const g = card.grade
   const tier = graderTier(submitted)
   const next = nextGraderTier(submitted)
+  const market = cardValue(card)
+  const quote = listingQuote(card, askMult)
 
   return (
     <div className="modalbg" onClick={onClose}>
@@ -50,15 +58,49 @@ export default function CardModal({ card, onClose }) {
               <p style={{ fontSize: 15 }}>Market value: <b style={{ color: 'var(--green)' }}>${rawValue(card).toFixed(2)}</b></p>
             )}
 
-            <div className="row" style={{ marginTop: 14 }}>
-              <button className="btn gold" onClick={() => { sellCard(card.uid); onClose() }}>
-                Sell now · ${cardValue(card).toFixed(2)}
-              </button>
-              <button className="btn alt" title="List with a consignment service — sells in a few days for a bit above market, minus a 12% fee"
-                onClick={() => { consign(card.uid); onClose() }}>
-                Consign ↗
-              </button>
-            </div>
+            {!listing ? (
+              <div className="sell-options" style={{ marginTop: 14 }}>
+                <button className="btn alt sellopt" onClick={() => { quickSell(card.uid); onClose() }}>
+                  <b>Quick sell · {fmtMoney(market * quickSellRate)}</b>
+                  <small>Instant, but only {Math.round(quickSellRate*100)}% of market (TCGplayer-style)</small>
+                </button>
+                <button className="btn alt sellopt" onClick={() => setListing(true)}>
+                  <b>List on your site ↗</b>
+                  <small>Set your price — market or higher; sells over time (faster with notoriety), 5% fee</small>
+                </button>
+                <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
+                  <b>Consign ↗</b>
+                  <small>A service sells it in a few days for a bit above market, minus a 12% fee</small>
+                </button>
+              </div>
+            ) : (
+              <div className="list-picker" style={{ marginTop: 14 }}>
+                <div className="row" style={{ justifyContent:'space-between', alignItems:'baseline' }}>
+                  <b>List on your site</b>
+                  <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(market)}</span>
+                </div>
+                <div className="askline">
+                  <span>Ask</span>
+                  <input type="range" min="0.8" max="2" step="0.05" value={askMult}
+                    onChange={e => setAskMult(parseFloat(e.target.value))} />
+                  <b style={{ minWidth: 92, textAlign:'right' }}>{fmtMoney(quote.ask)} <span className="muted" style={{fontWeight:600}}>({Math.round(askMult*100)}%)</span></b>
+                </div>
+                <div className="list-quote">
+                  <div><span className="muted">You net</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee</small></div>
+                  <div><span className="muted">Est. wait</span><b>~{quote.days} day{quote.days>1?'s':''}</b><small className="muted">faster with rep</small></div>
+                  <div><span className="muted">Sell odds</span>
+                    <b style={{ color: quote.sellChance > 0.7 ? 'var(--green)' : quote.sellChance > 0.45 ? 'var(--gold)' : 'var(--red)' }}>
+                      {Math.round(quote.sellChance*100)}%
+                    </b>
+                    <small className="muted">{quote.sellChance < 0.5 ? 'may sit unsold' : 'likely to sell'}</small>
+                  </div>
+                </div>
+                <div className="row" style={{ marginTop: 10 }}>
+                  <button className="btn gold" onClick={() => { listOnSite(card.uid, askMult); onClose() }}>List it ↗</button>
+                  <button className="btn alt" style={{ maxWidth: 120 }} onClick={() => setListing(false)}>← Back</button>
+                </div>
+              </div>
+            )}
 
             {!g && (
               <>

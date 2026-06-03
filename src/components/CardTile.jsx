@@ -9,15 +9,15 @@ const RARITY_COLOR = {
 
 export function rarityColor(r) { return RARITY_COLOR[r] || '#9aa3bf' }
 
-export default function CardTile({ card, onClick, interactive = true }) {
+export default function CardTile({ card, onClick, interactive = true, noBorder = false }) {
   const hit = isHit(card) || card._isHit
   const foil = card.foil
-  // The card border is tinted by rarity (foil/grail take precedence) — this is
-  // now the *only* rarity cue on the card face, since the holo overlay is gone.
+  // The card border is tinted by rarity (foil/grail take precedence). `noBorder`
+  // drops it entirely (used in the collection grid, where the user wants clean art).
   const edge = foil ? foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity)
   return (
     <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
-      <div className={`cardtile rarity-edge ${hit ? 'r-hit' : ''} ${card._grail ? 'r-grail' : ''} ${foil ? 'foil-'+foil.key : ''}`}
+      <div className={`cardtile ${noBorder ? 'no-edge' : 'rarity-edge'} ${hit ? 'r-hit' : ''} ${card._grail ? 'r-grail' : ''} ${foil ? 'foil-'+foil.key : ''}`}
         onClick={onClick} style={{ '--rarity': edge }}>
         <span className="tag" style={{ color: edge }}>
           {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}

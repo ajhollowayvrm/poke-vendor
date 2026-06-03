@@ -270,6 +270,9 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* ---------- Special foils & god packs ---------- */
 .cardtile.foil-pokeball  { border-color: #ff6b6b; box-shadow: 0 0 0 1px #ff6b6b66, 0 8px 20px #ff6b6b22; }
 .cardtile.foil-masterball { border-color: #a06bff; box-shadow: 0 0 0 1px #a06bff88, 0 8px 26px #a06bff33; }
+/* no-edge: borderless tiles (collection grid) — overrides every rarity/foil/hit border */
+.cardtile.no-edge, .cardtile.no-edge.r-hit, .cardtile.no-edge.foil-pokeball, .cardtile.no-edge.foil-masterball {
+  border: none; box-shadow: none; }
 .godbanner { text-align:center; font-weight:900; font-size: 26px; letter-spacing:.5px;
   background: linear-gradient(90deg,#ffd84d,#ff3df0,#3b6cff,#36d399,#ffd84d); background-size:300% 100%;
   -webkit-background-clip:text; background-clip:text; color:transparent; animation: godshine 3s linear infinite; }
@@ -416,6 +419,22 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .consign-strip { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:14px 0 4px;
   padding:10px 14px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; }
 .consign-strip > b { color: var(--gold); font-size:13px; }
+.consign-strip .pill.expired { background:#ff5e6c22; color:#ff9aa5; }
+.linkbtn { background:none; border:none; color:#9db8ff; font-weight:700; cursor:pointer; padding:0; font-size:12px; text-decoration:underline; }
+
+/* ---------- Sell options (card modal) ---------- */
+.sell-options { display:flex; flex-direction:column; gap:8px; }
+.sellopt { display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:2px; padding:10px 14px; max-width:none; }
+.sellopt b { font-size:14px; }
+.sellopt small { font-weight:600; opacity:.75; font-size:11.5px; }
+.list-picker { background: var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
+.askline { display:flex; align-items:center; gap:10px; margin:10px 0; }
+.askline input[type=range] { flex:1; accent-color: var(--gold); }
+.list-quote { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.list-quote > div { display:flex; flex-direction:column; background:#ffffff08; border-radius:10px; padding:8px 10px; }
+.list-quote > div > span { font-size:11px; }
+.list-quote > div > b { font-size:16px; margin:2px 0; }
+.list-quote > div > small { font-size:10px; }
 
 /* ---------- Want list ---------- */
 .wants { margin-top: 16px; }
