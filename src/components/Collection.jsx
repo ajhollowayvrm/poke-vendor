@@ -19,9 +19,11 @@ export default function Collection({ onPick }) {
   const [sort, setSort] = useState('value')
   const [selectMode, setSelectMode] = useState(false)
   const [picked, setPicked] = useState(() => new Set())
-  const [listMult, setListMult] = useState(1.1) // ask multiplier for bulk "list on site"
+  const [listPct, setListPct] = useState(110) // ask % of market for bulk "list on site"
+  const [tweetIt, setTweetIt] = useState(false) // post the listing to Twitter (hype window)
   const [gradeTier, setGradeTier] = useState('economy') // service tier for bulk grading
   const [toast, setToast] = useState(null)
+  const listMult = (parseFloat(listPct) || 0) / 100
 
   const raw = useMemo(() => collection.filter(c => !c.grade), [collection])
 
@@ -145,13 +147,26 @@ export default function Collection({ onPick }) {
               </div>
             )}
             <div className="bulk-list-group">
-              <button className="btn" onClick={() => {
-                const n = listManyOnSite(selCards.map(c => c.uid), listMult)
-                flash(`Listed ${n} card${n>1?'s':''} at ${Math.round(listMult*100)}% of market.`)
+              <div className="list-pct-row">
+                <span className="muted" style={{ fontSize: 12 }}>Ask</span>
+                {[80, 90, 100, 110].map(p => (
+                  <button key={p} className={`pctbtn ${Math.round(listMult*100) === p ? 'on' : ''}`}
+                    onClick={e => { e.stopPropagation(); setListPct(p) }}>{p}%</button>
+                ))}
+                <input className="pctinput" type="number" min="50" max="300" step="5" value={listPct}
+                  onClick={e => e.stopPropagation()}
+                  onChange={e => setListPct(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))} />
+                <span className="muted" style={{ fontSize: 12 }}>%</span>
+              </div>
+              <label className="tweet-toggle" onClick={e => e.stopPropagation()}>
+                <input type="checkbox" checked={tweetIt} onChange={e => setTweetIt(e.target.checked)} />
+                🐦 Tweet it <span className="muted">(more eyes for ~3d, +★)</span>
+              </label>
+              <button className="btn" disabled={!listMult} onClick={() => {
+                const n = listManyOnSite(selCards.map(c => c.uid), listMult, tweetIt)
+                flash(`Listed ${n} card${n>1?'s':''} at ${Math.round(listMult*100)}% of market${tweetIt ? ' · 🐦 tweeted' : ''}.`)
                 exitSelect()
-              }}>🌐 List @ {Math.round(listMult*100)}%</button>
-              <input type="range" min="0.8" max="2" step="0.05" value={listMult}
-                onClick={e => e.stopPropagation()} onChange={e => setListMult(parseFloat(e.target.value))} />
+              }}>🌐 List @ {Math.round(listMult*100)}%{tweetIt ? ' + 🐦' : ''}</button>
               {listHint && <span className={`list-hint ${listHint.cls}`}>{listHint.txt}</span>}
             </div>
             <button className="btn alt" onClick={() => {

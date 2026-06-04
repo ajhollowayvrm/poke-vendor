@@ -284,9 +284,13 @@ function pickPayMethod(channel, accepted) {
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
-export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null) {
+export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null) {
   const roll = Math.random()
   const online = channel === 'online'
+  // Who can buyers make offers on? ONLINE buyers only see what you've put up for
+  // sale (listed/tweeted cards). In-person (walk-in store / your show booth) they can
+  // spot anything in your case, so the whole collection is fair game there.
+  const offerPool = online ? (listedCards || []) : playerCollection
 
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
   if (roll < 0.22) {
@@ -311,10 +315,11 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     }
   }
 
-  // 2) Lowball / good offer ON one of your cards
-  if (roll < 0.5 && playerCollection.length) {
+  // 2) Lowball / good offer ON one of your cards. Online buyers can only offer on
+  // cards you've LISTED/tweeted (offerPool); in-person can offer on anything you own.
+  if (roll < 0.5 && offerPool.length) {
     const visitor = visitorFor(channel, 'offer')
-    const target = pickAny(null, playerCollection)
+    const target = pickAny(null, offerPool)
     const market = cardValue(target) // grade-aware — offers track the card's real worth
     const good = Math.random() > 0.5
     const offer = Math.round(market * (good ? (1.05 + Math.random()*0.4) : (0.4 + Math.random()*0.3)) * 100) / 100
@@ -384,10 +389,12 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
 // An "offer" encounter is built around a specific card you own. If you sell that
 // card before responding (e.g. an online order sits in your inbox while you're at
 // a show), the encounter is stale — it'd talk about a card you no longer have.
-// This returns true only when the encounter still makes sense for `collection`.
-export function encounterStillValid(enc, collection) {
+// The card may be in your collection OR out on the market (listed/tweeted), since
+// online offers target listed cards — valid as long as it's in either bucket.
+export function encounterStillValid(enc, collection, listings = null) {
   if (!enc || !enc.ownedUid) return true // doesn't reference one of your cards
-  return collection.some(c => c.uid === enc.ownedUid)
+  if (collection.some(c => c.uid === enc.ownedUid)) return true
+  return !!(listings && listings.some(l => l.card.uid === enc.ownedUid))
 }
 
 const PAY_LABELS = { venmo:'Venmo', cash:'cash', paypal:'PayPal', card:'card', tap:'tap-to-pay' }

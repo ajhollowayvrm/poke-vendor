@@ -25,12 +25,14 @@ export default function BoothInbox() {
   const dailyGoals = useGame(s => s.dailyGoals)
   const ensureDailyGoals = useGame(s => s.ensureDailyGoals)
   const collection = useGame(s => s.collection)
+  const listings = useGame(s => s.listings)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
   // Drop orders whose card you no longer own (e.g. sold it at a show) — keep the
   // original index so clearing/responding still targets the right inbox slot.
+  // A card that's listed/tweeted still counts as owned (online offers target listings).
   const validInbox = useMemo(
-    () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection)),
-    [inbox, collection])
+    () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings)),
+    [inbox, collection, listings])
   const [active, setActive] = useState(null) // {enc, idx}
   const [wantPick, setWantPick] = useState(null) // a want being fulfilled
   const [toast, setToast] = useState(null)

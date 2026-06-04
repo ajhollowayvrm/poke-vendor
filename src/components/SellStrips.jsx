@@ -57,6 +57,9 @@ function ListingRow({ l, i }) {
           <div className="listing-sub">
             <b>{fmtMoney(l.ask)}</b> <span className="muted">· {pct}% of market</span>
             <span className="listing-views" title="Customers who've looked at this listing">👀 {l.views || 0}</span>
+            {l.hypeDaysLeft > 0 && <span className="pill" style={{ background:'#1da1f222', color:'#5aa0ff' }}
+              title={`Tweeted — extra Twitter-mutual eyes for ${l.hypeDaysLeft} more day${l.hypeDaysLeft===1?'':'s'}`}>🐦 hyped · {l.hypeDaysLeft}d</span>}
+            {l.tweeted && !(l.hypeDaysLeft > 0) && <span className="pill" style={{ background:'#1da1f216', color:'#7fa8d8' }} title="Was tweeted — hype window has ended">🐦 tweeted</span>}
             {l.stale && <span className="pill expired" title="Lots of looks, no buyers — almost certainly priced too high">priced too high</span>}
           </div>
         </div>

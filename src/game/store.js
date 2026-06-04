@@ -164,6 +164,10 @@ export function dayOrderChance(channel, notoriety) {
 // After this many days drawing browsers with zero buyers/offers, a listing goes
 // STALE (almost certainly priced too high) — flagged in the UI so you reprice/pull.
 const LISTING_STALE_DAYS = 7
+// Tweeting a listing: a hype window of extra eyes (Twitter mutuals) for a few days.
+export const TWEET_HYPE_DAYS = 3
+const TWEET_BOOST = 2.2          // viewer multiplier while the hype window is live
+const TWEET_NOTORIETY = 2        // one-time rep bump for posting
 let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this module's hot paths)
 
 // Simulate `days` of customers browsing your own-site listings. Each day every live
@@ -183,15 +187,20 @@ function tickListings(listings, days, noto) {
     let cur = { ...l, offers: [...(l.offers || [])] }
     let didSell = false
     for (let day = 0; day < days && !didSell; day++) {
-      const viewers = dailyViewers(cur.card, cur.askMult, noto)
+      // Tweet hype: extra eyes (Twitter mutuals) while the hype window is open.
+      const hyped = (cur.hypeDaysLeft || 0) > 0
+      const viewers = dailyViewers(cur.card, cur.askMult, noto, Math.random, hyped ? TWEET_BOOST : 1)
       cur.views += viewers
       for (let v = 0; v < viewers; v++) {
+        // While hyped, a chunk of the extra traffic is Twitter mutuals (flavor on the sale).
+        const mutual = hyped && Math.random() < 0.4
         const savvy = rollBuyerSavvy()
         const max = buyerMaxMult(savvy, noto, cur.card)
+        const label = mutual ? 'Twitter mutual' : BUYER_SAVVY[savvy].label
         if (cur.askMult <= max) {
           // willing to pay the ask → sale at your price (net of fee)
           soldProceeds = round2(soldProceeds + cur.net)
-          sold.push({ name: cur.card.name, net: cur.net, savvy: BUYER_SAVVY[savvy].label })
+          sold.push({ name: cur.card.name, net: cur.net, savvy: label })
           didSell = true
           break
         }
@@ -202,11 +211,12 @@ function tickListings(listings, days, noto) {
           const market = cardValue(cur.card)
           const amount = round2(market * max)
           const fee = round2(amount * 0.05)
-          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: BUYER_SAVVY[savvy].label, icon: BUYER_SAVVY[savvy].icon })
+          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: label, icon: mutual ? '🐦' : BUYER_SAVVY[savvy].icon })
           newOffers++
         }
       }
       cur.age = (cur.age || 0) + 1
+      if (cur.hypeDaysLeft > 0) cur.hypeDaysLeft -= 1
     }
     if (didSell) continue // sold → drops off the board
     // mark stale if it's drawn plenty of eyes over enough days with no traction
@@ -243,6 +253,8 @@ function advanceDaysWith(set, get, days, away) {
   const empThroughput = Math.min(1.5, empList.reduce((a, e) => a + e.throughput, 0))
   const orderMult = 1 + empThroughput
   let payrollDue = 0, leaseDue = 0
+  // Online buyers can only make offers on cards you've put up for sale (listed/tweeted).
+  const listedCards = (s.listings || []).map(l => l.card)
   for (let i = 0; i < days; i++) {
     const dayNo = s.currentDay + i + 1 // the day being entered
     // a pending job starts paying once its start day arrives
@@ -252,12 +264,12 @@ function advanceDaysWith(set, get, days, away) {
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
     // online channel (employees raise the hit chance)
     if (Math.random() < Math.min(0.97, dayOrderChance('online', noto) * orderMult)) {
-      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online' }); onlineCount++ }
+      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store)
     if (hasStore && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
-      if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin', accepted), channel: 'walkin' })
+      if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin', accepted, listedCards), channel: 'walkin' })
       else missedWalkin++
     }
   }
@@ -266,7 +278,7 @@ function advanceDaysWith(set, get, days, away) {
   // never received an online order and these are home days, guarantee your first one
   // by the end of the first few days so the loop actually starts.
   if (onlineOK && onlineCount === 0 && (s.onlineOrdersEver || 0) === 0 && s.currentDay + days <= 5) {
-    newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online', _firstOrder: true })
+    newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online', _firstOrder: true })
     onlineCount++
   }
   // advance the day counter, rolling months as needed
@@ -386,6 +398,21 @@ function settleRent(set, get, rentDue, days) {
 function realizableAssets(s) {
   const coll = (s.collection || []).reduce((sum, c) => sum + cardValue(c), 0)
   return round2((s.cash || 0) + coll)
+}
+
+// A card you own may be in your collection OR out on the market (listed/tweeted).
+// These let an encounter sale resolve against whichever bucket holds the card,
+// so an offer accepted on a LISTED card actually removes the listing.
+function findOwnedAnywhere(s, uid) {
+  return s.collection.find(c => c.uid === uid)
+    || (s.listings || []).find(l => l.card.uid === uid)?.card
+    || null
+}
+function removeOwnedAnywhere(set, uid) {
+  set(st => ({
+    collection: st.collection.filter(c => c.uid !== uid),
+    listings: (st.listings || []).filter(l => l.card.uid !== uid),
+  }))
 }
 
 // --- Upgrades: buy once, keep forever ---------------------------------------
@@ -585,17 +612,20 @@ export const useGame = create(persist((set, get) => ({
 
   // List a card on your own site at `askMult`× market. Removes it from the
   // collection and puts it on the market, where browsing customers decide whether
-  // to buy (see tickListings). `views`/`offers` accrue as days pass.
-  listOnSite(uid, askMult) {
+  // to buy (see tickListings). `views`/`offers` accrue as days pass. `tweet` posts
+  // it for a hype window of extra Twitter-mutual eyes (+notoriety).
+  listOnSite(uid, askMult, tweet = false) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return false
     const q = get().listingQuote(card, askMult)
-    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
+    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0,
+      tweeted: !!tweet, hypeDaysLeft: tweet ? TWEET_HYPE_DAYS : 0 }
     set(s => ({
       collection: s.collection.filter(c => c.uid !== uid),
       listings: [...(s.listings || []), listing],
     }))
-    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)`, 0)
+    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)${tweet ? ' · 🐦 tweeted' : ''}`, 0)
+    if (tweet) { get().addNotoriety(TWEET_NOTORIETY); get().log('tweet', `Tweeted your ${card.name} listing — Twitter mutuals are watching (+${TWEET_NOTORIETY}★)`, 0) }
     return q
   },
 
@@ -702,20 +732,22 @@ export const useGame = create(persist((set, get) => ({
     return total
   },
   // List every selected card on your site at the same askMult (each rolls its own
-  // sell/expire outcome). Returns how many were listed.
-  listManyOnSite(uids, askMult) {
+  // sell/expire outcome). `tweet` posts the batch for a hype window. Returns the count.
+  listManyOnSite(uids, askMult, tweet = false) {
     const ids = new Set(uids)
     const cards = get().collection.filter(c => ids.has(c.uid))
     if (!cards.length) return 0
     const newListings = cards.map(card => {
       const q = get().listingQuote(card, askMult)
-      return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
+      return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0,
+        tweeted: !!tweet, hypeDaysLeft: tweet ? TWEET_HYPE_DAYS : 0 }
     })
     set(s => ({
       collection: s.collection.filter(c => !ids.has(c.uid)),
       listings: [...(s.listings || []), ...newListings],
     }))
-    get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market`, 0)
+    get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market${tweet ? ' · 🐦 tweeted' : ''}`, 0)
+    if (tweet) { get().addNotoriety(TWEET_NOTORIETY); get().log('tweet', `Tweeted your listings — Twitter mutuals are watching (+${TWEET_NOTORIETY}★)`, 0) }
     return cards.length
   },
   // Consign every selected card (each sells in 2–6 days for a bit above market −12%).
@@ -911,12 +943,14 @@ export const useGame = create(persist((set, get) => ({
       case 'sellOwned': {
         const blocked = s.paymentBlocked(effect.payMethod)
         if (blocked) { s.addNotoriety(-1); s.log('lost-sale', blocked, 0); return blocked }
-        const card = get().collection.find(c => c.uid === effect.uid)
+        // The card may live in your collection OR be out on the market (listed/tweeted) —
+        // an online offer is on a listed card. Pull it from whichever bucket holds it.
+        const card = findOwnedAnywhere(get(), effect.uid)
         if (card) {
           let price = effect.price
           if (get().upgrades.cases) price = round2(price * 1.12)
           const { net, fee } = processingFee(price, effect.payMethod)
-          set(st => ({ collection: st.collection.filter(c => c.uid !== effect.uid) }))
+          removeOwnedAnywhere(set, effect.uid)
           s.earn(net)
           s.addNotoriety(effect.notoriety)
           s.log('sell', `Sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
@@ -930,14 +964,14 @@ export const useGame = create(persist((set, get) => ({
         const blocked = s.paymentBlocked(effect.payMethod)
         if (blocked) { s.addNotoriety(-1); s.log('lost-sale', blocked, 0); return blocked }
         if (Math.random() < (effect.chance ?? 0.5)) {
-          const card = get().collection.find(c => c.uid === effect.uid)
+          const card = findOwnedAnywhere(get(), effect.uid)
           if (card) {
             // A counter is a normal sale of a card from your case — the display-case
             // bump applies here too (was previously missed).
             let price = effect.price
             if (get().upgrades.cases) price = round2(price * 1.12)
             const { net, fee } = processingFee(price, effect.payMethod)
-            set(st => ({ collection: st.collection.filter(c => c.uid !== effect.uid) }))
+            removeOwnedAnywhere(set, effect.uid)
             s.earn(net); s.addNotoriety(effect.notoriety)
             s.log('sell', `Countered and sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
             msg = appendFeeMsg(msg, fee, effect.payMethod, net)
@@ -970,7 +1004,7 @@ export const useGame = create(persist((set, get) => ({
     // A sale may have removed a card that a pending inbox order was about — drop
     // any now-stale orders so you never see an offer for a card you no longer own.
     set(st => {
-      const pruned = st.boothInbox.filter(enc => encounterStillValid(enc, st.collection))
+      const pruned = st.boothInbox.filter(enc => encounterStillValid(enc, st.collection, st.listings))
       return pruned.length === st.boothInbox.length ? {} : { boothInbox: pruned }
     })
     return msg

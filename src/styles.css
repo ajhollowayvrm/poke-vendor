@@ -408,8 +408,18 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .bulk-bar-summary { font-size: 14px; white-space: nowrap; }
 .bulk-bar-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .bulk-bar-actions .btn { flex: 0 0 auto; }
-.bulk-list-group { display: flex; align-items: center; gap: 6px; }
-.bulk-list-group input[type=range] { width: 78px; }
+.bulk-list-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* % preset buttons + custom input for listing ask */
+.list-pct-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pctbtn { background:#ffffff10; border:1px solid var(--line); color:var(--dim); border-radius:8px;
+  padding:4px 9px; font-size:12px; font-weight:700; cursor:pointer; }
+.pctbtn:hover { background:#ffffff1c; color:#fff; }
+.pctbtn.on { background: var(--gold); color:#1a1300; border-color: var(--gold); }
+.pctinput { width:58px; background:#0c0f1a; border:1px solid var(--line); color:#fff; border-radius:8px;
+  padding:4px 6px; font-size:12px; font-weight:700; text-align:right; }
+.tweet-toggle { display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer; user-select:none; }
+.tweet-toggle .muted { font-weight:400; }
 .bulk-grade-group { display: flex; align-items: center; gap: 6px; }
 .bulk-grade-group select { flex: 0 0 auto; max-width: 150px; }
 

@@ -472,12 +472,13 @@ export function buyerMaxMult(savvyKey, notoriety, card, rnd = Math.random) {
 // Expected number of shoppers who browse a listing per game-day. More with fame and
 // desirability; fair prices pull a few more eyes than wildly overpriced ones (which
 // still get looked at — and passed on). Floors at a trickle so something always happens.
-export function dailyViewers(card, askMult, notoriety, rnd = Math.random) {
+// `boost` multiplies the eyes (e.g. a Tweet's hype window pulls Twitter mutuals in).
+export function dailyViewers(card, askMult, notoriety, rnd = Math.random, boost = 1) {
   const fame = 0.6 + Math.min(2.6, notoriety / 60)        // ~0.6 at noto 0 → ~3.2 high
   const desire = cardDesirability(card)
   // overpricing softly suppresses eyeballs (window-shoppers skip the obvious gouge)
   const priceDrag = askMult <= 1.2 ? 1 : Math.max(0.45, 1 - (askMult - 1.2) * 0.4)
-  const expected = fame * desire * priceDrag
+  const expected = fame * desire * priceDrag * boost
   // Poisson-ish: expected value with random rounding so low traffic is bursty.
   const whole = Math.floor(expected)
   return whole + (rnd() < (expected - whole) ? 1 : 0)

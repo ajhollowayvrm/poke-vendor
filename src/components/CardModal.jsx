@@ -14,7 +14,9 @@ export default function CardModal({ card, onClose }) {
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
   const [listing, setListing] = useState(false) // showing the list-on-site picker?
-  const [askMult, setAskMult] = useState(1.1)
+  const [askPct, setAskPct] = useState(110)
+  const [tweetIt, setTweetIt] = useState(false)
+  const askMult = (parseFloat(askPct) || 0) / 100
   // close on Escape — clicking the backdrop already closes; this adds keyboard parity
   useEffect(() => {
     const onKey = e => { if (e.key === 'Escape') onClose() }
@@ -112,12 +114,20 @@ export default function CardModal({ card, onClose }) {
                   <b>List on your site</b>
                   <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(market)}</span>
                 </div>
-                <div className="askline">
-                  <span>Ask</span>
-                  <input type="range" min="0.8" max="2" step="0.05" value={askMult}
-                    onChange={e => setAskMult(parseFloat(e.target.value))} />
-                  <b style={{ minWidth: 92, textAlign:'right' }}>{fmtMoney(quote.ask)} <span className="muted" style={{fontWeight:600}}>({Math.round(askMult*100)}%)</span></b>
+                <div className="list-pct-row" style={{ marginTop: 8 }}>
+                  <span className="muted" style={{ fontSize: 12 }}>Ask</span>
+                  {[80, 90, 100, 110].map(p => (
+                    <button key={p} className={`pctbtn ${Math.round(askMult*100) === p ? 'on' : ''}`}
+                      onClick={() => setAskPct(p)}>{p}%</button>
+                  ))}
+                  <input className="pctinput" type="number" min="50" max="300" step="5" value={askPct}
+                    onChange={e => setAskPct(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))} />
+                  <b style={{ marginLeft: 'auto', textAlign:'right' }}>{fmtMoney(quote.ask)}</b>
                 </div>
+                <label className="tweet-toggle" style={{ marginTop: 8 }}>
+                  <input type="checkbox" checked={tweetIt} onChange={e => setTweetIt(e.target.checked)} />
+                  🐦 Tweet it <span className="muted">— extra Twitter-mutual eyes for ~3 days, +notoriety</span>
+                </label>
                 <div className="list-quote">
                   <div><span className="muted">You net</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee</small></div>
                   <div><span className="muted">Shoppers/day</span><b>👀 ~{quote.viewsPerDay}</b><small className="muted">more with rep</small></div>
@@ -129,7 +139,7 @@ export default function CardModal({ card, onClose }) {
                   </div>
                 </div>
                 <div className="row" style={{ marginTop: 10 }}>
-                  <button className="btn gold" onClick={() => { listOnSite(card.uid, askMult); onClose() }}>List it ↗</button>
+                  <button className="btn gold" disabled={!askMult} onClick={() => { listOnSite(card.uid, askMult, tweetIt); onClose() }}>List it{tweetIt ? ' + 🐦' : ''} ↗</button>
                   <button className="btn alt" style={{ maxWidth: 120 }} onClick={() => setListing(false)}>← Back</button>
                 </div>
               </div>
