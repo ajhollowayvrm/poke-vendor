@@ -3,7 +3,28 @@ import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 
-const STARTING_CASH = 2000
+const STARTING_CASH = 10000
+
+// --- Survival economy ------------------------------------------------------
+// Each game-day you earn your job's wage and pay rent. The job is the safety net
+// (and the friction): it pays steady but it's not the dream — cards are the path up.
+// Run out of money with nothing left to sell and you lose.
+export const RENT_PER_DAY = 40
+// Low-level jobs, ascending wage. Better jobs gate behind notoriety (you're more
+// hireable as your name gets around). Wage is per game-day. `start` = days until a
+// newly-taken job begins paying (re-apply friction); the starter job starts instantly.
+export const JOBS = [
+  { id: 'none',     title: 'Unemployed',          wage: 0,   minNoto: 0,   start: 0 },
+  { id: 'retail',   title: 'Card shop clerk',     wage: 70,  minNoto: 0,   start: 0 },
+  { id: 'barista',  title: 'Barista',             wage: 95,  minNoto: 10,  start: 1 },
+  { id: 'warehouse',title: 'Warehouse picker',    wage: 130, minNoto: 25,  start: 1 },
+  { id: 'manager',  title: 'Retail manager',      wage: 180, minNoto: 60,  start: 2 },
+  { id: 'broker',   title: 'Card-shop buyer',     wage: 260, minNoto: 120, start: 2 },
+]
+export const STARTER_JOB = JOBS.find(j => j.id === 'retail')
+export function jobById(id) { return JOBS.find(j => j.id === id) || null }
+// Days you can stay behind on rent before it's game over (the grace/comeback window).
+export const RENT_GRACE_DAYS = 3
 
 // The game runs in REAL TIME: 1 game-day = `dayMinutes` real minutes (default 15).
 // Everything daily — orders, listings/consignments, wages, rent, AND grading — rides this
@@ -134,7 +155,17 @@ function advanceDaysWith(set, get, days, away) {
   let missedOnline = 0, missedWalkin = 0
   let onlineCount = 0
   const newOrders = []
+  // Survival accrual across the days passed (settled against cash after sales below).
+  const wagePerDay = s.job?.wage || 0
+  let wagesEarned = 0, rentDue = 0
+  let pendingJob = s.pendingJob
+  let activeJob = s.job
   for (let i = 0; i < days; i++) {
+    const dayNo = s.currentDay + i + 1 // the day being entered
+    // a pending job starts paying once its start day arrives
+    if (pendingJob && dayNo >= pendingJob.startsOnDay) { activeJob = pendingJob.job; pendingJob = null }
+    wagesEarned += activeJob?.wage || 0
+    rentDue += RENT_PER_DAY
     // online channel
     if (Math.random() < dayOrderChance('online', noto)) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online' }); onlineCount++ }
@@ -197,11 +228,48 @@ function advanceDaysWith(set, get, days, away) {
     wantList: wants,
     dailyGoals: makeDailyGoals(noto), // fresh goals each new day
     goalsDay: d,
+    job: activeJob,        // a pending job may have started during these days
+    pendingJob,
   }))
+  // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
+  if (wagesEarned > 0) { get().earn(wagesEarned); get().log('wage', `Wages: ${activeJob?.title || 'job'} (+$${wagesEarned.toFixed(2)})`, wagesEarned) }
+  if (rentDue > 0) settleRent(set, get, rentDue, days)
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
-  return { added: newOrders.length, missedOnline, missedWalkin }
+  return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue) }
+}
+
+// Charge rent for the days passed. If cash covers it, pay and clear arrears. If not,
+// you fall behind: rentArrears counts consecutive shortfall days. Past RENT_GRACE_DAYS
+// with no realizable assets left to sell, it's game over. Having sellable cards keeps you
+// alive (the comeback path: liquidate or take a job).
+function settleRent(set, get, rentDue, days) {
+  const s = get()
+  if (s.cash >= rentDue) {
+    get().spend(rentDue)
+    get().log('rent', `Rent paid (-$${rentDue.toFixed(2)})`, -rentDue)
+    if (s.rentArrears) set({ rentArrears: 0 })
+    return
+  }
+  // can't fully cover rent → pay what we can, fall behind.
+  if (s.cash > 0) { get().spend(round2(s.cash)) }
+  const arrears = (s.rentArrears || 0) + days
+  const assets = realizableAssets(get())
+  if (arrears > RENT_GRACE_DAYS && assets < rentDue) {
+    set({ rentArrears: arrears, gameOver: true })
+    get().log('gameover', `You couldn't make rent and had nothing left to sell. Game over.`, 0)
+  } else {
+    set({ rentArrears: arrears })
+    get().log('rent-late', `Behind on rent (${arrears}/${RENT_GRACE_DAYS} days) — sell cards or take a job!`, 0)
+  }
+}
+
+// Rough liquidation value: cash + market value of the raw/graded collection. Used to
+// decide whether a behind-on-rent player still has a comeback (assets to sell) or is done.
+function realizableAssets(s) {
+  const coll = (s.collection || []).reduce((sum, c) => sum + cardValue(c), 0)
+  return round2((s.cash || 0) + coll)
 }
 
 // --- Upgrades: buy once, keep forever ---------------------------------------
@@ -258,6 +326,14 @@ export const useGame = create(persist((set, get) => ({
   // Real-time clock: epoch ms of the last processed day boundary. The world advances 1 day
   // per `settings.dayMinutes` of real time, online and offline (catch-up on load).
   lastTick: Date.now(),
+  // Survival economy: a day job pays a daily wage, rent drains it. job=null means full-time
+  // vendor (no wage). pendingJob holds a freshly-taken job until it starts (re-apply friction).
+  // rentArrears = consecutive days behind on rent; past RENT_GRACE_DAYS with nothing to sell
+  // → gameOver.
+  job: STARTER_JOB,
+  pendingJob: null,        // { job, startsOnDay }
+  rentArrears: 0,
+  gameOver: false,
   // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
   // autoAdvance: in one-by-one mode, auto-rip the next pack a few seconds after each finishes.
   // dayMinutes: real minutes per game-day (the master clock rate).
@@ -745,6 +821,33 @@ export const useGame = create(persist((set, get) => ({
   clearInboxItem(idx) {
     set(s => ({ boothInbox: s.boothInbox.filter((_, i) => i !== idx) }))
   },
+  // --- Jobs (the survival layer) ---
+  // Net worth = cash + collection liquidation value (for job gating + UI runway).
+  netWorth() { return realizableAssets(get()) },
+  // Take a job (by id). Gated by notoriety. Quitting first is implicit (replaces current).
+  // A newly-taken job starts after `start` days (re-apply friction); start:0 is instant.
+  takeJob(id) {
+    const job = jobById(id)
+    if (!job || job.id === 'none') return false
+    if (get().notoriety + 1e-9 < job.minNoto) return false
+    if (job.start <= 0) {
+      set({ job, pendingJob: null })
+      get().log('job', `Started a job: ${job.title} ($${job.wage}/day)`, 0)
+    } else {
+      const startsOnDay = get().currentDay + job.start
+      set({ pendingJob: { job, startsOnDay } })
+      get().log('job', `Hired as ${job.title} — starts in ${job.start} day${job.start>1?'s':''} ($${job.wage}/day)`, 0)
+    }
+    return true
+  },
+  // Quit instantly — go full-time vendor (no wage, rent still bites).
+  quitJob() {
+    if (!get().job) return
+    const had = get().job
+    set({ job: null, pendingJob: null })
+    get().log('job', `Quit ${had.title} — going full-time as a vendor. No more paycheck.`, 0)
+  },
+
   // Pass a single day at home — generate that day's home orders into the inbox.
   nextDay() { return advanceDaysWith(set, get, 1, false) },
 
@@ -754,6 +857,7 @@ export const useGame = create(persist((set, get) => ({
   // or null if no full day has passed. Days advance at home (`away:false`).
   tickRealTime() {
     const s = get()
+    if (s.gameOver) return null // world stops once you've lost
     const dayMs = dayLengthMs(s)
     const elapsed = Date.now() - (s.lastTick ?? Date.now())
     let due = Math.floor(elapsed / dayMs)
@@ -786,6 +890,7 @@ export const useGame = create(persist((set, get) => ({
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
   },
 }), {
@@ -858,6 +963,12 @@ export const useGame = create(persist((set, get) => ({
       state.lastTick = Date.now()
       state.settings = { ...(state.settings || {}) }
       state.settings.dayMinutes = state.settings.dayMinutes ?? DEFAULT_DAY_MINUTES
+      // Survival economy. Keep existing cash (don't retro-grant the new $10k start);
+      // employ them at the starter job so rent doesn't immediately bury them.
+      state.job = state.job ?? STARTER_JOB
+      state.pendingJob = state.pendingJob ?? null
+      state.rentArrears = state.rentArrears ?? 0
+      state.gameOver = state.gameOver ?? false
     }
     return state
   },

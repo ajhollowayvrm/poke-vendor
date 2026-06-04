@@ -137,6 +137,7 @@ export default function App() {
       </div>
 
       {awaySummary && <AwaySummary summary={awaySummary} onClose={() => setAwaySummary(null)} />}
+      <GameOver />
 
       {tab === 'shop' && (ripping
         ? <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
@@ -208,6 +209,26 @@ function AwaySummary({ summary, onClose }) {
           {added ? <div className="muted" style={{ fontSize: 13 }}>{added} new order{added === 1 ? '' : 's'} waiting</div> : null}
         </div>
         <button className="btn gold" style={{ maxWidth: 160 }} onClick={onClose}>Got it →</button>
+      </div>
+    </div>
+  )
+}
+
+// Lose screen — shown when you can't make rent and have nothing left to sell.
+function GameOver() {
+  const gameOver = useGame(s => s.gameOver)
+  const reset = useGame(s => s.reset)
+  if (!gameOver) return null
+  return (
+    <div className="modalbg" style={{ background: '#000d', zIndex: 50 }}>
+      <div className="modal" style={{ maxWidth: 420, textAlign: 'center' }}>
+        <h2 style={{ marginBottom: 6 }}>💸 Game Over</h2>
+        <p className="muted" style={{ marginTop: 0 }}>
+          You couldn't make rent and had nothing left to sell. The dream's over… for now.
+        </p>
+        <button className="btn gold" style={{ maxWidth: 200, margin: '8px auto 0' }} onClick={reset}>
+          Start over
+        </button>
       </div>
     </div>
   )

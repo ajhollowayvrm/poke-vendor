@@ -212,6 +212,23 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .clock-chip { font-weight: 800; font-size: 15px; color: #9db8ff; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .clock-chip small { display:block; text-align:right; color: var(--dim); font-size: 11px; font-weight: 600; }
 
+/* Finance / job panel (Stats tab) */
+.finance-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 16px; margin: 16px 0 8px; }
+.finance-head { display:flex; align-items:flex-start; gap: 12px; }
+.finance-title { font-weight: 800; font-size: 15px; }
+.finance-net { margin-left: auto; font-weight: 900; font-size: 20px; text-align: right; white-space: nowrap; }
+.finance-net small { display:block; color: var(--dim); font-size: 10px; font-weight: 600; }
+.finance-warn { background: #ff5e6c22; color: #ff9aa6; border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 700; margin: 8px 0; }
+.finance-jobs { display:flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.jobbtn { display:flex; flex-direction:column; align-items:flex-start; gap: 1px; padding: 6px 10px; border-radius: 9px;
+  background: #ffffff08; border: 1px solid var(--line); color: var(--txt); cursor: pointer; }
+.jobbtn:hover:not(:disabled) { border-color: #ffffff44; background: #ffffff12; }
+.jobbtn.on { background: #36d39922; border-color: #36d399; color: var(--green); cursor: default; }
+.jobbtn:disabled { opacity: .55; cursor: not-allowed; }
+.jobbtn .jobname { font-weight: 700; font-size: 12px; }
+.jobbtn .jobwage { font-size: 11px; color: var(--dim); }
+
 /* ---------- Calendar ---------- */
 .tierlegend { display:flex; flex-wrap:wrap; gap: 10px; margin: 4px 0 16px; }
 .legend { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color: var(--dim);

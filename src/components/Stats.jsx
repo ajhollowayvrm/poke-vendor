@@ -1,4 +1,4 @@
-import { useGame } from '../game/store'
+import { useGame, JOBS, RENT_PER_DAY } from '../game/store'
 import { cardValue, fmtMoney, round2, SETS } from '../game/engine'
 
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
@@ -29,6 +29,7 @@ export default function Stats() {
 
   return (
     <>
+      <FinanceCard />
       <div className="statgrid">
         <Stat label="Net worth" v={fmtMoney(netWorth)} c="var(--green)" />
         <Stat label="Cash" v={fmtMoney(cash)} />
@@ -100,4 +101,69 @@ export default function Stats() {
 }
 function Stat({ label, v, c }) {
   return <div className="stat"><b style={{ color: c || 'var(--txt)' }}>{v}</b><span>{label}</span></div>
+}
+
+// Survival economy panel: job + wage vs rent, net daily, cash runway, and the job picker.
+function FinanceCard() {
+  const job = useGame(s => s.job)
+  const pendingJob = useGame(s => s.pendingJob)
+  const cash = useGame(s => s.cash)
+  const notoriety = useGame(s => s.notoriety)
+  const rentArrears = useGame(s => s.rentArrears || 0)
+  const collection = useGame(s => s.collection)
+  const takeJob = useGame(s => s.takeJob)
+  const quitJob = useGame(s => s.quitJob)
+
+  const wage = job?.wage || 0
+  const netDay = wage - RENT_PER_DAY
+  const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
+  // Runway: if you're net-negative per day, how many days until cash runs out (then you'd
+  // lean on selling cards). Positive net = sustainable.
+  const runway = netDay >= 0 ? null : Math.floor(cash / -netDay)
+
+  return (
+    <div className="finance-card">
+      <div className="finance-head">
+        <div>
+          <div className="finance-title">💼 {pendingJob ? `${pendingJob.job.title} (starts day ${pendingJob.startsOnDay})` : (job ? job.title : 'Full-time vendor')}</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {job ? `Wage +$${wage}/day` : 'No paycheck — you live on card profit'} · Rent −${RENT_PER_DAY}/day
+          </div>
+        </div>
+        <div className="finance-net" style={{ color: netDay >= 0 ? 'var(--green)' : 'var(--red)' }}>
+          {netDay >= 0 ? '+' : ''}{fmtMoney(netDay)}<small>/day from job</small>
+        </div>
+      </div>
+      {rentArrears > 0 && (
+        <div className="finance-warn">⚠️ Behind on rent ({rentArrears} day{rentArrears>1?'s':''}). Sell cards or take a job before you're out.</div>
+      )}
+      <div className="muted" style={{ fontSize: 12, margin: '6px 0' }}>
+        {netDay >= 0
+          ? `Your job covers rent with $${netDay}/day to spare. Cards are how you actually grow.`
+          : runway != null
+            ? `At this rate your cash lasts ~${runway} day${runway===1?'':'s'} — card sales (collection ≈ ${fmtMoney(collValue)}) keep you afloat.`
+            : `Rent isn't covered — lean on card sales (collection ≈ ${fmtMoney(collValue)}).`}
+      </div>
+      <div className="finance-jobs">
+        {JOBS.filter(j => j.id !== 'none').map(j => {
+          const locked = notoriety + 1e-9 < j.minNoto
+          const current = job?.id === j.id && !pendingJob
+          return (
+            <button key={j.id} className={`jobbtn ${current ? 'on' : ''}`} disabled={locked || current}
+              title={locked ? `Unlocks at ${j.minNoto} notoriety` : `$${j.wage}/day${j.start>0?` · starts in ${j.start}d`:''}`}
+              onClick={() => takeJob(j.id)}>
+              <span className="jobname">{j.title}</span>
+              <span className="jobwage">${j.wage}/d{locked ? ` · 🔒${j.minNoto}` : ''}</span>
+            </button>
+          )
+        })}
+      </div>
+      {job && (
+        <button className="btn alt" style={{ maxWidth: 180, marginTop: 8 }}
+          onClick={() => { if (confirm(`Quit ${job.title}? You'll lose the $${wage}/day wage and live on card profit. Rent still applies.`)) quitJob() }}>
+          Quit — go full-time
+        </button>
+      )}
+    </div>
+  )
 }
