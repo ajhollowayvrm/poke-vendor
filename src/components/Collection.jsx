@@ -8,10 +8,6 @@ export default function Collection({ onPick }) {
   const sellAllUngraded = useGame(s => s.sellAllUngraded)
   const sellToBuylist = useGame(s => s.sellToBuylist)
   const buylistRate = useGame(s => s.buylistRate)
-  const consignments = useGame(s => s.consignments)
-  const listings = useGame(s => s.listings)
-  const relistListing = useGame(s => s.relistListing)
-  const pullListing = useGame(s => s.pullListing)
   const submitted = useGame(s => s.gradesSubmitted)
   // bulk action handlers
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
@@ -66,41 +62,11 @@ export default function Collection({ onPick }) {
   const gradeTotal = +(gradeFeePer * rawSelected.length).toFixed(2)
   const gradeBulk = bulkDiscount(rawSelected.length)
 
-  const nothing = !collection.length && !consignments.length && !listings.length
-  if (nothing)
-    return <div className="empty">No cards yet — head to the Shop and rip a pack. 📦</div>
+  if (!collection.length)
+    return <div className="empty">No cards yet — head to Buy and rip a pack. 📦</div>
 
   return (
     <>
-      {/* In-transit: cards you've listed on your own site (sell over time) */}
-      {listings.length > 0 && (
-        <div className="consign-strip">
-          <b>🌐 Listed on your site ({listings.length})</b>
-          {listings.map((l, i) => (
-            <span key={i} className={`pill ${l.expired ? 'expired' : ''}`}
-              title={l.expired ? 'Priced too high — it sat unsold' : `Sells for ${fmtMoney(l.net)} net in ~${l.daysLeft}d`}>
-              {l.card.name} · {fmtMoney(l.ask)}
-              {l.expired
-                ? <> · <button className="linkbtn" onClick={() => relistListing(i)}>relist</button> / <button className="linkbtn" onClick={() => pullListing(i)}>pull</button></>
-                : ` · ${l.daysLeft}d`}
-            </span>
-          ))}
-          <span className="muted" style={{ fontSize: 12 }}>— pays out on Next Day / when you attend a show</span>
-        </div>
-      )}
-
-      {consignments.length > 0 && (
-        <div className="consign-strip">
-          <b>↗ Consigned ({consignments.length})</b>
-          {consignments.map((c, i) => (
-            <span key={i} className="pill" title={`Pays ${fmtMoney(c.net)} when it sells`}>
-              {c.card.name} · {fmtMoney(c.net)} · {c.daysLeft}d
-            </span>
-          ))}
-          <span className="muted" style={{ fontSize: 12 }}>— pays out on Next Day / when you attend a show</span>
-        </div>
-      )}
-
       <div className="toolbar" style={{ marginTop: 8 }}>
         <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}>{collection.length} card{collection.length === 1 ? '' : 's'}</span>
         <select value={sort} onChange={e => setSort(e.target.value)}>
@@ -129,7 +95,7 @@ export default function Collection({ onPick }) {
       </div>
 
       {view.length === 0 ? (
-        <div className="empty">No cards yet — head to the Shop and rip a pack. 📦</div>
+        <div className="empty">No cards yet — head to Buy and rip a pack. 📦</div>
       ) : (
         <div className="grid coll-grid">
           {view.map(c => (

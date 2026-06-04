@@ -4,6 +4,7 @@ import { fmtMoney, cardValue } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
 import CardTile from './CardTile'
+import SellStrips from './SellStrips'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
   walkin: { label: 'Walk-in', icon: '🏬', color: '#ffcb05' } }
@@ -47,6 +48,10 @@ export default function BoothInbox() {
 
   return (
     <>
+      {/* Cards in-transit: listed on your own site / consigned (moved here from
+          Collection so the storefront's selling activity lives in one place). */}
+      <SellStrips />
+
       <div className="banner" style={{ marginTop: 16 }}>
         {hasStore
           ? <>🏬 You run a brick-and-mortar shop <b>and</b> sell online. Each day brings orders & walk-ins, scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>

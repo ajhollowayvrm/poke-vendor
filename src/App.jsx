@@ -17,10 +17,10 @@ import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 
 const TABS = ['shop', 'shows', 'myshop', 'upgrades', 'collection', 'prices', 'bench', 'stats', 'settings']
-const TAB_LABEL = { shop: 'Shop', shows: 'Shows', myshop: 'Orders', upgrades: 'Upgrades',
+const TAB_LABEL = { shop: 'Buy', shows: 'Shows', myshop: 'Sell', upgrades: 'Upgrades',
   collection: 'Collection', prices: 'Prices', bench: 'Grader', stats: 'Stats', settings: 'Settings' }
 // Icons for the mobile bottom nav (label is shown small underneath).
-const TAB_ICON = { shop: '🛒', shows: '🎪', myshop: '📨', upgrades: '⬆️',
+const TAB_ICON = { shop: '🛒', shows: '🎪', myshop: '🏬', upgrades: '⬆️',
   collection: '🗂️', prices: '🏷️', bench: '🔬', stats: '📊', settings: '⚙️' }
 
 export default function App() {
