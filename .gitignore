@@ -3,3 +3,7 @@ dist
 .DS_Store
 *.log
 .vite
+
+# RapidAPI key for fetch-data (never commit)
+scripts/.pokemon-api-key
+*.pokemon-api-key

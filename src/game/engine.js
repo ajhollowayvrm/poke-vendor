@@ -388,22 +388,35 @@ function estimateByRarity(r) {
   return table[r] ?? 0.1
 }
 
-// Graded value multiplier by PSA grade (rough market behavior).
+// Graded value multiplier by PSA grade (fallback heuristic when no real comp exists).
 const GRADE_MULT = { 10: 5.0, 9: 1.8, 8: 1.1, 7: 0.8, 6: 0.6, 5: 0.5, 4: 0.4, 3: 0.35, 2: 0.3, 1: 0.25 }
+// Real PSA median-sale comp for a grade, if the snapshot captured one for this card.
+// `card.psa` is { "10": usd, "9": usd, ... } from eBay sold listings (pokemon-api.com).
+function psaComp(card, grade) {
+  const v = card.psa?.[String(grade)]
+  return v != null ? v : null
+}
 export function gradedValue(card) {
   if (!card.grade) return rawValue(card)
-  const mult = GRADE_MULT[card.grade.overall] ?? 1
+  const g = card.grade.overall
+  // Prefer the REAL market price of this card at this PSA grade. Sparse data: if this
+  // exact grade has no comp, fall back to the heuristic (don't interpolate tiny samples).
+  const real = psaComp(card, g)
+  if (real != null) return round2(real)
+  const mult = GRADE_MULT[g] ?? 1
   // higher base-value cards see bigger grade premiums (gem mint chase)
   const scarcityBoost = 1 + Math.min(2, rawValue(card) / 50)
-  return round2(rawValue(card) * mult * (card.grade.overall >= 9 ? scarcityBoost : 1))
+  return round2(rawValue(card) * mult * (g >= 9 ? scarcityBoost : 1))
 }
 export function cardValue(card) { return card.grade ? gradedValue(card) : rawValue(card) }
 
 // Hypothetical "if this graded PSA 10" value for a still-raw card — what the slab
-// would be worth at a perfect grade. Mirrors gradedValue's PSA-10 math without
-// mutating the card. Used to tease the upside on a fresh hit during a rip.
+// would be worth at a perfect grade. Uses the REAL PSA-10 comp when the snapshot has
+// one; else mirrors gradedValue's heuristic. Used to tease upside on a fresh hit.
 export function psa10Value(card) {
   if (card.grade) return gradedValue(card)
+  const real = psaComp(card, 10)
+  if (real != null) return round2(real)
   const base = rawValue(card)
   const scarcityBoost = 1 + Math.min(2, base / 50)
   return round2(base * GRADE_MULT[10] * scarcityBoost)

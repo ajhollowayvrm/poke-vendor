@@ -1,18 +1,76 @@
-// Fetches the latest Pokémon TCG sets + cards into src/data/sets.json
-// Real data: pokemontcg.io (free, no key needed for modest use)
-import { writeFile, mkdir } from 'node:fs/promises'
+// Fetches Pokémon TCG sets + cards into src/data/sets.json.
+//
+// PRIMARY source: pokemon-api.com via RapidAPI (host pokemon-tcg-api.p.rapidapi.com) —
+// English cards, images, USD/EUR prices, eBay PSA graded comps, and sealed products.
+// Needs a key: set POKEMON_API_KEY env, or drop it in scripts/.pokemon-api-key (gitignored).
+// FALLBACK / specialist source: TCGCSV (free, no auth) — the Japanese Abyss Eye set
+// (category 85) and a per-field price fallback. pokemontcg.io is no longer used here.
+import { writeFile, mkdir, readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
-const API = 'https://api.pokemontcg.io/v2'
-const NUM_SETS = 6 // most recent N sets become "buyable products"
-// Sets we always include regardless of recency (fan-favorite chase product).
-//   sv8pt5   — Prismatic Evolutions (the headline chase set)
-//   rsv10pt5 — White Flare (SV-era companion to Black Bolt)
-//   cel25    — Celebrations (25th-anniversary nostalgia set)
-//   g1       — Generations (XY-era, classic Red/Blue feel)
-const ALWAYS_INCLUDE = ['sv8pt5', 'rsv10pt5', 'cel25', 'g1', 'base1']
+const PA_HOST = 'pokemon-tcg-api.p.rapidapi.com'
+const PA = `https://${PA_HOST}`
+// EUR→USD for the rare card whose only price is Cardmarket (approximate; vintage mostly
+// priced via tcgplayer/PSA anyway). Kept a const so it's obvious + easy to bump.
+const EUR_USD = 1.08
+
+// English sets to build, keyed by OUR ids (so SET_GROUP, the sv8pt5 promo pin, vintage
+// flags, and vintageProduct() all keep working). `ep` = pokemon-api.com episode id.
+//   Modern sets sell their full product lineup; `vintage:true` sets are hidden from the
+//   shop and sold only via the Vintage Vault vendor (heavy single packs), like base1.
+const EN_SETS = [
+  // modern (newest → oldest)
+  { id: 'me4',      ep: 413, name: 'Chaos Rising' },
+  { id: 'me3',      ep: 399, name: 'Perfect Order' },
+  { id: 'me2pt5',   ep: 396, name: 'Ascended Heroes' },
+  { id: 'me2',      ep: 231, name: 'Phantasmal Flames' },
+  { id: 'me1',      ep: 230, name: 'Mega Evolution' },
+  { id: 'zsv10pt5', ep: 223, name: 'Black Bolt' },
+  { id: 'rsv10pt5', ep: 224, name: 'White Flare' },
+  { id: 'sv8pt5',   ep: 212, name: 'Prismatic Evolutions' },
+  { id: 'cel25',    ep: 35,  name: 'Celebrations' },
+  { id: 'g1',       ep: 75,  name: 'Generations' },
+  // vintage (sold only via the Vintage Vault) — most desirable older chase sets
+  { id: 'ex15',  ep: 130, name: 'EX Dragon Frontiers',    vintage: true },
+  { id: 'ex7',   ep: 143, name: 'EX Team Rocket Returns', vintage: true },
+  { id: 'ex8',   ep: 142, name: 'EX Deoxys',              vintage: true },
+  { id: 'ecard3',ep: 154, name: 'Skyridge',               vintage: true },
+  { id: 'neo4',  ep: 159, name: 'Neo Destiny',            vintage: true },
+  { id: 'ecard2',ep: 155, name: 'Aquapolis',              vintage: true },
+  { id: 'neo1',  ep: 163, name: 'Neo Genesis',            vintage: true },
+  { id: 'base6', ep: 158, name: 'Legendary Collection',   vintage: true },
+]
 // Sets flagged `vintage` are NOT sold in the normal shop — they only surface via
 // the rare "Vintage Vault" vendor that occasionally appears at higher-tier shows.
-const VINTAGE_SETS = new Set(['base1']) // 1999 Base Set — the grail-tier heavy pack
+// base1 (1999 Base Set) stays on the TCGCSV path below; the rest come from EN_SETS.
+const VINTAGE_SETS = new Set(['base1', ...EN_SETS.filter(s => s.vintage).map(s => s.id)])
+
+// pokemon-api.com rarity → engine rarity (RARITY_ORDER in engine.js). Modern sets
+// already match (just title-case `rare`). Vintage eras add Gold Star / Shining /
+// Crystal / EX rarities — map them into engine tiers so they're treated as the chases
+// they are, not silently ranked 0 (which would make them pull/price like commons).
+const EN_RARITY_MAP = {
+  'rare': 'Rare',
+  'Rare Holo Star': 'Hyper Rare',          // Gold Stars — top vintage chase
+  'Rare Shining':   'Hyper Rare',          // Neo "Shining" subtype
+  'Rare Secret':    'Special Illustration Rare', // Crystals / secret rares
+  'Rare Holo EX':   'Ultra Rare',          // EX-era full-art ex
+  'Rare Holo':      'Rare Holo',
+  'Rare Ultra':     'Ultra Rare',          // modern/Generations full-art ultra
+  'Classic Collection': 'Special Illustration Rare', // Celebrations Classic reprints (Base Zard etc.) — chase tier
+}
+const KNOWN_RARITIES = new Set([
+  'Common','Uncommon','Rare','Rare Holo','Double Rare','ACE SPEC Rare','Illustration Rare',
+  'Ultra Rare','Special Illustration Rare','Hyper Rare','Mega Hyper Rare','Black White Rare',
+])
+function mapRarity(r) {
+  if (!r) return 'Common'
+  if (EN_RARITY_MAP[r]) return EN_RARITY_MAP[r]
+  if (KNOWN_RARITIES.has(r)) return r
+  console.log(`    ⚠️  unknown rarity "${r}" → defaulting to Rare`)
+  return 'Rare'
+}
 
 // Japanese-only sets. pokemontcg.io is English-only, so these are built entirely
 // from TCGCSV's Japanese category (85): real card names, numbers, rarities, prices,
@@ -67,8 +125,9 @@ function classifyProduct(name) {
   // promo — so no bonus. (ETBs / tins / premiums are the ones with a real promo.)
   if (/3-pack blister|three pack blister/.test(n)) return { type: '3-Pack Blister', icon: '🪟', packs: 3, bonus: null }
   if (/2-pack blister|two pack blister/.test(n))   return { type: '2-Pack Blister', icon: '🪟', packs: 2, bonus: 'promo' }
-  if (/sleeved booster pack$|checklane/.test(n))   return { type: 'Sleeved Pack', icon: '🛡️', packs: 1, bonus: null }
-  if (/booster pack$/.test(n))              return { type: 'Booster Pack', icon: '🎴', packs: 1, bonus: null }
+  if (/sleeved booster( pack)?$|checklane/.test(n))   return { type: 'Sleeved Pack', icon: '🛡️', packs: 1, bonus: null }
+  // pokemon-api names the single pack just "<Set> Booster" (no "Pack"); also match that.
+  if (/booster( pack)?$/.test(n))           return { type: 'Booster Pack', icon: '🎴', packs: 1, bonus: null }
   return null
 }
 
@@ -105,6 +164,144 @@ async function getJSON(url) {
   }
   throw new Error('too many retries ' + url)
 }
+
+// Resolve the RapidAPI key: env var first, then the gitignored local file.
+async function resolveApiKey() {
+  if (process.env.POKEMON_API_KEY) return process.env.POKEMON_API_KEY.trim()
+  try {
+    const here = dirname(fileURLToPath(import.meta.url))
+    const key = (await readFile(join(here, '.pokemon-api-key'), 'utf8')).trim()
+    if (key) return key
+  } catch { /* fall through */ }
+  throw new Error('No API key. Set POKEMON_API_KEY env or create scripts/.pokemon-api-key')
+}
+
+// GET a pokemon-api.com (RapidAPI) endpoint as JSON, with retry/backoff. Guards
+// against the occasional empty/malformed body (seen live) by treating it as retryable.
+let PA_KEY = null
+async function paGet(path) {
+  const headers = { 'x-rapidapi-host': PA_HOST, 'x-rapidapi-key': PA_KEY, 'Content-Type': 'application/json' }
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const res = await fetch(`${PA}${path}`, { headers })
+      if (res.status === 429) { await new Promise(r => setTimeout(r, 1500 * (attempt + 1))); continue }
+      if (!res.ok) throw new Error(`${res.status}`)
+      const text = await res.text()
+      if (!text) throw new Error('empty body')
+      return JSON.parse(text)
+    } catch (e) {
+      if (attempt === 4) throw new Error(`paGet ${path}: ${e.message}`)
+      await new Promise(r => setTimeout(r, 600 * (attempt + 1)))
+    }
+  }
+}
+
+// Page through every card row of a pokemon-api episode (20/page; lists every printing).
+async function fetchEpisodeCards(ep) {
+  const rows = []
+  let page = 1, total = 1
+  do {
+    const j = await paGet(`/episodes/${ep}/cards?page=${page}`)
+    const data = j?.data || []
+    rows.push(...data)
+    total = j?.paging?.total ?? page // if paging is missing, stop after this page
+    page++
+  } while (page <= total)
+  return rows
+}
+
+// USD price for a card row: tcgplayer market → cardmarket EUR→USD → PSA-9 comp → null.
+function rowUSD(row, psa) {
+  const tp = row.prices?.tcg_player?.market_price
+  if (tp != null) return round2(tp)
+  const cm = row.prices?.cardmarket?.lowest_near_mint ?? row.prices?.cardmarket?.['7d_average']
+  if (cm != null) return round2(cm * EUR_USD)
+  if (psa && psa['9'] != null) return round2(psa['9']) // old slab-only cards: PSA 9 as a raw proxy
+  return null
+}
+
+// Pull the PSA median-sale comps off a row → { "10": usd, "9": usd, ... } (PSA only).
+function psaComps(row) {
+  const psa = row.prices?.ebay?.graded?.psa
+  if (!psa) return null
+  const out = {}
+  for (const g of Object.keys(psa)) {
+    const m = psa[g]?.median_price
+    if (m != null) out[g] = round2(m)
+  }
+  return Object.keys(out).length ? out : null
+}
+
+// Build one English set from pokemon-api.com: page cards, dedupe to one per collector
+// number (the API lists each card as several identical rows — same tcgid/rarity, differing
+// only by internal id; NOT finish variants), emit a slim card + PSA comps + sealed products.
+async function fetchEnglishSet(cfg) {
+  // episode metadata (logo + series) — best-effort, not fatal if it fails
+  let meta = {}
+  try { const m = await paGet(`/episodes/${cfg.ep}`); meta = m?.data || m || {} } catch { /* ignore */ }
+  const rows = await fetchEpisodeCards(cfg.ep)
+  // group rows by collector number; pick the most-complete row as the representative.
+  const byNum = new Map()
+  for (const row of rows) {
+    const num = String(row.card_number ?? '').trim()
+    if (!num) continue
+    if (!byNum.has(num)) byNum.set(num, [])
+    byNum.get(num).push(row)
+  }
+  const cards = []
+  for (const [num, group] of byNum) {
+    // representative = the row that actually carries pricing (some dup rows are bare).
+    const base = group.find(r => r.prices?.tcg_player?.market_price != null || r.prices?.ebay?.graded?.psa)
+      || group[0]
+    const psa = psaComps(base) || group.map(psaComps).find(Boolean) || null
+    const price = rowUSD(base, psa)
+    const card = {
+      id: base.tcgid || `${cfg.id}-${num}`, // tcgid = pokemontcg.io id → keeps id-keyed logic working
+      name: base.name,
+      number: num,
+      rarity: mapRarity(base.rarity),
+      supertype: base.supertype || 'Pokémon',
+      img: base.image,
+      imgLarge: base.image,
+      price,
+    }
+    if (psa) card.psa = psa
+    cards.push(card)
+  }
+  // sealed products: pokemon-api → classify; fall back to TCGCSV per-set if none.
+  let products = await fetchPaProducts(cfg.ep)
+  if (!products.length && SET_GROUP[cfg.id]) products = await fetchSealed(SET_GROUP[cfg.id])
+  return {
+    cfg, cards, products,
+    logo: meta.logo || undefined,
+    series: meta.series?.name || undefined,
+    releaseDate: meta.released_at || undefined,
+  }
+}
+
+// Fetch + classify sealed products from pokemon-api.com for an episode.
+async function fetchPaProducts(ep) {
+  let j
+  try { j = await paGet(`/episodes/${ep}/products`) } catch { return [] }
+  const byType = {}
+  for (const p of (j?.data || [])) {
+    const cls = classifyProduct(p.name || '')
+    if (!cls) continue
+    const price = p.prices?.tcg_player?.market_price
+      ?? (p.prices?.cardmarket?.lowest != null ? p.prices.cardmarket.lowest * EUR_USD : null)
+    if (price == null) continue
+    const cur = byType[cls.type]
+    if (!cur || price < cur.price) {
+      byType[cls.type] = { type: cls.type, icon: cls.icon, packs: cls.packs, bonus: cls.bonus,
+        name: p.name, price: round2(price), tcgId: p.tcgplayer_id ?? p.id }
+    }
+  }
+  const order = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
+    'Booster Bundle','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box']
+  return Object.values(byType).sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
+}
+
+function round2(n) { return Math.round(n * 100) / 100 }
 
 // Fetch SINGLE-card prices for a TCGCSV group → { collectorNumber: price }.
 // Used as a fallback when pokemontcg.io has no price yet (brand-new sets).
@@ -238,89 +435,63 @@ async function fetchJapaneseSet(cfg) {
 }
 
 async function main() {
-  console.log('Fetching latest sets…')
-  const setsResp = await getJSON(`${API}/sets?orderBy=-releaseDate&pageSize=${NUM_SETS}`)
-  const sets = setsResp.data
-
-  // Ensure pinned sets are present (fetch their metadata if not already in the recent list).
-  for (const id of ALWAYS_INCLUDE) {
-    if (!sets.some(s => s.id === id)) {
-      const r = await getJSON(`${API}/sets/${id}`)
-      sets.push(r.data)
-    }
-  }
+  PA_KEY = await resolveApiKey()
+  console.log(`Fetching ${EN_SETS.length} English sets from pokemon-api.com…`)
 
   const out = []
-  for (const set of sets) {
-    console.log(`  ${set.name} (${set.id})…`)
-    let cards = []
-    let page = 1
-    while (true) {
-      const r = await getJSON(`${API}/cards?q=set.id:${set.id}&pageSize=250&page=${page}`)
-      cards = cards.concat(r.data)
-      if (r.data.length < 250) break
-      page++
-    }
-    const slim = cards.map(c => ({
-      id: c.id,
-      name: c.name,
-      number: c.number,
-      rarity: c.rarity || 'Common',
-      supertype: c.supertype,
-      img: c.images?.small,
-      imgLarge: c.images?.large,
-      // best available market price across finishes
-      price: bestPrice(c),
-    }))
-    // Fallback: brand-new sets often have no prices on pokemontcg.io yet. Pull
-    // real single-card prices from TCGCSV (same source as sealed) and fill the gaps.
-    const missing = slim.filter(c => c.price == null).length
-    if (missing && SET_GROUP[set.id]) {
-      const singles = await fetchSingles(SET_GROUP[set.id])
+  for (const cfg of EN_SETS) {
+    console.log(`  ${cfg.name} (${cfg.id}, ep ${cfg.ep})…`)
+    const { cards, products: rawProducts, logo, series, releaseDate } = await fetchEnglishSet(cfg)
+
+    // Per-field fallback: any card still missing a price → TCGCSV singles by number.
+    const missing = cards.filter(c => c.price == null)
+    if (missing.length && SET_GROUP[cfg.id]) {
+      const singles = await fetchSingles(SET_GROUP[cfg.id])
       let filled = 0
-      for (const c of slim) {
-        if (c.price != null) continue
+      for (const c of missing) {
         const key = String(c.number).replace(/^0+/, '') || '0'
         if (singles[key] != null) { c.price = singles[key]; filled++ }
       }
-      console.log(`    singles fallback: filled ${filled}/${missing} missing prices from TCGCSV`)
+      if (filled) console.log(`    singles fallback: filled ${filled}/${missing.length} from TCGCSV`)
     }
-    let products = await fetchSealed(SET_GROUP[set.id])
-    // Set-specific fixed promos: the Prismatic Evolutions Super-Premium Collection
-    // ALWAYS ships the Eevee ex Special Illustration Rare (#167 in this print) as its
-    // bonus card, not a random hit. Tag the product so the engine mints that exact card.
-    if (set.id === 'sv8pt5') {
+
+    let products = rawProducts
+    // Prismatic SPC always ships the Eevee ex SIR (#167) as its guaranteed promo.
+    if (cfg.id === 'sv8pt5') {
       const spc = products.find(p => p.type === 'Super-Premium Collection')
-      if (spc) spc.fixedPromo = `${set.id}-167`
+      if (spc) spc.fixedPromo = `${cfg.id}-167`
     }
-    // Vintage vault sets (1999 Base Set): pick the cheapest sealed pack TCGCSV has
-    // (any finish) as the lone "heavy" vintage pack — a single unsearched 11-card
-    // pack that can hold a Charizard. If TCGCSV has no clean pack price, fall back
-    // to a market-realistic ask. These are never sold in the normal shop.
-    if (VINTAGE_SETS.has(set.id)) {
-      const vintagePack = pickVintagePack(products)
-      products = [vintagePack]
-      console.log(`    vintage pack: ${vintagePack.name || 'Base Set Pack'} @ $${vintagePack.price}`)
-    } else if (products.length) {
-      console.log(`    sealed: ${products.map(p => p.type).join(', ')}`)
+    // Vintage sets sell ONE marked-up heavy pack via the Vault, never in the shop.
+    if (cfg.vintage) {
+      const vp = pickVintagePack(products)
+      vp.name = vp.name?.includes('Base Set') ? `${cfg.name} Booster Pack` : (vp.name || `${cfg.name} Booster Pack`)
+      products = [vp]
+      console.log(`    vintage pack: ${vp.name} @ $${vp.price}`)
+    } else {
+      console.log(`    ${cards.length} cards, sealed: ${products.map(p => p.type).join(', ') || 'none'}`)
     }
+
+    const priced = cards.filter(c => c.price != null).length
+    const withPsa = cards.filter(c => c.psa).length
+    console.log(`    ${cards.length} cards (${priced} priced, ${withPsa} w/ PSA comps)`)
+
     out.push({
-      id: set.id,
-      name: set.name,
-      series: set.series,
-      releaseDate: set.releaseDate,
-      printedTotal: set.printedTotal,
-      total: set.total,
-      logo: set.images?.logo,
-      symbol: set.images?.symbol,
-      vintage: VINTAGE_SETS.has(set.id) || undefined, // shop hides these; shown only at the Vintage Vault
-      cards: slim,
-      products, // real sealed product types + live market prices (TCGCSV)
+      id: cfg.id,
+      name: cfg.name,
+      series: series || (cfg.vintage ? 'Vintage' : undefined),
+      releaseDate,
+      printedTotal: cards.length,
+      total: cards.length,
+      logo,
+      symbol: undefined,
+      vintage: cfg.vintage || undefined, // shop hides these; shown only at the Vintage Vault
+      cards,
+      products,
     })
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise(r => setTimeout(r, 200))
   }
 
-  // Japanese-only sets (TCGCSV category 85 — no pokemontcg.io equivalent).
+  // Japanese-only sets (TCGCSV category 85 — no English release exists anywhere).
   for (const cfg of JP_SETS) {
     console.log(`  ${cfg.name} (${cfg.id}) [JP]…`)
     const jp = await fetchJapaneseSet(cfg)
@@ -338,37 +509,18 @@ async function main() {
   console.log(`Wrote src/data/sets.json — ${out.length} sets, ${totalCards} cards, ${totalProd} sealed products.`)
 }
 
-// Choose the vintage "heavy pack" product. Prefer a real sealed Booster Pack price
-// from TCGCSV; otherwise fall back to a market-plausible 1999 Base Set pack ask.
+// Choose the vintage "heavy pack" product. Prefer a real sealed Booster Pack price;
+// otherwise fall back to a market-plausible vintage pack ask (these run hundreds+).
 // Always emits a single-pack product tagged `vintage` with a fat price tag.
 function pickVintagePack(products) {
   const realPack = products.find(p => p.packs === 1)
-  const price = realPack ? Math.max(realPack.price, 250) : 600 // sealed Base packs run hundreds+
+  const price = realPack ? Math.max(realPack.price, 250) : 600
   return {
     type: 'Vintage Booster Pack', icon: '🗝️', packs: 1, bonus: null, vintage: true,
-    name: realPack?.name || '1999 Base Set Booster Pack',
+    name: realPack?.name,
     price: Math.round(price * 100) / 100,
     tcgId: realPack?.tcgId,
   }
-}
-
-function bestPrice(c) {
-  const tp = c.tcgplayer?.prices
-  if (tp) {
-    const finishes = ['holofoil', 'normal', 'reverseHolofoil', '1stEditionHolofoil', 'unlimitedHolofoil']
-    for (const f of finishes) {
-      const m = tp[f]?.market ?? tp[f]?.mid
-      if (m) return Math.round(m * 100) / 100
-    }
-    // any finish
-    for (const k of Object.keys(tp)) {
-      const m = tp[k]?.market ?? tp[k]?.mid
-      if (m) return Math.round(m * 100) / 100
-    }
-  }
-  const cm = c.cardmarket?.prices
-  if (cm?.averageSellPrice) return Math.round(cm.averageSellPrice * 100) / 100
-  return null
 }
 
 main().catch(e => { console.error(e); process.exit(1) })
