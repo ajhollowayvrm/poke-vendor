@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, packPrice, fmtMoney, rarityRank } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
@@ -8,7 +8,7 @@ import HoloCard from './HoloCard'
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit }) {
+export default function PackOpening({ set, product, onExit, singleNoReRip = false }) {
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -257,6 +257,8 @@ export default function PackOpening({ set, product, onExit }) {
                       <button className="btn gold" style={{ maxWidth: 200 }} onClick={nextPack}>
                         {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
                       </button>
+                    ) : singleNoReRip ? (
+                      <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
                     ) : (
                       <>
                         <button className="btn gold" style={{ maxWidth: 180 }} onClick={resetForNext}>
@@ -293,12 +295,18 @@ function NowRevealing({ card }) {
         const label = card.foil ? card.foil.label
           : card.grade ? `PSA ${card.grade.overall} · ${card.rarity}`
           : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
+        const showPsa10 = !card.grade && (card._isHit || card.foil)
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
             <img src={card.img} alt={card.name} />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
+            {showPsa10 && (
+              <div className="rip-now-psa10" title="What this card would be worth graded PSA 10">
+                💎 PSA 10 <b>{fmtMoney(psa10Value(card))}</b>
+              </div>
+            )}
           </div>
         )
       })() : <div className="muted" style={{ fontSize: 12 }}>Tearing it open…</div>}
@@ -326,7 +334,10 @@ function HitList({ hits }) {
                     {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
                   </div>
                 </div>
-                <div className="rip-hit-val">{fmtMoney(cardValue(c))}</div>
+                <div className="rip-hit-val">
+                  {fmtMoney(cardValue(c))}
+                  {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                </div>
               </div>
             )
           })}

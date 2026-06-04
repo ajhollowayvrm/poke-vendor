@@ -5,7 +5,32 @@ import { writeFile, mkdir } from 'node:fs/promises'
 const API = 'https://api.pokemontcg.io/v2'
 const NUM_SETS = 6 // most recent N sets become "buyable products"
 // Sets we always include regardless of recency (fan-favorite chase product).
-const ALWAYS_INCLUDE = ['sv8pt5'] // Prismatic Evolutions
+//   sv8pt5   — Prismatic Evolutions (the headline chase set)
+//   rsv10pt5 — White Flare (SV-era companion to Black Bolt)
+//   cel25    — Celebrations (25th-anniversary nostalgia set)
+//   g1       — Generations (XY-era, classic Red/Blue feel)
+const ALWAYS_INCLUDE = ['sv8pt5', 'rsv10pt5', 'cel25', 'g1', 'base1']
+// Sets flagged `vintage` are NOT sold in the normal shop — they only surface via
+// the rare "Vintage Vault" vendor that occasionally appears at higher-tier shows.
+const VINTAGE_SETS = new Set(['base1']) // 1999 Base Set — the grail-tier heavy pack
+
+// Japanese-only sets. pokemontcg.io is English-only, so these are built entirely
+// from TCGCSV's Japanese category (85): real card names, numbers, rarities, prices,
+// and TCGplayer CDN images. JP rarity names are mapped to the engine's rarity
+// vocabulary so the pull model works unchanged.
+const JP_SETS = [
+  { id: 'jp-m5', tcgGroup: 24711, name: 'Abyss Eye', series: 'Scarlet & Violet (JP)', releaseDate: '2025/06/06' },
+]
+// JP TCGplayer rarity → engine rarity. (ex = Double Rare, full-art = Ultra Rare,
+// Art Rare = Illustration Rare, Special Art Rare = Special Illustration Rare,
+// the lone Mega Ultra Rare chase = Hyper Rare.)
+const JP_RARITY_MAP = {
+  'Common': 'Common', 'Uncommon': 'Uncommon', 'Rare': 'Rare',
+  'Double Rare': 'Double Rare', 'Super Rare': 'Ultra Rare',
+  'Art Rare': 'Illustration Rare', 'Special Art Rare': 'Special Illustration Rare',
+  'Ultra Rare': 'Ultra Rare', 'Mega Ultra Rare': 'Hyper Rare',
+  'Shiny Super Rare': 'Hyper Rare', 'Special Rare': 'Special Illustration Rare',
+}
 
 // --- Sealed product pricing via TCGCSV (free, no auth) ---------------------
 // Maps our pokemontcg.io set ids → TCGplayer group ids on tcgcsv.com (category 3).
@@ -13,6 +38,10 @@ const TCGCSV = 'https://tcgcsv.com/tcgplayer/3'
 const SET_GROUP = {
   sv8pt5:   23821, // Prismatic Evolutions
   zsv10pt5: 24325, // Black Bolt
+  rsv10pt5: 24326, // White Flare
+  cel25:    2867,  // Celebrations
+  g1:       1728,  // Generations
+  base1:    604,   // Base Set (1999) — vintage vault product
   me1:      24380, // Mega Evolution
   me2:      24448, // Phantasmal Flames
   me2pt5:   24541, // Ascended Heroes
@@ -27,7 +56,7 @@ function classifyProduct(name) {
   const n = name.toLowerCase()
   // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs.
   if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|figure collection|art bundle|accessory|exclusive|\bcase\b/.test(n)) return null
-  if (/super-premium collection$/.test(n))  return { type: 'Super-Premium Collection', icon: '🏆', packs: 8, bonus: 'promo' }
+  if (/super-premium collection$/.test(n))  return { type: 'Super-Premium Collection', icon: '🏆', packs: 15, bonus: 'promo' }
   if (/premium .*collection$|premium figure collection$/.test(n)) return { type: 'Premium Collection', icon: '💎', packs: 7, bonus: 'promo' }
   if (/elite trainer box$/.test(n))         return { type: 'Elite Trainer Box', icon: '📦', packs: 9, bonus: 'promo' }
   if (/booster box$/.test(n))               return { type: 'Booster Box', icon: '🗃️', packs: 36, bonus: null }
@@ -154,6 +183,60 @@ async function fetchSealed(groupId) {
   return Object.values(byType).sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
 }
 
+// Build a whole Japanese set from TCGCSV category 85 (no pokemontcg.io equivalent).
+// Cards carry real names/numbers/prices/images + engine-mapped rarities; sealed
+// products are classified the same way as English sets.
+async function fetchJapaneseSet(cfg) {
+  const CAT = 'https://tcgcsv.com/tcgplayer/85'
+  let prods, prices
+  try {
+    prods = (await getJSON(`${CAT}/${cfg.tcgGroup}/products`)).results || []
+    prices = (await getJSON(`${CAT}/${cfg.tcgGroup}/prices`)).results || []
+  } catch (e) {
+    console.log(`    (JP fetch failed for group ${cfg.tcgGroup}: ${e.message})`)
+    return null
+  }
+  const priceById = {}
+  for (const pr of prices) {
+    const m = pr.marketPrice ?? pr.midPrice
+    if (m && priceById[pr.productId] == null) priceById[pr.productId] = Math.round(m * 100) / 100
+  }
+  const cards = []
+  const byType = {}
+  for (const p of prods) {
+    const ext = Object.fromEntries((p.extendedData || []).map(e => [e.name, e.value]))
+    if (ext.Number) {
+      const jpR = ext.Rarity || 'Common'
+      cards.push({
+        id: `${cfg.id}-${String(ext.Number).split('/')[0].replace(/^0+/, '') || '0'}`,
+        name: p.cleanName || p.name,
+        number: String(ext.Number).split('/')[0],
+        rarity: JP_RARITY_MAP[jpR] || 'Common',
+        supertype: 'Pokémon',
+        img: p.imageUrl,
+        imgLarge: p.imageUrl?.replace('_200w', '_400w') || p.imageUrl,
+        price: priceById[p.productId] ?? null,
+      })
+    } else {
+      const cls = classifyProduct(p.name)
+      if (!cls) continue
+      const price = priceById[p.productId]
+      if (price == null) continue
+      const cur = byType[cls.type]
+      if (!cur || price < cur.price) byType[cls.type] = { ...cls, name: p.name, price, tcgId: p.productId }
+    }
+  }
+  const order = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
+    'Booster Bundle','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box']
+  const products = Object.values(byType).sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
+  return {
+    id: cfg.id, name: cfg.name, series: cfg.series, releaseDate: cfg.releaseDate,
+    printedTotal: cards.length, total: cards.length,
+    logo: undefined, symbol: undefined, japanese: true,
+    cards, products,
+  }
+}
+
 async function main() {
   console.log('Fetching latest sets…')
   const setsResp = await getJSON(`${API}/sets?orderBy=-releaseDate&pageSize=${NUM_SETS}`)
@@ -202,8 +285,25 @@ async function main() {
       }
       console.log(`    singles fallback: filled ${filled}/${missing} missing prices from TCGCSV`)
     }
-    const products = await fetchSealed(SET_GROUP[set.id])
-    if (products.length) console.log(`    sealed: ${products.map(p => p.type).join(', ')}`)
+    let products = await fetchSealed(SET_GROUP[set.id])
+    // Set-specific fixed promos: the Prismatic Evolutions Super-Premium Collection
+    // ALWAYS ships the Eevee ex Special Illustration Rare (#167 in this print) as its
+    // bonus card, not a random hit. Tag the product so the engine mints that exact card.
+    if (set.id === 'sv8pt5') {
+      const spc = products.find(p => p.type === 'Super-Premium Collection')
+      if (spc) spc.fixedPromo = `${set.id}-167`
+    }
+    // Vintage vault sets (1999 Base Set): pick the cheapest sealed pack TCGCSV has
+    // (any finish) as the lone "heavy" vintage pack — a single unsearched 11-card
+    // pack that can hold a Charizard. If TCGCSV has no clean pack price, fall back
+    // to a market-realistic ask. These are never sold in the normal shop.
+    if (VINTAGE_SETS.has(set.id)) {
+      const vintagePack = pickVintagePack(products)
+      products = [vintagePack]
+      console.log(`    vintage pack: ${vintagePack.name || 'Base Set Pack'} @ $${vintagePack.price}`)
+    } else if (products.length) {
+      console.log(`    sealed: ${products.map(p => p.type).join(', ')}`)
+    }
     out.push({
       id: set.id,
       name: set.name,
@@ -213,9 +313,21 @@ async function main() {
       total: set.total,
       logo: set.images?.logo,
       symbol: set.images?.symbol,
+      vintage: VINTAGE_SETS.has(set.id) || undefined, // shop hides these; shown only at the Vintage Vault
       cards: slim,
       products, // real sealed product types + live market prices (TCGCSV)
     })
+    await new Promise(r => setTimeout(r, 300))
+  }
+
+  // Japanese-only sets (TCGCSV category 85 — no pokemontcg.io equivalent).
+  for (const cfg of JP_SETS) {
+    console.log(`  ${cfg.name} (${cfg.id}) [JP]…`)
+    const jp = await fetchJapaneseSet(cfg)
+    if (!jp) { console.log('    skipped (fetch failed)'); continue }
+    const priced = jp.cards.filter(c => c.price != null).length
+    console.log(`    ${jp.cards.length} cards (${priced} priced), sealed: ${jp.products.map(p => p.type).join(', ') || 'none'}`)
+    out.push(jp)
     await new Promise(r => setTimeout(r, 300))
   }
 
@@ -224,6 +336,20 @@ async function main() {
   const totalCards = out.reduce((a, s) => a + s.cards.length, 0)
   const totalProd = out.reduce((a, s) => a + (s.products?.length || 0), 0)
   console.log(`Wrote src/data/sets.json — ${out.length} sets, ${totalCards} cards, ${totalProd} sealed products.`)
+}
+
+// Choose the vintage "heavy pack" product. Prefer a real sealed Booster Pack price
+// from TCGCSV; otherwise fall back to a market-plausible 1999 Base Set pack ask.
+// Always emits a single-pack product tagged `vintage` with a fat price tag.
+function pickVintagePack(products) {
+  const realPack = products.find(p => p.packs === 1)
+  const price = realPack ? Math.max(realPack.price, 250) : 600 // sealed Base packs run hundreds+
+  return {
+    type: 'Vintage Booster Pack', icon: '🗝️', packs: 1, bonus: null, vintage: true,
+    name: realPack?.name || '1999 Base Set Booster Pack',
+    price: Math.round(price * 100) / 100,
+    tcgId: realPack?.tcgId,
+  }
 }
 
 function bestPrice(c) {

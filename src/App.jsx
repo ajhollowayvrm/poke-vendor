@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney } from './game/engine'
+import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney } from './game/engine'
 import { useGame } from './game/store'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -166,7 +166,7 @@ function Shop({ cash, onBuy }) {
         each product rips into its real pack count (+ a guaranteed promo for ETBs/tins/premiums). Ripping sealed is usually a loss — the chase is the fun.
       </div>
       <div className="grid shop-grid">
-        {SETS.map(set => {
+        {SHOP_SETS.map(set => {
           const products = setProducts(set)
           return (
             <div className="product" key={set.id}>

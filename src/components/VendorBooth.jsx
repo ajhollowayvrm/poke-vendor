@@ -4,7 +4,63 @@ import { cardValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
 import Haggle from './Haggle'
 
-export default function VendorBooth({ booth, onClose, flash }) {
+export default function VendorBooth({ booth, onClose, flash, onRipVault }) {
+  // The Vintage Vault is a special booth: no singles bin, just one heavy sealed
+  // vintage pack you can buy and crack right here on the floor.
+  if (booth.special === 'vault') return <VaultBooth booth={booth} onClose={onClose} onRipVault={onRipVault} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} />
+}
+
+// The rare travelling vintage dealer — sells a single sealed 1999 Base Set pack.
+function VaultBooth({ booth, onClose, onRipVault }) {
+  const cash = useGame(s => s.cash)
+  const { setName, logo, product, ask } = booth.vault
+  const afford = cash >= ask
+  function buy() {
+    const ok = window.confirm(
+      `Buy a sealed ${product.name} for ${fmtMoney(ask)}?\n\n` +
+      `• A genuine heavy vintage pack — unsearched, mint, straight from the case.\n` +
+      `• Could hold a base-set holo (Charizard, Blastoise, Venusaur…) — or nothing.\n` +
+      `• You'll crack it right here. The whole hall will be watching.`
+    )
+    if (!ok) return
+    onClose()
+    onRipVault?.({ setId: booth.vault.setId, product: { ...product, price: ask } })
+  }
+  return (
+    <div className="modalbg" onClick={onClose}>
+      <div className="modal vault-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
+        <div className="vault-ribbon">✨ SPECIAL EVENT ✨</div>
+        <div className="row" style={{ alignItems: 'baseline' }}>
+          <h2 style={{ marginRight: 'auto' }}>🗝️ The Vintage Vault</h2>
+          <span className="pill" style={{ background: '#ffd70022', color: '#ffd700' }}>Vintage Dealer</span>
+        </div>
+        <p className="muted" style={{ marginTop: 2 }}>
+          A travelling legend who deals only in sealed vintage. Today: one genuine
+          <b> {product.name}</b>. Unsearched, heavy, the real thing.
+        </p>
+        <div className="vault-offer">
+          {logo && <img className="vault-logo" src={logo} alt={setName} />}
+          <div className="vault-pack">🗝️</div>
+          <div className="vault-info">
+            <div className="vault-name">{product.name}</div>
+            <div className="muted" style={{ fontSize: 12 }}>1 sealed pack · base-set holos inside (Charizard, Blastoise, Venusaur…)</div>
+            <div className="vault-ask">{fmtMoney(ask)}</div>
+          </div>
+        </div>
+        <div className="row" style={{ marginTop: 14 }}>
+          <button className="btn gold" disabled={!afford} onClick={buy}>
+            {afford ? `Buy & rip — ${fmtMoney(ask)}` : `Need ${fmtMoney(ask)}`}
+          </button>
+          <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onClose}>Walk away</button>
+        </div>
+        {!afford && <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>Come back when you've built up some cash — vintage isn't cheap.</p>}
+      </div>
+    </div>
+  )
+}
+
+function RegularBooth({ booth, onClose, flash }) {
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
   const buyFromVendor = useGame(s => s.buyFromVendor)

@@ -248,6 +248,28 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .booth.arch-fair { background: linear-gradient(180deg,#36d399,#1d9268); }
 .booth.arch-newbie { background: linear-gradient(180deg,#8c97b8,#5a637f); }
 .booth.arch-sharp { background: linear-gradient(180deg,#ff9f43,#c46a12); }
+/* the rare Vintage Vault booth — unmistakable gold, gently pulsing to draw the eye */
+.booth.vault-booth { background: linear-gradient(180deg,#ffe27a,#d4a017);
+  box-shadow: 0 0 14px #ffd70088, inset 0 0 0 1.5px #fff6; animation: vaultpulse 1.8s ease-in-out infinite; }
+.booth.vault-booth .boothname { color:#3a2b00; text-shadow:none; }
+@keyframes vaultpulse { 0%,100%{ box-shadow:0 0 10px #ffd70066, inset 0 0 0 1.5px #fff6 }
+  50%{ box-shadow:0 0 22px #ffd700cc, inset 0 0 0 1.5px #fff9 } }
+
+/* --- Vintage Vault modal + offer --- */
+.vault-ribbon { display:inline-block; align-self:flex-start; font-weight:900; font-size:11px;
+  letter-spacing:1.5px; color:#3a2b00; background:linear-gradient(90deg,#ffe27a,#ffd700);
+  padding:3px 12px; border-radius:999px; margin-bottom:10px; }
+.vault-modal { border-color:#ffd70066; box-shadow:0 0 40px #ffd70022; }
+.vault-offer { display:flex; align-items:center; gap:14px; margin-top:14px; padding:14px;
+  border-radius:14px; background:#ffd7000d; border:1px solid #ffd70033; }
+.vault-logo { height:40px; width:auto; flex:none; }
+.vault-pack { font-size:46px; flex:none; filter:drop-shadow(0 4px 8px #000a); }
+.vault-info { flex:1; min-width:0; }
+.vault-name { font-weight:800; font-size:15px; }
+.vault-ask { font-weight:900; font-size:22px; color:#ffd700; margin-top:4px; }
+.vault-rip-bg { background:#000d; }
+.vault-rip-modal { width:96vw; max-height:94vh; overflow:auto; border-color:#ffd70055;
+  box-shadow:0 0 60px #ffd70033; display:flex; flex-direction:column; align-items:center; }
 .avatar { position:absolute; display:flex; align-items:center; justify-content:center; font-size: 28px;
   transition: left .09s linear, top .09s linear; z-index: 6; filter: drop-shadow(0 4px 3px #000a); }
 .npc { position:absolute; display:flex; align-items:center; justify-content:center; font-size: 20px;
@@ -424,6 +446,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rip-now-name { font-weight: 800; font-size: 13px; margin-top: 8px; line-height: 1.2; }
 .rip-now-meta { font-size: 11px; font-weight: 700; margin-top: 2px; }
 .rip-now-val { font-size: 14px; font-weight: 900; color: var(--green); margin-top: 4px; }
+/* the "if it grades PSA 10" tease on a fresh hit */
+.rip-now-psa10 { font-size: 11px; font-weight: 700; margin-top: 3px; color: #7cf0ff;
+  letter-spacing: .2px; }
+.rip-now-psa10 b { font-weight: 900; }
+.rip-hit-psa10 { font-size: 10px; font-weight: 700; color: #7cf0ff; margin-top: 1px; text-align: right; }
 /* right: running hit list */
 .rip-hits-list { display:flex; flex-direction:column; gap: 8px; max-height: 460px; overflow-y: auto; }
 .rip-hit-row { display:flex; align-items:center; gap: 8px; padding: 6px; border-radius: 10px;

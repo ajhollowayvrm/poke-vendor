@@ -4,6 +4,15 @@ import data from '../data/sets.json'
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
 
+// Sets sold in the normal shop (excludes `vintage` sets, which only appear via the
+// rare "Vintage Vault" vendor at higher-tier shows).
+export const SHOP_SETS = data.sets.filter(s => !s.vintage)
+// Vintage sets, keyed for the Vault vendor. The Vault sells these heavy old packs.
+export const VINTAGE_SETS = data.sets.filter(s => s.vintage)
+export function vintageProduct(set) {
+  return (set.products || []).find(p => p.vintage) || setProducts(set)[0]
+}
+
 // Rarity tiers ordered low → high, used for sorting/coloring and "hit" detection.
 export const RARITY_ORDER = [
   'Common', 'Uncommon', 'Rare', 'Rare Holo', 'Double Rare',
@@ -247,8 +256,10 @@ export function instance(card, source = 'sealed') {
   }
 }
 
-// Flat pool of every card across all sets (for vendor stock / offers / encounters).
-const ALL_CARDS = SETS.flatMap(s => s.cards)
+// Flat pool of every card across all NON-vintage sets (for vendor stock / offers /
+// encounters / wants). Vintage Base Set cards are exclusive to the Vintage Vault —
+// they don't float around ordinary booths, which keeps a Base Charizard special.
+const ALL_CARDS = SHOP_SETS.flatMap(s => s.cards)
 export function randomCard() { return instance(pick(ALL_CARDS)) }
 
 // Real-data price ceiling — anything requested above this is a synthesized "grail".
@@ -388,6 +399,16 @@ export function gradedValue(card) {
 }
 export function cardValue(card) { return card.grade ? gradedValue(card) : rawValue(card) }
 
+// Hypothetical "if this graded PSA 10" value for a still-raw card — what the slab
+// would be worth at a perfect grade. Mirrors gradedValue's PSA-10 math without
+// mutating the card. Used to tease the upside on a fresh hit during a rip.
+export function psa10Value(card) {
+  if (card.grade) return gradedValue(card)
+  const base = rawValue(card)
+  const scarcityBoost = 1 + Math.min(2, base / 50)
+  return round2(base * GRADE_MULT[10] * scarcityBoost)
+}
+
 // ---- Grading (PSA-style subgrades) ----
 // `fee` is the LIST price (before your loyalty discount). Raised so early
 // grading stings; the relationship below brings effective fees back down.
@@ -521,8 +542,14 @@ export function openProduct(set, product) {
 }
 
 // Mint the guaranteed bonus promo for a product (null if it has no bonus).
+// A product may pin an EXACT card via `fixedPromo` (a card id) — e.g. the
+// Prismatic Evolutions Super-Premium Collection always ships the Eevee ex #174.
 export function makeProductPromo(set, product) {
   if (product.bonus !== 'promo') return null
+  if (product.fixedPromo) {
+    const exact = set.cards.find(c => c.id === product.fixedPromo)
+    if (exact) { const c = instance(exact); c._promo = true; return c }
+  }
   const byR = cardsByRarity(set)
   const promoPool = byR['Ultra Rare'] || byR['Illustration Rare'] || byR['Double Rare'] || byR['Rare Holo']
   if (!promoPool?.length) return null

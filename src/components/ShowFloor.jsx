@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, SETS } from '../game/engine'
+import { openPack, rarityRank, cardValue, fmtMoney, SHOP_SETS as SETS, VINTAGE_SETS, vintageProduct } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
+import PackOpening from './PackOpening'
 
 const TILE = 52
 const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
@@ -32,6 +33,7 @@ export default function ShowFloor({ show, onLeave }) {
   const posRef = useRef(pos)
   useEffect(() => { posRef.current = pos }, [pos])
   const [openBooth, setOpenBooth] = useState(null)
+  const [vaultRip, setVaultRip] = useState(null) // { set, product } when ripping a Vintage Vault pack on the floor
   const [encounter, setEncounter] = useState(null)
   const [toast, setToast] = useState(null)
   const [boothAlert, setBoothAlert] = useState(null)
@@ -186,6 +188,19 @@ export default function ShowFloor({ show, onLeave }) {
   }
   function pick(opt) { flash(resolveEncounter(opt.effect)); setEncounter(null) }
 
+  // Buy + rip a Vintage Vault pack right here on the floor. Charges cash, records
+  // the spend against the set, then hands off to the PackOpening overlay.
+  const buyVault = useCallback(({ setId, product }) => {
+    const set = VINTAGE_SETS.find(s => s.id === setId)
+    if (!set) return
+    const g = useGame.getState()
+    if (g.cash < product.price) { flash(`Not enough cash for the ${product.name}.`); return }
+    if (!g.spend(product.price)) return
+    g.recordSetSpend(set.id, product.price)
+    g.log('buy', `Bought a ${product.name} from the Vintage Vault (${show.name})`, -product.price)
+    setVaultRip({ set, product })
+  }, [show.name, flash])
+
   return (
     <div className="floorwrap">
       <div className="floorhud">
@@ -224,9 +239,9 @@ export default function ShowFloor({ show, onLeave }) {
             return (
               <div key={`${x}-${y}`} className={`tile ${isWall?'wall':''}`} style={{ left:x*TILE, top:y*TILE, width:TILE, height:TILE }}>
                 {boothIdx !== null && (
-                  <div className={`booth arch-${booths[boothIdx].archetype}`} title={booths[boothIdx].name}>
+                  <div className={`booth arch-${booths[boothIdx].archetype} ${booths[boothIdx].special === 'vault' ? 'vault-booth' : ''}`} title={booths[boothIdx].name}>
                     <span className="boothname">{booths[boothIdx].name}</span>
-                    <span className="boothicon">🛒</span>
+                    <span className="boothicon">{booths[boothIdx].special === 'vault' ? '🗝️' : '🛒'}</span>
                   </div>
                 )}
                 {isPlayer && <div className="booth player"><span className="boothname">YOUR BOOTH</span><span className="boothicon">⭐</span></div>}
@@ -270,8 +285,17 @@ export default function ShowFloor({ show, onLeave }) {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} />}
+      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
+
+      {vaultRip && (
+        <div className="modalbg vault-rip-bg">
+          <div className="modal vault-rip-modal" style={{ maxWidth: 980 }}>
+            <div className="vault-ribbon">🗝️ VINTAGE VAULT — {vaultRip.product.name}</div>
+            <PackOpening set={vaultRip.set} product={vaultRip.product} singleNoReRip onExit={() => setVaultRip(null)} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

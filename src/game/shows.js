@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SETS, rarityRank } from './engine'
+import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SETS, rarityRank, VINTAGE_SETS, vintageProduct } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -26,7 +26,7 @@ const CITIES = ['Cerulean','Saffron','Celadon','Viridian','Pewter','Vermilion','
 const VENUES = ['Community Center','Convention Hall','Gymnasium','Expo Center','Hotel Ballroom','Trade Center']
 const VENDOR_NAMES = ['Ace Cards','Holo Haven','The Grading Gremlin','Pristine Pulls','Binder Bros',
   'Mint Condition','Slab City','Pocket Monsters Co.','Gemstone Cards','Foil & Fortune','Rip City',
-  'The Card Cabin','Vintage Vault','Chase Hunters','Top Loader Trading','Sketchy Steve\'s Singles',
+  'The Card Cabin','Cardboard Gold','Chase Hunters','Top Loader Trading','Sketchy Steve\'s Singles',
   'Honest Hannah\'s','Lucky Pull Lou','Whale Watchers','Bargain Bin Barry']
 
 function rng(seed) { // deterministic per-show generator
@@ -195,6 +195,33 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
       buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
       stock,
       // grid position assigned by the floor layout
+    })
+  }
+
+  // --- SPECIAL EVENT: the Vintage Vault ----------------------------------------
+  // A rare travelling dealer who only shows up at bigger shows (Regional+), selling
+  // a genuine sealed 1999 Base Set pack — heavy, unsearched, Charizard-or-bust. Deterministic
+  // per show-day (uses the seeded rng) so it's stable while you walk the floor, and
+  // its odds climb with the show tier. When it appears it's the talk of the hall.
+  const VAULT_TIERS = { regional: 0.18, national: 0.30, invitational: 0.55, worlds: 0.85 }
+  const vaultChance = VAULT_TIERS[show.tierKey] || 0
+  if (vaultChance && VINTAGE_SETS.length && r() < vaultChance) {
+    const vSet = pickR(r, VINTAGE_SETS)
+    const product = vintageProduct(vSet)
+    // The dealer marks the heavy pack UP — scarcity tax for a sealed vintage pack at
+    // a show. Bigger shows, bigger markup (and bigger crowd watching you rip it).
+    const markup = 1.15 + r() * (show.tierKey === 'worlds' ? 0.9 : 0.45)
+    const ask = round2(product.price * markup)
+    booths.push({
+      id: `${show.id}-vault`,
+      name: 'The Vintage Vault',
+      archetype: 'vault',
+      archLabel: 'Vintage Dealer',
+      vibe: 'a legend — deals only in sealed vintage',
+      buyMult: 0.9,
+      special: 'vault',
+      vault: { setId: vSet.id, setName: vSet.name, logo: vSet.logo, product, ask },
+      stock: [], // the Vault doesn't sell singles — just the one heavy pack
     })
   }
   return booths
