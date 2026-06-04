@@ -166,7 +166,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               <p className="muted" style={{ fontSize: 13, margin: '4px 0' }}>No hits this time — better luck next rip. 🤞</p>
             ) : (
               <div className="rip-summary-hits-grid">
-                {hits.map((c, i) => {
+                {[...hits].sort((a, b) => cardValue(b) - cardValue(a)).map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   return (
                     <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
@@ -352,7 +352,7 @@ function HitList({ hits }) {
         <div className="muted" style={{ fontSize: 12 }}>No hits yet — fingers crossed. 🤞</div>
       ) : (
         <div className="rip-hits-list">
-          {hits.map((c, i) => {
+          {[...hits].sort((a, b) => cardValue(b) - cardValue(a)).map((c, i) => {
             const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
             return (
               <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
