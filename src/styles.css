@@ -486,6 +486,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rip-hit-meta { font-size: 10px; font-weight: 700; }
 .rip-hit-val { font-size: 12px; font-weight: 800; color: var(--green); flex:none; }
 @keyframes hitrowin { from{opacity:0; transform: translateX(8px)} to{opacity:1; transform:none} }
+/* finished-summary hit list (shown after Skip rest / finishing a rip) */
+.rip-summary-hits { margin: 14px 0 4px; text-align: left; }
+.rip-summary-hits-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+  max-height: 300px; overflow-y: auto; }
+@media (max-width: 560px) { .rip-summary-hits-grid { grid-template-columns: 1fr; } }
 /* stack the side panels under the cards on narrow screens */
 @media (max-width: 860px) {
   .rip-layout { flex-direction: column; align-items: stretch; }

@@ -158,6 +158,35 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               🎁 Bonus promo: <b style={{ color: rarityColor(promo.rarity) }}>{promo.name}</b> · {fmtMoney(cardValue(promo))}
             </p>
           )}
+          <div className="rip-summary-hits">
+            <div className="rip-side-head" style={{ textAlign: 'center' }}>
+              {hits.length ? `Hits (${hits.length})` : 'Hits'}
+            </div>
+            {hits.length === 0 ? (
+              <p className="muted" style={{ fontSize: 13, margin: '4px 0' }}>No hits this time — better luck next rip. 🤞</p>
+            ) : (
+              <div className="rip-summary-hits-grid">
+                {hits.map((c, i) => {
+                  const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+                  return (
+                    <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
+                      <img src={c.img} alt="" />
+                      <div className="rip-hit-info">
+                        <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
+                        <div className="rip-hit-meta" style={{ color: edge }}>
+                          {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
+                        </div>
+                      </div>
+                      <div className="rip-hit-val">
+                        {fmtMoney(cardValue(c))}
+                        {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
           <div className="row" style={{ justifyContent: 'center', marginTop: 12 }}>
             <button className="btn gold" style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
           </div>

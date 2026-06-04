@@ -18,7 +18,6 @@ export default function BoothInbox() {
   const currentDay = useGame(s => s.currentDay)
   const clearItem = useGame(s => s.clearInboxItem)
   const resolveEncounter = useGame(s => s.resolveEncounter)
-  const nextDay = useGame(s => s.nextDay)
   const wantList = useGame(s => s.wantList)
   const cardsForWant = useGame(s => s.cardsForWant)
   const fulfillWant = useGame(s => s.fulfillWant)
@@ -46,12 +45,6 @@ export default function BoothInbox() {
     setActive(null)
   }
 
-  function passDay() {
-    const r = nextDay()
-    if (r.added) flash(`A day passes — ${r.added} new order${r.added>1?'s':''} came in.`)
-    else flash('A quiet day — no new orders.')
-  }
-
   return (
     <>
       <div className="banner" style={{ marginTop: 16 }}>
@@ -69,8 +62,7 @@ export default function BoothInbox() {
           : { background:'#3b6cff22', color:'#9db8ff' }}>
           📨 Inbox {inbox.length}/{INBOX_CAP}{inbox.length >= INBOX_CAP ? ' · full!' : inbox.length >= INBOX_CAP - 1 ? ' · nearly full' : ''}
         </span>
-        <button className="btn" style={{ flex:'none', maxWidth: 150 }} onClick={passDay}>⏭️ Next day</button>
-        <span className="muted" style={{ fontSize: 12 }}>Pass a day to bring in orders (attending a show passes several at once).</span>
+        <span className="muted" style={{ fontSize: 12 }}>Orders arrive as days pass — attend a show to bring in several at once.</span>
       </div>
 
       {dailyGoals.length > 0 && (
@@ -134,7 +126,7 @@ export default function BoothInbox() {
       )}
 
       {validInbox.length === 0 ? (
-        <div className="empty">No orders waiting. Hit <b>Next day</b> (or attend a show) to bring customers in. 📨</div>
+        <div className="empty">No orders waiting. Let a day pass (or attend a show) to bring customers in. 📨</div>
       ) : (
         <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', marginTop: 14 }}>
           {validInbox.map(({ enc, i }) => {
