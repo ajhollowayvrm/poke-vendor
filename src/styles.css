@@ -32,6 +32,19 @@ button { font-family: inherit; cursor: pointer; }
 .tab.active { background: var(--accent2); color: #fff; }
 .tab:hover:not(.active) { color: var(--txt); background: #ffffff10; }
 
+/* ⚙️ gear button in the top bar (opens Settings + Stats overlay) */
+.gear-btn { flex: 0 0 auto; background: #ffffff10; border: 1px solid var(--line); color: var(--dim);
+  width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; line-height: 1; }
+.gear-btn:hover { background: #ffffff1c; color: #fff; }
+
+/* Sub-tabs (inside Collection, and inside the Settings overlay) */
+.subtabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 4px; }
+.subtab { background: #ffffff0a; border: 1px solid var(--line); color: var(--dim);
+  padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
+.subtab:hover:not(.active) { color: var(--txt); background: #ffffff14; }
+.subtab.active { background: var(--accent2); color: #fff; border-color: transparent; }
+.settings-modal { max-height: 88vh; overflow-y: auto; }
+
 /* Mobile bottom nav — hidden on desktop, shown fixed at <=640px (see media query). */
 .bottomnav { display: none; }
 .pill { background:#ffffff14; color:var(--dim); border-radius:999px; padding:3px 9px; font-size:12px; font-weight:700;}

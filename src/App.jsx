@@ -16,15 +16,17 @@ import PriceGuide from './components/PriceGuide'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 
-const TABS = ['shop', 'shows', 'myshop', 'upgrades', 'collection', 'prices', 'bench', 'stats', 'settings']
-const TAB_LABEL = { shop: 'Buy', shows: 'Shows', myshop: 'Sell', upgrades: 'Upgrades',
-  collection: 'Collection', prices: 'Prices', bench: 'Grader', stats: 'Stats', settings: 'Settings' }
+// Primary nav: the core loop only. Reference/meta screens (Grader, Prices) live
+// as sub-tabs inside Collection; Settings + Stats live behind the ⚙️ gear in the top bar.
+const TABS = ['shop', 'myshop', 'shows', 'upgrades', 'collection']
+const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', shows: 'Shows', upgrades: 'Upgrades', collection: 'Collection' }
 // Icons for the mobile bottom nav (label is shown small underneath).
-const TAB_ICON = { shop: '🛒', shows: '🎪', myshop: '🏬', upgrades: '⬆️',
-  collection: '🗂️', prices: '🏷️', bench: '🔬', stats: '📊', settings: '⚙️' }
+const TAB_ICON = { shop: '🛒', myshop: '🏬', shows: '🎪', upgrades: '⬆️', collection: '🗂️' }
 
 export default function App() {
   const [tab, setTab] = useState('shop')
+  const [collTab, setCollTab] = useState('cards') // Collection sub-tab: cards | grader | prices
+  const [settingsOpen, setSettingsOpen] = useState(false) // ⚙️ overlay (Settings + Stats)
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
   const [activeShow, setActiveShow] = useState(null) // show being attended
@@ -124,8 +126,8 @@ export default function App() {
           {TABS.map(t => (
             <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
               {TAB_LABEL[t]}
-              {t === 'bench' && pendingCount ? ` (${pendingCount})` : ''}
               {t === 'myshop' && inboxCount ? ` (${inboxCount})` : ''}
+              {t === 'collection' && pendingCount ? ` (${pendingCount})` : ''}
             </button>
           ))}
         </div>
@@ -133,6 +135,7 @@ export default function App() {
           <GameClock />
           <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
           <div className="cash">${cash.toFixed(2)}<small>balance</small></div>
+          <button className="gear-btn" aria-label="Settings & Stats" title="Settings & Stats" onClick={() => setSettingsOpen(true)}>⚙️</button>
         </div>
       </div>
 
@@ -146,19 +149,28 @@ export default function App() {
       {tab === 'shows' && <Calendar onAttend={attendShow} />}
       {tab === 'myshop' && <BoothInbox />}
       {tab === 'upgrades' && <UpgradeShop />}
-      {tab === 'collection' && <Collection onPick={setPicked} />}
-      {tab === 'prices' && <PriceGuide />}
-      {tab === 'bench' && <Bench />}
-      {tab === 'stats' && <Stats />}
-      {tab === 'settings' && <Settings />}
+
+      {tab === 'collection' && (
+        <>
+          <div className="subtabs">
+            <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ Cards</button>
+            <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
+            <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
+          </div>
+          {collTab === 'cards' && <Collection onPick={setPicked} />}
+          {collTab === 'grader' && <Bench />}
+          {collTab === 'prices' && <PriceGuide />}
+        </>
+      )}
 
       {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+      {settingsOpen && <SettingsOverlay onClose={() => setSettingsOpen(false)} />}
 
       {/* Mobile-only floating bottom nav (top tab strip is hidden at <=640px).
-          Icon + small label; horizontally scrollable for the full tab set. */}
+          Icon + small label; the 5 core tabs + a gear for Settings/Stats. */}
       <nav className="bottomnav" aria-label="Primary">
         {TABS.map(t => {
-          const badge = t === 'bench' ? pendingCount : t === 'myshop' ? inboxCount : 0
+          const badge = t === 'myshop' ? inboxCount : t === 'collection' ? pendingCount : 0
           return (
             <button key={t} className={`bnav-btn ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
               <span className="bnav-icon">{TAB_ICON[t]}{badge ? <span className="bnav-badge">{badge}</span> : null}</span>
@@ -166,6 +178,10 @@ export default function App() {
             </button>
           )
         })}
+        <button className="bnav-btn" onClick={() => setSettingsOpen(true)}>
+          <span className="bnav-icon">⚙️</span>
+          <span className="bnav-label">More</span>
+        </button>
       </nav>
     </div>
   )
@@ -209,6 +225,29 @@ function AwaySummary({ summary, onClose }) {
           {added ? <div className="muted" style={{ fontSize: 13 }}>{added} new order{added === 1 ? '' : 's'} waiting</div> : null}
         </div>
         <button className="btn gold" style={{ maxWidth: 160 }} onClick={onClose}>Got it →</button>
+      </div>
+    </div>
+  )
+}
+
+// ⚙️ overlay holding the lower-frequency screens that no longer warrant a nav tab:
+// Settings and Stats, switchable via a sub-tab inside the modal.
+function SettingsOverlay({ onClose }) {
+  const [pane, setPane] = useState('settings')
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  return (
+    <div className="modalbg" onClick={onClose} style={{ zIndex: 40 }}>
+      <div className="modal settings-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720, width: '100%' }}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+        <div className="subtabs" style={{ marginBottom: 14 }}>
+          <button className={`subtab ${pane === 'settings' ? 'active' : ''}`} onClick={() => setPane('settings')}>⚙️ Settings</button>
+          <button className={`subtab ${pane === 'stats' ? 'active' : ''}`} onClick={() => setPane('stats')}>📊 Stats</button>
+        </div>
+        {pane === 'settings' ? <Settings /> : <Stats />}
       </div>
     </div>
   )
