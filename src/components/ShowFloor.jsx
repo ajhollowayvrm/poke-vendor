@@ -33,6 +33,10 @@ export default function ShowFloor({ show, onLeave }) {
   const posRef = useRef(pos)
   useEffect(() => { posRef.current = pos }, [pos])
   const [openBooth, setOpenBooth] = useState(null)
+  // Cards you've already haggled this show — one negotiation per card (no re-rolling
+  // a vendor by re-opening the haggle). Persists across booth re-opens for the whole show.
+  const [haggledIds, setHaggledIds] = useState(() => new Set())
+  const markHaggled = useCallback((uid) => setHaggledIds(prev => { const n = new Set(prev); n.add(uid); return n }), [])
   const [vaultRip, setVaultRip] = useState(null) // { set, product } when ripping a Vintage Vault pack on the floor
   const [encounter, setEncounter] = useState(null)
   const [toast, setToast] = useState(null)
@@ -285,7 +289,8 @@ export default function ShowFloor({ show, onLeave }) {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault} />}
+      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault}
+        haggledIds={haggledIds} onHaggled={markHaggled} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
       {vaultRip && (

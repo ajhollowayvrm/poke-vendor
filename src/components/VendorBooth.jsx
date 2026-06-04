@@ -4,11 +4,11 @@ import { cardValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
 import Haggle from './Haggle'
 
-export default function VendorBooth({ booth, onClose, flash, onRipVault }) {
+export default function VendorBooth({ booth, onClose, flash, onRipVault, haggledIds, onHaggled }) {
   // The Vintage Vault is a special booth: no singles bin, just one heavy sealed
   // vintage pack you can buy and crack right here on the floor.
   if (booth.special === 'vault') return <VaultBooth booth={booth} onClose={onClose} onRipVault={onRipVault} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} haggledIds={haggledIds} onHaggled={onHaggled} />
 }
 
 // The rare travelling vintage dealer — sells a single sealed 1999 Base Set pack.
@@ -60,7 +60,8 @@ function VaultBooth({ booth, onClose, onRipVault }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash }) {
+function RegularBooth({ booth, onClose, flash, haggledIds, onHaggled }) {
+  const haggled = haggledIds || new Set()
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
   const buyFromVendor = useGame(s => s.buyFromVendor)
@@ -96,7 +97,11 @@ function RegularBooth({ booth, onClose, flash }) {
         <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(mkt)}</div>
         <div className="row" style={{ gap: 6 }}>
           <button className="btn" disabled={cash < card._ask} onClick={() => buyAt(card, card._ask)}>Buy</button>
-          <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'buy', card, market: mkt, start: card._ask })}>Haggle</button>
+          <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} disabled={haggled.has(card.uid)}
+            title={haggled.has(card.uid) ? 'Already haggled this one — buy it or move on' : undefined}
+            onClick={() => setHaggle({ side:'buy', card, market: mkt, start: card._ask })}>
+            {haggled.has(card.uid) ? 'Haggled' : 'Haggle'}
+          </button>
         </div>
       </div>
     )
@@ -143,7 +148,11 @@ function RegularBooth({ booth, onClose, flash }) {
                   <CardTile card={card} interactive={false} />
                   <div className="row" style={{ gap: 6 }}>
                     <button className="btn alt" onClick={() => sellAt(card, offer)}>Sell {fmtMoney(offer)}</button>
-                    <button className="btn" style={{ flex:'none', maxWidth: 78 }} onClick={() => setHaggle({ side:'sell', card, market: mkt, start: offer })}>Haggle</button>
+                    <button className="btn" style={{ flex:'none', maxWidth: 78 }} disabled={haggled.has(card.uid)}
+                      title={haggled.has(card.uid) ? 'Already haggled this one — sell it or move on' : undefined}
+                      onClick={() => setHaggle({ side:'sell', card, market: mkt, start: offer })}>
+                      {haggled.has(card.uid) ? 'Haggled' : 'Haggle'}
+                    </button>
                   </div>
                 </div>
               )
@@ -157,10 +166,11 @@ function RegularBooth({ booth, onClose, flash }) {
         <Haggle
           side={haggle.side} card={haggle.card} market={haggle.market} start={haggle.start}
           archKey={booth.archetype} vendorName={booth.name}
-          onClose={() => setHaggle(null)}
+          onClose={(engaged) => { if (engaged) onHaggled?.(haggle.card.uid); setHaggle(null) }}
           onDeal={(price) => {
             if (haggle.side === 'buy') buyAt(haggle.card, price)
             else sellAt(haggle.card, price)
+            onHaggled?.(haggle.card.uid)
             setHaggle(null)
           }}
         />

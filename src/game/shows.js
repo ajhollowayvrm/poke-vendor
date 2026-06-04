@@ -115,9 +115,12 @@ export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
 export function haggleRound({ side, their, market, yourOffer, flex, round, archKey }) {
   // best price they'd ever agree to = market nudged by remaining flex
   const patience = Math.max(0, flex * (1 - round * 0.34)) // they get firmer each round
+  // BUYING: they won't sell below ~market — BUT never above what they're already asking
+  // (a mispriced gem priced under market stays a steal; they don't get to raise it on you).
+  // SELLING: they won't pay much over market, and never below their standing offer.
   const floorPrice = side === 'buy'
-    ? Math.max(market, their - (their - market) * (flex)) // buying: they won't go below ~market
-    : Math.min(market * 1.05, their + (market - their) * (flex)) // selling: won't pay much over market
+    ? Math.min(their, Math.max(market, their - (their - market) * flex))
+    : Math.max(their, Math.min(market * 1.05, their + (market - their) * flex))
   // how good is your offer for them?
   const goodForThem = side === 'buy' ? yourOffer >= floorPrice : yourOffer <= floorPrice
   // PRIDE WALK: low-flex sharks/lowballers won't fold to a near-market offer on

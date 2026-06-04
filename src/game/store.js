@@ -796,9 +796,13 @@ export const useGame = create(persist((set, get) => ({
       collection: s.collection.filter(c => c.uid !== uid),
       gradesSubmitted: s.gradesSubmitted + 1,
     }))
-    const readyAt = Date.now() + tier.days * dayLengthMs(get())
-    // remember the fee actually paid so the resolved grade records it, not list price
-    set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyAt, paidFee: fee }] }))
+    const dayMs = dayLengthMs(get())
+    const submittedAt = Date.now()
+    const readyAt = submittedAt + tier.days * dayMs
+    // remember the fee actually paid so the resolved grade records it, not list price.
+    // store submittedAt + the day-length used so the Bench progress/days-left stay correct
+    // even if the player later changes the day-length setting (readyAt is absolute).
+    set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyAt, submittedAt, dayMsAtSubmit: dayMs, paidFee: fee }] }))
     const disc = before.discount > 0 ? ` (${Math.round(before.discount*100)}% loyalty off)` : ''
     get().log('grade-submit', `Submitted ${card.name} (${tier.name}, $${fee.toFixed(2)}${disc})`, -fee)
     // crossed into a new loyalty tier?
@@ -819,11 +823,13 @@ export const useGame = create(persist((set, get) => ({
     const total = round2(feePer * cards.length)
     if (!get().spend(total)) return
     const uidSet = new Set(cards.map(c => c.uid))
-    const readyAt = Date.now() + tier.days * dayLengthMs(get())
+    const dayMs = dayLengthMs(get())
+    const submittedAt = Date.now()
+    const readyAt = submittedAt + tier.days * dayMs
     set(s => ({
       collection: s.collection.filter(c => !uidSet.has(c.uid)),
       gradesSubmitted: s.gradesSubmitted + cards.length,
-      pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, readyAt, paidFee: feePer }))],
+      pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, readyAt, submittedAt, dayMsAtSubmit: dayMs, paidFee: feePer }))],
     }))
     const bulk = bulkDiscount(cards.length)
     const notes = [before.discount > 0 ? `${Math.round(before.discount*100)}% loyalty` : null,

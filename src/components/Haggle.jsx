@@ -32,6 +32,10 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   const [round, setRound] = useState(0)
   const [log, setLog] = useState([`${vendorName}: "${line(side === 'buy' ? 'openBuy' : 'openSell', start)}"`])
   const [done, setDone] = useState(false)
+  // Whether the player actually negotiated (sent an offer / walked / out of rounds).
+  // A stray backdrop click before engaging doesn't burn the card's one haggle.
+  const [engaged, setEngaged] = useState(false)
+  const close = () => onClose(engaged)
 
   // suggested counter: nudge toward your favor from their current price
   const step = Math.max(0.25, Math.round(their * 0.12 * 100) / 100)
@@ -44,6 +48,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
 
   function send() {
     if (done) return
+    setEngaged(true)
     const res = haggleRound({ side, their, market, yourOffer: offer, flex: arch.flex, round, archKey })
     if (res.accept) {
       setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "${line('accept')}"`])
@@ -54,7 +59,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
     if (res.walk) {
       setLog(l => [...l, `You: "${fmtMoney(offer)}?"`, `${vendorName}: "${line('walk')}"`])
       setDone(true)
-      setTimeout(() => onClose(), 900)
+      setTimeout(() => onClose(true), 900) // they walked — the haggle happened
       return
     }
     // counter (a "pride" counter gets the posturing line templates)
@@ -70,7 +75,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   const outOfRounds = round >= MAX_ROUNDS
 
   return (
-    <div className="modalbg" onClick={onClose}>
+    <div className="modalbg" onClick={close}>
       <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
         <h2 style={{ fontSize: 19, marginBottom: 2 }}>Haggle · {vendorName}</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
@@ -85,7 +90,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
           <>
             <div className="haggle-current">
               Their price: <b>{fmtMoney(their)}</b>
-              <span className="muted" style={{ fontSize: 12 }}> · round {round + 1}/{MAX_ROUNDS}</span>
+              <span className="muted" style={{ fontSize: 12 }}> · round {Math.min(round + 1, MAX_ROUNDS)}/{MAX_ROUNDS}</span>
             </div>
             <div className="haggle-offer">
               <span className="muted" style={{ fontSize: 13 }}>Your offer</span>
@@ -102,7 +107,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
               {!outOfRounds && <button className="btn gold" disabled={!better} onClick={send}>Offer {fmtMoney(offer)}</button>}
               {/* always allow taking their standing price */}
               <button className="btn" onClick={() => onDeal(their)}>Take {fmtMoney(their)}</button>
-              <button className="btn alt" onClick={onClose}>Walk away</button>
+              <button className="btn alt" onClick={() => onClose(true)}>Walk away</button>
             </div>
             {outOfRounds && <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>They're out of patience — take their price or walk.</p>}
           </>

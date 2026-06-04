@@ -33,10 +33,13 @@ export default function Bench() {
       ) : (
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
           {pending.map((p, i) => {
-            const total = GRADING[p.tierKey].days * dayMs
+            // Use the day-length captured at submit so the bar + days-left stay consistent
+            // with the absolute readyAt even if the day-length setting changed since.
+            const pDayMs = p.dayMsAtSubmit || dayMs
+            const total = GRADING[p.tierKey].days * pDayMs
             const remain = Math.max(0, p.readyAt - now)
             const pct = Math.min(100, 100 * (1 - remain / total))
-            const daysLeft = Math.ceil(remain / dayMs)
+            const daysLeft = Math.ceil(remain / pDayMs)
             return (
               <div className="product" key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <img src={p.card.img} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
