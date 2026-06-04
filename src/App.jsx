@@ -26,7 +26,7 @@ const TAB_ICON = { shop: '🛒', myshop: '🏬', shows: '🎪', upgrades: '⬆�
 export default function App() {
   const [tab, setTab] = useState('shop')
   const [collTab, setCollTab] = useState('cards') // Collection sub-tab: cards | grader | prices
-  const [settingsOpen, setSettingsOpen] = useState(false) // ⚙️ overlay (Settings + Stats)
+  const [settingsPane, setSettingsPane] = useState('settings') // Settings tab sub-pane: settings | stats
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
   const [activeShow, setActiveShow] = useState(null) // show being attended
@@ -135,36 +135,49 @@ export default function App() {
           <GameClock />
           <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
           <div className="cash">${cash.toFixed(2)}<small>balance</small></div>
-          <button className="gear-btn" aria-label="Settings & Stats" title="Settings & Stats" onClick={() => setSettingsOpen(true)}>⚙️</button>
+          <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
       </div>
 
       {awaySummary && <AwaySummary summary={awaySummary} onClose={() => setAwaySummary(null)} />}
       <GameOver />
 
-      {tab === 'shop' && (ripping
-        ? <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
-        : <Shop cash={cash} onBuy={buyProduct} />)}
+      {/* the active view fills the space between the top bar and the bottom nav,
+          so short pages (empty collection, settings) don't leave dead space */}
+      <main className="content">
+        {tab === 'shop' && (ripping
+          ? <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
+          : <Shop cash={cash} onBuy={buyProduct} />)}
 
-      {tab === 'shows' && <Calendar onAttend={attendShow} />}
-      {tab === 'myshop' && <BoothInbox />}
-      {tab === 'upgrades' && <UpgradeShop />}
+        {tab === 'shows' && <Calendar onAttend={attendShow} />}
+        {tab === 'myshop' && <BoothInbox />}
+        {tab === 'upgrades' && <UpgradeShop />}
 
-      {tab === 'collection' && (
-        <>
-          <div className="subtabs">
-            <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
-            <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
-            <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
-          </div>
-          {collTab === 'cards' && <Collection onPick={setPicked} />}
-          {collTab === 'grader' && <Bench />}
-          {collTab === 'prices' && <PriceGuide />}
-        </>
-      )}
+        {tab === 'collection' && (
+          <>
+            <div className="subtabs">
+              <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
+              <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
+              <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
+            </div>
+            {collTab === 'cards' && <Collection onPick={setPicked} />}
+            {collTab === 'grader' && <Bench />}
+            {collTab === 'prices' && <PriceGuide />}
+          </>
+        )}
+
+        {tab === 'settings' && (
+          <>
+            <div className="subtabs">
+              <button className={`subtab ${settingsPane === 'settings' ? 'active' : ''}`} onClick={() => setSettingsPane('settings')}>⚙️ Settings</button>
+              <button className={`subtab ${settingsPane === 'stats' ? 'active' : ''}`} onClick={() => setSettingsPane('stats')}>📊 Stats</button>
+            </div>
+            {settingsPane === 'settings' ? <Settings /> : <Stats />}
+          </>
+        )}
+      </main>
 
       {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
-      {settingsOpen && <SettingsOverlay onClose={() => setSettingsOpen(false)} />}
 
       {/* Mobile-only floating bottom nav (top tab strip is hidden at <=640px).
           Icon + small label; the 5 core tabs + a gear for Settings/Stats. */}
@@ -178,7 +191,7 @@ export default function App() {
             </button>
           )
         })}
-        <button className="bnav-btn" onClick={() => setSettingsOpen(true)}>
+        <button className={`bnav-btn ${tab === 'settings' ? 'active' : ''}`} onClick={() => selectTab('settings')}>
           <span className="bnav-icon">⚙️</span>
           <span className="bnav-label">More</span>
         </button>
@@ -225,29 +238,6 @@ function AwaySummary({ summary, onClose }) {
           {added ? <div className="muted" style={{ fontSize: 13 }}>{added} new order{added === 1 ? '' : 's'} waiting</div> : null}
         </div>
         <button className="btn gold" style={{ maxWidth: 160 }} onClick={onClose}>Got it →</button>
-      </div>
-    </div>
-  )
-}
-
-// ⚙️ overlay holding the lower-frequency screens that no longer warrant a nav tab:
-// Settings and Stats, switchable via a sub-tab inside the modal.
-function SettingsOverlay({ onClose }) {
-  const [pane, setPane] = useState('settings')
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
-  return (
-    <div className="modalbg" onClick={onClose} style={{ zIndex: 40 }}>
-      <div className="modal settings-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720, width: '100%' }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <div className="subtabs" style={{ marginBottom: 14 }}>
-          <button className={`subtab ${pane === 'settings' ? 'active' : ''}`} onClick={() => setPane('settings')}>⚙️ Settings</button>
-          <button className={`subtab ${pane === 'stats' ? 'active' : ''}`} onClick={() => setPane('stats')}>📊 Stats</button>
-        </div>
-        {pane === 'settings' ? <Settings /> : <Stats />}
       </div>
     </div>
   )

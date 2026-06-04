@@ -13,7 +13,11 @@ body {
 button { font-family: inherit; cursor: pointer; }
 /* respect iPhone notch / home-bar safe areas when installed as a PWA */
 .app { max-width: 1180px; margin: 0 auto;
+  /* fill at least the viewport so short pages don't leave dead space below */
+  min-height: 100dvh; display: flex; flex-direction: column;
   padding: calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); }
+/* the routed view grows to fill the space between top bar and bottom nav */
+.content { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
 
 /* Top bar */
 .topbar { display: flex; align-items: center; gap: 18px; padding: 14px 18px;
@@ -43,7 +47,6 @@ button { font-family: inherit; cursor: pointer; }
   padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
 .subtab:hover:not(.active) { color: var(--txt); background: #ffffff14; }
 .subtab.active { background: var(--accent2); color: #fff; border-color: transparent; }
-.settings-modal { max-height: 88vh; overflow-y: auto; }
 
 /* Mobile bottom nav — hidden on desktop, shown fixed at <=640px (see media query). */
 .bottomnav { display: none; }
@@ -214,7 +217,9 @@ button { font-family: inherit; cursor: pointer; }
 .hist { font-size:13px; border-bottom:1px solid var(--line); padding:8px 2px; display:flex; gap:10px; }
 .hist .amt.pos { color: var(--green); margin-left:auto; font-weight:800; }
 .hist .amt.neg { color: var(--red); margin-left:auto; font-weight:800; }
-.empty { color: var(--dim); text-align:center; padding: 60px 0; }
+.empty { color: var(--dim); text-align:center; padding: 60px 20px;
+  /* fill the content area and center, so an empty page isn't a thin strip up top */
+  flex: 1 1 auto; display: flex; align-items: center; justify-content: center; }
 .toolbar { display:flex; gap:10px; align-items:center; margin: 16px 0; flex-wrap:wrap; }
 select { background: var(--panel2); color: var(--txt); border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-weight:700; }
 .banner { background:#ffcb0518; border:1px solid #ffcb0540; color:#ffe48a; border-radius:12px; padding:10px 14px; font-size:13px; }
@@ -634,10 +639,6 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
   /* modals go near-fullscreen and scroll */
   .modal { max-height: 92vh; padding: 16px; border-radius: 16px; }
-  /* the Settings/Stats overlay is tall + scrollable; keep its end clear of the
-     fixed bottom nav so the last controls (Reset, etc.) aren't hidden under it. */
-  .settings-modal { max-height: calc(100vh - 84px - env(safe-area-inset-bottom));
-    padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .detailflex { gap: 12px; } .detailflex img, .modal-holo { width: 200px; }
   .encounter { max-width: 94vw; }
 
