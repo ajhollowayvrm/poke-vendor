@@ -5,6 +5,10 @@ import { useGame } from '../game/store'
 const RIP_SPEEDS = [
   { v: 0.5, label: 'Slow' }, { v: 1, label: 'Normal' }, { v: 2, label: 'Fast' }, { v: 4, label: 'Turbo' },
 ]
+// Real minutes per game-day — the master clock rate. Lower = the world moves faster.
+const DAY_LENGTHS = [
+  { v: 5, label: '5 min' }, { v: 15, label: '15 min' }, { v: 30, label: '30 min' }, { v: 60, label: '1 hr' },
+]
 
 export default function Settings() {
   const reset = useGame(s => s.reset)
@@ -12,6 +16,7 @@ export default function Settings() {
   const openSealedOneByOne = useGame(s => s.settings.openSealedOneByOne)
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
+  const dayMinutes = useGame(s => s.settings.dayMinutes ?? 15)
   const setSetting = useGame(s => s.setSetting)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [progress, setProgress] = useState(null)
@@ -66,6 +71,22 @@ export default function Settings() {
           {RIP_SPEEDS.map(s => (
             <button key={s.v} className={`segbtn ${ripSpeed === s.v ? 'on' : ''}`}
               onClick={() => setSetting('ripSpeed', s.v)}>{s.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Day length</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            Real time per game-day. The world runs on its own — orders, sales, and grading all
+            advance at this rate, even while the app is closed.
+          </div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          {DAY_LENGTHS.map(d => (
+            <button key={d.v} className={`segbtn ${dayMinutes === d.v ? 'on' : ''}`}
+              onClick={() => setSetting('dayMinutes', d.v)}>{d.label}</button>
           ))}
         </div>
       </div>

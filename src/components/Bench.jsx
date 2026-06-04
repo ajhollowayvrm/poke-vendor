@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { useGame, DAY_MS_SIM } from '../game/store'
+import { useGame, dayLengthMs } from '../game/store'
 import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
 
@@ -21,6 +21,7 @@ export default function Bench() {
   }, [resolveGrades, pending.length])
 
   const now = Date.now()
+  const dayMs = useGame(dayLengthMs)
   return (
     <>
       <GraderRelationship submitted={submitted} />
@@ -32,10 +33,10 @@ export default function Bench() {
       ) : (
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
           {pending.map((p, i) => {
-            const total = GRADING[p.tierKey].days * DAY_MS_SIM
+            const total = GRADING[p.tierKey].days * dayMs
             const remain = Math.max(0, p.readyAt - now)
             const pct = Math.min(100, 100 * (1 - remain / total))
-            const daysLeft = Math.ceil(remain / DAY_MS_SIM)
+            const daysLeft = Math.ceil(remain / dayMs)
             return (
               <div className="product" key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <img src={p.card.img} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />

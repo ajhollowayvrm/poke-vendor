@@ -5,6 +5,17 @@ import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from '
 
 const STARTING_CASH = 2000
 
+// The game runs in REAL TIME: 1 game-day = `dayMinutes` real minutes (default 15).
+// Everything daily — orders, listings/consignments, wages, rent, AND grading — rides this
+// one clock, so a day always means the same thing. `dayLengthMs()` reads the live setting.
+export const DEFAULT_DAY_MINUTES = 15
+export function dayLengthMs(state) {
+  const m = state?.settings?.dayMinutes ?? DEFAULT_DAY_MINUTES
+  return Math.max(0.05, m) * 60 * 1000 // floor at ~3s for playtesting
+}
+// Back-compat export name kept for any stray import; equals the default day length.
+export const DAY_MS_SIM = DEFAULT_DAY_MINUTES * 60 * 1000
+
 // Card ids are "<setId>-<number>" (e.g. "me4-2"); the set id is everything before
 // the last hyphen so multi-hyphen set ids like "sv8pt5" survive.
 function setIdOf(card) {
@@ -244,9 +255,13 @@ export const useGame = create(persist((set, get) => ({
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
+  // Real-time clock: epoch ms of the last processed day boundary. The world advances 1 day
+  // per `settings.dayMinutes` of real time, online and offline (catch-up on load).
+  lastTick: Date.now(),
   // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
   // autoAdvance: in one-by-one mode, auto-rip the next pack a few seconds after each finishes.
-  settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false },
+  // dayMinutes: real minutes per game-day (the master clock rate).
+  settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES },
 
   setSetting(key, value) { set(s => ({ settings: { ...s.settings, [key]: value } })) },
 
@@ -553,7 +568,7 @@ export const useGame = create(persist((set, get) => ({
       collection: s.collection.filter(c => c.uid !== uid),
       gradesSubmitted: s.gradesSubmitted + 1,
     }))
-    const readyAt = Date.now() + tier.days * DAY_MS_SIM
+    const readyAt = Date.now() + tier.days * dayLengthMs(get())
     // remember the fee actually paid so the resolved grade records it, not list price
     set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyAt, paidFee: fee }] }))
     const disc = before.discount > 0 ? ` (${Math.round(before.discount*100)}% loyalty off)` : ''
@@ -576,7 +591,7 @@ export const useGame = create(persist((set, get) => ({
     const total = round2(feePer * cards.length)
     if (!get().spend(total)) return
     const uidSet = new Set(cards.map(c => c.uid))
-    const readyAt = Date.now() + tier.days * DAY_MS_SIM
+    const readyAt = Date.now() + tier.days * dayLengthMs(get())
     set(s => ({
       collection: s.collection.filter(c => !uidSet.has(c.uid)),
       gradesSubmitted: s.gradesSubmitted + cards.length,
@@ -732,6 +747,28 @@ export const useGame = create(persist((set, get) => ({
   },
   // Pass a single day at home — generate that day's home orders into the inbox.
   nextDay() { return advanceDaysWith(set, get, 1, false) },
+
+  // REAL-TIME CLOCK. Advance the world by however many whole game-days of real time have
+  // elapsed since `lastTick`. Called on mount (offline catch-up), every ~1s while open, and
+  // when the tab becomes visible again. Returns a summary for the "while you were away" UI,
+  // or null if no full day has passed. Days advance at home (`away:false`).
+  tickRealTime() {
+    const s = get()
+    const dayMs = dayLengthMs(s)
+    const elapsed = Date.now() - (s.lastTick ?? Date.now())
+    let due = Math.floor(elapsed / dayMs)
+    if (due < 1) return null
+    // Cap a huge backlog (e.g. save left for weeks) so we don't loop thousands of times.
+    const MAX_CATCHUP = CALENDAR_DAYS * 3 // 90 days
+    const capped = due > MAX_CATCHUP
+    if (capped) due = MAX_CATCHUP
+    const cashBefore = s.cash
+    const result = advanceDaysWith(set, get, due, false) || {}
+    // consume exactly the days we processed; keep the sub-day remainder so progress isn't lost.
+    set(st => ({ lastTick: (st.lastTick ?? Date.now()) + due * dayMs }))
+    const cashAfter = get().cash
+    return { ...result, days: due, capped, cashDelta: round2(cashAfter - cashBefore) }
+  },
   // Attend a show: the show's days pass while you're AWAY. Home orders during
   // those days only land if you have the Smartphone (online) / Staff (walk-in)
   // upgrades; otherwise they're missed. Any other shows in the window are skipped.
@@ -748,12 +785,12 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0,
-      settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
+      consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 10,
+  version: 11,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -815,10 +852,14 @@ export const useGame = create(persist((set, get) => ({
       // this version isn't attributable to a set, so we begin tracking from now).
       state.bySet = state.bySet ?? {}
     }
+    if (version < 11) {
+      // Real-time clock. Start the clock NOW for existing saves so they don't
+      // fast-forward a giant fake backlog of days on first load after upgrading.
+      state.lastTick = Date.now()
+      state.settings = { ...(state.settings || {}) }
+      state.settings.dayMinutes = state.settings.dayMinutes ?? DEFAULT_DAY_MINUTES
+    }
     return state
   },
 }))
 
-// In the sim, grading "days" pass in real seconds so you don't wait weeks.
-// 1 grading-day = 1.2 real seconds.
-export const DAY_MS_SIM = 1200

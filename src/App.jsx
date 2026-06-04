@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney } from './game/engine'
-import { useGame } from './game/store'
+import { useGame, dayLengthMs } from './game/store'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
 import Collection from './components/Collection'
@@ -36,16 +36,25 @@ export default function App() {
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection)).length)
   const notoriety = useGame(s => s.notoriety)
   const resolveGrades = useGame(s => s.resolveGrades)
-  const hasPendingGrades = useGame(s => s.pendingGrades.length > 0)
+  const tickRealTime = useGame(s => s.tickRealTime)
+  const [awaySummary, setAwaySummary] = useState(null) // "while you were away" banner
 
-  // Resolve grades whenever the app is mounted (in case the Bench tab isn't open),
-  // but only spin the interval while cards are actually at the grader — no point
-  // ticking every second with an empty queue.
+  // REAL-TIME CLOCK. One unified tick drives the whole living world: advance whole game-days
+  // of elapsed real time (orders, listings, consignments, wages/rent later — and grades, which
+  // resolve inside advanceDaysWith's day loop). Runs on mount (offline catch-up), every second
+  // while open, and whenever the tab becomes visible again.
   useEffect(() => {
-    if (!hasPendingGrades) return
-    const id = setInterval(resolveGrades, 1000)
-    return () => clearInterval(id)
-  }, [resolveGrades, hasPendingGrades])
+    const pump = (showAway) => {
+      const summary = tickRealTime()
+      resolveGrades() // settle any grades whose readyAt just passed this tick
+      if (showAway && summary && summary.days >= 1) setAwaySummary(summary)
+    }
+    pump(true) // mount: catch up offline time and surface a summary
+    const id = setInterval(() => pump(false), 1000)
+    const onVis = () => { if (document.visibilityState === 'visible') pump(true) }
+    document.addEventListener('visibilitychange', onVis)
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVis) }
+  }, [tickRealTime, resolveGrades])
 
   // Buy any sealed product. A single booster pack always opens the animated rip.
   // Multi-pack products: if "open one at a time" is on, rip each pack with the
@@ -121,10 +130,13 @@ export default function App() {
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
+          <GameClock />
           <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
           <div className="cash">${cash.toFixed(2)}<small>balance</small></div>
         </div>
       </div>
+
+      {awaySummary && <AwaySummary summary={awaySummary} onClose={() => setAwaySummary(null)} />}
 
       {tab === 'shop' && (ripping
         ? <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
@@ -154,6 +166,49 @@ export default function App() {
           )
         })}
       </nav>
+    </div>
+  )
+}
+
+// Live day counter + a countdown to the next game-day. Ticks its own 1s timer for the
+// countdown display (the actual day advance is driven by App's real-time tick).
+function GameClock() {
+  const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
+  const lastTick = useGame(s => s.lastTick)
+  const dayMs = useGame(dayLengthMs)
+  const [, force] = useState(0)
+  useEffect(() => { const id = setInterval(() => force(n => n + 1), 1000); return () => clearInterval(id) }, [])
+  const remain = Math.max(0, dayMs - ((Date.now() - (lastTick || Date.now())) % dayMs))
+  const mm = Math.floor(remain / 60000)
+  const ss = Math.floor((remain % 60000) / 1000)
+  return (
+    <span className="clock-chip" title={`Next day in ${mm}:${String(ss).padStart(2,'0')} · ${Math.round(dayMs/60000)} min/day`}>
+      📅 Day {currentDay}{monthsElapsed ? ` · M${monthsElapsed + 1}` : ''}
+      <small>{mm}:{String(ss).padStart(2,'0')} to next</small>
+    </span>
+  )
+}
+
+// "While you were away" — shown after offline/closed-tab time is fast-forwarded on load.
+function AwaySummary({ summary, onClose }) {
+  const { days, cashDelta, added, capped } = summary
+  return (
+    <div className="modalbg" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420, textAlign: 'center' }}>
+        <h2 style={{ marginBottom: 6 }}>🕑 {days} day{days === 1 ? '' : 's'} passed</h2>
+        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+          {capped ? 'You were away a long time — caught up the last stretch.' : 'The shop kept running while you were away.'}
+        </p>
+        <div style={{ fontSize: 15, margin: '10px 0' }}>
+          {cashDelta != null && (
+            <div>Net cash <b style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
+              {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}</b></div>
+          )}
+          {added ? <div className="muted" style={{ fontSize: 13 }}>{added} new order{added === 1 ? '' : 's'} waiting</div> : null}
+        </div>
+        <button className="btn gold" style={{ maxWidth: 160 }} onClick={onClose}>Got it →</button>
+      </div>
     </div>
   )
 }
