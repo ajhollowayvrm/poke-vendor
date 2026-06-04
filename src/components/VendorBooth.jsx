@@ -140,7 +140,7 @@ function RegularBooth({ booth, onClose, flash, haggledIds, onHaggled }) {
         ) : (
           collection.length === 0 ? <p className="muted">You have nothing to sell.</p> :
           <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))' }}>
-            {collection.slice(0, 24).map(card => {
+            {[...collection].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 24).map(card => {
               const mkt = cardValue(card)
               const offer = Math.round(mkt * booth.buyMult * 100) / 100
               return (
