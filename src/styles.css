@@ -635,6 +635,31 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .consign-strip .pill.expired { background:#ff5e6c22; color:#ff9aa5; }
 .linkbtn { background:none; border:none; color:#9db8ff; font-weight:700; cursor:pointer; padding:0; font-size:12px; text-decoration:underline; }
 
+/* ---------- Listed-on-site market panel ---------- */
+.market-panel { margin:14px 0 4px; padding:10px 14px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; }
+.market-head { color: var(--gold); font-size:13px; font-weight:700; margin-bottom:8px; }
+.market-head .muted { font-weight:400; }
+.market-list { display:flex; flex-direction:column; gap:6px; }
+.listing-row { background:#ffffff08; border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
+.listing-row.stale { border-color:#ff5e6c44; background:#ff5e6c0d; }
+.listing-main { display:flex; align-items:center; gap:10px; }
+.listing-thumb { width:34px; height:auto; border-radius:5px; flex:0 0 auto; }
+.listing-info { flex:1; min-width:0; }
+.listing-name { font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.listing-sub { display:flex; align-items:center; gap:8px; font-size:12px; flex-wrap:wrap; margin-top:1px; }
+.listing-views { color:var(--dim); }
+.listing-actions { display:flex; gap:10px; flex:0 0 auto; align-items:center; }
+.listing-reprice { display:flex; align-items:center; gap:10px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line); font-size:12px; }
+.listing-reprice input[type=range] { flex:1; max-width:220px; }
+.listing-offers { display:flex; flex-direction:column; gap:6px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line); }
+.offer { display:flex; align-items:center; gap:10px; font-size:13px; }
+.offer-label { flex:1; }
+.list-hint { font-size:11px; font-weight:700; white-space:nowrap; }
+.list-hint.good { color:var(--green); }
+.list-hint.ok { color:#9db8ff; }
+.list-hint.warn { color:#ffc46b; }
+.list-hint.bad { color:#ff9aa5; }
+
 /* ---------- Sell options (card modal) ---------- */
 .sell-options { display:flex; flex-direction:column; gap:8px; }
 .sellopt { display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:2px; padding:10px 14px; max-width:none; }

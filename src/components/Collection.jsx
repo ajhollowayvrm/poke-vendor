@@ -14,6 +14,7 @@ export default function Collection({ onPick }) {
   const quickSellMany = useGame(s => s.quickSellMany)
   const listManyOnSite = useGame(s => s.listManyOnSite)
   const consignMany = useGame(s => s.consignMany)
+  const listingQuote = useGame(s => s.listingQuote)
 
   const [sort, setSort] = useState('value')
   const [selectMode, setSelectMode] = useState(false)
@@ -61,6 +62,18 @@ export default function Collection({ onPick }) {
   const gradeFeePer = gradingFee(gradeTier, submitted, rawSelected.length || 1)
   const gradeTotal = +(gradeFeePer * rawSelected.length).toFixed(2)
   const gradeBulk = bulkDiscount(rawSelected.length)
+
+  // Live demand hint for the "List @ X%" slider — how much of the browsing pool
+  // would buy at this ask (sampled on the first selected card). Higher % = sells faster.
+  const listHint = useMemo(() => {
+    if (!selCards.length) return null
+    const q = listingQuote(selCards[0], listMult)
+    const share = Math.round((q.buyShare || 0) * 100)
+    if (share >= 60) return { txt: `most buyers will take this`, cls: 'good' }
+    if (share >= 25) return { txt: `some buyers will bite — slower`, cls: 'ok' }
+    if (share > 0)   return { txt: `only bargain-blind buyers — sits a while`, cls: 'warn' }
+    return { txt: `no one will pay this — it'll just sit`, cls: 'bad' }
+  }, [selCards, listMult, listingQuote])
 
   if (!collection.length)
     return <div className="empty">No cards yet — head to Buy and rip a pack. 📦</div>
@@ -139,6 +152,7 @@ export default function Collection({ onPick }) {
               }}>🌐 List @ {Math.round(listMult*100)}%</button>
               <input type="range" min="0.8" max="2" step="0.05" value={listMult}
                 onClick={e => e.stopPropagation()} onChange={e => setListMult(parseFloat(e.target.value))} />
+              {listHint && <span className={`list-hint ${listHint.cls}`}>{listHint.txt}</span>}
             </div>
             <button className="btn alt" onClick={() => {
               const n = consignMany(selCards.map(c => c.uid))

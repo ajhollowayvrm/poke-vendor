@@ -419,6 +419,70 @@ export function gradedValue(card) {
 }
 export function cardValue(card) { return card.grade ? gradedValue(card) : rawValue(card) }
 
+// ---- Customers / buyers (own-site listings) --------------------------------
+// Listed cards aren't sold by a timer — real customers BROWSE them. Each buyer has
+// a savvy level that sets how far over market they'll pay. List too high and no
+// buyer ever bites (it just sits). Fair/under-market asks sell fast.
+//
+//  • casual  — doesn't track prices; happily pays a markup (impulse buyer)
+//  • average — rough sense of value; a small markup is fine
+//  • sharp   — knows the comps; won't pay much over market
+//  • shark   — hunting deals; only bites at/under market, and may lowball
+// `tolerance` = the ask-multiple (× market) at which this buyer will still buy at ask.
+// `weight` = how common this buyer type is in the browsing pool.
+export const BUYER_SAVVY = {
+  casual:  { label: 'Casual buyer',  icon: '🙂', tolerance: 1.45, weight: 0.34 },
+  average: { label: 'Average buyer', icon: '🧑', tolerance: 1.18, weight: 0.40 },
+  sharp:   { label: 'Sharp buyer',   icon: '🤓', tolerance: 1.02, weight: 0.20 },
+  shark:   { label: 'Deal shark',    icon: '🦈', tolerance: 0.90, weight: 0.06 },
+}
+const SAVVY_KEYS = Object.keys(BUYER_SAVVY)
+
+// Roll a random buyer savvy from the weighted pool.
+export function rollBuyerSavvy(rnd = Math.random) {
+  let r = rnd()
+  for (const k of SAVVY_KEYS) { r -= BUYER_SAVVY[k].weight; if (r <= 0) return k }
+  return 'average'
+}
+
+// How desirable a card is to browse/buy: hits, graded slabs, and pricier cards
+// pull more eyes and a touch more markup tolerance. Returns ~0.6 (bulk) → ~2.4 (grail).
+export function cardDesirability(card) {
+  let d = 1
+  if (isHit(card)) d += 0.5
+  if (card.foil) d += 0.2
+  if (card.grade) d += 0.3 + Math.min(0.6, (card.grade.overall - 7) * 0.2) // PSA 8/9/10 climb
+  const v = cardValue(card)
+  d += Math.min(0.6, v / 300)             // pricier cards draw collectors
+  if (rarityRank(card.rarity) < rarityRank('Rare')) d -= 0.4 // bulk commons/uncommons
+  return Math.max(0.5, +d.toFixed(2))
+}
+
+// The MOST a given buyer will pay for this card, as a multiple of market.
+// = their base savvy tolerance, lifted by your notoriety (a known shop commands a
+// premium) and the card's desirability (hot cards carry a markup), plus a little jitter.
+export function buyerMaxMult(savvyKey, notoriety, card, rnd = Math.random) {
+  const base = (BUYER_SAVVY[savvyKey] || BUYER_SAVVY.average).tolerance
+  const notoLift = Math.min(0.35, notoriety / 400)        // up to +0.35× at high fame
+  const desireLift = (cardDesirability(card) - 1) * 0.18  // hot cards tolerate more
+  const jitter = (rnd() - 0.5) * 0.12                     // ±0.06 buyer-to-buyer noise
+  return Math.max(0.6, base + notoLift + desireLift + jitter)
+}
+
+// Expected number of shoppers who browse a listing per game-day. More with fame and
+// desirability; fair prices pull a few more eyes than wildly overpriced ones (which
+// still get looked at — and passed on). Floors at a trickle so something always happens.
+export function dailyViewers(card, askMult, notoriety, rnd = Math.random) {
+  const fame = 0.6 + Math.min(2.6, notoriety / 60)        // ~0.6 at noto 0 → ~3.2 high
+  const desire = cardDesirability(card)
+  // overpricing softly suppresses eyeballs (window-shoppers skip the obvious gouge)
+  const priceDrag = askMult <= 1.2 ? 1 : Math.max(0.45, 1 - (askMult - 1.2) * 0.4)
+  const expected = fame * desire * priceDrag
+  // Poisson-ish: expected value with random rounding so low traffic is bursty.
+  const whole = Math.floor(expected)
+  return whole + (rnd() < (expected - whole) ? 1 : 0)
+}
+
 // Hypothetical "if this graded PSA 10" value for a still-raw card — what the slab
 // would be worth at a perfect grade. Uses the REAL PSA-10 comp when the snapshot has
 // one; else mirrors gradedValue's heuristic. Used to tease upside on a fresh hit.

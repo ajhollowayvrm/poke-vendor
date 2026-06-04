@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount } from './engine'
+import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
+  BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 
 const STARTING_CASH = 10000
@@ -160,6 +161,64 @@ export function dayOrderChance(channel, notoriety) {
   const ramp  = Math.min(1, notoriety / 200)        // 0→1 across the fame curve
   return floor + (cap - floor) * ramp
 }
+// After this many days drawing browsers with zero buyers/offers, a listing goes
+// STALE (almost certainly priced too high) — flagged in the UI so you reprice/pull.
+const LISTING_STALE_DAYS = 7
+let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this module's hot paths)
+
+// Simulate `days` of customers browsing your own-site listings. Each day every live
+// listing draws some shoppers; each shopper rolls a savvy level and a max willingness
+// to pay. If your ask is within their max → they BUY at ask. If it's just over their
+// max → a chance they leave a lower OFFER you can accept/decline. Otherwise they pass.
+// Returns { listings, soldProceeds, sold:[{name,net,savvy}], newOffers, staleNow:[names] }.
+function tickListings(listings, days, noto) {
+  let soldProceeds = 0
+  const sold = []
+  const staleNow = []
+  let newOffers = 0
+  const remaining = []
+  for (const l of (listings || [])) {
+    // expired/awaiting-action listings just sit until you act on them
+    if (l.expired) { remaining.push(l); continue }
+    let cur = { ...l, offers: [...(l.offers || [])] }
+    let didSell = false
+    for (let day = 0; day < days && !didSell; day++) {
+      const viewers = dailyViewers(cur.card, cur.askMult, noto)
+      cur.views += viewers
+      for (let v = 0; v < viewers; v++) {
+        const savvy = rollBuyerSavvy()
+        const max = buyerMaxMult(savvy, noto, cur.card)
+        if (cur.askMult <= max) {
+          // willing to pay the ask → sale at your price (net of fee)
+          soldProceeds = round2(soldProceeds + cur.net)
+          sold.push({ name: cur.card.name, net: cur.net, savvy: BUYER_SAVVY[savvy].label })
+          didSell = true
+          break
+        }
+        // just over their max → occasional lowball offer at what they'd pay.
+        // Sharks lowball most; casuals rarely bother. Cap standing offers at 3.
+        const overBy = cur.askMult - max
+        if (overBy < 0.35 && (cur.offers.length < 3) && Math.random() < (savvy === 'shark' ? 0.5 : savvy === 'sharp' ? 0.3 : 0.12)) {
+          const market = cardValue(cur.card)
+          const amount = round2(market * max)
+          const fee = round2(amount * 0.05)
+          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: BUYER_SAVVY[savvy].label, icon: BUYER_SAVVY[savvy].icon })
+          newOffers++
+        }
+      }
+      cur.age = (cur.age || 0) + 1
+    }
+    if (didSell) continue // sold → drops off the board
+    // mark stale if it's drawn plenty of eyes over enough days with no traction
+    if (!cur.stale && (cur.age || 0) >= LISTING_STALE_DAYS && cur.offers.length === 0 && cur.views >= 5) {
+      cur.stale = true
+      staleNow.push(cur.card.name)
+    }
+    remaining.push(cur)
+  }
+  return { listings: remaining, soldProceeds, sold, newOffers, staleNow }
+}
+
 // Advance the calendar by `days`, generating home orders for each day passed.
 // `away` = these days are spent at a show: online orders only come in if you own
 // a Smartphone, walk-ins only if you have Shop Assistant; otherwise they're missed.
@@ -226,17 +285,15 @@ function advanceDaysWith(set, get, days, away) {
     if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
     else remainingConsign.push({ ...c, daysLeft: left })
   }
-  // resolve your own-site listings: when the timer elapses, a listing either
-  // SELLS (pays net) or EXPIRES unsold (you can relist or pull it). The outcome
-  // was decided at list time (l.willSell) so the preview odds are honest.
-  const remainingListings = []
-  for (const l of (s.listings || [])) {
-    if (l.expired) { remainingListings.push(l); continue } // already expired, awaiting your action
-    const left = l.daysLeft - days
-    if (left > 0) { remainingListings.push({ ...l, daysLeft: left }); continue }
-    if (l.willSell) { soldProceeds = round2(soldProceeds + l.net); get().log('sell', `Listing sold: ${l.card.name} for $${l.net.toFixed(2)}`, l.net) }
-    else { remainingListings.push({ ...l, daysLeft: 0, expired: true }); get().log('listing', `Listing expired unsold: ${l.card.name} (priced too high) — relist or pull it.`, 0) }
-  }
+  // resolve your own-site listings: real CUSTOMERS browse them over the days passed
+  // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
+  // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
+  const lt = tickListings(s.listings, days, noto)
+  const remainingListings = lt.listings
+  soldProceeds = round2(soldProceeds + lt.soldProceeds)
+  for (const sale of lt.sold) get().log('sell', `Sold ${sale.name} to a ${sale.savvy} — $${sale.net.toFixed(2)}`, sale.net)
+  if (lt.newOffers) get().log('listing', `${lt.newOffers} new offer${lt.newOffers > 1 ? 's' : ''} on your listings — review them on the Sell tab.`, 0)
+  for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
   // age out want-lists, then maybe post new collector wants (scaled by notoriety)
   let wants = s.wantList.map(w => ({ ...w, daysLeft: w.daysLeft - days })).filter(w => w.daysLeft > 0)
   const maxWants = 2 + Math.floor(noto / 80) // more fame → more collectors seek you out
@@ -258,6 +315,8 @@ function advanceDaysWith(set, get, days, away) {
   }))
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
+  // credit listing sales toward the daily sell/profit goals
+  for (const sale of lt.sold) { get().bumpGoal('sell', 1); get().bumpGoal('profit', sale.net) }
   if (wagesEarned > 0) { get().earn(wagesEarned, { wage: true }); get().log('wage', `Wages: ${activeJob?.title || 'job'} (+$${wagesEarned.toFixed(2)})`, wagesEarned) }
   if (rentDue > 0) settleRent(set, get, rentDue, days)
   // Brick & mortar: settle the daily lease + payroll. Failing this over the grace window
@@ -267,7 +326,7 @@ function advanceDaysWith(set, get, days, away) {
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
-    lease: round2(leaseDue), payroll: round2(payrollDue) }
+    lease: round2(leaseDue), payroll: round2(payrollDue), listingsSold: lt.sold.length, listingOffers: lt.newOffers }
 }
 
 // Settle daily store overhead (lease + payroll). If cash covers it, pay and clear arrears.
@@ -376,7 +435,7 @@ export const useGame = create(persist((set, get) => ({
   generousActs: 0,
   gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
   consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
-  listings: [],            // {card, ask, net, askMult, daysLeft, willSell, expired?} — your own-site listings
+  listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
@@ -502,57 +561,82 @@ export const useGame = create(persist((set, get) => ({
     get().bumpGoal('sell', 1); get().bumpGoal('profit', v)
   },
 
-  // Quote a self-listing at `askMult`× market: expected days-to-sell and the
-  // chance it actually sells (vs sitting). Higher asks pay more but sell slower
-  // and less reliably; notoriety speeds sales and makes high asks viable.
-  // Returns { ask, fee, net, days, sellChance }.
+  // Quote a self-listing at `askMult`× market. Sales are now driven by real
+  // browsing customers (see tickListings), so the quote ESTIMATES the experience:
+  // expected shoppers/day and the share of the buyer pool whose savvy tolerates
+  // this ask (≈ likelihood the next willing buyer bites). Returns
+  // { market, ask, fee, net, viewsPerDay, buyShare }.
   listingQuote(card, askMult) {
     const market = cardValue(card)
     const noto = get().notoriety
     const ask = round2(market * askMult)
     const fee = round2(ask * 0.05)          // ~5% marketplace fee
     const net = round2(ask - fee)
-    // base wait shrinks with notoriety (~9d at 0 rep → ~2d once well-known)
-    const base = 9 - Math.min(7, noto / 25)
-    // asking above market adds days; at/under market is quick
-    const premiumDays = Math.max(0, (askMult - 1)) * 22
-    const days = Math.max(1, Math.round(base + premiumDays))
-    // sell odds: ~at/under market almost always sells; far above market often sits.
-    // notoriety widens how high you can push before it stops selling.
-    const ceiling = 1.15 + noto / 200       // ask multiple you can hit reliably
-    const over = Math.max(0, askMult - ceiling)
-    const sellChance = Math.max(0.15, Math.min(0.98, 1 - over * 1.1))
-    return { market, ask, fee, net, days, sellChance }
+    const viewsPerDay = +(dailyViewers(card, askMult, noto, () => 0.5)).toFixed(0)
+    // share of the browsing pool whose max-willingness covers this ask (use the
+    // savvy weights, with each type's notoriety/desirability-lifted ceiling).
+    let buyShare = 0
+    for (const [key, b] of Object.entries(BUYER_SAVVY)) {
+      const max = buyerMaxMult(key, noto, card, () => 0.5)
+      if (askMult <= max) buyShare += b.weight
+    }
+    return { market, ask, fee, net, viewsPerDay, buyShare: +buyShare.toFixed(2) }
   },
 
-  // List a card on your own site at `askMult`× market. Decides sell/expire now
-  // (honest odds), removes from collection, pays net on day-advance if it sells.
+  // List a card on your own site at `askMult`× market. Removes it from the
+  // collection and puts it on the market, where browsing customers decide whether
+  // to buy (see tickListings). `views`/`offers` accrue as days pass.
   listOnSite(uid, askMult) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return false
     const q = get().listingQuote(card, askMult)
-    const willSell = Math.random() < q.sellChance
-    const listing = { card, ask: q.ask, net: q.net, askMult, daysLeft: q.days, willSell }
+    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
     set(s => ({
       collection: s.collection.filter(c => c.uid !== uid),
       listings: [...(s.listings || []), listing],
     }))
-    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market) — ~${q.days}d`, 0)
+    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)`, 0)
     return q
   },
 
-  // Relist an expired listing — rolls a fresh outcome at the same ask.
+  // Relist a listing (e.g. one that went stale) — back on the market fresh, same ask.
   relistListing(idx) {
     const l = get().listings[idx]
-    if (!l || !l.expired) return
+    if (!l) return
     const q = get().listingQuote(l.card, l.askMult)
-    const willSell = Math.random() < q.sellChance
     set(s => ({ listings: s.listings.map((x, i) => i === idx
-      ? { ...x, expired: false, daysLeft: q.days, willSell, ask: q.ask, net: q.net } : x) }))
-    get().log('listing', `Relisted ${l.card.name} — ~${q.days}d`, 0)
+      ? { ...x, expired: false, stale: false, views: 0, offers: [], age: 0, ask: q.ask, net: q.net } : x) }))
+    get().log('listing', `Relisted ${l.card.name} at $${q.ask.toFixed(2)}`, 0)
   },
 
-  // Pull a listing back into your collection (e.g. an expired one, or to reprice).
+  // Reprice a live listing to a new ask multiple (resets browsing interest).
+  repriceListing(idx, askMult) {
+    const l = get().listings[idx]
+    if (!l) return
+    const q = get().listingQuote(l.card, askMult)
+    set(s => ({ listings: s.listings.map((x, i) => i === idx
+      ? { ...x, askMult, ask: q.ask, net: q.net, expired: false, stale: false, views: 0, offers: [], age: 0 } : x) }))
+    get().log('listing', `Repriced ${l.card.name} to $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)`, 0)
+  },
+
+  // Accept a standing offer on a listing → sells now (net of the marketplace fee).
+  acceptOffer(idx, offerId) {
+    const l = get().listings[idx]
+    const offer = l?.offers?.find(o => o.id === offerId)
+    if (!l || !offer) return
+    set(s => ({ listings: s.listings.filter((_, i) => i !== idx) }))
+    get().earn(offer.net)
+    get().bumpGoal('sell', 1); get().bumpGoal('profit', offer.net)
+    get().log('sell', `Accepted a ${offer.savvyLabel}'s offer on ${l.card.name} — $${offer.net.toFixed(2)}`, offer.net)
+  },
+
+  // Decline a standing offer (drops it; the listing stays up).
+  declineOffer(idx, offerId) {
+    set(s => ({ listings: s.listings.map((x, i) => i === idx
+      ? { ...x, offers: (x.offers || []).filter(o => o.id !== offerId) } : x) }))
+  },
+
+  // Pull a listing back into your collection (to reprice differently, or stop selling).
   pullListing(idx) {
     const l = get().listings[idx]
     if (!l) return
@@ -625,7 +709,7 @@ export const useGame = create(persist((set, get) => ({
     if (!cards.length) return 0
     const newListings = cards.map(card => {
       const q = get().listingQuote(card, askMult)
-      return { card, ask: q.ask, net: q.net, askMult, daysLeft: q.days, willSell: Math.random() < q.sellChance }
+      return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
     })
     set(s => ({
       collection: s.collection.filter(c => !ids.has(c.uid)),
@@ -1009,7 +1093,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 12,
+  version: 13,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1090,6 +1174,15 @@ export const useGame = create(persist((set, get) => ({
       state.cardIncomeLog = state.cardIncomeLog ?? []
       state.employees = state.employees ?? []
       state.storeArrears = state.storeArrears ?? 0
+    }
+    if (version < 13) {
+      // Listings are now browsed by real customers (no pre-rolled willSell / daysLeft
+      // countdown). Normalize existing listings to the new shape: drop the timer fields,
+      // start their browsing fresh. Old `expired` flag is preserved as awaiting-action.
+      state.listings = (state.listings ?? []).map(l => {
+        const { willSell, daysLeft, ...rest } = l
+        return { ...rest, views: rest.views ?? 0, offers: rest.offers ?? [], age: rest.age ?? 0 }
+      })
     }
     return state
   },

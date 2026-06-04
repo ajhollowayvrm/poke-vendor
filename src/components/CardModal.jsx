@@ -120,12 +120,12 @@ export default function CardModal({ card, onClose }) {
                 </div>
                 <div className="list-quote">
                   <div><span className="muted">You net</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee</small></div>
-                  <div><span className="muted">Est. wait</span><b>~{quote.days} day{quote.days>1?'s':''}</b><small className="muted">faster with rep</small></div>
-                  <div><span className="muted">Sell odds</span>
-                    <b style={{ color: quote.sellChance > 0.7 ? 'var(--green)' : quote.sellChance > 0.45 ? 'var(--gold)' : 'var(--red)' }}>
-                      {Math.round(quote.sellChance*100)}%
+                  <div><span className="muted">Shoppers/day</span><b>👀 ~{quote.viewsPerDay}</b><small className="muted">more with rep</small></div>
+                  <div><span className="muted">Who'll buy</span>
+                    <b style={{ color: quote.buyShare > 0.6 ? 'var(--green)' : quote.buyShare > 0.25 ? 'var(--gold)' : 'var(--red)' }}>
+                      {Math.round(quote.buyShare*100)}%
                     </b>
-                    <small className="muted">{quote.sellChance < 0.5 ? 'may sit unsold' : 'likely to sell'}</small>
+                    <small className="muted">{quote.buyShare <= 0 ? 'too pricey — will sit' : quote.buyShare < 0.3 ? 'only casual buyers' : 'of browsing buyers'}</small>
                   </div>
                 </div>
                 <div className="row" style={{ marginTop: 10 }}>
