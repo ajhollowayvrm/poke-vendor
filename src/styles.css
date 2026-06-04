@@ -607,13 +607,16 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
     border-top: 1px solid var(--line); box-shadow: 0 -6px 24px #0007;
   }
   .bnav-btn {
-    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
     background: transparent; border: 0; color: var(--dim); padding: 5px 2px 3px; border-radius: 12px;
     font-weight: 700; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .bnav-btn.active { color: #fff; background: var(--accent2); }
+  /* tight highlight: a pill hugging just the icon (not the full-width cell) */
+  .bnav-btn.active { color: #fff; background: transparent; }
+  .bnav-btn.active .bnav-icon { background: var(--accent2); }
   .bnav-btn:active { transform: scale(.95); }
-  .bnav-icon { position: relative; font-size: 20px; line-height: 1; }
+  .bnav-icon { position: relative; font-size: 20px; line-height: 1;
+    padding: 4px 12px; border-radius: 999px; }
   /* labels shrink to fit the narrower per-tab width; truncate rather than wrap */
   .bnav-label { font-size: 10px; line-height: 1; max-width: 100%; overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap; }

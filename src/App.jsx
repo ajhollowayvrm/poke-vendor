@@ -19,7 +19,7 @@ import { SHOW_TIERS } from './game/shows'
 // Primary nav: the core loop only. Reference/meta screens (Grader, Prices) live
 // as sub-tabs inside Collection; Settings + Stats live behind the ⚙️ gear in the top bar.
 const TABS = ['shop', 'myshop', 'shows', 'upgrades', 'collection']
-const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', shows: 'Shows', upgrades: 'Upgrades', collection: 'Collection' }
+const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', shows: 'Shows', upgrades: 'Upgrades', collection: 'Cards' }
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', shows: '🎪', upgrades: '⬆️', collection: '🗂️' }
 
@@ -153,7 +153,7 @@ export default function App() {
       {tab === 'collection' && (
         <>
           <div className="subtabs">
-            <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ Cards</button>
+            <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
             <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
             <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
           </div>
