@@ -246,11 +246,35 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       {(phase === 'revealing' || phase === 'done') && (
         <>
           {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
+
+          {/* TOP — pack-done controls surface here so the next-pack button is up top, not below the cards */}
+          {phase === 'done' && (
+            <div className="rip-top-actions">
+              {multi ? (
+                <button className="btn gold" style={{ maxWidth: 220 }} onClick={nextPack}>
+                  {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
+                </button>
+              ) : singleNoReRip ? (
+                <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
+              ) : (
+                <>
+                  <button className="btn gold" style={{ maxWidth: 190 }} onClick={resetForNext}>
+                    Rip another ({fmtMoney(packPrice(set))})
+                  </button>
+                  <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onExit}>Done →</button>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* TOP — running list of hits for the whole rip (horizontal strip above the reveal) */}
+          <HitList hits={hits} />
+
           <div className="rip-layout">
             {/* LEFT — live callout naming every card as it reveals */}
             <NowRevealing card={current} />
 
-            {/* CENTER — the reveal row + pack-done controls */}
+            {/* CENTER — the reveal row + pack-value summary */}
             <div className="rip-center">
               <div className={`reveal-row ${isGod ? 'god' : ''}`}>
                 {pulls.map((c, i) => {
@@ -281,32 +305,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       </span>
                     </div>
                   )}
-                  <div className="row" style={{ justifyContent: 'center' }}>
-                    {multi ? (
-                      <button className="btn gold" style={{ maxWidth: 200 }} onClick={nextPack}>
-                        {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
-                      </button>
-                    ) : singleNoReRip ? (
-                      <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
-                    ) : (
-                      <>
-                        <button className="btn gold" style={{ maxWidth: 180 }} onClick={resetForNext}>
-                          Rip another ({fmtMoney(packPrice(set))})
-                        </button>
-                        <button className="btn alt" style={{ maxWidth: 160 }} onClick={onExit}>Done →</button>
-                      </>
-                    )}
-                  </div>
-                  <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>
+                  <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>
                     Cards added to your collection. Best pull:{' '}
                     <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
                   </p>
                 </div>
               )}
             </div>
-
-            {/* RIGHT — running list of hits for the whole rip */}
-            <HitList hits={hits} />
           </div>
         </>
       )}
@@ -343,10 +348,10 @@ function NowRevealing({ card }) {
   )
 }
 
-// Right-side running tally of every hit/foil pulled this rip.
+// Running tally of every hit/foil pulled this rip — a horizontal strip above the reveal.
 function HitList({ hits }) {
   return (
-    <aside className="rip-side rip-hits">
+    <aside className="rip-side rip-hits rip-hits-top">
       <div className="rip-side-head">Hits {hits.length ? `(${hits.length})` : ''}</div>
       {hits.length === 0 ? (
         <div className="muted" style={{ fontSize: 12 }}>No hits yet — fingers crossed. 🤞</div>

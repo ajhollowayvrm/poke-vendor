@@ -4,7 +4,7 @@ import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 
-const STARTING_CASH = 10000
+const STARTING_CASH = 5000
 
 // --- Survival economy ------------------------------------------------------
 // Each game-day you earn your job's wage and pay rent. The job is the safety net

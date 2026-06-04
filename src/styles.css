@@ -474,6 +474,14 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rip-side { flex: 0 0 200px; background: linear-gradient(180deg,var(--panel),var(--panel2));
   border:1px solid var(--line); border-radius: 14px; padding: 12px; align-self: stretch; }
 .rip-side-head { font-size: 11px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color: var(--muted); margin-bottom: 10px; }
+
+/* pack-done controls pulled to the top (above the cards) */
+.rip-top-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; width:100%; max-width:1100px; }
+/* the hits tally as a full-width strip above the reveal (horizontal scroll) */
+.rip-hits-top { flex: none; width:100%; max-width:1100px; align-self:auto; }
+.rip-hits-top .rip-hits-list { flex-direction: row; flex-wrap: nowrap; max-height: none;
+  overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; }
+.rip-hits-top .rip-hit-row { flex: 0 0 auto; min-width: 170px; }
 /* left: the card currently landing */
 .rip-now-card { text-align:center; animation: foilpop .35s cubic-bezier(.2,1.4,.5,1); }
 .rip-now-card img { width: 100%; border-radius: 10px; border: 2px solid var(--rarity, var(--line));
