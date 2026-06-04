@@ -29,7 +29,7 @@ export default function SellStrips() {
               {c.card.name} · {fmtMoney(c.net)} · {c.daysLeft}d
             </span>
           ))}
-          <span className="muted" style={{ fontSize: 12 }}>— pays out on Next Day / when you attend a show</span>
+          <span className="muted" style={{ fontSize: 12 }}>— pays out as the days pass / when you attend a show</span>
         </div>
       )}
     </>

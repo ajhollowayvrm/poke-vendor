@@ -26,7 +26,7 @@ export default function PriceGuide() {
   return (
     <>
       <div className="banner" style={{ marginTop: 16 }}>
-        💲 Price guide — live TCGplayer market values for every card in each set. Reference only; refresh prices in Settings.
+        💲 Price guide — live TCGplayer market values for every card in each set. Reference only; refresh prices from the ⚙️ menu.
       </div>
 
       <div className="toolbar">
