@@ -228,6 +228,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .jobbtn:disabled { opacity: .55; cursor: not-allowed; }
 .jobbtn .jobname { font-weight: 700; font-size: 12px; }
 .jobbtn .jobwage { font-size: 11px; color: var(--dim); }
+/* Brick & mortar store panel */
+.store-panel { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.store-head { font-weight: 800; font-size: 14px; }
+.emp-grid { display:flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.emp-row { display:flex; align-items:center; gap: 8px; padding: 6px 8px; border-radius: 9px; background: #ffffff08; }
+.emp-count { color: var(--green); font-size: 12px; }
 
 /* ---------- Calendar ---------- */
 .tierlegend { display:flex; flex-wrap:wrap; gap: 10px; margin: 4px 0 16px; }

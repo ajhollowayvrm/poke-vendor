@@ -25,6 +25,24 @@ export const STARTER_JOB = JOBS.find(j => j.id === 'retail')
 export function jobById(id) { return JOBS.find(j => j.id === id) || null }
 // Days you can stay behind on rent before it's game over (the grace/comeback window).
 export const RENT_GRACE_DAYS = 3
+// Rolling window (game-days) used to estimate your card income/day for the full-time
+// sustainability readout. Long enough to smooth out spiky sale days.
+export const INCOME_WINDOW_DAYS = 7
+
+// --- Brick & mortar (Phase 4) ----------------------------------------------
+// The storefront upgrade (UPGRADES.storefront) flips you from flipper to store owner:
+// walk-in customers, Cash payments — and a real daily LEASE you must keep funded.
+// Once open you can hire EMPLOYEES: each adds daily payroll but boosts order throughput
+// (and covers the store while you're at shows). Fail to cover store overhead (lease +
+// payroll) for STORE_GRACE_DAYS and you lose the store (close it) — back to flipping.
+export const STORE_LEASE_PER_DAY = 120
+export const STORE_GRACE_DAYS = 4
+export const EMPLOYEES = [
+  { id: 'clerk',    title: 'Store Clerk',     wage: 45, throughput: 0.25, desc: 'Handles the counter — more walk-in & online orders land.' },
+  { id: 'buyer',    title: 'Floor Buyer',     wage: 80, throughput: 0.45, desc: 'Works the floor and online — a big bump to order volume.' },
+  { id: 'manager',  title: 'Store Manager',   wage: 130, throughput: 0.70, desc: 'Runs the shop end to end — the most throughput, the most payroll.' },
+]
+export function employeeById(id) { return EMPLOYEES.find(e => e.id === id) || null }
 
 // The game runs in REAL TIME: 1 game-day = `dayMinutes` real minutes (default 15).
 // Everything daily — orders, listings/consignments, wages, rent, AND grading — rides this
@@ -150,29 +168,36 @@ function advanceDaysWith(set, get, days, away) {
   const noto = s.notoriety
   const hasStore = !!s.upgrades.storefront
   const onlineOK = away ? !!s.upgrades.smartphone : true
-  const walkinOK = away ? !!s.upgrades.staff : true
+  // Walk-ins are covered while away if you have the Shop Assistant upgrade OR any employee.
+  const walkinOK = away ? (!!s.upgrades.staff || (s.employees || []).length > 0) : true
   const accepted = acceptedMethods(s.upgrades) // buyers prefer methods you can take
   let missedOnline = 0, missedWalkin = 0
   let onlineCount = 0
   const newOrders = []
   // Survival accrual across the days passed (settled against cash after sales below).
-  const wagePerDay = s.job?.wage || 0
   let wagesEarned = 0, rentDue = 0
   let pendingJob = s.pendingJob
   let activeJob = s.job
+  // Employees boost order throughput (and their payroll is settled below). Capped so a
+  // packed payroll can't push order chance past ~1.
+  const empList = (s.employees || []).map(employeeById).filter(Boolean)
+  const empThroughput = Math.min(1.5, empList.reduce((a, e) => a + e.throughput, 0))
+  const orderMult = 1 + empThroughput
+  let payrollDue = 0, leaseDue = 0
   for (let i = 0; i < days; i++) {
     const dayNo = s.currentDay + i + 1 // the day being entered
     // a pending job starts paying once its start day arrives
     if (pendingJob && dayNo >= pendingJob.startsOnDay) { activeJob = pendingJob.job; pendingJob = null }
     wagesEarned += activeJob?.wage || 0
     rentDue += RENT_PER_DAY
-    // online channel
-    if (Math.random() < dayOrderChance('online', noto)) {
+    if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
+    // online channel (employees raise the hit chance)
+    if (Math.random() < Math.min(0.97, dayOrderChance('online', noto) * orderMult)) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store)
-    if (hasStore && Math.random() < dayOrderChance('walkin', noto)) {
+    if (hasStore && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
       if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin', accepted), channel: 'walkin' })
       else missedWalkin++
     }
@@ -233,11 +258,43 @@ function advanceDaysWith(set, get, days, away) {
   }))
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
-  if (wagesEarned > 0) { get().earn(wagesEarned); get().log('wage', `Wages: ${activeJob?.title || 'job'} (+$${wagesEarned.toFixed(2)})`, wagesEarned) }
+  if (wagesEarned > 0) { get().earn(wagesEarned, { wage: true }); get().log('wage', `Wages: ${activeJob?.title || 'job'} (+$${wagesEarned.toFixed(2)})`, wagesEarned) }
   if (rentDue > 0) settleRent(set, get, rentDue, days)
+  // Brick & mortar: settle the daily lease + payroll. Failing this over the grace window
+  // closes the store (you keep the cards/cash — you just lose the lease + staff).
+  if (hasStore && (leaseDue + payrollDue) > 0) settleStore(set, get, leaseDue, payrollDue, days)
+  set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
-  return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue) }
+  return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
+    lease: round2(leaseDue), payroll: round2(payrollDue) }
+}
+
+// Settle daily store overhead (lease + payroll). If cash covers it, pay and clear arrears.
+// If not, fall behind; past STORE_GRACE_DAYS you LOSE THE STORE (close it + let go of
+// staff) — you're back to flipping from home, not game over. Rent/game-over is separate.
+function settleStore(set, get, leaseDue, payrollDue, days) {
+  const due = round2(leaseDue + payrollDue)
+  const s = get()
+  if (s.cash >= due) {
+    get().spend(due)
+    get().log('store', `Store overhead paid — lease $${leaseDue.toFixed(2)}${payrollDue ? ` + payroll $${payrollDue.toFixed(2)}` : ''} (-$${due.toFixed(2)})`, -due)
+    if (s.storeArrears) set({ storeArrears: 0 })
+    return
+  }
+  if (s.cash > 0) get().spend(round2(s.cash))
+  const arrears = (s.storeArrears || 0) + days
+  if (arrears > STORE_GRACE_DAYS) {
+    // lose the store: drop the storefront + staff upgrades, let go of all employees.
+    set(st => {
+      const up = { ...st.upgrades }; delete up.storefront; delete up.staff
+      return { upgrades: up, employees: [], storeArrears: 0 }
+    })
+    get().log('store-lost', `Couldn't cover the store overhead — you lost the shop. Back to flipping from home.`, 0)
+  } else {
+    set({ storeArrears: arrears })
+    get().log('store-late', `Behind on store overhead (${arrears}/${STORE_GRACE_DAYS} days) — sell cards or trim staff!`, 0)
+  }
 }
 
 // Charge rent for the days passed. If cash covers it, pay and clear arrears. If not,
@@ -334,6 +391,11 @@ export const useGame = create(persist((set, get) => ({
   pendingJob: null,        // { job, startsOnDay }
   rentArrears: 0,
   gameOver: false,
+  cumWages: 0,             // lifetime wages earned — subtracted from stats.earned to isolate CARD income
+  _cardAccrual: 0,         // card income accrued since the last day-tick (flushed into cardIncomeLog)
+  cardIncomeLog: [],       // ring of recent per-day card-income deltas (for the full-time runway readout)
+  employees: [],           // hired employee ids (brick & mortar) — each is daily payroll + throughput
+  storeArrears: 0,         // consecutive days unable to cover store overhead → lose the store
   // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
   // autoAdvance: in one-by-one mode, auto-rip the next pack a few seconds after each finishes.
   // dayMinutes: real minutes per game-day (the master clock rate).
@@ -376,8 +438,14 @@ export const useGame = create(persist((set, get) => ({
     set(s => ({ cash: round2(s.cash - amount), stats: { ...s.stats, spent: round2(s.stats.spent + amount) } }))
     return true
   },
-  earn(amount) {
-    set(s => ({ cash: round2(s.cash + amount), stats: { ...s.stats, earned: round2(s.stats.earned + amount) } }))
+  // earn money. By default it counts as CARD income (sales, payouts, wants) for the
+  // full-time sustainability readout; pass {wage:true} for paycheck income so it's excluded.
+  earn(amount, opts) {
+    set(s => ({
+      cash: round2(s.cash + amount),
+      stats: { ...s.stats, earned: round2(s.stats.earned + amount) },
+      _cardAccrual: round2((s._cardAccrual || 0) + (opts?.wage ? 0 : amount)),
+    }))
   },
   // Attribute a sealed-product purchase to its set for the per-set ledger.
   recordSetSpend(setId, amount) {
@@ -848,6 +916,44 @@ export const useGame = create(persist((set, get) => ({
     get().log('job', `Quit ${had.title} — going full-time as a vendor. No more paycheck.`, 0)
   },
 
+  // --- Full-time sustainability readout (Phase 3) ---
+  // Average CARD income per game-day over the recent window (sales/payouts, not wages).
+  // Drives the "can I survive unemployed?" guidance. 0 until enough days have elapsed.
+  cardIncomePerDay() {
+    const log = get().cardIncomeLog || []
+    if (!log.length) return 0
+    return round2(log.reduce((a, v) => a + v, 0) / log.length)
+  },
+  // Total daily burn you must cover: rent + (store lease + payroll, if you have a store).
+  dailyBurn() {
+    const s = get()
+    let burn = RENT_PER_DAY
+    if (s.upgrades.storefront) {
+      burn += STORE_LEASE_PER_DAY
+      burn += (s.employees || []).map(employeeById).filter(Boolean).reduce((a, e) => a + e.wage, 0)
+    }
+    return round2(burn)
+  },
+
+  // --- Brick & mortar employees (Phase 4) ---
+  hireEmployee(id) {
+    const e = employeeById(id)
+    if (!e || !get().upgrades.storefront) return false
+    set(st => ({ employees: [...st.employees, id] }))
+    get().log('hire', `Hired a ${e.title} ($${e.wage}/day payroll)`, 0)
+    return true
+  },
+  fireEmployee(id) {
+    const e = employeeById(id)
+    set(st => {
+      const i = st.employees.indexOf(id)
+      if (i === -1) return {}
+      const next = st.employees.slice(); next.splice(i, 1)
+      return { employees: next }
+    })
+    if (e) get().log('fire', `Let go of a ${e.title}.`, 0)
+  },
+
   // Pass a single day at home — generate that day's home orders into the inbox.
   nextDay() { return advanceDaysWith(set, get, 1, false) },
 
@@ -868,10 +974,17 @@ export const useGame = create(persist((set, get) => ({
     if (capped) due = MAX_CATCHUP
     const cashBefore = s.cash
     const result = advanceDaysWith(set, get, due, false) || {}
-    // consume exactly the days we processed; keep the sub-day remainder so progress isn't lost.
-    set(st => ({ lastTick: (st.lastTick ?? Date.now()) + due * dayMs }))
+    // Flush CARD income accrued since the last tick (interactive sales + passive payouts,
+    // tracked by earn() — wages excluded) and attribute it evenly across the days passed
+    // into the rolling window that powers the full-time sustainability readout.
+    const cardIncome = round2(get()._cardAccrual || 0)
+    const perDay = round2(cardIncome / due)
+    const ring = [...(get().cardIncomeLog || [])]
+    for (let i = 0; i < due; i++) ring.push(perDay)
+    // consume exactly the days processed; keep the sub-day remainder; reset the accrual.
+    set(st => ({ lastTick: (st.lastTick ?? Date.now()) + due * dayMs, cardIncomeLog: ring.slice(-INCOME_WINDOW_DAYS), _cardAccrual: 0 }))
     const cashAfter = get().cash
-    return { ...result, days: due, capped, cashDelta: round2(cashAfter - cashBefore) }
+    return { ...result, days: due, capped, cashDelta: round2(cashAfter - cashBefore), cardIncome }
   },
   // Attend a show: the show's days pass while you're AWAY. Home orders during
   // those days only land if you have the Smartphone (online) / Staff (walk-in)
@@ -891,11 +1004,12 @@ export const useGame = create(persist((set, get) => ({
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
+      cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 11,
+  version: 12,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -969,6 +1083,13 @@ export const useGame = create(persist((set, get) => ({
       state.pendingJob = state.pendingJob ?? null
       state.rentArrears = state.rentArrears ?? 0
       state.gameOver = state.gameOver ?? false
+    }
+    if (version < 12) {
+      // Full-time readout + brick & mortar employees.
+      state.cumWages = state.cumWages ?? 0
+      state.cardIncomeLog = state.cardIncomeLog ?? []
+      state.employees = state.employees ?? []
+      state.storeArrears = state.storeArrears ?? 0
     }
     return state
   },

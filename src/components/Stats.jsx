@@ -1,4 +1,4 @@
-import { useGame, JOBS, RENT_PER_DAY } from '../game/store'
+import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
 import { cardValue, fmtMoney, round2, SETS } from '../game/engine'
 
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
@@ -113,36 +113,45 @@ function FinanceCard() {
   const collection = useGame(s => s.collection)
   const takeJob = useGame(s => s.takeJob)
   const quitJob = useGame(s => s.quitJob)
+  const cardPerDay = useGame(s => s.cardIncomePerDay())
+  const burn = useGame(s => s.dailyBurn())
 
   const wage = job?.wage || 0
-  const netDay = wage - RENT_PER_DAY
+  // The real question: does income (wage + card profit) cover the daily burn (rent + store)?
+  const income = wage + cardPerDay
+  const netDay = round2(income - burn)
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
-  // Runway: if you're net-negative per day, how many days until cash runs out (then you'd
-  // lean on selling cards). Positive net = sustainable.
   const runway = netDay >= 0 ? null : Math.floor(cash / -netDay)
+  // Can you survive WITHOUT the wage? (the "make it" test) — card income alone vs burn.
+  const sustainable = cardPerDay >= burn
 
   return (
     <div className="finance-card">
       <div className="finance-head">
         <div>
-          <div className="finance-title">💼 {pendingJob ? `${pendingJob.job.title} (starts day ${pendingJob.startsOnDay})` : (job ? job.title : 'Full-time vendor')}</div>
+          <div className="finance-title">💼 {pendingJob ? `${pendingJob.job.title} (starts day ${pendingJob.startsOnDay})` : (job ? job.title : '🃏 Full-time vendor')}</div>
           <div className="muted" style={{ fontSize: 12 }}>
-            {job ? `Wage +$${wage}/day` : 'No paycheck — you live on card profit'} · Rent −${RENT_PER_DAY}/day
+            {job ? `Wage +$${wage}/day` : 'No paycheck'} · Cards ≈ +{fmtMoney(cardPerDay)}/day · Burn −{fmtMoney(burn)}/day
           </div>
         </div>
         <div className="finance-net" style={{ color: netDay >= 0 ? 'var(--green)' : 'var(--red)' }}>
-          {netDay >= 0 ? '+' : ''}{fmtMoney(netDay)}<small>/day from job</small>
+          {netDay >= 0 ? '+' : ''}{fmtMoney(netDay)}<small>net/day</small>
         </div>
       </div>
       {rentArrears > 0 && (
         <div className="finance-warn">⚠️ Behind on rent ({rentArrears} day{rentArrears>1?'s':''}). Sell cards or take a job before you're out.</div>
       )}
+      {/* Full-time sustainability readout (Phase 3) */}
       <div className="muted" style={{ fontSize: 12, margin: '6px 0' }}>
-        {netDay >= 0
-          ? `Your job covers rent with $${netDay}/day to spare. Cards are how you actually grow.`
-          : runway != null
-            ? `At this rate your cash lasts ~${runway} day${runway===1?'':'s'} — card sales (collection ≈ ${fmtMoney(collValue)}) keep you afloat.`
-            : `Rent isn't covered — lean on card sales (collection ≈ ${fmtMoney(collValue)}).`}
+        {job
+          ? (sustainable
+              ? `📈 Your cards alone (~${fmtMoney(cardPerDay)}/day) already cover your ${fmtMoney(burn)}/day burn — you could quit and make it.`
+              : `Your job covers the bills; cards add ~${fmtMoney(cardPerDay)}/day. Get card income above ${fmtMoney(burn)}/day to go full-time for good.`)
+          : (sustainable
+              ? `🔥 Sustainable! Cards (~${fmtMoney(cardPerDay)}/day) beat your ${fmtMoney(burn)}/day burn. This is the dream.`
+              : runway != null
+                ? `⏳ Living on cards: ~${fmtMoney(cardPerDay)}/day vs ${fmtMoney(burn)}/day burn. Cash lasts ~${runway} day${runway===1?'':'s'} — sell cards (≈ ${fmtMoney(collValue)}) or take a job.`
+                : `Cards cover the burn for now.`)}
       </div>
       <div className="finance-jobs">
         {JOBS.filter(j => j.id !== 'none').map(j => {
@@ -159,11 +168,57 @@ function FinanceCard() {
         })}
       </div>
       {job && (
-        <button className="btn alt" style={{ maxWidth: 180, marginTop: 8 }}
-          onClick={() => { if (confirm(`Quit ${job.title}? You'll lose the $${wage}/day wage and live on card profit. Rent still applies.`)) quitJob() }}>
+        <button className="btn alt" style={{ maxWidth: 200, marginTop: 8 }}
+          onClick={() => { if (confirm(`Quit ${job.title}? You'll lose the $${wage}/day wage and live on card profit. Rent${useGame.getState().upgrades.storefront ? ' + store overhead' : ''} still applies.`)) quitJob() }}>
           Quit — go full-time
         </button>
       )}
+
+      <StorePanel />
+    </div>
+  )
+}
+
+// Brick & mortar panel (Phase 4): store status, daily overhead, employee hiring.
+function StorePanel() {
+  const hasStore = useGame(s => !!s.upgrades.storefront)
+  const employees = useGame(s => s.employees || [])
+  const storeArrears = useGame(s => s.storeArrears || 0)
+  const hire = useGame(s => s.hireEmployee)
+  const fire = useGame(s => s.fireEmployee)
+
+  if (!hasStore) {
+    return (
+      <div className="store-panel muted" style={{ fontSize: 12 }}>
+        🏬 No storefront yet. Open one from the <b>Upgrades</b> tab to unlock walk-in customers,
+        Cash payments, and employees — it adds a daily lease (${STORE_LEASE_PER_DAY}/day) you must keep funded.
+      </div>
+    )
+  }
+  const payroll = employees.map(employeeById).filter(Boolean).reduce((a, e) => a + e.wage, 0)
+  const counts = employees.reduce((m, id) => (m[id] = (m[id] || 0) + 1, m), {})
+  return (
+    <div className="store-panel">
+      <div className="store-head">🏬 Your Store <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>
+        — lease ${STORE_LEASE_PER_DAY}/day{payroll ? ` + payroll $${payroll}/day` : ''}</span></div>
+      {storeArrears > 0 && (
+        <div className="finance-warn">⚠️ Behind on store overhead ({storeArrears}/{STORE_GRACE_DAYS} days). Cover it or you'll lose the shop.</div>
+      )}
+      <div className="muted" style={{ fontSize: 12, margin: '4px 0 6px' }}>
+        Employees boost order throughput (and mind the shop while you're at shows) — but each is daily payroll. Balance it.
+      </div>
+      <div className="emp-grid">
+        {EMPLOYEES.map(e => (
+          <div className="emp-row" key={e.id}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: 13 }}>{e.title} {counts[e.id] ? <span className="emp-count">×{counts[e.id]}</span> : null}</div>
+              <div className="muted" style={{ fontSize: 11 }}>${e.wage}/day · +{Math.round(e.throughput*100)}% orders</div>
+            </div>
+            {counts[e.id] ? <button className="btn alt" style={{ flex:'none', maxWidth: 64 }} onClick={() => fire(e.id)}>Fire</button> : null}
+            <button className="btn" style={{ flex:'none', maxWidth: 64 }} onClick={() => hire(e.id)}>Hire</button>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
