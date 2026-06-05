@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney } from './game/engine'
+import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney,
+  businessVolume, distributorTier, nextDistributorTier, wholesalePrice, caseLot, casePrice } from './game/engine'
 import { useGame, dayLengthMs } from './game/store'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -69,23 +70,28 @@ export default function App() {
   // Multi-pack products: if "open one at a time" is on, rip each pack with the
   // animation (you can fast-forward); otherwise open the whole thing instantly.
   function buyProduct(set, product) {
-    if (cash < product.price) return toast(`Not enough cash for ${product.type}.`)
+    // The Buy/Distributor UI passes `_buyPrice` = the actual charged price (retail,
+    // wholesale, or case-lot), so the price shown is exactly what's charged. A case
+    // lot rips its boxes' worth of packs at once.
+    const price = product._buyPrice ?? product.price
+    if (cash < price) return toast(`Not enough cash for ${product.type}.`)
     const oneByOne = useGame.getState().settings.openSealedOneByOne
+    const wholesaleNote = product._buyPrice != null && product._buyPrice < product.price ? ' (wholesale)' : ''
     const animated = product.packs === 1 || oneByOne
     if (animated) {
-      if (!spend(product.price)) return
-      useGame.getState().recordSetSpend(set.id, product.price)
-      useGame.getState().log('buy', `Bought ${product.type} (${set.name})`, -product.price)
+      if (!spend(price)) return
+      useGame.getState().recordSetSpend(set.id, price)
+      useGame.getState().log('buy', `Bought ${product.type} (${set.name})${wholesaleNote}`, -price)
       setRipping({ set, product })
       setTab('shop')
       return
     }
-    if (!spend(product.price)) return
-    useGame.getState().recordSetSpend(set.id, product.price)
+    if (!spend(price)) return
+    useGame.getState().recordSetSpend(set.id, price)
     const all = openProduct(set, product)
     all.forEach(c => (c._isHit = isHit(c)))
     addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal
-    useGame.getState().log('buy', `Opened ${product.type} (${set.name})`, -product.price)
+    useGame.getState().log('buy', `Opened ${product.type} (${set.name})${wholesaleNote}`, -price)
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
@@ -296,34 +302,144 @@ function GameOver() {
 }
 
 function Shop({ cash, onBuy }) {
+  const stats = useGame(s => s.stats)
+  const supplyVendors = useGame(s => s.supplyVendors)
+  const supplyChannel = useGame(s => s.supplyChannel || [])
+  const volume = businessVolume(stats)
+  const tier = distributorTier(volume)
+  const next = nextDistributorTier(volume)
+  const disc = tier.discount
+  const [toastMsg, setToastMsg] = useState(null)
+  const flash = (m) => { setToastMsg(m); setTimeout(() => setToastMsg(null), 2600) }
+
+  // A product priced for the current account: stamps `_buyPrice` (what's charged)
+  // so the shown price equals the charged price. Retail at base tier; wholesale above.
+  const priced = (p) => ({ ...p, _buyPrice: wholesalePrice(p.price, disc) })
+
   return (
     <>
-      <div className="banner" style={{ marginTop: 18 }}>
+      <DistributorBanner tier={tier} next={next} volume={volume} />
+
+      {tier.supply && (
+        <SupplyPanel disc={disc} supplyVendors={supplyVendors} supplyChannel={supplyChannel} cash={cash} flash={flash} />
+      )}
+
+      <div className="banner" style={{ marginTop: 14 }}>
         🃏 Real sets & live <b>TCGplayer sealed prices</b> · data from {new Date(FETCHED_AT).toLocaleDateString()} ·
-        each product rips into its real pack count (+ a guaranteed promo for ETBs/tins/premiums). Ripping sealed is usually a loss — the chase is the fun.
+        each product rips into its real pack count (+ a guaranteed promo for ETBs/tins/premiums).
+        {disc > 0 ? <> Your <b style={{ color: tier.color }}>{tier.name}</b> account takes <b style={{ color:'var(--green)' }}>{Math.round(disc*100)}% off</b> every product.</> : <> Ripping sealed is usually a loss — the chase is the fun.</>}
       </div>
       <div className="grid shop-grid">
         {SHOP_SETS.map(set => {
           const products = setProducts(set)
+          const lot = tier.cases ? caseLot(set) : null
           return (
             <div className="product" key={set.id}>
               {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
               <h3>{set.name}</h3>
               <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
               <div className="prodlist">
-                {products.map(p => (
-                  <button key={p.type} className="prodbtn" disabled={cash < p.price} onClick={() => onBuy(set, p)}
-                    title={`${p.packs} pack${p.packs>1?'s':''}${p.bonus ? ' + promo' : ''}`}>
-                    <span className="prodname">{p.icon} {p.type}</span>
-                    <span className="prodmeta">{p.packs} pk{p.bonus ? ' +🎁' : ''}</span>
-                    <span className="prodprice">{fmtMoney(p.price)}</span>
-                  </button>
-                ))}
+                {products.map(p => {
+                  const pp = priced(p)
+                  return (
+                    <button key={p.type} className="prodbtn" disabled={cash < pp._buyPrice} onClick={() => onBuy(set, pp)}
+                      title={`${p.packs} pack${p.packs>1?'s':''}${p.bonus ? ' + promo' : ''}${disc>0?` · ${Math.round(disc*100)}% wholesale`:''}`}>
+                      <span className="prodname">{p.icon} {p.type}</span>
+                      <span className="prodmeta">{p.packs} pk{p.bonus ? ' +🎁' : ''}</span>
+                      <span className="prodprice">
+                        {disc > 0 && <s className="retail">{fmtMoney(p.price)}</s>}
+                        {fmtMoney(pp._buyPrice)}
+                      </span>
+                    </button>
+                  )
+                })}
+                {lot && (() => {
+                  const price = casePrice(lot, disc)
+                  return (
+                    <button className="prodbtn caselot" disabled={cash < price}
+                      onClick={() => onBuy(set, { ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, _buyPrice: price })}
+                      title={`${lot.boxes} boxes · ${lot.packs} packs · case bulk pricing`}>
+                      <span className="prodname">{lot.icon} {lot.type}</span>
+                      <span className="prodmeta">{lot.packs} pk · {lot.boxes} boxes</span>
+                      <span className="prodprice"><s className="retail">{fmtMoney(lot.retail)}</s>{fmtMoney(price)}</span>
+                    </button>
+                  )
+                })()}
               </div>
             </div>
           )
         })}
       </div>
+      {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
+  )
+}
+
+// Distributor status banner: your tier, what it unlocks, and progress to the next.
+function DistributorBanner({ tier, next, volume }) {
+  const pct = next ? Math.min(100, Math.round(((volume - tier.min) / (next.min - tier.min)) * 100)) : 100
+  return (
+    <div className="distrib-banner" style={{ marginTop: 18, borderColor: tier.color + '66' }}>
+      <div className="row" style={{ alignItems: 'baseline', gap: 10 }}>
+        <span className="pill" style={{ background: tier.color + '22', color: tier.color, fontSize: 13 }}>📦 {tier.name}</span>
+        <span className="muted" style={{ fontSize: 12.5 }}>
+          {tier.discount > 0 ? `${Math.round(tier.discount*100)}% wholesale off` : 'Move volume to unlock wholesale pricing'}
+          {tier.cases ? ' · case lots' : ''}{tier.supply ? ' · supply other vendors' : ''}
+        </span>
+        <span className="muted" style={{ marginLeft: 'auto', fontSize: 12.5 }}>Lifetime volume {fmtMoney(volume)}</span>
+      </div>
+      {next && (
+        <>
+          <div className="distrib-bar"><div style={{ width: pct + '%', background: tier.color }} /></div>
+          <div className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>
+            {fmtMoney(next.min - volume)} more volume → <b style={{ color: next.color }}>{next.name}</b>
+            {' '}({Math.round(next.discount*100)}% off{next.cases && !tier.cases ? ', case lots' : ''}{next.supply && !tier.supply ? ', supply vendors' : ''})
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// Supply Vendors: wholesale sealed product into the channel for passive income.
+function SupplyPanel({ disc, supplyVendors, supplyChannel, cash, flash }) {
+  const [setId, setSetId] = useState(SHOP_SETS[0].id)
+  const set = SHOP_SETS.find(s => s.id === setId) || SHOP_SETS[0]
+  const products = setProducts(set)
+  const [type, setType] = useState(() => products.find(p => p.packs >= 10)?.type || products[0].type)
+  const product = products.find(p => p.type === type) || products[0]
+  const cost = wholesalePrice(product.price, disc)
+  const pending = supplyChannel.reduce((a, w) => a + w.net, 0)
+
+  function place() {
+    if (cash < cost) return flash('Not enough cash to buy in.')
+    const r = supplyVendors(set, product)
+    if (r) flash(`Wholesaled ${product.type} of ${set.name} — nets ${fmtMoney(r.net)} in ~${r.daysLeft}d.`)
+  }
+  return (
+    <div className="market-panel" style={{ marginTop: 14 }}>
+      <div className="market-head">📦 Supply other vendors <span className="muted">— buy in at wholesale, sell through the channel for passive income over a few days</span></div>
+      <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
+        <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); const ps = setProducts(SHOP_SETS.find(s=>s.id===id)); setType(ps.find(p=>p.packs>=10)?.type || ps[0].type) }}>
+          {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
+        <select value={type} onChange={e => setType(e.target.value)}>
+          {products.map(p => <option key={p.type} value={p.type}>{p.icon} {p.type}</option>)}
+        </select>
+        <span className="muted" style={{ fontSize: 12 }}>buy-in {fmtMoney(cost)}</span>
+        <button className="btn gold" style={{ flex:'none', maxWidth: 200, marginLeft:'auto' }} disabled={cash < cost} onClick={place}>
+          Wholesale it → channel
+        </button>
+      </div>
+      {supplyChannel.length > 0 && (
+        <div className="consign-strip" style={{ marginTop: 10 }}>
+          <b>📦 In the channel ({supplyChannel.length})</b>
+          {supplyChannel.map((w, i) => (
+            <span key={i} className="pill" title={`Pays ${fmtMoney(w.net)} when it sells through`}>{w.label} · {fmtMoney(w.net)} · {w.daysLeft}d</span>
+          ))}
+          <span className="muted" style={{ fontSize: 12 }}>— {fmtMoney(pending)} incoming</span>
+        </div>
+      )}
+    </div>
   )
 }

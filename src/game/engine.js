@@ -675,3 +675,62 @@ export function makeProductPromo(set, product) {
   if (!promoPool?.length) return null
   const c = instance(pick(promoPool)); c._promo = true; return c
 }
+
+// ---- Distributor program ----------------------------------------------------
+// The prestige path above store-owner: move enough VOLUME through your business
+// (lifetime cash earned + spent — every dollar that's flowed through you) and the
+// distributors start treating you as a real account. You earn WHOLESALE pricing on
+// sealed product (buy below shop retail), unlock CASE LOTS (bulk boxes at a deeper
+// cut), and can SUPPLY other vendors for passive income. Tiers, low → high.
+//   discount — fraction off every sealed product's retail price
+//   cases    — can buy case lots (multi-box at an extra bulk cut)
+//   supply   — can wholesale product into the channel for passive payouts
+export const DISTRIBUTOR_TIERS = [
+  { key: 'none',    name: 'Retail Buyer',        min: 0,        discount: 0,    cases: false, supply: false, color: '#8c97b8' },
+  { key: 'dealer',  name: 'Authorized Dealer',   min: 25000,    discount: 0.08, cases: false, supply: false, color: '#5ec98a' },
+  { key: 'distrib', name: 'Distributor',         min: 100000,   discount: 0.15, cases: true,  supply: true,  color: '#5aa0ff' },
+  { key: 'master',  name: 'Master Distributor',  min: 400000,   discount: 0.22, cases: true,  supply: true,  color: '#ffcb05' },
+]
+// Lifetime business volume that drives the ladder: everything you've earned + spent.
+export function businessVolume(stats) {
+  return round2((stats?.earned || 0) + (stats?.spent || 0))
+}
+export function distributorTier(volume) {
+  let t = DISTRIBUTOR_TIERS[0]
+  for (const tier of DISTRIBUTOR_TIERS) if (volume >= tier.min) t = tier
+  return t
+}
+export function nextDistributorTier(volume) {
+  return DISTRIBUTOR_TIERS.find(t => t.min > volume) || null
+}
+// Wholesale price for a product at your distributor discount (retail × (1−discount)).
+export function wholesalePrice(retail, discount) {
+  return round2(retail * (1 - (discount || 0)))
+}
+
+// A CASE LOT: N boxes of a set bought together at an extra bulk cut on top of the
+// wholesale discount (real cases are cheaper per box than singles). We synthesize a
+// case from the set's biggest box-type product. Returns null if the set has no box.
+export const CASE_BOXES = 6      // boxes in a case
+export const CASE_BULK_CUT = 0.06 // extra discount vs buying the boxes individually
+export function caseLot(set) {
+  const products = setProducts(set)
+  // pick the largest multi-pack "box" as the case unit
+  const box = [...products].sort((a, b) => b.packs - a.packs)[0]
+  if (!box || box.packs < 10) return null // only real boxes form a case
+  return {
+    type: `Case (${CASE_BOXES}× ${box.type})`,
+    icon: '🏗️',
+    boxType: box.type,
+    unit: box,                       // the underlying box product
+    packs: box.packs * CASE_BOXES,
+    bonus: box.bonus,
+    boxes: CASE_BOXES,
+    retail: round2(box.price * CASE_BOXES), // before wholesale + the case cut
+  }
+}
+// Final case price at a given wholesale discount (wholesale on the boxes, then the
+// extra case bulk cut on top).
+export function casePrice(lot, discount) {
+  return round2(wholesalePrice(lot.retail, discount) * (1 - CASE_BULK_CUT))
+}

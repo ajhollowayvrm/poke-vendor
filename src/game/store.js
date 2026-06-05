@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
-  BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard } from './engine'
+  BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard,
+  businessVolume, distributorTier, wholesalePrice } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 import { fatigueMult } from './stream'
 
@@ -308,6 +309,14 @@ function advanceDaysWith(set, get, days, away) {
     if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
     else remainingConsign.push({ ...c, daysLeft: left })
   }
+  // resolve the distributor SUPPLY CHANNEL: product wholesaled to other vendors pays
+  // out (net of your wholesale cost) as the days pass.
+  const remainingSupply = []
+  for (const w of (s.supplyChannel || [])) {
+    const left = w.daysLeft - days
+    if (left <= 0) { soldProceeds = round2(soldProceeds + w.net); get().log('supply', `Channel order filled: ${w.label} (+$${w.net.toFixed(2)})`, w.net) }
+    else remainingSupply.push({ ...w, daysLeft: left })
+  }
   // resolve your own-site listings: real CUSTOMERS browse them over the days passed
   // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
   // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
@@ -330,6 +339,7 @@ function advanceDaysWith(set, get, days, away) {
     onlineOrdersEver: (st.onlineOrdersEver || 0) + onlineCount,
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
     consignments: remainingConsign,
+    supplyChannel: remainingSupply,
     listings: remainingListings,
     wantList: wants,
     dailyGoals: makeDailyGoals(noto), // fresh goals each new day
@@ -486,6 +496,7 @@ export const useGame = create(persist((set, get) => ({
   consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
   listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
   showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
+  supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
@@ -739,6 +750,34 @@ export const useGame = create(persist((set, get) => ({
     }))
     get().log('consign', `Consigned ${card.name} — nets ${'$'+net.toFixed(2)} in ~${daysLeft}d`, 0)
     return { net, daysLeft }
+  },
+
+  // --- Distributor program -----------------------------------------------------
+  // Your standing on the wholesale ladder, derived from lifetime business volume
+  // (everything earned + spent). Drives wholesale discounts, case lots, and supply.
+  distributorStatus() {
+    const vol = businessVolume(get().stats)
+    return { volume: vol, tier: distributorTier(vol) }
+  },
+  // Wholesale a sealed product into the channel: pay your wholesale cost now, and it
+  // sells through to other shops over a few days for a markup (passive distributor
+  // income). `retail` is the shop price; you buy in at wholesale and resell at a
+  // channel margin above that. Requires the supply perk (Distributor+).
+  supplyVendors(pokeSet, product) {
+    const { tier } = get().distributorStatus()
+    if (!tier.supply) return false
+    const cost = wholesalePrice(product.price, tier.discount) // you buy in at wholesale
+    if (!get().spend(cost)) return false
+    get().recordSetSpend(pokeSet.id, cost)
+    // resell into the channel at a margin over RETAIL (other shops pay near retail),
+    // minus a small channel fee. Net is comfortably above your wholesale cost.
+    const sellThrough = round2(product.price * (1.04 + Math.random() * 0.06)) // ~104–110% of retail
+    const net = round2(sellThrough * 0.95)                                    // 5% channel fee
+    const daysLeft = 2 + Math.floor(Math.random() * 4)                        // 2–5 days
+    const label = `${product.type} · ${pokeSet.name}`
+    set(s => ({ supplyChannel: [...(s.supplyChannel || []), { label, net, daysLeft }] }))
+    get().log('supply', `Wholesaled ${label} into the channel — nets $${net.toFixed(2)} in ~${daysLeft}d (cost $${cost.toFixed(2)})`, -cost)
+    return { cost, net, daysLeft }
   },
 
   // --- Livestream --------------------------------------------------------------
@@ -1246,14 +1285,14 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      consignments: [], listings: [], showInventory: [], supplyChannel: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 16,
+  version: 17,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1358,6 +1397,10 @@ export const useGame = create(persist((set, get) => ({
     if (version < 16) {
       // Audience fatigue (over-streaming thins your crowd).
       state.streamFatigue = state.streamFatigue ?? 0
+    }
+    if (version < 17) {
+      // Distributor program — the wholesale supply channel.
+      state.supplyChannel = state.supplyChannel ?? []
     }
     return state
   },

@@ -808,3 +808,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   overflow: hidden; margin: -4px 0 12px; }
 .stream-progress > div { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--green));
   transition: width .3s ease; }
+
+/* --- Distributor program (Buy tab) ---------------------------------------- */
+.distrib-banner { background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px; }
+.distrib-bar { height: 6px; background:#0c0f1a; border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-top:8px; }
+.distrib-bar > div { height:100%; transition: width .3s ease; }
+.prodprice s.retail { color: var(--dim); font-weight: 600; font-size: 11px; margin-right: 5px; opacity: .8; }
+.prodbtn.caselot { border-color: var(--accent); background: #ffcb0510; }
+.prodbtn.caselot:hover:not(:disabled) { background: #ffcb0520; }
