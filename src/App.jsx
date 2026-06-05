@@ -43,7 +43,7 @@ export default function App() {
   const addPulls = useGame(s => s.addPulls)
   const pendingCount = useGame(s => s.pendingGrades.length)
   // only count orders still valid (card not since sold) so the tab badge matches the list
-  const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings)).length)
+  const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
   const notoriety = useGame(s => s.notoriety)
   const resolveGrades = useGame(s => s.resolveGrades)
   const tickRealTime = useGame(s => s.tickRealTime)

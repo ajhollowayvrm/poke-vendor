@@ -312,13 +312,15 @@ export function makeTradeOffer(offerPool, notoriety) {
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
-export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null) {
+export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null) {
   const roll = Math.random()
   const online = channel === 'online'
-  // Who can buyers make offers on? ONLINE buyers only see what you've put up for
-  // sale (listed/tweeted cards). In-person (walk-in store / your show booth) they can
-  // spot anything in your case, so the whole collection is fair game there.
-  const offerPool = online ? (listedCards || []) : playerCollection
+  const walkin = channel === 'walkin'
+  // Who can buyers make offers on? Buyers only see what you've PUT OUT on that channel:
+  //   online → your LISTINGS (listed/tweeted)
+  //   walkin → your shop SHELF (display case — you choose what's out)
+  //   show   → your booth table (playerCollection is the show inventory the caller passed)
+  const offerPool = online ? (listedCards || []) : walkin ? (shelfCards || []) : playerCollection
 
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
   if (roll < 0.22) {
@@ -437,26 +439,30 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   // 4) Generic browse → small sale chance. Which of YOUR cards can they actually buy?
   //   show   → your show table (showInventory): only what you brought to the booth.
   //   online → your LISTINGS: an online shopper can only buy what you've put up for sale.
-  //            With nothing listed there's nothing to browse, so we skip the encounter.
-  //   walkin → your collection: a walk-in to your physical store browses your case.
-  // The store resolves `browseSale` against the pool named here.
-  const pool = channel === 'show' ? 'show' : online ? 'listings' : 'collection'
-  // Online buyers shop your listings; with an empty store there's nothing to sell them.
-  // Fall back to a price-check question so the visit still does something (no phantom sale).
-  if (online && !(listedCards && listedCards.length)) {
+  //   walkin → your shop SHELF (display case): only what you've put out on display.
+  // The store resolves `browseSale` against the pool named here. With nothing put out on
+  // the relevant channel there's nothing to browse, so we skip the sale.
+  const pool = channel === 'show' ? 'show' : online ? 'listings' : 'shop'
+  // Online/walk-in buyers only buy what you've PUT OUT (listings / shop shelf). With nothing
+  // out there's nothing to sell them — fall back to a price-check so the visit still does
+  // something (no phantom sale from your private collection).
+  const putOut = online ? (listedCards || []) : walkin ? (shelfCards || []) : null
+  if ((online || walkin) && !(putOut && putOut.length)) {
     const v = visitorFor(channel, 'question')
     const q = cardInValueRange(0.5, 60)
     const realMid = rawValue(q)
     const opts = shuffle([{ v: realMid, ok: true }, { v: round2(realMid*3), ok: false }, { v: round2(realMid*0.3), ok: false }])
+    const where = online ? 'up for sale' : 'out on the shelf'
+    const nudge = online ? '(List some cards to start selling online!)' : '(Put some cards out on the shelf to start selling in-store!)'
     return {
       kind: 'question',
       title: `${cap(v)} asks for a price check`,
-      body: `"You don't have anything up for sale right now, but — any idea what a ${q.name} goes for?"`,
+      body: `"You don't have anything ${where} right now, but — any idea what a ${q.name} goes for?"`,
       card: q,
       options: opts.map(o => ({
         text: `"Around $${o.v.toFixed(2)}."`, tone: 'fair',
         effect: o.ok
-          ? { type: 'none', notoriety: 2, msg: 'Spot on — they appreciate the help. (List some cards to start selling online!)' }
+          ? { type: 'none', notoriety: 2, msg: `Spot on — they appreciate the help. ${nudge}` }
           : { type: 'none', notoriety: -1, msg: `Not quite — it's closer to $${realMid.toFixed(2)}.` },
       })),
     }
@@ -482,10 +488,12 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
 // a show), the encounter is stale — it'd talk about a card you no longer have.
 // The card may be in your collection OR out on the market (listed/tweeted), since
 // online offers target listed cards — valid as long as it's in either bucket.
-export function encounterStillValid(enc, collection, listings = null) {
+export function encounterStillValid(enc, collection, listings = null, shopDisplay = null) {
   if (!enc || !enc.ownedUid) return true // doesn't reference one of your cards
   if (collection.some(c => c.uid === enc.ownedUid)) return true
-  return !!(listings && listings.some(l => l.card.uid === enc.ownedUid))
+  if (listings && listings.some(l => l.card.uid === enc.ownedUid)) return true
+  // a walk-in offer/trade references a card out on your shop shelf — still valid there.
+  return !!(shopDisplay && shopDisplay.some(c => c.uid === enc.ownedUid))
 }
 
 const PAY_LABELS = { venmo:'Venmo', cash:'cash', paypal:'PayPal', card:'card', tap:'tap-to-pay' }

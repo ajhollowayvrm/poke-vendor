@@ -27,13 +27,16 @@ export default function BoothInbox() {
   const ensureDailyGoals = useGame(s => s.ensureDailyGoals)
   const collection = useGame(s => s.collection)
   const listings = useGame(s => s.listings)
+  const shopDisplay = useGame(s => s.shopDisplay)
+  const pullFromShop = useGame(s => s.pullFromShop)
+  const pullAllFromShop = useGame(s => s.pullAllFromShop)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
   // Drop orders whose card you no longer own (e.g. sold it at a show) — keep the
   // original index so clearing/responding still targets the right inbox slot.
   // A card that's listed/tweeted still counts as owned (online offers target listings).
   const validInbox = useMemo(
-    () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings)),
-    [inbox, collection, listings])
+    () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings, shopDisplay)),
+    [inbox, collection, listings, shopDisplay])
   const consignments = useGame(s => s.consignments)
   const [active, setActive] = useState(null) // {enc, idx}
   const [wantPick, setWantPick] = useState(null) // a want being fulfilled
@@ -129,6 +132,36 @@ export default function BoothInbox() {
         <span className="pill" style={{ opacity: upgrades.smartphone ? 1 : 0.35 }}>📱 Online {upgrades.smartphone ? 'covered' : 'missed 🔒'}</span>
         <span className="pill" style={{ opacity: upgrades.staff ? 1 : 0.35 }}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
       </div>
+
+      {/* Store shelf (display case): the cards walk-in customers can actually buy.
+          You stock it from Cards → Select → 🏬 Stock shop. Pull cards back anytime. */}
+      {hasStore && (
+        <div className="wants">
+          <div className="wants-head">🏬 On the shelf <span className="muted">— walk-in customers only buy what you've put out here ({shopDisplay.length})</span>
+            {shopDisplay.length > 0 && (
+              <button className="btn alt" style={{ flex:'none', maxWidth: 150, marginLeft: 'auto', padding: '4px 10px' }}
+                onClick={() => { const n = pullAllFromShop(); flash(`Cleared the shelf — ${n} card${n>1?'s':''} back in your collection.`) }}>
+                Clear shelf
+              </button>
+            )}
+          </div>
+          {shopDisplay.length === 0 ? (
+            <div className="empty" style={{ marginTop: 4 }}>Nothing on display. Put cards out from <b>Cards → Select → 🏬 Stock shop</b> so walk-ins have something to buy. 🛒</div>
+          ) : (
+            <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', marginTop: 4 }}>
+              {[...shopDisplay].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
+                <div key={c.uid} className="vendoritem">
+                  <CardTile card={c} interactive={false} />
+                  <button className="btn alt" style={{ padding: '4px 10px' }}
+                    onClick={() => { pullFromShop(c.uid); flash(`Took ${c.name} off the shelf.`) }}>
+                    ↩ Pull · {fmtMoney(cardValue(c))}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {wantList.length > 0 && (
         <div className="wants">

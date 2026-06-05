@@ -302,6 +302,8 @@ function advanceDaysWith(set, get, days, away) {
   let payrollDue = 0, leaseDue = 0
   // Online buyers can only make offers on cards you've put up for sale (listed/tweeted).
   const listedCards = (s.listings || []).map(l => l.card)
+  // Walk-in customers only buy/offer on what you've put out on the shop shelf.
+  const shelfCards = s.shopDisplay || []
   for (let i = 0; i < days; i++) {
     const dayNo = s.currentDay + i + 1 // the day being entered
     // a pending job starts paying once its start day arrives
@@ -314,9 +316,11 @@ function advanceDaysWith(set, get, days, away) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
-    // walk-in channel (only if you have a physical store)
+    // walk-in channel (only if you have a physical store). The shelf is the pool: walk-ins
+    // only buy/offer on cards you've put out (passed as both the collection arg and the
+    // shelf arg so the encounter's offer + browse pools resolve to the display case).
     if (hasStore && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
-      if (walkinOK) newOrders.push({ ...boothEncounter(noto, s.collection, 'walkin', accepted, listedCards), channel: 'walkin' })
+      if (walkinOK) newOrders.push({ ...boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards), channel: 'walkin' })
       else missedWalkin++
     }
   }
@@ -420,10 +424,12 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
   if (s.cash > 0) get().spend(round2(s.cash))
   const arrears = (s.storeArrears || 0) + days
   if (arrears > STORE_GRACE_DAYS) {
-    // lose the store: drop the storefront + staff upgrades, let go of all employees.
+    // lose the store: drop the storefront + staff upgrades, let go of all employees, and
+    // bring any cards off the shelf back into your collection (no shop = no display case).
     set(st => {
       const up = { ...st.upgrades }; delete up.storefront; delete up.staff
-      return { upgrades: up, employees: [], storeArrears: 0 }
+      return { upgrades: up, employees: [], storeArrears: 0,
+        collection: [...(st.shopDisplay || []), ...st.collection], shopDisplay: [] }
     })
     get().log('store-lost', `Couldn't cover the store overhead — you lost the shop. Back to flipping from home.`, 0)
   } else {
@@ -473,6 +479,7 @@ function findOwnedAnywhere(s, uid) {
   return s.collection.find(c => c.uid === uid)
     || (s.listings || []).find(l => l.card.uid === uid)?.card
     || (s.showInventory || []).find(c => c.uid === uid)
+    || (s.shopDisplay || []).find(c => c.uid === uid)
     || null
 }
 function removeOwnedAnywhere(set, uid) {
@@ -480,6 +487,7 @@ function removeOwnedAnywhere(set, uid) {
     collection: st.collection.filter(c => c.uid !== uid),
     listings: (st.listings || []).filter(l => l.card.uid !== uid),
     showInventory: (st.showInventory || []).filter(c => c.uid !== uid),
+    shopDisplay: (st.shopDisplay || []).filter(c => c.uid !== uid),
   }))
 }
 
@@ -545,6 +553,7 @@ export const useGame = create(persist((set, get) => ({
   consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
   listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
   showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
+  shopDisplay: [],         // cards on your STORE shelf — walk-in customers only buy/offer on these (you choose what to put out). Needs a storefront.
   supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
@@ -1144,6 +1153,41 @@ export const useGame = create(persist((set, get) => ({
     }
   },
 
+  // --- Store display case (brick & mortar) -------------------------------------
+  // The shelf in your physical shop: walk-in customers only ever buy/offer on cards
+  // you've PUT OUT here (you choose what's on display), not your private collection.
+  // Needs a storefront. Cards stay out until they sell or you pull them back.
+  stockShop(uids) {
+    if (!get().upgrades.storefront) return 0
+    const ids = new Set(uids)
+    const putting = get().collection.filter(c => ids.has(c.uid))
+    if (!putting.length) return 0
+    set(s => ({
+      collection: s.collection.filter(c => !ids.has(c.uid)),
+      shopDisplay: [...putting, ...(s.shopDisplay || [])],
+    }))
+    get().log('shop', `Put ${putting.length} card${putting.length > 1 ? 's' : ''} out on the shop shelf`, 0)
+    return putting.length
+  },
+  // Pull one card off the shelf, back into your collection.
+  pullFromShop(uid) {
+    const card = (get().shopDisplay || []).find(c => c.uid === uid)
+    if (!card) return
+    set(s => ({
+      collection: [card, ...s.collection],
+      shopDisplay: (s.shopDisplay || []).filter(c => c.uid !== uid),
+    }))
+    get().log('shop', `Took ${card.name} off the shelf`, 0)
+  },
+  // Clear the whole shelf back into your collection.
+  pullAllFromShop() {
+    const shelf = get().shopDisplay || []
+    if (!shelf.length) return 0
+    set(s => ({ collection: [...shelf, ...s.collection], shopDisplay: [] }))
+    get().log('shop', `Cleared the shelf — ${shelf.length} card${shelf.length > 1 ? 's' : ''} back in your collection`, 0)
+    return shelf.length
+  },
+
   // Can we take this buyer's preferred payment method? Returns null if fine,
   // or a "lost sale" message if not (the caller should abort the sale).
   paymentBlocked(payMethod) {
@@ -1228,6 +1272,7 @@ export const useGame = create(persist((set, get) => ({
         const pool = effect.pool || (effect.fromShow ? 'show' : 'collection')
         const owned = pool === 'show' ? (get().showInventory || [])
           : pool === 'listings' ? (get().listings || []).map(l => l.card)
+          : pool === 'shop' ? (get().shopDisplay || [])
           : get().collection
         if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
           const blocked = s.paymentBlocked(effect.payMethod)
@@ -1270,7 +1315,7 @@ export const useGame = create(persist((set, get) => ({
     // A sale may have removed a card that a pending inbox order was about — drop
     // any now-stale orders so you never see an offer for a card you no longer own.
     set(st => {
-      const pruned = st.boothInbox.filter(enc => encounterStillValid(enc, st.collection, st.listings))
+      const pruned = st.boothInbox.filter(enc => encounterStillValid(enc, st.collection, st.listings, st.shopDisplay))
       return pruned.length === st.boothInbox.length ? {} : { boothInbox: pruned }
     })
     return msg
@@ -1392,7 +1437,7 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], supplyChannel: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
@@ -1400,7 +1445,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 19,
+  version: 20,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1415,6 +1460,7 @@ export const useGame = create(persist((set, get) => ({
     state.listings = keepWrapped(state.listings)
     state.consignments = keepWrapped(state.consignments)
     state.showInventory = keepFlat(state.showInventory)
+    state.shopDisplay = keepFlat(state.shopDisplay)
     return state
   },
   // backfill fields added across versions so old saves keep working.
@@ -1520,6 +1566,11 @@ export const useGame = create(persist((set, get) => ({
       // it drift from the next day-advance. No history yet — the sparkline fills in.
       state.marketMults = state.marketMults ?? {}
       state.marketHistory = state.marketHistory ?? {}
+    }
+    if (version < 20) {
+      // Store display case. Walk-in customers now buy only from this shelf (you choose
+      // what to put out); start it empty for existing saves.
+      state.shopDisplay = state.shopDisplay ?? []
     }
     return state
   },

@@ -15,6 +15,8 @@ export default function Collection({ onPick }) {
   const listManyOnSite = useGame(s => s.listManyOnSite)
   const consignMany = useGame(s => s.consignMany)
   const listingQuote = useGame(s => s.listingQuote)
+  const stockShop = useGame(s => s.stockShop)
+  const hasStore = useGame(s => !!s.upgrades.storefront)
 
   const [sort, setSort] = useState('value')
   const [selectMode, setSelectMode] = useState(false)
@@ -175,6 +177,13 @@ export default function Collection({ onPick }) {
               flash(`Consigned ${n} card${n>1?'s':''}.`)
               exitSelect()
             }}>↗ Consign</button>
+            {hasStore && (
+              <button className="btn alt" onClick={() => {
+                const n = stockShop(selCards.map(c => c.uid))
+                flash(`Put ${n} card${n>1?'s':''} out on the shop shelf — walk-ins can buy them now.`)
+                exitSelect()
+              }}>🏬 Stock shop</button>
+            )}
             <button className="btn alt" onClick={() => {
               const n = count
               const got = quickSellMany(selCards.map(c => c.uid))
