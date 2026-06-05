@@ -13,6 +13,7 @@ const DAY_LENGTHS = [
 export default function Settings() {
   const reset = useGame(s => s.reset)
   const log = useGame(s => s.log)
+  const onPricesRefreshed = useGame(s => s.onPricesRefreshed)
   const openSealedOneByOne = useGame(s => s.settings.openSealedOneByOne)
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -28,6 +29,7 @@ export default function Settings() {
     setStatus('running'); setResult(null); setProgress(null)
     try {
       const r = await refreshPrices(p => setProgress(p))
+      if (r.marketReset) onPricesRefreshed() // a fresh snapshot resets the living-market drift
       setResult(r)
       setLastRefreshed(r.fetchedAt)
       setStatus('done')

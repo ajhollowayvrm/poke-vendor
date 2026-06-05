@@ -2,7 +2,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard,
-  businessVolume, distributorTier, wholesalePrice, SETS, ownedIdSet, setCompletion, completionReward } from './engine'
+  businessVolume, distributorTier, wholesalePrice, SETS, ownedIdSet, setCompletion, completionReward,
+  setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 import { fatigueMult } from './stream'
 
@@ -177,6 +178,40 @@ export const STREAM_HYPE_DAYS = 4
 const STREAM_BOOST = 3.0         // listing viewer multiplier while a stream's afterglow is live
 let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this module's hot paths)
 
+// --- Living market ----------------------------------------------------------
+// Per-day chance a hype/crash event fires on SOME set (jolts one set's mult for
+// flavor). Kept low so events feel like news, not weather. How many recent mult
+// samples we keep per set for the Prices-tab sparkline.
+const MARKET_EVENT_CHANCE = 0.10
+const MARKET_HISTORY_LEN = 14
+// Drift every shop set's multiplier forward `days` game-days and, on a roll, fire a
+// single hype/crash event on a random set. Returns the new state slice:
+// { marketMults, marketHistory, events:[{setId,setName,kind,line,pct}] } — events are
+// surfaced to the player via the log by the caller. Pushes the fresh mults into the
+// pricing engine so every value in the game (singles, sealed, listings, offers) moves.
+function driftMarket(mults, history, days, log) {
+  const next = { ...(mults || {}) }
+  const hist = { ...(history || {}) }
+  const events = []
+  for (let d = 0; d < days; d++) {
+    for (const s of SHOP_SETS) next[s.id] = driftMult(next[s.id])
+    // at most one event per day, on a random shop set
+    if (Math.random() < MARKET_EVENT_CHANCE) {
+      const s = SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]
+      const ev = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)]
+      const r = applyMarketEvent(next[s.id], ev)
+      next[s.id] = r.mult
+      events.push({ setId: s.id, setName: s.name, kind: ev.kind, pct: r.pct, line: r.line.replace('{set}', s.name) })
+    }
+  }
+  // record one history sample per set per call (the post-drift value), capped.
+  for (const s of SHOP_SETS) {
+    hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
+  }
+  setMarketMults(next) // pricing engine reads this synchronously
+  return { marketMults: next, marketHistory: hist, events }
+}
+
 // Simulate `days` of customers browsing your own-site listings. Each day every live
 // listing draws some shoppers; each shopper rolls a savvy level and a max willingness
 // to pay. If your ask is within their max → they BUY at ask. If it's just over their
@@ -334,8 +369,12 @@ function advanceDaysWith(set, get, days, away) {
   for (let i = 0; i < days && wants.length < maxWants; i++) {
     if (Math.random() < wantChancePerDay) wants = [makeWant(noto >= 120), ...wants]
   }
+  // Living market: drift every set's price multiplier across the days passed; a hype
+  // or crash event may fire on a set (logged below so the player feels the market move).
+  const market = driftMarket(s.marketMults, s.marketHistory, days, get().log)
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
+    marketMults: market.marketMults, marketHistory: market.marketHistory,
     onlineOrdersEver: (st.onlineOrdersEver || 0) + onlineCount,
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
     consignments: remainingConsign,
@@ -361,6 +400,7 @@ function advanceDaysWith(set, get, days, away) {
   set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
+  for (const ev of market.events) get().log(ev.kind === 'hype' ? 'market-hype' : 'market-crash', `${ev.kind === 'hype' ? '📈' : '📉'} ${ev.line}`, 0)
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
     lease: round2(leaseDue), payroll: round2(payrollDue), listingsSold: lt.sold.length, listingOffers: lt.newOffers }
 }
@@ -482,6 +522,12 @@ export const useGame = create(persist((set, get) => ({
   // Set ids you've EVER completed (own one of every card) — the first-time completion
   // bonus pays once and is recorded here permanently, even if you later sell a card.
   completedSets: [],
+  // Living market: per-set price multiplier (default 1.0, bounded ~0.6–1.8×) that drifts
+  // each game-day and rides through cardValue/rawValue so every price moves together.
+  // marketHistory keeps a short ring of recent mults per set for the Prices-tab sparkline.
+  // The engine holds the live copy (module-level); we re-push it on rehydrate.
+  marketMults: {},
+  marketHistory: {},
 
   notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
   upgrades: {},            // { signage:true, ... }
@@ -934,6 +980,14 @@ export const useGame = create(persist((set, get) => ({
     return { payout }
   },
 
+  // A live price refresh is a fresh market snapshot — the new truth. The engine already
+  // zeroed its module-level multipliers; clear the persisted drift + history so it doesn't
+  // get re-pushed on the next load. Drift resumes from 1.0 on the next day-advance.
+  onPricesRefreshed() {
+    setMarketMults({})
+    set({ marketMults: {}, marketHistory: {} })
+  },
+
   // Ensure a fresh set of goals exists (called on mount if none yet).
   ensureDailyGoals() {
     if (!get().dailyGoals.length || get().goalsDay !== get().currentDay) {
@@ -1330,16 +1384,17 @@ export const useGame = create(persist((set, get) => ({
 
   reset() {
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
-      stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [],
+      stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], showInventory: [], supplyChannel: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
+    setMarketMults({}) // clear the engine's live market drift too
   },
 }), {
   name: 'poke-vendor-save',
-  version: 18,
+  version: 19,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1454,7 +1509,18 @@ export const useGame = create(persist((set, get) => ({
       // set, checkCompletions() on next card-add will (correctly) award it then.
       state.completedSets = state.completedSets ?? []
     }
+    if (version < 19) {
+      // Living market. Start every set at a neutral 1.0× (empty map = neutral) and let
+      // it drift from the next day-advance. No history yet — the sparkline fills in.
+      state.marketMults = state.marketMults ?? {}
+      state.marketHistory = state.marketHistory ?? {}
+    }
     return state
+  },
+  // The pricing engine holds the live market multipliers in module state, which is empty
+  // on every page load. Re-push the rehydrated map so saved drift survives a refresh.
+  onRehydrateStorage() {
+    return (state) => { if (state) setMarketMults(state.marketMults || {}) }
   },
 }))
 

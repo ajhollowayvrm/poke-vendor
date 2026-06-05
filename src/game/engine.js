@@ -325,6 +325,49 @@ export function gradedCardInRange(min, max, grade) {
 // update market values live (browser → pokemontcg.io) without rebuilding.
 const PRICE_OVERRIDES = {}
 
+// --- Living market ----------------------------------------------------------
+// Per-SET price multiplier (default 1.0) applied on top of the base price in
+// rawValue, so every value in the game (singles, sealed, collection, offers,
+// listings) moves together. The store owns the persisted values and drifts them
+// each game-day; it pushes the current map in here via setMarketMults() so the
+// pricing functions stay synchronous. A live price refresh resets all multipliers
+// to 1.0 (a fresh snapshot is the new truth — drift mustn't stack on top of it).
+export const MARKET_BOUNDS = { min: 0.6, max: 1.8 }
+let MARKET_MULT = {}
+export function setMarketMults(map) { MARKET_MULT = map || {} }
+export function marketMult(setId) { return MARKET_MULT[setId] ?? 1 }
+
+// Advance one set's multiplier one game-day: a small random step, mean-reverting
+// toward 1.0 so it never runs away, clamped to the bounds. `rnd` injectable for tests.
+const MARKET_STEP = 0.025   // ±~2.5% daily wiggle
+const MARKET_REVERT = 0.06  // pull 6%/day back toward 1.0
+export function driftMult(m, rnd = Math.random) {
+  const cur = m ?? 1
+  const step = (rnd() - 0.5) * 2 * MARKET_STEP   // [-step, +step]
+  const revert = (1 - cur) * MARKET_REVERT       // toward 1.0
+  const next = cur + step + revert
+  return Math.round(Math.min(MARKET_BOUNDS.max, Math.max(MARKET_BOUNDS.min, next)) * 1000) / 1000
+}
+
+// Named hype/crash events that jolt one set's multiplier for flavor + a price swing.
+// Returned with the magnitude already applied to a base mult by the caller.
+export const MARKET_EVENTS = [
+  { kind: 'hype',  pct: [0.15, 0.30], lines: ['A big YouTuber featured {set} — demand is spiking!', '{set} singles are trending on socials — prices jumping.', 'A tournament win put {set} in the spotlight — it\'s hot.'] },
+  { kind: 'crash', pct: [-0.28, -0.12], lines: ['A {set} reprint was announced — prices are sliding.', 'Hype cooled on {set} — the market\'s pulling back.', 'A big collection dump flooded {set} supply — values dipping.'] },
+]
+// Apply an event's jolt to a set's current multiplier: pick a magnitude in the
+// event's pct range and shift the mult by it, clamped to the bounds. Returns
+// { mult, pct, line } — the new mult, the actual % applied, and a flavor line with
+// {set} still as a placeholder for the caller to fill in. `rnd` injectable for tests.
+export function applyMarketEvent(cur, event, rnd = Math.random) {
+  const [lo, hi] = event.pct
+  const pct = lo + rnd() * (hi - lo)
+  const raw = (cur ?? 1) * (1 + pct)
+  const mult = Math.round(Math.min(MARKET_BOUNDS.max, Math.max(MARKET_BOUNDS.min, raw)) * 1000) / 1000
+  const line = event.lines[Math.floor(rnd() * event.lines.length)]
+  return { mult, pct: Math.round(pct * 100), line }
+}
+
 // Canonical price for every card id from the current bundled data. Cards pulled
 // before a data refresh have an old (possibly null) price baked into the saved
 // instance; this lets rawValue heal them to the current real price by id, rather
@@ -332,9 +375,17 @@ const PRICE_OVERRIDES = {}
 const CANONICAL_PRICE = {}
 for (const s of SETS) for (const c of s.cards) if (c.price != null) CANONICAL_PRICE[c.id] = c.price
 
+// Set id from a card id ("me4-90" → "me4"; "sv8pt5-12" → "sv8pt5").
+export function setIdOfCard(card) {
+  const id = card?.id; if (!id) return null
+  const i = id.lastIndexOf('-')
+  return i > 0 ? id.slice(0, i) : id
+}
+
 export function rawValue(card) {
   const override = PRICE_OVERRIDES[card.id]
   let base = override ?? card.price ?? CANONICAL_PRICE[card.id] ?? estimateByRarity(card.rarity)
+  base *= marketMult(setIdOfCard(card)) // living-market drift for this set
   if (card.foil) base *= card.foil.mult // Poké Ball (3×) / Master Ball (55×) premium
   else if (card.reverse) base *= reverseMult(card.rarity) // reverse holo: small on commons, larger on rares
   // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
@@ -387,7 +438,10 @@ export async function refreshPrices(onProgress) {
       else if (p != null) { PRICE_OVERRIDES[card.id] = p }
     }
   }
-  return { updated, total, fetchedAt: new Date().toISOString() }
+  // Fresh live snapshot = the new market truth. Reset the living-market drift so it
+  // doesn't stack on top of already-updated numbers; it resumes from 1.0 going forward.
+  MARKET_MULT = {}
+  return { updated, total, fetchedAt: new Date().toISOString(), marketReset: true }
 }
 // Reverse-holo premium scales with rarity: a reverse-holo common is barely worth
 // more than the base, while a reverse-holo rare commands a real premium.
@@ -422,7 +476,9 @@ export function gradedValue(card) {
   // exact grade has no comp, fall back to the heuristic (don't interpolate tiny samples).
   const real = psaComp(card, g)
   let value
-  if (real != null) value = real
+  // The real PSA comp is an absolute dollar that doesn't flow through rawValue, so
+  // apply the set's living-market multiplier here too — a slab rides its set's market.
+  if (real != null) value = real * marketMult(setIdOfCard(card))
   else {
     const mult = GRADE_MULT[g] ?? 1
     // higher base-value cards see bigger grade premiums (gem mint chase)
