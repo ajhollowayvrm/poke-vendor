@@ -16,6 +16,7 @@ import Settings from './components/Settings'
 import PriceGuide from './components/PriceGuide'
 import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
+import Binder from './components/Binder'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
@@ -193,10 +194,12 @@ export default function App() {
           <>
             <div className="subtabs">
               <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
+              <button className={`subtab ${collTab === 'binder' ? 'active' : ''}`} onClick={() => setCollTab('binder')}>📒 Binder</button>
               <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
               <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
             </div>
             {collTab === 'cards' && <Collection onPick={setPicked} />}
+            {collTab === 'binder' && <Binder onPick={setPicked} />}
             {collTab === 'grader' && <Bench />}
             {collTab === 'prices' && <PriceGuide />}
           </>

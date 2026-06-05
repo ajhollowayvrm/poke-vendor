@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard,
-  businessVolume, distributorTier, wholesalePrice } from './engine'
+  businessVolume, distributorTier, wholesalePrice, SETS, ownedIdSet, setCompletion, completionReward } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 import { fatigueMult } from './stream'
 
@@ -479,6 +479,9 @@ export const useGame = create(persist((set, get) => ({
   // `spent` = cash put into that set's sealed product; `pulledValue` = market value of
   // everything ripped from it. Drives the per-set analytics on the Stats page.
   bySet: {},
+  // Set ids you've EVER completed (own one of every card) — the first-time completion
+  // bonus pays once and is recorded here permanently, even if you later sell a card.
+  completedSets: [],
 
   notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
   upgrades: {},            // { signage:true, ... }
@@ -607,6 +610,30 @@ export const useGame = create(persist((set, get) => ({
     })
     get().log('rip', `Opened ${setName}`, 0)
     get().bumpGoal('rip', packs)
+    get().checkCompletions() // a new card may have just finished a set
+  },
+
+  // --- Master-set completion ---------------------------------------------------
+  // Pay the FIRST-TIME completion bonus for any set you now own one-of-every-card in
+  // and haven't been rewarded for yet. Idempotent and cheap; safe to call after any
+  // card enters the collection. The reward records the set id permanently in
+  // completedSets so it never pays twice (and selling later doesn't claw it back).
+  checkCompletions() {
+    const s = get()
+    const ownedIds = ownedIdSet(s.collection)
+    const newly = []
+    for (const set_ of SETS) {
+      if (s.completedSets.includes(set_.id)) continue
+      if (setCompletion(set_, ownedIds).complete) newly.push(set_)
+    }
+    if (!newly.length) return
+    set(st => ({ completedSets: [...st.completedSets, ...newly.map(x => x.id)] }))
+    for (const set_ of newly) {
+      const r = completionReward(set_)
+      get().earn(r.cash)
+      get().addNotoriety(r.noto)
+      get().log('complete', `🏆 Completed the ${set_.name} set! Bonus +$${r.cash.toFixed(2)} & +${r.noto}★`, r.cash)
+    }
   },
 
   // Quick sell (TCGplayer-style): instant cash, but ALWAYS below market — you pay
@@ -1012,6 +1039,7 @@ export const useGame = create(persist((set, get) => ({
       collection: [...resolved, ...s.collection],
     }))
     for (const g of resolved) get().log('grade-done', `${g.name} graded PSA ${g.grade.overall}`, 0)
+    get().checkCompletions() // a returned slab may complete a set
     return resolved
   },
 
@@ -1031,6 +1059,7 @@ export const useGame = create(persist((set, get) => ({
     }
     if (card._mispriced) get().addNotoriety(1) // you spotted a deal
     get().bumpGoal('buy', 1)
+    if (!opts.toShowInventory) get().checkCompletions() // bought card may finish a set
     return true
   },
 
@@ -1283,7 +1312,7 @@ export const useGame = create(persist((set, get) => ({
 
   reset() {
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
-      stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
+      stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [],
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], showInventory: [], supplyChannel: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
@@ -1292,7 +1321,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 17,
+  version: 18,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1401,6 +1430,11 @@ export const useGame = create(persist((set, get) => ({
     if (version < 17) {
       // Distributor program — the wholesale supply channel.
       state.supplyChannel = state.supplyChannel ?? []
+    }
+    if (version < 18) {
+      // Master-set completion. Start empty; if an existing save already owns a full
+      // set, checkCompletions() on next card-add will (correctly) award it then.
+      state.completedSets = state.completedSets ?? []
     }
     return state
   },

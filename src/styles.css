@@ -837,3 +837,26 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .prodprice s.retail { color: var(--dim); font-weight: 600; font-size: 11px; opacity: .8; }
 .prodbtn.caselot { border-color: var(--accent); background: #ffcb0510; }
 .prodbtn.caselot:hover:not(:disabled) { background: #ffcb0520; }
+
+/* --- Binder (master-set completion) --------------------------------------- */
+.binder-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.binder-progress { background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:12px; padding:12px 14px; margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.binder-prog-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.binder-prog-row b { font-size:15px; }
+.binder-bar { height:7px; background:#0c0f1a; border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+.binder-bar > div { height:100%; background:linear-gradient(90deg,var(--accent2),var(--green)); transition:width .3s; }
+.binder-grid { margin-top:14px; }
+.binder-slot { position:relative; border-radius:12px; }
+.binder-slot.owned { cursor:pointer; }
+.binder-slot .binder-num { position:absolute; bottom:6px; left:6px; font-size:10px; font-weight:800; z-index:4;
+  padding:1px 6px; border-radius:6px; background:#000a; backdrop-filter:blur(4px); color:var(--dim); }
+/* missing slot: a dim dashed placeholder with the card's number + name */
+.binder-slot.missing { aspect-ratio: 0.72; border:1px dashed var(--line); background:#0c0f1a88;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center;
+  padding:8px; color:var(--dim); opacity:.7; }
+.binder-slot.missing .binder-slot-num { font-size:13px; font-weight:900; color:#6b76a0; }
+.binder-slot.missing .binder-slot-name { font-size:10px; line-height:1.2; overflow:hidden;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.binder-slot.missing.chase { border-color:#ff79c655; background:#ff3df00d; }
+.binder-slot.missing .binder-slot-chase { position:absolute; top:5px; right:6px; font-size:11px; }

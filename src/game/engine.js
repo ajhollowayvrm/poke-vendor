@@ -734,3 +734,49 @@ export function caseLot(set) {
 export function casePrice(lot, discount) {
   return round2(wholesalePrice(lot.retail, discount) * (1 - CASE_BULK_CUT))
 }
+
+// ---- Master sets / completion ----------------------------------------------
+// A card is "owned" for completion purposes if you hold any copy of its id (raw OR
+// graded — a slab still counts toward the set). Completion ignores condition/grade.
+// "Chase" cards are the hard, expensive top rarities — owning them all is the real
+// flex within a set. Set completion = one of EVERY card; chase completion = every
+// top-rarity card.
+const CHASE_THRESHOLD = rarityRank('Special Illustration Rare')
+export function isChaseCard(card) {
+  return !!card.foil || rarityRank(card.rarity) >= CHASE_THRESHOLD
+}
+
+// Build the set of owned card ids from a collection (+ any other owned buckets the
+// caller passes flattened in). Cheap Set for O(1) lookups.
+export function ownedIdSet(cards) {
+  const s = new Set()
+  for (const c of cards || []) if (c?.id) s.add(c.id)
+  return s
+}
+
+// Completion stats for one set given an owned-id Set. Returns counts for the whole
+// set and for just the chase cards, plus the missing-card lists (for a shopping list).
+export function setCompletion(set, ownedIds) {
+  const all = set.cards
+  const chase = all.filter(isChaseCard)
+  const ownedAll = all.filter(c => ownedIds.has(c.id))
+  const ownedChase = chase.filter(c => ownedIds.has(c.id))
+  const missing = all.filter(c => !ownedIds.has(c.id))
+  return {
+    total: all.length, owned: ownedAll.length,
+    chaseTotal: chase.length, chaseOwned: ownedChase.length,
+    missing,
+    complete: ownedAll.length === all.length && all.length > 0,
+    chaseComplete: chase.length > 0 && ownedChase.length === chase.length,
+    pct: all.length ? Math.round((ownedAll.length / all.length) * 100) : 0,
+  }
+}
+
+// Cash + notoriety bonus for first-time completing a set. Scales with how big and
+// how valuable the set is — finishing a 300-card chase-heavy set is a real feat.
+export function completionReward(set) {
+  const value = set.cards.reduce((a, c) => a + (c.price ?? 0), 0)
+  const cash = round2(50 + set.cards.length * 2 + value * 0.05) // size + a slice of its book value
+  const noto = Math.round(8 + set.cards.length / 12)
+  return { cash, noto }
+}
