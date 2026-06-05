@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { haggleRound, archetype } from '../game/shows'
 import { fmtMoney } from '../game/engine'
+import { useModalEscape } from '../ui/dialog'
 
 const MAX_ROUNDS = 3
 
@@ -36,6 +37,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   // A stray backdrop click before engaging doesn't burn the card's one haggle.
   const [engaged, setEngaged] = useState(false)
   const close = () => onClose(engaged)
+  useModalEscape(close)
 
   // suggested counter: nudge toward your favor from their current price
   const step = Math.max(0.25, Math.round(their * 0.12 * 100) / 100)

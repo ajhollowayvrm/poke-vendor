@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
+import { fatigueMult } from './stream'
 
 const STARTING_CASH = 5000
 
@@ -168,6 +169,11 @@ const LISTING_STALE_DAYS = 7
 export const TWEET_HYPE_DAYS = 3
 const TWEET_BOOST = 2.2          // viewer multiplier while the hype window is live
 const TWEET_NOTORIETY = 2        // one-time rep bump for posting
+
+// Going live pumps your whole storefront for a few days after: every listing draws
+// far more eyes (stream viewers who came to shop). Bigger + longer than a Tweet.
+export const STREAM_HYPE_DAYS = 4
+const STREAM_BOOST = 3.0         // listing viewer multiplier while a stream's afterglow is live
 let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this module's hot paths)
 
 // Simulate `days` of customers browsing your own-site listings. Each day every live
@@ -175,7 +181,9 @@ let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this
 // to pay. If your ask is within their max → they BUY at ask. If it's just over their
 // max → a chance they leave a lower OFFER you can accept/decline. Otherwise they pass.
 // Returns { listings, soldProceeds, sold:[{name,net,savvy}], newOffers, staleNow:[names] }.
-function tickListings(listings, days, noto) {
+// `streamBoostDays` = how many of the first `days` fall inside a live stream-hype
+// window (a recent stream pumps EVERY listing's traffic, not just tweeted ones).
+function tickListings(listings, days, noto, streamBoostDays = 0) {
   let soldProceeds = 0
   const sold = []
   const staleNow = []
@@ -187,9 +195,12 @@ function tickListings(listings, days, noto) {
     let cur = { ...l, offers: [...(l.offers || [])] }
     let didSell = false
     for (let day = 0; day < days && !didSell; day++) {
-      // Tweet hype: extra eyes (Twitter mutuals) while the hype window is open.
+      // Tweet hype: extra eyes (Twitter mutuals) while the per-listing window is open.
       const hyped = (cur.hypeDaysLeft || 0) > 0
-      const viewers = dailyViewers(cur.card, cur.askMult, noto, Math.random, hyped ? TWEET_BOOST : 1)
+      // Stream afterglow: a recent live stream pumps ALL listings for its window.
+      const streamed = day < streamBoostDays
+      const boost = Math.max(hyped ? TWEET_BOOST : 1, streamed ? STREAM_BOOST : 1)
+      const viewers = dailyViewers(cur.card, cur.askMult, noto, Math.random, boost)
       cur.views += viewers
       for (let v = 0; v < viewers; v++) {
         // While hyped, a chunk of the extra traffic is Twitter mutuals (flavor on the sale).
@@ -300,7 +311,8 @@ function advanceDaysWith(set, get, days, away) {
   // resolve your own-site listings: real CUSTOMERS browse them over the days passed
   // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
   // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
-  const lt = tickListings(s.listings, days, noto)
+  const streamBoostDays = Math.min(days, s.streamHypeDaysLeft || 0)
+  const lt = tickListings(s.listings, days, noto, streamBoostDays)
   const remainingListings = lt.listings
   soldProceeds = round2(soldProceeds + lt.soldProceeds)
   for (const sale of lt.sold) get().log('sell', `Sold ${sale.name} to a ${sale.savvy} — $${sale.net.toFixed(2)}`, sale.net)
@@ -324,6 +336,8 @@ function advanceDaysWith(set, get, days, away) {
     goalsDay: d,
     job: activeJob,        // a pending job may have started during these days
     pendingJob,
+    streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
+    streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
   }))
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
@@ -434,6 +448,7 @@ export const UPGRADES = {
 
   // Remote-management: keep the home shop earning while you're away at a show.
   smartphone: { name: 'Smartphone', cost: 600, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show.', icon: '📱' },
+  streaming:  { name: 'Streaming Setup', cost: 900, desc: 'Camera, lights & capture card. Go LIVE and rip product on stream — viewers tune in, react, and tip, and a hot stream pumps your notoriety and listing traffic. Unlocks box breaks.', icon: '🔴' },
   staff:      { name: 'Shop Assistant', cost: 2500, desc: 'Hire staff to mind the store. WALK-IN customers are handled while you\'re at a show. Requires a Brick-and-Mortar Store.', icon: '🧑‍💼', needs: 'storefront' },
 
   signage:  { name: 'Eye-Catching Signage', cost: 150,  desc: '+15% foot traffic (shows, and your store if open).', icon: '🪧' },
@@ -463,6 +478,9 @@ export const useGame = create(persist((set, get) => ({
   boothInbox: [],          // pending encounters waiting at your home shop
   onlineOrdersEver: 0,     // lifetime online orders received → drives the new-player guarantee
   showsAttended: 0,
+  streamHypeDaysLeft: 0,   // days of post-stream "afterglow" left (boosts ALL listing traffic)
+  streamFatigue: 0,        // audience fatigue: +1 per stream, −1 per game-day of rest (drives viewer falloff)
+  streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, // lifetime livestream tallies
   generousActs: 0,
   gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
   consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
@@ -721,6 +739,63 @@ export const useGame = create(persist((set, get) => ({
     }))
     get().log('consign', `Consigned ${card.name} — nets ${'$'+net.toFixed(2)} in ~${daysLeft}d`, 0)
     return { net, daysLeft }
+  },
+
+  // --- Livestream --------------------------------------------------------------
+  // Collect the up-front cash from a box break's sold spots (called when the stream
+  // starts a break). Buyers pre-pay regardless of what gets pulled. Returns the gross.
+  collectBreakSpots(gross) {
+    if (!gross || gross <= 0) return 0
+    get().earn(round2(gross))
+    set(s => ({ streamStats: { ...s.streamStats, breaks: (s.streamStats?.breaks || 0) + 1 } }))
+    get().log('stream', `Sold break spots for $${round2(gross).toFixed(2)} up front`, round2(gross))
+    return round2(gross)
+  },
+  // Current audience freshness multiplier (1 = fresh, lower = streamed recently).
+  // The UI uses it to preview expected viewers before going live.
+  streamFreshness() { return fatigueMult(get().streamFatigue || 0) },
+
+  // A viewer buys a still-open break spot mid-stream (hype sells the last spots).
+  // Collect the spot price now; the UI marks that spot filled so its future pulls ship.
+  sellLiveSpot(price) {
+    if (!price || price <= 0) return
+    get().earn(round2(price))
+    get().log('stream', `A viewer grabbed an open break spot — +$${round2(price).toFixed(2)}`, round2(price))
+  },
+
+  // End-of-break settlement: cards that landed on FILLED spots ship to those buyers,
+  // so they leave your collection. Cards on UNFILLED spots are yours to keep (you
+  // "bought into" your own break for those teams). `shipUids` = the filled-spot cards.
+  shipBreakCards(shipUids) {
+    const ids = new Set(shipUids || [])
+    if (!ids.size) return 0
+    set(s => ({ collection: s.collection.filter(c => !ids.has(c.uid)) }))
+    get().log('stream', `Shipped ${ids.size} card${ids.size>1?'s':''} to break spot-holders`, 0)
+    return ids.size
+  },
+
+  // End a stream: bank tips (card income) + notoriety (can be slightly NEGATIVE on a
+  // flop), open the listing-traffic "afterglow", tire the audience (+1 fatigue), and
+  // burn a game-day — prepping & broadcasting takes the day, so the world advances
+  // (orders/rent/etc.) just like any other day. A stream is now a real time cost,
+  // not a free action, and over-streaming thins your crowd until you rest.
+  endStream({ tips = 0, noto = 0, peakViewers = 0 } = {}) {
+    if (tips > 0) get().earn(round2(tips))
+    if (noto) get().addNotoriety(noto) // may be negative after a flop
+    set(s => ({
+      streamHypeDaysLeft: noto > 0 ? STREAM_HYPE_DAYS : 0, // a flop earns no afterglow
+      streamFatigue: (s.streamFatigue || 0) + 1,
+      streamStats: {
+        streams: (s.streamStats?.streams || 0) + 1,
+        tips: round2((s.streamStats?.tips || 0) + tips),
+        peakViewers: Math.max(s.streamStats?.peakViewers || 0, Math.round(peakViewers)),
+        breaks: s.streamStats?.breaks || 0,
+      },
+    }))
+    const afterglow = noto > 0 ? ` Your shop is buzzing for ${STREAM_HYPE_DAYS} days.` : ''
+    get().log('stream', `Wrapped a livestream — ${Math.round(peakViewers)} peak viewers, $${round2(tips).toFixed(2)} in tips (${noto >= 0 ? '+' : ''}${noto}★).${afterglow}`, round2(tips))
+    // streaming consumes the day — advance the world one game-day (home, not away).
+    advanceDaysWith(set, get, 1, false)
   },
 
   // --- Bulk actions on a selected set of cards (Collection multi-select) -------
@@ -1170,7 +1245,7 @@ export const useGame = create(persist((set, get) => ({
   reset() {
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
-      notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
+      notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
       consignments: [], listings: [], showInventory: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
@@ -1178,7 +1253,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 14,
+  version: 16,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1274,6 +1349,15 @@ export const useGame = create(persist((set, get) => ({
       // Show inventory (cards you bring to a show to sell) is new. Existing saves
       // aren't mid-show, so start it empty — no migration of card data needed.
       state.showInventory = state.showInventory ?? []
+    }
+    if (version < 15) {
+      // Livestream feature. Backfill the afterglow window + lifetime tallies.
+      state.streamHypeDaysLeft = state.streamHypeDaysLeft ?? 0
+      state.streamStats = state.streamStats ?? { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }
+    }
+    if (version < 16) {
+      // Audience fatigue (over-streaming thins your crowd).
+      state.streamFatigue = state.streamFatigue ?? 0
     }
     return state
   },

@@ -3,6 +3,7 @@ import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, 
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
+import Burst from './Burst'
 
 // Opens sealed product with the animated rip. For a single booster this rips one
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
@@ -224,7 +225,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       {phase === 'idle' && (
         <>
           <div className="pack-wrap">
-            <div className="pack3d" onClick={rip}>
+            <div className="pack3d" onClick={rip} role="button" tabIndex={0} aria-label="Rip the pack"
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rip() } }}>
               <div className="foil" />
               {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
               <span className="hint">▶ Click to rip</span>
@@ -383,20 +385,3 @@ function HitList({ hits }) {
 
 function best(cards) { return cards.reduce((b, c) => cardValue(c) > cardValue(b) ? c : b, cards[0]) }
 
-function Burst() {
-  const bits = Array.from({ length: 40 })
-  return (
-    <div className="hitburst">
-      {bits.map((_, i) => {
-        const left = Math.random() * 100, dur = 1 + Math.random(), delay = Math.random() * 0.2
-        const colors = ['#ffcb05', '#ff3df0', '#3b6cff', '#36d399', '#fff']
-        return <span key={i} style={{
-          position: 'absolute', top: '-10px', left: left + '%', width: 9, height: 9,
-          background: colors[i % colors.length], borderRadius: 2,
-          animation: `fall ${dur}s ${delay}s ease-in forwards`,
-        }} />
-      })}
-      <style>{`@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:0}}`}</style>
-    </div>
-  )
-}

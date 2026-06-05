@@ -6,6 +6,7 @@ import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
 import CardTile from './CardTile'
+import { useModalEscape } from '../ui/dialog'
 
 const TILE = 52
 const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
@@ -23,6 +24,7 @@ export default function ShowFloor({ show, onLeave }) {
   const showInventory = useGame(s => s.showInventory)
   const tier = SHOW_TIERS[show.tierKey]
   const [showTable, setShowTable] = useState(false) // peek at your booth inventory
+  useModalEscape(() => setShowTable(false)) // Esc closes the table peek
 
   const [showDay, setShowDay] = useState(1) // which day of the multi-day show we're on
   const booths = useMemo(() => generateBooths(show, notoriety, showDay - 1), [show, notoriety, showDay])

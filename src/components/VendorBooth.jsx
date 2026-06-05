@@ -3,6 +3,7 @@ import { useGame } from '../game/store'
 import { cardValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
 import Haggle from './Haggle'
+import { confirmDialog } from '../ui/dialog'
 
 export default function VendorBooth({ booth, onClose, flash, onRipVault, haggledIds, onHaggled }) {
   // The Vintage Vault is a special booth: no singles bin, just one heavy sealed
@@ -16,13 +17,16 @@ function VaultBooth({ booth, onClose, onRipVault }) {
   const cash = useGame(s => s.cash)
   const { setName, logo, product, ask } = booth.vault
   const afford = cash >= ask
-  function buy() {
-    const ok = window.confirm(
-      `Buy a sealed ${product.name} for ${fmtMoney(ask)}?\n\n` +
-      `• A genuine heavy vintage pack — unsearched, mint, straight from the case.\n` +
-      `• Could hold a base-set holo (Charizard, Blastoise, Venusaur…) — or nothing.\n` +
-      `• You'll crack it right here. The whole hall will be watching.`
-    )
+  useModalEscape(onClose)
+  async function buy() {
+    const ok = await confirmDialog({
+      title: `Buy a sealed ${product.name}?`,
+      body: `${fmtMoney(ask)} for a genuine heavy vintage pack — unsearched, mint, straight from the case. `
+        + `Could hold a base-set holo (Charizard, Blastoise, Venusaur…) — or nothing. `
+        + `You'll crack it right here, and the whole hall will be watching.`,
+      confirmText: `Buy & rip — ${fmtMoney(ask)}`,
+      cancelText: 'Walk away',
+    })
     if (!ok) return
     onClose()
     onRipVault?.({ setId: booth.vault.setId, product: { ...product, price: ask } })
@@ -71,6 +75,9 @@ function RegularBooth({ booth, onClose, flash, haggledIds, onHaggled }) {
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
   // After agreeing a buy, ask whether to list it at the show or take it home.
   const [pendingBuy, setPendingBuy] = useState(null) // { card, price }
+  // Escape closes the top-most layer: the buy prompt if open, else the booth.
+  // (Haggle owns its own escape.)
+  useModalEscape(() => { if (pendingBuy) setPendingBuy(null); else if (!haggle) onClose() })
 
   const seeDeals = upgrades.network
 

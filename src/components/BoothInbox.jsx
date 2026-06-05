@@ -5,6 +5,7 @@ import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
+import { useModalEscape } from '../ui/dialog'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
   walkin: { label: 'Walk-in', icon: '🏬', color: '#ffcb05' } }
@@ -37,6 +38,7 @@ export default function BoothInbox() {
   const [active, setActive] = useState(null) // {enc, idx}
   const [wantPick, setWantPick] = useState(null) // a want being fulfilled
   const [toast, setToast] = useState(null)
+  useModalEscape(() => { if (wantPick) setWantPick(null) }) // close the want-fill picker on Esc
   // Sell splits into two sub-tabs: day-to-day Orders, and the cards you've put
   // On the market (listings + consignments) — the latter used to push the orders
   // way down the page, so it gets its own tab.

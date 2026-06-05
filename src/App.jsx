@@ -14,15 +14,17 @@ import BoothInbox from './components/BoothInbox'
 import Settings from './components/Settings'
 import PriceGuide from './components/PriceGuide'
 import ShowPrep from './components/ShowPrep'
+import Livestream from './components/Livestream'
+import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 
 // Primary nav: the core loop only. Reference/meta screens (Grader, Prices) live
 // as sub-tabs inside Collection; Settings + Stats live behind the ⚙️ gear in the top bar.
-const TABS = ['shop', 'myshop', 'shows', 'upgrades', 'collection']
-const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', shows: 'Shows', upgrades: 'Upgrades', collection: 'Cards' }
+const TABS = ['shop', 'myshop', 'stream', 'shows', 'upgrades', 'collection']
+const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', stream: 'Stream', shows: 'Shows', upgrades: 'Upgrades', collection: 'Cards' }
 // Icons for the mobile bottom nav (label is shown small underneath).
-const TAB_ICON = { shop: '🛒', myshop: '🏬', shows: '🎪', upgrades: '⬆️', collection: '🗂️' }
+const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', upgrades: '⬆️', collection: '🗂️' }
 
 export default function App() {
   const [tab, setTab] = useState('shop')
@@ -67,7 +69,7 @@ export default function App() {
   // Multi-pack products: if "open one at a time" is on, rip each pack with the
   // animation (you can fast-forward); otherwise open the whole thing instantly.
   function buyProduct(set, product) {
-    if (cash < product.price) return alert(`Not enough cash for ${product.type}!`)
+    if (cash < product.price) return toast(`Not enough cash for ${product.type}.`)
     const oneByOne = useGame.getState().settings.openSealedOneByOne
     const animated = product.packs === 1 || oneByOne
     if (animated) {
@@ -86,14 +88,14 @@ export default function App() {
     useGame.getState().log('buy', `Opened ${product.type} (${set.name})`, -product.price)
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
-    alert(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+    toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
   // Selecting a show opens the prep screen (pick which cards to bring to sell).
   // No money/days are spent until you confirm in prep — backing out is free.
   function attendShow(show) {
     const tier = SHOW_TIERS[show.tierKey]
-    if (useGame.getState().cash < tier.entryFee) return alert('Not enough cash for the entry fee!')
+    if (useGame.getState().cash < tier.entryFee) return toast('Not enough cash for the entry fee.')
     setPreppingShow(show)
   }
 
@@ -101,7 +103,7 @@ export default function App() {
   // the picked cards onto your show table, advance the calendar past the show, enter.
   function enterShow(show, uids) {
     const tier = SHOW_TIERS[show.tierKey]
-    if (!spend(tier.entryFee)) { setPreppingShow(null); return alert('Not enough cash for the entry fee!') }
+    if (!spend(tier.entryFee)) { setPreppingShow(null); return toast('Not enough cash for the entry fee.') }
     useGame.getState().bringToShow(uids || [])
     useGame.getState().log('show', `Attended ${show.name} (${tier.days}d)`, -tier.entryFee)
     // advance the calendar past the show — consumes its days, skipping overlaps
@@ -127,6 +129,8 @@ export default function App() {
           onConfirm={(uids) => enterShow(preppingShow, uids)}
           onCancel={() => setPreppingShow(null)} />
         {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        <DialogHost />
+      <ToastHost />
       </div>
     )
   }
@@ -137,6 +141,8 @@ export default function App() {
       <div className="app">
         <ShowFloor show={activeShow} onLeave={leaveShow} />
         {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        <DialogHost />
+      <ToastHost />
       </div>
     )
   }
@@ -157,7 +163,7 @@ export default function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
           <GameClock />
           <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
-          <div className="cash">${cash.toFixed(2)}<small>balance</small></div>
+          <div className="cash">{fmtMoney(cash)}<small>balance</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
       </div>
@@ -174,6 +180,7 @@ export default function App() {
 
         {tab === 'shows' && <Calendar onAttend={attendShow} />}
         {tab === 'myshop' && <BoothInbox />}
+        {tab === 'stream' && <Livestream />}
         {tab === 'upgrades' && <UpgradeShop />}
 
         {tab === 'collection' && (
@@ -201,6 +208,8 @@ export default function App() {
       </main>
 
       {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+      <DialogHost />
+      <ToastHost />
 
       {/* Mobile-only floating bottom nav (top tab strip is hidden at <=640px).
           Icon + small label; the 5 core tabs + a gear for Settings/Stats. */}

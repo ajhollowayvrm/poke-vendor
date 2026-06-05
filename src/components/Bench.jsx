@@ -49,7 +49,7 @@ export default function Bench() {
                   <div style={{ background: '#0c0f1a', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                     <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#3b6cff,#36d399)', transition: 'width .25s' }} />
                   </div>
-                  <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>{daysLeft} days left</div>
+                  <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>{daysLeft} day{daysLeft === 1 ? '' : 's'} left</div>
                 </div>
               </div>
             )

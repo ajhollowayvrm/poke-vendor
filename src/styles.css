@@ -326,6 +326,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   background: var(--panel); border:1px solid var(--line); color: var(--txt); padding: 12px 20px; border-radius: 12px;
   font-weight: 700; box-shadow: 0 12px 40px #000b; max-width: 80vw; text-align:center; animation: toastin .25s ease; }
 @keyframes toastin { from{opacity:0; transform: translate(-50%, 10px)} to{opacity:1; transform: translate(-50%,0)} }
+/* Global toast stack: a fixed column at bottom-center; toasts flow in-stack (not each self-positioned). */
+.toast-stack { position: fixed; bottom: calc(28px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+  z-index: 95; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.toast-stack .toast { position: static; transform: none; left: auto; bottom: auto; animation: toaststackin .25s ease; }
+@keyframes toaststackin { from{opacity:0; transform: translateY(10px)} to{opacity:1; transform: none} }
+@media (max-width: 640px) { .toast-stack { bottom: calc(84px + env(safe-area-inset-bottom)); } } /* clear the bottom nav */
 
 /* ---------- Vendor booth modal ---------- */
 .vendoritem { display:flex; flex-direction:column; gap:6px; align-items: stretch; }
@@ -716,8 +722,6 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .sellopt b { font-size:14px; }
 .sellopt small { font-weight:600; opacity:.75; font-size:11.5px; }
 .list-picker { background: var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
-.askline { display:flex; align-items:center; gap:10px; margin:10px 0; }
-.askline input[type=range] { flex:1; accent-color: var(--gold); }
 .list-quote { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
 .list-quote > div { display:flex; flex-direction:column; background:#ffffff08; border-radius:10px; padding:8px 10px; }
 .list-quote > div > span { font-size:11px; }
@@ -740,3 +744,67 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .goal-bar > div { height:100%; background:linear-gradient(90deg,#3b6cff,#36d399); transition:width .3s; }
 .goal-reward { font-size:11px; color:var(--dim); font-weight:700; }
 .goal.done .goal-reward { color: var(--green); }
+
+/* --- Livestream studio ---------------------------------------------------- */
+.stream-live { margin-top: 14px; }
+.stream-hud { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 12px;
+  background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:12px; margin-bottom:12px; }
+.live-dot { background:#ff5e6c22; color:#ff5e6c; font-weight:900; animation: livepulse 1.6s ease-in-out infinite; }
+@keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+.stream-viewers { font-weight:800; font-variant-numeric:tabular-nums; }
+.stream-body { display:flex; gap:14px; align-items:stretch; }
+.stream-stage { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:12px; }
+.stream-prompt { display:flex; justify-content:center; padding:18px 0; }
+.stream-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+.stream-hits { background:#0c0f1a; border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+.stream-hits-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.stream-hit { position:relative; width:52px; border-radius:6px; overflow:hidden; border:1px solid var(--rarity,#2a3252);
+  box-shadow:0 0 8px -2px var(--rarity,#000); }
+.stream-hit img { width:100%; display:block; }
+.stream-hit span { position:absolute; bottom:0; left:0; right:0; font-size:9px; font-weight:800; text-align:center;
+  background:#000a; padding:1px 0; }
+.spot-ship { position:absolute; top:-8px; left:50%; transform:translateX(-50%); white-space:nowrap;
+  font-size:10px; font-weight:800; background:#ffcb05; color:#111; padding:2px 6px; border-radius:999px; z-index:6; }
+
+/* live chat */
+.stream-chat { flex:0 0 270px; max-width:270px; display:flex; flex-direction:column;
+  background:#0c0f1a; border:1px solid var(--line); border-radius:12px; padding:10px; }
+.chat-feed { flex:1 1 auto; overflow-y:auto; max-height:420px; min-height:260px; margin-top:8px;
+  display:flex; flex-direction:column; gap:5px; font-size:12.5px; line-height:1.35; }
+.chat-msg { word-break:break-word; }
+.chat-msg b { font-weight:800; }
+.chat-msg.tip { color:var(--green); font-weight:700; background:#36d39914; border-radius:6px; padding:2px 6px; }
+
+.stream-summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:14px 0; text-align:left; }
+.stream-summary-grid > div { background:#0c0f1a; border:1px solid var(--line); border-radius:10px; padding:8px 12px;
+  display:flex; flex-direction:column; gap:2px; }
+.stream-summary-grid .muted { font-size:11px; }
+.stream-summary-grid b { font-size:17px; }
+
+@media (max-width: 760px) {
+  .stream-body { flex-direction:column; }
+  .stream-chat { flex:none; max-width:none; }
+  .chat-feed { max-height:200px; min-height:140px; }
+}
+
+/* livestream — spectacle additions */
+.stream-revealwrap { display:flex; gap:12px; align-items:flex-start; }
+.stream-now { flex:0 0 150px; max-width:150px; }
+.stream-now .rip-now-card img { width:100%; border-radius:8px; }
+.stream-revealwrap .reveal-row { flex:1 1 auto; min-width:0; }
+.spot-ship.mine { background:var(--accent2); color:#fff; }
+.spot-pop { animation: spotpop .5s ease; }
+@keyframes spotpop { 0%{transform:scale(1)} 40%{transform:scale(1.25)} 100%{transform:scale(1)} }
+@media (max-width: 760px) {
+  .stream-revealwrap { flex-direction:column; }
+  .stream-now { flex:none; max-width:none; display:flex; gap:10px; align-items:center; }
+  .stream-now .rip-now-card { display:flex; gap:10px; align-items:center; }
+  .stream-now .rip-now-card img { width:64px; }
+}
+
+/* livestream — progress bar under the HUD */
+.stream-progress { height: 5px; background: #0c0f1a; border:1px solid var(--line); border-radius: 999px;
+  overflow: hidden; margin: -4px 0 12px; }
+.stream-progress > div { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--green));
+  transition: width .3s ease; }

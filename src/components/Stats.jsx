@@ -1,5 +1,6 @@
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
 import { cardValue, fmtMoney, round2, SETS } from '../game/engine'
+import { confirmDialog } from '../ui/dialog'
 
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
 
@@ -169,7 +170,14 @@ function FinanceCard() {
       </div>
       {job && (
         <button className="btn alt" style={{ maxWidth: 200, marginTop: 8 }}
-          onClick={() => { if (confirm(`Quit ${job.title}? You'll lose the $${wage}/day wage and live on card profit. Rent${useGame.getState().upgrades.storefront ? ' + store overhead' : ''} still applies.`)) quitJob() }}>
+          onClick={async () => {
+            const ok = await confirmDialog({
+              title: `Quit ${job.title}?`,
+              body: `You'll lose the $${wage}/day wage and live on card profit. Rent${useGame.getState().upgrades.storefront ? ' + store overhead' : ''} still applies.`,
+              confirmText: 'Quit — go full-time', cancelText: 'Keep the job', danger: true,
+            })
+            if (ok) quitJob()
+          }}>
           Quit — go full-time
         </button>
       )}

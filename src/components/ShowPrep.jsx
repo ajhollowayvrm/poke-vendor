@@ -49,7 +49,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
             {' · '}Entry {fmtMoney(tier.entryFee)} · {tier.days} day{tier.days > 1 ? 's' : ''}
           </div>
         </div>
-        <div className="cash" style={{ marginLeft: 0 }}>${cash.toFixed(2)}<small>balance</small></div>
+        <div className="cash" style={{ marginLeft: 0 }}>{fmtMoney(cash)}<small>balance</small></div>
       </div>
 
       <div className="banner" style={{ marginTop: 0 }}>
