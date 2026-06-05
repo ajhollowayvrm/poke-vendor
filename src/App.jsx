@@ -166,7 +166,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
+        <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
           <GameClock />
           <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
           <div className="cash">{fmtMoney(cash)}<small>balance</small></div>

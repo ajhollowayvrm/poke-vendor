@@ -1,11 +1,17 @@
 import HoloCard from './HoloCard'
+import { useModalEscape } from '../ui/dialog'
 
 const TONE_ICON = { kind: '💛', fair: '🤝', cold: '🥶' }
 
-export default function Encounter({ data, onPick }) {
+// An encounter prompt. `onPick` resolves the chosen option. `onClose` (optional)
+// dismisses without choosing — backdrop click, Esc, or the × button. When no
+// onClose is given the modal is non-dismissable (caller wants a forced choice).
+export default function Encounter({ data, onPick, onClose }) {
+  useModalEscape(() => onClose?.())
   return (
-    <div className="modalbg">
+    <div className="modalbg" onClick={() => onClose?.()}>
       <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
+        {onClose && <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>}
         <h2 style={{ fontSize: 19 }}>{data.title}</h2>
         {data.card && (
           <div style={{ display:'flex', justifyContent:'center', margin:'8px 0' }}>

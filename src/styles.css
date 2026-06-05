@@ -218,8 +218,11 @@ button { font-family: inherit; cursor: pointer; }
 .hist .amt.pos { color: var(--green); margin-left:auto; font-weight:800; }
 .hist .amt.neg { color: var(--red); margin-left:auto; font-weight:800; }
 .empty { color: var(--dim); text-align:center; padding: 60px 20px;
-  /* fill the content area and center, so an empty page isn't a thin strip up top */
-  flex: 1 1 auto; display: flex; align-items: center; justify-content: center; }
+  /* fill the content area and center, so an empty page isn't a thin strip up top.
+     column direction keeps multi-node prose (text + <b>) flowing as one paragraph
+     instead of fragmenting each inline child into its own flex column. */
+  flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  max-width: 520px; margin-inline: auto; line-height: 1.5; }
 .toolbar { display:flex; gap:10px; align-items:center; margin: 16px 0; flex-wrap:wrap; }
 select { background: var(--panel2); color: var(--txt); border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-weight:700; }
 .banner { background:#ffcb0518; border:1px solid #ffcb0540; color:#ffe48a; border-radius:12px; padding:10px 14px; font-size:13px; }
@@ -254,7 +257,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .emp-count { color: var(--green); font-size: 12px; }
 
 /* ---------- Calendar ---------- */
-.tierlegend { display:flex; flex-wrap:wrap; gap: 10px; margin: 4px 0 16px; }
+/* Notoriety label + progress bar travel together; on a wide bar the group can take
+   a full row, but the label never separates from its bar. */
+.noto-group { display:inline-flex; align-items:center; gap:8px; flex:1 1 240px; min-width:200px; }
+.tierlegend { display:flex; flex-wrap:wrap; gap: 10px; margin: 10px 0 16px; }
 .legend { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color: var(--dim);
   border:1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
 .legend i { width:9px; height:9px; border-radius:50%; display:inline-block; }
@@ -553,7 +559,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .prodbtn:disabled { opacity:.4; cursor:not-allowed; }
 .prodbtn .prodname { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .prodbtn .prodmeta { color:var(--dim); font-size:11px; font-weight:600; flex:none; }
-.prodbtn .prodprice { color:var(--green); font-weight:800; flex:none; min-width:54px; text-align:right; }
+.prodbtn .prodprice { color:var(--green); font-weight:800; flex:none; min-width:54px; text-align:right;
+  display:inline-flex; align-items:baseline; justify-content:flex-end; gap:5px; white-space:nowrap; }
 
 /* ---------- Live rippers + hall announcements ---------- */
 .npc .rip-badge { position:absolute; top:-8px; right:-6px; font-size:11px; transform: scaleX(1); }
@@ -601,9 +608,22 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right));
     /* leave room so content clears the fixed bottom nav (bar + safe-area) */
     padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-  .topbar { gap: 10px; padding: 10px 12px; }
+  .topbar { gap: 8px; padding: 10px 12px; }
   .brand { font-size: 17px; }
   .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
+  /* tighten the right-side chip cluster (clock · notoriety · balance) so they don't
+     jam together on a phone; smaller sub-labels and a snugger gap give them air. */
+  .topbar-right { gap: 9px !important; }
+  .clock-chip { font-size: 13px; } .clock-chip small, .noto-chip small, .cash small { font-size: 10px; }
+  /* stack each setting row: label block on top, control below — the segmented
+     controls otherwise crush the description into a ~73px column. */
+  .setting-card { flex-direction: column; align-items: stretch; gap: 10px; }
+  .setting-card .seg { align-self: flex-start; }
+  /* the tier legend is reference metadata — scroll it horizontally as a chip row
+     instead of stacking 6 full-width rows above the actual show cards. */
+  .tierlegend { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px; scrollbar-width: thin; }
+  .tierlegend .legend { flex: 0 0 auto; font-size: 11px; }
   /* the in-bar tab strip is replaced by the floating bottom nav on phones */
   .topbar .tabs { display: none; }
   /* the ⚙️ gear is redundant on phones (bottom nav has a "More" entry) and
@@ -814,6 +834,6 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   border-radius: 14px; padding: 12px 14px; }
 .distrib-bar { height: 6px; background:#0c0f1a; border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-top:8px; }
 .distrib-bar > div { height:100%; transition: width .3s ease; }
-.prodprice s.retail { color: var(--dim); font-weight: 600; font-size: 11px; margin-right: 5px; opacity: .8; }
+.prodprice s.retail { color: var(--dim); font-weight: 600; font-size: 11px; opacity: .8; }
 .prodbtn.caselot { border-color: var(--accent); background: #ffcb0510; }
 .prodbtn.caselot:hover:not(:disabled) { background: #ffcb0520; }

@@ -109,7 +109,7 @@ export default function Settings() {
         </button>
       </div>
 
-      <h3 style={{ margin: '28px 0 4px' }}>Card prices</h3>
+      <h3 style={{ margin: '18px 0 4px' }}>Card prices</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
         Pull the latest TCGplayer market prices for all {SETS.length} loaded sets, live from pokemontcg.io.
         Updates values across the shop, your collection, vendor booths, and offers. No rebuild needed.
@@ -143,7 +143,7 @@ export default function Settings() {
         </button>
       </div>
 
-      <h3 style={{ margin: '28px 0 4px' }}>Save</h3>
+      <h3 style={{ margin: '18px 0 4px' }}>Save</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Progress auto-saves to this browser. Resetting wipes cash, collection, notoriety, and upgrades.</p>
       <button className="btn alt" style={{ maxWidth: 200 }}
         onClick={() => { if (confirm('Reset all progress? This wipes your save.')) reset() }}>

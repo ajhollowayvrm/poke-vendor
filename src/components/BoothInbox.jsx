@@ -175,7 +175,7 @@ export default function BoothInbox() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {active && <Encounter data={active.enc} onPick={pick} />}
+      {active && <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />}
 
       {wantPick && (
         <div className="modalbg" onClick={() => setWantPick(null)}>
