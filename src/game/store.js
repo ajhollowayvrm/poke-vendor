@@ -7,23 +7,26 @@ import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 import { fatigueMult } from './stream'
 
-const STARTING_CASH = 5000
+const STARTING_CASH = 2500
 
 // --- Survival economy ------------------------------------------------------
-// Each game-day you earn your job's wage and pay rent. The job is the safety net
-// (and the friction): it pays steady but it's not the dream — cards are the path up.
-// Run out of money with nothing left to sell and you lose.
+// Each game-day you earn your job's wage and pay rent. The job is a SAFETY NET, not a
+// living: it's tuned to barely clear rent, so working it keeps the lights on but builds
+// almost no wealth — the only real way up is cards. Going full-time means giving up that
+// thin cushion, so it's a real decision. Run out of money with nothing left to sell → lose.
 export const RENT_PER_DAY = 40
 // Low-level jobs, ascending wage. Better jobs gate behind notoriety (you're more
 // hireable as your name gets around). Wage is per game-day. `start` = days until a
 // newly-taken job begins paying (re-apply friction); the starter job starts instantly.
+// Wages are deliberately thin vs the $40/day rent: the starter clerk nets just +$5/day,
+// and even the top job is a grind, not a path — cards are where the money is.
 export const JOBS = [
   { id: 'none',     title: 'Unemployed',          wage: 0,   minNoto: 0,   start: 0 },
-  { id: 'retail',   title: 'Card shop clerk',     wage: 70,  minNoto: 0,   start: 0 },
-  { id: 'barista',  title: 'Barista',             wage: 95,  minNoto: 10,  start: 1 },
-  { id: 'warehouse',title: 'Warehouse picker',    wage: 130, minNoto: 25,  start: 1 },
-  { id: 'manager',  title: 'Retail manager',      wage: 180, minNoto: 60,  start: 2 },
-  { id: 'broker',   title: 'Card-shop buyer',     wage: 260, minNoto: 120, start: 2 },
+  { id: 'retail',   title: 'Card shop clerk',     wage: 45,  minNoto: 0,   start: 0 },
+  { id: 'barista',  title: 'Barista',             wage: 60,  minNoto: 10,  start: 1 },
+  { id: 'warehouse',title: 'Warehouse picker',    wage: 80,  minNoto: 25,  start: 1 },
+  { id: 'manager',  title: 'Retail manager',      wage: 115, minNoto: 60,  start: 2 },
+  { id: 'broker',   title: 'Card-shop buyer',     wage: 160, minNoto: 120, start: 2 },
 ]
 export const STARTER_JOB = JOBS.find(j => j.id === 'retail')
 export function jobById(id) { return JOBS.find(j => j.id === id) || null }
@@ -691,9 +694,10 @@ export const useGame = create(persist((set, get) => ({
     }
   },
 
-  // Quick sell (TCGplayer-style): instant cash, but ALWAYS below market — you pay
-  // for the convenience. Listing on your own site (below) can match or beat market.
-  quickSellRate: 0.80,
+  // Quick sell (TCGplayer-style): instant cash, but well below market — you pay a steep
+  // premium for the convenience. Liquidating your collection to make rent is a real loss,
+  // not a soft cushion. Listing on your own site (below) can match or beat market.
+  quickSellRate: 0.65,
   quickSell(uid) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return
@@ -805,8 +809,8 @@ export const useGame = create(persist((set, get) => ({
   },
 
   // Buylist: instantly dump ALL raw bulk (commons/uncommons/rares, no hits/graded)
-  // to a shop at a flat buylist rate — fast cash, well under market.
-  buylistRate: 0.55,
+  // to a shop at a flat buylist rate — fast cash, but a punishing cut under market.
+  buylistRate: 0.45,
   sellToBuylist() {
     const { collection, buylistRate } = get()
     const toSell = collection.filter(isBulkCard)
@@ -1445,7 +1449,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 20,
+  version: 21,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1571,6 +1575,20 @@ export const useGame = create(persist((set, get) => ({
       // Store display case. Walk-in customers now buy only from this shelf (you choose
       // what to put out); start it empty for existing saves.
       state.shopDisplay = state.shopDisplay ?? []
+    }
+    if (version < 21) {
+      // Harder economy. The liquidation rates are balance constants (not player choices),
+      // so push the tighter values onto existing saves. Quick-sell 0.80→0.65, buylist
+      // 0.55→0.45. (Rent/start cash read from module constants live.)
+      state.quickSellRate = 0.65
+      state.buylistRate = 0.45
+      // The active/pending job is a frozen snapshot that still carries its OLD wage; re-resolve
+      // it against the current JOBS table so the tighter wages actually apply to this save.
+      if (state.job?.id) state.job = jobById(state.job.id) || state.job
+      if (state.pendingJob?.job?.id) {
+        const j = jobById(state.pendingJob.job.id)
+        if (j) state.pendingJob = { ...state.pendingJob, job: j }
+      }
     }
     return state
   },
