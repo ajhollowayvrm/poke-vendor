@@ -1185,6 +1185,24 @@ export const useGame = create(persist((set, get) => ({
         }
         break
       }
+      case 'trade': {
+        // Card-for-card swap (± cash). You give up `uid`, receive `theirs`; cashAdj
+        // > 0 pays you, < 0 you pay them. Bail gracefully if you no longer own yours,
+        // or can't cover a cash-you-owe trade.
+        const card = findOwnedAnywhere(get(), effect.uid)
+        if (!card) { msg = 'That card is already gone — trade off.'; break }
+        const adj = effect.cashAdj || 0
+        if (adj < 0 && get().cash < -adj) { msg = `You can't cover the $${(-adj).toFixed(2)} on your side. Trade off.`; break }
+        removeOwnedAnywhere(set, effect.uid)
+        const got = { ...effect.theirs, _ask: undefined, _mispriced: undefined, _highlight: undefined }
+        set(st => ({ collection: [got, ...st.collection] }))
+        if (adj > 0) s.earn(adj)
+        else if (adj < 0) s.spend(-adj)
+        s.addNotoriety(effect.notoriety || 0)
+        s.log('trade', `Traded ${card.name} for ${effect.theirs.name}${adj > 0 ? ` (+$${adj.toFixed(2)})` : adj < 0 ? ` (−$${(-adj).toFixed(2)})` : ''}`, adj)
+        get().checkCompletions() // the card you traded for may finish a set
+        break
+      }
       case 'none':
       default:
         s.addNotoriety(effect.notoriety || 0)

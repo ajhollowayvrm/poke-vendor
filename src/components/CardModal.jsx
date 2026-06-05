@@ -45,10 +45,10 @@ export default function CardModal({ card, onClose }) {
                   <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
                   <div className="slab-cert">{card.name}</div>
                 </div>
-                <div className="slab-window"><img src={card.imgLarge || card.img} alt={card.name} /></div>
+                <div className="slab-window"><img src={card.imgLarge || card.img} alt={card.name} decoding="async" fetchpriority="high" /></div>
               </div>
             ) : (
-              <img src={card.imgLarge || card.img} alt={card.name} />
+              <img src={card.imgLarge || card.img} alt={card.name} decoding="async" fetchpriority="high" />
             )}
           </HoloCard>
           <div style={{ flex: 1, minWidth: 240 }}>

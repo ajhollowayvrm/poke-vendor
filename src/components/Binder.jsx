@@ -79,7 +79,7 @@ export default function Binder({ onPick }) {
             if (owned) {
               return (
                 <div key={c.id} className="coll-cell binder-slot owned" onClick={() => onPick?.(collection.find(x => x.id === c.id))}>
-                  <div className="cardtile no-edge"><img src={c.img} alt={c.name} loading="lazy" /></div>
+                  <div className="cardtile no-edge"><img src={c.img} alt={c.name} loading="lazy" decoding="async" /></div>
                   <span className="binder-num">#{c.number}</span>
                 </div>
               )

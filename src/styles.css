@@ -421,6 +421,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 }
 
 /* ---------- Collection multi-select + bulk-action bar ---------- */
+/* Skip rendering/decoding grid cells far off-screen — big win on long card grids
+   (binder/prices can be 100-300 cards). The intrinsic size keeps the scrollbar
+   stable while off-screen cells are un-rendered. */
+.coll-cell, .binder-slot, .priceitem { content-visibility: auto; contain-intrinsic-size: auto 210px; }
 .coll-cell { position: relative; }
 .coll-cell.selectable { cursor: pointer; border-radius: 12px; transition: box-shadow .12s, background .12s; }
 .coll-cell.selectable:hover { box-shadow: 0 0 0 1px var(--line); }
@@ -860,3 +864,16 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
 .binder-slot.missing.chase { border-color:#ff79c655; background:#ff3df00d; }
 .binder-slot.missing .binder-slot-chase { position:absolute; top:5px; right:6px; font-size:11px; }
+
+/* --- Trade encounter (card-for-card swap) --------------------------------- */
+.trade-view { display:flex; align-items:center; justify-content:center; gap:10px; margin:10px 0; }
+.trade-side { flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center; }
+.trade-side .trade-card img { width:100%; max-width:140px; border-radius:8px; }
+.trade-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--dim); }
+.trade-name { font-size:12.5px; font-weight:700; line-height:1.2; }
+.trade-val { font-size:12px; font-weight:800; color:var(--green); }
+.trade-swap { flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.trade-arrows { font-size:26px; color:var(--accent); }
+.trade-cash { font-size:11px; font-weight:800; padding:2px 7px; border-radius:999px; white-space:nowrap; text-align:center; }
+.trade-cash.up { background:#36d39922; color:var(--green); }
+.trade-cash.down { background:#ff9f4322; color:#ff9f43; }

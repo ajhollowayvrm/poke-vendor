@@ -285,7 +285,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   return (
                     <HoloCard key={c.uid} card={c} extraStyle={{ '--rarity': edge }}
                       className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
-                      <img src={c.img} alt={c.name} />
+                      <img src={c.img} alt={c.name} decoding="async" />
                     </HoloCard>
                   )
                 })}
@@ -334,7 +334,7 @@ function NowRevealing({ card }) {
         const showPsa10 = !card.grade && (card._isHit || card.foil)
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
-            <img src={card.img} alt={card.name} />
+            <img src={card.img} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>

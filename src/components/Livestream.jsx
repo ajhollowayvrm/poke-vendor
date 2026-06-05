@@ -416,7 +416,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                     <div key={c.uid} style={{ position:'relative' }}>
                       <HoloCard card={c} extraStyle={{ '--rarity': edge }}
                         className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
-                        <img src={c.img} alt={c.name} />
+                        <img src={c.img} alt={c.name} decoding="async" />
                       </HoloCard>
                       {i < shown && owner && (c._isHit || c.foil) && (
                         <span className={`spot-ship ${owner === 'YOU' ? 'mine' : ''}`} title={owner === 'YOU' ? 'Unsold spot — this one is yours' : `Ships to ${owner}`}>

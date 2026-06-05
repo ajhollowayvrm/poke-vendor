@@ -49,7 +49,7 @@ export default function PriceGuide() {
       <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
         {cards.map(c => (
           <div key={c.id} className="priceitem">
-            <img src={c.img} alt={c.name} loading="lazy" />
+            <img src={c.img} alt={c.name} loading="lazy" decoding="async" />
             <div className="pname" title={c.name}>{c.name}</div>
             <div className="prow">
               <span className="ptag" style={{ color: rarityColor(c.rarity) }}>#{c.number}</span>
