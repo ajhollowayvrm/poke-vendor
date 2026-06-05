@@ -434,12 +434,35 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     }
   }
 
-  // 4) Generic browse → small sale chance
+  // 4) Generic browse → small sale chance. Which of YOUR cards can they actually buy?
+  //   show   → your show table (showInventory): only what you brought to the booth.
+  //   online → your LISTINGS: an online shopper can only buy what you've put up for sale.
+  //            With nothing listed there's nothing to browse, so we skip the encounter.
+  //   walkin → your collection: a walk-in to your physical store browses your case.
+  // The store resolves `browseSale` against the pool named here.
+  const pool = channel === 'show' ? 'show' : online ? 'listings' : 'collection'
+  // Online buyers shop your listings; with an empty store there's nothing to sell them.
+  // Fall back to a price-check question so the visit still does something (no phantom sale).
+  if (online && !(listedCards && listedCards.length)) {
+    const v = visitorFor(channel, 'question')
+    const q = cardInValueRange(0.5, 60)
+    const realMid = rawValue(q)
+    const opts = shuffle([{ v: realMid, ok: true }, { v: round2(realMid*3), ok: false }, { v: round2(realMid*0.3), ok: false }])
+    return {
+      kind: 'question',
+      title: `${cap(v)} asks for a price check`,
+      body: `"You don't have anything up for sale right now, but — any idea what a ${q.name} goes for?"`,
+      card: q,
+      options: opts.map(o => ({
+        text: `"Around $${o.v.toFixed(2)}."`, tone: 'fair',
+        effect: o.ok
+          ? { type: 'none', notoriety: 2, msg: 'Spot on — they appreciate the help. (List some cards to start selling online!)' }
+          : { type: 'none', notoriety: -1, msg: `Not quite — it's closer to $${realMid.toFixed(2)}.` },
+      })),
+    }
+  }
   const visitor = visitorFor(channel, 'browse')
   const pay = pickPayMethod(channel, accepted)
-  // At a SHOW, a browse-sale pulls from your show table (show inventory), not your
-  // whole collection — the store resolves browseSale against showInventory when set.
-  const fromShow = channel === 'show'
   return {
     kind: 'browse',
     title: online ? `${cap(visitor)} is scrolling your listings` : `${cap(visitor)} stops to browse your case`,
@@ -447,9 +470,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     card: null,
     options: [
       { text: online ? 'Send a friendly note + deal' : 'Give them a warm welcome', tone: 'kind',
-        effect: { type: 'browseSale', fromShow, payMethod: pay, chance: 0.5 + Math.min(0.4, notoriety/200), notoriety: 1, msg: 'Friendliness pays off.' } },
+        effect: { type: 'browseSale', pool, payMethod: pay, chance: 0.5 + Math.min(0.4, notoriety/200), notoriety: 1, msg: 'Friendliness pays off.' } },
       { text: online ? 'Let them browse' : 'Let them browse in peace', tone: 'fair',
-        effect: { type: 'browseSale', fromShow, payMethod: pay, chance: 0.3, notoriety: 0, msg: 'They look around quietly.' } },
+        effect: { type: 'browseSale', pool, payMethod: pay, chance: 0.3, notoriety: 0, msg: 'They look around quietly.' } },
     ],
   }
 }

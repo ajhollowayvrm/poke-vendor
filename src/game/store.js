@@ -1219,10 +1219,16 @@ export const useGame = create(persist((set, get) => ({
       }
       case 'browseSale': {
         s.addNotoriety(effect.notoriety)
-        // At a SHOW, a browser can only buy what you brought to your table (show
-        // inventory). At home/online they browse your whole collection.
-        const fromShow = !!effect.fromShow
-        const owned = fromShow ? (get().showInventory || []) : get().collection
+        // Which of your cards can this browser actually buy?
+        //   show   → only what you brought to your table (show inventory)
+        //   listings → only cards you've LISTED for sale online (an online shopper can't
+        //              buy out of your private collection — only what's up for sale)
+        //   collection → a walk-in to your physical store browses your whole case
+        // (Back-compat: an old in-flight encounter may still carry `fromShow`.)
+        const pool = effect.pool || (effect.fromShow ? 'show' : 'collection')
+        const owned = pool === 'show' ? (get().showInventory || [])
+          : pool === 'listings' ? (get().listings || []).map(l => l.card)
+          : get().collection
         if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
           const blocked = s.paymentBlocked(effect.payMethod)
           if (blocked) { s.log('lost-sale', blocked, 0); msg = msg + ' …but ' + blocked.toLowerCase(); break }
