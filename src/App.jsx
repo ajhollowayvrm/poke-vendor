@@ -21,17 +21,19 @@ import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 
-// Primary nav: the core loop only. Reference/meta screens (Grader, Prices) live
-// as sub-tabs inside Collection; Settings + Stats live behind the ⚙️ gear in the top bar.
-const TABS = ['shop', 'myshop', 'stream', 'shows', 'upgrades', 'collection']
-const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', stream: 'Stream', shows: 'Shows', upgrades: 'Upgrades', collection: 'Cards' }
+// Primary nav: the core loop + Stats (your money/standing matters more than the upgrade
+// shop, so Stats gets a top slot and Upgrades moves behind the ⚙️ gear). Reference/meta
+// screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
+// behind the gear in the top bar.
+const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
+const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Cards' }
 // Icons for the mobile bottom nav (label is shown small underneath).
-const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', upgrades: '⬆️', collection: '🗂️' }
+const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
 
 export default function App() {
   const [tab, setTab] = useState('shop')
   const [collTab, setCollTab] = useState('cards') // Collection sub-tab: cards | grader | prices
-  const [settingsPane, setSettingsPane] = useState('settings') // Settings tab sub-pane: settings | stats
+  const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
   const [preppingShow, setPreppingShow] = useState(null) // show selected; picking which cards to bring
@@ -125,8 +127,10 @@ export default function App() {
     setActiveShow(null)
   }
 
-  // Switch tabs — also bail out of an in-progress pack rip so the new tab renders.
-  function selectTab(t) { setRipping(null); setTab(t) }
+  // Switch tabs. A rip in progress is NOT discarded — its component stays mounted as an
+  // overlay (just hidden off the Buy tab), so leaving and coming back resumes exactly where
+  // you were (same pack, running tally, unopened packs intact) instead of losing the rip.
+  function selectTab(t) { setTab(t) }
 
   // Prepping for a show: the pick-your-inventory screen takes over the whole view.
   if (preppingShow) {
@@ -178,17 +182,22 @@ export default function App() {
       {awaySummary && <AwaySummary summary={awaySummary} onClose={() => setAwaySummary(null)} />}
       <GameOver />
 
+      {/* A rip is mid-flight but you've stepped away to another tab — a tap brings you back. */}
+      {ripping && tab !== 'shop' && (
+        <button className="rip-resume-banner" onClick={() => selectTab('shop')}>
+          📦 Rip in progress — tap to resume
+        </button>
+      )}
+
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
-        {tab === 'shop' && (ripping
-          ? <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
-          : <Shop cash={cash} onBuy={buyProduct} />)}
+        {tab === 'shop' && <Shop cash={cash} onBuy={buyProduct} />}
 
         {tab === 'shows' && <Calendar onAttend={attendShow} />}
         {tab === 'myshop' && <BoothInbox />}
         {tab === 'stream' && <Livestream />}
-        {tab === 'upgrades' && <UpgradeShop />}
+        {tab === 'stats' && <Stats />}
 
         {tab === 'collection' && (
           <>
@@ -209,12 +218,21 @@ export default function App() {
           <>
             <div className="subtabs">
               <button className={`subtab ${settingsPane === 'settings' ? 'active' : ''}`} onClick={() => setSettingsPane('settings')}>⚙️ Settings</button>
-              <button className={`subtab ${settingsPane === 'stats' ? 'active' : ''}`} onClick={() => setSettingsPane('stats')}>📊 Stats</button>
+              <button className={`subtab ${settingsPane === 'upgrades' ? 'active' : ''}`} onClick={() => setSettingsPane('upgrades')}>⬆️ Upgrades</button>
             </div>
-            {settingsPane === 'settings' ? <Settings /> : <Stats />}
+            {settingsPane === 'settings' ? <Settings /> : <UpgradeShop />}
           </>
         )}
       </main>
+
+      {/* In-progress rip overlay. Mounted whenever a rip is active so its state survives
+          tab switches; hidden (not unmounted) when you're off the Buy tab, so leaving and
+          returning resumes the same rip rather than discarding it. */}
+      {ripping && (
+        <div className={`rip-overlay ${tab === 'shop' ? '' : 'hidden'}`}>
+          <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
+        </div>
+      )}
 
       {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
       <DialogHost />

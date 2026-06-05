@@ -19,6 +19,24 @@ button { font-family: inherit; cursor: pointer; }
 /* the routed view grows to fill the space between top bar and bottom nav */
 .content { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
 
+/* In-progress rip overlay: lives above the routed content so a rip survives tab switches.
+   `.hidden` keeps it mounted (state preserved) but unpainted, so returning to Buy resumes
+   the same rip. Sits BELOW the sticky top bar (z-30) and bottom nav (z-60) so you can still
+   navigate away mid-rip, and below modals (z-80). The top bar paints over its top strip;
+   the rip content is centred below it. */
+.rip-overlay { position: fixed; inset: 0; z-index: 25; overflow-y: auto;
+  background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
+  padding: calc(80px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); }
+.rip-overlay.hidden { display: none; }
+/* Floating "resume your rip" pill shown when a rip is mid-flight on another tab. */
+.rip-resume-banner { position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 55; cursor: pointer;
+  background: linear-gradient(180deg, #3b6cff, #2a52d8); color: #fff; border: none;
+  font-weight: 800; font-size: 13px; padding: 10px 16px; border-radius: 999px;
+  box-shadow: 0 6px 20px #0007; animation: ripPulse 1.8s ease-in-out infinite; }
+@keyframes ripPulse { 0%,100% { box-shadow: 0 6px 20px #0007; } 50% { box-shadow: 0 6px 26px #3b6cffaa; } }
+@media (max-width: 640px) { .rip-resume-banner { bottom: calc(74px + env(safe-area-inset-bottom)); } }
+
 /* Top bar */
 .topbar { display: flex; align-items: center; gap: 18px; padding: 14px 18px;
   background: linear-gradient(180deg,var(--panel),var(--panel2)); border: 1px solid var(--line);
