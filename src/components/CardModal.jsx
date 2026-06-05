@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { cardValue, rawValue, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney } from '../game/engine'
+import { cardValue, rawValue, psa10Value, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
@@ -90,7 +90,23 @@ export default function CardModal({ card, onClose }) {
                 )}
               </>
             ) : (
-              <p style={{ fontSize: 15 }}>Market value: <b style={{ color: 'var(--green)' }}>${rawValue(card).toFixed(2)}</b></p>
+              <>
+                <p style={{ fontSize: 15, marginBottom: 4 }}>Market value: <b style={{ color: 'var(--green)' }}>${rawValue(card).toFixed(2)}</b></p>
+                {/* What this card would be worth slabbed at a perfect grade — the upside
+                    that makes grading tempting. If the card's condition caps it below 10
+                    (a played card can't gem), flag that the PSA 10 is out of reach. */}
+                {(() => {
+                  const p10 = psa10Value(card)
+                  const cap = card.condition && CONDITIONS[card.condition] ? CONDITIONS[card.condition].maxGrade : 10
+                  const reachable = cap >= 10
+                  return (
+                    <p style={{ fontSize: 13, margin: 0 }} className="muted">
+                      💎 If it graded <b>PSA 10</b>: <b style={{ color: 'var(--gold)' }}>{fmtMoney(p10)}</b>
+                      {!reachable && <span style={{ color: CONDITIONS[card.condition].color }}> — but {CONDITIONS[card.condition].label} caps it at PSA {cap}</span>}
+                    </p>
+                  )
+                })()}
+              </>
             )}
 
             {!listing ? (

@@ -27,6 +27,16 @@ export function rarityRank(r) {
 export const HIT_THRESHOLD = RARITY_ORDER.indexOf('Double Rare')
 export function isHit(card) { return rarityRank(card.rarity) >= HIT_THRESHOLD }
 
+// Is this a "bulk" / non-worth card — safe to sweep into a bulk/quick-sell?
+// Decided by LIVE card attributes, NOT the `_isHit` flag (which is only stamped at
+// pull time, so a hit acquired any other way — bought, gifted, an old save — would
+// have no flag and slip through). A card is bulk only if it's raw, unfoiled, and
+// below the hit rarity threshold. A graded slab, a special foil, or any Double-Rare+
+// (incl. MEGA_ATTACK / Mega Hyper / Black White) is NEVER bulk.
+export function isBulkCard(card) {
+  return !card.grade && !card.foil && !isHit(card)
+}
+
 export function cardsByRarity(set) {
   const map = {}
   for (const c of set.cards) (map[c.rarity] ||= []).push(c)
@@ -411,11 +421,29 @@ export function gradedValue(card) {
   // Prefer the REAL market price of this card at this PSA grade. Sparse data: if this
   // exact grade has no comp, fall back to the heuristic (don't interpolate tiny samples).
   const real = psaComp(card, g)
-  if (real != null) return round2(real)
-  const mult = GRADE_MULT[g] ?? 1
-  // higher base-value cards see bigger grade premiums (gem mint chase)
-  const scarcityBoost = 1 + Math.min(2, rawValue(card) / 50)
-  return round2(rawValue(card) * mult * (g >= 9 ? scarcityBoost : 1))
+  let value
+  if (real != null) value = real
+  else {
+    const mult = GRADE_MULT[g] ?? 1
+    // higher base-value cards see bigger grade premiums (gem mint chase)
+    const scarcityBoost = 1 + Math.min(2, rawValue(card) / 50)
+    value = rawValue(card) * mult * (g >= 9 ? scarcityBoost : 1)
+  }
+  return round2(gradedFloor(card, g, value))
+}
+
+// A slab is never worth LESS than the raw card (grading only adds value or you'd
+// keep it raw), and a higher grade is never worth less than a lower one. eBay
+// sold-comps are sparse and noisy, so a captured PSA-10 sale can land below the
+// current raw price or below a worse grade's comp — clamp those nonsensical cases.
+function gradedFloor(card, g, value) {
+  let floor = rawValue(card) // a PSA-anything is at least the raw card
+  // pull the floor up to the best comp of any STRICTLY LOWER grade
+  for (let lower = 1; lower < g; lower++) {
+    const c = psaComp(card, lower)
+    if (c != null && c > floor) floor = c
+  }
+  return Math.max(value, floor)
 }
 export function cardValue(card) { return card.grade ? gradedValue(card) : rawValue(card) }
 
@@ -490,10 +518,15 @@ export function dailyViewers(card, askMult, notoriety, rnd = Math.random, boost 
 export function psa10Value(card) {
   if (card.grade) return gradedValue(card)
   const real = psaComp(card, 10)
-  if (real != null) return round2(real)
-  const base = rawValue(card)
-  const scarcityBoost = 1 + Math.min(2, base / 50)
-  return round2(base * GRADE_MULT[10] * scarcityBoost)
+  let value
+  if (real != null) value = real
+  else {
+    const base = rawValue(card)
+    const scarcityBoost = 1 + Math.min(2, base / 50)
+    value = base * GRADE_MULT[10] * scarcityBoost
+  }
+  // same floor as a real slab: a PSA 10 is never worth less than raw or a lower grade
+  return round2(gradedFloor(card, 10, value))
 }
 
 // ---- Grading (PSA-style subgrades) ----

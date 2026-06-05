@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
-  BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers } from './engine'
+  BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 
 const STARTING_CASH = 5000
@@ -400,18 +400,22 @@ function realizableAssets(s) {
   return round2((s.cash || 0) + coll)
 }
 
-// A card you own may be in your collection OR out on the market (listed/tweeted).
-// These let an encounter sale resolve against whichever bucket holds the card,
-// so an offer accepted on a LISTED card actually removes the listing.
+// A card you own may be in your collection, out on the market (listed/tweeted), OR
+// in your show inventory (cards you brought to the show you're attending). These let
+// an encounter sale resolve against whichever bucket holds the card, so an offer
+// accepted on a listed card removes the listing, and a sale at the show removes the
+// card from the booth's stock.
 function findOwnedAnywhere(s, uid) {
   return s.collection.find(c => c.uid === uid)
     || (s.listings || []).find(l => l.card.uid === uid)?.card
+    || (s.showInventory || []).find(c => c.uid === uid)
     || null
 }
 function removeOwnedAnywhere(set, uid) {
   set(st => ({
     collection: st.collection.filter(c => c.uid !== uid),
     listings: (st.listings || []).filter(l => l.card.uid !== uid),
+    showInventory: (st.showInventory || []).filter(c => c.uid !== uid),
   }))
 }
 
@@ -463,6 +467,7 @@ export const useGame = create(persist((set, get) => ({
   gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
   consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
   listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
+  showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
   wantList: [],            // active collector wants (see want-list section)
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
@@ -679,9 +684,11 @@ export const useGame = create(persist((set, get) => ({
 
   sellAllUngraded() {
     const { collection, quickSellRate } = get()
-    const toSell = collection.filter(c => !c.grade && !c._isHit)
+    // Bulk = raw, unfoiled, below the hit threshold (by live rarity, not the stale
+    // _isHit flag) — so a MEGA_ATTACK / SIR / foil acquired without that flag is safe.
+    const toSell = collection.filter(isBulkCard)
     const total = round2(toSell.reduce((a, c) => a + cardValue(c) * quickSellRate, 0))
-    set(s => ({ collection: s.collection.filter(c => c.grade || c._isHit) }))
+    set(s => ({ collection: s.collection.filter(c => !isBulkCard(c)) }))
     get().earn(total)
     get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ${Math.round(quickSellRate*100)}%`, total)
   },
@@ -691,11 +698,10 @@ export const useGame = create(persist((set, get) => ({
   buylistRate: 0.55,
   sellToBuylist() {
     const { collection, buylistRate } = get()
-    const isBulk = c => !c.grade && !c._isHit && !c.foil && rarityRank(c.rarity) < rarityRank('Double Rare')
-    const toSell = collection.filter(isBulk)
+    const toSell = collection.filter(isBulkCard)
     if (!toSell.length) return 0
     const total = round2(toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0))
-    set(s => ({ collection: s.collection.filter(c => !isBulk(c)) }))
+    set(s => ({ collection: s.collection.filter(c => !isBulkCard(c)) }))
     get().earn(total)
     get().log('sell', `Buylisted ${toSell.length} bulk cards @ ${Math.round(buylistRate*100)}%`, total)
     return total
@@ -896,14 +902,49 @@ export const useGame = create(persist((set, get) => ({
   },
 
   // --- Buy a card from a vendor booth ---
-  buyFromVendor(card, price) {
+  // At a show you can flip a fresh buy straight onto your table: pass
+  // { toShowInventory:true } to list it for sale at the show instead of taking it
+  // home to your collection. (Off the floor it always goes to the collection.)
+  buyFromVendor(card, price, opts = {}) {
     if (!get().spend(price)) return false
-    const bought = { ...card, _ask: undefined, _mispriced: undefined }
-    set(s => ({ collection: [bought, ...s.collection] }))
-    get().log('buy', `Bought ${card.name} from a vendor`, -price)
+    const bought = { ...card, _ask: undefined, _mispriced: undefined, _highlight: undefined }
+    if (opts.toShowInventory) {
+      set(s => ({ showInventory: [bought, ...(s.showInventory || [])] }))
+      get().log('buy', `Bought ${card.name} from a vendor — listed at your booth`, -price)
+    } else {
+      set(s => ({ collection: [bought, ...s.collection] }))
+      get().log('buy', `Bought ${card.name} from a vendor`, -price)
+    }
     if (card._mispriced) get().addNotoriety(1) // you spotted a deal
     get().bumpGoal('buy', 1)
     return true
+  },
+
+  // --- Show inventory: cards you bring to a show to sell at your booth ----------
+  // Move the selected collection cards onto your show table. Floor buyers (offers,
+  // browse-sales, walk-ups) only ever target these — your at-home collection isn't
+  // for sale at the show. Anything unsold comes home when you leave (endShow()).
+  bringToShow(uids) {
+    const ids = new Set(uids)
+    const bringing = get().collection.filter(c => ids.has(c.uid))
+    if (!bringing.length) { set({ showInventory: [] }); return 0 }
+    set(s => ({
+      collection: s.collection.filter(c => !ids.has(c.uid)),
+      showInventory: bringing,
+    }))
+    get().log('show', `Brought ${bringing.length} card${bringing.length > 1 ? 's' : ''} to sell at the show`, 0)
+    return bringing.length
+  },
+  // Leaving the show: any unsold show-inventory cards return to your collection.
+  endShow() {
+    const inv = get().showInventory || []
+    if (inv.length) {
+      set(s => ({ collection: [...inv, ...s.collection], showInventory: [] }))
+      get().log('show', `Brought ${inv.length} unsold card${inv.length > 1 ? 's' : ''} back home from the show`, 0)
+    } else if ((get().showInventory || []).length === 0) {
+      // nothing to do, but ensure the bucket is empty
+      set({ showInventory: [] })
+    }
   },
 
   // Can we take this buyer's preferred payment method? Returns null if fine,
@@ -981,19 +1022,23 @@ export const useGame = create(persist((set, get) => ({
       }
       case 'browseSale': {
         s.addNotoriety(effect.notoriety)
-        if (Math.random() < (effect.chance ?? 0.3) && get().collection.length) {
+        // At a SHOW, a browser can only buy what you brought to your table (show
+        // inventory). At home/online they browse your whole collection.
+        const fromShow = !!effect.fromShow
+        const owned = fromShow ? (get().showInventory || []) : get().collection
+        if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
           const blocked = s.paymentBlocked(effect.payMethod)
           if (blocked) { s.log('lost-sale', blocked, 0); msg = msg + ' …but ' + blocked.toLowerCase(); break }
-          // they buy a random affordable card from your collection at market
-          const owned = get().collection
+          // they buy a random card from the relevant pool at market
           const card = owned[Math.floor(Math.random() * owned.length)]
           let price = rawValue(card)
           if (get().upgrades.cases) price = round2(price * 1.12)
           const { net, fee } = processingFee(price, effect.payMethod)
-          set(st => ({ collection: st.collection.filter(c => c.uid !== card.uid) }))
+          removeOwnedAnywhere(set, card.uid)
           s.earn(net)
           s.log('sell', `A browser bought your ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
           msg = `They bought your ${card.name} for $${net.toFixed(2)}${fee > 0 ? ` (after $${fee.toFixed(2)} ${methodLabel(effect.payMethod)} fee)` : ''}!`
+          s.bumpGoal('sell', 1); s.bumpGoal('profit', net)
         }
         break
       }
@@ -1126,14 +1171,14 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      consignments: [], listings: [], showInventory: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
   },
 }), {
   name: 'poke-vendor-save',
-  version: 13,
+  version: 14,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1147,6 +1192,7 @@ export const useGame = create(persist((set, get) => ({
     state.pendingGrades = keepWrapped(state.pendingGrades)
     state.listings = keepWrapped(state.listings)
     state.consignments = keepWrapped(state.consignments)
+    state.showInventory = keepFlat(state.showInventory)
     return state
   },
   // backfill fields added across versions so old saves keep working.
@@ -1223,6 +1269,11 @@ export const useGame = create(persist((set, get) => ({
         const { willSell, daysLeft, ...rest } = l
         return { ...rest, views: rest.views ?? 0, offers: rest.offers ?? [], age: rest.age ?? 0 }
       })
+    }
+    if (version < 14) {
+      // Show inventory (cards you bring to a show to sell) is new. Existing saves
+      // aren't mid-show, so start it empty — no migration of card data needed.
+      state.showInventory = state.showInventory ?? []
     }
     return state
   },

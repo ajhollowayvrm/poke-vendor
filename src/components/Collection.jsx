@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rawValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount } from '../game/engine'
+import { cardValue, rawValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Collection({ onPick }) {
@@ -25,8 +25,6 @@ export default function Collection({ onPick }) {
   const [toast, setToast] = useState(null)
   const listMult = (parseFloat(listPct) || 0) / 100
 
-  const raw = useMemo(() => collection.filter(c => !c.grade), [collection])
-
   // One unified list of EVERYTHING — raw cards and graded slabs mixed together
   // (the slab look already distinguishes graded at a glance). Value-sort floats
   // the slabs up naturally by their graded value.
@@ -37,9 +35,12 @@ export default function Collection({ onPick }) {
   }, [collection, sort])
 
   const quickSellRate = useGame(s => s.quickSellRate)
-  const bulk = raw.filter(c => !c._isHit)
+  // "Bulk" by live attributes (raw, unfoiled, below the hit threshold) — matches the
+  // store's isBulkCard exactly, so the button counts/value reflect what actually sells
+  // and never sweeps a MEGA_ATTACK / SIR / foil that happens to lack the _isHit flag.
+  const bulk = collection.filter(isBulkCard)
   const bulkVal = bulk.reduce((a, c) => a + cardValue(c) * quickSellRate, 0)
-  const buylistBulk = raw.filter(c => !c._isHit && !c.foil && rarityRank(c.rarity) < rarityRank('Double Rare'))
+  const buylistBulk = bulk
   const buylistVal = buylistBulk.reduce((a, c) => a + cardValue(c) * buylistRate, 0)
 
   function flash(m) { setToast(m); setTimeout(() => setToast(null), 2800) }

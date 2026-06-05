@@ -610,6 +610,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, var(--panel), var(--panel2));
     border-top: 1px solid var(--line); box-shadow: 0 -6px 24px #0007;
+    /* Pin it to its own GPU layer. Without this, iOS Safari repaints a plain
+       fixed bar against stale scroll offsets during momentum scrolling — the bar
+       appears to drift up the page and "stick" mid-scroll before snapping back.
+       Promoting to a composited layer makes it track the visual viewport. */
+    transform: translateZ(0); -webkit-transform: translateZ(0);
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    will-change: transform;
   }
   .bnav-btn {
     flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;

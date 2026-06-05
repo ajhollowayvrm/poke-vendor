@@ -232,6 +232,26 @@ function psaComps(row) {
   return Object.keys(out).length ? out : null
 }
 
+// eBay sold-comps are sparse and noisy: a low-volume grade can post a median sale
+// BELOW the raw card or below a worse grade. Those are nonsensical (grading only
+// adds value, and a higher grade beats a lower one). Drop any comp that violates
+// monotonicity — leaving it absent lets the game floor it to raw/the next grade
+// down, rather than baking a bogus "PSA 10 < raw" number into the data.
+// Returns a cleaned comp object (or null if nothing survives).
+function sanitizePsa(psa, price) {
+  if (!psa) return null
+  const raw = price ?? 0
+  const out = {}
+  let prev = raw // running floor: raw, then each accepted lower grade
+  for (let g = 1; g <= 10; g++) {
+    const v = psa[String(g)]
+    if (v == null) continue
+    if (v >= prev) { out[g] = v; prev = v } // keep only monotonic, ≥ raw comps
+    // else: drop it (the game will floor this grade to `prev` at runtime)
+  }
+  return Object.keys(out).length ? out : null
+}
+
 // Build one English set from pokemon-api.com: page cards, dedupe to one per collector
 // number (the API lists each card as several identical rows — same tcgid/rarity, differing
 // only by internal id; NOT finish variants), emit a slim card + PSA comps + sealed products.
@@ -253,8 +273,9 @@ async function fetchEnglishSet(cfg) {
     // representative = the row that actually carries pricing (some dup rows are bare).
     const base = group.find(r => r.prices?.tcg_player?.market_price != null || r.prices?.ebay?.graded?.psa)
       || group[0]
-    const psa = psaComps(base) || group.map(psaComps).find(Boolean) || null
-    const price = rowUSD(base, psa)
+    const rawPsa = psaComps(base) || group.map(psaComps).find(Boolean) || null
+    const price = rowUSD(base, rawPsa) // price may use PSA-9 as a proxy → compute first
+    const psa = sanitizePsa(rawPsa, price) // then drop any sub-raw / non-monotonic grade
     const card = {
       id: base.tcgid || `${cfg.id}-${num}`, // tcgid = pokemontcg.io id → keeps id-keyed logic working
       name: base.name,

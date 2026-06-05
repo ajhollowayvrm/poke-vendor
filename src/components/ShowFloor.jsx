@@ -5,6 +5,7 @@ import { openPack, rarityRank, cardValue, fmtMoney, SHOP_SETS as SETS, VINTAGE_S
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
+import CardTile from './CardTile'
 
 const TILE = 52
 const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
@@ -19,7 +20,9 @@ const HYPE = ['just hit a', 'PULLED a', 'cracked a', 'opened a', 'just ripped a'
 export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
   const upgrades = useGame(s => s.upgrades)
+  const showInventory = useGame(s => s.showInventory)
   const tier = SHOW_TIERS[show.tierKey]
+  const [showTable, setShowTable] = useState(false) // peek at your booth inventory
 
   const [showDay, setShowDay] = useState(1) // which day of the multi-day show we're on
   const booths = useMemo(() => generateBooths(show, notoriety, showDay - 1), [show, notoriety, showDay])
@@ -120,7 +123,8 @@ export default function ShowFloor({ show, onLeave }) {
       const notoBonus = Math.min(0.5, notoriety / 300)
       const chance = Math.min(0.85, 0.12 * tier.traffic * (1 + notoBonus))
       if (Math.random() < chance) {
-        const enc = boothEncounter(notoriety, useGame.getState().collection, 'show', accepted)
+        // Floor buyers only shop your SHOW INVENTORY — the cards you brought to sell.
+        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted)
         if (upgrades.ticker) { setBoothAlert(enc); lastEncounterRef.current = Date.now(); walkupsRef.current++ }
         else if (atPlayerBooth(pos, playerAt)) { setEncounter({ enc, atBooth: true }); lastEncounterRef.current = Date.now(); walkupsRef.current++ }
       }
@@ -186,7 +190,7 @@ export default function ShowFloor({ show, onLeave }) {
 
   function triggerPlayerBooth() {
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
-    const enc = boothEncounter(notoriety, useGame.getState().collection, 'show', accepted)
+    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted)
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now()
   }
@@ -219,6 +223,11 @@ export default function ShowFloor({ show, onLeave }) {
           </button>
         )}
         <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>Notoriety {Math.round(notoriety)}</span>
+        <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
+          title="The cards you brought to sell at your booth"
+          onClick={() => setShowTable(true)}>
+          🪧 Your table ({showInventory.length})
+        </button>
       </div>
 
       {boothAlert && (
@@ -298,6 +307,31 @@ export default function ShowFloor({ show, onLeave }) {
           <div className="modal vault-rip-modal" style={{ maxWidth: 980 }}>
             <div className="vault-ribbon">🗝️ VINTAGE VAULT — {vaultRip.product.name}</div>
             <PackOpening set={vaultRip.set} product={vaultRip.product} singleNoReRip onExit={() => setVaultRip(null)} />
+          </div>
+        </div>
+      )}
+
+      {showTable && (
+        <div className="modalbg" onClick={() => setShowTable(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
+            <div className="row" style={{ alignItems: 'baseline' }}>
+              <h2 style={{ marginRight: 'auto' }}>🪧 Your table</h2>
+              <span className="pill">{showInventory.length} card{showInventory.length === 1 ? '' : 's'} · {fmtMoney(showInventory.reduce((a, c) => a + cardValue(c), 0))}</span>
+            </div>
+            <p className="muted" style={{ marginTop: 2 }}>
+              Shoppers who walk up to your booth buy from these. Buy a card from a vendor and choose
+              "List it at your booth" to add more. Unsold cards come home when you leave.
+            </p>
+            {showInventory.length === 0 ? (
+              <div className="empty">Nothing on your table yet — buy from a vendor and list it here, or sell from your collection to other vendors.</div>
+            ) : (
+              <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', marginTop: 6 }}>
+                {[...showInventory].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
+                  <CardTile key={c.uid} card={c} interactive={false} />
+                ))}
+              </div>
+            )}
+            <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={() => setShowTable(false)}>Close</button>
           </div>
         </div>
       )}

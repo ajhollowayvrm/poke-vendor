@@ -69,13 +69,24 @@ function RegularBooth({ booth, onClose, flash, haggledIds, onHaggled }) {
   const [stock, setStock] = useState(booth.stock)
   const [tab, setTab] = useState('buy')
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
+  // After agreeing a buy, ask whether to list it at the show or take it home.
+  const [pendingBuy, setPendingBuy] = useState(null) // { card, price }
 
   const seeDeals = upgrades.network
 
+  // A buy is agreed (at ask or via haggle) → ask where it goes before committing.
   function buyAt(card, price) {
-    if (buyFromVendor(card, price)) {
+    setPendingBuy({ card, price })
+  }
+  // Commit the agreed buy. `toShowInventory` lists it for sale at your booth;
+  // otherwise it goes home to your collection.
+  function commitBuy(toShowInventory) {
+    const { card, price } = pendingBuy
+    setPendingBuy(null)
+    if (buyFromVendor(card, price, { toShowInventory })) {
       setStock(s => s.filter(c => c.uid !== card.uid))
-      flash(`Bought ${card.name} for ${fmtMoney(price)}${price < cardValue(card)*0.85 ? ' — great deal!' : ''}`)
+      const deal = price < cardValue(card) * 0.85 ? ' — great deal!' : ''
+      flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${toShowInventory ? ' · listed at your booth' : ' · added to your collection'}`)
     }
   }
   function sellAt(card, price) {
@@ -174,6 +185,29 @@ function RegularBooth({ booth, onClose, flash, haggledIds, onHaggled }) {
             setHaggle(null)
           }}
         />
+      )}
+
+      {pendingBuy && (
+        <div className="modalbg" style={{ zIndex: 20 }} onClick={() => setPendingBuy(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 380, textAlign: 'center' }}>
+            <h3 style={{ marginTop: 0 }}>Bought {pendingBuy.card.name}</h3>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+              for {fmtMoney(pendingBuy.price)} · market {fmtMoney(cardValue(pendingBuy.card))}.
+              What do you want to do with it?
+            </p>
+            <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
+              <button className="btn gold" onClick={() => commitBuy(true)}>
+                🪧 List it at your booth — sell it here
+              </button>
+              <button className="btn alt" onClick={() => commitBuy(false)}>
+                🗂️ Keep it in your collection
+              </button>
+            </div>
+            <p className="muted" style={{ fontSize: 11, marginTop: 10 }}>
+              Listed cards are offered to shoppers at your table; unsold ones come home when you leave.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   )

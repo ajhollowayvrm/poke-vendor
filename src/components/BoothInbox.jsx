@@ -33,9 +33,15 @@ export default function BoothInbox() {
   const validInbox = useMemo(
     () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings)),
     [inbox, collection, listings])
+  const consignments = useGame(s => s.consignments)
   const [active, setActive] = useState(null) // {enc, idx}
   const [wantPick, setWantPick] = useState(null) // a want being fulfilled
   const [toast, setToast] = useState(null)
+  // Sell splits into two sub-tabs: day-to-day Orders, and the cards you've put
+  // On the market (listings + consignments) — the latter used to push the orders
+  // way down the page, so it gets its own tab.
+  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'market'
+  const marketCount = listings.length + consignments.length
 
   const hasStore = !!upgrades.storefront
   const accepted = acceptedMethods(upgrades)
@@ -50,10 +56,23 @@ export default function BoothInbox() {
 
   return (
     <>
-      {/* Cards in-transit: listed on your own site / consigned (moved here from
-          Collection so the storefront's selling activity lives in one place). */}
-      <SellStrips />
+      <div className="subtabs">
+        <button className={`subtab ${sellTab === 'orders' ? 'active' : ''}`} onClick={() => setSellTab('orders')}>
+          📨 Orders{validInbox.length ? ` (${validInbox.length})` : ''}
+        </button>
+        <button className={`subtab ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>
+          🌐 On the market{marketCount ? ` (${marketCount})` : ''}
+        </button>
+      </div>
 
+      {sellTab === 'market' ? (
+        // Cards you've put up for sale: listed on your own site / consigned. Moved to
+        // its own tab so a long listings panel doesn't bury the day-to-day orders.
+        (listings.length || consignments.length)
+          ? <SellStrips />
+          : <div className="empty">Nothing on the market. List or consign cards from your collection (Cards → Select) to sell them here. 🌐</div>
+      ) : (
+      <>
       <div className="banner" style={{ marginTop: 16 }}>
         {hasStore
           ? <>🏬 You run a brick-and-mortar shop <b>and</b> sell online. Each day brings orders & walk-ins, scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
@@ -150,6 +169,9 @@ export default function BoothInbox() {
           })}
         </div>
       )}
+      </>
+      )}
+
       {toast && <div className="toast">{toast}</div>}
       {active && <Encounter data={active.enc} onPick={pick} />}
 

@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SETS, rarityRank, VINTAGE_SETS, vintageProduct } from './engine'
+import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -372,6 +372,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   // 4) Generic browse → small sale chance
   const visitor = visitorFor(channel, 'browse')
   const pay = pickPayMethod(channel, accepted)
+  // At a SHOW, a browse-sale pulls from your show table (show inventory), not your
+  // whole collection — the store resolves browseSale against showInventory when set.
+  const fromShow = channel === 'show'
   return {
     kind: 'browse',
     title: online ? `${cap(visitor)} is scrolling your listings` : `${cap(visitor)} stops to browse your case`,
@@ -379,9 +382,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     card: null,
     options: [
       { text: online ? 'Send a friendly note + deal' : 'Give them a warm welcome', tone: 'kind',
-        effect: { type: 'browseSale', payMethod: pay, chance: 0.5 + Math.min(0.4, notoriety/200), notoriety: 1, msg: 'Friendliness pays off.' } },
+        effect: { type: 'browseSale', fromShow, payMethod: pay, chance: 0.5 + Math.min(0.4, notoriety/200), notoriety: 1, msg: 'Friendliness pays off.' } },
       { text: online ? 'Let them browse' : 'Let them browse in peace', tone: 'fair',
-        effect: { type: 'browseSale', payMethod: pay, chance: 0.3, notoriety: 0, msg: 'They look around quietly.' } },
+        effect: { type: 'browseSale', fromShow, payMethod: pay, chance: 0.3, notoriety: 0, msg: 'They look around quietly.' } },
     ],
   }
 }
@@ -420,7 +423,10 @@ export function makeWant(rich = false) {
   const daysLeft = 4 + Math.floor(Math.random() * 6) // 4–9 days to fill
   // 55% named card, 45% "any rarity from set"
   if (Math.random() < 0.55) {
-    const all = SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) > (rich ? 8 : 1)))
+    // Only ever name cards the player can actually OBTAIN — i.e. non-vintage sets sold
+    // in the shop. Vintage sets (Skyridge, Legendary Collection, Neo…) surface only via
+    // the rare Vintage Vault pack, so a want for one would be effectively unfulfillable.
+    const all = SHOP_SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) > (rich ? 8 : 1)))
     const card = wpick(all)
     const premium = 1.25 + Math.random() * (rich ? 0.6 : 0.3) // 1.25–1.85×
     return {
@@ -432,7 +438,7 @@ export function makeWant(rich = false) {
       desc: `${cap(who)} wants a ${card.name}`,
     }
   }
-  const set = wpick(SETS)
+  const set = wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
   const rar = wpick(WANT_RARITIES)
   const premium = 1.2 + Math.random() * (rich ? 0.4 : 0.25)
   return {

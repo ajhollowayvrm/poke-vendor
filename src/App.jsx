@@ -13,6 +13,7 @@ import UpgradeShop from './components/UpgradeShop'
 import BoothInbox from './components/BoothInbox'
 import Settings from './components/Settings'
 import PriceGuide from './components/PriceGuide'
+import ShowPrep from './components/ShowPrep'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 
@@ -29,6 +30,7 @@ export default function App() {
   const [settingsPane, setSettingsPane] = useState('settings') // Settings tab sub-pane: settings | stats
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
+  const [preppingShow, setPreppingShow] = useState(null) // show selected; picking which cards to bring
   const [activeShow, setActiveShow] = useState(null) // show being attended
   const cash = useGame(s => s.cash)
   const spend = useGame(s => s.spend)
@@ -52,6 +54,9 @@ export default function App() {
       if (showAway && summary && summary.days >= 1) setAwaySummary(summary)
     }
     pump(true) // mount: catch up offline time and surface a summary
+    // If the page was reloaded while a show was open, the floor view (React state) is
+    // gone but show-inventory cards may still be stranded on the table — bring them home.
+    if ((useGame.getState().showInventory || []).length) useGame.getState().endShow()
     const id = setInterval(() => pump(false), 1000)
     const onVis = () => { if (document.visibilityState === 'visible') pump(true) }
     document.addEventListener('visibilitychange', onVis)
@@ -84,35 +89,53 @@ export default function App() {
     alert(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
+  // Selecting a show opens the prep screen (pick which cards to bring to sell).
+  // No money/days are spent until you confirm in prep — backing out is free.
   function attendShow(show) {
     const tier = SHOW_TIERS[show.tierKey]
     if (useGame.getState().cash < tier.entryFee) return alert('Not enough cash for the entry fee!')
-    // Confirm before committing: attending charges the fee and burns days immediately
-    // (and any home orders during those days are missed without a Smartphone). Easy to
-    // fat-finger on the portrait/mobile layout, so make it deliberate.
-    const noPhone = !useGame.getState().upgrades.smartphone
-    const ok = window.confirm(
-      `Attend ${show.name}?\n\n` +
-      `• Entry fee: $${tier.entryFee}\n` +
-      `• Passes ${tier.days} day${tier.days > 1 ? 's' : ''} (you'll skip any other shows in that window)` +
-      (noPhone ? `\n• ⚠️ Online orders during the show will be MISSED (no 📱 Smartphone)` : `\n• 📱 Online orders will still be handled while you're away`)
-    )
-    if (!ok) return
-    if (!spend(tier.entryFee)) return alert('Not enough cash for the entry fee!')
+    setPreppingShow(show)
+  }
+
+  // Confirmed from the prep screen with the chosen card uids: charge the fee, move
+  // the picked cards onto your show table, advance the calendar past the show, enter.
+  function enterShow(show, uids) {
+    const tier = SHOW_TIERS[show.tierKey]
+    if (!spend(tier.entryFee)) { setPreppingShow(null); return alert('Not enough cash for the entry fee!') }
+    useGame.getState().bringToShow(uids || [])
     useGame.getState().log('show', `Attended ${show.name} (${tier.days}d)`, -tier.entryFee)
     // advance the calendar past the show — consumes its days, skipping overlaps
     useGame.getState().attendShowDays(show.day, tier.days)
+    setPreppingShow(null)
     setActiveShow(show)
+  }
+
+  // Leaving the show: unsold show-inventory cards come back home, then exit the floor.
+  function leaveShow() {
+    useGame.getState().endShow()
+    setActiveShow(null)
   }
 
   // Switch tabs — also bail out of an in-progress pack rip so the new tab renders.
   function selectTab(t) { setRipping(null); setTab(t) }
 
+  // Prepping for a show: the pick-your-inventory screen takes over the whole view.
+  if (preppingShow) {
+    return (
+      <div className="app">
+        <ShowPrep show={preppingShow}
+          onConfirm={(uids) => enterShow(preppingShow, uids)}
+          onCancel={() => setPreppingShow(null)} />
+        {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+      </div>
+    )
+  }
+
   // If attending a show, the floor takes over the whole view.
   if (activeShow) {
     return (
       <div className="app">
-        <ShowFloor show={activeShow} onLeave={() => setActiveShow(null)} />
+        <ShowFloor show={activeShow} onLeave={leaveShow} />
         {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
       </div>
     )
