@@ -170,6 +170,21 @@ const SET_RATES = {
       { rarity: 'Mega Hyper Rare',           p: 0.0008 }, // the grail — 1 in 1260
     ],
   },
+  // Mega Evolution (me1) — official TCGplayer pull rates (5,000+ packs). The set that
+  // introduced the Mega Hyper Rare (replacing Hyper Rare); two grails (Mega Lucario ex /
+  // Mega Gardevoir ex) at a brutal 1 in 1260 packs combined. Source: TCGplayer Infinite,
+  // "Mega Evolution Pull Rates" (Sep 2025).
+  me1: {
+    rare: [
+      { rarity: 'Double Rare', p: 0.2091 },  // 1 in 5
+      { rarity: 'Ultra Rare',  p: 0.0823 },  // 1 in 12
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.1089 }, // 1 in 9
+      { rarity: 'Special Illustration Rare', p: 0.0099 }, // 1 in 101
+      { rarity: 'Mega Hyper Rare',           p: 0.0008 }, // 2 grails — 1 in 1260
+    ],
+  },
   // Prismatic Evolutions — SIRs ~2× normal; DR 1-in-6.1, UR 1-in-13.4, Hyper 1-in-178.6.
   // Poké Ball foil ~1 in 3, Master Ball ~1 in 19. God pack ~1 in 2,500.
   // Sources: thepricedex.com/set/sv8pt5, TCGplayer, PokeBeach.
