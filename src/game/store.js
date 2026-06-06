@@ -757,7 +757,7 @@ export const useGame = create(persist((set, get) => ({
   // Quick sell (TCGplayer-style): instant cash, but well below market — you pay a steep
   // premium for the convenience. Liquidating your collection to make rent is a real loss,
   // not a soft cushion. Listing on your own site (below) can match or beat market.
-  quickSellRate: 0.65,
+  quickSellRate: 0.50,
   quickSell(uid) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return
@@ -1693,6 +1693,10 @@ export const useGame = create(persist((set, get) => ({
       // day-tick / mount rolls a fresh weekly set keyed off the absolute day.
       state.dailyGoals = []
       state.goalsDay = 0
+      // Quick-sell nerf: instant no-effort dumping was paying 65% of market, too close to
+      // properly listing. Drop to 50% (just above the 45% buylist) so it's a convenience
+      // tax — listing/consigning should clearly beat it. Balance constant, push onto saves.
+      state.quickSellRate = 0.50
     }
     return state
   },
