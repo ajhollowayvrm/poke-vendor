@@ -4,6 +4,23 @@ import data from '../data/sets.json'
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
 
+// Card art lives on a remote CDN, so a just-pulled card can pop in slowly mid-reveal.
+// Warm the browser cache the instant a pack is opened (or about to be), so by the time
+// the reveal animation reaches each card its image is already downloaded + decoded.
+// Cheap and idempotent — the browser dedupes repeat requests. No-op outside the browser.
+const _imgWarmed = new Set()
+export function preloadCardImages(cards) {
+  if (typeof Image === 'undefined' || !cards) return
+  for (const c of cards) {
+    const url = c?.img
+    if (!url || _imgWarmed.has(url)) continue
+    _imgWarmed.add(url)
+    const img = new Image()
+    img.decoding = 'async'
+    img.src = url
+  }
+}
+
 // Sets sold in the normal shop (excludes `vintage` sets, which only appear via the
 // rare "Vintage Vault" vendor at higher-tier shows).
 export const SHOP_SETS = data.sets.filter(s => !s.vintage)
@@ -514,11 +531,14 @@ export function cardValue(card) { return card.grade ? gradedValue(card) : rawVal
 //  • shark   — hunting deals; only bites at/under market, and may lowball
 // `tolerance` = the ask-multiple (× market) at which this buyer will still buy at ask.
 // `weight` = how common this buyer type is in the browsing pool.
+// Tuned so RAW singles listed AT market (1.0×) rarely clear — most buyers want a discount,
+// so the reliable sweet spot for raw cards is ~85% of market. Graded slabs and hot cards
+// claw back above market via cardDesirability's desireLift, so they can list near/at market.
 export const BUYER_SAVVY = {
-  casual:  { label: 'Casual buyer',  icon: '🙂', tolerance: 1.45, weight: 0.34 },
-  average: { label: 'Average buyer', icon: '🧑', tolerance: 1.18, weight: 0.40 },
-  sharp:   { label: 'Sharp buyer',   icon: '🤓', tolerance: 1.02, weight: 0.20 },
-  shark:   { label: 'Deal shark',    icon: '🦈', tolerance: 0.90, weight: 0.06 },
+  casual:  { label: 'Casual buyer',  icon: '🙂', tolerance: 1.05, weight: 0.34 },
+  average: { label: 'Average buyer', icon: '🧑', tolerance: 0.90, weight: 0.40 },
+  sharp:   { label: 'Sharp buyer',   icon: '🤓', tolerance: 0.80, weight: 0.20 },
+  shark:   { label: 'Deal shark',    icon: '🦈', tolerance: 0.68, weight: 0.06 },
 }
 const SAVVY_KEYS = Object.keys(BUYER_SAVVY)
 
@@ -556,7 +576,7 @@ export function buyerMaxMult(savvyKey, notoriety, card, rnd = Math.random) {
 // Expected number of shoppers who browse a listing per game-day. More with fame and
 // desirability; fair prices pull a few more eyes than wildly overpriced ones (which
 // still get looked at — and passed on). Floors at a trickle so something always happens.
-// `boost` multiplies the eyes (e.g. a Tweet's hype window pulls Twitter mutuals in).
+// `boost` multiplies the eyes (e.g. a recent livestream's afterglow pulls extra shoppers in).
 export function dailyViewers(card, askMult, notoriety, rnd = Math.random, boost = 1) {
   const fame = 0.6 + Math.min(2.6, notoriety / 60)        // ~0.6 at noto 0 → ~3.2 high
   const desire = cardDesirability(card)

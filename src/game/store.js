@@ -93,7 +93,6 @@ export const PAYMENT_METHODS = {
   cash:   { name: 'Cash',              short: 'Cash',    icon: '💵', viaUpgrade: 'storefront', feePct: 0,     feeFlat: 0 },
   paypal: { name: 'PayPal',            short: 'PayPal',  icon: '🅿️', viaUpgrade: 'payPaypal', feePct: 0.029, feeFlat: 0.30 },
   card:   { name: 'Credit/Debit Cards', short: 'Cards',  icon: '💳', viaUpgrade: 'payCard',   feePct: 0.029, feeFlat: 0.30 },
-  tap:    { name: 'Tap To Pay',        short: 'Tap',     icon: '📲', viaUpgrade: 'payTap',     feePct: 0.026, feeFlat: 0.10 },
 }
 
 // Which payment methods can the player currently accept?
@@ -158,25 +157,47 @@ function makeDailyGoals(noto) {
     }
   })
 }
-// Per-day probability that a home order arrives on each channel.
-// Flat & sparse early (a fresh vendor barely gets orders), ramping with
-// notoriety toward a cap. e.g. online: ~0.08/day at noto 0 → ~0.85 at noto 200.
+// Notoriety you must earn before strangers seek YOU out with unsolicited orders. Below
+// this you're a nobody — nobody DMs you to buy. Your early-game demand is the public
+// FORUM (people posting what they want; you go find/rip it). See FORUM_* + forumPosts.
+export const INBOUND_NOTORIETY_GATE = 12
+// Per-day probability that an unsolicited home order arrives on each channel. Zero until
+// you've made a name (INBOUND_NOTORIETY_GATE), then ramps from a sparse floor toward a cap.
+// e.g. online: 0 below the gate → ~0.10/day just past it → ~0.85 at noto 200.
 export function dayOrderChance(channel, notoriety) {
-  const floor = channel === 'online' ? 0.08 : 0.04 // chance at notoriety 0
+  if (notoriety < INBOUND_NOTORIETY_GATE) return 0 // unknown vendor → no inbound; use the forum
+  const floor = channel === 'online' ? 0.10 : 0.06 // chance just past the gate
   const cap   = channel === 'online' ? 0.85 : 0.65
-  const ramp  = Math.min(1, notoriety / 200)        // 0→1 across the fame curve
+  const ramp  = Math.min(1, (notoriety - INBOUND_NOTORIETY_GATE) / 200) // 0→1 across the fame curve
   return floor + (cap - floor) * ramp
 }
+// --- Forum (public wanted-ads board) ----------------------------------------
+// Anyone can post "WTB <card>" on the community forum, and anyone can fill it — it's
+// the early-game demand engine before you have a name (when no unsolicited orders come).
+// You browse the board, go rip/buy the card, then fulfill the post for an above-market
+// premium (it reuses the want shape, so cardMatchesWant/premiumMult apply). Posts expire.
+const FORUM_MAX_POSTS = 6          // how many open WTB posts the board holds at once
+const FORUM_REFILL_CHANCE = 0.7    // per game-day chance a fresh post appears (if under cap)
+// Drift the forum board forward `days`: age out expired posts, top up toward the cap.
+// Reuses makeWant() for the post shape (kind/cardId/rarity/premiumMult/daysLeft/who).
+function tickForum(posts, days, noto) {
+  let board = (posts || []).map(p => ({ ...p, daysLeft: p.daysLeft - days })).filter(p => p.daysLeft > 0)
+  for (let i = 0; i < days && board.length < FORUM_MAX_POSTS; i++) {
+    if (Math.random() < FORUM_REFILL_CHANCE) board = [{ ...makeWant(noto >= 120), forum: true }, ...board]
+  }
+  return board
+}
+
 // After this many days drawing browsers with zero buyers/offers, a listing goes
 // STALE (almost certainly priced too high) — flagged in the UI so you reprice/pull.
 const LISTING_STALE_DAYS = 7
-// Tweeting a listing: a hype window of extra eyes (Twitter mutuals) for a few days.
-export const TWEET_HYPE_DAYS = 3
-const TWEET_BOOST = 2.2          // viewer multiplier while the hype window is live
-const TWEET_NOTORIETY = 2        // one-time rep bump for posting
+// Even when a browsing buyer COULD afford your ask, a sale isn't guaranteed that day —
+// they mull it, compare, come back. A listing has at most this chance to actually close
+// per game-day, so listing is the patient path (quick-sell is the instant-but-worst one).
+const LISTING_DAILY_SELL_CAP = 0.5
 
 // Going live pumps your whole storefront for a few days after: every listing draws
-// far more eyes (stream viewers who came to shop). Bigger + longer than a Tweet.
+// far more eyes (stream viewers who came to shop).
 export const STREAM_HYPE_DAYS = 4
 const STREAM_BOOST = 3.0         // listing viewer multiplier while a stream's afterglow is live
 let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this module's hot paths)
@@ -221,7 +242,7 @@ function driftMarket(mults, history, days, log) {
 // max → a chance they leave a lower OFFER you can accept/decline. Otherwise they pass.
 // Returns { listings, soldProceeds, sold:[{name,net,savvy}], newOffers, staleNow:[names] }.
 // `streamBoostDays` = how many of the first `days` fall inside a live stream-hype
-// window (a recent stream pumps EVERY listing's traffic, not just tweeted ones).
+// window (a recent stream pumps EVERY listing's traffic).
 function tickListings(listings, days, noto, streamBoostDays = 0) {
   let soldProceeds = 0
   const sold = []
@@ -234,25 +255,26 @@ function tickListings(listings, days, noto, streamBoostDays = 0) {
     let cur = { ...l, offers: [...(l.offers || [])] }
     let didSell = false
     for (let day = 0; day < days && !didSell; day++) {
-      // Tweet hype: extra eyes (Twitter mutuals) while the per-listing window is open.
-      const hyped = (cur.hypeDaysLeft || 0) > 0
       // Stream afterglow: a recent live stream pumps ALL listings for its window.
       const streamed = day < streamBoostDays
-      const boost = Math.max(hyped ? TWEET_BOOST : 1, streamed ? STREAM_BOOST : 1)
+      const boost = streamed ? STREAM_BOOST : 1
       const viewers = dailyViewers(cur.card, cur.askMult, noto, Math.random, boost)
       cur.views += viewers
       for (let v = 0; v < viewers; v++) {
-        // While hyped, a chunk of the extra traffic is Twitter mutuals (flavor on the sale).
-        const mutual = hyped && Math.random() < 0.4
         const savvy = rollBuyerSavvy()
         const max = buyerMaxMult(savvy, noto, cur.card)
-        const label = mutual ? 'Twitter mutual' : BUYER_SAVVY[savvy].label
+        const label = BUYER_SAVVY[savvy].label
         if (cur.askMult <= max) {
-          // willing to pay the ask → sale at your price (net of fee)
-          soldProceeds = round2(soldProceeds + cur.net)
-          sold.push({ name: cur.card.name, net: cur.net, savvy: label })
-          didSell = true
-          break
+          // They CAN afford the ask — but a sale still isn't a sure thing. They mull it over;
+          // a listing closes at most LISTING_DAILY_SELL_CAP per day, so even a fair price
+          // takes a day or two (and an over-market ask leans on the rare casual who bites).
+          if (Math.random() < LISTING_DAILY_SELL_CAP) {
+            soldProceeds = round2(soldProceeds + cur.net)
+            sold.push({ name: cur.card.name, net: cur.net, savvy: label })
+            didSell = true
+            break
+          }
+          continue // willing, but walked today — maybe tomorrow
         }
         // just over their max → occasional lowball offer at what they'd pay.
         // Sharks lowball most; casuals rarely bother. Cap standing offers at 3.
@@ -261,12 +283,11 @@ function tickListings(listings, days, noto, streamBoostDays = 0) {
           const market = cardValue(cur.card)
           const amount = round2(market * max)
           const fee = round2(amount * 0.05)
-          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: label, icon: mutual ? '🐦' : BUYER_SAVVY[savvy].icon })
+          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: label, icon: BUYER_SAVVY[savvy].icon })
           newOffers++
         }
       }
       cur.age = (cur.age || 0) + 1
-      if (cur.hypeDaysLeft > 0) cur.hypeDaysLeft -= 1
     }
     if (didSell) continue // sold → drops off the board
     // mark stale if it's drawn plenty of eyes over enough days with no traction
@@ -376,6 +397,8 @@ function advanceDaysWith(set, get, days, away) {
   for (let i = 0; i < days && wants.length < maxWants; i++) {
     if (Math.random() < wantChancePerDay) wants = [makeWant(noto >= 120), ...wants]
   }
+  // Forum: the public WTB board refills over the days passed (your early-game demand).
+  const forumPosts = tickForum(s.forumPosts, days, noto)
   // Living market: drift every set's price multiplier across the days passed; a hype
   // or crash event may fire on a set (logged below so the player feels the market move).
   const market = driftMarket(s.marketMults, s.marketHistory, days, get().log)
@@ -388,6 +411,7 @@ function advanceDaysWith(set, get, days, away) {
     supplyChannel: remainingSupply,
     listings: remainingListings,
     wantList: wants,
+    forumPosts,
     dailyGoals: makeDailyGoals(noto), // fresh goals each new day
     goalsDay: d,
     job: activeJob,        // a pending job may have started during these days
@@ -505,12 +529,17 @@ export const UPGRADES = {
   // Payment rails — each its own setup. Capture buyers who won\'t use Venmo.
   payPaypal: { name: 'Accept PayPal',            cost: 120,  desc: 'Take PayPal — a huge share of online buyers prefer it.', icon: '🅿️', group: 'payment' },
   payCard:   { name: 'Accept Credit/Debit Cards', cost: 400,  desc: 'A card reader / merchant account so buyers can pay by card. Captures the most sales.', icon: '💳', group: 'payment' },
-  payTap:    { name: 'Tap To Pay',               cost: 250,  desc: 'Contactless tap-to-pay — fast checkout that closes impulse in-person sales.', icon: '📲', group: 'payment' },
 
   // Remote-management: keep the home shop earning while you're away at a show.
-  smartphone: { name: 'Smartphone', cost: 600, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show.', icon: '📱' },
+  // A modern smartphone fields online orders AND has contactless (tap) payments built in.
+  smartphone: { name: 'Smartphone', cost: 1000, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show. Has contactless tap-to-pay built in.', icon: '📱' },
   streaming:  { name: 'Streaming Setup', cost: 900, desc: 'Camera, lights & capture card. Go LIVE and rip product on stream — viewers tune in, react, and tip, and a hot stream pumps your notoriety and listing traffic. Unlocks box breaks.', icon: '🔴' },
   staff:      { name: 'Shop Assistant', cost: 2500, desc: 'Hire staff to mind the store. WALK-IN customers are handled while you\'re at a show. Requires a Brick-and-Mortar Store.', icon: '🧑‍💼', needs: 'storefront' },
+
+  // Vendor setup: a table, banner, display kit + dealer paperwork. A one-time buy that
+  // lets you VEND at shows — book a booth and sell your own cards on the floor. Without
+  // it you can only attend a show as a shopper (walk the floor and buy).
+  vendorSetup: { name: 'Vendor Setup', cost: 1200, desc: 'A folding table, display case, banner & dealer paperwork. Lets you book a BOOTH at shows to sell your own cards (pay a per-show vendor fee). Without it, you can only attend to shop.', icon: '🎪' },
 
   signage:  { name: 'Eye-Catching Signage', cost: 150,  desc: '+15% foot traffic (shows, and your store if open).', icon: '🪧' },
   cases:    { name: 'Glass Display Cases',  cost: 500,  desc: 'Offers on your cards come in ~12% higher.', icon: '🗄️' },
@@ -558,7 +587,8 @@ export const useGame = create(persist((set, get) => ({
   showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
   shopDisplay: [],         // cards on your STORE shelf — walk-in customers only buy/offer on these (you choose what to put out). Needs a storefront.
   supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
-  wantList: [],            // active collector wants (see want-list section)
+  wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
+  forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
   // Real-time clock: epoch ms of the last processed day boundary. The world advances 1 day
@@ -732,20 +762,17 @@ export const useGame = create(persist((set, get) => ({
 
   // List a card on your own site at `askMult`× market. Removes it from the
   // collection and puts it on the market, where browsing customers decide whether
-  // to buy (see tickListings). `views`/`offers` accrue as days pass. `tweet` posts
-  // it for a hype window of extra Twitter-mutual eyes (+notoriety).
-  listOnSite(uid, askMult, tweet = false) {
+  // to buy (see tickListings). `views`/`offers` accrue as days pass.
+  listOnSite(uid, askMult) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return false
     const q = get().listingQuote(card, askMult)
-    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0,
-      tweeted: !!tweet, hypeDaysLeft: tweet ? TWEET_HYPE_DAYS : 0 }
+    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
     set(s => ({
       collection: s.collection.filter(c => c.uid !== uid),
       listings: [...(s.listings || []), listing],
     }))
-    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)${tweet ? ' · 🐦 tweeted' : ''}`, 0)
-    if (tweet) { get().addNotoriety(TWEET_NOTORIETY); get().log('tweet', `Tweeted your ${card.name} listing — Twitter mutuals are watching (+${TWEET_NOTORIETY}★)`, 0) }
+    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)`, 0)
     return q
   },
 
@@ -938,22 +965,20 @@ export const useGame = create(persist((set, get) => ({
     return total
   },
   // List every selected card on your site at the same askMult (each rolls its own
-  // sell/expire outcome). `tweet` posts the batch for a hype window. Returns the count.
-  listManyOnSite(uids, askMult, tweet = false) {
+  // sell/expire outcome). Returns the count.
+  listManyOnSite(uids, askMult) {
     const ids = new Set(uids)
     const cards = get().collection.filter(c => ids.has(c.uid))
     if (!cards.length) return 0
     const newListings = cards.map(card => {
       const q = get().listingQuote(card, askMult)
-      return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0,
-        tweeted: !!tweet, hypeDaysLeft: tweet ? TWEET_HYPE_DAYS : 0 }
+      return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
     })
     set(s => ({
       collection: s.collection.filter(c => !ids.has(c.uid)),
       listings: [...(s.listings || []), ...newListings],
     }))
-    get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market${tweet ? ' · 🐦 tweeted' : ''}`, 0)
-    if (tweet) { get().addNotoriety(TWEET_NOTORIETY); get().log('tweet', `Tweeted your listings — Twitter mutuals are watching (+${TWEET_NOTORIETY}★)`, 0) }
+    get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market`, 0)
     return cards.length
   },
   // Consign every selected card (each sells in 2–6 days for a bit above market −12%).
@@ -989,6 +1014,29 @@ export const useGame = create(persist((set, get) => ({
     get().earn(payout)
     get().addNotoriety(want.notoriety)
     get().log('want', `Filled ${want.who}'s want with ${card.name} (+${Math.round(want.premiumMult*100)}% premium)`, payout)
+    get().bumpGoal('want', 1)
+    return { payout }
+  },
+
+  // --- Forum (public WTB board) ------------------------------------------------
+  // Which of your owned cards satisfy a forum post? (same matcher as wants)
+  cardsForForumPost(post) { return get().collection.filter(c => cardMatchesWant(c, post)) },
+  // Fill a forum WTB post with one of your cards → above-market payout + a little notoriety
+  // (filling public orders builds your name — it's how you EARN your way past the inbound
+  // gate). Counts toward the same 'want' daily goal/stat as a direct collector want.
+  fulfillForumPost(postId, uid) {
+    const post = (get().forumPosts || []).find(p => p.id === postId)
+    const card = get().collection.find(c => c.uid === uid)
+    if (!post || !card || !cardMatchesWant(card, post)) return false
+    const payout = round2(cardValue(card) * post.premiumMult)
+    set(s => ({
+      collection: s.collection.filter(c => c.uid !== uid),
+      forumPosts: (s.forumPosts || []).filter(p => p.id !== postId),
+      stats: { ...s.stats, wantsFilled: (s.stats.wantsFilled || 0) + 1 },
+    }))
+    get().earn(payout)
+    get().addNotoriety(post.notoriety)
+    get().log('forum', `Filled a forum WTB (${post.who}) with ${card.name} — +${Math.round((post.premiumMult-1)*100)}% over market`, payout)
     get().bumpGoal('want', 1)
     return { payout }
   },
@@ -1441,7 +1489,7 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], wantList: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
@@ -1449,7 +1497,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 21,
+  version: 22,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1589,6 +1637,13 @@ export const useGame = create(persist((set, get) => ({
         const j = jobById(state.pendingJob.job.id)
         if (j) state.pendingJob = { ...state.pendingJob, job: j }
       }
+    }
+    if (version < 22) {
+      // Forum board (early-game demand engine) — start empty; it fills on the next day-tick.
+      state.forumPosts = state.forumPosts ?? []
+      // Tap-to-pay was folded into the Smartphone upgrade and removed as a standalone rail;
+      // drop the dead payTap upgrade flag so it no longer shows as an accepted method.
+      if (state.upgrades?.payTap) { const up = { ...state.upgrades }; delete up.payTap; state.upgrades = up }
     }
     return state
   },

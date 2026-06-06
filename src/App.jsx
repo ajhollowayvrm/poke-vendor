@@ -100,25 +100,45 @@ export default function App() {
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
-  // Selecting a show opens the prep screen (pick which cards to bring to sell).
-  // No money/days are spent until you confirm in prep — backing out is free.
-  function attendShow(show) {
+  // Attend a show in one of two modes:
+  //   'shop'   — buy a shopper ticket (entryFee) and walk the floor to BUY. No booth.
+  //   'vendor' — entryFee + the show's vendorFee, and you run a BOOTH to sell your own
+  //              cards. Requires the one-time Vendor Setup upgrade. Opens prep to pick stock.
+  // No money/days are spent until you confirm (vendor → prep; shopper → straight in).
+  function attendShow(show, mode = 'shop') {
     const tier = SHOW_TIERS[show.tierKey]
+    if (mode === 'vendor') {
+      if (!useGame.getState().upgrades.vendorSetup) return toast('You need the 🎪 Vendor Setup upgrade to run a booth. Buy it from Upgrades.')
+      const cost = tier.entryFee + (tier.vendorFee || 0)
+      if (useGame.getState().cash < cost) return toast(`Not enough cash for the vendor fee (${'$'+cost}).`)
+      setPreppingShow(show) // prep screen: pick the cards to bring to your booth
+      return
+    }
     if (useGame.getState().cash < tier.entryFee) return toast('Not enough cash for the entry fee.')
-    setPreppingShow(show)
+    enterAsShopper(show)
   }
 
-  // Confirmed from the prep screen with the chosen card uids: charge the fee, move
-  // the picked cards onto your show table, advance the calendar past the show, enter.
+  // Enter a show as a SHOPPER: charge only the entry fee, no booth, straight to the floor.
+  function enterAsShopper(show) {
+    const tier = SHOW_TIERS[show.tierKey]
+    if (!spend(tier.entryFee)) return toast('Not enough cash for the entry fee.')
+    useGame.getState().bringToShow([]) // ensure the booth is empty — you're here to buy
+    useGame.getState().log('show', `Attended ${show.name} as a shopper (${tier.days}d)`, -tier.entryFee)
+    useGame.getState().attendShowDays(show.day, tier.days)
+    setActiveShow({ ...show, _asVendor: false })
+  }
+
+  // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee, move the
+  // picked cards onto your booth, advance the calendar past the show, enter as a vendor.
   function enterShow(show, uids) {
     const tier = SHOW_TIERS[show.tierKey]
-    if (!spend(tier.entryFee)) { setPreppingShow(null); return toast('Not enough cash for the entry fee.') }
+    const cost = tier.entryFee + (tier.vendorFee || 0)
+    if (!spend(cost)) { setPreppingShow(null); return toast(`Not enough cash for the vendor fee (${'$'+cost}).`) }
     useGame.getState().bringToShow(uids || [])
-    useGame.getState().log('show', `Attended ${show.name} (${tier.days}d)`, -tier.entryFee)
-    // advance the calendar past the show — consumes its days, skipping overlaps
+    useGame.getState().log('show', `Vended at ${show.name} (${tier.days}d · entry $${tier.entryFee} + booth $${tier.vendorFee})`, -cost)
     useGame.getState().attendShowDays(show.day, tier.days)
     setPreppingShow(null)
-    setActiveShow(show)
+    setActiveShow({ ...show, _asVendor: true })
   }
 
   // Leaving the show: unsold show-inventory cards come back home, then exit the floor.

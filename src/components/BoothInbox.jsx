@@ -23,6 +23,9 @@ export default function BoothInbox() {
   const wantList = useGame(s => s.wantList)
   const cardsForWant = useGame(s => s.cardsForWant)
   const fulfillWant = useGame(s => s.fulfillWant)
+  const forumPosts = useGame(s => s.forumPosts)
+  const cardsForForumPost = useGame(s => s.cardsForForumPost)
+  const fulfillForumPost = useGame(s => s.fulfillForumPost)
   const dailyGoals = useGame(s => s.dailyGoals)
   const ensureDailyGoals = useGame(s => s.ensureDailyGoals)
   const collection = useGame(s => s.collection)
@@ -39,14 +42,14 @@ export default function BoothInbox() {
     [inbox, collection, listings, shopDisplay])
   const consignments = useGame(s => s.consignments)
   const [active, setActive] = useState(null) // {enc, idx}
-  const [wantPick, setWantPick] = useState(null) // a want being fulfilled
+  const [wantPick, setWantPick] = useState(null) // a want/forum post being fulfilled {kind:'want'|'forum', item}
   const [toast, setToast] = useState(null)
-  useModalEscape(() => { if (wantPick) setWantPick(null) }) // close the want-fill picker on Esc
-  // Sell splits into two sub-tabs: day-to-day Orders, and the cards you've put
-  // On the market (listings + consignments) — the latter used to push the orders
-  // way down the page, so it gets its own tab.
-  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'market'
+  useModalEscape(() => { if (wantPick) setWantPick(null) }) // close the fill picker on Esc
+  // Sell splits into sub-tabs: day-to-day Orders, the public Forum board (WTB posts you
+  // can fill), and the cards you've put On the market (listings + consignments).
+  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'forum' | 'market'
   const marketCount = listings.length + consignments.length
+  const forumCount = (forumPosts || []).length
 
   const hasStore = !!upgrades.storefront
   const accepted = acceptedMethods(upgrades)
@@ -65,6 +68,9 @@ export default function BoothInbox() {
         <button className={`subtab ${sellTab === 'orders' ? 'active' : ''}`} onClick={() => setSellTab('orders')}>
           📨 Orders{validInbox.length ? ` (${validInbox.length})` : ''}
         </button>
+        <button className={`subtab ${sellTab === 'forum' ? 'active' : ''}`} onClick={() => setSellTab('forum')}>
+          📋 Forum{forumCount ? ` (${forumCount})` : ''}
+        </button>
         <button className={`subtab ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>
           🌐 On the market{marketCount ? ` (${marketCount})` : ''}
         </button>
@@ -76,6 +82,38 @@ export default function BoothInbox() {
         (listings.length || consignments.length)
           ? <SellStrips />
           : <div className="empty">Nothing on the market. List or consign cards from your collection (Cards → Select) to sell them here. 🌐</div>
+      ) : sellTab === 'forum' ? (
+        // The public WTB board: anyone-can-fill wanted ads. Your early-game demand engine
+        // before strangers start DMing you directly (see INBOUND_NOTORIETY_GATE).
+        <>
+          <div className="banner" style={{ marginTop: 16 }}>
+            📋 The community <b>forum</b> — collectors post cards they're hunting for. Fill a request from your
+            collection for an <b>above-market premium</b> (+ a little notoriety). The way to drum up business before
+            you've made a name. Go rip or buy what they want, then fulfill it here.
+          </div>
+          {forumCount === 0 ? (
+            <div className="empty" style={{ marginTop: 14 }}>The board's quiet right now — let a day pass for new posts. 📭</div>
+          ) : (
+            <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', marginTop: 14 }}>
+              {forumPosts.map(p => {
+                const matches = cardsForForumPost(p)
+                return (
+                  <div key={p.id} className={`product want ${matches.length ? 'fillable' : ''}`}>
+                    {p.img && <img src={p.img} alt="" style={{ width: 56, borderRadius: 8, alignSelf:'center' }} />}
+                    <h3 style={{ fontSize: 14, margin: 0 }}>📋 WTB: {p.desc.replace(/^.*? wants /, '')}</h3>
+                    <div className="meta" style={{ flex:1 }}>
+                      <span className="muted">— {p.who}</span><br/>
+                      Pays <b style={{ color:'var(--green)' }}>+{Math.round((p.premiumMult-1)*100)}%</b> over market · +{p.notoriety}★ · expires in {p.daysLeft}d
+                    </div>
+                    {matches.length
+                      ? <button className="btn gold" onClick={() => setWantPick({ kind: 'forum', item: p })}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
+                      : <button className="btn" disabled>Don't have it — go find one</button>}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>
       ) : (
       <>
       <div className="banner" style={{ marginTop: 16 }}>
@@ -165,7 +203,7 @@ export default function BoothInbox() {
 
       {wantList.length > 0 && (
         <div className="wants">
-          <div className="wants-head">📋 Want list <span className="muted">— collectors looking for cards; fill one for an above-market premium</span></div>
+          <div className="wants-head">⭐ Collectors seeking you <span className="muted">— your reputation drew these requests; fill one for an above-market premium</span></div>
           <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))' }}>
             {wantList.map(w => {
               const matches = cardsForWant(w)
@@ -177,7 +215,7 @@ export default function BoothInbox() {
                     Pays <b style={{ color:'var(--green)' }}>+{Math.round((w.premiumMult-1)*100)}%</b> over market · +{w.notoriety}★ · expires in {w.daysLeft}d
                   </div>
                   {matches.length
-                    ? <button className="btn gold" onClick={() => setWantPick(w)}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
+                    ? <button className="btn gold" onClick={() => setWantPick({ kind: 'want', item: w })}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
                     : <button className="btn" disabled>You don't have it</button>}
                 </div>
               )
@@ -210,27 +248,33 @@ export default function BoothInbox() {
       {toast && <div className="toast">{toast}</div>}
       {active && <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />}
 
-      {wantPick && (
+      {wantPick && (() => {
+        // One picker for both collector wants and forum WTB posts (same matcher/payout).
+        const item = wantPick.item
+        const isForum = wantPick.kind === 'forum'
+        const matches = isForum ? cardsForForumPost(item) : cardsForWant(item)
+        return (
         <div className="modalbg" onClick={() => setWantPick(null)}>
           <div className="modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
-            <h2 style={{ fontSize: 18, marginBottom: 2 }}>Fill: {wantPick.desc}</h2>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — they pay {Math.round(wantPick.premiumMult*100)}% of its market value, +{wantPick.notoriety} notoriety.</p>
+            <h2 style={{ fontSize: 18, marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety} notoriety.</p>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
-              {cardsForWant(wantPick).map(c => (
+              {matches.map(c => (
                 <div key={c.uid} className="vendoritem">
                   <CardTile card={c} interactive={false} />
                   <button className="btn gold" onClick={() => {
-                    const r = fulfillWant(wantPick.id, c.uid)
-                    if (r) flash(`Filled the want — earned ${fmtMoney(r.payout)} (+${wantPick.notoriety}★)`)
+                    const r = isForum ? fulfillForumPost(item.id, c.uid) : fulfillWant(item.id, c.uid)
+                    if (r) flash(`${isForum ? 'Filled a forum request' : 'Filled the want'} — earned ${fmtMoney(r.payout)} (+${item.notoriety}★)`)
                     setWantPick(null)
-                  }}>Give · {fmtMoney(cardValue(c) * wantPick.premiumMult)}</button>
+                  }}>Give · {fmtMoney(cardValue(c) * item.premiumMult)}</button>
                 </div>
               ))}
             </div>
             <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setWantPick(null)}>Cancel</button>
           </div>
         </div>
-      )}
+        )
+      })()}
     </>
   )
 }

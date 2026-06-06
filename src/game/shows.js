@@ -10,13 +10,16 @@ import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SHOP_
 // smaller shows happening during that window (the opportunity cost).
 // `booths` scaled up toward real-world floor sizes (a local meetup is ~15–30
 // tables, not 5) and spread so each tier feels distinctly bigger than the last.
+// `entryFee` = the SHOPPER ticket (walk the floor and buy). `vendorFee` = the extra cost
+// to book a BOOTH and sell your own cards (on top of entry, and only if you own the Vendor
+// Setup upgrade). A vendor table at a big expo costs real money, so it scales with the tier.
 export const SHOW_TIERS = {
-  meetup:   { name: 'Local Meetup',     minNotoriety: 0,   entryFee: 5,    days: 1, booths: 16, npcs: 12, valueBand: [0.5, 25],     traffic: 1.0, color: '#5ec98a' },
-  shop:     { name: 'Card Shop Event',  minNotoriety: 15,  entryFee: 12,   days: 1, booths: 22, npcs: 18, valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
-  regional: { name: 'Regional Show',    minNotoriety: 40,  entryFee: 30,   days: 2, booths: 32, npcs: 30, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
-  national: { name: 'National Expo',    minNotoriety: 80,  entryFee: 75,   days: 2, booths: 44, npcs: 48, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
-  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  days: 3, booths: 56, npcs: 64, valueBand: [200, 50000],  traffic: 4.5, color: '#7cf0ff' },
-  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, days: 4, booths: 72, npcs: 90, valueBand: [1000, 1000000], traffic: 6.0, color: '#ffd700' },
+  meetup:   { name: 'Local Meetup',     minNotoriety: 0,   entryFee: 5,    vendorFee: 15,   days: 1, booths: 16, npcs: 12, valueBand: [0.5, 25],     traffic: 1.0, color: '#5ec98a' },
+  shop:     { name: 'Card Shop Event',  minNotoriety: 15,  entryFee: 12,   vendorFee: 40,   days: 1, booths: 22, npcs: 18, valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
+  regional: { name: 'Regional Show',    minNotoriety: 40,  entryFee: 30,   vendorFee: 120,  days: 2, booths: 32, npcs: 30, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
+  national: { name: 'National Expo',    minNotoriety: 80,  entryFee: 75,   vendorFee: 350,  days: 2, booths: 44, npcs: 48, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
+  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  vendorFee: 1500, days: 3, booths: 56, npcs: 64, valueBand: [200, 50000],  traffic: 4.5, color: '#7cf0ff' },
+  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, vendorFee: 6000, days: 4, booths: 72, npcs: 90, valueBand: [1000, 1000000], traffic: 6.0, color: '#ffd700' },
 }
 
 export const CALENDAR_DAYS = 30
@@ -262,9 +265,9 @@ function visitorFor(channel, kind) {
   if (kind === 'fleeced') return pickAny(null, FLEECED_VISITORS[channel] || FLEECED_VISITORS.show)
   return pickAny(null, VISITOR_NAMES[channel] || VISITOR_NAMES.show)
 }
-// Online buyers can\'t hand you cash or tap. In-person can use anything.
+// Online buyers can\'t hand you cash. In-person can use anything you accept.
 const ONLINE_METHODS = ['venmo', 'paypal', 'card']
-const INPERSON_METHODS = ['cash', 'venmo', 'card', 'paypal', 'tap']
+const INPERSON_METHODS = ['cash', 'venmo', 'card', 'paypal']
 
 function pickAny(r, arr) { return arr[Math.floor((r ?? Math.random)() * arr.length)] }
 // Pick a payment method the buyer prefers, biased toward what YOU can actually
@@ -496,7 +499,7 @@ export function encounterStillValid(enc, collection, listings = null, shopDispla
   return !!(shopDisplay && shopDisplay.some(c => c.uid === enc.ownedUid))
 }
 
-const PAY_LABELS = { venmo:'Venmo', cash:'cash', paypal:'PayPal', card:'card', tap:'tap-to-pay' }
+const PAY_LABELS = { venmo:'Venmo', cash:'cash', paypal:'PayPal', card:'card' }
 function PAY_LABEL(k) { return PAY_LABELS[k] || 'cash' }
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1) }
 function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b }

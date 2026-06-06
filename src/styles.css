@@ -831,18 +831,19 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 }
 
 /* livestream — spectacle additions */
-.stream-revealwrap { display:flex; gap:12px; align-items:flex-start; }
-.stream-now { flex:0 0 150px; max-width:150px; }
-.stream-now .rip-now-card img { width:100%; border-radius:8px; }
-.stream-revealwrap .reveal-row { flex:1 1 auto; min-width:0; }
+/* On a livestream the card being pulled is the SHOW — stack the "Now revealing" hero
+   centered on top, with the full reveal row of pulls beneath it (also centered). */
+.stream-revealwrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+.stream-now { flex:none; width:200px; max-width:60vw; }
+.stream-now .rip-side-head { text-align:center; }
+.stream-now .rip-now-card { margin:0 auto; }
+.stream-now .rip-now-card img { width:100%; border-radius:10px; }
+.stream-revealwrap .reveal-row { width:100%; justify-content:center; flex-wrap:wrap; }
 .spot-ship.mine { background:var(--accent2); color:#fff; }
 .spot-pop { animation: spotpop .5s ease; }
 @keyframes spotpop { 0%{transform:scale(1)} 40%{transform:scale(1.25)} 100%{transform:scale(1)} }
 @media (max-width: 760px) {
-  .stream-revealwrap { flex-direction:column; }
-  .stream-now { flex:none; max-width:none; display:flex; gap:10px; align-items:center; }
-  .stream-now .rip-now-card { display:flex; gap:10px; align-items:center; }
-  .stream-now .rip-now-card img { width:64px; }
+  .stream-now { width:150px; }
 }
 
 /* livestream — progress bar under the HUD */

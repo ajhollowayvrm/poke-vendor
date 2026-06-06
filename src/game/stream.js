@@ -2,7 +2,7 @@
 // (scaled by notoriety), react in chat, and tip. Big pulls spike the room. You can
 // also run a BOX BREAK — sell spots (random teams) up front, then rip the box live
 // and "ship" each pull to its spot-holder. Ending a stream banks tips, a big
-// notoriety bump, and a sales-hype window (a stronger, longer cousin of a Tweet).
+// notoriety bump, and a sales-hype window (a recent stream pumps all your listings).
 import { isHit, cardValue, rarityRank, fmtMoney } from './engine'
 
 // A pull worth losing your mind over on camera — same bar the show floor uses for a

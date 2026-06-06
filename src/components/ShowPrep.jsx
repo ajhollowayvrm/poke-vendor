@@ -46,7 +46,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
           <div style={{ fontWeight: 800, fontSize: 18 }}>{show.name}</div>
           <div className="muted" style={{ fontSize: 13 }}>
             <span className="pill" style={{ background: tier.color + '33', color: tier.color }}>{tier.name}</span>
-            {' · '}Entry {fmtMoney(tier.entryFee)} · {tier.days} day{tier.days > 1 ? 's' : ''}
+            {' · '}Vendor {fmtMoney(tier.entryFee + (tier.vendorFee || 0))} <span style={{ opacity: 0.7 }}>(entry {fmtMoney(tier.entryFee)} + booth {fmtMoney(tier.vendorFee || 0)})</span> · {tier.days} day{tier.days > 1 ? 's' : ''}
           </div>
         </div>
         <div className="cash" style={{ marginLeft: 0 }}>{fmtMoney(cash)}<small>balance</small></div>
@@ -60,7 +60,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
 
       {collection.length === 0 ? (
         <div className="empty" style={{ marginTop: 18 }}>
-          Your collection is empty — you can still attend to <b>buy</b> from vendors and work the floor.
+          Your collection is empty — nothing to stock the booth with. You can still pay the vendor fee and man an empty table, but you'd be better off attending as a shopper.
         </div>
       ) : (
         <>
@@ -99,7 +99,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
         </div>
         <div className="bulk-bar-actions">
           <button className="btn gold" onClick={() => onConfirm([...picked])}>
-            🎪 Attend — pay {fmtMoney(tier.entryFee)} {count > 0 ? `· bring ${count}` : ''} →
+            🎪 Vend — pay {fmtMoney(tier.entryFee + (tier.vendorFee || 0))} {count > 0 ? `· bring ${count}` : ''} →
           </button>
         </div>
       </div>

@@ -21,8 +21,7 @@ export default function Collection({ onPick }) {
   const [sort, setSort] = useState('value')
   const [selectMode, setSelectMode] = useState(false)
   const [picked, setPicked] = useState(() => new Set())
-  const [listPct, setListPct] = useState(110) // ask % of market for bulk "list on site"
-  const [tweetIt, setTweetIt] = useState(false) // post the listing to Twitter (hype window)
+  const [listPct, setListPct] = useState(90) // ask % of market for bulk "list on site"
   const [gradeTier, setGradeTier] = useState('economy') // service tier for bulk grading
   const [toast, setToast] = useState(null)
   const listMult = (parseFloat(listPct) || 0) / 100
@@ -161,15 +160,11 @@ export default function Collection({ onPick }) {
                   onChange={e => setListPct(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))} />
                 <span className="muted" style={{ fontSize: 12 }}>%</span>
               </div>
-              <label className="tweet-toggle" onClick={e => e.stopPropagation()}>
-                <input type="checkbox" checked={tweetIt} onChange={e => setTweetIt(e.target.checked)} />
-                🐦 Tweet it <span className="muted">(more eyes for ~3d, +★)</span>
-              </label>
               <button className="btn" disabled={!listMult} onClick={() => {
-                const n = listManyOnSite(selCards.map(c => c.uid), listMult, tweetIt)
-                flash(`Listed ${n} card${n>1?'s':''} at ${Math.round(listMult*100)}% of market${tweetIt ? ' · 🐦 tweeted' : ''}.`)
+                const n = listManyOnSite(selCards.map(c => c.uid), listMult)
+                flash(`Listed ${n} card${n>1?'s':''} at ${Math.round(listMult*100)}% of market.`)
                 exitSelect()
-              }}>🌐 List @ {Math.round(listMult*100)}%{tweetIt ? ' + 🐦' : ''}</button>
+              }}>🌐 List @ {Math.round(listMult*100)}%</button>
               {listHint && <span className={`list-hint ${listHint.cls}`}>{listHint.txt}</span>}
             </div>
             <button className="btn alt" onClick={() => {

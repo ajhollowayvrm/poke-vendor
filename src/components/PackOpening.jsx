@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank, preloadCardImages } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
@@ -36,6 +36,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function rip() {
     if (phase !== 'idle') return
     const cards = openPack(set)
+    preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
     setIsGod(god)
@@ -285,7 +286,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   return (
                     <HoloCard key={c.uid} card={c} extraStyle={{ '--rarity': edge }}
                       className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
-                      <img src={c.img} alt={c.name} decoding="async" />
+                      <img src={c.img} alt={c.name} decoding="async" fetchpriority="high" />
                     </HoloCard>
                   )
                 })}

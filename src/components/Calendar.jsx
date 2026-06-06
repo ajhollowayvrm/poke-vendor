@@ -48,6 +48,9 @@ export default function Calendar({ onAttend }) {
         {shows.map(show => {
           const tier = SHOW_TIERS[show.tierKey]
           const canAfford = cash >= tier.entryFee
+          const vendorCost = tier.entryFee + (tier.vendorFee || 0)
+          const canVendor = !!upgrades.vendorSetup
+          const canAffordVendor = cash >= vendorCost
           const endsDay = Math.min(30, show.day + tier.days - 1)
           // Expected online orders during the show's run (rough), and whether the
           // player would MISS them (no Smartphone to manage online while away).
@@ -71,13 +74,22 @@ export default function Calendar({ onAttend }) {
                     : `⚠️ ~${expOnline.toFixed(expOnline < 1 ? 1 : 0)} online order${expOnline >= 1.5 ? 's' : ''} may arrive home — missed without a 📱 Smartphone`}
                 </div>
               )}
-              <div style={{ marginTop: 'auto', paddingTop: 10 }}>
+              <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {show.locked ? (
                   <button className="btn" disabled>🔒 Notoriety {tier.minNotoriety}</button>
                 ) : (
-                  <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show)}>
-                    Attend · ${tier.entryFee}{tier.days > 1 ? ` · ${tier.days}d` : ''}
-                  </button>
+                  <>
+                    <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show, 'shop')}
+                      title="Shopper ticket — walk the floor and buy. No booth.">
+                      🛍️ Attend · ${tier.entryFee}{tier.days > 1 ? ` · ${tier.days}d` : ''}
+                    </button>
+                    <button className="btn" disabled={!canVendor || !canAffordVendor} onClick={() => onAttend(show, 'vendor')}
+                      title={canVendor
+                        ? `Run a booth to sell your cards. Entry $${tier.entryFee} + booth $${tier.vendorFee}.`
+                        : 'Requires the 🎪 Vendor Setup upgrade'}>
+                      {canVendor ? `🎪 Vendor · $${vendorCost}` : '🎪 Vendor · 🔒 needs setup'}
+                    </button>
+                  </>
                 )}
               </div>
             </div>

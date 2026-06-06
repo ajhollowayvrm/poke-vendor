@@ -225,11 +225,17 @@ export default function ShowFloor({ show, onLeave }) {
           </button>
         )}
         <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>Notoriety {Math.round(notoriety)}</span>
-        <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
-          title="The cards you brought to sell at your booth"
-          onClick={() => setShowTable(true)}>
-          🪧 Your table ({showInventory.length})
-        </button>
+        {show._asVendor ? (
+          <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
+            title="The cards you brought to sell at your booth"
+            onClick={() => setShowTable(true)}>
+            🪧 Your table ({showInventory.length})
+          </button>
+        ) : (
+          <span className="pill" style={{ flex: 'none', opacity: 0.7 }} title="You're here as a shopper — buy a Vendor Setup to run your own booth">
+            🛍️ Shopping
+          </span>
+        )}
       </div>
 
       {boothAlert && (

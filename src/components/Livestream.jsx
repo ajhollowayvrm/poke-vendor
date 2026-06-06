@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank } from '../game/engine'
+import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank, preloadCardImages } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled,
@@ -228,6 +228,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   function ripPack() {
     if (!canRip) return
     const cards = openPack(set)
+    preloadCardImages(cards) // warm the CDN cache so the live reveal doesn't lag on slow images
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
     if (god) cards.forEach(c => { c._fromGod = true })
@@ -359,10 +360,15 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   }
 
   const flopping = isFlop(viewers)
-  // Running net so the player sees if the stream is in the black: what's come IN
-  // (tips + spot cash collected so far) minus the box cost.
+  // Running net so the player sees if the stream is in the black. What's come IN:
+  //   tips (always) + spot cash (breaks only) + the MARKET VALUE OF CARDS YOU KEEP.
+  // When ripping for yourself (no break) every card you pull is yours, so the box's
+  // pull value counts toward your net. In a break, cards on FILLED spots ship to buyers
+  // (already paid for via spot cash), so only the cards on unfilled spots are yours to keep.
   const spotCash = isBreak ? Math.round(filledSpots * perSpot * 100) / 100 : 0
-  const net = Math.round((tips + spotCash - product.price) * 100) / 100
+  const keptValue = Math.round(allPulled.current.reduce((a, p) =>
+    a + ((isBreak && p.spot != null && p.spot < filledSpots) ? 0 : cardValue(p.card)), 0) * 100) / 100
+  const net = Math.round((tips + spotCash + keptValue - product.price) * 100) / 100
   const progressPct = Math.round((Math.min(packNo, totalPacks) / totalPacks) * 100)
 
   return (
@@ -372,8 +378,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         <span className="pill live-dot">🔴 LIVE</span>
         <span className="stream-viewers" style={flopping ? { color: 'var(--red)' } : null}>👁 {viewers.toLocaleString()} watching{flopping ? ' · quiet room…' : ''}</span>
         <span className="pill" style={{ background:'#36d39922', color:'var(--green)' }}>💸 {fmtMoney(tips)} tips</span>
+        {keptValue > 0 && <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}
+          title="Market value of the cards you're keeping from this rip">🃏 {fmtMoney(keptValue)} kept</span>}
         {isBreak && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'#ffcb0522', color:'var(--gold)' }}>📦 Break · {filledSpots}/{spots} spots</span>}
-        <span className="pill" title="Money in (tips + spots) minus the box cost — your pulls aren't counted here"
+        <span className="pill" title={isBreak
+            ? 'Tips + spot cash + value of cards you keep (unfilled spots), minus the box cost'
+            : 'Tips + market value of every card you rip, minus the box cost'}
           style={{ background: net >= 0 ? '#36d39922' : '#ff5e6c22', color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>
           Net {net >= 0 ? '+' : ''}{fmtMoney(net)}
         </span>
@@ -486,7 +496,7 @@ function NowRevealing({ card }) {
         const showPsa10 = !card.grade && (card._isHit || card.foil)
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
-            <img src={card.img} alt={card.name} />
+            <img src={card.img} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
