@@ -110,6 +110,21 @@ const FOIL = {
 
 // Per-set overrides (keyed by set id). Only sets with real published data differ.
 const SET_RATES = {
+  // Chaos Rising (me4) — official TCGplayer pull rates (8,500+ packs opened).
+  // The Mega Hyper Rare (Mega Greninja ex) is the true grail at ~1 in 956 packs — NOT the
+  // near-every-box card it used to read as. SIR is rarer than the baseline too. Source:
+  // TCGplayer Infinite, "Pokémon TCG: Chaos Rising Pull Rates" (Jun 2026).
+  me4: {
+    rare: [
+      { rarity: 'Double Rare', p: 0.2030 },  // 1 in 5
+      { rarity: 'Ultra Rare',  p: 0.0829 },  // 1 in 12
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.1066 }, // 1 in 9
+      { rarity: 'Special Illustration Rare', p: 0.0121 }, // 1 in 83
+      { rarity: 'Mega Hyper Rare',           p: 0.0010 }, // the grail — 1 in 956
+    ],
+  },
   // Prismatic Evolutions — SIRs ~2× normal; DR 1-in-6.1, UR 1-in-13.4, Hyper 1-in-178.6.
   // Poké Ball foil ~1 in 3, Master Ball ~1 in 19. God pack ~1 in 2,500.
   // Sources: thepricedex.com/set/sv8pt5, TCGplayer, PokeBeach.
