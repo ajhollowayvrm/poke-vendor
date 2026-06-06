@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP } from '../game/store'
+import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT } from '../game/store'
 import { fmtMoney, cardValue } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
@@ -117,7 +117,16 @@ export default function BoothInbox() {
       ) : (
       <>
       <div className="banner" style={{ marginTop: 16 }}>
-        {hasStore
+        {notoriety < INBOUND_NOTORIETY_GATE
+          // Unknown vendor: no unsolicited orders from reputation yet. Tell the truth and
+          // point at the two ways to drum up demand — the Forum, or a bargain listing.
+          ? (() => {
+              const hasBargain = (listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
+              return <>🪧 You're an <b>unknown vendor</b> (notoriety <b>{Math.round(notoriety)}</b>) — strangers don't seek you out yet. Fill <b>Forum</b> wanted-ads to build a name{hasBargain
+                ? <>, and your bargain listing (≤{Math.round(BARGAIN_ASK_MULT*100)}% of market) is already drawing online deal-hunters.</>
+                : <>, or list a card at <b>≤{Math.round(BARGAIN_ASK_MULT*100)}% of market</b> to pull in online deal-hunters.</>}</>
+            })()
+          : hasStore
           ? <>🏬 You run a brick-and-mortar shop <b>and</b> sell online. Each day brings orders & walk-ins, scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
           : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders (notoriety <b>{Math.round(notoriety)}</b>). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
       </div>

@@ -29,7 +29,7 @@ export default function ShowFloor({ show, onLeave }) {
   const [showDay, setShowDay] = useState(1) // which day of the multi-day show we're on
   const booths = useMemo(() => generateBooths(show, notoriety, showDay - 1), [show, notoriety, showDay])
   // Layout scales with booth count → bigger shows fill more of the page.
-  const layout = useMemo(() => buildLayout(booths), [booths])
+  const layout = useMemo(() => buildLayout(booths, show._asVendor), [booths, show._asVendor])
   const { grid, cols, rows, playerAt } = layout
 
   const [pos, setPos] = useState(() => ({ x: playerAt.x, y: playerAt.y + 1 }))
@@ -116,6 +116,7 @@ export default function ShowFloor({ show, onLeave }) {
 
   // Booth walk-ups, now gated by a cooldown so they don't spam.
   useEffect(() => {
+    if (!show._asVendor) return // shoppers have no booth → no walk-up buyers
     const id = setInterval(() => {
       if (encounter || openBooth || boothAlert) return
       if (walkupsRef.current >= MAX_WALKUPS_PER_DAY) return // hit the per-day cap
@@ -132,7 +133,7 @@ export default function ShowFloor({ show, onLeave }) {
       }
     }, 3000)
     return () => clearInterval(id)
-  }, [encounter, openBooth, boothAlert, notoriety, upgrades.ticker, pos, playerAt, tier.traffic, accepted])
+  }, [show._asVendor, encounter, openBooth, boothAlert, notoriety, upgrades.ticker, pos, playerAt, tier.traffic, accepted])
 
   // One step in a direction: walk onto floor, or interact with a bumped booth.
   const move = useCallback((dx, dy) => {
@@ -191,6 +192,7 @@ export default function ShowFloor({ show, onLeave }) {
   }, [grid, pos, booths, openBooth, encounter, move])
 
   function triggerPlayerBooth() {
+    if (!show._asVendor) return // shoppers have no booth — only vendors tend one
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
     const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted)
     setEncounter({ enc, atBooth: true })
@@ -299,7 +301,7 @@ export default function ShowFloor({ show, onLeave }) {
       <div className="dpad" aria-hidden="true">
         <button className="dpad-btn up"    onClick={() => move(0,-1)}>▲</button>
         <button className="dpad-btn left"  onClick={() => move(-1,0)}>◀</button>
-        <button className="dpad-btn act"   onClick={() => { if (!openBooth && !encounter) triggerPlayerBooth() }} title="Tend your booth">★</button>
+        {show._asVendor && <button className="dpad-btn act"   onClick={() => { if (!openBooth && !encounter) triggerPlayerBooth() }} title="Tend your booth">★</button>}
         <button className="dpad-btn right" onClick={() => move(1,0)}>▶</button>
         <button className="dpad-btn down"  onClick={() => move(0,1)}>▼</button>
       </div>
@@ -361,7 +363,9 @@ export default function ShowFloor({ show, onLeave }) {
 }
 
 // --- layout: a hall sized to the booth count, booths in aisles, player center-bottom ---
-function buildLayout(booths) {
+// asVendor=true stamps the player's own booth tile ('P') at the start position; a shopper
+// spawns at the same spot but has no booth tile (playerAt is still their entry point).
+function buildLayout(booths, asVendor) {
   const n = booths.length
   // booths sit on every other column/row so there are walkable aisles between them.
   const boothCols = Math.ceil(Math.sqrt(n * 1.3))
@@ -381,9 +385,10 @@ function buildLayout(booths) {
       placed++
     }
   }
-  // player booth: center column, near the bottom
+  // player booth: center column, near the bottom. Only vendors get an actual booth tile;
+  // shoppers spawn at the same spot but the cell stays walkable floor (no 'P').
   const px = Math.floor(cols / 2), py = rows - 3
-  grid[py][px] = 'P'
+  if (asVendor) grid[py][px] = 'P'
   return { grid, cols, rows, playerAt: { x: px, y: py } }
 }
 

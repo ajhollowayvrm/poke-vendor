@@ -3,7 +3,7 @@ import { useGame } from '../game/store'
 import { cardValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
 import Haggle from './Haggle'
-import { confirmDialog } from '../ui/dialog'
+import { confirmDialog, useModalEscape } from '../ui/dialog'
 
 export default function VendorBooth({ booth, onClose, flash, onRipVault, onRipSealed, haggledIds, onHaggled }) {
   // The Vintage Vault is a special booth: no singles bin, just one heavy sealed

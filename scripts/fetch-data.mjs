@@ -217,13 +217,38 @@ async function fetchEpisodeCards(ep) {
   return rows
 }
 
-// USD price for a card row: tcgplayer market → cardmarket EUR→USD → PSA-9 comp → null.
+// USD price for a card row. Both sources pokemon-api.com exposes (cardmarket + tcg_player)
+// come back in EUR (currency:"EUR"), so everything is normalized via EUR_USD. The two
+// sources straddle the true US raw-NM value and which one is right depends on the card's
+// tier — so we value-gate:
+//
+//   • Cardmarket trailing average (30d → 7d → near-mint floor) is the credible anchor.
+//     On freshly-released sets TCGplayer's "market" has too few sales to mean anything —
+//     it runs ~2.7× and up to ~15× the Cardmarket avg (Cinccino ex #73: TCGplayer €6.04
+//     vs Cardmarket €0.64 ≈ the real ~$0.70). So for BULK (cmUsd < $20) we ignore TCGplayer
+//     entirely and trust Cardmarket alone.
+//   • For genuine CHASES (cmUsd ≥ $20) TCGplayer carries real US-premium signal that the
+//     EU-anchored Cardmarket lags below — e.g. Mega Greninja SIR #116 is ~$389-432 in the
+//     US but Cardmarket-only gives just $320. There we blend 70% Cardmarket + 30% TCGplayer,
+//     which lands #116 at ~$390 while keeping mid-tier cards honest.
+//
+// PSA-9 is a last-resort raw proxy for old slab-only cards with no live listings.
+const CHASE_USD = 20 // below this, TCGplayer is noise → Cardmarket only
 function rowUSD(row, psa) {
-  const tp = row.prices?.tcg_player?.market_price
-  if (tp != null) return round2(tp)
-  const cm = row.prices?.cardmarket?.lowest_near_mint ?? row.prices?.cardmarket?.['7d_average']
-  if (cm != null) return round2(cm * EUR_USD)
-  if (psa && psa['9'] != null) return round2(psa['9']) // old slab-only cards: PSA 9 as a raw proxy
+  const cm = row.prices?.cardmarket
+  const cmEur = cm?.['30d_average'] ?? cm?.['7d_average'] ?? cm?.lowest_near_mint
+  if (cmEur != null) {
+    const cmUsd = cmEur * EUR_USD
+    const tp = row.prices?.tcg_player
+    const tpEur = tp?.market_price
+    if (tpEur == null || cmUsd < CHASE_USD) return round2(cmUsd)
+    const tpUsd = tpEur * (tp.currency === 'EUR' ? EUR_USD : 1)
+    return round2(0.7 * cmUsd + 0.3 * tpUsd) // chase: blend in the US-premium signal
+  }
+  // No Cardmarket data at all → fall back to a currency-corrected TCGplayer, then PSA-9.
+  const tp = row.prices?.tcg_player
+  if (tp?.market_price != null) return round2(tp.market_price * (tp.currency === 'EUR' ? EUR_USD : 1))
+  if (psa && psa['9'] != null) return round2(psa['9'])
   return null
 }
 

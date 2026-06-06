@@ -161,15 +161,26 @@ function makeDailyGoals(noto) {
 // this you're a nobody — nobody DMs you to buy. Your early-game demand is the public
 // FORUM (people posting what they want; you go find/rip it). See FORUM_* + forumPosts.
 export const INBOUND_NOTORIETY_GATE = 12
+// A live listing priced at or below this fraction of market is a bargain that
+// online deal-hunters will find on their own — even for an unknown vendor below the
+// notoriety gate. (askMult is "fraction of market"; see listOnSite.)
+export const BARGAIN_ASK_MULT = 0.70
 // Per-day probability that an unsolicited home order arrives on each channel. Zero until
 // you've made a name (INBOUND_NOTORIETY_GATE), then ramps from a sparse floor toward a cap.
 // e.g. online: 0 below the gate → ~0.10/day just past it → ~0.85 at noto 200.
-export function dayOrderChance(channel, notoriety) {
-  if (notoriety < INBOUND_NOTORIETY_GATE) return 0 // unknown vendor → no inbound; use the forum
+// EXCEPTION: if you've listed something really cheap (hasBargain), online bargain-hunters
+// trickle in regardless of fame — a deliberate fire-sale is the other way to start the loop.
+export function dayOrderChance(channel, notoriety, hasBargain = false) {
+  if (notoriety < INBOUND_NOTORIETY_GATE) {
+    // unknown vendor → no inbound from reputation; the only draw is a steep deal.
+    return channel === 'online' && hasBargain ? 0.18 : 0
+  }
   const floor = channel === 'online' ? 0.10 : 0.06 // chance just past the gate
   const cap   = channel === 'online' ? 0.85 : 0.65
   const ramp  = Math.min(1, (notoriety - INBOUND_NOTORIETY_GATE) / 200) // 0→1 across the fame curve
-  return floor + (cap - floor) * ramp
+  const base  = floor + (cap - floor) * ramp
+  // A bargain listing adds extra pull on top of your reputation, too.
+  return channel === 'online' && hasBargain ? Math.min(0.9, base + 0.12) : base
 }
 // --- Forum (public wanted-ads board) ----------------------------------------
 // Anyone can post "WTB <card>" on the community forum, and anyone can fill it — it's
@@ -326,6 +337,8 @@ function advanceDaysWith(set, get, days, away) {
   let payrollDue = 0, leaseDue = 0
   // Online buyers can only make offers on cards you've put up for sale (listed/tweeted).
   const listedCards = (s.listings || []).map(l => l.card)
+  // A deeply-underpriced live listing draws online deal-hunters even before you're known.
+  const hasBargain = (s.listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
   // Walk-in customers only buy/offer on what you've put out on the shop shelf.
   const shelfCards = s.shopDisplay || []
   for (let i = 0; i < days; i++) {
@@ -336,7 +349,7 @@ function advanceDaysWith(set, get, days, away) {
     rentDue += RENT_PER_DAY
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
     // online channel (employees raise the hit chance)
-    if (Math.random() < Math.min(0.97, dayOrderChance('online', noto) * orderMult)) {
+    if (Math.random() < Math.min(0.97, dayOrderChance('online', noto, hasBargain) * orderMult)) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
@@ -348,14 +361,9 @@ function advanceDaysWith(set, get, days, away) {
       else missedWalkin++
     }
   }
-  // NEW-PLAYER GUARANTEE: a fresh vendor at notoriety 0 can otherwise go 10–15 days
-  // with no online orders (1-in-12/day) and feel like nothing's happening. If you've
-  // never received an online order and these are home days, guarantee your first one
-  // by the end of the first few days so the loop actually starts.
-  if (onlineOK && onlineCount === 0 && (s.onlineOrdersEver || 0) === 0 && s.currentDay + days <= 5) {
-    newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online', _firstOrder: true })
-    onlineCount++
-  }
+  // No new-player guarantee: an unknown vendor (below INBOUND_NOTORIETY_GATE) gets NO
+  // unsolicited inbox mail. Early demand comes from the public Forum (WTB board), or you
+  // can summon online deal-hunters by listing something below BARGAIN_ASK_MULT of market.
   // advance the day counter, rolling months as needed
   let d = s.currentDay + days, seed = s.showSeed, months = s.monthsElapsed
   while (d > CALENDAR_DAYS) {
@@ -575,7 +583,7 @@ export const useGame = create(persist((set, get) => ({
   currentDay: 1,           // calendar day; attending a show advances this
   monthsElapsed: 0,        // how many calendars have rolled (for display)
   boothInbox: [],          // pending encounters waiting at your home shop
-  onlineOrdersEver: 0,     // lifetime online orders received → drives the new-player guarantee
+  onlineOrdersEver: 0,     // lifetime count of online orders received (stats/telemetry)
   showsAttended: 0,
   streamHypeDaysLeft: 0,   // days of post-stream "afterglow" left (boosts ALL listing traffic)
   streamFatigue: 0,        // audience fatigue: +1 per stream, −1 per game-day of rest (drives viewer falloff)
