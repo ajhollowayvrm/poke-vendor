@@ -14,6 +14,10 @@ export default function PriceGuide() {
   const marketHistory = useGame(s => s.marketHistory)
 
   const set = SETS.find(s => s.id === setId) || SETS[0]
+  // Split the dropdown into the sets you can buy in the shop vs. vintage/legacy sets that
+  // only turn up at show vendors (sealed packs at the Vault, loose singles in booth bins).
+  const shopSets = SETS.filter(s => !s.vintage)
+  const vintageSets = SETS.filter(s => s.vintage)
   // Current multiplier + recent history for THIS set (engine map is the source of truth;
   // marketMults is the same data, used here only to trigger re-render on drift).
   const mult = marketMults[set.id] ?? marketMult(set.id) ?? 1
@@ -41,7 +45,12 @@ export default function PriceGuide() {
 
       <div className="toolbar">
         <select value={setId} onChange={e => { setSetId(e.target.value); setQ('') }}>
-          {SETS.map(s => <option key={s.id} value={s.id}>{s.name} ({s.cards.length} total)</option>)}
+          <optgroup label="In the shop">
+            {shopSets.map(s => <option key={s.id} value={s.id}>{s.name} ({s.cards.length} total)</option>)}
+          </optgroup>
+          <optgroup label="Vintage · vendor-only">
+            {vintageSets.map(s => <option key={s.id} value={s.id}>{s.name} ({s.cards.length} total)</option>)}
+          </optgroup>
         </select>
         <input className="search" placeholder="Search cards…" value={q} onChange={e => setQ(e.target.value)} />
         <select value={sort} onChange={e => setSort(e.target.value)}>
@@ -54,11 +63,20 @@ export default function PriceGuide() {
         {priciest && <span className="pill">Chase: {priciest.name} {fmtMoney(rawValue(priciest))}</span>}
       </div>
 
-      {/* Living-market trend for the selected set: a chip with the current multiplier and
-          direction, plus a sparkline of recent days. Neutral (≈1.0×) shows as flat. */}
+      {/* Living-market trend for shop sets (a chip + sparkline). Vintage/legacy sets don't
+          drift with the daily market, so they get a vendor-only note instead. */}
       <div className="toolbar" style={{ marginTop: -4 }}>
-        <TrendChip mult={mult} />
-        <Sparkline history={history} />
+        {set.vintage ? (
+          <span className="pill" style={{ color: '#ffd700', borderColor: '#ffd70066', display: 'inline-flex', gap: 6, alignItems: 'center' }}
+            title="You can't buy this set in the shop. Sealed packs turn up at the Vintage Vault, and loose singles in vendor booth bins at bigger shows.">
+            🗝️ Vintage · vendor-only — find it at shows
+          </span>
+        ) : (
+          <>
+            <TrendChip mult={mult} />
+            <Sparkline history={history} />
+          </>
+        )}
       </div>
 
       {set.logo && <img src={set.logo} alt={set.name} style={{ height: 48, objectFit:'contain', margin:'4px 0 12px', filter:'drop-shadow(0 4px 8px #0008)' }} />}
