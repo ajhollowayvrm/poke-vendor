@@ -69,6 +69,7 @@ const EN_RARITY_MAP = {
 const KNOWN_RARITIES = new Set([
   'Common','Uncommon','Rare','Rare Holo','Double Rare','ACE SPEC Rare','Illustration Rare',
   'Ultra Rare','Special Illustration Rare','Hyper Rare','Mega Hyper Rare','Black White Rare',
+  'MEGA_ATTACK_RARE', // Mega-era alt-art Mega ex (Ascended Heroes+) — passes through as-is
 ])
 function mapRarity(r) {
   if (!r) return 'Common'

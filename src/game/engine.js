@@ -139,6 +139,23 @@ const SET_RATES = {
       { rarity: 'Mega Hyper Rare',           p: 0.0006 }, // the grail — 1 in 1786
     ],
   },
+  // Ascended Heroes (me2pt5) — official TCGplayer pull rates (2,000+ packs). The largest
+  // English set; introduces the Mega Attack Rare, which sits in the RARE slot and REPLACES
+  // an Ultra Rare in packs where it appears (so UR drops to ~5% and MAR fills the ~3% gap —
+  // not additive). Two Mega Hyper Rares (Mega Charizard Y / Mega Dragonite ex) → ~1 in 540.
+  // Source: TCGplayer Infinite, "Ascended Heroes Pull Rates" (Feb 2026).
+  me2pt5: {
+    rare: [
+      { rarity: 'Double Rare',      p: 0.2037 }, // 1 in 5
+      { rarity: 'Ultra Rare',       p: 0.0481 }, // 1 in 21 (down from ~8% — MAR took the gap)
+      { rarity: 'MEGA_ATTACK_RARE', p: 0.0347 }, // 1 in 29 — new Mega-attack alt-art, rare slot
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.1125 }, // 1 in 9
+      { rarity: 'Special Illustration Rare', p: 0.0144 }, // 1 in 70
+      { rarity: 'Mega Hyper Rare',           p: 0.0019 }, // 2 grails — 1 in 540
+    ],
+  },
   // Prismatic Evolutions — SIRs ~2× normal; DR 1-in-6.1, UR 1-in-13.4, Hyper 1-in-178.6.
   // Poké Ball foil ~1 in 3, Master Ball ~1 in 19. God pack ~1 in 2,500.
   // Sources: thepricedex.com/set/sv8pt5, TCGplayer, PokeBeach.
