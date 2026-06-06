@@ -126,9 +126,13 @@ export default function BoothInbox() {
                 ? <>, and your bargain listing (≤{Math.round(BARGAIN_ASK_MULT*100)}% of market) is already drawing online deal-hunters.</>
                 : <>, or list a card at <b>≤{Math.round(BARGAIN_ASK_MULT*100)}% of market</b> to pull in online deal-hunters.</>}</>
             })()
+          : (listings.length === 0 && (shopDisplay || []).length === 0)
+          // Known vendor, but nothing out for sale → no orders will come. Buyers only
+          // message you about cards you've actually listed or put on the shelf.
+          ? <>🤫 Your shop's quiet — <b>nothing's up for sale</b>. Buyers only reach out about cards you've <b>listed online</b>{hasStore ? <> or <b>put on the shelf</b></> : ''}. Put something out and orders start arriving (notoriety <b>{Math.round(notoriety)}</b>).</>
           : hasStore
-          ? <>🏬 You run a brick-and-mortar shop <b>and</b> sell online. Each day brings orders & walk-ins, scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
-          : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders (notoriety <b>{Math.round(notoriety)}</b>). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
+          ? <>🏬 You run a brick-and-mortar shop <b>and</b> sell online. Each day brings orders & walk-ins on what you've put out, scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
+          : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders on what you've <b>listed</b> (notoriety <b>{Math.round(notoriety)}</b>). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
       </div>
 
       <div className="toolbar" style={{ marginTop: 12 }}>

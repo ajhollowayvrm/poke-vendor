@@ -120,7 +120,7 @@ export default function CardModal({ card, onClose }) {
                 </button>
                 <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
                   <b>Consign ↗</b>
-                  <small>A service sells it in a few days for a bit above market, minus a 12% fee</small>
+                  <small>A service sells it in a few days for about market, minus a 12% fee — you net ~market</small>
                 </button>
               </div>
             ) : (

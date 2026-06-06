@@ -341,6 +341,13 @@ function advanceDaysWith(set, get, days, away) {
   const hasBargain = (s.listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
   // Walk-in customers only buy/offer on what you've put out on the shop shelf.
   const shelfCards = s.shopDisplay || []
+  // No storefront, no inbox. Strangers only message you about cards you've actually
+  // put up for sale: online needs a live listing, walk-ins need cards on the shelf.
+  // With nothing out on a channel there's nobody to hear from there — so we skip the
+  // roll entirely rather than manufacture filler (price-checks, beggars) about a shop
+  // that isn't open. (A deep bargain listing still counts as "open online".)
+  const openOnline = listedCards.length > 0 || hasBargain
+  const openWalkin = shelfCards.length > 0
   for (let i = 0; i < days; i++) {
     const dayNo = s.currentDay + i + 1 // the day being entered
     // a pending job starts paying once its start day arrives
@@ -348,15 +355,15 @@ function advanceDaysWith(set, get, days, away) {
     wagesEarned += activeJob?.wage || 0
     rentDue += RENT_PER_DAY
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
-    // online channel (employees raise the hit chance)
-    if (Math.random() < Math.min(0.97, dayOrderChance('online', noto, hasBargain) * orderMult)) {
+    // online channel (employees raise the hit chance). Only if you have something listed.
+    if (openOnline && Math.random() < Math.min(0.97, dayOrderChance('online', noto, hasBargain) * orderMult)) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
-    // walk-in channel (only if you have a physical store). The shelf is the pool: walk-ins
-    // only buy/offer on cards you've put out (passed as both the collection arg and the
-    // shelf arg so the encounter's offer + browse pools resolve to the display case).
-    if (hasStore && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
+    // walk-in channel (only if you have a physical store AND cards out on the shelf). The
+    // shelf is the pool: walk-ins only buy/offer on cards you've put out (passed as both the
+    // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the display case).
+    if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
       if (walkinOK) newOrders.push({ ...boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards), channel: 'walkin' })
       else missedWalkin++
     }
@@ -857,8 +864,9 @@ export const useGame = create(persist((set, get) => ({
     return total
   },
 
-  // Consign a card: a service lists it; it sells in 2–6 game-days for a bit ABOVE
-  // market, minus a 12% consignment fee. Removes from collection now, pays later.
+  // Consign a card: a service lists it; it sells in 2–6 game-days slightly above market
+  // (1.05–1.20×), minus a 12% consignment fee — so you net ~0.92–1.06× market (roughly AT
+  // market). Removes from collection now, pays later.
   consignCard(uid) {
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return false
