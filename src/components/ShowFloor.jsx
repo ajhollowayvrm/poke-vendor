@@ -211,6 +211,19 @@ export default function ShowFloor({ show, onLeave }) {
     setVaultRip({ set, product })
   }, [show.name, flash])
 
+  // Buy + rip sealed product off a REGULAR booth's table. The booth entry carries the full
+  // set object + product + marked-up ask, so it works for both modern and vintage sealed.
+  // Charges the ask, records the spend, then hands off to the same PackOpening overlay.
+  const buySealed = useCallback(({ set, product, ask, vendorName }) => {
+    if (!set || !product) return
+    const g = useGame.getState()
+    if (g.cash < ask) { flash(`Not enough cash for the ${product.name || product.type}.`); return }
+    if (!g.spend(ask)) return
+    g.recordSetSpend(set.id, ask)
+    g.log('buy', `Bought a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} (${show.name})`, -ask)
+    setVaultRip({ set, product: { ...product, price: ask } })
+  }, [show.name, flash])
+
   return (
     <div className="floorwrap">
       <div className="floorhud">
@@ -306,7 +319,7 @@ export default function ShowFloor({ show, onLeave }) {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault}
+      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault} onRipSealed={buySealed}
         haggledIds={haggledIds} onHaggled={markHaggled} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 

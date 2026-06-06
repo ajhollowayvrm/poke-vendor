@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct, setProducts } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -154,6 +154,38 @@ export function haggleRound({ side, their, market, yourOffer, flex, round, archK
   return { counter }
 }
 
+// What sealed product (if any) a booth has on its table. Returns an array of
+// { card-less sealed entry } with `set`, the product, a marked-up `_ask`, and an
+// `_origin` tag for the UI. Buying it hands off to the same rip flow as the Vault.
+//   - Most booths occasionally lay out a MODERN sealed pack/box at a vendor markup
+//     (convenience: buy product at the show, but you pay over retail).
+//   - Whales reliably stock a big-ticket sealed item (fits "only deals in the big stuff").
+//   - Any booth has a small shot at an occasional VINTAGE sealed pack — so the Vault isn't
+//     the only place to find sealed vintage.
+// `r` is the show's seeded rng so the floor stays stable as you walk it.
+function boothSealed(r, arch) {
+  const out = []
+  const isWhale = arch.key === 'whale'
+  // Modern sealed: whales always lay one out; others ~22% of the time.
+  if (isWhale || r() < 0.22) {
+    const set = pickR(r, SHOP_SETS)
+    const prods = setProducts(set)
+    // Whales favor boxes (the big stuff); everyone else a pack-tier product.
+    const pool = isWhale ? prods.filter(p => p.packs >= 9) : prods.filter(p => p.packs <= 6)
+    const base = (pool.length ? pickR(r, pool) : pickR(r, prods))
+    const markup = 1.12 + r() * (isWhale ? 0.33 : 0.18) // ~1.12–1.45×; whales mark up more
+    out.push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
+  }
+  // Occasional vintage sealed pack on a regular table (rarer than the Vault, ~6%).
+  if (VINTAGE_SETS.length && r() < 0.06) {
+    const vSet = pickR(r, VINTAGE_SETS)
+    const product = vintageProduct(vSet)
+    const markup = 1.2 + r() * 0.5
+    out.push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
+  }
+  return out
+}
+
 // `dayOffset` re-rolls the floor for each day of a multi-day show — different
 // vendors/stock show up day to day.
 export function generateBooths(show, notoriety, dayOffset = 0) {
@@ -167,6 +199,11 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
   const nameOrder = shuffleR(r, VENDOR_NAMES)
   const SUFFIX = ['', ' II', ' III', ' IV']
   const vendorName = (i) => nameOrder[i % nameOrder.length] + SUFFIX[Math.floor(i / nameOrder.length)] || nameOrder[i % nameOrder.length]
+  // Loose vintage singles surface in booth bins more often at bigger shows (the venues that
+  // draw serious collectors). 0 at meetups → meaningful at Worlds. This is where you hunt
+  // raw vintage — you can't buy these sets in the shop.
+  const VINTAGE_SINGLE_CHANCE = { meetup: 0, shop: 0.04, regional: 0.08, national: 0.13, invitational: 0.18, worlds: 0.25 }
+  const vintageChance = VINTAGE_SINGLE_CHANCE[show.tierKey] || 0
   const booths = []
   for (let i = 0; i < n; i++) {
     const arch = pickR(r, ARCHETYPES)
@@ -176,9 +213,15 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
     for (let j = 0; j < stockN; j++) {
       const roll = r()
       let card
+      // A small slice of the bin is a loose VINTAGE single (Base Charizard etc.) at bigger
+      // shows — drawn from the vintage pool instead of the shop pool.
+      if (vintageChance && r() < vintageChance) {
+        card = vintageCardInRange(lo, hi * 3) || null // vintage skews pricey; widen the band
+      }
       // ~15% of stock are "hits" pulled from the upper band; rest is the bulk bin.
-      if (arch.key === 'whale' || roll > 0.85) card = gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3))
-      else card = cardInValueRange(lo, hi * (0.4 + r() * 0.6))
+      if (!card) card = (arch.key === 'whale' || roll > 0.85)
+        ? gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3))
+        : cardInValueRange(lo, hi * (0.4 + r() * 0.6))
       // Price against the card's TRUE value (grade-aware) — a slabbed gem is
       // worth its graded value, not its raw value, so the ask tracks that.
       const worth = cardValue(card)
@@ -200,6 +243,7 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
       vibe: arch.vibe,
       buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
       stock,
+      products: boothSealed(r, arch),  // sealed product on the table (may be empty)
       // grid position assigned by the floor layout
     })
   }

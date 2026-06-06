@@ -367,11 +367,26 @@ export function instance(card, source = 'sealed') {
   }
 }
 
-// Flat pool of every card across all NON-vintage sets (for vendor stock / offers /
-// encounters / wants). Vintage Base Set cards are exclusive to the Vintage Vault —
-// they don't float around ordinary booths, which keeps a Base Charizard special.
+// Flat pool of every card across all NON-vintage sets (for offers / encounters / wants
+// / the modern shop). The base of normal vendor stock too.
 const ALL_CARDS = SHOP_SETS.flatMap(s => s.cards)
 export function randomCard() { return instance(pick(ALL_CARDS)) }
+
+// Vintage singles (Base Charizard, Shining Gyarados, …). These never enter the shop,
+// wants, or online offers — but show vendors DO occasionally surface them in their bins,
+// so the floor is where you hunt loose vintage. Drawn via vintageCardInRange below.
+const VINTAGE_CARDS = VINTAGE_SETS.flatMap(s => s.cards).filter(c => c.price != null)
+// A real vintage single whose raw value falls in [min,max] (nearest by value if the band
+// is empty). Returns null if there's no vintage data at all. `floor` condition = a loose
+// card in the wild varies in condition, like normal booth singles.
+export function vintageCardInRange(min, max) {
+  if (!VINTAGE_CARDS.length) return null
+  const pool = VINTAGE_CARDS.filter(c => c.price >= min && c.price <= max)
+  if (pool.length) return instance(pick(pool), 'floor')
+  const sorted = [...VINTAGE_CARDS].sort((a, b) =>
+    Math.abs(a.price - (min + max) / 2) - Math.abs(b.price - (min + max) / 2))
+  return instance(sorted[0], 'floor')
+}
 
 // Real-data price ceiling — anything requested above this is a synthesized "grail".
 const REAL_PRICE_CEILING = ALL_CARDS.reduce((m, c) => Math.max(m, c.price ?? 0), 0)
