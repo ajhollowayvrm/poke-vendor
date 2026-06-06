@@ -59,6 +59,12 @@ const EN_RARITY_MAP = {
   'Rare Holo':      'Rare Holo',
   'Rare Ultra':     'Ultra Rare',          // modern/Generations full-art ultra
   'Classic Collection': 'Special Illustration Rare', // Celebrations Classic reprints (Base Zard etc.) — chase tier
+  // Some Mega-era episodes (e.g. Perfect Order, ep 399) come back with the JP-style
+  // rarity names for their secret rares — map them like the JP set does, or they fall
+  // through to the "Rare" default and the set loses its IR/SIR/Mega Hyper Rare chases.
+  'Art Rare':         'Illustration Rare',
+  'Special Art Rare': 'Special Illustration Rare',
+  'SECRET RARE':      'Mega Hyper Rare',
 }
 const KNOWN_RARITIES = new Set([
   'Common','Uncommon','Rare','Rare Holo','Double Rare','ACE SPEC Rare','Illustration Rare',

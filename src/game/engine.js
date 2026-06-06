@@ -125,6 +125,20 @@ const SET_RATES = {
       { rarity: 'Mega Hyper Rare',           p: 0.0010 }, // the grail — 1 in 956
     ],
   },
+  // Perfect Order (me3) — official TCGplayer pull rates (3,500+ packs). Mega-era Series
+  // rates, ~identical to Mega Evolution / Phantasmal Flames. MHR (Mega Zygarde ex) is the
+  // grail at ~1 in 1786 packs. Source: TCGplayer Infinite, "Perfect Order Pull Rates" (Apr 2026).
+  me3: {
+    rare: [
+      { rarity: 'Double Rare', p: 0.2097 },  // 1 in 5
+      { rarity: 'Ultra Rare',  p: 0.0854 },  // 1 in 12
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.1120 }, // 1 in 9
+      { rarity: 'Special Illustration Rare', p: 0.0123 }, // 1 in 81
+      { rarity: 'Mega Hyper Rare',           p: 0.0006 }, // the grail — 1 in 1786
+    ],
+  },
   // Prismatic Evolutions — SIRs ~2× normal; DR 1-in-6.1, UR 1-in-13.4, Hyper 1-in-178.6.
   // Poké Ball foil ~1 in 3, Master Ball ~1 in 19. God pack ~1 in 2,500.
   // Sources: thepricedex.com/set/sv8pt5, TCGplayer, PokeBeach.
