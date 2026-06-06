@@ -144,16 +144,25 @@ const GOAL_POOL = [
   { key: 'attend', label: () => `Attend a card show`,                targets: [1], cash: 30, noto: 1 },
   { key: 'profit', label: n => `Earn $${n} in sales`,               targets: [100,250], cash: 30, noto: 1 },
 ]
-function makeDailyGoals(noto) {
+// Goals run on a WEEKLY cadence: a fresh set is rolled and then sticks for 7 days
+// before the next refresh. Targets/rewards are scaled up for the week-long window.
+export const GOAL_PERIOD_DAYS = 7
+// Absolute day counter that doesn't wrap at the month boundary (currentDay resets to 1
+// each new calendar month). Goal cadence keys off this so a week spans months cleanly.
+function absoluteDay(currentDay, monthsElapsed) { return (monthsElapsed || 0) * CALENDAR_DAYS + currentDay }
+function makeWeeklyGoals(noto) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
-  const count = 2 + (Math.random() < 0.5 ? 1 : 0) // 2–3 goals
+  const count = 3 + (Math.random() < 0.5 ? 1 : 0) // 3–4 goals for the week
   const mult = 1 + noto / 150 // rewards scale gently with fame
   return shuffled.slice(0, count).map(g => {
-    const target = g.targets[Math.floor(Math.random() * g.targets.length)]
+    // Scale the daily target up toward a week's worth (×~5, capped by the biggest tier
+    // so a "rip 3" doesn't balloon absurdly), then pick from there.
+    const base = g.targets[Math.floor(Math.random() * g.targets.length)]
+    const target = g.key === 'profit' ? base * 5 : Math.min(base * 5, Math.max(base, Math.round(base * (3 + Math.random() * 2))))
     return {
       key: g.key, target, progress: 0, done: false,
       label: g.label(target),
-      cash: Math.round(g.cash * mult), noto: g.noto,
+      cash: round2(g.cash * mult * 3), noto: g.noto * 3, // bigger payout for a week-long goal
     }
   })
 }
@@ -417,6 +426,12 @@ function advanceDaysWith(set, get, days, away) {
   // Living market: drift every set's price multiplier across the days passed; a hype
   // or crash event may fire on a set (logged below so the player feels the market move).
   const market = driftMarket(s.marketMults, s.marketHistory, days, get().log)
+  // Weekly goals: only roll a fresh set once 7+ days have passed since the current set
+  // was generated (or if there are none yet). Otherwise the existing week's goals carry
+  // over with their progress intact. goalsDay stores the ABSOLUTE day (month-safe).
+  const newAbsDay = absoluteDay(d, months)
+  const goalsExpired = !s.dailyGoals.length || newAbsDay - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS
+  const periodGoals = goalsExpired ? makeWeeklyGoals(noto) : s.dailyGoals
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
     marketMults: market.marketMults, marketHistory: market.marketHistory,
@@ -427,8 +442,8 @@ function advanceDaysWith(set, get, days, away) {
     listings: remainingListings,
     wantList: wants,
     forumPosts,
-    dailyGoals: makeDailyGoals(noto), // fresh goals each new day
-    goalsDay: d,
+    dailyGoals: periodGoals,                       // weekly set; refreshed every 7 days
+    goalsDay: goalsExpired ? newAbsDay : (s.goalsDay || newAbsDay),
     job: activeJob,        // a pending job may have started during these days
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
@@ -1039,7 +1054,7 @@ export const useGame = create(persist((set, get) => ({
   cardsForForumPost(post) { return get().collection.filter(c => cardMatchesWant(c, post)) },
   // Fill a forum WTB post with one of your cards → above-market payout + a little notoriety
   // (filling public orders builds your name — it's how you EARN your way past the inbound
-  // gate). Counts toward the same 'want' daily goal/stat as a direct collector want.
+  // gate). Counts toward the same 'want' weekly goal/stat as a direct collector want.
   fulfillForumPost(postId, uid) {
     const post = (get().forumPosts || []).find(p => p.id === postId)
     const card = get().collection.find(c => c.uid === uid)
@@ -1065,13 +1080,24 @@ export const useGame = create(persist((set, get) => ({
     set({ marketMults: {}, marketHistory: {} })
   },
 
-  // Ensure a fresh set of goals exists (called on mount if none yet).
+  // Ensure a set of weekly goals exists (called on mount). Seeds a fresh set only if
+  // there are none yet or the 7-day window since they were generated has elapsed — an
+  // in-progress week carries over untouched. goalsDay holds the absolute (month-safe) day.
   ensureDailyGoals() {
-    if (!get().dailyGoals.length || get().goalsDay !== get().currentDay) {
-      set(s => ({ dailyGoals: makeDailyGoals(s.notoriety), goalsDay: s.currentDay }))
+    const s = get()
+    const today = absoluteDay(s.currentDay, s.monthsElapsed)
+    if (!s.dailyGoals.length || today - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS) {
+      set({ dailyGoals: makeWeeklyGoals(s.notoriety), goalsDay: today })
     }
   },
-  // Advance any daily goal matching `key` by `amount`; auto-complete + pay.
+  // Days until the current weekly goal set refreshes (0 = refreshes on the next day-tick).
+  goalsResetInDays() {
+    const s = get()
+    if (!s.dailyGoals.length) return 0
+    const today = absoluteDay(s.currentDay, s.monthsElapsed)
+    return Math.max(0, GOAL_PERIOD_DAYS - (today - (s.goalsDay || today)))
+  },
+  // Advance any weekly goal matching `key` by `amount`; auto-complete + pay.
   bumpGoal(key, amount = 1) {
     const goals = get().dailyGoals
     if (!goals.length) return
@@ -1513,7 +1539,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 22,
+  version: 23,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1660,6 +1686,13 @@ export const useGame = create(persist((set, get) => ({
       // Tap-to-pay was folded into the Smartphone upgrade and removed as a standalone rail;
       // drop the dead payTap upgrade flag so it no longer shows as an accepted method.
       if (state.upgrades?.payTap) { const up = { ...state.upgrades }; delete up.payTap; state.upgrades = up }
+    }
+    if (version < 23) {
+      // Goals moved from daily to weekly (persist 7 days). Old saves stored goalsDay as a
+      // small in-month day number and held a daily-sized goal set; reset both so the next
+      // day-tick / mount rolls a fresh weekly set keyed off the absolute day.
+      state.dailyGoals = []
+      state.goalsDay = 0
     }
     return state
   },

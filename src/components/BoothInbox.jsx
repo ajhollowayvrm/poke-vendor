@@ -28,6 +28,7 @@ export default function BoothInbox() {
   const fulfillForumPost = useGame(s => s.fulfillForumPost)
   const dailyGoals = useGame(s => s.dailyGoals)
   const ensureDailyGoals = useGame(s => s.ensureDailyGoals)
+  const goalsResetInDays = useGame(s => s.goalsResetInDays)
   const collection = useGame(s => s.collection)
   const listings = useGame(s => s.listings)
   const shopDisplay = useGame(s => s.shopDisplay)
@@ -147,20 +148,27 @@ export default function BoothInbox() {
         <span className="muted" style={{ fontSize: 12 }}>Orders arrive as days pass — attend a show to bring in several at once.</span>
       </div>
 
-      {dailyGoals.length > 0 && (
+      {dailyGoals.length > 0 && (() => {
+        const resetIn = goalsResetInDays()
+        return (
         <div className="goals">
-          <div className="goals-head">🎯 Today's goals</div>
+          <div className="goals-head">🎯 This week's goals
+            <span className="muted" style={{ fontWeight: 400, fontSize: 12, marginLeft: 8 }}>
+              {resetIn <= 0 ? 'refreshes next day' : `refreshes in ${resetIn} day${resetIn === 1 ? '' : 's'}`}
+            </span>
+          </div>
           <div className="goals-row">
             {dailyGoals.map((g, i) => (
               <div key={i} className={`goal ${g.done ? 'done' : ''}`}>
                 <div className="goal-label">{g.done ? '✓ ' : ''}{g.label}</div>
                 <div className="goal-bar"><div style={{ width: `${Math.min(100, 100*g.progress/g.target)}%` }} /></div>
-                <div className="goal-reward">{g.progress}/{g.target} · {g.cash ? `$${g.cash}` : ''}{g.cash && g.noto ? ' + ' : ''}{g.noto ? `${g.noto}★` : ''}</div>
+                <div className="goal-reward">{g.progress}/{g.target} · {g.cash ? fmtMoney(g.cash) : ''}{g.cash && g.noto ? ' + ' : ''}{g.noto ? `${g.noto}★` : ''}</div>
               </div>
             ))}
           </div>
         </div>
-      )}
+        )
+      })()}
 
       <div className="toolbar" style={{ marginTop: 4 }}>
         <span className="muted" style={{ fontSize: 13 }}>You accept:</span>
