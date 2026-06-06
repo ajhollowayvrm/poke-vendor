@@ -120,7 +120,7 @@ const SET_GROUP = {
 function classifyProduct(name) {
   const n = name.toLowerCase()
   // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs.
-  if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|figure collection|art bundle|accessory|exclusive|\bcase\b/.test(n)) return null
+  if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|\bpin\b|pin collection|figure collection|art bundle|accessory|exclusive|\bcase\b/.test(n)) return null
   if (/super-premium collection$/.test(n))  return { type: 'Super-Premium Collection', icon: '🏆', packs: 15, bonus: 'promo' }
   if (/premium .*collection$|premium figure collection$/.test(n)) return { type: 'Premium Collection', icon: '💎', packs: 7, bonus: 'promo' }
   if (/elite trainer box$/.test(n))         return { type: 'Elite Trainer Box', icon: '📦', packs: 9, bonus: 'promo' }
@@ -133,9 +133,28 @@ function classifyProduct(name) {
   if (/3-pack blister|three pack blister/.test(n)) return { type: '3-Pack Blister', icon: '🪟', packs: 3, bonus: null }
   if (/2-pack blister|two pack blister/.test(n))   return { type: '2-Pack Blister', icon: '🪟', packs: 2, bonus: 'promo' }
   if (/sleeved booster( pack)?$|checklane/.test(n))   return { type: 'Sleeved Pack', icon: '🛡️', packs: 1, bonus: null }
+  // "<Pokémon> ex Box" / "V Box" / "VMAX Box" — a small box built around a chase card:
+  // a few packs + the featured promo. Common in the Mega era (e.g. "Mega Meganium ex Box").
+  if (/\bex box$|\bv box$|\bvmax box$|\bvstar box$/.test(n)) return { type: 'ex Box', icon: '🎁', packs: 4, bonus: 'promo' }
   // pokemon-api names the single pack just "<Set> Booster" (no "Pack"); also match that.
   if (/booster( pack)?$/.test(n))           return { type: 'Booster Pack', icon: '🎴', packs: 1, bonus: null }
-  return null
+  // CATCH-ALL: an item that survived the hard-reject (so it's not an accessory/case/display)
+  // but matched no known type. Rather than silently drop a potentially-rippable product, fall
+  // it through to a generic openable, GUESSING pack count from the name (price as a tiebreaker).
+  // bonus stays null — we only promise a guaranteed promo for types we KNOW ship one.
+  // Tagged `_guessed` so the build summary can surface these for later curation.
+  return guessProduct(n)
+}
+
+// Best-effort classifier for an unrecognized (but non-rejected) sealed product. The raw
+// API gives us no pack count, so infer one from words in the name: boxes hold more than
+// tins/collections, which hold more than blisters, which hold more than a lone pack.
+function guessProduct(n) {
+  if (/\bbox$|\bbox\b/.test(n))                 return { type: 'Box', icon: '📦', packs: 4, bonus: null, _guessed: true }
+  if (/collection$|\bcollection\b|\btin\b/.test(n)) return { type: 'Collection', icon: '🧰', packs: 3, bonus: null, _guessed: true }
+  if (/blister|\bpack(s)?\b/.test(n))           return { type: 'Blister', icon: '🪟', packs: 2, bonus: null, _guessed: true }
+  // Truly opaque name that still wasn't an accessory — treat as a single pack (safe floor).
+  return { type: 'Sealed Product', icon: '🎴', packs: 1, bonus: null, _guessed: true }
 }
 
 // Pull-rate model for modern Scarlet & Violet / Mega Evolution era English packs.
@@ -346,12 +365,12 @@ async function fetchPaProducts(ep) {
     const cur = byType[cls.type]
     if (!cur || price < cur.price) {
       byType[cls.type] = { type: cls.type, icon: cls.icon, packs: cls.packs, bonus: cls.bonus,
-        name: p.name, price: round2(price), tcgId: p.tcgplayer_id ?? p.id }
+        name: p.name, price: round2(price), tcgId: p.tcgplayer_id ?? p.id, _guessed: cls._guessed || undefined }
     }
   }
-  const order = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
-    'Booster Bundle','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box']
-  return Object.values(byType).sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
+  // Keep `_guessed` here so the per-set build log can flag heuristic types; the main
+  // loop strips it before writing sets.json. (TCGCSV/JP paths strip it inline.)
+  return sortProducts(Object.values(byType))
 }
 
 function round2(n) { return Math.round(n * 100) / 100 }
@@ -424,13 +443,20 @@ async function fetchSealed(groupId) {
     const cur = byType[cls.type]
     if (!cur || price < cur.price) {
       byType[cls.type] = { type: cls.type, icon: cls.icon, packs: cls.packs, bonus: cls.bonus,
-        name: p.name, price: Math.round(price * 100) / 100, tcgId: p.productId }
+        name: p.name, price: Math.round(price * 100) / 100, tcgId: p.productId, _guessed: cls._guessed || undefined }
     }
   }
-  // canonical display order
-  const order = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
-    'Booster Bundle','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box']
-  return Object.values(byType).sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
+  return sortProducts(Object.values(byType)).map(({ _guessed, ...p }) => p)
+}
+
+// Canonical display order for product types, with the generic catch-all buckets after
+// the known types and anything unlisted sorted last. Shared by all fetch paths.
+const PRODUCT_ORDER = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
+  'Booster Bundle','ex Box','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box',
+  'Box','Collection','Blister','Sealed Product']
+function sortProducts(arr) {
+  const rank = t => { const i = PRODUCT_ORDER.indexOf(t); return i === -1 ? PRODUCT_ORDER.length : i }
+  return arr.sort((a, b) => rank(a.type) - rank(b.type))
 }
 
 // Build a whole Japanese set from TCGCSV category 85 (no pokemontcg.io equivalent).
@@ -476,9 +502,7 @@ async function fetchJapaneseSet(cfg) {
       if (!cur || price < cur.price) byType[cls.type] = { ...cls, name: p.name, price, tcgId: p.productId }
     }
   }
-  const order = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
-    'Booster Bundle','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box']
-  const products = Object.values(byType).sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
+  const products = sortProducts(Object.values(byType)).map(({ _guessed, ...p }) => p)
   return {
     id: cfg.id, name: cfg.name, series: cfg.series, releaseDate: cfg.releaseDate,
     printedTotal: cards.length, total: cards.length,
@@ -521,8 +545,15 @@ async function main() {
       products = [vp]
       console.log(`    vintage pack: ${vp.name} @ $${vp.price}`)
     } else {
-      console.log(`    ${cards.length} cards, sealed: ${products.map(p => p.type).join(', ') || 'none'}`)
+      // Mark guessed (catch-all) types with a ? so a pass over the build output surfaces
+      // which sets leaned on the heuristic and may want a hand-curated rule.
+      const label = products.map(p => p._guessed ? `${p.type}?(${p.packs}pk)` : p.type).join(', ') || 'none'
+      console.log(`    ${cards.length} cards, sealed: ${label}`)
+      const guessed = products.filter(p => p._guessed)
+      if (guessed.length) console.log(`    ⚠️  ${guessed.length} guessed product type(s) — verify: ${guessed.map(p => `"${p.name}"→${p.type}/${p.packs}pk`).join('; ')}`)
     }
+    // Strip the build-only `_guessed` tag so it never lands in shipped sets.json.
+    products = products.map(({ _guessed, ...p }) => p)
 
     const priced = cards.filter(c => c.price != null).length
     const withPsa = cards.filter(c => c.psa).length
