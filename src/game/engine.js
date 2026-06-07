@@ -690,6 +690,10 @@ export function setIdOfCard(card) {
   return i > 0 ? id.slice(0, i) : id
 }
 
+const SET_BY_ID = Object.fromEntries(SETS.map(s => [s.id, s]))
+export function setNameOfId(setId) { return SET_BY_ID[setId]?.name }
+export function setNameOfCard(card) { const id = setIdOfCard(card); return id ? SET_BY_ID[id]?.name : undefined }
+
 export function rawValue(card) {
   const override = PRICE_OVERRIDES[card.id]
   let base = override ?? card.price ?? CANONICAL_PRICE[card.id] ?? estimateByRarity(card.rarity)

@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank, preloadCardImages } from '../game/engine'
+import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
@@ -27,6 +28,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [ripValue, setRipValue] = useState(0)     // cumulative card value across the WHOLE rip
   const [packsOpened, setPacksOpened] = useState(0) // how many packs we've fully opened this rip
   const addPulls = useGame(s => s.addPulls)
+  const wantList = useGame(s => s.wantList)
+  const forumPosts = useGame(s => s.forumPosts)
+  const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
   const committed = useRef(false)
   const autoRipped = useRef(false)                 // did we already auto-rip the current idle pack?
   const speed = Math.max(0.25, ripSpeed)           // guard against absurd values
@@ -34,11 +38,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
   const last = packNo >= totalPacks
 
+  function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
+
   function rip() {
     if (phase !== 'idle') return
     const cards = openPack(set)
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
-    cards.forEach(c => { c._isHit = isHit(c) })
+    cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     const god = !!cards._god
     const demigod = !!cards._demigod
     setIsGod(god)
@@ -64,7 +70,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     }
     setShown(i + 1)
     const c = cards[i]
-    const special = c._isHit || c.foil
+    const special = c._isHit || c.foil || c._fillsWant
     if (special) { setBurst(true); setTimeout(() => setBurst(false), ms(1200)) }
     // Side callout: name every card as it lands, and accumulate hits/foils.
     setCurrent(c)
@@ -130,13 +136,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       if (pack._demigod) pack.forEach(c => { c._fromDemigod = true })
       fast.push(...pack)
     }
-    fast.forEach(c => { c._isHit = isHit(c) })
+    fast.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     if (fast.length) addPulls(fast, set.name, remaining)
     setExtra(e => [...e, ...fast])
     // fold the fast-forwarded packs into the running rip tally
     setRipValue(v => v + fast.reduce((a, c) => a + cardValue(c), 0))
     setPacksOpened(n => n + remaining)
-    const fastHits = fast.filter(c => c._isHit || c.foil)
+    const fastHits = fast.filter(c => c._isHit || c.foil || c._fillsWant)
     if (fastHits.length) setHits(h => [...fastHits, ...h])
     addBonusAndFinish()
   }
@@ -168,7 +174,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           )}
           <div className="rip-summary-hits">
             <div className="rip-side-head" style={{ textAlign: 'center' }}>
-              {hits.length ? `Hits (${hits.length})` : 'Hits'}
+              {/* Count true rarity/foil hits only; wanted cards also appear in the list
+                  (with their own ⭐ badge) but don't inflate the "Hits" tally. */}
+              {(() => { const n = hits.filter(c => c._isHit || c.foil).length; return n ? `Hits (${n})` : 'Hits' })()}
             </div>
             {hits.length === 0 ? (
               <p className="muted" style={{ fontSize: 13, margin: '4px 0' }}>No hits this time — better luck next rip. 🤞</p>
@@ -188,6 +196,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       <div className="rip-hit-val">
                         {fmtMoney(cardValue(c))}
                         {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                        {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                       </div>
                     </div>
                   )
@@ -372,6 +381,16 @@ function NowRevealing({ card }) {
                 💎 PSA 10 <b>{fmtMoney(psa10Value(card))}</b>
               </div>
             )}
+            {card._fillsWant && (
+              <div className="rip-now-want">
+                ⭐ Fills a want!
+                <div className="rip-now-want-note">
+                  {card._wantForum
+                    ? `+${Math.round((card._wantPremium - 1) * 100)}% on the forum`
+                    : `${card._wantWho} wants this`}
+                </div>
+              </div>
+            )}
           </div>
         )
       })() : <div className="muted" style={{ fontSize: 12 }}>Tearing it open…</div>}
@@ -381,9 +400,12 @@ function NowRevealing({ card }) {
 
 // Running tally of every hit/foil pulled this rip — a horizontal strip above the reveal.
 function HitList({ hits }) {
+  // Count true rarity/foil hits only; wanted cards still render in the list (with their
+  // ⭐ badge) but aren't counted as "Hits" so the tally matches the game's hit meaning.
+  const hitCount = hits.filter(c => c._isHit || c.foil).length
   return (
     <aside className="rip-side rip-hits rip-hits-top">
-      <div className="rip-side-head">Hits {hits.length ? `(${hits.length})` : ''}</div>
+      <div className="rip-side-head">Hits {hitCount ? `(${hitCount})` : ''}</div>
       {hits.length === 0 ? (
         <div className="muted" style={{ fontSize: 12 }}>No hits yet — fingers crossed. 🤞</div>
       ) : (
@@ -402,6 +424,7 @@ function HitList({ hits }) {
                 <div className="rip-hit-val">
                   {fmtMoney(cardValue(c))}
                   {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                  {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                 </div>
               </div>
             )

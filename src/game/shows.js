@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct, setProducts } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -374,14 +374,15 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   if (roll < 0.22 && fleecePool.length) {
     const visitor = visitorFor(channel, 'fleeced')
     const want = pickAny(null, fleecePool)
+    const setName = setNameOfCard(want)
     const pay = pickPayMethod(channel, accepted)
     return {
       kind: 'fleeced',
       ownedUid: want.uid,
       title: online ? `${cap(visitor)} messages you, frustrated` : `${cap(visitor)} approaches, looking dejected`,
       body: online
-        ? `"I just got burned on a trade — paid way over for a beat-up card. I'm tapped out but I really wanted a ${want.name}…"`
-        : `"I just paid way too much for a beat-up card at another booth. I'm basically out of money. I really wanted a ${want.name}…"`,
+        ? `"I just got burned on a trade — paid way over for a beat-up card. I'm tapped out but I really wanted a ${want.name}${setName ? ` from ${setName}` : ''}…"`
+        : `"I just paid way too much for a beat-up card at another booth. I'm basically out of money. I really wanted a ${want.name}${setName ? ` from ${setName}` : ''}…"`,
       card: want,
       options: [
         { text: `${online ? 'Mail' : 'Give'} them the ${want.name} for free`, tone: 'kind',
@@ -574,13 +575,14 @@ export function makeWant(rich = false) {
     const all = SHOP_SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) > (rich ? 8 : 1)))
     const card = wpick(all)
     const premium = 1.25 + Math.random() * (rich ? 0.6 : 0.3) // 1.25–1.85×
+    const setName = setNameOfCard(card)
     return {
       id: `w${Math.floor(Math.random()*1e9).toString(36)}`,
       kind: 'card', who, daysLeft,
-      cardId: card.id, cardName: card.name, img: card.img,
+      cardId: card.id, cardName: card.name, img: card.img, setName,
       premiumMult: round2(premium),
       notoriety: 3 + Math.floor((card.price ?? 0) / 20),
-      desc: `${cap(who)} wants a ${card.name}`,
+      desc: `${cap(who)} wants a ${card.name}${setName ? ` (${setName})` : ''}`,
     }
   }
   const set = wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
@@ -600,6 +602,6 @@ export function makeWant(rich = false) {
 export function cardMatchesWant(card, want) {
   if (card.grade) return false // they want a raw single to slot in a binder
   if (want.kind === 'card') return card.id === want.cardId
-  if (want.kind === 'rarity') return card.setId === want.setId && card.rarity === want.rarity
+  if (want.kind === 'rarity') return setIdOfCard(card) === want.setId && card.rarity === want.rarity
   return false
 }
