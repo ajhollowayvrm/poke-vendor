@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useGame, dayLengthMs } from '../game/store'
-import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney } from '../game/engine'
+import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -62,6 +62,7 @@ export default function Bench() {
 
 // Multi-select raw cards and submit them in one batch for a per-card bulk discount.
 function BulkSubmit({ collection, submitted, cash, onSubmit }) {
+  const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const [open, setOpen] = useState(false)
   const [tierKey, setTierKey] = useState('economy')
   const [picked, setPicked] = useState(() => new Set())
@@ -112,13 +113,22 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
           </div>
 
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', maxHeight: 360, overflowY: 'auto' }}>
-            {raw.map(c => (
+            {raw.map(c => {
+              const est = cutEstimate(c, hasLoupe)
+              return (
               <div key={c.uid} className={`bulk-card ${picked.has(c.uid) ? 'picked' : ''}`} onClick={() => toggle(c.uid)}>
                 <CardTile card={c} interactive={false} />
                 <div className="muted" style={{ fontSize: 10.5, textAlign: 'center' }}>raw {fmtMoney(rawValue(c))}</div>
+                <div style={{ textAlign: 'center', marginTop: 2 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, color: est.color, background: est.color + '22', borderRadius: 4, padding: '1px 5px' }}
+                    title={est.label}>
+                    👁️ {est.short}
+                  </span>
+                </div>
                 {picked.has(c.uid) && <span className="bulk-check">✓</span>}
               </div>
-            ))}
+              )
+            })}
           </div>
 
           <div className="row" style={{ marginTop: 12, alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>

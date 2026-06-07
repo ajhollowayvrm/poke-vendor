@@ -557,6 +557,11 @@ function rollCondition(source = 'sealed') {
   if (r < 0.45) return 'NM'; if (r < 0.78) return 'LP'; if (r < 0.95) return 'MP'; return 'DMG'
 }
 
+// Hidden cut quality: a 0..1 score assigned at pull time representing the card's
+// physical cut/centering quality. Average of 3 uniform samples → bell-ish, most
+// cards cluster mid (0.3–0.7), true gems (0.85+) and duds (<0.20) are uncommon.
+function rollCut() { return (Math.random() + Math.random() + Math.random()) / 3 }
+
 let _uid = 0
 export function instance(card, source = 'sealed') {
   return {
@@ -564,6 +569,7 @@ export function instance(card, source = 'sealed') {
     ...card,
     reverse: false,
     condition: card.condition ?? rollCondition(source),
+    _cut: card._cut ?? rollCut(),
     grade: null, // null | {overall, centering, corners, edges, surface, fee, gradedAt}
   }
 }
@@ -951,9 +957,15 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   // luck (0..~0.1) shifts the distribution toward higher grades — e.g. the loupe.
   // It nudges each cutoff up proportionally rather than subtracting from the roll,
   // so the lower tail (6 and below) stays reachable instead of becoming impossible.
+  //
+  // cutLuck: bias from the card's hidden cut quality (_cut 0..1, centered at 0.5).
+  // K=0.16 → a Pristine card adds +0.08 lean; a Rough card subtracts -0.08.
+  // Guard: _cut==null (old saves) → cutLuck=0, formula reduces to original exactly.
+  const cutLuck = card._cut == null ? 0 : Math.max(-0.12, Math.min(0.12, (card._cut - 0.5) * 0.16))
+  const effectiveLuck = Math.max(-0.25, Math.min(0.25, luck + cutLuck))
   const sub = () => {
     const r = Math.random()
-    const b = (p) => p + luck * (1 - p) // pull each cutoff toward 1 by `luck`
+    const b = (p) => Math.max(0.001, Math.min(0.999, p + effectiveLuck * (1 - p))) // pull each cutoff toward 1 by combined lean
     if (r < b(0.30)) return 10
     if (r < b(0.62)) return 9
     if (r < b(0.82)) return 8
@@ -980,6 +992,52 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   overall = Math.max(1, Math.min(cap, Math.min(overall, min === 10 ? 10 : min + 1)))
   // record the fee the player actually paid (after loyalty discount), not list price
   return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier, gradedAt: Date.now() }
+}
+
+// ---- Eyeball cut-quality estimate ----
+// Returns a qualitative read on a card's hidden cut (_cut 0..1).
+// precise=true (loupe owned): exact tier + specific detail line.
+// precise=false: fuzzy, hedged wording that's directionally right but vague.
+// Also appends a condition-cap note for played cards (LP/MP/DMG).
+// Backward-compat: _cut==null → treat as 0.5 (Clean) so old saves show a neutral read.
+const CUT_TIERS = [
+  { tier: 'Rough',      min: 0,    max: 0.20, label: 'Rough',      color: '#ff5e6c', detail: 'Off-center with edge wear' },
+  { tier: 'Off-center', min: 0.20, max: 0.40, label: 'Off-center', color: '#ff9f43', detail: 'Noticeably off-center' },
+  { tier: 'Clean',      min: 0.40, max: 0.65, label: 'Clean',      color: '#9db8ff', detail: 'Decent centering, minor flaws' },
+  { tier: 'Sharp',      min: 0.65, max: 0.85, label: 'Sharp',      color: '#36d399', detail: 'Well-centered, crisp edges' },
+  { tier: 'Pristine',   min: 0.85, max: 1.01, label: 'Pristine',   color: '#7cf0ff', detail: 'Dead-centered, sharp corners' },
+]
+// Fuzzy labels span ~±1 tier in wording; never name the exact tier confidently.
+const FUZZY_LABELS = {
+  'Rough':      'Looks rough — hard to tell without a loupe',
+  'Off-center': 'Looks a bit off — could be better',
+  'Clean':      'Looks clean-ish',
+  'Sharp':      'Looks sharp — could be a gem?',
+  'Pristine':   'Looks really sharp — could be a gem?',
+}
+// Compact fuzzy word for tight UI (the Bench tile): a deliberately COARSE bucket that
+// must never reveal the exact tier without the loupe. Adjacent tiers share a word (so
+// Sharp/Pristine are indistinguishable, Rough/Off-center likewise), and the words are
+// chosen to NOT match any exact tier name — only the loupe gives the real classification.
+const FUZZY_SHORT = {
+  'Rough':      'iffy?',
+  'Off-center': 'iffy?',
+  'Clean':      'ok?',
+  'Sharp':      'nice?',
+  'Pristine':   'nice?',
+}
+export function cutEstimate(card, precise) {
+  // Null-safe: _cut==null means an old save with no cut data; treat as 0.5 (Clean).
+  const cut = card._cut ?? 0.5
+  const t = CUT_TIERS.find(t => cut >= t.min && cut < t.max) || CUT_TIERS[CUT_TIERS.length - 1]
+  const cap = card.condition && CONDITIONS[card.condition] ? CONDITIONS[card.condition].maxGrade : 10
+  const capNote = cap < 10 ? ` · capped at PSA ${cap} by condition` : ''
+  // `short` is a compact word for tight UI: the exact tier when precise, a coarse
+  // never-leaks-the-tier word when fuzzy. `label` is the full read for roomy UI.
+  if (precise) {
+    return { tier: t.tier, label: t.label, short: t.label, detail: t.detail + capNote, color: t.color }
+  }
+  return { tier: t.tier, label: FUZZY_LABELS[t.tier] + capNote, short: FUZZY_SHORT[t.tier], detail: null, color: t.color }
 }
 
 export function round2(n) { return Math.round(n * 100) / 100 }

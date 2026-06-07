@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { cardValue, rawValue, psa10Value, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney } from '../game/engine'
+import { cardValue, rawValue, psa10Value, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
 
 export default function CardModal({ card, onClose }) {
+  const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const quickSell = useGame(s => s.quickSell)
   const quickSellRate = useGame(s => s.quickSellRate)
   const consign = useGame(s => s.consignCard)
@@ -102,6 +103,22 @@ export default function CardModal({ card, onClose }) {
                     <p style={{ fontSize: 13, margin: 0 }} className="muted">
                       💎 If it graded <b>PSA 10</b>: <b style={{ color: 'var(--gold)' }}>{fmtMoney(p10)}</b>
                       {!reachable && <span style={{ color: CONDITIONS[card.condition].color }}> — but {CONDITIONS[card.condition].label} caps it at PSA {cap}</span>}
+                    </p>
+                  )
+                })()}
+                {(() => {
+                  const est = cutEstimate(card, hasLoupe)
+                  return (
+                    <p style={{ fontSize: 13, margin: '6px 0 0' }}>
+                      <span className="pill" style={{ background: est.color + '22', color: est.color, fontSize: 12, padding: '2px 7px', borderRadius: 6, fontWeight: 700 }}>
+                        👁️ Cut: {est.label}
+                      </span>
+                      {hasLoupe && est.detail && (
+                        <span className="muted" style={{ fontSize: 12, marginLeft: 7 }}>{est.detail}</span>
+                      )}
+                      {!hasLoupe && (
+                        <span className="muted" style={{ fontSize: 11, marginLeft: 7 }}>Jeweler's Loupe gives a precise read</span>
+                      )}
                     </p>
                   )
                 })()}
