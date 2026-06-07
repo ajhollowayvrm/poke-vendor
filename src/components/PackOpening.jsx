@@ -19,6 +19,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [shown, setShown] = useState(0)
   const [burst, setBurst] = useState(false)
   const [isGod, setIsGod] = useState(false)
+  const [isDemigod, setIsDemigod] = useState(false)
   const [current, setCurrent] = useState(null)    // the card being revealed right now (side callout)
   const [hits, setHits] = useState([])            // every hit/foil pulled this whole rip (right list)
   const [finished, setFinished] = useState(false) // whole product done
@@ -39,11 +40,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
+    const demigod = !!cards._demigod
     setIsGod(god)
+    setIsDemigod(demigod)
     setCurrent(null)
     setPulls(cards)
     setPhase('shaking')
-    setTimeout(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : 900))
+    setTimeout(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : demigod ? 1200 : 900))
   }
 
   function revealNext(cards, i) {
@@ -56,6 +59,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
         setPacksOpened(n => n + 1)
       }
       if (cards._god) { setBurst(true); setTimeout(() => setBurst(false), 3000) } // big finale
+      else if (cards._demigod) { setBurst(true); setTimeout(() => setBurst(false), 1800) }
       setPhase('done'); return
     }
     setShown(i + 1)
@@ -74,7 +78,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function resetForNext() {
     committed.current = false
     autoRipped.current = false
-    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setCurrent(null)
+    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false); setCurrent(null)
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -122,6 +126,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     for (let i = 0; i < remaining; i++) {
       const pack = openPack(set)
       if (pack._god) pack.forEach(c => { c._fromGod = true })
+      if (pack._demigod) pack.forEach(c => { c._fromDemigod = true })
       fast.push(...pack)
     }
     fast.forEach(c => { c._isHit = isHit(c) })
@@ -249,6 +254,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       {(phase === 'revealing' || phase === 'done') && (
         <>
           {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
+          {isDemigod && <div className="demigodbanner">{(pulls._specialLabel || 'DEMIGOD PACK!')} <small>Most of the pack is a hit.</small></div>}
 
           {/* TOP — pack-done controls surface here so the next-pack button is up top, not below the cards */}
           {phase === 'done' && (
@@ -279,7 +285,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
             {/* CENTER — the reveal row + pack-value summary */}
             <div className="rip-center">
-              <div className={`reveal-row ${isGod ? 'god' : ''}`}>
+              <div className={`reveal-row ${isGod ? 'god' : isDemigod ? 'demigod' : ''}`}>
                 {pulls.map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')

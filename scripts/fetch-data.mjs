@@ -38,9 +38,11 @@ const EN_SETS = [
   { id: 'me1',      name: 'Mega Evolution' },
   { id: 'zsv10pt5', name: 'Black Bolt' },
   { id: 'rsv10pt5', name: 'White Flare' },
+  { id: 'sv10',     name: 'Destined Rivals' },
   { id: 'sv8pt5',   name: 'Prismatic Evolutions' },
   { id: 'cel25',    name: 'Celebrations' },
   { id: 'g1',       name: 'Generations' },
+  { id: 'sv3pt5',   name: '151' },
   // vintage (sold only via the Vintage Vault) — most desirable older chase sets
   { id: 'ex15',    name: 'EX Dragon Frontiers',    vintage: true },
   { id: 'ex7',     name: 'EX Team Rocket Returns', vintage: true },
@@ -109,6 +111,8 @@ const SET_GROUP = {
   sv8pt5:   23821, // Prismatic Evolutions
   zsv10pt5: 24325, // Black Bolt
   rsv10pt5: 24326, // White Flare
+  sv10:     24269, // Destined Rivals
+  sv3pt5:   23237, // 151
   cel25:    2867,  // Celebrations
   g1:       1728,  // Generations
   base1:    604,   // Base Set (1999) — vintage vault product
@@ -293,6 +297,8 @@ async function fetchSingles(groupId) {
   for (const p of prods) {
     const ext = Object.fromEntries((p.extendedData || []).map(e => [e.name, e.value]))
     if (!ext.Number) continue
+    // Skip Code Cards — digital redemption rows, not collectibles.
+    if (ext.Rarity === 'Code Card') continue
     const best = bestByProduct[p.productId]
     if (!best) continue
     const num = String(ext.Number).split('/')[0].replace(/^0+/, '') || '0'
@@ -350,6 +356,7 @@ const TCGDEX_ID = {
   zsv10pt5: 'sv10.5b',
   rsv10pt5: 'sv10.5w',
   sv8pt5:   'sv08.5',
+  sv3pt5:   'sv03.5',  // 151 — TCGdex uses sv03.5
   base6:    'lc',
 }
 
@@ -445,9 +452,10 @@ async function fetchEnglishSet(cfg, psaMap) {
   // 2. All cards from pokemontcg.io (paged)
   const rawCards = await fetchPtcgioCards(cfg.id)
 
-  // 3. Build card objects
+  // 3. Build card objects. Skip Code Cards — digital redemption rows, not collectibles.
   const cards = []
   for (const raw of rawCards) {
+    if (raw.rarity === 'Code Card') continue
     const price = cardUSD(raw)
     const img = raw.images?.small || null
     const imgLarge = raw.images?.large || null

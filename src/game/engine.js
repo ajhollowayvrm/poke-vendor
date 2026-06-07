@@ -99,13 +99,211 @@ const BASELINE_RATES = {
 // like a reverse holo but rarer + more valuable). Only some sets have them.
 //   pokeball  — Poké Ball foil  (~1 in 3 packs)         · modest premium
 //   masterball — Master Ball foil (~1 in 19 packs)       · big premium, chase pattern
-// God pack — the whole pack is high-rarity hits. Community-estimated ~1 in 2,500.
 // Multipliers reflect real secondary-market premiums on the pattern:
 //   Poké Ball foil    — trades ~2.5–4× the base card (common but desirable)  → 3×
 //   Master Ball foil  — the chase pattern, ~40–80× base                       → 55×
 const FOIL = {
   pokeball:   { key: 'pokeball',  label: 'Poké Ball Foil',  badge: '⦿ POKÉ BALL',  mult: 3.0,  color: '#ff6b6b' },
   masterball: { key: 'masterball', label: 'Master Ball Foil', badge: '◉ MASTER BALL', mult: 55.0, color: '#a06bff' },
+}
+
+// --- Special-pack system -------------------------------------------------------
+// Each set may define an ORDERED array of special-pack variants. openPack() rolls
+// them in order before building a normal pack; the FIRST variant whose
+// Math.random() < odds wins. List rarest-first within each set.
+//
+// Variant shape:
+//   { tier: 'god' | 'demigod',   // 'god' sets _god=true; 'demigod' sets _demigod=true
+//     key: string,               // unique key (e.g. 'mbgod', 'god', 'demigod')
+//     label: string,             // display string (e.g. 'MASTER BALL GOD PACK')
+//     odds: number,              // Math.random() < odds to trigger
+//     slots: SlotSpec[],         // for god-tier: explicit card composition
+//     hits?: SlotSpec,           // for demigod: spec for the high-rarity hit cards
+//     filler?: SlotSpec,         // for demigod: spec for the non-hit filler cards
+//   }
+//
+// SlotSpec shapes:
+//   { rarity: string, count: number }          — pick `count` from byR[rarity]
+//   { foil: 'pokeball'|'masterball',
+//     from: 'reverseBase',  count: number }    — normal card w/ that foil pattern
+//   { foil: 'pokeball'|'masterball',
+//     rarity: string, count: number }          — high-rarity card w/ that foil
+//   { fill: true }                             — remaining slots → normal cards
+//
+// Demigod packs: k = random int in [3..6] hit cards are drawn from `hits`,
+// then (packSize - k) filler cards from `filler`. Hit cards carry _fromDemigod=true.
+//
+// Back-compat flags (CRITICAL — existing UI/stream/stats consumers depend on these):
+//   God tier:    pulls._god=true,      each card c._fromGod=true
+//   Demigod tier: pulls._demigod=true, each card c._fromDemigod=true (NOT _god/_fromGod)
+//   All special:  pulls._specialKey=variant.key, pulls._specialLabel=variant.label
+const SPECIAL_PACKS = {
+  // Prismatic Evolutions — three variants, rarest first.
+  sv8pt5: [
+    // 1/15000: Master Ball God — every SIR gets a master-ball foil; common companions get pokeball foil.
+    { tier: 'god', key: 'mbgod', label: 'MASTER BALL GOD PACK', odds: 1 / 15000,
+      slots: [
+        { foil: 'masterball', rarity: 'Special Illustration Rare', count: 3 },
+        { foil: 'pokeball',   from: 'reverseBase',                 count: 7 },
+      ],
+    },
+    // 1/2500: God — 9 SIRs (pad with next-best if pool short).
+    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 2500,
+      slots: [
+        { rarity: 'Special Illustration Rare', count: 9 },
+        { fill: true },
+      ],
+    },
+    // 1/500: Demigod — 3–6 SAR hits; remaining slots are pokeball-foil commons.
+    { tier: 'demigod', key: 'demigod', label: 'DEMIGOD PACK', odds: 1 / 500,
+      hits:   { rarity: 'Special Illustration Rare' },
+      filler: { foil: 'pokeball', from: 'reverseBase' },
+    },
+  ],
+  // Ascended Heroes — two variants.
+  me2pt5: [
+    // 1/2000: God — 3 MEGA_ATTACK_RARE + 7 SIR.
+    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 2000,
+      slots: [
+        { rarity: 'MEGA_ATTACK_RARE',           count: 3 },
+        { rarity: 'Special Illustration Rare',  count: 7 },
+      ],
+    },
+    // 1/400: Demigod — 3–6 IR-or-better hits (prefer SIR, fall back to IR); filler = normal.
+    { tier: 'demigod', key: 'demigod', label: 'DEMIGOD PACK', odds: 1 / 400,
+      hits:   { rarities: ['Special Illustration Rare', 'Illustration Rare'] }, // preferred order
+      filler: { from: 'normal' },
+    },
+  ],
+  // Black Bolt — one god variant.
+  zsv10pt5: [
+    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 3000,
+      slots: [
+        { rarity: 'Special Illustration Rare', count: 1 },
+        { rarity: 'Illustration Rare',         count: 9 },
+      ],
+    },
+  ],
+  // White Flare — one god variant (mirrors Black Bolt structure).
+  rsv10pt5: [
+    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 3000,
+      slots: [
+        { rarity: 'Special Illustration Rare', count: 1 },
+        { rarity: 'Illustration Rare',         count: 9 },
+      ],
+    },
+  ],
+  // 151 — one god variant: 4 IR + 2 SIR + 4 normal fill (mirrors the real starter-line hit pattern).
+  sv3pt5: [
+    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 600,
+      slots: [
+        { rarity: 'Illustration Rare',         count: 4 },
+        { rarity: 'Special Illustration Rare', count: 2 },
+        { fill: true },
+      ],
+    },
+  ],
+}
+
+// Build one special pack from a variant definition. Returns the card array with
+// the correct tier flags set; does NOT set _specialKey/_specialLabel (caller does).
+// Always pads/truncates to exactly packSize cards. Never emits undefined.
+function buildSpecialPack(set, byR, variant, packSize) {
+  const commons = byR['Common'] || byR['Uncommon'] || set.cards
+  const uncommons = byR['Uncommon'] || commons
+
+  if (variant.tier === 'demigod') {
+    return buildDemigodPack(set, byR, variant, packSize, commons, uncommons)
+  }
+
+  // --- God-tier: explicit slot composition ---
+  const cards = []
+  for (const slot of variant.slots) {
+    if (slot.fill) {
+      // fill: remaining slots → normal (commons/uncommons)
+      while (cards.length < packSize) cards.push(instance(pick(commons)))
+      break
+    }
+    const count = slot.count ?? 1
+    if (slot.foil && slot.from === 'reverseBase') {
+      // Poké Ball / Master Ball foil on a normal (common-ish) card
+      for (let i = 0; i < count && cards.length < packSize; i++) {
+        const base = [...(byR['Common'] || []), ...(byR['Uncommon'] || []), ...(byR['Rare'] || [])]
+        const pool = base.length ? base : commons
+        const c = instance(pick(pool))
+        c.foil = FOIL[slot.foil]
+        cards.push(c)
+      }
+    } else if (slot.foil && slot.rarity) {
+      // Foil applied to a high-rarity card (e.g. masterball on SIR)
+      const pool = byR[slot.rarity]
+      const fallback = topRarityPool(byR)
+      for (let i = 0; i < count && cards.length < packSize; i++) {
+        const src = (pool?.length ? pool : (fallback?.pool || commons))
+        const c = instance(pick(src))
+        c.foil = FOIL[slot.foil]
+        cards.push(c)
+      }
+    } else if (slot.rarity) {
+      // Plain rarity slot — degrade to next-best if pool empty
+      const pool = byR[slot.rarity]
+      const fallback = topRarityPool(byR)
+      for (let i = 0; i < count && cards.length < packSize; i++) {
+        const src = pool?.length ? pool : (fallback?.pool || commons)
+        cards.push(instance(pick(src)))
+      }
+    }
+  }
+  // Safety pad: should already be at packSize from `fill`, but guard anyway
+  while (cards.length < packSize) cards.push(instance(pick(commons)))
+  if (cards.length > packSize) cards.splice(packSize)
+
+  cards.forEach(c => { c._fromGod = true })
+  cards._god = true
+  return cards
+}
+
+// Build a demigod pack: k random hits (3–6) + (packSize - k) filler cards.
+function buildDemigodPack(set, byR, variant, packSize, commons, uncommons) {
+  const k = 3 + Math.floor(Math.random() * 4) // 3, 4, 5, or 6
+
+  // Pick hit cards from the hits spec
+  const hitCards = []
+  const hitSpec = variant.hits
+  if (hitSpec.rarities) {
+    // Ordered fallback list: try each rarity, skip if empty pool
+    const pool = []
+    for (const r of hitSpec.rarities) if (byR[r]?.length) { pool.push(...byR[r]) }
+    const src = pool.length ? pool : (topRarityPool(byR)?.pool || commons)
+    for (let i = 0; i < k; i++) hitCards.push(instance(pick(src)))
+  } else {
+    const pool = byR[hitSpec.rarity]
+    const fallback = topRarityPool(byR)
+    const src = pool?.length ? pool : (fallback?.pool || commons)
+    for (let i = 0; i < k; i++) hitCards.push(instance(pick(src)))
+  }
+
+  // Build filler cards
+  const fillerCount = packSize - k
+  const fillerCards = []
+  const fillerSpec = variant.filler
+  if (fillerSpec?.foil && fillerSpec.from === 'reverseBase') {
+    const base = [...(byR['Common'] || []), ...(byR['Uncommon'] || []), ...(byR['Rare'] || [])]
+    const pool = base.length ? base : commons
+    for (let i = 0; i < fillerCount; i++) {
+      const c = instance(pick(pool))
+      c.foil = FOIL[fillerSpec.foil]
+      fillerCards.push(c)
+    }
+  } else {
+    // Normal filler: commons and uncommons
+    for (let i = 0; i < fillerCount; i++) fillerCards.push(instance(pick(commons)))
+  }
+
+  const cards = [...hitCards, ...fillerCards]
+  cards.forEach(c => { c._fromDemigod = true })
+  cards._demigod = true
+  return cards
 }
 
 // Per-set overrides (keyed by set id). Only sets with real published data differ.
@@ -186,7 +384,7 @@ const SET_RATES = {
     ],
   },
   // Prismatic Evolutions — SIRs ~2× normal; DR 1-in-6.1, UR 1-in-13.4, Hyper 1-in-178.6.
-  // Poké Ball foil ~1 in 3, Master Ball ~1 in 19. God pack ~1 in 2,500.
+  // Poké Ball foil ~1 in 3, Master Ball ~1 in 19. Special packs are now in SPECIAL_PACKS.sv8pt5.
   // Sources: thepricedex.com/set/sv8pt5, TCGplayer, PokeBeach.
   sv8pt5: {
     rare: [
@@ -203,10 +401,9 @@ const SET_RATES = {
       { ...FOIL.pokeball,   p: 0.3333 }, // 1 in 3
     ],
     aceSpec: 0.20, // PE has a 6-card ACE SPEC subset — ~1 in 5 packs
-    godPack: 1 / 2500,
   },
   // Black Bolt — Illustration Rares abundant (~1 in 6); generous overall.
-  // Poké Ball foil ~1 in 3 (~30.6%). God pack ~1 in 3,000.
+  // Poké Ball foil ~1 in 3 (~30.6%). Special packs now in SPECIAL_PACKS.zsv10pt5.
   // Sources: TCGplayer (~700 packs), PokePatch (1,000+ packs).
   zsv10pt5: {
     rare: [
@@ -224,7 +421,6 @@ const SET_RATES = {
     chase: [
       { rarity: 'Black White Rare', p: 0.0040 }, // the set's lone top chase — ~1 in 250
     ],
-    godPack: 1 / 3000,
   },
 }
 function ratesFor(set) { return SET_RATES[set.id] || BASELINE_RATES }
@@ -254,7 +450,8 @@ function rollSlot(byR, table) {
 }
 
 // Open a single pack from a set. Returns an array of pulled card instances.
-// The array may carry a `_god` flag (god pack) for the reveal to celebrate.
+// The array may carry a `_god` flag (god pack) or `_demigod` flag (demigod pack).
+// Also sets `_specialKey` / `_specialLabel` for any special-pack variant that fires.
 export function openPack(set) {
   const byR = cardsByRarity(set)
   const rates = ratesFor(set)
@@ -267,16 +464,20 @@ export function openPack(set) {
   const jp = !!set.japanese
   const nCommon = jp ? 3 : 4
   const nUncommon = jp ? 1 : 4
-  const godSize = jp ? 5 : 10
+  const packSize = jp ? 5 : 10
 
-  // GOD PACK — every card is a high-rarity hit. The jackpot.
-  if (rates.godPack && Math.random() < rates.godPack) {
-    const top = topRarityPool(byR)
-    const hitPool = top ? top.pool : (byR['Double Rare'] || byR['Rare'] || set.cards)
-    const pulls = []
-    for (let i = 0; i < godSize; i++) pulls.push(instance(pick(hitPool)))
-    pulls._god = true
-    return pulls
+  // SPECIAL PACKS — roll each variant in order (rarest first). First hit wins.
+  // Variants that fire return a fully-formed pack with the right tier flags.
+  const variants = SPECIAL_PACKS[set.id]
+  if (variants) {
+    for (const variant of variants) {
+      if (Math.random() < variant.odds) {
+        const pulls = buildSpecialPack(set, byR, variant, packSize)
+        pulls._specialKey = variant.key
+        pulls._specialLabel = variant.label
+        return pulls
+      }
+    }
   }
 
   const pulls = []

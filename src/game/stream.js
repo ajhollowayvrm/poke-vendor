@@ -40,6 +40,7 @@ export function fatigueMult(streamFatigue = 0) {
 export function viewerReaction(card, rnd = Math.random) {
   if (!card) return 1
   if (card._fromGod || card._god) return 1.6 + rnd() * 0.5      // god pack — room explodes
+  if (card._fromDemigod || card._demigod) return 1.3 + rnd() * 0.4 // demigod — big surge
   if (isStreamHype(card)) return 1.18 + rnd() * 0.22            // SIR+/foil — surge
   if (isHit(card)) return 1.04 + rnd() * 0.08                   // a normal hit — modest bump
   return 0.97 + rnd() * 0.05                                    // bulk — slight drift down
@@ -51,6 +52,7 @@ export function viewerReaction(card, rnd = Math.random) {
 // shouldn't routinely out-earn the product cost (the pulls + the rep are the point).
 export function tipsFor(card, viewers, rnd = Math.random) {
   const heat = card && (card._fromGod || card._god) ? 5
+    : card && (card._fromDemigod || card._demigod) ? 4
     : card && isStreamHype(card) ? 1.8
     : card && isHit(card) ? 0.45
     : 0.07
@@ -93,6 +95,8 @@ const HYPE_LINES = ['NO WAY 🤯', 'THE {name}?!?!', 'W pull 🔥🔥', '{name} 
   '{name} on stream?? clip it']
 const GODPACK_LINES = ['GOD PACK???? 🤯🤯🤯', 'CLIP IT CLIP IT', 'this is HISTORY', 'no shot… NO SHOT',
   'best stream ever', 'I\'m shaking', 'CHAT WE WON']
+const DEMIGOD_LINES = ['DEMIGOD PACK!! 👀', 'so many hits!!', 'thats stacked', 'half god pack LETS GO',
+  'insane pack', 'W pack']
 const HIT_LINES = ['ooo nice', 'decent hit 👍', 'that {name} will sell', 'clean pull', 'not bad not bad',
   'flip the {name} 💰', 'solid', 'gimme that {name}']
 const BULK_LINES = ['bulk city', 'rip another', 'F', 'pain', 'next pack pls', 'commons again 😴',
@@ -105,11 +109,12 @@ const TIP_LINES = h => [`${h} tipped! ty 🙏`, `${h} dropped a tip 💸`, `${h}
 function pick(arr, rnd = Math.random) { return arr[Math.floor(rnd() * arr.length)] }
 
 // One chat message reacting to the current moment. `card` (optional) lets hype/hit
-// lines name the actual pull. kind: 'hype' | 'god' | 'hit' | 'bulk' | 'ambient' | 'tip'
+// lines name the actual pull. kind: 'hype' | 'god' | 'demigod' | 'hit' | 'bulk' | 'ambient' | 'tip'
 export function chatLine(kind, rnd = Math.random, card = null) {
   const handle = pick(CHAT_HANDLES, rnd)
   if (kind === 'tip') return { handle: 'system', text: pick(TIP_LINES(handle), rnd), tip: true }
   const pool = kind === 'god' ? GODPACK_LINES
+    : kind === 'demigod' ? DEMIGOD_LINES
     : kind === 'hype' ? HYPE_LINES
     : kind === 'hit' ? HIT_LINES
     : kind === 'bulk' ? BULK_LINES
@@ -124,6 +129,7 @@ export function chatLine(kind, rnd = Math.random, card = null) {
 export function reactionKind(card) {
   if (!card) return 'ambient'
   if (card._fromGod || card._god) return 'god'
+  if (card._fromDemigod || card._demigod) return 'demigod'
   if (isStreamHype(card)) return 'hype'
   if (isHit(card)) return 'hit'
   return 'bulk'

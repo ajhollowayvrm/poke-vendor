@@ -702,6 +702,7 @@ export const useGame = create(persist((set, get) => ({
       const foils = cards.filter(c => c.foil)
       const bestFoil = foils.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestFoil)
       const godPacks = (s.stats.godPacks || 0) + (cards._god || cards.some(c => c._fromGod) ? 1 : 0)
+      const demigodPacks = (s.stats.demigodPacks || 0) + (cards._demigod || cards.some(c => c._fromDemigod) ? 1 : 0)
       // Fold pulled cards into the per-set ledger (grouped by set, in case a single
       // rip spans sets). Packs are attributed to the first card's set.
       let bySet = s.bySet
@@ -723,6 +724,7 @@ export const useGame = create(persist((set, get) => ({
           bestPull: best,
           bestFoil: bestFoil ?? s.stats.bestFoil,
           godPacks,
+          demigodPacks,
         },
       }
     })

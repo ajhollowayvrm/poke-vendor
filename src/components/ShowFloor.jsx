@@ -96,18 +96,18 @@ export default function ShowFloor({ show, onLeave }) {
       const set = SETS[Math.floor(Math.random() * SETS.length)]
       const pack = openPack(set)
       const best = pack.reduce((b, c) => cardValue(c) > cardValue(b) ? c : b, pack[0])
-      if (pack._god || isBigPull(best)) {
+      if (pack._god || pack._demigod || isBigPull(best)) {
         const who = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)]
-        const what = pack._god ? 'a GOD PACK 🤯' : `${best.foil ? best.foil.label + ' ' : ''}${best.name}`
+        const what = pack._god ? 'a GOD PACK 🤯' : pack._demigod ? 'a DEMIGOD PACK ⭐' : `${best.foil ? best.foil.label + ' ' : ''}${best.name}`
         const verb = HYPE[Math.floor(Math.random() * HYPE.length)]
         // Hype only rubs off on YOU if they bought the sealed from your booth.
         const mine = !!npc.boughtFromYou
         if (mine) {
-          const bump = pack._god ? 5 : 2
+          const bump = pack._god ? 5 : pack._demigod ? 3 : 2
           addNotoriety(bump)
           useGame.getState().log('hype', `${who} hit ${what} from product they bought at your booth — your name's buzzing! (+${bump} notoriety)`, 0)
         }
-        setAnnounce({ who, verb, what, card: best.img, value: cardValue(best), god: !!pack._god, mine, id: Date.now() })
+        setAnnounce({ who, verb, what, card: best.img, value: cardValue(best), god: !!pack._god, demigod: !!pack._demigod, mine, id: Date.now() })
         setTimeout(() => setAnnounce(a => (a && a.id ? null : a)), 5000)
       }
     }, 4000)
@@ -307,7 +307,7 @@ export default function ShowFloor({ show, onLeave }) {
       </div>
 
       {announce && (
-        <div className={`hall-announce ${announce.god ? 'god' : ''} ${announce.mine ? 'mine' : ''}`}>
+        <div className={`hall-announce ${announce.god ? 'god' : announce.demigod ? 'demigod' : ''} ${announce.mine ? 'mine' : ''}`}>
           {announce.card && <img src={announce.card} alt="" />}
           <div>
             <div className="ha-line">📣 {announce.who} {announce.verb} <b>{announce.what}</b>!</div>

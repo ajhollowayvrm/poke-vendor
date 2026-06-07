@@ -172,6 +172,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [shown, setShown] = useState(0)
   const [current, setCurrent] = useState(null)
   const [isGod, setIsGod] = useState(false)
+  const [isDemigod, setIsDemigod] = useState(false)
   const [burst, setBurst] = useState(false)
   const [viewers, setViewers] = useState(settled)
   const [chat, setChat] = useState(() => seedChat())
@@ -231,7 +232,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     preloadCardImages(cards) // warm the CDN cache so the live reveal doesn't lag on slow images
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
+    const demigod = !!cards._demigod
     if (god) cards.forEach(c => { c._fromGod = true })
+    if (demigod) cards.forEach(c => { c._fromDemigod = true })
     addPulls(cards, `🔴 ${set.name} (live)`)
     // tag each card with its break-spot (global index keeps round-robin fair across packs)
     if (isBreak) {
@@ -240,13 +243,14 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     } else {
       cards.forEach(c => allPulled.current.push({ card: c, spot: null }))
     }
-    setIsGod(god); setPulls(cards); setShown(0); setCurrent(null); setPhase('revealing')
+    setIsGod(god); setIsDemigod(demigod); setPulls(cards); setShown(0); setCurrent(null); setPhase('revealing')
     setTimeout(() => revealNext(cards, 0), ms(god ? 1100 : 500))
   }
 
   function revealNext(cards, i) {
     if (i >= cards.length) {
       if (cards._god) { setBurst(true); setTimeout(() => setBurst(false), ms(2500)) }
+      else if (cards._demigod) { setBurst(true); setTimeout(() => setBurst(false), ms(1500)) }
       setPackNo(n => { const np = n + 1; if (np >= totalPacks) finishSoon(); return np })
       setPhase('packdone'); return
     }
@@ -313,6 +317,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       const cards = openPack(set)
       cards.forEach(c => { c._isHit = isHit(c) })
       if (cards._god) cards.forEach(c => { c._fromGod = true })
+      if (cards._demigod) cards.forEach(c => { c._fromDemigod = true })
       addPulls(cards, `🔴 ${set.name} (live)`)
       cards.forEach((c, i) => {
         if (isBreak) allPulled.current.push({ card: c, spot: (allPulled.current.length) % spots })
@@ -395,6 +400,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 
       {isGod && (phase === 'revealing' || phase === 'packdone') && (
         <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — chat is losing it.</small></div>
+      )}
+      {isDemigod && (phase === 'revealing' || phase === 'packdone') && (
+        <div className="demigodbanner">DEMIGOD PACK! <small>chat is hyped.</small></div>
       )}
 
       <div className="stream-body">

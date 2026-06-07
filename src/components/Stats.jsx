@@ -43,6 +43,7 @@ export default function Stats() {
         <Stat label="Best pull" v={stats.bestPull ? fmtMoney(cardValue(stats.bestPull)) : '—'} />
         <Stat label="Best foil" v={stats.bestFoil ? fmtMoney(cardValue(stats.bestFoil)) : '—'} c="#a06bff" />
         <Stat label="God packs hit" v={stats.godPacks || 0} c="#ff3df0" />
+        <Stat label="Demigod packs" v={stats.demigodPacks || 0} c="#7dd3fc" />
         <Stat label="Cards graded" v={gradesSubmitted} />
         <Stat label="Shows attended" v={showsAttended} />
         <Stat label="Wants filled" v={stats.wantsFilled || 0} />
