@@ -95,17 +95,15 @@ export default function Settings() {
 
       <div className="setting-card">
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700 }}>Auto-open next pack</div>
+          <div style={{ fontWeight: 700 }}>Auto-rip</div>
           <div className="muted" style={{ fontSize: 12 }}>
-            {!openSealedOneByOne
-              ? 'Only applies in one-at-a-time mode (turn that on above).'
-              : autoAdvance
-                ? 'On — after a pack finishes it waits a few seconds, then rips the next one for you.'
-                : 'Off — you click “Next pack” yourself between packs.'}
+            {autoAdvance
+              ? 'On — ripping starts automatically when you buy or hit “Rip another,” and (in one-at-a-time mode) it rolls through the rest of a box for you.'
+              : 'Off — you click to start each rip yourself.'}
           </div>
         </div>
         <button className={`btn ${autoAdvance ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
-          role="switch" aria-checked={autoAdvance} disabled={!openSealedOneByOne}
+          role="switch" aria-checked={autoAdvance}
           onClick={() => setSetting('autoAdvance', !autoAdvance)}>
           {autoAdvance ? 'On' : 'Off'}
         </button>

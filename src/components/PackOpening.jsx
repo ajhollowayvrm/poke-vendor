@@ -88,16 +88,17 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     resetForNext()
   }
 
-  // Auto-advance: in one-by-one mode, after a pack finishes wait ~3s then move on;
-  // when that lands us on a fresh idle pack, auto-rip it. The user can still click
-  // through manually — any manual nextPack/rip just pre-empts the timer.
+  // Auto-advance ("Auto-open next pack"): when on, auto-rip whatever idle pack we're
+  // sitting on — including the FIRST pack right after a buy and the fresh pack after a
+  // "Rip another" remount — and, mid-box, wait a beat after a pack finishes then move on.
+  // The user can still click through manually; any manual nextPack/rip pre-empts the timer.
   useEffect(() => {
-    if (!autoAdvance || totalPacks <= 1) return
+    if (!autoAdvance) return
     if (phase === 'done' && !last) {
       const t = setTimeout(() => nextPack(), ms(3000))
       return () => clearTimeout(t)
     }
-    if (phase === 'idle' && packNo > 1 && !autoRipped.current) {
+    if (phase === 'idle' && !autoRipped.current) {
       autoRipped.current = true
       const t = setTimeout(() => rip(), ms(600))
       return () => clearTimeout(t)
