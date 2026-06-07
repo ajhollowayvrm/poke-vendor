@@ -370,12 +370,14 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   const offerPool = online ? (listedCards || []) : walkin ? (shelfCards || []) : playerCollection
 
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
-  if (roll < 0.22) {
+  const fleecePool = offerPool.filter(c => { const v = cardValue(c); return v >= 2 && v <= 20 })
+  if (roll < 0.22 && fleecePool.length) {
     const visitor = visitorFor(channel, 'fleeced')
-    const want = cardInValueRange(2, 20)
+    const want = pickAny(null, fleecePool)
     const pay = pickPayMethod(channel, accepted)
     return {
       kind: 'fleeced',
+      ownedUid: want.uid,
       title: online ? `${cap(visitor)} messages you, frustrated` : `${cap(visitor)} approaches, looking dejected`,
       body: online
         ? `"I just got burned on a trade — paid way over for a beat-up card. I'm tapped out but I really wanted a ${want.name}…"`
@@ -383,9 +385,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
       card: want,
       options: [
         { text: `${online ? 'Mail' : 'Give'} them the ${want.name} for free`, tone: 'kind',
-          effect: { type: 'giveFromStockOrMint', card: want, notoriety: 6, msg: 'You made their whole week. Word spreads fast.' } },
+          effect: { type: 'giveOwned', uid: want.uid, card: want, notoriety: 6, msg: 'You made their whole week. Word spreads fast.' } },
         { text: `Sell it at cost ($${rawValue(want).toFixed(2)})`, tone: 'fair',
-          effect: { type: 'sellMint', card: want, price: rawValue(want), payMethod: pay, notoriety: 2, msg: 'A fair deal earns quiet respect.' } },
+          effect: { type: 'sellOwned', uid: want.uid, card: want, price: rawValue(want), payMethod: pay, notoriety: 2, msg: 'A fair deal earns quiet respect.' } },
         { text: online ? 'Leave them on read' : 'Shrug — not your problem', tone: 'cold',
           effect: { type: 'none', notoriety: -1, msg: 'They move on. Not a great look.' } },
       ],

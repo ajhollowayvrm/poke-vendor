@@ -1328,24 +1328,14 @@ export const useGame = create(persist((set, get) => ({
     const s = get()
     let msg = effect.msg || ''
     switch (effect.type) {
-      case 'giveFromStockOrMint': {
-        // give a card away free — a generous act (Charity Banner boosts it)
+      case 'giveOwned': {
+        const card = findOwnedAnywhere(get(), effect.uid)
+        if (!card) { msg = "It's already gone."; break }
+        removeOwnedAnywhere(set, effect.uid)
         s.addNotoriety(effect.notoriety, true)
-        s.log('give', `Gave away a ${effect.card.name} for free`, 0)
+        s.log('give', `Gave away a ${card.name} for free`, 0)
         set(st => ({ generousActs: st.generousActs + 1 }))
         get().bumpGoal('help', 1)
-        break
-      }
-      case 'sellMint': {
-        const blocked = s.paymentBlocked(effect.payMethod)
-        if (blocked) { s.addNotoriety(-1); s.log('lost-sale', blocked, 0); return blocked }
-        const { net, fee } = processingFee(effect.price, effect.payMethod)
-        s.earn(net)
-        // selling at cost to a burned buyer is a generous/fair act
-        s.addNotoriety(effect.notoriety, true)
-        s.log('sell', `Sold a ${effect.card.name} at cost (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
-        msg = appendFeeMsg(msg, fee, effect.payMethod, net)
-        get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
         break
       }
       case 'sellOwned': {
