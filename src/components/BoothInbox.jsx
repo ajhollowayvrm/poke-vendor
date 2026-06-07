@@ -49,6 +49,7 @@ export default function BoothInbox() {
   // Sell splits into sub-tabs: day-to-day Orders, the public Forum board (WTB posts you
   // can fill), and the cards you've put On the market (listings + consignments).
   const [sellTab, setSellTab] = useState('orders') // 'orders' | 'forum' | 'market'
+  const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
   const marketCount = listings.length + consignments.length
   const forumCount = (forumPosts || []).length
 
@@ -73,7 +74,7 @@ export default function BoothInbox() {
           📋 Forum{forumCount ? ` (${forumCount})` : ''}
         </button>
         <button className={`subtab ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>
-          🌐 On the market{marketCount ? ` (${marketCount})` : ''}
+          🌐 On the market{marketCount ? ` (${marketCount}${listingOfferCount ? ` · ${listingOfferCount} to review` : ''})` : ''}
         </button>
       </div>
 

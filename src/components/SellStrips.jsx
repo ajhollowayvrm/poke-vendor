@@ -41,19 +41,36 @@ function ListingRow({ l, i }) {
   const declineOffer = useGame(s => s.declineOffer)
   const repriceListing = useGame(s => s.repriceListing)
   const pullListing = useGame(s => s.pullListing)
+  const setListingAutoSell = useGame(s => s.setListingAutoSell)
+  const hasAutoSell = useGame(s => !!s.upgrades.autoSell)
   const [repricing, setRepricing] = useState(false)
   const [mult, setMult] = useState(l.askMult || 1.1)
 
   const market = cardValue(l.card)
   const pct = Math.round((l.askMult || 1) * 100)
   const offers = l.offers || []
+  const topOffer = offers.reduce((best, o) => {
+    if (!best) return o
+    if (o.net > best.net) return o
+    if (o.net === best.net && o.amount > best.amount) return o
+    return best
+  }, null)
+  const hiddenCount = topOffer ? offers.length - 1 : 0
+  const autoSellOn = l.autoSell !== false
 
   return (
     <div className={`listing-row ${l.stale ? 'stale' : ''}`}>
       <div className="listing-main">
         {l.card.img && <img src={l.card.img} alt="" className="listing-thumb" />}
         <div className="listing-info">
-          <div className="listing-name">{l.card.name}</div>
+          <div className="listing-name">
+            {l.card.name}
+            {l.card.grade && (
+              <span className="pill" style={{ marginLeft: 6, fontSize: 11, background: '#ffcb0522', color: '#ffcb05', border: '1px solid #ffcb0544' }}>
+                PSA {l.card.grade.overall}
+              </span>
+            )}
+          </div>
           <div className="listing-sub">
             <b>{fmtMoney(l.ask)}</b> <span className="muted">· {pct}% of market</span>
             <span className="listing-views" title="Customers who've looked at this listing">👀 {l.views || 0}</span>
@@ -61,6 +78,16 @@ function ListingRow({ l, i }) {
           </div>
         </div>
         <div className="listing-actions">
+          {hasAutoSell && (
+            <button
+              className={`btn ${autoSellOn ? 'gold' : 'alt'}`}
+              style={{ padding: '2px 8px', fontSize: 11, flex: 'none' }}
+              title={autoSellOn ? '🤖 Auto-sell ON — click to hold for manual offers' : '🤖 Auto-sell OFF — click to re-enable'}
+              onClick={() => setListingAutoSell(i, !autoSellOn)}
+            >
+              🤖 {autoSellOn ? 'Auto' : 'Manual'}
+            </button>
+          )}
           <button className="linkbtn" onClick={() => setRepricing(v => !v)}>{repricing ? 'close' : 'reprice'}</button>
           <button className="linkbtn" onClick={() => pullListing(i)}>pull</button>
         </div>
@@ -75,17 +102,16 @@ function ListingRow({ l, i }) {
         </div>
       )}
 
-      {offers.length > 0 && (
+      {topOffer && (
         <div className="listing-offers">
-          {offers.map(o => (
-            <div key={o.id} className="offer">
-              <span className="offer-label" title={`${o.savvyLabel} offered below your ask`}>
-                {o.icon} Offer <b>{fmtMoney(o.amount)}</b> <span className="muted">(nets {fmtMoney(o.net)})</span>
-              </span>
-              <button className="btn gold" style={{ flex: 'none' }} onClick={() => acceptOffer(i, o.id)}>Accept</button>
-              <button className="linkbtn" onClick={() => declineOffer(i, o.id)}>decline</button>
-            </div>
-          ))}
+          <div className="offer">
+            <span className="offer-label" title={`${topOffer.savvyLabel} offered below your ask`}>
+              {topOffer.icon} Offer <b>{fmtMoney(topOffer.amount)}</b> <span className="muted">(nets {fmtMoney(topOffer.net)})</span>
+              {hiddenCount > 0 && <span className="muted" style={{ marginLeft: 6, fontSize: 11 }}>+{hiddenCount} more bid{hiddenCount > 1 ? 's' : ''}</span>}
+            </span>
+            <button className="btn gold" style={{ flex: 'none' }} onClick={() => acceptOffer(i, topOffer.id)}>Accept</button>
+            <button className="linkbtn" onClick={() => declineOffer(i, topOffer.id)}>decline</button>
+          </div>
         </div>
       )}
     </div>

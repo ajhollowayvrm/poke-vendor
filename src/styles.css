@@ -28,6 +28,8 @@ button { font-family: inherit; cursor: pointer; }
   background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
   padding: calc(80px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); }
 .rip-overlay.hidden { display: none; }
+/* Prevent the background page from scrolling while a rip is in progress and visible. */
+body.rip-lock { overflow: hidden; touch-action: none; }
 /* Floating "resume your rip" pill shown when a rip is mid-flight on another tab. */
 .rip-resume-banner { position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 55; cursor: pointer;

@@ -258,12 +258,14 @@ function driftMarket(mults, history, days, log) {
 
 // Simulate `days` of customers browsing your own-site listings. Each day every live
 // listing draws some shoppers; each shopper rolls a savvy level and a max willingness
-// to pay. If your ask is within their max → they BUY at ask. If it's just over their
-// max → a chance they leave a lower OFFER you can accept/decline. Otherwise they pass.
-// Returns { listings, soldProceeds, sold:[{name,net,savvy}], newOffers, staleNow:[names] }.
+// to pay. If the auto-sell upgrade is owned and the listing allows it, an affordable
+// buyer auto-sells at 80% of market (gated by LISTING_DAILY_SELL_CAP). Otherwise an
+// affordable buyer queues an offer for the player to accept. A buyer just over their
+// max may leave a lowball offer. Otherwise they pass.
+// Returns { listings, soldProceeds, sold:[{name,net,savvy,auto?}], newOffers, staleNow:[names] }.
 // `streamBoostDays` = how many of the first `days` fall inside a live stream-hype
 // window (a recent stream pumps EVERY listing's traffic).
-function tickListings(listings, days, noto, streamBoostDays = 0) {
+function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) {
   let soldProceeds = 0
   const sold = []
   const staleNow = []
@@ -274,6 +276,8 @@ function tickListings(listings, days, noto, streamBoostDays = 0) {
     if (l.expired) { remaining.push(l); continue }
     let cur = { ...l, offers: [...(l.offers || [])] }
     let didSell = false
+    // auto-sell is on when the upgrade is owned AND this listing hasn't opted out
+    const autoSellOn = !!upgrades.autoSell && (cur.autoSell !== false)
     for (let day = 0; day < days && !didSell; day++) {
       // Stream afterglow: a recent live stream pumps ALL listings for its window.
       const streamed = day < streamBoostDays
@@ -284,26 +288,42 @@ function tickListings(listings, days, noto, streamBoostDays = 0) {
         const savvy = rollBuyerSavvy()
         const max = buyerMaxMult(savvy, noto, cur.card)
         const label = BUYER_SAVVY[savvy].label
+        const icon = BUYER_SAVVY[savvy].icon
         if (cur.askMult <= max) {
-          // They CAN afford the ask — but a sale still isn't a sure thing. They mull it over;
-          // a listing closes at most LISTING_DAILY_SELL_CAP per day, so even a fair price
-          // takes a day or two (and an over-market ask leans on the rare casual who bites).
-          if (Math.random() < LISTING_DAILY_SELL_CAP) {
-            soldProceeds = round2(soldProceeds + cur.net)
-            sold.push({ name: cur.card.name, net: cur.net, savvy: label })
-            didSell = true
-            break
+          // They CAN afford the ask. With auto-sell: fires at 80% of market (same
+          // LISTING_DAILY_SELL_CAP gate so it still takes a day or two).
+          // Without auto-sell: queue an offer at the buyer's willing price.
+          if (autoSellOn) {
+            if (Math.random() < LISTING_DAILY_SELL_CAP) {
+              const market = cardValue(cur.card)
+              const amount = round2(market * 0.80)
+              const fee = round2(amount * 0.05)
+              const net = round2(amount - fee)
+              soldProceeds = round2(soldProceeds + net)
+              sold.push({ name: cur.card.name, net, savvy: label, auto: true })
+              didSell = true
+              break
+            }
+            continue // auto-sell willing but didn't fire today
           }
-          continue // willing, but walked today — maybe tomorrow
+          // No auto-sell: queue an offer at the buyer's willing price (≥ ask).
+          if (Math.random() < LISTING_DAILY_SELL_CAP) {
+            const market = cardValue(cur.card)
+            const amount = round2(market * max)
+            const fee = round2(amount * 0.05)
+            cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: label, icon })
+            newOffers++
+          }
+          continue // willing buyer — offer queued (or cap/prob skipped); next viewer
         }
         // just over their max → occasional lowball offer at what they'd pay.
-        // Sharks lowball most; casuals rarely bother. Cap standing offers at 3.
+        // Sharks lowball most; casuals rarely bother.
         const overBy = cur.askMult - max
-        if (overBy < 0.35 && (cur.offers.length < 3) && Math.random() < (savvy === 'shark' ? 0.5 : savvy === 'sharp' ? 0.3 : 0.12)) {
+        if (overBy < 0.35 && Math.random() < (savvy === 'shark' ? 0.5 : savvy === 'sharp' ? 0.3 : 0.12)) {
           const market = cardValue(cur.card)
           const amount = round2(market * max)
           const fee = round2(amount * 0.05)
-          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: label, icon: BUYER_SAVVY[savvy].icon })
+          cur.offers.push({ id: ++_offerSeq, amount, net: round2(amount - fee), savvy, savvyLabel: label, icon })
           newOffers++
         }
       }
@@ -408,10 +428,13 @@ function advanceDaysWith(set, get, days, away) {
   // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
   // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
   const streamBoostDays = Math.min(days, s.streamHypeDaysLeft || 0)
-  const lt = tickListings(s.listings, days, noto, streamBoostDays)
+  const lt = tickListings(s.listings, days, noto, streamBoostDays, s.upgrades)
   const remainingListings = lt.listings
   soldProceeds = round2(soldProceeds + lt.soldProceeds)
-  for (const sale of lt.sold) get().log('sell', `Sold ${sale.name} to a ${sale.savvy} — $${sale.net.toFixed(2)}`, sale.net)
+  for (const sale of lt.sold) {
+    if (sale.auto) get().log('sell', `Auto-sold ${sale.name} — $${sale.net.toFixed(2)}`, sale.net)
+    else get().log('sell', `Sold ${sale.name} to a ${sale.savvy} — $${sale.net.toFixed(2)}`, sale.net)
+  }
   if (lt.newOffers) get().log('listing', `${lt.newOffers} new offer${lt.newOffers > 1 ? 's' : ''} on your listings — review them on the Sell tab.`, 0)
   for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
   // age out want-lists, then maybe post new collector wants (scaled by notoriety)
@@ -577,6 +600,7 @@ export const UPGRADES = {
   loupe:    { name: "Jeweler's Loupe",      cost: 450,  desc: 'Slightly better grade odds when you submit cards.', icon: '🔍' },
   network:  { name: 'Dealer Network',       cost: 1500, desc: 'Famous vendors reveal their best stock — and flag underpriced DEALS and OVER-priced asks so you never overpay.', icon: '🤝' },
   banner:   { name: 'Charity Banner',       cost: 300, desc: 'Generous acts (giving cards away, fair deals) grant +50% extra notoriety.', icon: '🎗️' },
+  autoSell: { name: 'Auto-Sell Service',    cost: 1800, desc: 'Hands-off selling: willing buyers auto-purchase your listings at 80% of market value — no need to accept each offer. Flag any listing to opt out and hold for a manual offer.', icon: '🤖' },
 }
 
 export const useGame = create(persist((set, get) => ({
@@ -638,7 +662,8 @@ export const useGame = create(persist((set, get) => ({
   employees: [],           // hired employee ids (brick & mortar) — each is daily payroll + throughput
   storeArrears: 0,         // consecutive days unable to cover store overhead → lose the store
   // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
-  // autoAdvance: in one-by-one mode, auto-rip the next pack a few seconds after each finishes.
+  // autoAdvance ("Auto-rip"): auto-start ripping on buy / "Rip another" (incl. the first
+  // pack and single packs); in one-by-one mode, also rolls through a box's remaining packs.
   // dayMinutes: real minutes per game-day (the master clock rate).
   settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES },
 
@@ -799,7 +824,7 @@ export const useGame = create(persist((set, get) => ({
     const card = get().collection.find(c => c.uid === uid)
     if (!card) return false
     const q = get().listingQuote(card, askMult)
-    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
+    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0, autoSell: true }
     set(s => ({
       collection: s.collection.filter(c => c.uid !== uid),
       listings: [...(s.listings || []), listing],
@@ -843,6 +868,11 @@ export const useGame = create(persist((set, get) => ({
   declineOffer(idx, offerId) {
     set(s => ({ listings: s.listings.map((x, i) => i === idx
       ? { ...x, offers: (x.offers || []).filter(o => o.id !== offerId) } : x) }))
+  },
+
+  // Toggle auto-sell on a per-listing basis (only meaningful when autoSell upgrade is owned).
+  setListingAutoSell(idx, val) {
+    set(s => ({ listings: s.listings.map((x, i) => i === idx ? { ...x, autoSell: !!val } : x) }))
   },
 
   // Pull a listing back into your collection (to reprice differently, or stop selling).

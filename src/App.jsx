@@ -44,10 +44,21 @@ export default function App() {
   const pendingCount = useGame(s => s.pendingGrades.length)
   // only count orders still valid (card not since sold) so the tab badge matches the list
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
+  const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
   const notoriety = useGame(s => s.notoriety)
   const resolveGrades = useGame(s => s.resolveGrades)
   const tickRealTime = useGame(s => s.tickRealTime)
   const [awaySummary, setAwaySummary] = useState(null) // "while you were away" banner
+
+  // Lock body scroll while a rip overlay is visible (ripping + on the Buy tab).
+  // The overlay itself still scrolls internally (overflow-y:auto). Unlocks on cleanup.
+  useEffect(() => {
+    if (ripping && tab === 'shop') {
+      document.body.classList.add('rip-lock')
+      return () => document.body.classList.remove('rip-lock')
+    }
+    document.body.classList.remove('rip-lock')
+  }, [ripping, tab])
 
   // REAL-TIME CLOCK. One unified tick drives the whole living world: advance whole game-days
   // of elapsed real time (orders, listings, consignments, wages/rent later — and grades, which
@@ -202,7 +213,7 @@ export default function App() {
           {TABS.map(t => (
             <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
               {TAB_LABEL[t]}
-              {t === 'myshop' && inboxCount ? ` (${inboxCount})` : ''}
+              {t === 'myshop' && (inboxCount + offerCount) ? ` (${inboxCount + offerCount})` : ''}
               {t === 'collection' && pendingCount ? ` (${pendingCount})` : ''}
             </button>
           ))}
@@ -286,7 +297,7 @@ export default function App() {
           Icon + small label; the 5 core tabs + a gear for Settings/Stats. */}
       <nav className="bottomnav" aria-label="Primary">
         {TABS.map(t => {
-          const badge = t === 'myshop' ? inboxCount : t === 'collection' ? pendingCount : 0
+          const badge = t === 'myshop' ? inboxCount + offerCount : t === 'collection' ? pendingCount : 0
           return (
             <button key={t} className={`bnav-btn ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
               <span className="bnav-icon">{TAB_ICON[t]}{badge ? <span className="bnav-badge">{badge}</span> : null}</span>
