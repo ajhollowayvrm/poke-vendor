@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney,
+import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   businessVolume, distributorTier, nextDistributorTier, wholesalePrice, caseLot, casePrice } from './game/engine'
 import { useGame, dayLengthMs } from './game/store'
 import { encounterStillValid } from './game/shows'
@@ -98,6 +98,22 @@ export default function App() {
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+  }
+
+  // "Rip another" from the end-of-rip summary: re-buy the SAME product and rip it fresh,
+  // so you can keep chasing without going back to the shop. Charges the same price the
+  // original buy did (retail/wholesale/case via _buyPrice), logs it, and re-mounts the
+  // animated rip via a bumped nonce. Bails (no charge) if you can't afford it — the
+  // summary button is already disabled in that case, this is just a safety net.
+  function ripAnother(set, product) {
+    const price = product._buyPrice ?? product.price ?? packPrice(set)
+    if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
+    if (!spend(price)) return
+    useGame.getState().recordSetSpend(set.id, price)
+    const wholesaleNote = product._buyPrice != null && product._buyPrice < product.price ? ' (wholesale)' : ''
+    useGame.getState().log('buy', `Bought ${product?.type || 'pack'} (${set.name})${wholesaleNote}`, -price)
+    setRipping(r => ({ set, product, nonce: (r?.nonce ?? 0) + 1 }))
+    setTab('shop')
   }
 
   // Attend a show in one of two modes:
@@ -250,7 +266,15 @@ export default function App() {
           returning resumes the same rip rather than discarding it. */}
       {ripping && (
         <div className={`rip-overlay ${tab === 'shop' ? '' : 'hidden'}`}>
-          <PackOpening set={ripping.set} product={ripping.product} onExit={() => setRipping(null)} />
+          <PackOpening
+            key={ripping.nonce ?? 0}
+            set={ripping.set}
+            product={ripping.product}
+            onExit={() => setRipping(null)}
+            ripAnotherPrice={ripping.product?._buyPrice ?? ripping.product?.price ?? packPrice(ripping.set)}
+            canRipAnother={cash >= (ripping.product?._buyPrice ?? ripping.product?.price ?? packPrice(ripping.set))}
+            onRipAnother={() => ripAnother(ripping.set, ripping.product)}
+          />
         </div>
       )}
 

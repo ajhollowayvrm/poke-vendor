@@ -9,7 +9,7 @@ import Burst from './Burst'
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false }) {
+export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherPrice }) {
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -195,8 +195,21 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
             )}
           </div>
           <div className="row" style={{ justifyContent: 'center', marginTop: 12 }}>
-            <button className="btn gold" style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
+            {onRipAnother && (
+              <button
+                className="btn gold"
+                style={{ maxWidth: 220 }}
+                disabled={!canRipAnother}
+                title={canRipAnother ? '' : 'Not enough cash'}
+                onClick={onRipAnother}>
+                Rip another{ripAnotherPrice != null ? ` (${fmtMoney(ripAnotherPrice)})` : ''} ↻
+              </button>
+            )}
+            <button className={`btn ${onRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
           </div>
+          {onRipAnother && !canRipAnother && (
+            <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>Not enough cash to rip another.</p>
+          )}
         </div>
       </div>
     )
@@ -267,8 +280,16 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                 <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
               ) : (
                 <>
-                  <button className="btn gold" style={{ maxWidth: 190 }} onClick={resetForNext}>
-                    Rip another ({fmtMoney(packPrice(set))})
+                  {/* Re-rip a single pack. When a paid re-rip path is wired (the shop/Buy
+                      flow), route through it so another pack is CHARGED + opened fresh.
+                      Without it, fall back to the in-place reset. */}
+                  <button
+                    className="btn gold"
+                    style={{ maxWidth: 200 }}
+                    disabled={onRipAnother ? !canRipAnother : false}
+                    title={onRipAnother && !canRipAnother ? 'Not enough cash' : ''}
+                    onClick={onRipAnother || resetForNext}>
+                    Rip another ({fmtMoney(onRipAnother && ripAnotherPrice != null ? ripAnotherPrice : packPrice(set))})
                   </button>
                   <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onExit}>Done →</button>
                 </>
