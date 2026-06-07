@@ -458,13 +458,10 @@ export function openPack(set) {
   const commons = byR['Common'] || byR['Uncommon'] || set.cards
   const uncommons = byR['Uncommon'] || commons
 
-  // Japanese boosters are SMALLER: 5 cards (≈3 commons + 1 uncommon + 1 rare-or-better),
-  // and have no guaranteed Western-style reverse-holo slot. English/Mega packs are 10
-  // (4 commons + 4 uncommons + rare slot + reverse slot). Drive both off the set flag.
-  const jp = !!set.japanese
-  const nCommon = jp ? 3 : 4
-  const nUncommon = jp ? 1 : 4
-  const packSize = jp ? 5 : 10
+  // A pack is 10 cards: 4 commons + 4 uncommons + a rare slot + a reverse slot.
+  const nCommon = 4
+  const nUncommon = 4
+  const packSize = 10
 
   // SPECIAL PACKS — roll each variant in order (rarest first). First hit wins.
   // Variants that fire return a fully-formed pack with the right tier flags.
@@ -496,26 +493,23 @@ export function openPack(set) {
   const chaseHit = rates.chase ? rollSlot(byR, rates.chase) : null
   if (chaseHit) pulls.push(instance(chaseHit))
 
-  // REVERSE slot — English/Mega packs only. Sets with an ACE SPEC subset land one
-  // ~1 in 5 packs here; otherwise it's an IR/SIR/Hyper upgrade > special foil >
-  // ordinary reverse holo. Japanese packs have no such slot (5 cards total), so skip it.
-  if (!jp) {
-    const aceSpecPool = byR['ACE SPEC Rare']
-    if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
-      pulls.push(instance(pick(aceSpecPool)))
+  // REVERSE slot — sets with an ACE SPEC subset land one ~1 in 5 packs here; otherwise
+  // it's an IR/SIR/Hyper upgrade > special foil > ordinary reverse holo.
+  const aceSpecPool = byR['ACE SPEC Rare']
+  if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
+    pulls.push(instance(pick(aceSpecPool)))
+  } else {
+    const revHit = rollSlot(byR, rates.reverse)
+    if (revHit) {
+      pulls.push(instance(revHit))
     } else {
-      const revHit = rollSlot(byR, rates.reverse)
-      if (revHit) {
-        pulls.push(instance(revHit))
-      } else {
-        const revPool = [...(byR['Common']||[]), ...(byR['Uncommon']||[]), ...(byR['Rare']||[])]
-        if (revPool.length) {
-          const c = instance(pick(revPool))
-          const foil = rates.foils ? rollFoil(rates.foils) : null
-          if (foil) c.foil = foil          // Poké Ball / Master Ball pattern
-          else c.reverse = true            // ordinary reverse holo
-          pulls.push(c)
-        }
+      const revPool = [...(byR['Common']||[]), ...(byR['Uncommon']||[]), ...(byR['Rare']||[])]
+      if (revPool.length) {
+        const c = instance(pick(revPool))
+        const foil = rates.foils ? rollFoil(rates.foils) : null
+        if (foil) c.foil = foil          // Poké Ball / Master Ball pattern
+        else c.reverse = true            // ordinary reverse holo
+        pulls.push(c)
       }
     }
   }

@@ -5,8 +5,8 @@
 //   Provides: card names, numbers, rarities, images, and USD/EUR prices for all English sets.
 //
 // SECONDARY source: TCGCSV (https://tcgcsv.com) — free, no auth needed, browser UA required.
-//   Provides: sealed product listings + prices for English sets; full data for the Japanese
-//   Abyss Eye set (category 85); per-card price fallback by collector number.
+//   Provides: sealed product listings + prices for English sets; per-card price fallback
+//   by collector number.
 //
 // TERTIARY source: TCGdex (https://api.tcgdex.net/v2/en) — free, no auth needed.
 //   Last-resort fallback ONLY: fills a missing price or image for individual cards that
@@ -88,20 +88,6 @@ function mapRarity(r) {
   if (KNOWN_RARITIES.has(r)) return r
   console.log(`    ⚠️  unknown rarity "${r}" → defaulting to Rare`)
   return 'Rare'
-}
-
-// Japanese-only sets. pokemontcg.io is English-only, so these are built entirely
-// from TCGCSV's Japanese category (85).
-const JP_SETS = [
-  { id: 'jp-m5', tcgGroup: 24711, name: 'Abyss Eye', series: 'Scarlet & Violet (JP)', releaseDate: '2025/06/06' },
-]
-// JP TCGplayer rarity → engine rarity.
-const JP_RARITY_MAP = {
-  'Common': 'Common', 'Uncommon': 'Uncommon', 'Rare': 'Rare',
-  'Double Rare': 'Double Rare', 'Super Rare': 'Ultra Rare',
-  'Art Rare': 'Illustration Rare', 'Special Art Rare': 'Special Illustration Rare',
-  'Ultra Rare': 'Ultra Rare', 'Mega Ultra Rare': 'Hyper Rare',
-  'Shiny Super Rare': 'Hyper Rare', 'Special Rare': 'Special Illustration Rare',
 }
 
 // --- TCGCSV sealed product / singles source (free, no auth) --------------------
@@ -521,55 +507,6 @@ async function fetchEnglishSet(cfg, psaMap) {
   return { cards, products, meta }
 }
 
-// Build a whole Japanese set from TCGCSV category 85 (no pokemontcg.io equivalent).
-async function fetchJapaneseSet(cfg) {
-  const CAT = 'https://tcgcsv.com/tcgplayer/85'
-  let prods, prices
-  try {
-    prods = (await getJSON(`${CAT}/${cfg.tcgGroup}/products`)).results || []
-    prices = (await getJSON(`${CAT}/${cfg.tcgGroup}/prices`)).results || []
-  } catch (e) {
-    console.log(`    (JP fetch failed for group ${cfg.tcgGroup}: ${e.message})`)
-    return null
-  }
-  const priceById = {}
-  for (const pr of prices) {
-    const m = pr.marketPrice ?? pr.midPrice
-    if (m && priceById[pr.productId] == null) priceById[pr.productId] = Math.round(m * 100) / 100
-  }
-  const cards = []
-  const byType = {}
-  for (const p of prods) {
-    const ext = Object.fromEntries((p.extendedData || []).map(e => [e.name, e.value]))
-    if (ext.Number) {
-      const jpR = ext.Rarity || 'Common'
-      cards.push({
-        id: `${cfg.id}-${String(ext.Number).split('/')[0].replace(/^0+/, '') || '0'}`,
-        name: p.cleanName || p.name,
-        number: String(ext.Number).split('/')[0],
-        rarity: JP_RARITY_MAP[jpR] || 'Common',
-        supertype: 'Pokémon',
-        img: p.imageUrl,
-        imgLarge: p.imageUrl?.replace('_200w', '_400w') || p.imageUrl,
-        price: priceById[p.productId] ?? null,
-      })
-    } else {
-      const cls = classifyProduct(p.name)
-      if (!cls) continue
-      const price = priceById[p.productId]
-      if (price == null) continue
-      const cur = byType[cls.type]
-      if (!cur || price < cur.price) byType[cls.type] = { ...cls, name: p.name, price, tcgId: p.productId }
-    }
-  }
-  const products = sortProducts(Object.values(byType)).map(({ _guessed, ...p }) => p)
-  return {
-    id: cfg.id, name: cfg.name, series: cfg.series, releaseDate: cfg.releaseDate,
-    printedTotal: cards.length, total: cards.length,
-    logo: undefined, symbol: undefined, japanese: true,
-    cards, products,
-  }
-}
 
 // Canonical display order for product types.
 const PRODUCT_ORDER = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
@@ -666,17 +603,6 @@ async function main() {
       products,
     })
     await new Promise(r => setTimeout(r, 200))
-  }
-
-  // Japanese-only sets (TCGCSV category 85 — no English release exists anywhere).
-  for (const cfg of JP_SETS) {
-    console.log(`  ${cfg.name} (${cfg.id}) [JP]…`)
-    const jp = await fetchJapaneseSet(cfg)
-    if (!jp) { console.log('    skipped (fetch failed)'); continue }
-    const priced = jp.cards.filter(c => c.price != null).length
-    console.log(`    ${jp.cards.length} cards (${priced} priced), sealed: ${jp.products.map(p => p.type).join(', ') || 'none'}`)
-    out.push(jp)
-    await new Promise(r => setTimeout(r, 300))
   }
 
   await mkdir('src/data', { recursive: true })

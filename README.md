@@ -5,23 +5,20 @@ animated reveal, price your hits at real market value, send the gems off for
 PSA-style grading, and sell for profit. Built for personal, non-commercial play.
 
 ## Data
-Real sets, cards, rarities, images, **TCGplayer/Cardmarket prices**, and **real PSA
-graded sale comps** (eBay medians, used for graded card values) come from
-**[pokemon-api.com](https://www.pokemon-api.com)** via RapidAPI. The Japanese-only
-**Abyss Eye** set has no English release on any API, so it's built from the free
-[TCGCSV](https://tcgcsv.com) Japanese export (category 85); TCGCSV is also a per-field
-price fallback. A snapshot ships in `src/data/sets.json` (modern + vintage sets).
+Real sets, cards, rarities, images, and **TCGplayer/Cardmarket prices** come from a
+conglomerate of FREE APIs — **[pokemontcg.io](https://pokemontcg.io)** (primary),
+**[TCGCSV](https://tcgcsv.com)** (sealed products + per-field price fallback), and
+**[TCGdex](https://tcgdex.net)** (last-resort image/price fallback). **Real PSA graded
+sale comps** (eBay medians, used for graded card values) are preserved in the shipped
+snapshot. No API key is required. A snapshot ships in `src/data/sets.json` (modern +
+vintage English sets).
 
-The build needs a RapidAPI key for pokemon-api.com. Provide it either way:
+To refresh the snapshot:
 ```bash
-# option A: env var
-POKEMON_API_KEY=your-key npm run fetch-data
-# option B: drop it in a gitignored file (no env needed), then just run the build
-echo -n 'your-key' > scripts/.pokemon-api-key
-npm run fetch-data
+npm run fetch-data            # no key needed
+# optional: a free pokemontcg.io key lifts rate limits
+POKEMONTCG_IO_KEY=your-key npm run fetch-data
 ```
-`scripts/.pokemon-api-key` is gitignored — never committed. Rotate the key on RapidAPI
-if it's ever exposed. (Live in-browser price refresh still uses pokemontcg.io.)
 
 ## Run it
 ```bash
