@@ -1,27 +1,16 @@
-import { useEffect, useState, useMemo } from 'react'
-import { useGame, dayLengthMs } from '../game/store'
+import { useMemo } from 'react'
+import { useGame } from '../game/store'
 import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
   const pending = useGame(s => s.pendingGrades)
   const submitted = useGame(s => s.gradesSubmitted)
+  const currentDay = useGame(s => s.currentDay)
   const collection = useGame(s => s.collection)
   const cash = useGame(s => s.cash)
-  const resolveGrades = useGame(s => s.resolveGrades)
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
-  const [, tick] = useState(0)
 
-  // Only run the resolve/progress tick while cards are actually being graded —
-  // no point churning re-renders every 250ms with an empty queue.
-  useEffect(() => {
-    if (pending.length === 0) return
-    const id = setInterval(() => { resolveGrades(); tick(t => t + 1) }, 250)
-    return () => clearInterval(id)
-  }, [resolveGrades, pending.length])
-
-  const now = Date.now()
-  const dayMs = useGame(dayLengthMs)
   return (
     <>
       <GraderRelationship submitted={submitted} />
@@ -33,13 +22,9 @@ export default function Bench() {
       ) : (
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
           {pending.map((p, i) => {
-            // Use the day-length captured at submit so the bar + days-left stay consistent
-            // with the absolute readyAt even if the day-length setting changed since.
-            const pDayMs = p.dayMsAtSubmit || dayMs
-            const total = GRADING[p.tierKey].days * pDayMs
-            const remain = Math.max(0, p.readyAt - now)
-            const pct = Math.min(100, 100 * (1 - remain / total))
-            const daysLeft = Math.ceil(remain / pDayMs)
+            const totalDays = GRADING[p.tierKey].days
+            const daysLeft = Math.max(0, p.readyOnDay - currentDay)
+            const pct = Math.min(100, 100 * (totalDays - daysLeft) / totalDays)
             return (
               <div className="product" key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <img src={p.card.img} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
@@ -49,7 +34,9 @@ export default function Bench() {
                   <div style={{ background: '#0c0f1a', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                     <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#3b6cff,#36d399)', transition: 'width .25s' }} />
                   </div>
-                  <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>{daysLeft} day{daysLeft === 1 ? '' : 's'} left</div>
+                  <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
+                    {daysLeft === 0 ? 'Ready — advance a day to collect' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}
+                  </div>
                 </div>
               </div>
             )

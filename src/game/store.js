@@ -51,16 +51,7 @@ export const EMPLOYEES = [
 ]
 export function employeeById(id) { return EMPLOYEES.find(e => e.id === id) || null }
 
-// The game runs in REAL TIME: 1 game-day = `dayMinutes` real minutes (default 15).
-// Everything daily — orders, listings/consignments, wages, rent, AND grading — rides this
-// one clock, so a day always means the same thing. `dayLengthMs()` reads the live setting.
-export const DEFAULT_DAY_MINUTES = 15
-export function dayLengthMs(state) {
-  const m = state?.settings?.dayMinutes ?? DEFAULT_DAY_MINUTES
-  return Math.max(0.05, m) * 60 * 1000 // floor at ~3s for playtesting
-}
-// Back-compat export name kept for any stray import; equals the default day length.
-export const DAY_MS_SIM = DEFAULT_DAY_MINUTES * 60 * 1000
+// Time advances only when the player clicks "Next Day". There is no real-time clock.
 
 // Card ids are "<setId>-<number>" (e.g. "me4-2"); the set id is everything before
 // the last hyphen so multi-hyphen set ids like "sv8pt5" survive.
@@ -485,8 +476,11 @@ function advanceDaysWith(set, get, days, away) {
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
   for (const ev of market.events) get().log(ev.kind === 'hype' ? 'market-hype' : 'market-crash', `${ev.kind === 'hype' ? '📈' : '📉'} ${ev.line}`, 0)
+  // Resolve any grades whose day count was reached during these days (currentDay is now updated).
+  const resolvedGrades = get().resolveGrades()
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
-    lease: round2(leaseDue), payroll: round2(payrollDue), listingsSold: lt.sold.length, listingOffers: lt.newOffers }
+    lease: round2(leaseDue), payroll: round2(payrollDue), listingsSold: lt.sold.length, listingOffers: lt.newOffers,
+    resolvedGrades: resolvedGrades.length }
 }
 
 // Settle daily store overhead (lease + payroll). If cash covers it, pay and clear arrears.
@@ -606,7 +600,7 @@ export const UPGRADES = {
 export const useGame = create(persist((set, get) => ({
   cash: STARTING_CASH,
   collection: [],          // owned cards (instances)
-  pendingGrades: [],       // {card, readyAt, tier}
+  pendingGrades: [],       // {card, tierKey, readyOnDay, submittedAt, paidFee}
   history: [],             // {t, type, detail, amount}
   stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
   // Per-set ledger: { [setId]: { spent, pulledValue, packsOpened, cardsPulled, hits } }.
@@ -645,9 +639,6 @@ export const useGame = create(persist((set, get) => ({
   forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
-  // Real-time clock: epoch ms of the last processed day boundary. The world advances 1 day
-  // per `settings.dayMinutes` of real time, online and offline (catch-up on load).
-  lastTick: Date.now(),
   // Survival economy: a day job pays a daily wage, rent drains it. job=null means full-time
   // vendor (no wage). pendingJob holds a freshly-taken job until it starts (re-apply friction).
   // rentArrears = consecutive days behind on rent; past RENT_GRACE_DAYS with nothing to sell
@@ -664,8 +655,7 @@ export const useGame = create(persist((set, get) => ({
   // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
   // autoAdvance ("Auto-rip"): auto-start ripping on buy / "Rip another" (incl. the first
   // pack and single packs); in one-by-one mode, also rolls through a box's remaining packs.
-  // dayMinutes: real minutes per game-day (the master clock rate).
-  settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES },
+  settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false },
 
   setSetting(key, value) { set(s => ({ settings: { ...s.settings, [key]: value } })) },
 
@@ -1164,13 +1154,10 @@ export const useGame = create(persist((set, get) => ({
       collection: s.collection.filter(c => c.uid !== uid),
       gradesSubmitted: s.gradesSubmitted + 1,
     }))
-    const dayMs = dayLengthMs(get())
-    const submittedAt = Date.now()
-    const readyAt = submittedAt + tier.days * dayMs
+    const submittedAt = get().currentDay
+    const readyOnDay = submittedAt + tier.days
     // remember the fee actually paid so the resolved grade records it, not list price.
-    // store submittedAt + the day-length used so the Bench progress/days-left stay correct
-    // even if the player later changes the day-length setting (readyAt is absolute).
-    set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyAt, submittedAt, dayMsAtSubmit: dayMs, paidFee: fee }] }))
+    set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyOnDay, submittedAt, paidFee: fee }] }))
     const disc = before.discount > 0 ? ` (${Math.round(before.discount*100)}% loyalty off)` : ''
     get().log('grade-submit', `Submitted ${card.name} (${tier.name}, $${fee.toFixed(2)}${disc})`, -fee)
     // crossed into a new loyalty tier?
@@ -1191,13 +1178,12 @@ export const useGame = create(persist((set, get) => ({
     const total = round2(feePer * cards.length)
     if (!get().spend(total)) return
     const uidSet = new Set(cards.map(c => c.uid))
-    const dayMs = dayLengthMs(get())
-    const submittedAt = Date.now()
-    const readyAt = submittedAt + tier.days * dayMs
+    const submittedAt = get().currentDay
+    const readyOnDay = submittedAt + tier.days
     set(s => ({
       collection: s.collection.filter(c => !uidSet.has(c.uid)),
       gradesSubmitted: s.gradesSubmitted + cards.length,
-      pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, readyAt, submittedAt, dayMsAtSubmit: dayMs, paidFee: feePer }))],
+      pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, readyOnDay, submittedAt, paidFee: feePer }))],
     }))
     const bulk = bulkDiscount(cards.length)
     const notes = [before.discount > 0 ? `${Math.round(before.discount*100)}% loyalty` : null,
@@ -1208,10 +1194,10 @@ export const useGame = create(persist((set, get) => ({
     get().bumpGoal('grade', cards.length)
   },
 
-  // Called on a tick to resolve grades whose timers elapsed.
+  // Resolve grades whose day count has been reached.
   resolveGrades() {
-    const now = Date.now()
-    const ready = get().pendingGrades.filter(p => now >= p.readyAt)
+    const day = get().currentDay
+    const ready = get().pendingGrades.filter(p => day >= p.readyOnDay)
     if (!ready.length) return []
     const luck = get().upgrades.loupe ? 0.08 : 0
     const resolved = ready.map(p => {
@@ -1224,7 +1210,7 @@ export const useGame = create(persist((set, get) => ({
       return { ...p.card, grade, gradeHistory }
     })
     set(s => ({
-      pendingGrades: s.pendingGrades.filter(p => now < p.readyAt),
+      pendingGrades: s.pendingGrades.filter(p => day < p.readyOnDay),
       collection: [...resolved, ...s.collection],
     }))
     for (const g of resolved) get().log('grade-done', `${g.name} graded PSA ${g.grade.overall}`, 0)
@@ -1506,36 +1492,16 @@ export const useGame = create(persist((set, get) => ({
   },
 
   // Pass a single day at home — generate that day's home orders into the inbox.
-  nextDay() { return advanceDaysWith(set, get, 1, false) },
-
-  // REAL-TIME CLOCK. Advance the world by however many whole game-days of real time have
-  // elapsed since `lastTick`. Called on mount (offline catch-up), every ~1s while open, and
-  // when the tab becomes visible again. Returns a summary for the "while you were away" UI,
-  // or null if no full day has passed. Days advance at home (`away:false`).
-  tickRealTime() {
-    const s = get()
-    if (s.gameOver) return null // world stops once you've lost
-    const dayMs = dayLengthMs(s)
-    const elapsed = Date.now() - (s.lastTick ?? Date.now())
-    let due = Math.floor(elapsed / dayMs)
-    if (due < 1) return null
-    // Cap a huge backlog (e.g. save left for weeks) so we don't loop thousands of times.
-    const MAX_CATCHUP = CALENDAR_DAYS * 3 // 90 days
-    const capped = due > MAX_CATCHUP
-    if (capped) due = MAX_CATCHUP
-    const cashBefore = s.cash
-    const result = advanceDaysWith(set, get, due, false) || {}
-    // Flush CARD income accrued since the last tick (interactive sales + passive payouts,
-    // tracked by earn() — wages excluded) and attribute it evenly across the days passed
-    // into the rolling window that powers the full-time sustainability readout.
+  // Flushes accumulated card income into the rolling window for the full-time readout.
+  nextDay() {
+    if (get().gameOver) return null
+    const cashBefore = get().cash
+    const result = advanceDaysWith(set, get, 1, false) || {}
     const cardIncome = round2(get()._cardAccrual || 0)
-    const perDay = round2(cardIncome / due)
-    const ring = [...(get().cardIncomeLog || [])]
-    for (let i = 0; i < due; i++) ring.push(perDay)
-    // consume exactly the days processed; keep the sub-day remainder; reset the accrual.
-    set(st => ({ lastTick: (st.lastTick ?? Date.now()) + due * dayMs, cardIncomeLog: ring.slice(-INCOME_WINDOW_DAYS), _cardAccrual: 0 }))
+    const ring = [...(get().cardIncomeLog || []), cardIncome]
+    set(() => ({ cardIncomeLog: ring.slice(-INCOME_WINDOW_DAYS), _cardAccrual: 0 }))
     const cashAfter = get().cash
-    return { ...result, days: due, capped, cashDelta: round2(cashAfter - cashBefore), cardIncome }
+    return { ...result, days: 1, cashDelta: round2(cashAfter - cashBefore), cardIncome }
   },
   // Attend a show: the show's days pass while you're AWAY. Home orders during
   // those days only land if you have the Smartphone (online) / Staff (walk-in)
@@ -1553,15 +1519,15 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0, lastTick: Date.now(),
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
-      settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, dayMinutes: DEFAULT_DAY_MINUTES } })
+      settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
     setMarketMults({}) // clear the engine's live market drift too
   },
 }), {
   name: 'poke-vendor-save',
-  version: 23,
+  version: 24,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1626,11 +1592,10 @@ export const useGame = create(persist((set, get) => ({
       state.bySet = state.bySet ?? {}
     }
     if (version < 11) {
-      // Real-time clock. Start the clock NOW for existing saves so they don't
-      // fast-forward a giant fake backlog of days on first load after upgrading.
+      // Real-time clock migration (now obsolete — v24 cleans it up).
       state.lastTick = Date.now()
       state.settings = { ...(state.settings || {}) }
-      state.settings.dayMinutes = state.settings.dayMinutes ?? DEFAULT_DAY_MINUTES
+      state.settings.dayMinutes = state.settings.dayMinutes ?? 15
       // Survival economy. Keep existing cash (don't retro-grant the new $10k start);
       // employ them at the starter job so rent doesn't immediately bury them.
       state.job = state.job ?? STARTER_JOB
@@ -1720,12 +1685,38 @@ export const useGame = create(persist((set, get) => ({
       // tax — listing/consigning should clearly beat it. Balance constant, push onto saves.
       state.quickSellRate = 0.50
     }
+    if (version < 24) {
+      // Switched from real-time clock to manual "Next Day" button.
+      // Convert any in-flight wall-clock grades to day-count: set readyOnDay = currentDay
+      // so they resolve on the first resolveGrades() call (in onRehydrateStorage).
+      const currentDay = state.currentDay ?? 1
+      state.pendingGrades = (state.pendingGrades ?? []).map(p => ({
+        ...p,
+        readyOnDay: p.readyOnDay ?? currentDay,
+        // drop obsolete wall-clock fields
+        readyAt: undefined,
+        dayMsAtSubmit: undefined,
+      }))
+      // Remove obsolete real-time settings
+      if (state.settings?.dayMinutes !== undefined) {
+        const { dayMinutes, ...rest } = state.settings
+        state.settings = rest
+      }
+      // Drop lastTick — no longer used
+      delete state.lastTick
+    }
     return state
   },
   // The pricing engine holds the live market multipliers in module state, which is empty
   // on every page load. Re-push the rehydrated map so saved drift survives a refresh.
+  // Also resolve any grades that became ready on or before currentDay (handles migrated saves).
   onRehydrateStorage() {
-    return (state) => { if (state) setMarketMults(state.marketMults || {}) }
+    return (state) => {
+      if (!state) return
+      setMarketMults(state.marketMults || {})
+      // Settle any grades whose readyOnDay <= currentDay (e.g. migrated from wall-clock).
+      state.resolveGrades?.()
+    }
   },
 }))
 

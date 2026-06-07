@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   businessVolume, distributorTier, nextDistributorTier, wholesalePrice, caseLot, casePrice } from './game/engine'
-import { useGame, dayLengthMs } from './game/store'
+import { useGame } from './game/store'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
 import Collection from './components/Collection'
@@ -46,9 +46,7 @@ export default function App() {
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
   const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
   const notoriety = useGame(s => s.notoriety)
-  const resolveGrades = useGame(s => s.resolveGrades)
-  const tickRealTime = useGame(s => s.tickRealTime)
-  const [awaySummary, setAwaySummary] = useState(null) // "while you were away" banner
+  const [daySummary, setDaySummary] = useState(null) // per-day summary popup after Next Day
 
   // Lock body scroll while a rip overlay is visible (ripping + on the Buy tab).
   // The overlay itself still scrolls internally (overflow-y:auto). Unlocks on cleanup.
@@ -60,25 +58,16 @@ export default function App() {
     document.body.classList.remove('rip-lock')
   }, [ripping, tab])
 
-  // REAL-TIME CLOCK. One unified tick drives the whole living world: advance whole game-days
-  // of elapsed real time (orders, listings, consignments, wages/rent later — and grades, which
-  // resolve inside advanceDaysWith's day loop). Runs on mount (offline catch-up), every second
-  // while open, and whenever the tab becomes visible again.
+  // If the page was reloaded while a show was open, the floor view (React state) is
+  // gone but show-inventory cards may still be stranded on the table — bring them home.
   useEffect(() => {
-    const pump = (showAway) => {
-      const summary = tickRealTime()
-      resolveGrades() // settle any grades whose readyAt just passed this tick
-      if (showAway && summary && summary.days >= 1) setAwaySummary(summary)
-    }
-    pump(true) // mount: catch up offline time and surface a summary
-    // If the page was reloaded while a show was open, the floor view (React state) is
-    // gone but show-inventory cards may still be stranded on the table — bring them home.
     if ((useGame.getState().showInventory || []).length) useGame.getState().endShow()
-    const id = setInterval(() => pump(false), 1000)
-    const onVis = () => { if (document.visibilityState === 'visible') pump(true) }
-    document.addEventListener('visibilitychange', onVis)
-    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVis) }
-  }, [tickRealTime, resolveGrades])
+  }, [])
+
+  function handleNextDay() {
+    const summary = useGame.getState().nextDay()
+    if (summary) setDaySummary(summary)
+  }
 
   // Buy any sealed product. A single booster pack always opens the animated rip.
   // Multi-pack products: if "open one at a time" is on, rip each pack with the
@@ -220,13 +209,16 @@ export default function App() {
         </div>
         <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
           <GameClock />
+          <button className="btn next-day-btn" disabled={!!activeShow} title={activeShow ? 'Cannot advance while attending a show' : 'Advance one day'} onClick={handleNextDay}>
+            Next Day →
+          </button>
           <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
           <div className="cash">{fmtMoney(cash)}<small>balance</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
       </div>
 
-      {awaySummary && <AwaySummary summary={awaySummary} onClose={() => setAwaySummary(null)} />}
+      {daySummary && <DaySummary summary={daySummary} onClose={() => setDaySummary(null)} />}
       <GameOver />
 
       {/* A rip is mid-flight but you've stepped away to another tab — a tap brings you back. */}
@@ -314,44 +306,45 @@ export default function App() {
   )
 }
 
-// Live day counter + a countdown to the next game-day. Ticks its own 1s timer for the
-// countdown display (the actual day advance is driven by App's real-time tick).
+// Simple day display — no countdown, no real-time timer.
 function GameClock() {
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
-  const lastTick = useGame(s => s.lastTick)
-  const dayMs = useGame(dayLengthMs)
-  const [, force] = useState(0)
-  useEffect(() => { const id = setInterval(() => force(n => n + 1), 1000); return () => clearInterval(id) }, [])
-  const remain = Math.max(0, dayMs - ((Date.now() - (lastTick || Date.now())) % dayMs))
-  const mm = Math.floor(remain / 60000)
-  const ss = Math.floor((remain % 60000) / 1000)
   return (
-    <span className="clock-chip" title={`Next day in ${mm}:${String(ss).padStart(2,'0')} · ${Math.round(dayMs/60000)} min/day`}>
+    <span className="clock-chip">
       📅 Day {currentDay}{monthsElapsed ? ` · M${monthsElapsed + 1}` : ''}
-      <small>{mm}:{String(ss).padStart(2,'0')} to next</small>
     </span>
   )
 }
 
-// "While you were away" — shown after offline/closed-tab time is fast-forwarded on load.
-function AwaySummary({ summary, onClose }) {
-  const { days, cashDelta, added, capped } = summary
+// Per-day summary — shown after clicking "Next Day".
+function DaySummary({ summary, onClose }) {
+  const { cashDelta, added, listingsSold, listingOffers, wages, rent, lease, payroll, resolvedGrades } = summary
+  const currentDay = useGame(s => s.currentDay)
+  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || wages || rent || lease || payroll
   return (
     <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 6 }}>🕑 {days} day{days === 1 ? '' : 's'} passed</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-          {capped ? 'You were away a long time — caught up the last stretch.' : 'The shop kept running while you were away.'}
-        </p>
-        <div style={{ fontSize: 15, margin: '10px 0' }}>
-          {cashDelta != null && (
-            <div>Net cash <b style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
-              {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}</b></div>
-          )}
-          {added ? <div className="muted" style={{ fontSize: 13 }}>{added} new order{added === 1 ? '' : 's'} waiting</div> : null}
-        </div>
-        <button className="btn gold" style={{ maxWidth: 160 }} onClick={onClose}>Got it →</button>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, textAlign: 'center' }}>
+        <h2 style={{ marginBottom: 6 }}>📅 Day {currentDay}</h2>
+        {!hasActivity ? (
+          <p className="muted" style={{ marginTop: 0 }}>A quiet day.</p>
+        ) : (
+          <div style={{ fontSize: 14, margin: '8px 0', textAlign: 'left' }}>
+            {cashDelta != null && (
+              <div style={{ marginBottom: 6 }}>Net cash <b style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}</b></div>
+            )}
+            {added > 0 && <div className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</div>}
+            {listingsSold > 0 && <div className="muted">{listingsSold} listing{listingsSold === 1 ? '' : 's'} sold</div>}
+            {listingOffers > 0 && <div className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</div>}
+            {resolvedGrades > 0 && <div className="muted">{resolvedGrades} card{resolvedGrades === 1 ? '' : 's'} returned from grading</div>}
+            {wages > 0 && <div className="muted">Wages earned +{fmtMoney(wages)}</div>}
+            {rent > 0 && <div className="muted">Rent paid -{fmtMoney(rent)}</div>}
+            {lease > 0 && <div className="muted">Store lease -{fmtMoney(lease)}</div>}
+            {payroll > 0 && <div className="muted">Staff payroll -{fmtMoney(payroll)}</div>}
+          </div>
+        )}
+        <button className="btn gold" style={{ maxWidth: 160, marginTop: 8 }} onClick={onClose}>Continue</button>
       </div>
     </div>
   )
