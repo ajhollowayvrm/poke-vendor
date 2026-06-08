@@ -507,6 +507,24 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .priceitem .ptag { font-size:11px; font-weight:800; }
 .priceitem .pval { font-size:13px; font-weight:800; color: var(--green); }
 
+/* ---------- Marketplace (buy any single) ---------- */
+.market-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.market-card { background:#0c0f1a; border:1px solid var(--line); border-radius:12px; overflow:hidden;
+  display:flex; flex-direction:column; }
+.market-card > img { width:100%; aspect-ratio: 245 / 342; object-fit: contain; background:#070912;
+  display:block; padding:8px 8px 0; }
+.market-meta { padding:8px 10px 4px; }
+.market-name { font-size:13px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.market-sub { font-size:11px; font-weight:700; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.market-variants { display:flex; flex-direction:column; gap:5px; padding:4px 10px 10px; margin-top:auto; }
+.market-buy { display:flex; justify-content:space-between; align-items:center; gap:8px;
+  background:#ffffff10; color:var(--txt); border:1px solid var(--line); border-radius:8px;
+  padding:6px 9px; font-size:12px; font-weight:700; cursor:pointer; transition: background .12s, border-color .12s; }
+.market-buy:hover:not(:disabled) { background:#ffffff1f; border-color:#ffffff33; }
+.market-buy:disabled { opacity:.4; cursor:not-allowed; }
+.market-buy .mv-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.market-buy .mv-price { font-weight:800; color: var(--green); flex:0 0 auto; }
+
 /* ---------- Special foils & god packs ---------- */
 .cardtile.foil-pokeball  { border-color: #ff6b6b; box-shadow: 0 0 0 1px #ff6b6b66, 0 8px 20px #ff6b6b22; }
 .cardtile.foil-masterball { border-color: #a06bff; box-shadow: 0 0 0 1px #a06bff88, 0 8px 26px #a06bff33; }

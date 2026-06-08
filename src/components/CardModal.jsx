@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { cardValue, rawValue, psa10Value, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate } from '../game/engine'
+import { cardValue, rawValue, psa10Value, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, rarityLabel } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
@@ -54,7 +54,7 @@ export default function CardModal({ card, onClose }) {
           <div style={{ flex: 1, minWidth: 240 }}>
             <h2>{card.name}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
-              <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{card.rarity}</span>
+              <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{rarityLabel(card.rarity)}</span>
               {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{card.number}
               {!g && card.condition && CONDITIONS[card.condition] && (
                 <> · <span style={{ color: CONDITIONS[card.condition].color, fontWeight: 800 }}>{CONDITIONS[card.condition].label}</span></>

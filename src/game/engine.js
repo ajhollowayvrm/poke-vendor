@@ -40,6 +40,10 @@ export function rarityRank(r) {
   const i = RARITY_ORDER.indexOf(r)
   return i === -1 ? 0 : i
 }
+// Human-readable rarity name. Most rarities are already display-ready; only the
+// internal MEGA_ATTACK_RARE enum needs formatting (it's the "Mega Attack Rare" —
+// the Mega-era alt-art that sits in the rare slot). Use anywhere a rarity is shown.
+export function rarityLabel(r) { return r === 'MEGA_ATTACK_RARE' ? 'Mega Attack Rare' : r }
 // Anything at Double Rare or above is a "hit" worth celebrating.
 export const HIT_THRESHOLD = RARITY_ORDER.indexOf('Double Rare')
 export function isHit(card) { return rarityRank(card.rarity) >= HIT_THRESHOLD }
@@ -102,7 +106,7 @@ const BASELINE_RATES = {
 // Multipliers reflect real secondary-market premiums on the pattern:
 //   Poké Ball foil    — trades ~2.5–4× the base card (common but desirable)  → 3×
 //   Master Ball foil  — the chase pattern, ~40–80× base                       → 55×
-const FOIL = {
+export const FOIL = {
   pokeball:   { key: 'pokeball',  label: 'Poké Ball Foil',  badge: '⦿ POKÉ BALL',  mult: 3.0,  color: '#ff6b6b' },
   masterball: { key: 'masterball', label: 'Master Ball Foil', badge: '◉ MASTER BALL', mult: 55.0, color: '#a06bff' },
 }
@@ -587,6 +591,60 @@ export function vintageCardInRange(min, max) {
   const sorted = [...VINTAGE_CARDS].sort((a, b) =>
     Math.abs(a.price - (min + max) / 2) - Math.abs(b.price - (min + max) / 2))
   return instance(sorted[0], 'floor')
+}
+
+// --- Global singles marketplace ------------------------------------------------
+// A "buy any single" market spanning EVERY set (modern + vintage). Unlike the shop
+// (sealed only) or show vendors (a random handful), this lists each card on demand,
+// at a small markup over market — you pay a premium for buying the exact card you want
+// instead of gambling on a pack. Listings are synthesized per card (not stored): a
+// Near Mint raw copy always, plus a Poké Ball foil and PSA 9 / PSA 10 slabs for cards
+// worth chasing in those finishes.
+export const MARKETPLACE_CARDS = SETS.flatMap(s => s.cards)
+// Premium over market for the convenience of buying a specific single.
+const MARKET_MARKUP = 1.15
+export function marketAsk(value) { return round2(Math.max(0.25, value * MARKET_MARKUP)) }
+// Only bother listing foil/graded variants for cards with enough base value that those
+// finishes would realistically be sold separately (keeps bulk commons to a single row).
+const FOIL_VARIANT_FLOOR = 3   // base raw value to list a Poké Ball foil
+const GRADE_VARIANT_FLOOR = 8  // base raw value to list PSA slabs
+
+// A deterministic full PSA grade object for a marketplace slab (no random subgrades —
+// a "PSA 10" listing is exactly that). Mirrors rollGrade's output shape so gradedValue
+// and the rest of the app treat it like any owned slab.
+function marketGrade(overall) {
+  return { overall, centering: overall, corners: overall, edges: overall, surface: overall,
+    fee: 0, tier: 'standard', gradedAt: null, _market: true }
+}
+
+// Build the buyable listings for one card. Each listing is everything buyFromMarket
+// needs to mint an instance: a display id, the base card, the finish/condition/grade,
+// and the asking price (markup already applied). Sorted cheapest-first.
+export function marketVariants(card) {
+  const base = rawValue(card) // NM, non-foil, ungraded — the floor price
+  const out = [{
+    id: `${card.id}::nm`, card, kind: 'raw', condition: 'NM', foil: null, grade: null,
+    label: 'Near Mint', ask: marketAsk(base),
+  }]
+  if (base >= FOIL_VARIANT_FLOOR) {
+    out.push({
+      id: `${card.id}::foil`, card, kind: 'foil', condition: 'NM', foil: FOIL.pokeball, grade: null,
+      label: FOIL.pokeball.label, ask: marketAsk(rawValue({ ...card, foil: FOIL.pokeball, condition: 'NM' })),
+    })
+  }
+  if (base >= GRADE_VARIANT_FLOOR) {
+    for (const g of [9, 10]) {
+      const grade = marketGrade(g)
+      out.push({
+        id: `${card.id}::psa${g}`, card, kind: 'graded', condition: 'NM', foil: null, grade,
+        label: `PSA ${g}`, ask: marketAsk(gradedValue({ ...card, condition: 'NM', grade })),
+      })
+    }
+  }
+  // Cheapest first; on a price tie keep a stable finish order (raw < foil < graded)
+  // so a near-worthless card whose variants round to the same ask still reads NM-first.
+  const order = { raw: 0, foil: 1, graded: 2 }
+  return out.sort((a, b) => a.ask - b.ask || order[a.kind] - order[b.kind])
 }
 
 // Real-data price ceiling — anything requested above this is a synthesized "grail".

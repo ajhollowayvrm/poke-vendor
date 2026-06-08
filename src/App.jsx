@@ -14,6 +14,7 @@ import UpgradeShop from './components/UpgradeShop'
 import BoothInbox from './components/BoothInbox'
 import Settings from './components/Settings'
 import PriceGuide from './components/PriceGuide'
+import Marketplace from './components/Marketplace'
 import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
 import Binder from './components/Binder'
@@ -33,6 +34,7 @@ const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', 
 export default function App() {
   const [tab, setTab] = useState('shop')
   const [collTab, setCollTab] = useState('cards') // Collection sub-tab: cards | grader | prices
+  const [shopTab, setShopTab] = useState('sealed') // Buy sub-tab: sealed | market
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
@@ -231,7 +233,16 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
-        {tab === 'shop' && <Shop cash={cash} onBuy={buyProduct} />}
+        {tab === 'shop' && (
+          <>
+            <div className="subtabs">
+              <button className={`subtab ${shopTab === 'sealed' ? 'active' : ''}`} onClick={() => setShopTab('sealed')}>📦 Sealed</button>
+              <button className={`subtab ${shopTab === 'market' ? 'active' : ''}`} onClick={() => setShopTab('market')}>🛍️ Marketplace</button>
+            </div>
+            {shopTab === 'sealed' && <Shop cash={cash} onBuy={buyProduct} />}
+            {shopTab === 'market' && <Marketplace />}
+          </>
+        )}
 
         {tab === 'shows' && <Calendar onAttend={attendShow} />}
         {tab === 'myshop' && <BoothInbox />}

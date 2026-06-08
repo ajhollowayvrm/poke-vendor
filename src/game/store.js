@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard,
   businessVolume, distributorTier, wholesalePrice, SETS, ownedIdSet, setCompletion, completionReward,
-  setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS } from './engine'
+  setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS,
+  instance, setIdOfCard } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 import { fatigueMult } from './stream'
 
@@ -1235,6 +1236,32 @@ export const useGame = create(persist((set, get) => ({
     if (card._mispriced) get().addNotoriety(1) // you spotted a deal
     get().bumpGoal('buy', 1)
     if (!opts.toShowInventory) get().checkCompletions() // bought card may finish a set
+    return true
+  },
+
+  // --- Buy a single from the global marketplace ---
+  // `listing` comes from engine.marketVariants(): { card, condition, foil, grade, ask, label }.
+  // Mint a fresh owned instance with the listing's finish/condition/grade, pay the ask
+  // (which already includes the marketplace markup), and take it home. spend() rolls the
+  // cost into stats.spent, so marketplace buys count toward distributor volume like sealed.
+  buyFromMarket(listing) {
+    if (!listing) return false
+    const price = round2(listing.ask)
+    if (!get().spend(price)) return false
+    // instance() honors a passed-in condition and spreads foil through, but always nulls
+    // grade — so stamp the slab grade on afterward. source 'grail' = a clean handled copy.
+    const c = instance({ ...listing.card, condition: listing.condition, foil: listing.foil || undefined }, 'grail')
+    // Copy the listing's grade — listing.grade is shared across renders, so never
+    // stamp the reference directly (a future regrade/crack mechanic could mutate it).
+    if (listing.grade) c.grade = { ...listing.grade }
+    c._market = true
+    set(s => ({ collection: [c, ...s.collection] }))
+    const setId = setIdOfCard(c)
+    if (setId) get().recordSetSpend(setId, price)
+    const finish = listing.grade ? ` (${listing.label})` : listing.foil ? ` (${listing.foil.label})` : ''
+    get().log('buy', `Bought ${listing.card.name}${finish} on the marketplace`, -price)
+    get().bumpGoal('buy', 1)
+    get().checkCompletions() // a bought single may finish a set
     return true
   },
 
