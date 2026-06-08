@@ -601,9 +601,31 @@ export function vintageCardInRange(min, max) {
 // Near Mint raw copy always, plus a Poké Ball foil and PSA 9 / PSA 10 slabs for cards
 // worth chasing in those finishes.
 export const MARKETPLACE_CARDS = SETS.flatMap(s => s.cards)
-// Premium over market for the convenience of buying a specific single.
-const MARKET_MARKUP = 1.15
-export function marketAsk(value) { return round2(Math.max(0.25, value * MARKET_MARKUP)) }
+// Convenience premium for buying a specific single instead of ripping/hunting for it.
+// The markup SCALES with the card's value so the marketplace stays a cheap way to grab
+// filler (complete a set, fill a binder) but a deliberately bad deal on the chases —
+// ripping packs and hunting shows must remain the smart play for the cards that matter,
+// or the core loop collapses. Breakpoints are NM raw value → multiplier, low→high; the
+// markup for a value is the tier it falls into (steps, not interpolated — easy to reason
+// about and tune). A whole card's variants (foil/slab) share the tier of its NM value,
+// so a chase's foil and PSA 10 are marked up just as steeply as its raw.
+const MARKET_MARKUP_TIERS = [
+  { max: 2,        mult: 1.10 }, // bulk — basically just convenience
+  { max: 20,       mult: 1.30 }, // commons-plus / filler
+  { max: 100,      mult: 1.60 }, // real singles
+  { max: 500,      mult: 2.10 }, // strong chases
+  { max: Infinity, mult: 3.00 }, // grails — buying one outright should sting
+]
+function marketMarkup(value) {
+  for (const t of MARKET_MARKUP_TIERS) if (value <= t.max) return t.mult
+  return 3.00
+}
+// Ask for a variant: its own market value scaled by the markup tier of the card's NM
+// value (`tierValue`). Pass tierValue so a foil/slab is priced in the card's tier, not
+// its own inflated finish value (which could otherwise jump a cheap card into a high tier).
+export function marketAsk(value, tierValue = value) {
+  return round2(Math.max(0.25, value * marketMarkup(tierValue)))
+}
 // Only bother listing foil/graded variants for cards with enough base value that those
 // finishes would realistically be sold separately (keeps bulk commons to a single row).
 const FOIL_VARIANT_FLOOR = 3   // base raw value to list a Poké Ball foil
@@ -621,15 +643,15 @@ function marketGrade(overall) {
 // needs to mint an instance: a display id, the base card, the finish/condition/grade,
 // and the asking price (markup already applied). Sorted cheapest-first.
 export function marketVariants(card) {
-  const base = rawValue(card) // NM, non-foil, ungraded — the floor price
+  const base = rawValue(card) // NM, non-foil, ungraded — the floor price + markup tier
   const out = [{
     id: `${card.id}::nm`, card, kind: 'raw', condition: 'NM', foil: null, grade: null,
-    label: 'Near Mint', ask: marketAsk(base),
+    label: 'Near Mint', ask: marketAsk(base, base),
   }]
   if (base >= FOIL_VARIANT_FLOOR) {
     out.push({
       id: `${card.id}::foil`, card, kind: 'foil', condition: 'NM', foil: FOIL.pokeball, grade: null,
-      label: FOIL.pokeball.label, ask: marketAsk(rawValue({ ...card, foil: FOIL.pokeball, condition: 'NM' })),
+      label: FOIL.pokeball.label, ask: marketAsk(rawValue({ ...card, foil: FOIL.pokeball, condition: 'NM' }), base),
     })
   }
   if (base >= GRADE_VARIANT_FLOOR) {
@@ -637,7 +659,7 @@ export function marketVariants(card) {
       const grade = marketGrade(g)
       out.push({
         id: `${card.id}::psa${g}`, card, kind: 'graded', condition: 'NM', foil: null, grade,
-        label: `PSA ${g}`, ask: marketAsk(gradedValue({ ...card, condition: 'NM', grade })),
+        label: `PSA ${g}`, ask: marketAsk(gradedValue({ ...card, condition: 'NM', grade }), base),
       })
     }
   }

@@ -60,9 +60,10 @@ export default function Marketplace() {
   return (
     <>
       <div className="banner" style={{ marginTop: 16 }}>
-        🛍️ The <b>marketplace</b> — buy any single you're hunting instead of gambling on packs.
-        Every card in every set, at a small markup over market. Near Mint raw, Poké Ball foils,
-        and graded slabs where they trade. Vintage chases live here too.
+        🛍️ The <b>marketplace</b> — buy any single instead of gambling on packs. The markup
+        <b> scales with value</b>: cheap to grab filler for a set, but chases cost a steep premium —
+        ripping and hunting shows is still the smart way to land the big ones. Near Mint raw,
+        Poké Ball foils, and graded slabs where they trade. Vintage chases live here too.
       </div>
 
       <div className="toolbar">
