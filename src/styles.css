@@ -645,12 +645,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right));
     /* leave room so content clears the fixed bottom nav (bar + safe-area) */
     padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-  .topbar { gap: 8px; padding: 10px 12px; }
+  .topbar { gap: 8px; padding: 10px 12px; flex-wrap: wrap; }
   .brand { font-size: 17px; }
   .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
   /* tighten the right-side chip cluster (clock · notoriety · balance) so they don't
      jam together on a phone; smaller sub-labels and a snugger gap give them air. */
-  .topbar-right { gap: 9px !important; }
+  .topbar-right { gap: 9px !important; flex: 1 1 100% !important; flex-wrap: wrap;
+    justify-content: flex-end; min-width: 0; }
   .clock-chip { font-size: 13px; } .clock-chip small, .noto-chip small, .cash small { font-size: 10px; }
   /* stack each setting row: label block on top, control below — the segmented
      controls otherwise crush the description into a ~73px column. */
@@ -911,3 +912,17 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .trade-cash { font-size:11px; font-weight:800; padding:2px 7px; border-radius:999px; white-space:nowrap; text-align:center; }
 .trade-cash.up { background:#36d39922; color:var(--green); }
 .trade-cash.down { background:#ff9f4322; color:#ff9f43; }
+
+/* --- Sealed inventory (buy & hold) ---------------------------------------- */
+.sealed-item { display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+.sealed-head { display:flex; align-items:center; gap:10px; }
+.sealed-logo { width:54px; height:40px; object-fit:contain; flex:0 0 auto; }
+.sealed-name { font-size:14px; line-height:1.2; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sealed-value { display:flex; align-items:baseline; gap:2px; margin-top:2px; }
+.sealed-now { font-size:20px; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; }
+.sealed-delta { font-size:11px; font-weight:800; }
+.sealed-actions { display:flex; gap:6px; margin-top:8px; }
+.sealed-actions .btn { flex:1 1 0; min-width:0; padding:8px 6px; font-size:12.5px; white-space:nowrap; }
+.sealed-list-ctl { margin-top:8px; border-top:1px solid var(--line); padding-top:8px; }
+.vintage-vault { border-color:#c8962e55; background:linear-gradient(180deg,#1a1407,var(--panel2)); }
+.vintage-vault .prodbtn .prodmeta { font-weight:800; }

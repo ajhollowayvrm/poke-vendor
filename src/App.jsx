@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
-  businessVolume, distributorTier, nextDistributorTier, wholesalePrice, caseLot, casePrice } from './game/engine'
+  businessVolume, distributorTier, nextDistributorTier, wholesalePrice, caseLot, casePrice,
+  VINTAGE_SETS, vintageProduct, sealedValue, setById } from './game/engine'
 import { useGame } from './game/store'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -14,6 +15,7 @@ import UpgradeShop from './components/UpgradeShop'
 import BoothInbox from './components/BoothInbox'
 import Settings from './components/Settings'
 import PriceGuide from './components/PriceGuide'
+import SealedInventory from './components/SealedInventory'
 import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
 import Binder from './components/Binder'
@@ -32,6 +34,7 @@ const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', 
 
 export default function App() {
   const [tab, setTab] = useState('shop')
+  const [shopTab, setShopTab] = useState('buy') // Buy sub-tab: buy | inventory
   const [collTab, setCollTab] = useState('cards') // Collection sub-tab: cards | grader | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
@@ -42,6 +45,7 @@ export default function App() {
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
   const pendingCount = useGame(s => s.pendingGrades.length)
+  const sealedCount = useGame(s => s.sealedInventory.length)
   // only count orders still valid (card not since sold) so the tab badge matches the list
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
   const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
@@ -69,35 +73,54 @@ export default function App() {
     if (summary) setDaySummary(summary)
   }
 
-  // Buy any sealed product. A single booster pack always opens the animated rip.
-  // Multi-pack products: if "open one at a time" is on, rip each pack with the
-  // animation (you can fast-forward); otherwise open the whole thing instantly.
+  // Buying now STOCKS sealed product into your inventory (hold-first) — you rip, list,
+  // or flip it later from the 📦 Inventory tab. With "Auto-rip" on, it rips immediately
+  // on buy (the old instant-rip behaviour) for players who'd rather not hold.
   function buyProduct(set, product) {
     // The Buy/Distributor UI passes `_buyPrice` = the actual charged price (retail,
-    // wholesale, or case-lot), so the price shown is exactly what's charged. A case
-    // lot rips its boxes' worth of packs at once.
+    // wholesale, or case-lot), so the price shown is exactly what's charged.
     const price = product._buyPrice ?? product.price
     if (cash < price) return toast(`Not enough cash for ${product.type}.`)
+    const item = useGame.getState().buySealed(set, product, price)
+    if (!item) return
+    if (useGame.getState().settings.autoAdvance) { ripFromInventory(item.uid); return }
+    setShopTab('inventory')
+    toast(`Stocked ${product.type} of ${set.name} — rip, list, or flip it from 📦 Inventory.`)
+  }
+
+  // Rip a held product from inventory: remove it (no re-charge — already paid) and run
+  // the same rip flow as before. A single pack or "one at a time" mode opens the animated
+  // overlay; a whole box otherwise rips instantly straight into the collection.
+  function ripFromInventory(uid) {
+    const item = useGame.getState().ripSealed(uid)
+    if (!item) return
+    const set = setById(item.setId)
+    const product = item.product
+    if (!set) return toast('That set is no longer available.')
     const oneByOne = useGame.getState().settings.openSealedOneByOne
-    const wholesaleNote = product._buyPrice != null && product._buyPrice < product.price ? ' (wholesale)' : ''
     const animated = product.packs === 1 || oneByOne
     if (animated) {
-      if (!spend(price)) return
-      useGame.getState().recordSetSpend(set.id, price)
-      useGame.getState().log('buy', `Bought ${product.type} (${set.name})${wholesaleNote}`, -price)
       setRipping({ set, product })
-      setTab('shop')
+      setTab('shop'); setShopTab('buy')
       return
     }
-    if (!spend(price)) return
-    useGame.getState().recordSetSpend(set.id, price)
     const all = openProduct(set, product)
     all.forEach(c => (c._isHit = isHit(c)))
     addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal
-    useGame.getState().log('buy', `Opened ${product.type} (${set.name})${wholesaleNote}`, -price)
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+  }
+
+  // Buy a vintage sealed pack at its CURRENT (appreciated) market price and hold it.
+  function buyVintage(set) {
+    const product = vintageProduct(set)
+    const price = sealedValue({ product, setId: set.id })
+    if (cash < price) return toast(`Not enough cash for the ${product.type}.`)
+    const item = useGame.getState().buySealed(set, { ...product, _buyPrice: price }, price)
+    if (!item) return
+    setShopTab('inventory')
+    toast(`Stocked ${product.type} of ${set.name} for ${fmtMoney(price)} — it's in 📦 Inventory.`)
   }
 
   // "Rip another" from the end-of-rip summary: re-buy the SAME product and rip it fresh,
@@ -231,7 +254,16 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
-        {tab === 'shop' && <Shop cash={cash} onBuy={buyProduct} />}
+        {tab === 'shop' && (
+          <>
+            <div className="subtabs">
+              <button className={`subtab ${shopTab === 'buy' ? 'active' : ''}`} onClick={() => setShopTab('buy')}>🛒 Buy</button>
+              <button className={`subtab ${shopTab === 'inventory' ? 'active' : ''}`} onClick={() => setShopTab('inventory')}>📦 Inventory{sealedCount ? ` (${sealedCount})` : ''}</button>
+            </div>
+            {shopTab === 'buy' && <Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyVintage} />}
+            {shopTab === 'inventory' && <SealedInventory onRip={ripFromInventory} />}
+          </>
+        )}
 
         {tab === 'shows' && <Calendar onAttend={attendShow} />}
         {tab === 'myshop' && <BoothInbox />}
@@ -370,7 +402,7 @@ function GameOver() {
   )
 }
 
-function Shop({ cash, onBuy }) {
+function Shop({ cash, onBuy, onBuyVintage }) {
   const stats = useGame(s => s.stats)
   const supplyVendors = useGame(s => s.supplyVendors)
   const supplyChannel = useGame(s => s.supplyChannel || [])
@@ -439,8 +471,44 @@ function Shop({ cash, onBuy }) {
           )
         })}
       </div>
+      <VintageVault onBuy={onBuyVintage} cash={cash} />
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
+  )
+}
+
+// Vintage sealed: pricey old packs bought at current (appreciated) market value and
+// HELD — they trend up over time. Buying stocks them into your sealed inventory; ripping
+// one (a single old pack) is a real gamble. Re-prices live as the market drifts.
+function VintageVault({ onBuy, cash }) {
+  useGame(s => s.marketMults) // re-price as the market drifts
+  if (!VINTAGE_SETS.length) return null
+  return (
+    <div className="market-panel vintage-vault" style={{ marginTop: 18 }}>
+      <div className="market-head">🏛️ Vintage Vault <span className="muted">— rare old sealed packs. Buy &amp; hold; vintage appreciates. Ripping one is a real gamble.</span></div>
+      <div className="grid shop-grid" style={{ marginTop: 10 }}>
+        {VINTAGE_SETS.map(set => {
+          const product = vintageProduct(set)
+          const price = sealedValue({ product, setId: set.id })
+          const up = price >= (product.price || 0)
+          return (
+            <div className="product" key={set.id}>
+              {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
+              <h3>{set.name}</h3>
+              <div className="meta">{set.series} · {set.printedTotal || set.total} cards</div>
+              <div className="prodlist">
+                <button className="prodbtn" disabled={cash < price} onClick={() => onBuy(set)}
+                  title={`${product.type} · current market ${fmtMoney(price)}`}>
+                  <span className="prodname">{product.icon || '📦'} {product.type}</span>
+                  <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt</span>
+                  <span className="prodprice">{fmtMoney(price)}</span>
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 

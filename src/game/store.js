@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard,
   businessVolume, distributorTier, wholesalePrice, SETS, ownedIdSet, setCompletion, completionReward,
-  setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS } from './engine'
+  setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS,
+  VINTAGE_SETS, driftMultVintage, sealedValue, sealedCard, SEALED_FLIP_RATE, setById } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
 import { fatigueMult } from './stream'
 
@@ -212,6 +213,7 @@ const LISTING_DAILY_SELL_CAP = 0.5
 export const STREAM_HYPE_DAYS = 4
 const STREAM_BOOST = 3.0         // listing viewer multiplier while a stream's afterglow is live
 let _offerSeq = 0 // monotonic id for offers (Date.now/random are banned in this module's hot paths)
+let _sealedSeq = 0 // monotonic suffix for sealed-inventory item uids
 
 // --- Living market ----------------------------------------------------------
 // Per-day chance a hype/crash event fires on SOME set (jolts one set's mult for
@@ -230,6 +232,8 @@ function driftMarket(mults, history, days, log) {
   const events = []
   for (let d = 0; d < days; d++) {
     for (const s of SHOP_SETS) next[s.id] = driftMult(next[s.id])
+    // vintage sealed trends upward (finite, shrinking supply) — its own drift, no revert.
+    for (const s of VINTAGE_SETS) next[s.id] = driftMultVintage(next[s.id])
     // at most one event per day, on a random shop set
     if (Math.random() < MARKET_EVENT_CHANCE) {
       const s = SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]
@@ -241,6 +245,9 @@ function driftMarket(mults, history, days, log) {
   }
   // record one history sample per set per call (the post-drift value), capped.
   for (const s of SHOP_SETS) {
+    hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
+  }
+  for (const s of VINTAGE_SETS) {
     hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
   }
   setMarketMults(next) // pricing engine reads this synchronously
@@ -635,6 +642,7 @@ export const useGame = create(persist((set, get) => ({
   showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
   shopDisplay: [],         // cards on your STORE shelf — walk-in customers only buy/offer on these (you choose what to put out). Needs a storefront.
   supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
+  sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
   wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
   forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
@@ -869,6 +877,16 @@ export const useGame = create(persist((set, get) => ({
   pullListing(idx) {
     const l = get().listings[idx]
     if (!l) return
+    // A sealed listing goes back to the sealed INVENTORY, not the card collection.
+    if (l.card?._sealed && l.card.sealedRef) {
+      const item = l.card.sealedRef
+      set(s => ({
+        sealedInventory: [item, ...(s.sealedInventory || [])],
+        listings: s.listings.filter((_, i) => i !== idx),
+      }))
+      get().log('listing', `Pulled ${l.card.name} off the market`, 0)
+      return
+    }
     set(s => ({
       collection: [l.card, ...s.collection],
       listings: s.listings.filter((_, i) => i !== idx),
@@ -944,6 +962,70 @@ export const useGame = create(persist((set, get) => ({
     set(s => ({ supplyChannel: [...(s.supplyChannel || []), { label, net, daysLeft }] }))
     get().log('supply', `Wholesaled ${label} into the channel — nets $${net.toFixed(2)} in ~${daysLeft}d (cost $${cost.toFixed(2)})`, -cost)
     return { cost, net, daysLeft }
+  },
+
+  // --- Sealed inventory --------------------------------------------------------
+  // Buy a sealed product and HOLD it (the default — you rip/list/flip later from the
+  // Inventory tab). Charges `price` (the actual price the Buy UI showed: retail,
+  // wholesale, or vintage market), attributes the spend to the set, and stocks the
+  // item. Returns the new item (so the caller can immediately rip it if Auto-rip is on),
+  // or null if you couldn't afford it.
+  buySealed(pokeSet, product, price) {
+    const cost = price ?? product._buyPrice ?? product.price
+    if (!get().spend(cost)) return null
+    get().recordSetSpend(pokeSet.id, cost)
+    const item = {
+      uid: `s${Date.now().toString(36)}${(_sealedSeq++).toString(36)}`,
+      setId: pokeSet.id,
+      product: { ...product },
+      boughtDay: absoluteDay(get().currentDay, get().monthsElapsed),
+      boughtPrice: round2(cost),
+      vintage: !!pokeSet.vintage,
+    }
+    set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
+    get().log('buy', `Stocked ${product.type} (${pokeSet.name})`, -cost)
+    get().bumpGoal('buy', 1)
+    return item
+  },
+
+  // Pull a held product out of inventory to RIP it. Removes it and returns the item
+  // ({ setId, product, ... }); the caller resolves the full set via setById and runs
+  // the rip (animated or instant) — no re-charge, you already paid when you bought it.
+  ripSealed(uid) {
+    const item = (get().sealedInventory || []).find(i => i.uid === uid)
+    if (!item) return null
+    set(s => ({ sealedInventory: s.sealedInventory.filter(i => i.uid !== uid) }))
+    return item
+  },
+
+  // List a held sealed product on your own site at `askMult`× market. It rides the
+  // SAME browsing/offer engine as a card (via sealedCard's card-shaped wrapper).
+  listSealed(uid, askMult) {
+    const item = (get().sealedInventory || []).find(i => i.uid === uid)
+    if (!item) return null
+    const card = sealedCard(item)
+    const q = get().listingQuote(card, askMult)
+    const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0, autoSell: true }
+    set(s => ({
+      sealedInventory: s.sealedInventory.filter(i => i.uid !== uid),
+      listings: [...(s.listings || []), listing],
+    }))
+    get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)`, 0)
+    return q
+  },
+
+  // Quick-flip a held sealed product for instant cash at SEALED_FLIP_RATE of its live
+  // market value (no waiting, a small spread vs listing it). Returns the net paid.
+  quickFlipSealed(uid) {
+    const item = (get().sealedInventory || []).find(i => i.uid === uid)
+    if (!item) return null
+    const net = round2(sealedValue(item) * SEALED_FLIP_RATE)
+    set(s => ({ sealedInventory: s.sealedInventory.filter(i => i.uid !== uid) }))
+    get().earn(net)
+    const nm = setById(item.setId)?.name || ''
+    get().log('sell', `Quick-flipped ${nm} ${item.product.type} — $${net.toFixed(2)}`, net)
+    get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
+    return net
   },
 
   // --- Livestream --------------------------------------------------------------
@@ -1519,7 +1601,7 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], sealedInventory: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
@@ -1527,7 +1609,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 24,
+  version: 25,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1543,6 +1625,7 @@ export const useGame = create(persist((set, get) => ({
     state.consignments = keepWrapped(state.consignments)
     state.showInventory = keepFlat(state.showInventory)
     state.shopDisplay = keepFlat(state.shopDisplay)
+    state.sealedInventory = keepFlat(state.sealedInventory) // sealed items carry a uid too
     return state
   },
   // backfill fields added across versions so old saves keep working.
@@ -1704,6 +1787,12 @@ export const useGame = create(persist((set, get) => ({
       }
       // Drop lastTick — no longer used
       delete state.lastTick
+    }
+    if (version < 25) {
+      // Sealed inventory (buy & hold product, rip/list/flip later). New bucket — start
+      // empty for existing saves; nothing to migrate (buying still worked, it just ripped
+      // on the spot before).
+      state.sealedInventory = state.sealedInventory ?? []
     }
     return state
   },

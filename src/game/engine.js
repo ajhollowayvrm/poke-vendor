@@ -657,6 +657,19 @@ export function driftMult(m, rnd = Math.random) {
   return Math.round(Math.min(MARKET_BOUNDS.max, Math.max(MARKET_BOUNDS.min, next)) * 1000) / 1000
 }
 
+// VINTAGE drift: unlike modern sets, sealed vintage trends UP over time (a finite,
+// shrinking supply of decades-old product). Same daily wiggle, but with a small
+// positive bias and NO mean-reversion to 1.0 — so holding vintage sealed appreciates.
+// A higher ceiling lets it climb well past the modern cap over a long hold.
+const VINTAGE_BIAS = 0.004    // +~0.4%/day upward drift on average
+export const VINTAGE_MAX = 3.0
+export function driftMultVintage(m, rnd = Math.random) {
+  const cur = m ?? 1
+  const step = (rnd() - 0.5) * 2 * MARKET_STEP   // [-step, +step]
+  const next = cur + step + VINTAGE_BIAS
+  return Math.round(Math.min(VINTAGE_MAX, Math.max(MARKET_BOUNDS.min, next)) * 1000) / 1000
+}
+
 // Named hype/crash events that jolt one set's multiplier for flavor + a price swing.
 // Returned with the magnitude already applied to a base mult by the caller.
 export const MARKET_EVENTS = [
@@ -691,6 +704,7 @@ export function setIdOfCard(card) {
 }
 
 const SET_BY_ID = Object.fromEntries(SETS.map(s => [s.id, s]))
+export function setById(setId) { return SET_BY_ID[setId] }
 export function setNameOfId(setId) { return SET_BY_ID[setId]?.name }
 export function setNameOfCard(card) { const id = setIdOfCard(card); return id ? SET_BY_ID[id]?.name : undefined }
 
@@ -1097,6 +1111,41 @@ export function makeProductPromo(set, product) {
   const promoPool = byR['Ultra Rare'] || byR['Illustration Rare'] || byR['Double Rare'] || byR['Rare Holo']
   if (!promoPool?.length) return null
   const c = instance(pick(promoPool)); c._promo = true; return c
+}
+
+// ---- Sealed inventory -------------------------------------------------------
+// A held sealed product (bought but not yet ripped). Its live value rides the set's
+// market multiplier, so a hot modern set — or any vintage set (which trends up) —
+// appreciates while it sits in your inventory. `item` = { uid, setId, product, ... }.
+export const SEALED_FLIP_RATE = 0.92   // quick-flip payout as a fraction of live market value
+export function sealedValue(item) {
+  if (!item?.product) return 0
+  return round2((item.product.price || 0) * marketMult(item.setId))
+}
+// Wrap a sealed item in a card-shaped object so a sealed LISTING flows through the
+// exact same listing / offer / browsing machinery as a single card (no duplicated
+// logic). The synthetic id "<setId>-sealed" makes setIdOfCard resolve to the real
+// set (so marketMult applies); rarity 'Rare Holo' keeps it clear of the bulk
+// desirability penalty without ever counting as a "hit". `_sealed`/`sealedRef` let
+// the store restore it to inventory if the listing is pulled.
+export function sealedCard(item) {
+  const set = SET_BY_ID[item.setId]
+  const p = item.product
+  const art = set?.logo || set?.symbol || p.img || null
+  return {
+    uid: item.uid,
+    id: `${item.setId}-sealed`,
+    name: `${set?.name ? set.name + ' ' : ''}${p.type}`,
+    number: 'sealed',
+    rarity: 'Rare Holo',
+    supertype: 'Sealed Product',
+    price: p.price,
+    img: art,
+    imgLarge: art,
+    foil: null, reverse: false, condition: null, grade: null,
+    _sealed: true,
+    sealedRef: item,
+  }
 }
 
 // ---- Distributor program ----------------------------------------------------

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank, preloadCardImages } from '../game/engine'
+import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank, preloadCardImages, setById } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled,
@@ -50,12 +50,26 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const spend = useGame(s => s.spend)
   const recordSetSpend = useGame(s => s.recordSetSpend)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
+  const inventory = useGame(s => s.sealedInventory)
+  const ripSealedAction = useGame(s => s.ripSealed)
 
   const [setId, setSetId] = useState(SHOP_SETS[0].id)
-  const set = SHOP_SETS.find(s => s.id === setId) || SHOP_SETS[0]
-  const products = setProducts(set)
+  const buySet = SHOP_SETS.find(s => s.id === setId) || SHOP_SETS[0]
+  const products = setProducts(buySet)
   const [prodType, setProdType] = useState(() => bestProduct(products).type)
-  const product = products.find(p => p.type === prodType) || products[0]
+  const buyProduct = products.find(p => p.type === prodType) || products[0]
+
+  // You can rip FRESH (buy now) or break a box you already HOLD in sealed inventory.
+  const [source, setSource] = useState('buy')   // 'buy' | 'inventory'
+  const [invUid, setInvUid] = useState(null)
+  useEffect(() => {
+    if (source === 'inventory' && !inventory.find(i => i.uid === invUid)) setInvUid(inventory[0]?.uid || null)
+  }, [source, inventory, invUid])
+  const invItem = inventory.find(i => i.uid === invUid) || null
+
+  const fromInv = source === 'inventory' && !!invItem
+  const set = fromInv ? (setById(invItem.setId) || buySet) : buySet
+  const product = fromInv ? invItem.product : buyProduct
   const canBreak = product.packs >= 2
 
   const [doBreak, setDoBreak] = useState(false)
@@ -69,9 +83,11 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   useEffect(() => { if (!canBreak && doBreak) setDoBreak(false) }, [canBreak, doBreak])
 
   async function go() {
-    if (cash < product.price) return toast(`Not enough cash for the ${product.type}.`)
-    // Guard a pricey buy behind a confirm so one mis-tap can't burn a fortune.
-    if (product.price > 250) {
+    // Breaking a held box costs nothing now (you paid when you bought it); ripping fresh
+    // charges the product price.
+    if (!fromInv && cash < product.price) return toast(`Not enough cash for the ${product.type}.`)
+    // Guard a pricey FRESH buy behind a confirm so one mis-tap can't burn a fortune.
+    if (!fromInv && product.price > 250) {
       const ok = await confirmDialog({
         title: `Go live with a ${product.type}?`,
         body: `This rips a ${fmtMoney(product.price)} ${product.type} of ${set.name} on stream. It burns a game-day.`,
@@ -79,9 +95,16 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
       })
       if (!ok) return
     }
-    if (!spend(product.price)) return
-    recordSetSpend(set.id, product.price)
-    useGame.getState().log('stream', `Bought ${product.type} (${set.name}) to rip live`, -product.price)
+    if (fromInv) {
+      // Consume the held product from inventory — no re-charge.
+      const it = ripSealedAction(invItem.uid)
+      if (!it) return toast('That product is no longer in your inventory.')
+      useGame.getState().log('stream', `Broke a held ${product.type} (${set.name}) on stream`, 0)
+    } else {
+      if (!spend(product.price)) return
+      recordSetSpend(set.id, product.price)
+      useGame.getState().log('stream', `Bought ${product.type} (${set.name}) to rip live`, -product.price)
+    }
 
     let isBreak = false, spotsSold = 0, spotGross = 0
     if (doBreak && canBreak) {
@@ -104,15 +127,33 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
 
       <div className="market-panel" style={{ marginTop: 14 }}>
         <div className="market-head">🎬 What are you ripping?</div>
-        <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-          <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); setProdType(bestProduct(setProducts(SHOP_SETS.find(s=>s.id===id))).type) }}>
-            {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <select value={prodType} onChange={e => setProdType(e.target.value)}>
-            {products.map(p => <option key={p.type} value={p.type}>{p.icon} {p.type} · {p.packs} pk · {fmtMoney(p.price)}</option>)}
-          </select>
-          <span className="pill" style={{ marginLeft: 'auto' }}>{product.packs} pack{product.packs>1?'s':''}</span>
-        </div>
+        {inventory.length > 0 && (
+          <div className="row" style={{ gap: 6, marginTop: 8 }}>
+            <button className={`tab ${source === 'buy' ? 'active' : ''}`} onClick={() => setSource('buy')}>🛒 Buy fresh</button>
+            <button className={`tab ${source === 'inventory' ? 'active' : ''}`} onClick={() => setSource('inventory')}>📦 From inventory ({inventory.length})</button>
+          </div>
+        )}
+        {fromInv ? (
+          <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
+            <select value={invUid || ''} onChange={e => setInvUid(e.target.value)}>
+              {inventory.map(it => {
+                const s = setById(it.setId)
+                return <option key={it.uid} value={it.uid}>{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
+              })}
+            </select>
+            <span className="pill" style={{ marginLeft: 'auto' }}>{product.packs} pack{product.packs>1?'s':''} · owned</span>
+          </div>
+        ) : (
+          <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
+            <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); setProdType(bestProduct(setProducts(SHOP_SETS.find(s=>s.id===id))).type) }}>
+              {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+            <select value={prodType} onChange={e => setProdType(e.target.value)}>
+              {products.map(p => <option key={p.type} value={p.type}>{p.icon} {p.type} · {p.packs} pk · {fmtMoney(p.price)}</option>)}
+            </select>
+            <span className="pill" style={{ marginLeft: 'auto' }}>{product.packs} pack{product.packs>1?'s':''}</span>
+          </div>
+        )}
       </div>
 
       <div className="market-panel" style={{ marginTop: 12, opacity: canBreak ? 1 : 0.5 }}>
@@ -132,7 +173,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
               </span>
             </div>
             <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-              All {spots} filling collects <b style={{ color: 'var(--green)' }}>{fmtMoney(per * spots)}</b> vs {fmtMoney(product.price)} cost.
+              All {spots} filling collects <b style={{ color: 'var(--green)' }}>{fmtMoney(per * spots)}</b> vs {fromInv ? 'a box you already own' : `${fmtMoney(product.price)} cost`}.
               Whatever doesn't sell, you keep those teams' pulls.
             </p>
           </div>
@@ -140,8 +181,10 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
       </div>
 
       <div className="row" style={{ marginTop: 16, justifyContent: 'center' }}>
-        <button className="btn gold" style={{ maxWidth: 300 }} disabled={cash < product.price} onClick={go}>
-          {cash < product.price ? `Need ${fmtMoney(product.price)}` : `🔴 Go live — rip ${product.icon || ''} ${product.type} (${fmtMoney(product.price)})`}
+        <button className="btn gold" style={{ maxWidth: 300 }} disabled={!fromInv && cash < product.price} onClick={go}>
+          {fromInv
+            ? `🔴 Go live — break your ${product.icon || ''} ${product.type}`
+            : (cash < product.price ? `Need ${fmtMoney(product.price)}` : `🔴 Go live — rip ${product.icon || ''} ${product.type} (${fmtMoney(product.price)})`)}
         </button>
       </div>
       <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
