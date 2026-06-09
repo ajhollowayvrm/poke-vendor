@@ -398,6 +398,17 @@ export function makeSealedDeal(channel, notoriety = 0) {
       - seller.trust * 0.5 - Math.min(0.12, notoriety / 700), // a known name gets scammed less
     0.03, 0.92)
   const fake = Math.random() < fakeProb
+  // Fake QUALITY: most fakes are crude (an Authentication Kit nails them), but a
+  // sophisticated minority (~30%) are good reseals it usually MISSES — so a GENUINE read
+  // tilts the odds without ever being a guarantee. `detectability` = the chance the kit
+  // correctly flags THIS fake; vintage reseals are harder still. 0 for a genuine item.
+  let detectability = 0
+  if (fake) {
+    const sophisticated = Math.random() < 0.3
+    detectability = sophisticated ? 0.45 : 0.92
+    if (origin === 'vintage') detectability *= 0.8
+    detectability = Math.round(detectability * 100) / 100
+  }
   // Sketchy sellers insist on irreversible payment — a tell that correlates with risk.
   const pay = seller.sketchy ? (online ? 'venmo' : 'cash') : pickPayMethod(channel, null)
   const payTell = seller.sketchy
@@ -417,7 +428,7 @@ export function makeSealedDeal(channel, notoriety = 0) {
     card: logo ? { name: product.type, img: logo, imgLarge: logo } : null,
     // Everything the deal modal + store actions need to resolve a buy / authenticate /
     // chargeback. `fake` is the hidden outcome; `reversible` decides chargeback eligibility.
-    deal: { setId: set.id, product: { ...product }, ask, reference, fake, origin,
+    deal: { setId: set.id, product: { ...product }, ask, reference, fake, detectability, origin,
       payMethod: pay, reversible, sketchy: seller.sketchy, what },
   }
 }

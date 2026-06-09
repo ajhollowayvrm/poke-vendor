@@ -1044,11 +1044,14 @@ export const useGame = create(persist((set, get) => ({
     const fee = Math.max(10, round2(item.deal.ask * 0.05))
     if (get().cash < fee) return { error: `Authentication runs $${fee.toFixed(2)} — you can't cover it.` }
     get().spend(fee)
-    // A resealed vintage pack is genuinely hard to spot; modern is easier to call.
-    const accuracy = item.deal.origin === 'vintage' ? 0.72 : 0.85
-    const correct = Math.random() < accuracy
-    const looksFake = correct ? item.deal.fake : !item.deal.fake
-    const read = { looksFake, confidence: Math.round(accuracy * 100), fee }
+    // The read uses the fake's hidden `detectability` (crude fakes ~92%, sophisticated
+    // reseals ~45%, vintage harder), so a GENUINE read is never a guarantee. A genuine item
+    // clears, save a small false-alarm rate. The displayed confidence is the kit's TYPICAL
+    // reliability — not the per-deal truth, so it doesn't leak the sophistication.
+    const FALSE_POSITIVE = 0.06
+    const detect = item.deal.detectability ?? (item.deal.origin === 'vintage' ? 0.72 : 0.85)
+    const looksFake = item.deal.fake ? Math.random() < detect : Math.random() < FALSE_POSITIVE
+    const read = { looksFake, confidence: item.deal.origin === 'vintage' ? 72 : 85, fee }
     set(s => ({ boothInbox: s.boothInbox.map((e, i) => i === idx ? { ...e, authResult: read } : e) }))
     get().log('auth', `Authenticated a ${item.deal.what} — $${fee.toFixed(2)}`, -fee)
     return read

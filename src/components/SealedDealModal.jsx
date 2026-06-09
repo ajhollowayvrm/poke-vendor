@@ -71,8 +71,8 @@ export default function SealedDealModal({ enc, idx, onDone, onCancel, flash }) {
             borderColor: authRead.looksFake ? '#ff5e6c55' : '#36d39955' }}>
             🔍 <b>Authentication:</b> {authRead.looksFake
               ? <>looks <b style={{ color: 'var(--red)' }}>FAKE</b> — wrapper/weight is off.</>
-              : <>looks <b style={{ color: 'var(--green)' }}>GENUINE</b> — checks out.</>}
-            {' '}<span className="muted">(~{authRead.confidence}% reliable{deal.origin === 'vintage' ? ' · vintage reseals are tricky' : ''})</span>
+              : <>looks <b style={{ color: 'var(--green)' }}>GENUINE</b> — checks out, but a clean reseal can still pass.</>}
+            {' '}<span className="muted">(kit is ~{authRead.confidence}% reliable{deal.origin === 'vintage' ? ' · vintage reseals are trickiest' : ''})</span>
           </div>
         )}
 
