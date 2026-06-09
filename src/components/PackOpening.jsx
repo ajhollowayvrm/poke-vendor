@@ -35,6 +35,15 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const autoRipped = useRef(false)                 // did we already auto-rip the current idle pack?
   const speed = Math.max(0.25, ripSpeed)           // guard against absurd values
   const ms = (n) => n / speed                      // scale a delay by rip speed
+  // Track reveal/burst timers so they can be cancelled on unmount — exiting (Done / "Rip
+  // another" remount) mid-reveal would otherwise leave timers calling setState after unmount.
+  const timersRef = useRef([])
+  const after = (fn, delay) => {
+    const id = setTimeout(() => { timersRef.current = timersRef.current.filter(t => t !== id); fn() }, delay)
+    timersRef.current.push(id)
+    return id
+  }
+  useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
 
   const last = packNo >= totalPacks
 
@@ -52,7 +61,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     setCurrent(null)
     setPulls(cards)
     setPhase('shaking')
-    setTimeout(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : demigod ? 1200 : 900))
+    after(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : demigod ? 1200 : 900))
   }
 
   function revealNext(cards, i) {
@@ -64,19 +73,19 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
         setRipValue(v => v + cards.reduce((a, c) => a + cardValue(c), 0))
         setPacksOpened(n => n + 1)
       }
-      if (cards._god) { setBurst(true); setTimeout(() => setBurst(false), 3000) } // big finale
-      else if (cards._demigod) { setBurst(true); setTimeout(() => setBurst(false), 1800) }
+      if (cards._god) { setBurst(true); after(() => setBurst(false), 3000) } // big finale
+      else if (cards._demigod) { setBurst(true); after(() => setBurst(false), 1800) }
       setPhase('done'); return
     }
     setShown(i + 1)
     const c = cards[i]
     const special = c._isHit || c.foil || c._fillsWant
-    if (special) { setBurst(true); setTimeout(() => setBurst(false), ms(1200)) }
+    if (special) { setBurst(true); after(() => setBurst(false), ms(1200)) }
     // Side callout: name every card as it lands, and accumulate hits/foils.
     setCurrent(c)
     if (special) setHits(h => [c, ...h])
     const delay = special ? 1100 : 520
-    setTimeout(() => revealNext(cards, i + 1), ms(delay))
+    after(() => revealNext(cards, i + 1), ms(delay))
   }
 
   // Reset reveal state for the next pack in the sequence.

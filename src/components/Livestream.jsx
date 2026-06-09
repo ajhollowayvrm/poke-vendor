@@ -233,11 +233,25 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   // every card pulled, tagged with its spot index (for break shipping at the end)
   const allPulled = useRef([])  // { card, spot }  (spot only set for breaks)
 
+  // Every reveal/burst/tip timer is tracked here so we can cancel the whole chain when the
+  // stream ends early or the component unmounts — otherwise an in-flight revealNext keeps
+  // running setState and could fire finishSoon (minting a promo) AFTER cashout/settlement.
+  const timersRef = useRef([])
+  const after = (fn, delay) => {
+    const id = setTimeout(() => { timersRef.current = timersRef.current.filter(t => t !== id); fn() }, delay)
+    timersRef.current.push(id)
+    return id
+  }
+  useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
+
   const pushChat = useCallback((line) => {
     setChat(c => [...c.slice(-40), { ...line, id: `${Date.now()}-${Math.random()}` }])
   }, [])
 
-  // ambient chat + viewer drift toward settled
+  // ambient chat + viewer drift toward settled. Depend on `speed` (a number), NOT `ms` —
+  // `ms` is re-created every render, which would tear down and recreate this interval on
+  // every reveal tick, resetting the 1600ms timer before it can fire (stalling ambient
+  // chat/drift during the busiest part of the stream).
   useEffect(() => {
     const id = setInterval(() => {
       if (Math.random() < 0.7) pushChat(chatLine('ambient'))
@@ -247,9 +261,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         const next = Math.max(1, v + drift + jitter)
         peakRef.current = Math.max(peakRef.current, next); return next
       })
-    }, ms(1600))
+    }, 1600 / speed)
     return () => clearInterval(id)
-  }, [settled, ms, pushChat])
+  }, [settled, speed, pushChat])
 
   useEffect(() => { const el = chatBoxRef.current; if (el) el.scrollTop = el.scrollHeight }, [chat])
 
@@ -287,13 +301,14 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       cards.forEach(c => allPulled.current.push({ card: c, spot: null }))
     }
     setIsGod(god); setIsDemigod(demigod); setPulls(cards); setShown(0); setCurrent(null); setPhase('revealing')
-    setTimeout(() => revealNext(cards, 0), ms(god ? 1100 : 500))
+    after(() => revealNext(cards, 0), ms(god ? 1100 : 500))
   }
 
   function revealNext(cards, i) {
+    if (finishedRef.current) return // stream ended early — stop the chain (don't mint a post-cashout promo)
     if (i >= cards.length) {
-      if (cards._god) { setBurst(true); setTimeout(() => setBurst(false), ms(2500)) }
-      else if (cards._demigod) { setBurst(true); setTimeout(() => setBurst(false), ms(1500)) }
+      if (cards._god) { setBurst(true); after(() => setBurst(false), ms(2500)) }
+      else if (cards._demigod) { setBurst(true); after(() => setBurst(false), ms(1500)) }
       setPackNo(n => { const np = n + 1; if (np >= totalPacks) finishSoon(); return np })
       setPhase('packdone'); return
     }
@@ -305,16 +320,16 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     pushChat(chatLine(kind, Math.random, c))
     if (kind === 'hype' || kind === 'god') {
       setHypeMoments(m => m + 1)
-      setBurst(true); setTimeout(() => setBurst(false), ms(1400))
-      for (let k = 0; k < (kind === 'god' ? 4 : 2); k++) setTimeout(() => pushChat(chatLine(kind, Math.random, c)), ms(120 * (k + 1)))
+      setBurst(true); after(() => setBurst(false), ms(1400))
+      for (let k = 0; k < (kind === 'god' ? 4 : 2); k++) after(() => pushChat(chatLine(kind, Math.random, c)), ms(120 * (k + 1)))
       // a hot pull can sell a lingering break spot to a hyped viewer
       maybeSellLiveSpot(c)
     }
     if (special) setHits(h => [c, ...h])
     const t = tipsFor(c, peakRef.current)
-    if (t > 0) { setTips(x => Math.round((x + t) * 100) / 100); if (t >= 3 || kind === 'hype' || kind === 'god') setTimeout(() => pushChat(chatLine('tip')), ms(200)) }
+    if (t > 0) { setTips(x => Math.round((x + t) * 100) / 100); if (t >= 3 || kind === 'hype' || kind === 'god') after(() => pushChat(chatLine('tip')), ms(200)) }
     const delay = special ? 900 : 360
-    setTimeout(() => revealNext(cards, i + 1), ms(delay))
+    after(() => revealNext(cards, i + 1), ms(delay))
   }
 
   // On a hype pull, viewers may scramble for a still-open break spot.
@@ -327,7 +342,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       if (Math.random() < chance) {
         useGame.getState().sellLiveSpot(perSpot)
         setLiveSpotFlash({ id: Date.now() })
-        setTimeout(() => setLiveSpotFlash(null), 2200)
+        after(() => setLiveSpotFlash(null), 2200)
         pushChat({ handle: 'system', text: `someone grabbed an open spot! 📦 (+${fmtMoney(perSpot)})`, tip: true })
         return f + 1
       }
@@ -336,6 +351,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   }
 
   function finishSoon() {
+    if (finishedRef.current) return // already cashed out — don't add a promo after the fact
     const promo = makeProductPromo(set, product || { bonus: null })
     if (promo) {
       promo._isHit = isHit(promo)
@@ -355,6 +371,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     if (done) return
     const remaining = totalPacks - packNo - (phase === 'revealing' ? 1 : 0)
     let addedTips = 0, addedHits = [], hype = 0, spotGain = 0
+    // Track the LIVE filled-spot count (seeded from current state), not the stale initial
+    // `spotsSold` prop — spots already grabbed during the animated reveal must count, or
+    // skip would sell (and bank cash for) more spots than the break holds.
+    let filled = filledSpots
     let v = peakRef.current
     for (let p = 0; p < Math.max(0, remaining); p++) {
       const cards = openPack(set)
@@ -370,8 +390,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         const kind = reactionKind(c)
         if (kind === 'hype' || kind === 'god') {
           hype++
-          if (isBreak && (spotsSold + spotGain) < spots && Math.random() < (c._fromGod ? 0.9 : 0.5)) {
-            spotGain++; useGame.getState().sellLiveSpot(perSpot)
+          if (isBreak && filled < spots && Math.random() < (c._fromGod ? 0.9 : 0.5)) {
+            filled++; spotGain++; useGame.getState().sellLiveSpot(perSpot)
           }
         }
         addedTips += tipsFor(c, peakRef.current)
@@ -391,6 +411,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   function endStream() {
     if (finishedRef.current) return
     finishedRef.current = true
+    timersRef.current.forEach(clearTimeout); timersRef.current = [] // kill any in-flight reveal chain
     const peak = Math.round(peakRef.current)
     const noto = streamNotoriety(peak, hypeMoments)
     // breaks: ship the cards that landed on FILLED spots; keep the rest (your teams)

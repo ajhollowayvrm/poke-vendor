@@ -218,12 +218,12 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
       // A small slice of the bin is a loose VINTAGE single (Base Charizard etc.) at bigger
       // shows — drawn from the vintage pool instead of the shop pool.
       if (vintageChance && r() < vintageChance) {
-        card = vintageCardInRange(lo, hi * 3) || null // vintage skews pricey; widen the band
+        card = vintageCardInRange(lo, hi * 3, r) || null // vintage skews pricey; widen the band
       }
       // ~15% of stock are "hits" pulled from the upper band; rest is the bulk bin.
       if (!card) card = (arch.key === 'whale' || roll > 0.85)
-        ? gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3))
-        : cardInValueRange(lo, hi * (0.4 + r() * 0.6))
+        ? gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3), r)
+        : cardInValueRange(lo, hi * (0.4 + r() * 0.6), r)
       // Price against the card's TRUE value (grade-aware) — a slabbed gem is
       // worth its graded value, not its raw value, so the ask tracks that.
       const worth = cardValue(card)

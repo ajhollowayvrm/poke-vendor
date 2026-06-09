@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rawValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard } from '../game/engine'
+import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Collection({ onPick }) {

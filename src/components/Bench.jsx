@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useGame } from '../game/store'
+import { useGame, absoluteDay } from '../game/store'
 import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate } from '../game/engine'
 import CardTile from './CardTile'
 
@@ -7,6 +7,9 @@ export default function Bench() {
   const pending = useGame(s => s.pendingGrades)
   const submitted = useGame(s => s.gradesSubmitted)
   const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
+  // readyOnDay is a month-safe absolute day, so compare against the absolute "today".
+  const today = absoluteDay(currentDay, monthsElapsed)
   const collection = useGame(s => s.collection)
   const cash = useGame(s => s.cash)
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
@@ -21,12 +24,12 @@ export default function Bench() {
         <div className="empty">No cards at the grader. Submit cards above, or from a card's detail view. 🔬</div>
       ) : (
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
-          {pending.map((p, i) => {
+          {pending.map((p) => {
             const totalDays = GRADING[p.tierKey].days
-            const daysLeft = Math.max(0, p.readyOnDay - currentDay)
+            const daysLeft = Math.max(0, p.readyOnDay - today)
             const pct = Math.min(100, 100 * (totalDays - daysLeft) / totalDays)
             return (
-              <div className="product" key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <div className="product" key={p.card.uid} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <img src={p.card.img} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>

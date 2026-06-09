@@ -141,7 +141,7 @@ const GOAL_POOL = [
 export const GOAL_PERIOD_DAYS = 7
 // Absolute day counter that doesn't wrap at the month boundary (currentDay resets to 1
 // each new calendar month). Goal cadence keys off this so a week spans months cleanly.
-function absoluteDay(currentDay, monthsElapsed) { return (monthsElapsed || 0) * CALENDAR_DAYS + currentDay }
+export function absoluteDay(currentDay, monthsElapsed) { return (monthsElapsed || 0) * CALENDAR_DAYS + currentDay }
 function makeWeeklyGoals(noto) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
   const count = 3 + (Math.random() < 0.5 ? 1 : 0) // 3–4 goals for the week
@@ -662,9 +662,11 @@ export const useGame = create(persist((set, get) => ({
   employees: [],           // hired employee ids (brick & mortar) — each is daily payroll + throughput
   storeArrears: 0,         // consecutive days unable to cover store overhead → lose the store
   // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
-  // autoAdvance ("Auto-rip"): auto-start ripping on buy / "Rip another" (incl. the first
-  // pack and single packs); in one-by-one mode, also rolls through a box's remaining packs.
-  settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false },
+  // autoAdvance ("Auto-rip"): once a rip is underway, auto-start the next reveal — the first
+  // pack, single packs, and (in one-by-one mode) the rest of a box. PACING ONLY; it does NOT
+  // decide where a fresh buy goes. ripOnBuy: a buy skips inventory and rips immediately (the
+  // old instant-rip behaviour). Off by default → buying STOCKS to inventory to hold/list/flip.
+  settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false },
 
   setSetting(key, value) { set(s => ({ settings: { ...s.settings, [key]: value } })) },
 
@@ -1147,6 +1149,12 @@ export const useGame = create(persist((set, get) => ({
     get().log('stream', `Wrapped a livestream — ${Math.round(peakViewers)} peak viewers, $${round2(tips).toFixed(2)} in tips (${noto >= 0 ? '+' : ''}${noto}★).${afterglow}`, round2(tips))
     // streaming consumes the day — advance the world one game-day (home, not away).
     advanceDaysWith(set, get, 1, false)
+    // Flush this day's card income (including the tips just banked) into the rolling
+    // window, exactly like nextDay — otherwise the tips get lumped into the NEXT day's
+    // slot and skew the per-day card-income readout.
+    const cardIncome = round2(get()._cardAccrual || 0)
+    const ring = [...(get().cardIncomeLog || []), cardIncome]
+    set(() => ({ cardIncomeLog: ring.slice(-INCOME_WINDOW_DAYS), _cardAccrual: 0 }))
   },
 
   // --- Bulk actions on a selected set of cards (Collection multi-select) -------
@@ -1300,7 +1308,10 @@ export const useGame = create(persist((set, get) => ({
       collection: s.collection.filter(c => c.uid !== uid),
       gradesSubmitted: s.gradesSubmitted + 1,
     }))
-    const submittedAt = get().currentDay
+    // Use the month-safe ABSOLUTE day: currentDay wraps to 1 each calendar month, so a
+    // raw `currentDay + tier.days` (e.g. economy's 45) could exceed the wrap and never
+    // be reached — stranding the card + fee forever. absoluteDay never wraps.
+    const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
     const readyOnDay = submittedAt + tier.days
     // remember the fee actually paid so the resolved grade records it, not list price.
     set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyOnDay, submittedAt, paidFee: fee }] }))
@@ -1324,7 +1335,8 @@ export const useGame = create(persist((set, get) => ({
     const total = round2(feePer * cards.length)
     if (!get().spend(total)) return
     const uidSet = new Set(cards.map(c => c.uid))
-    const submittedAt = get().currentDay
+    // month-safe absolute day (see submitGrade) so a late-month bulk submit still resolves.
+    const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
     const readyOnDay = submittedAt + tier.days
     set(s => ({
       collection: s.collection.filter(c => !uidSet.has(c.uid)),
@@ -1342,7 +1354,8 @@ export const useGame = create(persist((set, get) => ({
 
   // Resolve grades whose day count has been reached.
   resolveGrades() {
-    const day = get().currentDay
+    // Compare against the same month-safe absolute day grades are stamped with (see submitGrade).
+    const day = absoluteDay(get().currentDay, get().monthsElapsed)
     const ready = get().pendingGrades.filter(p => day >= p.readyOnDay)
     if (!ready.length) return []
     const luck = get().upgrades.loupe ? 0.08 : 0
@@ -1527,7 +1540,7 @@ export const useGame = create(persist((set, get) => ({
           if (blocked) { s.log('lost-sale', blocked, 0); msg = msg + ' …but ' + blocked.toLowerCase(); break }
           // they buy a random card from the relevant pool at market
           const card = owned[Math.floor(Math.random() * owned.length)]
-          let price = rawValue(card)
+          let price = cardValue(card) // grade-aware: a slab sells for its graded value, not raw
           if (get().upgrades.cases) price = round2(price * 1.12)
           const { net, fee } = processingFee(price, effect.payMethod)
           removeOwnedAnywhere(set, card.uid)
@@ -1689,12 +1702,12 @@ export const useGame = create(persist((set, get) => ({
       consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], sealedInventory: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
-      settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false } })
+      settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false } })
     setMarketMults({}) // clear the engine's live market drift too
   },
 }), {
   name: 'poke-vendor-save',
-  version: 25,
+  version: 27,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1703,11 +1716,14 @@ export const useGame = create(persist((set, get) => ({
     const seen = new Set()
     const keepFlat = (arr) => (arr || []).filter(c => c?.uid && !seen.has(c.uid) && seen.add(c.uid))
     const keepWrapped = (arr) => (arr || []).filter(e => e?.card?.uid && !seen.has(e.card.uid) && seen.add(e.card.uid))
-    // priority: collection first, then in-flight buckets
-    state.collection = keepFlat(state.collection)
+    // Priority: the IN-FLIGHT money-bearing buckets win over a stray collection duplicate,
+    // so a corruption-repair never silently discards a card you've already paid a grading
+    // fee for (pendingGrades) or are owed proceeds on (listings/consignments). The card
+    // survives either way; this just makes sure the entry that carries owed money is kept.
     state.pendingGrades = keepWrapped(state.pendingGrades)
     state.listings = keepWrapped(state.listings)
     state.consignments = keepWrapped(state.consignments)
+    state.collection = keepFlat(state.collection)
     state.showInventory = keepFlat(state.showInventory)
     state.shopDisplay = keepFlat(state.shopDisplay)
     state.sealedInventory = keepFlat(state.sealedInventory) // sealed items carry a uid too
@@ -1879,6 +1895,28 @@ export const useGame = create(persist((set, get) => ({
       // on the spot before).
       state.sealedInventory = state.sealedInventory ?? []
     }
+    if (version < 26) {
+      // Decouple the on-buy rip from the rip-animation pacing. `autoAdvance` used to mean
+      // BOTH "auto-advance the rip animation" AND "a buy skips inventory and rips now," so
+      // anyone who turned Auto-rip on for pacing was silently bypassing the new inventory.
+      // Split off `ripOnBuy` and default it OFF for everyone — buying now stocks to inventory
+      // regardless of the pacing toggle. (autoAdvance keeps its animation-only meaning.)
+      state.settings = state.settings || {}
+      state.settings.ripOnBuy = state.settings.ripOnBuy ?? false
+    }
+    if (version < 27) {
+      // Grading day-wrap fix. pendingGrades used to stamp readyOnDay against the in-month
+      // currentDay (which resets to 1 every 30 days), so any grade with readyOnDay > 30 —
+      // ALWAYS the case for the 45-day economy tier, and for standard/express submitted
+      // late in a month — could never be reached, stranding the card + fee forever. Re-base
+      // every in-flight grade onto the month-safe absolute day (treat as freshly submitted
+      // now) so it resolves within at most tier.days. Never loses a card.
+      const today = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
+      state.pendingGrades = (state.pendingGrades || []).map(p => {
+        const days = GRADING[p.tierKey]?.days ?? 20
+        return { ...p, submittedAt: today, readyOnDay: today + days }
+      })
+    }
     return state
   },
   // The pricing engine holds the live market multipliers in module state, which is empty
@@ -1888,6 +1926,13 @@ export const useGame = create(persist((set, get) => ({
     return (state) => {
       if (!state) return
       setMarketMults(state.marketMults || {})
+      // Re-seed the module-level offer-id counter past the highest persisted offer id.
+      // The counter resets to 0 on every page load but offers persist inside listings, so
+      // without this the first post-reload offer would reuse id 1 — colliding with a
+      // persisted offer and making accept/decline match (or drop) the wrong one.
+      let maxOffer = 0
+      for (const l of (state.listings || [])) for (const o of (l.offers || [])) if (typeof o.id === 'number' && o.id > maxOffer) maxOffer = o.id
+      if (maxOffer > _offerSeq) _offerSeq = maxOffer
       // Settle any grades whose readyOnDay <= currentDay (e.g. migrated from wall-clock).
       state.resolveGrades?.()
     }

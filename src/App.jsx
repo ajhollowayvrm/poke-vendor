@@ -32,6 +32,16 @@ const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', stream: 'Stream', shows: 'Shows
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
 
+// The price to re-acquire a product RIGHT NOW (for "Rip another"). Vintage sealed
+// appreciates, so it must charge current market via sealedValue — not the price frozen
+// at the original buy (`_buyPrice`), which would let you keep buying fresh vintage at a
+// stale, cheaper price after the market climbed. Modern product reuses its genuine
+// retail/wholesale/case price.
+function liveProductPrice(set, product) {
+  if (product?.vintage) return sealedValue({ product, setId: set.id })
+  return product?._buyPrice ?? product?.price ?? packPrice(set)
+}
+
 export default function App() {
   const [tab, setTab] = useState('shop')
   const [shopTab, setShopTab] = useState('buy') // Buy sub-tab: buy | inventory
@@ -73,9 +83,10 @@ export default function App() {
     if (summary) setDaySummary(summary)
   }
 
-  // Buying now STOCKS sealed product into your inventory (hold-first) — you rip, list,
-  // or flip it later from the 📦 Inventory tab. With "Auto-rip" on, it rips immediately
-  // on buy (the old instant-rip behaviour) for players who'd rather not hold.
+  // Buying STOCKS sealed product into your inventory (hold-first) — you rip, list, or flip
+  // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses
+  // that to rip immediately (the old instant-rip behaviour); the "Auto-rip" pacing toggle
+  // does NOT, so turning on auto-advance no longer silently skips the inventory.
   function buyProduct(set, product) {
     // The Buy/Distributor UI passes `_buyPrice` = the actual charged price (retail,
     // wholesale, or case-lot), so the price shown is exactly what's charged.
@@ -83,7 +94,7 @@ export default function App() {
     if (cash < price) return toast(`Not enough cash for ${product.type}.`)
     const item = useGame.getState().buySealed(set, product, price)
     if (!item) return
-    if (useGame.getState().settings.autoAdvance) { ripFromInventory(item.uid); return }
+    if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     setShopTab('inventory')
     toast(`Stocked ${product.type} of ${set.name} — rip, list, or flip it from 📦 Inventory.`)
   }
@@ -129,7 +140,7 @@ export default function App() {
   // animated rip via a bumped nonce. Bails (no charge) if you can't afford it — the
   // summary button is already disabled in that case, this is just a safety net.
   function ripAnother(set, product) {
-    const price = product._buyPrice ?? product.price ?? packPrice(set)
+    const price = liveProductPrice(set, product)
     if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
     if (!spend(price)) return
     useGame.getState().recordSetSpend(set.id, price)
@@ -306,8 +317,8 @@ export default function App() {
             set={ripping.set}
             product={ripping.product}
             onExit={() => setRipping(null)}
-            ripAnotherPrice={ripping.product?._buyPrice ?? ripping.product?.price ?? packPrice(ripping.set)}
-            canRipAnother={cash >= (ripping.product?._buyPrice ?? ripping.product?.price ?? packPrice(ripping.set))}
+            ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
+            canRipAnother={cash >= liveProductPrice(ripping.set, ripping.product)}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
         </div>

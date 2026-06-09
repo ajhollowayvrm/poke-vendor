@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, fmtMoney } from '../game/engine'
 import CardTile from './CardTile'
@@ -87,6 +87,11 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
   // After agreeing a buy, ask whether to list it at the show or take it home.
   const [pendingBuy, setPendingBuy] = useState(null) // { card, price }
+  // Re-entry guard: a fast double-click on List/Keep could otherwise run commitBuy twice
+  // on the same pendingBuy (setPendingBuy(null) is async, so the second click still sees a
+  // non-null closure) — double-charging and inserting a duplicate-uid card. Stays true once
+  // a buy commits; buyAt() resets it when a NEW purchase begins.
+  const committingRef = useRef(false)
   // After choosing a sealed product: rip it on the floor now or stock it to hold.
   const [pendingSealed, setPendingSealed] = useState(null) // the sealed entry
   // Escape closes the top-most layer: a pending prompt if open, else the booth.
@@ -101,11 +106,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
 
   // A buy is agreed (at ask or via haggle) → ask where it goes before committing.
   function buyAt(card, price) {
+    committingRef.current = false // arm a fresh commit for this new purchase
     setPendingBuy({ card, price })
   }
   // Commit the agreed buy. `toShowInventory` lists it for sale at your booth;
   // otherwise it goes home to your collection.
   function commitBuy(toShowInventory) {
+    if (committingRef.current || !pendingBuy) return // ignore a double-click re-entry
+    committingRef.current = true
     const { card, price } = pendingBuy
     setPendingBuy(null)
     if (buyFromVendor(card, price, { toShowInventory })) {

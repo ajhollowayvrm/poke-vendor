@@ -60,7 +60,7 @@ export function cardsByRarity(set) {
   return map
 }
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+function pick(arr, rnd = Math.random) { return arr[Math.floor(rnd() * arr.length)] }
 
 // Real per-pack pull rates (empirical), modeled as two independent slots that
 // mirror how actual packs work: a RARE slot ("Rare or higher") and a REVERSE
@@ -543,27 +543,29 @@ export const CONDITIONS = {
 // Roll a condition. `source`: 'sealed' (fresh from a pack — always NM; any flaws
 // only show up as lower subgrades at grading time), 'floor' (a single off a show
 // table — handled/played, varies), 'grail' (handled fresh).
-function rollCondition(source = 'sealed') {
+function rollCondition(source = 'sealed', rnd = Math.random) {
   // Cards out of a sealed pack are always Near Mint. A pack-fresh card is never
   // "lightly played" — defects are surface/centering flaws that the grader catches.
   if (source !== 'floor') return 'NM'
-  const r = Math.random()
+  const r = rnd()
   if (r < 0.45) return 'NM'; if (r < 0.78) return 'LP'; if (r < 0.95) return 'MP'; return 'DMG'
 }
 
 // Hidden cut quality: a 0..1 score assigned at pull time representing the card's
 // physical cut/centering quality. Average of 3 uniform samples → bell-ish, most
 // cards cluster mid (0.3–0.7), true gems (0.85+) and duds (<0.20) are uncommon.
-function rollCut() { return (Math.random() + Math.random() + Math.random()) / 3 }
+function rollCut(rnd = Math.random) { return (rnd() + rnd() + rnd()) / 3 }
 
 let _uid = 0
-export function instance(card, source = 'sealed') {
+// `rnd` is injectable so a seeded caller (e.g. the show floor's per-seed rng) gets a
+// reproducible condition/cut — the uid still carries a timestamp for global uniqueness.
+export function instance(card, source = 'sealed', rnd = Math.random) {
   return {
     uid: `c${Date.now().toString(36)}${(_uid++).toString(36)}`,
     ...card,
     reverse: false,
-    condition: card.condition ?? rollCondition(source),
-    _cut: card._cut ?? rollCut(),
+    condition: card.condition ?? rollCondition(source, rnd),
+    _cut: card._cut ?? rollCut(rnd),
     grade: null, // null | {overall, centering, corners, edges, surface, fee, gradedAt}
   }
 }
@@ -580,13 +582,13 @@ const VINTAGE_CARDS = VINTAGE_SETS.flatMap(s => s.cards).filter(c => c.price != 
 // A real vintage single whose raw value falls in [min,max] (nearest by value if the band
 // is empty). Returns null if there's no vintage data at all. `floor` condition = a loose
 // card in the wild varies in condition, like normal booth singles.
-export function vintageCardInRange(min, max) {
+export function vintageCardInRange(min, max, rnd = Math.random) {
   if (!VINTAGE_CARDS.length) return null
   const pool = VINTAGE_CARDS.filter(c => c.price >= min && c.price <= max)
-  if (pool.length) return instance(pick(pool), 'floor')
+  if (pool.length) return instance(pick(pool, rnd), 'floor', rnd)
   const sorted = [...VINTAGE_CARDS].sort((a, b) =>
     Math.abs(a.price - (min + max) / 2) - Math.abs(b.price - (min + max) / 2))
-  return instance(sorted[0], 'floor')
+  return instance(sorted[0], 'floor', rnd)
 }
 
 // Real-data price ceiling — anything requested above this is a synthesized "grail".
@@ -598,31 +600,31 @@ const GRAIL_BASES = ALL_CARDS.filter(c => rarityRank(c.rarity) >= rarityRank('Sp
 // When [min,max] exceeds what real market data offers (the high-roller show
 // tiers), synthesize a "grail" — a top-rarity card with an overridden price in
 // band, themed as a vintage/iconic chase piece.
-export function cardInValueRange(min, max) {
+export function cardInValueRange(min, max, rnd = Math.random) {
   // Grail territory: requested value is beyond anything in the real dataset.
   // Grails are pristine (NM) — a six-figure card in the wild is mint/slabbed.
   if (min > REAL_PRICE_CEILING && GRAIL_BASES.length) {
-    const base = pick(GRAIL_BASES)
-    const price = round2(min + Math.random() * (max - min))
-    return instance({ ...base, price, _grail: true, condition: 'NM' })
+    const base = pick(GRAIL_BASES, rnd)
+    const price = round2(min + rnd() * (max - min))
+    return instance({ ...base, price, _grail: true, condition: 'NM' }, 'sealed', rnd)
   }
   const pool = ALL_CARDS.filter(c => {
     const v = c.price ?? 0
     return v >= min && v <= max
   })
-  if (pool.length) return instance(pick(pool), 'floor') // singles in the wild vary in condition
+  if (pool.length) return instance(pick(pool, rnd), 'floor', rnd) // singles in the wild vary in condition
   // fallback: nearest by value
   const sorted = [...ALL_CARDS].sort((a, b) =>
     Math.abs((a.price ?? 0) - (min + max) / 2) - Math.abs((b.price ?? 0) - (min + max) / 2))
-  return instance(sorted[0], 'floor')
+  return instance(sorted[0], 'floor', rnd)
 }
 
 // A graded copy of a real card (used for premium vendor stock / encounters).
-export function gradedCardInRange(min, max, grade) {
+export function gradedCardInRange(min, max, grade, rnd = Math.random) {
   // For grail-level bands, keep the floor in grail territory so the slab is a
   // true grail; for normal bands, a high grade implies a cheaper raw base.
   const floor = min > REAL_PRICE_CEILING ? min : min / (grade >= 9 ? 3 : 1)
-  const c = cardInValueRange(floor, max)
+  const c = cardInValueRange(floor, max, rnd)
   c.condition = 'NM' // it's slabbed; condition is locked in by the grade
   c.grade = { overall: grade, centering: grade, corners: grade, edges: grade, surface: grade, tier: 'standard', gradedAt: Date.now() }
   return c
@@ -708,10 +710,16 @@ export function setById(setId) { return SET_BY_ID[setId] }
 export function setNameOfId(setId) { return SET_BY_ID[setId]?.name }
 export function setNameOfCard(card) { const id = setIdOfCard(card); return id ? SET_BY_ID[id]?.name : undefined }
 
-export function rawValue(card) {
+// Resolve the market multiplier for a card: the live drift by default, or an explicit
+// override (used by valueHistory to reproject a card's value across past multipliers).
+function cardMult(card, multOverride) {
+  return multOverride != null ? multOverride : marketMult(setIdOfCard(card))
+}
+
+export function rawValue(card, multOverride) {
   const override = PRICE_OVERRIDES[card.id]
   let base = override ?? card.price ?? CANONICAL_PRICE[card.id] ?? estimateByRarity(card.rarity)
-  base *= marketMult(setIdOfCard(card)) // living-market drift for this set
+  base *= cardMult(card, multOverride) // living-market drift for this set
   if (card.foil) base *= card.foil.mult // Poké Ball (3×) / Master Ball (55×) premium
   else if (card.reverse) base *= reverseMult(card.rarity) // reverse holo: small on commons, larger on rares
   // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
@@ -795,8 +803,8 @@ function psaComp(card, grade) {
   const v = card.psa?.[String(grade)]
   return v != null ? v : null
 }
-export function gradedValue(card) {
-  if (!card.grade) return rawValue(card)
+export function gradedValue(card, multOverride) {
+  if (!card.grade) return rawValue(card, multOverride)
   const g = card.grade.overall
   // Prefer the REAL market price of this card at this PSA grade. Sparse data: if this
   // exact grade has no comp, fall back to the heuristic (don't interpolate tiny samples).
@@ -804,30 +812,34 @@ export function gradedValue(card) {
   let value
   // The real PSA comp is an absolute dollar that doesn't flow through rawValue, so
   // apply the set's living-market multiplier here too — a slab rides its set's market.
-  if (real != null) value = real * marketMult(setIdOfCard(card))
+  if (real != null) value = real * cardMult(card, multOverride)
   else {
     const mult = GRADE_MULT[g] ?? 1
     // higher base-value cards see bigger grade premiums (gem mint chase)
-    const scarcityBoost = 1 + Math.min(2, rawValue(card) / 50)
-    value = rawValue(card) * mult * (g >= 9 ? scarcityBoost : 1)
+    const scarcityBoost = 1 + Math.min(2, rawValue(card, multOverride) / 50)
+    value = rawValue(card, multOverride) * mult * (g >= 9 ? scarcityBoost : 1)
   }
-  return round2(gradedFloor(card, g, value))
+  return round2(gradedFloor(card, g, value, multOverride))
 }
 
 // A slab is never worth LESS than the raw card (grading only adds value or you'd
 // keep it raw), and a higher grade is never worth less than a lower one. eBay
 // sold-comps are sparse and noisy, so a captured PSA-10 sale can land below the
 // current raw price or below a worse grade's comp — clamp those nonsensical cases.
-function gradedFloor(card, g, value) {
-  let floor = rawValue(card) // a PSA-anything is at least the raw card
+function gradedFloor(card, g, value, multOverride) {
+  // Scale the lower-grade comps by the same living-market multiplier the headline value
+  // rides, so the whole grade ladder moves with the set's market (a slab isn't immune to
+  // a crash just because a lower grade has a captured comp). rawValue already carries it.
+  const m = cardMult(card, multOverride)
+  let floor = rawValue(card, multOverride) // a PSA-anything is at least the raw card
   // pull the floor up to the best comp of any STRICTLY LOWER grade
   for (let lower = 1; lower < g; lower++) {
     const c = psaComp(card, lower)
-    if (c != null && c > floor) floor = c
+    if (c != null && c * m > floor) floor = c * m
   }
   return Math.max(value, floor)
 }
-export function cardValue(card) { return card.grade ? gradedValue(card) : rawValue(card) }
+export function cardValue(card, multOverride) { return card.grade ? gradedValue(card, multOverride) : rawValue(card, multOverride) }
 
 // ---- Customers / buyers (own-site listings) --------------------------------
 // Listed cards aren't sold by a timer — real customers BROWSE them. Each buyer has
@@ -922,17 +934,16 @@ export function psaValueAt(card, grade) {
 export function psa10Value(card) { return psaValueAt(card, 10) }
 
 // A per-card PRICE HISTORY series over a set's recent market-multiplier samples
-// (store.marketHistory[setId], the same ring the Price-guide sparkline uses). A card's
-// value scales linearly with its set's living-market multiplier, so we reproject the
-// card's CURRENT value back across each historical mult to get a dollar value per day,
-// oldest → newest. Works for raw and graded cards alike (both ride the set's market).
+// (store.marketHistory[setId], the same ring the Price-guide sparkline uses). We recompute
+// the card's value through the real pricing path under EACH historical multiplier, oldest
+// → newest. Raw value is linear in the multiplier, but a graded slab's value is clamped by
+// lower-grade comps, so a naive `v * (m/cur)` reprojection would misstate graded history —
+// running each point through cardValue(card, m) keeps the line exact for slabs too.
 // Returns [] when there's no history yet; callers render a "no trend" note under 2 points.
 export function valueHistory(card, history) {
   const pts = (history || []).filter(m => typeof m === 'number')
   if (!pts.length) return []
-  const cur = marketMult(setIdOfCard(card)) || 1
-  const v = cardValue(card)
-  return pts.map(m => round2(v * (m / cur)))
+  return pts.map(m => cardValue(card, m))
 }
 
 // ---- Grading (PSA-style subgrades) ----

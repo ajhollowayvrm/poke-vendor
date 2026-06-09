@@ -13,6 +13,7 @@ export default function Settings() {
   const openSealedOneByOne = useGame(s => s.settings.openSealedOneByOne)
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
+  const ripOnBuy = useGame(s => s.settings.ripOnBuy ?? false)
   const setSetting = useGame(s => s.setSetting)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [progress, setProgress] = useState(null)
@@ -77,14 +78,30 @@ export default function Settings() {
           <div style={{ fontWeight: 700 }}>Auto-rip</div>
           <div className="muted" style={{ fontSize: 12 }}>
             {autoAdvance
-              ? 'On — ripping starts automatically when you buy or hit “Rip another,” and (in one-at-a-time mode) it rolls through the rest of a box for you.'
-              : 'Off — you click to start each rip yourself.'}
+              ? 'On — once a rip is underway it auto-starts each reveal, and (in one-at-a-time mode) rolls through the rest of a box for you. Pacing only — it doesn’t change where a buy goes.'
+              : 'Off — you click to start each reveal yourself.'}
           </div>
         </div>
         <button className={`btn ${autoAdvance ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={autoAdvance}
           onClick={() => setSetting('autoAdvance', !autoAdvance)}>
           {autoAdvance ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Rip on buy</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {ripOnBuy
+              ? 'On — buying sealed rips it immediately instead of stocking it. You skip the 📦 Inventory step.'
+              : 'Off — buying sealed stocks it into your 📦 Inventory to rip, list, or flip later.'}
+          </div>
+        </div>
+        <button className={`btn ${ripOnBuy ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          role="switch" aria-checked={ripOnBuy}
+          onClick={() => setSetting('ripOnBuy', !ripOnBuy)}>
+          {ripOnBuy ? 'On' : 'Off'}
         </button>
       </div>
 

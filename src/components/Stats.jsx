@@ -1,17 +1,30 @@
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
-import { cardValue, fmtMoney, round2, SETS } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, round2, SETS } from '../game/engine'
 import { confirmDialog } from '../ui/dialog'
 
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
 
 export default function Stats() {
-  const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet } = useGame(s => ({
+  const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
+    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory } = useGame(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
+    listings: s.listings, consignments: s.consignments, shopDisplay: s.shopDisplay,
+    showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
   }))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
-  const netWorth = cash + collValue
+  // Cards/products held in the IN-FLIGHT buckets are moved OUT of `collection` but are still
+  // your assets — count them so listing, consigning, stocking, or grading a card doesn't make
+  // net worth visibly drop with no offsetting gain.
+  const onMarket =
+    (listings || []).reduce((a, l) => a + cardValue(l.card), 0) +
+    (consignments || []).reduce((a, c) => a + (c.net || 0), 0) +
+    (shopDisplay || []).reduce((a, c) => a + cardValue(c), 0) +
+    (showInventory || []).reduce((a, c) => a + cardValue(c), 0) +
+    (pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0) +
+    (sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
+  const netWorth = cash + collValue + onMarket
   const pnl = stats.earned - stats.spent
 
   // Per-set analytics: spent on sealed vs market value pulled, sorted by net (most

@@ -161,11 +161,4 @@ export function spotsFilled(spots, notoriety, rnd = Math.random) {
   return n
 }
 
-// Assign each pulled card to a spot index (0..spots-1) round-robin in pull order, so
-// every spot-holder gets a fair, roughly-even slice of the box. Returns an array
-// parallel to `cards` of spot indices. (Spot owners are decided by the UI.)
-export function assignToSpots(cards, spots) {
-  return cards.map((_, i) => i % spots)
-}
-
 export { fmtMoney }

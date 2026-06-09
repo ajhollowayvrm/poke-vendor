@@ -253,8 +253,11 @@ export default function BoothInbox() {
         <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', marginTop: 14 }}>
           {validInbox.map(({ enc, i }) => {
             const badge = CHANNEL_BADGE[enc.channel] || CHANNEL_BADGE.online
+            // Key on stable per-encounter content, NOT the array index — clearing an item
+            // shifts indices and would make React reconcile tiles to the wrong encounter.
+            const key = enc.card?.uid || enc.ownedUid || `${enc.channel || 'c'}:${enc.title}`
             return (
-              <div key={i} className="product" style={{ cursor:'pointer' }} onClick={() => setActive({ enc, idx: i })}>
+              <div key={key} className="product" style={{ cursor:'pointer' }} onClick={() => setActive({ enc, idx: i })}>
                 <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
                 {enc.card && <img src={enc.card.img} alt="" style={{ width: 64, borderRadius: 8, alignSelf:'center' }} />}
                 <h3 style={{ fontSize: 15, margin: 0 }}>{enc.title}</h3>
