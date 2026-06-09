@@ -166,8 +166,9 @@ export function haggleRound({ side, their, market, yourOffer, flex, round, archK
 function boothSealed(r, arch) {
   const out = []
   const isWhale = arch.key === 'whale'
-  // Modern sealed: whales always lay one out; others ~22% of the time.
-  if (isWhale || r() < 0.22) {
+  // Modern sealed: whales always lay one out; others ~32% of the time — so even a small
+  // meetup floor has a handful of tables stocking sealed, not just the big shows.
+  if (isWhale || r() < 0.32) {
     const set = pickR(r, SHOP_SETS)
     const prods = setProducts(set)
     // Whales favor boxes (the big stuff); everyone else a pack-tier product.
@@ -176,8 +177,9 @@ function boothSealed(r, arch) {
     const markup = 1.12 + r() * (isWhale ? 0.33 : 0.18) // ~1.12–1.45×; whales mark up more
     out.push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
   }
-  // Occasional vintage sealed pack on a regular table (rarer than the Vault, ~6%).
-  if (VINTAGE_SETS.length && r() < 0.06) {
+  // A surprise vintage sealed pack on a regular table (~10%, any booth at any show — you
+  // never know who's sitting on an old pack). Rarer than modern, but it's everywhere.
+  if (VINTAGE_SETS.length && r() < 0.10) {
     const vSet = pickR(r, VINTAGE_SETS)
     const product = vintageProduct(vSet)
     const markup = 1.2 + r() * 0.5

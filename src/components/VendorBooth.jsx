@@ -5,15 +5,15 @@ import CardTile from './CardTile'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 
-export default function VendorBooth({ booth, onClose, flash, onRipVault, onRipSealed, haggledIds, onHaggled }) {
+export default function VendorBooth({ booth, onClose, flash, onRipVault, onRipSealed, onStockVault, onStockSealed, haggledIds, onHaggled }) {
   // The Vintage Vault is a special booth: no singles bin, just one heavy sealed
-  // vintage pack you can buy and crack right here on the floor.
-  if (booth.special === 'vault') return <VaultBooth booth={booth} onClose={onClose} onRipVault={onRipVault} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} haggledIds={haggledIds} onHaggled={onHaggled} />
+  // vintage pack you can buy and crack right here on the floor — or stock to hold.
+  if (booth.special === 'vault') return <VaultBooth booth={booth} onClose={onClose} onRipVault={onRipVault} onStockVault={onStockVault} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} />
 }
 
 // The rare travelling vintage dealer — sells a single sealed 1999 Base Set pack.
-function VaultBooth({ booth, onClose, onRipVault }) {
+function VaultBooth({ booth, onClose, onRipVault, onStockVault }) {
   const cash = useGame(s => s.cash)
   const { setName, logo, product, ask } = booth.vault
   const afford = cash >= ask
@@ -30,6 +30,12 @@ function VaultBooth({ booth, onClose, onRipVault }) {
     if (!ok) return
     onClose()
     onRipVault?.({ setId: booth.vault.setId, product: { ...product, price: ask } })
+  }
+  // Buy the pack and HOLD it in your sealed inventory instead of cracking it now. Vintage
+  // appreciates, so banking a sealed old pack to flip later is a legitimate play.
+  function hold() {
+    onClose()
+    onStockVault?.({ setId: booth.vault.setId, product: { ...product, price: ask }, ask })
   }
   return (
     <div className="modalbg" onClick={onClose}>
@@ -56,7 +62,11 @@ function VaultBooth({ booth, onClose, onRipVault }) {
           <button className="btn gold" disabled={!afford} onClick={buy}>
             {afford ? `Buy & rip — ${fmtMoney(ask)}` : `Need ${fmtMoney(ask)}`}
           </button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onClose}>Walk away</button>
+          <button className="btn alt" disabled={!afford} onClick={hold}
+            title="Stock it in your inventory to rip, list, or flip later — vintage appreciates while you hold">
+            📦 Buy &amp; hold
+          </button>
+          <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} onClick={onClose}>Walk away</button>
         </div>
         {!afford && <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>Come back when you've built up some cash — vintage isn't cheap.</p>}
       </div>
@@ -64,21 +74,28 @@ function VaultBooth({ booth, onClose, onRipVault }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash, onRipSealed, haggledIds, onHaggled }) {
+function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled }) {
   const haggled = haggledIds || new Set()
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
   const buyFromVendor = useGame(s => s.buyFromVendor)
   const collection = useGame(s => s.collection)
   const [stock, setStock] = useState(booth.stock)
-  const sealed = booth.products || []
+  // Sealed is local state so a stocked item disappears from the table after you take it.
+  const [sealed, setSealed] = useState(booth.products || [])
   const [tab, setTab] = useState('buy')
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
   // After agreeing a buy, ask whether to list it at the show or take it home.
   const [pendingBuy, setPendingBuy] = useState(null) // { card, price }
-  // Escape closes the top-most layer: the buy prompt if open, else the booth.
+  // After choosing a sealed product: rip it on the floor now or stock it to hold.
+  const [pendingSealed, setPendingSealed] = useState(null) // the sealed entry
+  // Escape closes the top-most layer: a pending prompt if open, else the booth.
   // (Haggle owns its own escape.)
-  useModalEscape(() => { if (pendingBuy) setPendingBuy(null); else if (!haggle) onClose() })
+  useModalEscape(() => {
+    if (pendingSealed) setPendingSealed(null)
+    else if (pendingBuy) setPendingBuy(null)
+    else if (!haggle) onClose()
+  })
 
   const seeDeals = upgrades.network
 
@@ -101,23 +118,20 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, haggledIds, onHaggle
     useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price, notoriety: 0, msg: '' })
     flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(price)}`)
   }
-  // Buy a sealed product off the table and crack it on the floor (same rip flow as the
-  // Vault). Vintage sealed gets a heads-up about the markup; modern is a quick confirm.
-  async function buySealed(entry) {
-    const { set, product, _ask, _origin } = entry
-    const ok = await confirmDialog({
-      title: `Buy a sealed ${product.type}?`,
-      body: _origin === 'vintage'
-        ? `${fmtMoney(_ask)} for a sealed ${product.name || set.name + ' pack'} — a vintage gamble. `
-          + `Vendor markup applies; rip it right here.`
-        : `${fmtMoney(_ask)} for a ${product.type} of ${set.name}. Above retail (vendor markup), `
-          + `but you can buy and rip it without leaving the show.`,
-      confirmText: `Buy & rip — ${fmtMoney(_ask)}`,
-      cancelText: 'Walk away',
-    })
-    if (!ok) return
+  // Picking a sealed product opens a choice: rip it on the floor now, or stock it to hold.
+  // Buy a sealed product and crack it on the floor right now (same rip flow as the Vault).
+  function ripSealedNow(entry) {
+    setPendingSealed(null)
     onClose()
-    onRipSealed?.({ set, product, ask: _ask, vendorName: booth.name })
+    onRipSealed?.({ set: entry.set, product: entry.product, ask: entry._ask, vendorName: booth.name })
+  }
+  // Buy a sealed product and stock it in your held inventory (rip/list/flip later). Keeps
+  // the booth open and removes the item from the table; the last one closes the Sealed tab.
+  function stockSealedNow(entry) {
+    setPendingSealed(null)
+    if (sealed.length <= 1) setTab('buy')
+    setSealed(s => s.filter(e => e !== entry))
+    onStockSealed?.({ set: entry.set, product: entry.product, ask: entry._ask, vendorName: booth.name })
   }
 
   function renderBuy(card, featured) {
@@ -161,7 +175,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, haggledIds, onHaggle
 
         {tab === 'sealed' ? (
           <>
-            <div className="showcase-head">📦 Sealed product <span className="muted">— buy &amp; rip it right here (vendor markup applies)</span></div>
+            <div className="showcase-head">📦 Sealed product <span className="muted">— buy to rip on the floor or stock &amp; hold (vendor markup applies)</span></div>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))' }}>
               {sealed.map((entry, idx) => (
                 <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''}`}>
@@ -173,8 +187,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, haggledIds, onHaggle
                     {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
                   </div>
                   <div className="askrow" style={{ justifyContent:'center' }}><span className="ask">{fmtMoney(entry._ask)}</span></div>
-                  <button className="btn gold" disabled={cash < entry._ask} onClick={() => buySealed(entry)}>
-                    {cash < entry._ask ? `Need ${fmtMoney(entry._ask)}` : 'Buy & rip →'}
+                  <button className="btn gold" disabled={cash < entry._ask} onClick={() => setPendingSealed(entry)}>
+                    {cash < entry._ask ? `Need ${fmtMoney(entry._ask)}` : 'Buy →'}
                   </button>
                 </div>
               ))}
@@ -233,6 +247,31 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, haggledIds, onHaggle
             setHaggle(null)
           }}
         />
+      )}
+
+      {pendingSealed && (
+        <div className="modalbg" style={{ zIndex: 20 }} onClick={() => setPendingSealed(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, textAlign: 'center' }}>
+            <h3 style={{ marginTop: 0 }}>
+              {pendingSealed._origin === 'vintage' ? '🗝️ ' : (pendingSealed.product.icon || '📦') + ' '}{pendingSealed.product.type}
+            </h3>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+              {pendingSealed.set.name} · {fmtMoney(pendingSealed._ask)} <span style={{ opacity: 0.8 }}>(vendor markup)</span>.
+              {pendingSealed._origin === 'vintage' ? ' A sealed vintage gamble.' : ''} Rip it now, or stock it to rip/list/flip later?
+            </p>
+            <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
+              <button className="btn gold" disabled={cash < pendingSealed._ask} onClick={() => ripSealedNow(pendingSealed)}>
+                📦 Rip it here on the floor →
+              </button>
+              <button className="btn alt" disabled={cash < pendingSealed._ask} onClick={() => stockSealedNow(pendingSealed)}>
+                🗂️ Stock it in your inventory
+              </button>
+            </div>
+            <p className="muted" style={{ fontSize: 11, marginTop: 10 }}>
+              Held sealed rides the market — vintage climbs the longer you hold it.
+            </p>
+          </div>
+        </div>
       )}
 
       {pendingBuy && (

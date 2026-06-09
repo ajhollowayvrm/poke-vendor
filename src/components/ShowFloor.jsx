@@ -226,6 +226,26 @@ export default function ShowFloor({ show, onLeave }) {
     setVaultRip({ set, product: { ...product, price: ask } })
   }, [show.name, flash])
 
+  // Buy sealed off a booth and STOCK it in your held inventory instead of ripping now —
+  // source low at a show, rip/list/flip from the 📦 Inventory tab later. buySealed (store)
+  // charges the ask, records the spend, and stocks the item.
+  const stockSealed = useCallback(({ set, product, ask, vendorName }) => {
+    if (!set || !product) return
+    const item = useGame.getState().buySealed(set, { ...product, _buyPrice: ask }, ask)
+    if (!item) { flash(`Not enough cash for the ${product.name || product.type}.`); return }
+    flash(`Stocked a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} — rip/list/flip it from 📦 Inventory.`)
+  }, [flash])
+
+  // Same, for a Vintage Vault pack: resolve the vintage set, then stock it to hold (vintage
+  // appreciates, so holding a sealed old pack is a real play, not just a rip-it-live gamble).
+  const stockVault = useCallback(({ setId, product, ask }) => {
+    const set = VINTAGE_SETS.find(s => s.id === setId)
+    if (!set) return
+    const item = useGame.getState().buySealed(set, { ...product, _buyPrice: ask }, ask)
+    if (!item) { flash(`Not enough cash for the ${product.name}.`); return }
+    flash(`Stocked a ${product.name} from the Vintage Vault — it's in 📦 Inventory.`)
+  }, [flash])
+
   return (
     <div className="floorwrap">
       <div className="floorhud">
@@ -322,7 +342,7 @@ export default function ShowFloor({ show, onLeave }) {
 
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault} onRipSealed={buySealed}
-        haggledIds={haggledIds} onHaggled={markHaggled} />}
+        onStockVault={stockVault} onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
       {vaultRip && (
