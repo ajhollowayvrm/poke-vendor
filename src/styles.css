@@ -739,6 +739,15 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
   /* modals go near-fullscreen and scroll */
   .modal { max-height: 92vh; padding: 16px; border-radius: 16px; }
+  /* The card detail is too tall to ever fit, so centering it at the 92vh cap just
+     leaves a dead band below that floats the content upward. Make it a full-height
+     sheet instead: edge-to-edge, top-anchored, safe-area aware, content scrolls. */
+  .modalbg:has(> .modal-detail) { align-items: stretch; padding: 0; }
+  .modal-detail {
+    max-height: none; width: 100%; border-radius: 0; border: 0;
+    padding: calc(14px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  .modal-detail .modal-close { top: calc(8px + env(safe-area-inset-top)); }
   .detailflex { gap: 12px; } .detailflex img, .modal-holo { width: 200px; }
   .encounter { max-width: 94vw; }
 

@@ -38,7 +38,7 @@ export default function CardModal({ card, onClose }) {
 
   return (
     <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
         <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <div className="detailflex">
           <HoloCard card={card} maxTilt={18} className="modal-holo"
