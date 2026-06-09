@@ -1492,6 +1492,27 @@ export const useGame = create(persist((set, get) => ({
         get().checkCompletions() // the card you traded for may finish a set
         break
       }
+      case 'buySealedDeal': {
+        // You're BUYING sealed off a stranger who messaged you. `fake` was rolled when the
+        // deal was generated (correlated with the tells the player saw). Real → it lands in
+        // your held sealed inventory; fake → the cash is gone and you get a dud.
+        const set = setById(effect.setId)
+        if (!set) { msg = 'The deal vanished before you could pay.'; break }
+        if (s.cash < effect.ask) { msg = `You can't cover the $${effect.ask.toFixed(2)} for it.`; break }
+        if (effect.fake) {
+          s.spend(effect.ask)
+          s.log('scam', `Scammed: paid $${effect.ask.toFixed(2)} for a fake ${effect.product.type} of ${set.name}`, -effect.ask)
+          s.addNotoriety(effect.notoriety || 0)
+          msg = `💸 Scammed. You paid $${effect.ask.toFixed(2)} and got ${effect.origin === 'vintage'
+            ? 'a resealed pack stuffed with bulk commons'
+            : 'an empty box — it never really shipped'}. Lesson learned.`
+        } else {
+          const item = s.buySealed(set, { ...effect.product, _buyPrice: effect.ask }, effect.ask)
+          if (!item) { msg = `You can't cover the $${effect.ask.toFixed(2)} for it.`; break }
+          msg = `📦 Legit! Stocked a ${effect.product.type} of ${set.name} for $${effect.ask.toFixed(2)} — a real steal. It's in 📦 Inventory.`
+        }
+        break
+      }
       case 'none':
       default:
         s.addNotoriety(effect.notoriety || 0)

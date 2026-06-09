@@ -358,6 +358,72 @@ export function makeTradeOffer(offerPool, notoriety) {
   return { yours, theirs, cashAdj, fair }
 }
 
+// --- Inbound sealed deals ----------------------------------------------------
+// A stranger DMs you offering to SELL you sealed product below market — sometimes a
+// genuine steal, sometimes a scam (you pay and get an empty box / a resealed fake). The
+// outcome (`deal.fake`) is rolled HERE and hidden in the encounter; the player decides on
+// the TELLS alone. Those tells CORRELATE with the risk so a sharp player can read a deal:
+// a deeper discount, vintage product, and a no-feedback seller all push the fake odds up;
+// an established seller (and your own notoriety) pushes them down. None of it is a tell
+// that perfectly reveals the outcome — an honest sketchy-looking seller still exists.
+const DEAL_SELLERS = [
+  { who: 'a longtime forum regular',           tell: 'hundreds of clean transactions',          trust: 0.90, sketchy: false },
+  { who: "a collector you've traded with",     tell: 'a solid track record with you',           trust: 0.72, sketchy: false },
+  { who: 'a Discord stranger',                 tell: 'a pretty new account',                    trust: 0.42, sketchy: true  },
+  { who: 'a brand-new marketplace account',    tell: 'zero feedback and a stock-photo listing', trust: 0.18, sketchy: true  },
+]
+function clampN(x, lo, hi) { return Math.max(lo, Math.min(hi, x)) }
+
+export function makeSealedDeal(channel, notoriety = 0) {
+  const online = channel === 'online'
+  // ~30% vintage when any vintage set exists — juicier and scammier; the rest modern.
+  const goVintage = VINTAGE_SETS.length && Math.random() < 0.3
+  let set, product, origin
+  if (goVintage) {
+    set = pickAny(null, VINTAGE_SETS); product = vintageProduct(set); origin = 'vintage'
+  } else {
+    set = pickAny(null, SHOP_SETS)
+    const prods = setProducts(set)
+    const pool = prods.filter(p => p.packs <= 18) // packs / small boxes — what moves in a DM
+    product = pickAny(null, pool.length ? pool : prods); origin = 'modern'
+  }
+  const reference = round2(product.price || 0)
+  if (reference <= 0) return null
+  // 10–45% under reference; the deeper the bait, the higher the fake odds.
+  const disc = 0.10 + Math.random() * 0.35
+  const ask = round2(reference * (1 - disc))
+  const seller = pickAny(null, DEAL_SELLERS)
+  const fakeProb = clampN(
+    0.20 + disc * 0.8 + (origin === 'vintage' ? 0.18 : 0)
+      - seller.trust * 0.5 - Math.min(0.12, notoriety / 700), // a known name gets scammed less
+    0.03, 0.92)
+  const fake = Math.random() < fakeProb
+  // Sketchy sellers insist on irreversible payment — a tell that correlates with risk.
+  const pay = seller.sketchy ? (online ? 'venmo' : 'cash') : pickPayMethod(channel, null)
+  const payTell = seller.sketchy
+    ? (online ? " They'll only take Venmo F&F — no refunds." : ' Cash only, no receipt.')
+    : ''
+  const pct = Math.round(disc * 100)
+  const logo = set.logo || null
+  const what = origin === 'vintage'
+    ? `a sealed ${product.name || set.name + ' pack'}`
+    : `a ${product.type} of ${set.name}`
+  return {
+    kind: 'sealedDeal',
+    title: online ? `${cap(seller.who)} DMs you a deal` : `${cap(seller.who)} offers you sealed product`,
+    body: `"Got ${what} I'll let go for $${ask.toFixed(2)} — ${pct}% under retail (~$${reference.toFixed(2)})."`
+      + ` It's ${seller.tell}.${payTell} Could be a steal… or a fake.`,
+    card: logo ? { name: product.type, img: logo, imgLarge: logo } : null,
+    options: [
+      { text: `Buy it — $${ask.toFixed(2)}${pay ? ` (${PAY_LABEL(pay)})` : ''}`, tone: 'fair',
+        effect: { type: 'buySealedDeal', setId: set.id, product: { ...product }, ask, fake, origin, payMethod: pay, notoriety: 0 } },
+      { text: 'Pass — too risky', tone: 'fair',
+        effect: { type: 'none', notoriety: 0,
+          msg: fake ? 'Smart — that one had scam written all over it.' : 'You let a real deal walk. Can’t win them all.' } },
+    ],
+  }
+}
+
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
@@ -370,6 +436,14 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   //   walkin → your shop SHELF (display case — you choose what's out)
   //   show   → your booth table (playerCollection is the show inventory the caller passed)
   const offerPool = online ? (listedCards || []) : walkin ? (shelfCards || []) : playerCollection
+
+  // 0) Inbound sealed-product DEAL — a stranger offers to SELL you sealed below market
+  // (sometimes a steal, sometimes a fake). Mostly online; rarer in person. Fires on its
+  // OWN roll so it doesn't shift the offer/question/browse bands below it.
+  if ((online || walkin) && Math.random() < (online ? 0.20 : 0.08)) {
+    const deal = makeSealedDeal(channel, notoriety)
+    if (deal) return deal
+  }
 
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
   const fleecePool = offerPool.filter(c => { const v = cardValue(c); return v >= 2 && v <= 20 })
