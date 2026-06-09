@@ -613,7 +613,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
 /* ---------- Shop product list ---------- */
 .prodlist { display:flex; flex-direction:column; gap:6px; margin-top:auto; }
-.prodbtn { display:flex; align-items:center; gap:8px; background:#ffffff0e; border:1px solid var(--line);
+.prodbtn { display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#ffffff0e; border:1px solid var(--line);
   color:var(--txt); border-radius:9px; padding:8px 10px; font-weight:700; font-size:13px; text-align:left;
   transition: background .12s, border-color .12s, transform .06s; }
 .prodbtn:hover:not(:disabled) { background:#ffffff1a; border-color:var(--accent2); }
@@ -905,6 +905,33 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .prodprice s.retail { color: var(--dim); font-weight: 600; font-size: 11px; opacity: .8; }
 .prodbtn.caselot { border-color: var(--accent); background: #ffcb0510; }
 .prodbtn.caselot:hover:not(:disabled) { background: #ffcb0520; }
+.prodbtn.clearance { border-color: #d98c4a; background: #d98c4a14; }
+.prodbtn.clearance:hover:not(:disabled) { background: #d98c4a26; }
+/* Sold-out stays readable (you still want the restock ETA) but clearly inert. */
+.prodbtn.out { opacity: 1; border-style: dashed; }
+.prodbtn.out .prodname, .prodbtn.out .prodprice, .prodbtn.out .prodmeta { opacity: .5; }
+.prodbtn:disabled { cursor:not-allowed; }
+.prodbtn:disabled:not(.out) { opacity:.4; }
+
+/* Per-product stock gauge (sits on its own line below the buy row). */
+.stockbar { flex-basis:100%; display:flex; align-items:center; gap:7px; margin-top:2px; }
+.stockbar-track { flex:1; height:4px; background:#0c0f1a; border-radius:999px; overflow:hidden; }
+.stockbar-fill { display:block; height:100%; transition: width .3s ease; }
+.stockbar-label { flex:none; font-size:10.5px; font-weight:700; color:var(--dim); letter-spacing:.2px; }
+
+/* Distributor picker: one chip per wholesaler, tinted with their brand colour. */
+.distrib-picker { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.distrib-chip { display:flex; flex-direction:column; align-items:flex-start; gap:2px; flex:1 1 150px;
+  background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:12px; padding:9px 12px; color:var(--txt); text-align:left;
+  transition: border-color .12s, background .12s, transform .06s; }
+.distrib-chip:hover:not(.active) { border-color: var(--dc); background:#ffffff10; }
+.distrib-chip:active { transform: translateY(1px); }
+.distrib-chip.active { border-color: var(--dc); box-shadow: 0 0 0 1px var(--dc), 0 4px 14px #0006;
+  background: color-mix(in srgb, var(--dc) 12%, var(--panel)); }
+.distrib-chip .dc-icon { font-size:18px; }
+.distrib-chip .dc-name { font-size:12.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.distrib-chip .dc-rep { font-size:11px; color: var(--dc); letter-spacing:1px; }
 
 /* --- Binder (master-set completion) --------------------------------------- */
 .binder-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; }

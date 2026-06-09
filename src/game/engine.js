@@ -1180,34 +1180,7 @@ export function sealedCard(item) {
   }
 }
 
-// ---- Distributor program ----------------------------------------------------
-// The prestige path above store-owner: move enough VOLUME through your business
-// (lifetime cash earned + spent — every dollar that's flowed through you) and the
-// distributors start treating you as a real account. You earn WHOLESALE pricing on
-// sealed product (buy below shop retail), unlock CASE LOTS (bulk boxes at a deeper
-// cut), and can SUPPLY other vendors for passive income. Tiers, low → high.
-//   discount — fraction off every sealed product's retail price
-//   cases    — can buy case lots (multi-box at an extra bulk cut)
-//   supply   — can wholesale product into the channel for passive payouts
-export const DISTRIBUTOR_TIERS = [
-  { key: 'none',    name: 'Retail Buyer',        min: 0,        discount: 0,    cases: false, supply: false, color: '#8c97b8' },
-  { key: 'dealer',  name: 'Authorized Dealer',   min: 25000,    discount: 0.08, cases: false, supply: false, color: '#5ec98a' },
-  { key: 'distrib', name: 'Distributor',         min: 100000,   discount: 0.15, cases: true,  supply: true,  color: '#5aa0ff' },
-  { key: 'master',  name: 'Master Distributor',  min: 400000,   discount: 0.22, cases: true,  supply: true,  color: '#ffcb05' },
-]
-// Lifetime business volume that drives the ladder: everything you've earned + spent.
-export function businessVolume(stats) {
-  return round2((stats?.earned || 0) + (stats?.spent || 0))
-}
-export function distributorTier(volume) {
-  let t = DISTRIBUTOR_TIERS[0]
-  for (const tier of DISTRIBUTOR_TIERS) if (volume >= tier.min) t = tier
-  return t
-}
-export function nextDistributorTier(volume) {
-  return DISTRIBUTOR_TIERS.find(t => t.min > volume) || null
-}
-// Wholesale price for a product at your distributor discount (retail × (1−discount)).
+// Wholesale price for a product at a flat discount (retail × (1−discount)).
 export function wholesalePrice(retail, discount) {
   return round2(retail * (1 - (discount || 0)))
 }
@@ -1237,6 +1210,137 @@ export function caseLot(set) {
 // extra case bulk cut on top).
 export function casePrice(lot, discount) {
   return round2(wholesalePrice(lot.retail, discount) * (1 - CASE_BULK_CUT))
+}
+
+// ---- Distributors -----------------------------------------------------------
+// You buy sealed product from a handful of distinct WHOLESALERS rather than one
+// abstract shop. Each has its own catalog, base pricing, reliability (how deep and
+// fast their stock is), and perks — and a RELATIONSHIP you build by spending with
+// them. Rapport (lifetime $ you've put through that distributor) climbs a shared
+// ladder; each rung deepens your discount, widens your stock allocation, and (for
+// some distributors) unlocks gated perks like case lots, channel supply, or
+// clearance lots. Stock is finite: buying it down means waiting for the restock.
+
+// Shared rapport ladder. `min` = lifetime $ spent WITH THAT DISTRIBUTOR.
+export const RAPPORT_LEVELS = [
+  { level: 0, name: 'New Account', min: 0,      color: '#8c97b8' },
+  { level: 1, name: 'Known',       min: 4000,   color: '#5ec98a' },
+  { level: 2, name: 'Preferred',   min: 18000,  color: '#5aa0ff' },
+  { level: 3, name: 'Trusted',     min: 55000,  color: '#b98cff' },
+  { level: 4, name: 'Partner',     min: 140000, color: '#ffcb05' },
+]
+export function rapportLevel(spend) {
+  let r = RAPPORT_LEVELS[0]
+  for (const lvl of RAPPORT_LEVELS) if ((spend || 0) >= lvl.min) r = lvl
+  return r
+}
+export function nextRapport(spend) {
+  return RAPPORT_LEVELS.find(r => r.min > (spend || 0)) || null
+}
+
+// The distributor roster.
+//   priceMult     — base multiple of retail BEFORE rapport discount (e.g. 0.9 = wholesale)
+//   discountStep  — extra fraction off per rapport level
+//   maxDiscount   — cap on the rapport discount
+//   reliability   — drives stock depth + restock speed (1 deep/fast, 0.4 thin/slow)
+//   cases         — sells case lots (gated at casesMinLevel)
+//   supply        — unlocks supplying the channel (gated at supplyMinLevel)
+//   clearance     — occasionally offers a steeply-discounted clearance lot
+//   firstDibs     — carries the newest sets, deeper stock on them
+export const DISTRIBUTORS = [
+  {
+    id: 'sunrise', name: 'Sunrise Collectibles', icon: '🌅', color: '#5ec98a',
+    blurb: 'Steady regional wholesaler. Carries everything in print and rarely runs dry — but prices sit only a hair under retail.',
+    priceMult: 0.97, discountStep: 0.022, maxDiscount: 0.12, reliability: 1.0,
+  },
+  {
+    id: 'prohobby', name: 'Pro Hobby Distribution', icon: '🏭', color: '#5aa0ff',
+    blurb: 'The real deal — true wholesale and full case lots. They only open the taps once you have proven you move volume.',
+    priceMult: 0.90, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.85,
+    cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
+  },
+  {
+    id: 'apex', name: 'Apex Imports', icon: '🚀', color: '#b98cff',
+    blurb: 'Gets the hot new releases first and deepest — at a premium. Allocation on chase product tightens fast unless they like you.',
+    priceMult: 1.0, discountStep: 0.03, maxDiscount: 0.15, reliability: 0.7, firstDibs: true,
+  },
+  {
+    id: 'greg', name: 'Gray-Market Greg', icon: '🕶️', color: '#d98c4a',
+    blurb: 'Cheapest packs in town and the odd clearance steal — when he has anything. Thin, erratic stock and a catalog that rotates weekly.',
+    priceMult: 0.82, discountStep: 0.015, maxDiscount: 0.10, reliability: 0.4, clearance: true,
+  },
+]
+export function distributorById(id) { return DISTRIBUTORS.find(d => d.id === id) || null }
+
+// How many of the NEWEST sets Apex carries, and how many sets Greg rotates through.
+const APEX_NEW_COUNT = 6
+const GREG_CATALOG_SIZE = 5
+
+// Which sets a distributor carries right now. `weekIndex` rotates Greg's selection.
+// `sets` is the in-print shop list (SHOP_SETS), newest last.
+export function distributorCatalog(dist, sets, weekIndex = 0) {
+  if (!dist) return sets
+  if (dist.id === 'apex') return sets.slice(Math.max(0, sets.length - APEX_NEW_COUNT))
+  if (dist.id === 'prohobby') return sets.filter(s => caseLot(s)) // box/case-friendly sets only
+  if (dist.id === 'greg') {
+    const n = sets.length
+    if (!n) return []
+    const start = (Math.abs(weekIndex) * 3) % n
+    const out = []
+    for (let i = 0; i < Math.min(GREG_CATALOG_SIZE, n); i++) out.push(sets[(start + i) % n])
+    return out
+  }
+  return sets // sunrise: the full catalog
+}
+
+// The rapport discount a distributor extends at a given level (capped). Single source
+// of truth for both pricing and the "what you've unlocked" banner.
+export function distributorDiscount(dist, level) {
+  if (!dist) return 0
+  return Math.min(dist.maxDiscount, (level || 0) * dist.discountStep)
+}
+// Price a product from a distributor at a given rapport level.
+export function distributorPrice(dist, retail, level) {
+  if (!dist) return round2(retail || 0)
+  return round2((retail || 0) * dist.priceMult * (1 - distributorDiscount(dist, level)))
+}
+// Case price from a distributor: wholesale on the boxes, then the extra case bulk cut.
+export function distributorCasePrice(dist, lot, level) {
+  return round2(distributorPrice(dist, lot.retail, level) * (1 - CASE_BULK_CUT))
+}
+
+// Stock cap for a product from a distributor at a rapport level. Singles stock deep,
+// boxes shallower, cases very shallow; scaled by reliability and (as a wider
+// allocation) by rapport.
+export function stockCap(dist, product, level) {
+  if (!dist) return 99
+  const packs = product?.packs || 1
+  const base = packs >= CASE_BOXES * 10 ? 2 : packs >= 10 ? 6 : 30
+  const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
+  const allo = 1 + 0.2 * (level || 0)       // bigger allocation as rapport grows
+  return Math.max(1, Math.round(base * rel * allo))
+}
+// Units of stock a distributor regains per day (toward the cap).
+export function restockRate(dist, cap) {
+  if (!dist) return cap
+  return Math.max(0.2, dist.reliability * cap * 0.18)
+}
+// Stock map key for a (set, product) pair.
+export function stockKey(set, product) { return `${set.id}|${product.type}` }
+// Live stock state for a (set, product) at a distributor. `stock` is that distributor's
+// saved stock map ({ key: {q, cap} }); an absent key means a full shelf. The cap is the
+// LARGER of any saved cap and the current allocation — so climbing a rapport rung widens
+// the shelf immediately instead of waiting for the next full restock to recompute it.
+export function stockState(dist, stock, set, product, level) {
+  const entry = (stock || {})[stockKey(set, product)]
+  const cap = Math.max(entry?.cap || 0, stockCap(dist, product, level))
+  const q = entry ? entry.q : cap
+  return { q, cap, out: q < 1 }
+}
+// Days until a depleted product is back in stock (qty climbs back to ≥1).
+export function daysToRestock(dist, qty, cap) {
+  if (qty >= 1) return 0
+  return Math.ceil((1 - qty) / restockRate(dist, cap))
 }
 
 // ---- Master sets / completion ----------------------------------------------

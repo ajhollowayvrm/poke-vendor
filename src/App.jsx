@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
-  businessVolume, distributorTier, nextDistributorTier, wholesalePrice, caseLot, casePrice,
+  DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
+  distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, vintageProduct, sealedValue, setById } from './game/engine'
 import { useGame } from './game/store'
 import { encounterStillValid } from './game/shows'
@@ -87,13 +88,13 @@ export default function App() {
   // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses
   // that to rip immediately (the old instant-rip behaviour); the "Auto-rip" pacing toggle
   // does NOT, so turning on auto-advance no longer silently skips the inventory.
-  function buyProduct(set, product) {
-    // The Buy/Distributor UI passes `_buyPrice` = the actual charged price (retail,
-    // wholesale, or case-lot), so the price shown is exactly what's charged.
+  function buyProduct(distId, set, product) {
+    // The Buy UI passes `_buyPrice` = the actual charged price (the distributor's price
+    // at your rapport, a case lot, or a clearance lot), so shown == charged.
     const price = product._buyPrice ?? product.price
     if (cash < price) return toast(`Not enough cash for ${product.type}.`)
-    const item = useGame.getState().buySealed(set, product, price)
-    if (!item) return
+    const item = useGame.getState().buyFromDistributor(distId, set, product, price)
+    if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     setShopTab('inventory')
     toast(`Stocked ${product.type} of ${set.name} — rip, list, or flip it from 📦 Inventory.`)
@@ -135,13 +136,22 @@ export default function App() {
   }
 
   // "Rip another" from the end-of-rip summary: re-buy the SAME product and rip it fresh,
-  // so you can keep chasing without going back to the shop. Charges the same price the
-  // original buy did (retail/wholesale/case via _buyPrice), logs it, and re-mounts the
-  // animated rip via a bumped nonce. Bails (no charge) if you can't afford it — the
-  // summary button is already disabled in that case, this is just a safety net.
+  // so you can keep chasing without going back to the shop. A distributor product
+  // (`_distId`) re-buys through that distributor so its STOCK and your RAPPORT stay
+  // honest — it's stocked then immediately pulled back out to rip (no double-charge),
+  // and refuses if they've sold out. Vintage / shop-less products fall back to a plain
+  // re-buy. Bails (no charge) if you can't afford it.
   function ripAnother(set, product) {
     const price = liveProductPrice(set, product)
     if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
+    if (product._distId) {
+      const item = useGame.getState().buyFromDistributor(product._distId, set, product, price)
+      if (!item) return toast(`${distributorById(product._distId)?.name || 'They'} are out of ${product.type} — can't rip another right now.`)
+      useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
+      setRipping(r => ({ set, product, nonce: (r?.nonce ?? 0) + 1 }))
+      setTab('shop')
+      return
+    }
     if (!spend(price)) return
     useGame.getState().recordSetSpend(set.id, price)
     const wholesaleNote = product._buyPrice != null && product._buyPrice < product.price ? ' (wholesale)' : ''
@@ -414,77 +424,184 @@ function GameOver() {
 }
 
 function Shop({ cash, onBuy, onBuyVintage }) {
-  const stats = useGame(s => s.stats)
+  const distributors = useGame(s => s.distributors)
+  const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
   const supplyVendors = useGame(s => s.supplyVendors)
   const supplyChannel = useGame(s => s.supplyChannel || [])
-  const volume = businessVolume(stats)
-  const tier = distributorTier(volume)
-  const next = nextDistributorTier(volume)
-  const disc = tier.discount
+  useGame(s => s.marketMults) // keep strike-through retail honest as the market drifts
+  const [distId, setDistId] = useState(DISTRIBUTORS[0].id)
   const [toastMsg, setToastMsg] = useState(null)
   const flash = (m) => { setToastMsg(m); setTimeout(() => setToastMsg(null), 2600) }
 
-  // A product priced for the current account: stamps `_buyPrice` (what's charged)
-  // so the shown price equals the charged price. Retail at base tier; wholesale above.
-  const priced = (p) => ({ ...p, _buyPrice: wholesalePrice(p.price, disc) })
+  const dist = distributorById(distId) || DISTRIBUTORS[0]
+  const rec = distributors[distId] || { spend: 0, stock: {} }
+  const lvl = rapportLevel(rec.spend)
+  // Week index drives Greg's rotating catalog (month-safe; 30 days/month).
+  const weekIndex = Math.floor(((monthsElapsed || 0) * 30 + currentDay) / 7)
+  const catalog = distributorCatalog(dist, SHOP_SETS, weekIndex)
+  // Greg flags one set's box as a clearance lot each week — a steep, thin-stock steal.
+  const clearanceSetId = dist.clearance && catalog.length ? catalog[weekIndex % catalog.length].id : null
+  const showSupply = dist.supply && lvl.level >= dist.supplyMinLevel
 
   return (
     <>
-      <DistributorBanner tier={tier} next={next} volume={volume} />
+      <DistributorPicker distributorState={distributors} selected={distId} onSelect={setDistId} />
+      <RapportBanner dist={dist} rec={rec} lvl={lvl} />
 
-      {tier.supply && (
-        <SupplyPanel disc={disc} supplyVendors={supplyVendors} supplyChannel={supplyChannel} cash={cash} flash={flash} />
+      {showSupply && (
+        <SupplyPanel dist={dist} lvl={lvl} supplyVendors={supplyVendors} supplyChannel={supplyChannel} cash={cash} flash={flash} />
       )}
 
       <div className="banner" style={{ marginTop: 14 }}>
-        🃏 Real sets & live <b>TCGplayer sealed prices</b> · data from {new Date(FETCHED_AT).toLocaleDateString()} ·
-        each product rips into its real pack count (+ a guaranteed promo for ETBs/tins/premiums).
-        {disc > 0 ? <> Your <b style={{ color: tier.color }}>{tier.name}</b> account takes <b style={{ color:'var(--green)' }}>{Math.round(disc*100)}% off</b> every product.</> : <> Ripping sealed is usually a loss — the chase is the fun.</>}
+        {dist.icon} <b style={{ color: dist.color }}>{dist.name}</b> — {dist.blurb}
+        {' '}Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.
       </div>
-      <div className="grid shop-grid">
-        {SHOP_SETS.map(set => {
-          const products = setProducts(set)
-          const lot = tier.cases ? caseLot(set) : null
-          return (
-            <div className="product" key={set.id}>
-              {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
-              <h3>{set.name}</h3>
-              <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
-              <div className="prodlist">
-                {products.map(p => {
-                  const pp = priced(p)
-                  return (
-                    <button key={p.type} className="prodbtn" disabled={cash < pp._buyPrice} onClick={() => onBuy(set, pp)}
-                      title={`${p.packs} pack${p.packs>1?'s':''}${p.bonus ? ' + promo' : ''}${disc>0?` · ${Math.round(disc*100)}% wholesale`:''}`}>
-                      <span className="prodname">{p.icon} {p.type}</span>
-                      <span className="prodmeta">{p.packs} pk{p.bonus ? ' +🎁' : ''}</span>
-                      <span className="prodprice">
-                        {disc > 0 && <s className="retail">{fmtMoney(p.price)}</s>}
-                        {fmtMoney(pp._buyPrice)}
-                      </span>
-                    </button>
-                  )
-                })}
-                {lot && (() => {
-                  const price = casePrice(lot, disc)
-                  return (
-                    <button className="prodbtn caselot" disabled={cash < price}
-                      onClick={() => onBuy(set, { ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, _buyPrice: price })}
-                      title={`${lot.boxes} boxes · ${lot.packs} packs · case bulk pricing`}>
-                      <span className="prodname">{lot.icon} {lot.type}</span>
-                      <span className="prodmeta">{lot.packs} pk · {lot.boxes} boxes</span>
-                      <span className="prodprice"><s className="retail">{fmtMoney(lot.retail)}</s>{fmtMoney(price)}</span>
-                    </button>
-                  )
-                })()}
-              </div>
-            </div>
-          )
-        })}
-      </div>
+
+      {catalog.length === 0 ? (
+        <p className="muted" style={{ marginTop: 18 }}>{dist.name} has nothing on the shelf right now — check back next week.</p>
+      ) : (
+        <div className="grid shop-grid">
+          {catalog.map(set => (
+            <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={rec.stock}
+              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} />
+          ))}
+        </div>
+      )}
+
       <VintageVault onBuy={onBuyVintage} cash={cash} />
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
+  )
+}
+
+// Pick which distributor you're buying from. Each chip shows their icon, name, and your
+// rapport (filled stars), tinted with their brand colour.
+function DistributorPicker({ distributorState, selected, onSelect }) {
+  return (
+    <div className="distrib-picker">
+      {DISTRIBUTORS.map(d => {
+        const rec = distributorState[d.id] || { spend: 0 }
+        const level = rapportLevel(rec.spend).level
+        const max = RAPPORT_LEVELS.length - 1
+        return (
+          <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''}`}
+            style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}>
+            <span className="dc-icon">{d.icon}</span>
+            <span className="dc-name">{d.name}</span>
+            <span className="dc-rep" aria-label={`${level} of ${max} rapport`}>{'★'.repeat(level)}{'☆'.repeat(max - level)}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// Your relationship with the selected distributor: current standing, the discount it
+// earns, what perks it unlocks, and progress toward the next rung.
+function RapportBanner({ dist, rec, lvl }) {
+  const next = nextRapport(rec.spend)
+  const disc = distributorDiscount(dist, lvl.level)
+  const nextDisc = next ? distributorDiscount(dist, next.level) : disc
+  const pct = next ? Math.min(100, Math.round(((rec.spend - lvl.min) / (next.min - lvl.min)) * 100)) : 100
+  const levelName = (n) => RAPPORT_LEVELS[n]?.name || ''
+  const perks = []
+  if (dist.cases) perks.push(lvl.level >= dist.casesMinLevel ? '✓ case lots' : `case lots at ${levelName(dist.casesMinLevel)}`)
+  if (dist.supply) perks.push(lvl.level >= dist.supplyMinLevel ? '✓ supply the channel' : `supply the channel at ${levelName(dist.supplyMinLevel)}`)
+  if (dist.firstDibs) perks.push('first dibs on new sets')
+  if (dist.clearance) perks.push('weekly clearance lots')
+  return (
+    <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66' }}>
+      <div className="row" style={{ alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+        <span className="pill" style={{ background: lvl.color + '22', color: lvl.color, fontSize: 13 }}>🤝 {lvl.name}</span>
+        <span className="muted" style={{ fontSize: 12.5 }}>
+          {disc > 0 ? <><b style={{ color: 'var(--green)' }}>{Math.round(disc * 100)}% off</b> their prices</> : 'building rapport unlocks discounts'}
+          {perks.length ? ' · ' + perks.join(' · ') : ''}
+        </span>
+        <span className="muted" style={{ marginLeft: 'auto', fontSize: 12.5 }}>Spent with them {fmtMoney(rec.spend)}</span>
+      </div>
+      {next && (
+        <>
+          <div className="distrib-bar"><div style={{ width: pct + '%', background: dist.color }} /></div>
+          <div className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>
+            {fmtMoney(next.min - rec.spend)} more spend → <b style={{ color: next.color }}>{next.name}</b>
+            {nextDisc > disc ? ` (${Math.round(nextDisc * 100)}% off` : ' ('}
+            {dist.cases && next.level >= dist.casesMinLevel && lvl.level < dist.casesMinLevel ? ', case lots' : ''}
+            {dist.supply && next.level >= dist.supplyMinLevel && lvl.level < dist.supplyMinLevel ? ', supply' : ''}
+            {', bigger allocation)'}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// One set on a distributor's shelf: its products (priced at your rapport), plus a case
+// lot (if they sell cases and you've earned it) and a clearance lot (Greg, weekly).
+function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance }) {
+  const products = setProducts(set)
+  const showCases = dist.cases && lvl.level >= dist.casesMinLevel
+  const lot = showCases ? caseLot(set) : null
+  const box = [...products].sort((a, b) => b.packs - a.packs)[0]
+  return (
+    <div className="product">
+      {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
+      <h3>{set.name}</h3>
+      <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
+      <div className="prodlist">
+        {products.map(p => (
+          <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} />
+        ))}
+        {lot && (
+          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy}
+            product={{ ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, bonus: lot.bonus, boxes: lot.boxes, _retail: lot.retail, _case: true }} />
+        )}
+        {clearance && box && (
+          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy}
+            product={{ ...box, type: `Clearance ${box.type}`, icon: '🏷️', _clearanceOf: box.price, _clearance: true }} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+// A single buyable product line with live stock. Prices at your rapport, draws the stock
+// bar, and disables itself when sold out (with a restock ETA) or you can't afford it.
+function StockButton({ dist, set, product, lvl, stock, cash, onBuy }) {
+  let price
+  if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
+  else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level) * 0.65)
+  else price = distributorPrice(dist, product.price, lvl.level)
+
+  const { q: qty, cap, out } = stockState(dist, stock, set, product, lvl.level)
+  const days = out ? daysToRestock(dist, qty, cap) : 0
+
+  const retail = product._clearance ? product._clearanceOf : product._case ? product._retail : product.price
+  const showStrike = price < (retail || 0) - 0.005
+
+  return (
+    <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''}`}
+      disabled={out || cash < price}
+      onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id })}
+      title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(qty)}/${cap} in stock`}>
+      <span className="prodname">{product.icon} {product.type}</span>
+      <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
+      <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{fmtMoney(price)}</span>
+      <StockBar qty={qty} cap={cap} out={out} days={days} color={dist.color} />
+    </button>
+  )
+}
+
+// Thin per-product stock gauge: fill proportional to qty/cap, red + ETA when sold out.
+function StockBar({ qty, cap, out, days, color }) {
+  const pct = Math.max(0, Math.min(100, Math.round((qty / cap) * 100)))
+  return (
+    <span className="stockbar">
+      <span className="stockbar-track"><span className="stockbar-fill" style={{ width: pct + '%', background: out ? 'var(--red)' : color }} /></span>
+      <span className="stockbar-label" style={out ? { color: 'var(--red)' } : null}>
+        {out ? `OUT · restocks ~${days}d` : `${Math.floor(qty)} / ${cap} in stock`}
+      </span>
+    </span>
   )
 }
 
@@ -523,40 +640,15 @@ function VintageVault({ onBuy, cash }) {
   )
 }
 
-// Distributor status banner: your tier, what it unlocks, and progress to the next.
-function DistributorBanner({ tier, next, volume }) {
-  const pct = next ? Math.min(100, Math.round(((volume - tier.min) / (next.min - tier.min)) * 100)) : 100
-  return (
-    <div className="distrib-banner" style={{ marginTop: 18, borderColor: tier.color + '66' }}>
-      <div className="row" style={{ alignItems: 'baseline', gap: 10 }}>
-        <span className="pill" style={{ background: tier.color + '22', color: tier.color, fontSize: 13 }}>📦 {tier.name}</span>
-        <span className="muted" style={{ fontSize: 12.5 }}>
-          {tier.discount > 0 ? `${Math.round(tier.discount*100)}% wholesale off` : 'Move volume to unlock wholesale pricing'}
-          {tier.cases ? ' · case lots' : ''}{tier.supply ? ' · supply other vendors' : ''}
-        </span>
-        <span className="muted" style={{ marginLeft: 'auto', fontSize: 12.5 }}>Lifetime volume {fmtMoney(volume)}</span>
-      </div>
-      {next && (
-        <>
-          <div className="distrib-bar"><div style={{ width: pct + '%', background: tier.color }} /></div>
-          <div className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>
-            {fmtMoney(next.min - volume)} more volume → <b style={{ color: next.color }}>{next.name}</b>
-            {' '}({Math.round(next.discount*100)}% off{next.cases && !tier.cases ? ', case lots' : ''}{next.supply && !tier.supply ? ', supply vendors' : ''})
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
-
-// Supply Vendors: wholesale sealed product into the channel for passive income.
-function SupplyPanel({ disc, supplyVendors, supplyChannel, cash, flash }) {
+// Supply Vendors: wholesale sealed product into the channel for passive income. Unlocked
+// once you hit Trusted+ rapport with Pro Hobby (you buy in at their wholesale price).
+function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
   const [setId, setSetId] = useState(SHOP_SETS[0].id)
   const set = SHOP_SETS.find(s => s.id === setId) || SHOP_SETS[0]
   const products = setProducts(set)
   const [type, setType] = useState(() => products.find(p => p.packs >= 10)?.type || products[0].type)
   const product = products.find(p => p.type === type) || products[0]
-  const cost = wholesalePrice(product.price, disc)
+  const cost = distributorPrice(dist, product.price, lvl.level)
   const pending = supplyChannel.reduce((a, w) => a + w.net, 0)
 
   function place() {
@@ -566,7 +658,7 @@ function SupplyPanel({ disc, supplyVendors, supplyChannel, cash, flash }) {
   }
   return (
     <div className="market-panel" style={{ marginTop: 14 }}>
-      <div className="market-head">📦 Supply other vendors <span className="muted">— buy in at wholesale, sell through the channel for passive income over a few days</span></div>
+      <div className="market-head">📦 Supply other vendors <span className="muted">— buy in at {dist.name}'s wholesale, sell through the channel for passive income over a few days</span></div>
       <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
         <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); const ps = setProducts(SHOP_SETS.find(s=>s.id===id)); setType(ps.find(p=>p.packs>=10)?.type || ps[0].type) }}>
           {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}

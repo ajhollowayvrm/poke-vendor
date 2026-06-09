@@ -2,7 +2,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier, rarityRank, bulkDiscount,
   BUYER_SAVVY, rollBuyerSavvy, buyerMaxMult, dailyViewers, isBulkCard,
-  businessVolume, distributorTier, wholesalePrice, SETS, ownedIdSet, setCompletion, completionReward,
+  distributorById, rapportLevel, distributorPrice, restockRate, stockKey, stockState,
+  SETS, ownedIdSet, setCompletion, completionReward,
   setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS,
   VINTAGE_SETS, driftMultVintage, sealedValue, sealedCard, SEALED_FLIP_RATE, setById } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
@@ -142,6 +143,26 @@ export const GOAL_PERIOD_DAYS = 7
 // Absolute day counter that doesn't wrap at the month boundary (currentDay resets to 1
 // each new calendar month). Goal cadence keys off this so a week spans months cleanly.
 export function absoluteDay(currentDay, monthsElapsed) { return (monthsElapsed || 0) * CALENDAR_DAYS + currentDay }
+
+// Restock every distributor's depleted stock over `days` passed. Each stock entry is
+// { q, cap }; it climbs back toward cap at the distributor's restock rate. Entries that
+// reach the cap are dropped (an absent key means "fully stocked" — keeps the map lean).
+function restockDistributors(distributors, days) {
+  const out = {}
+  for (const [id, d] of Object.entries(distributors || {})) {
+    const dist = distributorById(id)
+    const stock = {}
+    if (dist) {
+      for (const [key, e] of Object.entries(d.stock || {})) {
+        const rate = restockRate(dist, e.cap)
+        const q = Math.min(e.cap, e.q + rate * days)
+        if (q < e.cap - 1e-6) stock[key] = { q, cap: e.cap } // still short → keep
+      }
+    }
+    out[id] = { ...d, stock }
+  }
+  return out
+}
 function makeWeeklyGoals(noto) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
   const count = 3 + (Math.random() < 0.5 ? 1 : 0) // 3–4 goals for the week
@@ -460,6 +481,7 @@ function advanceDaysWith(set, get, days, away) {
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
     consignments: remainingConsign,
     supplyChannel: remainingSupply,
+    distributors: restockDistributors(s.distributors, days), // wholesalers refill their shelves
     listings: remainingListings,
     wantList: wants,
     forumPosts,
@@ -643,6 +665,7 @@ export const useGame = create(persist((set, get) => ({
   showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
   shopDisplay: [],         // cards on your STORE shelf — walk-in customers only buy/offer on these (you choose what to put out). Needs a storefront.
   supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
+  distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
   sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
   wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
   forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
@@ -939,23 +962,56 @@ export const useGame = create(persist((set, get) => ({
     return { net, daysLeft }
   },
 
-  // --- Distributor program -----------------------------------------------------
-  // Your standing on the wholesale ladder, derived from lifetime business volume
-  // (everything earned + spent). Drives wholesale discounts, case lots, and supply.
-  distributorStatus() {
-    const vol = businessVolume(get().stats)
-    return { volume: vol, tier: distributorTier(vol) }
+  // --- Distributors ------------------------------------------------------------
+  // Per-distributor relationship: rapport (lifetime $ spent with them) and their
+  // finite, restocking inventory. Returns a normalized record for `distId`.
+  distributorRec(distId) {
+    return get().distributors[distId] || { spend: 0, stock: {} }
+  },
+  // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,
+  // routes the actual purchase through buySealed (charge + stock the item + log), then
+  // bumps your rapport with them and decrements their shelf. Returns the new inventory
+  // item, or null if out of stock / unaffordable.
+  buyFromDistributor(distId, pokeSet, product, price) {
+    const dist = distributorById(distId)
+    if (!dist) return null
+    const rec = get().distributorRec(distId)
+    const level = rapportLevel(rec.spend).level
+    const key = stockKey(pokeSet, product)
+    if (stockState(dist, rec.stock, pokeSet, product, level).out) return null // sold out
+    const item = get().buySealed(pokeSet, product, price) // spends, stocks, logs; null if broke
+    if (!item) return null
+    const paid = price ?? product._buyPrice ?? product.price ?? 0
+    set(s => {
+      const cur = s.distributors[distId] || { spend: 0, stock: {} }
+      const st = stockState(dist, cur.stock, pokeSet, product, level) // fresh; cap ratchets up with rapport
+      return {
+        distributors: {
+          ...s.distributors,
+          [distId]: {
+            spend: round2((cur.spend || 0) + paid),
+            stock: { ...cur.stock, [key]: { q: Math.max(0, st.q - 1), cap: st.cap } },
+          },
+        },
+      }
+    })
+    return item
   },
   // Wholesale a sealed product into the channel: pay your wholesale cost now, and it
-  // sells through to other shops over a few days for a markup (passive distributor
-  // income). `retail` is the shop price; you buy in at wholesale and resell at a
-  // channel margin above that. Requires the supply perk (Distributor+).
+  // sells through to other shops over a few days for a markup (passive income). You buy
+  // in at Pro Hobby's wholesale price; requires Trusted+ rapport with them.
   supplyVendors(pokeSet, product) {
-    const { tier } = get().distributorStatus()
-    if (!tier.supply) return false
-    const cost = wholesalePrice(product.price, tier.discount) // you buy in at wholesale
+    const dist = distributorById('prohobby')
+    const rec = get().distributorRec('prohobby')
+    const level = rapportLevel(rec.spend).level
+    if (!dist?.supply || level < dist.supplyMinLevel) return false
+    const cost = distributorPrice(dist, product.price, level) // you buy in at wholesale
     if (!get().spend(cost)) return false
     get().recordSetSpend(pokeSet.id, cost)
+    set(s => { // the buy-in builds rapport with Pro Hobby too
+      const cur = s.distributors.prohobby || { spend: 0, stock: {} }
+      return { distributors: { ...s.distributors, prohobby: { ...cur, spend: round2((cur.spend || 0) + cost) } } }
+    })
     // resell into the channel at a margin over RETAIL (other shops pay near retail),
     // minus a small channel fee. Net is comfortably above your wholesale cost.
     const sellThrough = round2(product.price * (1.04 + Math.random() * 0.06)) // ~104–110% of retail
@@ -1699,7 +1755,7 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], sealedInventory: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], distributors: {}, sealedInventory: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false } })
@@ -1707,7 +1763,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 27,
+  version: 28,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1896,6 +1952,12 @@ export const useGame = create(persist((set, get) => ({
       state.sealedInventory = state.sealedInventory ?? []
     }
     if (version < 26) {
+      // Multiple distributors with per-distributor rapport + finite, restocking stock,
+      // replacing the single global volume tier. Start fresh: no rapport with anyone,
+      // every shelf full (an empty stock map reads as fully stocked).
+      state.distributors = state.distributors ?? {}
+    }
+    if (version < 27) {
       // Decouple the on-buy rip from the rip-animation pacing. `autoAdvance` used to mean
       // BOTH "auto-advance the rip animation" AND "a buy skips inventory and rips now," so
       // anyone who turned Auto-rip on for pacing was silently bypassing the new inventory.
@@ -1904,7 +1966,7 @@ export const useGame = create(persist((set, get) => ({
       state.settings = state.settings || {}
       state.settings.ripOnBuy = state.settings.ripOnBuy ?? false
     }
-    if (version < 27) {
+    if (version < 28) {
       // Grading day-wrap fix. pendingGrades used to stamp readyOnDay against the in-month
       // currentDay (which resets to 1 every 30 days), so any grade with readyOnDay > 30 —
       // ALWAYS the case for the 45-day economy tier, and for standard/express submitted
