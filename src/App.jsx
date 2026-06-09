@@ -4,6 +4,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, vintageProduct, sealedValue, setById } from './game/engine'
 import { useGame } from './game/store'
+import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
 import Collection from './components/Collection'
@@ -75,8 +76,10 @@ export default function App() {
 
   // If the page was reloaded while a show was open, the floor view (React state) is
   // gone but show-inventory cards may still be stranded on the table — bring them home.
+  // Also kick off cloud auto-sync (no-ops unless a Function URL + game ID are configured).
   useEffect(() => {
     if ((useGame.getState().showInventory || []).length) useGame.getState().endShow()
+    startAutoSync()
   }, [])
 
   function handleNextDay() {

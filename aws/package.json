@@ -1,0 +1,7 @@
+{
+  "name": "poke-vendor-save-fn",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lambda for PokéVendor cloud save. No dependencies — uses the @aws-sdk/client-dynamodb bundled with the Node 20 runtime."
+}

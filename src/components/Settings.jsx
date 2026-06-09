@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { refreshPrices, FETCHED_AT, SETS } from '../game/engine'
 import { useGame } from '../game/store'
+import CloudSave from './CloudSave'
 
 const RIP_SPEEDS = [
   { v: 0.5, label: 'Slow' }, { v: 1, label: 'Normal' }, { v: 2, label: 'Fast' }, { v: 4, label: 'Turbo' },
@@ -40,6 +41,9 @@ export default function Settings() {
 
   return (
     <>
+      <h3 style={{ margin: '4px 0 4px' }}>Save &amp; sync</h3>
+      <CloudSave />
+
       <h3 style={{ margin: '18px 0 4px' }}>Gameplay</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
         How sealed product with multiple packs (booster boxes, bundles, ETBs…) opens.

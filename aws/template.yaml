@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  PokéVendor cloud save — a DynamoDB table keyed by a per-game UUID, plus a small
+  Lambda (exposed via a Function URL) that the static PWA calls to GET/PUT a save.
+  Browsers can't talk to DynamoDB safely without credentials, so this Lambda is the
+  thin access layer. No auth: the UUID is the secret (unguessable v4 = 122 bits).
+
+Resources:
+  SavesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: poke-vendor-saves
+      BillingMode: PAY_PER_REQUEST   # on-demand — effectively free at hobby scale
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id          # the game's UUID / unique string
+          KeyType: HASH
+
+  SaveFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: poke-vendor-save
+      Runtime: nodejs20.x
+      Handler: handler.handler
+      CodeUri: ./
+      MemorySize: 128
+      Timeout: 10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SavesTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SavesTable
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins: ['*']        # the UUID gates access; tighten to your Pages origin if you prefer
+          AllowMethods: ['GET', 'PUT']
+          AllowHeaders: ['content-type']
+
+Outputs:
+  FunctionUrl:
+    Description: Paste this into src/game/syncConfig.js (SYNC_URL), then redeploy the site.
+    Value: !GetAtt SaveFnUrl.FunctionUrl
+  TableName:
+    Value: !Ref SavesTable
