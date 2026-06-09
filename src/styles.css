@@ -425,6 +425,33 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .grade-history { margin: 8px 0 2px; padding: 8px 10px; background:#0c0f1a; border:1px solid var(--line);
   border-radius: 10px; display:flex; flex-direction:column; gap:2px; }
 
+/* ---------- "If it graded" PSA tier row (raw cards) ---------- */
+.psa-tiers { margin: 8px 0 2px; }
+.psa-tiers-head { font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+.psa-tier-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.psa-tier { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 7px 8px; text-align: center; display: flex; flex-direction: column; gap: 1px; }
+.psa-tier-grade { font-size: 11px; font-weight: 800; color: var(--dim); letter-spacing: .3px; }
+.psa-tier-val { font-size: 16px; color: var(--gold); font-variant-numeric: tabular-nums; }
+.psa-tier.capped { opacity: 0.55; }
+.psa-tier.capped .psa-tier-val { color: var(--dim); }
+.psa-tier-note { font-size: 9.5px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .3px; }
+.psa-tier-cap { font-size: 11.5px; margin-top: 6px; }
+
+/* ---------- Per-card price-history chart (card modal) ---------- */
+.price-chart { margin: 14px 0 2px; padding: 10px 12px; background: #0c0f1a;
+  border: 1px solid var(--line); border-radius: 12px; }
+.pc-head { display: flex; align-items: baseline; gap: 8px; }
+.pc-title { font-size: 12px; font-weight: 700; color: var(--dim); }
+.pc-now { margin-left: auto; font-size: 15px; font-weight: 800; color: var(--green);
+  font-variant-numeric: tabular-nums; }
+.pc-chg { font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pc-svg { display: block; width: 100%; height: 60px; margin: 6px 0 2px; overflow: visible; }
+.pc-axis { display: flex; justify-content: space-between; font-size: 10.5px;
+  font-variant-numeric: tabular-nums; }
+.pc-empty { margin: 14px 0 2px; padding: 12px; background: #0c0f1a; border: 1px solid var(--line);
+  border-radius: 12px; font-size: 12px; }
+
 /* ---------- Per-set analytics (Stats page) ---------- */
 .setanalytics { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .set-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1fr; gap: 8px;

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { cardValue, rawValue, psa10Value, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
+import PriceChart from './PriceChart'
 
 export default function CardModal({ card, onClose }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
@@ -14,6 +15,9 @@ export default function CardModal({ card, onClose }) {
   const submitGrade = useGame(s => s.submitGrade)
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
+  // Per-set market history drives this card's price-history chart (it re-renders as the
+  // market drifts each game-day). The chart needs the set's recent multiplier samples.
+  const marketHistory = useGame(s => s.marketHistory)
   const [listing, setListing] = useState(false) // showing the list-on-site picker?
   const [askPct, setAskPct] = useState(90)
   const askMult = (parseFloat(askPct) || 0) / 100
@@ -29,6 +33,8 @@ export default function CardModal({ card, onClose }) {
   const next = nextGraderTier(submitted)
   const market = cardValue(card)
   const quote = listingQuote(card, askMult)
+  // This card's value reprojected across the set's recent market window (raw or graded).
+  const priceSeries = valueHistory(card, marketHistory?.[setIdOfCard(card)])
 
   return (
     <div className="modalbg" onClick={onClose}>
@@ -92,18 +98,33 @@ export default function CardModal({ card, onClose }) {
             ) : (
               <>
                 <p style={{ fontSize: 15, marginBottom: 4 }}>Market value: <b style={{ color: 'var(--green)' }}>${rawValue(card).toFixed(2)}</b></p>
-                {/* What this card would be worth slabbed at a perfect grade — the upside
-                    that makes grading tempting. If the card's condition caps it below 10
-                    (a played card can't gem), flag that the PSA 10 is out of reach. */}
+                {/* What this card could be worth slabbed, across the grades that actually
+                    move on the secondary market — PSA 10/9/8. Condition caps how high it
+                    can really grade (a played card can't gem), so grades above the cap are
+                    dimmed and flagged as out of reach while still showing the upside. */}
                 {(() => {
-                  const p10 = psa10Value(card)
                   const cap = card.condition && CONDITIONS[card.condition] ? CONDITIONS[card.condition].maxGrade : 10
-                  const reachable = cap >= 10
                   return (
-                    <p style={{ fontSize: 13, margin: 0 }} className="muted">
-                      💎 If it graded <b>PSA 10</b>: <b style={{ color: 'var(--gold)' }}>{fmtMoney(p10)}</b>
-                      {!reachable && <span style={{ color: CONDITIONS[card.condition].color }}> — but {CONDITIONS[card.condition].label} caps it at PSA {cap}</span>}
-                    </p>
+                    <div className="psa-tiers">
+                      <div className="psa-tiers-head muted">💎 If it graded…</div>
+                      <div className="psa-tier-row">
+                        {[10, 9, 8].map(grade => {
+                          const reachable = cap >= grade
+                          return (
+                            <div key={grade} className={`psa-tier${reachable ? '' : ' capped'}`}>
+                              <span className="psa-tier-grade">PSA {grade}</span>
+                              <b className="psa-tier-val">{fmtMoney(psaValueAt(card, grade))}</b>
+                              {!reachable && <span className="psa-tier-note">out of reach</span>}
+                            </div>
+                          )
+                        })}
+                      </div>
+                      {cap < 10 && (
+                        <div className="psa-tier-cap" style={{ color: CONDITIONS[card.condition].color }}>
+                          {CONDITIONS[card.condition].label} — this card can grade at most PSA {cap}.
+                        </div>
+                      )}
+                    </div>
                   )
                 })()}
                 {(() => {
@@ -124,6 +145,10 @@ export default function CardModal({ card, onClose }) {
                 })()}
               </>
             )}
+
+            {/* Price history — this card's value across the recent living-market window.
+                Shown for raw and graded cards alike (both ride the set's market). */}
+            <PriceChart series={priceSeries} />
 
             {!listing ? (
               <div className="sell-options" style={{ marginTop: 14 }}>

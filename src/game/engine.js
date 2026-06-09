@@ -897,21 +897,42 @@ export function dailyViewers(card, askMult, notoriety, rnd = Math.random, boost 
   return whole + (rnd() < (expected - whole) ? 1 : 0)
 }
 
-// Hypothetical "if this graded PSA 10" value for a still-raw card — what the slab
-// would be worth at a perfect grade. Uses the REAL PSA-10 comp when the snapshot has
-// one; else mirrors gradedValue's heuristic. Used to tease upside on a fresh hit.
-export function psa10Value(card) {
+// Hypothetical "if this graded PSA <grade>" value for a still-raw card — what the slab
+// would be worth at that grade. Prefers the REAL PSA comp for the grade when the snapshot
+// has one (scaled by the set's living market, exactly like gradedValue does for a real
+// slab), else mirrors gradedValue's heuristic. Used to tease grading upside on a raw card.
+// The gradedFloor keeps the ladder monotonic: a PSA 10 is never worth less than a PSA 9,
+// which is never worth less than the raw card.
+export function psaValueAt(card, grade) {
   if (card.grade) return gradedValue(card)
-  const real = psaComp(card, 10)
+  const real = psaComp(card, grade)
   let value
-  if (real != null) value = real
+  if (real != null) value = real * marketMult(setIdOfCard(card))
   else {
     const base = rawValue(card)
+    const mult = GRADE_MULT[grade] ?? 1
+    // higher base-value cards see a bigger grade premium (gem-mint chase), gated to 9+
     const scarcityBoost = 1 + Math.min(2, base / 50)
-    value = base * GRADE_MULT[10] * scarcityBoost
+    value = base * mult * (grade >= 9 ? scarcityBoost : 1)
   }
-  // same floor as a real slab: a PSA 10 is never worth less than raw or a lower grade
-  return round2(gradedFloor(card, 10, value))
+  return round2(gradedFloor(card, grade, value))
+}
+// Hypothetical PSA-10 value — the headline "if it gemmed" number. Thin wrapper kept for
+// existing callers; the general per-grade function is psaValueAt.
+export function psa10Value(card) { return psaValueAt(card, 10) }
+
+// A per-card PRICE HISTORY series over a set's recent market-multiplier samples
+// (store.marketHistory[setId], the same ring the Price-guide sparkline uses). A card's
+// value scales linearly with its set's living-market multiplier, so we reproject the
+// card's CURRENT value back across each historical mult to get a dollar value per day,
+// oldest → newest. Works for raw and graded cards alike (both ride the set's market).
+// Returns [] when there's no history yet; callers render a "no trend" note under 2 points.
+export function valueHistory(card, history) {
+  const pts = (history || []).filter(m => typeof m === 'number')
+  if (!pts.length) return []
+  const cur = marketMult(setIdOfCard(card)) || 1
+  const v = cardValue(card)
+  return pts.map(m => round2(v * (m / cur)))
 }
 
 // ---- Grading (PSA-style subgrades) ----
