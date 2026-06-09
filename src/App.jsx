@@ -469,7 +469,13 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         </div>
       )}
 
-      <VintageVault onBuy={onBuyVintage} cash={cash} />
+      {vintageVaultOpen(weekIndex) ? (
+        <VintageVault onBuy={onBuyVintage} cash={cash} />
+      ) : (
+        <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
+          <div className="market-head">🏛️ Vintage Vault <span className="muted">— the travelling dealer isn't in town right now. It swings by some weeks; hunt vintage at shows in the meantime.</span></div>
+        </div>
+      )}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )
@@ -605,6 +611,15 @@ function StockBar({ qty, cap, out, days, color }) {
   )
 }
 
+// The Vintage Vault is a TRAVELLING dealer — it only rolls into the shop SOME weeks, not
+// every day. Vintage is meant to be a rare find (hunt it at shows the rest of the time, via
+// the show-floor Vintage Vault vendor + booth sealed). Deterministic per week (stable across
+// re-renders and reloads) so the visiting schedule feels real rather than flickering.
+const VINTAGE_VAULT_EVERY = 3 // roughly one week in three it's in town
+function vintageVaultOpen(weekIndex) {
+  return (((weekIndex * 2654435761) >>> 0) % VINTAGE_VAULT_EVERY) === 0
+}
+
 // Vintage sealed: pricey old packs bought at current (appreciated) market value and
 // HELD — they trend up over time. Buying stocks them into your sealed inventory; ripping
 // one (a single old pack) is a real gamble. Re-prices live as the market drifts.
@@ -613,7 +628,7 @@ function VintageVault({ onBuy, cash }) {
   if (!VINTAGE_SETS.length) return null
   return (
     <div className="market-panel vintage-vault" style={{ marginTop: 18 }}>
-      <div className="market-head">🏛️ Vintage Vault <span className="muted">— rare old sealed packs. Buy &amp; hold; vintage appreciates. Ripping one is a real gamble.</span></div>
+      <div className="market-head">🏛️ Vintage Vault <span className="muted">— a travelling dealer, in town this week only. Rare old sealed packs: buy &amp; hold (vintage appreciates), or gamble on a rip.</span></div>
       <div className="grid shop-grid" style={{ marginTop: 10 }}>
         {VINTAGE_SETS.map(set => {
           const product = vintageProduct(set)
