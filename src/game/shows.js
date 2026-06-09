@@ -408,19 +408,17 @@ export function makeSealedDeal(channel, notoriety = 0) {
   const what = origin === 'vintage'
     ? `a sealed ${product.name || set.name + ' pack'}`
     : `a ${product.type} of ${set.name}`
+  const reversible = pay === 'card' || pay === 'paypal' // card/PayPal can be charged back; Venmo F&F / cash can't
   return {
     kind: 'sealedDeal',
     title: online ? `${cap(seller.who)} DMs you a deal` : `${cap(seller.who)} offers you sealed product`,
     body: `"Got ${what} I'll let go for $${ask.toFixed(2)} — ${pct}% under retail (~$${reference.toFixed(2)})."`
       + ` It's ${seller.tell}.${payTell} Could be a steal… or a fake.`,
     card: logo ? { name: product.type, img: logo, imgLarge: logo } : null,
-    options: [
-      { text: `Buy it — $${ask.toFixed(2)}${pay ? ` (${PAY_LABEL(pay)})` : ''}`, tone: 'fair',
-        effect: { type: 'buySealedDeal', setId: set.id, product: { ...product }, ask, fake, origin, payMethod: pay, notoriety: 0 } },
-      { text: 'Pass — too risky', tone: 'fair',
-        effect: { type: 'none', notoriety: 0,
-          msg: fake ? 'Smart — that one had scam written all over it.' : 'You let a real deal walk. Can’t win them all.' } },
-    ],
+    // Everything the deal modal + store actions need to resolve a buy / authenticate /
+    // chargeback. `fake` is the hidden outcome; `reversible` decides chargeback eligibility.
+    deal: { setId: set.id, product: { ...product }, ask, reference, fake, origin,
+      payMethod: pay, reversible, sketchy: seller.sketchy, what },
   }
 }
 

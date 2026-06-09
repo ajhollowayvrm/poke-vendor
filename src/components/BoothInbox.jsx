@@ -3,6 +3,7 @@ import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY
 import { fmtMoney, cardValue } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
+import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
 import { useModalEscape } from '../ui/dialog'
@@ -258,7 +259,7 @@ export default function BoothInbox() {
                 {enc.card && <img src={enc.card.img} alt="" style={{ width: 64, borderRadius: 8, alignSelf:'center' }} />}
                 <h3 style={{ fontSize: 15, margin: 0 }}>{enc.title}</h3>
                 <div className="meta" style={{ flex:1 }}>{enc.body.slice(0, 90)}…</div>
-                <button className="btn">{enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
+                <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →' : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
               </div>
             )
           })}
@@ -268,7 +269,10 @@ export default function BoothInbox() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {active && <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />}
+      {active && (active.enc.kind === 'sealedDeal' && active.enc.deal
+        ? <SealedDealModal enc={active.enc} idx={active.idx} flash={flash}
+            onDone={() => setActive(null)} onCancel={() => setActive(null)} />
+        : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />)}
 
       {wantPick && (() => {
         // One picker for both collector wants and forum WTB posts (same matcher/payout).

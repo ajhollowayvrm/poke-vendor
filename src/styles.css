@@ -642,9 +642,16 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 }
 
 @media (max-width: 640px) {
-  .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right));
-    /* leave room so content clears the fixed bottom nav (bar + safe-area) */
-    padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right)); }
+  /* App shell — applied ONLY to the main view (the .app that contains the bottom nav). Lock
+     it to the visual viewport and scroll the CONTENT region instead of the page body, so the
+     nav becomes a normal footer row that can't drift during iOS toolbar show/hide (the old
+     position:fixed bar did, even with a GPU hack). Full-screen branches without a nav (the
+     show floor / show prep) have no .bottomnav, so they keep normal page scrolling. */
+  html:has(.bottomnav), body:has(.bottomnav) { height: 100%; overflow: hidden; }
+  .app:has(> .bottomnav) { height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: 0; }
+  .app:has(> .bottomnav) .content { flex: 1 1 auto; min-height: 0; overflow-y: auto;
+    -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 10px; }
   .topbar { gap: 8px; padding: 10px 12px; flex-wrap: wrap; }
   .brand { font-size: 17px; }
   .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
@@ -669,18 +676,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .gear-btn { display: none; }
 
   .bottomnav {
-    /* all tabs share the width evenly — no horizontal scrolling */
-    display: flex; gap: 2px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    /* A normal footer row of the app-shell flex column — NOT position:fixed, so it can't
+       drift during iOS toolbar show/hide. The content region above scrolls; this stays put.
+       Tabs share the width evenly — no horizontal scrolling. */
+    display: flex; gap: 2px; flex: 0 0 auto; z-index: 60;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, var(--panel), var(--panel2));
     border-top: 1px solid var(--line); box-shadow: 0 -6px 24px #0007;
-    /* Pin it to its own GPU layer. Without this, iOS Safari repaints a plain
-       fixed bar against stale scroll offsets during momentum scrolling — the bar
-       appears to drift up the page and "stick" mid-scroll before snapping back.
-       Promoting to a composited layer makes it track the visual viewport. */
-    transform: translateZ(0); -webkit-transform: translateZ(0);
-    backface-visibility: hidden; -webkit-backface-visibility: hidden;
-    will-change: transform;
   }
   .bnav-btn {
     flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;

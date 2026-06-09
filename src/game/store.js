@@ -599,6 +599,7 @@ export const UPGRADES = {
   cases:    { name: 'Glass Display Cases',  cost: 500,  desc: 'Offers on your cards come in ~12% higher.', icon: '🗄️' },
   ticker:   { name: 'Visitor Ticker',       cost: 200,  desc: 'Alerts you when someone is at your stand while you browse a show hall.', icon: '🔔' },
   loupe:    { name: "Jeweler's Loupe",      cost: 450,  desc: 'Slightly better grade odds when you submit cards. Also gives a PRECISE cut/centering read on any raw card — without it the eyeball read is fuzzy.', icon: '🔍' },
+  authkit:  { name: 'Authentication Kit',   cost: 600,  desc: 'A precision scale, UV blacklight & reference guides for spotting resealed wrappers and weighed/searched packs. Lets you AUTHENTICATE sealed deals from strangers before you buy — catching most fakes (crude ones almost always; sophisticated reseals can still slip through, especially vintage).', icon: '🔬' },
   network:  { name: 'Dealer Network',       cost: 1500, desc: 'Famous vendors reveal their best stock — and flag underpriced DEALS and OVER-priced asks so you never overpay.', icon: '🤝' },
   banner:   { name: 'Charity Banner',       cost: 300, desc: 'Generous acts (giving cards away, fair deals) grant +50% extra notoriety.', icon: '🎗️' },
   autoSell: { name: 'Auto-Sell Service',    cost: 1800, desc: 'Hands-off selling: willing buyers auto-purchase your listings at 80% of market value — no need to accept each offer. Flag any listing to opt out and hold for a manual offer.', icon: '🤖' },
@@ -1026,6 +1027,66 @@ export const useGame = create(persist((set, get) => ({
     get().log('sell', `Quick-flipped ${nm} ${item.product.type} — $${net.toFixed(2)}`, net)
     get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
     return net
+  },
+
+  // --- Inbound sealed deals (authenticate / buy / chargeback) -------------------
+  // A stranger's DM offering sealed below market (see makeSealedDeal). The catch is some
+  // are fakes; these three actions are the counterplay loop.
+
+  // Pay a fee to authenticate a deal before buying (gated by the Jeweler's Loupe). Returns
+  // a READ correlated with the hidden truth but not perfect — a clever fake (esp. vintage)
+  // can pass. The result is persisted on the inbox item so re-opening can't re-roll it.
+  authenticateDeal(idx) {
+    const item = get().boothInbox[idx]
+    if (!item?.deal) return { error: 'Nothing to authenticate.' }
+    if (item.authResult) return item.authResult           // already read — no re-charge / re-roll
+    if (!get().upgrades.authkit) return { error: 'You need an Authentication Kit to authenticate.' }
+    const fee = Math.max(10, round2(item.deal.ask * 0.05))
+    if (get().cash < fee) return { error: `Authentication runs $${fee.toFixed(2)} — you can't cover it.` }
+    get().spend(fee)
+    // A resealed vintage pack is genuinely hard to spot; modern is easier to call.
+    const accuracy = item.deal.origin === 'vintage' ? 0.72 : 0.85
+    const correct = Math.random() < accuracy
+    const looksFake = correct ? item.deal.fake : !item.deal.fake
+    const read = { looksFake, confidence: Math.round(accuracy * 100), fee }
+    set(s => ({ boothInbox: s.boothInbox.map((e, i) => i === idx ? { ...e, authResult: read } : e) }))
+    get().log('auth', `Authenticated a ${item.deal.what} — $${fee.toFixed(2)}`, -fee)
+    return read
+  },
+
+  // Commit to buying a deal. Real → it lands in your held sealed inventory (reusing
+  // buySealed). Fake → the cash is gone and you get a dud. Returns a structured outcome so
+  // the modal can show the result and offer a chargeback. Charge happens exactly once here;
+  // the caller clears the inbox item right after so a re-open can't double-buy.
+  buyDeal(deal) {
+    if (!deal) return { error: true, msg: 'The deal vanished.' }
+    const set = setById(deal.setId)
+    if (!set) return { error: true, msg: 'The deal vanished before you could pay.' }
+    if (get().cash < deal.ask) return { error: true, msg: `You can't cover the $${deal.ask.toFixed(2)} for it.` }
+    if (deal.fake) {
+      get().spend(deal.ask)
+      get().log('scam', `Scammed: paid $${deal.ask.toFixed(2)} for a fake ${deal.product.type} of ${set.name}`, -deal.ask)
+      return { fake: true, reversible: !!deal.reversible, payMethod: deal.payMethod, ask: deal.ask, origin: deal.origin }
+    }
+    const out = get().buySealed(set, { ...deal.product, _buyPrice: deal.ask }, deal.ask)
+    if (!out) return { error: true, msg: `You can't cover the $${deal.ask.toFixed(2)} for it.` }
+    return { fake: false, ask: deal.ask, setName: set.name, type: deal.product.type }
+  },
+
+  // File a payment dispute after a scam paid by a reversible rail (card / PayPal). A coin
+  // -flip-ish recovery of most of the money — sketchy sellers force Venmo F&F / cash exactly
+  // to deny you this, so the rail you were pushed onto is itself the tell. Returns the result.
+  chargebackDeal(deal) {
+    if (!deal?.reversible) return { won: false, recovered: 0, noRecourse: true }
+    const won = Math.random() < 0.6
+    const recovered = won ? round2(deal.ask * 0.8) : 0
+    if (won) {
+      get().earn(recovered)
+      get().log('chargeback', `Chargeback won — recovered $${recovered.toFixed(2)} (${methodLabel(deal.payMethod)})`, recovered)
+    } else {
+      get().log('chargeback', `Chargeback denied — the $${deal.ask.toFixed(2)} is gone for good`, 0)
+    }
+    return { won, recovered }
   },
 
   // --- Livestream --------------------------------------------------------------
