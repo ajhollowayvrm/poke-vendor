@@ -111,7 +111,8 @@ export default function Settings() {
 
       <h3 style={{ margin: '18px 0 4px' }}>Card prices</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-        Pull the latest TCGplayer market prices for all {SETS.length} loaded sets, live from pokemontcg.io.
+        Pull the latest TCGplayer market prices for all {SETS.length} loaded sets — instantly from the
+        game&#39;s shared daily price cache when you&#39;re signed in, or live from pokemontcg.io otherwise.
         Updates values across the shop, your collection, vendor booths, and offers. No rebuild needed.
       </p>
 

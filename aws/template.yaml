@@ -8,6 +8,12 @@ Description: >
   50k monthly users), provisioned DynamoDB (5 of the free 25 RCU/WCU), and Lambda
   behind a Function URL (no API Gateway, whose free tier expires after 12 months).
 
+Parameters:
+  PokemonTcgIoKey:
+    Type: String
+    Default: ''
+    Description: Optional pokemontcg.io API key (free signup) — lifts upstream rate limits for the price cache.
+
 Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -71,15 +77,22 @@ Resources:
       Handler: handler.handler
       CodeUri: ./
       MemorySize: 128
-      Timeout: 10
+      Timeout: 120                   # a COLD price-cache fill walks ~21 upstream sets; saves return in ms regardless
       Environment:
         Variables:
           TABLE_NAME: !Ref SavesTable
           USER_POOL_ID: !Ref UserPool
           CLIENT_ID: !Ref UserPoolClient
+          POKEMONTCG_IO_KEY: !Ref PokemonTcgIoKey
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SavesTable
+      Events:
+        DailyPriceRefresh:           # EventBridge rules are free — keeps the price cache warm
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 day)
+            Input: '{"job":"refresh-prices"}'
       FunctionUrlConfig:
         AuthType: NONE                 # the Cognito JWT in the Authorization header is the auth
         Cors:

@@ -7,8 +7,17 @@ account: a DynamoDB table holds **one save per player**, and a tiny Lambda (behi
 ```
 GitHub Pages PWA ──HTTPS──> Cognito user pool          (sign up / sign in / refresh)
                  ──HTTPS──> Lambda Function URL        (Authorization: Bearer <id token>)
-                                └──> DynamoDB poke-vendor-saves(id = user#<sub>, data, savedAt, version)
+                                ├── GET/PUT /          DynamoDB poke-vendor-saves(id = user#<sub>, …)
+                                └── GET /prices        shared card-price cache (id = prices#v1)
+                                       └─(stale/missing sets)──> api.pokemontcg.io
 ```
+
+The same Lambda also serves a **shared card-price cache**: `GET /prices?sets=…` returns
+every requested set's TCGplayer prices from one DynamoDB row instead of ~21 slow
+pokemontcg.io calls. Sets staler than 24h refresh through to the upstream API, and a
+free daily EventBridge schedule re-warms the whole cache so players essentially never
+wait. Optionally pass `--parameter-overrides PokemonTcgIoKey=<key>` at deploy time
+(free signup at pokemontcg.io) to lift upstream rate limits.
 
 Everything is sized to stay inside the **always-free** AWS tier:
 

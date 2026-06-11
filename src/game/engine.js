@@ -1,5 +1,7 @@
 // Core game engine: pack composition, pulls, pricing, grading, pack pricing.
 import data from '../data/sets.json'
+import { SYNC_URL } from './syncConfig'
+import { getIdToken } from './auth'
 
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
@@ -742,11 +744,60 @@ function bestPrice(tp) {
   return null
 }
 
+// Apply a {cardId: price} map to one set, in place. Shared by both refresh paths.
+function applyPrices(set, priceById) {
+  let updated = 0, total = 0
+  for (const card of set.cards) {
+    total++
+    const p = priceById[card.id]
+    if (p != null && p !== card.price) { card.price = p; PRICE_OVERRIDES[card.id] = p; updated++ }
+    else if (p != null) { PRICE_OVERRIDES[card.id] = p }
+  }
+  return { updated, total }
+}
+
+// Fast path: the AWS backend keeps a shared price snapshot in DynamoDB (re-warmed
+// daily), so a signed-in player gets every set's prices in ONE request instead of
+// ~one slow pokemontcg.io call per set. Returns null when unavailable (signed out,
+// offline, backend error) — the caller falls back to fetching upstream directly.
+async function fetchCachedPrices(onProgress) {
+  if (!SYNC_URL) return null
+  let token = null
+  try { token = await getIdToken() } catch { return null }
+  if (!token) return null
+  onProgress?.({ setName: 'the cloud price cache', index: 0, count: 1 })
+  try {
+    const ids = SETS.map(s => s.id).join(',')
+    // A cold cache makes the backend walk pokemontcg.io itself, which can be slow —
+    // give up after 20s and fall back to fetching directly (with per-set progress).
+    // The Lambda finishes filling the cache regardless, so the NEXT refresh is instant.
+    const res = await fetch(`${SYNC_URL}prices?sets=${encodeURIComponent(ids)}`, {
+      headers: { authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout?.(20_000),
+    })
+    if (!res.ok) return null
+    const j = await res.json()
+    if (!j?.prices || !Object.keys(j.prices).length) return null
+    return j // { prices: {cardId: usd}, fetchedAt: ms, missing: [setId] }
+  } catch { return null }
+}
+
 // Live-refresh market prices for every loaded set, in place.
 // Returns { updated, total, fetchedAt }. Throws on network failure.
 export async function refreshPrices(onProgress) {
-  const API = 'https://api.pokemontcg.io/v2'
   let updated = 0, total = 0
+
+  const cached = await fetchCachedPrices(onProgress)
+  if (cached) {
+    for (const set of SETS) {
+      const r = applyPrices(set, cached.prices)
+      updated += r.updated; total += r.total
+    }
+    MARKET_MULT = {} // fresh snapshot = the new market truth (see below)
+    return { updated, total, fetchedAt: new Date(cached.fetchedAt).toISOString(), marketReset: true }
+  }
+
+  const API = 'https://api.pokemontcg.io/v2'
   for (let si = 0; si < SETS.length; si++) {
     const set = SETS[si]
     onProgress?.({ setName: set.name, index: si, count: SETS.length })
@@ -764,13 +815,8 @@ export async function refreshPrices(onProgress) {
       if (json.data.length < 250) break
       page++
     }
-    // apply to the in-memory set + override map
-    for (const card of set.cards) {
-      total++
-      const p = priceById[card.id]
-      if (p != null && p !== card.price) { card.price = p; PRICE_OVERRIDES[card.id] = p; updated++ }
-      else if (p != null) { PRICE_OVERRIDES[card.id] = p }
-    }
+    const r = applyPrices(set, priceById)
+    updated += r.updated; total += r.total
   }
   // Fresh live snapshot = the new market truth. Reset the living-market drift so it
   // doesn't stack on top of already-updated numbers; it resumes from 1.0 going forward.
