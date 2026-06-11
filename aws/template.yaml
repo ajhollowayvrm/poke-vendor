@@ -46,7 +46,7 @@ Resources:
         - ALLOW_USER_PASSWORD_AUTH     # plain email+password over TLS, so the PWA needs no SRP library
         - ALLOW_REFRESH_TOKEN_AUTH
       PreventUserExistenceErrors: ENABLED
-      RefreshTokenValidity: 90         # stay signed in for ~3 months between plays
+      RefreshTokenValidity: 3650       # sign in once per device, basically forever (Cognito max: 10 years)
       TokenValidityUnits:
         RefreshToken: days
 
