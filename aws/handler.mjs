@@ -156,11 +156,14 @@ export const handler = async (event) => {
     if (method === 'GET') {
       const r = await ddb.send(new GetItemCommand({ TableName: TABLE, Key: { id: { S: id } } }))
       if (!r.Item) return json(404, { error: 'not found' })
-      return json(200, {
-        data: r.Item.data?.S ?? null,
+      // ?peek=1: metadata only — the client checks "is the cloud ahead?" on every boot
+      // and sign-in, so don't make it download the whole save just to read a timestamp.
+      const meta = {
         savedAt: r.Item.savedAt ? Number(r.Item.savedAt.N) : 0,
         version: r.Item.version ? Number(r.Item.version.N) : null,
-      })
+      }
+      if (event?.queryStringParameters?.peek) return json(200, meta)
+      return json(200, { ...meta, data: r.Item.data?.S ?? null, enc: r.Item.enc?.S })
     }
 
     if (method === 'PUT') {
@@ -168,6 +171,7 @@ export const handler = async (event) => {
       try { body = JSON.parse(event?.body || '{}') } catch { return json(400, { error: 'bad json' }) }
       const { data, savedAt, version } = body
       if (typeof data !== 'string' || !data) return json(400, { error: 'missing data' })
+      const enc = body.enc === 'gz' ? 'gz' : null // client gzips saves; stored opaquely
       const ts = Number(savedAt) || Date.now()
       try {
         await ddb.send(new PutItemCommand({
@@ -175,6 +179,7 @@ export const handler = async (event) => {
           Item: {
             id: { S: id },
             data: { S: data },
+            ...(enc ? { enc: { S: enc } } : {}),
             savedAt: { N: String(ts) },
             version: { N: String(Number(version) || 0) },
             updatedAt: { N: String(Date.now()) },

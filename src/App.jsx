@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
-  VINTAGE_SETS, vintageProduct, sealedValue, setById } from './game/engine'
+  VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot } from './game/engine'
 import { useGame } from './game/store'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
@@ -80,6 +80,7 @@ export default function App() {
   useEffect(() => {
     if ((useGame.getState().showInventory || []).length) useGame.getState().endShow()
     startAutoSync()
+    warmPricesOnBoot().catch(() => {}) // re-apply the last price snapshot (and freshen if stale)
   }, [])
 
   function handleNextDay() {

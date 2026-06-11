@@ -22,7 +22,7 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'card-images',
-              expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              expiration: { maxEntries: 1200, maxAgeSeconds: 60 * 60 * 24 * 30, purgeOnQuotaError: true },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
@@ -45,4 +45,17 @@ export default defineConfig({
     }),
   ],
   server: { port: 5179, open: true },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split the bundle so a PWA update only re-downloads what actually changed:
+        // the card database (~biggest, changes on data refreshes) and the framework
+        // (rarely changes) get their own precache entries separate from game code.
+        manualChunks(id) {
+          if (id.includes('sets.json')) return 'card-data'
+          if (id.includes('node_modules')) return 'vendor'
+        },
+      },
+    },
+  },
 })

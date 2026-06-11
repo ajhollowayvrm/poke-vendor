@@ -744,6 +744,22 @@ function bestPrice(tp) {
   return null
 }
 
+// The last refreshed prices, persisted so they survive a reload — without this,
+// PRICE_OVERRIDES is module memory and every boot falls back to the bundled
+// (build-time) snapshot until someone presses Refresh again.
+const PRICE_SNAPSHOT_KEY = 'poke-vendor-price-snapshot' // { fetchedAt: ms, prices: {cardId: usd} }
+const SNAPSHOT_STALE_MS = 24 * 3600 * 1000
+
+function readPriceSnapshot() {
+  try {
+    const j = JSON.parse(localStorage.getItem(PRICE_SNAPSHOT_KEY))
+    return j && typeof j.prices === 'object' && j.prices ? j : null
+  } catch { return null }
+}
+function storePriceSnapshot(prices, fetchedAt) {
+  try { localStorage.setItem(PRICE_SNAPSHOT_KEY, JSON.stringify({ fetchedAt, prices })) } catch {}
+}
+
 // Apply a {cardId: price} map to one set, in place. Shared by both refresh paths.
 function applyPrices(set, priceById) {
   let updated = 0, total = 0
@@ -793,11 +809,13 @@ export async function refreshPrices(onProgress) {
       const r = applyPrices(set, cached.prices)
       updated += r.updated; total += r.total
     }
+    storePriceSnapshot(cached.prices, cached.fetchedAt)
     MARKET_MULT = {} // fresh snapshot = the new market truth (see below)
     return { updated, total, fetchedAt: new Date(cached.fetchedAt).toISOString(), marketReset: true }
   }
 
   const API = 'https://api.pokemontcg.io/v2'
+  const combined = {} // every set's prices, for the persisted snapshot
   for (let si = 0; si < SETS.length; si++) {
     const set = SETS[si]
     onProgress?.({ setName: set.name, index: si, count: SETS.length })
@@ -817,11 +835,28 @@ export async function refreshPrices(onProgress) {
     }
     const r = applyPrices(set, priceById)
     updated += r.updated; total += r.total
+    Object.assign(combined, priceById)
   }
+  storePriceSnapshot(combined, Date.now())
   // Fresh live snapshot = the new market truth. Reset the living-market drift so it
   // doesn't stack on top of already-updated numbers; it resumes from 1.0 going forward.
   MARKET_MULT = {}
   return { updated, total, fetchedAt: new Date().toISOString(), marketReset: true }
+}
+
+// Boot-time price warm-up, called once from App. Re-applies the persisted snapshot
+// (instant, offline-safe), then quietly pulls a newer one from the cloud cache if ours
+// is over a day old and we're signed in. Unlike an explicit Refresh, this NEVER resets
+// the living-market drift — new base prices slide in under the day-to-day multipliers,
+// so the market mechanic keeps its history across sessions.
+export async function warmPricesOnBoot() {
+  const snap = readPriceSnapshot()
+  if (snap) for (const set of SETS) applyPrices(set, snap.prices)
+  if (Date.now() - (snap?.fetchedAt || 0) < SNAPSHOT_STALE_MS) return
+  const cached = await fetchCachedPrices()
+  if (!cached || (snap && cached.fetchedAt <= snap.fetchedAt)) return
+  for (const set of SETS) applyPrices(set, cached.prices)
+  storePriceSnapshot(cached.prices, cached.fetchedAt)
 }
 // Reverse-holo premium scales with rarity: a reverse-holo common is barely worth
 // more than the base, while a reverse-holo rare commands a real premium.

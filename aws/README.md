@@ -12,6 +12,10 @@ GitHub Pages PWA ──HTTPS──> Cognito user pool          (sign up / sign i
                                        └─(stale/missing sets)──> api.pokemontcg.io
 ```
 
+`GET /?peek=1` returns save metadata only (`savedAt`, `version`) so boot/sign-in
+timestamp checks don't download the blob, and `PUT` accepts `enc:'gz'` — the client
+gzips saves (~5-10× smaller) and the Lambda stores the bytes opaquely.
+
 The same Lambda also serves a **shared card-price cache**: `GET /prices?sets=…` returns
 every requested set's TCGplayer prices from one DynamoDB row instead of ~21 slow
 pokemontcg.io calls. Sets staler than 24h refresh through to the upstream API, and a

@@ -60,16 +60,34 @@ function localIsPristine() {
 let applyingRemote = false // true while we're rehydrating from a cloud load (don't echo a push)
 let timer = null           // debounce handle for auto-sync pushes
 
-async function authedFetch(method, body) {
+async function authedFetch(method, body, query = '') {
   const token = await getIdToken()
   if (!token) { const e = new Error('Sign in to use cloud save.'); e.code = 'signedout'; throw e }
-  const res = await fetch(SYNC_URL, {
+  const res = await fetch(SYNC_URL + query, {
     method,
     headers: { authorization: `Bearer ${token}`, ...(body ? { 'content-type': 'application/json' } : {}) },
     ...(body ? { body: JSON.stringify(body) } : {}),
   })
   if (res.status === 401) { const e = new Error('Session expired — sign in again.'); e.code = 'signedout'; throw e }
   return res
+}
+
+// --- save compression -----------------------------------------------------------
+// Saves gzip ~5-10× smaller, so syncs are faster on mobile and stay far from
+// DynamoDB's 400KB item cap as a collection grows. CompressionStream is everywhere
+// the game runs (iOS 16.4+, Chrome 80+); without it we just upload the raw JSON.
+// The backend stores the bytes opaquely (enc:'gz'); old uncompressed saves load as-is.
+async function gzipToB64(str) {
+  const stream = new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))
+  const bytes = new Uint8Array(await new Response(stream).arrayBuffer())
+  let bin = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return btoa(bin)
+}
+async function gunzipFromB64(b64) {
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+  return new Response(stream).text()
 }
 
 // Push the current local save under its logical savedAt. Throws { code:'stale' } if the
@@ -79,7 +97,11 @@ export async function saveToCloud() {
   const data = readBlob(); if (!data) throw new Error('Nothing saved locally yet')
   let savedAt = localSavedAt()
   if (!savedAt) { savedAt = Date.now(); setLocalSavedAt(savedAt) } // first ever save
-  const res = await authedFetch('PUT', { data, savedAt, version: schemaVersion() })
+  let payload = { data, savedAt, version: schemaVersion() }
+  if (typeof CompressionStream !== 'undefined') {
+    try { payload = { ...payload, data: await gzipToB64(data), enc: 'gz' } } catch {}
+  }
+  const res = await authedFetch('PUT', payload)
   if (res.status === 409) {
     const j = await res.json().catch(() => ({}))
     const e = new Error('The cloud save is newer — load it before saving.')
@@ -106,17 +128,21 @@ export async function loadFromCloud() {
   if (!res.ok) throw new Error(`Load failed (${res.status})`)
   const j = await res.json()
   if (!j.data) throw new Error('The cloud save is empty')
+  let blob = j.data
+  if (j.enc === 'gz') {
+    try { blob = await gunzipFromB64(blob) } catch { blob = null }
+  }
   // Never apply a blob that isn't a real zustand save ({ state, version }) — a corrupted
   // cloud copy must not nuke the local game (rehydrating garbage destroys the store).
   let parsed
-  try { parsed = JSON.parse(j.data) } catch { parsed = null }
+  try { parsed = JSON.parse(blob) } catch { parsed = null }
   if (!parsed || typeof parsed.state !== 'object' || parsed.state === null) {
     throw new Error('The cloud save looks corrupted — keeping this device’s game.')
   }
   clearTimeout(timer)     // drop any pending push of the about-to-be-replaced local data
   applyingRemote = true
   try {
-    localStorage.setItem(SAVE_KEY, j.data)
+    localStorage.setItem(SAVE_KEY, blob)
     setLocalSavedAt(j.savedAt || Date.now()) // adopt the cloud data's logical time
     claimLocalForCurrentUser()
     await useGame.persist.rehydrate()        // reload the store from the new blob (runs migrations)
@@ -124,12 +150,13 @@ export async function loadFromCloud() {
   return { savedAt: j.savedAt }
 }
 
-// Look at the account's cloud save without applying it.
+// Look at the account's cloud save without applying it — metadata only (?peek=1),
+// so boots and sign-ins never download the whole blob just to compare timestamps.
 // → { exists, savedAt } | null when signed out / unreachable.
 export async function peekCloud() {
   if (!cloudConfigured() || !currentUser()) return null
   try {
-    const res = await authedFetch('GET')
+    const res = await authedFetch('GET', null, '?peek=1')
     if (res.status === 404) return { exists: false, savedAt: 0 }
     if (!res.ok) return null
     const j = await res.json()
