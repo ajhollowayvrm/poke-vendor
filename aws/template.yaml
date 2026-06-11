@@ -1,22 +1,66 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  PokéVendor cloud save — a DynamoDB table keyed by a per-game UUID, plus a small
-  Lambda (exposed via a Function URL) that the static PWA calls to GET/PUT a save.
-  Browsers can't talk to DynamoDB safely without credentials, so this Lambda is the
-  thin access layer. No auth: the UUID is the secret (unguessable v4 = 122 bits).
+  PokéVendor cloud save with accounts — a Cognito user pool (email + password) for
+  sign-in, a DynamoDB table holding one save per user, and a small Lambda (behind a
+  Function URL) that verifies the Cognito JWT and GETs/PUTs the caller's own save.
+  Everything is sized to stay inside the AWS ALWAYS-free tier: Cognito Lite (free to
+  50k monthly users), provisioned DynamoDB (5 of the free 25 RCU/WCU), and Lambda
+  behind a Function URL (no API Gateway, whose free tier expires after 12 months).
 
 Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: poke-vendor-users
+      UserPoolTier: LITE               # classic feature set; always-free to 50k MAUs
+      UsernameAttributes: [email]      # players sign in with their email address
+      UsernameConfiguration:
+        CaseSensitive: false
+      AutoVerifiedAttributes: [email]  # sign-up emails a 6-digit confirm code (Cognito default sender, free)
+      Policies:
+        PasswordPolicy:                # 8+ chars, no composition rules — it's a game account
+          MinimumLength: 8
+          RequireLowercase: false
+          RequireUppercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: poke-vendor-web
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false            # public SPA client — there is no place to hide a secret
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH     # plain email+password over TLS, so the PWA needs no SRP library
+        - ALLOW_REFRESH_TOKEN_AUTH
+      PreventUserExistenceErrors: ENABLED
+      RefreshTokenValidity: 90         # stay signed in for ~3 months between plays
+      TokenValidityUnits:
+        RefreshToken: days
+
   SavesTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: poke-vendor-saves
-      BillingMode: PAY_PER_REQUEST   # on-demand — effectively free at hobby scale
+      # Provisioned (not on-demand): 25 RCU + 25 WCU are ALWAYS free account-wide,
+      # while on-demand requests are billed from the first one. 5/5 plus DynamoDB's
+      # burst credit is plenty for debounced single-player saves and leaves capacity
+      # free for other tables in the account.
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
       KeySchema:
-        - AttributeName: id          # the game's UUID / unique string
+        - AttributeName: id            # "user#<cognito sub>" — one save per account
           KeyType: HASH
 
   SaveFn:
@@ -31,19 +75,30 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref SavesTable
+          USER_POOL_ID: !Ref UserPool
+          CLIENT_ID: !Ref UserPoolClient
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SavesTable
       FunctionUrlConfig:
-        AuthType: NONE
+        AuthType: NONE                 # the Cognito JWT in the Authorization header is the auth
         Cors:
-          AllowOrigins: ['*']        # the UUID gates access; tighten to your Pages origin if you prefer
+          AllowOrigins: ['*']
           AllowMethods: ['GET', 'PUT']
-          AllowHeaders: ['content-type']
+          AllowHeaders: ['content-type', 'authorization']
 
 Outputs:
   FunctionUrl:
-    Description: Paste this into src/game/syncConfig.js (SYNC_URL), then redeploy the site.
+    Description: SYNC_URL for src/game/syncConfig.js
     Value: !GetAtt SaveFnUrl.FunctionUrl
+  UserPoolClientId:
+    Description: AUTH_CLIENT_ID for src/game/syncConfig.js
+    Value: !Ref UserPoolClient
+  UserPoolId:
+    Description: Cognito user pool (server-side only; the app doesn't need it)
+    Value: !Ref UserPool
+  Region:
+    Description: AUTH_REGION for src/game/syncConfig.js
+    Value: !Ref AWS::Region
   TableName:
     Value: !Ref SavesTable

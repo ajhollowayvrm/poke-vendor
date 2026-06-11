@@ -76,7 +76,7 @@ export default function App() {
 
   // If the page was reloaded while a show was open, the floor view (React state) is
   // gone but show-inventory cards may still be stranded on the table — bring them home.
-  // Also kick off cloud auto-sync (no-ops unless a Function URL + game ID are configured).
+  // Also kick off cloud auto-sync (no-ops unless the AWS backend is configured + signed in).
   useEffect(() => {
     if ((useGame.getState().showInventory || []).length) useGame.getState().endShow()
     startAutoSync()

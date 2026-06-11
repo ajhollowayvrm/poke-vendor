@@ -1,7 +1,10 @@
 {
   "name": "poke-vendor-save-fn",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Lambda for PokéVendor cloud save. No dependencies — uses the @aws-sdk/client-dynamodb bundled with the Node 20 runtime."
+  "description": "Lambda for PokéVendor cloud save. @aws-sdk/client-dynamodb comes with the Node 20 runtime; aws-jwt-verify (zero-dependency) validates Cognito ID tokens.",
+  "dependencies": {
+    "aws-jwt-verify": "^4.0.1"
+  }
 }
