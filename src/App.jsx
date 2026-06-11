@@ -44,6 +44,13 @@ function liveProductPrice(set, product) {
   return product?._buyPrice ?? product?.price ?? packPrice(set)
 }
 
+// The 📦 Inventory items that ARE this product (same set + same type — price and
+// provenance vary by where a copy came from, but it's the same thing to rip).
+// "Rip another" consumes these before it ever re-buys: you already paid for them.
+function heldMatches(state, set, product) {
+  return (state.sealedInventory || []).filter(i => i.setId === set?.id && i.product?.type === product?.type)
+}
+
 export default function App() {
   const [tab, setTab] = useState('shop')
   const [shopTab, setShopTab] = useState('buy') // Buy sub-tab: buy | inventory
@@ -54,6 +61,9 @@ export default function App() {
   const [preppingShow, setPreppingShow] = useState(null) // show selected; picking which cards to bring
   const [activeShow, setActiveShow] = useState(null) // show being attended
   const cash = useGame(s => s.cash)
+  // How many copies of the in-progress rip's product are still held in 📦 Inventory —
+  // drives the "Rip another" label/gate (rip your own stock free before re-buying).
+  const ripStock = useGame(s => ripping ? heldMatches(s, ripping.set, ripping.product).length : 0)
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
   const pendingCount = useGame(s => s.pendingGrades.length)
@@ -139,13 +149,22 @@ export default function App() {
     toast(`Stocked ${product.type} of ${set.name} for ${fmtMoney(price)} — it's in 📦 Inventory.`)
   }
 
-  // "Rip another" from the end-of-rip summary: re-buy the SAME product and rip it fresh,
-  // so you can keep chasing without going back to the shop. A distributor product
-  // (`_distId`) re-buys through that distributor so its STOCK and your RAPPORT stay
-  // honest — it's stocked then immediately pulled back out to rip (no double-charge),
-  // and refuses if they've sold out. Vintage / shop-less products fall back to a plain
-  // re-buy. Bails (no charge) if you can't afford it.
+  // "Rip another" from the end-of-rip summary: keep chasing without going back to the
+  // shop. It reconciles with 📦 Inventory first — holding more of the SAME product
+  // means the next rip comes from YOUR stock (already paid; no charge). Only when
+  // you're out does it re-buy: a distributor product (`_distId`) re-buys through that
+  // distributor so its STOCK and your RAPPORT stay honest — it's stocked then
+  // immediately pulled back out to rip (no double-charge), and refuses if they've
+  // sold out. Vintage / shop-less products fall back to a plain re-buy. Bails (no
+  // charge) if you can't afford it.
   function ripAnother(set, product) {
+    const held = heldMatches(useGame.getState(), set, product)[0]
+    if (held) {
+      useGame.getState().ripSealed(held.uid)
+      setRipping(r => ({ set, product: held.product, nonce: (r?.nonce ?? 0) + 1 }))
+      setTab('shop')
+      return
+    }
     const price = liveProductPrice(set, product)
     if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
     if (product._distId) {
@@ -332,7 +351,8 @@ export default function App() {
             product={ripping.product}
             onExit={() => setRipping(null)}
             ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
-            canRipAnother={cash >= liveProductPrice(ripping.set, ripping.product)}
+            ripAnotherStock={ripStock}
+            canRipAnother={ripStock > 0 || cash >= liveProductPrice(ripping.set, ripping.product)}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
         </div>

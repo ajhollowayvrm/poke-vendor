@@ -10,7 +10,7 @@ import Burst from './Burst'
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherPrice }) {
+export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherPrice, ripAnotherStock = 0 }) {
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -221,7 +221,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                 disabled={!canRipAnother}
                 title={canRipAnother ? '' : 'Not enough cash'}
                 onClick={onRipAnother}>
-                Rip another{ripAnotherPrice != null ? ` (${fmtMoney(ripAnotherPrice)})` : ''} ↻
+                {/* Held stock rips free (already paid) — only an empty 📦 shows a price */}
+                Rip another{ripAnotherStock > 0 ? ` (📦 ${ripAnotherStock} held)` : ripAnotherPrice != null ? ` (${fmtMoney(ripAnotherPrice)})` : ''} ↻
               </button>
             )}
             <button className={`btn ${onRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
@@ -308,7 +309,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                     disabled={onRipAnother ? !canRipAnother : false}
                     title={onRipAnother && !canRipAnother ? 'Not enough cash' : ''}
                     onClick={onRipAnother || resetForNext}>
-                    Rip another ({fmtMoney(onRipAnother && ripAnotherPrice != null ? ripAnotherPrice : packPrice(set))})
+                    Rip another ({onRipAnother && ripAnotherStock > 0
+                      ? `📦 ${ripAnotherStock} held`
+                      : fmtMoney(onRipAnother && ripAnotherPrice != null ? ripAnotherPrice : packPrice(set))})
                   </button>
                   <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onExit}>Done →</button>
                 </>
