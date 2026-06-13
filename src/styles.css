@@ -679,6 +679,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .app:has(> .bottomnav) { height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: 0; }
   .app:has(> .bottomnav) .content { flex: 1 1 auto; min-height: 0; overflow-y: auto;
     -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 10px; }
+  /* The locked-height content column puts shrink pressure on its flex children, and a
+     child with its own overflow (the tier-legend chip row) has NO automatic min-height —
+     it gets crushed to a sliver. Pin children to natural height; .content does the scrolling. */
+  .app:has(> .bottomnav) .content > * { flex-shrink: 0; }
   .topbar { gap: 8px; padding: 10px 12px; flex-wrap: wrap; }
   .brand { font-size: 17px; }
   .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
