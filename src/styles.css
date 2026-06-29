@@ -5,6 +5,11 @@
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
+/* Paint the root canvas the theme's dark base. The home-indicator safe area on
+   iPhone can expose the bare <html> element (e.g. the 100%-height body vs the
+   100dvh app shell don't line up to the pixel under viewport-fit=cover); without
+   this it shows through as a white bar below the bottom nav. */
+html { background: var(--bg); }
 body {
   font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
   background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
