@@ -681,7 +681,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
      position:fixed bar did, even with a GPU hack). Full-screen branches without a nav (the
      show floor / show prep) have no .bottomnav, so they keep normal page scrolling. */
   html:has(.bottomnav), body:has(.bottomnav) { height: 100%; overflow: hidden; }
-  .app:has(> .bottomnav) { height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: 0; }
+  /* Fill the locked body exactly (height:100% == full screen under viewport-fit=cover).
+     Using 100dvh here came up short of the real screen height on iOS, leaving the nav
+     floating above a dark gap instead of pinned to the bottom edge. */
+  .app:has(> .bottomnav) { height: 100%; min-height: 0; overflow: hidden; padding-bottom: 0; }
   .app:has(> .bottomnav) .content { flex: 1 1 auto; min-height: 0; overflow-y: auto;
     -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 10px; }
   /* The locked-height content column puts shrink pressure on its flex children, and a
