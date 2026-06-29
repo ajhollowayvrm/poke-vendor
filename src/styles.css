@@ -719,7 +719,9 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
        drift during iOS toolbar show/hide. The content region above scrolls; this stays put.
        Tabs share the width evenly — no horizontal scrolling. */
     display: flex; gap: 2px; flex: 0 0 auto; z-index: 60;
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    /* Flush to the bottom edge — no safe-area inset reserved (full-screen app).
+       Small fixed bottom gap keeps the labels off the very edge / home indicator. */
+    padding: 6px 4px 8px;
     background: linear-gradient(180deg, var(--panel), var(--panel2));
     border-top: 1px solid var(--line); box-shadow: 0 -6px 24px #0007;
   }
