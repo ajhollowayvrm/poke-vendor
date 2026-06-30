@@ -6,7 +6,7 @@ import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier
   SETS, ownedIdSet, setCompletion, completionReward,
   setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS,
   VINTAGE_SETS, driftMultVintage, sealedValue, sealedCard, SEALED_FLIP_RATE, setById } from './engine'
-import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid } from './shows'
+import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid, makeRegular } from './shows'
 import { fatigueMult } from './stream'
 
 const STARTING_CASH = 2500
@@ -183,6 +183,14 @@ function makeWeeklyGoals(noto) {
 // this you're a nobody — nobody DMs you to buy. Your early-game demand is the public
 // FORUM (people posting what they want; you go find/rip it). See FORUM_* + forumPosts.
 export const INBOUND_NOTORIETY_GATE = 12
+// You need a bit of a name before any walk-up wants to become a "regular" of yours.
+export const REGULAR_FORM_GATE = 8
+// Relationships cool when neglected: every regular loses a little trust per game-day,
+// floored so dormancy alone never burns them (only gouging does). Dealing them adds it back.
+function decayRegulars(regulars, days) {
+  if (!regulars?.length) return regulars || []
+  return regulars.map(r => ({ ...r, trust: Math.max(2, round2((r.trust || 0) - 0.5 * days)) }))
+}
 // A live listing priced at or below this fraction of market is a bargain that
 // online deal-hunters will find on their own — even for an unknown vendor below the
 // notoriety gate. (askMult is "fraction of market"; see listOnSite.)
@@ -405,14 +413,14 @@ function advanceDaysWith(set, get, days, away) {
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
     // online channel (employees raise the hit chance). Only if you have something listed.
     if (openOnline && Math.random() < Math.min(0.97, dayOrderChance('online', noto, hasBargain) * orderMult)) {
-      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards), channel: 'online' }); onlineCount++ }
+      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store AND cards out on the shelf). The
     // shelf is the pool: walk-ins only buy/offer on cards you've put out (passed as both the
     // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the display case).
     if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
-      if (walkinOK) newOrders.push({ ...boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards), channel: 'walkin' })
+      if (walkinOK) newOrders.push({ ...boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars), channel: 'walkin' })
       else missedWalkin++
     }
   }
@@ -491,6 +499,7 @@ function advanceDaysWith(set, get, days, away) {
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
+    regulars: decayRegulars(st.regulars, days),                           // relationships cool if you neglect them
   }))
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
@@ -668,6 +677,7 @@ export const useGame = create(persist((set, get) => ({
   distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
   sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
   wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
+  regulars: [],            // persistent named customers (online/walkin) with a focus + trust; born from good deals
   forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
@@ -1281,6 +1291,48 @@ export const useGame = create(persist((set, get) => ({
     return { payout }
   },
 
+  // --- Regulars (persistent customers) -----------------------------------------
+  // Move a regular's trust after an interaction. delta>0 for fair/generous dealing,
+  // <0 for a gouge or a snub; `spent` adds to their lifetime tally. Trust hitting 0 on
+  // a negative move BURNS them — they stop coming around. Each touch also counts a visit.
+  bumpTrust(id, delta = 0, spent = 0) {
+    let burnedNow = null
+    set(s => ({
+      regulars: (s.regulars || []).map(r => {
+        if (r.id !== id) return r
+        const trust = Math.max(0, Math.min(100, (r.trust || 0) + delta))
+        const flags = { ...r.flags }
+        if (trust <= 0 && delta < 0 && !flags.burned) { flags.burned = true; burnedNow = r }
+        return { ...r, trust, visits: (r.visits || 0) + 1, lastSeenDay: s.currentDay,
+          spentTotal: round2((r.spentTotal || 0) + (spent || 0)), flags }
+      }),
+    }))
+    if (burnedNow) get().log('regular', `${burnedNow.emoji} ${burnedNow.name} felt burned and won't be back.`, 0)
+  },
+
+  // A great deal with an anonymous walk-up can turn them INTO a regular. Rolled on the
+  // `formSeed` a good deal's effect leaves behind. Gated on notoriety + a per-channel roster
+  // cap (kept small so the roster stays personal); a generous first meeting bonds harder.
+  formRegular(seed) {
+    if (!seed || !seed.setId) return
+    if (get().notoriety < REGULAR_FORM_GATE) return
+    const channel = seed.channel === 'walkin' ? 'walkin' : 'online'
+    const roster = get().regulars || []
+    const sameChan = roster.filter(r => r.channel === channel && !r.flags?.burned)
+    const CAP = channel === 'walkin' ? 3 : 6
+    const pForm = (seed.generous ? 0.5 : 0.28) + Math.min(0.2, get().notoriety / 500)
+    if (Math.random() > pForm) return
+    let kept = roster
+    if (sameChan.length >= CAP) {
+      // displace the coldest, most-dormant regular on that channel
+      const victim = sameChan.slice().sort((a, b) => (a.trust - b.trust) || (a.lastSeenDay - b.lastSeenDay))[0]
+      kept = roster.filter(r => r.id !== victim.id)
+    }
+    const reg = makeRegular({ ...seed, day: get().currentDay }, kept.map(r => r.name))
+    set({ regulars: [reg, ...kept] })
+    get().log('regular', `${reg.emoji} ${reg.name} liked doing business — now a ${channel === 'walkin' ? 'store regular' : 'regular online buyer'} (${reg.focus.label}).`, 0)
+  },
+
   // --- Forum (public WTB board) ------------------------------------------------
   // Which of your owned cards satisfy a forum post? (same matcher as wants)
   cardsForForumPost(post) { return get().collection.filter(c => cardMatchesWant(c, post)) },
@@ -1650,6 +1702,14 @@ export const useGame = create(persist((set, get) => ({
       default:
         s.addNotoriety(effect.notoriety || 0)
     }
+    // Regulars: a returning regular's choice moves their trust (and tallies their spend);
+    // a great deal with an anonymous walk-up can turn them INTO a regular.
+    if (effect.regularId) {
+      const spent = (effect.type === 'sellOwned' || effect.type === 'counter') ? (effect.price || 0) : 0
+      get().bumpTrust(effect.regularId, effect.trustDelta || 0, spent)
+    } else if (effect.formSeed) {
+      get().formRegular(effect.formSeed)
+    }
     // A sale may have removed a card that a pending inbox order was about — drop
     // any now-stale orders so you never see an offer for a card you no longer own.
     set(st => {
@@ -1755,7 +1815,7 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], distributors: {}, sealedInventory: [], wantList: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], distributors: {}, sealedInventory: [], wantList: [], regulars: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false } })
@@ -1763,7 +1823,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 28,
+  version: 29,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -1978,6 +2038,11 @@ export const useGame = create(persist((set, get) => ({
         const days = GRADING[p.tierKey]?.days ?? 20
         return { ...p, submittedAt: today, readyOnDay: today + days }
       })
+    }
+    if (version < 29) {
+      // Regulars: persistent named customers. Start empty for existing saves — they'll
+      // form naturally from the next good deals (see formRegular).
+      state.regulars = state.regulars ?? []
     }
     return state
   },

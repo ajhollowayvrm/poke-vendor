@@ -14,6 +14,14 @@ export default function Encounter({ data, onPick, onClose }) {
     <div className="modalbg" onClick={() => onClose?.()}>
       <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
         {onClose && <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>}
+        {data.regular && (
+          <div className="regular-banner">
+            <span className="reg-avatar" aria-hidden>{data.regular.emoji}</span>
+            <span><b>{data.regular.name}</b> · <span className="reg-tier">{data.regular.tier}</span>
+              {data.regular.focusLabel && <> · <span className="reg-focus">{data.regular.focusLabel}</span></>}
+            </span>
+          </div>
+        )}
         <h2 style={{ fontSize: 19 }}>{data.title}</h2>
 
         {isTrade ? (

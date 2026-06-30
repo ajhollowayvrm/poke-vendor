@@ -900,6 +900,8 @@ export function gradedValue(card, multOverride) {
     const scarcityBoost = 1 + Math.min(2, rawValue(card, multOverride) / 50)
     value = rawValue(card, multOverride) * mult * (g >= 9 ? scarcityBoost : 1)
   }
+  // Cap below any real higher-grade comp first, then floor above raw / lower comps.
+  value = Math.min(value, gradedCeiling(card, g, multOverride))
   return round2(gradedFloor(card, g, value, multOverride))
 }
 
@@ -919,6 +921,25 @@ function gradedFloor(card, g, value, multOverride) {
     if (c != null && c * m > floor) floor = c * m
   }
   return Math.max(value, floor)
+}
+// The mirror of gradedFloor: a grade is never worth MORE than a higher grade. PSA
+// comps are sparse, so a missing grade falls to the heuristic — and the PSA-9 scarcity
+// heuristic can balloon WAY past a modest real PSA-10 sale (e.g. a $368 raw card whose
+// only comp is PSA-10 $483, but whose heuristic PSA-9 computes to ~$1,988). gradedFloor
+// only pushes values up, so nothing caught that inversion. Here we cap grade g at the
+// nearest HIGHER grade that has a real comp (a trustworthy anchor), scaled down by the
+// typical grade-to-grade value ratio (GRADE_MULT) so the rungs stay spread out. Returns
+// Infinity (no cap) when no higher grade has a real comp — the heuristic stands.
+function gradedCeiling(card, g, multOverride) {
+  const m = cardMult(card, multOverride)
+  for (let higher = g + 1; higher <= 10; higher++) {
+    const c = psaComp(card, higher)
+    if (c != null) {
+      const ratio = (GRADE_MULT[g] ?? 1) / (GRADE_MULT[higher] ?? 1) // < 1 (lower grade)
+      return c * m * Math.min(1, ratio)
+    }
+  }
+  return Infinity
 }
 export function cardValue(card, multOverride) { return card.grade ? gradedValue(card, multOverride) : rawValue(card, multOverride) }
 
@@ -1008,6 +1029,7 @@ export function psaValueAt(card, grade) {
     const scarcityBoost = 1 + Math.min(2, base / 50)
     value = base * mult * (grade >= 9 ? scarcityBoost : 1)
   }
+  value = Math.min(value, gradedCeiling(card, grade))
   return round2(gradedFloor(card, grade, value))
 }
 // Hypothetical PSA-10 value — the headline "if it gemmed" number. Thin wrapper kept for

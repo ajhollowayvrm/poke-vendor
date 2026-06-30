@@ -21,6 +21,7 @@ import SealedInventory from './components/SealedInventory'
 import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
 import Binder from './components/Binder'
+import Regulars from './components/Regulars'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
@@ -68,6 +69,7 @@ export default function App() {
   const addPulls = useGame(s => s.addPulls)
   const pendingCount = useGame(s => s.pendingGrades.length)
   const sealedCount = useGame(s => s.sealedInventory.length)
+  const regularsCount = useGame(s => (s.regulars || []).filter(r => !r.flags?.burned).length)
   // only count orders still valid (card not since sold) so the tab badge matches the list
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
   const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
@@ -320,11 +322,13 @@ export default function App() {
               <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
               <button className={`subtab ${collTab === 'binder' ? 'active' : ''}`} onClick={() => setCollTab('binder')}>📒 Binder</button>
               <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
+              <button className={`subtab ${collTab === 'regulars' ? 'active' : ''}`} onClick={() => setCollTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>
               <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
             </div>
             {collTab === 'cards' && <Collection onPick={setPicked} />}
             {collTab === 'binder' && <Binder onPick={setPicked} />}
             {collTab === 'grader' && <Bench />}
+            {collTab === 'regulars' && <Regulars />}
             {collTab === 'prices' && <PriceGuide />}
           </>
         )}

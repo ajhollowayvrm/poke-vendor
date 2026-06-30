@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -436,7 +436,7 @@ export function makeSealedDeal(channel, notoriety = 0) {
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
-export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null) {
+export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null, regulars = null) {
   const roll = Math.random()
   const online = channel === 'online'
   const walkin = channel === 'walkin'
@@ -445,6 +445,20 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   //   walkin → your shop SHELF (display case — you choose what's out)
   //   show   → your booth table (playerCollection is the show inventory the caller passed)
   const offerPool = online ? (listedCards || []) : walkin ? (shelfCards || []) : playerCollection
+
+  // 0a) A RETURNING REGULAR. Once you've earned a few repeat customers (see store.formRegular),
+  // some visits are a familiar face instead of a stranger — and their encounter is targeted to
+  // what they collect, scaled by how much they trust you. Only on your home turf (online DMs /
+  // store walk-ins) in this phase; show-floor crowds stay anonymous.
+  const homeRoster = (regulars || []).filter(r => r.channel === (walkin ? 'walkin' : 'online') && !r.flags?.burned)
+  if (homeRoster.length && (online || walkin)) {
+    const pReg = Math.min(0.6, homeRoster.length * 0.15) // more regulars → more often it's one of them
+    if (Math.random() < pReg) {
+      const reg = pickRegular(homeRoster)
+      const enc = regularEncounter(reg, offerPool, channel, accepted, notoriety)
+      if (enc) return enc
+    }
+  }
 
   // 0) Inbound sealed-product DEAL — a stranger offers to SELL you sealed below market
   // (sometimes a steal, sometimes a fake). Mostly online; rarer in person. Fires on its
@@ -471,9 +485,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
       card: want,
       options: [
         { text: `${online ? 'Mail' : 'Give'} them the ${want.name} for free`, tone: 'kind',
-          effect: { type: 'giveOwned', uid: want.uid, card: want, notoriety: 6, msg: 'You made their whole week. Word spreads fast.' } },
+          effect: { type: 'giveOwned', uid: want.uid, card: want, notoriety: 6, formSeed: mkSeed(want, channel, true), msg: 'You made their whole week. Word spreads fast.' } },
         { text: `Sell it at cost ($${rawValue(want).toFixed(2)})`, tone: 'fair',
-          effect: { type: 'sellOwned', uid: want.uid, card: want, price: rawValue(want), payMethod: pay, notoriety: 2, msg: 'A fair deal earns quiet respect.' } },
+          effect: { type: 'sellOwned', uid: want.uid, card: want, price: rawValue(want), payMethod: pay, notoriety: 2, formSeed: mkSeed(want, channel, true), msg: 'A fair deal earns quiet respect.' } },
         { text: online ? 'Leave them on read' : 'Shrug — not your problem', tone: 'cold',
           effect: { type: 'none', notoriety: -1, msg: 'They move on. Not a great look.' } },
       ],
@@ -500,7 +514,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
       card: target,
       options: [
         { text: `Accept $${offer.toFixed(2)} (${m})`, tone: good ? 'fair' : 'cold',
-          effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: good ? 1 : 0, msg: good ? 'Clean sale, happy customer.' : 'You took the lowball. Cash is cash.' } },
+          effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: good ? 1 : 0, formSeed: good ? mkSeed(target, channel) : undefined, msg: good ? 'Clean sale, happy customer.' : 'You took the lowball. Cash is cash.' } },
         { text: 'Politely decline', tone: 'fair',
           effect: { type: 'none', notoriety: good ? -1 : 1, msg: good ? 'They leave disappointed.' : 'Holding firm on value builds your reputation.' } },
         ...(good ? [] : [{ text: `Counter at market ($${market.toFixed(2)})`, tone: 'fair',
@@ -538,6 +552,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
               : `Trade (give ${theirs.name}'s side + $${(-cashAdj).toFixed(2)})`,
             tone: fair ? 'fair' : 'cold',
             effect: { type: 'trade', uid: yours.uid, theirs, cashAdj, notoriety: fair ? 1 : 0,
+              formSeed: fair ? mkSeed(yours, channel) : undefined,
               msg: fair ? 'A clean trade — both walk away happy.' : 'You took the deal. Cards are cards.' } },
           { text: 'Pass on the trade', tone: 'fair',
             effect: { type: 'none', notoriety: fair ? -1 : 1, msg: fair ? 'They shrug and move on.' : 'Smart — that swap favored them.' } },
@@ -690,3 +705,169 @@ export function cardMatchesWant(card, want) {
   if (want.kind === 'rarity') return setIdOfCard(card) === want.setId && card.rarity === want.rarity
   return false
 }
+
+// ============================== REGULARS =====================================
+// Persistent, named customers who come back. Each has a collecting FOCUS, a spend
+// BUDGET, and a TRUST meter (0–100) that grows when you deal them fair and dents when
+// you gouge them. They're BORN from treating an anonymous walk-up well (store.formRegular,
+// seeded by the `formSeed` stamped on a good deal's effect). After that they recur instead
+// of a faceless stranger — with offers targeted to what they collect, scaled by how much
+// they trust you. The realization of "whatever you have meets whatever the customer wants."
+
+const REGULAR_NAMES = ['Maya','Diego','Priya','Sam','Tomás','Nina','Reggie','Yuki','Cole','Aisha',
+  'Bran','Lena','Omar','Kira','Theo','Sofia','Wes','Mara','Jin','Hank','Dev','Rosa','Cleo','Marcus']
+const REGULAR_EMOJI = ['🧑','👩','👨','🧓','🧔','👱','🧑‍🦱','👩‍🦰','🧑‍🦰','👨‍🦱','🧑‍🦳','👩‍🦳','🧕','👨‍🦳']
+
+// Archetype shapes how a regular bids and how much they'll spend on one card.
+// `tolerance` mirrors BUYER_SAVVY (the ×-market they'll pay AT FULL TRUST); `budget`
+// caps a single buy so a casual never drops whale money.
+const REGULAR_ARCH = {
+  casual:    { label: 'casual collector',    tolerance: 1.10, budget: 60,    weight: 0.40 },
+  collector: { label: 'serious collector',   tolerance: 1.00, budget: 450,   weight: 0.34 },
+  sharp:     { label: 'sharp buyer',         tolerance: 0.92, budget: 1500,  weight: 0.18 },
+  whale:     { label: 'deep-pocketed whale', tolerance: 1.06, budget: 15000, weight: 0.08 },
+}
+const REGULAR_ARCH_KEYS = Object.keys(REGULAR_ARCH)
+
+// Trust ladder (highest first). trust is 0..100.
+const TRUST_TIERS = [
+  { key: 'vip',          label: 'VIP',          min: 85 },
+  { key: 'friend',       label: 'Friend',       min: 60 },
+  { key: 'regular',      label: 'Regular',      min: 35 },
+  { key: 'acquaintance', label: 'Acquaintance', min: 15 },
+  { key: 'stranger',     label: 'New face',     min: 0  },
+]
+export function trustTier(trust) {
+  return TRUST_TIERS.find(t => (trust ?? 0) >= t.min) || TRUST_TIERS[TRUST_TIERS.length - 1]
+}
+
+function pickWeighted(table, keys) {
+  let r = Math.random()
+  for (const k of keys) { r -= table[k].weight; if (r <= 0) return k }
+  return keys[0]
+}
+// Weight regular selection toward higher-trust customers — your best customers shop most.
+function pickRegular(pool) {
+  const total = pool.reduce((a, r) => a + 1 + (r.trust || 0) / 25, 0)
+  let r = Math.random() * total
+  for (const reg of pool) { r -= 1 + (reg.trust || 0) / 25; if (r <= 0) return reg }
+  return pool[pool.length - 1]
+}
+
+// The seed a good deal leaves behind, from which a regular is built. Stamped on the
+// transacting option's effect; store.formRegular rolls on it after the deal resolves.
+function mkSeed(card, channel, generous = false) {
+  return { channel, setId: setIdOfCard(card), setName: setNameOfCard(card), cardName: card.name, rarity: card.rarity, generous }
+}
+
+// Build a collecting focus from the card that won them over. A set-focus is robust and
+// always matchable ("building <set>"); a high-rarity seed makes them hunt that tier in the set.
+function makeFocus(seed) {
+  const set = setById(seed.setId)
+  const setName = set?.name || seed.setName || 'modern sets'
+  if (seed.rarity && rarityRank(seed.rarity) >= rarityRank('Illustration Rare') && seed.setId) {
+    return { kind: 'rarity', setId: seed.setId, rarity: seed.rarity, setName, label: `hunting ${seed.rarity}s from ${setName}` }
+  }
+  if (seed.setId) return { kind: 'set', setId: seed.setId, setName, label: `building ${setName}` }
+  return { kind: 'any', label: 'hunting good deals' }
+}
+
+// Turn a deal-seed into a fresh regular. `taken` = names already in the roster (avoid dupes).
+export function makeRegular(seed, taken = []) {
+  const archKey = pickWeighted(REGULAR_ARCH, REGULAR_ARCH_KEYS)
+  const arch = REGULAR_ARCH[archKey]
+  const free = REGULAR_NAMES.filter(n => !taken.includes(n))
+  const name = wpick(free.length ? free : REGULAR_NAMES)
+  return {
+    id: `r${Math.floor(Math.random() * 1e9).toString(36)}`,
+    name,
+    emoji: wpick(REGULAR_EMOJI),
+    channel: seed.channel === 'walkin' ? 'walkin' : 'online', // show acquaintances become online DMs
+    archetype: archKey,
+    archLabel: arch.label,
+    focus: makeFocus(seed),
+    budget: arch.budget,
+    trust: seed.generous ? 26 : 18,   // a generous first meeting starts you off warmer
+    visits: 1,
+    spentTotal: 0,
+    lastSeenDay: seed.day ?? 1,
+    flags: {},
+  }
+}
+
+// Does a card fit a regular's focus? (Slabs DO count — collectors buy graded too.)
+export function cardMatchesFocus(card, focus) {
+  if (!focus) return false
+  if (focus.kind === 'set') return setIdOfCard(card) === focus.setId
+  if (focus.kind === 'rarity') return setIdOfCard(card) === focus.setId && rarityRank(card.rarity) >= rarityRank(focus.rarity)
+  if (focus.kind === 'any') return true
+  return false
+}
+
+// Build an encounter for a returning regular against your current sell pool. If you hold
+// something in their lane, they make a TARGETED offer (generosity scales with trust, capped
+// by budget); otherwise they check in / browse and mention what they're still after.
+export function regularEncounter(regular, offerPool, channel, accepted, notoriety) {
+  const tier = trustTier(regular.trust)
+  const regTag = { id: regular.id, name: regular.name, emoji: regular.emoji, tier: tier.label, focusLabel: regular.focus?.label }
+  const pay = pickPayMethod(channel, accepted)
+  const m = PAY_LABEL(pay)
+  const arch = REGULAR_ARCH[regular.archetype] || REGULAR_ARCH.collector
+
+  const matches = (offerPool || []).filter(c => cardMatchesFocus(c, regular.focus))
+  if (matches.length) {
+    // They want your best piece in their lane.
+    const target = matches.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
+    const market = cardValue(target)
+    // trust 0→1.2, full trust lifts their tolerance; low trust drags it into lowball land.
+    const trustFactor = 0.6 + 0.6 * ((regular.trust || 0) / 100)
+    const mult = Math.max(0.45, Math.min(1.4, arch.tolerance * trustFactor + (Math.random() - 0.5) * 0.08))
+    const offer = round2(Math.min(market * mult, regular.budget))
+    const fair = offer >= market * 0.9
+    const capped = offer >= regular.budget - 0.005 && market * mult > regular.budget // budget-limited
+    return {
+      kind: 'offer',
+      regular: regTag,
+      ownedUid: target.uid,
+      title: `${regular.emoji} ${regular.name} (${tier.label}) is back`,
+      body: capped
+        ? `"Love that ${target.name} — it's perfect for ${regular.focus.label}. I can't go higher than $${offer.toFixed(2)} though, that's my ceiling. ${cap(m)}?" (Market: $${market.toFixed(2)})`
+        : fair
+          ? `"You've got a ${target.name}! Exactly what I need — I'm ${regular.focus.label}. $${offer.toFixed(2)} by ${m}, sound fair?" (Market: $${market.toFixed(2)})`
+          : `"That ${target.name} fits ${regular.focus.label}… I'll give you $${offer.toFixed(2)} for it, ${m}." (Market: $${market.toFixed(2)})`,
+      card: target,
+      options: [
+        { text: `Accept $${offer.toFixed(2)} (${m})`, tone: fair ? 'fair' : 'cold',
+          effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay,
+            notoriety: fair ? 1 : 0, regularId: regular.id, trustDelta: fair ? 5 : 2,
+            msg: fair ? `${regular.name} is thrilled — another piece toward ${regular.focus.label}.` : `${regular.name} got a deal. They'll remember it.` } },
+        ...(!fair ? [{ text: `Counter at market ($${market.toFixed(2)})`, tone: 'fair',
+          effect: { type: 'counter', uid: target.uid, price: market, payMethod: pay, chance: 0.5 + Math.min(0.4, (regular.trust || 0) / 150),
+            notoriety: 1, regularId: regular.id, trustDelta: 3,
+            msg: `${regular.name} respects you holding value — pays fair.` } }] : []),
+        { text: 'Politely decline', tone: 'fair',
+          effect: { type: 'none', regularId: regular.id, trustDelta: fair ? -4 : 0, notoriety: fair ? -1 : 0,
+            msg: fair ? `${regular.name} is let down — they thought you two had a rapport.` : `${regular.name} shrugs; no hard feelings on a lowball.` } },
+      ],
+    }
+  }
+
+  // Nothing in their lane right now — they check in and browse what you do have.
+  const pool = online_(channel) ? 'listings' : channel === 'walkin' ? 'shop' : 'show'
+  return {
+    kind: 'browse',
+    regular: regTag,
+    title: `${regular.emoji} ${regular.name} (${tier.label}) checks in`,
+    body: `"Hey! Still ${regular.focus?.label || 'on the hunt'} — got anything new for me? I'll take a look around."`,
+    card: null,
+    options: [
+      { text: 'Show them around', tone: 'kind',
+        effect: { type: 'browseSale', pool, payMethod: pay, chance: 0.4 + Math.min(0.4, (regular.trust || 0) / 150),
+          notoriety: 1, regularId: regular.id, trustDelta: 2, msg: `${regular.name} appreciates the attention.` } },
+      { text: 'Let them browse', tone: 'fair',
+        effect: { type: 'browseSale', pool, payMethod: pay, chance: 0.25,
+          regularId: regular.id, trustDelta: 1, msg: `${regular.name} has a look around.` } },
+    ],
+  }
+}
+function online_(channel) { return channel === 'online' }
