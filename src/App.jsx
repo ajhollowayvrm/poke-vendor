@@ -104,11 +104,20 @@ export default function App() {
   // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses
   // that to rip immediately (the old instant-rip behaviour); the "Auto-rip" pacing toggle
   // does NOT, so turning on auto-advance no longer silently skips the inventory.
-  function buyProduct(distId, set, product) {
+  function buyProduct(distId, set, product, qty = 1) {
     // The Buy UI passes `_buyPrice` = the actual charged price (the distributor's price
     // at your rapport, a case lot, or a clearance lot), so shown == charged.
     const price = product._buyPrice ?? product.price
     if (cash < price) return toast(`Not enough cash for ${product.type}.`)
+    const n = Math.max(1, Math.floor(qty))
+    if (n > 1) {
+      // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
+      const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n)
+      if (!res) return toast(`${distributorById(distId)?.name || 'They'} can't fill that order right now.`)
+      setShopTab('inventory')
+      const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
+      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${short} — in 📦 Inventory.`)
+    }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price)
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
@@ -601,28 +610,47 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance }) {
 
 // A single buyable product line with live stock. Prices at your rapport, draws the stock
 // bar, and disables itself when sold out (with a restock ETA) or you can't afford it.
+// A quantity stepper lets you buy several at once (type "10" → ten ETBs in one purchase),
+// capped to what's in stock and what you can afford.
 function StockButton({ dist, set, product, lvl, stock, cash, onBuy }) {
   let price
   if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
   else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level) * 0.65)
   else price = distributorPrice(dist, product.price, lvl.level)
 
-  const { q: qty, cap, out } = stockState(dist, stock, set, product, lvl.level)
-  const days = out ? daysToRestock(dist, qty, cap) : 0
+  const { q: stockQty, cap, out } = stockState(dist, stock, set, product, lvl.level)
+  const days = out ? daysToRestock(dist, stockQty, cap) : 0
+  // How many you can buy right now: at least 1 if in stock, capped by stock and your cash.
+  const affordable = price > 0 ? Math.floor(cash / price) : 999
+  const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable))
+
+  const [buyQty, setBuyQty] = useState(1)
+  const qN = Math.min(Math.max(1, Math.floor(buyQty) || 1), Math.max(1, maxBuy))
+  const clampSet = (v) => setBuyQty(Math.min(Math.max(1, Math.floor(v) || 1), Math.max(1, maxBuy)))
+  const canBuy = !out && maxBuy >= 1
 
   const retail = product._clearance ? product._clearanceOf : product._case ? product._retail : product.price
   const showStrike = price < (retail || 0) - 0.005
+  const total = round2(price * qN)
 
   return (
-    <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''}`}
-      disabled={out || cash < price}
-      onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id })}
-      title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(qty)}/${cap} in stock`}>
-      <span className="prodname">{product.icon} {product.type}</span>
-      <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
-      <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{fmtMoney(price)}</span>
-      <StockBar qty={qty} cap={cap} out={out} days={days} color={dist.color} />
-    </button>
+    <div className="prodrow">
+      <div className="qty-ctl" aria-label="quantity">
+        <button type="button" className="qty-step" disabled={!canBuy || qN <= 1} onClick={() => clampSet(qN - 1)} aria-label="fewer">−</button>
+        <input type="number" min="1" max={Math.max(1, maxBuy)} value={qN} disabled={!canBuy}
+          onChange={e => clampSet(Number(e.target.value))} onFocus={e => e.target.select()} aria-label="quantity" />
+        <button type="button" className="qty-step" disabled={!canBuy || qN >= maxBuy} onClick={() => clampSet(qN + 1)} aria-label="more">+</button>
+      </div>
+      <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''}`}
+        disabled={!canBuy}
+        onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN)}
+        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now`}>
+        <span className="prodname">{product.icon} {product.type}</span>
+        <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
+        <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}</span>
+        <StockBar qty={stockQty} cap={cap} out={out} days={days} color={dist.color} />
+      </button>
+    </div>
   )
 }
 

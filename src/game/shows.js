@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -176,6 +176,19 @@ function boothSealed(r, arch) {
     const base = (pool.length ? pickR(r, pool) : pickR(r, prods))
     const markup = 1.12 + r() * (isWhale ? 0.33 : 0.18) // ~1.12–1.45×; whales mark up more
     out.push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
+  }
+  // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fates Collide, the Zygarde /
+  // Mega Gyarados boxes…) you "can still kinda find." More common than the vintage Vault —
+  // a vendor often has an old ETB / box / tin on the table — at a collector's markup over its
+  // (already appreciated) market price. The full lineup is eligible, so you might score a box.
+  if (SECONDARY_SETS.length && r() < 0.22) {
+    const sSet = pickR(r, SECONDARY_SETS)
+    const prods = setProducts(sSet)
+    const product = prods.length ? prods[Math.floor(r() * prods.length)] : null
+    if (product) {
+      const markup = 1.10 + r() * 0.25 // ~1.10–1.35×: a markup, but these are finds, not gouges
+      out.push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' })
+    }
   }
   // A surprise vintage sealed pack on a regular table (~10%, any booth at any show — you
   // never know who's sitting on an old pack). Rarer than modern, but it's everywhere.

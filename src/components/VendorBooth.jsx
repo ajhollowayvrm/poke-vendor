@@ -186,13 +186,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
             <div className="showcase-head">📦 Sealed product <span className="muted">— buy to rip on the floor or stock &amp; hold (vendor markup applies)</span></div>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))' }}>
               {sealed.map((entry, idx) => (
-                <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''}`}>
+                <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''}`}>
                   {entry.set.logo && <img src={entry.set.logo} alt={entry.set.name} style={{ height: 34, objectFit:'contain', alignSelf:'center' }} />}
                   <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>
                     {entry._origin === 'vintage' ? '🗝️ ' : entry.product.icon + ' '}{entry.product.type}
                   </div>
                   <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>
                     {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
+                    {entry._origin === 'aftermarket' ? ' · 🕰️ older sealed' : ''}
                   </div>
                   <div className="askrow" style={{ justifyContent:'center' }}><span className="ask">{fmtMoney(entry._ask)}</span></div>
                   <button className="btn gold" disabled={cash < entry._ask} onClick={() => setPendingSealed(entry)}>

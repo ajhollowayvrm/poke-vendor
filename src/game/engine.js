@@ -25,9 +25,14 @@ export function preloadCardImages(cards) {
 
 // Sets sold in the normal shop (excludes `vintage` sets, which only appear via the
 // rare "Vintage Vault" vendor at higher-tier shows).
-export const SHOP_SETS = data.sets.filter(s => !s.vintage)
+// Modern, in-print product the distributors sell fresh. Excludes vintage (Vault-only) AND
+// secondary (older "aftermarket" sets you find rather than buy fresh — see SECONDARY_SETS).
+export const SHOP_SETS = data.sets.filter(s => !s.vintage && !s.secondary)
 // Vintage sets, keyed for the Vault vendor. The Vault sells these heavy old packs.
 export const VINTAGE_SETS = data.sets.filter(s => s.vintage)
+// Aftermarket / "still findable" older sets (SM + XY era). Not sold by modern distributors;
+// they surface as finds at show-floor booths (full product lineups, at a collector's markup).
+export const SECONDARY_SETS = data.sets.filter(s => s.secondary)
 export function vintageProduct(set) {
   return (set.products || []).find(p => p.vintage) || setProducts(set)[0]
 }

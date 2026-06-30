@@ -5,7 +5,7 @@ import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier
   distributorById, rapportLevel, distributorPrice, restockRate, stockKey, stockState,
   SETS, ownedIdSet, setCompletion, completionReward,
   setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS,
-  VINTAGE_SETS, driftMultVintage, sealedValue, sealedCard, SEALED_FLIP_RATE, setById } from './engine'
+  VINTAGE_SETS, SECONDARY_SETS, driftMultVintage, sealedValue, sealedCard, SEALED_FLIP_RATE, setById } from './engine'
 import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid, makeRegular } from './shows'
 import { fatigueMult } from './stream'
 
@@ -263,6 +263,8 @@ function driftMarket(mults, history, days, log) {
     for (const s of SHOP_SETS) next[s.id] = driftMult(next[s.id])
     // vintage sealed trends upward (finite, shrinking supply) — its own drift, no revert.
     for (const s of VINTAGE_SETS) next[s.id] = driftMultVintage(next[s.id])
+    // aftermarket (older SM/XY) sealed also appreciates as supply dries up — same upward drift.
+    for (const s of SECONDARY_SETS) next[s.id] = driftMultVintage(next[s.id])
     // at most one event per day, on a random shop set
     if (Math.random() < MARKET_EVENT_CHANCE) {
       const s = SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]
@@ -277,6 +279,9 @@ function driftMarket(mults, history, days, log) {
     hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
   }
   for (const s of VINTAGE_SETS) {
+    hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
+  }
+  for (const s of SECONDARY_SETS) {
     hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
   }
   setMarketMults(next) // pricing engine reads this synchronously
@@ -1006,6 +1011,54 @@ export const useGame = create(persist((set, get) => ({
       }
     })
     return item
+  },
+  // Buy UP TO `qty` of a product from a distributor in ONE purchase (no clicking N times).
+  // Clamps to what's actually in stock and what you can afford, charges the total once,
+  // stocks each unit, decrements their shelf by the amount bought, and bumps rapport once.
+  // Returns { items, bought, spent, unit } or null if not even one could be bought.
+  buyFromDistributorBulk(distId, pokeSet, product, price, qty) {
+    const dist = distributorById(distId)
+    if (!dist) return null
+    const want = Math.max(1, Math.floor(qty || 1))
+    const rec = get().distributorRec(distId)
+    const level = rapportLevel(rec.spend).level
+    const key = stockKey(pokeSet, product)
+    const st = stockState(dist, rec.stock, pokeSet, product, level)
+    const unit = round2(price ?? product._buyPrice ?? product.price ?? 0)
+    // !out means at least one whole unit is buyable (mirrors the single-buy semantics).
+    const inStock = st.out ? 0 : Math.max(1, Math.floor(st.q))
+    const affordable = unit > 0 ? Math.floor(get().cash / unit) : want
+    const n = Math.min(want, inStock, affordable)
+    if (n < 1) return null
+    const total = round2(unit * n)
+    if (!get().spend(total)) return null
+    get().recordSetSpend(pokeSet.id, total)
+    const day = absoluteDay(get().currentDay, get().monthsElapsed)
+    const items = []
+    for (let i = 0; i < n; i++) {
+      items.push({
+        uid: `s${Date.now().toString(36)}${(_sealedSeq++).toString(36)}`,
+        setId: pokeSet.id, product: { ...product },
+        boughtDay: day, boughtPrice: unit, vintage: !!pokeSet.vintage,
+      })
+    }
+    set(s => {
+      const cur = s.distributors[distId] || { spend: 0, stock: {} }
+      const cst = stockState(dist, cur.stock, pokeSet, product, level) // fresh; cap ratchets w/ rapport
+      return {
+        sealedInventory: [...items, ...(s.sealedInventory || [])],
+        distributors: {
+          ...s.distributors,
+          [distId]: {
+            spend: round2((cur.spend || 0) + total),
+            stock: { ...cur.stock, [key]: { q: Math.max(0, cst.q - n), cap: cst.cap } },
+          },
+        },
+      }
+    })
+    get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}`, -total)
+    get().bumpGoal('buy', n)
+    return { items, bought: n, spent: total, unit }
   },
   // Wholesale a sealed product into the channel: pay your wholesale cost now, and it
   // sells through to other shops over a few days for a markup (passive income). You buy

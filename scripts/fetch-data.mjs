@@ -43,6 +43,21 @@ const EN_SETS = [
   { id: 'cel25',    name: 'Celebrations' },
   { id: 'g1',       name: 'Generations' },
   { id: 'sv3pt5',   name: '151' },
+  // aftermarket (find-only) — older sealed you "can still kinda find": not sold fresh by
+  // modern distributors, surfaced as secondary-market finds (shows / aftermarket source).
+  // Full product lineups (unlike the single-pack vintage Vault sets).
+  { id: 'sm9',    name: 'Team Up',         secondary: true },
+  { id: 'sm115',  name: 'Hidden Fates',    secondary: true },
+  { id: 'sm10',   name: 'Unbroken Bonds',  secondary: true },
+  { id: 'sm11',   name: 'Unified Minds',   secondary: true },
+  { id: 'sm12',   name: 'Cosmic Eclipse',  secondary: true },
+  { id: 'sm8',    name: 'Lost Thunder',    secondary: true },
+  { id: 'xy12',   name: 'Evolutions',      secondary: true },
+  { id: 'xy10',   name: 'Fates Collide',   secondary: true },
+  { id: 'xy11',   name: 'Steam Siege',     secondary: true },
+  { id: 'xy9',    name: 'BREAKpoint',      secondary: true },
+  { id: 'xy8',    name: 'BREAKthrough',    secondary: true },
+  { id: 'xy6',    name: 'Roaring Skies',   secondary: true },
   // vintage (sold only via the Vintage Vault) — most desirable older chase sets
   { id: 'ex15',    name: 'EX Dragon Frontiers',    vintage: true },
   { id: 'ex7',     name: 'EX Team Rocket Returns', vintage: true },
@@ -72,6 +87,17 @@ const EN_RARITY_MAP = {
   'Rare Holo VMAX': 'Ultra Rare',          // SWSH-era VMAX (Celebrations reprints) — chase tier
   'Radiant Rare':   'Ultra Rare',          // SWSH Radiant — same era, map preemptively
   'Classic Collection': 'Special Illustration Rare', // Celebrations Classic reprints (Base Zard etc.)
+  // SM / XY-era chases (aftermarket sets: Team Up, Hidden Fates, Evolutions, Fates Collide…)
+  'Rare Holo GX':   'Ultra Rare',          // SM GX full-bodies
+  'Rare Rainbow':   'Hyper Rare',          // SM rainbow-rare secret
+  'Rare Holo LV.X': 'Ultra Rare',
+  'Rare BREAK':     'Ultra Rare',          // XY BREAK cards
+  'Rare Shining':   'Hyper Rare',
+  'Rare Shiny':     'Special Illustration Rare',   // Hidden Fates Shiny Vault
+  'Rare Shiny GX':  'Hyper Rare',          // Shiny Vault GX
+  'Rare Prime':     'Ultra Rare',
+  'Rare ACE':       'Ultra Rare',
+  'LEGEND':         'Hyper Rare',
   // Mega-era JP-style rarity names
   'Art Rare':         'Illustration Rare',
   'Special Art Rare': 'Special Illustration Rare',
@@ -107,6 +133,19 @@ const SET_GROUP = {
   me2pt5:   24541, // Ascended Heroes
   me3:      24587, // Perfect Order
   me4:      24655, // Chaos Rising
+  // aftermarket (find-only) older sets — TCGplayer group ids for sealed products + price fallback
+  sm9:     2377,   // SM Team Up
+  sm115:   2480,   // Hidden Fates
+  sm10:    2420,   // SM Unbroken Bonds
+  sm11:    2464,   // SM Unified Minds
+  sm12:    2534,   // SM Cosmic Eclipse
+  sm8:     2328,   // SM Lost Thunder
+  xy12:    1842,   // XY Evolutions
+  xy10:    1780,   // XY Fates Collide (Mega Zygarde-EX product line)
+  xy11:    1815,   // XY Steam Siege
+  xy9:     1701,   // XY BREAKpoint
+  xy8:     1661,   // XY BREAKthrough
+  xy6:     1534,   // XY Roaring Skies
   // vintage sets — used for sealed products + singles price fallback
   ex15:    1411,   // EX Dragon Frontiers
   ex7:     1428,   // EX Team Rocket Returns
@@ -124,18 +163,24 @@ const SET_GROUP = {
 // (cases, code cards, singles, display cases, accessories).
 function classifyProduct(name) {
   const n = name.toLowerCase()
-  // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs.
-  if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|\bpin\b|pin collection|figure collection|art bundle|accessory|exclusive|\bcase\b/.test(n)) return null
+  // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs, and —
+  // for older sets — fixed THEME/THUNDER decks (no booster packs) and loose energy singles.
+  if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|\bpin\b|pin collection|figure collection|art bundle|accessory|exclusive|theme deck|\bdeck\b|\benergy\b|unnumbered/.test(n)) return null
   if (/super-premium collection$/.test(n))  return { type: 'Super-Premium Collection', icon: '🏆', packs: 15, bonus: 'promo' }
   if (/premium .*collection$|premium figure collection$/.test(n)) return { type: 'Premium Collection', icon: '💎', packs: 7, bonus: 'promo' }
+  if (/build (&|and) battle/.test(n))       return { type: 'Build & Battle Box', icon: '⚔️', packs: 4, bonus: 'promo' }
   if (/elite trainer box$/.test(n))         return { type: 'Elite Trainer Box', icon: '📦', packs: 9, bonus: 'promo' }
   if (/booster box$/.test(n))               return { type: 'Booster Box', icon: '🗃️', packs: 36, bonus: null }
   if (/booster bundle$/.test(n))            return { type: 'Booster Bundle', icon: '🎟️', packs: 6, bonus: null }
   if (/surprise box$/.test(n))              return { type: 'Surprise Box', icon: '🎁', packs: 8, bonus: 'promo' }
   if (/mini tin/.test(n))                   return { type: 'Mini Tin', icon: '🥫', packs: 2, bonus: 'promo' }
+  // GX/EX-era collector TINS (Team Up TAG TEAM tin, Triple Power tin, etc.): ~3 packs + a promo.
+  if (/\btin\b/.test(n))                    return { type: 'Tin', icon: '🥫', packs: 3, bonus: 'promo' }
   // Real SV 3-pack blisters ship a fixed coin/energy/checklane card, not a hit-tier promo.
   if (/3-pack blister|three pack blister/.test(n)) return { type: '3-Pack Blister', icon: '🪟', packs: 3, bonus: null }
   if (/2-pack blister|two pack blister/.test(n))   return { type: '2-Pack Blister', icon: '🪟', packs: 2, bonus: 'promo' }
+  // A single-pack blister: one booster + a fixed promo card.
+  if (/single pack blister|1-pack blister|single booster/.test(n)) return { type: 'Blister', icon: '🪟', packs: 1, bonus: 'promo' }
   if (/sleeved booster( pack)?$|checklane/.test(n))   return { type: 'Sleeved Pack', icon: '🛡️', packs: 1, bonus: null }
   // "<Pokémon> ex Box" / "V Box" / "VMAX Box" — a small box built around a chase card.
   if (/\bex box$|\bv box$|\bvmax box$|\bvstar box$/.test(n)) return { type: 'ex Box', icon: '🎁', packs: 4, bonus: 'promo' }
@@ -555,10 +600,18 @@ async function main() {
     console.log(`Loaded ${Object.keys(psaMap).length} prior PSA comps from sets.json.`)
   } catch { console.log('No existing sets.json — starting fresh (no prior PSA comps).') }
 
-  console.log(`Fetching ${EN_SETS.length} English sets from pokemontcg.io + TCGCSV…`)
+  // Scoped fetch: ONLY=sm9,xy10,… fetches just those sets. MERGE=1 appends/replaces them
+  // into the EXISTING sets.json (preserving every other set + its prices) instead of
+  // rewriting the whole snapshot — used to ADD sets without re-pricing the rest.
+  const onlyIds = (process.env.ONLY || '').split(',').map(s => s.trim()).filter(Boolean)
+  const mergeMode = process.env.MERGE === '1' || onlyIds.length > 0
+  const setsToFetch = onlyIds.length ? EN_SETS.filter(s => onlyIds.includes(s.id)) : EN_SETS
+  if (onlyIds.length) console.log(`Scoped fetch: ${setsToFetch.map(s => s.id).join(', ')} (MERGE=${mergeMode ? 'on' : 'off'})`)
+
+  console.log(`Fetching ${setsToFetch.length} English sets from pokemontcg.io + TCGCSV…`)
 
   const out = []
-  for (const cfg of EN_SETS) {
+  for (const cfg of setsToFetch) {
     console.log(`  ${cfg.name} (${cfg.id})…`)
     const { cards, products: rawProducts, meta } = await fetchEnglishSet(cfg, psaMap)
 
@@ -599,18 +652,39 @@ async function main() {
       logo: meta.images?.logo,
       symbol: meta.images?.symbol,
       vintage: cfg.vintage || undefined,
+      secondary: cfg.secondary || undefined,
       cards,
       products,
     })
     await new Promise(r => setTimeout(r, 200))
   }
 
+  // In merge mode, fold the freshly-fetched sets into the existing snapshot: replace any
+  // with the same id, append the new ones, and KEEP all others (and the top-level meta).
+  let finalSets = out
+  let prevMeta = null
+  if (mergeMode) {
+    try {
+      const here = dirname(fileURLToPath(import.meta.url))
+      prevMeta = JSON.parse(await readFile(join(here, '../src/data/sets.json'), 'utf8'))
+      const fetchedIds = new Set(out.map(s => s.id))
+      const kept = (prevMeta.sets || []).filter(s => !fetchedIds.has(s.id))
+      finalSets = [...kept, ...out]
+      console.log(`Merge: kept ${kept.length} existing set(s), added/updated ${out.length}.`)
+    } catch { console.log('Merge requested but no existing sets.json — writing fresh.') }
+  }
+
   await mkdir('src/data', { recursive: true })
-  await writeFile('src/data/sets.json', JSON.stringify({ fetchedAt: new Date().toISOString(), rareSlot: RARE_SLOT, reverseSlot: REVERSE_SLOT, sets: out }, null, 0))
-  const totalCards = out.reduce((a, s) => a + s.cards.length, 0)
-  const totalProd = out.reduce((a, s) => a + (s.products?.length || 0), 0)
-  const totalPsa = out.reduce((a, s) => a + s.cards.filter(c => c.psa).length, 0)
-  console.log(`Wrote src/data/sets.json — ${out.length} sets, ${totalCards} cards, ${totalProd} sealed products, ${totalPsa} cards w/ PSA comps.`)
+  await writeFile('src/data/sets.json', JSON.stringify({
+    fetchedAt: new Date().toISOString(),
+    rareSlot: prevMeta?.rareSlot || RARE_SLOT,
+    reverseSlot: prevMeta?.reverseSlot || REVERSE_SLOT,
+    sets: finalSets,
+  }, null, 0))
+  const totalCards = finalSets.reduce((a, s) => a + s.cards.length, 0)
+  const totalProd = finalSets.reduce((a, s) => a + (s.products?.length || 0), 0)
+  const totalPsa = finalSets.reduce((a, s) => a + s.cards.filter(c => c.psa).length, 0)
+  console.log(`Wrote src/data/sets.json — ${finalSets.length} sets, ${totalCards} cards, ${totalProd} sealed products, ${totalPsa} cards w/ PSA comps.`)
 }
 
 main().catch(e => { console.error(e); process.exit(1) })
