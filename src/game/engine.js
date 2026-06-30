@@ -899,9 +899,11 @@ export function gradedValue(card, multOverride) {
     // higher base-value cards see bigger grade premiums (gem mint chase)
     const scarcityBoost = 1 + Math.min(2, rawValue(card, multOverride) / 50)
     value = rawValue(card, multOverride) * mult * (g >= 9 ? scarcityBoost : 1)
+    // A HEURISTIC grade must not overshoot a real higher-grade comp (real comps are
+    // already monotonic from the snapshot's sanitize pass — only the heuristic can
+    // invert the ladder). Real comps are trusted as-is and never capped here.
+    value = Math.min(value, gradedCeiling(card, g, multOverride))
   }
-  // Cap below any real higher-grade comp first, then floor above raw / lower comps.
-  value = Math.min(value, gradedCeiling(card, g, multOverride))
   return round2(gradedFloor(card, g, value, multOverride))
 }
 
@@ -922,14 +924,14 @@ function gradedFloor(card, g, value, multOverride) {
   }
   return Math.max(value, floor)
 }
-// The mirror of gradedFloor: a grade is never worth MORE than a higher grade. PSA
-// comps are sparse, so a missing grade falls to the heuristic — and the PSA-9 scarcity
-// heuristic can balloon WAY past a modest real PSA-10 sale (e.g. a $368 raw card whose
-// only comp is PSA-10 $483, but whose heuristic PSA-9 computes to ~$1,988). gradedFloor
-// only pushes values up, so nothing caught that inversion. Here we cap grade g at the
-// nearest HIGHER grade that has a real comp (a trustworthy anchor), scaled down by the
-// typical grade-to-grade value ratio (GRADE_MULT) so the rungs stay spread out. Returns
-// Infinity (no cap) when no higher grade has a real comp — the heuristic stands.
+// Ceiling for a HEURISTIC grade only (real comps are trusted as-is). PSA comps are sparse,
+// so a missing grade falls to the heuristic — and the PSA-9 scarcity heuristic can balloon
+// WAY past a modest real PSA-10 sale (e.g. a card whose only comp is PSA-10 $985, but whose
+// heuristic PSA-9 computes to ~$1,988). gradedFloor only pushes values up, so nothing caught
+// that inversion. Here we cap a heuristic grade g at the nearest HIGHER grade that has a real
+// comp (a trustworthy anchor), scaled down by the typical grade-to-grade ratio (GRADE_MULT)
+// so the rungs stay spread out. Returns Infinity (no cap) when no higher grade has a real
+// comp — the heuristic stands (a low-pop gem can legitimately be worth many multiples of raw).
 function gradedCeiling(card, g, multOverride) {
   const m = cardMult(card, multOverride)
   for (let higher = g + 1; higher <= 10; higher++) {
@@ -1028,8 +1030,9 @@ export function psaValueAt(card, grade) {
     // higher base-value cards see a bigger grade premium (gem-mint chase), gated to 9+
     const scarcityBoost = 1 + Math.min(2, base / 50)
     value = base * mult * (grade >= 9 ? scarcityBoost : 1)
+    // heuristic-only: don't let it overshoot a real higher-grade comp (see gradedValue).
+    value = Math.min(value, gradedCeiling(card, grade))
   }
-  value = Math.min(value, gradedCeiling(card, grade))
   return round2(gradedFloor(card, grade, value))
 }
 // Hypothetical PSA-10 value — the headline "if it gemmed" number. Thin wrapper kept for
