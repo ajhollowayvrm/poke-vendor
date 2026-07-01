@@ -448,49 +448,109 @@ function GameClock() {
   )
 }
 
-// Per-day summary — shown after clicking "Next Day".
+// Per-day summary — shown after clicking "Next Day". A satisfying end-of-day recap: the
+// headline net-cash + net-worth, what actually SOLD (with the biggest sale called out),
+// how the market moved, new collectors who found you, and the overhead that hit.
 function DaySummary({ summary, onClose }) {
-  const { cashDelta, added, listingsSold, listingOffers, wages, rent, lease, payroll, resolvedGrades,
-    saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName } = summary
+  const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
+    resolvedGrades, saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName,
+    soldNames, bigSale, newWants, marketMovers, netWorth } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
+  const movers = marketMovers || []
+  const sold = soldNames || []
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || wages || rent || lease
-    || payroll || saleProceeds || notoDelta || missed
+    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
   const multiDay = days > 1
   return (
     <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 2 }}>{showName ? `🎪 Back from ${showName}` : `📅 Day ${currentDay}`}</h2>
-        {multiDay && <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>{days} days passed</div>}
-        {!hasActivity ? (
-          <p className="muted" style={{ marginTop: 0 }}>{multiDay ? 'Nothing stirred while you were away.' : 'A quiet day.'}</p>
-        ) : (
-          <div style={{ fontSize: 14, margin: '8px 0', textAlign: 'left' }}>
-            {cashDelta != null && (
-              <div style={{ marginBottom: 6 }}>Net cash <b style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}</b></div>
-            )}
-            {saleProceeds > 0 && <div className="muted">Sales income +{fmtMoney(saleProceeds)}</div>}
-            {notoDelta > 0 && <div className="muted">Notoriety <b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b></div>}
-            {added > 0 && <div className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</div>}
-            {listingsSold > 0 && <div className="muted">{listingsSold} listing{listingsSold === 1 ? '' : 's'} sold</div>}
-            {listingOffers > 0 && <div className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</div>}
-            {resolvedGrades > 0 && <div className="muted">{resolvedGrades} card{resolvedGrades === 1 ? '' : 's'} returned from grading</div>}
-            {wages > 0 && <div className="muted">Wages earned +{fmtMoney(wages)}</div>}
-            {rent > 0 && <div className="muted">Rent paid -{fmtMoney(rent)}</div>}
-            {lease > 0 && <div className="muted">Store lease -{fmtMoney(lease)}</div>}
-            {payroll > 0 && <div className="muted">Staff payroll -{fmtMoney(payroll)}</div>}
-            {missed > 0 && (
-              <div style={{ color: 'var(--red)', marginTop: 4 }}>
-                Missed {missed} order{missed === 1 ? '' : 's'} while away
-                <span className="muted"> ({missedOnline ? `${missedOnline} online` : ''}{missedOnline && missedWalkin ? ', ' : ''}{missedWalkin ? `${missedWalkin} walk-in` : ''})</span>
+      <div className="modal recap" onClick={e => e.stopPropagation()} style={{ maxWidth: 430 }}>
+        <h2 style={{ marginBottom: 2, textAlign: 'center' }}>{showName ? `🎪 Back from ${showName}` : `📅 Day ${currentDay}`}</h2>
+        {multiDay && <div className="muted" style={{ fontSize: 13, marginBottom: 6, textAlign: 'center' }}>{days} days passed</div>}
+
+        {/* Headline: net cash for the day + current net worth */}
+        {cashDelta != null && (
+          <div className="recap-headline">
+            <div>
+              <div className="recap-h-label">Net cash</div>
+              <div className="recap-h-val" style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}
+              </div>
+            </div>
+            {netWorth != null && (
+              <div style={{ textAlign: 'right' }}>
+                <div className="recap-h-label">Net worth</div>
+                <div className="recap-h-val" style={{ fontSize: 20 }}>{fmtMoney(netWorth)}</div>
               </div>
             )}
           </div>
         )}
-        <button className="btn gold" style={{ maxWidth: 160, marginTop: 8 }} onClick={onClose}>Continue</button>
+
+        {!hasActivity ? (
+          <p className="muted" style={{ marginTop: 4, textAlign: 'center' }}>{multiDay ? 'Nothing stirred while you were away.' : 'A quiet day. Nothing moved.'}</p>
+        ) : (
+          <div className="recap-body">
+            {/* What sold */}
+            {(saleProceeds > 0 || sold.length > 0) && (
+              <div className="recap-sec">
+                <div className="recap-sec-h">🧾 Sold</div>
+                {bigSale && <div className="recap-line"><span>Biggest: <b>{bigSale.name}</b></span><b style={{ color: 'var(--green)' }}>+{fmtMoney(bigSale.net)}</b></div>}
+                {sold.filter(s => !bigSale || s.name !== bigSale.name || s.net !== bigSale.net).slice(0, 3).map((s, i) => (
+                  <div className="recap-line" key={i}><span className="muted">{s.name}</span><span className="muted">+{fmtMoney(s.net)}</span></div>
+                ))}
+                {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(saleProceeds)}</b></div>}
+              </div>
+            )}
+
+            {/* Market movers */}
+            {movers.length > 0 && (
+              <div className="recap-sec">
+                <div className="recap-sec-h">📊 Market movers</div>
+                {movers.slice(0, 4).map((m, i) => (
+                  <div className="recap-line" key={i}>
+                    <span>{m.kind === 'hype' ? '📈' : '📉'} <b>{m.setName}</b></span>
+                    <b style={{ color: m.kind === 'hype' ? 'var(--green)' : 'var(--red)' }}>{m.pct > 0 ? '+' : ''}{m.pct}%</b>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Inbox / interest */}
+            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || resolvedGrades > 0 || notoDelta > 0) && (
+              <div className="recap-sec">
+                <div className="recap-sec-h">📬 New</div>
+                {newWants > 0 && <div className="recap-line"><span>🐋 {newWants} collector want{newWants === 1 ? '' : 's'} found you</span><span className="muted">Sell tab</span></div>}
+                {premiumOffers > 0 && <div className="recap-line"><span style={{ color: 'var(--green)' }}>📈 {premiumOffers} over-market offer{premiumOffers === 1 ? '' : 's'} (hot set)</span></div>}
+                {added > 0 && <div className="recap-line"><span className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</span></div>}
+                {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}
+                {resolvedGrades > 0 && <div className="recap-line"><span className="muted">{resolvedGrades} slab{resolvedGrades === 1 ? '' : 's'} back from grading</span></div>}
+                {notoDelta > 0 && <div className="recap-line"><span className="muted">Notoriety</span><b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b></div>}
+              </div>
+            )}
+
+            {/* Overhead out */}
+            {(wages > 0 || rent > 0 || storage > 0 || lease > 0 || payroll > 0) && (
+              <div className="recap-sec">
+                <div className="recap-sec-h">💸 Overhead</div>
+                {wages > 0 && <div className="recap-line"><span className="muted">Wages earned</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(wages)}</b></div>}
+                {rent > 0 && <div className="recap-line"><span className="muted">Rent</span><span>-{fmtMoney(rent)}</span></div>}
+                {storage > 0 && <div className="recap-line"><span className="muted">Inventory storage</span><span>-{fmtMoney(storage)}</span></div>}
+                {lease > 0 && <div className="recap-line"><span className="muted">Store lease</span><span>-{fmtMoney(lease)}</span></div>}
+                {payroll > 0 && <div className="recap-line"><span className="muted">Staff payroll</span><span>-{fmtMoney(payroll)}</span></div>}
+              </div>
+            )}
+
+            {missed > 0 && (
+              <div className="recap-line" style={{ color: 'var(--red)', marginTop: 4 }}>
+                <span>⚠️ Missed {missed} order{missed === 1 ? '' : 's'} while away</span>
+                <span className="muted">{missedOnline ? `${missedOnline} online` : ''}{missedOnline && missedWalkin ? ', ' : ''}{missedWalkin ? `${missedWalkin} walk-in` : ''}</span>
+              </div>
+            )}
+          </div>
+        )}
+        <button className="btn gold" style={{ maxWidth: 160, marginTop: 12, marginLeft: 'auto', marginRight: 'auto', display: 'block' }} onClick={onClose}>Continue</button>
       </div>
     </div>
   )

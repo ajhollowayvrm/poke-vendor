@@ -51,7 +51,7 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 33,
+  version: 34,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -307,6 +307,14 @@ export const useGame = create(persist((set, get) => ({
       state.followers = state.followers ?? 0
       state.settings = state.settings || {}
       state.settings.keepOne = state.settings.keepOne ?? false
+    }
+    if (version < 34) {
+      // Net-worth trend history (Stats sparkline + daily recap), the daily quick-sell
+      // counter (diminishing-returns dump penalty), and inventory carrying cost. All new,
+      // additive fields — start empty/zero so existing saves behave the same until the next
+      // day-advance begins sampling worth and (if over the free allowance) charging storage.
+      state.worthHistory = state.worthHistory ?? []
+      state.quickSellsToday = state.quickSellsToday ?? 0
     }
     return state
   },

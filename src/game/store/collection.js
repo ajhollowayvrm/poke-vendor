@@ -12,6 +12,21 @@ import {
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay } from './constants'
 
+// Quick-selling is the instant-but-worst exit, and now it has teeth beyond the flat rate:
+//   • DUMP PENALTY — every quick-sell you make in a single day floods the buylist, so each
+//     one that day pays a little less (diminishing returns). A fire-sale of your whole
+//     collection nets far less per card than spacing sales out, listing, or consigning.
+//   • REP DING — dumping a genuinely valuable card cheap dents your standing; collectors
+//     notice a known name flipping chase cards for scraps.
+// Together these make quick-sell strictly the panic/convenience button — anything worth real
+// money wants the patient channels (list for the market, consign near market, fill a want).
+const DUMP_PENALTY_PER = 0.025  // rate cut per prior quick-sell today
+const DUMP_PENALTY_MAX = 0.20   // capped (never worse than base − 20 points)
+const DUMP_DING_VALUE = 50      // a card worth ≥ this, dumped cheap, dents notoriety
+function dumpRate(base, prior) {
+  return base * (1 - Math.min(DUMP_PENALTY_MAX, DUMP_PENALTY_PER * Math.max(0, prior)))
+}
+
 export function createCollectionSlice(set, get) {
   return {
     addPulls(cards, setName, packs = 1) {
@@ -106,13 +121,24 @@ export function createCollectionSlice(set, get) {
     // premium for the convenience. Liquidating your collection to make rent is a real loss,
     // not a soft cushion. Listing on your own site (below) can match or beat market.
     quickSellRate: 0.50,
+    // Effective quick-sell rate right now, after today's dump penalty (for UI + logic).
+    quickSellRateNow() { return dumpRate(get().quickSellRate, get().quickSellsToday || 0) },
     quickSell(uid) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card) return
-      const v = round2(cardValue(card) * get().quickSellRate)
-      set(s => ({ collection: s.collection.filter(c => c.uid !== uid) }))
+      const prior = get().quickSellsToday || 0
+      const rate = dumpRate(get().quickSellRate, prior)
+      const market = cardValue(card)
+      const v = round2(market * rate)
+      set(s => ({ collection: s.collection.filter(c => c.uid !== uid), quickSellsToday: prior + 1 }))
       get().earn(v)
-      get().log('sell', `Quick-sold ${card.grade ? 'PSA '+card.grade.overall+' ' : ''}${card.name} @ ${Math.round(get().quickSellRate*100)}%`, v)
+      const flooded = prior >= 3 ? ' (buylist flooded today)' : ''
+      get().log('sell', `Quick-sold ${card.grade ? 'PSA '+card.grade.overall+' ' : ''}${card.name} @ ${Math.round(rate*100)}%${flooded}`, v)
+      // Dumping something genuinely valuable cheap dents your rep with collectors.
+      if (market >= DUMP_DING_VALUE) {
+        get().addNotoriety(-1)
+        get().log('rep', `Word got around you fire-sold a ${card.name} — collectors frowned (−1★). List valuable cards instead.`, 0)
+      }
       get().bumpGoal('sell', 1); get().bumpGoal('profit', v)
     },
 
@@ -126,11 +152,15 @@ export function createCollectionSlice(set, get) {
       const { sell, kept } = bulkSellableUids(collection, candidates, { keepOne: get().settings?.keepOne })
       const sellSet = new Set(sell)
       const toSell = collection.filter(c => sellSet.has(c.uid))
-      const total = round2(toSell.reduce((a, c) => a + cardValue(c) * quickSellRate, 0))
-      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)) }))
+      // Progressive dump penalty across the batch: the deeper you dump in one go, the more
+      // it floods the buylist and the less each additional card fetches.
+      const prior = get().quickSellsToday || 0
+      const total = round2(toSell.reduce((a, c, i) => a + cardValue(c) * dumpRate(quickSellRate, prior + i), 0))
+      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)), quickSellsToday: prior + toSell.length }))
       get().earn(total)
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
-      get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ${Math.round(quickSellRate*100)}%${keptNote}`, total)
+      const avgPct = toSell.length ? Math.round((total / toSell.reduce((a, c) => a + cardValue(c), 0)) * 100) : Math.round(quickSellRate*100)
+      get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ~${avgPct}%${keptNote}`, total)
       return { got: total, sold: toSell.length, kept: kept.length }
     },
 
@@ -176,12 +206,27 @@ export function createCollectionSlice(set, get) {
       const sellSet = new Set(sell)
       const toSell = get().collection.filter(c => sellSet.has(c.uid))
       if (!toSell.length) return { got: 0, sold: 0, kept: kept.length }
-      const rate = get().quickSellRate
-      const total = round2(toSell.reduce((a, c) => a + cardValue(c) * rate, 0))
-      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)) }))
+      const base = get().quickSellRate
+      const prior = get().quickSellsToday || 0
+      // Progressive dump penalty (see dumpRate) + count how many valuable cards got dumped.
+      let total = 0, valuable = 0
+      toSell.forEach((c, i) => {
+        const mkt = cardValue(c)
+        total += mkt * dumpRate(base, prior + i)
+        if (mkt >= DUMP_DING_VALUE) valuable++
+      })
+      total = round2(total)
+      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)), quickSellsToday: prior + toSell.length }))
       get().earn(total)
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
-      get().log('sell', `Quick-sold ${toSell.length} cards @ ${Math.round(rate*100)}%${keptNote}`, total)
+      const avgPct = Math.round((total / toSell.reduce((a, c) => a + cardValue(c), 0)) * 100)
+      get().log('sell', `Quick-sold ${toSell.length} cards @ ~${avgPct}%${keptNote}`, total)
+      // Fire-selling valuable cards in bulk dents your rep (capped so a big dump can't tank it).
+      if (valuable) {
+        const ding = Math.min(3, valuable)
+        get().addNotoriety(-ding)
+        get().log('rep', `You dumped ${valuable} valuable card${valuable>1?'s':''} to the buylist — collectors noticed (−${ding}★).`, 0)
+      }
       get().bumpGoal('sell', toSell.length); get().bumpGoal('profit', total)
       return { got: total, sold: toSell.length, kept: kept.length }
     },

@@ -400,6 +400,17 @@ function visitorFor(channel, kind) {
 const ONLINE_METHODS = ['venmo', 'paypal', 'card']
 const INPERSON_METHODS = ['cash', 'venmo', 'card', 'paypal']
 
+// --- Notoriety as a DOUBLE-EDGED sword ---------------------------------------
+// Fame changes WHO comes to your door, not just how many. The upside: WHALES — deep-
+// pocketed collectors who pay real premiums for your best piece and don't haggle. The
+// downsides: NAME-DROP LOWBALLERS who invoke your reputation to talk you down, and more
+// SCAMMERS targeting a known name (see the sealed-deal frequency scaling in boothEncounter).
+const WHALE_NOTO_GATE = 100   // whales start showing up once you've got a real name
+const WHALE_MIN_VALUE = 40    // they only bother for a genuinely worthwhile piece
+const NAMEDROP_NOTO_GATE = 60 // chancers start name-dropping your rep on lowballs around here
+const WHALE_NAMES = ['a deep-pocketed whale', 'a serious collector with a fat wallet', 'a big-money buyer',
+  'a hedge-fund hobbyist', 'a well-known set completist', 'a flush returning client']
+
 function pickAny(r, arr) { return arr[Math.floor((r ?? Math.random)() * arr.length)] }
 // Pick a payment method the buyer prefers, biased toward what YOU can actually
 // accept so deals don't fail at resolution. `accepted` is the player's accepted
@@ -545,10 +556,44 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     }
   }
 
+  // 0b) THE WHALE — the upside of fame. A high-notoriety vendor attracts deep-pocketed
+  // collectors who pay a real premium for the best piece you have out and won't haggle. Home
+  // channels only (online DMs / store walk-ins); its own roll so it doesn't shift the bands.
+  if ((online || walkin) && notoriety >= WHALE_NOTO_GATE && offerPool.length) {
+    const pWhale = Math.min(0.16, 0.05 + (notoriety - WHALE_NOTO_GATE) / 1200)
+    if (Math.random() < pWhale) {
+      const target = offerPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
+      if (cardValue(target) >= WHALE_MIN_VALUE) {
+        const market = cardValue(target)
+        const offer = round2(market * (1.15 + Math.random() * 0.45)) // 1.15–1.60× — they pay up
+        const pay = pickPayMethod(channel, accepted)
+        const m = PAY_LABEL(pay)
+        const who = pickAny(null, WHALE_NAMES)
+        return {
+          kind: 'offer',
+          ownedUid: target.uid,
+          title: online ? `${cap(who)} slides into your DMs` : `${cap(who)} makes a beeline for your case`,
+          body: `"I hear you're the one to see. That ${target.name} — I want it and I don't haggle. `
+            + `$${offer.toFixed(2)}, ${m}, right now." (Market: $${market.toFixed(2)})`,
+          card: target,
+          options: [
+            { text: `Accept $${offer.toFixed(2)} (${m})`, tone: 'fair',
+              effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: 2,
+                formSeed: mkSeed(target, channel), msg: 'The whale is thrilled — and whales talk to other whales.' } },
+            { text: 'Hold out for more', tone: 'fair',
+              effect: { type: 'none', notoriety: 0, msg: 'You let a paying whale walk away. Bold move.' } },
+          ],
+        }
+      }
+    }
+  }
+
   // 0) Inbound sealed-product DEAL — a stranger offers to SELL you sealed below market
   // (sometimes a steal, sometimes a fake). Mostly online; rarer in person. Fires on its
-  // OWN roll so it doesn't shift the offer/question/browse bands below it.
-  if ((online || walkin) && Math.random() < (online ? 0.20 : 0.08)) {
+  // OWN roll so it doesn't shift the offer/question/browse bands below it. A KNOWN name is a
+  // bigger target: scammers seek you out more the more famous you get (the downside of fame).
+  const scamChance = (online ? 0.20 : 0.08) + Math.min(online ? 0.12 : 0.08, notoriety / (online ? 900 : 1200))
+  if ((online || walkin) && Math.random() < scamChance) {
     const deal = makeSealedDeal(channel, notoriety)
     if (deal) return deal
   }
@@ -586,16 +631,23 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     const target = pickAny(null, offerPool)
     const market = cardValue(target) // grade-aware — offers track the card's real worth
     const good = Math.random() > 0.5
-    const offer = Math.round(market * (good ? (1.05 + Math.random()*0.4) : (0.4 + Math.random()*0.3)) * 100) / 100
+    let offer = Math.round(market * (good ? (1.05 + Math.random()*0.4) : (0.4 + Math.random()*0.3)) * 100) / 100
     const pay = pickPayMethod(channel, accepted)
     const m = PAY_LABEL(pay)
+    // NAME-DROP LOWBALLER — a downside of fame. Once you're a known name, chancers invoke
+    // your reputation to talk you DOWN ("you're big, you can spare it"). Only on lowballs.
+    const nameDrop = !good && notoriety >= NAMEDROP_NOTO_GATE && Math.random() < 0.4
+    if (nameDrop) offer = Math.round(offer * 0.9 * 100) / 100
+    const lowBody = nameDrop
+      ? `"Come on, everyone knows you're THE shop now — you can let this ${target.name} go cheap. $${offer.toFixed(2)}, ${m}. Do a little guy a solid." (Market: $${market.toFixed(2)})`
+      : `"Eh, that ${target.name}'s pretty common. I'll take it for $${offer.toFixed(2)}, ${m}." (Market: $${market.toFixed(2)})`
     return {
       kind: 'offer',
       ownedUid: target.uid, // so the encounter can be re-validated if you sell it first
       title: online ? `${cap(visitor)} wants your ${target.name}` : `${cap(visitor)} eyes your ${target.name}`,
       body: good
         ? `"That ${target.name} is exactly what I need. I'll give you $${offer.toFixed(2)}, paying by ${m}." (Market: $${market.toFixed(2)})`
-        : `"Eh, that ${target.name}'s pretty common. I'll take it for $${offer.toFixed(2)}, ${m}." (Market: $${market.toFixed(2)})`,
+        : lowBody,
       card: target,
       options: [
         { text: `Accept $${offer.toFixed(2)} (${m})`, tone: good ? 'fair' : 'cold',

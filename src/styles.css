@@ -351,6 +351,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .booth .boothname { font-size: 7.5px; font-weight: 800; color:#fff; text-align:center; line-height:1; padding: 0 2px;
   position:absolute; top: 3px; text-shadow: 0 1px 2px #000; }
 .booth .boothicon { font-size: 22px; margin-top: 6px; }
+/* Busy booth vibe: a booth drawing a crowd gets a warm glow + a live shopper count. */
+.booth.busy { box-shadow: 0 0 0 2px #ffcb0577, 0 4px 14px #0008; animation: boothPulse 1.8s ease-in-out infinite; }
+@keyframes boothPulse { 0%,100% { box-shadow: 0 0 0 2px #ffcb0555, 0 4px 12px #0008; } 50% { box-shadow: 0 0 0 3px #ffcb05aa, 0 4px 16px #0009; } }
+.booth .booth-crowd { position:absolute; bottom: 2px; right: 3px; font-size: 8px; font-weight: 800;
+  background:#000a; color:#ffd84d; border-radius: 6px; padding: 0 3px; line-height: 1.5; }
 .booth.player { background: linear-gradient(180deg,#ffd84d,#ffb000); }
 .booth.player .boothname { color:#3a2b00; text-shadow:none; }
 .booth.arch-fleecer { background: linear-gradient(180deg,#ff5e6c,#b8273a); }
@@ -507,6 +512,20 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   /* drop Pulled + Packs columns on narrow screens (header + cells alike) */
   .set-row > :nth-child(3), .set-row > :nth-child(6) { display: none; }
 }
+
+/* ---------- Stats: net-worth trend + cash-flow breakdown ---------- */
+.trend-card { border:1px solid var(--line); border-radius:12px; background: var(--panel2);
+  padding:12px 14px; margin:18px 0 4px; }
+.cashflow { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.cashflow-col { min-width:0; }
+.cashflow-head { font-weight:800; font-size:13px; margin-bottom:8px; border-bottom:1px solid var(--line); padding-bottom:5px; }
+.cashflow-row { display:grid; grid-template-columns: minmax(70px,1fr) 1.3fr auto; gap:8px; align-items:center;
+  font-size:12.5px; margin:5px 0; }
+.cashflow-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: var(--dim); }
+.cashflow-bar { height:8px; border-radius:5px; background:#ffffff0d; overflow:hidden; }
+.cashflow-bar > div { height:100%; border-radius:5px; min-width:2px; }
+.cashflow-amt { font-variant-numeric:tabular-nums; text-align:right; }
+@media (max-width: 640px) { .cashflow { grid-template-columns: 1fr; gap:12px; } }
 
 /* ---------- Collection multi-select + bulk-action bar ---------- */
 /* Skip rendering/decoding grid cells far off-screen — big win on long card grids
@@ -852,6 +871,42 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .haggle-current { font-size:14px; margin:6px 0; }
 .haggle-offer { background: var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
 .haggle-amt { font-size:22px; font-weight:900; color: var(--green); flex:1; text-align:center; font-variant-numeric:tabular-nums; }
+/* Negotiation visualizer: patience meter (+mood face) and a market-position scale. */
+.haggle-viz { display:flex; flex-direction:column; gap:12px; margin:12px 0 6px; }
+.haggle-patience { display:flex; flex-direction:column; gap:5px; }
+.hp-label { font-size:12px; color: var(--dim); display:flex; align-items:center; gap:6px; }
+.hp-mood { font-size:16px; }
+.hp-track { height:8px; border-radius:6px; background:#0c0f1a; border:1px solid var(--line); overflow:hidden; }
+.hp-fill { height:100%; border-radius:6px; transition: width .25s ease, background .25s ease; }
+.haggle-scale { display:flex; flex-direction:column; gap:7px; }
+.hs-track { position:relative; height:12px; border-radius:6px; margin:14px 4px 2px;
+  background: linear-gradient(90deg, rgba(94,201,138,0.18), rgba(255,255,255,0.05), rgba(255,94,108,0.18)); border:1px solid var(--line); }
+.hs-pin { position:absolute; top:50%; width:3px; height:22px; transform:translate(-50%,-50%); border-radius:2px; }
+.hs-pin.market { background:#c7d0e6; box-shadow:0 0 0 2px #c7d0e633; }
+.hs-pin.their { background: var(--gold); box-shadow:0 0 0 2px rgba(255,203,5,0.2); }
+.hs-pin.you { width:5px; height:26px; }
+.hs-pin.you.good { background: var(--green); box-shadow:0 0 8px rgba(94,201,138,0.6); }
+.hs-pin.you.bad { background: var(--red); box-shadow:0 0 8px rgba(255,94,108,0.5); }
+.hs-legend { display:flex; gap:14px; font-size:11px; color: var(--dim); }
+.hs-legend span { display:flex; align-items:center; gap:5px; }
+.hs-dot { width:9px; height:9px; border-radius:3px; display:inline-block; }
+.hs-dot.market { background:#c7d0e6; }
+.hs-dot.their { background: var(--gold); }
+.hs-dot.you { background: var(--green); }
+
+/* ---------- Daily recap ---------- */
+.modal.recap { text-align:left; }
+.recap-headline { display:flex; justify-content:space-between; align-items:flex-end; gap:12px;
+  background: var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin:10px 0; }
+.recap-h-label { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color: var(--dim); }
+.recap-h-val { font-size:26px; font-weight:900; font-variant-numeric:tabular-nums; line-height:1.1; }
+.recap-body { display:flex; flex-direction:column; gap:12px; margin-top:4px; max-height:52vh; overflow:auto; }
+.recap-sec { }
+.recap-sec-h { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color: var(--dim);
+  border-bottom:1px solid var(--line); padding-bottom:4px; margin-bottom:5px; }
+.recap-line { display:flex; justify-content:space-between; gap:10px; align-items:baseline;
+  font-size:13.5px; margin:3px 0; font-variant-numeric:tabular-nums; }
+.recap-line > span:first-child { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
 /* ---------- Consignment strip ---------- */
 .consign-strip { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:14px 0 4px;

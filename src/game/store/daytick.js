@@ -18,14 +18,22 @@ import {
   round2, cardValue, dailyViewers, rollBuyerSavvy, buyerMaxMult, BUYER_SAVVY,
   SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, driftMult, driftMultVintage,
   applyMarketEvent, MARKET_EVENTS, setMarketMults, distributorById, restockRate,
+  marketMult, setIdOfCard, sealedValue,
 } from '../engine'
 import { boothEncounter, makeWant } from '../shows'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
-  employeeById, dayOrderChance, BARGAIN_ASK_MULT,
+  employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
 } from './constants'
 import { realizableAssets } from './helpers'
+
+// A set trading at or above this multiple of its base price is "hot" — willing buyers
+// on a hot card pay a premium above market, so LISTING a card whose set is spiking can
+// net well over 100% of market. This is the patient/attentive path's real upside (quick-
+// selling can never beat market; auto-sell caps at 80%). Reading the market pays off.
+const HOT_SET_MULT = 1.2
+const HOT_PREMIUM = 0.15
 import { nextOfferId } from './ids'
 
 // --- daytick-only tuning constants ------------------------------------------
@@ -136,11 +144,14 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
   const sold = []
   const staleNow = []
   let newOffers = 0
+  let premiumOffers = 0 // offers landed on a hot-set card above market (the reading-the-market payoff)
   const remaining = []
   for (const l of (listings || [])) {
     // expired/awaiting-action listings just sit until you act on them
     if (l.expired) { remaining.push(l); continue }
     let cur = { ...l, offers: [...(l.offers || [])] }
+    // Is this card's SET hot right now? A hot set lets willing buyers stretch above market.
+    const hot = marketMult(setIdOfCard(cur.card)) >= HOT_SET_MULT
     let didSell = false
     // auto-sell is on when the upgrade is owned AND this listing hasn't opted out
     const autoSellOn = !!upgrades.autoSell && (cur.autoSell !== false)
@@ -153,11 +164,15 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
       for (let v = 0; v < viewers; v++) {
         const savvy = rollBuyerSavvy()
         const max = buyerMaxMult(savvy, noto, cur.card)
+        // On a hot set a willing buyer will stretch a premium above what they'd normally
+        // pay — so a manually-worked listing captures the spike (auto-sell never does).
+        const effMax = hot ? max + HOT_PREMIUM : max
         const label = BUYER_SAVVY[savvy].label
         const icon = BUYER_SAVVY[savvy].icon
-        if (cur.askMult <= max) {
+        if (cur.askMult <= effMax) {
           // They CAN afford the ask. With auto-sell: fires at 80% of market (same
-          // LISTING_DAILY_SELL_CAP gate so it still takes a day or two).
+          // LISTING_DAILY_SELL_CAP gate so it still takes a day or two) — hands-off
+          // convenience, but it leaves the hot-set premium on the table.
           // Without auto-sell: queue an offer at the buyer's willing price.
           if (autoSellOn) {
             if (Math.random() < LISTING_DAILY_SELL_CAP) {
@@ -172,13 +187,16 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
             }
             continue // auto-sell willing but didn't fire today
           }
-          // No auto-sell: queue an offer at the buyer's willing price (≥ ask).
+          // No auto-sell: queue an offer at the buyer's willing price (≥ ask, and above
+          // market when the set is hot).
           if (Math.random() < LISTING_DAILY_SELL_CAP) {
             const market = cardValue(cur.card)
-            const amount = round2(market * max)
+            const amount = round2(market * effMax)
             const fee = round2(amount * 0.05)
-            cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee), savvy, savvyLabel: label, icon })
+            const premium = amount > market * 1.02
+            cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee), savvy, savvyLabel: label, icon, hot: hot && premium })
             newOffers++
+            if (hot && premium) premiumOffers++
           }
           continue // willing buyer — offer queued (or cap/prob skipped); next viewer
         }
@@ -203,7 +221,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
     }
     remaining.push(cur)
   }
-  return { listings: remaining, soldProceeds, sold, newOffers, staleNow }
+  return { listings: remaining, soldProceeds, sold, newOffers, premiumOffers, staleNow }
 }
 
 // Advance the calendar by `days`, generating home orders for each day passed.
@@ -276,10 +294,17 @@ export function advanceDaysWith(set, get, days, away) {
   }
   // resolve consignments whose timer elapsed over the days passed
   let soldProceeds = 0
+  // Names + biggest single sale over the window, for the daily recap's "what sold" list.
+  const soldNames = []
+  let bigSale = null
+  const noteSale = (name, net) => {
+    soldNames.push({ name, net })
+    if (!bigSale || net > bigSale.net) bigSale = { name, net }
+  }
   const remainingConsign = []
   for (const c of s.consignments) {
     const left = c.daysLeft - days
-    if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
+    if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); noteSale(c.card.name, c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
     else remainingConsign.push({ ...c, daysLeft: left })
   }
   // resolve the distributor SUPPLY CHANNEL: product wholesaled to other vendors pays
@@ -298,18 +323,23 @@ export function advanceDaysWith(set, get, days, away) {
   const remainingListings = lt.listings
   soldProceeds = round2(soldProceeds + lt.soldProceeds)
   for (const sale of lt.sold) {
+    noteSale(sale.name, sale.net)
     if (sale.auto) get().log('sell', `Auto-sold ${sale.name} — $${sale.net.toFixed(2)}`, sale.net)
     else get().log('sell', `Sold ${sale.name} to a ${sale.savvy} — $${sale.net.toFixed(2)}`, sale.net)
   }
   if (lt.newOffers) get().log('listing', `${lt.newOffers} new offer${lt.newOffers > 1 ? 's' : ''} on your listings — review them on the Sell tab.`, 0)
+  // A spiking set drew premium offers ABOVE market — the reward for listing into a hot market.
+  if (lt.premiumOffers) get().log('listing', `📈 ${lt.premiumOffers} buyer${lt.premiumOffers > 1 ? 's' : ''} offered OVER market on a hot set — list into the spike while it lasts.`, 0)
   for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
   // age out want-lists, then maybe post new collector wants (scaled by notoriety)
   let wants = s.wantList.map(w => ({ ...w, daysLeft: w.daysLeft - days })).filter(w => w.daysLeft > 0)
+  const wantsAfterAging = wants.length
   const maxWants = 2 + Math.floor(noto / 80) // more fame → more collectors seek you out
   const wantChancePerDay = 0.25 + noto / 300
   for (let i = 0; i < days && wants.length < maxWants; i++) {
     if (Math.random() < wantChancePerDay) wants = [makeWant(noto >= 120), ...wants]
   }
+  const newWants = Math.max(0, wants.length - wantsAfterAging) // fresh collectors who sought you out
   // Forum: the public WTB board refills over the days passed (your early-game demand).
   const forumPosts = tickForum(s.forumPosts, days, noto)
   // Living market: drift every set's price multiplier across the days passed; a hype
@@ -339,13 +369,19 @@ export function advanceDaysWith(set, get, days, away) {
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
     regulars: decayRegulars(st.regulars, days),                           // relationships cool if you neglect them
+    quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
   }))
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
   // credit listing sales toward the daily sell/profit goals
   for (const sale of lt.sold) { get().bumpGoal('sell', 1); get().bumpGoal('profit', sale.net) }
   if (wagesEarned > 0) { get().earn(wagesEarned, { wage: true }); get().log('wage', `Wages: ${activeJob?.title || 'job'} (+$${wagesEarned.toFixed(2)})`, wagesEarned) }
-  if (rentDue > 0) settleRent(set, get, rentDue, days)
+  // Inventory carrying cost: money tied up in unsold sealed/listings/consignments/shelf
+  // beyond the free allowance bleeds a small daily storage fee. Folded into the same rent
+  // settlement/arrears path so it adds pressure without a separate game-over edge case.
+  const storageDue = round2(storageFee(s) * days)
+  const overheadDue = round2(rentDue + storageDue)
+  if (overheadDue > 0) settleRent(set, get, overheadDue, days, storageDue)
   // Brick & mortar: settle the daily lease + payroll. Failing this over the grace window
   // closes the store (you keep the cards/cash — you just lose the lease + staff).
   if (hasStore && (leaseDue + payrollDue) > 0) settleStore(set, get, leaseDue, payrollDue, days)
@@ -358,14 +394,33 @@ export function advanceDaysWith(set, get, days, away) {
   // Daily catch-all for milestones — sweeps up any slow-moving thresholds (net worth,
   // notoriety, cumulative counters) that the instant per-action checks don't cover.
   get().checkMilestones()
+  // Sample net worth (cash + everything you own, incl. in-flight buckets) into the trend
+  // ring — one point per day-advance — for the Stats sparkline and the daily recap.
+  const g = get()
+  const netWorth = round2(
+    g.cash
+    + (g.collection || []).reduce((a, c) => a + cardValue(c), 0)
+    + (g.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
+    + (g.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
+    + (g.shopDisplay || []).reduce((a, c) => a + cardValue(c), 0)
+    + (g.showInventory || []).reduce((a, c) => a + cardValue(c), 0)
+    + (g.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
+    + (g.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0))
+  set(st => ({ worthHistory: [...(st.worthHistory || []), { d: newAbsDay, worth: netWorth, cash: round2(g.cash) }].slice(-WORTH_HISTORY_LEN) }))
+
   // The day-summary payload. cashDelta/notoDelta are measured against the snapshot taken at
   // the very top of this call (s.cash / noto) AFTER every settlement above — including the
   // completion bonuses a returned slab may have just paid — so the modal reflects the whole
   // tick. saleProceeds is the passive income banked (consignments + supply + listing sales).
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
-    lease: round2(leaseDue), payroll: round2(payrollDue), listingsSold: lt.sold.length, listingOffers: lt.newOffers,
+    lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
+    listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
     resolvedGrades: resolvedGrades.length, days,
     saleProceeds: round2(soldProceeds),
+    // Richer recap data: named sales, biggest single sale, market movers, new collectors.
+    soldNames: soldNames.slice(0, 6), bigSale, newWants,
+    marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
+    netWorth,
     cashDelta: round2(get().cash - s.cash),
     notoDelta: round2(get().notoriety - noto) }
 }
@@ -377,6 +432,8 @@ export function mergeSummaries(a, b) {
   if (!a) return b
   if (!b) return a
   const add = (x, y) => (x || 0) + (y || 0)
+  // Take the biggest single sale across both legs of the trip.
+  const bigSale = [a.bigSale, b.bigSale].filter(Boolean).sort((x, y) => y.net - x.net)[0] || null
   return {
     added: add(a.added, b.added),
     missedOnline: add(a.missedOnline, b.missedOnline),
@@ -385,10 +442,17 @@ export function mergeSummaries(a, b) {
     rent: round2(add(a.rent, b.rent)),
     lease: round2(add(a.lease, b.lease)),
     payroll: round2(add(a.payroll, b.payroll)),
+    storage: round2(add(a.storage, b.storage)),
     listingsSold: add(a.listingsSold, b.listingsSold),
     listingOffers: add(a.listingOffers, b.listingOffers),
+    premiumOffers: add(a.premiumOffers, b.premiumOffers),
     resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
+    soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),
+    bigSale,
+    newWants: add(a.newWants, b.newWants),
+    marketMovers: [...(a.marketMovers || []), ...(b.marketMovers || [])],
+    netWorth: b.netWorth != null ? b.netWorth : a.netWorth, // latest (end-of-trip) worth
     cashDelta: round2(add(a.cashDelta, b.cashDelta)),
     notoDelta: round2(add(a.notoDelta, b.notoDelta)),
     days: add(a.days, b.days),
@@ -428,11 +492,14 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
 // you fall behind: rentArrears counts consecutive shortfall days. Past RENT_GRACE_DAYS
 // with no realizable assets left to sell, it's game over. Having sellable cards keeps you
 // alive (the comeback path: liquidate or take a job).
-function settleRent(set, get, rentDue, days) {
+function settleRent(set, get, rentDue, days, storageDue = 0) {
   const s = get()
+  // rentDue is the combined overhead (base rent + inventory storage); break it out for the log.
+  const baseRent = round2(rentDue - storageDue)
+  const storageNote = storageDue > 0 ? ` + storage $${storageDue.toFixed(2)}` : ''
   if (s.cash >= rentDue) {
     get().spend(rentDue)
-    get().log('rent', `Rent paid (-$${rentDue.toFixed(2)})`, -rentDue)
+    get().log('rent', `Rent $${baseRent.toFixed(2)}${storageNote} paid (-$${rentDue.toFixed(2)})`, -rentDue)
     if (s.rentArrears) set({ rentArrears: 0 })
     return
   }

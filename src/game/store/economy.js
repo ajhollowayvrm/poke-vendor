@@ -10,6 +10,7 @@ import { round2, setMarketMults } from '../engine'
 import {
   UPGRADES, RENT_PER_DAY, STORE_LEASE_PER_DAY, employeeById, jobById,
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
+  storageFee, heldUnits, STORAGE_FREE_UNITS,
 } from './constants'
 import { bumpSet, realizableAssets } from './helpers'
 import { advanceDaysWith, mergeSummaries } from './daytick'
@@ -178,15 +179,21 @@ export function createEconomySlice(set, get) {
       if (!log.length) return 0
       return round2(log.reduce((a, v) => a + v, 0) / log.length)
     },
-    // Total daily burn you must cover: rent + (store lease + payroll, if you have a store).
+    // Total daily burn you must cover: rent + inventory storage + (store lease + payroll,
+    // if you have a store). Storage is 0 until you're carrying more than the free allowance.
     dailyBurn() {
       const s = get()
-      let burn = RENT_PER_DAY
+      let burn = RENT_PER_DAY + storageFee(s)
       if (s.upgrades.storefront) {
         burn += STORE_LEASE_PER_DAY
         burn += (s.employees || []).map(employeeById).filter(Boolean).reduce((a, e) => a + e.wage, 0)
       }
       return round2(burn)
+    },
+    // Inventory storage readout for the finance panel: current daily fee + how loaded you are.
+    storageStatus() {
+      const s = get()
+      return { fee: storageFee(s), units: heldUnits(s), free: STORAGE_FREE_UNITS }
     },
 
     // --- Brick & mortar employees (Phase 4) ---

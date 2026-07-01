@@ -33,6 +33,12 @@ export function initialState() {
     // The engine holds the live copy (module-level); we re-push it on rehydrate.
     marketMults: {},
     marketHistory: {},
+    // Rolling net-worth / cash trend: one {d, worth, cash} sample per day-advance,
+    // capped to WORTH_HISTORY_LEN. Powers the Stats trend sparkline + the daily recap.
+    worthHistory: [],
+    // Quick-sells done TODAY. Dumping many cards at once floods the buylist and each
+    // subsequent quick-sell pays a little less (diminishing returns). Reset every day.
+    quickSellsToday: 0,
 
     notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
     upgrades: {},            // { signage:true, ... }

@@ -47,6 +47,29 @@ export const RENT_GRACE_DAYS = 3
 // sustainability readout. Long enough to smooth out spiky sale days.
 export const INCOME_WINDOW_DAYS = 7
 
+// --- Inventory carrying cost (money tied up in unsold stock BITES) -----------
+// Sitting on a pile of sealed product and unsold listings isn't free — you're
+// renting space and capital is frozen. You get a free allowance; every item beyond
+// it drains a small daily storage fee. This turns "buy the whole case and hoard it"
+// into a real decision: hold too much unsold and the daily bleed eats your runway.
+// Counted units = sealed inventory + live listings + consignments + shop-shelf cards.
+export const STORAGE_FREE_UNITS = 15   // this many held items cost nothing to store
+export const STORAGE_PER_UNIT = 2      // $/day for each held item beyond the allowance
+// How many held units are you carrying right now (drives the storage fee + the readout).
+export function heldUnits(s) {
+  return (s.sealedInventory?.length || 0) + (s.listings?.length || 0)
+    + (s.consignments?.length || 0) + (s.shopDisplay?.length || 0)
+}
+// Daily storage fee for the current inventory load (0 while under the free allowance).
+export function storageFee(s) {
+  const over = Math.max(0, heldUnits(s) - STORAGE_FREE_UNITS)
+  return round2(over * STORAGE_PER_UNIT)
+}
+
+// Rolling window (game-days) of net-worth / cash samples kept for the Stats trend
+// sparkline and the daily recap's "net worth" line. One sample per day-advance.
+export const WORTH_HISTORY_LEN = 30
+
 // --- Brick & mortar (Phase 4) ----------------------------------------------
 // The storefront upgrade (UPGRADES.storefront) flips you from flipper to store owner:
 // walk-in customers, Cash payments — and a real daily LEASE you must keep funded.

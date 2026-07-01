@@ -35,6 +35,10 @@ export default function ShowFloor({ show, onLeave }) {
   // Layout scales with booth count → bigger shows fill more of the page.
   const layout = useMemo(() => buildLayout(booths, show._asVendor), [booths, show._asVendor])
   const { grid, cols, rows, playerAt } = layout
+  // Walkable floor tiles adjacent to each booth, with a "draw" weight by archetype — where
+  // shoppers path TO and linger. Popular booths (fair dealers, whales, the Vault) pull bigger
+  // crowds, so the floor self-organizes into busy and dead tables (the show's "vibe").
+  const boothSpots = useMemo(() => buildBoothSpots(grid, cols, rows, booths), [grid, cols, rows, booths])
 
   const [pos, setPos] = useState(() => ({ x: playerAt.x, y: playerAt.y + 1 }))
   // mirror of pos for the NPC drift interval (so it sees the live player tile
@@ -62,29 +66,41 @@ export default function ShowFloor({ show, onLeave }) {
 
   // NPC shoppers wandering the aisles (visual atmosphere). Some are ripping packs.
   const addNotoriety = useGame(s => s.addNotoriety)
-  const [npcs, setNpcs] = useState(() => spawnNpcs(layout, tier.npcs, notoriety))
+  const [npcs, setNpcs] = useState(() => spawnNpcs(layout, tier.npcs, notoriety, boothSpots))
   const [poppedIds, setPoppedIds] = useState(() => new Set()) // NPCs mid-"pop" flash
   const [announce, setAnnounce] = useState(null)              // hall-wide big-pull banner
-  useEffect(() => { setNpcs(spawnNpcs(layout, tier.npcs, notoriety)) }, [layout, tier.npcs, notoriety])
+  useEffect(() => { setNpcs(spawnNpcs(layout, tier.npcs, notoriety, boothSpots)) }, [layout, tier.npcs, notoriety, boothSpots])
 
   const flash = useCallback((m) => { setToast(m); setTimeout(() => setToast(null), 2600) }, [])
 
-  // Drift NPCs around the open floor.
+  // Move NPCs with PURPOSE: each shopper heads to a booth (weighted by the booth's draw),
+  // browses there a few beats, then picks a new table. They path around aisles and each other
+  // instead of drifting randomly — so crowds gather at the popular booths and the hall reads
+  // as a living show floor rather than a screensaver.
   useEffect(() => {
     const id = setInterval(() => {
-      setNpcs(prev => prev.map(n => {
-        if (Math.random() < 0.35) return n // pause sometimes
-        const dirs = [[0,-1],[0,1],[-1,0],[1,0]]
-        const [dx, dy] = dirs[Math.floor(Math.random() * 4)]
-        const nx = n.x + dx, ny = n.y + dy
-        if (nx <= 0 || ny <= 0 || nx >= cols - 1 || ny >= rows - 1) return n
-        if (grid[ny][nx] !== 0) return n // only walk open floor
-        if (nx === posRef.current.x && ny === posRef.current.y) return n // don't walk through the player
-        return { ...n, x: nx, y: ny, face: dx < 0 ? -1 : dx > 0 ? 1 : n.face }
-      }))
-    }, 700)
+      setNpcs(prev => {
+        // Tiles you can't step onto this tick: the player + every other shopper's current cell.
+        const blocked = new Set([`${posRef.current.x},${posRef.current.y}`])
+        for (const o of prev) blocked.add(`${o.x},${o.y}`)
+        return prev.map(n => {
+          // Browsing a booth — hold still, then end the visit (clears the target).
+          if (n.linger > 0) return { ...n, linger: n.linger - 1 }
+          let target = n.target
+          if (!target && boothSpots.length) { const t = weightedPick(boothSpots); target = { x: t.x, y: t.y } }
+          if (!target) return n
+          const dist = Math.abs(n.x - target.x) + Math.abs(n.y - target.y)
+          if (dist === 0) return { ...n, linger: 2 + Math.floor(Math.random() * 5), target: null } // arrived → browse
+          const nextTile = stepToward(n, target, grid, cols, rows, blocked)
+            || randomStep(n, grid, cols, rows, blocked) // blocked → nudge so we never wedge
+          if (!nextTile) return n
+          blocked.add(`${nextTile.x},${nextTile.y}`) // claim the tile so no one else takes it this tick
+          return { ...n, x: nextTile.x, y: nextTile.y, face: nextTile.x < n.x ? -1 : nextTile.x > n.x ? 1 : n.face }
+        })
+      })
+    }, 650)
     return () => clearInterval(id)
-  }, [grid, cols, rows])
+  }, [grid, cols, rows, boothSpots])
 
   // Live rippers: every few seconds a ripping NPC cracks a pack. A big pull (SIR+,
   // foil, or grail) gets announced to the whole hall.
@@ -256,6 +272,16 @@ export default function ShowFloor({ show, onLeave }) {
     flash(`Stocked a ${product.name} from the Vintage Vault — it's in 📦 Inventory.`)
   }, [flash])
 
+  // Live crowd per booth = shoppers standing on a tile adjacent to it. Drives the "busy"
+  // vibe badge, so the player can read at a glance which tables are drawing a crowd.
+  const boothCrowd = {}
+  for (const n of npcs) {
+    for (const [dx, dy] of [[0,-1],[0,1],[-1,0],[1,0]]) {
+      const cell = grid[n.y + dy]?.[n.x + dx]
+      if (typeof cell === 'number' && cell >= 100) boothCrowd[cell - 100] = (boothCrowd[cell - 100] || 0) + 1
+    }
+  }
+
   return (
     <div className="floorwrap">
       <div className="floorhud">
@@ -305,9 +331,11 @@ export default function ShowFloor({ show, onLeave }) {
             return (
               <div key={`${x}-${y}`} className={`tile ${isWall?'wall':''}`} style={{ left:x*TILE, top:y*TILE, width:TILE, height:TILE }}>
                 {boothIdx !== null && (
-                  <div className={`booth arch-${booths[boothIdx].archetype} ${booths[boothIdx].special === 'vault' ? 'vault-booth' : ''} ${booths[boothIdx].recurring ? 'recurring-booth' : ''} ${booths[boothIdx].special === 'kiosk' ? 'kiosk-booth' : ''}`} title={booths[boothIdx].name}>
+                  <div className={`booth arch-${booths[boothIdx].archetype} ${booths[boothIdx].special === 'vault' ? 'vault-booth' : ''} ${booths[boothIdx].recurring ? 'recurring-booth' : ''} ${booths[boothIdx].special === 'kiosk' ? 'kiosk-booth' : ''} ${boothCrowd[boothIdx] >= 2 ? 'busy' : ''}`}
+                    title={`${booths[boothIdx].name}${boothCrowd[boothIdx] >= 2 ? ` · busy (${boothCrowd[boothIdx]} shoppers)` : ''}`}>
                     <span className="boothname">{booths[boothIdx].recurring ? '🤝 ' : ''}{booths[boothIdx].name}</span>
                     <span className="boothicon">{booths[boothIdx].special === 'vault' ? '🗝️' : booths[boothIdx].special === 'kiosk' ? '🔬' : '🛒'}</span>
+                    {boothCrowd[boothIdx] >= 2 && <span className="booth-crowd" title={`${boothCrowd[boothIdx]} shoppers here`}>👥{boothCrowd[boothIdx]}</span>}
                   </div>
                 )}
                 {isPlayer && <div className="booth player"><span className="boothname">YOUR BOOTH</span><span className="boothicon">⭐</span></div>}
@@ -446,7 +474,7 @@ function atPlayerBooth(pos, playerAt) {
   return Math.abs(pos.x - playerAt.x) + Math.abs(pos.y - playerAt.y) <= 1
 }
 
-function spawnNpcs(layout, count, notoriety = 0) {
+function spawnNpcs(layout, count, notoriety = 0, boothSpots = []) {
   const { grid, cols, rows } = layout
   const open = []
   for (let y = 1; y < rows - 1; y++) for (let x = 1; x < cols - 1; x++) if (grid[y][x] === 0) open.push({ x, y })
@@ -458,10 +486,64 @@ function spawnNpcs(layout, count, notoriety = 0) {
     const idx = Math.floor(Math.random() * open.length)
     const { x, y } = open[idx]
     const ripping = Math.random() < 0.3 // ~30% are cracking sealed on the floor
+    // Head to a booth from the off (weighted by draw) so the crowd forms immediately.
+    const t = boothSpots.length ? weightedPick(boothSpots) : null
     npcs.push({ id: `npc${i}`, x, y, emoji: NPC_EMOJI[i % NPC_EMOJI.length], face: Math.random() < 0.5 ? -1 : 1,
-      ripping, boughtFromYou: ripping && Math.random() < yourShare })
+      ripping, boughtFromYou: ripping && Math.random() < yourShare,
+      target: t ? { x: t.x, y: t.y } : null, linger: Math.floor(Math.random() * 3) })
   }
   return npcs
+}
+
+// --- Show-floor NPC pathing --------------------------------------------------
+// Draw weight per booth archetype — how strongly it pulls a crowd. Reputable/popular tables
+// (fair dealers, whales, the travelling Vault) pull more shoppers than a known lowballer's.
+const BOOTH_DRAW = { fair: 1.5, whale: 1.6, newbie: 1.2, sharp: 1.0, fleecer: 0.5, vault: 2.2, kiosk: 1.3 }
+// Walkable floor tiles orthogonally adjacent to each booth, tagged with the booth's draw —
+// the set of "stand here and browse" spots shoppers path to.
+function buildBoothSpots(grid, cols, rows, booths) {
+  const spots = []
+  for (let y = 1; y < rows - 1; y++) for (let x = 1; x < cols - 1; x++) {
+    const cell = grid[y][x]
+    if (typeof cell === 'number' && cell >= 100) {
+      const bi = cell - 100
+      const weight = BOOTH_DRAW[booths[bi]?.archetype] ?? 1
+      for (const [dx, dy] of [[0,-1],[0,1],[-1,0],[1,0]]) {
+        if (grid[y+dy]?.[x+dx] === 0) spots.push({ x: x+dx, y: y+dy, booth: bi, weight })
+      }
+    }
+  }
+  return spots
+}
+function weightedPick(arr) {
+  let total = 0; for (const a of arr) total += a.weight || 1
+  let r = Math.random() * total
+  for (const a of arr) { r -= a.weight || 1; if (r <= 0) return a }
+  return arr[arr.length - 1]
+}
+function passable(grid, cols, rows, x, y, blocked) {
+  if (x <= 0 || y <= 0 || x >= cols - 1 || y >= rows - 1) return false
+  if (grid[y][x] !== 0) return false // walls + booths are impassable
+  return !blocked.has(`${x},${y}`)   // don't step onto the player or another shopper
+}
+// Greedy one-step toward the target: try the longer axis first, then the other. Because the
+// hall is an open lattice of aisles, greedy-with-fallback reliably routes around the booths.
+function stepToward(n, target, grid, cols, rows, blocked) {
+  const dx = Math.sign(target.x - n.x), dy = Math.sign(target.y - n.y)
+  const order = Math.abs(target.x - n.x) >= Math.abs(target.y - n.y) ? [[dx,0],[0,dy]] : [[0,dy],[dx,0]]
+  for (const [ox, oy] of order) {
+    if (!ox && !oy) continue
+    if (passable(grid, cols, rows, n.x+ox, n.y+oy, blocked)) return { x: n.x+ox, y: n.y+oy }
+  }
+  return null
+}
+// When the greedy step is blocked (a booth or another shopper), take any legal step so an
+// NPC never wedges permanently.
+function randomStep(n, grid, cols, rows, blocked) {
+  const dirs = [[0,-1],[0,1],[-1,0],[1,0]]
+  for (let i = dirs.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [dirs[i],dirs[j]] = [dirs[j],dirs[i]] }
+  for (const [dx, dy] of dirs) if (passable(grid, cols, rows, n.x+dx, n.y+dy, blocked)) return { x: n.x+dx, y: n.y+dy }
+  return null
 }
 
 const NPC_NAMES = ['A collector','A kid','A streamer','Some guy','A hype beast','A local','A grinder',
