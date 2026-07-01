@@ -1062,18 +1062,18 @@ export const useGame = create(persist((set, get) => ({
   },
   // Wholesale a sealed product into the channel: pay your wholesale cost now, and it
   // sells through to other shops over a few days for a markup (passive income). You buy
-  // in at Pro Hobby's wholesale price; requires Trusted+ rapport with them.
+  // in at Dave & Adam's wholesale price; requires Trusted+ rapport with them.
   supplyVendors(pokeSet, product) {
-    const dist = distributorById('prohobby')
-    const rec = get().distributorRec('prohobby')
+    const dist = distributorById('dna')
+    const rec = get().distributorRec('dna')
     const level = rapportLevel(rec.spend).level
     if (!dist?.supply || level < dist.supplyMinLevel) return false
     const cost = distributorPrice(dist, product.price, level) // you buy in at wholesale
     if (!get().spend(cost)) return false
     get().recordSetSpend(pokeSet.id, cost)
-    set(s => { // the buy-in builds rapport with Pro Hobby too
-      const cur = s.distributors.prohobby || { spend: 0, stock: {} }
-      return { distributors: { ...s.distributors, prohobby: { ...cur, spend: round2((cur.spend || 0) + cost) } } }
+    set(s => { // the buy-in builds rapport with Dave & Adam's too
+      const cur = s.distributors.dna || { spend: 0, stock: {} }
+      return { distributors: { ...s.distributors, dna: { ...cur, spend: round2((cur.spend || 0) + cost) } } }
     })
     // resell into the channel at a margin over RETAIL (other shops pay near retail),
     // minus a small channel fee. Net is comfortably above your wholesale cost.
@@ -1876,7 +1876,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 29,
+  version: 30,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -2096,6 +2096,19 @@ export const useGame = create(persist((set, get) => ({
       // Regulars: persistent named customers. Start empty for existing saves — they'll
       // form naturally from the next good deals (see formRegular).
       state.regulars = state.regulars ?? []
+    }
+    if (version < 30) {
+      // Retailers re-themed (local game store + real online sellers). Remap old
+      // distributor rapport/stock keys by role so players keep what they built:
+      //   sunrise (reliable full catalog) → amazon
+      //   prohobby (cases/supply)         → dna
+      //   apex (first dibs)               → pokecenter
+      //   greg (rotating/clearance)       → lgs
+      const remap = { sunrise: 'amazon', prohobby: 'dna', apex: 'pokecenter', greg: 'lgs' }
+      const old = state.distributors || {}
+      const next = {}
+      for (const [id, rec] of Object.entries(old)) next[remap[id] || id] = rec
+      state.distributors = next
     }
     return state
   },

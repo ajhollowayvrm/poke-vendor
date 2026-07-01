@@ -1349,59 +1349,67 @@ export function nextRapport(spend) {
   return RAPPORT_LEVELS.find(r => r.min > (spend || 0)) || null
 }
 
-// The distributor roster.
-//   priceMult     — base multiple of retail BEFORE rapport discount (e.g. 0.9 = wholesale)
+// The retailer roster: your local game store + the major online sellers you'd actually
+// buy sealed from. Same mechanics, re-themed.
+//   priceMult     — base multiple of retail BEFORE rapport discount (1.0 = MSRP)
 //   discountStep  — extra fraction off per rapport level
 //   maxDiscount   — cap on the rapport discount
-//   reliability   — drives stock depth + restock speed (1 deep/fast, 0.4 thin/slow)
+//   reliability   — drives stock depth + restock speed (higher = deeper/faster, lower = sparse)
 //   cases         — sells case lots (gated at casesMinLevel)
 //   supply        — unlocks supplying the channel (gated at supplyMinLevel)
-//   clearance     — occasionally offers a steeply-discounted clearance lot
-//   firstDibs     — carries the newest sets, deeper stock on them
+//   clearance     — occasionally runs a steeply-discounted sale lot
+//   firstDibs     — gets the newest sets first (carries only the latest releases)
+//   rotating      — small, weekly-rotating selection (a shop shelf, not a warehouse)
 export const DISTRIBUTORS = [
   {
-    id: 'sunrise', name: 'Sunrise Collectibles', icon: '🌅', color: '#5ec98a',
-    blurb: 'Steady regional wholesaler. Carries everything in print and rarely runs dry — but prices sit only a hair under retail.',
-    priceMult: 0.97, discountStep: 0.022, maxDiscount: 0.12, reliability: 1.0,
+    id: 'lgs', name: 'Local Game Store', icon: '🎲', color: '#5ec98a',
+    blurb: 'Your neighborhood shop. A small, rotating shelf and the odd weekend sale — and they hold hot product for regulars. Limited allocation, so stock is thin.',
+    priceMult: 1.0, discountStep: 0.03, maxDiscount: 0.15, reliability: 0.4,
+    rotating: true, clearance: true,
   },
   {
-    id: 'prohobby', name: 'Pro Hobby Distribution', icon: '🏭', color: '#5aa0ff',
-    blurb: 'The real deal — true wholesale and full case lots. They only open the taps once you have proven you move volume.',
-    priceMult: 0.90, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.85,
+    id: 'pokecenter', name: 'Pokémon Center', icon: '⚡', color: '#ffcb05',
+    blurb: 'The official store — first crack at new sets and exclusives at MSRP. Strict per-customer allocation, so you can only grab a few at a time.',
+    priceMult: 1.0, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.45, firstDibs: true,
+  },
+  {
+    id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
+    blurb: 'The marketplace — every set at live market price, deep selection. You pay market, but it is (almost) always there.',
+    priceMult: 1.04, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.7,
+  },
+  {
+    id: 'amazon', name: 'Amazon', icon: '📦', color: '#ff9f43',
+    blurb: 'The everything store — reliable in-print staples, a hair over list. Never the chase deals, but rarely out of the basics.',
+    priceMult: 1.06, discountStep: 0.015, maxDiscount: 0.08, reliability: 0.8,
+  },
+  {
+    id: 'dna', name: "Dave & Adam's", icon: '🃏', color: '#b98cff',
+    blurb: 'A hobby giant — real case pricing and bulk supply once you are a known buyer. The volume play.',
+    priceMult: 0.93, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.7,
     cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
-  },
-  {
-    id: 'apex', name: 'Apex Imports', icon: '🚀', color: '#b98cff',
-    blurb: 'Gets the hot new releases first and deepest — at a premium. Allocation on chase product tightens fast unless they like you.',
-    priceMult: 1.0, discountStep: 0.03, maxDiscount: 0.15, reliability: 0.7, firstDibs: true,
-  },
-  {
-    id: 'greg', name: 'Gray-Market Greg', icon: '🕶️', color: '#d98c4a',
-    blurb: 'Cheapest packs in town and the odd clearance steal — when he has anything. Thin, erratic stock and a catalog that rotates weekly.',
-    priceMult: 0.82, discountStep: 0.015, maxDiscount: 0.10, reliability: 0.4, clearance: true,
   },
 ]
 export function distributorById(id) { return DISTRIBUTORS.find(d => d.id === id) || null }
 
-// How many of the NEWEST sets Apex carries, and how many sets Greg rotates through.
-const APEX_NEW_COUNT = 6
-const GREG_CATALOG_SIZE = 5
+// How many of the NEWEST sets a first-dibs seller carries, and how many the LGS rotates.
+const NEW_SET_COUNT = 6
+const LGS_SHELF_SIZE = 5
 
-// Which sets a distributor carries right now. `weekIndex` rotates Greg's selection.
-// `sets` is the in-print shop list (SHOP_SETS), newest last.
+// Which sets a retailer carries right now. `weekIndex` rotates the LGS shelf.
+// `sets` is the in-print shop list (SHOP_SETS), newest last. Perk-driven (not id-based).
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
-  if (dist.id === 'apex') return sets.slice(Math.max(0, sets.length - APEX_NEW_COUNT))
-  if (dist.id === 'prohobby') return sets.filter(s => caseLot(s)) // box/case-friendly sets only
-  if (dist.id === 'greg') {
+  if (dist.firstDibs) return sets.slice(Math.max(0, sets.length - NEW_SET_COUNT)) // newest releases only
+  if (dist.cases) return sets.filter(s => caseLot(s))                             // box/case-friendly sets
+  if (dist.rotating) {                                                            // small weekly shelf
     const n = sets.length
     if (!n) return []
     const start = (Math.abs(weekIndex) * 3) % n
     const out = []
-    for (let i = 0; i < Math.min(GREG_CATALOG_SIZE, n); i++) out.push(sets[(start + i) % n])
+    for (let i = 0; i < Math.min(LGS_SHELF_SIZE, n); i++) out.push(sets[(start + i) % n])
     return out
   }
-  return sets // sunrise: the full catalog
+  return sets // marketplace / big-box: the full catalog
 }
 
 // The rapport discount a distributor extends at a given level (capped). Single source
@@ -1420,15 +1428,22 @@ export function distributorCasePrice(dist, lot, level) {
   return round2(distributorPrice(dist, lot.retail, level) * (1 - CASE_BULK_CUT))
 }
 
-// Stock cap for a product from a distributor at a rapport level. Singles stock deep,
-// boxes shallower, cases very shallow; scaled by reliability and (as a wider
-// allocation) by rapport.
+// Stock cap for a product from a retailer at a rapport level. Sealed allocation is SPARSE
+// (real product is hard to keep on a shelf): a handful of single packs, only a few
+// multi-pack products (ETBs / bundles / premiums), one or two booster boxes, cases are
+// rare. Scaled by reliability and — as a wider allocation — by rapport, so building a
+// relationship is how you get to buy in any real quantity.
 export function stockCap(dist, product, level) {
   if (!dist) return 99
   const packs = product?.packs || 1
-  const base = packs >= CASE_BOXES * 10 ? 2 : packs >= 10 ? 6 : 30
+  let base
+  if (product?._case) base = 1
+  else if (packs >= 21) base = 1          // booster box
+  else if (packs >= 9) base = 3           // ETB / super-premium collection
+  else if (packs >= 2) base = 5           // booster bundle / premium / tin / blister
+  else base = 10                          // single booster / sleeved pack
   const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
-  const allo = 1 + 0.2 * (level || 0)       // bigger allocation as rapport grows
+  const allo = 1 + 0.25 * (level || 0)      // bigger allocation as rapport grows (up to +100%)
   return Math.max(1, Math.round(base * rel * allo))
 }
 // Units of stock a distributor regains per day (toward the cap).
