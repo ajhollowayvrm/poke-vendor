@@ -355,9 +355,41 @@ export function advanceDaysWith(set, get, days, away) {
   for (const ev of market.events) get().log(ev.kind === 'hype' ? 'market-hype' : 'market-crash', `${ev.kind === 'hype' ? '📈' : '📉'} ${ev.line}`, 0)
   // Resolve any grades whose day count was reached during these days (currentDay is now updated).
   const resolvedGrades = get().resolveGrades()
+  // The day-summary payload. cashDelta/notoDelta are measured against the snapshot taken at
+  // the very top of this call (s.cash / noto) AFTER every settlement above — including the
+  // completion bonuses a returned slab may have just paid — so the modal reflects the whole
+  // tick. saleProceeds is the passive income banked (consignments + supply + listing sales).
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
     lease: round2(leaseDue), payroll: round2(payrollDue), listingsSold: lt.sold.length, listingOffers: lt.newOffers,
-    resolvedGrades: resolvedGrades.length }
+    resolvedGrades: resolvedGrades.length, days,
+    saleProceeds: round2(soldProceeds),
+    cashDelta: round2(get().cash - s.cash),
+    notoDelta: round2(get().notoriety - noto) }
+}
+
+// Combine two day-summaries into one (used when a show trip is a home "wait" stretch plus
+// the "away" show days — the player wants ONE recap of the whole trip, not two). Sums the
+// counters/money and concatenates nothing else; a null side passes the other through.
+export function mergeSummaries(a, b) {
+  if (!a) return b
+  if (!b) return a
+  const add = (x, y) => (x || 0) + (y || 0)
+  return {
+    added: add(a.added, b.added),
+    missedOnline: add(a.missedOnline, b.missedOnline),
+    missedWalkin: add(a.missedWalkin, b.missedWalkin),
+    wages: round2(add(a.wages, b.wages)),
+    rent: round2(add(a.rent, b.rent)),
+    lease: round2(add(a.lease, b.lease)),
+    payroll: round2(add(a.payroll, b.payroll)),
+    listingsSold: add(a.listingsSold, b.listingsSold),
+    listingOffers: add(a.listingOffers, b.listingOffers),
+    resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
+    saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
+    cashDelta: round2(add(a.cashDelta, b.cashDelta)),
+    notoDelta: round2(add(a.notoDelta, b.notoDelta)),
+    days: add(a.days, b.days),
+  }
 }
 
 // Settle daily store overhead (lease + payroll). If cash covers it, pay and clear arrears.

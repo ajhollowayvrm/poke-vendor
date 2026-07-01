@@ -12,7 +12,7 @@ import {
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
 } from './constants'
 import { bumpSet, realizableAssets } from './helpers'
-import { advanceDaysWith } from './daytick'
+import { advanceDaysWith, mergeSummaries } from './daytick'
 import { initialState } from './initialState'
 
 export function createEconomySlice(set, get) {
@@ -188,24 +188,27 @@ export function createEconomySlice(set, get) {
     // Flushes accumulated card income into the rolling window for the full-time readout.
     nextDay() {
       if (get().gameOver) return null
-      const cashBefore = get().cash
+      // advanceDaysWith now carries days + cashDelta in its summary; we just tack on the
+      // per-day card-income flush that the full-time runway readout depends on.
       const result = advanceDaysWith(set, get, 1, false) || {}
       const cardIncome = round2(get()._cardAccrual || 0)
       const ring = [...(get().cardIncomeLog || []), cardIncome]
       set(() => ({ cardIncomeLog: ring.slice(-INCOME_WINDOW_DAYS), _cardAccrual: 0 }))
-      const cashAfter = get().cash
-      return { ...result, days: 1, cashDelta: round2(cashAfter - cashBefore), cardIncome }
+      return { ...result, cardIncome }
     },
     // Attend a show: the show's days pass while you're AWAY. Home orders during
     // those days only land if you have the Smartphone (online) / Staff (walk-in)
     // upgrades; otherwise they're missed. Any other shows in the window are skipped.
+    // Returns ONE merged summary of the whole trip (any home "wait" days + the away show
+    // days) so the caller can recap the trip on leaving the floor.
     attendShowDays(showDay, days) {
       set(s => ({ showsAttended: s.showsAttended + 1 }))
       get().bumpGoal('attend', 1) // credit today's "attend a show" goal before the day rolls
       // days waiting until the show opens (home, not away) + the show's run (away)
       const wait = Math.max(0, showDay - get().currentDay)
-      if (wait > 0) advanceDaysWith(set, get, wait, false)
-      return advanceDaysWith(set, get, days, true)
+      const waitRes = wait > 0 ? advanceDaysWith(set, get, wait, false) : null
+      const showRes = advanceDaysWith(set, get, days, true)
+      return mergeSummaries(waitRes, showRes)
     },
 
     // Wipe back to a fresh game. Uses the shared initialState() factory so the field list

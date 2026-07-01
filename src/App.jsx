@@ -221,8 +221,9 @@ export default function App() {
     if (!spend(tier.entryFee)) return toast('Not enough cash for the entry fee.')
     useGame.getState().bringToShow([]) // ensure the booth is empty — you're here to buy
     useGame.getState().log('show', `Attended ${show.name} as a shopper (${tier.days}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
-    useGame.getState().attendShowDays(show.day, tier.days)
-    setActiveShow({ ...show, _asVendor: false, _arrival: arrival })
+    // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
+    const summary = useGame.getState().attendShowDays(show.day, tier.days)
+    setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary })
   }
 
   // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee (+ booth-spot
@@ -236,15 +237,20 @@ export default function App() {
     useGame.getState().bringToShow(uids || [])
     const spotNote = spotFee ? ` + ${opts.spotLabel} $${spotFee}` : ''
     useGame.getState().log('show', `Vended at ${show.name} (${tier.days}d · entry $${tier.entryFee} + booth $${tier.vendorFee}${spotNote})`, -cost)
-    useGame.getState().attendShowDays(show.day, tier.days)
+    // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
+    const summary = useGame.getState().attendShowDays(show.day, tier.days)
     setPreppingShow(null)
-    setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open' })
+    setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary })
   }
 
   // Leaving the show: unsold show-inventory cards come back home, then exit the floor.
+  // Surface the trip recap (days away, rent/lease paid, orders missed, grades back) that we
+  // stashed when the days passed at entry — most useful after a multi-day show.
   function leaveShow() {
+    const trip = activeShow?._summary
     useGame.getState().endShow()
     setActiveShow(null)
+    if (trip) setDaySummary({ ...trip, showName: activeShow?.name })
   }
 
   // Switch tabs. A rip in progress is NOT discarded — its component stays mounted as an
@@ -430,21 +436,30 @@ function GameClock() {
 
 // Per-day summary — shown after clicking "Next Day".
 function DaySummary({ summary, onClose }) {
-  const { cashDelta, added, listingsSold, listingOffers, wages, rent, lease, payroll, resolvedGrades } = summary
+  const { cashDelta, added, listingsSold, listingOffers, wages, rent, lease, payroll, resolvedGrades,
+    saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName } = summary
   const currentDay = useGame(s => s.currentDay)
-  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || wages || rent || lease || payroll
+  const missed = (missedOnline || 0) + (missedWalkin || 0)
+  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || wages || rent || lease
+    || payroll || saleProceeds || notoDelta || missed
+  // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
+  // just the day you entered.
+  const multiDay = days > 1
   return (
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 6 }}>📅 Day {currentDay}</h2>
+        <h2 style={{ marginBottom: 2 }}>{showName ? `🎪 Back from ${showName}` : `📅 Day ${currentDay}`}</h2>
+        {multiDay && <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>{days} days passed</div>}
         {!hasActivity ? (
-          <p className="muted" style={{ marginTop: 0 }}>A quiet day.</p>
+          <p className="muted" style={{ marginTop: 0 }}>{multiDay ? 'Nothing stirred while you were away.' : 'A quiet day.'}</p>
         ) : (
           <div style={{ fontSize: 14, margin: '8px 0', textAlign: 'left' }}>
             {cashDelta != null && (
               <div style={{ marginBottom: 6 }}>Net cash <b style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
                 {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}</b></div>
             )}
+            {saleProceeds > 0 && <div className="muted">Sales income +{fmtMoney(saleProceeds)}</div>}
+            {notoDelta > 0 && <div className="muted">Notoriety <b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b></div>}
             {added > 0 && <div className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</div>}
             {listingsSold > 0 && <div className="muted">{listingsSold} listing{listingsSold === 1 ? '' : 's'} sold</div>}
             {listingOffers > 0 && <div className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</div>}
@@ -453,6 +468,12 @@ function DaySummary({ summary, onClose }) {
             {rent > 0 && <div className="muted">Rent paid -{fmtMoney(rent)}</div>}
             {lease > 0 && <div className="muted">Store lease -{fmtMoney(lease)}</div>}
             {payroll > 0 && <div className="muted">Staff payroll -{fmtMoney(payroll)}</div>}
+            {missed > 0 && (
+              <div style={{ color: 'var(--red)', marginTop: 4 }}>
+                Missed {missed} order{missed === 1 ? '' : 's'} while away
+                <span className="muted"> ({missedOnline ? `${missedOnline} online` : ''}{missedOnline && missedWalkin ? ', ' : ''}{missedWalkin ? `${missedWalkin} walk-in` : ''})</span>
+              </div>
+            )}
           </div>
         )}
         <button className="btn gold" style={{ maxWidth: 160, marginTop: 8 }} onClick={onClose}>Continue</button>
