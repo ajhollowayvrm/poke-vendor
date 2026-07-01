@@ -116,6 +116,14 @@ function mapRarity(r) {
   return 'Rare'
 }
 
+// Per-card rarity corrections keyed by card id. The source (pokemontcg.io) mis-tags a
+// handful of top secret-numbered cards as plain "Rare"; these are the set's signature
+// Black White Rare chases. Applied after mapRarity so a re-fetch keeps them correct.
+const RARITY_ID_OVERRIDE = {
+  'zsv10pt5-171': 'Black White Rare', // Black Bolt — Victini (secret)
+  'rsv10pt5-172': 'Black White Rare', // White Flare — Victini (secret)
+}
+
 // --- TCGCSV sealed product / singles source (free, no auth) --------------------
 // Maps our set ids → TCGplayer group ids on tcgcsv.com (category 3).
 const TCGCSV = 'https://tcgcsv.com/tcgplayer/3'
@@ -494,7 +502,7 @@ async function fetchEnglishSet(cfg, psaMap) {
       id: raw.id, // e.g. "me4-1" — already matches our id format
       name: raw.name,
       number: String(raw.number),
-      rarity: mapRarity(raw.rarity),
+      rarity: RARITY_ID_OVERRIDE[raw.id] || mapRarity(raw.rarity),
       supertype: raw.supertype || 'Pokémon',
       img,
       imgLarge,
