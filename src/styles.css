@@ -30,7 +30,10 @@ button { font-family: inherit; cursor: pointer; }
 .app { max-width: 1180px; margin: 0 auto;
   /* fill at least the viewport so short pages don't leave dead space below */
   min-height: 100dvh; display: flex; flex-direction: column;
-  padding: calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); }
+  /* Ignore the device safe zones: fill edge-to-edge (viewport-fit=cover) with fixed
+     padding instead of reserving the notch / home-indicator insets, so there's no dark
+     strip ("bar") above the top bar or below the nav. */
+  padding: 16px 20px 60px; }
 /* the routed view grows to fill the space between top bar and bottom nav */
 .content { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
 /* Each routed pane is a transparent flex passthrough (so .empty / full-height children
@@ -810,7 +813,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 }
 
 @media (max-width: 640px) {
-  .app { padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right)); }
+  .app { padding-left: 10px; padding-right: 10px; }
   /* App shell — applied ONLY to the main view (the .app that contains the bottom nav). Lock
      it to the visual viewport and scroll the CONTENT region instead of the page body, so the
      nav becomes a normal footer row that can't drift during iOS toolbar show/hide (the old
@@ -1255,7 +1258,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
    to bottom. `safe center` keeps a huge hall anchored to the top so it can scroll.
    Placed at end-of-file so it overrides the earlier mobile `.floorscroll` max-height. */
 @media (hover: none), (max-width: 760px) {
-  .app:has(.floorwrap) { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .app:has(.floorwrap) { padding-bottom: 14px; }
   .floorwrap { flex: 1 1 auto; min-height: 0; }
   .floorscroll { flex: 1 1 auto; max-height: none; align-items: safe center; }
 }
