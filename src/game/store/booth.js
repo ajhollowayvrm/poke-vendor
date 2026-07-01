@@ -9,7 +9,7 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById } from '../engine'
+import { round2, cardValue, setById, bulkSellableUids } from '../engine'
 import { encounterStillValid } from '../shows'
 import { acceptedMethods, PAYMENT_METHODS, processingFee } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
@@ -115,16 +115,19 @@ export function createBoothSlice(set, get) {
     // you've PUT OUT here (you choose what's on display), not your private collection.
     // Needs a storefront. Cards stay out until they sell or you pull them back.
     stockShop(uids) {
-      if (!get().upgrades.storefront) return 0
-      const ids = new Set(uids)
-      const putting = get().collection.filter(c => ids.has(c.uid))
-      if (!putting.length) return 0
+      if (!get().upgrades.storefront) return { sold: 0, kept: 0 }
+      // Cards on the shelf can be sold to walk-ins, so honor the protection net here too.
+      const { sell, kept } = bulkSellableUids(get().collection, uids, { keepOne: get().settings?.keepOne })
+      const sellSet = new Set(sell)
+      const putting = get().collection.filter(c => sellSet.has(c.uid))
+      if (!putting.length) return { sold: 0, kept: kept.length }
       set(s => ({
-        collection: s.collection.filter(c => !ids.has(c.uid)),
+        collection: s.collection.filter(c => !sellSet.has(c.uid)),
         shopDisplay: [...putting, ...(s.shopDisplay || [])],
       }))
-      get().log('shop', `Put ${putting.length} card${putting.length > 1 ? 's' : ''} out on the shop shelf`, 0)
-      return putting.length
+      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
+      get().log('shop', `Put ${putting.length} card${putting.length > 1 ? 's' : ''} out on the shop shelf${keptNote}`, 0)
+      return { sold: putting.length, kept: kept.length }
     },
     // Pull one card off the shelf, back into your collection.
     pullFromShop(uid) {

@@ -28,6 +28,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
     return (
       <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
         <div className={`cardtile slab grade-${g} ${gemmint ? 'slab-gem' : ''}`} onClick={onClick}>
+          {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
           <div className="slab-shine" aria-hidden="true" />
           <div className="slab-label">
             <div className="slab-brand">PSA</div>
@@ -56,6 +57,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
         <span className="tag" style={{ color: edge }}>
           {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}
         </span>
+        {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
         {!card.grade && card.condition && card.condition !== 'NM' && (
           <span className="condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
         )}

@@ -44,6 +44,7 @@ export function initialState() {
     showsAttended: 0,
     streamHypeDaysLeft: 0,   // days of post-stream "afterglow" left (boosts ALL listing traffic)
     streamFatigue: 0,        // audience fatigue: +1 per stream, −1 per game-day of rest (drives viewer falloff)
+    followers: 0,            // channel followers: your returning audience — a reliable baseline crowd that grows with good streams
     streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, // lifetime livestream tallies
     generousActs: 0,
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
@@ -80,6 +81,8 @@ export function initialState() {
     // ripOnBuy: a buy skips inventory and rips immediately. Off by default → buying STOCKS to inventory.
     // revealMode: 'auto' flips cards on a timer; 'manual' waits for you to tap each one.
     // sound/haptics: synthesized rip SFX + phone vibration (see game/feedback.js).
-    settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true },
+    // keepOne ("Protect set singles"): bulk sells skip your last copy of each card so a
+    // sweep only dumps duplicates — the master-set safety net (see engine.bulkSellableUids).
+    settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false },
   }
 }

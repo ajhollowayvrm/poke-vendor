@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank, preloadCardImages, setById } from '../game/engine'
+import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
-  chatLine, reactionKind, spotPrice, spotsFilled,
+  chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX,
 } from '../game/stream'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 import Burst from './Burst'
 import { confirmDialog, toast } from '../ui/dialog'
+import { configureFeedback, primeAudio, sfxHit, sfxGod } from '../game/feedback'
 
 // The livestream studio. You go LIVE and rip product on camera: a viewer counter,
 // live chat that reacts to your ACTUAL pulls, tips, a "now revealing" callout, and
@@ -47,6 +48,7 @@ export default function Livestream() {
 // --- Setup -------------------------------------------------------------------
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const cash = useGame(s => s.cash)
+  const followers = useGame(s => s.followers || 0)
   const spend = useGame(s => s.spend)
   const recordSetSpend = useGame(s => s.recordSetSpend)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
@@ -76,13 +78,14 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const [spots, setSpots] = useState(4)
 
   const fresh = fatigueMult(fatigue)
-  const expected = baseViewers(notoriety, fresh)
+  const expected = baseViewers(notoriety, fresh, followers)
   const per = spotPrice(product.price, spots, notoriety)
 
   // keep break toggle valid when switching to a single-pack product
   useEffect(() => { if (!canBreak && doBreak) setDoBreak(false) }, [canBreak, doBreak])
 
   async function go() {
+    primeAudio() // this click is our chance to start audio under the browser's autoplay policy
     // Breaking a held box costs nothing now (you paid when you bought it); ripping fresh
     // charges the product price.
     if (!fromInv && cash < product.price) return toast(`Not enough cash for the ${product.type}.`)
@@ -123,6 +126,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
         notoriety jump and pumps your store's traffic for days — but it <b>burns a game-day</b>, and streaming
         often <b>tires your audience</b> (rest a few days to recover).
         {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime</span> : null}
+        {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'#3b6cff22', color:'#9db8ff' }}>👥 {followers.toLocaleString()} followers</span>}
       </div>
 
       <div className="market-panel" style={{ marginTop: 14 }}>
@@ -203,11 +207,19 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const addPulls = useGame(s => s.addPulls)
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
+  const soundOn = useGame(s => s.settings.sound ?? true)
+  const hapticsOn = useGame(s => s.settings.haptics ?? true)
+  const followers = useGame(s => s.followers || 0)
+  const regulars = useGame(s => s.regulars)
+  const giveawayCard = useGame(s => s.giveawayCard)
   const speed = Math.max(0.25, ripSpeed)
   const ms = (n) => n / speed
 
+  // Keep the SFX module in sync with the player's sound/haptics settings.
+  useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
+
   const totalPacks = product.packs
-  const settled = baseViewers(notoriety, fatigueMult(fatigue))
+  const settled = baseViewers(notoriety, fatigueMult(fatigue), followers)
 
   const [packNo, setPackNo] = useState(0)
   const [phase, setPhase] = useState('idle')        // idle | revealing | packdone
@@ -225,13 +237,25 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [filledSpots, setFilledSpots] = useState(spotsSold)   // grows as viewers grab spots live
   const [liveSpotFlash, setLiveSpotFlash] = useState(null)
   const [done, setDone] = useState(false)
+  // Hype train (consecutive hits stack a tip multiplier) + a live combo counter.
+  const [hypeLevel, setHypeLevel] = useState(0)
+  const [combo, setCombo] = useState(0)
+  // Followers earned THIS session (giveaway + goal bonuses) — the base performance gain is
+  // added at cash-out. Kept in the component so the store's follower count moves exactly once.
+  const [sessionFollowers, setSessionFollowers] = useState(0)
+  const [gaveAway, setGaveAway] = useState(false)
+  const [goal] = useState(() => pickStreamGoal(product))
+  const [goalMet, setGoalMet] = useState(false)
 
   const peakRef = useRef(settled)
   const chatBoxRef = useRef(null)
   const finishedRef = useRef(false)
   const autoRef = useRef(false)
+  const hypeRef = useRef(0)          // mirror of hypeLevel readable inside timer callbacks
+  const regularsRef = useRef([])     // live online-regular roster for chat attribution
   // every card pulled, tagged with its spot index (for break shipping at the end)
   const allPulled = useRef([])  // { card, spot }  (spot only set for breaks)
+  regularsRef.current = (regulars || []).filter(r => !r.flags?.burned)
 
   // Every reveal/burst/tip timer is tracked here so we can cancel the whole chain when the
   // stream ends early or the component unmounts — otherwise an in-flight revealNext keeps
@@ -245,7 +269,17 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
 
   const pushChat = useCallback((line) => {
-    setChat(c => [...c.slice(-40), { ...line, id: `${Date.now()}-${Math.random()}` }])
+    let l = line
+    // Sometimes a real online REGULAR (from your customer roster) is the one chatting —
+    // ties the stream into your loyalty loop. Only reattributes ordinary reaction lines.
+    if (l && !l.tip && l.handle !== 'system') {
+      const roster = regularsRef.current
+      if (roster.length && Math.random() < 0.3) {
+        const r = roster[Math.floor(Math.random() * roster.length)]
+        l = { ...l, handle: r.name, regular: true, emoji: r.emoji }
+      }
+    }
+    setChat(c => [...c.slice(-40), { ...l, id: `${Date.now()}-${Math.random()}` }])
   }, [])
 
   // ambient chat + viewer drift toward settled. Depend on `speed` (a number), NOT `ms` —
@@ -307,8 +341,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   function revealNext(cards, i) {
     if (finishedRef.current) return // stream ended early — stop the chain (don't mint a post-cashout promo)
     if (i >= cards.length) {
-      if (cards._god) { setBurst(true); after(() => setBurst(false), ms(2500)) }
-      else if (cards._demigod) { setBurst(true); after(() => setBurst(false), ms(1500)) }
+      if (cards._god) { setBurst(true); sfxGod(); after(() => setBurst(false), ms(2500)) }
+      else if (cards._demigod) { setBurst(true); sfxGod(); after(() => setBurst(false), ms(1500)) }
       setPackNo(n => { const np = n + 1; if (np >= totalPacks) finishSoon(); return np })
       setPhase('packdone'); return
     }
@@ -316,7 +350,22 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     const c = cards[i]; setCurrent(c)
     const kind = reactionKind(c)
     const special = c._isHit || c.foil
+    // Hype train: a hit/hype pull stacks the combo & climbs the train (god/hype jump it
+    // faster); a dead common cools it one notch. The live train level multiplies tips.
+    const good = kind === 'hit' || kind === 'hype' || kind === 'god' || kind === 'demigod'
+    if (good) {
+      setCombo(x => x + 1)
+      const step = kind === 'god' ? 3 : (kind === 'hype' || kind === 'demigod') ? 2 : 1
+      hypeRef.current = Math.min(HYPE_TRAIN_MAX, hypeRef.current + step)
+    } else {
+      setCombo(0)
+      hypeRef.current = Math.max(0, hypeRef.current - 1)
+    }
+    setHypeLevel(hypeRef.current)
+    const hypeMult = hypeTrainMult(hypeRef.current)
     setViewers(v => { const next = Math.max(1, Math.round(v * viewerReaction(c))); peakRef.current = Math.max(peakRef.current, next); return next })
+    // Sound: rarer cards ring higher; chase-tier adds a shimmer (mirrors PackOpening).
+    if (special) sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, kind === 'hype' || kind === 'god')
     pushChat(chatLine(kind, Math.random, c))
     if (kind === 'hype' || kind === 'god') {
       setHypeMoments(m => m + 1)
@@ -326,7 +375,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       maybeSellLiveSpot(c)
     }
     if (special) setHits(h => [c, ...h])
-    const t = tipsFor(c, peakRef.current)
+    const t = tipsFor(c, peakRef.current, Math.random, hypeMult)
     if (t > 0) { setTips(x => Math.round((x + t) * 100) / 100); if (t >= 3 || kind === 'hype' || kind === 'god') after(() => pushChat(chatLine('tip')), ms(200)) }
     const delay = special ? 900 : 360
     after(() => revealNext(cards, i + 1), ms(delay))
@@ -349,6 +398,40 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       return f
     })
   }
+
+  // Raffle a bulk card you pulled this stream to a lucky viewer — a follower pop + chat frenzy.
+  // Once per stream, and only cards still yours (not shipped to a break buyer).
+  function runGiveaway() {
+    if (gaveAway || done || finishedRef.current) return
+    const pool = allPulled.current.filter(p => {
+      if (p.spot != null && p.spot < filledSpots) return false // already ships to a spot buyer
+      const c = p.card
+      return c && !c._isHit && !c.foil && !c.grade // give away bulk, never your hits
+    })
+    if (!pool.length) return toast('Nothing to give away yet — rip some cards first.')
+    const chosen = pool[Math.floor(Math.random() * pool.length)]
+    const res = giveawayCard(chosen.card.uid, peakRef.current)
+    if (!res) return
+    setGaveAway(true)
+    setSessionFollowers(f => f + res.followers)
+    setBurst(true); after(() => setBurst(false), ms(1500))
+    pushChat({ handle: 'system', text: `🎁 GIVEAWAY! ${res.card.name} goes to a lucky viewer — +${res.followers} followers`, tip: true })
+    for (let k = 0; k < 3; k++) after(() => pushChat(chatLine('hype', Math.random, res.card)), ms(150 * (k + 1)))
+  }
+
+  // Watch the per-stream goal; reward followers the moment it's met.
+  useEffect(() => {
+    if (goalMet || !goal || finishedRef.current) return
+    const met = goal.type === 'hits' ? hits.length >= goal.target
+      : goal.type === 'chase' ? hits.some(h => isStreamHype(h))
+      : goal.type === 'train' ? hypeLevel >= goal.target
+      : false
+    if (met) {
+      setGoalMet(true)
+      setSessionFollowers(f => f + goal.reward)
+      pushChat({ handle: 'system', text: `🎯 Goal complete — ${goal.label}! +${goal.reward} followers`, tip: true })
+    }
+  }, [hits, hypeLevel, goal, goalMet, pushChat])
 
   function finishSoon() {
     if (finishedRef.current) return // already cashed out — don't add a promo after the fact
@@ -394,12 +477,18 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             filled++; spotGain++; useGame.getState().sellLiveSpot(perSpot)
           }
         }
-        addedTips += tipsFor(c, peakRef.current)
+        // keep the hype train rolling through the skip so its tip multiplier still applies
+        const good = kind === 'hit' || kind === 'hype' || kind === 'god' || kind === 'demigod'
+        hypeRef.current = good
+          ? Math.min(HYPE_TRAIN_MAX, hypeRef.current + (kind === 'god' ? 3 : (kind === 'hype' || kind === 'demigod') ? 2 : 1))
+          : Math.max(0, hypeRef.current - 1)
+        addedTips += tipsFor(c, peakRef.current, Math.random, hypeTrainMult(hypeRef.current))
         if (c._isHit || c.foil) addedHits.push(c)
       })
     }
     if (addedTips) setTips(x => Math.round((x + addedTips) * 100) / 100)
     if (hype) setHypeMoments(m => m + hype)
+    setHypeLevel(hypeRef.current)
     if (spotGain) setFilledSpots(f => Math.min(spots, f + spotGain))
     if (addedHits.length) setHits(h => [...addedHits.reverse(), ...h])
     setViewers(Math.round(v))
@@ -414,6 +503,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     timersRef.current.forEach(clearTimeout); timersRef.current = [] // kill any in-flight reveal chain
     const peak = Math.round(peakRef.current)
     const noto = streamNotoriety(peak, hypeMoments)
+    // Followers earned: base performance (peak + hype moments) + this session's giveaway/goal
+    // bonuses. A flop earns none of the base. The store applies the whole gain at once.
+    const flopped = isFlop(peak)
+    const followerGain = followersGained(peak, hypeMoments, flopped) + sessionFollowers
     // breaks: ship the cards that landed on FILLED spots; keep the rest (your teams)
     let shipped = 0, keptHits = hits
     if (isBreak) {
@@ -422,10 +515,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       const shipSet = new Set(shipUids)
       keptHits = hits.filter(h => !shipSet.has(h.uid))
     }
-    useGame.getState().endStream({ tips, noto, peakViewers: peak })
+    useGame.getState().endStream({ tips, noto, peakViewers: peak, followers: followerGain })
+    // A solid (non-flop) stream can win you a new online regular — streaming feeds the loyalty loop.
+    if (!flopped && noto > 0) useGame.getState().formRegular({ channel: 'online', setId: set.id, setName: set.name, generous: hypeMoments > 0 })
     onEnd({ peak, noto, tips, hits: keptHits, packsRipped: totalPacks, isBreak,
       spotsSold: filledSpots, spots, spotGross: Math.round(filledSpots * perSpot * 100) / 100,
-      shipped, set, product })
+      shipped, set, product, followers: followerGain })
   }
 
   const flopping = isFlop(viewers)
@@ -447,6 +542,14 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         <span className="pill live-dot">🔴 LIVE</span>
         <span className="stream-viewers" style={flopping ? { color: 'var(--red)' } : null}>👁 {viewers.toLocaleString()} watching{flopping ? ' · quiet room…' : ''}</span>
         <span className="pill" style={{ background:'#36d39922', color:'var(--green)' }}>💸 {fmtMoney(tips)} tips</span>
+        <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }} title="Your returning audience — grows with good streams">
+          👥 {followers.toLocaleString()}{sessionFollowers > 0 ? <b style={{ color:'var(--green)' }}> +{sessionFollowers}</b> : ''}
+        </span>
+        {hypeLevel > 0 && (
+          <span className={`pill hype-train lvl-${Math.min(HYPE_TRAIN_MAX, hypeLevel)}`} title="Consecutive hits stack a tip multiplier — keep the train rolling!">
+            ⚡ Hype ×{hypeLevel} · tips {hypeTrainMult(hypeLevel).toFixed(1)}×{combo > 2 ? ` · 🔥${combo}` : ''}
+          </span>
+        )}
         {keptValue > 0 && <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}
           title="Market value of the cards you're keeping from this rip">🃏 {fmtMoney(keptValue)} kept</span>}
         {isBreak && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'#ffcb0522', color:'var(--gold)' }}>📦 Break · {filledSpots}/{spots} spots</span>}
@@ -467,6 +570,13 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       )}
       {isDemigod && (phase === 'revealing' || phase === 'packdone') && (
         <div className="demigodbanner">DEMIGOD PACK! <small>chat is hyped.</small></div>
+      )}
+
+      {goal && (
+        <div className={`stream-goal ${goalMet ? 'met' : ''}`}>
+          {goalMet ? '✅' : '🎯'} <b>Stream goal:</b> {goal.label}
+          <span className="muted"> · +{goal.reward} followers{goalMet ? ' — done!' : ''}</span>
+        </div>
       )}
 
       <div className="stream-body">
@@ -524,6 +634,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 ⏩ Skip to end ({totalPacks - packNo} left)
               </button>
             )}
+            {!done && pulls.length > 0 && (
+              <button className="btn alt" style={{ flex:'none', maxWidth: 190 }} disabled={gaveAway} onClick={runGiveaway}
+                title={gaveAway ? 'Already ran a giveaway this stream' : 'Raffle a bulk card to a viewer — a burst of new followers'}>
+                {gaveAway ? '🎁 Given away' : '🎁 Giveaway'}
+              </button>
+            )}
             {done && <button className="btn gold" style={{ maxWidth: 240 }} onClick={endStream}>End stream & cash out →</button>}
             {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endStream}>End early</button>}
           </div>
@@ -549,8 +665,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           <div className="rip-side-head">💬 Live chat</div>
           <div className="chat-feed" ref={chatBoxRef}>
             {chat.map(m => (
-              <div key={m.id} className={`chat-msg ${m.tip ? 'tip' : ''}`}>
-                {m.tip ? <span>{m.text}</span> : <><b style={{ color: handleColor(m.handle) }}>{m.handle}</b> {m.text}</>}
+              <div key={m.id} className={`chat-msg ${m.tip ? 'tip' : ''} ${m.regular ? 'regular' : ''}`}>
+                {m.tip ? <span>{m.text}</span> : (
+                  <><b style={{ color: m.regular ? 'var(--gold)' : handleColor(m.handle) }}>
+                    {m.regular ? `${m.emoji || '⭐'} ${m.handle} ⭐` : m.handle}
+                  </b> {m.text}</>
+                )}
               </div>
             ))}
           </div>
@@ -604,6 +724,7 @@ function StreamSummary({ session, onDone }) {
           <div><span className="muted">Your hits kept</span><b>{s.hits.length} · {fmtMoney(hitValue)}</b></div>
           {s.isBreak && <div><span className="muted">Spots sold</span><b>{s.spotsSold}/{s.spots}</b></div>}
           {s.isBreak && <div><span className="muted">Break P/L</span><b style={{ color: breakPL >= 0 ? 'var(--green)' : 'var(--red)' }}>{breakPL>=0?'+':''}{fmtMoney(breakPL)}</b></div>}
+          {s.followers > 0 && <div><span className="muted">New followers</span><b style={{ color:'#9db8ff' }}>👥 +{s.followers}</b></div>}
         </div>
         <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
           {s.noto > 0 ? '🔥 Your shop is buzzing — listing traffic is boosted for the next few days. Hop to the Sell tab.'
@@ -619,6 +740,18 @@ function StreamSummary({ session, onDone }) {
 
 // --- helpers -----------------------------------------------------------------
 function bestProduct(products) { return [...products].sort((a, b) => (b.packs - a.packs) || (b.price - a.price))[0] }
+// Pick a per-stream goal (a small objective that pays followers when met). Sized to the
+// product so a bigger box asks for a bit more.
+function pickStreamGoal(product) {
+  const packs = product?.packs || 1
+  const hitTarget = Math.max(2, Math.round(packs * 0.6))
+  const pool = [
+    { type: 'chase', label: 'Pull a chase (SIR+ or a special foil)', reward: 8 },
+    { type: 'train', target: 4, label: 'Get the hype train to ×4', reward: 6 },
+    { type: 'hits', target: hitTarget, label: `Pull ${hitTarget} hits this stream`, reward: 6 },
+  ]
+  return pool[Math.floor(Math.random() * pool.length)]
+}
 function seedChat() {
   return ['theQuietLurker', 'pikafan99', 'tcg_tina'].map((h, i) => ({
     handle: h, text: ['just got here!', 'lets see some hits', 'hi everyone 👋'][i], id: `seed-${i}`,

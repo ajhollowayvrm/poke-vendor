@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard } from '../game/engine'
+import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Collection({ onPick }) {
@@ -17,6 +17,11 @@ export default function Collection({ onPick }) {
   const listingQuote = useGame(s => s.listingQuote)
   const stockShop = useGame(s => s.stockShop)
   const hasStore = useGame(s => !!s.upgrades.storefront)
+  // Master-set protection: keep-one-of-each guard + per-card locks.
+  const keepOne = useGame(s => s.settings.keepOne)
+  const setSetting = useGame(s => s.setSetting)
+  const toggleLock = useGame(s => s.toggleLock)
+  const lockMany = useGame(s => s.lockMany)
 
   const [sort, setSort] = useState('value')
   const [selectMode, setSelectMode] = useState(false)
@@ -39,12 +44,25 @@ export default function Collection({ onPick }) {
   // "Bulk" by live attributes (raw, unfoiled, below the hit threshold) — matches the
   // store's isBulkCard exactly, so the button counts/value reflect what actually sells
   // and never sweeps a MEGA_ATTACK / SIR / foil that happens to lack the _isHit flag.
-  const bulk = collection.filter(isBulkCard)
-  const bulkVal = bulk.reduce((a, c) => a + cardValue(c) * quickSellRate, 0)
+  // Route it through the protection net so the labels reflect exactly what the action
+  // will sell (locks + keep-one held back), and we can surface how many are protected.
+  const { bulk, bulkVal, buylistVal, bulkKept } = useMemo(() => {
+    const bulkAll = collection.filter(isBulkCard)
+    const { sell, kept } = bulkSellableUids(collection, bulkAll.map(c => c.uid), { keepOne })
+    const sellSet = new Set(sell)
+    const toSell = bulkAll.filter(c => sellSet.has(c.uid))
+    return {
+      bulk: toSell,
+      bulkVal: toSell.reduce((a, c) => a + cardValue(c) * quickSellRate, 0),
+      buylistVal: toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0),
+      bulkKept: kept.length,
+    }
+  }, [collection, keepOne, quickSellRate, buylistRate])
   const buylistBulk = bulk
-  const buylistVal = buylistBulk.reduce((a, c) => a + cardValue(c) * buylistRate, 0)
 
   function flash(m) { setToast(m); setTimeout(() => setToast(null), 2800) }
+  // Appended to a bulk-action toast when the protection net held cards back.
+  function keptNote(kept) { return kept ? ` 🔒 Kept ${kept} you need.` : '' }
   function clearSel() { setPicked(new Set()) }
   function exitSelect() { setSelectMode(false); clearSel() }
 
@@ -99,26 +117,44 @@ export default function Collection({ onPick }) {
             {picked.size === view.length && view.length ? 'Deselect all' : `Select all (${view.length})`}
           </button>
         )}
+        {/* Master-set safety net: when on, no bulk sell ever dumps your last copy of a card. */}
+        <button className={`btn ${keepOne ? 'gold' : 'alt'}`} style={{ flex: 'none' }}
+          title="Protect set singles: bulk sells skip your last copy of each card, so a sweep only dumps duplicates. Locked cards (🔒) are always kept."
+          onClick={() => setSetting('keepOne', !keepOne)}>
+          {keepOne ? '🔒 Keeping singles' : '🔓 Keep singles'}
+        </button>
         {!selectMode && buylistBulk.length > 0 && (
           <button className="btn alt" style={{ flex: 'none', marginLeft: 'auto' }}
-            title={`Dump all bulk to a shop's buylist at ${Math.round(buylistRate*100)}% of market — instant cash`}
+            title={`Dump all bulk to a shop's buylist at ${Math.round(buylistRate*100)}% of market — instant cash${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={sellToBuylist}>Buylist {buylistBulk.length} → {fmtMoney(buylistVal)}</button>
         )}
         {!selectMode && bulk.length > 0 && (
           <button className="btn gold" style={{ flex: 'none', marginLeft: buylistBulk.length ? 0 : 'auto' }}
-            title="Quick-sell all raw commons/uncommons (non-hits) instantly"
+            title={`Quick-sell all raw commons/uncommons (non-hits) instantly${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={sellAllUngraded}>Sell {bulk.length} raw → {fmtMoney(bulkVal)}</button>
         )}
       </div>
+      {!selectMode && bulkKept > 0 && (
+        <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
+          🔒 {bulkKept} card{bulkKept>1?'s':''} protected from the bulk sweep — {keepOne ? 'set singles + locked' : 'locked'}.
+        </p>
+      )}
 
       {view.length === 0 ? (
         <div className="empty">No cards yet — head to Buy and rip a pack. 📦</div>
       ) : (
         <div className="grid coll-grid">
           {view.map(c => (
-            <div key={c.uid} className={`coll-cell ${selectMode ? 'selectable' : ''} ${picked.has(c.uid) ? 'picked' : ''}`} onClick={() => onTile(c)}>
+            <div key={c.uid} className={`coll-cell ${selectMode ? 'selectable' : ''} ${picked.has(c.uid) ? 'picked' : ''} ${c.locked ? 'locked' : ''}`} onClick={() => onTile(c)}>
               <CardTile card={c} noBorder />
               {selectMode && picked.has(c.uid) && <span className="coll-check">✓</span>}
+              {/* Per-card lock: a hard "never bulk-sell this" toggle. Hidden in select mode
+                  (locking there is a bulk action); always shown otherwise so it works on touch. */}
+              {!selectMode && (
+                <button className={`coll-lock ${c.locked ? 'on' : ''}`}
+                  title={c.locked ? 'Locked — never included in a bulk sell. Tap to unlock.' : 'Lock this card — protect it from bulk sells.'}
+                  onClick={e => { e.stopPropagation(); toggleLock(c.uid) }}>{c.locked ? '🔒' : '🔓'}</button>
+              )}
             </div>
           ))}
         </div>
@@ -161,28 +197,34 @@ export default function Collection({ onPick }) {
                 <span className="muted" style={{ fontSize: 12 }}>%</span>
               </div>
               <button className="btn" disabled={!listMult} onClick={() => {
-                const n = listManyOnSite(selCards.map(c => c.uid), listMult)
-                flash(`Listed ${n} card${n>1?'s':''} at ${Math.round(listMult*100)}% of market.`)
+                const { sold, kept } = listManyOnSite(selCards.map(c => c.uid), listMult)
+                flash(`Listed ${sold} card${sold>1?'s':''} at ${Math.round(listMult*100)}% of market.${keptNote(kept)}`)
                 exitSelect()
               }}>🌐 List @ {Math.round(listMult*100)}%</button>
               {listHint && <span className={`list-hint ${listHint.cls}`}>{listHint.txt}</span>}
             </div>
             <button className="btn alt" onClick={() => {
-              const n = consignMany(selCards.map(c => c.uid))
-              flash(`Consigned ${n} card${n>1?'s':''}.`)
+              const { sold, kept } = consignMany(selCards.map(c => c.uid))
+              flash(`Consigned ${sold} card${sold>1?'s':''}.${keptNote(kept)}`)
               exitSelect()
             }}>↗ Consign</button>
             {hasStore && (
               <button className="btn alt" onClick={() => {
-                const n = stockShop(selCards.map(c => c.uid))
-                flash(`Put ${n} card${n>1?'s':''} out on the shop shelf — walk-ins can buy them now.`)
+                const { sold, kept } = stockShop(selCards.map(c => c.uid))
+                flash(`Put ${sold} card${sold>1?'s':''} out on the shop shelf — walk-ins can buy them now.${keptNote(kept)}`)
                 exitSelect()
               }}>🏬 Stock shop</button>
             )}
+            {/* Lock/unlock the selection — a hard bulk-sell guard for specific keepers. */}
             <button className="btn alt" onClick={() => {
-              const n = count
-              const got = quickSellMany(selCards.map(c => c.uid))
-              flash(`Quick-sold ${n} card${n>1?'s':''} for ${fmtMoney(got)}.`)
+              const lock = !selCards.every(c => c.locked)
+              const n = lockMany(selCards.map(c => c.uid), lock)
+              flash(`${lock ? '🔒 Locked' : '🔓 Unlocked'} ${n} card${n>1?'s':''}.`)
+              exitSelect()
+            }}>{selCards.every(c => c.locked) ? '🔓 Unlock' : '🔒 Lock'}</button>
+            <button className="btn alt" onClick={() => {
+              const { got, sold, kept } = quickSellMany(selCards.map(c => c.uid))
+              flash(`Quick-sold ${sold} card${sold>1?'s':''} for ${fmtMoney(got)}.${keptNote(kept)}`)
               exitSelect()
             }}>💸 Quick-sell {fmtMoney(selValue * quickSellRate)}</button>
           </div>

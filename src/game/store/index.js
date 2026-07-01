@@ -51,7 +51,7 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 32,
+  version: 33,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -299,6 +299,14 @@ export const useGame = create(persist((set, get) => ({
       state.pendingMilestones = []
       const already = newlyUnlocked(state, state.milestones).map(x => x.id)
       if (already.length) state.milestones = [...state.milestones, ...already]
+    }
+    if (version < 33) {
+      // Channel followers (returning stream audience) + the "Protect set singles"
+      // bulk-sell guard. Start followers at 0 and default the guard off so existing
+      // saves behave exactly as before until the player opts in.
+      state.followers = state.followers ?? 0
+      state.settings = state.settings || {}
+      state.settings.keepOne = state.settings.keepOne ?? false
     }
     return state
   },

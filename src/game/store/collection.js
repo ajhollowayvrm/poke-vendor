@@ -7,7 +7,7 @@
 
 import {
   cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
-  rollGrade, ownedIdSet, SETS, setCompletion, completionReward,
+  rollGrade, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay } from './constants'
@@ -77,6 +77,31 @@ export function createCollectionSlice(set, get) {
       }
     },
 
+    // --- Card protection (master-set safety net) --------------------------------
+    // Toggle a hard "keep this" lock on one card — locked cards are never touched by
+    // any BULK action (sell/buylist/consign/list/stock). Single-card actions from the
+    // card modal still work, so a lock is a bulk-sweep guard, not a total freeze.
+    toggleLock(uid) {
+      let nowLocked = false
+      set(s => ({ collection: s.collection.map(c => {
+        if (c.uid !== uid) return c
+        nowLocked = !c.locked; return { ...c, locked: nowLocked }
+      }) }))
+      const card = get().collection.find(c => c.uid === uid)
+      if (card) get().log('lock', `${nowLocked ? '🔒 Locked' : '🔓 Unlocked'} ${card.name}`, 0)
+      return nowLocked
+    },
+    // Lock/unlock many at once (Collection select-mode). val=true locks, false unlocks.
+    lockMany(uids, val = true) {
+      const ids = new Set(uids)
+      let n = 0
+      set(s => ({ collection: s.collection.map(c => {
+        if (!ids.has(c.uid) || !!c.locked === !!val) return c
+        n++; return { ...c, locked: !!val }
+      }) }))
+      return n
+    },
+
     // Quick sell (TCGplayer-style): instant cash, but well below market — you pay a steep
     // premium for the convenience. Liquidating your collection to make rent is a real loss,
     // not a soft cushion. Listing on your own site (below) can match or beat market.
@@ -95,11 +120,18 @@ export function createCollectionSlice(set, get) {
       const { collection, quickSellRate } = get()
       // Bulk = raw, unfoiled, below the hit threshold (by live rarity, not the stale
       // _isHit flag) — so a MEGA_ATTACK / SIR / foil acquired without that flag is safe.
-      const toSell = collection.filter(isBulkCard)
+      // Then filter through the protection net (locks + keep-one) so a sweep never eats
+      // a card you're keeping for a set.
+      const candidates = collection.filter(isBulkCard).map(c => c.uid)
+      const { sell, kept } = bulkSellableUids(collection, candidates, { keepOne: get().settings?.keepOne })
+      const sellSet = new Set(sell)
+      const toSell = collection.filter(c => sellSet.has(c.uid))
       const total = round2(toSell.reduce((a, c) => a + cardValue(c) * quickSellRate, 0))
-      set(s => ({ collection: s.collection.filter(c => !isBulkCard(c)) }))
+      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)) }))
       get().earn(total)
-      get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ${Math.round(quickSellRate*100)}%`, total)
+      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
+      get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ${Math.round(quickSellRate*100)}%${keptNote}`, total)
+      return { got: total, sold: toSell.length, kept: kept.length }
     },
 
     // Buylist: instantly dump ALL raw bulk (commons/uncommons/rares, no hits/graded)
@@ -107,12 +139,16 @@ export function createCollectionSlice(set, get) {
     buylistRate: 0.45,
     sellToBuylist() {
       const { collection, buylistRate } = get()
-      const toSell = collection.filter(isBulkCard)
-      if (!toSell.length) return 0
+      const candidates = collection.filter(isBulkCard).map(c => c.uid)
+      const { sell, kept } = bulkSellableUids(collection, candidates, { keepOne: get().settings?.keepOne })
+      if (!sell.length) return 0
+      const sellSet = new Set(sell)
+      const toSell = collection.filter(c => sellSet.has(c.uid))
       const total = round2(toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0))
-      set(s => ({ collection: s.collection.filter(c => !isBulkCard(c)) }))
+      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)) }))
       get().earn(total)
-      get().log('sell', `Buylisted ${toSell.length} bulk cards @ ${Math.round(buylistRate*100)}%`, total)
+      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
+      get().log('sell', `Buylisted ${toSell.length} bulk cards @ ${Math.round(buylistRate*100)}%${keptNote}`, total)
       return total
     },
 
@@ -136,32 +172,36 @@ export function createCollectionSlice(set, get) {
     // --- Bulk actions on a selected set of cards (Collection multi-select) -------
     // Quick-sell every selected card at the quick-sell rate, in one go.
     quickSellMany(uids) {
-      const ids = new Set(uids)
-      const toSell = get().collection.filter(c => ids.has(c.uid))
-      if (!toSell.length) return 0
+      const { sell, kept } = bulkSellableUids(get().collection, uids, { keepOne: get().settings?.keepOne })
+      const sellSet = new Set(sell)
+      const toSell = get().collection.filter(c => sellSet.has(c.uid))
+      if (!toSell.length) return { got: 0, sold: 0, kept: kept.length }
       const rate = get().quickSellRate
       const total = round2(toSell.reduce((a, c) => a + cardValue(c) * rate, 0))
-      set(s => ({ collection: s.collection.filter(c => !ids.has(c.uid)) }))
+      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)) }))
       get().earn(total)
-      get().log('sell', `Quick-sold ${toSell.length} cards @ ${Math.round(rate*100)}%`, total)
+      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
+      get().log('sell', `Quick-sold ${toSell.length} cards @ ${Math.round(rate*100)}%${keptNote}`, total)
       get().bumpGoal('sell', toSell.length); get().bumpGoal('profit', total)
-      return total
+      return { got: total, sold: toSell.length, kept: kept.length }
     },
     // Consign every selected card (each sells in 2–6 days for a bit above market −12%).
     consignMany(uids) {
-      const ids = new Set(uids)
-      const cards = get().collection.filter(c => ids.has(c.uid))
-      if (!cards.length) return 0
+      const { sell, kept } = bulkSellableUids(get().collection, uids, { keepOne: get().settings?.keepOne })
+      const sellSet = new Set(sell)
+      const cards = get().collection.filter(c => sellSet.has(c.uid))
+      if (!cards.length) return { sold: 0, kept: kept.length }
       const newConsigns = cards.map(card => {
         const sellsFor = round2(cardValue(card) * (1.05 + Math.random() * 0.15))
         return { card, net: round2(sellsFor * 0.88), daysLeft: 2 + Math.floor(Math.random() * 5) }
       })
       set(s => ({
-        collection: s.collection.filter(c => !ids.has(c.uid)),
+        collection: s.collection.filter(c => !sellSet.has(c.uid)),
         consignments: [...s.consignments, ...newConsigns],
       }))
-      get().log('consign', `Consigned ${cards.length} cards`, 0)
-      return cards.length
+      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
+      get().log('consign', `Consigned ${cards.length} cards${keptNote}`, 0)
+      return { sold: cards.length, kept: kept.length }
     },
 
     // --- Grading -----------------------------------------------------------------

@@ -6,7 +6,7 @@
 // good deal). The passage of days that actually sells listings lives in daytick.js
 // (tickListings); this slice is the player-facing actions around them.
 
-import { cardValue, dailyViewers, buyerMaxMult, BUYER_SAVVY, round2 } from '../engine'
+import { cardValue, dailyViewers, buyerMaxMult, BUYER_SAVVY, round2, bulkSellableUids } from '../engine'
 import { cardMatchesWant, makeRegular } from '../shows'
 import { REGULAR_FORM_GATE } from './constants'
 
@@ -116,19 +116,21 @@ export function createSellingSlice(set, get) {
     // List every selected card on your site at the same askMult (each rolls its own
     // sell/expire outcome). Returns the count.
     listManyOnSite(uids, askMult) {
-      const ids = new Set(uids)
-      const cards = get().collection.filter(c => ids.has(c.uid))
-      if (!cards.length) return 0
+      const { sell, kept } = bulkSellableUids(get().collection, uids, { keepOne: get().settings?.keepOne })
+      const sellSet = new Set(sell)
+      const cards = get().collection.filter(c => sellSet.has(c.uid))
+      if (!cards.length) return { sold: 0, kept: kept.length }
       const newListings = cards.map(card => {
         const q = get().listingQuote(card, askMult)
         return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
       })
       set(s => ({
-        collection: s.collection.filter(c => !ids.has(c.uid)),
+        collection: s.collection.filter(c => !sellSet.has(c.uid)),
         listings: [...(s.listings || []), ...newListings],
       }))
-      get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market`, 0)
-      return cards.length
+      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
+      get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market${keptNote}`, 0)
+      return { sold: cards.length, kept: kept.length }
     },
 
     // --- Want-lists (collectors who sought YOU out) ------------------------------

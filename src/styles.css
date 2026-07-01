@@ -523,6 +523,19 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   background: var(--green); color: #07140c; font-weight: 900; font-size: 14px; display:flex;
   align-items:center; justify-content:center; box-shadow: 0 1px 5px rgba(0,0,0,.5); }
 
+/* Per-card lock: a small toggle in the corner of each collection tile. Subtle until
+   locked, so an unlocked grid stays clean. */
+.coll-lock { position: absolute; top: 6px; left: 6px; z-index: 6; width: 24px; height: 24px;
+  border: none; border-radius: 999px; cursor: pointer; font-size: 13px; line-height: 1;
+  display:flex; align-items:center; justify-content:center; padding: 0;
+  background: #0008; opacity: .38; transition: opacity .12s, background .12s; }
+.coll-lock:hover { opacity: 1; }
+.coll-lock.on { opacity: 1; background: var(--gold); box-shadow: 0 1px 5px rgba(0,0,0,.5); }
+.coll-cell.locked { box-shadow: 0 0 0 2px var(--gold); border-radius: 12px; }
+/* Lock badge shown on the tile itself (visible in select mode / other views). */
+.lockchip { position: absolute; top: 6px; left: 6px; z-index: 5; font-size: 12px; line-height: 1;
+  background: var(--gold); border-radius: 999px; padding: 3px 4px; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+
 .bulk-bar { position: sticky; bottom: 14px; z-index: 40; margin-top: 16px;
   background: linear-gradient(180deg, var(--panel), var(--panel2)); border: 1px solid var(--line);
   border-radius: 14px; padding: 12px 14px; box-shadow: 0 10px 34px #0008;
@@ -931,6 +944,20 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .chat-msg { word-break:break-word; }
 .chat-msg b { font-weight:800; }
 .chat-msg.tip { color:var(--green); font-weight:700; background:#36d39914; border-radius:6px; padding:2px 6px; }
+.chat-msg.regular { background:#ffcb0512; border-radius:6px; padding:2px 6px; }
+
+/* Hype train pill — brighter/hotter as the combo climbs. */
+.pill.hype-train { background:#ff9f4322; color:var(--gold); font-weight:800; }
+.pill.hype-train.lvl-3, .pill.hype-train.lvl-4 { background:#ff6b6b26; color:#ffb15e; }
+.pill.hype-train.lvl-5, .pill.hype-train.lvl-6 { background:#ff3df026; color:#ff8fe6;
+  animation: hypepulse .8s ease-in-out infinite; }
+@keyframes hypepulse { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.06) } }
+
+/* Per-stream goal banner. */
+.stream-goal { margin:0 0 12px; padding:8px 12px; border-radius:10px; font-size:13px;
+  background:#3b6cff14; border:1px solid var(--line); }
+.stream-goal.met { background:#36d39914; border-color:#36d39955; }
+.stream-goal b { font-weight:800; }
 
 .stream-summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:14px 0; text-align:left; }
 .stream-summary-grid > div { background:#0c0f1a; border:1px solid var(--line); border-radius:10px; padding:8px 12px;

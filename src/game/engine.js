@@ -1509,6 +1509,38 @@ export function setCompletion(set, ownedIds) {
   }
 }
 
+// --- Bulk-sell protection ----------------------------------------------------
+// The master-set safety net for the "sell everything" buttons. Given the full
+// collection, the uids a bulk action WANTS to move, and the player's protection
+// settings, decide which cards are actually safe to sell:
+//   • a LOCKED card (card.locked) is never swept — a hard, explicit "keep this."
+//   • keepOne: retain at least one copy of every card id you own, so a sweep only
+//     dumps DUPLICATES. A copy already staying behind (outside the sweep, or locked)
+//     satisfies "keep one"; only when EVERY copy of an id is in the sweep do we hold
+//     back its best copy so the set need survives.
+// Returns { sell:[uid], kept:[uid] } — `kept` are the protected uids pulled out.
+export function bulkSellableUids(collection, candidateUids, { keepOne = false } = {}) {
+  const cand = new Set(candidateUids)
+  const kept = [], sell = []
+  const byId = new Map() // card id → [candidate cards with that id]
+  for (const c of collection) {
+    if (!cand.has(c.uid)) continue
+    if (c.locked) { kept.push(c.uid); continue }   // hard lock — always keep
+    if (!c.id) { sell.push(c.uid); continue }      // no set id → can't be a set need
+    let g = byId.get(c.id); if (!g) { g = []; byId.set(c.id, g) }
+    g.push(c)
+  }
+  for (const [id, group] of byId) {
+    // A copy "survives" if it's staying behind anyway: not in this sweep, or locked.
+    const survivorOutside = collection.some(c => c.id === id && (!cand.has(c.uid) || c.locked))
+    if (!keepOne || survivorOutside) { for (const c of group) sell.push(c.uid); continue }
+    // keepOne is on and EVERY copy is in the sweep — hold back the best (highest-value) one.
+    const keepCard = group.reduce((b, c) => cardValue(c) > cardValue(b) ? c : b, group[0])
+    for (const c of group) (c.uid === keepCard.uid ? kept : sell).push(c.uid)
+  }
+  return { sell, kept }
+}
+
 // Cash + notoriety bonus for first-time completing a set. Scales with how big and
 // how valuable the set is — finishing a 300-card chase-heavy set is a real feat.
 export function completionReward(set) {

@@ -19,11 +19,28 @@ export function isStreamHype(card) {
 // `fatigue` (1 = fresh audience, →0 = burned out from over-streaming) scales the
 // crowd down: stream every day and the room thins; space them out and it recovers.
 const VIEWER_CEILING = 9000 // soft cap so high notoriety can't balloon to absurd numbers
-export function baseViewers(notoriety, fatigue = 1) {
+export function baseViewers(notoriety, fatigue = 1, followers = 0) {
   // ~8 at noto 0 → ~60 at noto 40 → ~600 at noto 200, then a smooth soft cap.
-  const raw = 8 + Math.pow(Math.max(0, notoriety), 1.35) * 1.6
+  // Followers are your RETURNING audience — a reliable crowd that shows regardless of
+  // fame, so building a channel over time lifts every stream's floor (~0.35 viewers each).
+  const raw = 8 + Math.pow(Math.max(0, notoriety), 1.35) * 1.6 + Math.max(0, followers) * 0.35
   const capped = VIEWER_CEILING * (1 - Math.exp(-raw / VIEWER_CEILING)) // asymptotes to the ceiling
   return Math.max(3, Math.round(capped * fatigue))
+}
+
+// New followers a stream earns — your returning audience grows when the room is big and
+// you make hype moments on camera. A flop wins none. Giveaways add on top (see Livestream).
+export function followersGained(peakViewers, hypeMoments, flopped = false) {
+  if (flopped) return 0
+  return Math.max(0, Math.round(peakViewers * 0.02 + hypeMoments * 4))
+}
+
+// The HYPE TRAIN: consecutive hit/hype pulls stack a combo that multiplies tips and keeps
+// the room electric. Level 0 = no train running; each level adds 30% to tips, capped so a
+// god-pack run rewards big without breaking the tip economy. A bulk pull derails it.
+export const HYPE_TRAIN_MAX = 6
+export function hypeTrainMult(level) {
+  return 1 + Math.min(HYPE_TRAIN_MAX, Math.max(0, level)) * 0.3
 }
 
 // Audience fatigue from how recently/often you've streamed. Each stream tires the
@@ -50,7 +67,7 @@ export function viewerReaction(card, rnd = Math.random) {
 // Scales with the live viewer count (more eyes = more tippers) and the pull's heat.
 // Tuned so tips are a nice supplement — a hot stream rewards you, but tips alone
 // shouldn't routinely out-earn the product cost (the pulls + the rep are the point).
-export function tipsFor(card, viewers, rnd = Math.random) {
+export function tipsFor(card, viewers, rnd = Math.random, hypeMult = 1) {
   const heat = card && (card._fromGod || card._god) ? 5
     : card && (card._fromDemigod || card._demigod) ? 4
     : card && isStreamHype(card) ? 1.8
@@ -59,7 +76,8 @@ export function tipsFor(card, viewers, rnd = Math.random) {
   // ~0.25% of viewers drop a small tip on an average moment; far more on a chase.
   const tippers = viewers * 0.0025 * heat * (0.6 + rnd() * 0.8)
   const perTip = 1 + rnd() * 3 // $1–$4 a pop
-  return Math.round(tippers * perTip * 100) / 100
+  // A running hype train multiplies what viewers throw (see hypeTrainMult).
+  return Math.round(tippers * perTip * Math.max(1, hypeMult) * 100) / 100
 }
 
 // A stream "flops" when almost nobody shows — a real risk for a small/over-streamed
