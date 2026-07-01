@@ -328,14 +328,14 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
       {multi && (
         <div className="pack-progress">
-          <span className="pill" style={{ background: '#3b6cff22', color: '#9db8ff' }}>📦 Pack {packNo} of {totalPacks}</span>
+          <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}</span>
           {packsOpened > 0 && (
-            <span className="pill" style={{ background: '#36d39922', color: 'var(--green)' }}
+            <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}
               title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
               💰 Rip {fmtMoney(ripValue)} <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
             </span>
           )}
-          {product?.bonus && <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
+          {product?.bonus && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
           {(phase === 'idle' || phase === 'done') && remainingToOpen >= 2 && (
             <button className="btn alt" style={{ flex: 'none', maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
           )}

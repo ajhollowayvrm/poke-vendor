@@ -9,6 +9,7 @@ import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 import Burst from './Burst'
 import { confirmDialog, toast } from '../ui/dialog'
+import { AnimatedNumber } from '../ui/AnimatedNumber'
 import { configureFeedback, primeAudio, sfxHit, sfxGod } from '../game/feedback'
 
 // The livestream studio. You go LIVE and rip product on camera: a viewer counter,
@@ -126,7 +127,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
         notoriety jump and pumps your store's traffic for days — but it <b>burns a game-day</b>, and streaming
         often <b>tires your audience</b> (rest a few days to recover).
         {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime</span> : null}
-        {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'#3b6cff22', color:'#9db8ff' }}>👥 {followers.toLocaleString()} followers</span>}
+        {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>👥 {followers.toLocaleString()} followers</span>}
       </div>
 
       <div className="market-panel" style={{ marginTop: 14 }}>
@@ -540,9 +541,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       {burst && <Burst />}
       <div className="stream-hud">
         <span className="pill live-dot">🔴 LIVE</span>
-        <span className="stream-viewers" style={flopping ? { color: 'var(--red)' } : null}>👁 {viewers.toLocaleString()} watching{flopping ? ' · quiet room…' : ''}</span>
-        <span className="pill" style={{ background:'#36d39922', color:'var(--green)' }}>💸 {fmtMoney(tips)} tips</span>
-        <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }} title="Your returning audience — grows with good streams">
+        <span className="stream-viewers" style={flopping ? { color: 'var(--red)' } : null}>👁 <AnimatedNumber value={viewers} flash={false} duration={600} format={(n) => Math.round(n).toLocaleString()} /> watching{flopping ? ' · quiet room…' : ''}</span>
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }}>💸 {fmtMoney(tips)} tips</span>
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }} title="Your returning audience — grows with good streams">
           👥 {followers.toLocaleString()}{sessionFollowers > 0 ? <b style={{ color:'var(--green)' }}> +{sessionFollowers}</b> : ''}
         </span>
         {hypeLevel > 0 && (
@@ -550,13 +551,13 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             ⚡ Hype ×{hypeLevel} · tips {hypeTrainMult(hypeLevel).toFixed(1)}×{combo > 2 ? ` · 🔥${combo}` : ''}
           </span>
         )}
-        {keptValue > 0 && <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}
+        {keptValue > 0 && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}
           title="Market value of the cards you're keeping from this rip">🃏 {fmtMoney(keptValue)} kept</span>}
-        {isBreak && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'#ffcb0522', color:'var(--gold)' }}>📦 Break · {filledSpots}/{spots} spots</span>}
+        {isBreak && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>📦 Break · {filledSpots}/{spots} spots</span>}
         <span className="pill" title={isBreak
             ? 'Tips + spot cash + value of cards you keep (unfilled spots), minus the box cost'
             : 'Tips + market value of every card you rip, minus the box cost'}
-          style={{ background: net >= 0 ? '#36d39922' : '#ff5e6c22', color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>
+          style={{ background: net >= 0 ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>
           Net {net >= 0 ? '+' : ''}{fmtMoney(net)}
         </span>
         <span className="pill" style={{ marginLeft:'auto' }}>📦 Pack {Math.min(packNo + (phase==='revealing'?1:0), totalPacks)}/{totalPacks}</span>
@@ -724,7 +725,7 @@ function StreamSummary({ session, onDone }) {
           <div><span className="muted">Your hits kept</span><b>{s.hits.length} · {fmtMoney(hitValue)}</b></div>
           {s.isBreak && <div><span className="muted">Spots sold</span><b>{s.spotsSold}/{s.spots}</b></div>}
           {s.isBreak && <div><span className="muted">Break P/L</span><b style={{ color: breakPL >= 0 ? 'var(--green)' : 'var(--red)' }}>{breakPL>=0?'+':''}{fmtMoney(breakPL)}</b></div>}
-          {s.followers > 0 && <div><span className="muted">New followers</span><b style={{ color:'#9db8ff' }}>👥 +{s.followers}</b></div>}
+          {s.followers > 0 && <div><span className="muted">New followers</span><b style={{ color:'var(--accent-light)' }}>👥 +{s.followers}</b></div>}
         </div>
         <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
           {s.noto > 0 ? '🔥 Your shop is buzzing — listing traffic is boosted for the next few days. Hop to the Sell tab.'

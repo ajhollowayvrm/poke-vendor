@@ -103,7 +103,7 @@ export default function Collection({ onPick }) {
   return (
     <>
       <div className="toolbar" style={{ marginTop: 8 }}>
-        <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}>{collection.length} card{collection.length === 1 ? '' : 's'}</span>
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>{collection.length} card{collection.length === 1 ? '' : 's'}</span>
         <select value={sort} onChange={e => setSort(e.target.value)}>
           <option value="value">Sort: Value</option><option value="rarity">Sort: Rarity</option>
           <option value="name">Sort: Name</option>

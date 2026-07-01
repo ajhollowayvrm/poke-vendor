@@ -69,6 +69,8 @@ export default function CardModal({ card, onClose }) {
 
             {g ? (
               <>
+                {/* Intentionally light: this mimics a real white PSA grade label, reinforcing
+                    the slab look beside the encased card — not theme drift. Leave as-is. */}
                 <div className="banner" style={{background:'#fff', color:'#111', borderColor:'#ddd', textAlign:'center'}}>
                   <b style={{fontSize:28}}>PSA {g.overall}</b>{' '}
                   <span style={{fontWeight:700}}>{gradeLabel(g.overall)}</span>

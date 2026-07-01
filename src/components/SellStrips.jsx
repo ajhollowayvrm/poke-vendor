@@ -66,7 +66,7 @@ function ListingRow({ l, i }) {
           <div className="listing-name">
             {l.card.name}
             {l.card.grade && (
-              <span className="pill" style={{ marginLeft: 6, fontSize: 11, background: '#ffcb0522', color: '#ffcb05', border: '1px solid #ffcb0544' }}>
+              <span className="pill" style={{ marginLeft: 6, fontSize: 11, background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)', border: '1px solid color-mix(in srgb, var(--gold) 27%, transparent)' }}>
                 PSA {l.card.grade.overall}
               </span>
             )}

@@ -1,7 +1,17 @@
 :root {
   --bg: #0c0f1a; --panel: #151a2b; --panel2: #1c2238; --line: #2a3252;
-  --txt: #e8ecf7; --dim: #8c97b8; --accent: #ffcb05; --accent2: #3b6cff;
-  --green: #36d399; --red: #ff5e6c; --gold: #ffcb05;
+  --txt: #e8ecf7; --dim: #8c97b8; --accent2: #3b6cff;
+  --green: #36d399; --red: #ff5e6c;
+  /* --gold is the canonical brand yellow; --accent aliases it so the two never drift
+     apart (they were duplicate literals #ffcb05 before). */
+  --gold: #ffcb05; --accent: var(--gold);
+  /* Secondary hues that recurred as raw literals across the app, now named:
+     --accent-light  the soft periwinkle used for info pills / clock chip (was #9db8ff)
+     --gold-muted    dimmer gold for banner text (was #ffe48a)
+     --red-muted     dimmer red for warning text (was #ff9aa6) */
+  --accent-light: #9db8ff; --gold-muted: #ffe48a; --red-muted: #ff9aa6;
+  /* Standard ghost-button hover wash — one value so hover brightness stops drifting. */
+  --hover: #ffffff16;
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
@@ -23,6 +33,28 @@ button { font-family: inherit; cursor: pointer; }
   padding: calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); }
 /* the routed view grows to fill the space between top bar and bottom nav */
 .content { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+/* Each routed pane is a transparent flex passthrough (so .empty / full-height children
+   still fill) that crossfades in when its sub-view mounts. Keyed on the active sub-tab. */
+.pane { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; animation: paneIn .2s ease; }
+@keyframes paneIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .pane { animation: none; } }
+/* Staggered list entrance — children of a .stagger-grid rise+fade in, the first few
+   with increasing delay so a freshly-populated list cascades instead of snapping.
+   Stable keys mean only genuinely new nodes re-animate; a tab switch re-mounts the
+   pane and replays the cascade. */
+.stagger-grid > * { animation: listItemIn .3s ease backwards; }
+.stagger-grid > *:nth-child(1) { animation-delay: .02s }
+.stagger-grid > *:nth-child(2) { animation-delay: .06s }
+.stagger-grid > *:nth-child(3) { animation-delay: .10s }
+.stagger-grid > *:nth-child(4) { animation-delay: .14s }
+.stagger-grid > *:nth-child(5) { animation-delay: .18s }
+.stagger-grid > *:nth-child(6) { animation-delay: .22s }
+.stagger-grid > *:nth-child(7) { animation-delay: .26s }
+.stagger-grid > *:nth-child(8) { animation-delay: .30s }
+/* Result banners that appear on an in-place state change (auth read, deal outcome). */
+.result-in { animation: resultIn .28s cubic-bezier(.2,.9,.3,1); }
+@keyframes resultIn { from { opacity: 0; transform: translateY(-4px) scale(.98) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .stagger-grid > *, .result-in { animation: none; } }
 
 /* In-progress rip overlay: lives above the routed content so a rip survives tab switches.
    `.hidden` keeps it mounted (state preserved) but unpainted, so returning to Buy resumes
@@ -31,8 +63,11 @@ button { font-family: inherit; cursor: pointer; }
    the rip content is centred below it. */
 .rip-overlay { position: fixed; inset: 0; z-index: 25; overflow-y: auto;
   background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
-  padding: calc(80px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); }
-.rip-overlay.hidden { display: none; }
+  padding: calc(80px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
+  transition: opacity .2s ease, visibility .2s ease; }
+/* keep it mounted (rip state preserved) but faded + inert when off the Buy tab */
+.rip-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .rip-overlay { transition: none; } }
 /* Prevent the background page from scrolling while a rip is in progress and visible. */
 body.rip-lock { overflow: hidden; touch-action: none; }
 /* Floating "resume your rip" pill shown when a rip is mid-flight on another tab. */
@@ -57,20 +92,23 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .tabs::-webkit-scrollbar { height: 6px; }
 .tabs::-webkit-scrollbar-thumb { background: #ffffff22; border-radius: 999px; }
 .tab { background: transparent; border: 1px solid transparent; color: var(--dim); flex: 0 0 auto;
-  white-space: nowrap; padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 14px; }
+  white-space: nowrap; padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 14px;
+  transition: background .15s, color .15s; }
 .tab.active { background: var(--accent2); color: #fff; }
-.tab:hover:not(.active) { color: var(--txt); background: #ffffff10; }
+.tab:hover:not(.active) { color: var(--txt); background: var(--hover); }
 
 /* ⚙️ gear button in the top bar (opens Settings + Stats overlay) */
 .gear-btn { flex: 0 0 auto; background: #ffffff10; border: 1px solid var(--line); color: var(--dim);
   width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; line-height: 1; }
-.gear-btn:hover { background: #ffffff1c; color: #fff; }
+.gear-btn { transition: background .15s, color .15s; }
+.gear-btn:hover { background: var(--hover); color: #fff; }
 
 /* Sub-tabs (inside Collection, and inside the Settings overlay) */
 .subtabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 4px; }
 .subtab { background: #ffffff0a; border: 1px solid var(--line); color: var(--dim);
-  padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
-.subtab:hover:not(.active) { color: var(--txt); background: #ffffff14; }
+  padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap;
+  transition: background .15s, color .15s, border-color .15s; }
+.subtab:hover:not(.active) { color: var(--txt); background: var(--hover); }
 .subtab.active { background: var(--accent2); color: #fff; border-color: transparent; }
 
 /* Mobile bottom nav — hidden on desktop, shown fixed at <=640px (see media query). */
@@ -254,10 +292,25 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 
 /* Modal */
 .modalbg { position: fixed; inset:0; background:#000b; display:flex; align-items:center; justify-content:center;
-  z-index: 80; padding: 20px; backdrop-filter: blur(3px); }
+  z-index: 80; padding: 20px; backdrop-filter: blur(3px); animation: backdropIn .18s ease; }
 .modal { background: var(--panel); border:1px solid var(--line); border-radius: 18px; padding: 20px;
   max-width: 760px; width: 100%; max-height: 88vh; overflow:auto; box-shadow: 0 30px 80px #000c;
-  position: relative; }
+  position: relative; animation: modalPop .2s cubic-bezier(.2,.9,.3,1); }
+/* Shared UI motion: backdrop fades, modal pops, toasts leave, numbers flash on change. */
+@keyframes backdropIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes modalPop { from { opacity: 0; transform: scale(.96) translateY(6px) } to { opacity: 1; transform: none } }
+@keyframes toastOut { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(8px) } }
+@keyframes listItemIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+@keyframes numFlashUp { 0% { transform: scale(1) } 32% { transform: scale(1.13); filter: brightness(1.35) } 100% { transform: scale(1); filter: none } }
+@keyframes numFlashDown { 0% { transform: scale(1) } 32% { transform: scale(1.08); filter: brightness(.8) } 100% { transform: scale(1); filter: none } }
+/* Animated numbers (cash / notoriety / viewers): the tween is JS; this just flashes the swap. */
+.num-anim { display: inline-block; }
+.num-anim.num-flash-up { animation: numFlashUp .6s ease; }
+.num-anim.num-flash-down { animation: numFlashDown .6s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .modalbg, .modal { animation: none; }
+  .num-anim.num-flash-up, .num-anim.num-flash-down { animation: none; }
+}
 .modal h2 { margin: 0 0 4px; }
 .modal-close { position: absolute; top: 10px; right: 12px; z-index: 2;
   width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--line);
@@ -288,12 +341,12 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   max-width: 520px; margin-inline: auto; line-height: 1.5; }
 .toolbar { display:flex; gap:10px; align-items:center; margin: 16px 0; flex-wrap:wrap; }
 select { background: var(--panel2); color: var(--txt); border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-weight:700; }
-.banner { background:#ffcb0518; border:1px solid #ffcb0540; color:#ffe48a; border-radius:12px; padding:10px 14px; font-size:13px; }
+.banner { background: color-mix(in srgb, var(--gold) 9%, transparent); border:1px solid color-mix(in srgb, var(--gold) 25%, transparent); color: var(--gold-muted); border-radius:12px; padding:10px 14px; font-size:13px; }
 
 /* ---------- Notoriety chip ---------- */
 .noto-chip { font-weight: 800; font-size: 18px; color: var(--gold); font-variant-numeric: tabular-nums; }
 .noto-chip small { display:block; text-align:right; color: var(--dim); font-size: 11px; font-weight: 600; }
-.clock-chip { font-weight: 800; font-size: 15px; color: #9db8ff; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.clock-chip { font-weight: 800; font-size: 15px; color: var(--accent-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .next-day-btn { font-size: 13px; padding: 5px 12px; white-space: nowrap; flex: none; }
 
 /* Finance / job panel (Stats tab) */
@@ -303,11 +356,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .finance-title { font-weight: 800; font-size: 15px; }
 .finance-net { margin-left: auto; font-weight: 900; font-size: 20px; text-align: right; white-space: nowrap; }
 .finance-net small { display:block; color: var(--dim); font-size: 10px; font-weight: 600; }
-.finance-warn { background: #ff5e6c22; color: #ff9aa6; border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 700; margin: 8px 0; }
+.finance-warn { background: color-mix(in srgb, var(--red) 13%, transparent); color: var(--red-muted); border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 700; margin: 8px 0; }
 .finance-jobs { display:flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-.jobbtn { display:flex; flex-direction:column; align-items:flex-start; gap: 1px; padding: 6px 10px; border-radius: 9px;
+.jobbtn { display:flex; flex-direction:column; align-items:flex-start; gap: 1px; padding: 6px 10px; border-radius: 10px;
   background: #ffffff08; border: 1px solid var(--line); color: var(--txt); cursor: pointer; }
-.jobbtn:hover:not(:disabled) { border-color: #ffffff44; background: #ffffff12; }
+.jobbtn:hover:not(:disabled) { border-color: #ffffff44; background: var(--hover); }
 .jobbtn.on { background: #36d39922; border-color: #36d399; color: var(--green); cursor: default; }
 .jobbtn:disabled { opacity: .55; cursor: not-allowed; }
 .jobbtn .jobname { font-weight: 700; font-size: 12px; }
@@ -316,7 +369,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .store-panel { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 .store-head { font-weight: 800; font-size: 14px; }
 .emp-grid { display:flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-.emp-row { display:flex; align-items:center; gap: 8px; padding: 6px 8px; border-radius: 9px; background: #ffffff08; }
+.emp-row { display:flex; align-items:center; gap: 8px; padding: 6px 8px; border-radius: 10px; background: #ffffff08; }
 .emp-count { color: var(--green); font-size: 12px; }
 
 /* ---------- Calendar ---------- */
@@ -405,6 +458,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   z-index: 95; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .toast-stack .toast { position: static; transform: none; left: auto; bottom: auto; animation: toaststackin .25s ease; }
 @keyframes toaststackin { from{opacity:0; transform: translateY(10px)} to{opacity:1; transform: none} }
+/* leaving toasts play an exit before unmount (JS flags .leaving ~260ms before removal) */
+.toast-stack .toast.leaving { animation: toastOut .26s ease forwards; }
 @media (max-width: 640px) { .toast-stack { bottom: calc(84px + env(safe-area-inset-bottom)); } } /* clear the bottom nav */
 
 /* ---------- Vendor booth modal ---------- */
@@ -434,7 +489,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .seg .segbtn { background: #ffffff10; color: var(--txt); border:none; padding: 8px 12px; font-weight:700;
   font-size: 13px; cursor:pointer; border-left:1px solid var(--line); }
 .seg .segbtn:first-child { border-left:none; }
-.seg .segbtn:hover { background:#ffffff1e; }
+.seg .segbtn:hover { background: var(--hover); }
 .seg .segbtn.on { background: linear-gradient(135deg,#ffd84d,#ffb000); color:#3a2b00; }
 
 /* ---------- Storefront / payments / channels ---------- */
@@ -453,7 +508,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .tier-ladder { display:flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
 .tier-node { flex: 1 1 0; min-width: 78px; display:flex; flex-direction:column; align-items:center; gap:1px;
   font-size: 12px; font-weight: 800; color: var(--dim); background:#0c0f1a; border:1px solid var(--line);
-  border-radius: 9px; padding: 7px 4px; text-align:center; opacity: .55; transition: opacity .2s; }
+  border-radius: 10px; padding: 7px 4px; text-align:center; opacity: .55; transition: opacity .2s; }
 .tier-node small { font-weight: 600; font-size: 9.5px; opacity: .8; }
 .tier-node.reached { opacity: 1; color: var(--tc); border-color: var(--tc); }
 .tier-node.current { box-shadow: 0 0 0 2px var(--tc); }
@@ -570,11 +625,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .list-pct-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .pctbtn { background:#ffffff10; border:1px solid var(--line); color:var(--dim); border-radius:8px;
   padding:4px 9px; font-size:12px; font-weight:700; cursor:pointer; }
-.pctbtn:hover { background:#ffffff1c; color:#fff; }
+.pctbtn:hover { background: var(--hover); color:#fff; }
 .pctbtn.on { background: var(--gold); color:#1a1300; border-color: var(--gold); }
 .pctinput { width:58px; background:#0c0f1a; border:1px solid var(--line); color:#fff; border-radius:8px;
   padding:4px 6px; font-size:12px; font-weight:700; text-align:right; }
-.tweet-toggle { display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer; user-select:none; }
+.tweet-toggle { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; cursor:pointer; user-select:none; }
 .tweet-toggle .muted { font-weight:400; }
 .bulk-grade-group { display: flex; align-items: center; gap: 6px; }
 .bulk-grade-group select { flex: 0 0 auto; max-width: 150px; }
@@ -610,7 +665,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .priceitem .pval { font-size:13px; font-weight:800; color: var(--green); }
 
 /* ---------- Special foils & god packs ---------- */
-.cardtile.foil-pokeball  { border-color: #ff6b6b; box-shadow: 0 0 0 1px #ff6b6b66, 0 8px 20px #ff6b6b22; }
+.cardtile.foil-pokeball  { border-color: var(--red);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 40%, transparent), 0 8px 20px color-mix(in srgb, var(--red) 13%, transparent); }
 .cardtile.foil-masterball { border-color: #a06bff; box-shadow: 0 0 0 1px #a06bff88, 0 8px 26px #a06bff33; }
 /* no-edge: borderless tiles (collection grid) — overrides every rarity/foil/hit border */
 .cardtile.no-edge, .cardtile.no-edge.r-hit, .cardtile.no-edge.foil-pokeball, .cardtile.no-edge.foil-masterball {
@@ -691,17 +747,17 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* a product row = quantity stepper + the buy button */
 .prodrow { display:flex; align-items:stretch; gap:6px; }
 .prodrow .prodbtn { flex:1; min-width:0; }
-.qty-ctl { display:flex; align-items:center; flex:none; border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#ffffff0e; }
+.qty-ctl { display:flex; align-items:center; flex:none; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#ffffff0e; }
 .qty-ctl input { width:34px; text-align:center; background:transparent; border:none; color:var(--txt); font-weight:800; font-size:13px; padding:0; -moz-appearance:textfield; }
 .qty-ctl input::-webkit-outer-spin-button, .qty-ctl input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
 .qty-ctl input:disabled { opacity:.4; }
 .qty-step { width:26px; align-self:stretch; border:none; background:#ffffff10; color:var(--txt); font-size:16px; font-weight:800; line-height:1; cursor:pointer; }
-.qty-step:hover:not(:disabled) { background:#ffffff24; }
+.qty-step:hover:not(:disabled) { background: var(--hover); }
 .qty-step:disabled { opacity:.3; cursor:not-allowed; }
 .prodbtn { display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#ffffff0e; border:1px solid var(--line);
-  color:var(--txt); border-radius:9px; padding:8px 10px; font-weight:700; font-size:13px; text-align:left;
+  color:var(--txt); border-radius:10px; padding:8px 10px; font-weight:700; font-size:13px; text-align:left;
   transition: background .12s, border-color .12s, transform .06s; }
-.prodbtn:hover:not(:disabled) { background:#ffffff1a; border-color:var(--accent2); }
+.prodbtn:hover:not(:disabled) { background: var(--hover); border-color:var(--accent2); }
 .prodbtn:active:not(:disabled) { transform: translateY(1px); }
 .prodbtn:disabled { opacity:.4; cursor:not-allowed; }
 .prodbtn .prodname { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -915,7 +971,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   padding:10px 14px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; }
 .consign-strip > b { color: var(--gold); font-size:13px; }
 .consign-strip .pill.expired { background:#ff5e6c22; color:#ff9aa5; }
-.linkbtn { background:none; border:none; color:#9db8ff; font-weight:700; cursor:pointer; padding:0; font-size:12px; text-decoration:underline; }
+.linkbtn { background:none; border:none; color: var(--accent-light); font-weight:700; cursor:pointer; padding:0; font-size:12px; text-decoration:underline; }
 
 /* ---------- Listed-on-site market panel ---------- */
 .market-panel { margin:14px 0 4px; padding:10px 14px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; }
@@ -938,7 +994,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .offer-label { flex:1; }
 .list-hint { font-size:11px; font-weight:700; white-space:nowrap; }
 .list-hint.good { color:var(--green); }
-.list-hint.ok { color:#9db8ff; }
+.list-hint.ok { color: var(--accent-light); }
 .list-hint.warn { color:#ffc46b; }
 .list-hint.bad { color:#ff9aa5; }
 
@@ -967,7 +1023,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .goal.done { border-color: var(--green); box-shadow: 0 0 0 1px #36d39944; }
 .goal-label { font-size:13px; font-weight:700; }
 .goal-bar { background:#0c0f1a; border:1px solid var(--line); border-radius:999px; height:7px; overflow:hidden; margin:6px 0 4px; }
-.goal-bar > div { height:100%; background:linear-gradient(90deg,#3b6cff,#36d399); transition:width .3s; }
+.goal-bar > div { height:100%; background:linear-gradient(90deg,var(--accent2),var(--green)); transition:width .3s; }
 .goal-reward { font-size:11px; color:var(--dim); font-weight:700; }
 .goal.done .goal-reward { color: var(--green); }
 
@@ -1172,7 +1228,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   background:#ffffff0e; border:1px solid var(--line); color:var(--txt); border-radius:10px; padding:8px 10px; cursor:pointer;
   transition:background .12s,border-color .12s; }
 .chip-btn small { color:var(--dim); font-size:10.5px; font-weight:600; line-height:1.3; }
-.chip-btn:hover:not(.active) { background:#ffffff18; }
+.chip-btn:hover:not(.active) { background: var(--hover); }
 .chip-btn.active { border-color:var(--accent2); background:#5aa0ff1f; }
 .chip-btn.active small { color:var(--txt); }
 

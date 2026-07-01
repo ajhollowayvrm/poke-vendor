@@ -36,14 +36,14 @@ export default function Binder({ onPick }) {
           {SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
         <span className="muted" style={{ fontSize: 12.5 }}>{set.series}</span>
-        {everCompleted && <span className="pill" style={{ background:'#ffcb0522', color:'var(--gold)' }} title="You've earned this set's completion bonus">🏆 Completed</span>}
+        {everCompleted && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }} title="You've earned this set's completion bonus">🏆 Completed</span>}
       </div>
 
       {/* Set completion progress */}
       <div className="binder-progress">
         <div className="binder-prog-row">
           <b>Set {comp.owned}/{comp.total}</b>
-          <span className={`pill ${comp.complete ? 'complete' : ''}`} style={comp.complete ? { background:'#36d39922', color:'var(--green)' } : null}>
+          <span className={`pill ${comp.complete ? 'complete' : ''}`} style={comp.complete ? { background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' } : null}>
             {comp.complete ? '✓ Complete' : `${comp.pct}%`}
           </span>
           {comp.chaseTotal > 0 && (

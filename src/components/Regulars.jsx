@@ -44,7 +44,7 @@ export default function Regulars() {
         Your repeat customers. The more they trust you, the better they pay — and the more often it's a
         familiar face at the counter instead of a stranger. Neglect them and the relationship cools.
       </p>
-      <div className="regulars-grid">
+      <div className="regulars-grid stagger-grid">
         {sorted.map(r => {
           const tier = trustTier(r.trust)
           const ch = CHANNEL[r.channel] || CHANNEL.online

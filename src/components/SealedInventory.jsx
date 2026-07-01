@@ -79,7 +79,7 @@ function SealedRow({ item, onRip }) {
       <div className="sealed-value">
         <span className="sealed-now">{fmtMoney(value)}</span>
         <span className="muted" style={{ fontSize: 11 }}>&nbsp;value</span>
-        <span className="pill sealed-delta" style={{ marginLeft: 'auto', background: up ? '#36d39922' : '#ff5e6c22', color: up ? 'var(--green)' : 'var(--red)' }}>
+        <span className="pill sealed-delta" style={{ marginLeft: 'auto', background: up ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: up ? 'var(--green)' : 'var(--red)' }}>
           {up ? '▲' : '▼'} {up ? '+' : ''}{pct}% ({up ? '+' : ''}{fmtMoney(delta)})
         </span>
       </div>

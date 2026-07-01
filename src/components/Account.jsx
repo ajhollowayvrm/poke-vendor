@@ -10,7 +10,7 @@ import {
 import { confirmDialog } from '../ui/dialog'
 
 const inputStyle = {
-  flex: 1, minWidth: 160, background: '#0c0f1a', border: '1px solid var(--line)',
+  flex: 1, minWidth: 160, background: 'var(--bg)', border: '1px solid var(--line)',
   color: '#fff', borderRadius: 8, padding: '8px 10px', fontSize: 13,
 }
 

@@ -23,7 +23,7 @@ export default function Bench() {
       {pending.length === 0 ? (
         <div className="empty">No cards at the grader. Submit cards above, or from a card's detail view. 🔬</div>
       ) : (
-        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
+        <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
           {pending.map((p) => {
             const totalDays = GRADING[p.tierKey].days
             const daysLeft = Math.max(0, p.readyOnDay - today)
@@ -34,8 +34,8 @@ export default function Bench() {
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>
                   <div className="muted" style={{ fontSize: 12 }}>{GRADING[p.tierKey].name} grading</div>
-                  <div style={{ background: '#0c0f1a', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
-                    <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#3b6cff,#36d399)', transition: 'width .25s' }} />
+                  <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
+                    <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,var(--accent2),var(--green))', transition: 'width .25s' }} />
                   </div>
                   <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
                     {daysLeft === 0 ? 'Ready — advance a day to collect' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}
@@ -123,7 +123,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
 
           <div className="row" style={{ marginTop: 12, alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span className="pill">{count} selected</span>
-            {bulk > 0 && <span className="pill" style={{ background: '#36d39922', color: 'var(--green)' }}>{Math.round(bulk*100)}% bulk discount</span>}
+            {bulk > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>{Math.round(bulk*100)}% bulk discount</span>}
             <span className="muted" style={{ fontSize: 13 }}>
               {count ? <>{fmtMoney(feePer)}/card × {count} = <b>{fmtMoney(total)}</b></> : 'Pick cards to grade'}
             </span>
@@ -168,7 +168,7 @@ function GraderRelationship({ submitted }) {
         ))}
       </div>
 
-      <div style={{ background: '#0c0f1a', borderRadius: 999, height: 8, overflow: 'hidden', border: '1px solid var(--line)', margin: '4px 0 6px' }}>
+      <div style={{ background: 'var(--bg)', borderRadius: 999, height: 8, overflow: 'hidden', border: '1px solid var(--line)', margin: '4px 0 6px' }}>
         <div style={{ width: pct + '%', height: '100%', background: `linear-gradient(90deg, ${tier.color}, ${next?.color || tier.color})`, transition: 'width .4s' }} />
       </div>
       <div className="muted" style={{ fontSize: 12 }}>

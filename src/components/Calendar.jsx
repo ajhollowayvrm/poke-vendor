@@ -19,7 +19,7 @@ export default function Calendar({ onAttend }) {
   return (
     <>
       <div className="toolbar">
-        <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}>📅 Day {currentDay} / 30{monthsElapsed ? ` · Month ${monthsElapsed + 1}` : ''}</span>
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>📅 Day {currentDay} / 30{monthsElapsed ? ` · Month ${monthsElapsed + 1}` : ''}</span>
         {/* keep the Notoriety label and its bar together as one unit so they don't
             split across rows when the toolbar wraps on a phone. */}
         <span className="noto-group">
@@ -108,7 +108,7 @@ export function NotorietyBar({ n }) {
   const pct = Math.min(100, (n / scale) * 100)
   return (
     <div style={{ flex: 1, minWidth: 90, maxWidth: 360 }}>
-      <div style={{ background: '#0c0f1a', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
+      <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
         <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#5ec98a,#ff9f43,#ff3df0)', transition: 'width .4s' }} />
         {tiers.map(t => t.minNotoriety > 0 && (
           <span key={t.name} title={t.name} style={{ position: 'absolute', top: -2, left: `${Math.min(100, (t.minNotoriety / scale) * 100)}%`, width: 2, height: 16, background: n >= t.minNotoriety ? '#fff' : '#ffffff44' }} />

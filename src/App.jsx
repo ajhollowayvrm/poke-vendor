@@ -23,6 +23,7 @@ import Livestream from './components/Livestream'
 import Binder from './components/Binder'
 import Regulars from './components/Regulars'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
+import { AnimatedNumber } from './ui/AnimatedNumber'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 import { milestoneById } from './game/milestones'
@@ -316,8 +317,8 @@ export default function App() {
           <button className="btn next-day-btn" disabled={!!activeShow} title={activeShow ? 'Cannot advance while attending a show' : 'Advance one day'} onClick={handleNextDay}>
             Next Day →
           </button>
-          <span className="noto-chip">⭐ {Math.round(notoriety)}<small>notoriety</small></span>
-          <div className="cash">{fmtMoney(cash)}<small>balance</small></div>
+          <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>notoriety</small></span>
+          <div className="cash"><AnimatedNumber value={cash} format={fmtMoney} /><small>balance</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
       </div>
@@ -341,15 +342,18 @@ export default function App() {
               <button className={`subtab ${shopTab === 'buy' ? 'active' : ''}`} onClick={() => setShopTab('buy')}>🛒 Buy</button>
               <button className={`subtab ${shopTab === 'inventory' ? 'active' : ''}`} onClick={() => setShopTab('inventory')}>📦 Inventory{sealedCount ? ` (${sealedCount})` : ''}</button>
             </div>
-            {shopTab === 'buy' && <Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyVintage} />}
-            {shopTab === 'inventory' && <SealedInventory onRip={ripFromInventory} />}
+            {/* keyed .pane crossfades whenever the active sub-view mounts */}
+            <div className="pane" key={shopTab}>
+              {shopTab === 'buy' && <Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyVintage} />}
+              {shopTab === 'inventory' && <SealedInventory onRip={ripFromInventory} />}
+            </div>
           </>
         )}
 
-        {tab === 'shows' && <Calendar onAttend={attendShow} />}
-        {tab === 'myshop' && <BoothInbox />}
-        {tab === 'stream' && <Livestream />}
-        {tab === 'stats' && <Stats />}
+        {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
+        {tab === 'myshop' && <div className="pane"><BoothInbox /></div>}
+        {tab === 'stream' && <div className="pane"><Livestream /></div>}
+        {tab === 'stats' && <div className="pane"><Stats /></div>}
 
         {tab === 'collection' && (
           <>
@@ -360,11 +364,13 @@ export default function App() {
               <button className={`subtab ${collTab === 'regulars' ? 'active' : ''}`} onClick={() => setCollTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>
               <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
             </div>
-            {collTab === 'cards' && <Collection onPick={setPicked} />}
-            {collTab === 'binder' && <Binder onPick={setPicked} />}
-            {collTab === 'grader' && <Bench />}
-            {collTab === 'regulars' && <Regulars />}
-            {collTab === 'prices' && <PriceGuide />}
+            <div className="pane" key={collTab}>
+              {collTab === 'cards' && <Collection onPick={setPicked} />}
+              {collTab === 'binder' && <Binder onPick={setPicked} />}
+              {collTab === 'grader' && <Bench />}
+              {collTab === 'regulars' && <Regulars />}
+              {collTab === 'prices' && <PriceGuide />}
+            </div>
           </>
         )}
 
@@ -374,7 +380,9 @@ export default function App() {
               <button className={`subtab ${settingsPane === 'settings' ? 'active' : ''}`} onClick={() => setSettingsPane('settings')}>⚙️ Settings</button>
               <button className={`subtab ${settingsPane === 'upgrades' ? 'active' : ''}`} onClick={() => setSettingsPane('upgrades')}>⬆️ Upgrades</button>
             </div>
-            {settingsPane === 'settings' ? <Settings /> : <UpgradeShop />}
+            <div className="pane" key={settingsPane}>
+              {settingsPane === 'settings' ? <Settings /> : <UpgradeShop />}
+            </div>
           </>
         )}
       </main>

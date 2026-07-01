@@ -66,9 +66,9 @@ export default function SealedDealModal({ enc, idx, onDone, onCancel, flash }) {
         </div>
 
         {authRead && (
-          <div className="banner" style={{ marginTop: 8, fontSize: 13,
-            background: authRead.looksFake ? '#ff5e6c22' : '#36d39922',
-            borderColor: authRead.looksFake ? '#ff5e6c55' : '#36d39955' }}>
+          <div className="banner result-in" style={{ marginTop: 8, fontSize: 13,
+            background: authRead.looksFake ? 'color-mix(in srgb, var(--red) 13%, transparent)' : 'color-mix(in srgb, var(--green) 13%, transparent)',
+            borderColor: authRead.looksFake ? 'color-mix(in srgb, var(--red) 33%, transparent)' : 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
             🔍 <b>Authentication:</b> {authRead.looksFake
               ? <>looks <b style={{ color: 'var(--red)' }}>FAKE</b> — wrapper/weight is off.</>
               : <>looks <b style={{ color: 'var(--green)' }}>GENUINE</b> — checks out, but a clean reseal can still pass.</>}
@@ -107,7 +107,7 @@ function Outcome({ outcome, charge, deal, onCharge, onFinish }) {
   if (!outcome.fake) {
     return (
       <div style={{ textAlign: 'center' }}>
-        <div className="banner" style={{ background: '#36d39922', borderColor: '#36d39955' }}>
+        <div className="banner result-in" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', borderColor: 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
           📦 <b>Legit!</b> Stocked a {outcome.type} of {outcome.setName} for {fmtMoney(outcome.ask)} — a real steal. Find it in 📦 Inventory.
         </div>
         <button className="btn gold" style={{ maxWidth: 200, marginTop: 12 }} onClick={onFinish}>Nice — done</button>
@@ -117,15 +117,15 @@ function Outcome({ outcome, charge, deal, onCharge, onFinish }) {
   const dud = outcome.origin === 'vintage' ? 'a resealed pack stuffed with bulk commons' : 'an empty box — it never really shipped'
   return (
     <div style={{ textAlign: 'center' }}>
-      <div className="banner" style={{ background: '#ff5e6c22', borderColor: '#ff5e6c55' }}>
+      <div className="banner result-in" style={{ background: 'color-mix(in srgb, var(--red) 13%, transparent)', borderColor: 'color-mix(in srgb, var(--red) 33%, transparent)' }}>
         💸 <b>Scammed.</b> You paid {fmtMoney(outcome.ask)} and got {dud}.
       </div>
       {outcome.reversible ? (
         charge ? (
           <>
-            <div className="banner" style={{ marginTop: 8,
-              background: charge.won ? '#36d39922' : '#ff5e6c22',
-              borderColor: charge.won ? '#36d39955' : '#ff5e6c55' }}>
+            <div className="banner result-in" style={{ marginTop: 8,
+              background: charge.won ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)',
+              borderColor: charge.won ? 'color-mix(in srgb, var(--green) 33%, transparent)' : 'color-mix(in srgb, var(--red) 33%, transparent)' }}>
               {charge.won
                 ? <>💳 <b>Chargeback won</b> — recovered {fmtMoney(charge.recovered)}.</>
                 : <>💳 <b>Chargeback denied</b> — the seller contested it. The money's gone.</>}

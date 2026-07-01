@@ -108,7 +108,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
       ) : (
         <>
           <div className="toolbar" style={{ marginTop: 12 }}>
-            <span className="pill" style={{ background: '#3b6cff22', color: '#9db8ff' }}>
+            <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>
               {collection.length} in collection
             </span>
             <select value={sort} onChange={e => setSort(e.target.value)}>

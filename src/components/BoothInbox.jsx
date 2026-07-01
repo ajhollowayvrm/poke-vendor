@@ -97,7 +97,7 @@ export default function BoothInbox() {
           {forumCount === 0 ? (
             <div className="empty" style={{ marginTop: 14 }}>The board's quiet right now — let a day pass for new posts. 📭</div>
           ) : (
-            <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', marginTop: 14 }}>
+            <div className="grid stagger-grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', marginTop: 14 }}>
               {forumPosts.map(p => {
                 const matches = cardsForForumPost(p)
                 return (
@@ -139,12 +139,12 @@ export default function BoothInbox() {
       </div>
 
       <div className="toolbar" style={{ marginTop: 12 }}>
-        <span className="pill" style={{ background:'#3b6cff22', color:'#9db8ff' }}>📅 Day {currentDay}</span>
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>📅 Day {currentDay}</span>
         {/* Inbox fill indicator — the inbox holds INBOX_CAP orders; once full, the
             oldest unanswered orders drop off, so flag when it's getting close. */}
         <span className="pill" style={inbox.length >= INBOX_CAP - 1
           ? { background:'#ff9f4322', color:'#ff9f43' }
-          : { background:'#3b6cff22', color:'#9db8ff' }}>
+          : { background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>
           📨 Inbox {inbox.length}/{INBOX_CAP}{inbox.length >= INBOX_CAP ? ' · full!' : inbox.length >= INBOX_CAP - 1 ? ' · nearly full' : ''}
         </span>
         <span className="muted" style={{ fontSize: 12 }}>Orders arrive as days pass — attend a show to bring in several at once.</span>
@@ -227,7 +227,7 @@ export default function BoothInbox() {
       {wantList.length > 0 && (
         <div className="wants">
           <div className="wants-head">⭐ Collectors seeking you <span className="muted">— your reputation drew these requests; fill one for an above-market premium</span></div>
-          <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))' }}>
+          <div className="grid stagger-grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))' }}>
             {wantList.map(w => {
               const matches = cardsForWant(w)
               return (
@@ -250,7 +250,7 @@ export default function BoothInbox() {
       {validInbox.length === 0 ? (
         <div className="empty">No orders waiting. Let a day pass (or attend a show) to bring customers in. 📨</div>
       ) : (
-        <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', marginTop: 14 }}>
+        <div className="grid stagger-grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', marginTop: 14 }}>
           {validInbox.map(({ enc, i }) => {
             const badge = CHANNEL_BADGE[enc.channel] || CHANNEL_BADGE.online
             // Key on stable per-encounter content, NOT the array index — clearing an item
