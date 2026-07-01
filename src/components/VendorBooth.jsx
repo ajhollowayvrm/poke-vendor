@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, fmtMoney } from '../game/engine'
+import { cardValue, fmtMoney, round2, GRADING, gradingFee } from '../game/engine'
+import { vendorRapport, nextVendorRapport } from '../game/shows'
 import CardTile from './CardTile'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
@@ -9,7 +10,58 @@ export default function VendorBooth({ booth, onClose, flash, onRipVault, onRipSe
   // The Vintage Vault is a special booth: no singles bin, just one heavy sealed
   // vintage pack you can buy and crack right here on the floor — or stock to hold.
   if (booth.special === 'vault') return <VaultBooth booth={booth} onClose={onClose} onRipVault={onRipVault} onStockVault={onStockVault} />
+  if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
   return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} />
+}
+
+// On-site grading kiosk (National+ shows): submit a raw card and it comes back slabbed in
+// ~2 days for a premium fee — no mail-in wait. Reuses the normal grading pipeline via the
+// `kiosk` tier, so results resolve on the day-advance shortly after the show.
+function KioskBooth({ booth, onClose, flash }) {
+  const cash = useGame(s => s.cash)
+  const collection = useGame(s => s.collection)
+  const submitted = useGame(s => s.gradesSubmitted)
+  useModalEscape(onClose)
+  const raw = [...collection].filter(c => !c.grade).sort((a, b) => cardValue(b) - cardValue(a))
+  const days = GRADING.kiosk.days
+  const fee = gradingFee('kiosk', submitted)
+  function submit(card) {
+    if (cash < fee) { flash(`Not enough cash for the ${fmtMoney(fee)} kiosk fee.`); return }
+    useGame.getState().submitGrade(card.uid, 'kiosk')
+    flash(`Submitted ${card.name} to the on-site grader — slabbed in ~${days} days.`)
+  }
+  return (
+    <div className="modalbg" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
+        <div className="row" style={{ alignItems: 'baseline' }}>
+          <h2 style={{ marginRight: 'auto' }}>🔬 On-Site Grading Kiosk</h2>
+          <span className="pill" style={{ background: '#7cf0ff22', color: '#7cf0ff' }}>~{days}-day turnaround</span>
+        </div>
+        <p className="muted" style={{ marginTop: 2 }}>
+          Skip the mail-in wait — hand over a raw card and it comes back slabbed in <b>~{days} days</b>, for a
+          premium <b>{fmtMoney(fee)}</b> per card. Results land on the next day or two after the show.
+        </p>
+        {raw.length === 0 ? <p className="muted">You have no raw cards on you to grade.</p> : (
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))' }}>
+            {raw.slice(0, 30).map(card => {
+              const worthIt = cardValue(card) >= fee
+              return (
+                <div key={card.uid} className="vendoritem">
+                  <CardTile card={card} interactive={false} />
+                  <div className="muted" style={{ fontSize: 11 }}>mkt {fmtMoney(cardValue(card))}</div>
+                  <button className="btn" disabled={cash < fee} onClick={() => submit(card)}
+                    title={!worthIt ? 'Grading costs more than this card is worth' : undefined}>
+                    Grade {fmtMoney(fee)}{!worthIt ? ' ⚠️' : ''}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+        <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
+      </div>
+    </div>
+  )
 }
 
 // The rare travelling vintage dealer — sells a single sealed 1999 Base Set pack.
@@ -80,6 +132,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const upgrades = useGame(s => s.upgrades)
   const buyFromVendor = useGame(s => s.buyFromVendor)
   const collection = useGame(s => s.collection)
+  // Recurring-vendor rapport: a familiar dealer cuts you a standing discount on their asks.
+  const vendorSpend = useGame(s => booth.vendorId ? (s.vendorSpend?.[booth.vendorId] || 0) : 0)
+  const rap = booth.vendorId ? vendorRapport(vendorSpend) : null
+  const disc = rap ? rap.disc : 0
+  const eff = (ask) => round2((ask || 0) * (1 - disc)) // rapport-discounted asking price
+  const nextRap = booth.vendorId ? nextVendorRapport(vendorSpend) : null
   const [stock, setStock] = useState(booth.stock)
   // Sealed is local state so a stocked item disappears from the table after you take it.
   const [sealed, setSealed] = useState(booth.products || [])
@@ -116,7 +174,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     committingRef.current = true
     const { card, price } = pendingBuy
     setPendingBuy(null)
-    if (buyFromVendor(card, price, { toShowInventory })) {
+    if (buyFromVendor(card, price, { toShowInventory, vendorId: booth.vendorId })) {
       setStock(s => s.filter(c => c.uid !== card.uid))
       const deal = price < cardValue(card) * 0.85 ? ' — great deal!' : ''
       flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${toShowInventory ? ' · listed at your booth' : ' · added to your collection'}`)
@@ -124,41 +182,48 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   }
   function sellAt(card, price) {
     useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price, notoriety: 0, msg: '' })
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, price) // dealing builds rapport
     flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(price)}`)
   }
   // Picking a sealed product opens a choice: rip it on the floor now, or stock it to hold.
   // Buy a sealed product and crack it on the floor right now (same rip flow as the Vault).
   function ripSealedNow(entry) {
+    const ask = eff(entry._ask)
     setPendingSealed(null)
     onClose()
-    onRipSealed?.({ set: entry.set, product: entry.product, ask: entry._ask, vendorName: booth.name })
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
+    onRipSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
   }
   // Buy a sealed product and stock it in your held inventory (rip/list/flip later). Keeps
   // the booth open and removes the item from the table; the last one closes the Sealed tab.
   function stockSealedNow(entry) {
+    const ask = eff(entry._ask)
     setPendingSealed(null)
     if (sealed.length <= 1) setTab('buy')
     setSealed(s => s.filter(e => e !== entry))
-    onStockSealed?.({ set: entry.set, product: entry.product, ask: entry._ask, vendorName: booth.name })
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
+    onStockSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
   }
 
   function renderBuy(card, featured) {
     const mkt = cardValue(card) // grade-aware true value
-    const deal = card._ask < mkt * 0.85
+    const ask = eff(card._ask)  // rapport discount applied
+    const deal = ask < mkt * 0.85
     return (
       <div key={card.uid} className={`vendoritem ${featured ? 'featured' : ''}`}>
         <CardTile card={card} interactive={false} />
         <div className="askrow">
-          <span className="ask">{fmtMoney(card._ask)}</span>
+          {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(card._ask)}</s>}
+          <span className="ask">{fmtMoney(ask)}</span>
           {seeDeals && deal && <span className="dealtag">DEAL</span>}
-          {seeDeals && !deal && card._ask > mkt*1.2 && <span className="overtag">OVER</span>}
+          {seeDeals && !deal && ask > mkt*1.2 && <span className="overtag">OVER</span>}
         </div>
         <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(mkt)}</div>
         <div className="row" style={{ gap: 6 }}>
-          <button className="btn" disabled={cash < card._ask} onClick={() => buyAt(card, card._ask)}>Buy</button>
+          <button className="btn" disabled={cash < ask} onClick={() => buyAt(card, ask)}>Buy</button>
           <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} disabled={haggled.has(card.uid)}
             title={haggled.has(card.uid) ? 'Already haggled this one — buy it or move on' : undefined}
-            onClick={() => setHaggle({ side:'buy', card, market: mkt, start: card._ask })}>
+            onClick={() => setHaggle({ side:'buy', card, market: mkt, start: ask })}>
             {haggled.has(card.uid) ? 'Haggled' : 'Haggle'}
           </button>
         </div>
@@ -170,10 +235,15 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
         <div className="row" style={{ alignItems:'baseline' }}>
-          <h2 style={{ marginRight:'auto' }}>{booth.name}</h2>
+          <h2 style={{ marginRight:'auto' }}>{booth.recurring ? '🤝 ' : ''}{booth.name}</h2>
+          {rap && <span className="pill" title="Your standing with this recurring dealer"
+            style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{disc > 0 ? ` · ${Math.round(disc*100)}% off` : ''}</span>}
           <span className="pill">{booth.archLabel}</span>
         </div>
-        <p className="muted" style={{ marginTop: 2 }}>This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> of market for cards. Try to <b>haggle</b> — but push too hard and they'll walk.</p>
+        <p className="muted" style={{ marginTop: 2 }}>
+          This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> of market for cards. Try to <b>haggle</b> — but push too hard and they'll walk.
+          {booth.recurring && <> <span style={{ color: rap?.color }}>A regular on the circuit — keep dealing with them to grow your discount{nextRap ? ` (${fmtMoney(nextRap.min - vendorSpend)} more of business → ${nextRap.name}, ${Math.round(nextRap.disc*100)}% off)` : ' — you\'re fully Trusted here'}.</span></>}
+        </p>
 
         <div className="tabs" style={{ margin: '10px 0' }}>
           <button className={`tab ${tab==='buy'?'active':''}`} onClick={()=>setTab('buy')}>Their stock ({stock.length})</button>
@@ -195,9 +265,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                     {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
                     {entry._origin === 'aftermarket' ? ' · 🕰️ older sealed' : ''}
                   </div>
-                  <div className="askrow" style={{ justifyContent:'center' }}><span className="ask">{fmtMoney(entry._ask)}</span></div>
-                  <button className="btn gold" disabled={cash < entry._ask} onClick={() => setPendingSealed(entry)}>
-                    {cash < entry._ask ? `Need ${fmtMoney(entry._ask)}` : 'Buy →'}
+                  <div className="askrow" style={{ justifyContent:'center' }}>
+                    {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(entry._ask)}</s>}
+                    <span className="ask">{fmtMoney(eff(entry._ask))}</span>
+                  </div>
+                  <button className="btn gold" disabled={cash < eff(entry._ask)} onClick={() => setPendingSealed(entry)}>
+                    {cash < eff(entry._ask) ? `Need ${fmtMoney(eff(entry._ask))}` : 'Buy →'}
                   </button>
                 </div>
               ))}
@@ -265,14 +338,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
               {pendingSealed._origin === 'vintage' ? '🗝️ ' : (pendingSealed.product.icon || '📦') + ' '}{pendingSealed.product.type}
             </h3>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-              {pendingSealed.set.name} · {fmtMoney(pendingSealed._ask)} <span style={{ opacity: 0.8 }}>(vendor markup)</span>.
+              {pendingSealed.set.name} · {fmtMoney(eff(pendingSealed._ask))} <span style={{ opacity: 0.8 }}>({disc > 0 ? 'after your rapport discount' : 'vendor markup'})</span>.
               {pendingSealed._origin === 'vintage' ? ' A sealed vintage gamble.' : ''} Rip it now, or stock it to rip/list/flip later?
             </p>
             <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
-              <button className="btn gold" disabled={cash < pendingSealed._ask} onClick={() => ripSealedNow(pendingSealed)}>
+              <button className="btn gold" disabled={cash < eff(pendingSealed._ask)} onClick={() => ripSealedNow(pendingSealed)}>
                 📦 Rip it here on the floor →
               </button>
-              <button className="btn alt" disabled={cash < pendingSealed._ask} onClick={() => stockSealedNow(pendingSealed)}>
+              <button className="btn alt" disabled={cash < eff(pendingSealed._ask)} onClick={() => stockSealedNow(pendingSealed)}>
                 🗂️ Stock it in your inventory
               </button>
             </div>

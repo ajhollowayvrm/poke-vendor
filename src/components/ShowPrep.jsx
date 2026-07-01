@@ -4,6 +4,17 @@ import { cardValue, rarityRank, fmtMoney, isHit } from '../game/engine'
 import { SHOW_TIERS } from '../game/shows'
 import CardTile from './CardTile'
 
+// Booth locations: a better spot pulls more foot traffic, for a fee on top of the booth cost.
+const SPOTS = [
+  { key: 'standard', label: 'Standard table', mult: 1.0,  feeMult: 0,   blurb: 'Included — a normal spot in the aisles.' },
+  { key: 'aisle',    label: 'Aisle spot',     mult: 1.25, feeMult: 0.5, blurb: '+25% foot traffic — on a main walkway.' },
+  { key: 'corner',   label: 'Corner endcap',  mult: 1.5,  feeMult: 1.0, blurb: '+50% foot traffic — everyone passes it.' },
+]
+const ARRIVALS = [
+  { key: 'open', label: '🌅 Arrive at open', blurb: 'First dibs — showcases are fresh and full.' },
+  { key: 'late', label: '🌇 Roll in late',   blurb: 'Best pieces are gone, but vendors mark the rest down to clear.' },
+]
+
 // Pre-show staging: pick which cards from your collection you'll bring to SELL at
 // the show. Only these are offered to floor shoppers; anything unsold comes home when
 // you leave. Backing out here costs nothing (the entry fee is charged on confirm).
@@ -15,6 +26,12 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
 
   const [sort, setSort] = useState('value')
   const [picked, setPicked] = useState(() => new Set())
+  const [spot, setSpot] = useState('standard') // booth location — traffic vs cost
+  const [arrival, setArrival] = useState('open') // when you walk in to shop the floor
+
+  const spotDef = SPOTS.find(s => s.key === spot) || SPOTS[0]
+  const spotFee = Math.round((tier.vendorFee || 0) * spotDef.feeMult)
+  const totalFee = tier.entryFee + (tier.vendorFee || 0) + spotFee
 
   const view = useMemo(() => {
     return [...collection].sort((a, b) => sort === 'value' ? cardValue(b) - cardValue(a)
@@ -58,6 +75,32 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
         {!hasPhone && <> · ⚠️ Online orders during the show will be missed (no 📱 Smartphone).</>}
       </div>
 
+      <div className="prep-choices">
+        <div className="prep-choice-group">
+          <div className="prep-choice-label">📍 Booth spot</div>
+          <div className="prep-choice-row">
+            {SPOTS.map(s => (
+              <button key={s.key} className={`chip-btn ${spot === s.key ? 'active' : ''}`} onClick={() => setSpot(s.key)}
+                title={s.blurb}>
+                <b>{s.label}</b>
+                <small>{s.feeMult ? `+${fmtMoney(Math.round((tier.vendorFee||0)*s.feeMult))}` : 'included'} · {s.blurb}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="prep-choice-group">
+          <div className="prep-choice-label">🕘 When you arrive</div>
+          <div className="prep-choice-row">
+            {ARRIVALS.map(a => (
+              <button key={a.key} className={`chip-btn ${arrival === a.key ? 'active' : ''}`} onClick={() => setArrival(a.key)}
+                title={a.blurb}>
+                <b>{a.label}</b><small>{a.blurb}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {collection.length === 0 ? (
         <div className="empty" style={{ marginTop: 18 }}>
           Your collection is empty — nothing to stock the booth with. You can still pay the vendor fee and man an empty table, but you'd be better off attending as a shopper.
@@ -98,8 +141,8 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
             : <span className="muted">Bringing nothing — buy &amp; flip on the floor</span>}
         </div>
         <div className="bulk-bar-actions">
-          <button className="btn gold" onClick={() => onConfirm([...picked])}>
-            🎪 Vend — pay {fmtMoney(tier.entryFee + (tier.vendorFee || 0))} {count > 0 ? `· bring ${count}` : ''} →
+          <button className="btn gold" disabled={cash < totalFee} onClick={() => onConfirm([...picked], { spot, spotFee, spotMult: spotDef.mult, spotLabel: spotDef.label, arrival })}>
+            🎪 Vend — pay {fmtMoney(totalFee)} {count > 0 ? `· bring ${count}` : ''} →
           </button>
         </div>
       </div>

@@ -207,7 +207,7 @@ export default function CardModal({ card, onClose }) {
                   </span>
                 </div>
                 <div className="row">
-                  {Object.entries(GRADING).map(([key, t]) => {
+                  {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => {
                     const fee = gradingFee(key, submitted)
                     const discounted = fee < t.fee
                     return (

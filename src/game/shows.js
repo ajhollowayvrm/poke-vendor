@@ -110,6 +110,43 @@ const ARCHETYPES = [
 const ARCH_BY_KEY = Object.fromEntries(ARCHETYPES.map(a => [a.key, a]))
 export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
 
+// ===== Recurring show vendors (rapport across the circuit) ===================
+// A fixed roster of named dealers who RECUR across shows (injected into generated
+// floors). Buying from them builds rapport (lifetime $ spent with that vendor), which
+// earns a standing discount at their table + reveals more of their showcase — the
+// show-floor sibling of distributor rapport and customer regulars. Their archetype is
+// fixed, so a given vendor's character is the same every time you see them.
+const SHOW_VENDOR_DEFS = [
+  { name: 'Slab City',      archetype: 'sharp'  },
+  { name: 'Rip City',       archetype: 'whale'  },
+  { name: 'Binder Bros',    archetype: 'fair'   },
+  { name: 'Chase Hunters',  archetype: 'sharp'  },
+  { name: 'Gemstone Cards', archetype: 'fair'   },
+  { name: 'Foil & Fortune', archetype: 'whale'  },
+  { name: "Honest Hannah",  archetype: 'fair'   },
+  { name: 'Lucky Pull Lou', archetype: 'newbie' },
+]
+// Rapport ladder by lifetime $ spent with a vendor. `disc` = standing discount on their
+// asking prices; higher rapport also widens how much of their showcase they'll show you.
+export const VENDOR_RAPPORT = [
+  { level: 0, name: 'Stranger', min: 0,    disc: 0,    color: '#8c97b8' },
+  { level: 1, name: 'Familiar', min: 400,  disc: 0.04, color: '#5ec98a' },
+  { level: 2, name: 'Regular',  min: 2000, disc: 0.08, color: '#5aa0ff' },
+  { level: 3, name: 'Trusted',  min: 8000, disc: 0.13, color: '#ffcb05' },
+]
+export function vendorRapport(spend) {
+  let r = VENDOR_RAPPORT[0]
+  for (const l of VENDOR_RAPPORT) if ((spend || 0) >= l.min) r = l
+  return r
+}
+export function nextVendorRapport(spend) { return VENDOR_RAPPORT.find(l => l.min > (spend || 0)) || null }
+// Build the recurring roster once (persisted). Six of the named dealers, stable ids.
+export function makeShowVendors() {
+  return shuffle(SHOW_VENDOR_DEFS).slice(0, 6).map((d, i) => ({
+    id: `sv${i}`, name: d.name, archetype: d.archetype,
+  }))
+}
+
 // Resolve one haggle round. side 'buy' = you're buying from them (lower is better
 // for you); 'sell' = they're buying from you (higher is better for you).
 //   their  = their current price, market = fair value, yourOffer = your counter
@@ -202,12 +239,18 @@ function boothSealed(r, arch) {
 }
 
 // `dayOffset` re-rolls the floor for each day of a multi-day show — different
-// vendors/stock show up day to day.
-export function generateBooths(show, notoriety, dayOffset = 0) {
+// vendors/stock show up day to day. `roster` is the recurring show-vendor list (their
+// identities get injected into some booths so you see familiar faces). `arrival` is when
+// you walked the floor: 'open' (fresh, first dibs) or 'late' (picked-over but marked down).
+export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arrival = 'open') {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
   const [lo, hi] = tier.valueBand
   const n = tier.booths
+  // Which recurring roster vendors are at THIS show (a seeded 2–4 of them), and in which
+  // booth slots. Their identity + fixed archetype override the procedural pick for that slot.
+  const recCount = roster.length ? Math.min(roster.length, n, 2 + Math.floor(r() * 3)) : 0
+  const recPick = recCount ? shuffleR(r, roster).slice(0, recCount) : []
   // Draw vendor names without replacement. If a show has more booths than names,
   // wrap to a fresh shuffle and tag with a "II"/"III" suffix so every full name
   // is still unique (no two bare "Rip City" tables).
@@ -221,7 +264,9 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
   const vintageChance = VINTAGE_SINGLE_CHANCE[show.tierKey] || 0
   const booths = []
   for (let i = 0; i < n; i++) {
-    const arch = pickR(r, ARCHETYPES)
+    // A recurring roster vendor claims this slot (fixed character), else a procedural one.
+    const rec = recPick[i] || null
+    const arch = rec ? archetype(rec.archetype) : pickR(r, ARCHETYPES)
     // Bigger booths now: a deep bin of commons/uncommons + a few hits.
     const stockN = 14 + Math.floor(r() * 18) // 14–31 cards
     const stock = []
@@ -246,18 +291,30 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
       card._mispriced = arch.key === 'newbie' && ask < worth * 0.7
       stock.push(card)
     }
-    // Highlight the booth's 1–3 priciest pieces as featured "showcase" cards.
-    const byVal = [...stock].sort((a, b) => cardValue(b) - cardValue(a))
+    let boothStock = stock
+    // LATE arrival: the best 1–2 pieces got snapped up by early birds, and the vendor marks
+    // the rest down to move it before teardown. OPEN: everything's fresh and you get first dibs.
+    if (arrival === 'late') {
+      const top = [...boothStock].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 1 + Math.floor(r() * 2))
+      const gone = new Set(top.map(c => c.uid))
+      boothStock = boothStock.filter(c => !gone.has(c.uid))
+      const markdown = 0.85 + r() * 0.07 // ~8–15% off to clear
+      for (const c of boothStock) c._ask = Math.max(0.25, round2(c._ask * markdown))
+    }
+    // Highlight the booth's 1–3 priciest remaining pieces as featured "showcase" cards.
+    const byVal = [...boothStock].sort((a, b) => cardValue(b) - cardValue(a))
     const featuredN = Math.min(3, byVal.length)
     for (let k = 0; k < featuredN; k++) byVal[k]._highlight = true
     booths.push({
       id: `${show.id}-b${i}`,
-      name: vendorName(i),
+      name: rec ? rec.name : vendorName(i),
+      vendorId: rec ? rec.id : undefined, // recurring roster vendor (rapport applies)
+      recurring: !!rec,
       archetype: arch.key,
       archLabel: arch.label,
       vibe: arch.vibe,
       buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
-      stock,
+      stock: boothStock,
       products: boothSealed(r, arch),  // sealed product on the table (may be empty)
       // grid position assigned by the floor layout
     })
@@ -287,6 +344,21 @@ export function generateBooths(show, notoriety, dayOffset = 0) {
       special: 'vault',
       vault: { setId: vSet.id, setName: vSet.name, logo: vSet.logo, product, ask },
       stock: [], // the Vault doesn't sell singles — just the one heavy pack
+    })
+  }
+
+  // --- ON-SITE GRADING KIOSK ---------------------------------------------------
+  // Big shows (National+) host a grading service booth: submit a raw card and it comes back
+  // graded in ~2 days (vs the mail-in wait) — for a premium fee. Always present at these tiers.
+  if (['national', 'invitational', 'worlds'].includes(show.tierKey)) {
+    booths.push({
+      id: `${show.id}-kiosk`,
+      name: 'On-Site Grading Kiosk',
+      archetype: 'kiosk', archLabel: 'Grading Service',
+      vibe: 'a pop-up grading service — slabs while you shop',
+      special: 'kiosk',
+      buyMult: 0,
+      stock: [],
     })
   }
   return booths

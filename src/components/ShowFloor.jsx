@@ -22,12 +22,16 @@ export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
   const upgrades = useGame(s => s.upgrades)
   const showInventory = useGame(s => s.showInventory)
+  const showVendors = useGame(s => s.showVendors) // recurring roster (stable identities)
   const tier = SHOW_TIERS[show.tierKey]
   const [showTable, setShowTable] = useState(false) // peek at your booth inventory
   useModalEscape(() => setShowTable(false)) // Esc closes the table peek
 
   const [showDay, setShowDay] = useState(1) // which day of the multi-day show we're on
-  const booths = useMemo(() => generateBooths(show, notoriety, showDay - 1), [show, notoriety, showDay])
+  // Recurring roster gets injected into the floor; `show._arrival` ('open' | 'late') tunes
+  // how picked-over the booths are. showVendors identities are stable, so this won't re-roll
+  // the floor when rapport changes (rapport lives in vendorSpend, read only in the booth).
+  const booths = useMemo(() => generateBooths(show, notoriety, showDay - 1, showVendors, show._arrival || 'open'), [show, notoriety, showDay, showVendors])
   // Layout scales with booth count → bigger shows fill more of the page.
   const layout = useMemo(() => buildLayout(booths, show._asVendor), [booths, show._asVendor])
   const { grid, cols, rows, playerAt } = layout
@@ -123,8 +127,14 @@ export default function ShowFloor({ show, onLeave }) {
       if (Date.now() - lastEncounterRef.current < ENCOUNTER_COOLDOWN) return
       // chance per 3s tick after cooldown: scales with the show's traffic and a
       // capped notoriety bonus so small shows stay calm even when you're famous.
+      // Your ACTIVE-BOOTH play multiplies it: a better spot, a stocked showcase, and a
+      // running Deal of the Show all pull more foot traffic to your table.
       const notoBonus = Math.min(0.5, notoriety / 300)
-      const chance = Math.min(0.85, 0.12 * tier.traffic * (1 + notoBonus))
+      const inv = useGame.getState().showInventory || []
+      const showcaseN = inv.filter(c => c._showcase).length
+      const dealActive = inv.some(c => c._deal)
+      const boothMult = (show._boothMult || 1) * (1 + Math.min(0.45, showcaseN * 0.15)) * (dealActive ? 1.25 : 1)
+      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult)
       if (Math.random() < chance) {
         // Floor buyers only shop your SHOW INVENTORY — the cards you brought to sell.
         const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted)
@@ -295,9 +305,9 @@ export default function ShowFloor({ show, onLeave }) {
             return (
               <div key={`${x}-${y}`} className={`tile ${isWall?'wall':''}`} style={{ left:x*TILE, top:y*TILE, width:TILE, height:TILE }}>
                 {boothIdx !== null && (
-                  <div className={`booth arch-${booths[boothIdx].archetype} ${booths[boothIdx].special === 'vault' ? 'vault-booth' : ''}`} title={booths[boothIdx].name}>
-                    <span className="boothname">{booths[boothIdx].name}</span>
-                    <span className="boothicon">{booths[boothIdx].special === 'vault' ? '🗝️' : '🛒'}</span>
+                  <div className={`booth arch-${booths[boothIdx].archetype} ${booths[boothIdx].special === 'vault' ? 'vault-booth' : ''} ${booths[boothIdx].recurring ? 'recurring-booth' : ''} ${booths[boothIdx].special === 'kiosk' ? 'kiosk-booth' : ''}`} title={booths[boothIdx].name}>
+                    <span className="boothname">{booths[boothIdx].recurring ? '🤝 ' : ''}{booths[boothIdx].name}</span>
+                    <span className="boothicon">{booths[boothIdx].special === 'vault' ? '🗝️' : booths[boothIdx].special === 'kiosk' ? '🔬' : '🛒'}</span>
                   </div>
                 )}
                 {isPlayer && <div className="booth player"><span className="boothname">YOUR BOOTH</span><span className="boothicon">⭐</span></div>}
@@ -362,15 +372,35 @@ export default function ShowFloor({ show, onLeave }) {
               <span className="pill">{showInventory.length} card{showInventory.length === 1 ? '' : 's'} · {fmtMoney(showInventory.reduce((a, c) => a + cardValue(c), 0))}</span>
             </div>
             <p className="muted" style={{ marginTop: 2 }}>
-              Shoppers who walk up to your booth buy from these. Buy a card from a vendor and choose
-              "List it at your booth" to add more. Unsold cards come home when you leave.
+              Shoppers who walk up to your booth buy from these. <b>Work your table</b> to pull more foot
+              traffic: feature your best pieces in the <b>⭐ showcase</b> (up to 3) and flag one
+              <b> 🏷️ Deal of the Show</b> as a crowd-drawing loss-leader.
             </p>
+            {show._asVendor && (
+              <div className="banner" style={{ marginTop: 6 }}>
+                📍 Spot: <b>{show._spotLabel || 'Standard table'}</b>
+                {' · '}⭐ Showcase {showInventory.filter(c => c._showcase).length}/3
+                {' · '}🏷️ Deal: <b>{showInventory.find(c => c._deal)?.name || 'none'}</b>
+                {' — '}<span style={{ color: 'var(--green)' }}>traffic ×{( (show._boothMult||1) * (1 + Math.min(0.45, showInventory.filter(c=>c._showcase).length*0.15)) * (showInventory.some(c=>c._deal)?1.25:1) ).toFixed(2)}</span>
+              </div>
+            )}
             {showInventory.length === 0 ? (
               <div className="empty">Nothing on your table yet — buy from a vendor and list it here, or sell from your collection to other vendors.</div>
             ) : (
-              <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', marginTop: 6 }}>
-                {[...showInventory].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
-                  <CardTile key={c.uid} card={c} interactive={false} />
+              <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(132px,1fr))', marginTop: 6 }}>
+                {[...showInventory].sort((a, b) => (b._showcase?1:0)-(a._showcase?1:0) || cardValue(b) - cardValue(a)).map(c => (
+                  <div key={c.uid} className={`vendoritem ${c._showcase ? 'featured' : ''}`}>
+                    <CardTile card={c} interactive={false} />
+                    <div className="muted" style={{ fontSize: 11 }}>{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
+                    <div className="row" style={{ gap: 5 }}>
+                      <button className={`btn ${c._showcase ? 'gold' : 'alt'}`} style={{ fontSize: 11, padding: '5px 6px' }}
+                        onClick={() => useGame.getState().toggleShowcase(c.uid)}
+                        title="Feature this piece in your showcase to pull more traffic">{c._showcase ? '★ Featured' : '☆ Showcase'}</button>
+                      <button className={`btn ${c._deal ? 'gold' : 'alt'}`} style={{ flex:'none', fontSize: 11, padding: '5px 6px' }}
+                        onClick={() => useGame.getState().setDealOfShow(c._deal ? null : c.uid)}
+                        title="Flag as the Deal of the Show — a loss-leader that draws a crowd">🏷️</button>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

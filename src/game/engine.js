@@ -1064,6 +1064,9 @@ export const GRADING = {
   economy: { name: 'Economy', fee: 20, days: 45 },
   standard: { name: 'Standard', fee: 60, days: 20 },
   express:  { name: 'Express',  fee: 130, days: 5 },
+  // On-site grading kiosk at big shows: skip the mail wait — results in ~2 days — but pay a
+  // premium for it. `onSite` keeps it out of the normal (mail-in) Grader tier pickers.
+  kiosk:    { name: 'On-Site Kiosk', fee: 240, days: 2, onSite: true },
 }
 
 // Bulk submission discount: sending several cards in one batch cuts the per-card

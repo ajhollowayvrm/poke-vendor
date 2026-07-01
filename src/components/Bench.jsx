@@ -95,7 +95,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
         <>
           <div className="row" style={{ margin: '10px 0', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span className="muted" style={{ fontSize: 13 }}>Service:</span>
-            {Object.entries(GRADING).map(([key, t]) => (
+            {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => (
               <button key={key} className={`tab ${tierKey === key ? 'active' : ''}`} onClick={() => setTierKey(key)}>
                 {t.name} · ~{t.days}d
               </button>
@@ -175,7 +175,7 @@ function GraderRelationship({ submitted }) {
         {next
           ? <>Send <b>{next.min - submitted}</b> more card{next.min - submitted === 1 ? '' : 's'} to reach <b style={{ color: next.color }}>{next.name}</b> ({Math.round(next.discount * 100)}% off).</>
           : <>Top tier reached — the grader treats you like family.</>}
-        {' '}Current fees: {Object.entries(GRADING).map(([k, t], i) => (
+        {' '}Current fees: {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([k, t], i) => (
           <span key={k}>{i ? ' · ' : ''}{t.name} <b>${gradingFee(k, submitted).toFixed(0)}</b></span>
         ))}.
       </div>

@@ -6,7 +6,7 @@ import { cardValue, GRADING, rollGrade, round2, rawValue, gradingFee, graderTier
   SETS, ownedIdSet, setCompletion, completionReward,
   setMarketMults, driftMult, applyMarketEvent, MARKET_EVENTS, MARKET_BOUNDS, SHOP_SETS,
   VINTAGE_SETS, SECONDARY_SETS, driftMultVintage, sealedValue, sealedCard, SEALED_FLIP_RATE, setById } from './engine'
-import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid, makeRegular } from './shows'
+import { boothEncounter, makeWant, cardMatchesWant, encounterStillValid, makeRegular, makeShowVendors } from './shows'
 import { fatigueMult } from './stream'
 
 const STARTING_CASH = 2500
@@ -683,6 +683,8 @@ export const useGame = create(persist((set, get) => ({
   sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
   wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
   regulars: [],            // persistent named customers (online/walkin) with a focus + trust; born from good deals
+  showVendors: makeShowVendors(), // recurring named dealers you meet across shows; { id,name,archetype,spend } — rapport builds with deals
+  vendorSpend: {},         // { [vendorId]: lifetime $ dealt with that show vendor } → rapport tier
   forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
   dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
   goalsDay: 0,             // which day dailyGoals were generated for
@@ -1554,8 +1556,15 @@ export const useGame = create(persist((set, get) => ({
     }
     if (card._mispriced) get().addNotoriety(1) // you spotted a deal
     get().bumpGoal('buy', 1)
+    if (opts.vendorId) get().bumpVendorRapport(opts.vendorId, price) // dealing builds rapport
     if (!opts.toShowInventory) get().checkCompletions() // bought card may finish a set
     return true
+  },
+  // Build rapport with a recurring show vendor by dealing with them (buying or selling).
+  // Rapport = lifetime $ dealt; it earns a standing discount at their table (see vendorRapport).
+  bumpVendorRapport(vendorId, amount) {
+    if (!vendorId || !(amount > 0)) return
+    set(s => ({ vendorSpend: { ...(s.vendorSpend || {}), [vendorId]: round2((s.vendorSpend?.[vendorId] || 0) + amount) } }))
   },
 
   // --- Show inventory: cards you bring to a show to sell at your booth ----------
@@ -1573,16 +1582,37 @@ export const useGame = create(persist((set, get) => ({
     get().log('show', `Brought ${bringing.length} card${bringing.length > 1 ? 's' : ''} to sell at the show`, 0)
     return bringing.length
   },
-  // Leaving the show: any unsold show-inventory cards return to your collection.
+  // Leaving the show: any unsold show-inventory cards return to your collection. Strip
+  // the transient booth flags (showcase / deal-of-show) — they only matter at the show.
   endShow() {
     const inv = get().showInventory || []
     if (inv.length) {
-      set(s => ({ collection: [...inv, ...s.collection], showInventory: [] }))
+      const home = inv.map(({ _showcase, _deal, ...c }) => c)
+      set(s => ({ collection: [...home, ...s.collection], showInventory: [] }))
       get().log('show', `Brought ${inv.length} unsold card${inv.length > 1 ? 's' : ''} back home from the show`, 0)
-    } else if ((get().showInventory || []).length === 0) {
-      // nothing to do, but ensure the bucket is empty
+    } else {
       set({ showInventory: [] })
     }
+  },
+  // --- Active booth: showcase + deal of the show ------------------------------
+  // Feature a card in your showcase (up to 3): featured pieces pull more foot traffic and
+  // sharper buyers to your table. Toggling off frees a slot.
+  SHOWCASE_MAX: 3,
+  toggleShowcase(uid) {
+    const inv = get().showInventory || []
+    const card = inv.find(c => c.uid === uid)
+    if (!card) return
+    const on = !!card._showcase
+    if (!on && inv.filter(c => c._showcase).length >= 3) return // showcase is full
+    set(s => ({ showInventory: (s.showInventory || []).map(c => c.uid === uid ? { ...c, _showcase: !on } : c) }))
+  },
+  // Mark ONE card as the "Deal of the Show" — a loss-leader markdown that draws a crowd
+  // (a traffic + notoriety bump). Pass the same uid again (or null) to clear it.
+  setDealOfShow(uid) {
+    const cur = (get().showInventory || []).find(c => c._deal)
+    const clearing = !uid || (cur && cur.uid === uid)
+    set(s => ({ showInventory: (s.showInventory || []).map(c => ({ ...c, _deal: !clearing && c.uid === uid })) }))
+    if (!clearing) { get().addNotoriety(1); get().log('show', `Announced a Deal of the Show — the markdown is pulling a crowd.`, 0) }
   },
 
   // --- Store display case (brick & mortar) -------------------------------------
@@ -1868,7 +1898,7 @@ export const useGame = create(persist((set, get) => ({
     set({ cash: STARTING_CASH, collection: [], pendingGrades: [], history: [],
       stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null }, bySet: {}, completedSets: [], marketMults: {}, marketHistory: {},
       notoriety: 0, upgrades: {}, showSeed: 7, currentDay: 1, monthsElapsed: 0, boothInbox: [], onlineOrdersEver: 0, showsAttended: 0, streamHypeDaysLeft: 0, streamFatigue: 0, streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, generousActs: 0, gradesSubmitted: 0,
-      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], distributors: {}, sealedInventory: [], wantList: [], regulars: [], forumPosts: [], dailyGoals: [], goalsDay: 0,
+      consignments: [], listings: [], showInventory: [], shopDisplay: [], supplyChannel: [], distributors: {}, sealedInventory: [], wantList: [], regulars: [], showVendors: makeShowVendors(), vendorSpend: {}, forumPosts: [], dailyGoals: [], goalsDay: 0,
       job: STARTER_JOB, pendingJob: null, rentArrears: 0, gameOver: false,
       cumWages: 0, _cardAccrual: 0, cardIncomeLog: [], employees: [], storeArrears: 0,
       settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false } })
@@ -1876,7 +1906,7 @@ export const useGame = create(persist((set, get) => ({
   },
 }), {
   name: 'poke-vendor-save',
-  version: 30,
+  version: 31,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -2109,6 +2139,12 @@ export const useGame = create(persist((set, get) => ({
       const next = {}
       for (const [id, rec] of Object.entries(old)) next[remap[id] || id] = rec
       state.distributors = next
+    }
+    if (version < 31) {
+      // Recurring show vendors (rapport across the circuit). Seed the roster once; start
+      // with no rapport. showVendors holds stable identities, vendorSpend the lifetime deal $.
+      if (!state.showVendors?.length) state.showVendors = makeShowVendors()
+      state.vendorSpend = state.vendorSpend ?? {}
     }
     return state
   },
