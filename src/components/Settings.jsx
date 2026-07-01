@@ -15,6 +15,9 @@ export default function Settings() {
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
   const ripOnBuy = useGame(s => s.settings.ripOnBuy ?? false)
+  const revealMode = useGame(s => s.settings.revealMode ?? 'auto')
+  const sound = useGame(s => s.settings.sound ?? true)
+  const haptics = useGame(s => s.settings.haptics ?? true)
   const setSetting = useGame(s => s.setSetting)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [progress, setProgress] = useState(null)
@@ -66,8 +69,23 @@ export default function Settings() {
 
       <div className="setting-card">
         <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Reveal mode</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {revealMode === 'manual'
+              ? 'Manual — cards land face-down; tap each one to flip it yourself. The suspense of the last card is in your hands.'
+              : 'Auto — cards flip on their own, best card last. Chase pulls get a suspense beat.'}
+          </div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          <button className={`segbtn ${revealMode === 'auto' ? 'on' : ''}`} onClick={() => setSetting('revealMode', 'auto')}>Auto</button>
+          <button className={`segbtn ${revealMode === 'manual' ? 'on' : ''}`} onClick={() => setSetting('revealMode', 'manual')}>Manual</button>
+        </div>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Rip speed</div>
-          <div className="muted" style={{ fontSize: 12 }}>How fast cards reveal during the animated rip.</div>
+          <div className="muted" style={{ fontSize: 12 }}>How fast cards reveal during the animated rip{revealMode === 'manual' ? ' (auto mode only)' : ''}.</div>
         </div>
         <div className="seg" style={{ flex: 'none' }}>
           {RIP_SPEEDS.map(s => (
@@ -90,6 +108,38 @@ export default function Settings() {
           role="switch" aria-checked={autoAdvance}
           onClick={() => setSetting('autoAdvance', !autoAdvance)}>
           {autoAdvance ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Rip sound effects</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {sound
+              ? 'On — pack tear, card flips, and a rising chime on hits (pitched to rarity).'
+              : 'Off — the rip is silent.'}
+          </div>
+        </div>
+        <button className={`btn ${sound ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          role="switch" aria-checked={sound}
+          onClick={() => setSetting('sound', !sound)}>
+          {sound ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Haptics</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {haptics
+              ? 'On — your phone buzzes on the tear and on hits (supported devices only).'
+              : 'Off — no vibration.'}
+          </div>
+        </div>
+        <button className={`btn ${haptics ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          role="switch" aria-checked={haptics}
+          onClick={() => setSetting('haptics', !haptics)}>
+          {haptics ? 'On' : 'Off'}
         </button>
       </div>
 

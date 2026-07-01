@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank, preloadCardImages } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank, preloadCardImages, HIT_THRESHOLD } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 import Burst from './Burst'
+import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxTension, sfxGod } from '../game/feedback'
+
+// Chase-tier = the cards worth a suspense beat: Master Ball foils and anything
+// Special Illustration Rare or above.
+function isChase(c) { return c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare') }
 
 // Opens sealed product with the animated rip. For a single booster this rips one
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
@@ -14,10 +19,16 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
+  const revealMode = useGame(s => s.settings.revealMode ?? 'auto')
+  const soundOn = useGame(s => s.settings.sound ?? true)
+  const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const [packNo, setPackNo] = useState(1)        // 1-based, which pack we're on
   const [phase, setPhase] = useState('idle')
   const [pulls, setPulls] = useState([])
   const [shown, setShown] = useState(0)
+  const [awaiting, setAwaiting] = useState(false) // manual mode: waiting for a tap to flip the next card
+  const [suspenseIdx, setSuspenseIdx] = useState(-1) // auto mode: index of the chase card being teased pre-flip
+  const [tear, setTear] = useState(0)            // drag-to-rip progress 0..1 on the idle pack
   const [burst, setBurst] = useState(false)
   const [isGod, setIsGod] = useState(false)
   const [isDemigod, setIsDemigod] = useState(false)
@@ -44,6 +55,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     return id
   }
   useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
+  // Keep the feedback module's sound/haptics gates in sync with the user's settings.
+  useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
 
   const last = packNo >= totalPacks
 
@@ -51,6 +64,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
   function rip() {
     if (phase !== 'idle') return
+    primeAudio() // this click/drag is our chance to start audio under the autoplay policy
+    setTear(0)
     const cards = openPack(set)
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
     cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
@@ -59,33 +74,95 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     setIsGod(god)
     setIsDemigod(demigod)
     setCurrent(null)
+    setAwaiting(false)
+    setSuspenseIdx(-1)
     setPulls(cards)
     setPhase('shaking')
-    after(() => { setPhase('revealing'); revealNext(cards, 0) }, ms(god ? 1500 : demigod ? 1200 : 900))
+    sfxTear()
+    after(() => {
+      setPhase('revealing')
+      // Manual mode: land the pack as a stack of face-down cards and wait for the
+      // first tap. Auto mode: start the timed reveal immediately.
+      if (revealMode === 'manual') setAwaiting(true)
+      else step(cards, 0)
+    }, ms(god ? 1500 : demigod ? 1200 : 900))
   }
 
-  function revealNext(cards, i) {
-    if (i >= cards.length) {
-      if (!committed.current) {
-        committed.current = true
-        addPulls(cards, set.name)
-        // fold this pack into the running rip tally (value-per-rip)
-        setRipValue(v => v + cards.reduce((a, c) => a + cardValue(c), 0))
-        setPacksOpened(n => n + 1)
-      }
-      if (cards._god) { setBurst(true); after(() => setBurst(false), 3000) } // big finale
-      else if (cards._demigod) { setBurst(true); after(() => setBurst(false), 1800) }
-      setPhase('done'); return
+  function finish(cards) {
+    if (!committed.current) {
+      committed.current = true
+      addPulls(cards, set.name)
+      // fold this pack into the running rip tally (value-per-rip)
+      setRipValue(v => v + cards.reduce((a, c) => a + cardValue(c), 0))
+      setPacksOpened(n => n + 1)
+    }
+    if (cards._god) { setBurst(true); after(() => setBurst(false), 3000); sfxGod() } // big finale
+    else if (cards._demigod) { setBurst(true); after(() => setBurst(false), 1800); sfxGod() }
+    setPhase('done')
+  }
+
+  // Reveal card i, fire its feedback, then decide how to reach i+1: in auto mode we
+  // schedule the next reveal on a timer; in manual mode we stop and wait for a tap.
+  // A chase card in auto mode gets a short suspense beat (dim the row, tease the
+  // face-down card) before it actually flips.
+  function step(cards, i) {
+    if (i >= cards.length) { finish(cards); return }
+    const c = cards[i]
+    const chase = isChase(c)
+    if (chase && revealMode !== 'manual' && !c._peeked) {
+      c._peeked = true
+      setSuspenseIdx(i)
+      sfxTension()
+      after(() => { setSuspenseIdx(-1); step(cards, i) }, ms(850))
+      return
     }
     setShown(i + 1)
-    const c = cards[i]
     const special = c._isHit || c.foil || c._fillsWant
-    if (special) { setBurst(true); after(() => setBurst(false), ms(1200)) }
-    // Side callout: name every card as it lands, and accumulate hits/foils.
-    setCurrent(c)
-    if (special) setHits(h => [c, ...h])
+    setCurrent(c) // side callout names every card as it lands
+    if (special) {
+      setBurst(true); after(() => setBurst(false), ms(1200))
+      setHits(h => [c, ...h])
+      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, chase)
+    } else {
+      sfxFlip()
+    }
+    const isLast = i + 1 >= cards.length
+    if (revealMode === 'manual' && !isLast) { setAwaiting(true); return }
     const delay = special ? 1100 : 520
-    after(() => revealNext(cards, i + 1), ms(delay))
+    after(() => step(cards, i + 1), ms(delay))
+  }
+
+  // Manual mode: a tap on the next face-down card flips it (and queues the wait for
+  // the one after). `shown` is the index of the next card to reveal.
+  function advanceManual() {
+    if (phase !== 'revealing' || !awaiting) return
+    primeAudio()
+    setAwaiting(false)
+    step(pulls, shown)
+  }
+
+  // Drag-to-rip: dragging down across the sealed pack tears it open. A downward drag
+  // grows a glowing seam; crossing the threshold fires the rip. A plain click still
+  // works (rip()'s phase guard keeps the two from double-firing).
+  const dragRef = useRef({ active: false, startY: 0 })
+  const RIP_DRAG = 130 // px of downward drag to tear it open
+  function onPackDown(e) {
+    if (phase !== 'idle') return
+    dragRef.current = { active: true, startY: e.clientY }
+    primeAudio()
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* ignore */ }
+  }
+  function onPackMove(e) {
+    if (!dragRef.current.active) return
+    const dy = e.clientY - dragRef.current.startY
+    const p = Math.max(0, Math.min(1, dy / RIP_DRAG))
+    setTear(p)
+    if (dy >= RIP_DRAG) { dragRef.current.active = false; rip() }
+  }
+  function onPackUp() {
+    if (!dragRef.current.active) return
+    dragRef.current.active = false
+    if (phase === 'idle') setTear(0) // released before tearing — snap the seam shut
   }
 
   // Reset reveal state for the next pack in the sequence.
@@ -94,6 +171,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     committed.current = false
     autoRipped.current = false
     setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false); setCurrent(null)
+    setAwaiting(false); setSuspenseIdx(-1); setTear(0)
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -240,6 +318,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const multi = totalPacks > 1
   // packs still un-opened: the current one counts only while it's idle (not yet ripped)
   const remainingToOpen = totalPacks - packNo + (phase === 'idle' ? 1 : 0)
+  // manual mode: is the next card to flip a chase? (drives the spotlight + tap hint)
+  const nextCard = pulls[shown]
+  const nextIsChase = phase === 'revealing' && awaiting && !!nextCard && isChase(nextCard)
 
   return (
     <div className="stage">
@@ -265,10 +346,14 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
         <>
           <div className="pack-wrap">
             <div className="pack3d" onClick={rip} role="button" tabIndex={0} aria-label="Rip the pack"
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rip() } }}>
+              style={{ '--tear': tear }}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rip() } }}
+              onPointerDown={onPackDown} onPointerMove={onPackMove}
+              onPointerUp={onPackUp} onPointerCancel={onPackUp}>
               <div className="foil" />
+              <div className="tear" aria-hidden="true" />
               {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
-              <span className="hint">▶ Click to rip</span>
+              <span className="hint">▶ Click or drag down to rip</span>
             </div>
           </div>
           {!multi && <button className="btn alt" style={{ maxWidth: 160 }} onClick={onExit}>← Back to shop</button>}
@@ -328,18 +413,31 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
             {/* CENTER — the reveal row + pack-value summary */}
             <div className="rip-center">
-              <div className={`reveal-row ${isGod ? 'god' : isDemigod ? 'demigod' : ''}`}>
+              {/* a chase card being teased (auto suspense beat, or the next manual tap)
+                  dims the rest of the row to spotlight it */}
+              <div className={`reveal-row ${isGod ? 'god' : isDemigod ? 'demigod' : ''} ${(suspenseIdx >= 0 || nextIsChase) ? 'focus' : ''}`}>
                 {pulls.map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
-                  const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')
+                  const chase = isChase(c)
+                  const isShown = i < shown
+                  const isNext = phase === 'revealing' && awaiting && i === shown // the card a manual tap will flip
+                  const peek = chase && (suspenseIdx === i || isNext)
                   return (
-                    <HoloCard key={c.uid} card={c} extraStyle={{ '--rarity': edge }}
-                      className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
-                      <img src={c.img} alt={c.name} decoding="async" fetchpriority="high" />
+                    <HoloCard key={c.uid} card={c} interactive={isShown}
+                      onClick={isNext ? advanceManual : undefined}
+                      extraStyle={{ '--rarity': edge }}
+                      className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
+                      <div className="flip">
+                        <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
+                        <div className="flip-front"><img src={c.img} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
+                      </div>
                     </HoloCard>
                   )
                 })}
               </div>
+              {phase === 'revealing' && awaiting && (
+                <p className="rip-tap-hint">👆 Tap the {nextIsChase ? 'glowing ' : ''}card to reveal it</p>
+              )}
               {phase === 'done' && (
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 15, marginBottom: multi ? 4 : 8 }}>

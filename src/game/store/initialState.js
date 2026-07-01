@@ -78,6 +78,8 @@ export function initialState() {
     // Rip/UI prefs. ripSpeed: reveal-speed multiplier (1 = normal, >1 faster, <1 slower).
     // autoAdvance ("Auto-rip"): once a rip is underway, auto-start the next reveal. PACING ONLY.
     // ripOnBuy: a buy skips inventory and rips immediately. Off by default → buying STOCKS to inventory.
-    settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false },
+    // revealMode: 'auto' flips cards on a timer; 'manual' waits for you to tap each one.
+    // sound/haptics: synthesized rip SFX + phone vibration (see game/feedback.js).
+    settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true },
   }
 }

@@ -496,9 +496,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                   const owner = spotIdx != null ? (spotIdx < filledSpots ? spotOwners[spotIdx] : 'YOU') : null
                   return (
                     <div key={c.uid} style={{ position:'relative' }}>
-                      <HoloCard card={c} extraStyle={{ '--rarity': edge }}
-                        className={`reveal-card ${i < shown ? 'shown' : ''} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
-                        <img src={c.img} alt={c.name} decoding="async" />
+                      <HoloCard card={c} interactive={i < shown} extraStyle={{ '--rarity': edge }}
+                        className={`reveal-card ${i < shown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
+                        <div className="flip">
+                          <div className="flip-back" aria-hidden="true" />
+                          <div className="flip-front"><img src={c.img} alt={i < shown ? c.name : ''} decoding="async" /></div>
+                        </div>
                       </HoloCard>
                       {i < shown && owner && (c._isHit || c.foil) && (
                         <span className={`spot-ship ${owner === 'YOU' ? 'mine' : ''}`} title={owner === 'YOU' ? 'Unsold spot — this one is yours' : `Ships to ${owner}`}>

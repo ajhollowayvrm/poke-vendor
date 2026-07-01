@@ -181,7 +181,11 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .pack-progress { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
 .pack3d { width: 230px; height: 360px; border-radius: 16px; position: relative; cursor: pointer;
   background: linear-gradient(160deg,#2b3a6b,#1a2138); display:flex; align-items:center; justify-content:center;
-  box-shadow: 0 20px 50px #000a, inset 0 0 0 2px #ffffff14; user-select:none; }
+  box-shadow: 0 20px 50px #000a, inset 0 0 0 2px #ffffff14; user-select:none; touch-action: none; }
+/* drag-to-rip: a glowing seam near the top that widens as you drag down (--tear 0..1) */
+.pack3d .tear { position:absolute; left:8%; right:8%; top:26px; height:5px; border-radius:4px;
+  background: linear-gradient(90deg,#fff0,#fff,#fff0); box-shadow: 0 0 18px 4px #fff8;
+  transform: scaleX(var(--tear,0)); transform-origin:center; opacity: var(--tear,0); pointer-events:none; }
 .pack-wrap { perspective: 1200px; }
 .pack3d .logo { max-width: 80%; max-height: 60%; object-fit: contain; filter: drop-shadow(0 6px 10px #000b); }
 .pack3d .hint { position:absolute; bottom: 14px; font-size:12px; color:#ffffffcc; font-weight:700; }
@@ -192,25 +196,57 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   animation: sheen 2.5s linear infinite; pointer-events:none; }
 
 .reveal-row { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; max-width: 980px; }
-/* reveal-card is a HoloCard; animate opacity/scale only (tilt transform handled by JS on hover) */
+/* reveal-card is a HoloCard (JS handles hover tilt on the outer element). Cards land
+   face-DOWN as a stack of backs and flip up when revealed — the .flip inner element
+   does the 3D turn; the border stays neutral until shown so nothing is spoiled. */
 .reveal-card { width: 150px; border-radius: 12px; position:relative; background:#0c0f1a;
-  border:1px solid var(--line); opacity:0; transform: scale(.82); transition: opacity .4s ease, transform .5s cubic-bezier(.2,1.3,.5,1); }
-.reveal-card.shown { opacity:1; transform: scale(1); }
-.reveal-card img { width:100%; display:block; border-radius: 11px; }
-/* reveal border is tinted by rarity (--rarity set per-card in JS) — same cue as
-   the resting tiles, no art-covering overlay. Hits get a glow + pop. */
-.reveal-card { border-color: var(--rarity, var(--line)); }
+  border:1px solid var(--line); perspective: 900px; }
+.reveal-card .flip { position:relative; transform-style: preserve-3d;
+  transition: transform .55s cubic-bezier(.3,.9,.3,1); transform: rotateY(180deg); }
+.reveal-card.shown .flip { transform: rotateY(0deg); }
+.reveal-card .flip-front, .reveal-card .flip-back {
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 11px; overflow: hidden; }
+.reveal-card .flip-front { position: relative; }
+.reveal-card .flip-front img { width:100%; display:block; border-radius: 11px; }
+/* the card back — a faint set logo over a sheened panel */
+.reveal-card .flip-back { position:absolute; inset:0; transform: rotateY(180deg);
+  display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(circle at 50% 34%, #3a4d8f 0 26%, #2b3a6b 27% 44%, #1c2848 45% 100%); }
+.reveal-card .flip-back img { width:56%; opacity:.2; filter: grayscale(.3) drop-shadow(0 2px 6px #0008); }
+.reveal-card .flip-back::after { content:''; position:absolute; inset:0; border-radius:11px;
+  box-shadow: inset 0 0 0 2px #ffffff12, inset 0 0 0 6px #ffffff08;
+  background: linear-gradient(120deg,#ffffff00 42%,#ffffff26 50%,#ffffff00 58%); background-size:300% 300%;
+  animation: sheen 3s linear infinite; }
+/* rarity border + glow only once revealed */
+.reveal-card.shown { border-color: var(--rarity, var(--line)); }
 .reveal-card.hit.shown { border-width: 2px;
-  box-shadow: 0 0 26px color-mix(in srgb, var(--rarity) 70%, transparent), 0 0 0 2px var(--rarity);
-  animation: hitpulse 1.2s ease-out; }
-@keyframes hitpulse { 0%{transform:scale(.82)} 40%{transform:scale(1.12)} 100%{transform:scale(1)} }
-/* top-tier chases get a bigger landing pulse — still just the border glowing,
-   art stays fully visible */
-.reveal-card.chase.shown { animation: hitpulse 1.2s ease-out, chaseRim 1.6s ease-out 1; }
+  box-shadow: 0 0 26px color-mix(in srgb, var(--rarity) 70%, transparent), 0 0 0 2px var(--rarity); }
+/* top-tier chases get a landing halo — border only, art stays fully visible */
+.reveal-card.chase.shown { animation: chaseRim 1.6s ease-out 1; }
 @keyframes chaseRim {
   0%   { box-shadow: 0 0 0 2px var(--rarity), 0 0 70px 10px color-mix(in srgb, var(--rarity) 85%, transparent); }
   45%  { box-shadow: 0 0 0 2px var(--rarity), 0 0 44px 4px color-mix(in srgb, var(--rarity) 70%, transparent); }
   100% { box-shadow: 0 0 26px color-mix(in srgb, var(--rarity) 70%, transparent), 0 0 0 2px var(--rarity); }
+}
+/* an upcoming chase card — teased before it flips (bob + rarity glow on the back) */
+.reveal-card.peek { animation: peekbob 1s ease-in-out infinite; z-index: 2; }
+.reveal-card.peek .flip-back { box-shadow: 0 0 34px 5px color-mix(in srgb, var(--rarity) 75%, transparent); }
+@keyframes peekbob { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-7px) } }
+.reveal-card.tappable { cursor: pointer; }
+/* the next card a manual tap will flip gets a soft pulse so it reads as tappable */
+.reveal-card.tappable:not(.peek) { animation: tapready 1.3s ease-in-out infinite; }
+@keyframes tapready { 0%,100%{ box-shadow: 0 0 0 0 #ffffff00 } 50%{ box-shadow: 0 0 16px 2px #ffffff44 } }
+/* spotlight: dim everything except the card being teased */
+.reveal-row.focus .reveal-card:not(.peek) { opacity:.4; filter: blur(1px); transition: opacity .3s ease, filter .3s ease; }
+/* manual-mode "tap to flip" prompt */
+.rip-tap-hint { font-size: 13px; font-weight: 700; color: #cdd6f4; text-align:center; margin: 2px 0;
+  animation: taphint 1.4s ease-in-out infinite; }
+@keyframes taphint { 0%,100%{opacity:.55} 50%{opacity:1} }
+/* respect reduced-motion: cut the big animations, keep cards flipping instantly */
+@media (prefers-reduced-motion: reduce) {
+  .pack3d.shake { animation: none; }
+  .reveal-card .flip { transition: none; }
+  .reveal-card.peek, .reveal-card.chase.shown, .reveal-card.tappable, .rip-tap-hint, .reveal-card .flip-back::after { animation: none; }
 }
 .hitburst { position:fixed; inset:0; pointer-events:none; z-index:60; }
 

@@ -3,7 +3,7 @@ import { useRef, useState, useCallback } from 'react'
 // Card wrapper: a gentle pointer-tracked 3D tilt on hover. No holographic
 // overlay — the art is left fully visible; rarity is conveyed by the colored
 // border on the card tile itself (see rarityColor + .cardtile border).
-export default function HoloCard({ card, children, maxTilt = 14, className = '', interactive = true, extraStyle }) {
+export default function HoloCard({ card, children, maxTilt = 14, className = '', interactive = true, extraStyle, onClick }) {
   const ref = useRef(null)
   const [style, setStyle] = useState({})
 
@@ -32,6 +32,7 @@ export default function HoloCard({ card, children, maxTilt = 14, className = '',
       style={{ ...extraStyle, ...style }}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
+      onClick={onClick}
     >
       {children}
     </div>
