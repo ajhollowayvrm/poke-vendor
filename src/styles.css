@@ -827,6 +827,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
      child with its own overflow (the tier-legend chip row) has NO automatic min-height —
      it gets crushed to a sliver. Pin children to natural height; .content does the scrolling. */
   .app:has(> .bottomnav) .content > * { flex-shrink: 0; }
+  /* Short routed views spread to the edges: headers/panels stay snug under the tabs while
+     the final list is pushed to the bottom (above the nav), so the leftover space lands in
+     the middle instead of as a dead band at the bottom. margin-top:auto collapses to 0 when
+     the content overflows (tall lists just scroll from the top). :not(:first-child) leaves
+     single-block views top-anchored rather than dropping their only child to the bottom. */
+  .app:has(> .bottomnav) .pane > *:last-child:not(:first-child) { margin-top: auto; }
   .topbar { gap: 8px; padding: 10px 12px; flex-wrap: wrap; }
   .brand { font-size: 17px; }
   .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
