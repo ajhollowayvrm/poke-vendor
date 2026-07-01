@@ -1241,3 +1241,16 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* Recurring roster vendor + grading kiosk booths stand out on the floor */
 .booth.recurring-booth { outline:2px solid #ffcb0555; }
 .booth.kiosk-booth { background:linear-gradient(180deg,#0c2630,#0a1a22); border-color:#7cf0ff66; }
+
+/* --- Show floor: fill the viewport on phones ------------------------------- */
+/* Attending a show is a full-screen view with NO bottom nav, so the .pane fix above
+   doesn't reach it. On phones its content clustered at the top and left a dead band
+   below the D-pad. Let the floorwrap fill the app and grow the scrollable map region
+   so the map centers between the HUD (top) and the D-pad (bottom) — screen used top
+   to bottom. `safe center` keeps a huge hall anchored to the top so it can scroll.
+   Placed at end-of-file so it overrides the earlier mobile `.floorscroll` max-height. */
+@media (hover: none), (max-width: 760px) {
+  .app:has(.floorwrap) { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .floorwrap { flex: 1 1 auto; min-height: 0; }
+  .floorscroll { flex: 1 1 auto; max-height: none; align-items: safe center; }
+}
