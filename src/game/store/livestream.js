@@ -73,6 +73,7 @@ export function createLivestreamSlice(set, get) {
       const cardIncome = round2(get()._cardAccrual || 0)
       const ring = [...(get().cardIncomeLog || []), cardIncome]
       set(() => ({ cardIncomeLog: ring.slice(-INCOME_WINDOW_DAYS), _cardAccrual: 0 }))
+      get().checkMilestones() // stream-count / peak-viewer badges
     },
   }
 }

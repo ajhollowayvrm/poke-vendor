@@ -355,6 +355,9 @@ export function advanceDaysWith(set, get, days, away) {
   for (const ev of market.events) get().log(ev.kind === 'hype' ? 'market-hype' : 'market-crash', `${ev.kind === 'hype' ? '📈' : '📉'} ${ev.line}`, 0)
   // Resolve any grades whose day count was reached during these days (currentDay is now updated).
   const resolvedGrades = get().resolveGrades()
+  // Daily catch-all for milestones — sweeps up any slow-moving thresholds (net worth,
+  // notoriety, cumulative counters) that the instant per-action checks don't cover.
+  get().checkMilestones()
   // The day-summary payload. cashDelta/notoDelta are measured against the snapshot taken at
   // the very top of this call (s.cash / noto) AFTER every settlement above — including the
   // completion bonuses a returned slab may have just paid — so the modal reflects the whole

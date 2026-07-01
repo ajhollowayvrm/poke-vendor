@@ -51,6 +51,7 @@ export function createCollectionSlice(set, get) {
       get().log('rip', `Opened ${setName}`, 0)
       get().bumpGoal('rip', packs)
       get().checkCompletions() // a new card may have just finished a set
+      get().checkMilestones()  // packs/hits/god-pack/best-pull badges — instant feedback on a rip
     },
 
     // --- Master-set completion ---------------------------------------------------

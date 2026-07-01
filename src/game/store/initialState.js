@@ -61,6 +61,8 @@ export function initialState() {
     forumPosts: [],          // public WTB board — anyone-can-fill wants; your early-game demand engine
     dailyGoals: [],          // {key,label,target,progress,reward,done} for currentDay
     goalsDay: 0,             // which day dailyGoals were generated for
+    milestones: [],          // ids of permanently-unlocked achievement badges (see game/milestones.js)
+    pendingMilestones: [],   // ids unlocked but not yet announced — App drains this into toasts
     // Survival economy: a day job pays a daily wage, rent drains it. job=null means full-time
     // vendor (no wage). pendingJob holds a freshly-taken job until it starts (re-apply friction).
     // rentArrears = consecutive days behind on rent; past RENT_GRACE_DAYS with nothing to sell → gameOver.

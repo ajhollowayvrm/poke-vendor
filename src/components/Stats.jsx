@@ -1,17 +1,19 @@
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2, SETS } from '../game/engine'
+import { MILESTONES, MILESTONE_GROUPS, milestoneProgress } from '../game/milestones'
 import { confirmDialog } from '../ui/dialog'
 
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
 
 export default function Stats() {
   const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
-    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory } = useGame(s => ({
+    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory, milestones } = useGame(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
     listings: s.listings, consignments: s.consignments, shopDisplay: s.shopDisplay,
     showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
+    milestones: s.milestones || [],
   }))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
   // Cards/products held in the IN-FLIGHT buckets are moved OUT of `collection` but are still
@@ -70,6 +72,8 @@ export default function Stats() {
         </p>
       )}
 
+      <MilestoneShelf unlocked={milestones} />
+
       <h3 style={{ margin: '24px 0 6px' }}>By set</h3>
       {setRows.length === 0 ? (
         <p className="muted">Rip some sealed product to see which sets pay off. 📦</p>
@@ -116,6 +120,51 @@ export default function Stats() {
 }
 function Stat({ label, v, c }) {
   return <div className="stat"><b style={{ color: c || 'var(--txt)' }}>{v}</b><span>{label}</span></div>
+}
+
+// Achievement badges. Unlocked ones light up gold; locked ones dim to a 🔒 with a progress
+// bar toward their goal. Grouped by theme. Progress reads a live state snapshot (the panel
+// re-renders as stats change, so bars stay current).
+function MilestoneShelf({ unlocked }) {
+  const have = new Set(unlocked || [])
+  const snap = useGame.getState()
+  return (
+    <>
+      <h3 style={{ margin: '24px 0 6px' }}>
+        Milestones <span className="muted" style={{ fontSize: 13, fontWeight: 'normal' }}>· {have.size}/{MILESTONES.length}</span>
+      </h3>
+      {MILESTONE_GROUPS.map(group => (
+        <div key={group} style={{ marginBottom: 12 }}>
+          <div className="muted" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 5 }}>{group}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {MILESTONES.filter(m => m.group === group).map(m => {
+              const done = have.has(m.id)
+              const pct = done ? 1 : milestoneProgress(snap, m)
+              return (
+                <div key={m.id}
+                  title={done ? `${m.name} — ${m.desc} ✓` : `${m.desc} · ${Math.round(pct * 100)}%`}
+                  style={{
+                    width: 132, padding: '7px 9px', borderRadius: 8,
+                    border: `1px solid ${done ? 'var(--gold)' : 'rgba(255,255,255,0.10)'}`,
+                    background: done ? 'rgba(255,190,60,0.10)' : 'rgba(255,255,255,0.03)',
+                    opacity: done ? 1 : 0.62,
+                  }}>
+                  <div style={{ fontSize: 17, lineHeight: 1.2 }}>{done ? m.icon : '🔒'}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: done ? 'var(--gold)' : 'var(--txt)' }}>{m.name}</div>
+                  <div className="muted" style={{ fontSize: 11 }}>{m.desc}</div>
+                  {!done && (
+                    <div style={{ height: 3, background: 'rgba(255,255,255,0.10)', borderRadius: 2, marginTop: 5, overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.round(pct * 100)}%`, height: '100%', background: 'var(--gold)' }} />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </>
+  )
 }
 
 // Survival economy panel: job + wage vs rent, net daily, cash runway, and the job picker.

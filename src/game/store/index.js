@@ -27,6 +27,7 @@ import { persist } from 'zustand/middleware'
 import { GRADING, setMarketMults } from '../engine'
 import { makeShowVendors } from '../shows'
 import { jobById, STARTER_JOB, absoluteDay } from './constants'
+import { newlyUnlocked } from '../milestones'
 import { seedOfferId } from './ids'
 import { initialState } from './initialState'
 import { createEconomySlice } from './economy'
@@ -50,7 +51,7 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 31,
+  version: 32,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -289,6 +290,15 @@ export const useGame = create(persist((set, get) => ({
       // with no rapport. showVendors holds stable identities, vendorSpend the lifetime deal $.
       if (!state.showVendors?.length) state.showVendors = makeShowVendors()
       state.vendorSpend = state.vendorSpend ?? {}
+    }
+    if (version < 32) {
+      // Milestones (achievement badges). Silently retro-credit everything this save has
+      // ALREADY earned — mark them unlocked with no reward/toast flood — so only NEW
+      // milestones from here on pay out and announce. pendingMilestones starts empty.
+      state.milestones = state.milestones ?? []
+      state.pendingMilestones = []
+      const already = newlyUnlocked(state, state.milestones).map(x => x.id)
+      if (already.length) state.milestones = [...state.milestones, ...already]
     }
     return state
   },

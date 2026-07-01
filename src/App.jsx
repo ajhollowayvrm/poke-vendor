@@ -25,6 +25,7 @@ import Regulars from './components/Regulars'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
+import { milestoneById } from './game/milestones'
 
 // Primary nav: the core loop + Stats (your money/standing matters more than the upgrade
 // shop, so Stats gets a top slot and Upgrades moves behind the ⚙️ gear). Reference/meta
@@ -100,6 +101,19 @@ export default function App() {
     const summary = useGame.getState().nextDay()
     if (summary) setDaySummary(summary)
   }
+
+  // Announce freshly-unlocked milestones as toasts. The store queues unlock ids in
+  // pendingMilestones from wherever they trigger (rips, day-tick, encounters, streams);
+  // we drain the queue here so the notification is decoupled from what caused it.
+  const pendingMilestones = useGame(s => s.pendingMilestones)
+  useEffect(() => {
+    if (!pendingMilestones?.length) return
+    for (const id of pendingMilestones) {
+      const mst = milestoneById(id)
+      if (mst) toast(`🏅 Milestone unlocked — ${mst.icon} ${mst.name}: ${mst.desc}${mst.noto ? ` (+${mst.noto}★)` : ''}`, 4500)
+    }
+    useGame.getState().clearPendingMilestones()
+  }, [pendingMilestones])
 
   // Buying STOCKS sealed product into your inventory (hold-first) — you rip, list, or flip
   // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses

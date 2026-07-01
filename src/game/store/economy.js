@@ -14,6 +14,7 @@ import {
 import { bumpSet, realizableAssets } from './helpers'
 import { advanceDaysWith, mergeSummaries } from './daytick'
 import { initialState } from './initialState'
+import { newlyUnlocked } from '../milestones'
 
 export function createEconomySlice(set, get) {
   return {
@@ -68,6 +69,30 @@ export function createEconomySlice(set, get) {
       if (!setId || !amount) return
       set(s => ({ bySet: bumpSet(s.bySet, setId, { spent: amount }) }))
     },
+
+    // --- Milestones ---
+    // Unlock any achievement whose lifetime threshold is now met. Cheap and idempotent — a
+    // no-op (no set, no re-render) when nothing new crossed, so it's safe to call from many
+    // action sites (rips, day-tick, encounters, streams, wants). Rewards notoriety once and
+    // queues each unlock for App to announce as a toast. Returns the freshly-unlocked defs.
+    // (No recursion: the notoriety reward goes through addNotoriety, which does NOT call back
+    // here. A reward that crosses a reputation-tier goal is picked up on the next call.)
+    checkMilestones() {
+      const s = get()
+      const fresh = newlyUnlocked(s, s.milestones)
+      if (!fresh.length) return []
+      set(st => ({
+        milestones: [...(st.milestones || []), ...fresh.map(x => x.id)],
+        pendingMilestones: [...(st.pendingMilestones || []), ...fresh.map(x => x.id)],
+      }))
+      for (const x of fresh) {
+        if (x.noto) get().addNotoriety(x.noto)
+        get().log('milestone', `🏅 Milestone: ${x.name} — ${x.desc}${x.noto ? ` (+${x.noto}★)` : ''}`, 0)
+      }
+      return fresh
+    },
+    // App drains the announce-queue after showing the toasts.
+    clearPendingMilestones() { if ((get().pendingMilestones || []).length) set({ pendingMilestones: [] }) },
 
     // A live price refresh is a fresh market snapshot — the new truth. The engine already
     // zeroed its module-level multipliers; clear the persisted drift + history so it doesn't

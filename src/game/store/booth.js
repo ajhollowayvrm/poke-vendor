@@ -294,6 +294,7 @@ export function createBoothSlice(set, get) {
         const pruned = st.boothInbox.filter(enc => encounterStillValid(enc, st.collection, st.listings, st.shopDisplay))
         return pruned.length === st.boothInbox.length ? {} : { boothInbox: pruned }
       })
+      get().checkMilestones() // generosity / sale-driven badges — instant on a walk-up outcome
       return msg
     },
 
