@@ -488,7 +488,43 @@ function dedupePack(pulls, byR, rnd = Math.random) {
 // Open a single pack from a set. Returns an array of pulled card instances.
 // The array may carry a `_god` flag (god pack) or `_demigod` flag (demigod pack).
 // Also sets `_specialKey` / `_specialLabel` for any special-pack variant that fires.
+// Pick a random card from `pool` that isn't already in the `used` id-set (draw without
+// replacement — so a pack never repeats a card). Falls back to allowing a repeat only if
+// the pool is fully exhausted (pool smaller than the slots that need it).
+function pickUnique(pool, used, rnd = Math.random) {
+  const avail = pool.filter(c => !used.has(c.id))
+  const c = pick(avail.length ? avail : pool, rnd)
+  if (c) used.add(c.id)
+  return c
+}
+
+// Celebrations (cel25) is a bespoke 4-card, all-holo pack — nothing like a normal booster,
+// so it gets its own builder instead of the 10-card common/uncommon layout. Slot odds match
+// the real published pull rates (DigitalTQ, 541 packs opened): three main-set holo rares,
+// then a 4th "hit" slot that's a Classic Collection reprint ~37.8% of packs, a main-set
+// Ultra Rare art card (Pikachu V/VMAX, Zacian V, Gold Mew…) ~38%, else another holo rare.
+// Within a tier the pick is uniform (≈ the average of the real per-card rates).
+function openCelebrationsPack(set) {
+  const byR = cardsByRarity(set)
+  const base = [...(byR['Rare'] || []), ...(byR['Rare Holo'] || [])] // main-set holo rares
+  const ur = byR['Ultra Rare'] || []                                 // main-set art rares
+  const cc = byR['Special Illustration Rare'] || []                  // Classic Collection
+  const basePool = base.length ? base : set.cards
+  const used = new Set()
+  const pulls = []
+  for (let i = 0; i < 3; i++) pulls.push(instance(pickUnique(basePool, used)))
+  const r = Math.random()
+  const hitPool = (r < 0.378 && cc.length) ? cc
+    : (r < 0.758 && ur.length) ? ur
+    : basePool
+  pulls.push(instance(pickUnique(hitPool, used)))
+  // reveal the best (highest rarity) card last
+  pulls.sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity))
+  return pulls
+}
+
 export function openPack(set) {
+  if (set.id === 'cel25') return openCelebrationsPack(set) // bespoke 4-card structure
   const byR = cardsByRarity(set)
   const rates = ratesFor(set)
   const commons = byR['Common'] || byR['Uncommon'] || set.cards
