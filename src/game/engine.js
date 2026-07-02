@@ -488,22 +488,47 @@ function dedupePack(pulls, byR, rnd = Math.random) {
 // Open a single pack from a set. Returns an array of pulled card instances.
 // The array may carry a `_god` flag (god pack) or `_demigod` flag (demigod pack).
 // Also sets `_specialKey` / `_specialLabel` for any special-pack variant that fires.
-// Pick a random card from `pool` that isn't already in the `used` id-set (draw without
-// replacement — so a pack never repeats a card). Falls back to allowing a repeat only if
-// the pool is fully exhausted (pool smaller than the slots that need it).
-function pickUnique(pool, used, rnd = Math.random) {
-  const avail = pool.filter(c => !used.has(c.id))
-  const c = pick(avail.length ? avail : pool, rnd)
-  if (c) used.add(c.id)
-  return c
+// Exact per-card, per-pack Celebrations pull rates (%), from DigitalTQ's 541-pack sample.
+// Keyed by our card id. Main set is cel25-<number>; Classic Collection is cel25c-*.
+const CEL_RATE = {
+  // --- main set (cel25) ---
+  'cel25-1': 21.44,  'cel25-2': 23.11,  'cel25-3': 21.81,  'cel25-4': 20.89,  'cel25-5': 13.49, // Ho-Oh…Pikachu
+  'cel25-6': 6.47,   'cel25-7': 4.81,   'cel25-8': 5.36,   'cel25-9': 4.44,   'cel25-10': 22.55, // Pikachu V/VMAX…Zekrom
+  'cel25-11': 12.94, 'cel25-12': 21.81, 'cel25-13': 24.03, 'cel25-14': 22.18, 'cel25-15': 9.61,  // Mew…Lunala
+  'cel25-16': 7.39,  'cel25-17': 21.44, 'cel25-18': 5.18,  'cel25-19': 19.41, 'cel25-20': 19.96, // Zacian V…Dialga
+  'cel25-21': 13.12, 'cel25-22': 21.44, 'cel25-23': 12.75, 'cel25-24': 3.88,  'cel25-25': 0.37,  // Solgaleo…Mew(Gold)
+  // --- Classic Collection (cel25c) — matched by name ---
+  'cel25c-4_A': 1.29,   'cel25c-2_A': 2.59,   'cel25c-15_A1': 2.59, 'cel25c-15_A2': 3.33, // Charizard, Blastoise, Venusaur, Team Rocket
+  'cel25c-15_A4': 2.77, 'cel25c-15_A3': 2.22, 'cel25c-73_A': 1.85,  'cel25c-8_A': 1.11,   // Claydol, Rocket's Zapdos, Imposter Oak, Dark Gyarados
+  'cel25c-66_A': 1.11,  'cel25c-24_A': 2.96,  'cel25c-20_A': 2.03,  'cel25c-86_A': 1.66,  // Shining Magikarp, Lt. Surge's Pikachu, Cleffa, Rocket's Admin
+  'cel25c-17_A': 0.74,  'cel25c-88_A': 1.29,  'cel25c-93_A': 1.11,  'cel25c-9_A': 3.14,   // Umbreon★, Mew ex, Gardevoir ex, Team Magma's Groudon
+  'cel25c-109_A': 0.74, 'cel25c-145_A': 1.48, 'cel25c-113_A': 0.55, 'cel25c-114_A': 1.48, // Luxray GL, Garchomp C, Reshiram, Zekrom
+  'cel25c-54_A': 0.74,  'cel25c-97_A': 1.11,  'cel25c-60_A': 1.29,  'cel25c-107_A': 0.55, // Mewtwo-EX, Xerneas-EX, Tapu Lele-GX, Donphan
+  'cel25c-76_A': 0.37,                                                                    // M Rayquaza-EX
+}
+// Aggregate slot odds: a pack's 4th "hit" card is a Classic Collection reprint 37.81% of
+// packs, a main-set Ultra Rare art card 37.53%, else another holo rare (24.66%).
+const CEL_CC_SLOT = 0.3781
+const CEL_UR_SLOT = 0.3753
+
+// Draw a card from `pool` (excluding already-used ids), weighted by its Celebrations pull
+// rate so each card lands at its real frequency. Without replacement — no repeats in a pack.
+function weightedCelPick(pool, used, rnd = Math.random) {
+  const src = pool.filter(c => !used.has(c.id))
+  const use = src.length ? src : pool
+  let total = 0; for (const c of use) total += CEL_RATE[c.id] || 0.5
+  let r = rnd() * total
+  let chosen = use[use.length - 1]
+  for (const c of use) { r -= (CEL_RATE[c.id] || 0.5); if (r <= 0) { chosen = c; break } }
+  used.add(chosen.id)
+  return chosen
 }
 
 // Celebrations (cel25) is a bespoke 4-card, all-holo pack — nothing like a normal booster,
-// so it gets its own builder instead of the 10-card common/uncommon layout. Slot odds match
-// the real published pull rates (DigitalTQ, 541 packs opened): three main-set holo rares,
-// then a 4th "hit" slot that's a Classic Collection reprint ~37.8% of packs, a main-set
-// Ultra Rare art card (Pikachu V/VMAX, Zacian V, Gold Mew…) ~38%, else another holo rare.
-// Within a tier the pick is uniform (≈ the average of the real per-card rates).
+// so it gets its own builder. Structure + odds match the real published pull rates
+// (DigitalTQ, 541 packs): 3 main-set holo rares, then a 4th "hit" slot that's a Classic
+// Collection reprint (37.81%), a main-set Ultra Rare art card (37.53%), or another holo.
+// Every card is weighted by its EXACT per-card rate (Charizard 1.29%, Rayquaza 0.37%, …).
 function openCelebrationsPack(set) {
   const byR = cardsByRarity(set)
   const base = [...(byR['Rare'] || []), ...(byR['Rare Holo'] || [])] // main-set holo rares
@@ -512,12 +537,12 @@ function openCelebrationsPack(set) {
   const basePool = base.length ? base : set.cards
   const used = new Set()
   const pulls = []
-  for (let i = 0; i < 3; i++) pulls.push(instance(pickUnique(basePool, used)))
+  for (let i = 0; i < 3; i++) pulls.push(instance(weightedCelPick(basePool, used)))
   const r = Math.random()
-  const hitPool = (r < 0.378 && cc.length) ? cc
-    : (r < 0.758 && ur.length) ? ur
+  const hitPool = (r < CEL_CC_SLOT && cc.length) ? cc
+    : (r < CEL_CC_SLOT + CEL_UR_SLOT && ur.length) ? ur
     : basePool
-  pulls.push(instance(pickUnique(hitPool, used)))
+  pulls.push(instance(weightedCelPick(hitPool, used)))
   // reveal the best (highest rarity) card last
   pulls.sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity))
   return pulls
