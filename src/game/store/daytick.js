@@ -22,7 +22,7 @@ import {
 } from '../engine'
 import { boothEncounter, makeWant } from '../shows'
 import {
-  CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
+  CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
 } from './constants'
@@ -224,6 +224,78 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
   return { listings: remaining, soldProceeds, sold, newOffers, premiumOffers, staleNow }
 }
 
+// --- Life events: "something can happen while time passes" -------------------
+// Each game-day advanced has a small chance SOMETHING happens — a surprise expense, a
+// card dinged or gone missing, a buyer walking, or (rarely) a windfall. This makes
+// fast-forwarding a gamble instead of a free skip; multi-day jumps compound the risk.
+// LOCKED cards are protected (agency: lock your keepers), and losses are bounded so it's
+// "meaningful," not rage-quit territory. Mutates state via get()/set(); returns the lines.
+const LIFE_EVENT_CHANCE = 0.11 // per game-day
+const COND_DOWN = { NM: 'LP', LP: 'MP', MP: 'DMG' } // one condition tier worse (DMG can't drop)
+const EXPENSE_LINES = ['🔧 Surprise repair bill', '🧾 A utility bill came due', '🅿️ Parking ticket',
+  '📦 Restocked shipping supplies + sleeves', '💻 Software/subscription charge', '🚗 Gas + tolls to a pickup']
+const WINDFALL_LINES = ['💵 Found cash in an old binder', '🙌 A walk-in rounded up and overpaid',
+  '🎁 A regular slipped you a little extra', '🪙 A return/refund came back your way']
+
+// Weighted pick that favours LOW-value cards (cheap cards go first; grails only rarely),
+// so the risk stings fairly without routinely nuking your best pull. Returns an index.
+function pickWeightedLowValue(cards) {
+  const w = cards.map(c => 1 / (Math.sqrt(Math.max(0, cardValue(c))) + 1))
+  let tot = 0; for (const x of w) tot += x
+  let r = Math.random() * tot
+  for (let i = 0; i < cards.length; i++) { r -= w[i]; if (r <= 0) return i }
+  return cards.length - 1
+}
+
+function applyLifeEvents(get, set, days) {
+  const events = []
+  for (let i = 0; i < days; i++) {
+    if (Math.random() >= LIFE_EVENT_CHANCE) continue
+    const s = get()
+    const dingable = (s.collection || []).filter(c => !c.grade && !c.locked && COND_DOWN[c.condition])
+    const stealable = (s.collection || []).filter(c => !c.locked)
+    const withOffers = (s.listings || []).filter(l => (l.offers?.length || 0) > 0)
+    const cands = [{ w: 34, k: 'expense' }, { w: 15, k: 'windfall' }]
+    if (dingable.length) cands.push({ w: 24, k: 'ding' })
+    if (stealable.length) cands.push({ w: 7, k: 'theft' })
+    if (withOffers.length) cands.push({ w: 12, k: 'offer_pull' })
+    let tot = 0; for (const c of cands) tot += c.w
+    let r = Math.random() * tot, kind = cands[0].k
+    for (const c of cands) { r -= c.w; if (r <= 0) { kind = c.k; break } }
+
+    if (kind === 'expense') {
+      const amt = Math.min(round2(15 + Math.random() * 55), Math.max(0, round2(s.cash)))
+      if (amt > 0) get().spend(amt)
+      const line = `${EXPENSE_LINES[Math.floor(Math.random() * EXPENSE_LINES.length)]} (-$${amt.toFixed(2)})`
+      get().log('life-bad', line, -amt); events.push({ icon: '💸', line, cashDelta: -amt })
+    } else if (kind === 'windfall') {
+      const amt = round2(20 + Math.random() * 50)
+      get().earn(amt)
+      const line = `${WINDFALL_LINES[Math.floor(Math.random() * WINDFALL_LINES.length)]} (+$${amt.toFixed(2)})`
+      get().log('life-good', line, amt); events.push({ icon: '🍀', line, cashDelta: amt })
+    } else if (kind === 'ding') {
+      const c = dingable[pickWeightedLowValue(dingable)]
+      const from = c.condition, to = COND_DOWN[from]
+      set(st => ({ collection: st.collection.map(x => x.uid === c.uid ? { ...x, condition: to } : x) }))
+      const line = `📦 ${c.name} got dinged in storage (${from}→${to})`
+      get().log('life-bad', line, 0); events.push({ icon: '📦', line, cashDelta: 0 })
+    } else if (kind === 'theft') {
+      const c = stealable[pickWeightedLowValue(stealable)]
+      const val = cardValue(c)
+      set(st => ({ collection: st.collection.filter(x => x.uid !== c.uid) }))
+      const line = `🕵️ ${c.name} went missing (was ~$${val.toFixed(2)}) — lock cards to protect them`
+      get().log('life-bad', line, 0); events.push({ icon: '🕵️', line, cashDelta: 0 })
+    } else if (kind === 'offer_pull') {
+      const l = withOffers[Math.floor(Math.random() * withOffers.length)]
+      const off = l.offers[0]
+      set(st => ({ listings: st.listings.map(x => x.card.uid === l.card.uid ? { ...x, offers: (x.offers || []).filter(o => o.id !== off.id) } : x) }))
+      const line = `🚪 A buyer withdrew their $${(off.amount || 0).toFixed(2)} offer on ${l.card.name}`
+      get().log('life-bad', line, 0); events.push({ icon: '🚪', line, cashDelta: 0 })
+    }
+  }
+  return events
+}
+
 // Advance the calendar by `days`, generating home orders for each day passed.
 // `away` = these days are spent at a show: online orders only come in if you own
 // a Smartphone, walk-ins only if you have Shop Assistant; otherwise they're missed.
@@ -266,7 +338,9 @@ export function advanceDaysWith(set, get, days, away) {
     // a pending job starts paying once its start day arrives
     if (pendingJob && dayNo >= pendingJob.startsOnDay) { activeJob = pendingJob.job; pendingJob = null }
     wagesEarned += activeJob?.wage || 0
-    rentDue += RENT_PER_DAY
+    // Rent creeps up with the calendar: use the month the day being entered falls in, so a
+    // multi-day jump that crosses a month boundary charges the higher rate for later days.
+    rentDue += rentPerDay(s.monthsElapsed + Math.floor((s.currentDay + i) / CALENDAR_DAYS))
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
     // online channel (employees raise the hit chance). Only if you have something listed.
     if (openOnline && Math.random() < Math.min(0.97, dayOrderChance('online', noto, hasBargain) * orderMult)) {
@@ -386,6 +460,9 @@ export function advanceDaysWith(set, get, days, away) {
   // closes the store (you keep the cards/cash — you just lose the lease + staff).
   if (hasStore && (leaseDue + payrollDue) > 0) settleStore(set, get, leaseDue, payrollDue, days)
   set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
+  // Life events: something may have happened while these days passed (expense, ding, theft,
+  // a buyer walking, a windfall). Applied after settlement so the recap's cashDelta captures it.
+  const lifeEvents = applyLifeEvents(get, set, days)
   if (missedOnline) get().log('missed', `Missed ${missedOnline} online order${missedOnline>1?'s':''} while away (get a 📱 Smartphone).`, 0)
   if (missedWalkin) get().log('missed', `Missed ${missedWalkin} walk-in${missedWalkin>1?'s':''} while away (hire a 🧑‍💼 Shop Assistant).`, 0)
   for (const ev of market.events) get().log(ev.kind === 'hype' ? 'market-hype' : 'market-crash', `${ev.kind === 'hype' ? '📈' : '📉'} ${ev.line}`, 0)
@@ -420,6 +497,7 @@ export function advanceDaysWith(set, get, days, away) {
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
+    lifeEvents,
     netWorth,
     cashDelta: round2(get().cash - s.cash),
     notoDelta: round2(get().notoriety - noto) }
@@ -452,6 +530,7 @@ export function mergeSummaries(a, b) {
     bigSale,
     newWants: add(a.newWants, b.newWants),
     marketMovers: [...(a.marketMovers || []), ...(b.marketMovers || [])],
+    lifeEvents: [...(a.lifeEvents || []), ...(b.lifeEvents || [])],
     netWorth: b.netWorth != null ? b.netWorth : a.netWorth, // latest (end-of-trip) worth
     cashDelta: round2(add(a.cashDelta, b.cashDelta)),
     notoDelta: round2(add(a.notoDelta, b.notoDelta)),

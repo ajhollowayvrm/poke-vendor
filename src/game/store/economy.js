@@ -8,7 +8,7 @@
 
 import { round2, setMarketMults } from '../engine'
 import {
-  UPGRADES, RENT_PER_DAY, STORE_LEASE_PER_DAY, employeeById, jobById,
+  UPGRADES, rentPerDay, STORE_LEASE_PER_DAY, employeeById, jobById,
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
   storageFee, heldUnits, STORAGE_FREE_UNITS,
 } from './constants'
@@ -183,7 +183,7 @@ export function createEconomySlice(set, get) {
     // if you have a store). Storage is 0 until you're carrying more than the free allowance.
     dailyBurn() {
       const s = get()
-      let burn = RENT_PER_DAY + storageFee(s)
+      let burn = rentPerDay(s.monthsElapsed) + storageFee(s)
       if (s.upgrades.storefront) {
         burn += STORE_LEASE_PER_DAY
         burn += (s.employees || []).map(employeeById).filter(Boolean).reduce((a, e) => a + e.wage, 0)

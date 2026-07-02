@@ -26,6 +26,13 @@ export const STARTING_CASH = 2500
 // almost no wealth — the only real way up is cards. Going full-time means giving up that
 // thin cushion, so it's a real decision. Run out of money with nothing left to sell → lose.
 export const RENT_PER_DAY = 40
+// Cost of living CREEPS UP: every month elapsed adds this to the daily rent. A fixed job
+// wage (the starter clerk clears rent by +$5/day at month 0) stops covering it within a
+// couple of months, so idling on a job is no longer free — card income has to grow.
+export const RENT_MONTHLY_HIKE = 10
+export function rentPerDay(monthsElapsed = 0) {
+  return RENT_PER_DAY + Math.max(0, monthsElapsed || 0) * RENT_MONTHLY_HIKE
+}
 // Low-level jobs, ascending wage. Better jobs gate behind notoriety (you're more
 // hireable as your name gets around). Wage is per game-day. `start` = days until a
 // newly-taken job begins paying (re-apply friction); the starter job starts instantly.

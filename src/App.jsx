@@ -462,13 +462,14 @@ function GameClock() {
 function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, marketMovers, netWorth } = summary
+    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
   const sold = soldNames || []
+  const events = lifeEvents || []
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || wages || rent || lease
-    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants
+    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || events.length
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
   const multiDay = days > 1
@@ -535,6 +536,19 @@ function DaySummary({ summary, onClose }) {
                 {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}
                 {resolvedGrades > 0 && <div className="recap-line"><span className="muted">{resolvedGrades} slab{resolvedGrades === 1 ? '' : 's'} back from grading</span></div>}
                 {notoDelta > 0 && <div className="recap-line"><span className="muted">Notoriety</span><b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b></div>}
+              </div>
+            )}
+
+            {/* Life events — what happened while time passed */}
+            {events.length > 0 && (
+              <div className="recap-sec">
+                <div className="recap-sec-h">📆 While time passed</div>
+                {events.map((e, i) => (
+                  <div className="recap-line" key={i}>
+                    <span style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--txt)' }}>{e.line}</span>
+                    {e.cashDelta ? <b style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--red)' }}>{e.cashDelta > 0 ? '+' : ''}{fmtMoney(e.cashDelta)}</b> : null}
+                  </div>
+                ))}
               </div>
             )}
 
