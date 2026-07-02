@@ -50,7 +50,9 @@ const EN_SETS = [
   // modern distributors, surfaced as secondary-market finds (shows / aftermarket source).
   // Full product lineups (unlike the single-pack vintage Vault sets).
   { id: 'sm9',    name: 'Team Up',         secondary: true },
-  { id: 'sm115',  name: 'Hidden Fates',    secondary: true },
+  // Hidden Fates ships a 94-card "Shiny Vault" subset (sma — shiny Charizard-GX etc.); merge
+  // it so the set is complete (69 main + 94 Shiny Vault = 163), mirroring Celebrations.
+  { id: 'sm115',  name: 'Hidden Fates',    secondary: true, alsoFetch: ['sma'] },
   { id: 'sm10',   name: 'Unbroken Bonds',  secondary: true },
   { id: 'sm11',   name: 'Unified Minds',   secondary: true },
   { id: 'sm12',   name: 'Cosmic Eclipse',  secondary: true },
