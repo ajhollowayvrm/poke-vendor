@@ -40,7 +40,10 @@ const EN_SETS = [
   { id: 'rsv10pt5', name: 'White Flare' },
   { id: 'sv10',     name: 'Destined Rivals' },
   { id: 'sv8pt5',   name: 'Prismatic Evolutions' },
-  { id: 'cel25',    name: 'Celebrations' },
+  // Celebrations is a 50-card set: the 25-card main set (cel25) + the 25-card Classic
+  // Collection reprints (cel25c — Base Charizard etc.), which are the premium inserts.
+  // alsoFetch pulls the Classic Collection and merges it into this set.
+  { id: 'cel25',    name: 'Celebrations', alsoFetch: ['cel25c'] },
   { id: 'g1',       name: 'Generations' },
   { id: 'sv3pt5',   name: '151' },
   // aftermarket (find-only) — older sealed you "can still kinda find": not sold fresh by
@@ -488,8 +491,14 @@ async function fetchEnglishSet(cfg, psaMap) {
   // 1. Set metadata from pokemontcg.io
   const meta = await fetchPtcgioSet(cfg.id)
 
-  // 2. All cards from pokemontcg.io (paged)
+  // 2. All cards from pokemontcg.io (paged). `alsoFetch` merges sibling source sets into
+  //    this one (e.g. Celebrations' Classic Collection subset) so the set is complete.
   const rawCards = await fetchPtcgioCards(cfg.id)
+  for (const extraId of (cfg.alsoFetch || [])) {
+    const extra = await fetchPtcgioCards(extraId)
+    console.log(`    +${extra.length} cards merged from ${extraId}`)
+    rawCards.push(...extra)
+  }
 
   // 3. Build card objects. Skip Code Cards — digital redemption rows, not collectibles.
   const cards = []
