@@ -429,7 +429,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
                       <div className="flip">
                         <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
-                        <div className="flip-front"><img src={c.img} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
+                        {/* decoding="sync": present the card whole (never a half-painted
+                            face mid-flip). Preload already decodes these, so it's instant. */}
+                        <div className="flip-front"><img src={c.img} alt={isShown ? c.name : ''} decoding="sync" fetchpriority="high" /></div>
                       </div>
                     </HoloCard>
                   )

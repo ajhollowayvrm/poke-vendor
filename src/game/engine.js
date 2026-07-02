@@ -18,8 +18,11 @@ export function preloadCardImages(cards) {
     if (!url || _imgWarmed.has(url)) continue
     _imgWarmed.add(url)
     const img = new Image()
-    img.decoding = 'async'
     img.src = url
+    // Actually DECODE to a ready texture (not just download): otherwise the reveal flip's
+    // compositor layer rasterizes before the image finishes decoding and paints the card
+    // in halves ("half then fills") mid-turn. decode() warms the decoded bitmap in cache.
+    if (img.decode) img.decode().catch(() => {})
   }
 }
 
