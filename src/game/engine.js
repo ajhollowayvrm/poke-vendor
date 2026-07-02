@@ -456,6 +456,35 @@ function rollSlot(byR, table) {
   return null
 }
 
+// A real booster never contains two copies of the same card. Slots are rolled
+// independently (with replacement) and some pools overlap, so a pack can end up with
+// dupes (e.g. two Kyogre, two Flying Pikachu V). Swap each duplicate for an UNUSED card
+// of the SAME rarity — so pull odds and the foil/reverse look of the slot are preserved —
+// falling back to leaving it only if that rarity has no other card left. Dedupes by the
+// base card `id` (instances share it); mutates + returns the pulls array in place.
+function dedupePack(pulls, byR, rnd = Math.random) {
+  const seen = new Set()
+  const allCards = Object.values(byR).flat() // every card in the set, for the fallback pool
+  for (let i = 0; i < pulls.length; i++) {
+    const c = pulls[i]
+    if (!seen.has(c.id)) { seen.add(c.id); continue }
+    // Prefer an unused card of the SAME rarity (keeps pull odds + the slot's look). If that
+    // rarity is exhausted (tiny sets like Celebrations), fall back to ANY unused card in the
+    // set so the pack is still dupe-free — negligible odds drift, no repeats.
+    let pool = (byR[c.rarity] || []).filter(x => !seen.has(x.id))
+    if (!pool.length) pool = allCards.filter(x => !seen.has(x.id))
+    if (!pool.length) { seen.add(c.id); continue } // pack larger than the whole set (shouldn't happen)
+    const repl = instance(pick(pool, rnd))
+    repl.foil = c.foil || false          // keep the slot's foil pattern
+    repl.reverse = !!c.reverse           // and reverse-holo flag
+    if (c._fromGod) repl._fromGod = true
+    if (c._fromDemigod) repl._fromDemigod = true
+    pulls[i] = repl
+    seen.add(repl.id)
+  }
+  return pulls
+}
+
 // Open a single pack from a set. Returns an array of pulled card instances.
 // The array may carry a `_god` flag (god pack) or `_demigod` flag (demigod pack).
 // Also sets `_specialKey` / `_specialLabel` for any special-pack variant that fires.
@@ -477,6 +506,7 @@ export function openPack(set) {
     for (const variant of variants) {
       if (Math.random() < variant.odds) {
         const pulls = buildSpecialPack(set, byR, variant, packSize)
+        dedupePack(pulls, byR) // no two identical cards in one pack
         pulls._specialKey = variant.key
         pulls._specialLabel = variant.label
         return pulls
@@ -521,6 +551,8 @@ export function openPack(set) {
     }
   }
 
+  // no two identical cards in one pack — swap dupes for unused cards of the same rarity
+  dedupePack(pulls, byR)
   // sort so the best card is revealed last (foils rank above plain reverse)
   pulls.sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity) + foilWeight(a) - foilWeight(b))
   return pulls
