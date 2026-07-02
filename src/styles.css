@@ -1197,6 +1197,9 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .sealed-head { display:flex; align-items:center; gap:10px; }
 .sealed-logo { width:54px; height:40px; object-fit:contain; flex:0 0 auto; }
 .sealed-name { font-size:14px; line-height:1.2; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* stacked-quantity badge on a sealed row (identical products group into one entry) */
+.sealed-qty { flex:none; align-self:center; font-size:14px; font-weight:900; color:var(--accent-light);
+  background: color-mix(in srgb, var(--accent2) 16%, transparent); border-radius:999px; padding:2px 9px; }
 .sealed-value { display:flex; align-items:baseline; gap:2px; margin-top:2px; }
 .sealed-now { font-size:20px; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; }
 .sealed-delta { font-size:11px; font-weight:800; }

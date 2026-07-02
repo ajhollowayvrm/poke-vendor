@@ -56,8 +56,7 @@ function heldMatches(state, set, product) {
 
 export default function App() {
   const [tab, setTab] = useState('shop')
-  const [shopTab, setShopTab] = useState('buy') // Buy sub-tab: buy | inventory
-  const [collTab, setCollTab] = useState('cards') // Collection sub-tab: cards | grader | prices
+  const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [picked, setPicked] = useState(null)     // card for modal
@@ -130,15 +129,13 @@ export default function App() {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
       const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n)
       if (!res) return toast(`${distributorById(distId)?.name || 'They'} can't fill that order right now.`)
-      setShopTab('inventory')
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
-      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${short} — in 📦 Inventory.`)
+      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${short} — in Cards → 📦 Sealed.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price)
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
-    setShopTab('inventory')
-    toast(`Stocked ${product.type} of ${set.name} — rip, list, or flip it from 📦 Inventory.`)
+    toast(`Stocked ${product.type} of ${set.name} — rip, list, or flip it from Cards → 📦 Sealed.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -154,7 +151,7 @@ export default function App() {
     const animated = product.packs === 1 || oneByOne
     if (animated) {
       setRipping({ set, product })
-      setTab('shop'); setShopTab('buy')
+      setTab('shop')
       return
     }
     const all = openProduct(set, product)
@@ -172,8 +169,7 @@ export default function App() {
     if (cash < price) return toast(`Not enough cash for the ${product.type}.`)
     const item = useGame.getState().buySealed(set, { ...product, _buyPrice: price }, price)
     if (!item) return
-    setShopTab('inventory')
-    toast(`Stocked ${product.type} of ${set.name} for ${fmtMoney(price)} — it's in 📦 Inventory.`)
+    toast(`Stocked ${product.type} of ${set.name} for ${fmtMoney(price)} — it's in Cards → 📦 Sealed.`)
   }
 
   // "Rip another" from the end-of-rip summary: keep chasing without going back to the
@@ -337,17 +333,7 @@ export default function App() {
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
         {tab === 'shop' && (
-          <>
-            <div className="subtabs">
-              <button className={`subtab ${shopTab === 'buy' ? 'active' : ''}`} onClick={() => setShopTab('buy')}>🛒 Buy</button>
-              <button className={`subtab ${shopTab === 'inventory' ? 'active' : ''}`} onClick={() => setShopTab('inventory')}>📦 Inventory{sealedCount ? ` (${sealedCount})` : ''}</button>
-            </div>
-            {/* keyed .pane crossfades whenever the active sub-view mounts */}
-            <div className="pane" key={shopTab}>
-              {shopTab === 'buy' && <Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyVintage} />}
-              {shopTab === 'inventory' && <SealedInventory onRip={ripFromInventory} />}
-            </div>
-          </>
+          <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyVintage} /></div>
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
@@ -359,6 +345,7 @@ export default function App() {
           <>
             <div className="subtabs">
               <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
+              <button className={`subtab ${collTab === 'sealed' ? 'active' : ''}`} onClick={() => setCollTab('sealed')}>📦 Sealed{sealedCount ? ` (${sealedCount})` : ''}</button>
               <button className={`subtab ${collTab === 'binder' ? 'active' : ''}`} onClick={() => setCollTab('binder')}>📒 Binder</button>
               <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
               <button className={`subtab ${collTab === 'regulars' ? 'active' : ''}`} onClick={() => setCollTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>
@@ -366,6 +353,7 @@ export default function App() {
             </div>
             <div className="pane" key={collTab}>
               {collTab === 'cards' && <Collection onPick={setPicked} />}
+              {collTab === 'sealed' && <SealedInventory onRip={ripFromInventory} />}
               {collTab === 'binder' && <Binder onPick={setPicked} />}
               {collTab === 'grader' && <Bench />}
               {collTab === 'regulars' && <Regulars />}
