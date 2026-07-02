@@ -1273,6 +1273,9 @@ export function openProduct(set, product) {
   // Bonus promo: a guaranteed hit-tier card (ETBs/tins/premiums include one).
   const promo = makeProductPromo(set, product)
   if (promo) all.push(promo)
+  // NOTE: each pack is deduped internally (a single pack never repeats a card), but a
+  // multi-pack box is intentionally NOT deduped across packs — real boxes repeat cards
+  // between packs, and that keeps the collection grind honest.
   return all
 }
 
