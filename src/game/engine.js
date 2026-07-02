@@ -409,26 +409,107 @@ const SET_RATES = {
     ],
     aceSpec: 0.20, // PE has a 6-card ACE SPEC subset — ~1 in 5 packs
   },
-  // Black Bolt — Illustration Rares abundant (~1 in 6); generous overall.
-  // Poké Ball foil ~1 in 3 (~30.6%). Special packs now in SPECIAL_PACKS.zsv10pt5.
-  // Sources: TCGplayer (~700 packs), PokePatch (1,000+ packs).
+  // Black Bolt — Illustration Rares abundant (~1 in 6, the set's signature); SIR is a true
+  // chase (~1.25%, NOT the ~5% it used to read as), and the set has NO Hyper Rare cards —
+  // its top chase is the Black White Rare. Poké Ball ~30.6% / Master Ball ~5.1% foils.
+  // Sources: TCGplayer, PokePatch, ThePriceDex, dripshop (1,800+ packs) — Jul 2025.
   zsv10pt5: {
     rare: [
       { rarity: 'Double Rare', p: 0.2111 },  // ~21%
-      { rarity: 'Ultra Rare',  p: 0.0583 },  // ~5.8%
+      { rarity: 'Ultra Rare',  p: 0.0600 },  // ~6%
     ],
     reverse: [
-      { rarity: 'Illustration Rare',         p: 0.1639 }, // 1 in 6 — signature of the set
-      { rarity: 'Special Illustration Rare', p: 0.0514 }, // ~1 in 19
-      { rarity: 'Hyper Rare',                p: 0.0120 }, // ~1 in 83 top-end
+      { rarity: 'Illustration Rare',         p: 0.1640 }, // ~16.4% — signature of the set
+      { rarity: 'Special Illustration Rare', p: 0.0125 }, // ~1.25% (was wrongly ~5%)
     ],
     foils: [
-      { ...FOIL.pokeball, p: 0.3056 }, // ~30.6%
+      { ...FOIL.pokeball,   p: 0.3056 }, // ~30.6%
+      { ...FOIL.masterball, p: 0.0514 }, // ~5.1%
     ],
     chase: [
-      { rarity: 'Black White Rare', p: 0.0040 }, // the set's lone top chase — ~1 in 250
+      { rarity: 'Black White Rare', p: 0.0020 }, // the set's lone top chase — ~1 in 500
     ],
   },
+  // White Flare — Black Bolt's twin set; near-identical published rates. Same IR-abundant
+  // profile, SIR chase ~1.25%, Black White Rare top chase, Poké Ball / Master Ball foils.
+  // Sources: TCGplayer, ThePriceDex, PokeBeach, dripshop (1,800+ packs) — Jul 2025.
+  rsv10pt5: {
+    rare: [
+      { rarity: 'Double Rare', p: 0.2130 },  // ~21.3%
+      { rarity: 'Ultra Rare',  p: 0.0580 },  // ~5.8%
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.1640 }, // ~16.4%
+      { rarity: 'Special Illustration Rare', p: 0.0125 }, // ~1.25%
+    ],
+    foils: [
+      { ...FOIL.pokeball,   p: 0.3060 }, // ~30.6%
+      { ...FOIL.masterball, p: 0.0510 }, // ~5.1%
+    ],
+    chase: [
+      { rarity: 'Black White Rare', p: 0.0020 }, // ~1 in 500
+    ],
+  },
+  // Destined Rivals (sv10) — standard SV rates. Source: TCGplayer Infinite, GameRant,
+  // dripshop (Destined Rivals Pull Rates, 2025).
+  sv10: {
+    rare: [
+      { rarity: 'Double Rare', p: 0.2000 },  // ~20%
+      { rarity: 'Ultra Rare',  p: 0.0639 },  // ~6.4%
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.0833 }, // ~8.3%
+      { rarity: 'Special Illustration Rare', p: 0.0106 }, // ~1.06%
+      { rarity: 'Hyper Rare',                p: 0.0067 }, // ~0.67%
+    ],
+  },
+  // Scarlet & Violet—151 (sv3pt5) — famously generous SIR (~3.1%) and gold Hyper (~1.9%).
+  // Source: TCGplayer Infinite "SV—151 Pull Rates", PokePatch, dripshop (2023/2025).
+  sv3pt5: {
+    rare: [
+      { rarity: 'Double Rare', p: 0.1320 },  // ~13.2%
+      { rarity: 'Ultra Rare',  p: 0.0640 },  // ~6.4%
+    ],
+    reverse: [
+      { rarity: 'Illustration Rare',         p: 0.0850 }, // ~8.5%
+      { rarity: 'Special Illustration Rare', p: 0.0310 }, // ~3.1% (unusually generous)
+      { rarity: 'Hyper Rare',                p: 0.0190 }, // ~1.9%
+    ],
+  },
+
+  // ===== Medium/low-confidence era estimates =====================================
+  // No official large-sample rates exist for these older sets, so these map published
+  // community/era ratios onto our rarity buckets: GX/EX/full-art/BREAK → Ultra Rare,
+  // Rainbow/Crystal/Secret → Special Illustration Rare, Gold Star/Gold Secret → Hyper Rare.
+  // Sources: TCGplayer, ThePriceDex, elitefourum, karpfolio, community box samples.
+
+  // --- SM era (2018-2019) ---
+  sm12: { rare: [{ rarity: 'Ultra Rare', p: 0.2400 }], // Cosmic Eclipse — GX/TAG TEAM heavy
+    reverse: [{ rarity: 'Special Illustration Rare', p: 0.0140 }, { rarity: 'Hyper Rare', p: 0.0090 }] },
+  sm11: { rare: [{ rarity: 'Ultra Rare', p: 0.1730 }], // Unified Minds
+    reverse: [{ rarity: 'Special Illustration Rare', p: 0.0130 }, { rarity: 'Hyper Rare', p: 0.0090 }] },
+  sm10: { rare: [{ rarity: 'Ultra Rare', p: 0.1400 }], // Unbroken Bonds
+    reverse: [{ rarity: 'Special Illustration Rare', p: 0.0177 }, { rarity: 'Hyper Rare', p: 0.0076 }] },
+  sm9:  { rare: [{ rarity: 'Ultra Rare', p: 0.1420 }], // Team Up
+    reverse: [{ rarity: 'Special Illustration Rare', p: 0.0170 }, { rarity: 'Hyper Rare', p: 0.0080 }] },
+  sm8:  { rare: [{ rarity: 'Ultra Rare', p: 0.1430 }], // Lost Thunder
+    reverse: [{ rarity: 'Special Illustration Rare', p: 0.0141 }, { rarity: 'Hyper Rare', p: 0.0097 }] },
+  // Hidden Fates — main-set GX + the 94-card Shiny Vault (shiny holo → SIR ~7%; shiny-GX +
+  // gold secret → Hyper ~3.6%), so a Shiny Vault card lands ~1 in 9 packs.
+  sm115:{ rare: [{ rarity: 'Ultra Rare', p: 0.1000 }],
+    reverse: [{ rarity: 'Special Illustration Rare', p: 0.0700 }, { rarity: 'Hyper Rare', p: 0.0360 }] },
+
+  // --- XY era (2015-2016): EX / M-EX / full-art / BREAK → Ultra Rare; Secret Rare → SIR ---
+  xy8:  { rare: [{ rarity: 'Ultra Rare', p: 0.2500 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0140 }] }, // BREAKthrough
+  xy9:  { rare: [{ rarity: 'Ultra Rare', p: 0.2390 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0140 }] }, // BREAKpoint
+  xy10: { rare: [{ rarity: 'Ultra Rare', p: 0.2480 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0080 }] }, // Fates Collide
+  xy11: { rare: [{ rarity: 'Ultra Rare', p: 0.1940 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0140 }] }, // Steam Siege
+  xy6:  { rare: [{ rarity: 'Ultra Rare', p: 0.1700 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0080 }] }, // Roaring Skies
+
+  // --- EX era (2004-2006): ex → Ultra Rare, Gold Star → Hyper Rare, Crystal/Secret → SIR ---
+  ex15: { rare: [{ rarity: 'Ultra Rare', p: 0.0830 }], reverse: [{ rarity: 'Hyper Rare', p: 0.0140 }] }, // EX Dragon Frontiers (Gold Star)
+  ex8:  { rare: [{ rarity: 'Ultra Rare', p: 0.0740 }], reverse: [{ rarity: 'Hyper Rare', p: 0.0093 }, { rarity: 'Special Illustration Rare', p: 0.0083 }] }, // EX Deoxys
+  ecard3: { rare: [], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0460 }] }, // Skyridge Crystals
 }
 function ratesFor(set) { return SET_RATES[set.id] || BASELINE_RATES }
 
