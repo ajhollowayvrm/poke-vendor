@@ -718,10 +718,15 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   // 0b) THE WHALE — the upside of fame. A high-notoriety vendor attracts deep-pocketed
   // collectors who pay a real premium for the best piece you have out and won't haggle. Home
   // channels only (online DMs / store walk-ins); its own roll so it doesn't shift the bands.
-  if ((online || walkin) && notoriety >= WHALE_NOTO_GATE && offerPool.length) {
-    const pWhale = Math.min(0.16, 0.05 + (notoriety - WHALE_NOTO_GATE) / 1200)
+  // FEATURING pieces in your store's display case is the whale bait: with something featured,
+  // whales come in EARLIER (lower fame gate), MORE OFTEN, and go straight for a featured piece.
+  const featuredPool = walkin ? offerPool.filter(c => c._featured) : []
+  const whaleGate = featuredPool.length ? 60 : WHALE_NOTO_GATE
+  if ((online || walkin) && notoriety >= whaleGate && offerPool.length) {
+    const pWhale = Math.min(0.22, (0.05 + Math.max(0, notoriety - whaleGate) / 1200) * (featuredPool.length ? 1.7 : 1))
     if (Math.random() < pWhale) {
-      const target = offerPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
+      const pickPool = featuredPool.length ? featuredPool : offerPool
+      const target = pickPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
       if (cardValue(target) >= WHALE_MIN_VALUE) {
         const market = cardValue(target)
         const offer = round2(market * (1.15 + Math.random() * 0.45)) // 1.15–1.60× — they pay up
@@ -732,7 +737,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
           kind: 'offer',
           ownedUid: target.uid,
           title: online ? `${cap(who)} slides into your DMs` : `${cap(who)} makes a beeline for your case`,
-          body: `"I hear you're the one to see. That ${target.name} — I want it and I don't haggle. `
+          body: `"I hear you're the one to see. ${target._featured ? 'That featured' : 'That'} ${target.name} — I want it and I don't haggle. `
             + `$${offer.toFixed(2)}, ${m}, right now." (Market: $${market.toFixed(2)})`,
           card: target,
           options: [
@@ -981,12 +986,13 @@ export function makeShopRequest(s, accepted = null) {
     }
   }
 
+  // ONE store inventory: everything unlocked is "on the floor" (shelf); 🔒 kept items are
+  // "in the back" — you own it but it's not for sale, so selling one is a choice you make
+  // on the spot. Items held for a regular are behind the counter and off-limits entirely.
   const wantSealed = Math.random() < 0.5
   if (wantSealed) {
-    // Items HELD for a regular are behind the counter — not sellable to a walk-in.
-    const sealedOut = (s.shopSealed || []).filter(it => !it._heldFor)
-    const shelf = sealedOut.map(it => ({ it, loc: 'shelf' }))
-    const back = (s.sealedInventory || []).map(it => ({ it, loc: 'back' }))
+    const shelf = (s.sealedInventory || []).filter(it => !it.locked && !it._heldFor).map(it => ({ it, loc: 'shelf' }))
+    const back = (s.sealedInventory || []).filter(it => it.locked && !it._heldFor).map(it => ({ it, loc: 'back' }))
     const have = [...shelf, ...back]
     if (have.length && Math.random() < 0.55) {
       const { it, loc } = pickAny(null, have)
@@ -997,20 +1003,18 @@ export function makeShopRequest(s, accepted = null) {
     // a random product they want — maybe you happen to have it, usually not
     const set = pickAny(null, SHOP_SETS)
     const prod = pickAny(null, setProducts(set))
-    const onShelf = sealedOut.find(x => x.setId === set.id && x.product.type === prod.type)
-    const inBack = (s.sealedInventory || []).find(x => x.setId === set.id && x.product.type === prod.type)
-    const hit = onShelf || inBack
+    const pool = (s.sealedInventory || []).filter(it => !it._heldFor)
+    const hit = pool.find(x => x.setId === set.id && x.product.type === prod.type)
     return build({ label: `${prod.type} of ${set.name}`, article: 'a', img: set.logo || null,
       price: priceFor(hit ? sealedValue(hit) : prod.price),
-      loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'sealed', uid: hit?.uid })
+      loc: hit ? (hit.locked ? 'back' : 'shelf') : 'none', kind: 'sealed', uid: hit?.uid })
   }
 
-  // singles — the "shelf" is the display case PLUS any card listed everywhere
-  // (online + in-store): a walk-in can be rung up for those on the spot too.
-  // Cards HELD for a regular sit behind the counter and are off-limits.
-  const caseCards = [...(s.shopDisplay || []).filter(c => !c._heldFor), ...omniShelfCards(s.listings)]
+  // singles — the floor is every unlocked collection card PLUS any card listed everywhere
+  // (online + in-store); 🔒 locked cards are keepers "in the back."
+  const caseCards = [...(s.collection || []).filter(c => !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
   const shelf = caseCards.map(c => ({ c, loc: 'shelf' }))
-  const back = (s.collection || []).map(c => ({ c, loc: 'back' }))
+  const back = (s.collection || []).filter(c => c.locked && !c._heldFor).map(c => ({ c, loc: 'back' }))
   const have = [...shelf, ...back]
   if (have.length && Math.random() < 0.55) {
     const { c, loc } = pickAny(null, have)
@@ -1018,7 +1022,7 @@ export function makeShopRequest(s, accepted = null) {
   }
   const want = cardInValueRange(1, 300)
   const onShelf = caseCards.find(x => x.id === want.id)
-  const inBack = (s.collection || []).find(x => x.id === want.id)
+  const inBack = (s.collection || []).find(x => x.id === want.id && x.locked)
   const hit = onShelf || inBack
   return build({ label: want.name, article: 'a', img: want.img,
     price: priceFor(hit ? cardValue(hit) : cardValue(want)),

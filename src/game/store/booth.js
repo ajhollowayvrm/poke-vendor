@@ -9,7 +9,7 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById, setIdOfCard, bulkSellableUids, cardInValueRange, sealedValue,
+import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue,
   SHOP_SETS, SECONDARY_SETS, setProducts, marketMult } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../shows'
 
@@ -270,83 +270,38 @@ export function createBoothSlice(set, get) {
       return { payout }
     },
 
-    // --- Store display case (brick & mortar) -------------------------------------
-    // The shelf in your physical shop: walk-in customers only ever buy/offer on cards
-    // you've PUT OUT here (you choose what's on display), not your private collection.
-    // Needs a storefront. Cards stay out until they sell or you pull them back.
-    stockShop(uids) {
-      if (!get().upgrades.storefront) return { sold: 0, kept: 0 }
-      // Cards on the shelf can be sold to walk-ins, so honor the protection net here too.
-      const { sell, kept } = bulkSellableUids(get().collection, uids, { keepOne: get().settings?.keepOne })
-      const sellSet = new Set(sell)
-      const putting = get().collection.filter(c => sellSet.has(c.uid))
-      if (!putting.length) return { sold: 0, kept: kept.length }
-      set(s => ({
-        collection: s.collection.filter(c => !sellSet.has(c.uid)),
-        shopDisplay: [...putting, ...(s.shopDisplay || [])],
-      }))
-      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
-      get().log('shop', `Put ${putting.length} card${putting.length > 1 ? 's' : ''} out on the shop shelf${keptNote}`, 0)
-      return { sold: putting.length, kept: kept.length }
+    // --- Store stock (brick & mortar) ---------------------------------------------
+    // ONE inventory: with a storefront, your collection + sealed inventory ARE the store
+    // stock — everything is out for walk-ins by default. Per-item flags do the rest:
+    //   locked    — 🔒 KEEP: not for sale in the store (and safe from bulk sweeps)
+    //   _heldFor  — behind the counter for a regular (off the sellable floor)
+    //   _featured — in the display-case spotlight (cards only) — pulls WHALES
+    // Streams, rips, shows, and mystery packs all draw from this same stock. (The old
+    // stock/pull shelf shuffling is gone — legacy shopDisplay/shopSealed merge home in
+    // the v42 migration.)
+    FEATURED_MAX: 4,
+    // Feature/unfeature a card in the display case (cap FEATURED_MAX). Featured pieces
+    // attract deep-pocketed whales — they show up earlier and more often for them.
+    toggleFeatureCard(uid) {
+      const card = get().collection.find(c => c.uid === uid)
+      if (!card || !get().upgrades.storefront) return false
+      const on = !!card._featured
+      if (!on && get().collection.filter(c => c._featured).length >= get().FEATURED_MAX) return false
+      set(s => ({ collection: s.collection.map(c => c.uid === uid ? { ...c, _featured: !on } : c) }))
+      if (!on) get().log('shop', `⭐ Featured ${card.name} in the display case — the kind of piece whales come in for`, 0)
+      return true
     },
-    // Pull one card off the shelf, back into your collection (any hold is released).
-    pullFromShop(uid) {
-      const found = (get().shopDisplay || []).find(c => c.uid === uid)
-      if (!found) return
-      const { _heldFor, ...card } = found
-      set(s => ({
-        collection: [card, ...s.collection],
-        shopDisplay: (s.shopDisplay || []).filter(c => c.uid !== uid),
-      }))
-      get().log('shop', `Took ${card.name} off the shelf`, 0)
-    },
-    // Clear the whole shelf back into your collection (holds released).
-    pullAllFromShop() {
-      const shelf = get().shopDisplay || []
-      if (!shelf.length) return 0
-      set(s => ({ collection: [...shelf.map(({ _heldFor, ...c }) => c), ...s.collection], shopDisplay: [] }))
-      get().log('shop', `Cleared the shelf — ${shelf.length} card${shelf.length > 1 ? 's' : ''} back in your collection`, 0)
-      return shelf.length
-    },
-
-    // --- Sealed on the store shelf ----------------------------------------------
-    // Sealed product can go on the shelf too — walk-ins buy it in person (browseSale, below,
-    // includes shopSealed in the 'shop' pool). Mirrors stockShop/pullFromShop for cards.
-    // Move the given held sealed uids from inventory onto the shelf. Returns how many moved.
-    stockShopSealed(uids) {
-      if (!get().upgrades.storefront) return 0
-      const ids = new Set(uids || [])
-      const putting = (get().sealedInventory || []).filter(it => ids.has(it.uid))
-      if (!putting.length) return 0
-      set(s => ({
-        sealedInventory: (s.sealedInventory || []).filter(it => !ids.has(it.uid)),
-        shopSealed: [...putting, ...(s.shopSealed || [])],
-      }))
-      get().log('shop', `Put ${putting.length} sealed on the shop shelf`, 0)
-      return putting.length
-    },
-    // Pull one sealed product off the shelf, back into held inventory (hold released).
-    pullShopSealed(uid) {
-      const found = (get().shopSealed || []).find(it => it.uid === uid)
-      if (!found) return
-      const { _heldFor, ...item } = found
-      set(s => ({
-        sealedInventory: [item, ...(s.sealedInventory || [])],
-        shopSealed: (s.shopSealed || []).filter(it => it.uid !== uid),
-      }))
-      get().log('shop', `Took a ${item.product.type} off the shelf`, 0)
-    },
-    // Clear all sealed off the shelf, back into held inventory (holds released).
-    pullAllShopSealed() {
-      const shelf = get().shopSealed || []
-      if (!shelf.length) return 0
-      set(s => ({ sealedInventory: [...shelf.map(({ _heldFor, ...it }) => it), ...(s.sealedInventory || [])], shopSealed: [] }))
-      get().log('shop', `Cleared the sealed shelf — ${shelf.length} back in inventory`, 0)
-      return shelf.length
+    // Flip KEEP (not for sale) on a sealed item. Kept sealed stays yours to rip/stream/
+    // repack — walk-ins just can't buy it.
+    toggleLockSealed(uid) {
+      const it = (get().sealedInventory || []).find(x => x.uid === uid)
+      if (!it) return false
+      set(s => ({ sealedInventory: s.sealedInventory.map(x => x.uid === uid ? { ...x, locked: !x.locked } : x) }))
+      return true
     },
 
     // --- In-store services: holds, giveaways, the consignment case ---------------
-    // Put a shelf item aside for a REGULAR: it comes off the sellable floor and waits
+    // Put a stock item aside for a REGULAR: it comes off the sellable floor and waits
     // behind the counter. Over the next few days they come in and buy it at a small
     // premium over the walk-in price (trust-scaled odds, resolved in the day-tick);
     // if they never show, the hold lapses and it goes back out.
@@ -355,14 +310,14 @@ export function createBoothSlice(set, get) {
       if (!reg) return false
       const held = { regularId: reg.id, name: reg.name, emoji: reg.emoji, daysLeft: HOLD_DAYS_STORE }
       if (kind === 'sealed') {
-        const it = (get().shopSealed || []).find(x => x.uid === uid)
+        const it = (get().sealedInventory || []).find(x => x.uid === uid)
         if (!it) return false
-        set(s => ({ shopSealed: s.shopSealed.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
+        set(s => ({ sealedInventory: s.sealedInventory.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
         get().log('shop', `Set the ${it.product.type} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
       } else {
-        const c = (get().shopDisplay || []).find(x => x.uid === uid)
+        const c = get().collection.find(x => x.uid === uid)
         if (!c) return false
-        set(s => ({ shopDisplay: s.shopDisplay.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
+        set(s => ({ collection: s.collection.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
         get().log('shop', `Set ${c.name} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
       }
       return true
@@ -370,8 +325,8 @@ export function createBoothSlice(set, get) {
     // Put a held item back out on the sellable floor.
     releaseHold(kind, uid) {
       const strip = arr => (arr || []).map(x => x.uid === uid ? (({ _heldFor, ...rest }) => rest)(x) : x)
-      if (kind === 'sealed') set(s => ({ shopSealed: strip(s.shopSealed) }))
-      else set(s => ({ shopDisplay: strip(s.shopDisplay) }))
+      if (kind === 'sealed') set(s => ({ sealedInventory: strip(s.sealedInventory) }))
+      else set(s => ({ collection: strip(s.collection) }))
       get().log('shop', 'Put the held item back out on the floor', 0)
     },
 
@@ -572,11 +527,12 @@ export function createBoothSlice(set, get) {
                ...(get().showSealed || []).map(it => ({ item: it, sealed: true }))]
             : pool === 'listings' ? (get().listings || []).map(l => ({ item: l.card, sealed: false }))
             : pool === 'shop'
-            // The store case = the shelf + any card listed EVERYWHERE (online + in-store).
-            // Items HELD for a regular sit behind the counter — browsers can't buy them.
-            ? [...(get().shopDisplay || []).filter(c => !c._heldFor).map(c => ({ item: c, sealed: false })),
+            // The store = your WHOLE stock: every collection card + held sealed is out for
+            // walk-ins unless it's 🔒 kept (locked) or held behind the counter for a regular.
+            // Cards listed EVERYWHERE (online + in-store) are browsable too.
+            ? [...get().collection.filter(c => !c.locked && !c._heldFor).map(c => ({ item: c, sealed: false })),
                ...omniShelfCards(get().listings).map(c => ({ item: c, sealed: false })),
-               ...(get().shopSealed || []).filter(it => !it._heldFor).map(it => ({ item: it, sealed: true }))]
+               ...(get().sealedInventory || []).filter(it => !it.locked && !it._heldFor).map(it => ({ item: it, sealed: true }))]
             : get().collection.map(c => ({ item: c, sealed: false }))
           // Your CUSTOM MYSTERY PACKS sit on the same table/shelf — impulse product a
           // browser can grab at its fixed tier price (channel-gated per tier).
@@ -613,7 +569,8 @@ export function createBoothSlice(set, get) {
             const { net, fee } = processingFee(price, effect.payMethod)
             if (pick.sealed) set(st => ({
               showSealed: (st.showSealed || []).filter(x => x.uid !== item.uid),
-              shopSealed: (st.shopSealed || []).filter(x => x.uid !== item.uid),
+              sealedInventory: (st.sealedInventory || []).filter(x => x.uid !== item.uid), // store stock IS held inventory
+              shopSealed: (st.shopSealed || []).filter(x => x.uid !== item.uid),           // legacy shelf (pre-v42 saves)
             }))
             else removeOwnedAnywhere(set, item.uid)
             s.earn(net)

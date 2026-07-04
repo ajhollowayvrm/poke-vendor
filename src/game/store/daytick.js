@@ -409,18 +409,18 @@ export function advanceDaysWith(set, get, days, away) {
   const listedCards = (s.listings || []).map(l => l.card)
   // A deeply-underpriced live listing draws online deal-hunters even before you're known.
   const hasBargain = (s.listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
-  // Walk-in customers only buy/offer on what you've put out on the shop shelf —
-  // which includes cards listed EVERYWHERE (online + store case): the same physical
-  // card is browsable in person, and whichever channel sells it first takes it.
-  // Items HELD for a regular are behind the counter and off the sellable floor.
-  const shelfCards = [...(s.shopDisplay || []).filter(c => !c._heldFor), ...omniShelfCards(s.listings)]
+  // The store IS your inventory: walk-ins buy/offer on your whole collection (plus cards
+  // listed EVERYWHERE), except items 🔒 kept (locked = not for sale) or HELD behind the
+  // counter for a regular. Only meaningful with a storefront (every walk-in roll gates on it).
+  const shelfCards = [...(s.collection || []).filter(c => !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
+  const sellableSealed = (s.sealedInventory || []).filter(it => !it.locked && !it._heldFor)
   // No storefront, no inbox. Strangers only message you about cards you've actually
-  // put up for sale: online needs a live listing, walk-ins need cards on the shelf.
+  // put up for sale: online needs a live listing, walk-ins need sellable stock out.
   // With nothing out on a channel there's nobody to hear from there — so we skip the
   // roll entirely rather than manufacture filler (price-checks, beggars) about a shop
   // that isn't open. (A deep bargain listing still counts as "open online".)
   const openOnline = listedCards.length > 0 || hasBargain
-  const openWalkin = shelfCards.length > 0
+  const openWalkin = shelfCards.length > 0 || sellableSealed.length > 0
   for (let i = 0; i < days; i++) {
     const dayNo = s.currentDay + i + 1 // the day being entered
     // a pending job starts paying once its start day arrives
@@ -477,7 +477,7 @@ export function advanceDaysWith(set, get, days, away) {
   // becomes a runaway printer — the big money is still in the cards you move.
   let counterRevenue = 0
   if (hasStore) {
-    const stocked = shelfCards.length > 0 || (s.shopSealed || []).length > 0
+    const stocked = shelfCards.length > 0 || sellableSealed.length > 0
     const perDay = Math.min(250, (15 + noto) * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6))
     counterRevenue = round2(perDay * days)
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
@@ -581,9 +581,10 @@ export function advanceDaysWith(set, get, days, away) {
   // 1) HOLDS: a regular you set an item aside for comes in to pick it up (trust-scaled
   //    daily odds, paid cash at the walk-in premium + a hold bonus). If the hold window
   //    lapses first, the item goes back out on the floor. Needs the store minded
-  //    (walkinOK) — nobody hands over a hold to a locked door.
-  let shopDisplayNext = s.shopDisplay || []
-  let shopSealedNext = s.shopSealed || []
+  //    (walkinOK) — nobody hands over a hold to a locked door. Holds live as _heldFor
+  //    flags on the ONE store inventory (collection + sealedInventory).
+  let collectionNext = get().collection || []   // fresh read — earlier steps may have touched these
+  let sealedInvNext = get().sealedInventory || []
   if (hasStore) {
     const tickHolds = (arr, isSealed) => arr.map(it => {
       if (!it._heldFor) return it
@@ -609,8 +610,8 @@ export function advanceDaysWith(set, get, days, away) {
       }
       return { ...it, _heldFor: { ...it._heldFor, daysLeft: left } }
     }).filter(Boolean)
-    shopDisplayNext = tickHolds(shopDisplayNext, false)
-    shopSealedNext = tickHolds(shopSealedNext, true)
+    collectionNext = tickHolds(collectionNext, false)
+    sealedInvNext = tickHolds(sealedInvNext, true)
   }
   // 2) CONSIGNMENT CASE: locals' cards you carry sell across the counter as days pass —
   //    you bank the commission (their money isn't yours). Unsold past the window goes
@@ -727,8 +728,10 @@ export function advanceDaysWith(set, get, days, away) {
     listings: remainingListings,
     wantList: wants,
     showLeads: leadsNext,
-    shopDisplay: shopDisplayNext,           // holds picked up / lapsed
-    shopSealed: shopSealedNext,
+    // Holds picked up / lapsed on the one store inventory. Only written with a store —
+    // nothing else in this window mutates these buckets, so the snapshot-derived arrays
+    // are safe to write back; without a store they're left untouched.
+    ...(hasStore ? { collection: collectionNext, sealedInventory: sealedInvNext } : {}),
     storeConsignments: storeConsignsNext,   // consigned sales banked, expiries returned
     storeConsignRequests: consignReqsNext,  // fresh asks in, stale asks gone
     buyinOffers: buyinsNext,                // sellers waiting on an answer (fresh in, stale gone)
@@ -854,9 +857,13 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
     set(st => {
       const up = { ...st.upgrades }; delete up.storefront; delete up.staff
       const prize = st.storeEventPlanned?.prizeCard
+      // No store = no counter or display case: strip every hold + featured flag off the
+      // one inventory (plus anything still on a legacy pre-v42 shelf comes home).
       return { upgrades: up, employees: [], storeArrears: 0,
-        collection: [...(prize ? [prize] : []), ...(st.shopDisplay || []).map(({ _heldFor, ...c }) => c), ...st.collection], shopDisplay: [],
-        sealedInventory: [...(st.shopSealed || []).map(({ _heldFor, ...it }) => it), ...(st.sealedInventory || [])], shopSealed: [],
+        collection: [...(prize ? [prize] : []), ...(st.shopDisplay || []).map(({ _heldFor, ...c }) => c),
+          ...st.collection.map(({ _heldFor, _featured, ...c }) => c)], shopDisplay: [],
+        sealedInventory: [...(st.shopSealed || []).map(({ _heldFor, ...it }) => it),
+          ...(st.sealedInventory || []).map(({ _heldFor, ...it }) => it)], shopSealed: [],
         listings: (st.listings || []).map(l => l.everywhere ? { ...l, everywhere: false } : l),
         // No shop = no case: consigned cards go home, asks + seller offers lapse, any
         // planned event is off (prize back), unspent store credit dies with the store

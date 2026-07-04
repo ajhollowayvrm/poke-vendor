@@ -15,7 +15,6 @@ export default function Collection({ onPick }) {
   const listManyOnSite = useGame(s => s.listManyOnSite)
   const consignMany = useGame(s => s.consignMany)
   const listingQuote = useGame(s => s.listingQuote)
-  const stockShop = useGame(s => s.stockShop)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   // Master-set protection: keep-one-of-each guard + per-card locks.
   const keepOne = useGame(s => s.settings.keepOne)
@@ -220,20 +219,14 @@ export default function Collection({ onPick }) {
               flash(`Consigned ${sold} card${sold>1?'s':''}.${keptNote(kept)}`)
               exitSelect()
             }}>↗ Consign</button>
-            {hasStore && (
-              <button className="btn alt" onClick={() => {
-                const { sold, kept } = stockShop(selCards.map(c => c.uid))
-                flash(`Put ${sold} card${sold>1?'s':''} out on the shop shelf — walk-ins can buy them now.${keptNote(kept)}`)
-                exitSelect()
-              }}>🏬 Stock shop</button>
-            )}
-            {/* Lock/unlock the selection — a hard bulk-sell guard for specific keepers. */}
+            {/* Lock/unlock the selection — a hard bulk-sell guard; with a store it also
+                means "not for sale" (kept off the walk-in floor). */}
             <button className="btn alt" onClick={() => {
               const lock = !selCards.every(c => c.locked)
               const n = lockMany(selCards.map(c => c.uid), lock)
-              flash(`${lock ? '🔒 Locked' : '🔓 Unlocked'} ${n} card${n>1?'s':''}.`)
+              flash(`${lock ? `🔒 ${hasStore ? 'Keeping' : 'Locked'}` : '🔓 Unlocked'} ${n} card${n>1?'s':''}${lock && hasStore ? ' — off the store floor' : ''}.`)
               exitSelect()
-            }}>{selCards.every(c => c.locked) ? '🔓 Unlock' : '🔒 Lock'}</button>
+            }}>{selCards.every(c => c.locked) ? '🔓 Unlock' : hasStore ? '🔒 Keep' : '🔒 Lock'}</button>
             <button className="btn alt" onClick={() => {
               const { got, sold, kept } = quickSellMany(selCards.map(c => c.uid))
               flash(`Quick-sold ${sold} card${sold>1?'s':''} for ${fmtMoney(got)}.${keptNote(kept)}`)

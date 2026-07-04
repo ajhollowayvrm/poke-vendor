@@ -38,6 +38,12 @@ export function createEconomySlice(set, get) {
       if (!get().spend(u.cost)) return false
       set(s => ({ upgrades: { ...s.upgrades, [key]: true } }))
       get().log('upgrade', `Bought ${u.name}`, -u.cost)
+      if (key === 'storefront') {
+        // The store IS your inventory: everything you own goes out on the floor. No
+        // separate shelf to stock — flag keepers 🔒 (not for sale) and ⭐ feature your
+        // best pieces from the Sell → Shop floor tab.
+        get().log('shop', `🏬 Doors open — your whole collection & sealed stock is now out on the store floor. 🔒 Keep anything that's not for sale, ⭐ feature your best pieces to draw whales.`, 0)
+      }
       return true
     },
     trafficMult() {

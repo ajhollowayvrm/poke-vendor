@@ -1227,6 +1227,20 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .sell-lines { max-height:none; }
 @media (max-width:640px){ .trade-builder-cols { flex-direction:column; } .trade-line-list { max-height:30vh; } .sell-lines { max-height:none; } }
 
+/* --- Store stock (one line per SKU, quantities stacked) --------------------- */
+.stock-lines { display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+.stock-line { cursor:default; }
+.stock-line.kept { opacity:.6; }
+.stock-line .tl-unit { flex:none; font-weight:800; font-size:12.5px; color:var(--green); min-width:58px; text-align:right; }
+.stock-line .tl-count { flex:none; min-width:34px; text-align:center; font-weight:800; font-size:12px; color:var(--txt);
+  background:#ffffff10; border:1px solid var(--line); border-radius:8px; padding:3px 5px; }
+.stock-act { flex:none; border:1px solid var(--line); background:#ffffff0e; color:var(--txt);
+  border-radius:8px; padding:4px 8px; font-size:13px; line-height:1.2; cursor:pointer; }
+.stock-act:hover:not(:disabled) { background:var(--hover); border-color:var(--accent2); }
+.stock-act.on { border-color:var(--gold); color:var(--gold); background:#ffcb0518; }
+.stock-act:disabled { opacity:.35; cursor:not-allowed; }
+@media (max-width:640px){ .stock-line .tl-unit { min-width:48px; } }
+
 /* --- Sealed inventory (buy & hold) ---------------------------------------- */
 .sealed-item { display:flex; flex-direction:column; gap:6px; align-items:stretch; }
 .sealed-head { display:flex; align-items:center; gap:10px; }

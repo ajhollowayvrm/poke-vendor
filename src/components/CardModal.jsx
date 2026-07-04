@@ -21,7 +21,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
   const submitGrade = useGame(s => s.submitGrade)
   const addToBinder = useGame(s => s.addToBinder)
   const removeFromBinder = useGame(s => s.removeFromBinder)
-  const stockShop = useGame(s => s.stockShop)
   const toggleLock = useGame(s => s.toggleLock)
   // Live lock state (the `card` prop is a snapshot — the store is the truth).
   const locked = useGame(s => !!(s.collection || []).find(x => x.uid === card?.uid)?.locked)
@@ -233,15 +232,13 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
                   <b>Consign ↗</b>
                   <small>Hands-off: a service sells it in a few days for a guaranteed ~0.85–0.95× market (18% fee). Reliable, but listing can reach/beat market.</small>
                 </button>
-                {hasStore && (
-                  <button className="btn alt sellopt" onClick={() => { const { sold } = stockShop([card.uid]); if (sold) onClose() }}>
-                    <b>🏬 Put on the store shelf</b>
-                    <small>Walk-ins buy it in person — +12% premium, no fees. Pull it back anytime from the Shop floor.</small>
-                  </button>
-                )}
                 <button className="btn alt sellopt" onClick={() => toggleLock(card.uid)}>
-                  <b>{locked ? '🔓 Unlock' : '🔒 Lock this card'}</b>
-                  <small>{locked ? 'Locked — protected from every bulk sell. Tap to unlock.' : 'A hard "never bulk-sell this" guard for keepers.'}</small>
+                  <b>{locked ? '🔓 Unlock' : `🔒 ${hasStore ? 'Keep this card' : 'Lock this card'}`}</b>
+                  <small>{locked
+                    ? `Kept — protected from every bulk sell${hasStore ? ' and off your store floor (walk-ins can\'t buy it)' : ''}. Tap to unlock.`
+                    : hasStore
+                    ? 'Not for sale: off your store floor and safe from bulk sells. You can still grade, trade, or show it.'
+                    : 'A hard "never bulk-sell this" guard for keepers.'}</small>
                 </button>
               </div>
             ) : (

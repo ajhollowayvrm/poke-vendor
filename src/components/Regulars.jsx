@@ -14,14 +14,15 @@ export default function Regulars() {
   const regulars = useGame(s => s.regulars) || []
   const collection = useGame(s => s.collection)
   const listings = useGame(s => s.listings)
-  const shopDisplay = useGame(s => s.shopDisplay)
+  const hasStore = useGame(s => !!s.upgrades.storefront)
 
   // The cards a regular could actually buy from you right now: online buyers shop your
-  // LISTINGS, in-store regulars shop your SHELF. Surfaces "you're holding what they want."
+  // LISTINGS, in-store regulars shop your whole STORE STOCK (everything not 🔒 kept or
+  // held). Surfaces "you're holding what they want."
   const poolFor = useMemo(() => ({
     online: (listings || []).map(l => l.card),
-    walkin: (shopDisplay || []),
-  }), [listings, shopDisplay])
+    walkin: hasStore ? (collection || []).filter(c => !c.locked && !c._heldFor) : [],
+  }), [listings, collection, hasStore])
 
   const sorted = useMemo(() => [...regulars].sort((a, b) =>
     (a.flags?.burned ? 1 : 0) - (b.flags?.burned ? 1 : 0) || (b.trust || 0) - (a.trust || 0)

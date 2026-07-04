@@ -54,7 +54,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 41,
+  version: 42,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -372,6 +372,19 @@ export const useGame = create(persist((set, get) => ({
       state.builtPacks = state.builtPacks ?? []
       state.packRep = state.packRep ?? 50
       state.packStats = state.packStats ?? { built: 0, sold: 0, revenue: 0, delighted: 0, burned: 0 }
+    }
+    if (version < 42) {
+      // ONE store inventory: with a storefront, your collection + sealed inventory ARE the
+      // store stock (walk-ins buy from them directly; 🔒 locked = not for sale). The old
+      // separate shelf buckets merge home — holds (_heldFor) ride along untouched.
+      if ((state.shopDisplay || []).length) {
+        state.collection = [...state.shopDisplay, ...(state.collection || [])]
+        state.shopDisplay = []
+      }
+      if ((state.shopSealed || []).length) {
+        state.sealedInventory = [...state.shopSealed, ...(state.sealedInventory || [])]
+        state.shopSealed = []
+      }
     }
     return state
   },

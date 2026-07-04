@@ -61,8 +61,8 @@ export function initialState() {
     listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
     showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
     showSealed: [],          // SEALED product you brought to the current show to sell at your booth — floor buyers can buy it; unsold comes home (to sealedInventory) when you leave
-    shopDisplay: [],         // cards on your STORE shelf — walk-in customers only buy/offer on these (you choose what to put out). Needs a storefront.
-    shopSealed: [],          // SEALED product on your STORE shelf — walk-ins can buy it in person; you stock it from held inventory and pull it back anytime. Needs a storefront.
+    shopDisplay: [],         // LEGACY (pre-v42): cards once lived on a separate store shelf. With a storefront the whole COLLECTION is store stock now (🔒 locked = not for sale, _featured = display-case spotlight, _heldFor = behind the counter). Kept empty for save-merge compat.
+    shopSealed: [],          // LEGACY (pre-v42): sealed shelf — sealedInventory IS the store's sealed stock now. Kept empty for save-merge compat.
     storeConsignRequests: [], // locals waiting on an answer: {id, who, card, ask, commissionPct, days, pendingDays} — carry their card for a cut, or pass
     storeConsignments: [],   // cards you're carrying for locals: {id, who, card, ask, commissionPct, daysLeft} — NOT yours; a sale pays your commission, unsold goes home
     giveawayDaysLeft: 0,     // store buzz window (giveaways + hosted events): walk-in traffic boost days remaining

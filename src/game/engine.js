@@ -1946,6 +1946,7 @@ export function bulkSellableUids(collection, candidateUids, { keepOne = false } 
   for (const c of collection) {
     if (!cand.has(c.uid)) continue
     if (c.locked) { kept.push(c.uid); continue }   // hard lock — always keep
+    if (c._heldFor) { kept.push(c.uid); continue } // behind the counter for a regular — not sweepable
     if (!c.id) { sell.push(c.uid); continue }      // no set id → can't be a set need
     let g = byId.get(c.id); if (!g) { g = []; byId.set(c.id, g) }
     g.push(c)

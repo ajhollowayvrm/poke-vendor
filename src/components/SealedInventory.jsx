@@ -11,16 +11,16 @@ export default function SealedInventory({ onRip }) {
   const inventory = useGame(s => s.sealedInventory)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   const listSealedMany = useGame(s => s.listSealedMany)
-  const stockShopSealed = useGame(s => s.stockShopSealed)
   // subscribe to the market so values re-render after a day-tick / drift event
   useGame(s => s.marketMults)
 
-  // Group identical products (same set + type + vintage flag) into stacks. Value is the
-  // same per unit (product.price × current market); cost is summed across the units bought.
+  // Group identical products (same set + type + vintage + kept flag) into stacks. Value is
+  // the same per unit (product.price × current market); cost is summed across the units.
+  // Kept (locked) units group separately so a mixed stack reads honestly.
   const groups = useMemo(() => {
     const map = new Map()
     for (const it of inventory) {
-      const key = `${it.setId}|${it.product?.type}|${it.product?.name || ''}|${it.vintage ? 1 : 0}`
+      const key = `${it.setId}|${it.product?.type}|${it.product?.name || ''}|${it.vintage ? 1 : 0}|${it.locked ? 1 : 0}`
       if (!map.has(key)) map.set(key, [])
       map.get(key).push(it)
     }
@@ -44,10 +44,6 @@ export default function SealedInventory({ onRip }) {
     const n = listSealedMany(inventory.map(it => it.uid), 1.0)
     if (n) toast(`Listed all ${n} sealed at 100% of market — track them on the Sell tab.`)
   }
-  function stockAll() {
-    const n = stockShopSealed(inventory.map(it => it.uid))
-    if (n) toast(`Stocked all ${n} sealed on the shop shelf — walk-ins can buy it now.`)
-  }
 
   return (
     <>
@@ -56,11 +52,11 @@ export default function SealedInventory({ onRip }) {
         value <b>{fmtMoney(totalValue)}</b> · cost {fmtMoney(totalCost)} ·
         <b style={{ color: pl >= 0 ? 'var(--green)' : 'var(--red)' }}> {pl >= 0 ? '+' : ''}{fmtMoney(pl)}</b> unrealized.
         {' '}Sealed rides the market — <b>vintage climbs</b> the longer you hold it.
+        {hasStore && <> <b>🏬 This IS your store's sealed stock</b> — walk-ins buy from it unless a unit is 🔒 kept.</>}
       </div>
       <div className="toolbar" style={{ marginTop: 10 }}>
         <span className="muted" style={{ fontSize: 12 }}>Move it all at once:</span>
         <button className="btn alt" style={{ flex: 'none' }} onClick={listAll}>🌐 List all online</button>
-        {hasStore && <button className="btn alt" style={{ flex: 'none' }} onClick={stockAll}>🏬 Stock all to shop</button>}
       </div>
       <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', marginTop: 12 }}>
         {groups.map(items => <SealedRow key={items[0].uid} items={items} onRip={onRip} hasStore={hasStore} />)}
@@ -74,7 +70,7 @@ export default function SealedInventory({ onRip }) {
 function SealedRow({ items, onRip, hasStore }) {
   const listSealed = useGame(s => s.listSealed)
   const listSealedMany = useGame(s => s.listSealedMany)
-  const stockShopSealed = useGame(s => s.stockShopSealed)
+  const toggleLockSealed = useGame(s => s.toggleLockSealed)
   const quickFlipSealed = useGame(s => s.quickFlipSealed)
   const [listing, setListing] = useState(false)
   const [mult, setMult] = useState(1.0)
@@ -99,9 +95,12 @@ function SealedRow({ items, onRip, hasStore }) {
     if (listed) toast(`Listed ${listed}× ${item.product.type} at ${Math.round(mult*100)}% — track them on the Sell tab.`)
     setListing(false); setQtySel(1)
   }
-  function doStock() {
-    const moved = stockShopSealed(pickUids(n))
-    if (moved) toast(`Stocked ${moved}× ${item.product.type} on the shop shelf — walk-ins can buy it.`)
+  // Flip KEEP on the selected units (kept units group into their own stack on re-render).
+  function doKeep() {
+    for (const uid of pickUids(n)) toggleLockSealed(uid)
+    toast(item.locked
+      ? `🔓 ${n}× ${item.product.type} back up for sale in the store.`
+      : `🔒 Keeping ${n}× ${item.product.type} — walk-ins can't buy it (you can still rip, stream, or repack it).`)
     setQtySel(1)
   }
   function doFlip() {
@@ -117,6 +116,7 @@ function SealedRow({ items, onRip, hasStore }) {
           <b className="sealed-name">{item.product.icon || '📦'} {item.product.type}</b>
           <div className="muted" style={{ fontSize: 12 }}>
             {set?.name}{item.vintage ? ' · 🏛️ vintage' : ''} · {item.product.packs} pk
+            {item.locked ? <b style={{ color: 'var(--gold)' }}> · 🔒 kept (not for sale)</b> : ''}
           </div>
         </div>
         {qty > 1 && <span className="sealed-qty" title={`${qty} in stock`}>×{qty}</span>}
@@ -138,14 +138,19 @@ function SealedRow({ items, onRip, hasStore }) {
           <b className="qval">{n}</b>
           <button className="qstep" onClick={() => setQtySel(q => Math.min(qty, Math.max(1, q) + 1))} disabled={n >= qty} aria-label="More">+</button>
           <button className="qstep qmax" onClick={() => setQtySel(qty)} disabled={n >= qty}>All {qty}</button>
-          <span className="muted" style={{ fontSize: 11, marginLeft: 'auto' }}>applies to List / Stock</span>
+          <span className="muted" style={{ fontSize: 11, marginLeft: 'auto' }}>applies to List / Keep</span>
         </div>
       )}
 
       <div className="sealed-actions">
         <button className="btn gold" onClick={() => onRip(item.uid)}>📦 Rip{qty > 1 ? ' one' : ''}</button>
         <button className="btn alt" onClick={() => setListing(v => !v)}>{listing ? 'Cancel' : `🌐 List${qty > 1 ? ` ${n}` : ''}`}</button>
-        {hasStore && <button className="btn alt" onClick={doStock} title="Put it on your store shelf for walk-in customers">🏬 Stock{qty > 1 ? ` ${n}` : ''}</button>}
+        {hasStore && (
+          <button className={`btn ${item.locked ? 'gold' : 'alt'}`} onClick={doKeep}
+            title={item.locked ? 'Kept — not for sale in your store. Tap to put it back on the floor.' : 'Keep it — walk-ins can\'t buy it (rips, streams & repacks still can use it)'}>
+            {item.locked ? '🔓 Unkeep' : '🔒 Keep'}{qty > 1 ? ` ${n}` : ''}
+          </button>
+        )}
         <button className="btn" onClick={doFlip} title={`Instant cash at ${Math.round(SEALED_FLIP_RATE * 100)}% of value`}>⚡ Flip {fmtMoney(flip)}</button>
       </div>
 
