@@ -1333,6 +1333,37 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier, gradedAt: Date.now() }
 }
 
+// Predicted grade RANGE for a still-raw card (the Grading Scope upgrade). Monte-Carlos the
+// SAME rollGrade path the real submission uses — so it honours the card's hidden cut, its
+// condition cap, and the player's loupe luck — then summarises the outcome: the likeliest
+// grade, a confidence band (10th–90th percentile), and the gem-10 odds. Purely informational;
+// it changes nothing about the actual roll. Returns null-safe fields for the UI.
+export function gradePrediction(card, luck = 0, samples = 600) {
+  const counts = {}
+  for (let i = 0; i < samples; i++) {
+    const g = rollGrade(card, 'standard', luck).overall
+    counts[g] = (counts[g] || 0) + 1
+  }
+  const grades = Object.keys(counts).map(Number).sort((a, b) => a - b)
+  // likeliest grade (mode)
+  let likely = grades[0], best = -1
+  for (const g of grades) if (counts[g] > best) { best = counts[g]; likely = g }
+  // 10th / 90th percentile band (walk the cumulative distribution low→high)
+  let cum = 0, lo = grades[0], hi = grades[grades.length - 1]
+  const loMark = samples * 0.1, hiMark = samples * 0.9
+  let loSet = false
+  for (const g of grades) {
+    const prev = cum; cum += counts[g]
+    if (!loSet && cum > loMark) { lo = g; loSet = true }
+    if (prev < hiMark && cum >= hiMark) { hi = g; break }
+  }
+  return {
+    likely, lo, hi,
+    gemChance: (counts[10] || 0) / samples,               // P(PSA 10)
+    highChance: ((counts[10] || 0) + (counts[9] || 0)) / samples, // P(9 or 10)
+  }
+}
+
 // ---- Eyeball cut-quality estimate ----
 // Returns a qualitative read on a card's hidden cut (_cut 0..1).
 // precise=true (loupe owned): exact tier + specific detail line.

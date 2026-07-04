@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS } from '../game/engine'
+import { useState, useEffect, useMemo } from 'react'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
@@ -7,6 +7,7 @@ import PriceChart from './PriceChart'
 
 export default function CardModal({ card, onClose }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
+  const hasScope = useGame(s => !!s.upgrades.gradescope)
   const quickSell = useGame(s => s.quickSell)
   const quickSellRate = useGame(s => s.quickSellRate)
   const consign = useGame(s => s.consignCard)
@@ -45,6 +46,11 @@ export default function CardModal({ card, onClose }) {
   const quote = listingQuote(card, askMult)
   // This card's value reprojected across the set's recent market window (raw or graded).
   const priceSeries = valueHistory(card, marketHistory?.[setIdOfCard(card)])
+  // Grading Scope prediction: Monte-Carlo the real grade roll (honours cut/condition/loupe)
+  // to show a likely grade range before you pay. Only computed for raw cards when owned.
+  const prediction = useMemo(
+    () => (hasScope && card && !card.grade) ? gradePrediction(card, hasLoupe ? 0.08 : 0) : null,
+    [hasScope, hasLoupe, card])
 
   return (
     <div className="modalbg" onClick={onClose}>
@@ -238,6 +244,17 @@ export default function CardModal({ card, onClose }) {
                     🤝 {tier.name}{tier.discount > 0 ? ` · ${Math.round(tier.discount*100)}% off` : ''}
                   </span>
                 </div>
+                {hasScope && prediction && (
+                  <div className="grade-predict" title="Predicted from this card's cut, condition, and your loupe — a range, not a guarantee.">
+                    <span className="gp-icon">🔭</span>
+                    <span className="gp-range">Likely <b>PSA {prediction.lo === prediction.hi ? prediction.lo : `${prediction.lo}–${prediction.hi}`}</b></span>
+                    <span className="gp-likely">best odds <b>PSA {prediction.likely}</b></span>
+                    <span className="gp-gem" style={{ color: prediction.gemChance >= 0.15 ? 'var(--gold)' : 'var(--dim)' }}>
+                      💎 10: <b>{Math.round(prediction.gemChance * 100)}%</b>
+                    </span>
+                    <span className="muted" style={{ fontSize: 11 }}>· 9+: {Math.round(prediction.highChance * 100)}%</span>
+                  </div>
+                )}
                 <div className="row">
                   {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => {
                     const fee = gradingFee(key, submitted)
