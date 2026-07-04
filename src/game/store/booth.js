@@ -10,7 +10,7 @@
 // card (collection / listings / show inventory / shop shelf).
 
 import { round2, cardValue, setById, bulkSellableUids, cardInValueRange, sealedValue } from '../engine'
-import { encounterStillValid, STORE_SALE_PREMIUM } from '../shows'
+import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../shows'
 
 // The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
@@ -207,6 +207,38 @@ export function createBoothSlice(set, get) {
       const clearing = !uid || (cur && cur.uid === uid)
       set(s => ({ showInventory: (s.showInventory || []).map(c => ({ ...c, _deal: !clearing && c.uid === uid })) }))
       if (!clearing) { get().addNotoriety(1); get().log('show', `Announced a Deal of the Show — the markdown is pulling a crowd.`, 0) }
+    },
+
+    // --- Pre-show leads (appointments) --------------------------------------------
+    // Claim every lead for a show as you enter it: removes them from state and returns
+    // them so App can stash them on activeShow._leads (the floor works off that copy —
+    // the calendar days already advanced past the show at entry, so leaving them in
+    // state would just get them expired mid-show by the next tick).
+    claimShowLeads(showId) {
+      const all = get().showLeads || []
+      const mine = all.filter(l => l.showId === showId)
+      if (mine.length) set(s => ({ showLeads: (s.showLeads || []).filter(l => l.showId !== showId) }))
+      return mine
+    },
+    // Meet a buyer-lead at the show and sell them a matching card (from your collection
+    // or your booth's show inventory) at the appointment premium. Returns { payout } or false.
+    fulfillShowLead(lead, uid) {
+      if (!lead?.want) return false
+      const card = get().collection.find(c => c.uid === uid)
+        || (get().showInventory || []).find(c => c.uid === uid)
+      if (!card || !cardMatchesWant(card, lead.want)) return false
+      const payout = round2(cardValue(card) * lead.premiumMult)
+      set(s => ({
+        collection: s.collection.filter(c => c.uid !== uid),
+        showInventory: (s.showInventory || []).filter(c => c.uid !== uid),
+        stats: { ...s.stats, wantsFilled: (s.stats.wantsFilled || 0) + 1 },
+      }))
+      get().earn(payout)
+      get().addNotoriety(lead.notoriety || 3)
+      get().log('want', `Met ${lead.who} at the show as arranged — sold ${card.name} at ${Math.round(lead.premiumMult * 100)}% of market`, payout)
+      get().bumpGoal('want', 1)
+      get().checkMilestones()
+      return { payout }
     },
 
     // --- Store display case (brick & mortar) -------------------------------------

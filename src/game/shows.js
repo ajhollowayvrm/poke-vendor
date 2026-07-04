@@ -97,6 +97,52 @@ export function generateCalendar(notoriety, seed = 7) {
   return shows.sort((a, b) => a.day - b.day)
 }
 
+// --- Pre-show leads -----------------------------------------------------------
+// A few days before a show, people you matter to reach out — a reason to make THAT
+// trip. Two kinds:
+//   'vendor' — a recurring dealer you have rapport with sets aside a sealed vintage
+//              pack at a held (under-market) price. It's waiting at their table.
+//   'buyer'  — a collector arranges to meet you at the show to buy a specific card
+//              (or any of a rarity), at a premium fatter than a normal want — the
+//              extra is for making the trip.
+// Leads live in state (showLeads), surface on the Calendar + log, are CLAIMED when
+// you enter the show (App stashes them on activeShow._leads), and expire if the
+// show passes unattended. `absDay` is the month-safe absolute day of the show.
+export function makeShowLead(show, kind, opts = {}) {
+  const base = {
+    showId: show.id, showDay: show.day, showName: show.name, tierKey: show.tierKey,
+    absDay: opts.absDay ?? show.day,
+  }
+  if (kind === 'buyer') {
+    const w = makeWant(!!opts.bigSpender)
+    const premiumMult = round2(w.premiumMult + 0.3) // the trip premium
+    return {
+      ...base,
+      id: `lead-${show.id}-b${w.id}`,
+      kind: 'buyer',
+      who: w.who, want: w, img: w.img,
+      desc: w.desc.replace(/^.*? wants /, ''), // just the item ("a Chespin (Chaos Rising)")
+      premiumMult,
+      notoriety: (w.notoriety || 2) + 1,
+      text: `${cap(w.who)} messaged: "I'll be at ${show.name} (day ${show.day}) — bring ${w.desc.replace(/^.*? wants /, '')} and I'll pay ${Math.round(premiumMult * 100)}% of market, cash on the spot."`,
+    }
+  }
+  // vendor hold — needs a vintage pool and a roster vendor to make the promise
+  if (!VINTAGE_SETS.length || !opts.vendor) return null
+  const set = VINTAGE_SETS[Math.floor(Math.random() * VINTAGE_SETS.length)]
+  const product = vintageProduct(set)
+  if (!product) return null
+  const price = round2(product.price * 0.9) // held under the usual 1.15×+ show markup — a favor
+  return {
+    ...base,
+    id: `lead-${show.id}-v${opts.vendor.id}`,
+    kind: 'vendor',
+    vendorId: opts.vendor.id, vendorName: opts.vendor.name,
+    setId: set.id, setName: set.name, productType: product.type, price,
+    text: `${opts.vendor.name} messaged: "Setting up at ${show.name} (day ${show.day}). Got a sealed ${product.type} of ${set.name} with your name on it — $${price.toFixed(2)}, holding it till then."`,
+  }
+}
+
 // --- Vendor generation -------------------------------------------------------
 // Each booth has a personality that colors prices, encounters, and stock.
 // `flex` = how far (fraction toward fair market) a vendor will haggle from their
@@ -258,7 +304,7 @@ function boothSealed(r, arch, band = [1, 100]) {
 // vendors/stock show up day to day. `roster` is the recurring show-vendor list (their
 // identities get injected into some booths so you see familiar faces). `arrival` is when
 // you walked the floor: 'open' (fresh, first dibs) or 'late' (picked-over but marked down).
-export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arrival = 'open') {
+export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arrival = 'open', leads = []) {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
   const [lo, hi] = tier.valueBand
@@ -267,10 +313,19 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
   // booth slots. Their identity + fixed archetype override the procedural pick for that slot.
   const recCount = roster.length ? Math.min(roster.length, n, 2 + Math.floor(r() * 3)) : 0
   const recPick = recCount ? shuffleR(r, roster).slice(0, recCount) : []
+  // A vendor who DM'd you a pre-show hold is guaranteed to actually be here —
+  // swap them into the recurring slots if the seeded draw left them out.
+  for (const l of (leads || []).filter(x => x.kind === 'vendor')) {
+    if (recPick.some(v => v.id === l.vendorId)) continue
+    const v = roster.find(x => x.id === l.vendorId)
+    if (v) { if (recPick.length < Math.max(1, Math.min(n, 4))) recPick.push(v); else recPick[recPick.length - 1] = v }
+  }
   // Draw vendor names without replacement. If a show has more booths than names,
   // wrap to a fresh shuffle and tag with a "II"/"III" suffix so every full name
-  // is still unique (no two bare "Rip City" tables).
-  const nameOrder = shuffleR(r, VENDOR_NAMES)
+  // is still unique (no two bare "Rip City" tables). Roster vendors present at THIS
+  // show keep their name exclusive — no procedural doppelgänger table beside them.
+  const recNames = new Set(recPick.map(v => v.name))
+  const nameOrder = shuffleR(r, VENDOR_NAMES.filter(nm => !recNames.has(nm)))
   const SUFFIX = ['', ' II', ' III', ' IV']
   const vendorName = (i) => nameOrder[i % nameOrder.length] + SUFFIX[Math.floor(i / nameOrder.length)] || nameOrder[i % nameOrder.length]
   // Loose vintage singles surface in booth bins more often at bigger shows (the venues that
@@ -362,6 +417,19 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       const target = regs.length ? regs[Math.floor(r() * regs.length)] : booths[0]
       target.products = [...(target.products || []), entry]
     }
+  }
+
+  // --- PRE-SHOW VENDOR HOLDS ----------------------------------------------------
+  // A dealer who messaged you before the show has the promised sealed waiting on
+  // their table, at the price they quoted (locked when they DM'd you — a real favor
+  // vs the usual 1.15×+ show markup). Flagged so the booth + directory can show it.
+  for (const l of (leads || []).filter(x => x.kind === 'vendor')) {
+    const booth = booths.find(b => b.vendorId === l.vendorId)
+    const set = setById(l.setId)
+    const product = set ? vintageProduct(set) : null
+    if (!booth || !set || !product) continue
+    booth.products = [{ set, product, _ask: l.price, _origin: 'vintage', _lead: true }, ...(booth.products || [])]
+    booth.leadNote = `holding a ${product.type} of ${set.name} for you — $${(l.price ?? 0).toFixed(2)}`
   }
 
   // --- ON-SITE GRADING KIOSK ---------------------------------------------------

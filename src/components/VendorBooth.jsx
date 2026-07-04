@@ -246,6 +246,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                 </div>
               ) : (
                 <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''}`}>
+                  {entry._lead && (
+                    <span className="pill" style={{ alignSelf: 'center', fontSize: 10.5, background: '#ffcb0522', color: 'var(--gold)' }}
+                      title="They set this aside for you before the show — at the price they quoted.">
+                      🤝 set aside for you
+                    </span>
+                  )}
                   {entry.set.logo && <img src={entry.set.logo} alt={entry.set.name} style={{ height: 34, objectFit:'contain', alignSelf:'center' }} />}
                   <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>
                     {entry._origin === 'vintage' ? '🗝️ ' : entry.product.icon + ' '}{entry.product.type}

@@ -21,7 +21,7 @@ import {
   marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS } from '../shows'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
@@ -501,6 +501,36 @@ export function advanceDaysWith(set, get, days, away) {
   const periodGoals = goalsExpired ? makeWeeklyGoals(noto) : s.dailyGoals
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
   const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days), s.distributors, days, newAbsDay, get().log)
+  // --- Pre-show leads: people DM you BEFORE a show, giving that trip a reason -----
+  // Expire leads whose show has passed unattended (attending claims them at entry),
+  // then maybe generate fresh ones for unlocked shows 1–4 days out: a recurring
+  // vendor you have rapport with sets aside vintage at a held price, or a collector
+  // arranges to meet you there to buy a specific card at an appointment premium.
+  const LEAD_WINDOW = 4, LEAD_CAP = 3
+  let leadsNext = (s.showLeads || []).filter(l => (l.absDay ?? 0) >= newAbsDay)
+  const newLeads = []
+  {
+    const calendar = generateCalendar(noto, seed)
+    const rapportVendors = (s.showVendors || []).filter(v => vendorRapport(s.vendorSpend?.[v.id] || 0).level >= 1)
+    for (const showX of calendar) {
+      if (leadsNext.length >= LEAD_CAP) break
+      if (noto < SHOW_TIERS[showX.tierKey]?.minNotoriety) continue // can't attend → no DM
+      if (showX.day <= d || showX.day - d > LEAD_WINDOW) continue
+      if (leadsNext.some(l => l.showId === showX.id)) continue
+      const absShowDay = absoluteDay(showX.day, months)
+      const wantVendorLead = rapportVendors.length > 0 && Math.random() < 0.30
+      const wantBuyerLead = !wantVendorLead && noto >= 20 && Math.random() < 0.35
+      let lead = null
+      if (wantVendorLead) {
+        const vendor = rapportVendors[Math.floor(Math.random() * rapportVendors.length)]
+        lead = makeShowLead(showX, 'vendor', { vendor, absDay: absShowDay })
+      } else if (wantBuyerLead) {
+        lead = makeShowLead(showX, 'buyer', { bigSpender: noto >= 120, absDay: absShowDay })
+      }
+      if (lead) { leadsNext = [...leadsNext, lead]; newLeads.push(lead) }
+    }
+  }
+  for (const l of newLeads) get().log('lead', `📬 ${l.text}`, 0)
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
     marketMults: market.marketMults, marketHistory: market.marketHistory,
@@ -511,6 +541,7 @@ export function advanceDaysWith(set, get, days, away) {
     distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds
     listings: remainingListings,
     wantList: wants,
+    showLeads: leadsNext,
     forumPosts,
     dailyGoals: periodGoals,                       // weekly set; refreshed every 7 days
     goalsDay: goalsExpired ? newAbsDay : (s.goalsDay || newAbsDay),

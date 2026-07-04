@@ -243,9 +243,12 @@ export default function App() {
     if (!spend(tier.entryFee)) return toast('Not enough cash for the entry fee.')
     useGame.getState().bringToShow([], []) // ensure the booth is empty — you're here to buy
     useGame.getState().log('show', `Attended ${show.name} as a shopper (${tier.days}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
+    // Claim any pre-show leads for this show (vendor holds + buyer appointments) BEFORE
+    // the days advance — the floor works off this copy (state leads expire with the calendar).
+    const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
     const summary = useGame.getState().attendShowDays(show.day, tier.days)
-    setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary })
+    setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads })
   }
 
   // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee (+ booth-spot
@@ -260,10 +263,13 @@ export default function App() {
     useGame.getState().bringToShow(cardUids || [], sealedUids || [])
     const spotNote = spotFee ? ` + ${opts.spotLabel} $${spotFee}` : ''
     useGame.getState().log('show', `Vended at ${show.name} (${tier.days}d · entry $${tier.entryFee} + booth $${tier.vendorFee}${spotNote})`, -cost)
+    // Claim any pre-show leads for this show (vendor holds + buyer appointments) BEFORE
+    // the days advance — the floor works off this copy (state leads expire with the calendar).
+    const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
     const summary = useGame.getState().attendShowDays(show.day, tier.days)
     setPreppingShow(null)
-    setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary })
+    setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads })
   }
 
   // Leaving the show: unsold show-inventory cards come back home, then exit the floor.

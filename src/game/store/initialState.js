@@ -66,6 +66,7 @@ export function initialState() {
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
     wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
+    showLeads: [],           // pre-show DMs: vendors holding an item for you / buyers arranging to meet you AT an upcoming show. Claimed on entry (→ activeShow._leads); expire if the show passes unattended.
     regulars: [],            // persistent named customers (online/walkin) with a focus + trust; born from good deals
     showVendors: makeShowVendors(), // recurring named dealers you meet across shows; { id,name,archetype,spend } — rapport builds with deals
     vendorSpend: {},         // { [vendorId]: lifetime $ dealt with that show vendor } → rapport tier

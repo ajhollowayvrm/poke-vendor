@@ -10,6 +10,7 @@ export default function Calendar({ onAttend }) {
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const upgrades = useGame(s => s.upgrades)
+  const showLeads = useGame(s => s.showLeads)
 
   const allShows = useMemo(() => generateCalendar(notoriety, showSeed), [notoriety, showSeed])
   // Only shows on or after today are attendable; earlier ones have passed.
@@ -33,6 +34,13 @@ export default function Calendar({ onAttend }) {
         Any shows on those days are <b>missed</b> — a 4-day Worlds skips everything in that window. Pick wisely.
       </div>
 
+      {(showLeads || []).length > 0 && (
+        <div className="banner lead-banner" style={{ marginTop: 8 }}>
+          📬 <b>{showLeads.length} appointment{showLeads.length > 1 ? 's' : ''} lined up</b> — people reached out ahead of
+          upcoming shows (marked below). A held item or a premium buyer is waiting if you make the trip; skip the show and it's gone.
+        </div>
+      )}
+
       <div className="tierlegend">
         {Object.entries(SHOW_TIERS).map(([k, t]) => (
           <span key={k} className="legend" style={{ borderColor: t.color }}>
@@ -52,12 +60,13 @@ export default function Calendar({ onAttend }) {
           const canVendor = !!upgrades.vendorSetup
           const canAffordVendor = cash >= vendorCost
           const endsDay = Math.min(30, show.day + tier.days - 1)
+          const leads = (showLeads || []).filter(l => l.showId === show.id)
           // Expected online orders during the show's run (rough), and whether the
           // player would MISS them (no Smartphone to manage online while away).
           const expOnline = dayOrderChance('online', notoriety) * tier.days
           const onlineCovered = !!upgrades.smartphone
           return (
-            <div key={show.id} className={`calcard ${show.locked ? 'locked' : ''} ${show.day === currentDay ? 'today' : ''}`} style={{ borderLeftColor: tier.color }}>
+            <div key={show.id} className={`calcard ${show.locked ? 'locked' : ''} ${show.day === currentDay ? 'today' : ''} ${leads.length ? 'has-leads' : ''}`} style={{ borderLeftColor: tier.color }}>
               <div className="calday">
                 {show.day === currentDay ? 'TODAY' : `Day ${show.day}`}
                 {tier.days > 1 && <span className="dur"> · {tier.days} days (thru {endsDay})</span>}
@@ -67,6 +76,13 @@ export default function Calendar({ onAttend }) {
               <div className="muted" style={{ fontSize: 12 }}>
                 Cards ~{fmtMoney(tier.valueBand[0])}–{fmtMoney(tier.valueBand[1])} · {Math.round(tier.traffic * 100)}% traffic
               </div>
+              {leads.map(l => (
+                <div key={l.id} className="cal-lead" title={l.text}>
+                  {l.kind === 'vendor'
+                    ? <>🗝️ <b>{l.vendorName}</b> is holding a {l.productType} of {l.setName} for you · {fmtMoney(l.price)}</>
+                    : <>🤝 <b>{l.who}</b> wants {l.desc} · pays {Math.round(l.premiumMult * 100)}%</>}
+                </div>
+              ))}
               {!show.locked && (
                 <div className="muted" style={{ fontSize: 11.5, color: onlineCovered ? 'var(--green)' : '#ff9f43' }}>
                   {onlineCovered

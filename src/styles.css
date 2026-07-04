@@ -394,43 +394,54 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .calcard.locked { opacity: .55; }
 .calcard h4 { margin: 4px 0 2px; font-size: 16px; }
 .calday { font-size: 11px; font-weight: 800; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
+/* Pre-show leads on a calendar card — the reason to make THIS trip. */
+.calcard.has-leads { border-color:#ffcb0555; box-shadow: 0 0 0 1px #ffcb0522; }
+.cal-lead { font-size: 11.5px; margin-top: 4px; padding: 5px 8px; border-radius: 8px;
+  background:#ffcb0512; border:1px solid #ffcb0533; color: var(--txt); }
+.lead-banner { border-color:#ffcb0555; }
 
-/* ---------- Show floor / 2D map ---------- */
+/* ---------- Show floor (vendor directory) ---------- */
 .floorwrap { display:flex; flex-direction: column; align-items: stretch; gap: 14px; margin-top: 14px; }
 .floorhud { display:flex; gap: 12px; align-items:center; width: 100%; flex-wrap: wrap; }
-/* big halls scroll inside this viewport so Worlds can be huge without breaking layout */
-.floorscroll { width: 100%; max-height: 78vh; overflow: auto; border-radius: 14px;
-  display:flex; justify-content:center; }
-.floor { position: relative; flex: none; background:
-  repeating-linear-gradient(0deg, #11162a 0 51px, #0e1325 51px 52px),
-  repeating-linear-gradient(90deg, #11162a 0 51px, #0e1325 51px 52px);
-  border: 3px solid #2a3252; border-radius: 12px; box-shadow: inset 0 0 60px #0008, 0 20px 50px #0009; }
-.tile { position:absolute; }
-.tile.wall { background: linear-gradient(180deg,#39406b,#262c4a); border:1px solid #4a5384; border-radius:4px; }
-.booth { position:absolute; inset: 3px; border-radius: 8px; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; font-size: 20px; box-shadow: 0 4px 10px #0007; border:1px solid #fff2;
-  background: linear-gradient(180deg,#3b6cff,#2748b8); }
-.booth .boothname { font-size: 7.5px; font-weight: 800; color:#fff; text-align:center; line-height:1; padding: 0 2px;
-  position:absolute; top: 3px; text-shadow: 0 1px 2px #000; }
-.booth .boothicon { font-size: 22px; margin-top: 6px; }
-/* Busy booth vibe: a booth drawing a crowd gets a warm glow + a live shopper count. */
-.booth.busy { box-shadow: 0 0 0 2px #ffcb0577, 0 4px 14px #0008; animation: boothPulse 1.8s ease-in-out infinite; }
-@keyframes boothPulse { 0%,100% { box-shadow: 0 0 0 2px #ffcb0555, 0 4px 12px #0008; } 50% { box-shadow: 0 0 0 3px #ffcb05aa, 0 4px 16px #0009; } }
-.booth .booth-crowd { position:absolute; bottom: 2px; right: 3px; font-size: 8px; font-weight: 800;
-  background:#000a; color:#ffd84d; border-radius: 6px; padding: 0 3px; line-height: 1.5; }
-.booth.player { background: linear-gradient(180deg,#ffd84d,#ffb000); }
-.booth.player .boothname { color:#3a2b00; text-shadow:none; }
-.booth.arch-fleecer { background: linear-gradient(180deg,#ff5e6c,#b8273a); }
-.booth.arch-whale { background: linear-gradient(180deg,#ff3df0,#a012a0); }
-.booth.arch-fair { background: linear-gradient(180deg,#36d399,#1d9268); }
-.booth.arch-newbie { background: linear-gradient(180deg,#8c97b8,#5a637f); }
-.booth.arch-sharp { background: linear-gradient(180deg,#ff9f43,#c46a12); }
-/* the rare Vintage Vault booth — unmistakable gold, gently pulsing to draw the eye */
-.booth.vault-booth { background: linear-gradient(180deg,#ffe27a,#d4a017);
-  box-shadow: 0 0 14px #ffd70088, inset 0 0 0 1.5px #fff6; animation: vaultpulse 1.8s ease-in-out infinite; }
-.booth.vault-booth .boothname { color:#3a2b00; text-shadow:none; }
-@keyframes vaultpulse { 0%,100%{ box-shadow:0 0 10px #ffd70066, inset 0 0 0 1.5px #fff6 }
-  50%{ box-shadow:0 0 22px #ffd700cc, inset 0 0 0 1.5px #fff9 } }
+.hall-vibe { font-size: 12.5px; margin: -6px 2px 0; }
+/* One line per vendor table. The left accent carries the archetype color the old
+   map booths used, so a "who's who" read survives the de-mapping. */
+.vdir { display:flex; flex-direction:column; gap:8px; }
+.vdir-row { display:flex; align-items:center; gap:12px; padding:10px 14px; cursor:pointer;
+  background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-left:4px solid #3b6cff; border-radius:12px; transition: transform .1s, box-shadow .1s; }
+.vdir-row:hover { transform: translateY(-1px); box-shadow: 0 6px 18px #0006; }
+.vdir-row.arch-fair    { border-left-color:#36d399; }
+.vdir-row.arch-sharp   { border-left-color:#ff9f43; }
+.vdir-row.arch-whale   { border-left-color:#ff3df0; }
+.vdir-row.arch-newbie  { border-left-color:#8c97b8; }
+.vdir-row.arch-fleecer { border-left-color:#ff5e6c; }
+.vdir-row.kiosk        { border-left-color:#7cf0ff; }
+/* A table drawing a crowd glows — the directory's version of the busy-booth pulse. */
+.vdir-row.busy { animation: boothPulse 1.8s ease-in-out infinite; }
+@keyframes boothPulse { 0%,100% { box-shadow: 0 0 0 1px #ffcb0533; } 50% { box-shadow: 0 0 0 3px #ffcb0577; } }
+/* A vendor holding something for you — gold edge, top of the list. */
+.vdir-row.lead { border-color:#ffcb0566; background: linear-gradient(160deg, color-mix(in srgb, var(--gold) 8%, var(--panel)), var(--panel2)); }
+.vdir-icon { font-size: 24px; flex:none; width: 32px; text-align:center; }
+.vdir-info { flex:1; min-width:0; }
+.vdir-name { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-weight:800; font-size:14px; }
+.vdir-name .pill { font-size: 10.5px; padding: 2px 8px; }
+.vdir-arch { background:#ffffff10; color:var(--dim); }
+.vdir-held { background:#ffcb0522; color:var(--gold); }
+.vdir-crowd { background:#ffcb0522; color:#ffd84d; }
+.vdir-sub { font-size: 12px; margin-top: 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vdir-go { flex:none; font-size: 22px; color: var(--dim); }
+
+/* Pre-show appointments (buyer meets + vendor holds) at the top of the floor. */
+.appt-strip { background: linear-gradient(160deg, color-mix(in srgb, var(--accent2) 10%, var(--panel)), var(--panel2));
+  border:1px solid color-mix(in srgb, var(--accent2) 40%, var(--line)); border-radius:12px; padding:10px 14px; }
+.appt-strip.held { background: linear-gradient(160deg, color-mix(in srgb, var(--gold) 8%, var(--panel)), var(--panel2));
+  border-color:#ffcb0555; }
+.appt-head { font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--dim); margin-bottom:6px; }
+.appt-row { display:flex; align-items:center; gap:10px; padding:6px 0; }
+.appt-row + .appt-row { border-top:1px solid var(--line); }
+.appt-thumb { width:34px; border-radius:5px; flex:none; }
+.appt-info { flex:1; min-width:0; font-size:13px; }
 
 /* --- Vintage Vault modal + offer --- */
 .vault-ribbon { display:inline-block; align-self:flex-start; font-weight:900; font-size:11px;
@@ -447,11 +458,6 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .vault-rip-bg { background:#000d; }
 .vault-rip-modal { width:96vw; max-height:94vh; overflow:auto; border-color:#ffd70055;
   box-shadow:0 0 60px #ffd70033; display:flex; flex-direction:column; align-items:center; }
-.avatar { position:absolute; display:flex; align-items:center; justify-content:center; font-size: 28px;
-  transition: left .09s linear, top .09s linear; z-index: 6; filter: drop-shadow(0 4px 3px #000a); }
-.npc { position:absolute; display:flex; align-items:center; justify-content:center; font-size: 20px;
-  transition: left .6s linear, top .6s linear; z-index: 4; opacity: .9; filter: drop-shadow(0 3px 2px #0008); }
-
 .ticker { background: linear-gradient(90deg,#ffcb05,#ffb000); color:#3a2b00; font-weight: 800; border-radius: 10px;
   padding: 10px 16px; cursor: pointer; animation: tickerpulse 1s ease-in-out infinite; max-width: 720px; width: 100%; text-align:center; }
 @keyframes tickerpulse { 0%,100%{box-shadow:0 0 0 0 #ffcb0566} 50%{box-shadow:0 0 0 6px #ffcb0500} }
@@ -772,11 +778,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .prodbtn .prodprice { color:var(--green); font-weight:800; flex:none; min-width:54px; text-align:right;
   display:inline-flex; align-items:baseline; justify-content:flex-end; gap:5px; white-space:nowrap; }
 
-/* ---------- Live rippers + hall announcements ---------- */
-.npc .rip-badge { position:absolute; top:-8px; right:-6px; font-size:11px; transform: scaleX(1); }
-.npc .rip-pop { position:absolute; top:-16px; left:50%; transform:translateX(-50%) scaleX(1); font-size:16px;
-  animation: rippop .9s ease-out; }
-@keyframes rippop { 0%{opacity:0; transform:translate(-50%,4px) scale(.6)} 30%{opacity:1} 100%{opacity:0; transform:translate(-50%,-12px) scale(1.2)} }
+/* ---------- Hall announcements (big pulls on the floor) ---------- */
 .hall-announce { position: fixed; top: 88px; left: 50%; transform: translateX(-50%); z-index: 70;
   display:flex; gap: 12px; align-items:center; max-width: 520px;
   background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--gold);
@@ -797,25 +799,6 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .hall-announce.mine .ha-sub b { color: var(--green); }
 
 /* ===================== Mobile + touch optimization ===================== */
-.floor { cursor: pointer; }
-
-/* On-screen D-pad — shown only on touch / small screens */
-.dpad { display: none; }
-@media (hover: none), (max-width: 760px) {
-  .dpad {
-    display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px);
-    gap: 6px; margin: 14px auto 0; justify-content: center; user-select: none; touch-action: manipulation;
-  }
-  .dpad-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--txt);
-    border-radius: 12px; font-size: 20px; font-weight: 800; display:flex; align-items:center; justify-content:center;
-    -webkit-tap-highlight-color: transparent; }
-  .dpad-btn:active { background: var(--accent2); color: #fff; transform: scale(.94); }
-  .dpad-btn.up { grid-area: 1 / 2 } .dpad-btn.left { grid-area: 2 / 1 }
-  .dpad-btn.act { grid-area: 2 / 2; color: var(--gold) } .dpad-btn.right { grid-area: 2 / 3 }
-  .dpad-btn.down { grid-area: 3 / 2 }
-  .floorhint { display: none; } /* WASD hint irrelevant on touch */
-}
-
 @media (max-width: 640px) {
   .app { padding-left: 10px; padding-right: 10px; }
   /* App shell — applied ONLY to the main view (the .app that contains the bottom nav). Lock
@@ -923,8 +906,6 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .btn, .prodbtn, .encbtn, .tab { min-height: 40px; }
   .encbtn { padding: 14px 16px; }
 
-  /* show floor: smaller tiles already scroll; keep the hall from overflowing weirdly */
-  .floorscroll { max-height: 62vh; }
   .hall-announce { max-width: 92vw; top: 70px; }
   .calgrid { grid-template-columns: 1fr; }
 }
@@ -932,7 +913,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* prevent iOS auto-zoom on focus (form controls ≥16px) + smoother momentum scroll */
 @media (max-width: 640px) {
   select, .search, input, button { font-size: 16px; }
-  .floorscroll, .modal, .tabs { -webkit-overflow-scrolling: touch; }
+  .modal, .tabs { -webkit-overflow-scrolling: touch; }
 }
 
 /* ---------- Card condition chip ---------- */
@@ -1315,21 +1296,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .chip-btn.active { border-color:var(--accent2); background:#5aa0ff1f; }
 .chip-btn.active small { color:var(--txt); }
 
-/* Recurring roster vendor + grading kiosk booths stand out on the floor */
-.booth.recurring-booth { outline:2px solid #ffcb0555; }
-.booth.kiosk-booth { background:linear-gradient(180deg,#0c2630,#0a1a22); border-color:#7cf0ff66; }
-
-/* --- Show floor: fill the viewport on phones ------------------------------- */
+/* --- Show floor on phones: the directory scrolls with the page ------------- */
 /* Attending a show is a full-screen view with NO bottom nav, so the .pane fix above
-   doesn't reach it. On phones its content clustered at the top and left a dead band
-   below the D-pad. Let the floorwrap fill the app and grow the scrollable map region
-   so the map centers between the HUD (top) and the D-pad (bottom) — screen used top
-   to bottom. `safe center` keeps a huge hall anchored to the top so it can scroll.
-   Placed at end-of-file so it overrides the earlier mobile `.floorscroll` max-height. */
+   doesn't reach it — just keep a small bottom pad under the last vendor row. */
 @media (hover: none), (max-width: 760px) {
   .app:has(.floorwrap) { padding-bottom: 14px; }
-  .floorwrap { flex: 1 1 auto; min-height: 0; }
-  .floorscroll { flex: 1 1 auto; max-height: none; align-items: safe center; }
+  .vdir-sub { white-space: normal; }
 }
 
 /* ============================================================================
