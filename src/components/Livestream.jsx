@@ -3,7 +3,7 @@ import { useGame } from '../game/store'
 import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
-  chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX,
+  chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
 } from '../game/stream'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
@@ -69,7 +69,8 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const [spots, setSpots] = useState(4)
 
   const fresh = fatigueMult(fatigue)
-  const expected = baseViewers(notoriety, fresh, followers)
+  const draw = set ? streamDrawMult(set, product) : 1
+  const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw)
   const per = product ? spotPrice(product.price, spots, notoriety) : 0
 
   // keep break toggle valid when switching to a single-pack product
@@ -116,11 +117,21 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
               <select value={invUid || ''} onChange={e => setInvUid(e.target.value)}>
                 {inventory.map(it => {
                   const s = setById(it.setId)
-                  return <option key={it.uid} value={it.uid}>{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
+                  const tag = it.vintage ? '🗝️ ' : s?.secondary ? '🕰️ ' : ''
+                  return <option key={it.uid} value={it.uid}>{tag}{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
                 })}
               </select>
-              <span className="pill" style={{ marginLeft: 'auto' }}>{product?.packs} pack{product?.packs>1?'s':''} · owned</span>
+              {set?.vintage
+                ? <span className="pill" style={{ marginLeft: 'auto', background:'color-mix(in srgb, var(--gold) 16%, transparent)', color:'var(--gold)' }}>🗝️ Vintage · huge draw</span>
+                : <span className="pill" style={{ marginLeft: 'auto' }}>{product?.packs} pack{product?.packs>1?'s':''} · owned</span>}
             </div>
+            {draw > 1.05 && (
+              <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+                {set?.vintage
+                  ? `🗝️ Breaking sealed VINTAGE on camera is appointment viewing — expect a much bigger crowd (~${Math.round((draw-1)*100)}% more viewers).`
+                  : `🕰️ Older sealed pulls a bigger crowd (~${Math.round((draw-1)*100)}% more viewers).`}
+              </p>
+            )}
           </div>
 
           <div className="market-panel" style={{ marginTop: 12, opacity: canBreak ? 1 : 0.5 }}>
@@ -183,7 +194,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
 
   const totalPacks = product.packs
-  const settled = baseViewers(notoriety, fatigueMult(fatigue), followers)
+  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) * streamDrawMult(set, product))
 
   const [packNo, setPackNo] = useState(0)
   const [phase, setPhase] = useState('idle')        // idle | revealing | packdone

@@ -28,6 +28,17 @@ export function baseViewers(notoriety, fatigue = 1, followers = 0) {
   return Math.max(3, Math.round(capped * fatigue))
 }
 
+// What you're RIPPING changes the crowd size. Vintage sealed is appointment viewing — cracking
+// a sealed 1999 pack on camera pulls people in from everywhere (everyone wants to witness the
+// Base Charizard hit… or the heartbreak). Older aftermarket sealed draws a smaller bump, and a
+// big-ticket box pulls a few more eyes than a $5 pack. Returns a multiplier on the viewer count.
+export function streamDrawMult(set, product) {
+  let m = set?.vintage ? 1.9 : set?.secondary ? 1.3 : 1.0
+  const price = product?.price || 0
+  m *= 1 + Math.min(0.35, price / 1200) // a pricey box draws more than a single pack
+  return Math.round(m * 100) / 100
+}
+
 // New followers a stream earns — your returning audience grows when the room is big and
 // you make hype moments on camera. A flop wins none. Giveaways add on top (see Livestream).
 export function followersGained(peakViewers, hypeMoments, flopped = false) {
