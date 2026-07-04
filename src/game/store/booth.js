@@ -9,7 +9,7 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById, bulkSellableUids, cardInValueRange } from '../engine'
+import { round2, cardValue, setById, bulkSellableUids, cardInValueRange, sealedValue } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM } from '../shows'
 
 // The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
@@ -98,6 +98,44 @@ export function createBoothSlice(set, get) {
       return { got }
     },
 
+    // Many-to-many trade with a booth: give any bundle of YOUR cards + held sealed for a
+    // bundle of THEIR cards + sealed products, with `cashDelta` closing the value gap
+    // (> 0 you also pay; < 0 they top you up). Validates you own everything on your side and
+    // can cover a positive delta. Returns { ok, error }.
+    //   payload: { giveCardUids, giveSealedUids, getCards, getSealed, cashDelta, vendorId }
+    tradeWithVendor({ giveCardUids = [], giveSealedUids = [], getCards = [], getSealed = [], cashDelta = 0, vendorId } = {}) {
+      const cardIds = new Set(giveCardUids)
+      const sealIds = new Set(giveSealedUids)
+      const mine = get().collection.filter(c => cardIds.has(c.uid))
+      const mySealed = (get().sealedInventory || []).filter(it => sealIds.has(it.uid))
+      if (mine.length !== cardIds.size || mySealed.length !== sealIds.size) {
+        return { error: 'Some of the cards/sealed you offered are no longer yours.' }
+      }
+      if (!getCards.length && !getSealed.length) return { error: 'Pick something to trade for.' }
+      if (!mine.length && !mySealed.length && cashDelta <= 0) return { error: 'Offer at least one card, sealed, or cash.' }
+      const delta = round2(cashDelta)
+      if (delta > 0 && get().cash < delta) return { error: `You can't cover the $${delta.toFixed(2)} on your side.` }
+      // Received items land in the right buckets. Sealed lands in held inventory (rip/list/flip later).
+      const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined }))
+      const gotSealed = getSealed.map(entry => get().mintSealedRow(entry.set, entry.product, entry.ask ?? entry.product?.price ?? 0))
+      set(s => ({
+        collection: [...gotCards, ...s.collection.filter(c => !cardIds.has(c.uid))],
+        sealedInventory: [...gotSealed, ...(s.sealedInventory || []).filter(it => !sealIds.has(it.uid))],
+      }))
+      if (delta > 0) get().spend(delta)
+      else if (delta < 0) get().earn(-delta)
+      const myValue = mine.reduce((a, c) => a + cardValue(c), 0) + mySealed.reduce((a, it) => a + sealedValue(it), 0)
+      if (vendorId) get().bumpVendorRapport(vendorId, myValue + Math.max(0, delta))
+      get().addNotoriety(1)
+      const giveN = mine.length + mySealed.length
+      const getN = gotCards.length + gotSealed.length
+      get().log('trade', `Traded ${giveN} item${giveN !== 1 ? 's' : ''} for ${getN}${delta > 0 ? ` + $${delta.toFixed(2)}` : delta < 0 ? ` (got $${(-delta).toFixed(2)} back)` : ''}`, -delta)
+      get().bumpGoal('buy', 1)
+      get().checkCompletions()
+      get().checkMilestones()
+      return { ok: true }
+    },
+
     // Build rapport with a recurring show vendor by dealing with them (buying or selling).
     // Rapport = lifetime $ dealt; it earns a standing discount at their table (see vendorRapport).
     bumpVendorRapport(vendorId, amount) {
@@ -105,31 +143,49 @@ export function createBoothSlice(set, get) {
       set(s => ({ vendorSpend: { ...(s.vendorSpend || {}), [vendorId]: round2((s.vendorSpend?.[vendorId] || 0) + amount) } }))
     },
 
-    // --- Show inventory: cards you bring to a show to sell at your booth ----------
-    // Move the selected collection cards onto your show table. Floor buyers (offers,
-    // browse-sales, walk-ups) only ever target these — your at-home collection isn't
-    // for sale at the show. Anything unsold comes home when you leave (endShow()).
-    bringToShow(uids) {
-      const ids = new Set(uids)
-      const bringing = get().collection.filter(c => ids.has(c.uid))
-      if (!bringing.length) { set({ showInventory: [] }); return 0 }
+    // --- Show inventory: cards + sealed you bring to a show to sell at your booth -----
+    // Move the selected collection cards (and held sealed product) onto your show table.
+    // Floor buyers (offers, browse-sales, walk-ups) only ever target these — your at-home
+    // collection/inventory isn't for sale at the show. Anything unsold comes home when you
+    // leave (endShow()). Both lists are cleared/replaced so re-attending starts clean.
+    bringToShow(cardUids, sealedUids) {
+      const cardIds = new Set(cardUids || [])
+      const sealIds = new Set(sealedUids || [])
+      const bringing = get().collection.filter(c => cardIds.has(c.uid))
+      const bringingSealed = (get().sealedInventory || []).filter(it => sealIds.has(it.uid))
       set(s => ({
-        collection: s.collection.filter(c => !ids.has(c.uid)),
+        collection: s.collection.filter(c => !cardIds.has(c.uid)),
         showInventory: bringing,
+        sealedInventory: (s.sealedInventory || []).filter(it => !sealIds.has(it.uid)),
+        showSealed: bringingSealed,
       }))
-      get().log('show', `Brought ${bringing.length} card${bringing.length > 1 ? 's' : ''} to sell at the show`, 0)
-      return bringing.length
+      const parts = []
+      if (bringing.length) parts.push(`${bringing.length} card${bringing.length > 1 ? 's' : ''}`)
+      if (bringingSealed.length) parts.push(`${bringingSealed.length} sealed`)
+      if (parts.length) get().log('show', `Brought ${parts.join(' + ')} to sell at the show`, 0)
+      return bringing.length + bringingSealed.length
     },
-    // Leaving the show: any unsold show-inventory cards return to your collection. Strip
-    // the transient booth flags (showcase / deal-of-show) — they only matter at the show.
+    // Leaving the show: unsold show-inventory cards return to your collection and unsold
+    // sealed returns to your held inventory. Strip the transient booth flags (showcase /
+    // deal-of-show) — they only matter at the show.
     endShow() {
       const inv = get().showInventory || []
-      if (inv.length) {
+      const sealed = get().showSealed || []
+      if (inv.length || sealed.length) {
         const home = inv.map(({ _showcase, _deal, ...c }) => c)
-        set(s => ({ collection: [...home, ...s.collection], showInventory: [] }))
-        get().log('show', `Brought ${inv.length} unsold card${inv.length > 1 ? 's' : ''} back home from the show`, 0)
+        const homeSealed = sealed.map(({ _showcase, _deal, ...it }) => it)
+        set(s => ({
+          collection: [...home, ...s.collection],
+          showInventory: [],
+          sealedInventory: [...homeSealed, ...(s.sealedInventory || [])],
+          showSealed: [],
+        }))
+        const parts = []
+        if (inv.length) parts.push(`${inv.length} card${inv.length > 1 ? 's' : ''}`)
+        if (sealed.length) parts.push(`${sealed.length} sealed`)
+        get().log('show', `Brought ${parts.join(' + ')} unsold back home from the show`, 0)
       } else {
-        set({ showInventory: [] })
+        set({ showInventory: [], showSealed: [] })
       }
     },
     // --- Active booth: showcase + deal of the show ------------------------------
@@ -265,46 +321,75 @@ export function createBoothSlice(set, get) {
           //   collection → a walk-in to your physical store browses your whole case
           // (Back-compat: an old in-flight encounter may still carry `fromShow`.)
           const pool = effect.pool || (effect.fromShow ? 'show' : 'collection')
-          const owned = pool === 'show' ? (get().showInventory || [])
-            : pool === 'listings' ? (get().listings || []).map(l => l.card)
-            : pool === 'shop' ? (get().shopDisplay || [])
-            : get().collection
+          // Build the buyable pool. At a show your table can hold cards AND sealed product;
+          // wrap each entry so we know how to price/remove it when it's the one they grab.
+          const owned = pool === 'show'
+            ? [...(get().showInventory || []).map(c => ({ item: c, sealed: false })),
+               ...(get().showSealed || []).map(it => ({ item: it, sealed: true }))]
+            : pool === 'listings' ? (get().listings || []).map(l => ({ item: l.card, sealed: false }))
+            : pool === 'shop' ? (get().shopDisplay || []).map(c => ({ item: c, sealed: false }))
+            : get().collection.map(c => ({ item: c, sealed: false }))
           if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
             const blocked = s.paymentBlocked(effect.payMethod)
             if (blocked) { s.log('lost-sale', blocked, 0); msg = msg + ' …but ' + blocked.toLowerCase(); break }
-            // they buy a random card from the relevant pool at market
-            const card = owned[Math.floor(Math.random() * owned.length)]
-            let price = cardValue(card) // grade-aware: a slab sells for its graded value, not raw
+            // they buy a random item from the relevant pool at market
+            const pick = owned[Math.floor(Math.random() * owned.length)]
+            const item = pick.item
+            const label = pick.sealed ? `${item.product.type} (${setById(item.setId)?.name || 'sealed'})` : item.name
+            let price = pick.sealed ? sealedValue(item) : cardValue(item) // grade-aware for cards; market for sealed
             // Deal of the Show: the card you flagged as a loss-leader actually sells at a
             // markdown (that's the trade-off for the crowd it draws). ~12% off.
-            if (card._deal) price = round2(price * (1 - DEAL_OF_SHOW_MARKDOWN))
+            if (item._deal) price = round2(price * (1 - DEAL_OF_SHOW_MARKDOWN))
             if (get().upgrades.cases) price = round2(price * 1.12)
             if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
             const { net, fee } = processingFee(price, effect.payMethod)
-            removeOwnedAnywhere(set, card.uid)
+            if (pick.sealed) set(st => ({ showSealed: (st.showSealed || []).filter(x => x.uid !== item.uid) }))
+            else removeOwnedAnywhere(set, item.uid)
             s.earn(net)
-            s.log('sell', `A browser bought your ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
-            msg = `They bought your ${card.name} for $${net.toFixed(2)}${fee > 0 ? ` (after $${fee.toFixed(2)} ${methodLabel(effect.payMethod)} fee)` : ''}!`
+            s.log('sell', `A browser bought your ${label} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
+            msg = `They bought your ${label} for $${net.toFixed(2)}${fee > 0 ? ` (after $${fee.toFixed(2)} ${methodLabel(effect.payMethod)} fee)` : ''}!`
             s.bumpGoal('sell', 1); s.bumpGoal('profit', net)
           }
           break
         }
         case 'trade': {
-          // Card-for-card swap (± cash). You give up `uid`, receive `theirs`; cashAdj
-          // > 0 pays you, < 0 you pay them. Bail gracefully if you no longer own yours,
-          // or can't cover a cash-you-owe trade.
-          const card = findOwnedAnywhere(get(), effect.uid)
-          if (!card) { msg = 'That card is already gone — trade off.'; break }
+          // Many-to-many swap (± cash): give a bundle of your cards + sealed, receive a bundle
+          // of their cards + sealed. cashAdj > 0 pays you, < 0 you pay them. Bail gracefully if
+          // you no longer own everything on your side, or can't cover cash you owe.
+          // Back-compat: old single-card effects carry `uid` + `theirs` (an object) instead of
+          // `give`/`theirs`-array — normalize both shapes here.
+          const give = effect.give || [{ kind: 'card', uid: effect.uid }]
+          const giveCards = give.filter(g => g.kind !== 'sealed')
+          const giveSealed = give.filter(g => g.kind === 'sealed')
+          const getCards = effect.theirs ? (Array.isArray(effect.theirs) ? effect.theirs : [effect.theirs]) : []
+          const getSealed = effect.theirsSealed || []
+          // Your sealed may sit in held inventory OR on your show table (showSealed) — check both.
+          const findSealed = (uid) => (get().sealedInventory || []).find(it => it.uid === uid)
+            || (get().showSealed || []).find(it => it.uid === uid)
+          const ownedCards = giveCards.map(g => findOwnedAnywhere(get(), g.uid)).filter(Boolean)
+          const ownedSealed = giveSealed.map(g => findSealed(g.uid)).filter(Boolean)
+          if (ownedCards.length !== giveCards.length || ownedSealed.length !== giveSealed.length) {
+            msg = 'Some of those are already gone — trade off.'; break
+          }
           const adj = effect.cashAdj || 0
           if (adj < 0 && get().cash < -adj) { msg = `You can't cover the $${(-adj).toFixed(2)} on your side. Trade off.`; break }
-          removeOwnedAnywhere(set, effect.uid)
-          const got = { ...effect.theirs, _ask: undefined, _mispriced: undefined, _highlight: undefined }
-          set(st => ({ collection: [got, ...st.collection] }))
+          giveCards.forEach(g => removeOwnedAnywhere(set, g.uid))
+          if (giveSealed.length) {
+            const ids = new Set(giveSealed.map(g => g.uid))
+            set(st => ({
+              sealedInventory: (st.sealedInventory || []).filter(it => !ids.has(it.uid)),
+              showSealed: (st.showSealed || []).filter(it => !ids.has(it.uid)),
+            }))
+          }
+          const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined }))
+          const gotSealed = getSealed.map(e => get().mintSealedRow(e.set || setById(e.setId), e.product, e.ask ?? e.product?.price ?? 0))
+          set(st => ({ collection: [...gotCards, ...st.collection], sealedInventory: [...gotSealed, ...(st.sealedInventory || [])] }))
           if (adj > 0) s.earn(adj)
           else if (adj < 0) s.spend(-adj)
           s.addNotoriety(effect.notoriety || 0)
-          s.log('trade', `Traded ${card.name} for ${effect.theirs.name}${adj > 0 ? ` (+$${adj.toFixed(2)})` : adj < 0 ? ` (−$${(-adj).toFixed(2)})` : ''}`, adj)
-          get().checkCompletions() // the card you traded for may finish a set
+          const giveN = giveCards.length + giveSealed.length, getN = gotCards.length + gotSealed.length
+          s.log('trade', `Traded ${giveN} item${giveN !== 1 ? 's' : ''} for ${getN}${adj > 0 ? ` (+$${adj.toFixed(2)})` : adj < 0 ? ` (−$${(-adj).toFixed(2)})` : ''}`, adj)
+          get().checkCompletions() // a card/sealed you traded for may finish a set
           break
         }
         case 'buySealedDeal': {

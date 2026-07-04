@@ -51,7 +51,7 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 35,
+  version: 36,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -74,6 +74,7 @@ export const useGame = create(persist((set, get) => ({
     state.showInventory = keepFlat(state.showInventory)
     state.shopDisplay = keepFlat(state.shopDisplay)
     state.sealedInventory = keepFlat(state.sealedInventory) // sealed items carry a uid too
+    state.showSealed = keepFlat(state.showSealed)           // sealed brought to a show carries a uid too
     return state
   },
   // backfill fields added across versions so old saves keep working.
@@ -323,6 +324,11 @@ export const useGame = create(persist((set, get) => ({
       // Masterset binder — cards you physically slot into a per-set masterset (moved out of
       // the collection, protected from bulk actions). New bucket; start it empty.
       state.binder = state.binder ?? []
+    }
+    if (version < 36) {
+      // Sealed product you bring to a show to sell at your booth. New bucket; start empty
+      // (existing saves aren't mid-show, so nothing to migrate).
+      state.showSealed = state.showSealed ?? []
     }
     return state
   },

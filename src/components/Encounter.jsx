@@ -1,15 +1,45 @@
 import HoloCard from './HoloCard'
 import { useModalEscape } from '../ui/dialog'
-import { cardValue, fmtMoney } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, setById } from '../game/engine'
 
 const TONE_ICON = { kind: '💛', fair: '🤝', cold: '🥶' }
+
+// One item thumbnail in a trade bundle — a card, or a sealed-product chip.
+function TradeItem({ card, sealed }) {
+  if (sealed) {
+    const set = setById(sealed.setId)
+    return (
+      <div className="trade-item sealed">
+        {set?.logo
+          ? <img className="trade-sealed-logo" src={set.logo} alt={set.name} decoding="async" />
+          : <div className="trade-sealed-icon">{sealed.product.icon || '📦'}</div>}
+        <div className="trade-name">{sealed.product.icon || '📦'} {sealed.product.type}</div>
+        <div className="trade-val">{fmtMoney(sealedValue(sealed))}</div>
+      </div>
+    )
+  }
+  return (
+    <div className="trade-item">
+      <HoloCard card={card} maxTilt={14} className="enc-card trade-card">
+        <img src={card.imgLarge || card.img} alt={card.name} decoding="async" />
+      </HoloCard>
+      <div className="trade-name">{card.name}</div>
+      <div className="trade-val">{fmtMoney(cardValue(card))}</div>
+    </div>
+  )
+}
 
 // An encounter prompt. `onPick` resolves the chosen option. `onClose` (optional)
 // dismisses without choosing — backdrop click, Esc, or the × button. When no
 // onClose is given the modal is non-dismissable (caller wants a forced choice).
 export default function Encounter({ data, onPick, onClose }) {
   useModalEscape(() => onClose?.())
-  const isTrade = data.kind === 'trade' && data.yourCard && data.card
+  // Normalize the trade bundles (arrays) with a fallback to the legacy single-card shape.
+  const giveCards = data.giveCards || (data.yourCard ? [data.yourCard] : [])
+  const giveSealed = data.giveSealed || []
+  const getCards = data.theirs ? (Array.isArray(data.theirs) ? data.theirs : [data.theirs]) : (data.card ? [data.card] : [])
+  const getSealed = data.theirsSealed || []
+  const isTrade = data.kind === 'trade' && (giveCards.length || giveSealed.length) && (getCards.length || getSealed.length)
   return (
     <div className="modalbg" onClick={() => onClose?.()}>
       <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
@@ -25,15 +55,14 @@ export default function Encounter({ data, onPick, onClose }) {
         <h2 style={{ fontSize: 19 }}>{data.title}</h2>
 
         {isTrade ? (
-          // Two-sided trade: what you give up ↔ what you get, with the cash delta.
+          // Two-sided bundle trade: what you give up ↔ what you get, with the cash delta.
           <div className="trade-view">
             <div className="trade-side">
               <div className="trade-label">You give</div>
-              <HoloCard card={data.yourCard} maxTilt={14} className="enc-card trade-card">
-                <img src={data.yourCard.img} alt={data.yourCard.name} decoding="async" />
-              </HoloCard>
-              <div className="trade-name">{data.yourCard.name}</div>
-              <div className="trade-val">{fmtMoney(cardValue(data.yourCard))}</div>
+              <div className="trade-items">
+                {giveCards.map(c => <TradeItem key={c.uid} card={c} />)}
+                {giveSealed.map(it => <TradeItem key={it.uid} sealed={it} />)}
+              </div>
             </div>
             <div className="trade-swap">
               <span className="trade-arrows">⇄</span>
@@ -42,11 +71,10 @@ export default function Encounter({ data, onPick, onClose }) {
             </div>
             <div className="trade-side">
               <div className="trade-label">You get</div>
-              <HoloCard card={data.card} maxTilt={14} className="enc-card trade-card">
-                <img src={data.card.imgLarge || data.card.img} alt={data.card.name} decoding="async" fetchpriority="high" />
-              </HoloCard>
-              <div className="trade-name">{data.card.name}</div>
-              <div className="trade-val">{fmtMoney(cardValue(data.card))}</div>
+              <div className="trade-items">
+                {getCards.map(c => <TradeItem key={c.uid} card={c} />)}
+                {getSealed.map(it => <TradeItem key={it.uid || it.product?.type} sealed={it} />)}
+              </div>
             </div>
           </div>
         ) : data.card && (

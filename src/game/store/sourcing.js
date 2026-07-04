@@ -167,6 +167,20 @@ export function createSourcingSlice(set, get) {
       return item
     },
 
+    // Mint a sealed-inventory row WITHOUT charging — for trades or grants where the item is
+    // acquired by other means. Same uid/shape as buySealed; the CALLER adds it to inventory.
+    // `boughtPrice` is the cost basis to record (e.g. the value given up in a trade).
+    mintSealedRow(pokeSet, product, boughtPrice = 0) {
+      return {
+        uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
+        setId: pokeSet.id,
+        product: { ...product, _ask: undefined, _mispriced: undefined, _highlight: undefined },
+        boughtDay: absoluteDay(get().currentDay, get().monthsElapsed),
+        boughtPrice: round2(boughtPrice),
+        vintage: !!pokeSet.vintage,
+      }
+    },
+
     // Pull a held product out of inventory to RIP it. Removes it and returns the item
     // ({ setId, product, ... }); the caller resolves the full set via setById and runs
     // the rip (animated or instant) — no re-charge, you already paid when you bought it.

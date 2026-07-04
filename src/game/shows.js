@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -450,32 +450,58 @@ function pickPayMethod(channel, accepted) {
   return pickAny(null, pool)
 }
 
-// Build a card-for-card trade proposal. They want one of YOUR cards (`yours`) and
-// offer a real card of theirs (`theirs`) near the same value, with a cash adjustment
-// to balance. Fairness tilts with notoriety/luck: ~60% are roughly even ("fair"),
-// the rest tilt in THEIR favor (they offer a slightly weaker card and ask you to add
-// cash, or short you on the cash adjustment). Returns null if nothing tradeable.
+// Build a MANY-TO-MANY trade proposal. They want a bundle of YOUR items (cards and/or held
+// sealed, from `offerPool` + `sealedPool`) and offer a bundle of real cards of theirs near the
+// same total value, with a cash adjustment to balance. Fairness tilts with notoriety/luck:
+// ~60% are roughly even ("fair"), the rest tilt in THEIR favor (they short you on the cash).
+// Returns { yours:[{kind,item}], theirs:[cards], cashAdj, fair } or null if nothing tradeable.
 //   cashAdj > 0 → they add cash to you · < 0 → you add cash to them · 0 → straight swap
-export function makeTradeOffer(offerPool, notoriety) {
-  if (!offerPool?.length) return null
-  const yours = pickAny(null, offerPool)
-  const yoursVal = cardValue(yours)
+export function makeTradeOffer(offerPool, notoriety, sealedPool = []) {
+  const candidates = [
+    ...(offerPool || []).map(c => ({ kind: 'card', item: c, val: cardValue(c) })),
+    ...(sealedPool || []).map(it => ({ kind: 'sealed', item: it, val: sealedValue(it) })),
+  ].filter(x => x.val > 0)
+  if (!candidates.length) return null
+  // Your side: 1–3 of your items (more only when you have them to give).
+  const nYours = Math.min(candidates.length, 1 + (Math.random() < 0.45 ? 1 : 0) + (Math.random() < 0.2 ? 1 : 0))
+  const yours = sampleN(candidates, nYours)
+  const yoursVal = yours.reduce((a, y) => a + y.val, 0)
   if (yoursVal <= 0) return null
-  // their card sits within a band around your card's value
-  const lo = Math.max(0.25, yoursVal * 0.55)
-  const hi = yoursVal * 1.4
-  const theirs = cardInValueRange(lo, hi)
-  const theirsVal = cardValue(theirs)
+  // Their side: 1–3 cards whose total sits in a band around your bundle's value.
+  const nTheirs = 1 + (Math.random() < 0.45 ? 1 : 0) + (Math.random() < 0.2 ? 1 : 0)
+  const theirs = []
+  let budget = yoursVal * (0.85 + Math.random() * 0.5) // aim near your value, spread across their cards
+  for (let i = 0; i < nTheirs; i++) {
+    const left = nTheirs - i
+    const share = i === nTheirs - 1 ? budget : (budget / left) * (0.7 + Math.random() * 0.6)
+    const lo = Math.max(0.25, share * 0.6)
+    const hi = Math.max(lo + 0.5, share * 1.4)
+    const c = cardInValueRange(lo, hi)
+    theirs.push(c); budget = Math.max(0, budget - cardValue(c))
+  }
+  const theirsVal = theirs.reduce((a, c) => a + cardValue(c), 0)
   // a fair trade balances the value gap with cash; an unfair one shorts you. Higher
   // notoriety → more often you get a fair counterpart (people deal you straight).
   const fair = Math.random() < (0.5 + Math.min(0.35, notoriety / 300))
-  const gap = yoursVal - theirsVal // +: their card is worth less, they should add cash
-  // fair: cash closes the gap (rounded). unfair: they pay ~60% of what they owe, or
-  // overcharge ~40% extra when YOU'd owe — always tilted their way.
-  const cashAdj = fair
-    ? round2(gap)
-    : round2(gap >= 0 ? gap * 0.55 : gap * 1.4)
+  const gap = round2(yoursVal - theirsVal) // +: their bundle is worth less, they should add cash
+  // fair: cash closes the gap. unfair: they pay ~55% of what they owe, or overcharge ~40%
+  // extra when YOU'd owe — always tilted their way.
+  const cashAdj = fair ? gap : round2(gap >= 0 ? gap * 0.55 : gap * 1.4)
   return { yours, theirs, cashAdj, fair }
+}
+
+// Sample up to n distinct entries from an array (no mutation of the source).
+function sampleN(arr, n) {
+  const pool = [...arr]
+  const out = []
+  for (let i = 0; i < n && pool.length; i++) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0])
+  return out
+}
+// Join names as "A", "A & B", or "A, B & C".
+function listAnd(names) {
+  if (names.length <= 1) return names[0] || ''
+  if (names.length === 2) return `${names[0]} & ${names[1]}`
+  return `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`
 }
 
 // --- Inbound sealed deals ----------------------------------------------------
@@ -556,10 +582,13 @@ export function makeSealedDeal(channel, notoriety = 0) {
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
-export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null, regulars = null) {
+export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null, regulars = null, showSealedPool = null) {
   const roll = Math.random()
   const online = channel === 'online'
   const walkin = channel === 'walkin'
+  // Sealed you brought to your booth is tradeable at a show (only there — no sealed on the
+  // store shelf or in online DMs in this phase).
+  const sealedPool = channel === 'show' ? (showSealedPool || []) : []
   // Who can buyers make offers on? Buyers only see what you've PUT OUT on that channel:
   //   online → your LISTINGS (listed/tweeted)
   //   walkin → your shop SHELF (display case — you choose what's out)
@@ -689,8 +718,8 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   // savvy: a shark proposes lopsided swaps in their favor; a fair dealer evens it out.
   // Only in-person/at-a-show (you can see each other's cards) and only if you own
   // something tradeable. ~12% band (0.50–0.62).
-  if (!online && roll < 0.62 && offerPool.length) {
-    const trade = makeTradeOffer(offerPool, notoriety)
+  if (!online && roll < 0.62 && (offerPool.length || sealedPool.length)) {
+    const trade = makeTradeOffer(offerPool, notoriety, sealedPool)
     if (trade) {
       const visitor = visitorFor(channel, 'offer')
       const { yours, theirs, cashAdj, fair } = trade
@@ -698,22 +727,30 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
       const cashLine = cashAdj > 0 ? ` + $${cashAdj.toFixed(2)} your way`
         : cashAdj < 0 ? ` if you add $${(-cashAdj).toFixed(2)}`
         : ' — straight up'
+      const give = yours.map(y => ({ kind: y.kind, uid: y.item.uid }))
+      const giveCards = yours.filter(y => y.kind === 'card').map(y => y.item)
+      const giveSealed = yours.filter(y => y.kind === 'sealed').map(y => y.item)
+      const yoursNames = yours.map(y => y.kind === 'sealed' ? y.item.product.type : y.item.name)
+      const theirsNames = theirs.map(c => c.name)
+      const yoursVal = yours.reduce((a, y) => a + y.val, 0)
+      const theirsVal = theirs.reduce((a, c) => a + cardValue(c), 0)
+      const seedCard = yours.find(y => y.kind === 'card')?.item // regulars form off a real card
+      const cashTag = cashAdj > 0 ? ` (+$${cashAdj.toFixed(2)})` : cashAdj < 0 ? ` (−$${(-cashAdj).toFixed(2)})` : ''
       return {
         kind: 'trade',
-        ownedUid: yours.uid,            // re-validate if you sold `yours` first
-        title: online ? `${cap(visitor)} proposes a trade` : `${cap(visitor)} wants to trade`,
-        body: `"I'll trade you my ${theirs.name} for your ${yours.name}${cashLine}." `
-          + `(Theirs ~$${cardValue(theirs).toFixed(2)} · yours ~$${cardValue(yours).toFixed(2)})`,
-        card: theirs,                    // show what they're offering
-        yourCard: yours,                 // the modal also shows what you'd give up
-        cashAdj,
+        ownedUid: yours[0].item.uid,     // re-validate the primary item
+        title: `${cap(visitor)} wants to trade`,
+        body: `"I'll trade you my ${listAnd(theirsNames)} for your ${listAnd(yoursNames)}${cashLine}." `
+          + `(Theirs ~$${theirsVal.toFixed(2)} · yours ~$${yoursVal.toFixed(2)})`,
+        // Bundle payload for the modal (arrays); `card`/`yourCard` kept for legacy single render.
+        giveCards, giveSealed, theirs, cashAdj,
+        card: theirs[0] || null,
+        yourCard: giveCards[0] || null,
         options: [
-          { text: cashAdj === 0 ? `Swap ${yours.name} ↔ ${theirs.name}`
-              : cashAdj > 0 ? `Trade (get ${theirs.name} + $${cashAdj.toFixed(2)})`
-              : `Trade (give ${theirs.name}'s side + $${(-cashAdj).toFixed(2)})`,
+          { text: `Trade my ${yours.length} for their ${theirs.length}${cashTag}`,
             tone: fair ? 'fair' : 'cold',
-            effect: { type: 'trade', uid: yours.uid, theirs, cashAdj, notoriety: fair ? 1 : 0,
-              formSeed: fair ? mkSeed(yours, channel) : undefined,
+            effect: { type: 'trade', give, theirs, cashAdj, notoriety: fair ? 1 : 0,
+              formSeed: fair && seedCard ? mkSeed(seedCard, channel) : undefined,
               msg: fair ? 'A clean trade — both walk away happy.' : 'You took the deal. Cards are cards.' } },
           { text: 'Pass on the trade', tone: 'fair',
             effect: { type: 'none', notoriety: fair ? -1 : 1, msg: fair ? 'They shrug and move on.' : 'Smart — that swap favored them.' } },

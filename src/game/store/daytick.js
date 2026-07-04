@@ -551,7 +551,8 @@ export function advanceDaysWith(set, get, days, away) {
     + (g.shopDisplay || []).reduce((a, c) => a + cardValue(c), 0)
     + (g.showInventory || []).reduce((a, c) => a + cardValue(c), 0)
     + (g.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
-    + (g.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0))
+    + (g.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
+    + (g.showSealed || []).reduce((a, it) => a + sealedValue(it), 0))
   set(st => ({ worthHistory: [...(st.worthHistory || []), { d: newAbsDay, worth: netWorth, cash: round2(g.cash) }].slice(-WORTH_HISTORY_LEN) }))
 
   // The day-summary payload. cashDelta/notoDelta are measured against the snapshot taken at

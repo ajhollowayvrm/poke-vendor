@@ -234,7 +234,7 @@ export default function App() {
     const tier = SHOW_TIERS[show.tierKey]
     setShopperShow(null)
     if (!spend(tier.entryFee)) return toast('Not enough cash for the entry fee.')
-    useGame.getState().bringToShow([]) // ensure the booth is empty — you're here to buy
+    useGame.getState().bringToShow([], []) // ensure the booth is empty — you're here to buy
     useGame.getState().log('show', `Attended ${show.name} as a shopper (${tier.days}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
     const summary = useGame.getState().attendShowDays(show.day, tier.days)
@@ -244,12 +244,13 @@ export default function App() {
   // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee (+ booth-spot
   // fee), move the picked cards onto your booth, advance the calendar past the show, enter
   // as a vendor. `opts` carries the booth spot (traffic mult + fee) and arrival timing.
-  function enterShow(show, uids, opts = {}) {
+  function enterShow(show, payload = {}) {
+    const { cardUids, sealedUids, ...opts } = payload
     const tier = SHOW_TIERS[show.tierKey]
     const spotFee = opts.spotFee || 0
     const cost = tier.entryFee + (tier.vendorFee || 0) + spotFee
     if (!spend(cost)) { setPreppingShow(null); return toast(`Not enough cash for the vendor fee (${'$'+cost}).`) }
-    useGame.getState().bringToShow(uids || [])
+    useGame.getState().bringToShow(cardUids || [], sealedUids || [])
     const spotNote = spotFee ? ` + ${opts.spotLabel} $${spotFee}` : ''
     useGame.getState().log('show', `Vended at ${show.name} (${tier.days}d · entry $${tier.entryFee} + booth $${tier.vendorFee}${spotNote})`, -cost)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
@@ -283,7 +284,7 @@ export default function App() {
     return (
       <div className="app">
         <ShowPrep show={preppingShow}
-          onConfirm={(uids, opts) => enterShow(preppingShow, uids, opts)}
+          onConfirm={(payload) => enterShow(preppingShow, payload)}
           onCancel={() => setPreppingShow(null)} />
         {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
         <DialogHost />

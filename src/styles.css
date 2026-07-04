@@ -1213,6 +1213,24 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .trade-cash { font-size:11px; font-weight:800; padding:2px 7px; border-radius:999px; white-space:nowrap; text-align:center; }
 .trade-cash.up { background:#36d39922; color:var(--green); }
 .trade-cash.down { background:#ff9f4322; color:#ff9f43; }
+/* Multi-item bundle sides in a trade encounter. */
+.trade-items { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+.trade-item { width:96px; display:flex; flex-direction:column; align-items:center; gap:3px; text-align:center; }
+.trade-item .trade-card img { width:100%; max-width:96px; border-radius:6px; }
+.trade-item.sealed { background:#0c0f1a; border:1px solid var(--line); border-radius:8px; padding:8px 6px; }
+.trade-item.sealed .trade-sealed-logo { width:70px; max-width:100%; object-fit:contain; }
+.trade-item.sealed .trade-sealed-icon { font-size:34px; line-height:1.4; }
+
+/* --- Trade builder (vendor booth, many-to-many) --------------------------- */
+.trade-builder-cols { display:flex; gap:12px; margin-top:12px; }
+.trade-builder-col { flex:1 1 0; min-width:0; display:flex; flex-direction:column; }
+.trade-pick-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px;
+  max-height:38vh; overflow-y:auto; padding:6px; background:#0c0f1a66; border:1px solid var(--line); border-radius:10px; }
+.trade-sealed-thumb { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.trade-sealed-thumb img { width:100%; max-width:82px; object-fit:contain; border-radius:6px; }
+.trade-sealed-thumb .tst-icon { font-size:30px; }
+.trade-sealed-thumb .tst-label { font-size:10.5px; font-weight:700; line-height:1.15; text-align:center; }
+@media (max-width:640px){ .trade-builder-cols { flex-direction:column; } .trade-pick-grid { max-height:30vh; } }
 
 /* --- Sealed inventory (buy & hold) ---------------------------------------- */
 .sealed-item { display:flex; flex-direction:column; gap:6px; align-items:stretch; }

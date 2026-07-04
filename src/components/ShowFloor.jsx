@@ -152,8 +152,8 @@ export default function ShowFloor({ show, onLeave }) {
       const boothMult = (show._boothMult || 1) * (1 + Math.min(0.45, showcaseN * 0.15)) * (dealActive ? 1.25 : 1)
       const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult)
       if (Math.random() < chance) {
-        // Floor buyers only shop your SHOW INVENTORY — the cards you brought to sell.
-        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted)
+        // Floor buyers only shop your SHOW INVENTORY — the cards + sealed you brought to sell.
+        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
         if (upgrades.ticker) { setBoothAlert(enc); lastEncounterRef.current = Date.now(); walkupsRef.current++ }
         else if (atPlayerBooth(pos, playerAt)) { setEncounter({ enc, atBooth: true }); lastEncounterRef.current = Date.now(); walkupsRef.current++ }
       }
@@ -220,7 +220,7 @@ export default function ShowFloor({ show, onLeave }) {
   function triggerPlayerBooth() {
     if (!show._asVendor) return // shoppers have no booth — only vendors tend one
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
-    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted)
+    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now()
   }
