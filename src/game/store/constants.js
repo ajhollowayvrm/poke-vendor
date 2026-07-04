@@ -214,7 +214,8 @@ export const UPGRADES = {
 
   // Keep earning while you're away at a show.
   smartphone: { name: 'Smartphone', cost: 1000, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show, instead of being missed.', icon: '📱' },
-  streaming:  { name: 'Streaming Setup', cost: 900, desc: 'Camera, lights & capture card. Go LIVE and rip product on stream — viewers tune in, react, and tip, and a hot stream pumps your notoriety and listing traffic. Unlocks box breaks.', icon: '🔴' },
+  streaming:  { name: 'Streaming Setup', cost: 900, desc: 'Camera, lights & capture card. Go LIVE and rip product on stream — viewers tune in, react, and tip, and a hot stream pumps your notoriety and listing traffic. Queue up MULTIPLE products per broadcast and unlock box breaks.', icon: '🔴' },
+  ripService: { name: 'Live Rip Service', cost: 2200, desc: 'Take RIP ORDERS live on stream: viewers pay a premium to have you crack a product you already hold on camera and ship them everything that comes out. You keep the markup no matter what hits — a steady, low-variance income while you broadcast. Requires a Streaming Setup.', icon: '🎟️', needs: 'streaming' },
   staff:      { name: 'Shop Assistant', cost: 2500, desc: 'A permanent assistant who minds the store: a standing +15% order throughput (no daily payroll) AND covers your walk-ins while you\'re away at a show. A one-time-fee alternative to paid Employees (who boost more, for a wage). Requires a Brick-and-Mortar Store.', icon: '🧑‍💼', needs: 'storefront' },
 
   // Book a booth at shows to SELL your own cards.

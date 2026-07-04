@@ -190,4 +190,37 @@ export function spotsFilled(spots, notoriety, rnd = Math.random) {
   return n
 }
 
+// --- Live rip orders (Pokebank-style) ----------------------------------------
+// With the Live Rip Service upgrade, viewers pay a PREMIUM to have you crack a product
+// you hold on camera and ship them everything that comes out. You keep the markup no
+// matter what hits — the vendor's edge is the markup, not the pull. This is separate
+// from a box BREAK (many spots on one box); a rip order is one whole product, one buyer.
+
+// What a viewer will pay to have you rip a whole product live for them. It's the product's
+// value plus a markup that climbs with your fame (a known ripper commands more) and with the
+// draw of what's being cracked (vintage/older sealed on camera is a bigger ask). Tuned so the
+// order is reliably profitable vs the product's cost — the markup is the whole point.
+export function ripOrderPrice(product, notoriety, set) {
+  const value = product?.price || 0
+  // ~1.2× at noto 0 → ~1.6× at high fame, then a small draw bump for hype product.
+  const markup = 1.2 + Math.min(0.4, Math.max(0, notoriety) / 320) + (streamDrawMult(set, product) - 1) * 0.15
+  return Math.round(value * markup * 100) / 100
+}
+
+// Roll a single incoming rip order from your remaining held inventory. Picks a random held
+// item and a buyer handle; the caller owns arrival timing/frequency. Returns null if you
+// hold nothing to rip. `heldItems` are raw sealedInventory rows ({ uid, setId, product }).
+export function rollRipOrder(heldItems, notoriety, setResolver, rnd = Math.random) {
+  const pool = heldItems || []
+  if (!pool.length) return null
+  const it = pool[Math.floor(rnd() * pool.length)]
+  const set = setResolver ? setResolver(it.setId) : null
+  const buyer = pick(CHAT_HANDLES, rnd)
+  return {
+    id: `ro-${it.uid}-${Math.floor(rnd() * 1e9)}`,
+    buyer, invUid: it.uid, setId: it.setId, product: it.product,
+    price: ripOrderPrice(it.product, notoriety, set),
+  }
+}
+
 export { fmtMoney }

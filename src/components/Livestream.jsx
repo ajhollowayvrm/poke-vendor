@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
+import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
+  rollRipOrder,
 } from '../game/stream'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
@@ -15,8 +16,10 @@ import { configureFeedback, primeAudio, sfxHit, sfxGod } from '../game/feedback'
 // The livestream studio. You go LIVE and rip product on camera: a viewer counter,
 // live chat that reacts to your ACTUAL pulls, tips, a "now revealing" callout, and
 // (optionally) a BOX BREAK where spots ship to buyers — unsold spots' cards stay
-// yours, and a big pull can sell a lingering spot live. Streaming burns a game-day
-// and tires your audience, so it's a deliberate play.
+// yours, and a big pull can sell a lingering spot live. You QUEUE multiple products
+// per broadcast (they rip back-to-back) and, with the Live Rip Service upgrade, take
+// RIP ORDERS from viewers mid-stream. Streaming burns a game-day and tires your
+// audience, so it's a deliberate play.
 // Phases: setup → live → ended
 export default function Livestream() {
   const hasGear = useGame(s => !!s.upgrades.streaming)
@@ -48,126 +51,156 @@ export default function Livestream() {
 
 // --- Setup -------------------------------------------------------------------
 // You can ONLY stream product you already HOLD in sealed inventory — no buying right before
-// a stream. Source low (shop / shows), hold it, then break it live for tips + fame.
+// a stream. Source low (shop / shows), hold it, then queue it up and break it live for tips
+// + fame. Build a QUEUE of held products; the stream rips through them back-to-back.
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const followers = useGame(s => s.followers || 0)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   const inventory = useGame(s => s.sealedInventory)
   const ripSealedAction = useGame(s => s.ripSealed)
 
-  const [invUid, setInvUid] = useState(null)
+  // The rip queue you're building. Each row: { invUid, setId, product, brk:{on,spots} }.
+  const [queue, setQueue] = useState([])
+  const [pick, setPick] = useState(null) // the inventory item currently selected to add
+
+  // Available = held items not already queued (each physical unit can be queued once).
+  const queuedUids = new Set(queue.map(q => q.invUid))
+  const available = inventory.filter(it => !queuedUids.has(it.uid))
   useEffect(() => {
-    if (!inventory.find(i => i.uid === invUid)) setInvUid(inventory[0]?.uid || null)
-  }, [inventory, invUid])
-  const invItem = inventory.find(i => i.uid === invUid) || null
+    if (!available.find(it => it.uid === pick)) setPick(available[0]?.uid || null)
+  }, [available, pick])
 
-  const set = invItem ? (setById(invItem.setId) || SHOP_SETS[0]) : null
-  const product = invItem ? invItem.product : null
-  const canBreak = !!product && product.packs >= 2
-
-  const [doBreak, setDoBreak] = useState(false)
-  const [spots, setSpots] = useState(4)
+  function addToQueue() {
+    const it = available.find(x => x.uid === pick)
+    if (!it) return
+    setQueue(q => [...q, { invUid: it.uid, setId: it.setId, product: it.product, brk: { on: false, spots: 4 } }])
+  }
+  function removeFromQueue(uid) { setQueue(q => q.filter(e => e.invUid !== uid)) }
+  function patchBreak(uid, patch) {
+    setQueue(q => q.map(e => e.invUid === uid ? { ...e, brk: { ...e.brk, ...patch } } : e))
+  }
 
   const fresh = fatigueMult(fatigue)
-  const draw = set ? streamDrawMult(set, product) : 1
+  // The room drifts toward the biggest-draw product in the queue (a vintage box later
+  // shouldn't cap the crowd at a $5 pack's draw).
+  const draw = queue.length ? Math.max(...queue.map(e => streamDrawMult(setById(e.setId) || SHOP_SETS[0], e.product))) : 1
   const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw)
-  const per = product ? spotPrice(product.price, spots, notoriety) : 0
-
-  // keep break toggle valid when switching to a single-pack product
-  useEffect(() => { if (!canBreak && doBreak) setDoBreak(false) }, [canBreak, doBreak])
+  const totalPacks = queue.reduce((a, e) => a + e.product.packs, 0)
 
   function go() {
-    if (!invItem) return
+    if (!queue.length) return
     primeAudio() // this click is our chance to start audio under the browser's autoplay policy
-    // Consume the held product from inventory — no charge, you already paid when you bought it.
-    const it = ripSealedAction(invItem.uid)
-    if (!it) return toast('That product is no longer in your inventory.')
-    useGame.getState().log('stream', `Broke a held ${product.type} (${set.name}) on stream`, 0)
-
-    let isBreak = false, spotsSold = 0, spotGross = 0
-    if (doBreak && canBreak) {
-      isBreak = true
-      spotsSold = spotsFilled(spots, notoriety)
-      spotGross = Math.round(spotsSold * per * 100) / 100
-      if (spotGross > 0) collectBreakSpots(spotGross)
+    const sessionQueue = []
+    for (const row of queue) {
+      // Consume the held product from inventory — no charge, you already paid when you bought it.
+      const it = ripSealedAction(row.invUid)
+      if (!it) continue // vanished between building the queue and going live — skip it
+      const set = setById(row.setId) || SHOP_SETS[0]
+      const product = row.product
+      const canBreak = product.packs >= 2 && row.brk.on
+      let isBreak = false, spots = 0, spotsSold = 0, perSpot = 0, spotGross = 0, owners = []
+      if (canBreak) {
+        isBreak = true
+        spots = row.brk.spots
+        perSpot = spotPrice(product.price, spots, notoriety)
+        spotsSold = spotsFilled(spots, notoriety)
+        spotGross = Math.round(spotsSold * perSpot * 100) / 100
+        owners = buildSpotOwners(spots)
+        if (spotGross > 0) collectBreakSpots(spotGross) // buyers pre-pay their spots
+      }
+      useGame.getState().log('stream', `Broke a held ${product.type} (${set.name}) on stream`, 0)
+      sessionQueue.push({ set, product, isBreak, spots, spotsSold, filled: spotsSold, perSpot, spotGross, owners, orderedBy: null })
     }
-    onGoLive({ set, product, isBreak, spots, spotsSold, spotGross, perSpot: per })
+    if (!sessionQueue.length) return toast('Nothing left to stream — your queued product is gone.')
+    onGoLive({ queue: sessionQueue })
   }
 
   return (
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
       <div className="banner" style={{ marginTop: 16 }}>
-        🔴 <b>Go live & rip on camera.</b> You break product you <b>already hold</b> — viewers tune in, react to your
-        pulls, and tip. A hot stream banks a notoriety jump and pumps your store's traffic for days — but it
-        <b> burns a game-day</b>, and streaming often <b>tires your audience</b> (rest a few days to recover).
-        {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime</span> : null}
+        🔴 <b>Go live & rip on camera.</b> Queue up <b>as many held products as you like</b> and rip them
+        back-to-back — viewers tune in, react to your pulls, and tip. A hot stream banks a notoriety jump and
+        pumps your store's traffic for days — but it <b>burns a game-day</b>, and streaming often <b>tires your
+        audience</b> (rest a few days to recover).
+        {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime{streamStats.ripOrders ? ` · ${streamStats.ripOrders} rip orders filled` : ''}</span> : null}
         {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>👥 {followers.toLocaleString()} followers</span>}
       </div>
 
       {inventory.length === 0 ? (
         <div className="empty" style={{ marginTop: 20 }}>
           📦 You have no sealed product to break. Streams rip from your <b>held inventory</b> only —
-          <b> buy sealed on the Buy tab</b> (or source it at a show), then come back and break it live.
+          <b> buy sealed on the Buy tab</b> (or source it at a show), then come back and queue it up live.
         </div>
       ) : (
         <>
           <div className="market-panel" style={{ marginTop: 14 }}>
-            <div className="market-head">🎬 What are you breaking? <span className="muted">— from your 📦 inventory</span></div>
+            <div className="market-head">🎬 Build your rip queue <span className="muted">— from your 📦 inventory</span></div>
             <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-              <select value={invUid || ''} onChange={e => setInvUid(e.target.value)}>
-                {inventory.map(it => {
-                  const s = setById(it.setId)
-                  const tag = it.vintage ? '🗝️ ' : s?.secondary ? '🕰️ ' : ''
-                  return <option key={it.uid} value={it.uid}>{tag}{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
-                })}
+              <select value={pick || ''} onChange={e => setPick(e.target.value)} disabled={!available.length} style={{ flex: 1, minWidth: 220 }}>
+                {available.length === 0
+                  ? <option value="">— everything's queued —</option>
+                  : available.map(it => {
+                    const s = setById(it.setId)
+                    const tag = it.vintage ? '🗝️ ' : s?.secondary ? '🕰️ ' : ''
+                    return <option key={it.uid} value={it.uid}>{tag}{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
+                  })}
               </select>
-              {set?.vintage
-                ? <span className="pill" style={{ marginLeft: 'auto', background:'color-mix(in srgb, var(--gold) 16%, transparent)', color:'var(--gold)' }}>🗝️ Vintage · huge draw</span>
-                : <span className="pill" style={{ marginLeft: 'auto' }}>{product?.packs} pack{product?.packs>1?'s':''} · owned</span>}
+              <button className="btn" disabled={!pick} onClick={addToQueue}>➕ Add to queue</button>
             </div>
-            {draw > 1.05 && (
-              <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-                {set?.vintage
-                  ? `🗝️ Breaking sealed VINTAGE on camera is appointment viewing — expect a much bigger crowd (~${Math.round((draw-1)*100)}% more viewers).`
-                  : `🕰️ Older sealed pulls a bigger crowd (~${Math.round((draw-1)*100)}% more viewers).`}
-              </p>
-            )}
           </div>
 
-          <div className="market-panel" style={{ marginTop: 12, opacity: canBreak ? 1 : 0.5 }}>
-            <label className="tweet-toggle" style={{ fontSize: 14 }}>
-              <input type="checkbox" checked={doBreak} disabled={!canBreak} onChange={e => setDoBreak(e.target.checked)} />
-              📦 <b>Run a box break</b> <span className="muted">— sell spots up front; filled spots ship to buyers, unsold spots' cards are yours to keep. A hot pull can sell a leftover spot live.{canBreak ? '' : ' (needs a multi-pack product)'}</span>
-            </label>
-            {doBreak && canBreak && (
-              <div style={{ marginTop: 10 }}>
-                <div className="list-pct-row">
-                  <span className="muted" style={{ fontSize: 12 }}>Spots</span>
-                  {[2, 4, 6, 8].map(n => (
-                    <button key={n} className={`pctbtn ${spots === n ? 'on' : ''}`} onClick={() => setSpots(n)}>{n}</button>
-                  ))}
-                  <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>
-                    {fmtMoney(per)}/spot · ~{Math.round(Math.min(0.98, 0.25 + notoriety/160)*100)}% sell at your fame
-                  </span>
-                </div>
-                <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-                  All {spots} filling collects <b style={{ color: 'var(--green)' }}>{fmtMoney(per * spots)}</b> vs a box you already own.
-                  Whatever doesn't sell, you keep those teams' pulls.
-                </p>
+          {queue.length > 0 && (
+            <div className="market-panel" style={{ marginTop: 12 }}>
+              <div className="market-head">📋 Tonight's queue <span className="muted">— {queue.length} product{queue.length>1?'s':''} · {totalPacks} pack{totalPacks>1?'s':''}, ripped back-to-back</span></div>
+              <div className="stream-queue">
+                {queue.map((row, i) => {
+                  const s = setById(row.setId)
+                  const canBreak = row.product.packs >= 2
+                  const per = canBreak ? spotPrice(row.product.price, row.brk.spots, notoriety) : 0
+                  return (
+                    <div key={row.invUid} className="stream-queue-row">
+                      <div className="sq-main">
+                        <span className="sq-idx">{i + 1}</span>
+                        <span className="sq-name">{row.product.icon || '📦'} {s?.name}{row.vintage ? ' 🗝️' : ''} {row.product.type}</span>
+                        <span className="muted sq-pk">{row.product.packs} pk</span>
+                        <button className="sq-x" title="Remove from queue" onClick={() => removeFromQueue(row.invUid)}>✕</button>
+                      </div>
+                      {canBreak && (
+                        <div className="sq-break">
+                          <label className="tweet-toggle" style={{ fontSize: 13 }}>
+                            <input type="checkbox" checked={row.brk.on} onChange={e => patchBreak(row.invUid, { on: e.target.checked })} />
+                            📦 <b>Box break</b> <span className="muted">— sell spots up front</span>
+                          </label>
+                          {row.brk.on && (
+                            <div className="list-pct-row" style={{ marginTop: 6 }}>
+                              <span className="muted" style={{ fontSize: 12 }}>Spots</span>
+                              {[2, 4, 6, 8].map(n => (
+                                <button key={n} className={`pctbtn ${row.brk.spots === n ? 'on' : ''}`} onClick={() => patchBreak(row.invUid, { spots: n })}>{n}</button>
+                              ))}
+                              <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>{fmtMoney(per)}/spot · all sell ⇒ <b style={{ color:'var(--green)' }}>{fmtMoney(per * row.brk.spots)}</b></span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="row" style={{ marginTop: 16, justifyContent: 'center' }}>
-            <button className="btn gold" style={{ maxWidth: 300 }} disabled={!invItem} onClick={go}>
-              🔴 Go live — break your {product?.icon || ''} {product?.type}
+            <button className="btn gold" style={{ maxWidth: 320 }} disabled={!queue.length} onClick={go}>
+              🔴 Go live — rip {queue.length || ''} product{queue.length !== 1 ? 's' : ''} ({totalPacks} pk)
             </button>
           </div>
           <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
-            Expecting ~{expected.toLocaleString()} viewers
-            {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
-            {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
-            {' · costs 1 game-day'}
+            {queue.length === 0
+              ? 'Add at least one product to your queue to go live.'
+              : <>Expecting ~{expected.toLocaleString()} viewers
+                {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
+                {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
+                {' · costs 1 game-day'}</>}
           </p>
         </>
       )}
@@ -176,8 +209,12 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
 }
 
 // --- Live --------------------------------------------------------------------
+// Rips through session.queue back-to-back. Session-wide stats (viewers, tips, hits, hype,
+// followers) accumulate across every product; per-entry state (which pack, this box's break
+// spots) resets as each product finishes. With the Live Rip Service upgrade, viewers place
+// RIP ORDERS mid-stream — accepting pre-pays cash, consumes a held product, and appends it to
+// the queue as a fully-owed single-owner "break" (every card ships to that buyer).
 function LiveStage({ session, notoriety, fatigue, onEnd }) {
-  const { set, product, isBreak, spots, spotsSold, perSpot } = session
   const addPulls = useGame(s => s.addPulls)
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -187,15 +224,27 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const regulars = useGame(s => s.regulars)
   const collection = useGame(s => s.collection)
   const giveawayCard = useGame(s => s.giveawayCard)
+  // Live Rip Service upgrade + its plumbing.
+  const hasRipService = useGame(s => !!s.upgrades.ripService)
+  const collectRipOrder = useGame(s => s.collectRipOrder)
+  const ripSealedAction = useGame(s => s.ripSealed)
   const speed = Math.max(0.25, ripSpeed)
   const ms = (n) => n / speed
 
   // Keep the SFX module in sync with the player's sound/haptics settings.
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
 
-  const totalPacks = product.packs
-  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) * streamDrawMult(set, product))
+  // The rip queue is mutable (rip orders append to it). queueRef is the source of truth for
+  // timer callbacks; queueVer forces re-render when it changes (append / a spot fills).
+  const queueRef = useRef(session.queue.map(e => ({ ...e })))
+  const [queueVer, setQueueVer] = useState(0)
+  const bumpQueue = () => setQueueVer(v => v + 1)
 
+  // The room drifts toward the biggest-draw product's settled viewer count.
+  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) *
+    Math.max(...queueRef.current.map(e => streamDrawMult(e.set, e.product))))
+
+  const [entryIdx, setEntryIdx] = useState(0)
   const [packNo, setPackNo] = useState(0)
   const [phase, setPhase] = useState('idle')        // idle | revealing | packdone
   const [pulls, setPulls] = useState([])
@@ -209,7 +258,6 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [hits, setHits] = useState([])
   const [tips, setTips] = useState(0)
   const [hypeMoments, setHypeMoments] = useState(0)
-  const [filledSpots, setFilledSpots] = useState(spotsSold)   // grows as viewers grab spots live
   const [liveSpotFlash, setLiveSpotFlash] = useState(null)
   const [done, setDone] = useState(false)
   // Hype train (consecutive hits stack a tip multiplier) + a live combo counter.
@@ -220,22 +268,35 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [sessionFollowers, setSessionFollowers] = useState(0)
   const [giveawayOpen, setGiveawayOpen] = useState(false) // the "pick a card to give away" picker
   const [giveaways, setGiveaways] = useState(0)            // how many you've raffled this stream
-  const [goal] = useState(() => pickStreamGoal(product))
+  const [goal] = useState(() => pickStreamGoal(biggestProduct(session.queue)))
   const [goalMet, setGoalMet] = useState(false)
+  const [orders, setOrders] = useState([])                 // pending live rip orders (upgrade only)
 
   const peakRef = useRef(settled)
   const chatBoxRef = useRef(null)
   const finishedRef = useRef(false)
   const autoRef = useRef(false)
+  const idxRef = useRef(0)           // mirror of entryIdx, readable inside timer callbacks
+  const packRef = useRef(0)          // mirror of packNo
+  const phaseRef = useRef('idle')    // mirror of phase
+  const doneRef = useRef(false)      // mirror of done
   const hypeRef = useRef(0)          // mirror of hypeLevel readable inside timer callbacks
+  const entryDoneRef = useRef(new Set()) // entry indices whose promo has been minted (idempotent)
   const regularsRef = useRef([])     // live online-regular roster for chat attribution
-  // every card pulled, tagged with its spot index (for break shipping at the end)
-  const allPulled = useRef([])  // { card, spot }  (spot only set for breaks)
+  // every card pulled, tagged with its entry + break spot (for shipping at the end)
+  const allPulled = useRef([])       // { card, spot, entryIdx }  (spot only set for break/order entries)
   regularsRef.current = (regulars || []).filter(r => !r.flags?.burned)
+
+  // Synced setters: keep the ref mirror and the render state in lockstep so timer callbacks
+  // (which close over stale state) always read the live value from the ref.
+  const setIdxX = (i) => { idxRef.current = i; setEntryIdx(i) }
+  const setPhaseX = (p) => { phaseRef.current = p; setPhase(p) }
+  const setDoneX = (v) => { doneRef.current = v; setDone(v) }
+  const curEntry = () => queueRef.current[idxRef.current]
 
   // Every reveal/burst/tip timer is tracked here so we can cancel the whole chain when the
   // stream ends early or the component unmounts — otherwise an in-flight revealNext keeps
-  // running setState and could fire finishSoon (minting a promo) AFTER cashout/settlement.
+  // running setState and could fire onEntryComplete (minting a promo) AFTER cashout.
   const timersRef = useRef([])
   const after = (fn, delay) => {
     const id = setTimeout(() => { timersRef.current = timersRef.current.filter(t => t !== id); fn() }, delay)
@@ -260,8 +321,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 
   // ambient chat + viewer drift toward settled. Depend on `speed` (a number), NOT `ms` —
   // `ms` is re-created every render, which would tear down and recreate this interval on
-  // every reveal tick, resetting the 1600ms timer before it can fire (stalling ambient
-  // chat/drift during the busiest part of the stream).
+  // every reveal tick, resetting the 1600ms timer before it can fire.
   useEffect(() => {
     const id = setInterval(() => {
       if (Math.random() < 0.7) pushChat(chatLine('ambient'))
@@ -277,40 +337,71 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 
   useEffect(() => { const el = chatBoxRef.current; if (el) el.scrollTop = el.scrollHeight }, [chat])
 
-  // auto-advance between packs when the setting is on
+  // Live rip orders: while live with the upgrade (and product still on hand), viewers roll in
+  // requests to have you crack a held product for them. Frequency scales with the crowd.
   useEffect(() => {
-    if (!autoAdvance) return
+    if (!hasRipService) return
+    const id = setInterval(() => {
+      if (doneRef.current || finishedRef.current) return
+      setOrders(prev => {
+        if (prev.length >= 3) return prev
+        const pendingUids = new Set(prev.map(o => o.invUid))
+        const held = (useGame.getState().sealedInventory || []).filter(it => !pendingUids.has(it.uid))
+        if (!held.length) return prev
+        const chance = Math.min(0.6, 0.12 + peakRef.current / 4000) // bigger room ⇒ more orders
+        if (Math.random() > chance) return prev
+        const order = rollRipOrder(held, notoriety, setById)
+        if (!order) return prev
+        pushChat({ handle: order.buyer, text: `yo can you rip my ${order.product.type}? 🎟️ paying ${fmtMoney(order.price)}` })
+        return [...prev, order]
+      })
+    }, 5200 / speed)
+    return () => clearInterval(id)
+  }, [hasRipService, speed, notoriety, pushChat])
+
+  // auto-advance between packs / into the next product when the setting is on
+  useEffect(() => {
+    if (!autoAdvance || done) return
+    const entry = queueRef.current[entryIdx]
+    const totalPacks = entry ? entry.product.packs : 0
     if (phase === 'packdone' && packNo < totalPacks) {
       const t = setTimeout(() => ripPack(), ms(1400)); return () => clearTimeout(t)
     }
-    if (phase === 'idle' && packNo === 0 && !autoRef.current) {
+    if (phase === 'packdone' && packNo >= totalPacks && entryIdx < queueRef.current.length - 1) {
+      const t = setTimeout(() => goNextEntry(), ms(1400)); return () => clearTimeout(t)
+    }
+    if (phase === 'idle' && packNo === 0 && entryIdx === 0 && !autoRef.current) {
       autoRef.current = true
       const t = setTimeout(() => ripPack(), ms(700)); return () => clearTimeout(t)
     }
-  }, [phase, packNo, autoAdvance]) // eslint-disable-line
+  }, [phase, packNo, entryIdx, autoAdvance, done]) // eslint-disable-line
 
-  const canRip = (phase === 'idle' || phase === 'packdone') && !done && packNo < totalPacks
-  // spot index a pull lands on (round-robin across spots, in global pull order)
-  const spotOwners = isBreak ? buildSpotOwners(spots) : null
+  const entry = queueRef.current[entryIdx]           // current product being ripped (render)
+  const totalPacks = entry ? entry.product.packs : 0
+  const hasNextEntry = entryIdx < queueRef.current.length - 1
+  const canRipPack = (phase === 'idle' || phase === 'packdone') && !done && packNo < totalPacks
+  const atEntryEnd = phase === 'packdone' && packNo >= totalPacks && !done && hasNextEntry
 
   function ripPack() {
-    if (!canRip) return
-    const cards = openPack(set)
+    if (phaseRef.current === 'revealing' || doneRef.current) return
+    const e = curEntry()
+    if (!e || packRef.current >= e.product.packs) return
+    const cards = openPack(e.set)
     preloadCardImages(cards) // warm the CDN cache so the live reveal doesn't lag on slow images
     cards.forEach(c => { c._isHit = isHit(c) })
     const god = !!cards._god
     const demigod = !!cards._demigod
     if (god) cards.forEach(c => { c._fromGod = true })
     if (demigod) cards.forEach(c => { c._fromDemigod = true })
-    addPulls(cards, `🔴 ${set.name} (live)`)
-    // tag each card with its break-spot (global index keeps round-robin fair across packs)
-    if (isBreak) {
-      const startIdx = allPulled.current.length
-      cards.forEach((c, i) => allPulled.current.push({ card: c, spot: (startIdx + i) % spots }))
+    addPulls(cards, `🔴 ${e.set.name} (live)`)
+    const idx = idxRef.current
+    if (e.isBreak) {
+      const startIdx = allPulled.current.filter(p => p.entryIdx === idx).length
+      cards.forEach((c, i) => allPulled.current.push({ card: c, spot: (startIdx + i) % e.spots, entryIdx: idx }))
     } else {
-      cards.forEach(c => allPulled.current.push({ card: c, spot: null }))
+      cards.forEach(c => allPulled.current.push({ card: c, spot: null, entryIdx: idx }))
     }
-    setIsGod(god); setIsDemigod(demigod); setPulls(cards); setShown(0); setCurrent(null); setPhase('revealing')
+    setIsGod(god); setIsDemigod(demigod); setPulls(cards); setShown(0); setCurrent(null); setPhaseX('revealing')
     after(() => revealNext(cards, 0), ms(god ? 1100 : 500))
   }
 
@@ -319,8 +410,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     if (i >= cards.length) {
       if (cards._god) { setBurst(true); sfxGod(); after(() => setBurst(false), ms(2500)) }
       else if (cards._demigod) { setBurst(true); sfxGod(); after(() => setBurst(false), ms(1500)) }
-      setPackNo(n => { const np = n + 1; if (np >= totalPacks) finishSoon(); return np })
-      setPhase('packdone'); return
+      const tp = curEntry().product.packs
+      setPackNo(n => { const np = n + 1; packRef.current = np; if (np >= tp) onEntryComplete(); return np })
+      setPhaseX('packdone'); return
     }
     setShown(i + 1)
     const c = cards[i]; setCurrent(c)
@@ -357,31 +449,86 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     after(() => revealNext(cards, i + 1), ms(delay))
   }
 
-  // On a hype pull, viewers may scramble for a still-open break spot.
-  function maybeSellLiveSpot(card) {
-    if (!isBreak) return
-    setFilledSpots(f => {
-      if (f >= spots) return f
-      // chance scales with how hot the pull is + your fame
-      const chance = (card._fromGod ? 0.9 : 0.5) * (0.5 + Math.min(0.5, notoriety / 200))
-      if (Math.random() < chance) {
-        useGame.getState().sellLiveSpot(perSpot)
-        setLiveSpotFlash({ id: Date.now() })
-        after(() => setLiveSpotFlash(null), 2200)
-        pushChat({ handle: 'system', text: `someone grabbed an open spot! 📦 (+${fmtMoney(perSpot)})`, tip: true })
-        return f + 1
-      }
-      return f
-    })
+  // The current product's last pack just finished. Mint its guaranteed promo (once), and if it
+  // was the LAST product in the queue, mark the stream done. Otherwise the player rips the next
+  // product (button, or the auto-advance effect).
+  function onEntryComplete() {
+    const idx = idxRef.current
+    if (entryDoneRef.current.has(idx)) return // idempotent (setPackNo updater can double-run)
+    entryDoneRef.current.add(idx)
+    const e = curEntry()
+    const promo = makeProductPromo(e.set, e.product || { bonus: null })
+    if (promo) {
+      promo._isHit = isHit(promo)
+      addPulls([promo], `🔴 ${e.set.name} promo (live)`, 0)
+      const startIdx = allPulled.current.filter(p => p.entryIdx === idx).length
+      allPulled.current.push({ card: promo, spot: e.isBreak ? startIdx % e.spots : null, entryIdx: idx })
+      if (promo._isHit || promo.foil) setHits(h => [promo, ...h])
+      pushChat(chatLine(reactionKind(promo), Math.random, promo))
+    }
+    if (idx >= queueRef.current.length - 1) setDoneX(true) // whole queue finished
   }
 
-  // Cards a break buyer already paid for (on a filled spot) can't be given away — they ship
-  // to that buyer at the end. Everything else you own is fair game for a raffle.
-  const reservedUids = new Set(allPulled.current.filter(p => p.spot != null && p.spot < filledSpots).map(p => p.card.uid))
+  // Move to the next queued product and start ripping it (keeps the broadcast continuous).
+  function goNextEntry() {
+    if (finishedRef.current) return
+    const next = idxRef.current + 1
+    if (next >= queueRef.current.length) return
+    setIdxX(next)
+    packRef.current = 0; setPackNo(0)
+    setPulls([]); setShown(0); setCurrent(null); setIsGod(false); setIsDemigod(false)
+    setPhaseX('idle')
+    if (doneRef.current) setDoneX(false) // an accepted rip order re-opened the queue
+    after(() => ripPack(), ms(300))
+  }
 
-  // Raffle ANY card you own to a lucky viewer — a follower pop + chat frenzy. A pricier
-  // giveaway lands a bigger crowd. Repeatable all stream long (generosity feeds the loyalty
-  // loop). `uid` comes from the giveaway picker.
+  // On a hype pull, viewers may scramble for a still-open break spot (not for rip orders —
+  // those are a single fully-owed spot).
+  function maybeSellLiveSpot(card) {
+    const e = curEntry()
+    if (!e || !e.isBreak || e.orderedBy) return
+    if (e.filled >= e.spots) return
+    const chance = (card._fromGod ? 0.9 : 0.5) * (0.5 + Math.min(0.5, notoriety / 200))
+    if (Math.random() < chance) {
+      e.filled += 1
+      useGame.getState().sellLiveSpot(e.perSpot)
+      setLiveSpotFlash({ id: Date.now() })
+      after(() => setLiveSpotFlash(null), 2200)
+      pushChat({ handle: 'system', text: `someone grabbed an open spot! 📦 (+${fmtMoney(e.perSpot)})`, tip: true })
+      bumpQueue()
+    }
+  }
+
+  // Accept a live rip order: the buyer pre-pays now, the held product is consumed, and it's
+  // appended to the queue as a fully-owed single-owner break (all its cards ship to them).
+  function acceptOrder(order) {
+    if (done || finishedRef.current) return
+    const it = ripSealedAction(order.invUid)
+    if (!it) { setOrders(o => o.filter(x => x.id !== order.id)); return toast('That product just left your inventory.') }
+    collectRipOrder(order.price, order.buyer, order.product.type)
+    const set = setById(order.setId) || it.setId && setById(it.setId) || SHOP_SETS[0]
+    queueRef.current = [...queueRef.current, {
+      set, product: order.product, isBreak: true, spots: 1, spotsSold: 1, filled: 1,
+      perSpot: order.price, spotGross: order.price, owners: [order.buyer], orderedBy: order.buyer,
+    }]
+    setOrders(o => o.filter(x => x.id !== order.id))
+    bumpQueue()
+    pushChat({ handle: 'system', text: `✅ accepted ${order.buyer}'s rip order — ${order.product.type} added to the queue`, tip: true })
+    // If the queue had already wrapped, re-open it and flow into the new product.
+    if (doneRef.current) goNextEntry()
+  }
+  function declineOrder(id) { setOrders(o => o.filter(x => x.id !== id)) }
+
+  // Cards owed to a filled break spot / rip-order buyer (across every entry) can't be given
+  // away — they ship at the end. Everything else you own is fair game for a raffle.
+  const reservedUids = new Set(
+    allPulled.current
+      .filter(p => p.spot != null && p.spot < queueRef.current[p.entryIdx].filled)
+      .map(p => p.card.uid)
+  )
+
+  // Raffle ANY card you own to a lucky viewer — a follower pop + chat frenzy. `uid` comes from
+  // the giveaway picker.
   function runGiveaway(uid) {
     if (done || finishedRef.current) return
     const res = giveawayCard(uid, peakRef.current)
@@ -408,68 +555,70 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     }
   }, [hits, hypeLevel, goal, goalMet, pushChat])
 
-  function finishSoon() {
-    if (finishedRef.current) return // already cashed out — don't add a promo after the fact
-    const promo = makeProductPromo(set, product || { bonus: null })
-    if (promo) {
-      promo._isHit = isHit(promo)
-      addPulls([promo], `🔴 ${set.name} promo (live)`, 0)
-      // spots is always ≥2 for a break, but guard the modulo against a 0 just in case
-      allPulled.current.push({ card: promo, spot: isBreak && spots > 0 ? allPulled.current.length % spots : null })
-      if (promo._isHit || promo.foil) setHits(h => [promo, ...h])
-      pushChat(chatLine(reactionKind(promo), Math.random, promo))
-    }
-    setDone(true)
-  }
-
-  // Skip the slog: instantly rip every remaining pack into the collection (no
-  // animation), tallying viewers/tips/hits/spot-fills, then jump to the wrap-up.
-  // For a big box this turns 30+ clicks into one.
+  // Skip the slog: instantly rip every remaining pack across ALL remaining queued products
+  // (no animation), tallying viewers/tips/hits/spot-fills, then jump to the wrap-up.
   function skipRest() {
-    if (done) return
-    const remaining = totalPacks - packNo - (phase === 'revealing' ? 1 : 0)
-    let addedTips = 0, addedHits = [], hype = 0, spotGain = 0
-    // Track the LIVE filled-spot count (seeded from current state), not the stale initial
-    // `spotsSold` prop — spots already grabbed during the animated reveal must count, or
-    // skip would sell (and bank cash for) more spots than the break holds.
-    let filled = filledSpots
+    if (done || finishedRef.current) return
+    let addedTips = 0, hype = 0
+    const addedHits = []
     let v = peakRef.current
-    for (let p = 0; p < Math.max(0, remaining); p++) {
-      const cards = openPack(set)
-      cards.forEach(c => { c._isHit = isHit(c) })
-      if (cards._god) cards.forEach(c => { c._fromGod = true })
-      if (cards._demigod) cards.forEach(c => { c._fromDemigod = true })
-      addPulls(cards, `🔴 ${set.name} (live)`)
-      cards.forEach((c, i) => {
-        if (isBreak) allPulled.current.push({ card: c, spot: (allPulled.current.length) % spots })
-        else allPulled.current.push({ card: c, spot: null })
-        v = Math.max(1, Math.round(v * viewerReaction(c)))
-        peakRef.current = Math.max(peakRef.current, v)
-        const kind = reactionKind(c)
-        if (kind === 'hype' || kind === 'god') {
-          hype++
-          if (isBreak && filled < spots && Math.random() < (c._fromGod ? 0.9 : 0.5)) {
-            filled++; spotGain++; useGame.getState().sellLiveSpot(perSpot)
+    for (let idx = idxRef.current; idx < queueRef.current.length; idx++) {
+      const e = queueRef.current[idx]
+      // packs already ripped in the CURRENT entry (later entries start fresh)
+      const already = idx === idxRef.current ? (packRef.current + (phaseRef.current === 'revealing' ? 1 : 0)) : 0
+      const remaining = Math.max(0, e.product.packs - already)
+      for (let p = 0; p < remaining; p++) {
+        const cards = openPack(e.set)
+        cards.forEach(c => { c._isHit = isHit(c) })
+        if (cards._god) cards.forEach(c => { c._fromGod = true })
+        if (cards._demigod) cards.forEach(c => { c._fromDemigod = true })
+        addPulls(cards, `🔴 ${e.set.name} (live)`)
+        cards.forEach((c) => {
+          const startIdx = allPulled.current.filter(pp => pp.entryIdx === idx).length
+          allPulled.current.push({ card: c, spot: e.isBreak ? startIdx % e.spots : null, entryIdx: idx })
+          v = Math.max(1, Math.round(v * viewerReaction(c)))
+          peakRef.current = Math.max(peakRef.current, v)
+          const kind = reactionKind(c)
+          if (kind === 'hype' || kind === 'god') {
+            hype++
+            if (e.isBreak && !e.orderedBy && e.filled < e.spots && Math.random() < (c._fromGod ? 0.9 : 0.5)) {
+              e.filled++; useGame.getState().sellLiveSpot(e.perSpot)
+            }
           }
+          // keep the hype train rolling through the skip so its tip multiplier still applies
+          const good = kind === 'hit' || kind === 'hype' || kind === 'god' || kind === 'demigod'
+          hypeRef.current = good
+            ? Math.min(HYPE_TRAIN_MAX, hypeRef.current + (kind === 'god' ? 3 : (kind === 'hype' || kind === 'demigod') ? 2 : 1))
+            : Math.max(0, hypeRef.current - 1)
+          addedTips += tipsFor(c, peakRef.current, Math.random, hypeTrainMult(hypeRef.current))
+          if (c._isHit || c.foil) addedHits.push(c)
+        })
+      }
+      // mint this product's guaranteed promo (once)
+      if (!entryDoneRef.current.has(idx)) {
+        entryDoneRef.current.add(idx)
+        const promo = makeProductPromo(e.set, e.product || { bonus: null })
+        if (promo) {
+          promo._isHit = isHit(promo)
+          addPulls([promo], `🔴 ${e.set.name} promo (live)`, 0)
+          const startIdx = allPulled.current.filter(pp => pp.entryIdx === idx).length
+          allPulled.current.push({ card: promo, spot: e.isBreak ? startIdx % e.spots : null, entryIdx: idx })
+          if (promo._isHit || promo.foil) addedHits.push(promo)
         }
-        // keep the hype train rolling through the skip so its tip multiplier still applies
-        const good = kind === 'hit' || kind === 'hype' || kind === 'god' || kind === 'demigod'
-        hypeRef.current = good
-          ? Math.min(HYPE_TRAIN_MAX, hypeRef.current + (kind === 'god' ? 3 : (kind === 'hype' || kind === 'demigod') ? 2 : 1))
-          : Math.max(0, hypeRef.current - 1)
-        addedTips += tipsFor(c, peakRef.current, Math.random, hypeTrainMult(hypeRef.current))
-        if (c._isHit || c.foil) addedHits.push(c)
-      })
+      }
     }
     if (addedTips) setTips(x => Math.round((x + addedTips) * 100) / 100)
     if (hype) setHypeMoments(m => m + hype)
     setHypeLevel(hypeRef.current)
-    if (spotGain) setFilledSpots(f => Math.min(spots, f + spotGain))
     if (addedHits.length) setHits(h => [...addedHits.reverse(), ...h])
     setViewers(Math.round(v))
-    setPackNo(totalPacks)
+    const last = queueRef.current.length - 1
+    setIdxX(last)
+    packRef.current = queueRef.current[last].product.packs
+    setPackNo(packRef.current)
+    bumpQueue()
     pushChat({ handle: 'system', text: 'ripped the rest off-stream ⏩', tip: false })
-    finishSoon()
+    setDoneX(true)
   }
 
   function endStream() {
@@ -482,33 +631,53 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     // bonuses. A flop earns none of the base. The store applies the whole gain at once.
     const flopped = isFlop(peak)
     const followerGain = followersGained(peak, hypeMoments, flopped) + sessionFollowers
-    // breaks: ship the cards that landed on FILLED spots; keep the rest (your teams)
-    let shipped = 0, keptHits = hits
-    if (isBreak) {
-      const shipUids = allPulled.current.filter(p => p.spot < filledSpots).map(p => p.card.uid)
-      shipped = useGame.getState().shipBreakCards(shipUids)
-      const shipSet = new Set(shipUids)
-      keptHits = hits.filter(h => !shipSet.has(h.uid))
-    }
+    // Ship every owed card (filled break spots + full rip orders) across all entries.
+    const shipUids = allPulled.current
+      .filter(p => p.spot != null && p.spot < queueRef.current[p.entryIdx].filled)
+      .map(p => p.card.uid)
+    const shipped = shipUids.length ? useGame.getState().shipBreakCards(shipUids) : 0
+    const shipSet = new Set(shipUids)
+    const keptHits = hits.filter(h => !shipSet.has(h.uid))
     useGame.getState().endStream({ tips, noto, peakViewers: peak, followers: followerGain })
     // A solid (non-flop) stream can win you a new online regular — streaming feeds the loyalty loop.
-    if (!flopped && noto > 0) useGame.getState().formRegular({ channel: 'online', setId: set.id, setName: set.name, generous: hypeMoments > 0 })
-    onEnd({ peak, noto, tips, hits: keptHits, packsRipped: totalPacks, isBreak,
-      spotsSold: filledSpots, spots, spotGross: Math.round(filledSpots * perSpot * 100) / 100,
-      shipped, set, product, followers: followerGain })
+    if (!flopped && noto > 0) {
+      const s0 = queueRef.current[0].set
+      useGame.getState().formRegular({ channel: 'online', setId: s0.id, setName: s0.name, generous: hypeMoments > 0 })
+    }
+    const breakEntries = queueRef.current.filter(e => e.isBreak && !e.orderedBy)
+    const orderEntries = queueRef.current.filter(e => e.orderedBy)
+    onEnd({
+      peak, noto, tips, hits: keptHits,
+      packsRipped: queueRef.current.reduce((a, e) => a + e.product.packs, 0),
+      products: queueRef.current.length,
+      isBreak: breakEntries.length > 0,
+      spots: breakEntries.reduce((a, e) => a + e.spots, 0),
+      spotsSold: breakEntries.reduce((a, e) => a + e.filled, 0),
+      spotGross: Math.round(breakEntries.reduce((a, e) => a + e.filled * e.perSpot, 0) * 100) / 100,
+      breakCost: Math.round(breakEntries.reduce((a, e) => a + (e.product.price || 0), 0) * 100) / 100,
+      orderCount: orderEntries.length,
+      orderRevenue: Math.round(orderEntries.reduce((a, e) => a + e.perSpot, 0) * 100) / 100,
+      shipped,
+      set: queueRef.current[0].set, product: queueRef.current[0].product,
+      followers: followerGain,
+    })
   }
 
   const flopping = isFlop(viewers)
-  // Running net so the player sees if the stream is in the black. What's come IN:
-  //   tips (always) + spot cash (breaks only) + the MARKET VALUE OF CARDS YOU KEEP.
-  // When ripping for yourself (no break) every card you pull is yours, so the box's
-  // pull value counts toward your net. In a break, cards on FILLED spots ship to buyers
-  // (already paid for via spot cash), so only the cards on unfilled spots are yours to keep.
-  const spotCash = isBreak ? Math.round(filledSpots * perSpot * 100) / 100 : 0
-  const keptValue = Math.round(allPulled.current.reduce((a, p) =>
-    a + ((isBreak && p.spot != null && p.spot < filledSpots) ? 0 : cardValue(p.card)), 0) * 100) / 100
-  const net = Math.round((tips + spotCash + keptValue - product.price) * 100) / 100
-  const progressPct = Math.round((Math.min(packNo, totalPacks) / totalPacks) * 100)
+  // Running net so the player sees if the stream is in the black. What's come IN across the
+  // whole queue: tips + collected spot/order cash + the MARKET VALUE OF CARDS YOU KEEP (cards
+  // not shipped to a break/order buyer), minus every product's cost.
+  const collectedCash = Math.round(queueRef.current.reduce((a, e) => a + e.filled * e.perSpot, 0) * 100) / 100
+  const keptValue = Math.round(allPulled.current.reduce((a, p) => {
+    const e = queueRef.current[p.entryIdx]
+    const shipping = p.spot != null && p.spot < e.filled
+    return a + (shipping ? 0 : cardValue(p.card))
+  }, 0) * 100) / 100
+  const totalCost = Math.round(queueRef.current.reduce((a, e) => a + (e.product.price || 0), 0) * 100) / 100
+  const net = Math.round((tips + collectedCash + keptValue - totalCost) * 100) / 100
+  const packsDone = queueRef.current.slice(0, entryIdx).reduce((a, e) => a + e.product.packs, 0) + Math.min(packNo, totalPacks)
+  const totalPacksAll = queueRef.current.reduce((a, e) => a + e.product.packs, 0)
+  const progressPct = Math.round((packsDone / Math.max(1, totalPacksAll)) * 100)
 
   return (
     <div className="stream-live">
@@ -527,16 +696,19 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         )}
         {keptValue > 0 && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}
           title="Market value of the cards you're keeping from this rip">🃏 {fmtMoney(keptValue)} kept</span>}
-        {isBreak && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>📦 Break · {filledSpots}/{spots} spots</span>}
-        <span className="pill" title={isBreak
-            ? 'Tips + spot cash + value of cards you keep (unfilled spots), minus the box cost'
-            : 'Tips + market value of every card you rip, minus the box cost'}
+        {entry && entry.orderedBy && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>🎟️ Rip order · {entry.orderedBy}</span>}
+        {entry && entry.isBreak && !entry.orderedBy && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>📦 Break · {entry.filled}/{entry.spots} spots</span>}
+        <span className="pill" title={entry && entry.isBreak
+            ? 'Tips + spot/order cash + value of cards you keep, minus product cost'
+            : 'Tips + market value of every card you rip, minus product cost'}
           style={{ background: net >= 0 ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>
           Net {net >= 0 ? '+' : ''}{fmtMoney(net)}
         </span>
-        <span className="pill" style={{ marginLeft:'auto' }}>📦 Pack {Math.min(packNo + (phase==='revealing'?1:0), totalPacks)}/{totalPacks}</span>
+        <span className="pill" style={{ marginLeft:'auto' }} title={entry ? `${entry.product.type} · ${entry.set.name}` : ''}>
+          📦 {entry ? entry.product.type : ''} · {entryIdx + 1}/{queueRef.current.length} · pk {Math.min(packNo + (phase==='revealing'?1:0), totalPacks)}/{totalPacks}
+        </span>
       </div>
-      {totalPacks > 1 && (
+      {totalPacksAll > 1 && (
         <div className="stream-progress" aria-hidden="true"><div style={{ width: progressPct + '%' }} /></div>
       )}
 
@@ -562,8 +734,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 role="button" tabIndex={0} aria-label="Rip the first pack live"
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ripPack() } }}>
                 <div className="foil" />
-                {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
-                <span className="hint">▶ Rip the first pack live</span>
+                {entry?.set.logo ? <img className="logo" src={entry.set.logo} alt={entry.set.name} /> : <b>{entry?.set.name}</b>}
+                <span className="hint">▶ Rip {entryIdx === 0 ? 'the first pack' : `${entry?.product.type}`} live</span>
               </div>
             </div>
           )}
@@ -575,10 +747,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 {pulls.map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')
-                  // this card's global spot (for the break ship tag)
+                  // this card's spot within the CURRENT entry (for the ship tag)
                   const gp = allPulled.current.find(p => p.card.uid === c.uid)
                   const spotIdx = gp ? gp.spot : null
-                  const owner = spotIdx != null ? (spotIdx < filledSpots ? spotOwners[spotIdx] : 'YOU') : null
+                  const owner = spotIdx != null ? (spotIdx < entry.filled ? (entry.owners[spotIdx] || 'buyer') : 'YOU') : null
                   return (
                     <div key={c.uid} style={{ position:'relative' }}>
                       <HoloCard card={c} interactive={i < shown} extraStyle={{ '--rarity': edge }}
@@ -601,12 +773,17 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           )}
 
           <div className="stream-actions">
-            {canRip && pulls.length > 0 && (
+            {canRipPack && pulls.length > 0 && (
               <button className="btn gold" style={{ maxWidth: 220 }} disabled={phase === 'revealing'} onClick={ripPack}>Rip next pack ({packNo + 1}/{totalPacks}) →</button>
             )}
-            {!done && (totalPacks - packNo) >= 2 && phase !== 'revealing' && (
-              <button className="btn alt" style={{ flex:'none', maxWidth: 200 }} onClick={skipRest}>
-                ⏩ Skip to end ({totalPacks - packNo} left)
+            {atEntryEnd && (
+              <button className="btn gold" style={{ maxWidth: 260 }} onClick={goNextEntry}>
+                Next product → {queueRef.current[entryIdx + 1]?.product.icon || '📦'} {queueRef.current[entryIdx + 1]?.product.type}
+              </button>
+            )}
+            {!done && (totalPacksAll - packsDone) >= 2 && phase !== 'revealing' && (
+              <button className="btn alt" style={{ flex:'none', maxWidth: 210 }} onClick={skipRest}>
+                ⏩ Skip to end ({totalPacksAll - packsDone} pk left)
               </button>
             )}
             {!done && (
@@ -618,6 +795,21 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             {done && <button className="btn gold" style={{ maxWidth: 240 }} onClick={endStream}>End stream & cash out →</button>}
             {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endStream}>End early</button>}
           </div>
+
+          {hasRipService && orders.length > 0 && (
+            <div className="rip-orders">
+              <div className="rip-side-head">🎟️ Rip orders <span className="muted">— viewers paying you to crack it live (you keep the markup; cards ship to them)</span></div>
+              {orders.map(o => (
+                <div key={o.id} className="rip-order">
+                  <b className="ro-buyer" style={{ color: handleColor(o.buyer) }}>{o.buyer}</b>
+                  <span className="ro-prod">{o.product.icon || '📦'} {o.product.type}</span>
+                  <span className="ro-price">{fmtMoney(o.price)}</span>
+                  <button className="btn gold ro-btn" disabled={done} onClick={() => acceptOrder(o)}>Accept</button>
+                  <button className="btn alt ro-btn" onClick={() => declineOrder(o.id)}>Pass</button>
+                </div>
+              ))}
+            </div>
+          )}
 
           {hits.length > 0 && (
             <div className="stream-hits">
@@ -735,28 +927,31 @@ function StreamSummary({ session, onDone }) {
   const s = session?.summary
   if (!s) { onDone(); return null }
   const hitValue = s.hits.reduce((a, c) => a + cardValue(c), 0)
-  const breakPL = s.isBreak ? Math.round((s.spotGross - s.product.price) * 100) / 100 : null
+  const breakPL = s.isBreak ? Math.round((s.spotGross - (s.breakCost || 0)) * 100) / 100 : null
   const flopped = isFlop(s.peak)
   return (
     <div className="stage">
       <div style={{ textAlign:'center', maxWidth: 520 }}>
         <h2 style={{ marginBottom: 4 }}>{flopped ? '🦗 Stream over — quiet one.' : '📴 Stream over — GG!'}</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-          {s.packsRipped} pack{s.packsRipped>1?'s':''} of {s.set.name}{flopped ? ' to a near-empty room.' : ', ripped live for the people.'}
+          {s.packsRipped} pack{s.packsRipped>1?'s':''} across {s.products || 1} product{(s.products||1)>1?'s':''} of {s.set.name}{s.products>1?' & more':''}{flopped ? ', to a near-empty room.' : ', ripped live for the people.'}
         </p>
         <div className="stream-summary-grid">
           <div><span className="muted">Peak viewers</span><b>👁 {s.peak.toLocaleString()}</b></div>
           <div><span className="muted">Tips banked</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.tips)}</b></div>
           <div><span className="muted">Notoriety</span><b style={{ color: s.noto >= 0 ? 'var(--gold)' : 'var(--red)' }}>{s.noto>=0?'+':''}{s.noto}★</b></div>
+          <div><span className="muted">Products ripped</span><b>📦 {s.products || 1}</b></div>
           <div><span className="muted">Your hits kept</span><b>{s.hits.length} · {fmtMoney(hitValue)}</b></div>
-          {s.isBreak && <div><span className="muted">Spots sold</span><b>{s.spotsSold}/{s.spots}</b></div>}
+          {s.isBreak && <div><span className="muted">Break spots sold</span><b>{s.spotsSold}/{s.spots}</b></div>}
           {s.isBreak && <div><span className="muted">Break P/L</span><b style={{ color: breakPL >= 0 ? 'var(--green)' : 'var(--red)' }}>{breakPL>=0?'+':''}{fmtMoney(breakPL)}</b></div>}
+          {s.orderCount > 0 && <div><span className="muted">Rip orders filled</span><b>🎟️ {s.orderCount}</b></div>}
+          {s.orderCount > 0 && <div><span className="muted">Rip order revenue</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.orderRevenue)}</b></div>}
           {s.followers > 0 && <div><span className="muted">New followers</span><b style={{ color:'var(--accent-light)' }}>👥 +{s.followers}</b></div>}
         </div>
         <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
           {s.noto > 0 ? '🔥 Your shop is buzzing — listing traffic is boosted for the next few days. Hop to the Sell tab.'
             : '😬 Barely anyone watched — no afterglow this time. Build some buzz before going live again.'}
-          {s.isBreak && s.shipped > 0 && ` Shipped ${s.shipped} card${s.shipped>1?'s':''} to spot-holders; unsold-spot cards are in your collection.`}
+          {s.shipped > 0 && ` Shipped ${s.shipped} card${s.shipped>1?'s':''} to break/rip-order buyers; everything else is in your collection.`}
           {' · A day passed while you streamed.'}
         </p>
         <button className="btn gold" style={{ maxWidth: 200, marginTop: 12 }} onClick={onDone}>Done →</button>
@@ -766,7 +961,10 @@ function StreamSummary({ session, onDone }) {
 }
 
 // --- helpers -----------------------------------------------------------------
-function bestProduct(products) { return [...products].sort((a, b) => (b.packs - a.packs) || (b.price - a.price))[0] }
+// The biggest product in a queue (most packs, then priciest) — used to size the stream goal.
+function biggestProduct(queue) {
+  return queue.map(e => e.product).sort((a, b) => (b.packs - a.packs) || (b.price - a.price))[0]
+}
 // Pick a per-stream goal (a small objective that pays followers when met). Sized to the
 // product so a bigger box asks for a bit more.
 function pickStreamGoal(product) {

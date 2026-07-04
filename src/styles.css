@@ -1086,6 +1086,28 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .stream-goal.met { background:#36d39914; border-color:#36d39955; }
 .stream-goal b { font-weight:800; }
 
+/* Setup: the rip queue you build before going live. */
+.stream-queue { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+.stream-queue-row { background:#0c0f1a; border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
+.stream-queue-row .sq-main { display:flex; align-items:center; gap:8px; }
+.sq-idx { flex:none; width:20px; height:20px; border-radius:999px; background:var(--accent2); color:#061018;
+  font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.sq-name { font-weight:700; font-size:13.5px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sq-pk { flex:none; font-size:12px; }
+.sq-x { flex:none; margin-left:auto; background:none; border:1px solid var(--line); color:var(--red);
+  border-radius:7px; width:24px; height:24px; cursor:pointer; font-size:12px; line-height:1; }
+.sq-x:hover { background:#ff6b6b1a; }
+.sq-break { margin-top:6px; padding-top:6px; border-top:1px dashed var(--line); }
+
+/* Live: incoming rip orders (Live Rip Service upgrade). */
+.rip-orders { background:#0c0f1a; border:1px solid var(--gold); border-radius:12px; padding:10px 12px; margin-top:4px; }
+.rip-order { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:6px 0; border-top:1px solid var(--line); }
+.rip-order:first-of-type { border-top:none; }
+.rip-order .ro-buyer { font-weight:800; font-size:13px; }
+.rip-order .ro-prod { font-size:13px; }
+.rip-order .ro-price { margin-left:auto; font-weight:800; color:var(--green); }
+.rip-order .ro-btn { flex:none; max-width:90px; padding:5px 12px; font-size:13px; }
+
 .stream-summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:14px 0; text-align:left; }
 .stream-summary-grid > div { background:#0c0f1a; border:1px solid var(--line); border-radius:10px; padding:8px 12px;
   display:flex; flex-direction:column; gap:2px; }

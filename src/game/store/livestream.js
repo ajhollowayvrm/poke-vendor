@@ -22,6 +22,24 @@ export function createLivestreamSlice(set, get) {
       get().log('stream', `Sold break spots for $${round2(gross).toFixed(2)} up front`, round2(gross))
       return round2(gross)
     },
+    // A viewer places a LIVE RIP ORDER (needs the Live Rip Service upgrade): they pre-pay a
+    // premium to have you crack a product you hold on camera, and every card ships to them at
+    // settlement. You bank the price NOW and keep it no matter what gets pulled — the markup is
+    // your edge. The product itself is consumed from inventory by the caller (ripSealed), and
+    // the pull cards are shipped via shipBreakCards when the order's queue entry finishes.
+    collectRipOrder(price, buyer, productType) {
+      if (!price || price <= 0) return 0
+      const gross = round2(price)
+      get().earn(gross)
+      set(s => ({ streamStats: {
+        ...s.streamStats,
+        ripOrders: (s.streamStats?.ripOrders || 0) + 1,
+        ripRevenue: round2((s.streamStats?.ripRevenue || 0) + gross),
+      } }))
+      get().log('stream', `🎟️ ${buyer || 'A viewer'} ordered a live rip of a ${productType || 'product'} — +$${gross.toFixed(2)} (ships to them)`, gross)
+      return gross
+    },
+
     // Current audience freshness multiplier (1 = fresh, lower = streamed recently).
     // The UI uses it to preview expected viewers before going live.
     streamFreshness() { return fatigueMult(get().streamFatigue || 0) },
@@ -76,6 +94,7 @@ export function createLivestreamSlice(set, get) {
         streamFatigue: (s.streamFatigue || 0) + 1,
         followers: Math.max(0, (s.followers || 0) + followers), // returning audience grows
         streamStats: {
+          ...s.streamStats, // carry ripOrders/ripRevenue (banked live) through untouched
           streams: (s.streamStats?.streams || 0) + 1,
           tips: round2((s.streamStats?.tips || 0) + tips),
           peakViewers: Math.max(s.streamStats?.peakViewers || 0, Math.round(peakViewers)),
