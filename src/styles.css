@@ -90,6 +90,10 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .brand b { color: var(--accent); }
 .cash { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 800; font-size: 22px; color: var(--green); }
 .cash small { color: var(--dim); font-weight: 600; font-size: 12px; display:block; text-align:right;}
+/* Net worth sits beside cash — the stable "total worth" figure. Styled as a secondary
+   readout (smaller, cooler colour) so cash-on-hand stays the headline number. */
+.worth { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 18px; color: var(--accent-light); cursor: help; }
+.worth small { color: var(--dim); font-weight: 600; font-size: 11px; display:block; text-align:right; }
 .tabs { display: flex; gap: 6px; overflow-x: auto; flex: 1 1 auto; min-width: 0;
   scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
 .tabs::-webkit-scrollbar { height: 6px; }
@@ -843,12 +847,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   body { background: var(--bg); }
   .topbar { gap: 8px; padding: 10px 12px; flex-wrap: wrap; background: var(--bg); border-color: transparent; }
   .brand { font-size: 17px; }
-  .cash { font-size: 18px; } .noto-chip { font-size: 15px; }
+  .cash { font-size: 18px; } .worth { font-size: 14px; } .noto-chip { font-size: 15px; }
   /* tighten the right-side chip cluster (clock · notoriety · balance) so they don't
      jam together on a phone; smaller sub-labels and a snugger gap give them air. */
   .topbar-right { gap: 9px !important; flex: 1 1 100% !important; flex-wrap: wrap;
     justify-content: flex-end; min-width: 0; }
-  .clock-chip { font-size: 13px; } .clock-chip small, .noto-chip small, .cash small { font-size: 10px; }
+  .clock-chip { font-size: 13px; } .clock-chip small, .noto-chip small, .cash small, .worth small { font-size: 10px; }
   /* stack each setting row: label block on top, control below — the segmented
      controls otherwise crush the description into a ~73px column. */
   .setting-card { flex-direction: column; align-items: stretch; gap: 10px; }

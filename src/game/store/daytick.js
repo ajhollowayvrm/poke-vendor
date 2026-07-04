@@ -27,7 +27,7 @@ import {
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
 } from './constants'
-import { realizableAssets } from './helpers'
+import { realizableAssets, netWorthFull } from './helpers'
 
 // A set trading at or above this multiple of its base price is "hot" — willing buyers
 // on a hot card pay a premium above market, so LISTING a card whose set is spiking can
@@ -542,17 +542,7 @@ export function advanceDaysWith(set, get, days, away) {
   // Sample net worth (cash + everything you own, incl. in-flight buckets) into the trend
   // ring — one point per day-advance — for the Stats sparkline and the daily recap.
   const g = get()
-  const netWorth = round2(
-    g.cash
-    + (g.collection || []).reduce((a, c) => a + cardValue(c), 0)
-    + (g.binder || []).reduce((a, c) => a + cardValue(c), 0)
-    + (g.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
-    + (g.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
-    + (g.shopDisplay || []).reduce((a, c) => a + cardValue(c), 0)
-    + (g.showInventory || []).reduce((a, c) => a + cardValue(c), 0)
-    + (g.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
-    + (g.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
-    + (g.showSealed || []).reduce((a, it) => a + sealedValue(it), 0))
+  const netWorth = netWorthFull(g)
   set(st => ({ worthHistory: [...(st.worthHistory || []), { d: newAbsDay, worth: netWorth, cash: round2(g.cash) }].slice(-WORTH_HISTORY_LEN) }))
 
   // The day-summary payload. cashDelta/notoDelta are measured against the snapshot taken at

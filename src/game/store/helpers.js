@@ -6,7 +6,7 @@
 //   • Payment messaging: methodLabel, feeNote, appendFeeMsg  (used by booth + sourcing)
 //   • Liquidation value: realizableAssets  (used by daytick.settleRent + economy.netWorth)
 
-import { round2, cardValue } from '../engine'
+import { round2, cardValue, sealedValue } from '../engine'
 
 // Card ids are "<setId>-<number>" (e.g. "me4-2"); the set id is everything before
 // the last hyphen so multi-hyphen set ids like "sv8pt5" survive.
@@ -54,4 +54,23 @@ export function realizableAssets(s) {
   const coll = (s.collection || []).reduce((sum, c) => sum + cardValue(c), 0)
   const binder = (s.binder || []).reduce((sum, c) => sum + cardValue(c), 0)
   return round2((s.cash || 0) + coll + binder)
+}
+
+// FULL net worth: cash on hand + the market value of EVERY asset you hold, wherever it
+// sits — your collection & binder, cards out on the market (listings/consignments), your
+// store shelf & show table, cards at the grader, and all sealed product (held or on your
+// booth). Unlike realizableAssets (a quick liquidation figure for rent/job gating), this
+// is the "total worth" headline: it stays put when you just MOVE value around (list a card,
+// buy sealed, send a card to grade) — only real income/spend moves it. One definition, used
+// by the header readout, the daily recap, and the Stats trend so they never disagree.
+export function netWorthFull(s) {
+  const cv = (arr) => (arr || []).reduce((a, c) => a + cardValue(c), 0)
+  return round2(
+    (s.cash || 0)
+    + cv(s.collection) + cv(s.binder) + cv(s.shopDisplay) + cv(s.showInventory)
+    + (s.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
+    + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
+    + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
+    + (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
+    + (s.showSealed || []).reduce((a, it) => a + sealedValue(it), 0))
 }

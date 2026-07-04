@@ -4,6 +4,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
 import { useGame } from './game/store'
+import { netWorthFull } from './game/store/helpers'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -65,6 +66,12 @@ export default function App() {
   const [activeShow, setActiveShow] = useState(null) // show being attended
   const [shopperShow, setShopperShow] = useState(null) // shopper attending: pick arrival timing first
   const cash = useGame(s => s.cash)
+  // Total net worth: cash + market value of every asset you hold (collection, listings,
+  // sealed, cards at the grader, etc.). Shown next to cash so moving value around (grading,
+  // buying sealed, listing) doesn't read as your money vanishing/appearing — only real
+  // income/spend moves it. Recomputed on any state change; returns a number so it only
+  // re-renders the header when the figure actually changes.
+  const worth = useGame(s => netWorthFull(s))
   // How many copies of the in-progress rip's product are still held in 📦 Inventory —
   // drives the "Rip another" label/gate (rip your own stock free before re-buying).
   const ripStock = useGame(s => ripping ? heldMatches(s, ripping.set, ripping.product).length : 0)
@@ -324,7 +331,8 @@ export default function App() {
             Next Day →
           </button>
           <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>notoriety</small></span>
-          <div className="cash"><AnimatedNumber value={cash} format={fmtMoney} /><small>balance</small></div>
+          <div className="cash" title="Cash on hand — spendable money right now"><AnimatedNumber value={cash} format={fmtMoney} /><small>cash on hand</small></div>
+          <div className="worth" title="Net worth — cash + market value of everything you own (collection, listings, sealed, cards at the grader). Moving value around (grading, buying, listing) doesn't change it; only real income or spending does."><AnimatedNumber value={worth} format={fmtMoney} /><small>net worth</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
       </div>
