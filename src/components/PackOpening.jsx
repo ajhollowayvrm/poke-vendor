@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, packPrice, fmtMoney, rarityRank, preloadCardImages, HIT_THRESHOLD } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, HIT_THRESHOLD } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -282,7 +282,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       </div>
                       <div className="rip-hit-val">
                         {fmtMoney(cardValue(c))}
-                        {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                        {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10 / PSA 9">💎 10 {fmtMoney(psaValueAt(c, 10))} · 9 {fmtMoney(psaValueAt(c, 9))}</div>}
                         {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                       </div>
                     </div>
@@ -481,16 +481,15 @@ function NowRevealing({ card }) {
         const label = card.foil ? card.foil.label
           : card.grade ? `PSA ${card.grade.overall} · ${card.rarity}`
           : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
-        const showPsa10 = !card.grade && (card._isHit || card.foil)
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
             <img src={card.img} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
-            {showPsa10 && (
-              <div className="rip-now-psa10" title="What this card would be worth graded PSA 10">
-                💎 PSA 10 <b>{fmtMoney(psa10Value(card))}</b>
+            {!card.grade && (
+              <div className="rip-now-psa10" title="Market value if this card graded PSA 10 / PSA 9">
+                💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
               </div>
             )}
             {card._fillsWant && (

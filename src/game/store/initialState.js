@@ -17,6 +17,8 @@ export function initialState() {
   return {
     cash: STARTING_CASH,
     collection: [],          // owned cards (instances)
+    binder: [],              // cards physically slotted into your masterset binder — moved OUT of the collection (protected from bulk actions); one per {set,card,variant} slot
+
     pendingGrades: [],       // {card, tierKey, readyOnDay, submittedAt, paidFee}
     history: [],             // {t, type, detail, amount}
     stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },

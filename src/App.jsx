@@ -22,6 +22,7 @@ import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
 import Binder from './components/Binder'
 import Regulars from './components/Regulars'
+import GradeReveal from './components/GradeReveal'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { AnimatedNumber } from './ui/AnimatedNumber'
 import { NotorietyBar } from './components/Calendar'
@@ -77,6 +78,7 @@ export default function App() {
   const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
   const notoriety = useGame(s => s.notoriety)
   const [daySummary, setDaySummary] = useState(null) // per-day summary popup after Next Day
+  const [gradeReveal, setGradeReveal] = useState(null) // { cards, summary } — click-to-reveal slabs back from grading
 
   // Lock body scroll while a rip overlay is visible (ripping + on the Buy tab).
   // The overlay itself still scrolls internally (overflow-y:auto). Unlocks on cleanup.
@@ -99,7 +101,10 @@ export default function App() {
 
   function handleNextDay() {
     const summary = useGame.getState().nextDay()
-    if (summary) setDaySummary(summary)
+    if (!summary) return
+    // Slabs back from grading get their own click-to-reveal moment FIRST, then the recap.
+    if (summary.resolvedGradeCards?.length) setGradeReveal({ cards: summary.resolvedGradeCards, summary })
+    else setDaySummary(summary)
   }
 
   // Announce freshly-unlocked milestones as toasts. The store queues unlock ids in
@@ -259,9 +264,14 @@ export default function App() {
   // stashed when the days passed at entry — most useful after a multi-day show.
   function leaveShow() {
     const trip = activeShow?._summary
+    const name = activeShow?.name
     useGame.getState().endShow()
     setActiveShow(null)
-    if (trip) setDaySummary({ ...trip, showName: activeShow?.name })
+    if (trip) {
+      const s = { ...trip, showName: name }
+      if (trip.resolvedGradeCards?.length) setGradeReveal({ cards: trip.resolvedGradeCards, summary: s })
+      else setDaySummary(s)
+    }
   }
 
   // Switch tabs. A rip in progress is NOT discarded — its component stays mounted as an
@@ -319,6 +329,13 @@ export default function App() {
         </div>
       </div>
 
+      {gradeReveal && (
+        <GradeReveal cards={gradeReveal.cards} onDone={() => {
+          const s = gradeReveal.summary
+          setGradeReveal(null)
+          if (s) setDaySummary(s)
+        }} />
+      )}
       {daySummary && <DaySummary summary={daySummary} onClose={() => setDaySummary(null)} />}
       <GameOver />
 

@@ -477,6 +477,7 @@ export function advanceDaysWith(set, get, days, away) {
   const netWorth = round2(
     g.cash
     + (g.collection || []).reduce((a, c) => a + cardValue(c), 0)
+    + (g.binder || []).reduce((a, c) => a + cardValue(c), 0)
     + (g.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
     + (g.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
     + (g.shopDisplay || []).reduce((a, c) => a + cardValue(c), 0)
@@ -492,7 +493,7 @@ export function advanceDaysWith(set, get, days, away) {
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
     lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
     listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
-    resolvedGrades: resolvedGrades.length, days,
+    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, days,
     saleProceeds: round2(soldProceeds),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
@@ -525,6 +526,7 @@ export function mergeSummaries(a, b) {
     listingOffers: add(a.listingOffers, b.listingOffers),
     premiumOffers: add(a.premiumOffers, b.premiumOffers),
     resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
+    resolvedGradeCards: [...(a.resolvedGradeCards || []), ...(b.resolvedGradeCards || [])],
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
     soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),
     bigSale,

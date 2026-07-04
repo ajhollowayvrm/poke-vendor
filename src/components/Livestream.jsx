@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
+import { SHOP_SETS, setProducts, openPack, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX,
@@ -47,68 +47,41 @@ export default function Livestream() {
 }
 
 // --- Setup -------------------------------------------------------------------
+// You can ONLY stream product you already HOLD in sealed inventory — no buying right before
+// a stream. Source low (shop / shows), hold it, then break it live for tips + fame.
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
-  const cash = useGame(s => s.cash)
   const followers = useGame(s => s.followers || 0)
-  const spend = useGame(s => s.spend)
-  const recordSetSpend = useGame(s => s.recordSetSpend)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   const inventory = useGame(s => s.sealedInventory)
   const ripSealedAction = useGame(s => s.ripSealed)
 
-  const [setId, setSetId] = useState(SHOP_SETS[0].id)
-  const buySet = SHOP_SETS.find(s => s.id === setId) || SHOP_SETS[0]
-  const products = setProducts(buySet)
-  const [prodType, setProdType] = useState(() => bestProduct(products).type)
-  const buyProduct = products.find(p => p.type === prodType) || products[0]
-
-  // You can rip FRESH (buy now) or break a box you already HOLD in sealed inventory.
-  const [source, setSource] = useState('buy')   // 'buy' | 'inventory'
   const [invUid, setInvUid] = useState(null)
   useEffect(() => {
-    if (source === 'inventory' && !inventory.find(i => i.uid === invUid)) setInvUid(inventory[0]?.uid || null)
-  }, [source, inventory, invUid])
+    if (!inventory.find(i => i.uid === invUid)) setInvUid(inventory[0]?.uid || null)
+  }, [inventory, invUid])
   const invItem = inventory.find(i => i.uid === invUid) || null
 
-  const fromInv = source === 'inventory' && !!invItem
-  const set = fromInv ? (setById(invItem.setId) || buySet) : buySet
-  const product = fromInv ? invItem.product : buyProduct
-  const canBreak = product.packs >= 2
+  const set = invItem ? (setById(invItem.setId) || SHOP_SETS[0]) : null
+  const product = invItem ? invItem.product : null
+  const canBreak = !!product && product.packs >= 2
 
   const [doBreak, setDoBreak] = useState(false)
   const [spots, setSpots] = useState(4)
 
   const fresh = fatigueMult(fatigue)
   const expected = baseViewers(notoriety, fresh, followers)
-  const per = spotPrice(product.price, spots, notoriety)
+  const per = product ? spotPrice(product.price, spots, notoriety) : 0
 
   // keep break toggle valid when switching to a single-pack product
   useEffect(() => { if (!canBreak && doBreak) setDoBreak(false) }, [canBreak, doBreak])
 
-  async function go() {
+  function go() {
+    if (!invItem) return
     primeAudio() // this click is our chance to start audio under the browser's autoplay policy
-    // Breaking a held box costs nothing now (you paid when you bought it); ripping fresh
-    // charges the product price.
-    if (!fromInv && cash < product.price) return toast(`Not enough cash for the ${product.type}.`)
-    // Guard a pricey FRESH buy behind a confirm so one mis-tap can't burn a fortune.
-    if (!fromInv && product.price > 250) {
-      const ok = await confirmDialog({
-        title: `Go live with a ${product.type}?`,
-        body: `This rips a ${fmtMoney(product.price)} ${product.type} of ${set.name} on stream. It burns a game-day.`,
-        confirmText: `Go live — ${fmtMoney(product.price)}`, cancelText: 'Not yet',
-      })
-      if (!ok) return
-    }
-    if (fromInv) {
-      // Consume the held product from inventory — no re-charge.
-      const it = ripSealedAction(invItem.uid)
-      if (!it) return toast('That product is no longer in your inventory.')
-      useGame.getState().log('stream', `Broke a held ${product.type} (${set.name}) on stream`, 0)
-    } else {
-      if (!spend(product.price)) return
-      recordSetSpend(set.id, product.price)
-      useGame.getState().log('stream', `Bought ${product.type} (${set.name}) to rip live`, -product.price)
-    }
+    // Consume the held product from inventory — no charge, you already paid when you bought it.
+    const it = ripSealedAction(invItem.uid)
+    if (!it) return toast('That product is no longer in your inventory.')
+    useGame.getState().log('stream', `Broke a held ${product.type} (${set.name}) on stream`, 0)
 
     let isBreak = false, spotsSold = 0, spotGross = 0
     if (doBreak && canBreak) {
@@ -123,81 +96,70 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   return (
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
       <div className="banner" style={{ marginTop: 16 }}>
-        🔴 <b>Go live & rip on camera.</b> Viewers tune in, react to your pulls, and tip. A hot stream banks a
-        notoriety jump and pumps your store's traffic for days — but it <b>burns a game-day</b>, and streaming
-        often <b>tires your audience</b> (rest a few days to recover).
+        🔴 <b>Go live & rip on camera.</b> You break product you <b>already hold</b> — viewers tune in, react to your
+        pulls, and tip. A hot stream banks a notoriety jump and pumps your store's traffic for days — but it
+        <b> burns a game-day</b>, and streaming often <b>tires your audience</b> (rest a few days to recover).
         {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime</span> : null}
         {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>👥 {followers.toLocaleString()} followers</span>}
       </div>
 
-      <div className="market-panel" style={{ marginTop: 14 }}>
-        <div className="market-head">🎬 What are you ripping?</div>
-        {inventory.length > 0 && (
-          <div className="row" style={{ gap: 6, marginTop: 8 }}>
-            <button className={`tab ${source === 'buy' ? 'active' : ''}`} onClick={() => setSource('buy')}>🛒 Buy fresh</button>
-            <button className={`tab ${source === 'inventory' ? 'active' : ''}`} onClick={() => setSource('inventory')}>📦 From inventory ({inventory.length})</button>
-          </div>
-        )}
-        {fromInv ? (
-          <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-            <select value={invUid || ''} onChange={e => setInvUid(e.target.value)}>
-              {inventory.map(it => {
-                const s = setById(it.setId)
-                return <option key={it.uid} value={it.uid}>{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
-              })}
-            </select>
-            <span className="pill" style={{ marginLeft: 'auto' }}>{product.packs} pack{product.packs>1?'s':''} · owned</span>
-          </div>
-        ) : (
-          <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-            <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); setProdType(bestProduct(setProducts(SHOP_SETS.find(s=>s.id===id))).type) }}>
-              {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-            <select value={prodType} onChange={e => setProdType(e.target.value)}>
-              {products.map(p => <option key={p.type} value={p.type}>{p.icon} {p.type} · {p.packs} pk · {fmtMoney(p.price)}</option>)}
-            </select>
-            <span className="pill" style={{ marginLeft: 'auto' }}>{product.packs} pack{product.packs>1?'s':''}</span>
-          </div>
-        )}
-      </div>
-
-      <div className="market-panel" style={{ marginTop: 12, opacity: canBreak ? 1 : 0.5 }}>
-        <label className="tweet-toggle" style={{ fontSize: 14 }}>
-          <input type="checkbox" checked={doBreak} disabled={!canBreak} onChange={e => setDoBreak(e.target.checked)} />
-          📦 <b>Run a box break</b> <span className="muted">— sell spots up front; filled spots ship to buyers, unsold spots' cards are yours to keep. A hot pull can sell a leftover spot live.{canBreak ? '' : ' (needs a multi-pack product)'}</span>
-        </label>
-        {doBreak && canBreak && (
-          <div style={{ marginTop: 10 }}>
-            <div className="list-pct-row">
-              <span className="muted" style={{ fontSize: 12 }}>Spots</span>
-              {[2, 4, 6, 8].map(n => (
-                <button key={n} className={`pctbtn ${spots === n ? 'on' : ''}`} onClick={() => setSpots(n)}>{n}</button>
-              ))}
-              <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>
-                {fmtMoney(per)}/spot · ~{Math.round(Math.min(0.98, 0.25 + notoriety/160)*100)}% sell at your fame
-              </span>
+      {inventory.length === 0 ? (
+        <div className="empty" style={{ marginTop: 20 }}>
+          📦 You have no sealed product to break. Streams rip from your <b>held inventory</b> only —
+          <b> buy sealed on the Buy tab</b> (or source it at a show), then come back and break it live.
+        </div>
+      ) : (
+        <>
+          <div className="market-panel" style={{ marginTop: 14 }}>
+            <div className="market-head">🎬 What are you breaking? <span className="muted">— from your 📦 inventory</span></div>
+            <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
+              <select value={invUid || ''} onChange={e => setInvUid(e.target.value)}>
+                {inventory.map(it => {
+                  const s = setById(it.setId)
+                  return <option key={it.uid} value={it.uid}>{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
+                })}
+              </select>
+              <span className="pill" style={{ marginLeft: 'auto' }}>{product?.packs} pack{product?.packs>1?'s':''} · owned</span>
             </div>
-            <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-              All {spots} filling collects <b style={{ color: 'var(--green)' }}>{fmtMoney(per * spots)}</b> vs {fromInv ? 'a box you already own' : `${fmtMoney(product.price)} cost`}.
-              Whatever doesn't sell, you keep those teams' pulls.
-            </p>
           </div>
-        )}
-      </div>
 
-      <div className="row" style={{ marginTop: 16, justifyContent: 'center' }}>
-        <button className="btn gold" style={{ maxWidth: 300 }} disabled={!fromInv && cash < product.price} onClick={go}>
-          {fromInv
-            ? `🔴 Go live — break your ${product.icon || ''} ${product.type}`
-            : (cash < product.price ? `Need ${fmtMoney(product.price)}` : `🔴 Go live — rip ${product.icon || ''} ${product.type} (${fmtMoney(product.price)})`)}
-        </button>
-      </div>
-      <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
-        Expecting ~{expected.toLocaleString()} viewers
-        {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
-        {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
-        {' · costs 1 game-day'}
-      </p>
+          <div className="market-panel" style={{ marginTop: 12, opacity: canBreak ? 1 : 0.5 }}>
+            <label className="tweet-toggle" style={{ fontSize: 14 }}>
+              <input type="checkbox" checked={doBreak} disabled={!canBreak} onChange={e => setDoBreak(e.target.checked)} />
+              📦 <b>Run a box break</b> <span className="muted">— sell spots up front; filled spots ship to buyers, unsold spots' cards are yours to keep. A hot pull can sell a leftover spot live.{canBreak ? '' : ' (needs a multi-pack product)'}</span>
+            </label>
+            {doBreak && canBreak && (
+              <div style={{ marginTop: 10 }}>
+                <div className="list-pct-row">
+                  <span className="muted" style={{ fontSize: 12 }}>Spots</span>
+                  {[2, 4, 6, 8].map(n => (
+                    <button key={n} className={`pctbtn ${spots === n ? 'on' : ''}`} onClick={() => setSpots(n)}>{n}</button>
+                  ))}
+                  <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>
+                    {fmtMoney(per)}/spot · ~{Math.round(Math.min(0.98, 0.25 + notoriety/160)*100)}% sell at your fame
+                  </span>
+                </div>
+                <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+                  All {spots} filling collects <b style={{ color: 'var(--green)' }}>{fmtMoney(per * spots)}</b> vs a box you already own.
+                  Whatever doesn't sell, you keep those teams' pulls.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="row" style={{ marginTop: 16, justifyContent: 'center' }}>
+            <button className="btn gold" style={{ maxWidth: 300 }} disabled={!invItem} onClick={go}>
+              🔴 Go live — break your {product?.icon || ''} {product?.type}
+            </button>
+          </div>
+          <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
+            Expecting ~{expected.toLocaleString()} viewers
+            {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
+            {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
+            {' · costs 1 game-day'}
+          </p>
+        </>
+      )}
     </div>
   )
 }
@@ -212,6 +174,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const followers = useGame(s => s.followers || 0)
   const regulars = useGame(s => s.regulars)
+  const collection = useGame(s => s.collection)
   const giveawayCard = useGame(s => s.giveawayCard)
   const speed = Math.max(0.25, ripSpeed)
   const ms = (n) => n / speed
@@ -244,7 +207,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   // Followers earned THIS session (giveaway + goal bonuses) — the base performance gain is
   // added at cash-out. Kept in the component so the store's follower count moves exactly once.
   const [sessionFollowers, setSessionFollowers] = useState(0)
-  const [gaveAway, setGaveAway] = useState(false)
+  const [giveawayOpen, setGiveawayOpen] = useState(false) // the "pick a card to give away" picker
+  const [giveaways, setGiveaways] = useState(0)            // how many you've raffled this stream
   const [goal] = useState(() => pickStreamGoal(product))
   const [goalMet, setGoalMet] = useState(false)
 
@@ -400,20 +364,19 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     })
   }
 
-  // Raffle a bulk card you pulled this stream to a lucky viewer — a follower pop + chat frenzy.
-  // Once per stream, and only cards still yours (not shipped to a break buyer).
-  function runGiveaway() {
-    if (gaveAway || done || finishedRef.current) return
-    const pool = allPulled.current.filter(p => {
-      if (p.spot != null && p.spot < filledSpots) return false // already ships to a spot buyer
-      const c = p.card
-      return c && !c._isHit && !c.foil && !c.grade // give away bulk, never your hits
-    })
-    if (!pool.length) return toast('Nothing to give away yet — rip some cards first.')
-    const chosen = pool[Math.floor(Math.random() * pool.length)]
-    const res = giveawayCard(chosen.card.uid, peakRef.current)
-    if (!res) return
-    setGaveAway(true)
+  // Cards a break buyer already paid for (on a filled spot) can't be given away — they ship
+  // to that buyer at the end. Everything else you own is fair game for a raffle.
+  const reservedUids = new Set(allPulled.current.filter(p => p.spot != null && p.spot < filledSpots).map(p => p.card.uid))
+
+  // Raffle ANY card you own to a lucky viewer — a follower pop + chat frenzy. A pricier
+  // giveaway lands a bigger crowd. Repeatable all stream long (generosity feeds the loyalty
+  // loop). `uid` comes from the giveaway picker.
+  function runGiveaway(uid) {
+    if (done || finishedRef.current) return
+    const res = giveawayCard(uid, peakRef.current)
+    if (!res) return toast('That card is no longer in your collection.')
+    setGiveawayOpen(false)
+    setGiveaways(n => n + 1)
     setSessionFollowers(f => f + res.followers)
     setBurst(true); after(() => setBurst(false), ms(1500))
     pushChat({ handle: 'system', text: `🎁 GIVEAWAY! ${res.card.name} goes to a lucky viewer — +${res.followers} followers`, tip: true })
@@ -635,10 +598,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 ⏩ Skip to end ({totalPacks - packNo} left)
               </button>
             )}
-            {!done && pulls.length > 0 && (
-              <button className="btn alt" style={{ flex:'none', maxWidth: 190 }} disabled={gaveAway} onClick={runGiveaway}
-                title={gaveAway ? 'Already ran a giveaway this stream' : 'Raffle a bulk card to a viewer — a burst of new followers'}>
-                {gaveAway ? '🎁 Given away' : '🎁 Giveaway'}
+            {!done && (
+              <button className="btn alt" style={{ flex:'none', maxWidth: 190 }} disabled={!collection.length} onClick={() => setGiveawayOpen(true)}
+                title={collection.length ? 'Raffle any card you own to a viewer — a burst of new followers (bigger cards = bigger pop)' : 'You have no cards to give away'}>
+                🎁 Giveaway{giveaways > 0 ? ` (${giveaways})` : ''}
               </button>
             )}
             {done && <button className="btn gold" style={{ maxWidth: 240 }} onClick={endStream}>End stream & cash out →</button>}
@@ -677,6 +640,49 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           </div>
         </aside>
       </div>
+
+      {giveawayOpen && (
+        <GiveawayPicker collection={collection} reservedUids={reservedUids}
+          onPick={(uid) => runGiveaway(uid)} onClose={() => setGiveawayOpen(false)} />
+      )}
+    </div>
+  )
+}
+
+// Pick any card you own to raffle to the audience mid-stream. Sorted by value so your
+// headline chase cards are front-and-centre — a big giveaway lands a big follower pop.
+function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
+  const pool = [...collection].filter(c => !reservedUids.has(c.uid)).sort((a, b) => cardValue(b) - cardValue(a))
+  return (
+    <div className="modalbg" onClick={onClose} style={{ zIndex: 30 }}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
+        <div className="row" style={{ alignItems: 'baseline' }}>
+          <h2 style={{ marginRight: 'auto' }}>🎁 Give away a card</h2>
+          <span className="pill">{pool.length} eligible</span>
+        </div>
+        <p className="muted" style={{ marginTop: 2 }}>
+          Raffle any card you own to a lucky viewer — chat goes wild and new followers pour in.
+          The <b>pricier the card, the bigger the pop</b>. Give away as many as you like.
+        </p>
+        {pool.length === 0 ? (
+          <div className="empty">Nothing to give away — every card you have is reserved for a break buyer.</div>
+        ) : (
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(132px,1fr))', maxHeight: '52vh', overflowY: 'auto', marginTop: 6 }}>
+            {pool.slice(0, 60).map(c => {
+              const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+              return (
+                <div key={c.uid} className="vendoritem" style={{ '--rarity': edge }}>
+                  <img src={c.img} alt={c.name} loading="lazy" decoding="async" style={{ width: '100%', borderRadius: 8 }} />
+                  <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{c.name}</div>
+                  <div style={{ fontSize: 12, fontWeight: 800, textAlign: 'center', color: 'var(--green)' }}>{fmtMoney(cardValue(c))}</div>
+                  <button className="btn gold" style={{ fontSize: 12, padding: '6px' }} onClick={() => onPick(c.uid)}>🎁 Give away</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+        <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={onClose}>Close</button>
+      </div>
     </div>
   )
 }
@@ -689,18 +695,27 @@ function NowRevealing({ card }) {
       {card ? (() => {
         const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
         const label = card.foil ? card.foil.label : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
-        const showPsa10 = !card.grade && (card._isHit || card.foil)
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
             <img src={card.img} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
-            {showPsa10 && <div className="rip-now-psa10" title="What this card would be worth graded PSA 10">💎 PSA 10 <b>{fmtMoney(psa10Value(card))}</b></div>}
+            {!card.grade && <PsaLine card={card} />}
           </div>
         )
       })() : <div className="muted" style={{ fontSize: 12 }}>Tearing it open…</div>}
     </aside>
+  )
+}
+
+// The graded-value teaser shown on every raw reveal: what the card would be worth at PSA 10
+// and PSA 9 on the market right now.
+function PsaLine({ card }) {
+  return (
+    <div className="rip-now-psa10" title="Market value if this card graded PSA 10 / PSA 9">
+      💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
+    </div>
   )
 }
 

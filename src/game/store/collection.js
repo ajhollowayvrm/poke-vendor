@@ -8,6 +8,7 @@
 import {
   cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
   rollGrade, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
+  setById, cardVariant, cardMastersetVariants,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay } from './constants'
@@ -76,7 +77,9 @@ export function createCollectionSlice(set, get) {
     // completedSets so it never pays twice (and selling later doesn't claw it back).
     checkCompletions() {
       const s = get()
-      const ownedIds = ownedIdSet(s.collection)
+      // Cards slotted into the binder still count toward set completion (they didn't leave
+      // your ownership — just the sellable pool), so include them when checking.
+      const ownedIds = ownedIdSet([...s.collection, ...(s.binder || [])])
       const newly = []
       for (const set_ of SETS) {
         if (s.completedSets.includes(set_.id)) continue
@@ -90,6 +93,77 @@ export function createCollectionSlice(set, get) {
         get().addNotoriety(r.noto)
         get().log('complete', `🏆 Completed the ${set_.name} set! Bonus +$${r.cash.toFixed(2)} & +${r.noto}★`, r.cash)
       }
+    },
+
+    // --- Masterset binder --------------------------------------------------------
+    // The binder physically holds ONE copy per {set, card, variant} slot, moved OUT of the
+    // collection (so it's safe from every bulk action) but still counted as owned. Placing a
+    // card is deliberate curation; a full masterset (every variant of every card) is the flex.
+
+    // Move one collection card into its binder slot. No-op if that exact slot is already
+    // filled (a masterset holds one of each variant — a duplicate stays sellable). Returns
+    // true if it moved.
+    addToBinder(uid) {
+      const card = get().collection.find(c => c.uid === uid)
+      if (!card) return false
+      const setId = setIdOf(card)
+      const variant = cardVariant(card)
+      const filled = (get().binder || []).some(b => b.id === card.id && setIdOf(b) === setId && cardVariant(b) === variant)
+      if (filled) return false
+      set(s => ({
+        collection: s.collection.filter(c => c.uid !== uid),
+        binder: [...(s.binder || []), card],
+      }))
+      get().log('binder', `📒 Slotted ${card.name} into your binder`, 0)
+      return true
+    },
+
+    // Fill every EMPTY binder slot for a set from your collection in one go — "add everything
+    // possible." Picks one copy per open slot (best copy first). Pass no setId to sweep all
+    // sets. Returns the number of cards moved.
+    addAllToBinder(setId = null) {
+      const sets = setId ? [setById(setId)].filter(Boolean) : SETS
+      if (!sets.length) return 0
+      const binder = get().binder || []
+      const placed = new Set(binder.map(b => `${setIdOf(b)}:${b.id}:${cardVariant(b)}`))
+      const chosen = new Map() // slotKey → card (first/best copy wins)
+      // best copy first so the nicest condition/grade lands in the binder
+      const coll = [...get().collection].sort((a, b) => cardValue(b) - cardValue(a))
+      for (const c of coll) {
+        const cSet = setIdOf(c)
+        const set_ = sets.find(s => s.id === cSet)
+        if (!set_) continue
+        // the card must actually be part of this set's masterset (it always is, but guard)
+        const cardDef = set_.cards.find(x => x.id === c.id)
+        if (!cardDef) continue
+        const variant = cardVariant(c)
+        if (!cardMastersetVariants(set_, cardDef).includes(variant)) continue
+        const slotKey = `${cSet}:${c.id}:${variant}`
+        if (placed.has(slotKey) || chosen.has(slotKey)) continue
+        chosen.set(slotKey, c)
+      }
+      if (!chosen.size) return 0
+      const movingUids = new Set([...chosen.values()].map(c => c.uid))
+      const moving = get().collection.filter(c => movingUids.has(c.uid))
+      set(s => ({
+        collection: s.collection.filter(c => !movingUids.has(c.uid)),
+        binder: [...(s.binder || []), ...moving],
+      }))
+      const label = setId ? `for ${setById(setId)?.name || 'the set'}` : 'across your collection'
+      get().log('binder', `📒 Filled ${moving.length} binder slot${moving.length > 1 ? 's' : ''} ${label}`, 0)
+      return moving.length
+    },
+
+    // Take a card back out of the binder, into your collection (to sell or reslot).
+    removeFromBinder(uid) {
+      const card = (get().binder || []).find(c => c.uid === uid)
+      if (!card) return false
+      set(s => ({
+        binder: s.binder.filter(c => c.uid !== uid),
+        collection: [card, ...s.collection],
+      }))
+      get().log('binder', `Took ${card.name} out of your binder`, 0)
+      return true
     },
 
     // --- Card protection (master-set safety net) --------------------------------

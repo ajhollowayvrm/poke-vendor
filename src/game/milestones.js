@@ -22,7 +22,7 @@ const streams       = s => s.streamStats?.streams || 0
 const peakViewers   = s => s.streamStats?.peakViewers || 0
 const wantsFilled   = s => s.stats?.wantsFilled || 0
 // Net worth (cash + raw/graded collection) and best single pull by market value.
-const netWorth      = s => (s.cash || 0) + (s.collection || []).reduce((a, c) => a + cardValue(c), 0)
+const netWorth      = s => (s.cash || 0) + (s.collection || []).reduce((a, c) => a + cardValue(c), 0) + (s.binder || []).reduce((a, c) => a + cardValue(c), 0)
 const bestPullValue = s => (s.stats?.bestPull ? cardValue(s.stats.bestPull) : 0)
 
 // Terse builder: id, group, icon, name, desc, goal, noto reward, value accessor.

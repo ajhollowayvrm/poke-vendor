@@ -6,7 +6,7 @@
 // audience, and burn a game-day through the shared day-tick). The viewer/tip/chat math is
 // pure and lives in ../stream (game); this slice is the state mutations around it.
 
-import { round2 } from '../engine'
+import { round2, cardValue } from '../engine'
 import { fatigueMult } from '../stream'
 import { advanceDaysWith } from './daytick'
 import { STREAM_HYPE_DAYS, INCOME_WINDOW_DAYS } from './constants'
@@ -34,17 +34,21 @@ export function createLivestreamSlice(set, get) {
       get().log('stream', `A viewer grabbed an open break spot — +$${round2(price).toFixed(2)}`, round2(price))
     },
 
-    // Raffle a card to the audience on stream. It leaves your collection (someone won it)
-    // and earns a touch of notoriety now. The follower pop it suggests is RETURNED, not
-    // applied — the live stage batches every session follower gain into endStream so the
-    // count moves once, cleanly. Returns { card, followers } for the UI, or null if gone.
+    // Raffle a card you own to the audience on stream. It leaves your collection (someone won
+    // it) and earns notoriety now — a bigger, pricier giveaway lands a bigger pop. The follower
+    // gain it suggests is RETURNED, not applied — the live stage batches every session follower
+    // gain into endStream so the count moves once, cleanly. A generous chase-card giveaway also
+    // bumps notoriety more. Returns { card, followers } for the UI, or null if gone.
     giveawayCard(uid, viewers = 0) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card) return null
-      const gained = 5 + Math.round(Math.max(0, viewers) * 0.04)
+      const val = cardValue(card)
+      // base crowd pop (scales with who's watching) + a value bonus (a grail giveaway blows up)
+      const gained = 5 + Math.round(Math.max(0, viewers) * 0.04) + Math.min(150, Math.round(val * 0.5))
+      const notoBump = val >= 100 ? 3 : val >= 25 ? 2 : 1
       set(s => ({ collection: s.collection.filter(c => c.uid !== uid) }))
-      get().addNotoriety(1)
-      get().log('stream', `🎁 Gave away ${card.name} on stream — chat erupted (+${gained} followers coming)`, 0)
+      get().addNotoriety(notoBump)
+      get().log('stream', `🎁 Gave away ${card.name} ($${val.toFixed(2)}) on stream — chat erupted (+${gained} followers coming, +${notoBump}★)`, 0)
       return { card, followers: gained }
     },
 

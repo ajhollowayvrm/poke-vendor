@@ -200,41 +200,54 @@ export function haggleRound({ side, their, market, yourOffer, flex, round, archK
 //   - Any booth has a small shot at an occasional VINTAGE sealed pack — so the Vault isn't
 //     the only place to find sealed vintage.
 // `r` is the show's seeded rng so the floor stays stable as you walk it.
-function boothSealed(r, arch) {
+function boothSealed(r, arch, band = [1, 100]) {
   const out = []
   const isWhale = arch.key === 'whale'
-  // Modern sealed: whales always lay one out; others ~32% of the time — so even a small
-  // meetup floor has a handful of tables stocking sealed, not just the big shows.
-  if (isWhale || r() < 0.32) {
+  // Modern sealed: whales always lay boxes out; others reliably have SOMETHING sealed on the
+  // table now (a show floor should be full of sealed product). A single modern pack tier plus
+  // a good shot at a second modern item, so most booths carry a couple of options.
+  const addModern = (boxes) => {
     const set = pickR(r, SHOP_SETS)
     const prods = setProducts(set)
-    // Whales favor boxes (the big stuff); everyone else a pack-tier product.
-    const pool = isWhale ? prods.filter(p => p.packs >= 9) : prods.filter(p => p.packs <= 6)
+    const pool = boxes ? prods.filter(p => p.packs >= 9) : prods.filter(p => p.packs <= 6)
     const base = (pool.length ? pickR(r, pool) : pickR(r, prods))
-    const markup = 1.12 + r() * (isWhale ? 0.33 : 0.18) // ~1.12–1.45×; whales mark up more
+    const markup = 1.12 + r() * (boxes ? 0.33 : 0.18)
     out.push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
   }
+  if (isWhale || r() < 0.62) addModern(isWhale)       // most tables now stock modern sealed
+  if (r() < 0.30) addModern(isWhale || r() < 0.4)     // a good chunk carry a second item too
   // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fates Collide, the Zygarde /
-  // Mega Gyarados boxes…) you "can still kinda find." More common than the vintage Vault —
-  // a vendor often has an old ETB / box / tin on the table — at a collector's markup over its
-  // (already appreciated) market price. The full lineup is eligible, so you might score a box.
-  if (SECONDARY_SETS.length && r() < 0.22) {
+  // Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old ETB / box /
+  // tin on the table at a collector's markup.
+  if (SECONDARY_SETS.length && r() < 0.38) {
     const sSet = pickR(r, SECONDARY_SETS)
     const prods = setProducts(sSet)
     const product = prods.length ? prods[Math.floor(r() * prods.length)] : null
     if (product) {
-      const markup = 1.10 + r() * 0.25 // ~1.10–1.35×: a markup, but these are finds, not gouges
+      const markup = 1.10 + r() * 0.25
       out.push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' })
     }
   }
-  // A surprise vintage sealed pack on a regular table (~10%, any booth at any show — you
-  // never know who's sitting on an old pack). Rarer than modern, but it's everywhere.
-  if (VINTAGE_SETS.length && r() < 0.10) {
+  // A surprise vintage sealed pack on a regular table — any booth at any show.
+  if (VINTAGE_SETS.length && r() < 0.16) {
     const vSet = pickR(r, VINTAGE_SETS)
     const product = vintageProduct(vSet)
     const markup = 1.2 + r() * 0.5
     out.push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
   }
+  // MYSTERY PACKS: repackaged grab-bag singles — pay a fixed price, get one random card whose
+  // value lands somewhere in the pack's band (usually a small loss, sometimes a jackpot). A
+  // show-floor staple. Sized to the show tier via `band`. Basic pack is common; a pricier
+  // premium pack (bigger swing) shows up less often.
+  const [, hi] = band
+  const basicPrice = round2(Math.max(5, hi * 0.06))
+  if (r() < 0.5) out.push({ mystery: true, key: 'basic', name: 'Mystery Pack', icon: '❓',
+    price: basicPrice, band: [round2(basicPrice * 0.25), round2(basicPrice * 3)],
+    blurb: 'One random single — could be bulk, could be a banger.' })
+  const premPrice = round2(Math.max(20, hi * 0.2))
+  if (r() < 0.22) out.push({ mystery: true, key: 'premium', name: 'Premium Mystery Pack', icon: '🎁',
+    price: premPrice, band: [round2(premPrice * 0.35), round2(premPrice * 4)],
+    blurb: 'A pricier grab-bag — bigger floor, bigger ceiling. Guaranteed a hit sometimes.' })
   return out
 }
 
@@ -315,7 +328,7 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       vibe: arch.vibe,
       buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
       stock: boothStock,
-      products: boothSealed(r, arch),  // sealed product on the table (may be empty)
+      products: boothSealed(r, arch, tier.valueBand),  // sealed + mystery packs on the table (may be empty)
       // grid position assigned by the floor layout
     })
   }
@@ -795,42 +808,75 @@ export { rawValue }
 // above-market premium + notoriety. Two kinds: a named card, or "any <rarity>
 // from <set>". Bigger asks pay a fatter premium.
 const COLLECTOR_NAMES = ['Marco the completist','a binder grinder','an Eeveelution superfan','a vintage hound',
-  'a set-builder','a deep-pocketed whale','a nostalgic dad','a rising streamer','a master-set chaser','a local legend']
-const WANT_RARITIES = ['Illustration Rare','Ultra Rare','Special Illustration Rare','Hyper Rare']
+  'a set-builder','a deep-pocketed whale','a nostalgic dad','a rising streamer','a master-set chaser','a local legend',
+  'a bulk-bin digger','a kid building their first deck','a playset hunter','a common-card completist','a rainbow-rare fan',
+  'a reverse-holo nerd','a page-filler','a weekend collector','a type collector','a Poké Ball foil fanatic']
+// The full rarity spectrum a collector might ask for — from bulk commons all the way to the
+// chase. Weighted so most requests are the everyday cards (commons/uncommons/rares) with the
+// occasional big chase ask, so filling wants is a constant, varied part of the loop — not just
+// a rare IR/SIR event. `w` = relative frequency.
+const WANT_RARITIES = [
+  { rarity: 'Common', w: 5 }, { rarity: 'Uncommon', w: 5 }, { rarity: 'Rare', w: 4 },
+  { rarity: 'Rare Holo', w: 3 }, { rarity: 'Double Rare', w: 3 }, { rarity: 'Illustration Rare', w: 2 },
+  { rarity: 'Ultra Rare', w: 2 }, { rarity: 'Special Illustration Rare', w: 1 }, { rarity: 'Hyper Rare', w: 1 },
+]
+// Notoriety a filled rarity-want pays, by rarity tier.
+const WANT_RARITY_NOTO = {
+  'Common': 1, 'Uncommon': 1, 'Rare': 2, 'Rare Holo': 2, 'Double Rare': 3,
+  'Illustration Rare': 4, 'Ultra Rare': 5, 'Special Illustration Rare': 6, 'Hyper Rare': 6,
+}
 
 function wpick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+// Weighted pick from [{...,w}] entries.
+function wpickWeighted(arr) {
+  let total = 0; for (const a of arr) total += a.w || 1
+  let r = Math.random() * total
+  for (const a of arr) { r -= a.w || 1; if (r <= 0) return a }
+  return arr[arr.length - 1]
+}
 
-// Make one want. `rich` (high notoriety) skews toward pricier asks.
+// Make one want. Collectors ask for a HUGE variety — a common to fill a binder page just as
+// often as a chase. `rich` (high notoriety) skews toward pricier named asks.
 export function makeWant(rich = false) {
   const who = wpick(COLLECTOR_NAMES)
   const daysLeft = 4 + Math.floor(Math.random() * 6) // 4–9 days to fill
-  // 55% named card, 45% "any rarity from set"
+  // 55% named card, 45% "any <rarity> from <set>"
   if (Math.random() < 0.55) {
-    // Only ever name cards the player can actually OBTAIN — i.e. non-vintage sets sold
-    // in the shop. Vintage sets (Skyridge, Legendary Collection, Neo…) surface only via
-    // the rare Vintage Vault pack, so a want for one would be effectively unfulfillable.
-    const all = SHOP_SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) > (rich ? 8 : 1)))
+    // Only ever name cards the player can actually OBTAIN — i.e. non-vintage sets sold in the
+    // shop. A rich collector skews toward pricier cards; everyone else can ask for anything,
+    // including cheap commons/uncommons (variety over value).
+    const floor = rich ? 8 : 0
+    let all = SHOP_SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) >= floor))
+    if (!all.length) all = SHOP_SETS.flatMap(s => s.cards)
     const card = wpick(all)
-    const premium = 1.25 + Math.random() * (rich ? 0.6 : 0.3) // 1.25–1.85×
+    const price = card.price ?? 0
+    // Cheaper cards pay a fatter multiple (a $0.25 common at 1.25× is nothing — bump the % so
+    // filling a low want is still a small but real reward); pricier cards a tighter multiple.
+    const premium = price < 2 ? 2.5 + Math.random() * 2.5   // 2.5–5× on bulk (still pennies-to-dollars)
+      : price < 15 ? 1.4 + Math.random() * (rich ? 0.5 : 0.35)
+      : 1.25 + Math.random() * (rich ? 0.6 : 0.3)
     const setName = setNameOfCard(card)
     return {
       id: `w${Math.floor(Math.random()*1e9).toString(36)}`,
       kind: 'card', who, daysLeft,
       cardId: card.id, cardName: card.name, img: card.img, setName,
       premiumMult: round2(premium),
-      notoriety: 3 + Math.floor((card.price ?? 0) / 20),
+      notoriety: 1 + Math.floor(price / 20),
       desc: `${cap(who)} wants a ${card.name}${setName ? ` (${setName})` : ''}`,
     }
   }
   const set = wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
-  const rar = wpick(WANT_RARITIES)
-  const premium = 1.2 + Math.random() * (rich ? 0.4 : 0.25)
+  const rar = wpickWeighted(WANT_RARITIES).rarity
+  // Low-rarity asks pay a fatter multiple so a common/uncommon want is worth doing.
+  const low = rarityRank(rar) < rarityRank('Double Rare')
+  const premium = low ? 1.8 + Math.random() * 1.2   // 1.8–3× on commons/uncommons/rares
+    : 1.2 + Math.random() * (rich ? 0.4 : 0.25)
   return {
     id: `w${Math.floor(Math.random()*1e9).toString(36)}`,
     kind: 'rarity', who, daysLeft,
     setId: set.id, setName: set.name, rarity: rar,
     premiumMult: round2(premium),
-    notoriety: rar === 'Special Illustration Rare' || rar === 'Hyper Rare' ? 6 : 3,
+    notoriety: WANT_RARITY_NOTO[rar] ?? 3,
     desc: `${cap(who)} wants any ${rar} from ${set.name}`,
   }
 }

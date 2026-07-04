@@ -52,5 +52,6 @@ export function appendFeeMsg(msg, fee, payMethod, net = null) {
 // and to power the net-worth / runway readouts.
 export function realizableAssets(s) {
   const coll = (s.collection || []).reduce((sum, c) => sum + cardValue(c), 0)
-  return round2((s.cash || 0) + coll)
+  const binder = (s.binder || []).reduce((sum, c) => sum + cardValue(c), 0)
+  return round2((s.cash || 0) + coll + binder)
 }

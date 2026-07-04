@@ -51,7 +51,7 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 34,
+  version: 35,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -67,6 +67,9 @@ export const useGame = create(persist((set, get) => ({
     state.pendingGrades = keepWrapped(state.pendingGrades)
     state.listings = keepWrapped(state.listings)
     state.consignments = keepWrapped(state.consignments)
+    // Binder holds PLACED copies (out of the collection). It wins over a stray collection
+    // duplicate so a corruption-repair never yanks a card you've deliberately slotted.
+    state.binder = keepFlat(state.binder)
     state.collection = keepFlat(state.collection)
     state.showInventory = keepFlat(state.showInventory)
     state.shopDisplay = keepFlat(state.shopDisplay)
@@ -315,6 +318,11 @@ export const useGame = create(persist((set, get) => ({
       // day-advance begins sampling worth and (if over the free allowance) charging storage.
       state.worthHistory = state.worthHistory ?? []
       state.quickSellsToday = state.quickSellsToday ?? 0
+    }
+    if (version < 35) {
+      // Masterset binder — cards you physically slot into a per-set masterset (moved out of
+      // the collection, protected from bulk actions). New bucket; start it empty.
+      state.binder = state.binder ?? []
     }
     return state
   },

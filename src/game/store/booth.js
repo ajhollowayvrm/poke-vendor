@@ -9,7 +9,7 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById, bulkSellableUids } from '../engine'
+import { round2, cardValue, setById, bulkSellableUids, cardInValueRange } from '../engine'
 import { encounterStillValid } from '../shows'
 import { acceptedMethods, PAYMENT_METHODS, processingFee } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
@@ -55,6 +55,45 @@ export function createBoothSlice(set, get) {
       if (!opts.toShowInventory) get().checkCompletions() // bought card may finish a set
       return true
     },
+    // Buy a MYSTERY PACK off a booth — a repackaged grab-bag single. You pay a fixed price
+    // and get one random card whose value lands somewhere in the pack's band (usually a
+    // small loss, occasionally a real jackpot). Returns the pulled card (added to your
+    // collection) so the booth can reveal it, or null if you couldn't afford it.
+    buyMysteryPack(price, band) {
+      if (!get().spend(price)) return null
+      const [lo, hi] = band || [1, Math.max(2, price * 3)]
+      // small jackpot chance: a slice of packs draw from WAY above the band (the "chase")
+      const jackpot = Math.random() < 0.12
+      const card = jackpot ? cardInValueRange(hi, hi * 4) : cardInValueRange(lo, hi)
+      set(s => ({ collection: [card, ...s.collection] }))
+      get().log('buy', `❓ Opened a mystery pack for $${round2(price).toFixed(2)} — pulled ${card.name} ($${cardValue(card).toFixed(2)})`, -price)
+      get().bumpGoal('buy', 1)
+      get().checkCompletions() // a mystery pull can finish a set
+      get().checkMilestones()
+      return card
+    },
+
+    // Trade one of YOUR cards (± cash) for a booth's card. `cashDelta` > 0 means you ALSO pay
+    // that much; < 0 means the vendor tops you up. Your card is valued at what they'd pay for
+    // it (their buy rate), so the cash closes the gap to their ask. Returns { got } or { error }.
+    tradeForVendorCard(boothCard, yourUid, cashDelta = 0, opts = {}) {
+      const mine = get().collection.find(c => c.uid === yourUid)
+      if (!mine) return { error: 'You no longer have that card to trade.' }
+      const delta = round2(cashDelta)
+      if (delta > 0 && get().cash < delta) return { error: `You can't cover the $${delta.toFixed(2)} on your side.` }
+      const got = { ...boothCard, _ask: undefined, _mispriced: undefined, _highlight: undefined }
+      set(s => ({ collection: [got, ...s.collection.filter(c => c.uid !== yourUid)] }))
+      if (delta > 0) get().spend(delta)
+      else if (delta < 0) get().earn(-delta)
+      if (opts.vendorId) get().bumpVendorRapport(opts.vendorId, cardValue(mine) + Math.max(0, delta))
+      get().addNotoriety(1)
+      get().log('trade', `Traded ${mine.name}${delta > 0 ? ` + $${delta.toFixed(2)}` : delta < 0 ? ` (got $${(-delta).toFixed(2)} back)` : ''} for ${got.name}`, -delta)
+      get().bumpGoal('buy', 1)
+      get().checkCompletions() // the card you traded for may finish a set
+      get().checkMilestones()
+      return { got }
+    },
+
     // Build rapport with a recurring show vendor by dealing with them (buying or selling).
     // Rapport = lifetime $ dealt; it earns a standing discount at their table (see vendorRapport).
     bumpVendorRapport(vendorId, amount) {

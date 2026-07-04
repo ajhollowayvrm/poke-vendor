@@ -1689,6 +1689,87 @@ export function setCompletion(set, ownedIds) {
   }
 }
 
+// ---- Masterset variants -----------------------------------------------------
+// A "masterset" is stronger than a plain set: it wants EVERY printing variant of every
+// card — the normal, its reverse holo, and (where a set has them) the Poké Ball and Master
+// Ball foil patterns. These helpers describe which variant slots a card contributes and
+// which variant a specific owned copy represents.
+export const MASTERSET_VARIANTS = {
+  normal:     { key: 'normal',     label: 'Normal',           badge: '●',  color: '#9aa6c8' },
+  reverse:    { key: 'reverse',    label: 'Reverse Holo',     badge: '↻',  color: '#7cf0ff' },
+  pokeball:   { key: 'pokeball',   label: 'Poké Ball Foil',   badge: '⦿',  color: FOIL.pokeball.color },
+  masterball: { key: 'masterball', label: 'Master Ball Foil', badge: '◉',  color: FOIL.masterball.color },
+}
+export const MASTERSET_VARIANT_ORDER = ['normal', 'reverse', 'pokeball', 'masterball']
+
+// The variant a specific card INSTANCE represents (used to slot an owned copy).
+export function cardVariant(card) {
+  const k = card?.foil?.key
+  if (k === 'masterball') return 'masterball'
+  if (k === 'pokeball') return 'pokeball'
+  if (k) return k
+  if (card?.reverse) return 'reverse'
+  return 'normal'
+}
+
+// Does a set's rate table / special packs ever produce a given foil pattern?
+function setSupportsFoil(setId, foilKey) {
+  const rates = SET_RATES[setId]
+  const inReverse = rates?.reverse?.some(r => r.key === foilKey)
+  const sp = SPECIAL_PACKS[setId]
+  const inSpecial = sp?.some(v =>
+    v.slots?.some(s => s.foil === foilKey) || v.hits?.foil === foilKey || v.filler?.foil === foilKey)
+  return !!(inReverse || inSpecial)
+}
+// Does a set have a reverse-holo slot at all? Modern sets do; vintage doesn't.
+function setHasReverse(set) {
+  if (set?.vintage) return false
+  const rates = SET_RATES[set.id]
+  return rates ? !!rates.reverse : true // baseline (used when a set has no override) has a reverse slot
+}
+// Reverse-eligible cards are the low/mid rarities that ride the reverse slot (and thus can
+// appear as reverse/Poké Ball/Master Ball foils). Chase cards (Double Rare+) don't.
+function reverseEligible(card) { return rarityRank(card.rarity) < HIT_THRESHOLD }
+
+// The ordered variant columns a set's masterset shows.
+export function setVariantColumns(set) {
+  const cols = ['normal']
+  if (setHasReverse(set)) cols.push('reverse')
+  if (setSupportsFoil(set.id, 'pokeball')) cols.push('pokeball')
+  if (setSupportsFoil(set.id, 'masterball')) cols.push('masterball')
+  return cols
+}
+// The variant slots a specific card contributes to its set's masterset.
+export function cardMastersetVariants(set, card) {
+  const cols = setVariantColumns(set)
+  const out = ['normal']
+  const elig = reverseEligible(card)
+  for (const v of cols) {
+    if (v === 'normal') continue
+    if (elig) out.push(v) // reverse/pokeball/masterball apply to reverse-eligible cards
+  }
+  return out
+}
+// Masterset completion stats for a set given the placed BINDER cards + everything else you
+// own. `binderCards` are the copies physically slotted into the binder; `ownedCards` is any
+// other bucket (collection) whose variants count as "available to place". Returns per-slot
+// totals so the UI can render progress + a fill button.
+export function mastersetStats(set, binderCards, ownedCards = []) {
+  const binderKeys = new Set(binderCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
+  const looseKeys = new Set(ownedCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
+  let total = 0, placed = 0, placeable = 0
+  for (const card of set.cards) {
+    for (const v of cardMastersetVariants(set, card)) {
+      total++
+      const key = `${card.id}:${v}`
+      if (binderKeys.has(key)) placed++
+      else if (looseKeys.has(key)) placeable++
+    }
+  }
+  return { total, placed, placeable, pct: total ? Math.round((placed / total) * 100) : 0,
+    complete: total > 0 && placed === total }
+}
+
 // --- Bulk-sell protection ----------------------------------------------------
 // The master-set safety net for the "sell everything" buttons. Given the full
 // collection, the uids a bulk action WANTS to move, and the player's protection

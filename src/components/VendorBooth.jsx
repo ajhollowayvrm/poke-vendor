@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, fmtMoney, round2, GRADING, gradingFee } from '../game/engine'
 import { vendorRapport, nextVendorRapport } from '../game/shows'
-import CardTile from './CardTile'
+import CardTile, { rarityColor } from './CardTile'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 
@@ -152,13 +152,33 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const committingRef = useRef(false)
   // After choosing a sealed product: rip it on the floor now or stock it to hold.
   const [pendingSealed, setPendingSealed] = useState(null) // the sealed entry
+  const [mysteryResult, setMysteryResult] = useState(null) // card pulled from a mystery pack
+  const [tradeFor, setTradeFor] = useState(null)           // booth card you're offering a trade on
   // Escape closes the top-most layer: a pending prompt if open, else the booth.
   // (Haggle owns its own escape.)
   useModalEscape(() => {
-    if (pendingSealed) setPendingSealed(null)
+    if (mysteryResult) setMysteryResult(null)
+    else if (tradeFor) setTradeFor(null)
+    else if (pendingSealed) setPendingSealed(null)
     else if (pendingBuy) setPendingBuy(null)
     else if (!haggle) onClose()
   })
+
+  // Buy & open a mystery pack right here — one random single, revealed on the spot.
+  function openMystery(entry) {
+    const card = useGame.getState().buyMysteryPack(entry.price, entry.band)
+    if (!card) { flash(`Not enough cash for the ${entry.name}.`); return }
+    setSealed(s => { const next = s.filter(e => e !== entry); if (!next.length) setTab('buy'); return next })
+    setMysteryResult({ card, packName: entry.name })
+  }
+  // Complete a card-for-card (± cash) trade for one of the booth's cards.
+  function doTrade(boothCard, yourUid, cashDelta) {
+    const res = useGame.getState().tradeForVendorCard(boothCard, yourUid, cashDelta, { vendorId: booth.vendorId })
+    if (res.error) { flash(res.error); return }
+    setStock(s => s.filter(c => c.uid !== boothCard.uid))
+    setTradeFor(null)
+    flash(`Traded for ${boothCard.name}!`)
+  }
 
   const seeDeals = upgrades.network
 
@@ -221,11 +241,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
         <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(mkt)}</div>
         <div className="row" style={{ gap: 6 }}>
           <button className="btn" disabled={cash < ask} onClick={() => buyAt(card, ask)}>Buy</button>
-          <button className="btn alt" style={{ flex:'none', maxWidth: 78 }} disabled={haggled.has(card.uid)}
+          <button className="btn alt" style={{ flex:'none', maxWidth: 70 }} disabled={haggled.has(card.uid)}
             title={haggled.has(card.uid) ? 'Already haggled this one — buy it or move on' : undefined}
             onClick={() => setHaggle({ side:'buy', card, market: mkt, start: ask })}>
             {haggled.has(card.uid) ? 'Haggled' : 'Haggle'}
           </button>
+          <button className="btn alt" style={{ flex:'none', maxWidth: 70 }} disabled={!collection.length}
+            title={collection.length ? 'Offer one of your cards (+/- cash) for this' : 'You have no cards to trade'}
+            onClick={() => setTradeFor({ card, ask })}>Trade</button>
         </div>
       </div>
     )
@@ -253,9 +276,21 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
 
         {tab === 'sealed' ? (
           <>
-            <div className="showcase-head">📦 Sealed product <span className="muted">— buy to rip on the floor or stock &amp; hold (vendor markup applies)</span></div>
+            <div className="showcase-head">📦 Sealed & mystery <span className="muted">— sealed rips on the floor or stocks to hold; mystery packs open on the spot (vendor markup applies)</span></div>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))' }}>
-              {sealed.map((entry, idx) => (
+              {sealed.map((entry, idx) => entry.mystery ? (
+                <div key={idx} className="vendoritem featured sealed-mystery">
+                  <div style={{ fontSize: 34, textAlign: 'center' }}>{entry.icon}</div>
+                  <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>{entry.name}</div>
+                  <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>{entry.blurb}</div>
+                  <div className="askrow" style={{ justifyContent:'center' }}>
+                    <span className="ask">{fmtMoney(entry.price)}</span>
+                  </div>
+                  <button className="btn gold" disabled={cash < entry.price} onClick={() => openMystery(entry)}>
+                    {cash < entry.price ? `Need ${fmtMoney(entry.price)}` : '❓ Buy & open'}
+                  </button>
+                </div>
+              ) : (
                 <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''}`}>
                   {entry.set.logo && <img src={entry.set.logo} alt={entry.set.name} style={{ height: 34, objectFit:'contain', alignSelf:'center' }} />}
                   <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>
@@ -378,6 +413,105 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
           </div>
         </div>
       )}
+
+      {mysteryResult && (
+        <MysteryReveal result={mysteryResult} onClose={() => setMysteryResult(null)} />
+      )}
+
+      {tradeFor && (
+        <TradePanel booth={booth} boothCard={tradeFor.card} ask={tradeFor.ask} collection={collection}
+          onTrade={doTrade} onClose={() => setTradeFor(null)} />
+      )}
+    </div>
+  )
+}
+
+// The mystery-pack reveal: flip open the grab-bag to see the one random single you pulled.
+function MysteryReveal({ result, onClose }) {
+  const { card, packName } = result
+  const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
+  const val = cardValue(card)
+  const hit = card._isHit || !!card.foil || val >= 15
+  useModalEscape(onClose)
+  return (
+    <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
+        <h3 style={{ marginTop: 0 }}>{hit ? '🎉 ' : '❓ '}{packName}</h3>
+        <div className="vendoritem featured" style={{ '--rarity': edge, maxWidth: 200, margin: '0 auto' }}>
+          <img src={card.img} alt={card.name} style={{ width: '100%', borderRadius: 8 }} />
+          <div style={{ fontWeight: 800, fontSize: 13 }}>{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
+          <div className="muted" style={{ fontSize: 11, color: edge }}>{card.foil ? card.foil.label : card.rarity}</div>
+          <div style={{ fontWeight: 800, color: 'var(--green)' }}>{fmtMoney(val)}</div>
+        </div>
+        <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
+          {hit ? "That's a hit! It's in your collection." : 'Added to your collection.'}
+        </p>
+        <button className="btn gold" style={{ maxWidth: 160, margin: '4px auto 0' }} onClick={onClose}>Nice →</button>
+      </div>
+    </div>
+  )
+}
+
+// Trade one of YOUR cards (+/- cash) for a booth card. Your card is valued at the vendor's
+// BUY rate (what they'd pay), so the cash closes the gap to their ask — trade up with cash, or
+// dump a card you don't want and take cash back on a cheaper piece.
+function TradePanel({ booth, boothCard, ask, collection, onTrade, onClose }) {
+  const [yourUid, setYourUid] = useState(null)
+  const mine = collection.find(c => c.uid === yourUid) || null
+  useModalEscape(onClose)
+  const tradeIn = mine ? round2(cardValue(mine) * booth.buyMult) : 0 // what they'd give you for it
+  const cashDelta = round2(ask - tradeIn) // >0 you add cash; <0 they add cash
+  const cash = useGame(s => s.cash)
+  const canDo = !!mine && (cashDelta <= 0 || cash >= cashDelta)
+  const sorted = [...collection].sort((a, b) => cardValue(b) - cardValue(a))
+  return (
+    <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
+        <h3 style={{ marginTop: 0 }}>🔁 Trade for {boothCard.name}</h3>
+        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+          They want <b>{fmtMoney(ask)}</b> for it. Pick a card to offer — they value it at their buy rate
+          ({Math.round(booth.buyMult * 100)}% of market), and cash covers the rest.
+        </p>
+        <div className="trade-summary">
+          <div className="row" style={{ justifyContent: 'center', gap: 14, alignItems: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div className="muted" style={{ fontSize: 11 }}>You give</div>
+              <b>{mine ? mine.name : '—'}</b>
+              <div className="muted" style={{ fontSize: 11 }}>{mine ? `worth ${fmtMoney(tradeIn)} to them` : 'pick a card'}</div>
+            </div>
+            <div style={{ fontSize: 22 }}>⇄</div>
+            <div style={{ textAlign: 'center' }}>
+              <div className="muted" style={{ fontSize: 11 }}>You get</div>
+              <b>{boothCard.name}</b>
+              <div className="muted" style={{ fontSize: 11 }}>market {fmtMoney(cardValue(boothCard))}</div>
+            </div>
+          </div>
+          {mine && (
+            <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 800 }}>
+              {cashDelta > 0
+                ? <>You also pay <span style={{ color: 'var(--red)' }}>{fmtMoney(cashDelta)}</span></>
+                : cashDelta < 0
+                ? <>They add <span style={{ color: 'var(--green)' }}>{fmtMoney(-cashDelta)}</span> to you</>
+                : 'Straight swap — no cash'}
+            </div>
+          )}
+        </div>
+        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', maxHeight: '42vh', overflowY: 'auto', marginTop: 10 }}>
+          {sorted.slice(0, 40).map(c => (
+            <div key={c.uid} className={`vendoritem ${yourUid === c.uid ? 'featured' : ''}`} style={{ cursor: 'pointer', outline: yourUid === c.uid ? '2px solid var(--accent)' : 'none' }}
+              onClick={() => setYourUid(c.uid)}>
+              <CardTile card={c} interactive={false} />
+              <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{fmtMoney(cardValue(c))}</div>
+            </div>
+          ))}
+        </div>
+        <div className="row" style={{ marginTop: 12 }}>
+          <button className="btn gold" disabled={!canDo} onClick={() => onTrade(boothCard, yourUid, cashDelta)}>
+            {!mine ? 'Pick a card' : cashDelta > 0 && cash < cashDelta ? `Need ${fmtMoney(cashDelta)}` : 'Make the trade'}
+          </button>
+          <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} onClick={onClose}>Cancel</button>
+        </div>
+      </div>
     </div>
   )
 }

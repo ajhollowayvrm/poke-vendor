@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
@@ -13,6 +13,16 @@ export default function CardModal({ card, onClose }) {
   const listOnSite = useGame(s => s.listOnSite)
   const listingQuote = useGame(s => s.listingQuote)
   const submitGrade = useGame(s => s.submitGrade)
+  const addToBinder = useGame(s => s.addToBinder)
+  const removeFromBinder = useGame(s => s.removeFromBinder)
+  // Is THIS copy slotted in the binder? And if not, is its masterset slot already taken by
+  // another copy (so adding it would be a no-op)?
+  const inBinder = useGame(s => (s.binder || []).some(c => c.uid === card?.uid))
+  const slotTaken = useGame(s => {
+    if (!card) return false
+    const sid = setIdOfCard(card), variant = cardVariant(card)
+    return (s.binder || []).some(b => b.id === card.id && setIdOfCard(b) === sid && cardVariant(b) === variant)
+  })
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
   // Per-set market history drives this card's price-history chart (it re-renders as the
@@ -152,8 +162,28 @@ export default function CardModal({ card, onClose }) {
                 Shown for raw and graded cards alike (both ride the set's market). */}
             <PriceChart series={priceSeries} />
 
-            {!listing ? (
+            {inBinder && (
               <div className="sell-options" style={{ marginTop: 14 }}>
+                <div className="banner" style={{ marginTop: 0 }}>
+                  📒 Slotted in your masterset binder as the{' '}
+                  <b style={{ color: MASTERSET_VARIANTS[cardVariant(card)]?.color }}>{MASTERSET_VARIANTS[cardVariant(card)]?.label}</b> copy —
+                  protected from every bulk action.
+                </div>
+                <button className="btn alt sellopt" onClick={() => { removeFromBinder(card.uid); onClose() }}>
+                  <b>📤 Take out of binder</b>
+                  <small>Return it to your collection to sell, list, or grade</small>
+                </button>
+              </div>
+            )}
+
+            {!inBinder && (!listing ? (
+              <div className="sell-options" style={{ marginTop: 14 }}>
+                <button className="btn alt sellopt" disabled={slotTaken}
+                  title={slotTaken ? 'Your binder already has this variant slotted' : undefined}
+                  onClick={() => { if (addToBinder(card.uid)) onClose() }}>
+                  <b>📒 Add to masterset binder</b>
+                  <small>{slotTaken ? 'This variant slot is already filled' : `Slot the ${MASTERSET_VARIANTS[cardVariant(card)]?.label || 'card'} — moves it out of the sellable pool, safe from bulk actions`}</small>
+                </button>
                 <button className="btn alt sellopt" onClick={() => { quickSell(card.uid); onClose() }}>
                   <b>Quick sell · {fmtMoney(market * quickSellRate)}</b>
                   <small>Instant, but only {Math.round(quickSellRate*100)}% of market (TCGplayer-style)</small>
@@ -198,9 +228,9 @@ export default function CardModal({ card, onClose }) {
                   <button className="btn alt" style={{ maxWidth: 120 }} onClick={() => setListing(false)}>← Back</button>
                 </div>
               </div>
-            )}
+            ))}
 
-            {!g && (
+            {!inBinder && !g && (
               <>
                 <div style={{ display:'flex', alignItems:'center', gap: 8, margin: '18px 0 6px' }}>
                   <span className="muted" style={{ fontSize: 13 }}>Submit for PSA-style grading</span>

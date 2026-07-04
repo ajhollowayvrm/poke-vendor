@@ -7,15 +7,16 @@ const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
 
 export default function Stats() {
   const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
-    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory, milestones, worthHistory } = useGame(s => ({
+    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory, milestones, worthHistory, binder } = useGame(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
     listings: s.listings, consignments: s.consignments, shopDisplay: s.shopDisplay,
     showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
-    milestones: s.milestones || [], worthHistory: s.worthHistory || [],
+    milestones: s.milestones || [], worthHistory: s.worthHistory || [], binder: s.binder || [],
   }))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
+    + (binder || []).reduce((a, c) => a + cardValue(c), 0)
   // Cards/products held in the IN-FLIGHT buckets are moved OUT of `collection` but are still
   // your assets — count them so listing, consigning, stocking, or grading a card doesn't make
   // net worth visibly drop with no offsetting gain.
