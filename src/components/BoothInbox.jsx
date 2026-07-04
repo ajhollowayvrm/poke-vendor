@@ -7,6 +7,7 @@ import Encounter from './Encounter'
 import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
+import MysteryPacks from './MysteryPacks'
 import { useModalEscape } from '../ui/dialog'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
@@ -85,11 +86,13 @@ export default function BoothInbox() {
     else if (wantPick) setWantPick(null)
   })
   // Sell splits into sub-tabs: day-to-day Orders, your Shop floor (case, holds,
-  // consignment intake, giveaways), the public Forum board, and On the market.
-  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'store' | 'forum' | 'market'
+  // consignment intake, giveaways), your Mystery pack line, the public Forum board,
+  // and On the market.
+  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'store' | 'packs' | 'forum' | 'market'
   const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
   const marketCount = listings.length + consignments.length
   const forumCount = (forumPosts || []).length
+  const builtPackCount = useGame(s => (s.builtPacks || []).length)
 
   const hasStore = !!upgrades.storefront
   const accepted = acceptedMethods(upgrades)
@@ -116,6 +119,9 @@ export default function BoothInbox() {
             </button>
           )
         })()}
+        <button className={`subtab ${sellTab === 'packs' ? 'active' : ''}`} onClick={() => setSellTab('packs')}>
+          ❓ Packs{builtPackCount ? ` (${builtPackCount})` : ''}
+        </button>
         <button className={`subtab ${sellTab === 'forum' ? 'active' : ''}`} onClick={() => setSellTab('forum')}>
           📋 Forum{forumCount ? ` (${forumCount})` : ''}
         </button>
@@ -130,6 +136,9 @@ export default function BoothInbox() {
         (listings.length || consignments.length)
           ? <SellStrips />
           : <div className="empty">Nothing on the market. List or consign cards from your collection (Cards → Select) to sell them here. 🌐</div>
+      ) : sellTab === 'packs' ? (
+        // Your custom mystery-pack product line: tiers, the builder, and built stock.
+        <MysteryPacks />
       ) : sellTab === 'store' ? (
         // ---- 🏬 Shop floor: the physical store, in sections — what's in the case
         // (singles + sealed), holds behind the counter, the consignment case you run

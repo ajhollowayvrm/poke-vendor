@@ -382,6 +382,15 @@ export default function ShowFloor({ show, onLeave }) {
           <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
             <div className="row" style={{ alignItems: 'baseline' }}>
               <h2 style={{ marginRight: 'auto' }}>🪧 Your table</h2>
+              {(() => {
+                const packsOut = useGame.getState().packsForChannel ? useGame.getState().packsForChannel('show').length : 0
+                return packsOut > 0 && (
+                  <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}
+                    title="Your built mystery packs (with the 🎪 Shows channel on) sell off this table too">
+                    ❓ {packsOut} mystery pack{packsOut === 1 ? '' : 's'} out
+                  </span>
+                )
+              })()}
               <span className="pill">{showInventory.length} card{showInventory.length === 1 ? '' : 's'} · {fmtMoney(showInventory.reduce((a, c) => a + cardValue(c), 0))}</span>
             </div>
             <p className="muted" style={{ marginTop: 2 }}>

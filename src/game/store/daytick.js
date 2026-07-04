@@ -22,6 +22,7 @@ import {
   makeVintageHold, setById,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
@@ -547,6 +548,34 @@ export function advanceDaysWith(set, get, days, away) {
   // A spiking set drew premium offers ABOVE market — the reward for listing into a hot market.
   if (lt.premiumOffers) get().log('listing', `📈 ${lt.premiumOffers} buyer${lt.premiumOffers > 1 ? 's' : ''} offered OVER market on a hot set — list into the spike while it lasts.`, 0)
   for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
+
+  // --- Mystery pack sales over the days passed -----------------------------------
+  // Your repack line sells on its enabled channels day by day: online orders ship out
+  // (needs the channel minded while away), store copies move across the counter (buzz
+  // helps). Each sale runs through sellBuiltPack — it banks the cash and settles the
+  // buyer-opened-it reputation swing — so here we just roll the demand.
+  if ((get().builtPacks || []).length) {
+    for (let i = 0; i < days; i++) {
+      if (!(get().builtPacks || []).length) break
+      const rep = get().packRep ?? 50
+      for (const tier of (get().packTiers || [])) {
+        if (tier.channels?.online && onlineOK) {
+          const q = get().packsForChannel('online').filter(p => p.tierId === tier.id)
+          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'online')) {
+            const r = get().sellBuiltPack(q[0].uid, { channel: 'online' })
+            if (r) noteSale(`${tier.name} (repack)`, r.net)
+          }
+        }
+        if (tier.channels?.store && hasStore && walkinOK) {
+          const q = get().packsForChannel('store').filter(p => p.tierId === tier.id)
+          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i)) {
+            const r = get().sellBuiltPack(q[0].uid, { channel: 'walkin' })
+            if (r) noteSale(`${tier.name} (repack)`, r.net)
+          }
+        }
+      }
+    }
+  }
 
   // --- In-store services over the days passed ----------------------------------
   // 1) HOLDS: a regular you set an item aside for comes in to pick it up (trust-scaled

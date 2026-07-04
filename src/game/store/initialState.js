@@ -12,6 +12,7 @@
 
 import { STARTING_CASH, STARTER_JOB } from './constants'
 import { makeShowVendors } from '../shows'
+import { defaultPackTiers } from '../mysterypacks'
 
 export function initialState() {
   return {
@@ -69,6 +70,10 @@ export function initialState() {
     storeCredit: 0,          // outstanding store credit you've issued (a liability — drains from counter takings as locals spend it; counts against net worth)
     storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
     eventCooldownLeft: 0,    // days before you can host another event
+    packTiers: defaultPackTiers(), // your mystery-pack PRODUCT LINES: {id,name,icon,price,bandLo,bandHi,channels:{show,store,online,stream}} — price + advertised band are yours to set
+    builtPacks: [],          // assembled mystery packs: {uid, tierId, cards:[...], sealed:[...], builtDay} — contents moved OUT of collection/inventory; sold sight-unseen at the tier price
+    packRep: 50,             // 0..100 repack reputation (50 = unproven) — moved by what buyers find inside; drives pack demand
+    packStats: { built: 0, sold: 0, revenue: 0, delighted: 0, burned: 0 }, // lifetime mystery-pack tallies
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.

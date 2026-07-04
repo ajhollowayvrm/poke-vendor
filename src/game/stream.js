@@ -137,6 +137,9 @@ const TIP_LINES = h => [`${h} tipped! ty 🙏`, `${h} dropped a tip 💸`, `${h}
 
 function pick(arr, rnd = Math.random) { return arr[Math.floor(rnd() * arr.length)] }
 
+// A random chat handle — for attributing live orders (rip orders, mystery-pack buys).
+export function randomChatHandle(rnd = Math.random) { return pick(CHAT_HANDLES, rnd) }
+
 // One chat message reacting to the current moment. `card` (optional) lets hype/hit
 // lines name the actual pull. kind: 'hype' | 'god' | 'demigod' | 'hit' | 'bulk' | 'ambient' | 'tip'
 export function chatLine(kind, rnd = Math.random, card = null) {

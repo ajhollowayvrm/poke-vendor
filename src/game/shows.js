@@ -286,19 +286,29 @@ function boothSealed(r, arch, band = [1, 100]) {
     const markup = 1.2 + r() * 0.5
     out.push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
   }
-  // MYSTERY PACKS: repackaged grab-bag singles — pay a fixed price, get one random card whose
-  // value lands somewhere in the pack's band (usually a small loss, sometimes a jackpot). A
-  // show-floor staple. Sized to the show tier via `band`. Basic pack is common; a pricier
-  // premium pack (bigger swing) shows up less often.
+  // MYSTERY PACKS: repackaged grab-bags — pay a fixed price, get one random pull (usually a
+  // single, occasionally a sealed product) whose value lands somewhere in the pack's band
+  // (usually a small loss, sometimes a jackpot). A show-floor staple. Prices are CAPPED at
+  // real repack money — a bigger show means a slightly nicer pack, not a $10k gamble; nobody
+  // repacks five figures into a grab-bag. Basic is common; premium less so; big shows
+  // sometimes lay out a high-roller repack.
   const [, hi] = band
-  const basicPrice = round2(Math.max(5, hi * 0.06))
+  const clampP = (x, lo2, hi2) => round2(Math.min(hi2, Math.max(lo2, x)))
+  const basicPrice = clampP(hi * 0.06, 5, 20)
   if (r() < 0.5) out.push({ mystery: true, key: 'basic', name: 'Mystery Pack', icon: '❓',
     price: basicPrice, band: [round2(basicPrice * 0.25), round2(basicPrice * 3)],
-    blurb: 'One random single — could be bulk, could be a banger.' })
-  const premPrice = round2(Math.max(20, hi * 0.2))
+    blurb: 'One random pull — could be bulk, could be a banger, could even be sealed.' })
+  const premPrice = clampP(hi * 0.2, 20, 100)
   if (r() < 0.22) out.push({ mystery: true, key: 'premium', name: 'Premium Mystery Pack', icon: '🎁',
     price: premPrice, band: [round2(premPrice * 0.35), round2(premPrice * 4)],
-    blurb: 'A pricier grab-bag — bigger floor, bigger ceiling. Guaranteed a hit sometimes.' })
+    blurb: 'A pricier grab-bag — bigger floor, bigger ceiling. Sometimes hides sealed product.' })
+  // High-roller repack: only where serious money walks the floor (value band tops $1k+).
+  if (hi >= 1200 && r() < 0.18) {
+    const hrPrice = clampP(hi * 0.01, 150, 400)
+    out.push({ mystery: true, key: 'highroller', name: 'High Roller Repack', icon: '💎',
+      price: hrPrice, band: [round2(hrPrice * 0.5), round2(hrPrice * 6)],
+      blurb: 'The serious gamble — a real chase piece or sealed heat is in some of these.' })
+  }
   return out
 }
 

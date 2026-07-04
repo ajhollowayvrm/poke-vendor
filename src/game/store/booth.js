@@ -9,8 +9,23 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById, setIdOfCard, bulkSellableUids, cardInValueRange, sealedValue } from '../engine'
+import { round2, cardValue, setById, setIdOfCard, bulkSellableUids, cardInValueRange, sealedValue,
+  SHOP_SETS, SECONDARY_SETS, setProducts, marketMult } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../shows'
+
+// A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
+// repack could plausibly hide. Returns { set, product } or null when nothing fits the band.
+function randomSealedInRange(lo, hi) {
+  const candidates = []
+  for (const set of [...SHOP_SETS, ...SECONDARY_SETS]) {
+    for (const p of setProducts(set)) {
+      const v = (p.price || 0) * marketMult(set.id)
+      if (v >= lo && v <= hi) candidates.push({ set, product: p })
+    }
+  }
+  if (!candidates.length) return null
+  return candidates[Math.floor(Math.random() * candidates.length)]
+}
 
 // The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
@@ -60,13 +75,26 @@ export function createBoothSlice(set, get) {
       if (!opts.toShowInventory) get().checkCompletions() // bought card may finish a set
       return true
     },
-    // Buy a MYSTERY PACK off a booth — a repackaged grab-bag single. You pay a fixed price
-    // and get one random card whose value lands somewhere in the pack's band (usually a
-    // small loss, occasionally a real jackpot). Returns the pulled card (added to your
-    // collection) so the booth can reveal it, or null if you couldn't afford it.
+    // Buy a MYSTERY PACK off a booth — a repackaged grab-bag. You pay a fixed price and get
+    // one random pull whose value lands somewhere in the pack's band (usually a small loss,
+    // occasionally a real jackpot). Most pulls are a single; some repacks hide a SEALED
+    // product instead (it stocks to your held inventory). Returns { card } or { sealed, set }
+    // for the booth's reveal, or null if you couldn't afford it.
     buyMysteryPack(price, band) {
       if (!get().spend(price)) return null
       const [lo, hi] = band || [1, Math.max(2, price * 3)]
+      // ~15% of repacks hide a wrapped sealed product whose market value fits the band.
+      if (Math.random() < 0.15) {
+        const found = randomSealedInRange(lo, hi * 1.5)
+        if (found) {
+          const item = get().mintSealedRow(found.set, found.product, price)
+          set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
+          get().log('buy', `❓ Opened a mystery pack for $${round2(price).toFixed(2)} — a sealed ${found.product.type} of ${found.set.name} was inside! (~$${sealedValue(item).toFixed(2)}, stocked to 📦 Inventory)`, -price)
+          get().bumpGoal('buy', 1)
+          get().checkMilestones()
+          return { sealed: item, set: found.set }
+        }
+      }
       // small jackpot chance: a slice of packs draw from WAY above the band (the "chase")
       const jackpot = Math.random() < 0.12
       const card = jackpot ? cardInValueRange(hi, hi * 4) : cardInValueRange(lo, hi)
@@ -75,7 +103,7 @@ export function createBoothSlice(set, get) {
       get().bumpGoal('buy', 1)
       get().checkCompletions() // a mystery pull can finish a set
       get().checkMilestones()
-      return card
+      return { card }
     },
 
     // Trade one of YOUR cards (± cash) for a booth's card. `cashDelta` > 0 means you ALSO pay
@@ -550,12 +578,31 @@ export function createBoothSlice(set, get) {
                ...omniShelfCards(get().listings).map(c => ({ item: c, sealed: false })),
                ...(get().shopSealed || []).filter(it => !it._heldFor).map(it => ({ item: it, sealed: true }))]
             : get().collection.map(c => ({ item: c, sealed: false }))
+          // Your CUSTOM MYSTERY PACKS sit on the same table/shelf — impulse product a
+          // browser can grab at its fixed tier price (channel-gated per tier).
+          if (pool === 'show' || pool === 'shop') {
+            const chan = pool === 'show' ? 'show' : 'store'
+            for (const p of get().packsForChannel(chan)) owned.push({ item: p, pack: true })
+          }
           if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
             const blocked = s.paymentBlocked(effect.payMethod)
             if (blocked) { s.log('lost-sale', blocked, 0); msg = msg + ' …but ' + blocked.toLowerCase(); break }
             // they buy a random item from the relevant pool at market
             const pick = owned[Math.floor(Math.random() * owned.length)]
             const item = pick.item
+            if (pick.pack) {
+              // A mystery pack sells at its FIXED tier price — no case/premium adjustments;
+              // sellBuiltPack banks the money, ships the contents, and settles the rep.
+              const r = s.sellBuiltPack(item.uid, { channel: pool === 'show' ? 'show' : 'walkin', payMethod: effect.payMethod })
+              if (r) {
+                msg = `They grabbed a ${r.tier.icon} ${r.tier.name} for $${r.gross.toFixed(2)} — `
+                  + (r.outcome.key === 'jackpot' ? 'opened it on the spot and PULLED A BANGER. The table is mobbed! 🎉'
+                    : r.outcome.key === 'happy' ? 'opened it right there and walked off grinning.'
+                    : r.outcome.key === 'meh' ? 'opened it, shrugged, and moved on. Cash is cash.'
+                    : 'opened it and shot you a dirty look. That one was thin. 😬')
+              }
+              break
+            }
             const label = pick.sealed ? `${item.product.type} (${setById(item.setId)?.name || 'sealed'})` : item.name
             let price = pick.sealed ? sealedValue(item) : cardValue(item) // grade-aware for cards; market for sealed
             // Deal of the Show: the card you flagged as a loss-leader actually sells at a

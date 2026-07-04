@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById } from '../game/engine'
+import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, sealedCard, round2 } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
-  rollRipOrder,
+  rollRipOrder, randomChatHandle,
 } from '../game/stream'
+import { packSaleChance } from '../game/mysterypacks'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 import Burst from './Burst'
@@ -58,6 +59,9 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   const inventory = useGame(s => s.sealedInventory)
   const ripSealedAction = useGame(s => s.ripSealed)
+  // Built mystery packs with the 🔴 stream channel on — viewers can order them mid-stream.
+  const streamPacks = useGame(s => (s.builtPacks || [])
+    .filter(p => (s.packTiers || []).find(t => t.id === p.tierId)?.channels?.stream).length)
 
   // The rip queue you're building. Each row: { invUid, setId, product, brk:{on,spots} }.
   const [queue, setQueue] = useState([])
@@ -124,6 +128,9 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
         audience</b> (rest a few days to recover).
         {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime{streamStats.ripOrders ? ` · ${streamStats.ripOrders} rip orders filled` : ''}</span> : null}
         {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>👥 {followers.toLocaleString()} followers</span>}
+        {streamPacks > 0 && <span className="pill" style={{ marginLeft: 8, background: '#ffcb0522', color: 'var(--gold)' }}
+          title="Built mystery packs with the 🔴 Stream channel on — viewers order them mid-stream and you rip them on camera">
+          🎁 {streamPacks} mystery pack{streamPacks > 1 ? 's' : ''} ready for live orders</span>}
       </div>
 
       {inventory.length === 0 ? (
@@ -337,19 +344,35 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 
   useEffect(() => { const el = chatBoxRef.current; if (el) el.scrollTop = el.scrollHeight }, [chat])
 
-  // Live rip orders: while live with the upgrade (and product still on hand), viewers roll in
-  // requests to have you crack a held product for them. Frequency scales with the crowd.
+  // Live orders while you're on air. Two kinds share the order box:
+  //   🎁 PACK orders — viewers buy one of your built MYSTERY PACKS (stream channel on) and
+  //      you rip it on camera; no upgrade needed, it's your own product.
+  //   🎟️ RIP orders — viewers pay a premium to have you crack a product you hold (needs the
+  //      Live Rip Service upgrade). Frequency scales with the crowd.
   useEffect(() => {
-    if (!hasRipService) return
     const id = setInterval(() => {
       if (doneRef.current || finishedRef.current) return
       setOrders(prev => {
         if (prev.length >= 3) return prev
-        const pendingUids = new Set(prev.map(o => o.invUid))
-        const held = (useGame.getState().sealedInventory || []).filter(it => !pendingUids.has(it.uid))
-        if (!held.length) return prev
+        const g = useGame.getState()
+        const pendingUids = new Set(prev.map(o => o.invUid || o.packUid))
+        const packsOut = (g.packsForChannel?.('stream') || []).filter(p => !pendingUids.has(p.uid))
+        const held = hasRipService ? (g.sealedInventory || []).filter(it => !pendingUids.has(it.uid)) : []
+        if (!packsOut.length && !held.length) return prev
         const chance = Math.min(0.6, 0.12 + peakRef.current / 4000) // bigger room ⇒ more orders
         if (Math.random() > chance) return prev
+        const wantPack = packsOut.length && (!held.length || Math.random() < 0.45)
+        if (wantPack) {
+          const pack = packsOut[Math.floor(Math.random() * packsOut.length)]
+          const tier = (g.packTiers || []).find(t => t.id === pack.tierId)
+          if (!tier) return prev
+          // Pricier packs need rep + fame to move, even to a hyped room.
+          if (Math.random() > Math.max(0.08, packSaleChance(tier.price, notoriety, g.packRep ?? 50, 'store', true) * 2.2)) return prev
+          const buyer = randomChatHandle()
+          pushChat({ handle: buyer, text: `drop me a ${tier.icon} ${tier.name}!! paying ${fmtMoney(tier.price)}` })
+          return [...prev, { id: `po-${pack.uid}-${Math.floor(Math.random() * 1e9)}`, kind: 'pack',
+            packUid: pack.uid, buyer, price: tier.price, product: { icon: tier.icon, type: tier.name } }]
+        }
         const order = rollRipOrder(held, notoriety, setById)
         if (!order) return prev
         pushChat({ handle: order.buyer, text: `yo can you rip my ${order.product.type}? 🎟️ paying ${fmtMoney(order.price)}` })
@@ -386,14 +409,16 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     if (phaseRef.current === 'revealing' || doneRef.current) return
     const e = curEntry()
     if (!e || packRef.current >= e.product.packs) return
-    const cards = openPack(e.set)
+    // A mystery-pack rip reveals the PRE-SEALED contents — they were sold and already left
+    // your stock (sellBuiltPack), so no pulls are added; every card ships to the buyer.
+    const cards = e.packRip ? [...e.packCards] : openPack(e.set)
     preloadCardImages(cards) // warm the CDN cache so the live reveal doesn't lag on slow images
     cards.forEach(c => { c._isHit = isHit(c) })
-    const god = !!cards._god
-    const demigod = !!cards._demigod
+    const god = !e.packRip && !!cards._god
+    const demigod = !e.packRip && !!cards._demigod
     if (god) cards.forEach(c => { c._fromGod = true })
     if (demigod) cards.forEach(c => { c._fromDemigod = true })
-    addPulls(cards, `🔴 ${e.set.name} (live)`)
+    if (!e.packRip) addPulls(cards, `🔴 ${e.set.name} (live)`)
     const idx = idxRef.current
     if (e.isBreak) {
       const startIdx = allPulled.current.filter(p => p.entryIdx === idx).length
@@ -457,7 +482,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     if (entryDoneRef.current.has(idx)) return // idempotent (setPackNo updater can double-run)
     entryDoneRef.current.add(idx)
     const e = curEntry()
-    const promo = makeProductPromo(e.set, e.product || { bonus: null })
+    // A mystery-pack rip has no promo (it's a repack, not sealed product) and the whole
+    // queue may still be open — just check for the end.
+    const promo = e.packRip ? null : makeProductPromo(e.set, e.product || { bonus: null })
     if (promo) {
       promo._isHit = isHit(promo)
       addPulls([promo], `🔴 ${e.set.name} promo (live)`, 0)
@@ -501,8 +528,27 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 
   // Accept a live rip order: the buyer pre-pays now, the held product is consumed, and it's
   // appended to the queue as a fully-owed single-owner break (all its cards ship to them).
+  // A PACK order sells one of your built mystery packs the same way — the sale (cash, rep
+  // swing, log) settles now via sellBuiltPack, and the contents get ripped on camera next.
   function acceptOrder(order) {
     if (done || finishedRef.current) return
+    if (order.kind === 'pack') {
+      const r = useGame.getState().sellBuiltPack(order.packUid, { channel: 'stream', buyer: order.buyer })
+      if (!r) { setOrders(o => o.filter(x => x.id !== order.id)); return toast('That pack is already gone.') }
+      // Contents become the on-camera reveal: real cards + any sealed inside (card-shaped for display).
+      const revealCards = [...(r.pack.cards || []), ...(r.pack.sealed || []).map(sealedCard)]
+      queueRef.current = [...queueRef.current, {
+        set: { id: null, name: r.tier.name, logo: null }, // pseudo-set: the tier IS the product
+        product: { type: r.tier.name, icon: r.tier.icon, packs: 1, price: round2(r.value) }, // price = contents value, so the Net readout stays honest (sale − what shipped out)
+        isBreak: true, spots: 1, spotsSold: 1, filled: 1, perSpot: r.gross, spotGross: r.gross,
+        owners: [order.buyer], orderedBy: order.buyer, packRip: true, packCards: revealCards,
+      }]
+      setOrders(o => o.filter(x => x.id !== order.id))
+      bumpQueue()
+      pushChat({ handle: 'system', text: `✅ ${order.buyer} bought a ${r.tier.icon} ${r.tier.name} (${fmtMoney(r.gross)}) — ripping it live!`, tip: true })
+      if (doneRef.current) goNextEntry()
+      return
+    }
     const it = ripSealedAction(order.invUid)
     if (!it) { setOrders(o => o.filter(x => x.id !== order.id)); return toast('That product just left your inventory.') }
     collectRipOrder(order.price, order.buyer, order.product.type)
@@ -568,11 +614,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       const already = idx === idxRef.current ? (packRef.current + (phaseRef.current === 'revealing' ? 1 : 0)) : 0
       const remaining = Math.max(0, e.product.packs - already)
       for (let p = 0; p < remaining; p++) {
-        const cards = openPack(e.set)
+        // Mystery-pack rips reveal pre-sealed contents (already sold & shipped — no pulls added).
+        const cards = e.packRip ? [...e.packCards] : openPack(e.set)
         cards.forEach(c => { c._isHit = isHit(c) })
-        if (cards._god) cards.forEach(c => { c._fromGod = true })
-        if (cards._demigod) cards.forEach(c => { c._fromDemigod = true })
-        addPulls(cards, `🔴 ${e.set.name} (live)`)
+        if (!e.packRip && cards._god) cards.forEach(c => { c._fromGod = true })
+        if (!e.packRip && cards._demigod) cards.forEach(c => { c._fromDemigod = true })
+        if (!e.packRip) addPulls(cards, `🔴 ${e.set.name} (live)`)
         cards.forEach((c) => {
           const startIdx = allPulled.current.filter(pp => pp.entryIdx === idx).length
           allPulled.current.push({ card: c, spot: e.isBreak ? startIdx % e.spots : null, entryIdx: idx })
@@ -594,10 +641,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           if (c._isHit || c.foil) addedHits.push(c)
         })
       }
-      // mint this product's guaranteed promo (once)
+      // mint this product's guaranteed promo (once) — repacks have none
       if (!entryDoneRef.current.has(idx)) {
         entryDoneRef.current.add(idx)
-        const promo = makeProductPromo(e.set, e.product || { bonus: null })
+        const promo = e.packRip ? null : makeProductPromo(e.set, e.product || { bonus: null })
         if (promo) {
           promo._isHit = isHit(promo)
           addPulls([promo], `🔴 ${e.set.name} promo (live)`, 0)
@@ -645,7 +692,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       useGame.getState().formRegular({ channel: 'online', setId: s0.id, setName: s0.name, generous: hypeMoments > 0 })
     }
     const breakEntries = queueRef.current.filter(e => e.isBreak && !e.orderedBy)
-    const orderEntries = queueRef.current.filter(e => e.orderedBy)
+    const orderEntries = queueRef.current.filter(e => e.orderedBy && !e.packRip)
+    const packEntries = queueRef.current.filter(e => e.packRip)
     onEnd({
       peak, noto, tips, hits: keptHits,
       packsRipped: queueRef.current.reduce((a, e) => a + e.product.packs, 0),
@@ -657,6 +705,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       breakCost: Math.round(breakEntries.reduce((a, e) => a + (e.product.price || 0), 0) * 100) / 100,
       orderCount: orderEntries.length,
       orderRevenue: Math.round(orderEntries.reduce((a, e) => a + e.perSpot, 0) * 100) / 100,
+      packCount: packEntries.length,
+      packRevenue: Math.round(packEntries.reduce((a, e) => a + e.perSpot, 0) * 100) / 100,
       shipped,
       set: queueRef.current[0].set, product: queueRef.current[0].product,
       followers: followerGain,
@@ -696,7 +746,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         )}
         {keptValue > 0 && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}
           title="Market value of the cards you're keeping from this rip">🃏 {fmtMoney(keptValue)} kept</span>}
-        {entry && entry.orderedBy && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>🎟️ Rip order · {entry.orderedBy}</span>}
+        {entry && entry.orderedBy && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>{entry.packRip ? '🎁 Pack order' : '🎟️ Rip order'} · {entry.orderedBy}</span>}
         {entry && entry.isBreak && !entry.orderedBy && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>📦 Break · {entry.filled}/{entry.spots} spots</span>}
         <span className="pill" title={entry && entry.isBreak
             ? 'Tips + spot/order cash + value of cards you keep, minus product cost'
@@ -796,9 +846,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endStream}>End early</button>}
           </div>
 
-          {hasRipService && orders.length > 0 && (
+          {orders.length > 0 && (
             <div className="rip-orders">
-              <div className="rip-side-head">🎟️ Rip orders <span className="muted">— viewers paying you to crack it live (you keep the markup; cards ship to them)</span></div>
+              <div className="rip-side-head">🎟️ Live orders <span className="muted">— viewers buying rips & your mystery packs (cards ship to them)</span></div>
               {orders.map(o => (
                 <div key={o.id} className="rip-order">
                   <b className="ro-buyer" style={{ color: handleColor(o.buyer) }}>{o.buyer}</b>
@@ -946,6 +996,8 @@ function StreamSummary({ session, onDone }) {
           {s.isBreak && <div><span className="muted">Break P/L</span><b style={{ color: breakPL >= 0 ? 'var(--green)' : 'var(--red)' }}>{breakPL>=0?'+':''}{fmtMoney(breakPL)}</b></div>}
           {s.orderCount > 0 && <div><span className="muted">Rip orders filled</span><b>🎟️ {s.orderCount}</b></div>}
           {s.orderCount > 0 && <div><span className="muted">Rip order revenue</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.orderRevenue)}</b></div>}
+          {s.packCount > 0 && <div><span className="muted">Mystery packs sold live</span><b>🎁 {s.packCount}</b></div>}
+          {s.packCount > 0 && <div><span className="muted">Pack revenue</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.packRevenue)}</b></div>}
           {s.followers > 0 && <div><span className="muted">New followers</span><b style={{ color:'var(--accent-light)' }}>👥 +{s.followers}</b></div>}
         </div>
         <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>

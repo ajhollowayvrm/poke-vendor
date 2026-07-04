@@ -36,6 +36,8 @@ import { createSellingSlice } from './selling'
 import { createSourcingSlice } from './sourcing'
 import { createBoothSlice } from './booth'
 import { createLivestreamSlice } from './livestream'
+import { createPacksSlice } from './packs'
+import { defaultPackTiers } from '../mysterypacks'
 
 // Re-export the public API (constants + pure helpers) so `import { ... } from '../game/store'`
 // keeps resolving every symbol components use (PAYMENT_METHODS, UPGRADES, JOBS, absoluteDay, …).
@@ -49,9 +51,10 @@ export const useGame = create(persist((set, get) => ({
   ...createSourcingSlice(set, get),
   ...createBoothSlice(set, get),
   ...createLivestreamSlice(set, get),
+  ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 40,
+  version: 41,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -60,6 +63,13 @@ export const useGame = create(persist((set, get) => ({
     const seen = new Set()
     const keepFlat = (arr) => (arr || []).filter(c => c?.uid && !seen.has(c.uid) && seen.add(c.uid))
     const keepWrapped = (arr) => (arr || []).filter(e => e?.card?.uid && !seen.has(e.card.uid) && seen.add(e.card.uid))
+    // Built mystery packs hold SEALED-IN copies (out of the collection/inventory). A pack's
+    // contents are never filtered (the pack must stay intact for its eventual buyer), so
+    // register their uids FIRST — a stray duplicate in any other bucket gets dropped.
+    for (const p of (state.builtPacks || [])) {
+      for (const c of (p?.cards || [])) if (c?.uid) seen.add(c.uid)
+      for (const it of (p?.sealed || [])) if (it?.uid) seen.add(it.uid)
+    }
     // Priority: the IN-FLIGHT money-bearing buckets win over a stray collection duplicate,
     // so a corruption-repair never silently discards a card you've already paid a grading
     // fee for (pendingGrades) or are owed proceeds on (listings/consignments). The card
@@ -354,6 +364,14 @@ export const useGame = create(persist((set, get) => ({
       state.storeCredit = state.storeCredit ?? 0
       state.storeEventPlanned = state.storeEventPlanned ?? null
       state.eventCooldownLeft = state.eventCooldownLeft ?? 0
+    }
+    if (version < 41) {
+      // Custom mystery packs: player-built repack product lines. Seed the starter tiers
+      // (basic/premium/royal — fully editable), no packs built yet, neutral pack rep.
+      state.packTiers = state.packTiers?.length ? state.packTiers : defaultPackTiers()
+      state.builtPacks = state.builtPacks ?? []
+      state.packRep = state.packRep ?? 50
+      state.packStats = state.packStats ?? { built: 0, sold: 0, revenue: 0, delighted: 0, burned: 0 }
     }
     return state
   },

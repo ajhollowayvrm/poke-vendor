@@ -74,5 +74,7 @@ export function netWorthFull(s) {
     + (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
     + (s.showSealed || []).reduce((a, it) => a + sealedValue(it), 0)
     + (s.shopSealed || []).reduce((a, it) => a + sealedValue(it), 0)
+    // Built mystery packs: the contents are still your assets until a buyer takes the pack.
+    + (s.builtPacks || []).reduce((a, p) => a + cv(p.cards) + (p.sealed || []).reduce((x, it) => x + sealedValue(it), 0), 0)
     - (s.storeCredit || 0)) // issued store credit is a liability — locals will spend it out of your future takings
 }

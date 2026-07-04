@@ -106,12 +106,13 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     else if (!haggle) onClose()
   })
 
-  // Buy & open a mystery pack right here — one random single, revealed on the spot.
+  // Buy & open a mystery pack right here — one random pull (a single, or sometimes a
+  // sealed product), revealed on the spot.
   function openMystery(entry) {
-    const card = useGame.getState().buyMysteryPack(entry.price, entry.band)
-    if (!card) { flash(`Not enough cash for the ${entry.name}.`); return }
+    const res = useGame.getState().buyMysteryPack(entry.price, entry.band)
+    if (!res) { flash(`Not enough cash for the ${entry.name}.`); return }
     setSealed(s => { const next = s.filter(e => e !== entry); if (!next.length) setTab('buy'); return next })
-    setMysteryResult({ card, packName: entry.name })
+    setMysteryResult({ ...res, packName: entry.name })
   }
   // Complete a many-to-many trade: your bundle of cards + sealed (± cash) for the booth's
   // bundle of cards + sealed. Removes every taken booth item from the table afterward.
@@ -420,13 +421,35 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   )
 }
 
-// The mystery-pack reveal: flip open the grab-bag to see the one random single you pulled.
+// The mystery-pack reveal: flip open the grab-bag to see what you pulled — usually one
+// random single, but some repacks hide a whole sealed product (it stocks to inventory).
 function MysteryReveal({ result, onClose }) {
-  const { card, packName } = result
+  const { card, sealed, set, packName } = result
+  useModalEscape(onClose)
+  if (sealed) {
+    const val = sealedValue(sealed)
+    return (
+      <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
+        <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
+          <h3 style={{ marginTop: 0 }}>📦 {packName}</h3>
+          <div className="vendoritem featured" style={{ maxWidth: 200, margin: '0 auto' }}>
+            {set?.logo && <img src={set.logo} alt={set?.name || ''} style={{ height: 44, objectFit: 'contain', alignSelf: 'center' }} />}
+            <div style={{ fontSize: 30 }}>{sealed.product.icon || '📦'}</div>
+            <div style={{ fontWeight: 800, fontSize: 13 }}>{sealed.product.type}</div>
+            <div className="muted" style={{ fontSize: 11 }}>{set?.name}</div>
+            <div style={{ fontWeight: 800, color: 'var(--green)' }}>{fmtMoney(val)}</div>
+          </div>
+          <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
+            Sealed product inside! It's stocked in <b>Cards → 📦 Sealed</b> — rip, list, or flip it.
+          </p>
+          <button className="btn gold" style={{ maxWidth: 160, margin: '4px auto 0' }} onClick={onClose}>Nice →</button>
+        </div>
+      </div>
+    )
+  }
   const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
   const val = cardValue(card)
   const hit = card._isHit || !!card.foil || val >= 15
-  useModalEscape(onClose)
   return (
     <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>

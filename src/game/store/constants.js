@@ -66,6 +66,7 @@ export const STORAGE_PER_UNIT = 2      // $/day for each held item beyond the al
 export function heldUnits(s) {
   return (s.sealedInventory?.length || 0) + (s.listings?.length || 0)
     + (s.consignments?.length || 0) + (s.shopDisplay?.length || 0) + (s.shopSealed?.length || 0)
+    + (s.builtPacks?.length || 0) // a sealed repack on the shelf is stock like any other
 }
 // Daily storage fee for the current inventory load (0 while under the free allowance).
 export function storageFee(s) {
