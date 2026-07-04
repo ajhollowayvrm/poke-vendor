@@ -467,7 +467,7 @@ function GameClock() {
 function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents } = summary
+    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
@@ -514,6 +514,7 @@ function DaySummary({ summary, onClose }) {
                 {sold.filter(s => !bigSale || s.name !== bigSale.name || s.net !== bigSale.net).slice(0, 3).map((s, i) => (
                   <div className="recap-line" key={i}><span className="muted">{s.name}</span><span className="muted">+{fmtMoney(s.net)}</span></div>
                 ))}
+                {counterIncome > 0 && <div className="recap-line"><span className="muted">🏬 Storefront counter (singles/supplies/bulk)</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(counterIncome)}</b></div>}
                 {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(saleProceeds)}</b></div>}
               </div>
             )}

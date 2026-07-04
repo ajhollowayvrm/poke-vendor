@@ -184,8 +184,10 @@ export function dayOrderChance(channel, notoriety, hasBargain = false) {
     // unknown vendor → no inbound from reputation; the only draw is a steep deal.
     return channel === 'online' && hasBargain ? 0.18 : 0
   }
-  const floor = channel === 'online' ? 0.10 : 0.06 // chance just past the gate
-  const cap   = channel === 'online' ? 0.85 : 0.65
+  // A physical store is your biggest DEMAND engine — local foot traffic beats an unknown
+  // web listing, so walk-ins come MORE often than online orders (that's what the lease buys).
+  const floor = channel === 'online' ? 0.10 : 0.16 // chance just past the gate
+  const cap   = channel === 'online' ? 0.85 : 0.95
   const ramp  = Math.min(1, (notoriety - INBOUND_NOTORIETY_GATE) / 200) // 0→1 across the fame curve
   const base  = floor + (cap - floor) * ramp
   // A bargain listing adds extra pull on top of your reputation, too.
@@ -202,7 +204,7 @@ export const STREAM_HYPE_DAYS = 4
 // investments are thousands, and a physical storefront is the big commitment.
 export const UPGRADES = {
   // THE major commitment: a real lease + buildout. Unlocks walk-ins + Cash.
-  storefront: { name: 'Brick-and-Mortar Store', cost: 8000, desc: 'Sign a lease and open a real shop. Local customers walk in for in-person sales, and you can accept Cash. The big leap from flipper to store owner.', icon: '🏬', tier: 'big' },
+  storefront: { name: 'Brick-and-Mortar Store', cost: 8000, desc: 'Sign a lease ($120/day) and open a real shop — your biggest DEMAND engine. Heavy local foot traffic (more orders than online), a +12% in-person price premium, steady daily counter business (singles/supplies/bulk to locals) once your case is stocked, passive local fame, and Cash payments. The big leap from flipper to store owner — keep the shelf stocked and it more than earns its lease.', icon: '🏬', tier: 'big' },
 
   // Payment rails — each its own setup. Capture buyers who won't use Venmo.
   payPaypal: { name: 'Accept PayPal',            cost: 120,  desc: 'Take PayPal — a huge share of online buyers prefer it.', icon: '🅿️', group: 'payment' },

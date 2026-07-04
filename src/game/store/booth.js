@@ -10,7 +10,7 @@
 // card (collection / listings / show inventory / shop shelf).
 
 import { round2, cardValue, setById, bulkSellableUids, cardInValueRange } from '../engine'
-import { encounterStillValid } from '../shows'
+import { encounterStillValid, STORE_SALE_PREMIUM } from '../shows'
 import { acceptedMethods, PAYMENT_METHODS, processingFee } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
@@ -220,6 +220,7 @@ export function createBoothSlice(set, get) {
           if (card) {
             let price = effect.price
             if (get().upgrades.cases) price = round2(price * 1.12)
+            if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
             const { net, fee } = processingFee(price, effect.payMethod)
             removeOwnedAnywhere(set, effect.uid)
             s.earn(net)
@@ -241,6 +242,7 @@ export function createBoothSlice(set, get) {
               // bump applies here too (was previously missed).
               let price = effect.price
               if (get().upgrades.cases) price = round2(price * 1.12)
+              if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
               const { net, fee } = processingFee(price, effect.payMethod)
               removeOwnedAnywhere(set, effect.uid)
               s.earn(net); s.addNotoriety(effect.notoriety)
@@ -270,6 +272,7 @@ export function createBoothSlice(set, get) {
             const card = owned[Math.floor(Math.random() * owned.length)]
             let price = cardValue(card) // grade-aware: a slab sells for its graded value, not raw
             if (get().upgrades.cases) price = round2(price * 1.12)
+            if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
             const { net, fee } = processingFee(price, effect.payMethod)
             removeOwnedAnywhere(set, card.uid)
             s.earn(net)

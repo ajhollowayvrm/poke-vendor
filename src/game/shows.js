@@ -101,11 +101,11 @@ export function generateCalendar(notoriety, seed = 7) {
 // `flex` = how far (fraction toward fair market) a vendor will haggle from their
 // opening price before walking. Fair dealers bend a lot; lowballers barely move.
 const ARCHETYPES = [
-  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable' },
-  { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, flex: 0.45, vibe: 'shrewd, always angling' },
-  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'only deals in the big stuff' },
-  { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, flex: 0.65, vibe: 'eager but green' },
-  { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  flex: 0.20, vibe: 'notorious for ripping people off' },
+  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — fair both ways' },
+  { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, flex: 0.45, vibe: 'shrewd — but stocks the deepest high-end & graded bins' },
+  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — and pays TOP dollar for yours' },
+  { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, flex: 0.65, vibe: 'eager but green — sells under market, sometimes misprices a gem' },
+  { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  flex: 0.20, vibe: 'a shark — gouges on everything, but now and then fumbles a price' },
 ]
 const ARCH_BY_KEY = Object.fromEntries(ARCHETYPES.map(a => [a.key, a]))
 export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
@@ -291,8 +291,12 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       if (vintageChance && r() < vintageChance) {
         card = vintageCardInRange(lo, hi * 3, r) || null // vintage skews pricey; widen the band
       }
-      // ~15% of stock are "hits" pulled from the upper band; rest is the bulk bin.
-      if (!card) card = (arch.key === 'whale' || roll > 0.85)
+      // Hit density varies by archetype — this is a REASON to pick a vendor. SHARP traders
+      // are shrewd operators who corner the good stuff: their bins run far deeper in high-end
+      // singles and graded slabs (you pay their premium, but they're where the chase cards
+      // ARE). Whales always deal big; everyone else runs a normal ~15% hit rate.
+      const hitChance = arch.key === 'sharp' ? 0.38 : 0.15
+      if (!card) card = (arch.key === 'whale' || roll < hitChance)
         ? gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3), r)
         : cardInValueRange(lo, hi * (0.4 + r() * 0.6), r)
       // Price against the card's TRUE value (grade-aware) — a slabbed gem is
@@ -300,8 +304,13 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       const worth = cardValue(card)
       let ask = worth * arch.sellMult
       if (arch.key === 'newbie' && r() > 0.7) ask = worth * 0.5 // mispriced gem!
+      // FLEECER steal: a greedy lowballer overprices everything — but every so often fumbles a
+      // price and tags a real piece dirt cheap (they misjudged it). It's the ONE reason to dig
+      // through a lowballer's bin: the rare mislabeled grail. Worth-gated so it lands on
+      // something worth grabbing, not a 25¢ common.
+      if (arch.key === 'fleecer' && worth >= Math.max(5, lo * 3) && r() < 0.12) ask = worth * (0.4 + r() * 0.2)
       card._ask = Math.max(0.25, Math.round(ask * 100) / 100)
-      card._mispriced = arch.key === 'newbie' && ask < worth * 0.7
+      card._mispriced = ask < worth * 0.7 && (arch.key === 'newbie' || arch.key === 'fleecer')
       stock.push(card)
     }
     let boothStock = stock
@@ -409,6 +418,11 @@ function visitorFor(channel, kind) {
   if (kind === 'fleeced') return pickAny(null, FLEECED_VISITORS[channel] || FLEECED_VISITORS.show)
   return pickAny(null, VISITOR_NAMES[channel] || VISITOR_NAMES.show)
 }
+// In-person walk-in customers at your STORE pay a premium over online buyers — no shipping,
+// they can hold it, and impulse is real. This is a core reason to run a brick-and-mortar shop:
+// the same card sells for more across your counter than in a web listing. Applied at sale
+// resolution to walk-in sale/counter/browse effects (see store/booth.resolveEncounter).
+export const STORE_SALE_PREMIUM = 0.12
 // Online buyers can\'t hand you cash. In-person can use anything you accept.
 const ONLINE_METHODS = ['venmo', 'paypal', 'card']
 const INPERSON_METHODS = ['cash', 'venmo', 'card', 'paypal']

@@ -351,9 +351,30 @@ export function advanceDaysWith(set, get, days, away) {
     // shelf is the pool: walk-ins only buy/offer on cards you've put out (passed as both the
     // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the display case).
     if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
-      if (walkinOK) newOrders.push({ ...boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars), channel: 'walkin' })
-      else missedWalkin++
+      if (walkinOK) {
+        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
+        // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies —
+        // a card sells for more across your counter than in a web listing.
+        for (const o of (enc.options || [])) {
+          if (o.effect && ['sellOwned', 'counter', 'browseSale'].includes(o.effect.type)) o.effect.inStore = true
+        }
+        newOrders.push({ ...enc, channel: 'walkin' })
+      } else missedWalkin++
     }
+  }
+  // BRICK & MORTAR "counter business": beyond the individual walk-up encounters above, a real
+  // shop does steady everyday trade — singles, supplies, bulk to local kids/parents. That
+  // baseline income scales with your local fame (foot traffic) and staffing, and rewards
+  // keeping the case STOCKED (a neglected, empty shop barely ticks over). It's the recurring
+  // revenue that makes the lease worth carrying once you've built a name. Also, running a
+  // storefront steadily grows your name in town (passive notoriety). Capped so it never
+  // becomes a runaway printer — the big money is still in the cards you move.
+  let counterRevenue = 0
+  if (hasStore) {
+    const stocked = (s.shopDisplay || []).length > 0
+    const perDay = Math.min(250, (15 + noto) * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6))
+    counterRevenue = round2(perDay * days)
+    get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }
   // No new-player guarantee: an unknown vendor (below INBOUND_NOTORIETY_GATE) gets NO
   // unsolicited inbox mail. Early demand comes from the public Forum (WTB board), or you
@@ -366,8 +387,10 @@ export function advanceDaysWith(set, get, days, away) {
     months += 1
     get().log('month', `A new month of shows begins.`, 0)
   }
-  // resolve consignments whose timer elapsed over the days passed
-  let soldProceeds = 0
+  // resolve consignments whose timer elapsed over the days passed. Seed proceeds with the
+  // storefront's counter business (logged separately below so the recap can show it).
+  let soldProceeds = counterRevenue
+  if (counterRevenue > 0) get().log('shop', `🏬 Storefront counter sales — singles, supplies & bulk to locals (+$${counterRevenue.toFixed(2)})`, counterRevenue)
   // Names + biggest single sale over the window, for the daily recap's "what sold" list.
   const soldNames = []
   let bigSale = null
@@ -494,7 +517,7 @@ export function advanceDaysWith(set, get, days, away) {
     lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
     listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
     resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, days,
-    saleProceeds: round2(soldProceeds),
+    saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
@@ -528,6 +551,7 @@ export function mergeSummaries(a, b) {
     resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
     resolvedGradeCards: [...(a.resolvedGradeCards || []), ...(b.resolvedGradeCards || [])],
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
+    counterIncome: round2(add(a.counterIncome, b.counterIncome)),
     soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),
     bigSale,
     newWants: add(a.newWants, b.newWants),
