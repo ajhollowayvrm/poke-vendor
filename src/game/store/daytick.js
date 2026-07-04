@@ -21,7 +21,7 @@ import {
   marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById,
 } from '../engine'
-import { boothEncounter, makeWant } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant } from '../shows'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
@@ -395,9 +395,14 @@ export function advanceDaysWith(set, get, days, away) {
     // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the display case).
     if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
       if (walkinOK) {
-        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
-        // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies —
-        // a card sells for more across your counter than in a web listing.
+        // ~35% of walk-ins come in ASKING for a specific item (sealed or single) rather than
+        // browsing — the store's demand layer. The rest are the usual offer/browse/trade mix.
+        const enc = Math.random() < 0.35
+          ? makeShopRequest(s, accepted)
+          : boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
+        // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies — a
+        // card sells for more across your counter than in a web listing. (fulfillRequest already
+        // bakes the premium into its price, so it's intentionally NOT flagged here.)
         for (const o of (enc.options || [])) {
           if (o.effect && ['sellOwned', 'counter', 'browseSale'].includes(o.effect.type)) o.effect.inStore = true
         }

@@ -72,5 +72,6 @@ export function netWorthFull(s) {
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
-    + (s.showSealed || []).reduce((a, it) => a + sealedValue(it), 0))
+    + (s.showSealed || []).reduce((a, it) => a + sealedValue(it), 0)
+    + (s.shopSealed || []).reduce((a, it) => a + sealedValue(it), 0))
 }

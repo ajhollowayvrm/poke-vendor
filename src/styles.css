@@ -1247,9 +1247,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .sealed-value { display:flex; align-items:baseline; gap:2px; margin-top:2px; }
 .sealed-now { font-size:20px; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; }
 .sealed-delta { font-size:11px; font-weight:800; }
-.sealed-actions { display:flex; gap:6px; margin-top:8px; }
+.sealed-actions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
 .sealed-actions .btn { flex:1 1 0; min-width:0; padding:8px 6px; font-size:12.5px; white-space:nowrap; }
 .sealed-list-ctl { margin-top:8px; border-top:1px solid var(--line); padding-top:8px; }
+/* Quantity stepper on a stacked sealed row (list/stock N units at once). */
+.sealed-qty-ctl { display:flex; align-items:center; gap:6px; margin-top:8px; }
+.sealed-qty-ctl .qstep { flex:none; width:26px; height:26px; border:1px solid var(--line); background:#0c0f1a;
+  color:var(--text); border-radius:7px; font-weight:800; cursor:pointer; line-height:1; }
+.sealed-qty-ctl .qstep.qmax { width:auto; padding:0 8px; font-size:12px; }
+.sealed-qty-ctl .qstep:disabled { opacity:.4; cursor:default; }
+.sealed-qty-ctl .qval { min-width:20px; text-align:center; font-weight:900; font-variant-numeric:tabular-nums; }
+/* Sealed product tile on the store shelf (Sell tab). */
+.shelf-sealed { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; }
+.shelf-sealed img { width:100%; max-width:96px; object-fit:contain; border-radius:6px; }
+.shelf-sealed .shelf-sealed-icon { font-size:36px; }
+.shelf-sealed .shelf-sealed-label { font-size:11px; font-weight:700; text-align:center; line-height:1.15; }
 .vintage-vault { border-color:#c8962e55; background:linear-gradient(180deg,#1a1407,var(--panel2)); }
 .vintage-vault .prodbtn .prodmeta { font-weight:800; }
 

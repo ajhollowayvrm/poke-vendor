@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT } from '../game/store'
-import { fmtMoney, cardValue } from '../game/engine'
+import { fmtMoney, cardValue, sealedValue, setById } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
 import SealedDealModal from './SealedDealModal'
@@ -35,6 +35,11 @@ export default function BoothInbox() {
   const shopDisplay = useGame(s => s.shopDisplay)
   const pullFromShop = useGame(s => s.pullFromShop)
   const pullAllFromShop = useGame(s => s.pullAllFromShop)
+  const shopSealed = useGame(s => s.shopSealed)
+  const sealedInventory = useGame(s => s.sealedInventory)
+  const pullShopSealed = useGame(s => s.pullShopSealed)
+  const pullAllShopSealed = useGame(s => s.pullAllShopSealed)
+  const stockShopSealed = useGame(s => s.stockShopSealed)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
   // Drop orders whose card you no longer own (e.g. sold it at a show) — keep the
   // original index so clearing/responding still targets the right inbox slot.
@@ -198,18 +203,45 @@ export default function BoothInbox() {
           You stock it from Cards → Select → 🏬 Stock shop. Pull cards back anytime. */}
       {hasStore && (
         <div className="wants">
-          <div className="wants-head">🏬 On the shelf <span className="muted">— walk-in customers only buy what you've put out here ({shopDisplay.length})</span>
-            {shopDisplay.length > 0 && (
+          <div className="wants-head">🏬 On the shelf <span className="muted">— walk-in customers only buy what you've put out here ({shopDisplay.length} card{shopDisplay.length===1?'':'s'}{shopSealed.length?` · ${shopSealed.length} sealed`:''})</span>
+            {(shopDisplay.length > 0 || shopSealed.length > 0) && (
               <button className="btn alt" style={{ flex:'none', maxWidth: 150, marginLeft: 'auto', padding: '4px 10px' }}
-                onClick={() => { const n = pullAllFromShop(); flash(`Cleared the shelf — ${n} card${n>1?'s':''} back in your collection.`) }}>
+                onClick={() => { const n = pullAllFromShop() + pullAllShopSealed(); flash(`Cleared the shelf — ${n} item${n>1?'s':''} back in stock.`) }}>
                 Clear shelf
               </button>
             )}
           </div>
-          {shopDisplay.length === 0 ? (
-            <div className="empty" style={{ marginTop: 4 }}>Nothing on display. Put cards out from <b>Cards → Select → 🏬 Stock shop</b> so walk-ins have something to buy. 🛒</div>
+
+          {/* Quick action: dump all held sealed onto the shelf without leaving the Sell tab. */}
+          {(sealedInventory?.length || 0) > 0 && (
+            <div className="toolbar" style={{ marginTop: 4 }}>
+              <span className="muted" style={{ fontSize: 12 }}>📦 {sealedInventory.length} sealed in the back —</span>
+              <button className="btn alt" style={{ flex:'none', padding:'4px 10px' }}
+                onClick={() => { const n = stockShopSealed((sealedInventory||[]).map(it=>it.uid)); flash(`Stocked ${n} sealed on the shelf.`) }}>
+                🏬 Stock all sealed
+              </button>
+            </div>
+          )}
+
+          {shopDisplay.length === 0 && shopSealed.length === 0 ? (
+            <div className="empty" style={{ marginTop: 4 }}>Nothing on display. Put <b>cards</b> out from <b>Cards → Select → 🏬 Stock shop</b>, or <b>sealed</b> from <b>📦 Inventory → 🏬 Stock</b>, so walk-ins have something to buy. 🛒</div>
           ) : (
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', marginTop: 4 }}>
+              {[...shopSealed].sort((a, b) => sealedValue(b) - sealedValue(a)).map(it => {
+                const set = setById(it.setId)
+                return (
+                  <div key={it.uid} className="vendoritem">
+                    <div className="shelf-sealed">
+                      {set?.logo ? <img src={set.logo} alt={set?.name || ''} decoding="async" /> : <span className="shelf-sealed-icon">{it.product.icon || '📦'}</span>}
+                      <div className="shelf-sealed-label">{it.product.icon || '📦'} {it.product.type}</div>
+                    </div>
+                    <button className="btn alt" style={{ padding: '4px 10px' }}
+                      onClick={() => { pullShopSealed(it.uid); flash(`Took a ${it.product.type} off the shelf.`) }}>
+                      ↩ Pull · {fmtMoney(sealedValue(it))}
+                    </button>
+                  </div>
+                )
+              })}
               {[...shopDisplay].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
                 <div key={c.uid} className="vendoritem">
                   <CardTile card={c} interactive={false} />

@@ -247,6 +247,41 @@ export function createBoothSlice(set, get) {
       return shelf.length
     },
 
+    // --- Sealed on the store shelf ----------------------------------------------
+    // Sealed product can go on the shelf too — walk-ins buy it in person (browseSale, below,
+    // includes shopSealed in the 'shop' pool). Mirrors stockShop/pullFromShop for cards.
+    // Move the given held sealed uids from inventory onto the shelf. Returns how many moved.
+    stockShopSealed(uids) {
+      if (!get().upgrades.storefront) return 0
+      const ids = new Set(uids || [])
+      const putting = (get().sealedInventory || []).filter(it => ids.has(it.uid))
+      if (!putting.length) return 0
+      set(s => ({
+        sealedInventory: (s.sealedInventory || []).filter(it => !ids.has(it.uid)),
+        shopSealed: [...putting, ...(s.shopSealed || [])],
+      }))
+      get().log('shop', `Put ${putting.length} sealed on the shop shelf`, 0)
+      return putting.length
+    },
+    // Pull one sealed product off the shelf, back into held inventory.
+    pullShopSealed(uid) {
+      const item = (get().shopSealed || []).find(it => it.uid === uid)
+      if (!item) return
+      set(s => ({
+        sealedInventory: [item, ...(s.sealedInventory || [])],
+        shopSealed: (s.shopSealed || []).filter(it => it.uid !== uid),
+      }))
+      get().log('shop', `Took a ${item.product.type} off the shelf`, 0)
+    },
+    // Clear all sealed off the shelf, back into held inventory.
+    pullAllShopSealed() {
+      const shelf = get().shopSealed || []
+      if (!shelf.length) return 0
+      set(s => ({ sealedInventory: [...shelf, ...(s.sealedInventory || [])], shopSealed: [] }))
+      get().log('shop', `Cleared the sealed shelf — ${shelf.length} back in inventory`, 0)
+      return shelf.length
+    },
+
     // Can we take this buyer's preferred payment method? Returns null if fine,
     // or a "lost sale" message if not (the caller should abort the sale).
     paymentBlocked(payMethod) {
@@ -327,7 +362,9 @@ export function createBoothSlice(set, get) {
             ? [...(get().showInventory || []).map(c => ({ item: c, sealed: false })),
                ...(get().showSealed || []).map(it => ({ item: it, sealed: true }))]
             : pool === 'listings' ? (get().listings || []).map(l => ({ item: l.card, sealed: false }))
-            : pool === 'shop' ? (get().shopDisplay || []).map(c => ({ item: c, sealed: false }))
+            : pool === 'shop'
+            ? [...(get().shopDisplay || []).map(c => ({ item: c, sealed: false })),
+               ...(get().shopSealed || []).map(it => ({ item: it, sealed: true }))]
             : get().collection.map(c => ({ item: c, sealed: false }))
           if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
             const blocked = s.paymentBlocked(effect.payMethod)
@@ -343,7 +380,10 @@ export function createBoothSlice(set, get) {
             if (get().upgrades.cases) price = round2(price * 1.12)
             if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
             const { net, fee } = processingFee(price, effect.payMethod)
-            if (pick.sealed) set(st => ({ showSealed: (st.showSealed || []).filter(x => x.uid !== item.uid) }))
+            if (pick.sealed) set(st => ({
+              showSealed: (st.showSealed || []).filter(x => x.uid !== item.uid),
+              shopSealed: (st.shopSealed || []).filter(x => x.uid !== item.uid),
+            }))
             else removeOwnedAnywhere(set, item.uid)
             s.earn(net)
             s.log('sell', `A browser bought your ${label} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
@@ -390,6 +430,43 @@ export function createBoothSlice(set, get) {
           const giveN = giveCards.length + giveSealed.length, getN = gotCards.length + gotSealed.length
           s.log('trade', `Traded ${giveN} item${giveN !== 1 ? 's' : ''} for ${getN}${adj > 0 ? ` (+$${adj.toFixed(2)})` : adj < 0 ? ` (−$${(-adj).toFixed(2)})` : ''}`, adj)
           get().checkCompletions() // a card/sealed you traded for may finish a set
+          break
+        }
+        case 'fulfillRequest': {
+          // A walk-in asked for a specific item and you produced it (off the shelf or from the
+          // back). `price` already includes the in-store + request premium. Sell it and remove
+          // it from whichever bucket holds it; bail gracefully if it's since gone.
+          const blocked = s.paymentBlocked(effect.payMethod)
+          if (blocked) { s.addNotoriety(-1); s.log('lost-sale', blocked, 0); return blocked }
+          const { net, fee } = processingFee(effect.price, effect.payMethod)
+          if (effect.kind === 'sealed') {
+            const item = (get().sealedInventory || []).find(it => it.uid === effect.uid)
+              || (get().shopSealed || []).find(it => it.uid === effect.uid)
+            if (!item) { msg = 'That one just left your stock — the customer moved on.'; break }
+            set(st => ({
+              sealedInventory: (st.sealedInventory || []).filter(it => it.uid !== effect.uid),
+              shopSealed: (st.shopSealed || []).filter(it => it.uid !== effect.uid),
+            }))
+            s.earn(net); s.addNotoriety(effect.notoriety || 1)
+            const label = `${item.product.type} (${setById(item.setId)?.name || 'sealed'})`
+            s.log('sell', `Filled a walk-in request — sold ${label} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
+            msg = appendFeeMsg(msg, fee, effect.payMethod, net)
+          } else {
+            const card = findOwnedAnywhere(get(), effect.uid)
+            if (!card) { msg = 'That one just left your stock — the customer moved on.'; break }
+            removeOwnedAnywhere(set, effect.uid)
+            s.earn(net); s.addNotoriety(effect.notoriety || 1)
+            s.log('sell', `Filled a walk-in request — sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
+            msg = appendFeeMsg(msg, fee, effect.payMethod, net)
+          }
+          s.bumpGoal('sell', 1); s.bumpGoal('profit', net)
+          break
+        }
+        case 'requestMiss': {
+          // You couldn't produce what the walk-in wanted — a small rep ding (or none) and a
+          // demand signal in the log so you know what locals are hunting for.
+          s.addNotoriety(effect.notoriety || 0)
+          s.log('demand', `Missed demand: a walk-in wanted ${effect.what} and left empty-handed`, 0)
           break
         }
         case 'buySealedDeal': {

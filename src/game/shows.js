@@ -831,6 +831,89 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   }
 }
 
+// --- Brick-and-mortar walk-in REQUESTS ---------------------------------------
+// A walk-in asks for a SPECIFIC thing (a sealed product or a single). If it's on your SHELF
+// → instant, happy sale. If it's in the BACK (your collection / held inventory) → you can grab
+// it. If you don't have it AT ALL → they leave disappointed (a demand signal + small rep ding).
+// ~55% of requests are for something you actually have, so keeping stock stocked pays off.
+// The premium is already baked into the returned price (in-store premium + a "came for it"
+// bump), so resolveEncounter charges effect.price as-is (no double premium).
+const REQUEST_PREMIUM = 0.06
+export function makeShopRequest(s, accepted = null) {
+  const pay = pickPayMethod('walkin', accepted)
+  const visitor = visitorFor('walkin', 'offer')
+  const priceFor = (base) => round2((base || 0) * (1 + STORE_SALE_PREMIUM + REQUEST_PREMIUM))
+
+  // Assemble the encounter once the desired item + its location are known.
+  //   loc: 'shelf' (on display) | 'back' (owned, not out) | 'none' (don't own it)
+  function build({ label, article, img, price, loc, kind, uid }) {
+    const has = loc === 'shelf' || loc === 'back'
+    const options = has
+      ? [
+          { text: loc === 'shelf' ? `Ring it up — $${price.toFixed(2)}` : `Grab it from the back — $${price.toFixed(2)}`,
+            tone: 'kind',
+            effect: { type: 'fulfillRequest', kind, uid, price, payMethod: pay, fromShelf: loc === 'shelf',
+              notoriety: loc === 'shelf' ? 2 : 1,
+              msg: loc === 'shelf' ? 'Rang it up right off the shelf — happy customer! 😄' : 'Grabbed it from the back — sale made! 🙂' } },
+          { text: "Tell them it's not for sale", tone: 'fair',
+            effect: { type: 'none', notoriety: 0, msg: 'They shrug and move on — you had it but passed.' } },
+        ]
+      : [
+          { text: "Apologize — you don't have it", tone: 'fair',
+            effect: { type: 'requestMiss', what: label, notoriety: -1, msg: `You don't stock ${article} ${label}. They leave disappointed. 😞` } },
+          { text: 'Offer to try and get one in', tone: 'kind',
+            effect: { type: 'requestMiss', what: label, notoriety: 0, msg: `You take their number and promise to hunt one down. Stock ${label} to catch this demand.` } },
+        ]
+    return {
+      kind: 'request', channel: 'walkin', // no ownedUid → never auto-pruned; the sell option re-validates on click
+      title: `${cap(visitor)} is after something`,
+      body: has
+        ? `"Hey — you got ${article} ${label}? I've been hunting one."`
+        : `"You carry ${article} ${label} by any chance? Been looking everywhere."`,
+      card: img ? { name: label, img, imgLarge: img } : null,
+      options,
+    }
+  }
+
+  const wantSealed = Math.random() < 0.5
+  if (wantSealed) {
+    const shelf = (s.shopSealed || []).map(it => ({ it, loc: 'shelf' }))
+    const back = (s.sealedInventory || []).map(it => ({ it, loc: 'back' }))
+    const have = [...shelf, ...back]
+    if (have.length && Math.random() < 0.55) {
+      const { it, loc } = pickAny(null, have)
+      const set = setById(it.setId)
+      return build({ label: `${it.product.type} of ${set?.name || 'that set'}`, article: 'a', img: set?.logo || null,
+        price: priceFor(sealedValue(it)), loc, kind: 'sealed', uid: it.uid })
+    }
+    // a random product they want — maybe you happen to have it, usually not
+    const set = pickAny(null, SHOP_SETS)
+    const prod = pickAny(null, setProducts(set))
+    const onShelf = (s.shopSealed || []).find(x => x.setId === set.id && x.product.type === prod.type)
+    const inBack = (s.sealedInventory || []).find(x => x.setId === set.id && x.product.type === prod.type)
+    const hit = onShelf || inBack
+    return build({ label: `${prod.type} of ${set.name}`, article: 'a', img: set.logo || null,
+      price: priceFor(hit ? sealedValue(hit) : prod.price),
+      loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'sealed', uid: hit?.uid })
+  }
+
+  // singles
+  const shelf = (s.shopDisplay || []).map(c => ({ c, loc: 'shelf' }))
+  const back = (s.collection || []).map(c => ({ c, loc: 'back' }))
+  const have = [...shelf, ...back]
+  if (have.length && Math.random() < 0.55) {
+    const { c, loc } = pickAny(null, have)
+    return build({ label: c.name, article: 'a', img: c.img, price: priceFor(cardValue(c)), loc, kind: 'card', uid: c.uid })
+  }
+  const want = cardInValueRange(1, 300)
+  const onShelf = (s.shopDisplay || []).find(x => x.id === want.id)
+  const inBack = (s.collection || []).find(x => x.id === want.id)
+  const hit = onShelf || inBack
+  return build({ label: want.name, article: 'a', img: want.img,
+    price: priceFor(hit ? cardValue(hit) : cardValue(want)),
+    loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'card', uid: hit?.uid })
+}
+
 // An "offer" encounter is built around a specific card you own. If you sell that
 // card before responding (e.g. an online order sits in your inbox while you're at
 // a show), the encounter is stale — it'd talk about a card you no longer have.

@@ -65,7 +65,7 @@ export const STORAGE_PER_UNIT = 2      // $/day for each held item beyond the al
 // How many held units are you carrying right now (drives the storage fee + the readout).
 export function heldUnits(s) {
   return (s.sealedInventory?.length || 0) + (s.listings?.length || 0)
-    + (s.consignments?.length || 0) + (s.shopDisplay?.length || 0)
+    + (s.consignments?.length || 0) + (s.shopDisplay?.length || 0) + (s.shopSealed?.length || 0)
 }
 // Daily storage fee for the current inventory load (0 while under the free allowance).
 export function storageFee(s) {

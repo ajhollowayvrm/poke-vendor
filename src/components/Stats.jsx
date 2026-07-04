@@ -13,6 +13,7 @@ export default function Stats() {
     bySet: s.bySet || {},
     listings: s.listings, consignments: s.consignments, shopDisplay: s.shopDisplay,
     showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
+    showSealed: s.showSealed, shopSealed: s.shopSealed,
     milestones: s.milestones || [], worthHistory: s.worthHistory || [], binder: s.binder || [],
   }))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
@@ -26,7 +27,9 @@ export default function Stats() {
     (shopDisplay || []).reduce((a, c) => a + cardValue(c), 0) +
     (showInventory || []).reduce((a, c) => a + cardValue(c), 0) +
     (pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0) +
-    (sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
+    (sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0) +
+    (showSealed || []).reduce((a, it) => a + sealedValue(it), 0) +
+    (shopSealed || []).reduce((a, it) => a + sealedValue(it), 0)
   const netWorth = cash + collValue + onMarket
   const pnl = stats.earned - stats.spent
 

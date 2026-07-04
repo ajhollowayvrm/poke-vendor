@@ -207,6 +207,15 @@ export function createSourcingSlice(set, get) {
       return q
     },
 
+    // List MANY held sealed products at once (a quantity of a stack, or your whole inventory)
+    // on your own site at `askMult`× market. Each unit becomes its own listing. Returns the
+    // number actually listed.
+    listSealedMany(uids, askMult) {
+      let n = 0
+      for (const uid of (uids || [])) if (get().listSealed(uid, askMult)) n++
+      return n
+    },
+
     // Quick-flip a held sealed product for instant cash at SEALED_FLIP_RATE of its live
     // market value (no waiting, a small spread vs listing it). Returns the net paid.
     quickFlipSealed(uid) {
