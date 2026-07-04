@@ -64,7 +64,11 @@ export function initialState() {
     shopSealed: [],          // SEALED product on your STORE shelf — walk-ins can buy it in person; you stock it from held inventory and pull it back anytime. Needs a storefront.
     storeConsignRequests: [], // locals waiting on an answer: {id, who, card, ask, commissionPct, days, pendingDays} — carry their card for a cut, or pass
     storeConsignments: [],   // cards you're carrying for locals: {id, who, card, ask, commissionPct, daysLeft} — NOT yours; a sale pays your commission, unsold goes home
-    giveawayDaysLeft: 0,     // in-store giveaway buzz: walk-in traffic boost window remaining
+    giveawayDaysLeft: 0,     // store buzz window (giveaways + hosted events): walk-in traffic boost days remaining
+    buyinOffers: [],         // locals selling YOU their cards: {id, who, hint, cards, askCash, estimate, estimateTight, pendingDays} — pay cash or store credit
+    storeCredit: 0,          // outstanding store credit you've issued (a liability — drains from counter takings as locals spend it; counts against net worth)
+    storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
+    eventCooldownLeft: 0,    // days before you can host another event
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.

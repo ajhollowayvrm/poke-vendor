@@ -73,5 +73,6 @@ export function netWorthFull(s) {
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
     + (s.showSealed || []).reduce((a, it) => a + sealedValue(it), 0)
-    + (s.shopSealed || []).reduce((a, it) => a + sealedValue(it), 0))
+    + (s.shopSealed || []).reduce((a, it) => a + sealedValue(it), 0)
+    - (s.storeCredit || 0)) // issued store credit is a liability — locals will spend it out of your future takings
 }

@@ -21,13 +21,15 @@ import {
   marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
+  BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
+  STORE_EVENTS, EVENT_COOLDOWN_DAYS,
 } from './constants'
 import { realizableAssets, netWorthFull } from './helpers'
 
@@ -365,6 +367,43 @@ export function advanceDaysWith(set, get, days, away) {
   // a payoff that reaches the rest of the game, not just bigger future streams.
   const followerBump = Math.min(0.15, (s.followers || 0) / 2000)
   let payrollDue = 0, leaseDue = 0
+  // --- Hosted store event: the night you planned happens as the first day turns ---
+  // Resolved up front so its buzz window covers the days about to pass. `buzzDays0`
+  // is the store's shared traffic-buzz counter (giveaways + events feed it).
+  let buzzDays0 = s.giveawayDaysLeft || 0
+  let eventCooldown = Math.max(0, (s.eventCooldownLeft || 0) - days)
+  let eventExtraWalkins = 0
+  {
+    const plan = s.storeEventPlanned
+    const ev = plan ? STORE_EVENTS[plan.type] : null
+    if (plan && ev && hasStore) {
+      if (ev.income) {
+        const inc = round2(ev.income(noto))
+        get().earn(inc)
+        get().log('shop', `${ev.icon} ${ev.name} — the room was packed (+$${inc.toFixed(2)} at the door & counter)`, inc)
+      } else {
+        get().log('shop', `${ev.icon} ${ev.name} — a good room; word spreads.`, 0)
+      }
+      if (ev.noto) get().addNotoriety(ev.noto)
+      if (plan.prizeCard) {
+        // Raffle prize drawn — generosity with a box office (Charity Banner applies).
+        const pv = cardValue(plan.prizeCard)
+        const pop = Math.min(15, Math.round(2 + Math.sqrt(pv)))
+        get().addNotoriety(pop, true)
+        set(st => ({ generousActs: st.generousActs + 1 }))
+        get().log('give', `🎟️ Raffle drawn — ${plan.prizeCard.name} ($${pv.toFixed(2)}) went home with a winner (+${pop}★)`, 0)
+        get().bumpGoal('help', 1)
+      }
+      if (ev.trust) set(st => ({ regulars: (st.regulars || []).map(r => r.flags?.burned ? r : { ...r, trust: Math.min(100, (r.trust || 0) + ev.trust) }) }))
+      if (ev.formsRegular) get().formRegular({ setId: SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]?.id, channel: 'walkin', generous: true })
+      buzzDays0 = Math.max(buzzDays0, ev.buzzDays || 0)
+      eventExtraWalkins = ev.extraWalkins || 0
+      eventCooldown = Math.max(eventCooldown, Math.max(0, EVENT_COOLDOWN_DAYS - (days - 1)))
+    } else if (plan?.prizeCard) {
+      // Store gone before the night came — the raffle can't run; the prize comes home.
+      set(st => ({ collection: [plan.prizeCard, ...st.collection] }))
+    }
+  }
   // Online buyers can only make offers on cards you've listed/tweeted.
   const listedCards = (s.listings || []).map(l => l.card)
   // A deeply-underpriced live listing draws online deal-hunters even before you're known.
@@ -398,8 +437,8 @@ export function advanceDaysWith(set, get, days, away) {
     // walk-in channel (only if you have a physical store AND cards out on the shelf). The
     // shelf is the pool: walk-ins only buy/offer on cards you've put out (passed as both the
     // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the
-    // display case). Giveaway buzz pumps foot traffic for the days its window covers.
-    const buzz = (s.giveawayDaysLeft || 0) > i ? GIVEAWAY_TRAFFIC_MULT : 1
+    // display case). Store buzz (giveaways + events) pumps foot traffic for its window.
+    const buzz = buzzDays0 > i ? GIVEAWAY_TRAFFIC_MULT : 1
     if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult * buzz)) {
       if (walkinOK) {
         // ~35% of walk-ins come in ASKING for a specific item (sealed or single) rather than
@@ -416,6 +455,17 @@ export function advanceDaysWith(set, get, days, away) {
         newOrders.push({ ...enc, channel: 'walkin' })
       } else missedWalkin++
     }
+    // Last night's hosted event: its crowd works your case as the day opens —
+    // guaranteed extra walk-ups on the first day after the event.
+    if (i === 0 && eventExtraWalkins > 0 && hasStore && openWalkin && walkinOK) {
+      for (let e = 0; e < eventExtraWalkins; e++) {
+        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
+        for (const o of (enc.options || [])) {
+          if (o.effect && ['sellOwned', 'counter', 'browseSale'].includes(o.effect.type)) o.effect.inStore = true
+        }
+        newOrders.push({ ...enc, channel: 'walkin' })
+      }
+    }
   }
   // BRICK & MORTAR "counter business": beyond the individual walk-up encounters above, a real
   // shop does steady everyday trade — singles, supplies, bulk to local kids/parents. That
@@ -431,6 +481,20 @@ export function advanceDaysWith(set, get, days, away) {
     counterRevenue = round2(perDay * days)
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }
+  // STORE CREDIT redemption: locals holding credit spend it at the counter — those
+  // sales come out of the day's takings instead of arriving as cash. A slice of
+  // outstanding credit is simply never redeemed (breakage) — which is exactly why
+  // paying sellers in credit beats paying cash.
+  let storeCreditNext = round2(s.storeCredit || 0)
+  if (hasStore && storeCreditNext > 0 && counterRevenue > 0) {
+    const redeemed = round2(Math.min(storeCreditNext, counterRevenue * CREDIT_REDEEM_SHARE))
+    if (redeemed > 0) {
+      counterRevenue = round2(counterRevenue - redeemed)
+      storeCreditNext = round2(storeCreditNext - redeemed)
+      get().log('shop', `💳 Locals spent $${redeemed.toFixed(2)} of store credit at the counter`, 0)
+    }
+  }
+  if (storeCreditNext > 0) storeCreditNext = round2(storeCreditNext * Math.pow(1 - CREDIT_BREAKAGE, days))
   // No new-player guarantee: an unknown vendor (below INBOUND_NOTORIETY_GATE) gets NO
   // unsolicited inbox mail. Early demand comes from the public Forum (WTB board), or you
   // can summon online deal-hunters by listing something below BARGAIN_ASK_MULT of market.
@@ -528,7 +592,7 @@ export function advanceDaysWith(set, get, days, away) {
     for (const c of storeConsignsNext) {
       let left = c.daysLeft, sold = false
       for (let dd = 0; dd < days && !sold && left > 0; dd++) {
-        const buzzMult = (s.giveawayDaysLeft || 0) > dd ? 1.25 : 1
+        const buzzMult = buzzDays0 > dd ? 1.25 : 1
         if (walkinOK && Math.random() < Math.min(0.30, (0.10 + noto / 500) * buzzMult)) sold = true
         else left--
       }
@@ -553,6 +617,20 @@ export function advanceDaysWith(set, get, days, away) {
         const req = makeConsignRequest(noto)
         consignReqsNext = [req, ...consignReqsNext]
         get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on the Sell tab.`, 0)
+      }
+    }
+  }
+  // 3) COLLECTION BUY-INS: locals walk in wanting to SELL you a lot of cards.
+  //    Offers wait a couple of days for an answer, then they try the shop across town.
+  let buyinsNext = (s.buyinOffers || [])
+    .map(o => ({ ...o, pendingDays: o.pendingDays - days }))
+    .filter(o => o.pendingDays > 0)
+  if (hasStore && noto >= BUYIN_MIN_NOTO) {
+    for (let i = 0; i < days && buyinsNext.length < BUYIN_CAP; i++) {
+      if (Math.random() < BUYIN_CHANCE) {
+        const offer = makeBuyinOffer(noto)
+        buyinsNext = [offer, ...buyinsNext]
+        get().log('shop', `🛍️ ${offer.who.charAt(0).toUpperCase() + offer.who.slice(1)} came in with ${offer.count} cards to SELL — asking $${offer.askCash.toFixed(2)}. Appraise it on the Sell tab.`, 0)
       }
     }
   }
@@ -624,7 +702,11 @@ export function advanceDaysWith(set, get, days, away) {
     shopSealed: shopSealedNext,
     storeConsignments: storeConsignsNext,   // consigned sales banked, expiries returned
     storeConsignRequests: consignReqsNext,  // fresh asks in, stale asks gone
-    giveawayDaysLeft: Math.max(0, (st.giveawayDaysLeft || 0) - days), // buzz ages out
+    buyinOffers: buyinsNext,                // sellers waiting on an answer (fresh in, stale gone)
+    storeCredit: storeCreditNext,           // credit spent at the counter + breakage
+    storeEventPlanned: null,                // tonight happened (or couldn't) — either way it's spent
+    eventCooldownLeft: eventCooldown,
+    giveawayDaysLeft: Math.max(0, buzzDays0 - days), // buzz (giveaway/event) ages out
     forumPosts,
     dailyGoals: periodGoals,                       // weekly set; refreshed every 7 days
     goalsDay: goalsExpired ? newAbsDay : (s.goalsDay || newAbsDay),
@@ -742,13 +824,21 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
     // collection, sealed to held inventory, and everywhere-listings back to online-only.
     set(st => {
       const up = { ...st.upgrades }; delete up.storefront; delete up.staff
+      const prize = st.storeEventPlanned?.prizeCard
       return { upgrades: up, employees: [], storeArrears: 0,
-        collection: [...(st.shopDisplay || []).map(({ _heldFor, ...c }) => c), ...st.collection], shopDisplay: [],
+        collection: [...(prize ? [prize] : []), ...(st.shopDisplay || []).map(({ _heldFor, ...c }) => c), ...st.collection], shopDisplay: [],
         sealedInventory: [...(st.shopSealed || []).map(({ _heldFor, ...it }) => it), ...(st.sealedInventory || [])], shopSealed: [],
         listings: (st.listings || []).map(l => l.everywhere ? { ...l, everywhere: false } : l),
-        // No shop = no case: consigned cards go home to their owners, asks lapse, buzz dies.
-        storeConsignments: [], storeConsignRequests: [], giveawayDaysLeft: 0 }
+        // No shop = no case: consigned cards go home, asks + seller offers lapse, any
+        // planned event is off (prize back), unspent store credit dies with the store
+        // (locals eat it — hence the rep hit logged below), buzz dies.
+        storeConsignments: [], storeConsignRequests: [], buyinOffers: [],
+        storeEventPlanned: null, eventCooldownLeft: 0, storeCredit: 0, giveawayDaysLeft: 0 }
     })
+    if ((get().storeCredit || 0) === 0 && (s.storeCredit || 0) > 0) {
+      get().addNotoriety(-2)
+      get().log('store-lost', `The $${(s.storeCredit || 0).toFixed(2)} of store credit you'd issued became worthless — locals are burned. (−2 notoriety)`, 0)
+    }
     get().log('store-lost', `Couldn't cover the store overhead — you lost the shop. Back to flipping from home.`, 0)
   } else {
     set({ storeArrears: arrears })

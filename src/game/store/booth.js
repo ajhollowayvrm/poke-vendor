@@ -9,13 +9,14 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById, bulkSellableUids, cardInValueRange, sealedValue } from '../engine'
+import { round2, cardValue, setById, setIdOfCard, bulkSellableUids, cardInValueRange, sealedValue } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../shows'
 
 // The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
 const DEAL_OF_SHOW_MARKDOWN = 0.12
-import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS } from './constants'
+import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
+  STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -384,6 +385,82 @@ export function createBoothSlice(set, get) {
       if (!req) return
       set(s => ({ storeConsignRequests: s.storeConsignRequests.filter(r => r.id !== id) }))
       get().log('shop', `Passed on ${req.who}'s consignment — they took their ${req.card.name} elsewhere`, 0)
+    },
+
+    // --- Collection buy-ins (locals selling YOU their cards) ---------------------
+    // Accept a lot for `method`: 'cash' pays their ask now; 'credit' pays nothing now —
+    // you issue STORE CREDIT at a bonus (ask × 1.25). Credit deals cost no cash, warm the
+    // seller toward becoming a regular, and drain out of future counter takings instead
+    // (see the day-tick). Returns { cards, market, paid, method } for the reveal, or { error }.
+    acceptBuyin(id, method = 'cash') {
+      const offer = (get().buyinOffers || []).find(o => o.id === id)
+      if (!offer) return { error: 'They already left.' }
+      let paid
+      if (method === 'credit') {
+        paid = round2(offer.askCash * (1 + STORE_CREDIT_BONUS))
+        if ((get().storeCredit || 0) + paid > creditIssueCap(get().notoriety)) {
+          return { error: 'Too much credit outstanding — locals want cash until some of it gets spent.' }
+        }
+        set(s => ({ storeCredit: round2((s.storeCredit || 0) + paid) }))
+      } else {
+        paid = offer.askCash
+        if (!get().spend(paid)) return { error: `You can't cover the $${paid.toFixed(2)} in cash.` }
+      }
+      set(s => ({
+        collection: [...offer.cards, ...s.collection],
+        buyinOffers: s.buyinOffers.filter(o => o.id !== id),
+      }))
+      const label = method === 'credit' ? `$${paid.toFixed(2)} store credit` : `$${paid.toFixed(2)} cash`
+      get().log('buy', `Bought ${offer.count} cards off ${offer.who} for ${label} (lot market ~$${offer.market.toFixed(2)})`, method === 'credit' ? 0 : -paid)
+      get().addNotoriety(1) // the shop that buys collections gets talked about
+      get().bumpGoal('buy', offer.count)
+      // A credit deal keeps them in your orbit — good odds they become a regular.
+      if (method === 'credit') get().formRegular({ setId: setIdOfCard(offer.cards[0]), channel: 'walkin', generous: true })
+      get().checkCompletions() // a bought lot can finish a set
+      get().checkMilestones()
+      return { cards: offer.cards, market: offer.market, paid, method }
+    },
+    declineBuyin(id) {
+      const offer = (get().buyinOffers || []).find(o => o.id === id)
+      if (!offer) return
+      set(s => ({ buyinOffers: s.buyinOffers.filter(o => o.id !== id) }))
+      get().log('shop', `Passed on ${offer.who}'s collection — they'll try the shop across town`, 0)
+    },
+
+    // --- Hosted store events -------------------------------------------------------
+    // Plan tonight's event: pay the cost now, it happens on the next day-advance
+    // (see the day-tick). A raffle needs a prize card — it leaves your collection
+    // into the plan so it can't be sold out from under the raffle.
+    planStoreEvent(type, prizeUid = null) {
+      const ev = STORE_EVENTS[type]
+      const s = get()
+      if (!ev || !s.upgrades.storefront) return { error: 'No storefront to host in.' }
+      if (s.storeEventPlanned) return { error: 'Tonight is already booked.' }
+      if ((s.eventCooldownLeft || 0) > 0) return { error: `The room needs a breather — try again in ${s.eventCooldownLeft} day${s.eventCooldownLeft > 1 ? 's' : ''}.` }
+      if (s.notoriety < (ev.minNoto || 0)) return { error: `Nobody would come yet — you need ${ev.minNoto} notoriety.` }
+      let prizeCard = null
+      if (ev.needsPrize) {
+        prizeCard = s.collection.find(c => c.uid === prizeUid)
+        if (!prizeCard) return { error: 'Pick a prize card for the raffle.' }
+      }
+      if (!get().spend(ev.cost)) return { error: `You can't cover the $${ev.cost} to run it.` }
+      set(st => ({
+        storeEventPlanned: { type, cost: ev.cost, prizeCard },
+        collection: prizeCard ? st.collection.filter(c => c.uid !== prizeCard.uid) : st.collection,
+      }))
+      get().log('shop', `${ev.icon} Flyers up — hosting ${ev.name} tonight${prizeCard ? ` (prize: ${prizeCard.name})` : ''}. It happens when the day turns.`, -ev.cost)
+      return { ok: true }
+    },
+    // Call it off: refund the cost, return the raffle prize.
+    cancelStoreEvent() {
+      const plan = get().storeEventPlanned
+      if (!plan) return
+      get().earn(plan.cost)
+      set(s => ({
+        storeEventPlanned: null,
+        collection: plan.prizeCard ? [plan.prizeCard, ...s.collection] : s.collection,
+      }))
+      get().log('shop', `Called off tonight's ${STORE_EVENTS[plan.type]?.name || 'event'} — refunded $${plan.cost.toFixed(2)}`, plan.cost)
     },
 
     // Can we take this buyer's preferred payment method? Returns null if fine,

@@ -51,7 +51,7 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 39,
+  version: 40,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
@@ -346,6 +346,14 @@ export const useGame = create(persist((set, get) => ({
       state.storeConsignRequests = state.storeConsignRequests ?? []
       state.storeConsignments = state.storeConsignments ?? []
       state.giveawayDaysLeft = state.giveawayDaysLeft ?? 0
+    }
+    if (version < 40) {
+      // Collection buy-ins (locals selling you their cards), store credit, and
+      // hosted store events. All new, additive — start empty/zero.
+      state.buyinOffers = state.buyinOffers ?? []
+      state.storeCredit = state.storeCredit ?? 0
+      state.storeEventPlanned = state.storeEventPlanned ?? null
+      state.eventCooldownLeft = state.eventCooldownLeft ?? 0
     }
     return state
   },

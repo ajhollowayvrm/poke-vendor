@@ -1008,6 +1008,49 @@ export function makeConsignRequest(notoriety) {
   }
 }
 
+// --- Collection buy-ins ----------------------------------------------------------
+// A local walks in wanting to SELL you a lot of cards — the store as a sourcing
+// channel. You never see the exact cards before you pay: you get a noisy eyeball
+// ESTIMATE of the lot's market value (±25%; the Jeweler's Loupe tightens it to ±8%)
+// plus a vibe hint. Their ask runs 45–70% of true market — most lots are profitable
+// if you read them right; the sharky sellers price tight.
+const BUYIN_SELLERS = [
+  { who: 'a kid clearing out his binder', tone: 'soft' },
+  { who: 'a parent selling an outgrown collection', tone: 'soft' },
+  { who: 'a college student who needs rent', tone: 'soft' },
+  { who: 'a local downsizing before a move', tone: 'mid' },
+  { who: 'a weekend collector thinning doubles', tone: 'mid' },
+  { who: 'a sharp-eyed flipper flipping through you', tone: 'sharp' },
+  { who: 'a grinder who knows every comp', tone: 'sharp' },
+]
+export function makeBuyinOffer(notoriety) {
+  const seller = BUYIN_SELLERS[Math.floor(Math.random() * BUYIN_SELLERS.length)]
+  // The lot: a stack of bulk with 1–2 real pieces mixed in (scaled by your local fame —
+  // better-known shops get brought better collections).
+  const n = 5 + Math.floor(Math.random() * 8)
+  const cards = []
+  const hits = 1 + (Math.random() < 0.4 ? 1 : 0)
+  for (let i = 0; i < n - hits; i++) cards.push(cardInValueRange(0.25, 6))
+  for (let i = 0; i < hits; i++) cards.push(cardInValueRange(5, 18 + notoriety * 0.4))
+  const market = round2(cards.reduce((a, c) => a + cardValue(c), 0))
+  // Ask by seller tone: soft sellers leave meat on the bone; sharp ones price tight.
+  const askMult = seller.tone === 'soft' ? 0.45 + Math.random() * 0.15
+    : seller.tone === 'sharp' ? 0.62 + Math.random() * 0.13
+    : 0.52 + Math.random() * 0.15
+  const askCash = Math.max(1, round2(market * askMult))
+  // Two pre-rolled estimates so the readout is stable: the naked-eye one (±25%) and
+  // the Loupe one (±8%) — the UI shows whichever your gear earns.
+  const noisy = (band) => round2(market * (1 - band + Math.random() * band * 2))
+  return {
+    id: `bi${Math.floor(Math.random() * 1e9).toString(36)}`,
+    who: seller.who, tone: seller.tone,
+    hint: seller.tone === 'sharp' ? 'priced like someone who checked comps' : seller.tone === 'soft' ? 'just wants it gone' : 'seems reasonable',
+    cards, count: n, market, askCash,
+    estimate: noisy(0.25), estimateTight: noisy(0.08),
+    pendingDays: 2,
+  }
+}
+
 // An "offer" encounter is built around a specific card you own. If you sell that
 // card before responding (e.g. an online order sits in your inbox while you're at
 // a show), the encounter is stale — it'd talk about a card you no longer have.

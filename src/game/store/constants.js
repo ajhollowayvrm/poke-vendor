@@ -163,6 +163,41 @@ export const CONSIGN_REQ_CAP = 2        // at most this many locals waiting on a
 export const CONSIGN_REQ_CHANCE = 0.22  // per-day chance a local walks in asking you to carry their card
 export const CONSIGN_MIN_NOTO = 15      // nobody trusts an unknown shop with their cards
 
+// --- Collection buy-ins + store credit -----------------------------------------
+// Locals walk in wanting to SELL you their cards — the store as a SOURCING channel.
+// You appraise the lot (a noisy estimate; the Loupe tightens it), then pay CASH now
+// or STORE CREDIT at a bonus. Credit is the real LGS trick: no cash leaves today,
+// the seller comes back as a customer, and their credit drains out of your daily
+// counter takings over time (with a little breakage that's never redeemed at all).
+export const BUYIN_CHANCE = 0.16        // per-day chance a seller walks in (storefront + a bit of a name)
+export const BUYIN_CAP = 2              // at most this many lots waiting on an answer
+export const BUYIN_MIN_NOTO = 10
+export const STORE_CREDIT_BONUS = 0.25  // credit offer = cash ask × (1 + bonus) — they take more in credit
+export const CREDIT_REDEEM_SHARE = 0.6  // share of each day's counter takings credit-holders can spend down
+export const CREDIT_BREAKAGE = 0.02     // daily % of outstanding credit that's simply never redeemed
+// Locals stop accepting credit when you owe too much of it (scales with your name).
+export function creditIssueCap(notoriety) { return 200 + (notoriety || 0) * 2 }
+
+// --- Hosted store events ---------------------------------------------------------
+// Real shops live on recurring events — they create foot traffic, community, and
+// predictable revenue. Plan one tonight from the Shop floor; it happens when the
+// day turns. `buzzDays` feeds the same walk-in traffic boost giveaways use.
+export const EVENT_COOLDOWN_DAYS = 2 // the room (and you) need a breather between events
+export const STORE_EVENTS = {
+  tradeNight: { name: 'Trade Night', icon: '🔁', cost: 60, minNoto: 0,
+    desc: 'Open the tables — locals bring binders. Builds trust with every regular, puts fresh trade offers in your inbox, and a night of browsers works your case.',
+    buzzDays: 1, extraWalkins: 2, trust: 4, noto: 3 },
+  leagueNight: { name: 'League Night', icon: '🎮', cost: 100, minNoto: 0,
+    desc: 'Host the local league — snacks, sleeves and singles move all night, and a kid at the counter tonight is a regular next month.',
+    buzzDays: 1, extraWalkins: 1, trust: 3, noto: 2, income: (noto) => 40 + noto * 0.5, formsRegular: true },
+  tournament: { name: 'Tournament', icon: '🏆', cost: 250, minNoto: 40,
+    desc: 'A sanctioned tournament: entry fees in, prize support out (covered by the fee). Serious players travel for it — a real notoriety pop and days of buzz.',
+    buzzDays: 2, extraWalkins: 2, trust: 2, noto: 8, income: (noto) => 140 + noto * 1.2 },
+  raffle: { name: 'Raffle Night', icon: '🎟️', cost: 40, minNoto: 0, needsPrize: true,
+    desc: 'Put up a prize card and sell tickets. Ticket money in, the prize goes home with a winner — generosity with a box-office.',
+    buzzDays: 2, extraWalkins: 1, trust: 3, income: (noto) => Math.min(400, 50 + noto * 1.5) },
+}
+
 export const CALENDAR_DAYS = 30
 export const INBOX_CAP = 8
 

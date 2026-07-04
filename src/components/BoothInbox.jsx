@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS } from '../game/store'
+import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
+  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import Encounter from './Encounter'
@@ -51,6 +52,16 @@ export default function BoothInbox() {
   const runGiveaway = useGame(s => s.runGiveaway)
   const acceptConsignRequest = useGame(s => s.acceptConsignRequest)
   const declineConsignRequest = useGame(s => s.declineConsignRequest)
+  // Buy-ins (locals selling to you), store credit, and hosted events.
+  const cash = useGame(s => s.cash)
+  const buyinOffers = useGame(s => s.buyinOffers)
+  const storeCredit = useGame(s => s.storeCredit)
+  const storeEventPlanned = useGame(s => s.storeEventPlanned)
+  const eventCooldownLeft = useGame(s => s.eventCooldownLeft)
+  const acceptBuyin = useGame(s => s.acceptBuyin)
+  const declineBuyin = useGame(s => s.declineBuyin)
+  const planStoreEvent = useGame(s => s.planStoreEvent)
+  const cancelStoreEvent = useGame(s => s.cancelStoreEvent)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
   // Drop orders whose card you no longer own (e.g. sold it at a show) — keep the
   // original index so clearing/responding still targets the right inbox slot.
@@ -63,9 +74,13 @@ export default function BoothInbox() {
   const [wantPick, setWantPick] = useState(null) // a want/forum post being fulfilled {kind:'want'|'forum', item}
   const [holdPick, setHoldPick] = useState(null) // shelf item being held for a regular {kind, uid, label}
   const [givePick, setGivePick] = useState(false) // picking a card for the in-store giveaway
+  const [rafflePick, setRafflePick] = useState(false) // picking the raffle prize card
+  const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
   const [toast, setToast] = useState(null)
   useModalEscape(() => { // close the top-most picker on Esc
-    if (givePick) setGivePick(false)
+    if (buyinReveal) setBuyinReveal(null)
+    else if (rafflePick) setRafflePick(false)
+    else if (givePick) setGivePick(false)
     else if (holdPick) setHoldPick(null)
     else if (wantPick) setWantPick(null)
   })
@@ -93,11 +108,14 @@ export default function BoothInbox() {
         <button className={`subtab ${sellTab === 'orders' ? 'active' : ''}`} onClick={() => setSellTab('orders')}>
           📨 Orders{validInbox.length ? ` (${validInbox.length})` : ''}
         </button>
-        {hasStore && (
-          <button className={`subtab ${sellTab === 'store' ? 'active' : ''}`} onClick={() => setSellTab('store')}>
-            🏬 Shop floor{(storeConsignRequests || []).length ? ` (${storeConsignRequests.length})` : ''}
-          </button>
-        )}
+        {hasStore && (() => {
+          const waiting = (storeConsignRequests || []).length + (buyinOffers || []).length
+          return (
+            <button className={`subtab ${sellTab === 'store' ? 'active' : ''}`} onClick={() => setSellTab('store')}>
+              🏬 Shop floor{waiting ? ` (${waiting})` : ''}
+            </button>
+          )
+        })()}
         <button className={`subtab ${sellTab === 'forum' ? 'active' : ''}`} onClick={() => setSellTab('forum')}>
           📋 Forum{forumCount ? ` (${forumCount})` : ''}
         </button>
@@ -125,10 +143,50 @@ export default function BoothInbox() {
           return (
             <>
               <div className="banner" style={{ marginTop: 16 }}>
-                🏬 <b>Your shop floor.</b> Walk-ins buy what's in the case (+12% in person, no fees). Hold pieces behind the
-                counter for regulars, carry locals' cards for a commission, and run a 🎁 giveaway when the room needs a jolt.
-                {giveawayDaysLeft > 0 && <> <b style={{ color: 'var(--gold)' }}> 🎉 Giveaway buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
+                🏬 <b>Your shop floor.</b> Walk-ins buy what's in the case (+12% in person, no fees). Buy collections off
+                locals (cash or credit), hold pieces for regulars, carry consignments for a commission, host events, and
+                run a 🎁 giveaway when the room needs a jolt.
+                {giveawayDaysLeft > 0 && <> <b style={{ color: 'var(--gold)' }}> 🎉 Buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
+                {(storeCredit || 0) > 0 && <> <span className="pill" title="Outstanding store credit you've issued — locals spend it down at your counter over the coming days; a little never gets redeemed at all." style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>💳 {fmtMoney(storeCredit)} credit outstanding</span></>}
               </div>
+
+              {/* Collection buy-ins: locals selling YOU their cards */}
+              {(buyinOffers || []).length > 0 && (
+                <div className="wants">
+                  <div className="wants-head">🛍️ Collection buy-ins <span className="muted">— locals selling to you: appraise the lot, pay cash or store credit (+{Math.round(STORE_CREDIT_BONUS * 100)}%, they spend it back at your counter)</span></div>
+                  <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(270px,1fr))' }}>
+                    {buyinOffers.map(o => {
+                      const est = upgrades.loupe ? o.estimateTight : o.estimate
+                      const credit = Math.round(o.askCash * (1 + STORE_CREDIT_BONUS) * 100) / 100
+                      return (
+                        <div key={o.id} className="product">
+                          <h3 style={{ fontSize: 14, margin: 0 }}>{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
+                          <div className="meta" style={{ flex: 1 }}>
+                            A lot of <b>{o.count} cards</b> — {o.hint}.<br />
+                            Your read: <b title={upgrades.loupe ? 'Loupe appraisal — tight (±8%)' : 'Eyeball estimate (±25%) — the 🔍 Jeweler\'s Loupe reads lots much tighter'}>
+                              ~{fmtMoney(est)} of cards {upgrades.loupe ? '🔍' : '👁️'}</b>
+                            <br />Asking <b>{fmtMoney(o.askCash)}</b> cash · they'll wait {o.pendingDays}d
+                          </div>
+                          <div className="row" style={{ gap: 5 }}>
+                            <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12 }} disabled={cash < o.askCash}
+                              title="Pay their ask in cash — done and dusted"
+                              onClick={() => { const r = acceptBuyin(o.id, 'cash'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
+                              💵 {fmtMoney(o.askCash)}
+                            </button>
+                            <button className="btn" style={{ padding: '6px 8px', fontSize: 12 }}
+                              title={`No cash down — issue ${fmtMoney(credit)} store credit instead. They spend it back at your counter over time (and some never gets redeemed). Credit sellers tend to become regulars.`}
+                              onClick={() => { const r = acceptBuyin(o.id, 'credit'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
+                              💳 {fmtMoney(credit)}
+                            </button>
+                            <button className="btn alt" style={{ flex: 'none', maxWidth: 70, padding: '6px 8px', fontSize: 12 }}
+                              onClick={() => { declineBuyin(o.id); flash('Passed on the lot.') }}>Pass</button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Consignment intake: locals waiting on a yes/no */}
               {(storeConsignRequests || []).length > 0 && (
@@ -288,6 +346,43 @@ export default function BoothInbox() {
                     ? <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🎉 Buzz live · {giveawayDaysLeft}d left</span>
                     : <span className="muted" style={{ fontSize: 12 }}>Pricier card → bigger pop. Regulars warm up (+trust); the 🎗️ Charity Banner boosts the notoriety.</span>}
                 </div>
+              </div>
+
+              {/* Hosted events: plan tonight, it happens when the day turns */}
+              <div className="wants">
+                <div className="wants-head">🎪 Host an event <span className="muted">— recurring nights are what real shops run on: traffic, community, and money at the door</span></div>
+                {storeEventPlanned ? (
+                  <div className="banner" style={{ marginTop: 4 }}>
+                    {STORE_EVENTS[storeEventPlanned.type]?.icon} <b>Tonight: {STORE_EVENTS[storeEventPlanned.type]?.name}</b>
+                    {storeEventPlanned.prizeCard ? <> · prize: <b>{storeEventPlanned.prizeCard.name}</b></> : ''} — it happens when you hit <b>Next Day</b>.
+                    <button className="btn alt" style={{ flex: 'none', maxWidth: 120, marginLeft: 10, padding: '4px 10px' }}
+                      onClick={() => { cancelStoreEvent(); flash('Called it off — refunded.') }}>Call it off</button>
+                  </div>
+                ) : eventCooldownLeft > 0 ? (
+                  <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>😮‍💨 The room needs a breather — you can host again in <b>{eventCooldownLeft} day{eventCooldownLeft > 1 ? 's' : ''}</b>.</div>
+                ) : (
+                  <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', marginTop: 4 }}>
+                    {Object.entries(STORE_EVENTS).map(([key, ev]) => {
+                      const locked = notoriety < (ev.minNoto || 0)
+                      const cantAfford = cash < ev.cost
+                      return (
+                        <div key={key} className="product">
+                          <h3 style={{ fontSize: 14, margin: 0 }}>{ev.icon} {ev.name}</h3>
+                          <div className="meta" style={{ flex: 1 }}>{ev.desc}</div>
+                          <button className="btn" disabled={locked || cantAfford}
+                            title={locked ? `Needs ${ev.minNoto} notoriety` : ev.needsPrize ? 'Pick the prize card next' : undefined}
+                            onClick={() => {
+                              if (ev.needsPrize) { setRafflePick(true); return }
+                              const r = planStoreEvent(key)
+                              flash(r.error || `${ev.icon} ${ev.name} is on tonight — hit Next Day to run it.`)
+                            }}>
+                            {locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             </>
           )
@@ -541,6 +636,58 @@ export default function BoothInbox() {
               })}
             </div>
             <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setGivePick(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Buy-in reveal: the lot you just bought — was your appraisal right? */}
+      {buyinReveal && (
+        <div className="modalbg" onClick={() => setBuyinReveal(null)}>
+          <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
+            <h2 style={{ fontSize: 18, marginBottom: 2 }}>
+              {buyinReveal.market >= buyinReveal.paid * 1.3 ? '🤑' : buyinReveal.market >= buyinReveal.paid ? '🙂' : '😬'} The lot, flipped through
+            </h2>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+              Paid <b>{buyinReveal.method === 'credit' ? `${fmtMoney(buyinReveal.paid)} store credit` : `${fmtMoney(buyinReveal.paid)} cash`}</b> ·
+              market value <b style={{ color: buyinReveal.market >= buyinReveal.paid ? 'var(--green)' : 'var(--red)' }}>{fmtMoney(buyinReveal.market)}</b>
+              {buyinReveal.method === 'credit' ? ' · no cash left the till — they\'ll spend the credit back at your counter.' : ''} All {buyinReveal.cards.length} cards are in your collection.
+            </p>
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(110px,1fr))' }}>
+              {[...buyinReveal.cards].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
+                <div key={c.uid} className="vendoritem">
+                  <CardTile card={c} interactive={false} />
+                </div>
+              ))}
+            </div>
+            <button className="btn gold" style={{ marginTop: 14, maxWidth: 160 }} onClick={() => setBuyinReveal(null)}>Nice →</button>
+          </div>
+        </div>
+      )}
+
+      {/* Raffle prize picker: the card that goes home with a winner tonight. */}
+      {rafflePick && (
+        <div className="modalbg" onClick={() => setRafflePick(false)}>
+          <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
+            <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+              A flashier prize sells more tickets worth of goodwill — bigger notoriety pop when it's drawn.
+              Costs ${STORE_EVENTS.raffle.cost} to run; ticket money comes in when the night happens.
+            </p>
+            {collection.length === 0 ? <div className="empty">No cards to raffle.</div> : (
+              <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
+                {[...collection].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => (
+                  <div key={c.uid} className="vendoritem">
+                    <CardTile card={c} interactive={false} />
+                    <button className="btn gold" style={{ padding: '4px 8px', fontSize: 12 }} onClick={() => {
+                      const r = planStoreEvent('raffle', c.uid)
+                      flash(r.error || `🎟️ Raffle Night is on — ${c.name} is the prize. Hit Next Day to run it.`)
+                      setRafflePick(false)
+                    }}>Prize · {fmtMoney(cardValue(c))}</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setRafflePick(false)}>Cancel</button>
           </div>
         </div>
       )}
