@@ -1,5 +1,6 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
 import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
+import { omniShelfCards } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -897,8 +898,10 @@ export function makeShopRequest(s, accepted = null) {
       loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'sealed', uid: hit?.uid })
   }
 
-  // singles
-  const shelf = (s.shopDisplay || []).map(c => ({ c, loc: 'shelf' }))
+  // singles — the "shelf" is the display case PLUS any card listed everywhere
+  // (online + in-store): a walk-in can be rung up for those on the spot too.
+  const caseCards = [...(s.shopDisplay || []), ...omniShelfCards(s.listings)]
+  const shelf = caseCards.map(c => ({ c, loc: 'shelf' }))
   const back = (s.collection || []).map(c => ({ c, loc: 'back' }))
   const have = [...shelf, ...back]
   if (have.length && Math.random() < 0.55) {
@@ -906,7 +909,7 @@ export function makeShopRequest(s, accepted = null) {
     return build({ label: c.name, article: 'a', img: c.img, price: priceFor(cardValue(c)), loc, kind: 'card', uid: c.uid })
   }
   const want = cardInValueRange(1, 300)
-  const onShelf = (s.shopDisplay || []).find(x => x.id === want.id)
+  const onShelf = caseCards.find(x => x.id === want.id)
   const inBack = (s.collection || []).find(x => x.id === want.id)
   const hit = onShelf || inBack
   return build({ label: want.name, article: 'a', img: want.img,

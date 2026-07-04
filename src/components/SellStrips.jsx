@@ -14,7 +14,7 @@ export default function SellStrips() {
     <>
       {listings.length > 0 && (
         <div className="market-panel">
-          <div className="market-head">🌐 Listed on your site <span className="muted">({listings.length}) — customers browse these; a fair price sells, an overpriced one just sits</span></div>
+          <div className="market-head">🌐 Listed for sale <span className="muted">({listings.length}) — online sales pay a 5% fee + shipping; 🏬+🌐 items can also sell in person, fee-free at a premium</span></div>
           <div className="market-list">
             {listings.map((l, i) => <ListingRow key={i} l={l} i={i} />)}
           </div>
@@ -42,12 +42,15 @@ function ListingRow({ l, i }) {
   const repriceListing = useGame(s => s.repriceListing)
   const pullListing = useGame(s => s.pullListing)
   const setListingAutoSell = useGame(s => s.setListingAutoSell)
+  const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const hasAutoSell = useGame(s => !!s.upgrades.autoSell)
+  const hasStore = useGame(s => !!s.upgrades.storefront)
   const [repricing, setRepricing] = useState(false)
   const [mult, setMult] = useState(l.askMult || 1.1)
 
   const market = cardValue(l.card)
   const pct = Math.round((l.askMult || 1) * 100)
+  const canEverywhere = hasStore && !l.card?._sealed
   const offers = l.offers || []
   const topOffer = offers.reduce((best, o) => {
     if (!best) return o
@@ -73,11 +76,26 @@ function ListingRow({ l, i }) {
           </div>
           <div className="listing-sub">
             <b>{fmtMoney(l.ask)}</b> <span className="muted">· {pct}% of market</span>
+            <span className="pill" style={l.everywhere
+              ? { fontSize: 10.5, background: '#ffcb0522', color: 'var(--gold)' }
+              : { fontSize: 10.5, background: '#5aa0ff22', color: '#5aa0ff' }}
+              title={l.everywhere
+                ? 'Listed everywhere — online AND in your store case. A walk-in can buy it fee-free at the in-person premium; whichever channel sells first takes it.'
+                : 'Online only — sales pay the 5% marketplace fee + shipping.'}>
+              {l.everywhere ? '🏬+🌐 everywhere' : '🌐 online'}
+            </span>
             <span className="listing-views" title="Customers who've looked at this listing">👀 {l.views || 0}</span>
             {l.stale && <span className="pill expired" title="Lots of looks, no buyers — almost certainly priced too high">priced too high</span>}
           </div>
         </div>
         <div className="listing-actions">
+          {(canEverywhere || l.everywhere) && (
+            <button className="linkbtn"
+              title={l.everywhere ? 'Take it out of the store case (keep the online listing)' : 'Also put it out in your store case — sells to walk-ins too, fee-free at a premium'}
+              onClick={() => setListingEverywhere(i, !l.everywhere)}>
+              {l.everywhere ? 'online only' : '+ store case'}
+            </button>
+          )}
           {hasAutoSell && (
             <button
               className={`btn ${autoSellOn ? 'gold' : 'alt'}`}

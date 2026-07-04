@@ -15,7 +15,7 @@ import { encounterStillValid, STORE_SALE_PREMIUM } from '../shows'
 // The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
 const DEAL_OF_SHOW_MARKDOWN = 0.12
-import { acceptedMethods, PAYMENT_METHODS, processingFee } from './constants'
+import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -363,7 +363,9 @@ export function createBoothSlice(set, get) {
                ...(get().showSealed || []).map(it => ({ item: it, sealed: true }))]
             : pool === 'listings' ? (get().listings || []).map(l => ({ item: l.card, sealed: false }))
             : pool === 'shop'
+            // The store case = the shelf + any card listed EVERYWHERE (online + in-store).
             ? [...(get().shopDisplay || []).map(c => ({ item: c, sealed: false })),
+               ...omniShelfCards(get().listings).map(c => ({ item: c, sealed: false })),
                ...(get().shopSealed || []).map(it => ({ item: it, sealed: true }))]
             : get().collection.map(c => ({ item: c, sealed: false }))
           if (Math.random() < (effect.chance ?? 0.3) && owned.length) {

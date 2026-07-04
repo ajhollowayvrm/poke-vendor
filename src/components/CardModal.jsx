@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
 import { useGame } from '../game/store'
+import { STORE_SALE_PREMIUM } from '../game/shows'
 import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
 import PriceChart from './PriceChart'
@@ -29,8 +30,12 @@ export default function CardModal({ card, onClose }) {
   // Per-set market history drives this card's price-history chart (it re-renders as the
   // market drifts each game-day). The chart needs the set's recent multiplier samples.
   const marketHistory = useGame(s => s.marketHistory)
+  const hasStore = useGame(s => !!s.upgrades.storefront)
   const [listing, setListing] = useState(false) // showing the list-on-site picker?
   const [askPct, setAskPct] = useState(90)
+  // With a storefront, default to listing EVERYWHERE (online + your store case) —
+  // in-person sales skip the fees + shipping and earn the walk-in premium.
+  const [everywhere, setEverywhere] = useState(true)
   const askMult = (parseFloat(askPct) || 0) / 100
   // close on Escape — clicking the backdrop already closes; this adds keyboard parity
   useEffect(() => {
@@ -195,8 +200,8 @@ export default function CardModal({ card, onClose }) {
                   <small>Instant, but only {Math.round(quickSellRate*100)}% of market (TCGplayer-style)</small>
                 </button>
                 <button className="btn alt sellopt" onClick={() => setListing(true)}>
-                  <b>List on your site ↗</b>
-                  <small>Set your price — raw cards usually sell ~85% of market; sells over time, 5% fee</small>
+                  <b>List for sale ↗{hasStore ? ' 🌐+🏬' : ''}</b>
+                  <small>Set your price — sells over time. Online sales pay a 5% fee + shipping{hasStore ? '; list it everywhere and a walk-in can buy it fee-free at a premium instead' : ''}</small>
                 </button>
                 <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
                   <b>Consign ↗</b>
@@ -206,9 +211,19 @@ export default function CardModal({ card, onClose }) {
             ) : (
               <div className="list-picker" style={{ marginTop: 14 }}>
                 <div className="row" style={{ justifyContent:'space-between', alignItems:'baseline' }}>
-                  <b>List on your site</b>
+                  <b>List for sale</b>
                   <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(market)}</span>
                 </div>
+                {hasStore && (
+                  <div className="row" style={{ marginTop: 8, gap: 6 }}>
+                    <button className={`btn ${everywhere ? 'gold' : 'alt'}`} style={{ fontSize: 12, padding: '6px 10px' }}
+                      title="One card, two channels: it's up on your site AND out in your store case. Whichever finds a buyer first takes it — and an in-person sale skips the fee + shipping and earns the walk-in premium."
+                      onClick={() => setEverywhere(true)}>🏬+🌐 Everywhere</button>
+                    <button className={`btn ${everywhere ? 'alt' : 'gold'}`} style={{ fontSize: 12, padding: '6px 10px' }}
+                      title="Web listing only — walk-ins won't see it."
+                      onClick={() => setEverywhere(false)}>🌐 Online only</button>
+                  </div>
+                )}
                 <div className="list-pct-row" style={{ marginTop: 8 }}>
                   <span className="muted" style={{ fontSize: 12 }}>Ask</span>
                   {[80, 90, 100, 110].map(p => (
@@ -220,7 +235,7 @@ export default function CardModal({ card, onClose }) {
                   <b style={{ marginLeft: 'auto', textAlign:'right' }}>{fmtMoney(quote.ask)}</b>
                 </div>
                 <div className="list-quote">
-                  <div><span className="muted">You net</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee</small></div>
+                  <div><span className="muted">Online nets</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee + {fmtMoney(quote.ship ?? 0)} shipping</small></div>
                   <div><span className="muted">Shoppers/day</span><b>👀 ~{quote.viewsPerDay}</b><small className="muted">more with rep</small></div>
                   <div><span className="muted">Who'll buy</span>
                     <b style={{ color: quote.buyShare > 0.6 ? 'var(--green)' : quote.buyShare > 0.25 ? 'var(--gold)' : 'var(--red)' }}>
@@ -229,8 +244,16 @@ export default function CardModal({ card, onClose }) {
                     <small className="muted">{quote.buyShare <= 0 ? 'too pricey — will sit' : quote.buyShare < 0.3 ? 'only casual buyers' : 'of browsing buyers'}</small>
                   </div>
                 </div>
+                {hasStore && everywhere && (
+                  <p className="muted" style={{ fontSize: 11.5, margin: '8px 2px 0' }}>
+                    🏬 A walk-in pays ~<b style={{ color:'var(--green)' }}>{fmtMoney(round2(market * (1 + STORE_SALE_PREMIUM)))}</b> across
+                    the counter (+{Math.round(STORE_SALE_PREMIUM*100)}% in-person premium, no fee, no shipping) — in-store beats online on the same card.
+                  </p>
+                )}
                 <div className="row" style={{ marginTop: 10 }}>
-                  <button className="btn gold" disabled={!askMult} onClick={() => { listOnSite(card.uid, askMult); onClose() }}>List it ↗</button>
+                  <button className="btn gold" disabled={!askMult} onClick={() => { listOnSite(card.uid, askMult, { everywhere: hasStore && everywhere }); onClose() }}>
+                    {hasStore && everywhere ? 'List everywhere ↗' : 'List it ↗'}
+                  </button>
                   <button className="btn alt" style={{ maxWidth: 120 }} onClick={() => setListing(false)}>← Back</button>
                 </div>
               </div>

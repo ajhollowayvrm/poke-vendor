@@ -124,6 +124,33 @@ export function netsZero(gross, payMethod) {
   return processingFee(gross, payMethod).net <= 0.005 && gross > 0
 }
 
+// --- Online sale drag (marketplace fee + shipping & packing) -----------------
+// Selling online is convenient but it BLEEDS: every online sale pays the ~5%
+// marketplace fee AND a shipping & packing cost (mailer, sleeve, label, postage).
+// In-person sales pay neither — that's the store's edge (on top of the +12%
+// in-person premium): the same card simply nets more across your counter.
+// Shipping is flat + a slice of the sale, capped at a share of small sales so
+// listing bulk stays viable (you batch cheap cards into cheap envelopes).
+export const ONLINE_FEE_PCT = 0.05
+export const SHIP_FLAT = 0.60
+export const SHIP_PCT = 0.03
+export const SHIP_MAX_SHARE = 0.25
+export function shippingCost(amount) {
+  if (!(amount > 0)) return 0
+  return round2(Math.min(SHIP_FLAT + SHIP_PCT * amount, amount * SHIP_MAX_SHARE))
+}
+
+// --- Omni-channel listings ("list everywhere") --------------------------------
+// With a storefront, a listing can be flagged `everywhere`: the SAME physical card
+// is up on your site AND out in your store case, sold from whichever channel finds
+// a buyer first. The card object lives ONLY in `listings` (the save-repair dedupe
+// in index.js allows one bucket per uid); everything walk-in-facing pulls these in
+// via this helper. Sealed-wrapped listings stay online-only (sealed has its own
+// shelf, shopSealed).
+export function omniShelfCards(listings) {
+  return (listings || []).filter(l => l.everywhere && !l.expired && !l.card?._sealed).map(l => l.card)
+}
+
 export const CALENDAR_DAYS = 30
 export const INBOX_CAP = 8
 
@@ -206,7 +233,7 @@ export const STREAM_HYPE_DAYS = 4
 // investments are thousands, and a physical storefront is the big commitment.
 export const UPGRADES = {
   // THE major commitment: a real lease + buildout. Unlocks walk-ins + Cash.
-  storefront: { name: 'Brick-and-Mortar Store', cost: 8000, desc: 'Sign a lease ($120/day) and open a real shop — your biggest DEMAND engine. Heavy local foot traffic (more orders than online), a +12% in-person price premium, steady daily counter business (singles/supplies/bulk to locals) once your case is stocked, passive local fame, and Cash payments. The big leap from flipper to store owner — keep the shelf stocked and it more than earns its lease.', icon: '🏬', tier: 'big' },
+  storefront: { name: 'Brick-and-Mortar Store', cost: 8000, desc: 'Sign a lease ($120/day) and open a real shop — your biggest DEMAND engine. Heavy local foot traffic (more orders than online), a +12% in-person price premium, fee-free in-person sales (online listings pay a 5% fee + shipping), steady daily counter business (singles/supplies/bulk to locals) once your case is stocked, passive local fame, and Cash payments. Lets you list cards EVERYWHERE — one item up online AND in your store case, sold from whichever channel finds a buyer first. The big leap from flipper to store owner — keep the shelf stocked and it more than earns its lease.', icon: '🏬', tier: 'big' },
 
   // Payment rails — each its own setup. Capture buyers who won't use Venmo.
   payPaypal: { name: 'Accept PayPal',            cost: 120,  desc: 'Take PayPal — a huge share of online buyers prefer it.', icon: '🅿️', group: 'payment' },

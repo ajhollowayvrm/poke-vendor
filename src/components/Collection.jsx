@@ -27,6 +27,9 @@ export default function Collection({ onPick }) {
   const [selectMode, setSelectMode] = useState(false)
   const [picked, setPicked] = useState(() => new Set())
   const [listPct, setListPct] = useState(90) // ask % of market for bulk "list on site"
+  // Bulk-list channel: with a storefront, default to EVERYWHERE (online + store case) —
+  // walk-ins buy fee-free at a premium; online pays the marketplace fee + shipping.
+  const [listEverywhere, setListEverywhere] = useState(true)
   const [gradeTier, setGradeTier] = useState('economy') // service tier for bulk grading
   const [toast, setToast] = useState(null)
   const listMult = (parseFloat(listPct) || 0) / 100
@@ -196,11 +199,20 @@ export default function Collection({ onPick }) {
                   onChange={e => setListPct(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))} />
                 <span className="muted" style={{ fontSize: 12 }}>%</span>
               </div>
+              {hasStore && (
+                <button className={`btn ${listEverywhere ? 'gold' : 'alt'}`} style={{ flex: 'none' }}
+                  title={listEverywhere
+                    ? 'Everywhere: also out in your store case — walk-ins buy fee-free at the +12% in-person premium; whichever channel sells first takes it. Tap for online-only.'
+                    : 'Online only: web listing, pays the 5% fee + shipping per sale. Tap to also put them in your store case.'}
+                  onClick={() => setListEverywhere(v => !v)}>
+                  {listEverywhere ? '🏬+🌐 Everywhere' : '🌐 Online only'}
+                </button>
+              )}
               <button className="btn" disabled={!listMult} onClick={() => {
-                const { sold, kept } = listManyOnSite(selCards.map(c => c.uid), listMult)
-                flash(`Listed ${sold} card${sold>1?'s':''} at ${Math.round(listMult*100)}% of market.${keptNote(kept)}`)
+                const { sold, kept } = listManyOnSite(selCards.map(c => c.uid), listMult, { everywhere: hasStore && listEverywhere })
+                flash(`Listed ${sold} card${sold>1?'s':''} at ${Math.round(listMult*100)}% of market${hasStore && listEverywhere ? ' — online + store case' : ''}.${keptNote(kept)}`)
                 exitSelect()
-              }}>🌐 List @ {Math.round(listMult*100)}%</button>
+              }}>{hasStore && listEverywhere ? '🏬+🌐' : '🌐'} List @ {Math.round(listMult*100)}%</button>
               {listHint && <span className={`list-hint ${listHint.cls}`}>{listHint.txt}</span>}
             </div>
             <button className="btn alt" onClick={() => {

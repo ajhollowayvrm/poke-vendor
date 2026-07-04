@@ -26,6 +26,7 @@ import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
+  ONLINE_FEE_PCT, shippingCost, omniShelfCards,
 } from './constants'
 import { realizableAssets, netWorthFull } from './helpers'
 
@@ -213,8 +214,8 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
             if (Math.random() < LISTING_DAILY_SELL_CAP) {
               const market = cardValue(cur.card)
               const amount = round2(market * 0.80)
-              const fee = round2(amount * 0.05)
-              const net = round2(amount - fee)
+              const fee = round2(amount * ONLINE_FEE_PCT)
+              const net = round2(amount - fee - shippingCost(amount)) // online sale → ship it
               soldProceeds = round2(soldProceeds + net)
               sold.push({ name: cur.card.name, net, savvy: label, auto: true })
               didSell = true
@@ -227,9 +228,9 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
           if (Math.random() < LISTING_DAILY_SELL_CAP) {
             const market = cardValue(cur.card)
             const amount = round2(market * effMax)
-            const fee = round2(amount * 0.05)
+            const fee = round2(amount * ONLINE_FEE_PCT)
             const premium = amount > market * 1.02
-            cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee), savvy, savvyLabel: label, icon, hot: hot && premium })
+            cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount)), savvy, savvyLabel: label, icon, hot: hot && premium })
             newOffers++
             if (hot && premium) premiumOffers++
           }
@@ -241,8 +242,8 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
         if (overBy < 0.35 && Math.random() < (savvy === 'shark' ? 0.5 : savvy === 'sharp' ? 0.3 : 0.12)) {
           const market = cardValue(cur.card)
           const amount = round2(market * max)
-          const fee = round2(amount * 0.05)
-          cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee), savvy, savvyLabel: label, icon })
+          const fee = round2(amount * ONLINE_FEE_PCT)
+          cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount)), savvy, savvyLabel: label, icon })
           newOffers++
         }
       }
@@ -367,8 +368,10 @@ export function advanceDaysWith(set, get, days, away) {
   const listedCards = (s.listings || []).map(l => l.card)
   // A deeply-underpriced live listing draws online deal-hunters even before you're known.
   const hasBargain = (s.listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
-  // Walk-in customers only buy/offer on what you've put out on the shop shelf.
-  const shelfCards = s.shopDisplay || []
+  // Walk-in customers only buy/offer on what you've put out on the shop shelf —
+  // which includes cards listed EVERYWHERE (online + store case): the same physical
+  // card is browsable in person, and whichever channel sells it first takes it.
+  const shelfCards = [...(s.shopDisplay || []), ...omniShelfCards(s.listings)]
   // No storefront, no inbox. Strangers only message you about cards you've actually
   // put up for sale: online needs a live listing, walk-ins need cards on the shelf.
   // With nothing out on a channel there's nobody to hear from there — so we skip the
@@ -419,7 +422,7 @@ export function advanceDaysWith(set, get, days, away) {
   // becomes a runaway printer — the big money is still in the cards you move.
   let counterRevenue = 0
   if (hasStore) {
-    const stocked = (s.shopDisplay || []).length > 0
+    const stocked = shelfCards.length > 0 || (s.shopSealed || []).length > 0
     const perDay = Math.min(250, (15 + noto) * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6))
     counterRevenue = round2(perDay * days)
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
@@ -621,11 +624,14 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
   const arrears = (s.storeArrears || 0) + days
   if (arrears > STORE_GRACE_DAYS) {
     // lose the store: drop the storefront + staff upgrades, let go of all employees, and
-    // bring any cards off the shelf back into your collection (no shop = no display case).
+    // bring everything off the shelf back home (no shop = no display case) — cards to the
+    // collection, sealed to held inventory, and everywhere-listings back to online-only.
     set(st => {
       const up = { ...st.upgrades }; delete up.storefront; delete up.staff
       return { upgrades: up, employees: [], storeArrears: 0,
-        collection: [...(st.shopDisplay || []), ...st.collection], shopDisplay: [] }
+        collection: [...(st.shopDisplay || []), ...st.collection], shopDisplay: [],
+        sealedInventory: [...(st.shopSealed || []), ...(st.sealedInventory || [])], shopSealed: [],
+        listings: (st.listings || []).map(l => l.everywhere ? { ...l, everywhere: false } : l) }
     })
     get().log('store-lost', `Couldn't cover the store overhead — you lost the shop. Back to flipping from home.`, 0)
   } else {

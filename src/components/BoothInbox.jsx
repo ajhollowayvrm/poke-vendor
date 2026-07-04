@@ -35,6 +35,7 @@ export default function BoothInbox() {
   const shopDisplay = useGame(s => s.shopDisplay)
   const pullFromShop = useGame(s => s.pullFromShop)
   const pullAllFromShop = useGame(s => s.pullAllFromShop)
+  const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const shopSealed = useGame(s => s.shopSealed)
   const sealedInventory = useGame(s => s.sealedInventory)
   const pullShopSealed = useGame(s => s.pullShopSealed)
@@ -199,11 +200,15 @@ export default function BoothInbox() {
         <span className="pill" style={{ opacity: upgrades.staff ? 1 : 0.35 }}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
       </div>
 
-      {/* Store shelf (display case): the cards walk-in customers can actually buy.
+      {/* Store shelf (display case): the cards walk-in customers can actually buy —
+          stocked cards PLUS anything listed everywhere (online + store case).
           You stock it from Cards → Select → 🏬 Stock shop. Pull cards back anytime. */}
-      {hasStore && (
+      {hasStore && (() => {
+        const omni = listings.map((l, idx) => ({ l, idx })).filter(({ l }) => l.everywhere && !l.expired && !l.card?._sealed)
+        const caseCount = shopDisplay.length + omni.length
+        return (
         <div className="wants">
-          <div className="wants-head">🏬 On the shelf <span className="muted">— walk-in customers only buy what you've put out here ({shopDisplay.length} card{shopDisplay.length===1?'':'s'}{shopSealed.length?` · ${shopSealed.length} sealed`:''})</span>
+          <div className="wants-head">🏬 On the shelf <span className="muted">— walk-in customers only buy what you've put out here ({caseCount} card{caseCount===1?'':'s'}{omni.length?` · ${omni.length} also online`:''}{shopSealed.length?` · ${shopSealed.length} sealed`:''})</span>
             {(shopDisplay.length > 0 || shopSealed.length > 0) && (
               <button className="btn alt" style={{ flex:'none', maxWidth: 150, marginLeft: 'auto', padding: '4px 10px' }}
                 onClick={() => { const n = pullAllFromShop() + pullAllShopSealed(); flash(`Cleared the shelf — ${n} item${n>1?'s':''} back in stock.`) }}>
@@ -223,8 +228,8 @@ export default function BoothInbox() {
             </div>
           )}
 
-          {shopDisplay.length === 0 && shopSealed.length === 0 ? (
-            <div className="empty" style={{ marginTop: 4 }}>Nothing on display. Put <b>cards</b> out from <b>Cards → Select → 🏬 Stock shop</b>, or <b>sealed</b> from <b>📦 Inventory → 🏬 Stock</b>, so walk-ins have something to buy. 🛒</div>
+          {caseCount === 0 && shopSealed.length === 0 ? (
+            <div className="empty" style={{ marginTop: 4 }}>Nothing on display. Put <b>cards</b> out from <b>Cards → Select → 🏬 Stock shop</b> (or list them <b>everywhere</b>), or <b>sealed</b> from <b>📦 Inventory → 🏬 Stock</b>, so walk-ins have something to buy. 🛒</div>
           ) : (
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', marginTop: 4 }}>
               {[...shopSealed].sort((a, b) => sealedValue(b) - sealedValue(a)).map(it => {
@@ -251,10 +256,21 @@ export default function BoothInbox() {
                   </button>
                 </div>
               ))}
+              {omni.sort((a, b) => cardValue(b.l.card) - cardValue(a.l.card)).map(({ l, idx }) => (
+                <div key={l.card.uid} className="vendoritem" title="Listed everywhere — also up on your site. Whichever channel sells it first takes it.">
+                  <CardTile card={l.card} interactive={false} />
+                  <span className="pill" style={{ alignSelf: 'center', fontSize: 10.5, background: '#5aa0ff22', color: '#5aa0ff' }}>🌐 also online · {fmtMoney(l.ask)}</span>
+                  <button className="btn alt" style={{ padding: '4px 10px' }}
+                    onClick={() => { setListingEverywhere(idx, false); flash(`${l.card.name} is online-only now.`) }}>
+                    ↩ Online only
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>
-      )}
+        )
+      })()}
 
       {wantList.length > 0 && (
         <div className="wants">

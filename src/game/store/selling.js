@@ -8,7 +8,7 @@
 
 import { cardValue, dailyViewers, buyerMaxMult, BUYER_SAVVY, round2, bulkSellableUids } from '../engine'
 import { cardMatchesWant, makeRegular } from '../shows'
-import { REGULAR_FORM_GATE } from './constants'
+import { REGULAR_FORM_GATE, ONLINE_FEE_PCT, shippingCost } from './constants'
 
 export function createSellingSlice(set, get) {
   return {
@@ -16,13 +16,14 @@ export function createSellingSlice(set, get) {
     // browsing customers (see tickListings), so the quote ESTIMATES the experience:
     // expected shoppers/day and the share of the buyer pool whose savvy tolerates
     // this ask (≈ likelihood the next willing buyer bites). Returns
-    // { market, ask, fee, net, viewsPerDay, buyShare }.
+    // { market, ask, fee, ship, net, viewsPerDay, buyShare }.
     listingQuote(card, askMult) {
       const market = cardValue(card)
       const noto = get().notoriety
       const ask = round2(market * askMult)
-      const fee = round2(ask * 0.05)          // ~5% marketplace fee
-      const net = round2(ask - fee)
+      const fee = round2(ask * ONLINE_FEE_PCT) // ~5% marketplace fee
+      const ship = shippingCost(ask)           // shipping & packing — online only
+      const net = round2(ask - fee - ship)
       const viewsPerDay = +(dailyViewers(card, askMult, noto, () => 0.5)).toFixed(0)
       // share of the browsing pool whose max-willingness covers this ask (use the
       // savvy weights, with each type's notoriety/desirability-lifted ceiling).
@@ -31,23 +32,40 @@ export function createSellingSlice(set, get) {
         const max = buyerMaxMult(key, noto, card, () => 0.5)
         if (askMult <= max) buyShare += b.weight
       }
-      return { market, ask, fee, net, viewsPerDay, buyShare: +buyShare.toFixed(2) }
+      return { market, ask, fee, ship, net, viewsPerDay, buyShare: +buyShare.toFixed(2) }
     },
 
     // List a card on your own site at `askMult`× market. Removes it from the
     // collection and puts it on the market, where browsing customers decide whether
     // to buy (see tickListings). `views`/`offers` accrue as days pass.
-    listOnSite(uid, askMult) {
+    // opts.everywhere (needs a storefront): the SAME card also goes out in your store
+    // case — walk-ins can buy it in person (no fees, +premium) and whichever channel
+    // finds a buyer first takes it off both.
+    listOnSite(uid, askMult, opts = {}) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card) return false
       const q = get().listingQuote(card, askMult)
-      const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0, autoSell: true }
+      const everywhere = !!(opts.everywhere && get().upgrades.storefront)
+      const listing = { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0, autoSell: true, everywhere }
       set(s => ({
         collection: s.collection.filter(c => c.uid !== uid),
         listings: [...(s.listings || []), listing],
       }))
-      get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)`, 0)
+      get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)${everywhere ? ' — online + in your store case' : ''}`, 0)
       return q
+    },
+
+    // Flip a live listing between online-only and everywhere (online + store case).
+    // Going everywhere needs a storefront; sealed-wrapped listings stay online-only.
+    setListingEverywhere(idx, val) {
+      const l = get().listings[idx]
+      if (!l) return
+      const on = !!val && !!get().upgrades.storefront && !l.card?._sealed
+      if (on === !!l.everywhere) return
+      set(s => ({ listings: s.listings.map((x, i) => i === idx ? { ...x, everywhere: on } : x) }))
+      get().log('listing', on
+        ? `${l.card.name} is now also out in your store case — sells online or in person, whichever comes first`
+        : `${l.card.name} pulled from the store case — online listing only`, 0)
     },
 
     // Relist a listing (e.g. one that went stale) — back on the market fresh, same ask.
@@ -114,22 +132,23 @@ export function createSellingSlice(set, get) {
     },
 
     // List every selected card on your site at the same askMult (each rolls its own
-    // sell/expire outcome). Returns the count.
-    listManyOnSite(uids, askMult) {
+    // sell/expire outcome). Returns the count. opts.everywhere as in listOnSite.
+    listManyOnSite(uids, askMult, opts = {}) {
       const { sell, kept } = bulkSellableUids(get().collection, uids, { keepOne: get().settings?.keepOne })
       const sellSet = new Set(sell)
       const cards = get().collection.filter(c => sellSet.has(c.uid))
       if (!cards.length) return { sold: 0, kept: kept.length }
+      const everywhere = !!(opts.everywhere && get().upgrades.storefront)
       const newListings = cards.map(card => {
         const q = get().listingQuote(card, askMult)
-        return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0 }
+        return { card, ask: q.ask, net: q.net, askMult, views: 0, offers: [], age: 0, everywhere }
       })
       set(s => ({
         collection: s.collection.filter(c => !sellSet.has(c.uid)),
         listings: [...(s.listings || []), ...newListings],
       }))
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
-      get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market${keptNote}`, 0)
+      get().log('listing', `Listed ${cards.length} cards at ${Math.round(askMult*100)}% of market${everywhere ? ' — online + store case' : ''}${keptNote}`, 0)
       return { sold: cards.length, kept: kept.length }
     },
 

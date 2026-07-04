@@ -151,6 +151,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, price) // dealing builds rapport
     flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(price)}`)
   }
+  // Sell every copy on a SKU line at the vendor's per-copy offer in one tap.
+  function sellGroup(g, offerEach) {
+    for (const c of g.items) {
+      useGame.getState().resolveEncounter({ type: 'sellOwned', uid: c.uid, price: offerEach, notoriety: 0, msg: '' })
+    }
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, round2(offerEach * g.items.length))
+    flash(`Sold ${g.items.length} × ${g.first.name} to ${booth.name} for ${fmtMoney(round2(offerEach * g.items.length))}`)
+  }
   // Picking a sealed product opens a choice: rip it on the floor now, or stock it to hold.
   // Buy a sealed product and crack it on the floor right now (same rip flow as the Vault).
   function ripSealedNow(entry) {
@@ -275,25 +283,40 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
           </>
         ) : (
           collection.length === 0 ? <p className="muted">You have nothing to sell.</p> :
-          <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))' }}>
-            {[...collection].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 24).map(card => {
-              const mkt = cardValue(card)
-              const offer = Math.round(mkt * booth.buyMult * 100) / 100
-              return (
-                <div key={card.uid} className="vendoritem">
-                  <CardTile card={card} interactive={false} />
-                  <div className="row" style={{ gap: 6 }}>
-                    <button className="btn alt" onClick={() => sellAt(card, offer)}>Sell {fmtMoney(offer)}</button>
-                    <button className="btn" style={{ flex:'none', maxWidth: 78 }} disabled={haggled.has(card.uid)}
-                      title={haggled.has(card.uid) ? 'Already haggled this one — sell it or move on' : undefined}
-                      onClick={() => setHaggle({ side:'sell', card, market: mkt, start: offer })}>
-                      {haggled.has(card.uid) ? 'Haggled' : 'Haggle'}
-                    </button>
+          <>
+            <p className="muted" style={{ fontSize: 12, margin: '0 0 6px' }}>
+              One line per SKU — identical copies (same card, condition, grade) are stacked, so you can move duplicates in one tap.
+            </p>
+            <div className="trade-line-list sell-lines">
+              {groupCardLines(collection, c => round2(cardValue(c))).slice(0, 30).map(g => {
+                const offer = round2(g.unit * booth.buyMult)
+                const rep = g.first
+                return (
+                  <div key={g.key} className="trade-line" style={{ cursor: 'default' }}>
+                    <img className="tl-thumb" src={rep.img} alt="" />
+                    <div className="tl-info">
+                      <div className="tl-name">{rep.foil ? `${rep.foil.badge} ` : rep.reverse ? '✨ ' : ''}{rep.name}</div>
+                      <div className="tl-sub muted">{skuBadge(rep)} · mkt {fmtMoney(g.unit)} · they pay {fmtMoney(offer)} each{g.count > 1 ? ` · ×${g.count}` : ''}</div>
+                    </div>
+                    <div className="row" style={{ gap: 5, flex: 'none', width: 'auto' }}>
+                      <button className="btn alt" style={{ flex: 'none', padding: '5px 9px', fontSize: 12 }}
+                        onClick={() => sellAt(rep, offer)}>Sell 1</button>
+                      {g.count > 1 && (
+                        <button className="btn" style={{ flex: 'none', padding: '5px 9px', fontSize: 12 }}
+                          title={`Sell all ${g.count} copies at ${fmtMoney(offer)} each`}
+                          onClick={() => sellGroup(g, offer)}>All {g.count} · {fmtMoney(round2(offer * g.count))}</button>
+                      )}
+                      <button className="btn" style={{ flex: 'none', padding: '5px 9px', fontSize: 12 }} disabled={haggled.has(rep.uid)}
+                        title={haggled.has(rep.uid) ? 'Already haggled this one — sell it or move on' : 'Haggle one copy up from their offer'}
+                        onClick={() => setHaggle({ side: 'sell', card: rep, market: g.unit, start: offer })}>
+                        {haggled.has(rep.uid) ? 'Haggled' : 'Haggle'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          </>
         )}
         <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
       </div>
@@ -399,58 +422,112 @@ function MysteryReveal({ result, onClose }) {
   )
 }
 
+// --- SKU grouping -------------------------------------------------------------
+// "Same SKU" = same card, same condition, same grade, same finish. Identical copies
+// collapse into ONE line in the pickers; you pick a QUANTITY from there instead of
+// hunting duplicate tiles. Unit price is folded into the key so every copy on a
+// line is guaranteed interchangeable (a line's total is always unit × qty).
+function cardSku(c) {
+  return [c.id, c.condition || '', c.grade ? `psa${c.grade.overall}` : 'raw',
+    c.foil ? (c.foil.badge || c.foil.label || 'foil') : c.reverse ? 'rv' : ''].join('|')
+}
+// Short per-line descriptor: grade if slabbed, else raw condition.
+function skuBadge(c) { return c.grade ? `PSA ${c.grade.overall}` : (c.condition || 'raw') }
+// Group items into SKU lines: [{ key, first, items, unit, count }], highest value first.
+function groupLines(items, keyOf, unitOf) {
+  const map = new Map()
+  for (const it of items || []) {
+    const unit = unitOf(it)
+    const key = `${keyOf(it)}|${unit.toFixed(2)}`
+    let g = map.get(key)
+    if (!g) map.set(key, g = { key, first: it, items: [], unit, count: 0 })
+    g.items.push(it); g.count++
+  }
+  return [...map.values()].sort((a, b) => b.unit - a.unit)
+}
+function groupCardLines(cards, unitOf) { return groupLines(cards, cardSku, unitOf) }
+const sealedSku = (setId, product) => `seal|${setId}|${product?.type || ''}`
+
+// One SKU line in a picker: thumbnail + name + details, and a − qty + stepper.
+// Tapping the line body adds one (the fast path); the − backs one off.
+function QtyLine({ thumb, name, sub, count, qty, onAdd, onSub }) {
+  return (
+    <div className={`trade-line ${qty > 0 ? 'on' : ''}`} onClick={() => qty < count && onAdd()}>
+      {thumb}
+      <div className="tl-info">
+        <div className="tl-name">{name}</div>
+        <div className="tl-sub muted">{sub}</div>
+      </div>
+      <div className="qty-ctl" onClick={e => e.stopPropagation()}>
+        <button className="qty-step" disabled={qty <= 0} onClick={onSub} aria-label="one less">−</button>
+        <span className="tl-qty">{qty}{count > 1 ? <span className="tl-of">/{count}</span> : ''}</span>
+        <button className="qty-step" disabled={qty >= count} onClick={onAdd} aria-label="one more">+</button>
+      </div>
+    </div>
+  )
+}
+
 // Many-to-many trade builder. Assemble a bundle of YOUR cards + held sealed to offer for a
 // bundle of the booth's cards + sealed. Your items are valued at the vendor's BUY rate (what
 // they'd pay); their items at their (rapport-discounted) ask. Cash closes the gap either way.
+// Every SKU is one line — duplicates stack, and you dial in how many with the stepper.
 function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, sealedInventory, eff, onTrade, onClose }) {
   const cash = useGame(s => s.cash)
   useModalEscape(onClose)
   const buyMult = booth.buyMult || 0.6
-  const [giveCards, setGiveCards] = useState(() => new Set())
-  const [giveSealed, setGiveSealed] = useState(() => new Set())
-  const [getCards, setGetCards] = useState(() => new Set(seedCard ? [seedCard.uid] : []))
-  const [getSealedIdx, setGetSealedIdx] = useState(() => new Set())
 
-  const toggle = (setter) => (key) => setter(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n })
-  const tCardGive = toggle(setGiveCards), tSealGive = toggle(setGiveSealed)
-  const tCardGet = toggle(setGetCards), tSealGet = toggle(setGetSealedIdx)
+  // SKU lines per side. Yours priced at market (× buy rate at the summary); theirs at
+  // the rapport-discounted ask. Only real (non-mystery) booth sealed is tradeable.
+  const mineCardLines = groupCardLines(collection, c => round2(cardValue(c)))
+  const mineSealedLines = groupLines(sealedInventory || [], it => sealedSku(it.setId, it.product), it => round2(sealedValue(it)))
+  const theirCardLines = groupCardLines(boothCards, c => eff(c._ask))
+  const theirSealedLines = groupLines(
+    boothSealed.map((e, i) => ({ e, i })).filter(x => !x.e.mystery),
+    x => sealedSku(x.e.set?.id, x.e.product), x => eff(x.e._ask))
 
-  // Values: your side at their buy rate; their side at the (discounted) ask.
-  const yourVal = round2(
-    [...giveCards].reduce((a, uid) => { const c = collection.find(x => x.uid === uid); return a + (c ? cardValue(c) * buyMult : 0) }, 0)
-    + [...giveSealed].reduce((a, uid) => { const it = (sealedInventory || []).find(x => x.uid === uid); return a + (it ? sealedValue(it) * buyMult : 0) }, 0))
-  const theirVal = round2(
-    [...getCards].reduce((a, uid) => { const c = boothCards.find(x => x.uid === uid); return a + (c ? eff(c._ask) : 0) }, 0)
-    + [...getSealedIdx].reduce((a, i) => { const e = boothSealed[i]; return a + (e ? eff(e._ask) : 0) }, 0))
+  // qty per line key, per side. The booth card you tapped "Trade" on seeds its line at 1.
+  const [giveQty, setGiveQty] = useState({})
+  const [giveSealQty, setGiveSealQty] = useState({})
+  const [getQty, setGetQty] = useState(() => seedCard ? { [`${cardSku(seedCard)}|${eff(seedCard._ask).toFixed(2)}`]: 1 } : {})
+  const [getSealQty, setGetSealQty] = useState({})
+  const bump = (setter, key, delta, max) => setter(prev => {
+    const n = Math.max(0, Math.min(max, (prev[key] || 0) + delta))
+    const next = { ...prev }
+    if (n > 0) next[key] = n; else delete next[key]
+    return next
+  })
+
+  const total = (lines, qmap) => lines.reduce((a, g) => a + g.unit * (qmap[g.key] || 0), 0)
+  const countOf = (qmap) => Object.values(qmap).reduce((a, n) => a + n, 0)
+  const yourVal = round2((total(mineCardLines, giveQty) + total(mineSealedLines, giveSealQty)) * buyMult)
+  const theirVal = round2(total(theirCardLines, getQty) + total(theirSealedLines, getSealQty))
   const cashDelta = round2(theirVal - yourVal) // >0 you add cash; <0 they add cash
-  const nGive = giveCards.size + giveSealed.size
-  const nGet = getCards.size + getSealedIdx.size
+  const nGive = countOf(giveQty) + countOf(giveSealQty)
+  const nGet = countOf(getQty) + countOf(getSealQty)
   const canDo = nGet > 0 && (nGive > 0 || cashDelta > 0) && (cashDelta <= 0 || cash >= cashDelta)
 
-  const mineCards = [...collection].sort((a, b) => cardValue(b) - cardValue(a))
-  const mineSealed = [...(sealedInventory || [])].sort((a, b) => sealedValue(b) - sealedValue(a))
-  // Only real (non-mystery) sealed on the booth is tradeable.
-  const boothSeal = boothSealed.map((e, i) => ({ e, i })).filter(x => !x.e.mystery)
+  const MAX_LINES = 60 // a huge collection still renders snappily; highest value first
 
   function confirm() {
+    const takeCards = theirCardLines.flatMap(g => g.items.slice(0, getQty[g.key] || 0))
+    const takeSealed = theirSealedLines.flatMap(g => g.items.slice(0, getSealQty[g.key] || 0))
     onTrade({
-      giveCardUids: [...giveCards],
-      giveSealedUids: [...giveSealed],
-      getCards: [...getCards].map(uid => boothCards.find(c => c.uid === uid)).filter(Boolean),
-      getSealed: [...getSealedIdx].map(i => { const e = boothSealed[i]; return e ? { set: e.set, product: e.product, ask: eff(e._ask) } : null }).filter(Boolean),
+      giveCardUids: mineCardLines.flatMap(g => g.items.slice(0, giveQty[g.key] || 0).map(c => c.uid)),
+      giveSealedUids: mineSealedLines.flatMap(g => g.items.slice(0, giveSealQty[g.key] || 0).map(it => it.uid)),
+      getCards: takeCards,
+      getSealed: takeSealed.map(({ e }) => ({ set: e.set, product: e.product, ask: eff(e._ask) })),
       cashDelta,
-      takenCardUids: [...getCards],
-      takenSealedIdx: [...getSealedIdx],
+      takenCardUids: takeCards.map(c => c.uid),
+      takenSealedIdx: takeSealed.map(({ i }) => i),
     })
   }
 
-  const selStyle = (on) => ({ cursor: 'pointer', outline: on ? '2px solid var(--accent)' : 'none' })
   return (
     <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
       <div className="modal trade-builder" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
         <h3 style={{ marginTop: 0 }}>🔁 Build a trade with {booth.name}</h3>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-          Pick any mix of your cards + sealed to offer, and any of their table to take. They value your
+          One line per SKU — duplicates stack, tap a line (or +) to add copies. They value your
           side at their buy rate ({Math.round(buyMult * 100)}% of market); cash covers the gap.
         </p>
 
@@ -478,36 +555,53 @@ function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, seal
         <div className="trade-builder-cols">
           <div className="trade-builder-col">
             <div className="rip-side-head">📤 Your side</div>
-            <div className="trade-pick-grid">
-              {mineCards.length === 0 && mineSealed.length === 0 && <div className="muted" style={{ fontSize: 12 }}>Nothing to offer — trade cash only.</div>}
-              {mineSealed.map(it => (
-                <div key={it.uid} className={`vendoritem ${giveSealed.has(it.uid) ? 'featured' : ''}`} style={selStyle(giveSealed.has(it.uid))} onClick={() => tSealGive(it.uid)}>
-                  <SealedThumb item={it} />
-                  <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{fmtMoney(sealedValue(it))}</div>
-                </div>
+            <div className="trade-line-list">
+              {mineCardLines.length === 0 && mineSealedLines.length === 0 && <div className="muted" style={{ fontSize: 12 }}>Nothing to offer — trade cash only.</div>}
+              {mineSealedLines.map(g => (
+                <QtyLine key={g.key}
+                  thumb={<span className="tl-icon">{g.first.product?.icon || '📦'}</span>}
+                  name={`${g.first.product?.type || 'Sealed'} — ${setById(g.first.setId)?.name || 'sealed'}`}
+                  sub={`${fmtMoney(round2(g.unit * buyMult))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
+                  count={g.count} qty={giveSealQty[g.key] || 0}
+                  onAdd={() => bump(setGiveSealQty, g.key, +1, g.count)}
+                  onSub={() => bump(setGiveSealQty, g.key, -1, g.count)} />
               ))}
-              {mineCards.slice(0, 40).map(c => (
-                <div key={c.uid} className={`vendoritem ${giveCards.has(c.uid) ? 'featured' : ''}`} style={selStyle(giveCards.has(c.uid))} onClick={() => tCardGive(c.uid)}>
-                  <CardTile card={c} interactive={false} />
-                  <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{fmtMoney(cardValue(c))}</div>
-                </div>
+              {mineCardLines.slice(0, MAX_LINES).map(g => (
+                <QtyLine key={g.key}
+                  thumb={<img className="tl-thumb" src={g.first.img} alt="" loading="lazy" />}
+                  name={`${g.first.foil ? `${g.first.foil.badge} ` : g.first.reverse ? '✨ ' : ''}${g.first.name}`}
+                  sub={`${skuBadge(g.first)} · ${fmtMoney(round2(g.unit * buyMult))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
+                  count={g.count} qty={giveQty[g.key] || 0}
+                  onAdd={() => bump(setGiveQty, g.key, +1, g.count)}
+                  onSub={() => bump(setGiveQty, g.key, -1, g.count)} />
               ))}
+              {mineCardLines.length > MAX_LINES && (
+                <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>
+                  +{mineCardLines.length - MAX_LINES} more lines (highest value shown)
+                </div>
+              )}
             </div>
           </div>
           <div className="trade-builder-col">
             <div className="rip-side-head">📥 Their table</div>
-            <div className="trade-pick-grid">
-              {boothSeal.map(({ e, i }) => (
-                <div key={`s${i}`} className={`vendoritem ${getSealedIdx.has(i) ? 'featured' : ''}`} style={selStyle(getSealedIdx.has(i))} onClick={() => tSealGet(i)}>
-                  <SealedThumb item={{ setId: e.set?.id, product: e.product }} />
-                  <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{fmtMoney(eff(e._ask))}</div>
-                </div>
+            <div className="trade-line-list">
+              {theirSealedLines.map(g => (
+                <QtyLine key={g.key}
+                  thumb={<span className="tl-icon">{g.first.e.product?.icon || '📦'}</span>}
+                  name={`${g.first.e.product?.type || 'Sealed'} — ${g.first.e.set?.name || 'sealed'}`}
+                  sub={`${fmtMoney(g.unit)} each${g.count > 1 ? ` · ${g.count} on the table` : ''}`}
+                  count={g.count} qty={getSealQty[g.key] || 0}
+                  onAdd={() => bump(setGetSealQty, g.key, +1, g.count)}
+                  onSub={() => bump(setGetSealQty, g.key, -1, g.count)} />
               ))}
-              {boothCards.map(c => (
-                <div key={c.uid} className={`vendoritem ${getCards.has(c.uid) ? 'featured' : ''}`} style={selStyle(getCards.has(c.uid))} onClick={() => tCardGet(c.uid)}>
-                  <CardTile card={c} interactive={false} />
-                  <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{fmtMoney(eff(c._ask))}</div>
-                </div>
+              {theirCardLines.map(g => (
+                <QtyLine key={g.key}
+                  thumb={<img className="tl-thumb" src={g.first.img} alt="" loading="lazy" />}
+                  name={`${g.first.foil ? `${g.first.foil.badge} ` : g.first.reverse ? '✨ ' : ''}${g.first.name}`}
+                  sub={`${skuBadge(g.first)} · ${fmtMoney(g.unit)} each${g.count > 1 ? ` · ${g.count} on the table` : ''}`}
+                  count={g.count} qty={getQty[g.key] || 0}
+                  onAdd={() => bump(setGetQty, g.key, +1, g.count)}
+                  onSub={() => bump(setGetQty, g.key, -1, g.count)} />
               ))}
             </div>
           </div>
@@ -526,13 +620,3 @@ function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, seal
   )
 }
 
-// Compact sealed-product thumbnail (set logo + type) for the trade builder.
-function SealedThumb({ item }) {
-  const set = setById(item.setId)
-  return (
-    <div className="trade-sealed-thumb">
-      {set?.logo ? <img src={set.logo} alt={set?.name || ''} decoding="async" /> : <span className="tst-icon">{item.product?.icon || '📦'}</span>}
-      <div className="tst-label">{item.product?.icon || '📦'} {item.product?.type}</div>
-    </div>
-  )
-}
