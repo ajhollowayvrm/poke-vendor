@@ -21,12 +21,13 @@ import {
   marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest } from '../shows'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
+  HOLD_PICKUP_PREMIUM, GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
 } from './constants'
 import { realizableAssets, netWorthFull } from './helpers'
 
@@ -371,7 +372,8 @@ export function advanceDaysWith(set, get, days, away) {
   // Walk-in customers only buy/offer on what you've put out on the shop shelf —
   // which includes cards listed EVERYWHERE (online + store case): the same physical
   // card is browsable in person, and whichever channel sells it first takes it.
-  const shelfCards = [...(s.shopDisplay || []), ...omniShelfCards(s.listings)]
+  // Items HELD for a regular are behind the counter and off the sellable floor.
+  const shelfCards = [...(s.shopDisplay || []).filter(c => !c._heldFor), ...omniShelfCards(s.listings)]
   // No storefront, no inbox. Strangers only message you about cards you've actually
   // put up for sale: online needs a live listing, walk-ins need cards on the shelf.
   // With nothing out on a channel there's nobody to hear from there — so we skip the
@@ -395,8 +397,10 @@ export function advanceDaysWith(set, get, days, away) {
     }
     // walk-in channel (only if you have a physical store AND cards out on the shelf). The
     // shelf is the pool: walk-ins only buy/offer on cards you've put out (passed as both the
-    // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the display case).
-    if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult)) {
+    // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the
+    // display case). Giveaway buzz pumps foot traffic for the days its window covers.
+    const buzz = (s.giveawayDaysLeft || 0) > i ? GIVEAWAY_TRAFFIC_MULT : 1
+    if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult * buzz)) {
       if (walkinOK) {
         // ~35% of walk-ins come in ASKING for a specific item (sealed or single) rather than
         // browsing — the store's demand layer. The rest are the usual offer/browse/trade mix.
@@ -479,6 +483,80 @@ export function advanceDaysWith(set, get, days, away) {
   // A spiking set drew premium offers ABOVE market — the reward for listing into a hot market.
   if (lt.premiumOffers) get().log('listing', `📈 ${lt.premiumOffers} buyer${lt.premiumOffers > 1 ? 's' : ''} offered OVER market on a hot set — list into the spike while it lasts.`, 0)
   for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
+
+  // --- In-store services over the days passed ----------------------------------
+  // 1) HOLDS: a regular you set an item aside for comes in to pick it up (trust-scaled
+  //    daily odds, paid cash at the walk-in premium + a hold bonus). If the hold window
+  //    lapses first, the item goes back out on the floor. Needs the store minded
+  //    (walkinOK) — nobody hands over a hold to a locked door.
+  let shopDisplayNext = s.shopDisplay || []
+  let shopSealedNext = s.shopSealed || []
+  if (hasStore) {
+    const tickHolds = (arr, isSealed) => arr.map(it => {
+      if (!it._heldFor) return it
+      const reg = (s.regulars || []).find(r => r.id === it._heldFor.regularId && !r.flags?.burned)
+      let left = it._heldFor.daysLeft
+      for (let dd = 0; dd < days && left > 0; dd++) {
+        if (walkinOK && reg && Math.random() < Math.min(0.6, 0.3 + (reg.trust || 0) / 250)) {
+          const label = isSealed ? it.product.type : it.name
+          const price = round2((isSealed ? sealedValue(it) : cardValue(it)) * (1 + STORE_SALE_PREMIUM + HOLD_PICKUP_PREMIUM))
+          soldProceeds = round2(soldProceeds + price)
+          noteSale(label, price)
+          get().log('sell', `${reg.emoji} ${reg.name} came in for the ${label} you were holding — paid $${price.toFixed(2)} cash, delighted`, price)
+          get().bumpTrust(reg.id, 4, price)
+          get().bumpGoal('sell', 1); get().bumpGoal('profit', price)
+          return null // sold — off the shelf
+        }
+        left--
+      }
+      if (left <= 0) {
+        const { _heldFor, ...clean } = it
+        get().log('shop', `Hold lapsed — ${it._heldFor.name} never came for the ${isSealed ? it.product.type : it.name}; it's back on the floor.`, 0)
+        return clean
+      }
+      return { ...it, _heldFor: { ...it._heldFor, daysLeft: left } }
+    }).filter(Boolean)
+    shopDisplayNext = tickHolds(shopDisplayNext, false)
+    shopSealedNext = tickHolds(shopSealedNext, true)
+  }
+  // 2) CONSIGNMENT CASE: locals' cards you carry sell across the counter as days pass —
+  //    you bank the commission (their money isn't yours). Unsold past the window goes
+  //    home with its owner. And new locals may come in asking you to carry something.
+  let storeConsignsNext = s.storeConsignments || []
+  if (hasStore && storeConsignsNext.length) {
+    const kept = []
+    for (const c of storeConsignsNext) {
+      let left = c.daysLeft, sold = false
+      for (let dd = 0; dd < days && !sold && left > 0; dd++) {
+        const buzzMult = (s.giveawayDaysLeft || 0) > dd ? 1.25 : 1
+        if (walkinOK && Math.random() < Math.min(0.30, (0.10 + noto / 500) * buzzMult)) sold = true
+        else left--
+      }
+      if (sold) {
+        const cut = round2(c.ask * c.commissionPct)
+        soldProceeds = round2(soldProceeds + cut)
+        noteSale(`${c.card.name} (consigned)`, cut)
+        get().log('shop', `Sold ${c.who}'s consigned ${c.card.name} for $${c.ask.toFixed(2)} — your ${Math.round(c.commissionPct * 100)}% cut: $${cut.toFixed(2)}`, cut)
+        get().addNotoriety(1) // moving locals' cards builds your name as THE shop to sell through
+      } else if (left <= 0) {
+        get().log('shop', `${c.who} picked their unsold ${c.card.name} back up — consignment window closed.`, 0)
+      } else kept.push({ ...c, daysLeft: left })
+    }
+    storeConsignsNext = kept
+  }
+  let consignReqsNext = (s.storeConsignRequests || [])
+    .map(r => ({ ...r, pendingDays: r.pendingDays - days }))
+    .filter(r => r.pendingDays > 0)
+  if (hasStore && noto >= CONSIGN_MIN_NOTO) {
+    for (let i = 0; i < days && consignReqsNext.length < CONSIGN_REQ_CAP; i++) {
+      if (Math.random() < CONSIGN_REQ_CHANCE) {
+        const req = makeConsignRequest(noto)
+        consignReqsNext = [req, ...consignReqsNext]
+        get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on the Sell tab.`, 0)
+      }
+    }
+  }
+
   // age out want-lists, then maybe post new collector wants (scaled by notoriety)
   let wants = s.wantList.map(w => ({ ...w, daysLeft: w.daysLeft - days })).filter(w => w.daysLeft > 0)
   const wantsAfterAging = wants.length
@@ -542,6 +620,11 @@ export function advanceDaysWith(set, get, days, away) {
     listings: remainingListings,
     wantList: wants,
     showLeads: leadsNext,
+    shopDisplay: shopDisplayNext,           // holds picked up / lapsed
+    shopSealed: shopSealedNext,
+    storeConsignments: storeConsignsNext,   // consigned sales banked, expiries returned
+    storeConsignRequests: consignReqsNext,  // fresh asks in, stale asks gone
+    giveawayDaysLeft: Math.max(0, (st.giveawayDaysLeft || 0) - days), // buzz ages out
     forumPosts,
     dailyGoals: periodGoals,                       // weekly set; refreshed every 7 days
     goalsDay: goalsExpired ? newAbsDay : (s.goalsDay || newAbsDay),
@@ -660,9 +743,11 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
     set(st => {
       const up = { ...st.upgrades }; delete up.storefront; delete up.staff
       return { upgrades: up, employees: [], storeArrears: 0,
-        collection: [...(st.shopDisplay || []), ...st.collection], shopDisplay: [],
-        sealedInventory: [...(st.shopSealed || []), ...(st.sealedInventory || [])], shopSealed: [],
-        listings: (st.listings || []).map(l => l.everywhere ? { ...l, everywhere: false } : l) }
+        collection: [...(st.shopDisplay || []).map(({ _heldFor, ...c }) => c), ...st.collection], shopDisplay: [],
+        sealedInventory: [...(st.shopSealed || []).map(({ _heldFor, ...it }) => it), ...(st.sealedInventory || [])], shopSealed: [],
+        listings: (st.listings || []).map(l => l.everywhere ? { ...l, everywhere: false } : l),
+        // No shop = no case: consigned cards go home to their owners, asks lapse, buzz dies.
+        storeConsignments: [], storeConsignRequests: [], giveawayDaysLeft: 0 }
     })
     get().log('store-lost', `Couldn't cover the store overhead — you lost the shop. Back to flipping from home.`, 0)
   } else {

@@ -151,6 +151,18 @@ export function omniShelfCards(listings) {
   return (listings || []).filter(l => l.everywhere && !l.expired && !l.card?._sealed).map(l => l.card)
 }
 
+// --- In-store services (holds, giveaways, the consignment case) ---------------
+// Real card shops run on favors and community: holding a piece behind the counter
+// for a regular, raffling something off to pack the room, and carrying locals'
+// cards on consignment for a cut. Tuning for all three lives here.
+export const HOLD_DAYS_STORE = 4        // how long you'll hold an item for a regular before it goes back out
+export const HOLD_PICKUP_PREMIUM = 0.05 // they pay a little extra on top of the in-person premium — the favor is worth it
+export const GIVEAWAY_BUZZ_DAYS = 3     // how long giveaway word-of-mouth pumps walk-in traffic
+export const GIVEAWAY_TRAFFIC_MULT = 1.35
+export const CONSIGN_REQ_CAP = 2        // at most this many locals waiting on a consignment answer
+export const CONSIGN_REQ_CHANCE = 0.22  // per-day chance a local walks in asking you to carry their card
+export const CONSIGN_MIN_NOTO = 15      // nobody trusts an unknown shop with their cards
+
 export const CALENDAR_DAYS = 30
 export const INBOX_CAP = 8
 

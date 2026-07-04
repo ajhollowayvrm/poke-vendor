@@ -15,7 +15,7 @@ import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../sho
 // The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
 const DEAL_OF_SHOW_MARKDOWN = 0.12
-import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards } from './constants'
+import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -260,21 +260,22 @@ export function createBoothSlice(set, get) {
       get().log('shop', `Put ${putting.length} card${putting.length > 1 ? 's' : ''} out on the shop shelf${keptNote}`, 0)
       return { sold: putting.length, kept: kept.length }
     },
-    // Pull one card off the shelf, back into your collection.
+    // Pull one card off the shelf, back into your collection (any hold is released).
     pullFromShop(uid) {
-      const card = (get().shopDisplay || []).find(c => c.uid === uid)
-      if (!card) return
+      const found = (get().shopDisplay || []).find(c => c.uid === uid)
+      if (!found) return
+      const { _heldFor, ...card } = found
       set(s => ({
         collection: [card, ...s.collection],
         shopDisplay: (s.shopDisplay || []).filter(c => c.uid !== uid),
       }))
       get().log('shop', `Took ${card.name} off the shelf`, 0)
     },
-    // Clear the whole shelf back into your collection.
+    // Clear the whole shelf back into your collection (holds released).
     pullAllFromShop() {
       const shelf = get().shopDisplay || []
       if (!shelf.length) return 0
-      set(s => ({ collection: [...shelf, ...s.collection], shopDisplay: [] }))
+      set(s => ({ collection: [...shelf.map(({ _heldFor, ...c }) => c), ...s.collection], shopDisplay: [] }))
       get().log('shop', `Cleared the shelf — ${shelf.length} card${shelf.length > 1 ? 's' : ''} back in your collection`, 0)
       return shelf.length
     },
@@ -295,23 +296,94 @@ export function createBoothSlice(set, get) {
       get().log('shop', `Put ${putting.length} sealed on the shop shelf`, 0)
       return putting.length
     },
-    // Pull one sealed product off the shelf, back into held inventory.
+    // Pull one sealed product off the shelf, back into held inventory (hold released).
     pullShopSealed(uid) {
-      const item = (get().shopSealed || []).find(it => it.uid === uid)
-      if (!item) return
+      const found = (get().shopSealed || []).find(it => it.uid === uid)
+      if (!found) return
+      const { _heldFor, ...item } = found
       set(s => ({
         sealedInventory: [item, ...(s.sealedInventory || [])],
         shopSealed: (s.shopSealed || []).filter(it => it.uid !== uid),
       }))
       get().log('shop', `Took a ${item.product.type} off the shelf`, 0)
     },
-    // Clear all sealed off the shelf, back into held inventory.
+    // Clear all sealed off the shelf, back into held inventory (holds released).
     pullAllShopSealed() {
       const shelf = get().shopSealed || []
       if (!shelf.length) return 0
-      set(s => ({ sealedInventory: [...shelf, ...(s.sealedInventory || [])], shopSealed: [] }))
+      set(s => ({ sealedInventory: [...shelf.map(({ _heldFor, ...it }) => it), ...(s.sealedInventory || [])], shopSealed: [] }))
       get().log('shop', `Cleared the sealed shelf — ${shelf.length} back in inventory`, 0)
       return shelf.length
+    },
+
+    // --- In-store services: holds, giveaways, the consignment case ---------------
+    // Put a shelf item aside for a REGULAR: it comes off the sellable floor and waits
+    // behind the counter. Over the next few days they come in and buy it at a small
+    // premium over the walk-in price (trust-scaled odds, resolved in the day-tick);
+    // if they never show, the hold lapses and it goes back out.
+    holdShelfItem(kind, uid, regularId) {
+      const reg = (get().regulars || []).find(r => r.id === regularId && !r.flags?.burned)
+      if (!reg) return false
+      const held = { regularId: reg.id, name: reg.name, emoji: reg.emoji, daysLeft: HOLD_DAYS_STORE }
+      if (kind === 'sealed') {
+        const it = (get().shopSealed || []).find(x => x.uid === uid)
+        if (!it) return false
+        set(s => ({ shopSealed: s.shopSealed.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
+        get().log('shop', `Set the ${it.product.type} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
+      } else {
+        const c = (get().shopDisplay || []).find(x => x.uid === uid)
+        if (!c) return false
+        set(s => ({ shopDisplay: s.shopDisplay.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
+        get().log('shop', `Set ${c.name} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
+      }
+      return true
+    },
+    // Put a held item back out on the sellable floor.
+    releaseHold(kind, uid) {
+      const strip = arr => (arr || []).map(x => x.uid === uid ? (({ _heldFor, ...rest }) => rest)(x) : x)
+      if (kind === 'sealed') set(s => ({ shopSealed: strip(s.shopSealed) }))
+      else set(s => ({ shopDisplay: strip(s.shopDisplay) }))
+      get().log('shop', 'Put the held item back out on the floor', 0)
+    },
+
+    // Run an IN-STORE GIVEAWAY: give a card from your collection away to the locals.
+    // Costs the card, but word spreads — a notoriety pop (generous, so the Charity
+    // Banner boosts it), a walk-in traffic buzz window, and every regular warms up.
+    runGiveaway(uid) {
+      const card = get().collection.find(c => c.uid === uid)
+      if (!card || !get().upgrades.storefront) return false
+      const value = cardValue(card)
+      const noto = Math.min(15, Math.round(2 + Math.sqrt(value)))
+      set(s => ({
+        collection: s.collection.filter(c => c.uid !== uid),
+        giveawayDaysLeft: GIVEAWAY_BUZZ_DAYS,
+        generousActs: s.generousActs + 1,
+        regulars: (s.regulars || []).map(r => r.flags?.burned ? r : { ...r, trust: Math.min(100, (r.trust || 0) + 3) }),
+      }))
+      get().addNotoriety(noto, true)
+      get().log('give', `🎁 In-store giveaway! Gave away ${card.name} ($${value.toFixed(2)}) — the room went nuts. Word's out for ${GIVEAWAY_BUZZ_DAYS} days. (+${noto}★)`, 0)
+      get().bumpGoal('help', 1)
+      get().checkMilestones()
+      return { noto }
+    },
+
+    // Accept a local's consignment ask: their card goes in your case at THEIR price;
+    // when it sells you keep the commission (no capital tied up). Passing just sends
+    // them on their way.
+    acceptConsignRequest(id) {
+      const req = (get().storeConsignRequests || []).find(r => r.id === id)
+      if (!req) return
+      set(s => ({
+        storeConsignRequests: s.storeConsignRequests.filter(r => r.id !== id),
+        storeConsignments: [{ id: req.id, who: req.who, card: req.card, ask: req.ask, commissionPct: req.commissionPct, daysLeft: req.days }, ...(s.storeConsignments || [])],
+      }))
+      get().log('shop', `Took ${req.who}'s ${req.card.name} on consignment — $${req.ask.toFixed(2)} ask, ${Math.round(req.commissionPct * 100)}% is yours when it sells`, 0)
+    },
+    declineConsignRequest(id) {
+      const req = (get().storeConsignRequests || []).find(r => r.id === id)
+      if (!req) return
+      set(s => ({ storeConsignRequests: s.storeConsignRequests.filter(r => r.id !== id) }))
+      get().log('shop', `Passed on ${req.who}'s consignment — they took their ${req.card.name} elsewhere`, 0)
     },
 
     // Can we take this buyer's preferred payment method? Returns null if fine,
@@ -396,9 +468,10 @@ export function createBoothSlice(set, get) {
             : pool === 'listings' ? (get().listings || []).map(l => ({ item: l.card, sealed: false }))
             : pool === 'shop'
             // The store case = the shelf + any card listed EVERYWHERE (online + in-store).
-            ? [...(get().shopDisplay || []).map(c => ({ item: c, sealed: false })),
+            // Items HELD for a regular sit behind the counter — browsers can't buy them.
+            ? [...(get().shopDisplay || []).filter(c => !c._heldFor).map(c => ({ item: c, sealed: false })),
                ...omniShelfCards(get().listings).map(c => ({ item: c, sealed: false })),
-               ...(get().shopSealed || []).map(it => ({ item: it, sealed: true }))]
+               ...(get().shopSealed || []).filter(it => !it._heldFor).map(it => ({ item: it, sealed: true }))]
             : get().collection.map(c => ({ item: c, sealed: false }))
           if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
             const blocked = s.paymentBlocked(effect.payMethod)
