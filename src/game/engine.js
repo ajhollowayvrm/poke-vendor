@@ -773,9 +773,11 @@ const VINTAGE_CARDS = VINTAGE_SETS.flatMap(s => s.cards).filter(c => c.price != 
 // A real vintage single whose raw value falls in [min,max] (nearest by value if the band
 // is empty). Returns null if there's no vintage data at all. `floor` condition = a loose
 // card in the wild varies in condition, like normal booth singles.
-export function vintageCardInRange(min, max, rnd = Math.random) {
+export function vintageCardInRange(min, max, rnd = Math.random, exclude = null) {
   if (!VINTAGE_CARDS.length) return null
-  const pool = VINTAGE_CARDS.filter(c => c.price >= min && c.price <= max)
+  let pool = VINTAGE_CARDS.filter(c => c.price >= min && c.price <= max)
+  const fresh = pool.filter(c => !exclude?.has(c.id))
+  if (fresh.length) pool = fresh // avoid repeating a bin's pricier singles while variety remains
   if (pool.length) return instance(pick(pool, rnd), 'floor', rnd)
   const sorted = [...VINTAGE_CARDS].sort((a, b) =>
     Math.abs(a.price - (min + max) / 2) - Math.abs(b.price - (min + max) / 2))
@@ -812,13 +814,24 @@ function topCompSlabs() {
     .slice(0, 12)
 }
 
+// Deep-band raw requests draw from the WHOLE hobby — modern shop cards AND vintage
+// singles both fit a "pricey card" ask. The modern pool alone thins to a handful of
+// chase SIRs above a few hundred dollars, which is how an elite show's bins ended up
+// stacked with six of the same Gengar. (Kept above everyday bands so vintage still
+// never leaks into the shop, wants, or cheap walk-in requests.)
+const VINTAGE_JOIN_MIN = 300
+
 // Mint a real card instance whose ACTUAL value falls within [min,max] if possible.
 // Above the modern raw ceiling the pool becomes real vintage singles + real graded
 // comps; a band beyond even the best real sale clamps to the true top pieces instead
 // of inventing a price. Every dollar figure shown traces back to market data.
-export function cardInValueRange(min, max, rnd = Math.random) {
+// `exclude` (a Set of card ids) keeps one booth from repeating its pricier singles —
+// honored only while the pool has other options.
+export function cardInValueRange(min, max, rnd = Math.random, exclude = null) {
+  const fresh = c => !exclude?.has(c.id)
   if (min > REAL_PRICE_CEILING) {
-    const vint = VINTAGE_CARDS.filter(c => (c.price ?? 0) >= min && (c.price ?? 0) <= max)
+    const vintAll = VINTAGE_CARDS.filter(c => (c.price ?? 0) >= min && (c.price ?? 0) <= max)
+    const vint = vintAll.some(fresh) ? vintAll.filter(fresh) : vintAll
     const slabs = COMP_SLABS.filter(e => { const v = psaValueAt(e.card, e.grade); return v >= min && v <= max })
     const total = vint.length + slabs.length
     if (total) {
@@ -831,13 +844,16 @@ export function cardInValueRange(min, max, rnd = Math.random) {
       return mintSlab(top[Math.floor(rnd() * top.length)], rnd)
     }
   }
-  const pool = ALL_CARDS.filter(c => {
+  const base = min >= VINTAGE_JOIN_MIN ? [...ALL_CARDS, ...VINTAGE_CARDS] : ALL_CARDS
+  let pool = base.filter(c => {
     const v = c.price ?? 0
     return v >= min && v <= max
   })
+  const unseen = pool.filter(fresh)
+  if (unseen.length) pool = unseen
   if (pool.length) return instance(pick(pool, rnd), 'floor', rnd) // singles in the wild vary in condition
   // fallback: nearest by value
-  const sorted = [...ALL_CARDS].sort((a, b) =>
+  const sorted = [...base].sort((a, b) =>
     Math.abs((a.price ?? 0) - (min + max) / 2) - Math.abs((b.price ?? 0) - (min + max) / 2))
   return instance(sorted[0], 'floor', rnd)
 }

@@ -343,16 +343,18 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
     // Bigger booths now: a deep bin of commons/uncommons + a few hits.
     const stockN = 14 + Math.floor(r() * 18) // 14–31 cards
     const stock = []
-    // Slabs already on THIS table — high-band graded stock comes from a finite pool of
-    // real PSA comps, so without this a whale's showcase stacks three of the same slab.
+    // Repeat guards for THIS table: high-band graded stock comes from a finite pool of
+    // real PSA comps (dedupe by card+grade), and pricier raw singles shouldn't stack
+    // either (dupe COMMONS are fine — real bins are full of them).
     const seenSlabs = new Set()
+    const seenIds = new Set()
     for (let j = 0; j < stockN; j++) {
       const roll = r()
       let card
       // A small slice of the bin is a loose VINTAGE single (Base Charizard etc.) at bigger
       // shows — drawn from the vintage pool instead of the shop pool.
       if (vintageChance && r() < vintageChance) {
-        card = vintageCardInRange(lo, hi * 3, r) || null // vintage skews pricey; widen the band
+        card = vintageCardInRange(lo, hi * 3, r, seenIds) || null // vintage skews pricey; widen the band
       }
       // Hit density varies by archetype — this is a REASON to pick a vendor. SHARP traders
       // are shrewd operators who corner the good stuff: their bins run far deeper in high-end
@@ -361,10 +363,20 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       // The hit band floor sits low (15% of the tier cap) so elite tiers draw from the
       // whole real-comp spread instead of exhausting the handful of top comps.
       const hitChance = arch.key === 'sharp' ? 0.38 : 0.15
-      if (!card) card = (arch.key === 'whale' || roll < hitChance)
-        ? gradedCardInRange(hi * 0.15, hi, 8 + Math.floor(r() * 3), r, seenSlabs)
-        : cardInValueRange(lo, hi * (0.4 + r() * 0.6), r)
+      if (!card) {
+        if (arch.key === 'whale' || roll < hitChance) {
+          card = gradedCardInRange(hi * 0.15, hi, 8 + Math.floor(r() * 3), r, seenSlabs)
+        } else {
+          // The BIN is a spread, not wall-to-wall chase cards — an elite tier means the
+          // top showcase is bigger, not a four-figure floor on every sleeve. Half the
+          // bin draws from the tier's band; half from the wider spread beneath it
+          // (there are plenty of real vintage + modern cards at every price in between).
+          const bulkLo = r() < 0.5 ? lo : lo * (0.05 + r() * 0.25)
+          card = cardInValueRange(bulkLo, hi * (0.4 + r() * 0.6), r, seenIds)
+        }
+      }
       if (card?.grade) seenSlabs.add(`${card.id}|${card.grade.overall}`)
+      else if (card && (card.price ?? 0) >= 300) seenIds.add(card.id)
       // Price against the card's TRUE value (grade-aware) — a slabbed gem is
       // worth its graded value, not its raw value, so the ask tracks that.
       const worth = cardValue(card)
