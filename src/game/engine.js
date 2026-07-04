@@ -782,22 +782,54 @@ export function vintageCardInRange(min, max, rnd = Math.random) {
   return instance(sorted[0], 'floor', rnd)
 }
 
-// Real-data price ceiling — anything requested above this is a synthesized "grail".
+// Real-data RAW price ceiling for modern shop cards. Above this, the high end of the
+// hobby lives in VINTAGE singles and REAL graded comps — never in made-up prices.
 const REAL_PRICE_CEILING = ALL_CARDS.reduce((m, c) => Math.max(m, c.price ?? 0), 0)
-// Highest-rarity real cards make convincing grail bases (chase/SIR/hyper art).
-const GRAIL_BASES = ALL_CARDS.filter(c => rarityRank(c.rarity) >= rarityRank('Special Illustration Rare'))
 
-// Mint a real card instance whose raw value falls within [min,max] if possible.
-// When [min,max] exceeds what real market data offers (the high-roller show
-// tiers), synthesize a "grail" — a top-rarity card with an overridden price in
-// band, themed as a vintage/iconic chase piece.
+// Every (card, grade) pair with a REAL PSA sale comp in the snapshot (eBay medians),
+// across modern + vintage. This is the game's true high end — the five-figure slabs a
+// big show's showcase case is made of (PSA 10 Aquapolis Umbreon ~$49k, Skyridge
+// Charizard ~$35k, Shining Mewtwo ~$36k, …). Values are read at pick time via
+// psaValueAt so they ride the living market like everything else.
+const COMP_SLABS = [...ALL_CARDS, ...VINTAGE_CARDS].flatMap(c =>
+  [10, 9, 8].filter(g => c.psa?.[String(g)] != null).map(g => ({ card: c, grade: g })))
+
+// A card that ACTUALLY commands this much is a genuine grail (crown styling + hall hype).
+const GRAIL_VALUE = 10000
+
+// Mint a slabbed instance of a real (card, grade) comp entry.
+function mintSlab(entry, rnd) {
+  const g = entry.grade
+  const c = instance({ ...entry.card, condition: 'NM' }, 'sealed', rnd)
+  c.grade = { overall: g, centering: g, corners: g, edges: g, surface: g, tier: 'standard', gradedAt: Date.now() }
+  if (gradedValue(c) >= GRAIL_VALUE) c._grail = true
+  return c
+}
+// The dozen most valuable real slabs — the clamp target when a request exceeds reality.
+function topCompSlabs() {
+  return [...COMP_SLABS]
+    .sort((a, b) => psaValueAt(b.card, b.grade) - psaValueAt(a.card, a.grade))
+    .slice(0, 12)
+}
+
+// Mint a real card instance whose ACTUAL value falls within [min,max] if possible.
+// Above the modern raw ceiling the pool becomes real vintage singles + real graded
+// comps; a band beyond even the best real sale clamps to the true top pieces instead
+// of inventing a price. Every dollar figure shown traces back to market data.
 export function cardInValueRange(min, max, rnd = Math.random) {
-  // Grail territory: requested value is beyond anything in the real dataset.
-  // Grails are pristine (NM) — a six-figure card in the wild is mint/slabbed.
-  if (min > REAL_PRICE_CEILING && GRAIL_BASES.length) {
-    const base = pick(GRAIL_BASES, rnd)
-    const price = round2(min + rnd() * (max - min))
-    return instance({ ...base, price, _grail: true, condition: 'NM' }, 'sealed', rnd)
+  if (min > REAL_PRICE_CEILING) {
+    const vint = VINTAGE_CARDS.filter(c => (c.price ?? 0) >= min && (c.price ?? 0) <= max)
+    const slabs = COMP_SLABS.filter(e => { const v = psaValueAt(e.card, e.grade); return v >= min && v <= max })
+    const total = vint.length + slabs.length
+    if (total) {
+      const i = Math.floor(rnd() * total)
+      if (i < vint.length) return instance({ ...vint[i], condition: 'NM' }, 'sealed', rnd) // a four-figure raw is kept mint
+      return mintSlab(slabs[i - vint.length], rnd)
+    }
+    if (COMP_SLABS.length) {
+      const top = topCompSlabs()
+      return mintSlab(top[Math.floor(rnd() * top.length)], rnd)
+    }
   }
   const pool = ALL_CARDS.filter(c => {
     const v = c.price ?? 0
@@ -811,11 +843,25 @@ export function cardInValueRange(min, max, rnd = Math.random) {
 }
 
 // A graded copy of a real card (used for premium vendor stock / encounters).
-export function gradedCardInRange(min, max, grade, rnd = Math.random) {
-  // For grail-level bands, keep the floor in grail territory so the slab is a
-  // true grail; for normal bands, a high grade implies a cheaper raw base.
-  const floor = min > REAL_PRICE_CEILING ? min : min / (grade >= 9 ? 3 : 1)
-  const c = cardInValueRange(floor, max, rnd)
+// High bands draw ONLY from real (card, grade) sale comps — a $35k slab in a showcase
+// is a card that has actually sold for $35k at that grade. Modest bands keep the old
+// behavior: a cheap real card slabbed, valued by the (comp-capped) grade heuristic.
+// `exclude` (a Set of "<cardId>|<grade>" keys) lets a booth avoid stacking three of the
+// same slab — honored only while the pool has other options.
+export function gradedCardInRange(min, max, grade, rnd = Math.random, exclude = null) {
+  if (max > REAL_PRICE_CEILING && COMP_SLABS.length) {
+    const inBand = e => { const v = psaValueAt(e.card, e.grade); return v >= min && v <= max }
+    const fresh = e => !exclude?.has(`${e.card.id}|${e.grade}`)
+    let pool = COMP_SLABS.filter(e => e.grade === grade && inBand(e)) // honor the asked grade first
+    if (!pool.length) pool = COMP_SLABS.filter(inBand)                // any real grade in band
+    const unseen = pool.filter(fresh)
+    if (unseen.length) pool = unseen                                  // avoid dupes while variety remains
+    if (pool.length) return mintSlab(pick(pool, rnd), rnd)
+    const top = topCompSlabs().filter(fresh)                          // band above the best real sale → clamp
+    const clamp = top.length ? top : topCompSlabs()
+    return mintSlab(clamp[Math.floor(rnd() * clamp.length)], rnd)
+  }
+  const c = cardInValueRange(min / (grade >= 9 ? 3 : 1), Math.min(max, REAL_PRICE_CEILING), rnd)
   c.condition = 'NM' // it's slabbed; condition is locked in by the grade
   c.grade = { overall: grade, centering: grade, corners: grade, edges: grade, surface: grade, tier: 'standard', gradedAt: Date.now() }
   return c

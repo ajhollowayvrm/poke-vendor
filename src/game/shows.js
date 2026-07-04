@@ -19,8 +19,10 @@ export const SHOW_TIERS = {
   shop:     { name: 'Card Shop Event',  minNotoriety: 15,  entryFee: 12,   vendorFee: 40,   days: 1, booths: 22, npcs: 18, valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
   regional: { name: 'Regional Show',    minNotoriety: 40,  entryFee: 30,   vendorFee: 120,  days: 2, booths: 32, npcs: 30, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
   national: { name: 'National Expo',    minNotoriety: 80,  entryFee: 75,   vendorFee: 350,  days: 2, booths: 44, npcs: 48, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
-  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  vendorFee: 1500, days: 3, booths: 56, npcs: 64, valueBand: [200, 50000],  traffic: 4.5, color: '#7cf0ff' },
-  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, vendorFee: 6000, days: 4, booths: 72, npcs: 90, valueBand: [1000, 1000000], traffic: 6.0, color: '#ffd700' },
+  // Elite-tier value bands top out at what the REAL price data supports (the priciest
+  // true PSA-10 comps run ~$49k) — a showcase slab is a card that actually sells for that.
+  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  vendorFee: 1500, days: 3, booths: 56, npcs: 64, valueBand: [200, 25000],  traffic: 4.5, color: '#7cf0ff' },
+  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, vendorFee: 6000, days: 4, booths: 72, npcs: 90, valueBand: [1000, 50000], traffic: 6.0, color: '#ffd700' },
 }
 
 export const CALENDAR_DAYS = 30
@@ -341,6 +343,9 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
     // Bigger booths now: a deep bin of commons/uncommons + a few hits.
     const stockN = 14 + Math.floor(r() * 18) // 14–31 cards
     const stock = []
+    // Slabs already on THIS table — high-band graded stock comes from a finite pool of
+    // real PSA comps, so without this a whale's showcase stacks three of the same slab.
+    const seenSlabs = new Set()
     for (let j = 0; j < stockN; j++) {
       const roll = r()
       let card
@@ -353,10 +358,13 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       // are shrewd operators who corner the good stuff: their bins run far deeper in high-end
       // singles and graded slabs (you pay their premium, but they're where the chase cards
       // ARE). Whales always deal big; everyone else runs a normal ~15% hit rate.
+      // The hit band floor sits low (15% of the tier cap) so elite tiers draw from the
+      // whole real-comp spread instead of exhausting the handful of top comps.
       const hitChance = arch.key === 'sharp' ? 0.38 : 0.15
       if (!card) card = (arch.key === 'whale' || roll < hitChance)
-        ? gradedCardInRange(hi * 0.4, hi, 8 + Math.floor(r() * 3), r)
+        ? gradedCardInRange(hi * 0.15, hi, 8 + Math.floor(r() * 3), r, seenSlabs)
         : cardInValueRange(lo, hi * (0.4 + r() * 0.6), r)
+      if (card?.grade) seenSlabs.add(`${card.id}|${card.grade.overall}`)
       // Price against the card's TRUE value (grade-aware) — a slabbed gem is
       // worth its graded value, not its raw value, so the ask tracks that.
       const worth = cardValue(card)
