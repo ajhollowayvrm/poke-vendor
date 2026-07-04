@@ -18,7 +18,8 @@ import {
   round2, cardValue, dailyViewers, rollBuyerSavvy, buyerMaxMult, BUYER_SAVVY,
   SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, driftMult, driftMultVintage,
   applyMarketEvent, MARKET_EVENTS, setMarketMults, distributorById, restockRate,
-  marketMult, setIdOfCard, sealedValue,
+  marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
+  makeVintageHold, setById,
 } from '../engine'
 import { boothEncounter, makeWant } from '../shows'
 import {
@@ -69,6 +70,40 @@ function restockDistributors(distributors, days) {
       }
     }
     out[id] = { ...d, stock }
+  }
+  return out
+}
+
+// High-rapport vendors set aside vintage FOR YOU (the "we'll hold it" perk). For each
+// distributor you're Preferred+ with, a small daily chance to reserve a sealed vintage pack —
+// but only if you don't already have one held with them. It persists until you buy it or the
+// hold window lapses (they put it back). Priced at market with your standing rapport discount.
+// Mutates nothing; returns an updated distributors map and logs new holds via `log`.
+const HOLD_RAPPORT_LEVEL = 2      // Preferred+ (a real relationship)
+const HOLD_CHANCE_PER_DAY = 0.05  // ~30% chance over a week without a hold
+const HOLD_DAYS = 12              // how long they'll hold it before it goes back on the shelf
+function applyVintageHolds(distributors, prev, days, absDay, log) {
+  if (!VINTAGE_SETS.length) return distributors
+  const out = { ...distributors }
+  for (const dist of DISTRIBUTORS) {
+    const rec = out[dist.id] || prev[dist.id] || { spend: 0, stock: {} }
+    let hold = rec.hold || null
+    if (hold && hold.heldUntilDay != null && absDay >= hold.heldUntilDay) {
+      log('supply', `🗝️ ${dist.name} put the sealed ${hold.setName || 'vintage pack'} they were holding back on the shelf — you didn't grab it in time.`, 0)
+      hold = null
+    }
+    const level = rapportLevel(rec.spend).level
+    if (!hold && level >= HOLD_RAPPORT_LEVEL) {
+      let created = null
+      for (let i = 0; i < days && !created; i++) {
+        if (Math.random() < HOLD_CHANCE_PER_DAY) created = makeVintageHold(distributorDiscount(dist, level))
+      }
+      if (created) {
+        hold = { ...created, heldUntilDay: absDay + HOLD_DAYS }
+        log('supply', `🗝️ ${dist.name} messaged you — they set aside a sealed ${created.setName} just for you ($${created.price.toFixed(2)}, held ~${HOLD_DAYS}d). A rapport perk.`, 0)
+      }
+    }
+    if (hold !== (rec.hold || null)) out[dist.id] = { ...rec, hold }
   }
   return out
 }
@@ -456,6 +491,8 @@ export function advanceDaysWith(set, get, days, away) {
   const newAbsDay = absoluteDay(d, months)
   const goalsExpired = !s.dailyGoals.length || newAbsDay - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS
   const periodGoals = goalsExpired ? makeWeeklyGoals(noto) : s.dailyGoals
+  // Restock the distributors, then let high-rapport ones reserve vintage for you.
+  const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days), s.distributors, days, newAbsDay, get().log)
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
     marketMults: market.marketMults, marketHistory: market.marketHistory,
@@ -463,7 +500,7 @@ export function advanceDaysWith(set, get, days, away) {
     boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
     consignments: remainingConsign,
     supplyChannel: remainingSupply,
-    distributors: restockDistributors(s.distributors, days), // wholesalers refill their shelves
+    distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds
     listings: remainingListings,
     wantList: wants,
     forumPosts,

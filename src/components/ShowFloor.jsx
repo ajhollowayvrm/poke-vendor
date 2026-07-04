@@ -226,22 +226,9 @@ export default function ShowFloor({ show, onLeave }) {
   }
   function pick(opt) { flash(resolveEncounter(opt.effect)); setEncounter(null) }
 
-  // Buy + rip a Vintage Vault pack right here on the floor. Charges cash, records
-  // the spend against the set, then hands off to the PackOpening overlay.
-  const buyVault = useCallback(({ setId, product }) => {
-    const set = VINTAGE_SETS.find(s => s.id === setId)
-    if (!set) return
-    const g = useGame.getState()
-    if (g.cash < product.price) { flash(`Not enough cash for the ${product.name}.`); return }
-    if (!g.spend(product.price)) return
-    g.recordSetSpend(set.id, product.price)
-    g.log('buy', `Bought a ${product.name} from the Vintage Vault (${show.name})`, -product.price)
-    setVaultRip({ set, product })
-  }, [show.name, flash])
-
-  // Buy + rip sealed product off a REGULAR booth's table. The booth entry carries the full
-  // set object + product + marked-up ask, so it works for both modern and vintage sealed.
-  // Charges the ask, records the spend, then hands off to the same PackOpening overlay.
+  // Buy + rip sealed product (modern OR vintage) off a booth's table right here on the floor.
+  // The booth entry carries the full set object + product + marked-up ask. Charges the ask,
+  // records the spend, then hands off to the PackOpening overlay.
   const buySealed = useCallback(({ set, product, ask, vendorName }) => {
     if (!set || !product) return
     const g = useGame.getState()
@@ -260,16 +247,6 @@ export default function ShowFloor({ show, onLeave }) {
     const item = useGame.getState().buySealed(set, { ...product, _buyPrice: ask }, ask)
     if (!item) { flash(`Not enough cash for the ${product.name || product.type}.`); return }
     flash(`Stocked a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} — rip/list/flip it from 📦 Inventory.`)
-  }, [flash])
-
-  // Same, for a Vintage Vault pack: resolve the vintage set, then stock it to hold (vintage
-  // appreciates, so holding a sealed old pack is a real play, not just a rip-it-live gamble).
-  const stockVault = useCallback(({ setId, product, ask }) => {
-    const set = VINTAGE_SETS.find(s => s.id === setId)
-    if (!set) return
-    const item = useGame.getState().buySealed(set, { ...product, _buyPrice: ask }, ask)
-    if (!item) { flash(`Not enough cash for the ${product.name}.`); return }
-    flash(`Stocked a ${product.name} from the Vintage Vault — it's in 📦 Inventory.`)
   }, [flash])
 
   // Live crowd per booth = shoppers standing on a tile adjacent to it. Drives the "busy"
@@ -379,14 +356,14 @@ export default function ShowFloor({ show, onLeave }) {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipVault={buyVault} onRipSealed={buySealed}
-        onStockVault={stockVault} onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled} />}
+      {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
+        onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
       {vaultRip && (
         <div className="modalbg vault-rip-bg">
           <div className="modal vault-rip-modal" style={{ maxWidth: 980 }}>
-            <div className="vault-ribbon">🗝️ VINTAGE VAULT — {vaultRip.product.name}</div>
+            <div className="vault-ribbon">{vaultRip.set?.vintage ? '🗝️ VINTAGE' : '📦 SEALED'} — {vaultRip.set?.name} {vaultRip.product.name || vaultRip.product.type}</div>
             <PackOpening set={vaultRip.set} product={vaultRip.product} singleNoReRip onExit={() => setVaultRip(null)} />
           </div>
         </div>

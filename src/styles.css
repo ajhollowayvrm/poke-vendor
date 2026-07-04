@@ -1332,3 +1332,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .grade-predict .gp-range b { color:var(--accent-light); }
 .grade-predict .gp-likely { color:var(--dim); font-weight:600; }
 .grade-predict .gp-likely b { color:var(--txt); font-weight:800; }
+
+/* Vintage reserved-hold card (rapport perk) — a gold "held for you" highlight */
+.product.vintage-held { border:1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 30%, transparent), 0 6px 18px #0006;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--gold) 9%, var(--panel)), var(--panel2)); }

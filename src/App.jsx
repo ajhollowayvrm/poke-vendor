@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
-  VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot } from './game/engine'
+  VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
 import { useGame } from './game/store'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
@@ -167,14 +167,13 @@ export default function App() {
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
-  // Buy a vintage sealed pack at its CURRENT (appreciated) market price and hold it.
-  function buyVintage(set) {
-    const product = vintageProduct(set)
-    const price = sealedValue({ product, setId: set.id })
-    if (cash < price) return toast(`Not enough cash for the ${product.type}.`)
-    const item = useGame.getState().buySealed(set, { ...product, _buyPrice: price }, price)
+  // Buy a vintage FIND (or a reserved rapport hold) off a distributor — stocks it to hold
+  // (vintage appreciates), builds rapport with them, and clears the hold if it was reserved.
+  function buyDistVintage(distId, find, opts = {}) {
+    if (cash < find.price) return toast(`Not enough cash for the ${find.setName} pack (${fmtMoney(find.price)}).`)
+    const item = useGame.getState().buyDistributorVintage(distId, find.setId, find.product, find.price, opts)
     if (!item) return
-    toast(`Stocked ${product.type} of ${set.name} for ${fmtMoney(price)} — it's in Cards → 📦 Sealed.`)
+    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Cards → 📦 Sealed.`)
   }
 
   // "Rip another" from the end-of-rip summary: keep chasing without going back to the
@@ -350,7 +349,7 @@ export default function App() {
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
         {tab === 'shop' && (
-          <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyVintage} /></div>
+          <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
@@ -650,13 +649,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         </div>
       )}
 
-      {vintageVaultOpen(weekIndex) ? (
-        <VintageVault onBuy={onBuyVintage} cash={cash} />
-      ) : (
-        <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
-          <div className="market-head">🏛️ Vintage Vault <span className="muted">— the travelling dealer isn't in town right now. It swings by some weeks; hunt vintage at shows in the meantime.</span></div>
-        </div>
-      )}
+      <VintageShelf dist={dist} rec={rec} weekIndex={weekIndex} cash={cash} onBuyVintage={onBuyVintage} />
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )
@@ -811,45 +804,48 @@ function StockBar({ qty, cap, out, days, color }) {
   )
 }
 
-// The Vintage Vault is a TRAVELLING dealer — it only rolls into the shop SOME weeks, not
-// every day. Vintage is meant to be a rare find (hunt it at shows the rest of the time, via
-// the show-floor Vintage Vault vendor + booth sealed). Deterministic per week (stable across
-// re-renders and reloads) so the visiting schedule feels real rather than flickering.
-const VINTAGE_VAULT_EVERY = 3 // roughly one week in three it's in town
-function vintageVaultOpen(weekIndex) {
-  return (((weekIndex * 2654435761) >>> 0) % VINTAGE_VAULT_EVERY) === 0
-}
-
-// Vintage sealed: pricey old packs bought at current (appreciated) market value and
-// HELD — they trend up over time. Buying stocks them into your sealed inventory; ripping
-// one (a single old pack) is a real gamble. Re-prices live as the market drifts.
-function VintageVault({ onBuy, cash }) {
-  useGame(s => s.marketMults) // re-price as the market drifts
+// Vintage sealed no longer lives at a dedicated Vault — it turns up RANDOMLY on each vendor's
+// shelf some weeks (check them regularly), and high-rapport vendors RESERVE a piece for you.
+// This panel shows the selected distributor's current vintage: a reserved HOLD (a rapport
+// perk that persists until you grab it) and/or a rotating weekly FIND. Re-prices as the market
+// drifts (the parent Shop already subscribes to marketMults).
+function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
   if (!VINTAGE_SETS.length) return null
+  const hold = rec?.hold || null
+  const find = useMemo(() => distributorVintageFind(dist, weekIndex), [dist, weekIndex])
+  if (!hold && !find) {
+    return (
+      <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
+        <div className="market-head">🗝️ Vintage <span className="muted">— nothing old on {dist.name}'s shelf this week. It turns up randomly here (check back), and always at shows. Build rapport and they'll hold pieces for you.</span></div>
+      </div>
+    )
+  }
+  const Card = ({ f, held }) => {
+    const p = sealedValue({ product: f.product, setId: f.setId })
+    const up = p >= (f.product.price || 0)
+    return (
+      <div className={`product ${held ? 'vintage-held' : ''}`} key={(held ? 'h' : 'f') + f.setId}>
+        {f.logo && <img className="logo" src={f.logo} alt={f.setName} />}
+        <h3>{f.setName}</h3>
+        <div className="meta">{held ? '🗝️ Reserved for you' : '🗝️ Vintage find'} · sealed {f.product.type}</div>
+        <div className="prodlist">
+          <button className="prodbtn" disabled={cash < f.price}
+            onClick={() => onBuyVintage(dist.id, f, { fromHold: held })}
+            title={`${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}`}>
+            <span className="prodname">{f.product.icon || '📦'} {f.product.type}</span>
+            <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
+            <span className="prodprice">{fmtMoney(f.price)}</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="market-panel vintage-vault" style={{ marginTop: 18 }}>
-      <div className="market-head">🏛️ Vintage Vault <span className="muted">— a travelling dealer, in town this week only. Rare old sealed packs: buy &amp; hold (vintage appreciates), or gamble on a rip.</span></div>
+      <div className="market-head">🗝️ Vintage on {dist.name}'s shelf <span className="muted">— old sealed, buy &amp; hold (vintage appreciates) or rip it. Rotates weekly; rapport gets pieces reserved for you.</span></div>
       <div className="grid shop-grid" style={{ marginTop: 10 }}>
-        {VINTAGE_SETS.map(set => {
-          const product = vintageProduct(set)
-          const price = sealedValue({ product, setId: set.id })
-          const up = price >= (product.price || 0)
-          return (
-            <div className="product" key={set.id}>
-              {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
-              <h3>{set.name}</h3>
-              <div className="meta">{set.series} · {set.printedTotal || set.total} cards</div>
-              <div className="prodlist">
-                <button className="prodbtn" disabled={cash < price} onClick={() => onBuy(set)}
-                  title={`${product.type} · current market ${fmtMoney(price)}`}>
-                  <span className="prodname">{product.icon || '📦'} {product.type}</span>
-                  <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt</span>
-                  <span className="prodprice">{fmtMoney(price)}</span>
-                </button>
-              </div>
-            </div>
-          )
-        })}
+        {hold && <Card f={hold} held />}
+        {find && <Card f={find} />}
       </div>
     </div>
   )

@@ -344,31 +344,23 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
     })
   }
 
-  // --- SPECIAL EVENT: the Vintage Vault ----------------------------------------
-  // A rare travelling dealer who only shows up at bigger shows (Regional+), selling
-  // a genuine sealed 1999 Base Set pack — heavy, unsearched, Charizard-or-bust. Deterministic
-  // per show-day (uses the seeded rng) so it's stable while you walk the floor, and
-  // its odds climb with the show tier. When it appears it's the talk of the hall.
-  const VAULT_TIERS = { regional: 0.18, national: 0.30, invitational: 0.55, worlds: 0.85 }
-  const vaultChance = VAULT_TIERS[show.tierKey] || 0
-  if (vaultChance && VINTAGE_SETS.length && r() < vaultChance) {
-    const vSet = pickR(r, VINTAGE_SETS)
-    const product = vintageProduct(vSet)
-    // The dealer marks the heavy pack UP — scarcity tax for a sealed vintage pack at
-    // a show. Bigger shows, bigger markup (and bigger crowd watching you rip it).
-    const markup = 1.15 + r() * (show.tierKey === 'worlds' ? 0.9 : 0.45)
-    const ask = round2(product.price * markup)
-    booths.push({
-      id: `${show.id}-vault`,
-      name: 'The Vintage Vault',
-      archetype: 'vault',
-      archLabel: 'Vintage Dealer',
-      vibe: 'a legend — deals only in sealed vintage',
-      buyMult: 0.9,
-      special: 'vault',
-      vault: { setId: vSet.id, setName: vSet.name, logo: vSet.logo, product, ask },
-      stock: [], // the Vault doesn't sell singles — just the one heavy pack
-    })
+  // --- VINTAGE IS ALWAYS AT SHOWS ---------------------------------------------
+  // There's no more dedicated Vintage Vault — vintage sealed just turns up on regular booth
+  // tables (see boothSealed, ~16% per booth). To GUARANTEE it every show, make sure at least
+  // one booth is holding a sealed vintage pack; if the random rolls produced none, inject one
+  // onto a random regular table. Bigger shows draw more (scaled markup). So: shows always have
+  // vintage to hunt, on top of what rotates through your shop vendors during the week.
+  if (VINTAGE_SETS.length && booths.length) {
+    const already = booths.some(b => (b.products || []).some(p => p._origin === 'vintage'))
+    if (!already) {
+      const vSet = pickR(r, VINTAGE_SETS)
+      const product = vintageProduct(vSet)
+      const markup = 1.15 + r() * (show.tierKey === 'worlds' ? 0.9 : 0.45)
+      const entry = { set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' }
+      const regs = booths.filter(b => !b.special)
+      const target = regs.length ? regs[Math.floor(r() * regs.length)] : booths[0]
+      target.products = [...(target.products || []), entry]
+    }
   }
 
   // --- ON-SITE GRADING KIOSK ---------------------------------------------------

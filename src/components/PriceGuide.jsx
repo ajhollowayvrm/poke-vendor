@@ -15,7 +15,7 @@ export default function PriceGuide() {
 
   const set = SETS.find(s => s.id === setId) || SETS[0]
   // Split the dropdown into the sets you can buy in the shop vs. vintage/legacy sets that
-  // only turn up at show vendors (sealed packs at the Vault, loose singles in booth bins).
+  // only turn up randomly on vendor shelves and at shows (sealed packs + loose singles in bins).
   const shopSets = SETS.filter(s => !s.vintage)
   const vintageSets = SETS.filter(s => s.vintage)
   // Current multiplier + recent history for THIS set (engine map is the source of truth;
@@ -68,8 +68,8 @@ export default function PriceGuide() {
       <div className="toolbar" style={{ marginTop: -4 }}>
         {set.vintage ? (
           <span className="pill" style={{ color: '#ffd700', borderColor: '#ffd70066', display: 'inline-flex', gap: 6, alignItems: 'center' }}
-            title="You can't buy this set in the shop. Sealed packs turn up at the Vintage Vault, and loose singles in vendor booth bins at bigger shows.">
-            🗝️ Vintage · vendor-only — find it at shows
+            title="You can't buy this set from the regular shop catalog. Sealed vintage turns up randomly on vendor shelves (check weekly) and always at shows; loose singles show up in booth bins at bigger shows. Build vendor rapport and they'll hold pieces for you.">
+            🗝️ Vintage · find it on vendor shelves & at shows
           </span>
         ) : (
           <>

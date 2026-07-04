@@ -100,6 +100,23 @@ export function createSourcingSlice(set, get) {
       get().bumpGoal('buy', n)
       return { items, bought: n, spent: total, unit }
     },
+    // Buy a VINTAGE find (or a reserved hold) from a distributor. Charges `price`, stocks the
+    // sealed item to hold, builds rapport with that distributor (it's real business), and — if
+    // this was their reserved hold — clears the hold. Returns the stocked item or null.
+    buyDistributorVintage(distId, setId, product, price, opts = {}) {
+      const pokeSet = setById(setId)
+      if (!pokeSet) return null
+      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, vintage: true }, price)
+      if (!item) return null
+      set(s => {
+        const cur = s.distributors[distId] || { spend: 0, stock: {} }
+        const next = { ...cur, spend: round2((cur.spend || 0) + price) }
+        if (opts.fromHold) next.hold = null // they handed over the piece they were holding
+        return { distributors: { ...s.distributors, [distId]: next } }
+      })
+      return item
+    },
+
     // Wholesale a sealed product into the channel: pay your wholesale cost now, and it
     // sells through to other shops over a few days for a markup (passive income). You buy
     // in at Dave & Adam's wholesale price; requires Trusted+ rapport with them.

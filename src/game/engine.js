@@ -1650,6 +1650,42 @@ export function distributorCatalog(dist, sets, weekIndex = 0) {
   return wide // marketplace / big-box: the full catalog EXCEPT the brand-new exclusive
 }
 
+// --- Vintage finds: sealed vintage surfaces RANDOMLY at your retailers -------
+// (There's no more Vintage Vault.) Instead, a sealed vintage pack turns up on a vendor's
+// shelf on a given WEEK — deterministic per (distributor, week), so it's stable while you shop
+// and ROTATES week to week. That's the hook: check your vendors regularly to catch one. Not
+// every vendor deals vintage — Pokémon Center is new-product-only; the local shop and hobby
+// channels turn it up most. Priced at current market (vintage appreciates) plus a small finder
+// markup. Returns { setId, setName, logo, product, price } or null.
+const VINTAGE_FIND_RATE = { lgs: 0.45, tcgplayer: 0.30, dna: 0.32, amazon: 0.15, pokecenter: 0 }
+function findRng(distId, weekIndex) {
+  let s = ((weekIndex + 1) * 2654435761) >>> 0
+  for (let i = 0; i < distId.length; i++) s = (s * 31 + distId.charCodeAt(i)) >>> 0
+  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
+}
+export function distributorVintageFind(dist, weekIndex = 0) {
+  if (!dist || !VINTAGE_SETS.length) return null
+  const rate = VINTAGE_FIND_RATE[dist.id] ?? 0.2
+  if (rate <= 0) return null
+  const r = findRng(dist.id, weekIndex)
+  if (r() >= rate) return null
+  const set = VINTAGE_SETS[Math.floor(r() * VINTAGE_SETS.length)]
+  const product = vintageProduct(set)
+  const markup = 1.05 + r() * 0.2 // 1.05–1.25× current market
+  const price = round2(sealedValue({ product, setId: set.id }) * markup)
+  return { setId: set.id, setName: set.name, logo: set.logo, product, price }
+}
+// Build a vintage item a high-rapport vendor RESERVES for you (the "we'll hold it" perk). Priced
+// at market with the vendor's standing rapport discount — the relationship perk is a fair price
+// PLUS them setting it aside. `rnd` lets the caller vary the pick. Returns { setId, product, price }.
+export function makeVintageHold(discount = 0, rnd = Math.random) {
+  if (!VINTAGE_SETS.length) return null
+  const set = VINTAGE_SETS[Math.floor(rnd() * VINTAGE_SETS.length)]
+  const product = vintageProduct(set)
+  const price = round2(sealedValue({ product, setId: set.id }) * (1 - Math.min(0.2, discount)))
+  return { setId: set.id, setName: set.name, logo: set.logo, product, price }
+}
+
 // The rapport discount a distributor extends at a given level (capped). Single source
 // of truth for both pricing and the "what you've unlocked" banner.
 export function distributorDiscount(dist, level) {

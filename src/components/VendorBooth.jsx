@@ -6,10 +6,7 @@ import CardTile, { rarityColor } from './CardTile'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 
-export default function VendorBooth({ booth, onClose, flash, onRipVault, onRipSealed, onStockVault, onStockSealed, haggledIds, onHaggled }) {
-  // The Vintage Vault is a special booth: no singles bin, just one heavy sealed
-  // vintage pack you can buy and crack right here on the floor — or stock to hold.
-  if (booth.special === 'vault') return <VaultBooth booth={booth} onClose={onClose} onRipVault={onRipVault} onStockVault={onStockVault} />
+export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled }) {
   if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
   return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} />
 }
@@ -59,68 +56,6 @@ function KioskBooth({ booth, onClose, flash }) {
           </div>
         )}
         <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
-      </div>
-    </div>
-  )
-}
-
-// The rare travelling vintage dealer — sells a single sealed 1999 Base Set pack.
-function VaultBooth({ booth, onClose, onRipVault, onStockVault }) {
-  const cash = useGame(s => s.cash)
-  const { setName, logo, product, ask } = booth.vault
-  const afford = cash >= ask
-  useModalEscape(onClose)
-  async function buy() {
-    const ok = await confirmDialog({
-      title: `Buy a sealed ${product.name}?`,
-      body: `${fmtMoney(ask)} for a genuine heavy vintage pack — unsearched, mint, straight from the case. `
-        + `Could hold a base-set holo (Charizard, Blastoise, Venusaur…) — or nothing. `
-        + `You'll crack it right here, and the whole hall will be watching.`,
-      confirmText: `Buy & rip — ${fmtMoney(ask)}`,
-      cancelText: 'Walk away',
-    })
-    if (!ok) return
-    onClose()
-    onRipVault?.({ setId: booth.vault.setId, product: { ...product, price: ask } })
-  }
-  // Buy the pack and HOLD it in your sealed inventory instead of cracking it now. Vintage
-  // appreciates, so banking a sealed old pack to flip later is a legitimate play.
-  function hold() {
-    onClose()
-    onStockVault?.({ setId: booth.vault.setId, product: { ...product, price: ask }, ask })
-  }
-  return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal vault-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
-        <div className="vault-ribbon">✨ SPECIAL EVENT ✨</div>
-        <div className="row" style={{ alignItems: 'baseline' }}>
-          <h2 style={{ marginRight: 'auto' }}>🗝️ The Vintage Vault</h2>
-          <span className="pill" style={{ background: '#ffd70022', color: '#ffd700' }}>Vintage Dealer</span>
-        </div>
-        <p className="muted" style={{ marginTop: 2 }}>
-          A travelling legend who deals only in sealed vintage. Today: one genuine
-          <b> {product.name}</b>. Unsearched, heavy, the real thing.
-        </p>
-        <div className="vault-offer">
-          {logo && <img className="vault-logo" src={logo} alt={setName} />}
-          <div className="vault-pack">🗝️</div>
-          <div className="vault-info">
-            <div className="vault-name">{product.name}</div>
-            <div className="muted" style={{ fontSize: 12 }}>1 sealed pack · base-set holos inside (Charizard, Blastoise, Venusaur…)</div>
-            <div className="vault-ask">{fmtMoney(ask)}</div>
-          </div>
-        </div>
-        <div className="row" style={{ marginTop: 14 }}>
-          <button className="btn gold" disabled={!afford} onClick={buy}>
-            {afford ? `Buy & rip — ${fmtMoney(ask)}` : `Need ${fmtMoney(ask)}`}
-          </button>
-          <button className="btn alt" disabled={!afford} onClick={hold}
-            title="Stock it in your inventory to rip, list, or flip later — vintage appreciates while you hold">
-            📦 Buy &amp; hold
-          </button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} onClick={onClose}>Walk away</button>
-        </div>
-        {!afford && <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>Come back when you've built up some cash — vintage isn't cheap.</p>}
       </div>
     </div>
   )
