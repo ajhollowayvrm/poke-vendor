@@ -401,10 +401,17 @@ export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arri
       const markdown = 0.85 + r() * 0.07 // ~8–15% off to clear
       for (const c of boothStock) c._ask = Math.max(0.25, round2(c._ask * markdown))
     }
-    // Highlight the booth's 1–3 priciest remaining pieces as featured "showcase" cards.
+    // Highlight the booth's priciest pieces as featured "showcase" cards — skipping
+    // same-NAME repeats (two different Charizards are distinct cards, but a showcase
+    // reading "Charizard · Houndoom · Charizard" looks like a dupe to a shopper).
     const byVal = [...boothStock].sort((a, b) => cardValue(b) - cardValue(a))
-    const featuredN = Math.min(3, byVal.length)
-    for (let k = 0; k < featuredN; k++) byVal[k]._highlight = true
+    const featNames = new Set()
+    for (const c of byVal) {
+      if (featNames.size >= 3) break
+      if (featNames.has(c.name)) continue
+      c._highlight = true
+      featNames.add(c.name)
+    }
     booths.push({
       id: `${show.id}-b${i}`,
       name: rec ? rec.name : vendorName(i),

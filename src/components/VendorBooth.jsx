@@ -3,6 +3,7 @@ import { useGame } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, setById } from '../game/engine'
 import { vendorRapport, nextVendorRapport } from '../game/shows'
 import CardTile, { rarityColor } from './CardTile'
+import CardModal from './CardModal'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 
@@ -91,10 +92,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const [pendingSealed, setPendingSealed] = useState(null) // the sealed entry
   const [mysteryResult, setMysteryResult] = useState(null) // card pulled from a mystery pack
   const [tradeFor, setTradeFor] = useState(null)           // booth card you're offering a trade on
+  // Tap any card to open its page: { card, ask } for THEIR stock (read-only inspect —
+  // PSA-if-graded values + cut read, the gem-hunter's tools), { card, owned:true } for yours.
+  const [inspect, setInspect] = useState(null)
   // Escape closes the top-most layer: a pending prompt if open, else the booth.
-  // (Haggle owns its own escape.)
+  // (Haggle owns its own escape; the card page also closes itself.)
   useModalEscape(() => {
     if (mysteryResult) setMysteryResult(null)
+    else if (inspect) setInspect(null)
     else if (tradeFor) setTradeFor(null)
     else if (pendingSealed) setPendingSealed(null)
     else if (pendingBuy) setPendingBuy(null)
@@ -185,7 +190,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     const deal = ask < mkt * 0.85
     return (
       <div key={card.uid} className={`vendoritem ${featured ? 'featured' : ''}`}>
-        <CardTile card={card} interactive={false} />
+        {/* Tap the card itself to open its page — PSA-if-graded values, the cut/centering
+            read, and price history. How you shop for gem-10 candidates. */}
+        <div style={{ cursor: 'zoom-in' }} title="Tap to inspect — grade upside, cut read, price history"
+          onClick={() => setInspect({ card, ask })}>
+          <CardTile card={card} interactive={false} />
+        </div>
         <div className="askrow">
           {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(card._ask)}</s>}
           <span className="ask">{fmtMoney(ask)}</span>
@@ -299,7 +309,9 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                 const rep = g.first
                 return (
                   <div key={g.key} className="trade-line" style={{ cursor: 'default' }}>
-                    <img className="tl-thumb" src={rep.img} alt="" />
+                    <img className="tl-thumb" src={rep.img} alt="" style={{ cursor: 'zoom-in' }}
+                      title="Tap to open this card — check its PSA upside before selling it away"
+                      onClick={() => setInspect({ card: rep, owned: true })} />
                     <div className="tl-info">
                       <div className="tl-name">{rep.foil ? `${rep.foil.badge} ` : rep.reverse ? '✨ ' : ''}{rep.name}</div>
                       <div className="tl-sub muted">{skuBadge(rep)} · mkt {fmtMoney(g.unit)} · they pay {fmtMoney(offer)} each{g.count > 1 ? ` · ×${g.count}` : ''}</div>
@@ -391,6 +403,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
 
       {mysteryResult && (
         <MysteryReveal result={mysteryResult} onClose={() => setMysteryResult(null)} />
+      )}
+
+      {/* The card page — read-only inspect for their stock, full actions for yours. */}
+      {inspect && (
+        <CardModal card={inspect.card} inspect={!inspect.owned} ask={inspect.ask ?? null}
+          onClose={() => setInspect(null)} />
       )}
 
       {tradeFor && (

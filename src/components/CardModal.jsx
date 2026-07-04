@@ -6,7 +6,11 @@ import { rarityColor, gradeLabel } from './CardTile'
 import HoloCard from './HoloCard'
 import PriceChart from './PriceChart'
 
-export default function CardModal({ card, onClose }) {
+// The card page. Owned cards get the full action set (everything the bulk-select bar
+// offers). `inspect` renders it read-only for a card you DON'T own — a vendor's booth
+// single at a show — so you can study the PSA-if-graded values, the cut/centering read,
+// and the price history before paying their ask (`ask` shows their price vs market).
+export default function CardModal({ card, onClose, inspect = false, ask = null }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const hasScope = useGame(s => !!s.upgrades.gradescope)
   const quickSell = useGame(s => s.quickSell)
@@ -17,6 +21,10 @@ export default function CardModal({ card, onClose }) {
   const submitGrade = useGame(s => s.submitGrade)
   const addToBinder = useGame(s => s.addToBinder)
   const removeFromBinder = useGame(s => s.removeFromBinder)
+  const stockShop = useGame(s => s.stockShop)
+  const toggleLock = useGame(s => s.toggleLock)
+  // Live lock state (the `card` prop is a snapshot — the store is the truth).
+  const locked = useGame(s => !!(s.collection || []).find(x => x.uid === card?.uid)?.locked)
   // Is THIS copy slotted in the binder? And if not, is its masterset slot already taken by
   // another copy (so adding it would be a no-op)?
   const inBinder = useGame(s => (s.binder || []).some(c => c.uid === card?.uid))
@@ -173,7 +181,25 @@ export default function CardModal({ card, onClose }) {
                 Shown for raw and graded cards alike (both ride the set's market). */}
             <PriceChart series={priceSeries} />
 
-            {inBinder && (
+            {/* Inspect mode: someone else's card (a booth single at a show). No actions —
+                just the read: their ask vs market, and everything above (PSA-if-graded
+                values, cut estimate, history) to judge whether it's a gem-10 candidate. */}
+            {inspect && (
+              <div className="banner" style={{ marginTop: 14 }}>
+                {ask != null ? (
+                  <>🏷️ Their ask: <b>{fmtMoney(ask)}</b> · market {fmtMoney(market)}
+                    {ask < market * 0.85 ? <b style={{ color: 'var(--green)' }}> — a real deal</b>
+                      : ask > market * 1.2 ? <b style={{ color: '#ff9f43' }}> — over market</b> : ''}
+                    <br /></>
+                ) : null}
+                <span className="muted" style={{ fontSize: 12.5 }}>
+                  In the vendor's case — buy, haggle, or trade for it from their table.
+                  {!g && ' The cut read + PSA values above are your gem-hunting tools.'}
+                </span>
+              </div>
+            )}
+
+            {!inspect && inBinder && (
               <div className="sell-options" style={{ marginTop: 14 }}>
                 <div className="banner" style={{ marginTop: 0 }}>
                   📒 Slotted in your masterset binder as the{' '}
@@ -187,7 +213,7 @@ export default function CardModal({ card, onClose }) {
               </div>
             )}
 
-            {!inBinder && (!listing ? (
+            {!inspect && !inBinder && (!listing ? (
               <div className="sell-options" style={{ marginTop: 14 }}>
                 <button className="btn alt sellopt" disabled={slotTaken}
                   title={slotTaken ? 'Your binder already has this variant slotted' : undefined}
@@ -206,6 +232,16 @@ export default function CardModal({ card, onClose }) {
                 <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
                   <b>Consign ↗</b>
                   <small>Hands-off: a service sells it in a few days for a guaranteed ~0.85–0.95× market (18% fee). Reliable, but listing can reach/beat market.</small>
+                </button>
+                {hasStore && (
+                  <button className="btn alt sellopt" onClick={() => { const { sold } = stockShop([card.uid]); if (sold) onClose() }}>
+                    <b>🏬 Put on the store shelf</b>
+                    <small>Walk-ins buy it in person — +12% premium, no fees. Pull it back anytime from the Shop floor.</small>
+                  </button>
+                )}
+                <button className="btn alt sellopt" onClick={() => toggleLock(card.uid)}>
+                  <b>{locked ? '🔓 Unlock' : '🔒 Lock this card'}</b>
+                  <small>{locked ? 'Locked — protected from every bulk sell. Tap to unlock.' : 'A hard "never bulk-sell this" guard for keepers.'}</small>
                 </button>
               </div>
             ) : (
@@ -259,7 +295,7 @@ export default function CardModal({ card, onClose }) {
               </div>
             ))}
 
-            {!inBinder && !g && (
+            {!inspect && !inBinder && !g && (
               <>
                 <div style={{ display:'flex', alignItems:'center', gap: 8, margin: '18px 0 6px' }}>
                   <span className="muted" style={{ fontSize: 13 }}>Submit for PSA-style grading</span>
