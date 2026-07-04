@@ -50,16 +50,23 @@ export function rarityRank(r) {
   const i = RARITY_ORDER.indexOf(r)
   return i === -1 ? 0 : i
 }
-// Anything at Double Rare or above is a "hit" worth celebrating.
+// Anything at Double Rare or above is a "hit" worth celebrating — OR anything worth real
+// money. A card whose market value clears HIT_VALUE_THRESHOLD counts as a hit regardless of
+// its printed rarity, so a valuable common/uncommon/reverse gets the on-rip celebration and
+// is protected from the bulk "sell all / buylist" sweeps (see isBulkCard, which excludes hits).
 export const HIT_THRESHOLD = RARITY_ORDER.indexOf('Double Rare')
-export function isHit(card) { return rarityRank(card.rarity) >= HIT_THRESHOLD }
+export const HIT_VALUE_THRESHOLD = 20
+export function isHit(card) {
+  return rarityRank(card.rarity) >= HIT_THRESHOLD || cardValue(card) > HIT_VALUE_THRESHOLD
+}
 
 // Is this a "bulk" / non-worth card — safe to sweep into a bulk/quick-sell?
 // Decided by LIVE card attributes, NOT the `_isHit` flag (which is only stamped at
 // pull time, so a hit acquired any other way — bought, gifted, an old save — would
-// have no flag and slip through). A card is bulk only if it's raw, unfoiled, and
-// below the hit rarity threshold. A graded slab, a special foil, or any Double-Rare+
-// (incl. MEGA_ATTACK / Mega Hyper / Black White) is NEVER bulk.
+// have no flag and slip through). A card is bulk only if it's raw, unfoiled, and not a
+// hit — where "hit" now includes anything worth more than HIT_VALUE_THRESHOLD (see isHit),
+// so a valuable single is never swept. A graded slab, a special foil, any Double-Rare+
+// (incl. MEGA_ATTACK / Mega Hyper / Black White), or any $20+ card is NEVER bulk.
 export function isBulkCard(card) {
   return !card.grade && !card.foil && !isHit(card)
 }
