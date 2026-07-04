@@ -1301,10 +1301,10 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   const sub = () => {
     const r = Math.random()
     const b = (p) => Math.max(0.001, Math.min(0.999, p + effectiveLuck * (1 - p))) // pull each cutoff toward 1 by combined lean
-    if (r < b(0.30)) return 10
-    if (r < b(0.62)) return 9
-    if (r < b(0.82)) return 8
-    if (r < b(0.92)) return 7
+    if (r < b(0.36)) return 10
+    if (r < b(0.64)) return 9
+    if (r < b(0.83)) return 8
+    if (r < b(0.93)) return 7
     if (r < b(0.97)) return 6
     return 4 + Math.floor(Math.random()*2)
   }
@@ -1320,11 +1320,15 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
     return cap - Math.floor(Math.random() * (spread + 1))
   }
   const centering = capSub(), corners = capSub(), edges = capSub(), surface = capSub()
-  // PSA overall ≈ limited by the lowest subgrade, with some weighting
+  // PSA overall ≈ the average, held back by the weakest subgrade — but not as harshly as a
+  // strict "min + 1" gate (which made a true 10 require ALL FOUR subgrades to be a 10, ~0.8%).
+  // A near-perfect card (worst subgrade 9) can still GEM when the average rounds up, so 10s
+  // land at a satisfying rate for pristine pulls while a genuinely flawed card is still capped.
   const min = Math.min(centering, corners, edges, surface)
   const avg = (centering + corners + edges + surface) / 4
-  let overall = Math.round(Math.min(min + 1, avg))
-  overall = Math.max(1, Math.min(cap, Math.min(overall, min === 10 ? 10 : min + 1)))
+  const ceiling = min >= 9 ? 10 : min + 1 // one 9 subgrade no longer blocks a gem
+  let overall = Math.round(Math.min(ceiling, avg))
+  overall = Math.max(1, Math.min(cap, ceiling, overall))
   // record the fee the player actually paid (after loyalty discount), not list price
   return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier, gradedAt: Date.now() }
 }
