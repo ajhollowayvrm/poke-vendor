@@ -128,11 +128,13 @@ const SHOW_VENDOR_DEFS = [
 ]
 // Rapport ladder by lifetime $ spent with a vendor. `disc` = standing discount on their
 // asking prices; higher rapport also widens how much of their showcase they'll show you.
+// Thresholds are reachable within a normal run (a roster vendor only shows up some shows, so
+// a $8k top rung was almost never hit) — lowered so the discount ladder actually pays off.
 export const VENDOR_RAPPORT = [
   { level: 0, name: 'Stranger', min: 0,    disc: 0,    color: '#8c97b8' },
-  { level: 1, name: 'Familiar', min: 400,  disc: 0.04, color: '#5ec98a' },
-  { level: 2, name: 'Regular',  min: 2000, disc: 0.08, color: '#5aa0ff' },
-  { level: 3, name: 'Trusted',  min: 8000, disc: 0.13, color: '#ffcb05' },
+  { level: 1, name: 'Familiar', min: 250,  disc: 0.05, color: '#5ec98a' },
+  { level: 2, name: 'Regular',  min: 1200, disc: 0.09, color: '#5aa0ff' },
+  { level: 3, name: 'Trusted',  min: 4500, disc: 0.14, color: '#ffcb05' },
 ]
 export function vendorRapport(spend) {
   let r = VENDOR_RAPPORT[0]
@@ -439,14 +441,17 @@ const WHALE_NAMES = ['a deep-pocketed whale', 'a serious collector with a fat wa
   'a hedge-fund hobbyist', 'a well-known set completist', 'a flush returning client']
 
 function pickAny(r, arr) { return arr[Math.floor((r ?? Math.random)() * arr.length)] }
-// Pick a payment method the buyer prefers, biased toward what YOU can actually
-// accept so deals don't fail at resolution. `accepted` is the player's accepted
-// set (from acceptedMethods()); when present, we only offer methods you can take
-// unless the channel has none in common (then fall back so the encounter still
-// has a method, and the UI softens the message). Venmo is always accepted.
+// Some ONLINE buyers won't budge on how they pay — a share insist on their preferred rail
+// (PayPal / a card), and if you can't take it the sale is LOST. That's exactly what the
+// PayPal / Credit-Card upgrades capture: more rails you accept → fewer online buyers walk.
+// In-person buyers (show/walk-in) are flexible, so we keep steering them to a method you can
+// take. Venmo is always accepted, so an insistent Venmo buyer never costs you a sale.
+const PAYMENT_INSIST_RATE = 0.30
 function pickPayMethod(channel, accepted) {
   const pool = channel === 'online' ? ONLINE_METHODS : INPERSON_METHODS
   if (accepted) {
+    // online insister: pick their true preference from the full pool (may be one you lack)
+    if (channel === 'online' && Math.random() < PAYMENT_INSIST_RATE) return pickAny(null, pool)
     const ok = pool.filter(m => accepted.has(m))
     if (ok.length) return pickAny(null, ok)
   }

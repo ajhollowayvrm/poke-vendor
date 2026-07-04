@@ -1237,13 +1237,17 @@ export function valueHistory(card, history) {
 // ---- Grading (PSA-style subgrades) ----
 // `fee` is the LIST price (before your loyalty discount). Raised so early
 // grading stings; the relationship below brings effective fees back down.
+// `luck` nudges the grade roll toward higher grades (like the loupe), so the premium tiers
+// aren't ONLY paying for speed — a pricier submission also gets a slightly better shot at the
+// gem (careful handling, a better grader queue). Economy is cheap + slow + no edge; Express /
+// Kiosk cost more but grade a touch kinder. Stacks with the Jeweler's Loupe.
 export const GRADING = {
-  economy: { name: 'Economy', fee: 20, days: 45 },
-  standard: { name: 'Standard', fee: 60, days: 20 },
-  express:  { name: 'Express',  fee: 130, days: 5 },
+  economy: { name: 'Economy', fee: 20, days: 45, luck: 0 },
+  standard: { name: 'Standard', fee: 60, days: 20, luck: 0.02 },
+  express:  { name: 'Express',  fee: 130, days: 5, luck: 0.05 },
   // On-site grading kiosk at big shows: skip the mail wait — results in ~2 days — but pay a
   // premium for it. `onSite` keeps it out of the normal (mail-in) Grader tier pickers.
-  kiosk:    { name: 'On-Site Kiosk', fee: 240, days: 2, onSite: true },
+  kiosk:    { name: 'On-Site Kiosk', fee: 240, days: 2, luck: 0.06, onSite: true },
 }
 
 // Bulk submission discount: sending several cards in one batch cuts the per-card
@@ -1478,7 +1482,10 @@ export function makeProductPromo(set, product) {
 // A held sealed product (bought but not yet ripped). Its live value rides the set's
 // market multiplier, so a hot modern set — or any vintage set (which trends up) —
 // appreciates while it sits in your inventory. `item` = { uid, setId, product, ... }.
-export const SEALED_FLIP_RATE = 0.92   // quick-flip payout as a fraction of live market value
+// Quick-flip is the INSTANT sealed exit — a real convenience spread under market, so that
+// LISTING a sealed item (patient, rides the buyer engine, can catch a hot-set spike) has a
+// reason to exist. Was 0.92 (too close to market — it dominated listing); now a clear haircut.
+export const SEALED_FLIP_RATE = 0.80   // quick-flip payout as a fraction of live market value
 export function sealedValue(item) {
   if (!item?.product) return 0
   return round2((item.product.price || 0) * marketMult(item.setId))
@@ -1587,8 +1594,8 @@ export const DISTRIBUTORS = [
   },
   {
     id: 'pokecenter', name: 'Pokémon Center', icon: '⚡', color: '#ffcb05',
-    blurb: 'The official store — first crack at new sets and exclusives at MSRP. Strict per-customer allocation, so you can only grab a few at a time.',
-    priceMult: 1.0, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.45, firstDibs: true,
+    blurb: 'The official store — the ONLY place stocking brand-new sets at MSRP the day they drop (everyone else is weeks behind), and it never runs dry on a fresh release. Grab the newest product here first.',
+    priceMult: 1.0, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.95, firstDibs: true,
   },
   {
     id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
@@ -1597,8 +1604,8 @@ export const DISTRIBUTORS = [
   },
   {
     id: 'amazon', name: 'Amazon', icon: '📦', color: '#ff9f43',
-    blurb: 'The everything store — reliable in-print staples, a hair over list. Never the chase deals, but rarely out of the basics.',
-    priceMult: 1.06, discountStep: 0.015, maxDiscount: 0.08, reliability: 0.8,
+    blurb: 'The everything store — pay a hair over list, but stock is GUARANTEED: it never sells out and never makes you wait for a restock. The convenience play when you need product now.',
+    priceMult: 1.06, discountStep: 0.015, maxDiscount: 0.08, reliability: 1.0, guaranteed: true,
   },
   {
     id: 'dna', name: "Dave & Adam's", icon: '🃏', color: '#b98cff',
@@ -1612,22 +1619,28 @@ export function distributorById(id) { return DISTRIBUTORS.find(d => d.id === id)
 // How many of the NEWEST sets a first-dibs seller carries, and how many the LGS rotates.
 const NEW_SET_COUNT = 6
 const LGS_SHELF_SIZE = 5
+// The very newest release is EXCLUSIVE to the first-dibs seller (Pokémon Center) — everyone
+// else is behind on it. That's what makes "first crack at new sets" a real reason to shop PC.
+const NEW_EXCLUSIVE_COUNT = 1
 
 // Which sets a retailer carries right now. `weekIndex` rotates the LGS shelf.
 // `sets` is the in-print shop list (SHOP_SETS), newest last. Perk-driven (not id-based).
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
-  if (dist.firstDibs) return sets.slice(Math.max(0, sets.length - NEW_SET_COUNT)) // newest releases only
-  if (dist.cases) return sets.filter(s => caseLot(s))                             // box/case-friendly sets
+  if (dist.firstDibs) return sets.slice(Math.max(0, sets.length - NEW_SET_COUNT)) // newest releases (incl. the exclusive)
+  // Everyone else can't get the very newest release yet — it's the first-dibs seller's
+  // exclusive until it filters out to the wider market. Drop it from their shelves.
+  const wide = sets.slice(0, Math.max(0, sets.length - NEW_EXCLUSIVE_COUNT))
+  if (dist.cases) return wide.filter(s => caseLot(s))                             // box/case-friendly sets
   if (dist.rotating) {                                                            // small weekly shelf
-    const n = sets.length
+    const n = wide.length
     if (!n) return []
     const start = (Math.abs(weekIndex) * 3) % n
     const out = []
-    for (let i = 0; i < Math.min(LGS_SHELF_SIZE, n); i++) out.push(sets[(start + i) % n])
+    for (let i = 0; i < Math.min(LGS_SHELF_SIZE, n); i++) out.push(wide[(start + i) % n])
     return out
   }
-  return sets // marketplace / big-box: the full catalog
+  return wide // marketplace / big-box: the full catalog EXCEPT the brand-new exclusive
 }
 
 // The rapport discount a distributor extends at a given level (capped). Single source
@@ -1676,6 +1689,12 @@ export function stockKey(set, product) { return `${set.id}|${product.type}` }
 // LARGER of any saved cap and the current allocation — so climbing a rapport rung widens
 // the shelf immediately instead of waiting for the next full restock to recompute it.
 export function stockState(dist, stock, set, product, level) {
+  // A "guaranteed" retailer (Amazon) never sells out — its shelf is treated as always full,
+  // so it's the reliable "need it now" option that offsets its higher price.
+  if (dist?.guaranteed) {
+    const cap = stockCap(dist, product, level)
+    return { q: cap, cap, out: false }
+  }
   const entry = (stock || {})[stockKey(set, product)]
   const cap = Math.max(entry?.cap || 0, stockCap(dist, product, level))
   const q = entry ? entry.q : cap

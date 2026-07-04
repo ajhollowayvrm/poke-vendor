@@ -11,6 +11,10 @@
 
 import { round2, cardValue, setById, bulkSellableUids, cardInValueRange } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM } from '../shows'
+
+// The Deal-of-the-Show loss-leader markdown: the card you flag actually sells cheaper (the
+// trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
+const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
@@ -271,6 +275,9 @@ export function createBoothSlice(set, get) {
             // they buy a random card from the relevant pool at market
             const card = owned[Math.floor(Math.random() * owned.length)]
             let price = cardValue(card) // grade-aware: a slab sells for its graded value, not raw
+            // Deal of the Show: the card you flagged as a loss-leader actually sells at a
+            // markdown (that's the trade-off for the crowd it draws). ~12% off.
+            if (card._deal) price = round2(price * (1 - DEAL_OF_SHOW_MARKDOWN))
             if (get().upgrades.cases) price = round2(price * 1.12)
             if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
             const { net, fee } = processingFee(price, effect.payMethod)

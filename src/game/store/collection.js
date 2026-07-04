@@ -262,8 +262,8 @@ export function createCollectionSlice(set, get) {
     consignCard(uid) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card) return false
-      const sellsFor = round2(cardValue(card) * (1.05 + Math.random() * 0.15)) // 1.05–1.20× market
-      const net = round2(sellsFor * 0.88) // 12% consignment fee
+      const sellsFor = round2(cardValue(card) * (1.02 + Math.random() * 0.13)) // 1.02–1.15× market
+      const net = round2(sellsFor * 0.82) // 18% consignment fee → nets ~0.84–0.94× market
       const daysLeft = 2 + Math.floor(Math.random() * 5) // 2–6 days
       set(s => ({
         collection: s.collection.filter(c => c.uid !== uid),
@@ -311,8 +311,8 @@ export function createCollectionSlice(set, get) {
       const cards = get().collection.filter(c => sellSet.has(c.uid))
       if (!cards.length) return { sold: 0, kept: kept.length }
       const newConsigns = cards.map(card => {
-        const sellsFor = round2(cardValue(card) * (1.05 + Math.random() * 0.15))
-        return { card, net: round2(sellsFor * 0.88), daysLeft: 2 + Math.floor(Math.random() * 5) }
+        const sellsFor = round2(cardValue(card) * (1.02 + Math.random() * 0.13))
+        return { card, net: round2(sellsFor * 0.82), daysLeft: 2 + Math.floor(Math.random() * 5) }
       })
       set(s => ({
         collection: s.collection.filter(c => !sellSet.has(c.uid)),
@@ -386,8 +386,10 @@ export function createCollectionSlice(set, get) {
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
       const ready = get().pendingGrades.filter(p => day >= p.readyOnDay)
       if (!ready.length) return []
-      const luck = get().upgrades.loupe ? 0.08 : 0
+      const loupeLuck = get().upgrades.loupe ? 0.08 : 0
       const resolved = ready.map(p => {
+        // A pricier grading tier grades a touch kinder (see GRADING[].luck), stacking with the loupe.
+        const luck = loupeLuck + (GRADING[p.tierKey]?.luck || 0)
         const grade = rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null)
         // Append to a per-card grading history so the modal can show "this card was
         // graded PSA X (Standard, $Y) on day Z". (One entry today, but the array is

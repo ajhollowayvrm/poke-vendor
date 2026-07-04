@@ -88,7 +88,9 @@ export function createEconomySlice(set, get) {
       }))
       for (const x of fresh) {
         if (x.noto) get().addNotoriety(x.noto)
-        get().log('milestone', `🏅 Milestone: ${x.name} — ${x.desc}${x.noto ? ` (+${x.noto}★)` : ''}`, 0)
+        if (x.cash) get().earn(x.cash) // late milestones pay real money, not just notoriety
+        const cashNote = x.cash ? ` (+$${x.cash.toLocaleString()})` : ''
+        get().log('milestone', `🏅 Milestone: ${x.name} — ${x.desc}${x.noto ? ` (+${x.noto}★)` : ''}${cashNote}`, x.cash || 0)
       }
       return fresh
     },

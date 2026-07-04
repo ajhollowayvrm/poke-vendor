@@ -317,8 +317,16 @@ export function advanceDaysWith(set, get, days, away) {
   // Employees boost order throughput (and their payroll is settled below). Capped so a
   // packed payroll can't push order chance past ~1.
   const empList = (s.employees || []).map(employeeById).filter(Boolean)
-  const empThroughput = Math.min(1.5, empList.reduce((a, e) => a + e.throughput, 0))
+  // Shop Assistant is a permanent, payroll-free +0.15 throughput (a person minding the store) —
+  // a distinct one-time-fee alternative to the paid Employees, which give bigger boosts for a
+  // daily wage. So staff isn't just "away coverage" that any hire duplicates.
+  const staffThroughput = s.upgrades.staff ? 0.15 : 0
+  const empThroughput = Math.min(1.5, empList.reduce((a, e) => a + e.throughput, 0) + staffThroughput)
   const orderMult = 1 + empThroughput
+  // Channel FOLLOWERS are a returning audience that also SHOPS — a built-up following adds a
+  // standing bump to your online order chance even on days you don't stream. Gives streaming
+  // a payoff that reaches the rest of the game, not just bigger future streams.
+  const followerBump = Math.min(0.15, (s.followers || 0) / 2000)
   let payrollDue = 0, leaseDue = 0
   // Online buyers can only make offers on cards you've listed/tweeted.
   const listedCards = (s.listings || []).map(l => l.card)
@@ -343,7 +351,7 @@ export function advanceDaysWith(set, get, days, away) {
     rentDue += rentPerDay(s.monthsElapsed + Math.floor((s.currentDay + i) / CALENDAR_DAYS))
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
     // online channel (employees raise the hit chance). Only if you have something listed.
-    if (openOnline && Math.random() < Math.min(0.97, dayOrderChance('online', noto, hasBargain) * orderMult)) {
+    if (openOnline && Math.random() < Math.min(0.97, (dayOrderChance('online', noto, hasBargain) + followerBump) * orderMult)) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }

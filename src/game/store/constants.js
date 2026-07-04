@@ -150,7 +150,9 @@ export function absoluteDay(currentDay, monthsElapsed) { return (monthsElapsed |
 export function makeWeeklyGoals(noto) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
   const count = 3 + (Math.random() < 0.5 ? 1 : 0) // 3–4 goals for the week
-  const mult = 1 + noto / 150 // rewards scale gently with fame
+  // Reward scales with fame so a week's goals stay worth chasing as the economy grows — a
+  // famous vendor's goal pays real money, not a rounding error. (Was noto/150 — far too flat.)
+  const mult = 1 + noto / 45
   return shuffled.slice(0, count).map(g => {
     // Scale the daily target up toward a week's worth (×~5, capped by the biggest tier
     // so a "rip 3" doesn't balloon absurdly), then pick from there.
@@ -211,9 +213,9 @@ export const UPGRADES = {
   payCard:   { name: 'Accept Credit/Debit Cards', cost: 400,  desc: 'A card reader / merchant account so buyers can pay by card. Captures the most sales.', icon: '💳', group: 'payment' },
 
   // Keep earning while you're away at a show.
-  smartphone: { name: 'Smartphone', cost: 1000, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show. Has contactless tap-to-pay built in.', icon: '📱' },
+  smartphone: { name: 'Smartphone', cost: 1000, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show, instead of being missed.', icon: '📱' },
   streaming:  { name: 'Streaming Setup', cost: 900, desc: 'Camera, lights & capture card. Go LIVE and rip product on stream — viewers tune in, react, and tip, and a hot stream pumps your notoriety and listing traffic. Unlocks box breaks.', icon: '🔴' },
-  staff:      { name: 'Shop Assistant', cost: 2500, desc: 'Hire staff to mind the store. WALK-IN customers are handled while you\'re at a show. Requires a Brick-and-Mortar Store.', icon: '🧑‍💼', needs: 'storefront' },
+  staff:      { name: 'Shop Assistant', cost: 2500, desc: 'A permanent assistant who minds the store: a standing +15% order throughput (no daily payroll) AND covers your walk-ins while you\'re away at a show. A one-time-fee alternative to paid Employees (who boost more, for a wage). Requires a Brick-and-Mortar Store.', icon: '🧑‍💼', needs: 'storefront' },
 
   // Book a booth at shows to SELL your own cards.
   vendorSetup: { name: 'Vendor Setup', cost: 1200, desc: 'A folding table, display case, banner & dealer paperwork. Lets you book a BOOTH at shows to sell your own cards (pay a per-show vendor fee). Without it, you can only attend to shop.', icon: '🎪' },

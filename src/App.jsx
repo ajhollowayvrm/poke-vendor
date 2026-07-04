@@ -115,7 +115,7 @@ export default function App() {
     if (!pendingMilestones?.length) return
     for (const id of pendingMilestones) {
       const mst = milestoneById(id)
-      if (mst) toast(`🏅 Milestone unlocked — ${mst.icon} ${mst.name}: ${mst.desc}${mst.noto ? ` (+${mst.noto}★)` : ''}`, 4500)
+      if (mst) toast(`🏅 Milestone unlocked — ${mst.icon} ${mst.name}: ${mst.desc}${mst.noto ? ` (+${mst.noto}★)` : ''}${mst.cash ? ` (+${fmtMoney(mst.cash)})` : ''}`, 4500)
     }
     useGame.getState().clearPendingMilestones()
   }, [pendingMilestones])
