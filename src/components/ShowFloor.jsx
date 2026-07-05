@@ -24,6 +24,31 @@ const HYPE = ['just hit a', 'PULLED a', 'cracked a', 'opened a', 'just ripped a'
 export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
   const upgrades = useGame(s => s.upgrades)
+  // Snapshot the money/rep state the moment you walk the floor, so leaving can recap what
+  // the FLOOR itself did (buying, selling, encounters) — distinct from the days-away home
+  // recap that already fired at entry. stats.earned/spent only move on real cash in/out.
+  const floorBaseRef = useRef(null)
+  if (floorBaseRef.current === null) {
+    const g = useGame.getState()
+    floorBaseRef.current = {
+      earned: g.stats.earned, spent: g.stats.spent, noto: g.notoriety,
+      rapport: Object.values(g.vendorSpend || {}).reduce((a, v) => a + v, 0),
+    }
+  }
+  // Leave: compute the floor recap from the baseline and hand it up to be folded into the
+  // trip summary. takenIds counts every item lifted off a booth table this show.
+  function handleLeave() {
+    const g = useGame.getState()
+    const b = floorBaseRef.current
+    const floor = {
+      spent: round2(g.stats.spent - b.spent),
+      earned: round2(g.stats.earned - b.earned),
+      notoGained: round2(g.notoriety - b.noto),
+      rapport: round2(Object.values(g.vendorSpend || {}).reduce((a, v) => a + v, 0) - b.rapport),
+      acquired: takenIds.size,
+    }
+    onLeave(floor)
+  }
   const showInventory = useGame(s => s.showInventory)
   const showVendors = useGame(s => s.showVendors) // recurring roster (stable identities)
   const vendorSpend = useGame(s => s.vendorSpend)
@@ -216,7 +241,7 @@ export default function ShowFloor({ show, onLeave }) {
   return (
     <div className="floorwrap">
       <div className="floorhud">
-        <button className="btn alt" style={{ flex:'none' }} onClick={onLeave}>← Leave show</button>
+        <button className="btn alt" style={{ flex:'none' }} onClick={handleLeave}>← Leave show</button>
         <span className="pill" style={{ background: tier.color+'33', color: tier.color }}>{show.name} · {tier.name}</span>
         {tier.days > 1 && <span className="pill">Show day {showDay} / {tier.days}</span>}
         {tier.days > 1 && showDay < tier.days && (

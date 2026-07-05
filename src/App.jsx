@@ -288,16 +288,17 @@ export default function App() {
   // Leaving the show: unsold show-inventory cards come back home, then exit the floor.
   // Surface the trip recap (days away, rent/lease paid, orders missed, grades back) that we
   // stashed when the days passed at entry — most useful after a multi-day show.
-  function leaveShow() {
+  function leaveShow(floor) {
     const trip = activeShow?._summary
     const name = activeShow?.name
     useGame.getState().endShow()
     setActiveShow(null)
-    if (trip) {
-      const s = { ...trip, showName: name }
-      if (trip.resolvedGradeCards?.length) setGradeReveal({ cards: trip.resolvedGradeCards, summary: s })
-      else setDaySummary(s)
-    }
+    // Always show a recap on leave (even a quiet 1-day show), now that the floor recap
+    // gives it content: what you spent/earned/gained on the floor, folded in with the
+    // days-away home summary.
+    const s = { ...(trip || {}), showName: name, floor }
+    if (trip?.resolvedGradeCards?.length) setGradeReveal({ cards: trip.resolvedGradeCards, summary: s })
+    else setDaySummary(s)
   }
 
   // Switch tabs. A rip in progress is NOT discarded — its component stays mounted as an
@@ -501,14 +502,15 @@ function GameClock() {
 function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome } = summary
+    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
   const sold = soldNames || []
   const events = lifeEvents || []
+  const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || wages || rent || lease
-    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || events.length
+    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || events.length || floorActive
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
   const multiDay = days > 1
@@ -540,6 +542,23 @@ function DaySummary({ summary, onClose }) {
           <p className="muted" style={{ marginTop: 4, textAlign: 'center' }}>{multiDay ? 'Nothing stirred while you were away.' : 'A quiet day. Nothing moved.'}</p>
         ) : (
           <div className="recap-body">
+            {/* On the floor — what the show itself did (buying, selling, rep), distinct
+                from the days-away home activity below. */}
+            {floorActive && (
+              <div className="recap-sec">
+                <div className="recap-sec-h">🎪 On the floor</div>
+                {floor.acquired > 0 && <div className="recap-line"><span className="muted">Items picked up</span><b>{floor.acquired}</b></div>}
+                {floor.spent > 0 && <div className="recap-line"><span className="muted">Spent buying</span><span style={{ color: 'var(--red)' }}>−{fmtMoney(floor.spent)}</span></div>}
+                {floor.earned > 0 && <div className="recap-line"><span className="muted">Earned selling</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(floor.earned)}</b></div>}
+                {(floor.earned > 0 || floor.spent > 0) && (
+                  <div className="recap-line"><span>Floor net</span>
+                    <b style={{ color: floor.earned - floor.spent >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                      {floor.earned - floor.spent >= 0 ? '+' : ''}{fmtMoney(round2(floor.earned - floor.spent))}</b></div>
+                )}
+                {floor.notoGained > 0 && <div className="recap-line"><span className="muted">Notoriety gained</span><b style={{ color: 'var(--gold)' }}>+{floor.notoGained}★</b></div>}
+                {floor.rapport > 0 && <div className="recap-line"><span className="muted">🤝 Dealt with vendors</span><span className="muted">{fmtMoney(floor.rapport)}</span></div>}
+              </div>
+            )}
             {/* What sold */}
             {(saleProceeds > 0 || sold.length > 0) && (
               <div className="recap-sec">
