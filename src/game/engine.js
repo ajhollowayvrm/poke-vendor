@@ -1128,7 +1128,11 @@ function estimateByRarity(r) {
 }
 
 // Graded value multiplier by PSA grade (fallback heuristic when no real comp exists).
-const GRADE_MULT = { 10: 5.0, 9: 1.8, 8: 1.1, 7: 0.8, 6: 0.6, 5: 0.5, 4: 0.4, 3: 0.35, 2: 0.3, 1: 0.25 }
+// Tuned so a blind standard-fee submission is a true gamble (slightly -EV), and the
+// edge comes from the tools: loupe/cut-reading + loyalty/bulk fee discounts turn the
+// same roll clearly +EV. PSA 9 ≈ modest premium, PSA 8 ≈ just under raw (real-world
+// modern behavior); the dream stays in the 10.
+const GRADE_MULT = { 10: 5.0, 9: 1.35, 8: 0.95, 7: 0.8, 6: 0.6, 5: 0.5, 4: 0.4, 3: 0.35, 2: 0.3, 1: 0.25 }
 // Real PSA median-sale comp for a grade, if the snapshot captured one for this card.
 // `card.psa` is { "10": usd, "9": usd, ... } from eBay sold listings (pokemon-api.com).
 function psaComp(card, grade) {
@@ -1147,9 +1151,11 @@ export function gradedValue(card, multOverride) {
   if (real != null) value = real * cardMult(card, multOverride)
   else {
     const mult = GRADE_MULT[g] ?? 1
-    // higher base-value cards see bigger grade premiums (gem mint chase)
-    const scarcityBoost = 1 + Math.min(2, rawValue(card, multOverride) / 50)
-    value = rawValue(card, multOverride) * mult * (g >= 9 ? scarcityBoost : 1)
+    // Gem-scarcity premium: higher base-value cards see a bigger TRUE-GEM premium — but
+    // only at PSA 10, and capped at 1.5× (was: up to 3× for any 9+, which made comp-less
+    // chases worth 15× raw and every submission +EV regardless of outcome).
+    const scarcityBoost = 1 + Math.min(0.5, rawValue(card, multOverride) / 160)
+    value = rawValue(card, multOverride) * mult * (g >= 10 ? scarcityBoost : 1)
     // A HEURISTIC grade must not overshoot a real higher-grade comp (real comps are
     // already monotonic from the snapshot's sanitize pass — only the heuristic can
     // invert the ladder). Real comps are trusted as-is and never capped here.
@@ -1158,16 +1164,17 @@ export function gradedValue(card, multOverride) {
   return round2(gradedFloor(card, g, value, multOverride))
 }
 
-// A slab is never worth LESS than the raw card (grading only adds value or you'd
-// keep it raw), and a higher grade is never worth less than a lower one. eBay
-// sold-comps are sparse and noisy, so a captured PSA-10 sale can land below the
-// current raw price or below a worse grade's comp — clamp those nonsensical cases.
+// Floors: a STRONG slab (PSA 9/10) is never worth less than the raw card, and a higher
+// grade is never worth less than a lower grade's real comp. But a LOW grade (≤8) has no
+// raw-value floor — slabbing a modern card at PSA 6 genuinely destroys value, exactly
+// like real life. (The old "any slab ≥ raw" floor meant grading had zero downside, so
+// grading everything was strictly dominant and the fee was the only cost.)
 function gradedFloor(card, g, value, multOverride) {
   // Scale the lower-grade comps by the same living-market multiplier the headline value
   // rides, so the whole grade ladder moves with the set's market (a slab isn't immune to
   // a crash just because a lower grade has a captured comp). rawValue already carries it.
   const m = cardMult(card, multOverride)
-  let floor = rawValue(card, multOverride) // a PSA-anything is at least the raw card
+  let floor = g >= 9 ? rawValue(card, multOverride) : 0 // only strong slabs floor at raw
   // pull the floor up to the best comp of any STRICTLY LOWER grade
   for (let lower = 1; lower < g; lower++) {
     const c = psaComp(card, lower)
@@ -1374,8 +1381,12 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   const sub = () => {
     const r = Math.random()
     const b = (p) => Math.max(0.001, Math.min(0.999, p + effectiveLuck * (1 - p))) // pull each cutoff toward 1 by combined lean
-    if (r < b(0.36)) return 10
-    if (r < b(0.64)) return 9
+    // P(sub 10) = 28% baseline → overall PSA-10 ≈ 7-8% untooled, ≈ 13% with loupe +
+    // express + a well-cut card. (Was 36% / ≈13% baseline — which, with no downside on
+    // low grades, made grading a free option on every NM card. Now the prediction tools
+    // and cut-reading are what tilt a gamble into an edge.)
+    if (r < b(0.28)) return 10
+    if (r < b(0.58)) return 9
     if (r < b(0.83)) return 8
     if (r < b(0.93)) return 7
     if (r < b(0.97)) return 6

@@ -46,13 +46,6 @@ export function createEconomySlice(set, get) {
       }
       return true
     },
-    trafficMult() {
-      const s = get()
-      let m = 1 + s.notoriety / 100
-      if (s.upgrades.signage) m *= 1.15
-      return m
-    },
-
     log(type, detail, amount = 0) {
       set(s => ({ history: [{ t: Date.now(), type, detail, amount }, ...s.history].slice(0, 200) }))
     },

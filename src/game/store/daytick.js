@@ -210,14 +210,16 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
         const label = BUYER_SAVVY[savvy].label
         const icon = BUYER_SAVVY[savvy].icon
         if (cur.askMult <= effMax) {
-          // They CAN afford the ask. With auto-sell: fires at 80% of market (same
-          // LISTING_DAILY_SELL_CAP gate so it still takes a day or two) — hands-off
-          // convenience, but it leaves the hot-set premium on the table.
-          // Without auto-sell: queue an offer at the buyer's willing price.
+          // They CAN afford the ask — and they pay YOUR ask, not their private maximum.
+          // (Offers used to land at the buyer's max willingness, which made underpricing
+          // free: a rock-bottom ask harvested 1.2-1.55× market offers. Now the ask is the
+          // price; capturing a hot-set spike means actually repricing up while it's hot.)
+          // With auto-sell: closes hands-off at exactly the ask.
+          // Without: queues an offer at the ask plus a small impulse premium.
           if (autoSellOn) {
             if (Math.random() < LISTING_DAILY_SELL_CAP) {
               const market = cardValue(cur.card)
-              const amount = round2(market * 0.80)
+              const amount = round2(market * Math.min(effMax, cur.askMult))
               const fee = round2(amount * ONLINE_FEE_PCT)
               const net = round2(amount - fee - shippingCost(amount)) // online sale → ship it
               soldProceeds = round2(soldProceeds + net)
@@ -227,11 +229,11 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
             }
             continue // auto-sell willing but didn't fire today
           }
-          // No auto-sell: queue an offer at the buyer's willing price (≥ ask, and above
-          // market when the set is hot).
           if (Math.random() < LISTING_DAILY_SELL_CAP) {
             const market = cardValue(cur.card)
-            const amount = round2(market * effMax)
+            // impulse jitter: up to +6% over the ask, never past what this buyer would pay
+            const payMult = Math.min(effMax, cur.askMult * (1 + Math.random() * 0.06))
+            const amount = round2(market * payMult)
             const fee = round2(amount * ONLINE_FEE_PCT)
             const premium = amount > market * 1.02
             cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount)), savvy, savvyLabel: label, icon, hot: hot && premium })
@@ -440,7 +442,8 @@ export function advanceDaysWith(set, get, days, away) {
     // collection arg and the shelf arg so the encounter's offer + browse pools resolve to the
     // display case). Store buzz (giveaways + events) pumps foot traffic for its window.
     const buzz = buzzDays0 > i ? GIVEAWAY_TRAFFIC_MULT : 1
-    if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult * buzz)) {
+    const signageMult = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% store foot traffic
+    if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult * buzz * signageMult)) {
       if (walkinOK) {
         // ~35% of walk-ins come in ASKING for a specific item (sealed or single) rather than
         // browsing — the store's demand layer. The rest are the usual offer/browse/trade mix.
@@ -475,10 +478,14 @@ export function advanceDaysWith(set, get, days, away) {
   // revenue that makes the lease worth carrying once you've built a name. Also, running a
   // storefront steadily grows your name in town (passive notoriety). Capped so it never
   // becomes a runaway printer — the big money is still in the cards you move.
+  // A LOCKED shop does zero counter trade: while you're away at a show with no staff
+  // (walkinOK false), there's nobody behind the counter — no revenue, no name-building.
+  // (It used to bank up to $250/day from a locked door for a whole Worlds trip.)
   let counterRevenue = 0
-  if (hasStore) {
+  if (hasStore && walkinOK) {
     const stocked = shelfCards.length > 0 || sellableSealed.length > 0
-    const perDay = Math.min(250, (15 + noto) * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6))
+    const signage = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% foot traffic
+    const perDay = Math.min(250, (15 + noto) * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6) * signage)
     counterRevenue = round2(perDay * days)
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }

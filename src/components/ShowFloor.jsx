@@ -36,8 +36,11 @@ export default function ShowFloor({ show, onLeave }) {
   // Recurring roster gets injected into the floor; `show._arrival` ('open' | 'late') tunes
   // how picked-over the booths are; `show._leads` makes a vendor who DM'd you actually be
   // here with the promised item on the table.
-  const booths = useMemo(() => generateBooths(show, notoriety, showDay - 1, showVendors, show._arrival || 'open', show._leads || []),
-    [show, notoriety, showDay, showVendors])
+  // The floor is fixed per show-day: notoriety must NOT be a dependency here — it ticks
+  // constantly at a show (sales, questions, giveaways), and every tick used to rebuild
+  // the whole floor, restocking everything already bought and re-minting card uids.
+  const booths = useMemo(() => generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || []),
+    [show, showDay, showVendors])
 
   const [openBooth, setOpenBooth] = useState(null)
   // Cards you've already haggled this show — one negotiation per card (no re-rolling
@@ -126,7 +129,8 @@ export default function ShowFloor({ show, onLeave }) {
       const showcaseN = inv.filter(c => c._showcase).length
       const dealActive = inv.some(c => c._deal)
       const boothMult = (show._boothMult || 1) * (1 + Math.min(0.45, showcaseN * 0.15)) * (dealActive ? 1.25 : 1)
-      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult)
+      const signageMult = upgrades.signage ? 1.15 : 1 // 🪧 +15% booth foot traffic at shows
+      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult)
       if (Math.random() < chance) {
         const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
         lastEncounterRef.current = Date.now(); walkupsRef.current++

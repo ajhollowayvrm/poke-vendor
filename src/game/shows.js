@@ -316,7 +316,10 @@ function boothSealed(r, arch, band = [1, 100]) {
 // vendors/stock show up day to day. `roster` is the recurring show-vendor list (their
 // identities get injected into some booths so you see familiar faces). `arrival` is when
 // you walked the floor: 'open' (fresh, first dibs) or 'late' (picked-over but marked down).
-export function generateBooths(show, notoriety, dayOffset = 0, roster = [], arrival = 'open', leads = []) {
+// NOTE: deliberately does NOT take notoriety — the floor must be a pure function of
+// (show seed, day) so it can't silently regenerate (restocking sold-out booths and
+// re-minting card uids) when the player's stats move mid-show.
+export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = []) {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
   const [lo, hi] = tier.valueBand

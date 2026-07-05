@@ -480,14 +480,18 @@ export function createBoothSlice(set, get) {
           const card = findOwnedAnywhere(get(), effect.uid)
           if (card) {
             let price = effect.price
-            if (get().upgrades.cases) price = round2(price * 1.12)
+            // Glass Cases bump BUYER offers on your displayed cards — not sales YOU make
+            // to a vendor's buylist (atVendor). Without that gate the +12% turned a whale
+            // booth's 0.90× buy rate into >market, an above-market cash-out for anything.
+            const casesBump = get().upgrades.cases && !effect.atVendor
+            if (casesBump) price = round2(price * 1.12)
             if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
             const { net, fee } = processingFee(price, effect.payMethod)
             removeOwnedAnywhere(set, effect.uid)
             s.earn(net)
             s.addNotoriety(effect.notoriety)
             s.log('sell', `Sold ${card.name} (${methodLabel(effect.payMethod)})${feeNote(fee)}`, net)
-            msg = msg + (get().upgrades.cases ? ' (display case bumped the price.)' : '')
+            msg = msg + (casesBump ? ' (display case bumped the price.)' : '')
             msg = appendFeeMsg(msg, fee, effect.payMethod, net)
             get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
           }

@@ -154,14 +154,15 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     }
   }
   function sellAt(card, price) {
-    useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price, notoriety: 0, msg: '' })
+    // atVendor: this is the vendor's buylist price — the Glass Cases display bump doesn't apply
+    useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price, notoriety: 0, msg: '', atVendor: true })
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, price) // dealing builds rapport
     flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(price)}`)
   }
   // Sell every copy on a SKU line at the vendor's per-copy offer in one tap.
   function sellGroup(g, offerEach) {
     for (const c of g.items) {
-      useGame.getState().resolveEncounter({ type: 'sellOwned', uid: c.uid, price: offerEach, notoriety: 0, msg: '' })
+      useGame.getState().resolveEncounter({ type: 'sellOwned', uid: c.uid, price: offerEach, notoriety: 0, msg: '', atVendor: true })
     }
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, round2(offerEach * g.items.length))
     flash(`Sold ${g.items.length} × ${g.first.name} to ${booth.name} for ${fmtMoney(round2(offerEach * g.items.length))}`)
