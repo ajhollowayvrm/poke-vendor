@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { flushSaveWrite } from '../game/store'
 
 const SAVE_KEY = 'poke-vendor-save'
 
@@ -16,6 +17,7 @@ export default class ErrorBoundary extends Component {
     console.error('PokeVendor crashed:', error, info?.componentStack)
   }
   downloadSave = () => {
+    try { flushSaveWrite() } catch {} // persist writes are debounced — capture the latest
     const blob = localStorage.getItem(SAVE_KEY)
     if (!blob) return
     const url = URL.createObjectURL(new Blob([blob], { type: 'application/json' }))

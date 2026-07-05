@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow'
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2, SETS } from '../game/engine'
 import { MILESTONES, MILESTONE_GROUPS, milestoneProgress } from '../game/milestones'
@@ -6,8 +7,12 @@ import { confirmDialog } from '../ui/dialog'
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
 
 export default function Stats() {
+  // useShallow: this selector builds a fresh object, which under plain Object.is meant
+  // EVERY store write re-rendered Stats (and re-reduced the whole collection + ledger)
+  // while the tab was open. Shallow-compared, it only re-renders when a selected slice
+  // actually changes.
   const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
-    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory, milestones, worthHistory, binder } = useGame(s => ({
+    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory, milestones, worthHistory, binder } = useGame(useShallow(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
@@ -15,7 +20,7 @@ export default function Stats() {
     showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
     showSealed: s.showSealed, shopSealed: s.shopSealed,
     milestones: s.milestones || [], worthHistory: s.worthHistory || [], binder: s.binder || [],
-  }))
+  })))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
     + (binder || []).reduce((a, c) => a + cardValue(c), 0)
   // Cards/products held in the IN-FLIGHT buckets are moved OUT of `collection` but are still

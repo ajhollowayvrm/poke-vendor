@@ -23,7 +23,7 @@
 //   • livestream.js   — going live + box breaks
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { GRADING, setMarketMults } from '../engine'
 import { makeShowVendors } from '../shows'
 import { jobById, STARTER_JOB, absoluteDay } from './constants'
@@ -43,6 +43,35 @@ import { defaultPackTiers } from '../mysterypacks'
 // keeps resolving every symbol components use (PAYMENT_METHODS, UPGRADES, JOBS, absoluteDay, …).
 export * from './constants'
 
+// --- Debounced save writes --------------------------------------------------------
+// persist serializes the WHOLE game on every set() — during a pack rip that's several
+// full-collection JSON.stringify + synchronous localStorage writes per card, on the main
+// thread, mid-animation (the single biggest jank source on iPhone). Batch them: hold the
+// latest blob and write after 400ms of quiet. Flushed on pagehide / tab-hidden (so an
+// iOS background-kill never loses more than the last 400ms) and before ANY direct read
+// of the blob (persist reads here; cloud pushes call flushSaveWrite via readBlob).
+let _pendingSave = null // [key, value] not yet written to localStorage
+let _saveTimer = null
+export function flushSaveWrite() {
+  if (!_pendingSave) return
+  const [k, v] = _pendingSave
+  _pendingSave = null
+  try { localStorage.setItem(k, v) } catch {}
+}
+const debouncedStorage = {
+  getItem: (k) => { flushSaveWrite(); return localStorage.getItem(k) },
+  setItem: (k, v) => {
+    _pendingSave = [k, v]
+    clearTimeout(_saveTimer)
+    _saveTimer = setTimeout(flushSaveWrite, 400)
+  },
+  removeItem: (k) => { _pendingSave = null; clearTimeout(_saveTimer); localStorage.removeItem(k) },
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', flushSaveWrite)
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSaveWrite() })
+}
+
 export const useGame = create(persist((set, get) => ({
   ...initialState(),
   ...createEconomySlice(set, get),
@@ -55,6 +84,7 @@ export const useGame = create(persist((set, get) => ({
 }), {
   name: 'poke-vendor-save',
   version: 42,
+  storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.

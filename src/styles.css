@@ -213,7 +213,11 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .cardtile.slab.slab-gem .slab-brand { color: #fff; }
 
 /* ---------- Card wrapper (3D tilt only — no holo overlay) ---------- */
-.holocard { position: relative; transform-style: preserve-3d; will-change: transform; border-radius: 12px; }
+/* will-change ONLY while hovered: a blanket will-change promoted every tile in a
+   500-card grid to its own GPU layer — real memory pressure + scroll jank on iPhone.
+   Hover is when the tilt animates, and touch devices never pay the cost at all. */
+.holocard { position: relative; transform-style: preserve-3d; border-radius: 12px; }
+.holocard:hover { will-change: transform; }
 .holocard > img, .holocard .cardtile { display:block; border-radius: 12px; }
 
 /* Rarity is shown by the card's BORDER colour (--rarity, set per-card in JS),
@@ -473,6 +477,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 @keyframes toaststackin { from{opacity:0; transform: translateY(10px)} to{opacity:1; transform: none} }
 /* leaving toasts play an exit before unmount (JS flags .leaving ~260ms before removal) */
 .toast-stack .toast.leaving { animation: toastOut .26s ease forwards; }
+/* Action button inside a toast (↩︎ Undo). pointer-events re-enabled — the stack itself
+   is click-through by design, but the action must be tappable. 44px-min hit area. */
+.toast-action { pointer-events: auto; margin-left: 10px; padding: 8px 14px; min-height: 36px; border-radius: 8px; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--accent-light) 55%, transparent);
+  background: color-mix(in srgb, var(--accent2) 18%, transparent); color: var(--accent-light);
+  font-weight: 800; font-size: 12.5px; }
+.toast-action:active { transform: scale(0.96); }
 @media (max-width: 640px) { .toast-stack { bottom: calc(84px + env(safe-area-inset-bottom)); } } /* clear the bottom nav */
 
 /* ---------- Vendor booth modal ---------- */

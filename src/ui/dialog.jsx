@@ -60,20 +60,25 @@ export function DialogHost() {
 // --- Global toast -----------------------------------------------------------
 // A transient bottom-of-screen message, callable from anywhere (replaces the
 // informational window.alert() calls). `toast('Saved!')` — auto-dismisses.
+// Optional `action` = { label, onClick }: renders a button inside the toast
+// (e.g. "↩︎ Undo" on a bulk sale) that runs onClick and dismisses the toast.
 let _toastListener = null
 let _toasts = []
 let _toastSeq = 0
-export function toast(message, ms = 3000) {
+export function toast(message, ms = 3000, action = null) {
   const id = ++_toastSeq
-  _toasts = [..._toasts, { id, message, leaving: false }]
+  _toasts = [..._toasts, { id, message, leaving: false, action }]
   _toastListener?.()
-  // After `ms`, flag the toast as leaving so it plays the exit animation, then remove
-  // it once the ~260ms toastOut keyframe has finished.
-  setTimeout(() => {
-    _toasts = _toasts.map(t => t.id === id ? { ...t, leaving: true } : t)
-    _toastListener?.()
-    setTimeout(() => { _toasts = _toasts.filter(t => t.id !== id); _toastListener?.() }, 260)
-  }, ms)
+  setTimeout(() => dismissToast(id), ms)
+}
+// Flag the toast as leaving so it plays the exit animation, then remove it once the
+// ~260ms toastOut keyframe has finished. Safe to call twice (action click + timer).
+function dismissToast(id) {
+  const t = _toasts.find(x => x.id === id)
+  if (!t || t.leaving) return
+  _toasts = _toasts.map(x => x.id === id ? { ...x, leaving: true } : x)
+  _toastListener?.()
+  setTimeout(() => { _toasts = _toasts.filter(x => x.id !== id); _toastListener?.() }, 260)
 }
 export function ToastHost() {
   const [, force] = useState(0)
@@ -81,7 +86,15 @@ export function ToastHost() {
   if (!_toasts.length) return null
   return (
     <div className="toast-stack">
-      {_toasts.map(t => <div key={t.id} className={`toast${t.leaving ? ' leaving' : ''}`} role="status">{t.message}</div>)}
+      {_toasts.map(t => (
+        <div key={t.id} className={`toast${t.leaving ? ' leaving' : ''}`} role="status">
+          {t.message}
+          {t.action && !t.leaving && (
+            <button className="toast-action"
+              onClick={() => { dismissToast(t.id); t.action.onClick() }}>{t.action.label}</button>
+          )}
+        </div>
+      ))}
     </div>
   )
 }

@@ -230,7 +230,11 @@ export function createCollectionSlice(set, get) {
       // it floods the buylist and the less each additional card fetches.
       const prior = get().quickSellsToday || 0
       const total = round2(toSell.reduce((a, c, i) => a + cardValue(c) * dumpRate(quickSellRate, prior + i), 0))
-      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)), quickSellsToday: prior + toSell.length }))
+      set(s => ({
+        collection: s.collection.filter(c => !sellSet.has(c.uid)),
+        quickSellsToday: prior + toSell.length,
+        lastBulkSale: { cards: toSell, total, noto: 0, qsDelta: toSell.length, ts: Date.now() },
+      }))
       get().earn(total)
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
       const avgPct = toSell.length ? Math.round((total / toSell.reduce((a, c) => a + cardValue(c), 0)) * 100) : Math.round(quickSellRate*100)
@@ -249,11 +253,36 @@ export function createCollectionSlice(set, get) {
       const sellSet = new Set(sell)
       const toSell = collection.filter(c => sellSet.has(c.uid))
       const total = round2(toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0))
-      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)) }))
+      set(s => ({
+        collection: s.collection.filter(c => !sellSet.has(c.uid)),
+        lastBulkSale: { cards: toSell, total, noto: 0, qsDelta: 0, ts: Date.now() },
+      }))
       get().earn(total)
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
       get().log('sell', `Buylisted ${toSell.length} bulk cards @ ${Math.round(buylistRate*100)}%${keptNote}`, total)
       return total
+    },
+
+    // ↩︎ Undo the most recent bulk sale (surfaced as an Undo button on the sale toast).
+    // Atomic reversal: the exact cards come back, and the cash / stats.earned / income-
+    // accrual / dump-counter / rep-ding bookkeeping all reverse. Guarded by a freshness
+    // window so a stale snapshot can't be replayed long after prices have moved.
+    undoBulkSale() {
+      const u = get().lastBulkSale
+      if (!u || !u.cards?.length) return false
+      if (Date.now() - u.ts > 15000) return false // undo window is the toast, ~5-6s
+      if (get().cash < u.total) return false      // already spent the money — can't unwind
+      set(s => ({
+        collection: [...u.cards, ...s.collection],
+        cash: round2(s.cash - u.total),
+        stats: { ...s.stats, earned: round2(s.stats.earned - u.total) },
+        _cardAccrual: round2((s._cardAccrual || 0) - u.total),
+        quickSellsToday: Math.max(0, (s.quickSellsToday || 0) - (u.qsDelta || 0)),
+        lastBulkSale: null,
+      }))
+      if (u.noto) get().addNotoriety(u.noto) // refund the fire-sale rep ding
+      get().log('undo', `↩︎ Undid the bulk sale — ${u.cards.length} card${u.cards.length > 1 ? 's' : ''} back, $${u.total.toFixed(2)} returned`, -u.total)
+      return true
     },
 
     // Consign a card: a service lists it; it sells in 2–6 game-days slightly above market
@@ -290,14 +319,18 @@ export function createCollectionSlice(set, get) {
         if (mkt >= DUMP_DING_VALUE) valuable++
       })
       total = round2(total)
-      set(s => ({ collection: s.collection.filter(c => !sellSet.has(c.uid)), quickSellsToday: prior + toSell.length }))
+      const ding = valuable ? Math.min(3, valuable) : 0
+      set(s => ({
+        collection: s.collection.filter(c => !sellSet.has(c.uid)),
+        quickSellsToday: prior + toSell.length,
+        lastBulkSale: { cards: toSell, total, noto: ding, qsDelta: toSell.length, ts: Date.now() },
+      }))
       get().earn(total)
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
       const avgPct = Math.round((total / toSell.reduce((a, c) => a + cardValue(c), 0)) * 100)
       get().log('sell', `Quick-sold ${toSell.length} cards @ ~${avgPct}%${keptNote}`, total)
       // Fire-selling valuable cards in bulk dents your rep (capped so a big dump can't tank it).
-      if (valuable) {
-        const ding = Math.min(3, valuable)
+      if (ding) {
         get().addNotoriety(-ding)
         get().log('rep', `You dumped ${valuable} valuable card${valuable>1?'s':''} to the buylist — collectors noticed (−${ding}★).`, 0)
       }

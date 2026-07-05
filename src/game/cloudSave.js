@@ -13,7 +13,7 @@
 // advances only on a real local change and travels with the save. That's what lets the
 // backend's "refuse a push older than the cloud copy" guard work, and lets reconcile
 // pull a newer cloud save before you start playing on a device that's behind.
-import { useGame } from './store'
+import { useGame, flushSaveWrite } from './store'
 import { SYNC_URL } from './syncConfig'
 import { authConfigured, currentUser, getIdToken } from './auth'
 
@@ -48,7 +48,9 @@ let syncBlocked = false
 export function autoSyncOn() { return localStorage.getItem(AUTO_KEY) !== '0' } // default ON
 export function setAutoSync(on) { localStorage.setItem(AUTO_KEY, on ? '1' : '0') }
 
-function readBlob() { return localStorage.getItem(SAVE_KEY) }
+// Persist writes are debounced (store/index.js) — flush the pending one first so a
+// cloud push never uploads a blob that's up to 400ms behind the live game.
+function readBlob() { flushSaveWrite(); return localStorage.getItem(SAVE_KEY) }
 function localSavedAt() { return Number(localStorage.getItem(SAVEDAT_KEY)) || 0 }
 function setLocalSavedAt(ts) { localStorage.setItem(SAVEDAT_KEY, String(ts || Date.now())) }
 function baseSavedAt() { const n = Number(localStorage.getItem(BASE_KEY)); return n > 0 ? n : null }

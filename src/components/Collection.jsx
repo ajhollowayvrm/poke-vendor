@@ -1,7 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids } from '../game/engine'
+import { toast as notify } from '../ui/dialog'
 import CardTile from './CardTile'
+
+// Shared Undo affordance for the bulk-sale toasts: reverses the sale atomically
+// (cards back, cash/stats/rep unwound) while the toast is up.
+const undoAction = { label: '↩︎ Undo', onClick: () => { if (useGame.getState().undoBulkSale()) notify('↩︎ Sale undone — cards restored.') } }
 
 export default function Collection({ onPick }) {
   const collection = useGame(s => s.collection)
@@ -41,6 +46,13 @@ export default function Collection({ onPick }) {
       : sort === 'rarity' ? rarityRank(b.rarity) - rarityRank(a.rarity)
       : a.name.localeCompare(b.name))
   }, [collection, sort])
+
+  // Render the grid incrementally: with value-sort the interesting cards are at the top
+  // and the long tail is bulk — mounting 500+ tilt-wrapped tiles at once is the main
+  // collection-tab jank on iPhone. "Show more" pages the tail in on demand.
+  const PAGE = 120
+  const [shown, setShown] = useState(PAGE)
+  useEffect(() => { setShown(PAGE) }, [sort]) // new ordering → back to the top slice
 
   const quickSellRate = useGame(s => s.quickSellRate)
   // "Bulk" by live attributes (raw, unfoiled, below the hit threshold) — matches the
@@ -128,12 +140,19 @@ export default function Collection({ onPick }) {
         {!selectMode && buylistBulk.length > 0 && (
           <button className="btn alt" style={{ flex: 'none', marginLeft: 'auto' }}
             title={`Dump all bulk to a shop's buylist at ${Math.round(buylistRate*100)}% of market — instant cash${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
-            onClick={sellToBuylist}>Buylist {buylistBulk.length} → {fmtMoney(buylistVal)}</button>
+            onClick={() => {
+              const n = buylistBulk.length
+              const got = sellToBuylist()
+              if (got) notify(`Buylisted ${n} card${n > 1 ? 's' : ''} for ${fmtMoney(got)}.`, 6000, undoAction)
+            }}>Buylist {buylistBulk.length} → {fmtMoney(buylistVal)}</button>
         )}
         {!selectMode && bulk.length > 0 && (
           <button className="btn gold" style={{ flex: 'none', marginLeft: buylistBulk.length ? 0 : 'auto' }}
             title={`Quick-sell all raw commons/uncommons (non-hits) instantly${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
-            onClick={sellAllUngraded}>Sell {bulk.length} raw → {fmtMoney(bulkVal)}</button>
+            onClick={() => {
+              const { got, sold } = sellAllUngraded()
+              if (sold) notify(`Quick-sold ${sold} raw card${sold > 1 ? 's' : ''} for ${fmtMoney(got)}.`, 6000, undoAction)
+            }}>Sell {bulk.length} raw → {fmtMoney(bulkVal)}</button>
         )}
       </div>
       {!selectMode && bulkKept > 0 && (
@@ -145,21 +164,29 @@ export default function Collection({ onPick }) {
       {view.length === 0 ? (
         <div className="empty">No cards yet — head to Buy and rip a pack. 📦</div>
       ) : (
-        <div className="grid coll-grid">
-          {view.map(c => (
-            <div key={c.uid} className={`coll-cell ${selectMode ? 'selectable' : ''} ${picked.has(c.uid) ? 'picked' : ''} ${c.locked ? 'locked' : ''}`} onClick={() => onTile(c)}>
-              <CardTile card={c} noBorder />
-              {selectMode && picked.has(c.uid) && <span className="coll-check">✓</span>}
-              {/* Per-card lock: a hard "never bulk-sell this" toggle. Hidden in select mode
-                  (locking there is a bulk action); always shown otherwise so it works on touch. */}
-              {!selectMode && (
-                <button className={`coll-lock ${c.locked ? 'on' : ''}`}
-                  title={c.locked ? 'Locked — never included in a bulk sell. Tap to unlock.' : 'Lock this card — protect it from bulk sells.'}
-                  onClick={e => { e.stopPropagation(); toggleLock(c.uid) }}>{c.locked ? '🔒' : '🔓'}</button>
-              )}
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="grid coll-grid">
+            {view.slice(0, shown).map(c => (
+              <div key={c.uid} className={`coll-cell ${selectMode ? 'selectable' : ''} ${picked.has(c.uid) ? 'picked' : ''} ${c.locked ? 'locked' : ''}`} onClick={() => onTile(c)}>
+                <CardTile card={c} noBorder />
+                {selectMode && picked.has(c.uid) && <span className="coll-check">✓</span>}
+                {/* Per-card lock: a hard "never bulk-sell this" toggle. Hidden in select mode
+                    (locking there is a bulk action); always shown otherwise so it works on touch. */}
+                {!selectMode && (
+                  <button className={`coll-lock ${c.locked ? 'on' : ''}`}
+                    title={c.locked ? 'Locked — never included in a bulk sell. Tap to unlock.' : 'Lock this card — protect it from bulk sells.'}
+                    onClick={e => { e.stopPropagation(); toggleLock(c.uid) }}>{c.locked ? '🔒' : '🔓'}</button>
+                )}
+              </div>
+            ))}
+          </div>
+          {view.length > shown && (
+            <button className="btn alt" style={{ margin: '12px auto 0', display: 'block', maxWidth: 260 }}
+              onClick={() => setShown(s => s + PAGE * 2)}>
+              Show more ({view.length - shown} hidden)
+            </button>
+          )}
+        </>
       )}
 
       {/* Floating bulk-action bar — appears when cards are selected. */}
@@ -229,7 +256,8 @@ export default function Collection({ onPick }) {
             }}>{selCards.every(c => c.locked) ? '🔓 Unlock' : hasStore ? '🔒 Keep' : '🔒 Lock'}</button>
             <button className="btn alt" onClick={() => {
               const { got, sold, kept } = quickSellMany(selCards.map(c => c.uid))
-              flash(`Quick-sold ${sold} card${sold>1?'s':''} for ${fmtMoney(got)}.${keptNote(kept)}`)
+              if (sold) notify(`Quick-sold ${sold} card${sold>1?'s':''} for ${fmtMoney(got)}.${keptNote(kept)}`, 6000, undoAction)
+              else flash(`Nothing sold — all protected.${keptNote(kept)}`)
               exitSelect()
             }}>💸 Quick-sell {fmtMoney(selValue * quickSellRate)}</button>
           </div>
