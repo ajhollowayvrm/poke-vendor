@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2, cardImgLarge } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
 import { rarityColor, gradeLabel } from './CardTile'
@@ -83,10 +84,10 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
                   <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
                   <div className="slab-cert">{card.name}</div>
                 </div>
-                <div className="slab-window"><img src={cardImgLarge(card)} alt={card.name} decoding="async" fetchpriority="high" /></div>
+                <div className="slab-window"><HiResImg card={card} alt={card.name} decoding="async" fetchpriority="high" /></div>
               </div>
             ) : (
-              <img src={cardImgLarge(card)} alt={card.name} decoding="async" fetchpriority="high" />
+              <HiResImg card={card} alt={card.name} decoding="async" fetchpriority="high" />
             )}
           </HoloCard>
           <div style={{ flex: 1, minWidth: 240 }}>

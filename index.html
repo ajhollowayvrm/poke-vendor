@@ -9,10 +9,13 @@
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
     <!-- Card images live on these CDNs — warm DNS+TLS early so the first card isn't
          stuck behind a cold connection handshake. (These are the hosts actually used in
-         the snapshot; the old tcggo/tcgplayer-cdn hints pointed at hosts we never hit.) -->
-    <link rel="preconnect" href="https://images.pokemontcg.io" crossorigin />
+         the snapshot; the old tcggo/tcgplayer-cdn hints pointed at hosts we never hit.)
+         NO crossorigin here: card art loads via plain <img> (no-cors), and browsers only
+         reuse a preconnected socket when the credential mode matches — a crossorigin
+         preconnect would warm a CORS socket the images can never use. -->
+    <link rel="preconnect" href="https://images.pokemontcg.io" />
     <link rel="dns-prefetch" href="https://images.pokemontcg.io" />
-    <link rel="preconnect" href="https://images.scrydex.com" crossorigin />
+    <link rel="preconnect" href="https://images.scrydex.com" />
     <link rel="dns-prefetch" href="https://images.scrydex.com" />
     <!-- iOS home-screen app -->
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />

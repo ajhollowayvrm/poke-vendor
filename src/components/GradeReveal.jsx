@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { cardValue, rawValue, fmtMoney, GRADING, cardImgLarge } from '../game/engine'
+import { cardValue, rawValue, fmtMoney, GRADING } from '../game/engine'
+import HiResImg from './HiResImg'
 import { gradeLabel, rarityColor } from './CardTile'
 import Burst from './Burst'
 import { primeAudio, sfxHit, sfxGod, sfxTension } from '../game/feedback'
@@ -65,7 +66,7 @@ export default function GradeReveal({ cards, onDone }) {
                       <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
                       <div className="slab-cert">{card.name}</div>
                     </div>
-                    <div className="slab-window"><img src={cardImgLarge(card)} alt={card.name} decoding="async" /></div>
+                    <div className="slab-window"><HiResImg card={card} alt={card.name} decoding="async" /></div>
                     <div className="gr-val">
                       {fmtMoney(cardValue(card))}
                       {gain > 0.5 && <span className="gr-gain"> ▲{fmtMoney(gain)}</span>}
