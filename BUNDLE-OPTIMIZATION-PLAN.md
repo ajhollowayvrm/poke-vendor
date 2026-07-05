@@ -4,6 +4,23 @@ The deferred "risky" item from the audit. Goal: cut mobile **boot parse time** (
 some download), which is dominated by the card-data snapshot. This is staged by risk
 so we can bank the safe wins and stop before the dangerous one if we choose.
 
+## Status (2026-07-05): Phases 0+1 SHIPPED, Phase 2 not worth it
+
+- **Phase 0** shipped (`json: { stringify: true }`) — chunk now emits as `JSON.parse("…")`.
+- **Phase 1** shipped — 4,586/5,153 cards' URLs stripped and derived at runtime via
+  `cardImg()`/`cardImgLarge()` in engine.js; 541 scrydex + 26 pattern-breakers (cel25
+  suffixes, one zsv10pt5 number/URL mismatch) keep explicit URLs. Round-trip equality
+  verified on all 5,153 cards; full Playwright drive + `npm run sim` green.
+- **Results:** sets.json 1158→664 KB; card-data chunk 1186→680 KB raw, 137→97 KB gzip;
+  PWA precache 2.0→1.5 MB.
+- **Measured boot impact (the honest part):** isolated chunk parse+eval dropped ~15–20%
+  (28→23 ms at 4× CPU throttle, 38→32 ms at 6×), but total boot-to-interactive is ~1 s
+  and dominated by app init, NOT card-data parse. **Phase 2's entire upside is a slice
+  of that already-small parse cost — call it well under 100 ms even on a slow phone —
+  against 1–2 days of await-gating and silent data-correctness risk. Per the plan's own
+  go/no-go: stopped after Phase 1.** Revisit only if a real-device profile ever shows
+  card-data parse as a top-3 boot cost.
+
 ## Measured baseline (2026-07-05)
 
 | Thing | Value |
