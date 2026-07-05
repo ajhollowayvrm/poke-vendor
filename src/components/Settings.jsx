@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { refreshPrices, FETCHED_AT, SETS } from '../game/engine'
 import { useGame } from '../game/store'
+import { cloudConfigured, disownLocalSave, pushLocalChange } from '../game/cloudSave'
+import { currentUser } from '../game/auth'
+import { confirmDialog, toast } from '../ui/dialog'
 import Account from './Account'
 
 const RIP_SPEEDS = [
@@ -41,6 +44,47 @@ export default function Settings() {
   }
 
   const built = new Date(FETCHED_AT)
+
+  // Reset is cloud-aware. The old flow left auto-sync armed, so 2.5s after a reset the
+  // fresh day-1 save was pushed to the cloud — silently destroying the real save on the
+  // account (and, at next boot, on every other device). Now: disown the local game FIRST
+  // (kills the pending debounce push + ownership, so nothing touches the cloud), then
+  // reset, and only wipe the cloud too if that was the explicit choice — via a force
+  // push, which the backend snapshots to a restorable #prev backup before honoring.
+  async function doReset() {
+    const signedIn = cloudConfigured() && !!currentUser()
+    const ok = await confirmDialog({
+      title: 'Reset all progress?',
+      body: signedIn
+        ? 'This wipes the game on THIS device — cash, collection, notoriety, upgrades.\n\nNext you’ll choose whether your account’s cloud save is wiped too, or kept.'
+        : 'This wipes your save — cash, collection, notoriety, upgrades. There is no undo.',
+      confirmText: 'Reset',
+      danger: true,
+    })
+    if (!ok) return
+    let wipeCloud = false
+    if (signedIn) {
+      wipeCloud = await confirmDialog({
+        title: 'Wipe the cloud save too?',
+        body: 'KEEP CLOUD SAVE — this device starts fresh; your account keeps its current cloud save, and you can load it back anytime from ⚙️ → Account.\n\nWIPE CLOUD TOO — the account starts over as well. The old cloud save is kept as a one-step backup ("Restore previous cloud version" in Account) in case this was a mistake.',
+        confirmText: 'Wipe cloud too',
+        cancelText: 'Keep cloud save',
+        danger: true,
+      })
+    }
+    disownLocalSave() // must run BEFORE reset(): stops auto-sync pushing the fresh save
+    reset()
+    if (wipeCloud) {
+      try {
+        await pushLocalChange({ force: true })
+        toast('Cloud save wiped — the previous version is restorable from Account.')
+      } catch {
+        toast('Couldn’t reach the cloud — your cloud save is untouched. Reconnect from ⚙️ → Account.')
+      }
+    } else if (signedIn) {
+      toast('This device is reset. Your cloud save is untouched — load it anytime from ⚙️ → Account.')
+    }
+  }
 
   return (
     <>
@@ -195,9 +239,11 @@ export default function Settings() {
       </div>
 
       <h3 style={{ margin: '18px 0 4px' }}>Save</h3>
-      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Progress auto-saves to this browser. Resetting wipes cash, collection, notoriety, and upgrades.</p>
-      <button className="btn alt" style={{ maxWidth: 200 }}
-        onClick={() => { if (confirm('Reset all progress? This wipes your save.')) reset() }}>
+      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        Progress auto-saves to this browser{cloudConfigured() ? ' (and to your account when signed in)' : ''}.
+        Resetting wipes cash, collection, notoriety, and upgrades.
+      </p>
+      <button className="btn alt" style={{ maxWidth: 200 }} onClick={doReset}>
         Reset save
       </button>
     </>

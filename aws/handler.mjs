@@ -2,7 +2,11 @@
 // Cognito ID token (Authorization: Bearer <jwt>).
 //
 //   GET  /                            -> the caller's save { data, savedAt, version }   (404 if none)
-//   PUT  / { data, savedAt, version } -> { ok, savedAt }                                (409 if cloud is newer)
+//   GET  /?prev=1                     -> the caller's one-deep backup save              (404 if none)
+//   PUT  / { data, savedAt, version,  -> { ok, savedAt }
+//            baseSavedAt?, force?,       409 if baseSavedAt no longer matches the cloud (CAS),
+//            backup?, enc? }             413 if data > 350KB; force skips CAS but snapshots
+//                                        the old save to #prev first; backup also rotates #prev
 //   GET  /prices?sets=a,b,c           -> { prices: {cardId: usd}, fetchedAt, missing }
 //
 // Saves are keyed by the token's `sub`, so a player can only ever touch THEIR OWN save.
@@ -154,7 +158,9 @@ export const handler = async (event) => {
     const id = `user#${claims.sub}`
 
     if (method === 'GET') {
-      const r = await ddb.send(new GetItemCommand({ TableName: TABLE, Key: { id: { S: id } } }))
+      // ?prev=1: the one-deep backup slot (rotated before forced overwrites + daily).
+      const key = event?.queryStringParameters?.prev ? `${id}#prev` : id
+      const r = await ddb.send(new GetItemCommand({ TableName: TABLE, Key: { id: { S: key } } }))
       if (!r.Item) return json(404, { error: 'not found' })
       // ?peek=1: metadata only — the client checks "is the cloud ahead?" on every boot
       // and sign-in, so don't make it download the whole save just to read a timestamp.
@@ -171,8 +177,26 @@ export const handler = async (event) => {
       try { body = JSON.parse(event?.body || '{}') } catch { return json(400, { error: 'bad json' }) }
       const { data, savedAt, version } = body
       if (typeof data !== 'string' || !data) return json(400, { error: 'missing data' })
+      // A DynamoDB item caps at 400KB. Reject early with a status the client can name
+      // ("save too large to sync") instead of a ValidationException 500 forever.
+      if (data.length > 350_000) return json(413, { error: 'too large' })
       const enc = body.enc === 'gz' ? 'gz' : null // client gzips saves; stored opaquely
       const ts = Number(savedAt) || Date.now()
+      const base = Number(body.baseSavedAt) > 0 ? Number(body.baseSavedAt) : null
+      const force = body.force === true
+      // Rotate the one-deep backup slot BEFORE any overwrite that could destroy history:
+      // every forced push (conflict "keep this device", reset-everywhere, prev-restore)
+      // and any push the client marks `backup` (it does so once a day). One extra item,
+      // far inside the free tier — and it makes every catastrophic overwrite undoable.
+      if (force || body.backup === true) {
+        const cur = await ddb.send(new GetItemCommand({ TableName: TABLE, Key: { id: { S: id } } }))
+        if (cur.Item) {
+          await ddb.send(new PutItemCommand({
+            TableName: TABLE,
+            Item: { ...cur.Item, id: { S: `${id}#prev` }, backedUpAt: { N: String(Date.now()) } },
+          }))
+        }
+      }
       try {
         await ddb.send(new PutItemCommand({
           TableName: TABLE,
@@ -184,10 +208,18 @@ export const handler = async (event) => {
             version: { N: String(Number(version) || 0) },
             updatedAt: { N: String(Date.now()) },
           },
-          // Only overwrite if our save isn't OLDER than what's already there — stops an
-          // out-of-date device from clobbering a newer cloud save.
-          ConditionExpression: 'attribute_not_exists(id) OR savedAt <= :ts',
-          ExpressionAttributeValues: { ':ts': { N: String(ts) } },
+          // force: deliberate overwrite (the #prev snapshot above already ran).
+          // baseSavedAt: compare-and-swap — only overwrite the exact revision the client
+          //   last synced against, so ANY fork (second device, clock skew) is an honest
+          //   409 instead of newest-wins silently discarding a session.
+          // neither (legacy clients): the old "not older than the cloud" guard.
+          ...(force ? {} : base !== null ? {
+            ConditionExpression: 'attribute_not_exists(id) OR savedAt = :base',
+            ExpressionAttributeValues: { ':base': { N: String(base) } },
+          } : {
+            ConditionExpression: 'attribute_not_exists(id) OR savedAt <= :ts',
+            ExpressionAttributeValues: { ':ts': { N: String(ts) } },
+          }),
         }))
       } catch (e) {
         if (e?.name === 'ConditionalCheckFailedException') {

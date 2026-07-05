@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   cloudConfigured, autoSyncOn, setAutoSync, localOwnedByCurrentUser,
   pushLocalChange, loadFromCloud, peekCloud, reconcile,
+  getSyncStatus, restorePrevCloudSave,
 } from '../game/cloudSave'
 import {
   currentUser, onAuthChange, signIn, signUp, confirmSignUp, resendCode,
@@ -30,8 +31,18 @@ export default function Account() {
   // The local game belongs to a different account (or none) than the one signed in —
   // auto-sync is paused until the player picks a side below.
   const [conflict, setConflict] = useState(() => !!currentUser() && !localOwnedByCurrentUser())
+  // Live sync status (ok / offline / error / conflict / toolarge) — pushed from
+  // cloudSave via a window event, so failing auto-pushes are visible here instead
+  // of silently swallowed. A 'conflict' status means a same-account fork (this device
+  // AND the cloud both changed since they last synced) — shows the pick-a-side panel.
+  const [syncSt, setSyncSt] = useState(getSyncStatus())
 
   useEffect(() => onAuthChange(setUser), [])
+  useEffect(() => {
+    const onSync = (e) => setSyncSt(e.detail)
+    window.addEventListener('poke-vendor-sync', onSync)
+    return () => window.removeEventListener('poke-vendor-sync', onSync)
+  }, [])
 
   // Refresh the cloud timestamp whenever the signed-in account changes (informational).
   useEffect(() => {
@@ -175,7 +186,7 @@ export default function Account() {
       setCloudAt(r.savedAt); setConflict(false)
       flash('ok', 'Saved to the cloud.')
     } catch (err) {
-      if (err.code === 'stale') flash('err', 'Cloud has a newer save — load it first, then save.')
+      if (err.code === 'stale') flash('err', 'The cloud changed since this device last synced — pick which save to keep above.')
       else flash('err', err.message)
     } finally { setBusy(false) }
   }
@@ -201,12 +212,37 @@ export default function Account() {
   async function doKeepLocal() {
     const ok = await confirmDialog({
       title: 'Keep this device’s game?',
-      body: 'This overwrites your account’s cloud save with the game on THIS device. The old cloud save is gone for good.',
+      body: 'This overwrites your account’s cloud save with the game on THIS device.\n\nThe save being replaced is kept as a one-step backup — "Restore previous cloud version" below brings it back if this was the wrong call.',
       confirmText: 'Overwrite cloud',
       danger: true,
     })
     if (!ok) return
-    await doSave()
+    setBusy(true)
+    try {
+      // force: this is a deliberate overwrite of a diverged cloud save — CAS would 409.
+      // The backend snapshots the outgoing save to #prev before honoring it.
+      const r = await pushLocalChange({ force: true })
+      setCloudAt(r.savedAt); setConflict(false)
+      flash('ok', 'This device’s game is now the cloud save.')
+    } catch (err) { flash('err', err.message) } finally { setBusy(false) }
+  }
+
+  async function doRestorePrev() {
+    const ok = await confirmDialog({
+      title: 'Restore the previous cloud version?',
+      body: 'This swaps in the cloud’s one-step backup: the previous version becomes your game (here and in the cloud), and the save it replaces becomes the new backup — so restoring again swaps back.',
+      confirmText: 'Restore previous',
+      danger: true,
+    })
+    if (!ok) return
+    setBusy(true)
+    try {
+      const r = await restorePrevCloudSave()
+      setCloudAt(r.savedAt); setConflict(false)
+      flash('ok', 'Previous cloud version restored — it’s now your live save.')
+    } catch (err) {
+      flash('err', err.code === 'notfound' ? 'No previous cloud version exists yet.' : err.message)
+    } finally { setBusy(false) }
   }
 
   function doSignOut() {
@@ -240,10 +276,12 @@ export default function Account() {
 
         {reconciling ? (
           <div className="muted" style={{ fontSize: 12 }}>Syncing…</div>
-        ) : conflict ? (
+        ) : (conflict || syncSt.state === 'conflict') ? (
           <div style={{ border: '1px solid var(--line)', borderRadius: 8, padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ fontSize: 12.5 }}>
-              ⚠️ This device’s game isn’t the one saved on your account. Cloud sync is paused — pick which save to keep:
+              {conflict
+                ? '⚠️ This device’s game isn’t the one saved on your account. Cloud sync is paused — pick which save to keep:'
+                : '⚠️ This device AND the cloud both changed since they last synced (another device pushed in between). Cloud sync is paused — pick which save to keep:'}
             </div>
             <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
               <button className="btn gold" style={{ flex: 'none', maxWidth: 170 }} disabled={busy} onClick={() => doLoad()}>Use cloud save</button>
@@ -265,13 +303,28 @@ export default function Account() {
                 {auto ? 'On' : 'Off'}
               </button>
             </div>
+            {syncSt.state === 'ok' && (
+              <div className="muted" style={{ fontSize: 11.5 }}>✓ Last synced {new Date(syncSt.at).toLocaleTimeString()}</div>
+            )}
+            {syncSt.state === 'offline' && (
+              <div className="muted" style={{ fontSize: 11.5 }}>Offline — will sync when the cloud is reachable again.</div>
+            )}
+            {syncSt.state === 'toolarge' && (
+              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>⚠️ This save is too large to sync — cloud backups are NOT updating.</div>
+            )}
+            {syncSt.state === 'error' && (
+              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>⚠️ Cloud sync is failing ({syncSt.message || 'unknown error'}) — retrying as you play.</div>
+            )}
           </>
         )}
 
         {note}
 
-        <div style={{ borderTop: '1px solid var(--line)', paddingTop: 10 }}>
+        <div className="row" style={{ borderTop: '1px solid var(--line)', paddingTop: 10, gap: 8, flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} disabled={busy} onClick={doSignOut}>Sign out</button>
+          <button className="linkbtn" style={{ fontSize: 12 }} disabled={busy} onClick={doRestorePrev}>
+            ↩︎ Restore previous cloud version
+          </button>
         </div>
       </div>
     )

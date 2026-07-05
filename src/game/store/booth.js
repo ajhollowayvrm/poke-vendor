@@ -176,7 +176,9 @@ export function createBoothSlice(set, get) {
     // Move the selected collection cards (and held sealed product) onto your show table.
     // Floor buyers (offers, browse-sales, walk-ups) only ever target these — your at-home
     // collection/inventory isn't for sale at the show. Anything unsold comes home when you
-    // leave (endShow()). Both lists are cleared/replaced so re-attending starts clean.
+    // leave (endShow()). MERGE into the buckets rather than replace: normally they're empty
+    // here (endShow cleared them), and merging guarantees anything stranded by a mid-show
+    // reload can never be overwritten and lost.
     bringToShow(cardUids, sealedUids) {
       const cardIds = new Set(cardUids || [])
       const sealIds = new Set(sealedUids || [])
@@ -184,9 +186,9 @@ export function createBoothSlice(set, get) {
       const bringingSealed = (get().sealedInventory || []).filter(it => sealIds.has(it.uid))
       set(s => ({
         collection: s.collection.filter(c => !cardIds.has(c.uid)),
-        showInventory: bringing,
+        showInventory: [...(s.showInventory || []), ...bringing],
         sealedInventory: (s.sealedInventory || []).filter(it => !sealIds.has(it.uid)),
-        showSealed: bringingSealed,
+        showSealed: [...(s.showSealed || []), ...bringingSealed],
       }))
       const parts = []
       if (bringing.length) parts.push(`${bringing.length} card${bringing.length > 1 ? 's' : ''}`)

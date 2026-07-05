@@ -98,10 +98,12 @@ export default function App() {
   }, [ripping, tab])
 
   // If the page was reloaded while a show was open, the floor view (React state) is
-  // gone but show-inventory cards may still be stranded on the table — bring them home.
+  // gone but show-inventory cards AND sealed may still be stranded on the table — bring
+  // them home. (Sealed matters too: a sealed-only booth used to strand showSealed forever.)
   // Also kick off cloud auto-sync (no-ops unless the AWS backend is configured + signed in).
   useEffect(() => {
-    if ((useGame.getState().showInventory || []).length) useGame.getState().endShow()
+    const g = useGame.getState()
+    if ((g.showInventory || []).length || (g.showSealed || []).length) g.endShow()
     startAutoSync()
     warmPricesOnBoot().catch(() => {}) // re-apply the last price snapshot (and freshen if stale)
   }, [])

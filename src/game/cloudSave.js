@@ -21,8 +21,29 @@ const SAVE_KEY = 'poke-vendor-save'             // zustand persist blob (the who
 const SAVEDAT_KEY = 'poke-vendor-cloud-savedAt' // logical save time of the local data
 const AUTO_KEY = 'poke-vendor-cloud-auto'       // '0' | '1' auto-sync toggle
 const OWNER_KEY = 'poke-vendor-cloud-owner'     // which account (sub) the local data is synced with
+const BASE_KEY = 'poke-vendor-cloud-base'       // cloud savedAt this device last synced against (the CAS token)
+const BACKUP_DAY_KEY = 'poke-vendor-cloud-backupday' // calendar day we last rotated the cloud #prev backup
+
+// A DynamoDB item caps at 400KB; the backend rejects past 350KB. Checked client-side too
+// so an oversized save surfaces as a clear "too large" instead of a network error.
+const MAX_PUSH_BYTES = 350_000
 
 export function cloudConfigured() { return !!SYNC_URL && authConfigured() }
+
+// --- sync status -----------------------------------------------------------------
+// One tiny observable so the UI can tell "synced" apart from "silently failing".
+// states: idle | ok | offline | error | conflict | toolarge
+let syncStatus = { state: 'idle', at: 0, message: null }
+export function getSyncStatus() { return syncStatus }
+function setSyncStatus(state, message = null) {
+  syncStatus = { state, at: Date.now(), message }
+  try { window.dispatchEvent(new CustomEvent('poke-vendor-sync', { detail: syncStatus })) } catch {}
+}
+
+// True after a 409 fork (the cloud moved past what this device last synced AND this
+// device has its own changes). Auto-sync stops pushing until the player picks a side
+// (load cloud, or force-push this device) — retrying would just clobber one of them.
+let syncBlocked = false
 
 export function autoSyncOn() { return localStorage.getItem(AUTO_KEY) !== '0' } // default ON
 export function setAutoSync(on) { localStorage.setItem(AUTO_KEY, on ? '1' : '0') }
@@ -30,6 +51,11 @@ export function setAutoSync(on) { localStorage.setItem(AUTO_KEY, on ? '1' : '0')
 function readBlob() { return localStorage.getItem(SAVE_KEY) }
 function localSavedAt() { return Number(localStorage.getItem(SAVEDAT_KEY)) || 0 }
 function setLocalSavedAt(ts) { localStorage.setItem(SAVEDAT_KEY, String(ts || Date.now())) }
+function baseSavedAt() { const n = Number(localStorage.getItem(BASE_KEY)); return n > 0 ? n : null }
+function setBaseSavedAt(ts) {
+  if (ts) localStorage.setItem(BASE_KEY, String(ts))
+  else localStorage.removeItem(BASE_KEY)
+}
 function schemaVersion() {
   try { return useGame.persist.getOptions().version ?? 0 } catch { return 0 }
 }
@@ -90,41 +116,77 @@ async function gunzipFromB64(b64) {
   return new Response(stream).text()
 }
 
-// Push the current local save under its logical savedAt. Throws { code:'stale' } if the
-// cloud already holds a NEWER save (the device is behind — load it first).
-export async function saveToCloud() {
+// Push the current local save under its logical savedAt.
+//
+// Writes are compare-and-swap: we send the cloud savedAt this device last synced against
+// (baseSavedAt) and the backend only overwrites that exact revision. ANY fork — a second
+// device that pushed meanwhile, clock skew, whatever — comes back as an honest 409
+// ({ code:'stale' }) instead of newest-wins silently discarding one side.
+//
+// `force` (conflict "keep this device", reset-everywhere, prev-restore) overwrites
+// unconditionally — but the backend snapshots the save it's replacing to a #prev slot
+// first, so even a forced overwrite is one restore away from undone. A once-a-day
+// `backup` flag rotates that same #prev slot during normal play, giving a rolling
+// "yesterday" backup on top of the pre-force snapshots.
+export async function saveToCloud({ force = false } = {}) {
   if (!cloudConfigured()) throw new Error('Cloud sync isn’t set up')
   const data = readBlob(); if (!data) throw new Error('Nothing saved locally yet')
   let savedAt = localSavedAt()
   if (!savedAt) { savedAt = Date.now(); setLocalSavedAt(savedAt) } // first ever save
   let payload = { data, savedAt, version: schemaVersion() }
+  const base = baseSavedAt()
+  if (force) payload.force = true
+  else if (base) payload.baseSavedAt = base // no base yet (pre-CAS device): backend falls back to the legacy newest-wins guard
+  const today = new Date().toDateString()
+  if (localStorage.getItem(BACKUP_DAY_KEY) !== today) payload.backup = true
   if (typeof CompressionStream !== 'undefined') {
     try { payload = { ...payload, data: await gzipToB64(data), enc: 'gz' } } catch {}
+  }
+  if (payload.data.length > MAX_PUSH_BYTES) {
+    const e = new Error('This save is too large to sync to the cloud.')
+    e.code = 'toolarge'; setSyncStatus('toolarge', e.message); throw e
   }
   const res = await authedFetch('PUT', payload)
   if (res.status === 409) {
     const j = await res.json().catch(() => ({}))
-    const e = new Error('The cloud save is newer — load it before saving.')
+    syncBlocked = true
+    setSyncStatus('conflict', 'The cloud save changed since this device last synced.')
+    const e = new Error('The cloud save changed since this device last synced — pick which to keep in ⚙️ → Account.')
     e.code = 'stale'; e.savedAt = j.savedAt; throw e
   }
-  if (!res.ok) throw new Error(`Save failed (${res.status})`)
+  if (res.status === 413) {
+    const e = new Error('This save is too large to sync to the cloud.')
+    e.code = 'toolarge'; setSyncStatus('toolarge', e.message); throw e
+  }
+  if (!res.ok) { setSyncStatus('error', `Save failed (${res.status})`); throw new Error(`Save failed (${res.status})`) }
+  const j = await res.json().catch(() => ({}))
+  const ts = j.savedAt || savedAt
+  setLocalSavedAt(ts)
+  setBaseSavedAt(ts) // in sync with the exact revision we just wrote
+  if (payload.backup) localStorage.setItem(BACKUP_DAY_KEY, today)
   claimLocalForCurrentUser()
-  return { savedAt }
+  syncBlocked = false
+  setSyncStatus('ok')
+  return { savedAt: ts }
 }
 
 // Mark the local data as freshly changed (advance its logical time to now) and push.
-// Used by the manual Save button, auto-sync, and "keep this device's game" in a
-// conflict (now > the cloud's savedAt, so the push wins the backend's guard).
-export async function pushLocalChange() {
+// Used by the manual Save button, auto-sync, and — with { force:true } — the deliberate
+// overwrites: "keep this device's game" in a conflict, reset-everywhere, prev-restore.
+export async function pushLocalChange(opts) {
   setLocalSavedAt(Date.now())
-  return saveToCloud()
+  return saveToCloud(opts)
 }
 
-// Fetch the signed-in account's cloud save and apply it locally.
-export async function loadFromCloud() {
+// Fetch the signed-in account's cloud save and apply it locally. { prev:true } fetches
+// the one-deep #prev backup instead (see restorePrevCloudSave).
+export async function loadFromCloud({ prev = false } = {}) {
   if (!cloudConfigured()) throw new Error('Cloud sync isn’t set up')
-  const res = await authedFetch('GET')
-  if (res.status === 404) { const e = new Error('No cloud save on this account yet'); e.code = 'notfound'; throw e }
+  const res = await authedFetch('GET', null, prev ? '?prev=1' : '')
+  if (res.status === 404) {
+    const e = new Error(prev ? 'No previous cloud version exists yet' : 'No cloud save on this account yet')
+    e.code = 'notfound'; throw e
+  }
   if (!res.ok) throw new Error(`Load failed (${res.status})`)
   const j = await res.json()
   if (!j.data) throw new Error('The cloud save is empty')
@@ -142,12 +204,59 @@ export async function loadFromCloud() {
   clearTimeout(timer)     // drop any pending push of the about-to-be-replaced local data
   applyingRemote = true
   try {
+    // Keep the save being replaced in a local rollback slot: if the rehydrate below
+    // throws (bad migration, corrupt-but-parseable blob), the previous game is one
+    // localStorage restore away instead of destroyed.
+    const prior = readBlob()
+    const priorSavedAt = localSavedAt()
+    const priorBase = baseSavedAt()
+    if (prior) localStorage.setItem(SAVE_KEY + '-prev', prior)
     localStorage.setItem(SAVE_KEY, blob)
     setLocalSavedAt(j.savedAt || Date.now()) // adopt the cloud data's logical time
+    // Loading the CURRENT cloud save puts us exactly in sync with it (CAS base = its
+    // savedAt). Loading the #prev backup does NOT — the cloud current is still something
+    // else, so clear the base and let the caller force-push (restorePrevCloudSave).
+    setBaseSavedAt(prev ? null : (j.savedAt || Date.now()))
     claimLocalForCurrentUser()
-    await useGame.persist.rehydrate()        // reload the store from the new blob (runs migrations)
+    try {
+      await useGame.persist.rehydrate()      // reload the store from the new blob (runs migrations)
+    } catch (err) {
+      if (prior) {
+        // Roll everything back — data AND sync markers, so this device doesn't claim
+        // to be in sync with a cloud save it failed to load.
+        localStorage.setItem(SAVE_KEY, prior)
+        setLocalSavedAt(priorSavedAt || Date.now())
+        setBaseSavedAt(priorBase)
+        await useGame.persist.rehydrate().catch(() => {})
+      }
+      throw new Error('The cloud save couldn’t be loaded — kept this device’s game.')
+    }
+    if (!prev) { syncBlocked = false; setSyncStatus('ok') }
   } finally { applyingRemote = false }
   return { savedAt: j.savedAt }
+}
+
+// Restore the cloud's one-deep backup: pull #prev, apply it locally, then force-push it
+// back as the CURRENT cloud save. The force-push snapshots the save it replaces into
+// #prev — so restoring twice swaps back, and nothing is ever more than one step gone.
+// Recovers from any bad overwrite: an accidental "wipe cloud too" reset, a wrong
+// "keep this device's game" call, a fork resolved the wrong way.
+export async function restorePrevCloudSave() {
+  await loadFromCloud({ prev: true })
+  return pushLocalChange({ force: true })
+}
+
+// Forget this device's cloud linkage WITHOUT touching the cloud: cancel any pending
+// auto-push and drop the ownership/sync markers. Used by "reset this device only" —
+// the fresh local game becomes a foreign save, so auto-sync stays paused (the cloud
+// copy is safe) until the player deliberately reconnects via ⚙️ → Account.
+export function disownLocalSave() {
+  clearTimeout(timer); timer = null
+  syncBlocked = false
+  localStorage.removeItem(OWNER_KEY)
+  localStorage.removeItem(SAVEDAT_KEY)
+  localStorage.removeItem(BASE_KEY)
+  setSyncStatus('idle')
 }
 
 // Look at the account's cloud save without applying it — metadata only (?peek=1),
@@ -175,7 +284,7 @@ export async function peekCloud() {
 export async function reconcile() {
   try {
     const remote = await peekCloud()
-    if (!remote) return { action: 'offline' }
+    if (!remote) { setSyncStatus('offline'); return { action: 'offline' } }
     const hasLocal = !!readBlob()
     if (!remote.exists) {
       if (!hasLocal) return { action: 'none' }
@@ -185,13 +294,24 @@ export async function reconcile() {
     if (hasLocal && !localOwnedByCurrentUser() && !localIsPristine()) {
       return { action: 'conflict', cloudAt: remote.savedAt }
     }
+    // Two-sided fork: the cloud moved past the revision this device last synced against
+    // AND this device has local changes since then (a failed/blocked push left its
+    // logical time ahead of the base). Silently picking a side at boot would discard
+    // one of them — surface it instead; the Account panel offers the choice.
+    const base = baseSavedAt()
+    if (hasLocal && localOwnedByCurrentUser() && base &&
+        remote.savedAt !== base && localSavedAt() > base) {
+      syncBlocked = true
+      setSyncStatus('conflict', 'This device and the cloud both changed since they last synced.')
+      return { action: 'conflict', cloudAt: remote.savedAt }
+    }
     if (!hasLocal || !localOwnedByCurrentUser() || remote.savedAt > localSavedAt()) {
       const r = await loadFromCloud()
       return { action: 'pulled', savedAt: r.savedAt }
     }
     if (localSavedAt() > remote.savedAt) await saveToCloud()
     return { action: 'pushed' }
-  } catch { return { action: 'offline' } }
+  } catch { setSyncStatus('offline'); return { action: 'offline' } }
 }
 
 // Start cloud auto-sync. Called once at app boot; no-ops unless the backend is
@@ -204,8 +324,11 @@ export async function startAutoSync() {
   if (started || !cloudConfigured()) return
   started = true
   useGame.subscribe(() => {
-    if (applyingRemote || !autoSyncOn() || !localOwnedByCurrentUser()) return
+    if (applyingRemote || syncBlocked || !autoSyncOn() || !localOwnedByCurrentUser()) return
     clearTimeout(timer)
+    // Errors here set the sync status (conflict/toolarge/error) inside saveToCloud, so a
+    // failing auto-push is visible in ⚙️ → Account instead of swallowed. A 409 also sets
+    // syncBlocked, which stops further pushes until the player picks a side.
     timer = setTimeout(() => { pushLocalChange().catch(() => {}) }, 2500)
   })
   if (currentUser() && autoSyncOn() && localOwnedByCurrentUser()) {

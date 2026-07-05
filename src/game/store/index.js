@@ -91,6 +91,17 @@ export const useGame = create(persist((set, get) => ({
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state
+    // Corrupt-save guard: drop null/garbage entries from every card/item bucket BEFORE any
+    // migration step maps over them. A single null in `collection` would otherwise throw
+    // inside migrate (e.g. the v32 retro-credit reads card values), which aborts rehydrate
+    // and boots the player into a FRESH GAME while their real save sits unreadable in
+    // localStorage. merge()'s dedupe runs after migrate, so it can't catch this first.
+    for (const k of ['collection', 'binder', 'showInventory', 'sealedInventory', 'showSealed',
+      'shopDisplay', 'shopSealed', 'pendingGrades', 'listings', 'consignments', 'builtPacks']) {
+      if (state[k] !== undefined && Array.isArray(state[k])) {
+        state[k] = state[k].filter(x => x && typeof x === 'object')
+      }
+    }
     if (version < 2) {
       state.notoriety = state.notoriety ?? 0
       state.upgrades = state.upgrades ?? {}
@@ -312,8 +323,14 @@ export const useGame = create(persist((set, get) => ({
       // milestones from here on pay out and announce. pendingMilestones starts empty.
       state.milestones = state.milestones ?? []
       state.pendingMilestones = []
-      const already = newlyUnlocked(state, state.milestones).map(x => x.id)
-      if (already.length) state.milestones = [...state.milestones, ...already]
+      // Defensive: this is the one migration step that computes over card data (net worth
+      // walks the whole collection). If a weird save still trips it, skipping retro-credit
+      // is strictly better than aborting the whole migration — milestones re-check on the
+      // next action anyway (checkMilestones is called from rips/day-ticks/encounters).
+      try {
+        const already = newlyUnlocked(state, state.milestones).map(x => x.id)
+        if (already.length) state.milestones = [...state.milestones, ...already]
+      } catch { /* retro-credit skipped; unlocks arrive naturally with rewards */ }
     }
     if (version < 33) {
       // Channel followers (returning stream audience) + the "Protect set singles"

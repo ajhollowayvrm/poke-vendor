@@ -58,6 +58,10 @@ export function createEconomySlice(set, get) {
     },
 
     spend(amount) {
+      // Invariant guard: `cash < NaN` is false, so without this check a single malformed
+      // price (undefined/NaN upstream) would write NaN into cash and PERSIST it — bricking
+      // the save. A negative amount would silently ADD money. Refuse both.
+      if (!Number.isFinite(amount) || amount < 0) return false
       if (get().cash < amount) return false
       set(s => ({ cash: round2(s.cash - amount), stats: { ...s.stats, spent: round2(s.stats.spent + amount) } }))
       return true
@@ -65,6 +69,7 @@ export function createEconomySlice(set, get) {
     // earn money. By default it counts as CARD income (sales, payouts, wants) for the
     // full-time sustainability readout; pass {wage:true} for paycheck income so it's excluded.
     earn(amount, opts) {
+      if (!Number.isFinite(amount) || amount < 0) return // same NaN-poisoning guard as spend()
       set(s => ({
         cash: round2(s.cash + amount),
         stats: { ...s.stats, earned: round2(s.stats.earned + amount) },
