@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, sealedCard, round2 } from '../game/engine'
+import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, sealedCard, round2, cardImg } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
@@ -861,7 +861,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                         className={`reveal-card ${i < shown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
                         <div className="flip">
                           <div className="flip-back" aria-hidden="true" />
-                          <div className="flip-front"><img src={c.img} alt={i < shown ? c.name : ''} decoding="async" /></div>
+                          <div className="flip-front"><img src={cardImg(c)} alt={i < shown ? c.name : ''} decoding="async" /></div>
                         </div>
                       </HoloCard>
                       {i < shown && owner && (c._isHit || c.foil) && (
@@ -923,7 +923,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   return (
                     <div key={c.uid+'-'+i} className="stream-hit" style={{ '--rarity': edge }} title={`${c.name} · ${fmtMoney(cardValue(c))}`}>
-                      <img src={c.img} alt="" /><span>{fmtMoney(cardValue(c))}</span>
+                      <img src={cardImg(c)} alt="" /><span>{fmtMoney(cardValue(c))}</span>
                     </div>
                   )
                 })}
@@ -979,7 +979,7 @@ function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
               const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
               return (
                 <div key={c.uid} className="vendoritem" style={{ '--rarity': edge }}>
-                  <img src={c.img} alt={c.name} loading="lazy" decoding="async" style={{ width: '100%', borderRadius: 8 }} />
+                  <img src={cardImg(c)} alt={c.name} loading="lazy" decoding="async" style={{ width: '100%', borderRadius: 8 }} />
                   <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{c.name}</div>
                   <div style={{ fontSize: 12, fontWeight: 800, textAlign: 'center', color: 'var(--green)' }}>{fmtMoney(cardValue(c))}</div>
                   <button className="btn gold" style={{ fontSize: 12, padding: '6px' }} onClick={() => onPick(c.uid)}>🎁 Give away</button>
@@ -1004,7 +1004,7 @@ function NowRevealing({ card }) {
         const label = card.foil ? card.foil.label : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
-            <img src={card.img} alt={card.name} decoding="async" fetchpriority="high" />
+            <img src={cardImg(card)} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>

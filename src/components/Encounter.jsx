@@ -1,6 +1,6 @@
 import HoloCard from './HoloCard'
 import { useModalEscape } from '../ui/dialog'
-import { cardValue, sealedValue, fmtMoney, setById } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, setById, cardImgLarge } from '../game/engine'
 
 const TONE_ICON = { kind: '💛', fair: '🤝', cold: '🥶' }
 
@@ -21,7 +21,7 @@ function TradeItem({ card, sealed }) {
   return (
     <div className="trade-item">
       <HoloCard card={card} maxTilt={14} className="enc-card trade-card">
-        <img src={card.imgLarge || card.img} alt={card.name} decoding="async" />
+        <img src={cardImgLarge(card)} alt={card.name} decoding="async" />
       </HoloCard>
       <div className="trade-name">{card.name}</div>
       <div className="trade-val">{fmtMoney(cardValue(card))}</div>
@@ -79,7 +79,7 @@ export default function Encounter({ data, onPick, onClose }) {
           </div>
         ) : data.card && (
           <div style={{ display:'flex', justifyContent:'center', margin:'8px 0' }}>
-            <HoloCard card={data.card} maxTilt={16} className="enc-card"><img src={data.card.imgLarge || data.card.img} alt={data.card.name} decoding="async" fetchpriority="high" /></HoloCard>
+            <HoloCard card={data.card} maxTilt={16} className="enc-card"><img src={cardImgLarge(data.card)} alt={data.card.name} decoding="async" fetchpriority="high" /></HoloCard>
           </div>
         )}
 

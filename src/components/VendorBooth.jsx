@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, setById } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, setById, cardImg } from '../game/engine'
 import { vendorRapport, nextVendorRapport } from '../game/shows'
 import CardTile, { rarityColor } from './CardTile'
 import CardModal from './CardModal'
@@ -335,7 +335,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                 const rep = g.first
                 return (
                   <div key={g.key} className="trade-line" style={{ cursor: 'default' }}>
-                    <img className="tl-thumb" src={rep.img} alt="" style={{ cursor: 'zoom-in' }}
+                    <img className="tl-thumb" src={cardImg(rep)} alt="" style={{ cursor: 'zoom-in' }}
                       title="Tap to open this card — check its PSA upside before selling it away"
                       onClick={() => setInspect({ card: rep, owned: true })} />
                     <div className="tl-info">
@@ -480,7 +480,7 @@ function MysteryReveal({ result, onClose }) {
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
         <h3 style={{ marginTop: 0 }}>{hit ? '🎉 ' : '❓ '}{packName}</h3>
         <div className="vendoritem featured" style={{ '--rarity': edge, maxWidth: 200, margin: '0 auto' }}>
-          <img src={card.img} alt={card.name} style={{ width: '100%', borderRadius: 8 }} />
+          <img src={cardImg(card)} alt={card.name} style={{ width: '100%', borderRadius: 8 }} />
           <div style={{ fontWeight: 800, fontSize: 13 }}>{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
           <div className="muted" style={{ fontSize: 11, color: edge }}>{card.foil ? card.foil.label : card.rarity}</div>
           <div style={{ fontWeight: 800, color: 'var(--green)' }}>{fmtMoney(val)}</div>
@@ -616,7 +616,7 @@ function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, seal
               ))}
               {mineCardLines.slice(0, MAX_LINES).map(g => (
                 <QtyLine key={g.key}
-                  thumb={<img className="tl-thumb" src={g.first.img} alt="" loading="lazy" />}
+                  thumb={<img className="tl-thumb" src={cardImg(g.first)} alt="" loading="lazy" />}
                   name={`${g.first.foil ? `${g.first.foil.badge} ` : g.first.reverse ? '✨ ' : ''}${g.first.name}`}
                   sub={`${skuBadge(g.first)} · ${fmtMoney(round2(g.unit * buyMult))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
                   count={g.count} qty={giveQty[g.key] || 0}
@@ -644,7 +644,7 @@ function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, seal
               ))}
               {theirCardLines.map(g => (
                 <QtyLine key={g.key}
-                  thumb={<img className="tl-thumb" src={g.first.img} alt="" loading="lazy" />}
+                  thumb={<img className="tl-thumb" src={cardImg(g.first)} alt="" loading="lazy" />}
                   name={`${g.first.foil ? `${g.first.foil.badge} ` : g.first.reverse ? '✨ ' : ''}${g.first.name}`}
                   sub={`${skuBadge(g.first)} · ${fmtMoney(g.unit)} each${g.count > 1 ? ` · ${g.count} on the table` : ''}`}
                   count={g.count} qty={getQty[g.key] || 0}

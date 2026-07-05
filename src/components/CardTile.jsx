@@ -1,4 +1,4 @@
-import { cardValue, isHit, fmtMoney, CONDITIONS } from '../game/engine'
+import { cardValue, isHit, fmtMoney, CONDITIONS, cardImg } from '../game/engine'
 import HoloCard from './HoloCard'
 
 const RARITY_COLOR = {
@@ -39,7 +39,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
             <div className="slab-cert">{card.name}</div>
           </div>
           <div className="slab-window">
-            <img src={card.img} alt={card.name} loading="lazy" decoding="async" />
+            <img src={cardImg(card)} alt={card.name} loading="lazy" decoding="async" />
           </div>
           <span className="price">{fmtMoney(cardValue(card))}</span>
         </div>
@@ -61,7 +61,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
         {!card.grade && card.condition && card.condition !== 'NM' && (
           <span className="condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
         )}
-        <img src={card.img} alt={card.name} loading="lazy" decoding="async" />
+        <img src={cardImg(card)} alt={card.name} loading="lazy" decoding="async" />
         <span className="price">{fmtMoney(cardValue(card))}</span>
       </div>
     </HoloCard>

@@ -22,6 +22,7 @@
 import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { stripDerivableImages } from './strip-derivable-images.mjs'
 
 // EUR→USD conversion for Cardmarket prices (approximate; used as fallback only).
 const EUR_USD = 1.08
@@ -713,6 +714,12 @@ async function main() {
   const carried = (prevMeta?.sets || []).filter(s => !fetchedIds.has(s.id))
   const finalSets = [...carried, ...validated]
   if (carried.length) console.log(`Carried ${carried.length} set(s) not in this run: ${carried.map(s => s.id).join(', ')}`)
+
+  // Drop image URLs the runtime rebuilds from card id+number (engine.js cardImg) —
+  // ~40% of the snapshot's raw bytes. Only exact-pattern matches are stripped;
+  // idempotent for sets carried forward from an already-stripped snapshot.
+  const imgStats = stripDerivableImages(finalSets)
+  console.log(`Stripped derivable art URLs from ${imgStats.stripped}/${imgStats.total} cards (${imgStats.keptExplicit} keep explicit URLs).`)
 
   await mkdir('src/data', { recursive: true })
   await writeFile('src/data/sets.json', JSON.stringify({

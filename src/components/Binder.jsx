@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import {
   SETS, setCompletion, completionReward, isChaseCard, fmtMoney,
-  cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard,
+  cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
 } from '../game/engine'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
@@ -137,7 +137,7 @@ export default function Binder({ onPick }) {
             const anyOwned = variants.map(v => placed.get(`${c.id}:${v}`) || loose.get(`${c.id}:${v}`)).find(Boolean)
             const ownsAny = !!anyOwned
             const chase = isChaseCard(c)
-            const art = anyOwned?.img || c.img
+            const art = cardImg(anyOwned) || cardImg(c)
             return (
               <div key={c.id} className={`binder-slot masterset ${ownsAny ? 'owned' : 'missing'} ${chase ? 'chase' : ''}`}>
                 <div className="binder-slot-art" onClick={() => anyOwned && onPick?.(anyOwned)} title={anyOwned ? c.name : `${c.name} · ${c.rarity}`}>

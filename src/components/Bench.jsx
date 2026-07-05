@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate } from '../game/engine'
+import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate, cardImg } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -30,7 +30,7 @@ export default function Bench() {
             const pct = Math.min(100, 100 * (totalDays - daysLeft) / totalDays)
             return (
               <div className="product" key={p.card.uid} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <img src={p.card.img} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
+                <img src={cardImg(p.card)} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>
                   <div className="muted" style={{ fontSize: 12 }}>{GRADING[p.tierKey].name} grading</div>

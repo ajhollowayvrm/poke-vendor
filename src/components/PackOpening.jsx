@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, HIT_THRESHOLD } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, HIT_THRESHOLD, cardImg } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -278,7 +278,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   return (
                     <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
-                      <img src={c.img} alt="" />
+                      <img src={cardImg(c)} alt="" />
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                         <div className="rip-hit-meta" style={{ color: edge }}>
@@ -438,7 +438,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                             a sync decode here stalls the compositor and leaves cards frozen
                             face-down mid-reveal. preloadCardImages() already warms the decoded
                             bitmap (img.decode()), so the front still paints whole and instant. */}
-                        <div className="flip-front"><img src={c.img} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
+                        <div className="flip-front"><img src={cardImg(c)} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
                       </div>
                     </HoloCard>
                   )
@@ -490,7 +490,7 @@ function NowRevealing({ card }) {
           : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
-            <img src={card.img} alt={card.name} decoding="async" fetchpriority="high" />
+            <img src={cardImg(card)} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
@@ -532,7 +532,7 @@ function HitList({ hits }) {
             const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
             return (
               <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
-                <img src={c.img} alt="" />
+                <img src={cardImg(c)} alt="" />
                 <div className="rip-hit-info">
                   <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                   <div className="rip-hit-meta" style={{ color: edge }}>

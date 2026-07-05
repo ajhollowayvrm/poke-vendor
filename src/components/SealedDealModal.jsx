@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGame } from '../game/store'
-import { fmtMoney } from '../game/engine'
+import { fmtMoney, cardImg } from '../game/engine'
 import HoloCard from './HoloCard'
 import { useModalEscape } from '../ui/dialog'
 
@@ -53,7 +53,7 @@ export default function SealedDealModal({ enc, idx, onDone, onCancel, flash }) {
         <h2 style={{ fontSize: 19 }}>{enc.title}</h2>
         {enc.card && (
           <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
-            <HoloCard card={enc.card} maxTilt={16} className="enc-card"><img src={enc.card.img} alt="" decoding="async" /></HoloCard>
+            <HoloCard card={enc.card} maxTilt={16} className="enc-card"><img src={cardImg(enc.card)} alt="" decoding="async" /></HoloCard>
           </div>
         )}
         <p style={{ fontSize: 15, lineHeight: 1.45 }}>{enc.body}</p>

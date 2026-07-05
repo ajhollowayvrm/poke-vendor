@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS } from '../game/engine'
+import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -150,7 +150,7 @@ export default function ShowFloor({ show, onLeave }) {
           addNotoriety(bump)
           useGame.getState().log('hype', `${who} hit ${what} from product they bought at your booth — your name's buzzing! (+${bump} notoriety)`, 0)
         }
-        setAnnounce({ who, verb, what, at, card: best.img, value: cardValue(best), god: !!pack._god, demigod: !!pack._demigod, mine, id: Date.now() })
+        setAnnounce({ who, verb, what, at, card: cardImg(best), value: cardValue(best), god: !!pack._god, demigod: !!pack._demigod, mine, id: Date.now() })
         setTimeout(() => setAnnounce(a => (a && a.id ? null : a)), 5000)
       }
     }, 4000)

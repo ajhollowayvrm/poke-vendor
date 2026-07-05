@@ -6,6 +6,26 @@ import { getIdToken } from './auth'
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
 
+// Card art URL resolution. pokemontcg.io art follows a fixed pattern derived from the
+// card's id + number, so the data snapshot omits those URLs (~40% of its raw bytes) and
+// they're rebuilt here. Cards with an explicit img/imgLarge — scrydex-hosted newest sets,
+// the pattern-breakers (cel25's cel25c paths, suffixed filenames), synthetic pseudo-cards —
+// use it verbatim. ALWAYS read card art through these, never card.img directly: card
+// instances minted after the strip don't carry the fields.
+export function cardImg(card) {
+  if (!card) return null
+  if (card.img) return card.img
+  const sid = setIdOfCard(card)
+  return sid && card.number ? `https://images.pokemontcg.io/${sid}/${card.number}.png` : null
+}
+export function cardImgLarge(card) {
+  if (!card) return null
+  if (card.imgLarge) return card.imgLarge
+  if (card.img) return card.img // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
+  const sid = setIdOfCard(card)
+  return sid && card.number ? `https://images.pokemontcg.io/${sid}/${card.number}_hires.png` : null
+}
+
 // Card art lives on a remote CDN, so a just-pulled card can pop in slowly mid-reveal.
 // Warm the browser cache the instant a pack is opened (or about to be), so by the time
 // the reveal animation reaches each card its image is already downloaded + decoded.
@@ -14,7 +34,7 @@ const _imgWarmed = new Set()
 export function preloadCardImages(cards) {
   if (typeof Image === 'undefined' || !cards) return
   for (const c of cards) {
-    const url = c?.img
+    const url = cardImg(c)
     if (!url || _imgWarmed.has(url)) continue
     _imgWarmed.add(url)
     const img = new Image()

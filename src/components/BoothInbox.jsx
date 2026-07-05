@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS } from '../game/store'
-import { fmtMoney, cardValue, sealedValue, setById, round2 } from '../game/engine'
+import { fmtMoney, cardValue, sealedValue, setById, round2, cardImg } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 import Encounter from './Encounter'
@@ -217,7 +217,7 @@ export default function BoothInbox() {
                   <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))' }}>
                     {storeConsignRequests.map(r => (
                       <div key={r.id} className="product">
-                        {r.card.img && <img src={r.card.img} alt="" style={{ width: 56, borderRadius: 8, alignSelf: 'center' }} />}
+                        {cardImg(r.card) && <img src={cardImg(r.card)} alt="" style={{ width: 56, borderRadius: 8, alignSelf: 'center' }} />}
                         <h3 style={{ fontSize: 14, margin: 0 }}>{r.who} brings a {r.card.name}</h3>
                         <div className="meta" style={{ flex: 1 }}>
                           Their ask <b>{fmtMoney(r.ask)}</b> · your cut <b style={{ color: 'var(--green)' }}>{Math.round(r.commissionPct * 100)}% ({fmtMoney(r.ask * r.commissionPct)})</b>
@@ -297,7 +297,7 @@ export default function BoothInbox() {
                     {heldItems.map(({ kind, it }) => (
                       <div key={it.uid} className="trade-line stock-line" style={{ cursor: 'default' }}>
                         {kind === 'card'
-                          ? <img className="tl-thumb" src={it.img} alt="" loading="lazy" decoding="async" />
+                          ? <img className="tl-thumb" src={cardImg(it)} alt="" loading="lazy" decoding="async" />
                           : <span className="tl-icon">{it.product.icon || '📦'}</span>}
                         <div className="tl-info">
                           <div className="tl-name">{kind === 'card' ? it.name : `${it.product.type} · ${setById(it.setId)?.name || 'sealed'}`}</div>
@@ -551,7 +551,7 @@ export default function BoothInbox() {
                   return (
                     <div key={key} className="product" style={{ cursor: 'pointer' }} onClick={() => setActive({ enc, idx: i })}>
                       <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
-                      {enc.card && <img src={enc.card.img} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
+                      {enc.card && <img src={cardImg(enc.card)} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
                       <h3 style={{ fontSize: 15, margin: 0 }}>{enc.title}</h3>
                       <div className="meta" style={{ flex: 1 }}>{enc.body.slice(0, 90)}…</div>
                       <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →' : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
@@ -751,7 +751,7 @@ function StockLine({ line, holdEnabled, holdTitle, onHold, flash }) {
   return (
     <div className={`trade-line stock-line ${allKept ? 'kept' : ''}`}>
       {kind === 'card'
-        ? <img className="tl-thumb" src={first.img} alt="" loading="lazy" decoding="async" />
+        ? <img className="tl-thumb" src={cardImg(first)} alt="" loading="lazy" decoding="async" />
         : <span className="tl-icon">{first.product.icon || '📦'}</span>}
       <div className="tl-info">
         <div className="tl-name">{featuredCopy ? '⭐ ' : ''}{label}</div>

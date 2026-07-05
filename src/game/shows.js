@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg } from './engine'
 import { omniShelfCards } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
@@ -1035,7 +1035,7 @@ export function makeShopRequest(s, accepted = null) {
   const have = [...shelf, ...back]
   if (have.length && Math.random() < 0.55) {
     const { c, loc } = pickAny(null, have)
-    return build({ label: c.name, article: 'a', img: c.img, price: priceFor(cardValue(c)), loc, kind: 'card', uid: c.uid })
+    return build({ label: c.name, article: 'a', img: cardImg(c), price: priceFor(cardValue(c)), loc, kind: 'card', uid: c.uid })
   }
   const want = cardInValueRange(1, 300)
   const onShelf = caseCards.find(x => x.id === want.id)
@@ -1185,7 +1185,7 @@ export function makeWant(rich = false) {
     return {
       id: `w${Math.floor(Math.random()*1e9).toString(36)}`,
       kind: 'card', who, daysLeft,
-      cardId: card.id, cardName: card.name, img: card.img, setName,
+      cardId: card.id, cardName: card.name, img: cardImg(card), setName,
       premiumMult: round2(premium),
       notoriety: 1 + Math.floor(price / 20),
       desc: `${cap(who)} wants a ${card.name}${setName ? ` (${setName})` : ''}`,

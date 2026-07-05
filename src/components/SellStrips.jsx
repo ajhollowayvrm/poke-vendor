@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGame } from '../game/store'
-import { fmtMoney, cardValue } from '../game/engine'
+import { fmtMoney, cardValue, cardImg } from '../game/engine'
 
 // The "on the market" panel — cards you've listed on your own site (browsed by
 // real customers) and cards you've consigned. Lives on the Sell tab.
@@ -73,7 +73,7 @@ function ListingRow({ l }) {
   return (
     <div className={`listing-row ${l.stale ? 'stale' : ''}`}>
       <div className="listing-main">
-        {l.card.img && <img src={l.card.img} alt="" className="listing-thumb" />}
+        {cardImg(l.card) && <img src={cardImg(l.card)} alt="" className="listing-thumb" />}
         <div className="listing-info">
           <div className="listing-name">
             {l.card.name}
