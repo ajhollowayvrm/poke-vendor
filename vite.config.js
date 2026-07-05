@@ -18,11 +18,15 @@ export default defineConfig({
         // remote card images: cache-on-use so a revisited card shows offline
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.hostname === 'images.pokemontcg.io',
+            // Card art lives on BOTH hosts — pokemontcg.io (older sets) and scrydex.com
+            // (the newest sets, ~10% of cards and the ones you rip most). Matching only
+            // pokemontcg.io meant the newest sets' art re-downloaded every session and
+            // never worked offline. maxEntries bumped to cover the full card pool.
+            urlPattern: ({ url }) => url.hostname === 'images.pokemontcg.io' || url.hostname === 'images.scrydex.com',
             handler: 'CacheFirst',
             options: {
               cacheName: 'card-images',
-              expiration: { maxEntries: 1200, maxAgeSeconds: 60 * 60 * 24 * 30, purgeOnQuotaError: true },
+              expiration: { maxEntries: 6000, maxAgeSeconds: 60 * 60 * 24 * 30, purgeOnQuotaError: true },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

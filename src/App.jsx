@@ -26,6 +26,7 @@ import Binder from './components/Binder'
 import Regulars from './components/Regulars'
 import GradeReveal from './components/GradeReveal'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
+import { configureFeedback } from './game/feedback'
 import { AnimatedNumber } from './ui/AnimatedNumber'
 import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
@@ -119,6 +120,13 @@ export default function App() {
     startAutoSync()
     warmPricesOnBoot().catch(() => {}) // re-apply the last price snapshot (and freshen if stale)
   }, [])
+
+  // Keep the audio/haptics engine in sync with the settings, at boot AND when toggled —
+  // feedback defaults ON and only PackOpening synced it before, so GradeReveal/stream sfx
+  // could fire with sound turned off until a rip mounted. This effect covers both cases.
+  const soundOn = useGame(s => s.settings?.sound ?? true)
+  const hapticsOn = useGame(s => s.settings?.haptics ?? true)
+  useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
 
   function handleNextDay() {
     const summary = useGame.getState().nextDay()
@@ -437,6 +445,7 @@ export default function App() {
             key={ripping.nonce ?? 0}
             set={ripping.set}
             product={ripping.product}
+            paused={tab !== 'shop'}
             onExit={() => setRipping(null)}
             ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
             ripAnotherStock={ripStock}

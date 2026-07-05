@@ -47,13 +47,23 @@ export function appendFeeMsg(msg, fee, payMethod, net = null) {
   return out
 }
 
-// Rough liquidation value: cash + market value of the raw/graded collection. Used to
-// decide whether a behind-on-rent player still has a comeback (assets to sell) or is done,
-// and to power the net-worth / runway readouts.
+// Liquidation value: cash + everything you could actually sell to dig out of rent arrears.
+// Powers the rent death-check and the runway readouts, so it MUST count the liquid buckets
+// beyond the collection — a player sitting on $50k of sealed (flippable at ~80% in one tap)
+// but an empty collection is NOT bankrupt. Sealed takes a fire-sale haircut (flip rate);
+// cards at market value; consignments at their owed net; issued store credit is a liability.
+const FLIP = 0.8 // instant sealed-flip rate (SEALED_FLIP_RATE) — the fast-cash haircut
 export function realizableAssets(s) {
-  const coll = (s.collection || []).reduce((sum, c) => sum + cardValue(c), 0)
-  const binder = (s.binder || []).reduce((sum, c) => sum + cardValue(c), 0)
-  return round2((s.cash || 0) + coll + binder)
+  const cv = (arr) => (arr || []).reduce((a, c) => a + cardValue(c), 0)
+  const sv = (arr) => (arr || []).reduce((a, it) => a + sealedValue(it) * FLIP, 0)
+  return round2(
+    (s.cash || 0)
+    + cv(s.collection) + cv(s.binder) + cv(s.shopDisplay) + cv(s.showInventory)
+    + (s.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
+    + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
+    + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
+    + sv(s.sealedInventory) + sv(s.showSealed) + sv(s.shopSealed)
+    - (s.storeCredit || 0))
 }
 
 // FULL net worth: cash on hand + the market value of EVERY asset you hold, wherever it

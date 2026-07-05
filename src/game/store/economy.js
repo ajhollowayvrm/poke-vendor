@@ -182,7 +182,10 @@ export function createEconomySlice(set, get) {
         set({ job, pendingJob: null })
         get().log('job', `Started a job: ${job.title} ($${job.wage}/day)`, 0)
       } else {
-        const startsOnDay = get().currentDay + job.start
+        // ABSOLUTE day (month-safe), matching the day-tick comparison. Was in-month
+        // currentDay + start, which on day 30 produced startsOnDay=32 — unreachable once
+        // the day wraps to 1, so the job never started (same bug class as the v28 grade fix).
+        const startsOnDay = absoluteDay(get().currentDay, get().monthsElapsed) + job.start
         set({ pendingJob: { job, startsOnDay } })
         get().log('job', `Hired as ${job.title} — starts in ${job.start} day${job.start>1?'s':''} ($${job.wage}/day)`, 0)
       }

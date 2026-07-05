@@ -65,10 +65,14 @@ export function fatigueMult(streamFatigue = 0) {
 
 // How much a single pull moves the room. A hit pulls people IN (and they tell friends);
 // a dead pack lets the count sag a little. Returns a multiplier on current viewers.
-export function viewerReaction(card, rnd = Math.random) {
+// `ignoreGod`: the caller applies the god/demigod "room explodes" bump ONCE per pack (on
+// the first card), then passes ignoreGod=true for the rest — otherwise every one of the
+// 10 top-rarity cards in a god pack compounds a 1.6-2.1× multiply (~110×+ viewers/pack).
+// With ignoreGod the remaining cards fall to their real-rarity reaction (a modest surge).
+export function viewerReaction(card, rnd = Math.random, ignoreGod = false) {
   if (!card) return 1
-  if (card._fromGod || card._god) return 1.6 + rnd() * 0.5      // god pack — room explodes
-  if (card._fromDemigod || card._demigod) return 1.3 + rnd() * 0.4 // demigod — big surge
+  if (!ignoreGod && (card._fromGod || card._god)) return 1.6 + rnd() * 0.5      // god pack — room explodes
+  if (!ignoreGod && (card._fromDemigod || card._demigod)) return 1.3 + rnd() * 0.4 // demigod — big surge
   if (isStreamHype(card)) return 1.18 + rnd() * 0.22            // SIR+/foil — surge
   if (isHit(card)) return 1.04 + rnd() * 0.08                   // a normal hit — modest bump
   return 0.97 + rnd() * 0.05                                    // bulk — slight drift down

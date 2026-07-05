@@ -51,6 +51,14 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
+  // Grading Scope prediction: Monte-Carlo the real grade roll (honours cut/condition/loupe)
+  // to show a likely grade range before you pay. Only computed for raw cards when owned.
+  // MUST stay above the `!card` early return — it's a hook, and a hook that only runs on
+  // some renders changes the hook count and crashes React (rules of hooks). It already
+  // null-guards `card` internally, so it's safe to always call.
+  const prediction = useMemo(
+    () => (hasScope && card && !card.grade) ? gradePrediction(card, hasLoupe ? 0.08 : 0) : null,
+    [hasScope, hasLoupe, card])
   if (!card) return null
   const g = card.grade
   const tier = graderTier(submitted)
@@ -59,11 +67,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
   const quote = listingQuote(card, askMult)
   // This card's value reprojected across the set's recent market window (raw or graded).
   const priceSeries = valueHistory(card, marketHistory?.[setIdOfCard(card)])
-  // Grading Scope prediction: Monte-Carlo the real grade roll (honours cut/condition/loupe)
-  // to show a likely grade range before you pay. Only computed for raw cards when owned.
-  const prediction = useMemo(
-    () => (hasScope && card && !card.grade) ? gradePrediction(card, hasLoupe ? 0.08 : 0) : null,
-    [hasScope, hasLoupe, card])
 
   return (
     <div className="modalbg" onClick={onClose}>

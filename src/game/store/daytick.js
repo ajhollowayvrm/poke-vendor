@@ -435,9 +435,11 @@ export function advanceDaysWith(set, get, days, away) {
   const openOnline = listedCards.length > 0 || hasBargain
   const openWalkin = shelfCards.length > 0 || sellableSealed.length > 0
   for (let i = 0; i < days; i++) {
-    const dayNo = s.currentDay + i + 1 // the day being entered
-    // a pending job starts paying once its start day arrives
-    if (pendingJob && dayNo >= pendingJob.startsOnDay) { activeJob = pendingJob.job; pendingJob = null }
+    const dayNo = s.currentDay + i + 1 // the day being entered (in-month, may exceed 30 mid-loop)
+    // a pending job starts paying once its start day arrives — compared in ABSOLUTE days
+    // (month-safe) so a job taken late in a month can't be stranded past the wrap.
+    const enteringAbsDay = absoluteDay(s.currentDay, s.monthsElapsed) + i + 1
+    if (pendingJob && enteringAbsDay >= pendingJob.startsOnDay) { activeJob = pendingJob.job; pendingJob = null }
     wagesEarned += activeJob?.wage || 0
     // Rent creeps up with the calendar: use the month the day being entered falls in, so a
     // multi-day jump that crosses a month boundary charges the higher rate for later days.

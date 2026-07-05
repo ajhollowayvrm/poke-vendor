@@ -15,7 +15,7 @@ function isChase(c) { return c.foil?.key === 'masterball' || rarityRank(c.rarity
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherPrice, ripAnotherStock = 0 }) {
+export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherPrice, ripAnotherStock = 0, paused = false }) {
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -187,6 +187,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   // The user can still click through manually; any manual nextPack/rip pre-empts the timer.
   useEffect(() => {
     if (!autoAdvance) return
+    // Don't auto-rip while the overlay is hidden (you've left the Buy tab). It stays
+    // mounted so you can resume, but the banner says "Rip in progress — tap to resume",
+    // so it must actually PAUSE — not keep cracking packs invisibly. Resumes on return
+    // (`paused` is in the deps).
+    if (paused) return
     if (phase === 'done' && !last) {
       const t = setTimeout(() => nextPack(), ms(3000))
       return () => clearTimeout(t)
@@ -196,7 +201,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       const t = setTimeout(() => rip(), ms(600))
       return () => clearTimeout(t)
     }
-  }, [phase, packNo, autoAdvance, last, totalPacks, speed])
+  }, [phase, packNo, autoAdvance, last, totalPacks, speed, paused])
 
   // Mint the product's guaranteed promo (if any), add it, and finish.
   function addBonusAndFinish() {

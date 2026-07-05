@@ -283,6 +283,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [orders, setOrders] = useState([])                 // pending live rip orders (upgrade only)
 
   const peakRef = useRef(settled)
+  const viewersRef = useRef(settled) // live viewer count for tips (peakRef is monotonic — see below)
+  const godBumpedRef = useRef(false) // has THIS pack's god/demigod room-explosion already fired?
   const chatBoxRef = useRef(null)
   const finishedRef = useRef(false)
   const autoRef = useRef(false)
@@ -339,7 +341,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         const drift = Math.round((settled - v) * 0.08)
         const jitter = Math.round((Math.random() - 0.45) * Math.max(2, v * 0.04))
         const next = Math.max(1, v + drift + jitter)
-        peakRef.current = Math.max(peakRef.current, next); return next
+        peakRef.current = Math.max(peakRef.current, next); viewersRef.current = next; return next
       })
     }, 1600 / speed)
     return () => clearInterval(id)
@@ -421,6 +423,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     const demigod = !e.packRip && !!cards._demigod
     if (god) cards.forEach(c => { c._fromGod = true })
     if (demigod) cards.forEach(c => { c._fromDemigod = true })
+    godBumpedRef.current = false // fresh pack — its god/demigod explosion hasn't fired yet
     if (!e.packRip) {
       addPulls(cards, `🔴 ${e.set.name} (live)`)
       useGame.getState().escrowPackRipped(e.invUid) // session record: this pack is cracked
@@ -462,7 +465,21 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     }
     setHypeLevel(hypeRef.current)
     const hypeMult = hypeTrainMult(hypeRef.current)
-    setViewers(v => { const next = Math.max(1, Math.round(v * viewerReaction(c))); peakRef.current = Math.max(peakRef.current, next); return next })
+    // Viewer reaction: apply a god/demigod pack's "room explodes" bump ONCE (first flagged
+    // card of the pack); the rest react by their real rarity. Without this, all 10 top-rarity
+    // cards compounded a 1.6-2.1× multiply — ~110×+ viewers per god pack, cascading into
+    // quadratic tips. Live viewers are also clamped to 8× the settled room so no single
+    // moment can run away.
+    const isGodCard = c._fromGod || c._fromDemigod
+    const ignoreGod = isGodCard && godBumpedRef.current
+    if (isGodCard && !godBumpedRef.current) godBumpedRef.current = true
+    const reaction = viewerReaction(c, Math.random, ignoreGod)
+    setViewers(v => {
+      const next = Math.max(1, Math.min(Math.round(settled * 8), Math.round(v * reaction)))
+      peakRef.current = Math.max(peakRef.current, next)
+      viewersRef.current = next
+      return next
+    })
     // Sound: rarer cards ring higher; chase-tier adds a shimmer (mirrors PackOpening).
     if (special) sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, kind === 'hype' || kind === 'god')
     pushChat(chatLine(kind, Math.random, c))
@@ -474,7 +491,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       maybeSellLiveSpot(c)
     }
     if (special) setHits(h => [c, ...h])
-    const t = tipsFor(c, peakRef.current, Math.random, hypeMult)
+    const t = tipsFor(c, viewersRef.current, Math.random, hypeMult) // tips scale with the LIVE room, not the all-time peak
     if (t > 0) { setTips(x => Math.round((x + t) * 100) / 100); if (t >= 3 || kind === 'hype' || kind === 'god') after(() => pushChat(chatLine('tip')), ms(200)) }
     const delay = special ? 900 : 360
     after(() => revealNext(cards, i + 1), ms(delay))
@@ -628,10 +645,14 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         if (!e.packRip && cards._god) cards.forEach(c => { c._fromGod = true })
         if (!e.packRip && cards._demigod) cards.forEach(c => { c._fromDemigod = true })
         if (!e.packRip) addPulls(cards, `🔴 ${e.set.name} (live)`)
+        let godBumped = false // one god/demigod room-explosion per pack (same as the live path)
         cards.forEach((c) => {
           const startIdx = allPulled.current.filter(pp => pp.entryIdx === idx).length
           allPulled.current.push({ card: c, spot: e.isBreak ? startIdx % e.spots : null, entryIdx: idx })
-          v = Math.max(1, Math.round(v * viewerReaction(c)))
+          const isGodCard = c._fromGod || c._fromDemigod
+          const reaction = viewerReaction(c, Math.random, isGodCard && godBumped)
+          if (isGodCard) godBumped = true
+          v = Math.max(1, Math.min(Math.round(settled * 8), Math.round(v * reaction)))
           peakRef.current = Math.max(peakRef.current, v)
           const kind = reactionKind(c)
           if (kind === 'hype' || kind === 'god') {
@@ -645,7 +666,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           hypeRef.current = good
             ? Math.min(HYPE_TRAIN_MAX, hypeRef.current + (kind === 'god' ? 3 : (kind === 'hype' || kind === 'demigod') ? 2 : 1))
             : Math.max(0, hypeRef.current - 1)
-          addedTips += tipsFor(c, peakRef.current, Math.random, hypeTrainMult(hypeRef.current))
+          addedTips += tipsFor(c, v, Math.random, hypeTrainMult(hypeRef.current)) // live count, not peak
           if (c._isHit || c.foil) addedHits.push(c)
         })
       }

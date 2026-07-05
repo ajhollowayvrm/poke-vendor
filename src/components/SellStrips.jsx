@@ -16,7 +16,7 @@ export default function SellStrips() {
         <div className="market-panel">
           <div className="market-head">🌐 Listed for sale <span className="muted">({listings.length}) — online sales pay a 5% fee + shipping; 🏬+🌐 items can also sell in person, fee-free at a premium</span></div>
           <div className="market-list">
-            {listings.map((l, i) => <ListingRow key={i} l={l} i={i} />)}
+            {listings.map(l => <ListingRow key={l.card.uid} l={l} />)}
           </div>
         </div>
       )}
@@ -36,7 +36,7 @@ export default function SellStrips() {
   )
 }
 
-function ListingRow({ l, i }) {
+function ListingRow({ l }) {
   const acceptOffer = useGame(s => s.acceptOffer)
   const declineOffer = useGame(s => s.declineOffer)
   const repriceListing = useGame(s => s.repriceListing)
@@ -47,6 +47,15 @@ function ListingRow({ l, i }) {
   const hasStore = useGame(s => !!s.upgrades.storefront)
   const [repricing, setRepricing] = useState(false)
   const [mult, setMult] = useState(l.askMult || 1.1)
+
+  // The store's listing actions address by INDEX, but the listings array shifts under us
+  // when a sale/pull removes an earlier listing on a day-tick. Resolve the CURRENT index
+  // by this card's uid at click time so an action never lands on the wrong (shifted) row.
+  const uid = l.card.uid
+  const withIdx = (fn) => () => {
+    const idx = useGame.getState().listings.findIndex(x => x.card.uid === uid)
+    if (idx >= 0) fn(idx)
+  }
 
   const market = cardValue(l.card)
   const pct = Math.round((l.askMult || 1) * 100)
@@ -92,7 +101,7 @@ function ListingRow({ l, i }) {
           {(canEverywhere || l.everywhere) && (
             <button className="linkbtn"
               title={l.everywhere ? 'Take it out of the store case (keep the online listing)' : 'Also put it out in your store case — sells to walk-ins too, fee-free at a premium'}
-              onClick={() => setListingEverywhere(i, !l.everywhere)}>
+              onClick={withIdx(idx => setListingEverywhere(idx, !l.everywhere))}>
               {l.everywhere ? 'online only' : '+ store case'}
             </button>
           )}
@@ -101,13 +110,13 @@ function ListingRow({ l, i }) {
               className={`btn ${autoSellOn ? 'gold' : 'alt'}`}
               style={{ padding: '2px 8px', fontSize: 11, flex: 'none' }}
               title={autoSellOn ? '🤖 Auto-sell ON — click to hold for manual offers' : '🤖 Auto-sell OFF — click to re-enable'}
-              onClick={() => setListingAutoSell(i, !autoSellOn)}
+              onClick={withIdx(idx => setListingAutoSell(idx, !autoSellOn))}
             >
               🤖 {autoSellOn ? 'Auto' : 'Manual'}
             </button>
           )}
           <button className="linkbtn" onClick={() => setRepricing(v => !v)}>{repricing ? 'close' : 'reprice'}</button>
-          <button className="linkbtn" onClick={() => pullListing(i)}>pull</button>
+          <button className="linkbtn" onClick={withIdx(idx => pullListing(idx))}>pull</button>
         </div>
       </div>
 
@@ -116,7 +125,7 @@ function ListingRow({ l, i }) {
           <span className="muted">New ask: <b>{fmtMoney(market * mult)}</b> ({Math.round(mult * 100)}%)</span>
           <input type="range" min="0.8" max="2" step="0.05" value={mult}
             onChange={e => setMult(parseFloat(e.target.value))} />
-          <button className="btn" style={{ flex: 'none' }} onClick={() => { repriceListing(i, mult); setRepricing(false) }}>Reprice</button>
+          <button className="btn" style={{ flex: 'none' }} onClick={withIdx(idx => { repriceListing(idx, mult); setRepricing(false) })}>Reprice</button>
         </div>
       )}
 
@@ -127,8 +136,8 @@ function ListingRow({ l, i }) {
               {topOffer.icon} Offer <b>{fmtMoney(topOffer.amount)}</b> <span className="muted">(nets {fmtMoney(topOffer.net)})</span>
               {hiddenCount > 0 && <span className="muted" style={{ marginLeft: 6, fontSize: 11 }}>+{hiddenCount} more bid{hiddenCount > 1 ? 's' : ''}</span>}
             </span>
-            <button className="btn gold" style={{ flex: 'none' }} onClick={() => acceptOffer(i, topOffer.id)}>Accept</button>
-            <button className="linkbtn" onClick={() => declineOffer(i, topOffer.id)}>decline</button>
+            <button className="btn gold" style={{ flex: 'none' }} onClick={withIdx(idx => acceptOffer(idx, topOffer.id))}>Accept</button>
+            <button className="linkbtn" onClick={withIdx(idx => declineOffer(idx, topOffer.id))}>decline</button>
           </div>
         </div>
       )}
