@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids } from '../game/engine'
 import { toast as notify } from '../ui/dialog'
+import { AskPicker } from '../ui/AskPicker'
 import CardTile from './CardTile'
 
 // Shared Undo affordance for the bulk-sale toasts: reverses the sale atomically
@@ -214,17 +215,9 @@ export default function Collection({ onPick }) {
               </div>
             )}
             <div className="bulk-list-group">
-              <div className="list-pct-row">
-                <span className="muted" style={{ fontSize: 12 }}>Ask</span>
-                {[80, 90, 100, 110].map(p => (
-                  <button key={p} className={`pctbtn ${Math.round(listMult*100) === p ? 'on' : ''}`}
-                    onClick={e => { e.stopPropagation(); setListPct(p) }}>{p}%</button>
-                ))}
-                <input className="pctinput" type="number" min="50" max="300" step="5" value={listPct}
-                  onClick={e => e.stopPropagation()}
-                  onChange={e => setListPct(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))} />
+              <AskPicker pct={listPct} onChange={setListPct}>
                 <span className="muted" style={{ fontSize: 12 }}>%</span>
-              </div>
+              </AskPicker>
               {hasStore && (
                 <button className={`btn ${listEverywhere ? 'gold' : 'alt'}`} style={{ flex: 'none' }}
                   title={listEverywhere

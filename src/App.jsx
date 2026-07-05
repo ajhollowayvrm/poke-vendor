@@ -3,6 +3,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
+import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
 import { netWorthFull } from './game/store/helpers'
 import { startAutoSync } from './game/cloudSave'
@@ -449,17 +450,15 @@ export default function App() {
 
       {/* Shopper arrival choice: first dibs at open vs. marked-down late. */}
       {shopperShow && (
-        <div className="modalbg" onClick={() => setShopperShow(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 460, textAlign: 'center' }}>
-            <h2 style={{ marginTop: 0 }}>🛍️ {shopperShow.name}</h2>
-            <p className="muted" style={{ marginTop: 0 }}>Entry {fmtMoney(SHOW_TIERS[shopperShow.tierKey].entryFee)}. When do you walk the floor?</p>
-            <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
-              <button className="btn gold" onClick={() => enterAsShopper(shopperShow, 'open')}>🌅 Arrive at open — first dibs on the showcases</button>
-              <button className="btn alt" onClick={() => enterAsShopper(shopperShow, 'late')}>🌇 Roll in late — picked over, but vendors mark it down</button>
-            </div>
-            <button className="btn alt" style={{ marginTop: 12, maxWidth: 120 }} onClick={() => setShopperShow(null)}>Cancel</button>
+        <Modal onClose={() => setShopperShow(null)} style={{ textAlign: 'center' }} label={`Attend ${shopperShow.name}`}>
+          <h2 style={{ marginTop: 0 }}>🛍️ {shopperShow.name}</h2>
+          <p className="muted" style={{ marginTop: 0 }}>Entry {fmtMoney(SHOW_TIERS[shopperShow.tierKey].entryFee)}. When do you walk the floor?</p>
+          <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
+            <button className="btn gold" onClick={() => enterAsShopper(shopperShow, 'open')}>🌅 Arrive at open — first dibs on the showcases</button>
+            <button className="btn alt" onClick={() => enterAsShopper(shopperShow, 'late')}>🌇 Roll in late — picked over, but vendors mark it down</button>
           </div>
-        </div>
+          <button className="btn alt" style={{ marginTop: 12, maxWidth: 120 }} onClick={() => setShopperShow(null)}>Cancel</button>
+        </Modal>
       )}
       <DialogHost />
       <ToastHost />
@@ -515,8 +514,9 @@ function DaySummary({ summary, onClose }) {
   // just the day you entered.
   const multiDay = days > 1
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal recap" onClick={e => e.stopPropagation()} style={{ maxWidth: 430 }}>
+    <Modal onClose={onClose} className="recap" maxWidth={430} label="Day summary">
+      <>
+      {/* recap body */}
         <h2 style={{ marginBottom: 2, textAlign: 'center' }}>{showName ? `🎪 Back from ${showName}` : `📅 Day ${currentDay}`}</h2>
         {multiDay && <div className="muted" style={{ fontSize: 13, marginBottom: 6, textAlign: 'center' }}>{days} days passed</div>}
 
@@ -632,8 +632,8 @@ function DaySummary({ summary, onClose }) {
           </div>
         )}
         <button className="btn gold" style={{ maxWidth: 160, marginTop: 12, marginLeft: 'auto', marginRight: 'auto', display: 'block' }} onClick={onClose}>Continue</button>
-      </div>
-    </div>
+      </>
+    </Modal>
   )
 }
 
@@ -643,17 +643,16 @@ function GameOver() {
   const reset = useGame(s => s.reset)
   if (!gameOver) return null
   return (
-    <div className="modalbg" style={{ background: '#000d', zIndex: 50 }}>
-      <div className="modal" style={{ maxWidth: 420, textAlign: 'center' }}>
-        <h2 style={{ marginBottom: 6 }}>💸 Game Over</h2>
-        <p className="muted" style={{ marginTop: 0 }}>
-          You couldn't make rent and had nothing left to sell. The dream's over… for now.
-        </p>
-        <button className="btn gold" style={{ maxWidth: 200, margin: '8px auto 0' }} onClick={reset}>
-          Start over
-        </button>
-      </div>
-    </div>
+    <Modal dismissable={false} maxWidth={420} zIndex={50} label="Game over"
+      style={{ textAlign: 'center' }}>
+      <h2 style={{ marginBottom: 6 }}>💸 Game Over</h2>
+      <p className="muted" style={{ marginTop: 0 }}>
+        You couldn't make rent and had nothing left to sell. The dream's over… for now.
+      </p>
+      <button className="btn gold" style={{ maxWidth: 200, margin: '8px auto 0' }} onClick={reset}>
+        Start over
+      </button>
+    </Modal>
   )
 }
 

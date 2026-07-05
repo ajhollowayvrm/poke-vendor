@@ -3,6 +3,7 @@ import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gr
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
 import { rarityColor, gradeLabel } from './CardTile'
+import { AskPicker } from '../ui/AskPicker'
 import HoloCard from './HoloCard'
 import PriceChart from './PriceChart'
 
@@ -257,16 +258,9 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
                       onClick={() => setEverywhere(false)}>🌐 Online only</button>
                   </div>
                 )}
-                <div className="list-pct-row" style={{ marginTop: 8 }}>
-                  <span className="muted" style={{ fontSize: 12 }}>Ask</span>
-                  {[80, 90, 100, 110].map(p => (
-                    <button key={p} className={`pctbtn ${Math.round(askMult*100) === p ? 'on' : ''}`}
-                      onClick={() => setAskPct(p)}>{p}%</button>
-                  ))}
-                  <input className="pctinput" type="number" min="50" max="300" step="5" value={askPct}
-                    onChange={e => setAskPct(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))} />
+                <AskPicker pct={askPct} onChange={setAskPct}>
                   <b style={{ marginLeft: 'auto', textAlign:'right' }}>{fmtMoney(quote.ask)}</b>
-                </div>
+                </AskPicker>
                 <div className="list-quote">
                   <div><span className="muted">Online nets</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee + {fmtMoney(quote.ship ?? 0)} shipping</small></div>
                   <div><span className="muted">Shoppers/day</span><b>👀 ~{quote.viewsPerDay}</b><small className="muted">more with rep</small></div>

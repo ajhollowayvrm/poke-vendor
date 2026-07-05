@@ -55,14 +55,16 @@ try {
   await page.waitForTimeout(1200)
 
   // ---- 1. RIP EV per modern shop set ---------------------------------------------
-  console.log('\nRIP EV (avg pack value / booster price, N=600 packs per set) — want < 1.00:')
+  // N is large: pack value is fat-tailed (a rare chase dwarfs a whole box), so a small
+  // sample swings wildly run-to-run. 5k packs keeps the mean stable enough to gate on.
+  console.log('\nRIP EV (avg pack value / booster price, N=5000 packs per set) — want < 1.00:')
   const rip = await page.evaluate(async () => {
     const eng = await import('/src/game/engine.js')
     const out = []
     for (const s of eng.SHOP_SETS) {
       const booster = (s.products || []).find(p => p.packs === 1 && /booster pack/i.test(p.type || ''))
       if (!booster || !booster.price) continue
-      const N = 600
+      const N = 5000
       let total = 0
       for (let i = 0; i < N; i++) for (const c of eng.openPack(s)) total += eng.cardValue(c)
       out.push({ set: s.name, price: booster.price, ev: total / N })

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useGame } from '../game/store'
 import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE } from '../game/engine'
 import { toast } from '../ui/dialog'
+import { AskPicker } from '../ui/AskPicker'
 
 // Your SEALED product on hand — bought but not yet ripped. Identical products (same set +
 // type) STACK into one row with a quantity; each can be ripped (launches the normal rip,
@@ -156,12 +157,9 @@ function SealedRow({ items, onRip, hasStore }) {
 
       {listing && (
         <div className="sealed-list-ctl">
-          <div className="list-pct-row">
-            {[0.8, 0.9, 1.0, 1.1].map(m => (
-              <button key={m} className={`pctbtn ${mult === m ? 'on' : ''}`} onClick={() => setMult(m)}>{Math.round(m * 100)}%</button>
-            ))}
+          <AskPicker pct={Math.round(mult * 100)} onChange={p => setMult((p || 0) / 100)} custom={false} label={null}>
             <span className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>ask <b>{fmtMoney(unit * mult)}</b>{n > 1 ? ` ea · ${fmtMoney(unit * mult * n)} total` : ''}</span>
-          </div>
+          </AskPicker>
           <button className="btn gold" style={{ marginTop: 8, maxWidth: 220 }} onClick={doList}>List {n > 1 ? `${n} units` : 'for sale'}</button>
         </div>
       )}
