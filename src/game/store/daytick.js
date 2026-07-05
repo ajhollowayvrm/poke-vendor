@@ -17,7 +17,8 @@
 import {
   round2, cardValue, dailyViewers, rollBuyerSavvy, buyerMaxMult, BUYER_SAVVY,
   SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, driftMult, driftMultVintage,
-  applyMarketEvent, MARKET_EVENTS, setMarketMults, distributorById, restockRate,
+  applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
+  setMarketMults, distributorById, restockRate,
   marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById,
 } from '../engine'
@@ -143,17 +144,27 @@ function driftMarket(mults, history, days, log) {
   const events = []
   for (let d = 0; d < days; d++) {
     for (const s of SHOP_SETS) next[s.id] = driftMult(next[s.id])
-    // vintage sealed trends upward (finite, shrinking supply) — its own drift, no revert.
+    // vintage sealed trends upward (finite, shrinking supply) — tapering bias, no revert.
     for (const s of VINTAGE_SETS) next[s.id] = driftMultVintage(next[s.id])
     // aftermarket (older SM/XY) sealed also appreciates as supply dries up — same upward drift.
     for (const s of SECONDARY_SETS) next[s.id] = driftMultVintage(next[s.id])
-    // at most one event per day, on a random shop set
+    // at most one hype/crash event per day, on a random shop set
     if (Math.random() < MARKET_EVENT_CHANCE) {
       const s = SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]
       const ev = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)]
       const r = applyMarketEvent(next[s.id], ev)
       next[s.id] = r.mult
       events.push({ setId: s.id, setName: s.name, kind: ev.kind, pct: r.pct, line: r.line.replace('{set}', s.name) })
+    }
+    // Rare vintage/secondary CRASH — the tail risk that makes holding vintage a real bet,
+    // not a guaranteed climb. Checked per vintage/secondary set per day.
+    for (const s of [...VINTAGE_SETS, ...SECONDARY_SETS]) {
+      if (Math.random() < VINTAGE_CRASH_CHANCE) {
+        const ev = VINTAGE_CRASH_EVENTS[Math.floor(Math.random() * VINTAGE_CRASH_EVENTS.length)]
+        const r = applyMarketEvent(next[s.id], ev)
+        next[s.id] = r.mult
+        events.push({ setId: s.id, setName: s.name, kind: 'crash', pct: r.pct, line: r.line.replace('{set}', s.name) })
+      }
     }
   }
   // record one history sample per set per call (the post-drift value), capped.
@@ -526,11 +537,23 @@ export function advanceDaysWith(set, get, days, away) {
     if (!bigSale || net > bigSale.net) bigSale = { name, net }
   }
   const remainingConsign = []
+  const consignReturns = []
   for (const c of s.consignments) {
     const left = c.daysLeft - days
-    if (left <= 0) { soldProceeds = round2(soldProceeds + c.net); noteSale(c.card.name, c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net) }
+    if (left <= 0) {
+      // Consignment is no longer a GUARANTEED sale: ~15% of the time the service can't
+      // move it and the card comes home unsold. That risk is what stops consignment
+      // (high net, fast) from strictly dominating a plain auto-sell listing.
+      if (Math.random() < 0.15) {
+        consignReturns.push(c.card)
+        get().log('consign', `Consignment didn’t sell: ${c.card.name} came back unsold.`, 0)
+      } else {
+        soldProceeds = round2(soldProceeds + c.net); noteSale(c.card.name, c.net); get().log('sell', `Consignment sold: ${c.card.name}`, c.net)
+      }
+    }
     else remainingConsign.push({ ...c, daysLeft: left })
   }
+  if (consignReturns.length) set(st => ({ collection: [...consignReturns, ...st.collection] }))
   // resolve the distributor SUPPLY CHANNEL: product wholesaled to other vendors pays
   // out (net of your wholesale cost) as the days pass.
   const remainingSupply = []
@@ -755,6 +778,7 @@ export function advanceDaysWith(set, get, days, away) {
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
     regulars: decayRegulars(st.regulars, days),                           // relationships cool if you neglect them
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
+    giveawaysToday: 0,                                                     // fresh day → giveaway rep is full value again
   }))
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)

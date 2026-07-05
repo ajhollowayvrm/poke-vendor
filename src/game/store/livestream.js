@@ -157,12 +157,17 @@ export function createLivestreamSlice(set, get) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card) return null
       const val = cardValue(card)
-      // base crowd pop (scales with who's watching) + a value bonus (a grail giveaway blows up)
+      // Anti-farm (mirrors the in-store giveaway): penny cards give no rep, and each
+      // successive on-stream giveaway the same day halves the rep pop — mashing the picker
+      // on bulk in an empty-room stream no longer prints fame. Follower gain scales with
+      // the ROOM and the card, so an empty-room giveaway is naturally tiny anyway.
+      const done = get().giveawaysToday || 0
       const gained = 5 + Math.round(Math.max(0, viewers) * 0.04) + Math.min(150, Math.round(val * 0.5))
-      const notoBump = val >= 100 ? 3 : val >= 25 ? 2 : 1
-      set(s => ({ collection: s.collection.filter(c => c.uid !== uid) }))
-      get().addNotoriety(notoBump)
-      get().log('stream', `🎁 Gave away ${card.name} ($${val.toFixed(2)}) on stream — chat erupted (+${gained} followers coming, +${notoBump}★)`, 0)
+      const baseNoto = val >= 100 ? 3 : val >= 25 ? 2 : val >= 5 ? 1 : 0
+      const notoBump = Math.round(baseNoto * Math.pow(0.5, done))
+      set(s => ({ collection: s.collection.filter(c => c.uid !== uid), giveawaysToday: (s.giveawaysToday || 0) + 1 }))
+      if (notoBump > 0) get().addNotoriety(notoBump, true)
+      get().log('stream', `🎁 Gave away ${card.name} ($${val.toFixed(2)}) on stream — chat erupted (+${gained} followers coming${notoBump > 0 ? `, +${notoBump}★` : ''})`, 0)
       return { card, followers: gained }
     },
 

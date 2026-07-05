@@ -230,7 +230,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
                 </button>
                 <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
                   <b>Consign ↗</b>
-                  <small>Hands-off: a service sells it in a few days for a guaranteed ~0.85–0.95× market (18% fee). Reliable, but listing can reach/beat market.</small>
+                  <small>Hands-off: a service tries to sell it in a few days for ~0.85–0.95× market (18% fee). Usually moves it, but ~1 in 7 come back unsold.</small>
                 </button>
                 <button className="btn alt sellopt" onClick={() => toggleLock(card.uid)}>
                   <b>{locked ? '🔓 Unlock' : `🔒 ${hasStore ? 'Keep this card' : 'Lock this card'}`}</b>

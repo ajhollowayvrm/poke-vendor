@@ -241,7 +241,10 @@ export function createBoothSlice(set, get) {
       const cur = (get().showInventory || []).find(c => c._deal)
       const clearing = !uid || (cur && cur.uid === uid)
       set(s => ({ showInventory: (s.showInventory || []).map(c => ({ ...c, _deal: !clearing && c.uid === uid })) }))
-      if (!clearing) { get().addNotoriety(1); get().log('show', `Announced a Deal of the Show — the markdown is pulling a crowd.`, 0) }
+      // No notoriety here — announcing a deal draws a crowd (the +25% boothMult), it isn't
+      // itself a reputational act. It used to pay +1 per call, so toggling the flag between
+      // two cards farmed rep for free.
+      if (!clearing) get().log('show', `Announced a Deal of the Show — the markdown is pulling a crowd.`, 0)
     },
 
     // --- Pre-show leads (appointments) --------------------------------------------
@@ -343,15 +346,23 @@ export function createBoothSlice(set, get) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card || !get().upgrades.storefront) return false
       const value = cardValue(card)
-      const noto = Math.min(15, Math.round(2 + Math.sqrt(value)))
+      // Anti-farm: penny cards give no rep (a $0.10 common giveaway wasn't "generous"),
+      // and each successive giveaway THE SAME DAY pays sharply less (halving) — so you
+      // can't mash the picker on bulk for free fame. A single meaningful giveaway still
+      // lands its full pop. The traffic buzz + regular-trust warmth stay full either way.
+      const done = get().giveawaysToday || 0
+      const base = value < 5 ? 0 : Math.min(15, Math.round(2 + Math.sqrt(value)))
+      const noto = Math.round(base * Math.pow(0.5, done))
       set(s => ({
         collection: s.collection.filter(c => c.uid !== uid),
         giveawayDaysLeft: GIVEAWAY_BUZZ_DAYS,
+        giveawaysToday: (s.giveawaysToday || 0) + 1,
         generousActs: s.generousActs + 1,
         regulars: (s.regulars || []).map(r => r.flags?.burned ? r : { ...r, trust: Math.min(100, (r.trust || 0) + 3) }),
       }))
-      get().addNotoriety(noto, true)
-      get().log('give', `🎁 In-store giveaway! Gave away ${card.name} ($${value.toFixed(2)}) — the room went nuts. Word's out for ${GIVEAWAY_BUZZ_DAYS} days. (+${noto}★)`, 0)
+      if (noto > 0) get().addNotoriety(noto, true)
+      const repNote = noto > 0 ? ` (+${noto}★)` : done > 0 ? ' (the room’s already seen your generosity today)' : ' (too minor to move your rep)'
+      get().log('give', `🎁 In-store giveaway! Gave away ${card.name} ($${value.toFixed(2)}) — Word's out for ${GIVEAWAY_BUZZ_DAYS} days.${repNote}`, 0)
       get().bumpGoal('help', 1)
       get().checkMilestones()
       return { noto }

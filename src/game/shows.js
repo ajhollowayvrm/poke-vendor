@@ -230,11 +230,14 @@ export function haggleRound({ side, their, market, yourOffer, flex, round, archK
     }
   }
   if (goodForThem) return { accept: true }
-  // too aggressive → chance they walk, scaling with how far past their limit you pushed
+  // too aggressive → chance they walk, scaling with how far past their limit you pushed.
+  // PROBABILISTIC, not a hard threshold: past the tolerance the walk chance ramps up, so
+  // an informed player can't shave to the exact risk-free edge — pushing hard is a gamble.
   const overreach = side === 'buy'
     ? (floorPrice - yourOffer) / Math.max(1, floorPrice)
     : (yourOffer - floorPrice) / Math.max(1, floorPrice)
-  if (overreach > 0.4 + patience) return { walk: true }
+  const walkChance = Math.max(0, Math.min(0.95, (overreach - (0.4 + patience)) / 0.4 + (overreach > 0.4 + patience ? 0.2 : 0)))
+  if (walkChance > 0 && Math.random() < walkChance) return { walk: true }
   // otherwise they meet you partway toward your offer
   const counter = side === 'buy'
     ? round2(Math.max(floorPrice, their - (their - yourOffer) * (0.35 + patience)))
@@ -822,7 +825,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
         { text: `Accept $${offer.toFixed(2)} (${m})`, tone: good ? 'fair' : 'cold',
           effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: good ? 1 : 0, formSeed: good ? mkSeed(target, channel) : undefined, msg: good ? 'Clean sale, happy customer.' : 'You took the lowball. Cash is cash.' } },
         { text: 'Politely decline', tone: 'fair',
-          effect: { type: 'none', notoriety: good ? -1 : 1, msg: good ? 'They leave disappointed.' : 'Holding firm on value builds your reputation.' } },
+          // Declining a lowball is rep-neutral (it used to pay +1, so declining — always the
+          // correct play on a lowball — was a free rep faucet). Declining a FAIR offer stings.
+          effect: { type: 'none', notoriety: good ? -1 : 0, msg: good ? 'They leave disappointed.' : 'You hold firm on value. No deal.' } },
         ...(good ? [] : [{ text: `Counter at market ($${market.toFixed(2)})`, tone: 'fair',
           effect: { type: 'counter', uid: target.uid, price: market, payMethod: pay, chance: 0.6, notoriety: 2, msg: 'They grumble but pay fair value.' } }]),
       ],

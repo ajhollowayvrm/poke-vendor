@@ -159,10 +159,15 @@ export default function ShowFloor({ show, onLeave }) {
   // Tend your own table on demand: face the room and see who's there.
   function tendTable() {
     if (!show._asVendor || openBooth || encounter) return
+    // A pending alert is a walk-up that already counted against the budget — just show it.
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
+    // Tending draws from the SAME daily walk-up budget as auto walk-ups (was uncapped, so
+    // mashing ★/Enter spawned unlimited encounters — a rep/price-check farm). Once the
+    // booth's had its ~3 visitors for the day, tending just finds a quiet table.
+    if (walkupsRef.current >= MAX_WALKUPS_PER_DAY) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
     const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
     setEncounter({ enc, atBooth: true })
-    lastEncounterRef.current = Date.now()
+    lastEncounterRef.current = Date.now(); walkupsRef.current++
   }
   function pick(opt) { flash(resolveEncounter(opt.effect)); setEncounter(null) }
 

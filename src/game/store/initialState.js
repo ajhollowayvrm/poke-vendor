@@ -42,6 +42,7 @@ export function initialState() {
     // Quick-sells done TODAY. Dumping many cards at once floods the buylist and each
     // subsequent quick-sell pays a little less (diminishing returns). Reset every day.
     quickSellsToday: 0,
+    giveawaysToday: 0,      // giveaways done today — each successive one pays less rep (anti-farm). Reset daily.
 
     notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
     upgrades: {},            // { signage:true, ... }

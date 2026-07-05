@@ -25,11 +25,30 @@ export function createEconomySlice(set, get) {
     // `generous` = this gain came from a kind/generous act (giving a card, a fair
     // deal). The Charity Banner only boosts THOSE, matching its copy — not every
     // notoriety tick from ordinary sales.
+    // Notoriety is the master stat (orders, walk-ins, show gates, buyer tolerance, wants,
+    // credit caps), so a monotone ratchet lets any small rep faucet snowball into end-game
+    // demand. GAINS saturate above a soft cap: past NOTO_SOFT_CAP each point of rep is
+    // worth progressively less, so climbing from 200→300 takes far more than 0→100. Rep is
+    // never LOST to this (losses — dings, flops — always apply in full); it just gets
+    // harder to farm the top end. Keeps late-game demand tied to sustained real activity.
     addNotoriety(n, generous = false) {
       if (!n) return
       let amt = n
       if (n > 0 && generous && get().upgrades.banner) amt = Math.round(n * 1.5)
-      set(s => ({ notoriety: Math.max(0, round2(s.notoriety + amt)) }))
+      set(s => {
+        let next
+        if (amt <= 0) next = s.notoriety + amt // dings always land in full
+        else {
+          const cur = s.notoriety
+          const SOFT = 150 // below here, 1 rep = 1 point; above, gains taper by 1/(1+excess/150)
+          if (cur < SOFT) next = cur + amt
+          else {
+            const damp = 1 / (1 + (cur - SOFT) / 150)
+            next = cur + amt * damp
+          }
+        }
+        return { notoriety: Math.max(0, round2(next)) }
+      })
     },
     buyUpgrade(key) {
       const u = UPGRADES[key]

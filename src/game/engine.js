@@ -916,14 +916,26 @@ export function driftMult(m, rnd = Math.random) {
 // shrinking supply of decades-old product). Same daily wiggle, but with a small
 // positive bias and NO mean-reversion to 1.0 — so holding vintage sealed appreciates.
 // A higher ceiling lets it climb well past the modern cap over a long hold.
-const VINTAGE_BIAS = 0.004    // +~0.4%/day upward drift on average
+const VINTAGE_BIAS = 0.004    // +~0.4%/day upward drift on average (at mult 1.0)
 export const VINTAGE_MAX = 3.0
 export function driftMultVintage(m, rnd = Math.random) {
   const cur = m ?? 1
   const step = (rnd() - 0.5) * 2 * MARKET_STEP   // [-step, +step]
-  const next = cur + step + VINTAGE_BIAS
+  // Bias TAPERS as the mult climbs, so appreciation slows toward the ceiling instead of
+  // marching to it — holding vintage still trends up, but it's not a riskless money-printer
+  // that maxes every unit at 3×. (The rare crash events in driftMarket are the downside.)
+  const headroom = Math.max(0, (VINTAGE_MAX - cur) / (VINTAGE_MAX - 1))
+  const next = cur + step + VINTAGE_BIAS * headroom
   return Math.round(Math.min(VINTAGE_MAX, Math.max(MARKET_BOUNDS.min, next)) * 1000) / 1000
 }
+
+// Vintage/secondary sealed CAN crash — a reprint scare, an authentication scandal, a
+// big hoard hitting the market. Rare (checked per set per day at VINTAGE_CRASH_CHANCE)
+// but real, so a long vintage hold carries genuine tail risk instead of guaranteed gains.
+export const VINTAGE_CRASH_CHANCE = 0.006 // ~1 in 167 set-days
+export const VINTAGE_CRASH_EVENTS = [
+  { pct: [-0.35, -0.18], lines: ['A sealed {set} case hoard surfaced — the market’s spooked.', 'Rumors of a {set} reprint tanked sealed demand.', 'A big graded-{set} authentication scandal cooled the whole vintage market.'] },
+]
 
 // Named hype/crash events that jolt one set's multiplier for flavor + a price swing.
 // Returned with the magnitude already applied to a base mult by the caller.
@@ -1122,8 +1134,9 @@ function reverseMult(r) {
 }
 function estimateByRarity(r) {
   const table = { 'Common':0.08,'Uncommon':0.12,'Rare':0.25,'Rare Holo':1.0,
-    'Double Rare':2.5,'Illustration Rare':4,'Ultra Rare':6,
-    'Special Illustration Rare':25,'Hyper Rare':30,'Mega Hyper Rare':120 }
+    'Double Rare':2.5,'ACE SPEC Rare':8,'Illustration Rare':4,'Ultra Rare':6,
+    'Special Illustration Rare':25,'Hyper Rare':30,'MEGA_ATTACK_RARE':40,
+    'Mega Hyper Rare':120,'Black White Rare':150 }
   return table[r] ?? 0.1
 }
 
