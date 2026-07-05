@@ -48,6 +48,10 @@ export default defineConfig({
       },
     }),
   ],
+  // Emit imported JSON as JSON.parse("...") instead of a JS object literal —
+  // JSON.parse of a big string is ~1.5-2x faster than the engine parsing the
+  // equivalent literal, which matters for the ~1MB card-data chunk on phones.
+  json: { stringify: true },
   server: { port: 5179, open: true },
   build: {
     rollupOptions: {
