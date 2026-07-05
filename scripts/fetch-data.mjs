@@ -619,13 +619,12 @@ async function main() {
     console.log(`Loaded ${Object.keys(psaMap).length} prior PSA comps from sets.json.`)
   } catch { console.log('No existing sets.json — starting fresh (no prior PSA comps).') }
 
-  // Scoped fetch: ONLY=sm9,xy10,… fetches just those sets. MERGE=1 appends/replaces them
-  // into the EXISTING sets.json (preserving every other set + its prices) instead of
-  // rewriting the whole snapshot — used to ADD sets without re-pricing the rest.
+  // Scoped fetch: ONLY=sm9,xy10,… fetches just those sets. Every write is merge-
+  // preserving now (sets not in this run are always carried forward), so MERGE=1 is
+  // no longer needed — ONLY just narrows how much gets re-fetched/re-priced.
   const onlyIds = (process.env.ONLY || '').split(',').map(s => s.trim()).filter(Boolean)
-  const mergeMode = process.env.MERGE === '1' || onlyIds.length > 0
   const setsToFetch = onlyIds.length ? EN_SETS.filter(s => onlyIds.includes(s.id)) : EN_SETS
-  if (onlyIds.length) console.log(`Scoped fetch: ${setsToFetch.map(s => s.id).join(', ')} (MERGE=${mergeMode ? 'on' : 'off'})`)
+  if (onlyIds.length) console.log(`Scoped fetch: ${setsToFetch.map(s => s.id).join(', ')}`)
 
   console.log(`Fetching ${setsToFetch.length} English sets from pokemontcg.io + TCGCSV…`)
 
@@ -678,20 +677,42 @@ async function main() {
     await new Promise(r => setTimeout(r, 200))
   }
 
-  // In merge mode, fold the freshly-fetched sets into the existing snapshot: replace any
-  // with the same id, append the new ones, and KEEP all others (and the top-level meta).
-  let finalSets = out
+  // Fold the freshly-fetched sets into the existing snapshot. This is ALWAYS
+  // merge-preserving now: sets in the prior snapshot that this run didn't fetch
+  // (e.g. the WOTC legacy sets written by fetch-legacy.mjs) are kept, never
+  // silently deleted — the old non-merge mode wiped every set outside EN_SETS.
   let prevMeta = null
-  if (mergeMode) {
-    try {
-      const here = dirname(fileURLToPath(import.meta.url))
-      prevMeta = JSON.parse(await readFile(join(here, '../src/data/sets.json'), 'utf8'))
-      const fetchedIds = new Set(out.map(s => s.id))
-      const kept = (prevMeta.sets || []).filter(s => !fetchedIds.has(s.id))
-      finalSets = [...kept, ...out]
-      console.log(`Merge: kept ${kept.length} existing set(s), added/updated ${out.length}.`)
-    } catch { console.log('Merge requested but no existing sets.json — writing fresh.') }
+  try {
+    const here = dirname(fileURLToPath(import.meta.url))
+    prevMeta = JSON.parse(await readFile(join(here, '../src/data/sets.json'), 'utf8'))
+  } catch { /* first ever run — nothing to preserve */ }
+  const prevById = new Map((prevMeta?.sets || []).map(s => [s.id, s]))
+
+  // Validation gate: a set that fetched EMPTY (API regression, schema change) must not
+  // replace a good prior copy — an empty set crashes openPack at runtime. Keep the old
+  // data and say so loudly. A set that shrank >30% is suspicious too: keep the fetch
+  // (real rotations happen) but flag it for eyeballing.
+  const validated = []
+  for (const s of out) {
+    const prev = prevById.get(s.id)
+    if (!s.cards.length) {
+      if (prev?.cards?.length) {
+        console.log(`  ⚠️  ${s.id} fetched EMPTY — keeping the previous snapshot's ${prev.cards.length} cards`)
+        validated.push(prev)
+      } else {
+        console.log(`  ⚠️  ${s.id} fetched EMPTY and has no prior copy — SKIPPING (would crash openPack)`)
+      }
+      continue
+    }
+    if (prev?.cards?.length && s.cards.length < prev.cards.length * 0.7) {
+      console.log(`  ⚠️  ${s.id} shrank ${prev.cards.length} → ${s.cards.length} cards — keeping the fetch, but verify this is a real change`)
+    }
+    validated.push(s)
   }
+  const fetchedIds = new Set(validated.map(s => s.id))
+  const carried = (prevMeta?.sets || []).filter(s => !fetchedIds.has(s.id))
+  const finalSets = [...carried, ...validated]
+  if (carried.length) console.log(`Carried ${carried.length} set(s) not in this run: ${carried.map(s => s.id).join(', ')}`)
 
   await mkdir('src/data', { recursive: true })
   await writeFile('src/data/sets.json', JSON.stringify({

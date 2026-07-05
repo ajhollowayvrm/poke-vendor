@@ -95,6 +95,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
     if (!queue.length) return
     primeAudio() // this click is our chance to start audio under the browser's autoplay policy
     const sessionQueue = []
+    const escrowEntries = [] // store-side session record — survives reload/unmount
     for (const row of queue) {
       // Consume the held product from inventory — no charge, you already paid when you bought it.
       const it = ripSealedAction(row.invUid)
@@ -113,9 +114,11 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
         if (spotGross > 0) collectBreakSpots(spotGross) // buyers pre-pay their spots
       }
       useGame.getState().log('stream', `Broke a held ${product.type} (${set.name}) on stream`, 0)
-      sessionQueue.push({ set, product, isBreak, spots, spotsSold, filled: spotsSold, perSpot, spotGross, owners, orderedBy: null })
+      sessionQueue.push({ invUid: row.invUid, set, product, isBreak, spots, spotsSold, filled: spotsSold, perSpot, spotGross, owners, orderedBy: null })
+      escrowEntries.push({ invUid: row.invUid, item: it, packs: product.packs, packsDone: 0, spotGross })
     }
     if (!sessionQueue.length) return toast('Nothing left to stream — your queued product is gone.')
+    useGame.getState().startStreamEscrow(escrowEntries)
     onGoLive({ queue: sessionQueue })
   }
 
@@ -418,7 +421,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     const demigod = !e.packRip && !!cards._demigod
     if (god) cards.forEach(c => { c._fromGod = true })
     if (demigod) cards.forEach(c => { c._fromDemigod = true })
-    if (!e.packRip) addPulls(cards, `🔴 ${e.set.name} (live)`)
+    if (!e.packRip) {
+      addPulls(cards, `🔴 ${e.set.name} (live)`)
+      useGame.getState().escrowPackRipped(e.invUid) // session record: this pack is cracked
+    }
     const idx = idxRef.current
     if (e.isBreak) {
       const startIdx = allPulled.current.filter(p => p.entryIdx === idx).length
@@ -519,6 +525,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     if (Math.random() < chance) {
       e.filled += 1
       useGame.getState().sellLiveSpot(e.perSpot)
+      useGame.getState().escrowSpotCash(e.invUid, e.perSpot) // refundable if the session dies
       setLiveSpotFlash({ id: Date.now() })
       after(() => setLiveSpotFlash(null), 2200)
       pushChat({ handle: 'system', text: `someone grabbed an open spot! 📦 (+${fmtMoney(e.perSpot)})`, tip: true })
@@ -552,9 +559,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     const it = ripSealedAction(order.invUid)
     if (!it) { setOrders(o => o.filter(x => x.id !== order.id)); return toast('That product just left your inventory.') }
     collectRipOrder(order.price, order.buyer, order.product.type)
+    useGame.getState().appendStreamEscrow({ invUid: order.invUid, item: it, packs: order.product.packs, packsDone: 0, spotGross: order.price })
     const set = setById(order.setId) || it.setId && setById(it.setId) || SHOP_SETS[0]
     queueRef.current = [...queueRef.current, {
-      set, product: order.product, isBreak: true, spots: 1, spotsSold: 1, filled: 1,
+      invUid: order.invUid, set, product: order.product, isBreak: true, spots: 1, spotsSold: 1, filled: 1,
       perSpot: order.price, spotGross: order.price, owners: [order.buyer], orderedBy: order.buyer,
     }]
     setOrders(o => o.filter(x => x.id !== order.id))
@@ -664,8 +672,33 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     packRef.current = queueRef.current[last].product.packs
     setPackNo(packRef.current)
     bumpQueue()
+    useGame.getState().escrowAllRipped() // fast-forward: every escrowed pack is now cracked
     pushChat({ handle: 'system', text: 'ripped the rest off-stream ⏩', tip: false })
     setDoneX(true)
+  }
+
+  // End the stream before the queue is finished. Product must never evaporate: clean
+  // unstarted entries go back to 📦 inventory; anything started — or with sold spots /
+  // a paying order buyer — finishes off-stream via skipRest (which also ships what's
+  // owed). The player then cashes out normally with the real totals.
+  async function endEarly() {
+    const idx = idxRef.current
+    const returnable = queueRef.current.filter((e, i) =>
+      i > idx && e.invUid && !e.orderedBy && !e.packRip && !(e.isBreak && e.filled > 0))
+    const ok = await confirmDialog({
+      title: 'End the stream early?',
+      body: `${returnable.length ? `${returnable.length} unstarted product${returnable.length > 1 ? 's go' : ' goes'} back to your 📦 inventory unopened. ` : ''}Everything already started — plus any break or rip order someone paid into — finishes off-stream: those packs still rip and owed cards still ship. Then cash out.`,
+      confirmText: 'End early',
+      danger: true,
+    })
+    if (!ok) return
+    if (returnable.length) {
+      useGame.getState().returnStreamItems(returnable.map(e => e.invUid))
+      const drop = new Set(returnable.map(e => e.invUid))
+      queueRef.current = queueRef.current.filter(e => !drop.has(e.invUid))
+      bumpQueue()
+    }
+    skipRest() // finish the remainder off-stream (ships owed cards), then cash out normally
   }
 
   function endStream() {
@@ -843,7 +876,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
               </button>
             )}
             {done && <button className="btn gold" style={{ maxWidth: 240 }} onClick={endStream}>End stream & cash out →</button>}
-            {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endStream}>End early</button>}
+            {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endEarly}>End early</button>}
           </div>
 
           {orders.length > 0 && (

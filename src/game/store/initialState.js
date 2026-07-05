@@ -55,6 +55,7 @@ export function initialState() {
     streamFatigue: 0,        // audience fatigue: +1 per stream, −1 per game-day of rest (drives viewer falloff)
     followers: 0,            // channel followers: your returning audience — a reliable baseline crowd that grows with good streams
     streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, // lifetime livestream tallies
+    streamEscrow: null,      // live-session escrow: { entries:[{invUid,item,packs,packsDone,spotGross}], ts } — non-null = ON AIR; settled at endStream or boot rescue
     generousActs: 0,
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance

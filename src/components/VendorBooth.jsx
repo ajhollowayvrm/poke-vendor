@@ -8,9 +8,9 @@ import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
-export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled }) {
+export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken }) {
   if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} />
 }
 
 // On-site grading kiosk (National+ shows): submit a raw card and it comes back slabbed in
@@ -63,7 +63,7 @@ function KioskBooth({ booth, onClose, flash }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled }) {
+function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken }) {
   const haggled = haggledIds || new Set()
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
@@ -77,9 +77,11 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const disc = rap ? rap.disc : 0
   const eff = (ask) => round2((ask || 0) * (1 - disc)) // rapport-discounted asking price
   const nextRap = booth.vendorId ? nextVendorRapport(vendorSpend) : null
-  const [stock, setStock] = useState(booth.stock)
-  // Sealed is local state so a stocked item disappears from the table after you take it.
-  const [sealed, setSealed] = useState(booth.products || [])
+  // Local working copies, seeded MINUS everything already taken this show (takenIds
+  // lives in ShowFloor): booth stock used to reset on every close/reopen, re-serving
+  // bought items at the same uid — infinite rebuy plus uid-duplication corruption.
+  const [stock, setStock] = useState(() => (booth.stock || []).filter(c => !takenIds?.has(c.uid)))
+  const [sealed, setSealed] = useState(() => (booth.products || []).filter(e => !takenIds?.has(e._tk)))
   const [tab, setTab] = useState('buy')
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
   // After agreeing a buy, ask whether to list it at the show or take it home.
@@ -113,6 +115,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     const res = useGame.getState().buyMysteryPack(entry.price, entry.band)
     if (!res) { flash(`Not enough cash for the ${entry.name}.`); return }
     setSealed(s => { const next = s.filter(e => e !== entry); if (!next.length) setTab('buy'); return next })
+    if (entry._tk) onTaken?.([entry._tk])
     setMysteryResult({ ...res, packName: entry.name })
   }
   // Complete a many-to-many trade: your bundle of cards + sealed (± cash) for the booth's
@@ -124,6 +127,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
       cashDelta: payload.cashDelta, vendorId: booth.vendorId,
     })
     if (res.error) { flash(res.error); return }
+    const sealedKeys = payload.takenSealedIdx.map(i => sealed[i]?._tk).filter(Boolean)
+    onTaken?.([...payload.takenCardUids, ...sealedKeys])
     setStock(s => s.filter(c => !payload.takenCardUids.includes(c.uid)))
     setSealed(s => s.filter((_, i) => !payload.takenSealedIdx.includes(i)))
     setTradeFor(null)
@@ -148,6 +153,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     const { card, price } = pendingBuy
     setPendingBuy(null)
     if (buyFromVendor(card, price, { toShowInventory, vendorId: booth.vendorId })) {
+      onTaken?.([card.uid]) // off the table for good — reopening the booth can't re-serve it
       setStock(s => s.filter(c => c.uid !== card.uid))
       const deal = price < cardValue(card) * 0.85 ? ' — great deal!' : ''
       flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${toShowInventory ? ' · listed at your booth' : ' · added to your collection'}`)
@@ -173,18 +179,24 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     const ask = eff(entry._ask)
     setPendingSealed(null)
     onClose()
+    // Only on a SUCCESSFUL buy: mark the entry taken + build rapport. (Rapport used to
+    // bump — and the item used to stay re-buyable — even when the purchase failed.)
+    const ok = onRipSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
+    if (!ok) return
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
-    onRipSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
+    if (entry._tk) onTaken?.([entry._tk])
   }
   // Buy a sealed product and stock it in your held inventory (rip/list/flip later). Keeps
   // the booth open and removes the item from the table; the last one closes the Sealed tab.
   function stockSealedNow(entry) {
     const ask = eff(entry._ask)
     setPendingSealed(null)
+    const ok = onStockSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
+    if (!ok) return // buy failed (cash) — leave the item on the table
     if (sealed.length <= 1) setTab('buy')
     setSealed(s => s.filter(e => e !== entry))
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
-    onStockSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
+    if (entry._tk) onTaken?.([entry._tk])
   }
 
   function renderBuy(card, featured) {

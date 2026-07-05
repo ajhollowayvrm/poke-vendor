@@ -6,13 +6,109 @@
 // audience, and burn a game-day through the shared day-tick). The viewer/tip/chat math is
 // pure and lives in ../stream (game); this slice is the state mutations around it.
 
-import { round2, cardValue } from '../engine'
+import { round2, cardValue, openPack, setById } from '../engine'
 import { fatigueMult } from '../stream'
 import { advanceDaysWith } from './daytick'
 import { STREAM_HYPE_DAYS, INCOME_WINDOW_DAYS } from './constants'
 
 export function createLivestreamSlice(set, get) {
   return {
+    // --- Stream escrow -------------------------------------------------------------
+    // A live session used to exist only as component state: going live consumed the
+    // product and banked spot cash immediately, but shipping/day-burn/fatigue only
+    // settled in endStream — so a reload (or anything that killed the component)
+    // mid-stream kept the cash, vaporized the product, and dodged the day cost.
+    // The escrow is the store-side record of the session: written at go-live, updated
+    // per ripped pack, cleared at settlement. `settleAbandonedStream()` (called at
+    // boot, like the show rescue) makes the world whole if the session died.
+    // Entries: { invUid, item, packs, packsDone, spotGross }.
+    startStreamEscrow(entries) {
+      set({ streamEscrow: { entries: entries || [], ts: Date.now() } })
+    },
+    // Mid-stream consumption (accepted rip orders) joins the same escrow.
+    appendStreamEscrow(entry) {
+      const esc = get().streamEscrow
+      if (!esc || !entry) return
+      set({ streamEscrow: { ...esc, entries: [...esc.entries, entry] } })
+    },
+    escrowPackRipped(invUid) {
+      const esc = get().streamEscrow
+      if (!esc || !invUid) return
+      set({ streamEscrow: { ...esc, entries: esc.entries.map(e =>
+        e.invUid === invUid ? { ...e, packsDone: (e.packsDone || 0) + 1 } : e) } })
+    },
+    // A live spot sold mid-stream adds to the entry's collected cash (refundable on abandon).
+    escrowSpotCash(invUid, amount) {
+      const esc = get().streamEscrow
+      if (!esc || !invUid || !(amount > 0)) return
+      set({ streamEscrow: { ...esc, entries: esc.entries.map(e =>
+        e.invUid === invUid ? { ...e, spotGross: round2((e.spotGross || 0) + amount) } : e) } })
+    },
+    // skipRest fast-forwards everything to completion in one shot.
+    escrowAllRipped() {
+      const esc = get().streamEscrow
+      if (!esc) return
+      set({ streamEscrow: { ...esc, entries: esc.entries.map(e => ({ ...e, packsDone: e.packs })) } })
+    },
+    // End-early: clean unstarted entries go home to 📦 inventory (and leave the escrow).
+    returnStreamItems(invUids) {
+      const esc = get().streamEscrow
+      const ids = new Set(invUids || [])
+      const back = (esc?.entries || []).filter(e => ids.has(e.invUid) && e.item)
+      if (!back.length) return 0
+      set(s => ({
+        sealedInventory: [...back.map(e => e.item), ...(s.sealedInventory || [])],
+        streamEscrow: { ...esc, entries: esc.entries.filter(e => !ids.has(e.invUid)) },
+      }))
+      get().log('stream', `Returned ${back.length} unopened product${back.length > 1 ? 's' : ''} to 📦 inventory (stream ended early)`, 0)
+      return back.length
+    },
+    clearStreamEscrow() { if (get().streamEscrow) set({ streamEscrow: null }) },
+    // Boot-time rescue for a session that died mid-broadcast (reload, crash):
+    //  • untouched entries with nothing sold on them → straight back to inventory
+    //  • started entries (or pre-paid breaks/orders) → the remaining packs crack
+    //    off-camera into your collection (product never evaporates)
+    //  • pre-paid spot/order cash → refunded to the buyers (reversing the earn()
+    //    bookkeeping); the cards stay yours since nothing shipped
+    //  • the broadcast still cost the day + audience fatigue — going live isn't free
+    settleAbandonedStream() {
+      const esc = get().streamEscrow
+      if (!esc) return null
+      let returned = 0, ripped = 0, refund = 0
+      for (const e of (esc.entries || [])) {
+        const done = e.packsDone || 0
+        if (done <= 0 && !(e.spotGross > 0)) {
+          if (e.item) { set(s => ({ sealedInventory: [e.item, ...(s.sealedInventory || [])] })); returned++ }
+          continue
+        }
+        const st = e.item?.setId ? setById(e.item.setId) : null
+        const remaining = Math.max(0, (e.packs || 0) - done)
+        if (st && remaining > 0) {
+          for (let i = 0; i < remaining; i++) get().addPulls(openPack(st), `🔴 ${st.name} (recovered)`)
+          ripped += remaining
+        }
+        if (e.spotGross > 0) refund = round2(refund + e.spotGross)
+      }
+      if (refund > 0) {
+        const give = Math.min(get().cash, refund) // refund what's there; the rest is written off
+        if (give > 0) set(s => ({
+          cash: round2(s.cash - give),
+          stats: { ...s.stats, earned: round2(s.stats.earned - give) },
+          _cardAccrual: round2((s._cardAccrual || 0) - give),
+        }))
+      }
+      set({ streamEscrow: null })
+      const bits = []
+      if (returned) bits.push(`${returned} unopened product${returned > 1 ? 's' : ''} back to 📦`)
+      if (ripped) bits.push(`${ripped} pack${ripped > 1 ? 's' : ''} cracked off-camera into your collection`)
+      if (refund) bits.push(`$${refund.toFixed(2)} of spot/order money refunded to buyers`)
+      get().log('stream', `⚠️ The stream cut out mid-broadcast — ${bits.join(', ') || 'settled'}. The day was still spent.`, 0)
+      advanceDaysWith(set, get, 1, false) // the broadcast consumed the day regardless
+      // fatigue after the tick (its rest-recovery would otherwise cancel it — see endStream)
+      set(s => ({ streamFatigue: (s.streamFatigue || 0) + 1 }))
+      return { returned, ripped, refund }
+    },
+
     // Collect the up-front cash from a box break's sold spots (called when the stream
     // starts a break). Buyers pre-pay regardless of what gets pulled. Returns the gross.
     collectBreakSpots(gross) {
@@ -87,11 +183,11 @@ export function createLivestreamSlice(set, get) {
     // (orders/rent/etc.) just like any other day. A stream is now a real time cost,
     // not a free action, and over-streaming thins your crowd until you rest.
     endStream({ tips = 0, noto = 0, peakViewers = 0, followers = 0 } = {}) {
+      get().clearStreamEscrow() // clean settlement — the escrow's job is done
       if (tips > 0) get().earn(round2(tips))
       if (noto) get().addNotoriety(noto) // may be negative after a flop
       set(s => ({
         streamHypeDaysLeft: noto > 0 ? STREAM_HYPE_DAYS : 0, // a flop earns no afterglow
-        streamFatigue: (s.streamFatigue || 0) + 1,
         followers: Math.max(0, (s.followers || 0) + followers), // returning audience grows
         streamStats: {
           ...s.streamStats, // carry ripOrders/ripRevenue (banked live) through untouched
@@ -106,6 +202,10 @@ export function createLivestreamSlice(set, get) {
       get().log('stream', `Wrapped a livestream — ${Math.round(peakViewers)} peak viewers, $${round2(tips).toFixed(2)} in tips (${noto >= 0 ? '+' : ''}${noto}★).${follow}${afterglow}`, round2(tips))
       // streaming consumes the day — advance the world one game-day (home, not away).
       advanceDaysWith(set, get, 1, false)
+      // Fatigue AFTER the day-tick: the tick's rest-recovery (-1/day) used to erase the
+      // +1 applied above it in the same call, so audience fatigue NEVER accumulated and
+      // "over-streaming tires your audience" was silently dead.
+      set(s => ({ streamFatigue: (s.streamFatigue || 0) + 1 }))
       // Flush this day's card income (including the tips just banked) into the rolling
       // window, exactly like nextDay — otherwise the tips get lumped into the NEXT day's
       // slot and skew the per-day card-income readout.

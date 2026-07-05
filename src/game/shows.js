@@ -305,8 +305,10 @@ function boothSealed(r, arch, band = [1, 100]) {
   // High-roller repack: only where serious money walks the floor (value band tops $1k+).
   if (hi >= 1200 && r() < 0.18) {
     const hrPrice = clampP(hi * 0.01, 150, 400)
+    // band tuned with `npm run sim`: at ×6 the jackpot range reached deep into the
+    // top-heavy PSA-slab pool and the tier measured 142-208% of price — an ATM.
     out.push({ mystery: true, key: 'highroller', name: 'High Roller Repack', icon: '💎',
-      price: hrPrice, band: [round2(hrPrice * 0.5), round2(hrPrice * 6)],
+      price: hrPrice, band: [round2(hrPrice * 0.45), round2(hrPrice * 3.5)],
       blurb: 'The serious gamble — a real chase piece or sealed heat is in some of these.' })
   }
   return out

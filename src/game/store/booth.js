@@ -83,9 +83,13 @@ export function createBoothSlice(set, get) {
     buyMysteryPack(price, band) {
       if (!get().spend(price)) return null
       const [lo, hi] = band || [1, Math.max(2, price * 3)]
-      // ~15% of repacks hide a wrapped sealed product whose market value fits the band.
-      if (Math.random() < 0.15) {
-        const found = randomSealedInRange(lo, hi * 1.5)
+      // Odds tuned against `npm run sim` (which Monte-Carlos this exact action with the
+      // real card pools): the pack must pay out LESS than it costs on average — a slot
+      // machine with a dream, not an ATM. The old 12% jackpot in [hi, 4hi] + sealed in
+      // [lo, 1.5hi] measured 138-208% of price across tiers.
+      // ~12% of repacks hide a wrapped sealed product whose market value fits the band.
+      if (Math.random() < 0.12) {
+        const found = randomSealedInRange(lo, hi)
         if (found) {
           const item = get().mintSealedRow(found.set, found.product, price)
           set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
@@ -95,9 +99,9 @@ export function createBoothSlice(set, get) {
           return { sealed: item, set: found.set }
         }
       }
-      // small jackpot chance: a slice of packs draw from WAY above the band (the "chase")
-      const jackpot = Math.random() < 0.12
-      const card = jackpot ? cardInValueRange(hi, hi * 4) : cardInValueRange(lo, hi)
+      // small jackpot chance: a slice of packs draw from above the band (the "chase")
+      const jackpot = Math.random() < 0.07
+      const card = jackpot ? cardInValueRange(hi, hi * 2.2) : cardInValueRange(lo * 0.6, hi * 0.75)
       set(s => ({ collection: [card, ...s.collection] }))
       get().log('buy', `❓ Opened a mystery pack for $${round2(price).toFixed(2)} — pulled ${card.name} ($${cardValue(card).toFixed(2)})`, -price)
       get().bumpGoal('buy', 1)

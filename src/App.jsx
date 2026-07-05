@@ -84,6 +84,7 @@ export default function App() {
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
   const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
   const notoriety = useGame(s => s.notoriety)
+  const streamLive = useGame(s => !!s.streamEscrow) // ON AIR — locks tab nav + Next Day
   const [daySummary, setDaySummary] = useState(null) // per-day summary popup after Next Day
   const [gradeReveal, setGradeReveal] = useState(null) // { cards, summary } — click-to-reveal slabs back from grading
 
@@ -100,10 +101,20 @@ export default function App() {
   // If the page was reloaded while a show was open, the floor view (React state) is
   // gone but show-inventory cards AND sealed may still be stranded on the table — bring
   // them home. (Sealed matters too: a sealed-only booth used to strand showSealed forever.)
+  // Same for a livestream that died mid-broadcast: settle its escrow (product back or
+  // cracked into the collection, pre-paid spot cash refunded, the day still spent).
   // Also kick off cloud auto-sync (no-ops unless the AWS backend is configured + signed in).
   useEffect(() => {
     const g = useGame.getState()
     if ((g.showInventory || []).length || (g.showSealed || []).length) g.endShow()
+    if (g.streamEscrow) {
+      const r = g.settleAbandonedStream()
+      if (r) toast(`⚠️ Your last stream cut out mid-broadcast — ${[
+        r.returned ? `${r.returned} product${r.returned > 1 ? 's' : ''} returned to 📦` : '',
+        r.ripped ? `${r.ripped} pack${r.ripped > 1 ? 's' : ''} cracked into your collection` : '',
+        r.refund ? `${fmtMoney(r.refund)} refunded to spot buyers` : '',
+      ].filter(Boolean).join(', ') || 'settled'}. The day was still spent.`, 7000)
+    }
     startAutoSync()
     warmPricesOnBoot().catch(() => {}) // re-apply the last price snapshot (and freshen if stale)
   }, [])
@@ -292,7 +303,13 @@ export default function App() {
   // Switch tabs. A rip in progress is NOT discarded — its component stays mounted as an
   // overlay (just hidden off the Buy tab), so leaving and coming back resumes exactly where
   // you were (same pack, running tally, unopened packs intact) instead of losing the rip.
-  function selectTab(t) { setTab(t) }
+  // A LIVE STREAM, though, locks the tab: the session lives in the stream component, so
+  // navigating away would kill the broadcast mid-rip (the escrow would settle it as an
+  // abandoned stream — refunds, off-camera cracks, day spent). End it on purpose instead.
+  function selectTab(t) {
+    if (streamLive && t !== 'stream') { toast('🔴 You’re live — end the stream before leaving.'); return }
+    setTab(t)
+  }
 
   // Prepping for a show: the pick-your-inventory screen takes over the whole view.
   if (preppingShow) {
@@ -335,7 +352,8 @@ export default function App() {
         </div>
         <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
           <GameClock />
-          <button className="btn next-day-btn" disabled={!!activeShow} title={activeShow ? 'Cannot advance while attending a show' : 'Advance one day'} onClick={handleNextDay}>
+          <button className="btn next-day-btn" disabled={!!activeShow || streamLive}
+            title={activeShow ? 'Cannot advance while attending a show' : streamLive ? 'You’re live — end the stream first (it consumes the day itself)' : 'Advance one day'} onClick={handleNextDay}>
             Next Day →
           </button>
           <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>notoriety</small></span>

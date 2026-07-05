@@ -39,8 +39,21 @@ export default function ShowFloor({ show, onLeave }) {
   // The floor is fixed per show-day: notoriety must NOT be a dependency here — it ticks
   // constantly at a show (sales, questions, giveaways), and every tick used to rebuild
   // the whole floor, restocking everything already bought and re-minting card uids.
-  const booths = useMemo(() => generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || []),
-    [show, showDay, showVendors])
+  const booths = useMemo(() => {
+    const bs = generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || [])
+    // Stamp session-stable "taken" keys on sealed/mystery entries (cards already carry
+    // uids): booth index + slot. Purchases mark these in takenIds so closing and
+    // reopening a booth can never re-serve something you already bought.
+    bs.forEach((b, bi) => { (b.products || []).forEach((p, pi) => { p._tk = `${bi}#s${pi}` }) })
+    return bs
+  }, [show, showDay, showVendors])
+
+  // Everything bought off the floor this show — card uids + sealed `_tk` keys. Booth
+  // stock is component state inside the booth modal, so without this a close/reopen
+  // re-served every purchased item at the same uid (infinite rebuy of mispriced gems,
+  // plus uid duplication: selling one copy silently destroyed both).
+  const [takenIds, setTakenIds] = useState(() => new Set())
+  const markTaken = (keys) => setTakenIds(prev => { const n = new Set(prev); for (const k of keys) n.add(k); return n })
 
   const [openBooth, setOpenBooth] = useState(null)
   // Cards you've already haggled this show — one negotiation per card (no re-rolling
@@ -154,22 +167,25 @@ export default function ShowFloor({ show, onLeave }) {
   function pick(opt) { flash(resolveEncounter(opt.effect)); setEncounter(null) }
 
   // Buy + rip sealed product off a booth's table right here on the floor.
+  // Returns true on success so the booth can mark the entry taken.
   const buySealed = useCallback(({ set, product, ask, vendorName }) => {
-    if (!set || !product) return
+    if (!set || !product) return false
     const g = useGame.getState()
-    if (g.cash < ask) { flash(`Not enough cash for the ${product.name || product.type}.`); return }
-    if (!g.spend(ask)) return
+    if (g.cash < ask) { flash(`Not enough cash for the ${product.name || product.type}.`); return false }
+    if (!g.spend(ask)) return false
     g.recordSetSpend(set.id, ask)
     g.log('buy', `Bought a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} (${show.name})`, -ask)
     setVaultRip({ set, product: { ...product, price: ask } })
+    return true
   }, [show.name, flash])
 
   // Buy sealed off a booth and STOCK it in held inventory instead of ripping now.
   const stockSealed = useCallback(({ set, product, ask, vendorName }) => {
-    if (!set || !product) return
+    if (!set || !product) return false
     const item = useGame.getState().buySealed(set, { ...product, _buyPrice: ask }, ask)
-    if (!item) { flash(`Not enough cash for the ${product.name || product.type}.`); return }
+    if (!item) { flash(`Not enough cash for the ${product.name || product.type}.`); return false }
     flash(`Stocked a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} — rip/list/flip it from 📦 Inventory.`)
+    return true
   }, [flash])
 
   // Live crowd per booth (from the drifting shoppers) — the directory's 👥 badges.
@@ -334,7 +350,8 @@ export default function ShowFloor({ show, onLeave }) {
 
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
-        onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled} />}
+        onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled}
+        takenIds={takenIds} onTaken={markTaken} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
       {vaultRip && (
