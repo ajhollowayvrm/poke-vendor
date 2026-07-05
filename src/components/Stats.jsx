@@ -12,7 +12,8 @@ export default function Stats() {
   // while the tab was open. Shallow-compared, it only re-renders when a selected slice
   // actually changes.
   const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
-    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory, milestones, worthHistory, binder } = useGame(useShallow(s => ({
+    listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory,
+    showSealed, shopSealed, milestones, worthHistory, binder } = useGame(useShallow(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
