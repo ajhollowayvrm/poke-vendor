@@ -8,9 +8,9 @@ import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
-export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken }) {
+export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend }) {
   if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} />
 }
 
 // On-site grading kiosk (National+ shows): submit a raw card and it comes back slabbed in
@@ -63,7 +63,7 @@ function KioskBooth({ booth, onClose, flash }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken }) {
+function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend }) {
   const haggled = haggledIds || new Set()
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
@@ -160,18 +160,28 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     }
   }
   function sellAt(card, price) {
+    // The vendor pays from a finite till — they can't buy what they can't cover.
+    if (price > tillLeft + 0.001) { flash(`${booth.name} is tapped out — only ${fmtMoney(tillLeft)} left in their till.`); return }
     // atVendor: this is the vendor's buylist price — the Glass Cases display bump doesn't apply
     useGame.getState().resolveEncounter({ type: 'sellOwned', uid: card.uid, price, notoriety: 0, msg: '', atVendor: true })
+    onTillSpend?.(price)
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, price) // dealing builds rapport
     flash(`Sold ${card.name} to ${booth.name} for ${fmtMoney(price)}`)
   }
-  // Sell every copy on a SKU line at the vendor's per-copy offer in one tap.
+  // Sell copies on a SKU line at the vendor's per-copy offer, up to what their till covers.
   function sellGroup(g, offerEach) {
-    for (const c of g.items) {
-      useGame.getState().resolveEncounter({ type: 'sellOwned', uid: c.uid, price: offerEach, notoriety: 0, msg: '', atVendor: true })
+    const affordable = offerEach > 0 ? Math.floor((tillLeft + 0.001) / offerEach) : g.items.length
+    const n = Math.min(g.items.length, affordable)
+    if (n <= 0) { flash(`${booth.name} can't cover even one — only ${fmtMoney(tillLeft)} left in their till.`); return }
+    for (let i = 0; i < n; i++) {
+      useGame.getState().resolveEncounter({ type: 'sellOwned', uid: g.items[i].uid, price: offerEach, notoriety: 0, msg: '', atVendor: true })
     }
-    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, round2(offerEach * g.items.length))
-    flash(`Sold ${g.items.length} × ${g.first.name} to ${booth.name} for ${fmtMoney(round2(offerEach * g.items.length))}`)
+    const gross = round2(offerEach * n)
+    onTillSpend?.(gross)
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, gross)
+    flash(n < g.items.length
+      ? `Sold ${n} of ${g.items.length} × ${g.first.name} for ${fmtMoney(gross)} — ${booth.name}'s till is empty now.`
+      : `Sold ${n} × ${g.first.name} to ${booth.name} for ${fmtMoney(gross)}`)
   }
   // Picking a sealed product opens a choice: rip it on the floor now, or stock it to hold.
   // Buy a sealed product and crack it on the floor right now (same rip flow as the Vault).
@@ -317,6 +327,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
           <>
             <p className="muted" style={{ fontSize: 12, margin: '0 0 6px' }}>
               One line per SKU — identical copies (same card, condition, grade) are stacked, so you can move duplicates in one tap.
+              {Number.isFinite(tillLeft) && <> This vendor has <b style={{ color: tillLeft < 50 ? 'var(--red)' : 'var(--gold)' }}>{fmtMoney(tillLeft)}</b> left to spend today.</>}
             </p>
             <div className="trade-line-list sell-lines">
               {groupCardLines(collection, c => round2(cardValue(c))).slice(0, 30).map(g => {

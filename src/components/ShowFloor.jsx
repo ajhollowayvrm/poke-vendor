@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, SHOP_SETS as SETS } from '../game/engine'
+import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -54,6 +54,13 @@ export default function ShowFloor({ show, onLeave }) {
   // plus uid duplication: selling one copy silently destroyed both).
   const [takenIds, setTakenIds] = useState(() => new Set())
   const markTaken = (keys) => setTakenIds(prev => { const n = new Set(prev); for (const k of keys) n.add(k); return n })
+
+  // Per-booth cash-till depletion for THIS show-day: selling to a vendor draws down their
+  // finite till (booth.till), so you can't dump an unlimited amount on one whale. Keyed by
+  // booth id + show-day so a fresh floor each day restocks the till.
+  const [tillSpent, setTillSpent] = useState(() => ({}))
+  const tillKey = (booth) => `${booth.id}#${showDay}`
+  const markTillSpend = (booth, amt) => setTillSpent(prev => ({ ...prev, [tillKey(booth)]: (prev[tillKey(booth)] || 0) + amt }))
 
   const [openBooth, setOpenBooth] = useState(null)
   // Cards you've already haggled this show — one negotiation per card (no re-rolling
@@ -356,7 +363,9 @@ export default function ShowFloor({ show, onLeave }) {
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
         onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled}
-        takenIds={takenIds} onTaken={markTaken} />}
+        takenIds={takenIds} onTaken={markTaken}
+        tillLeft={Math.max(0, round2((openBooth.till || 0) - (tillSpent[tillKey(openBooth)] || 0)))}
+        onTillSpend={(amt) => markTillSpend(openBooth, amt)} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
       {vaultRip && (

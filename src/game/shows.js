@@ -158,6 +158,9 @@ const ARCHETYPES = [
 ]
 const ARCH_BY_KEY = Object.fromEntries(ARCHETYPES.map(a => [a.key, a]))
 export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
+// Cash-till depth by archetype: a whale carries the most (they came to spend big),
+// a lowballer the least. Multiplies the band-scaled base till in generateBooths.
+const TILL_ARCH = { whale: 2.5, sharp: 1.5, fair: 1.0, newbie: 0.6, fleecer: 0.5 }
 
 // ===== Recurring show vendors (rapport across the circuit) ===================
 // A fixed roster of named dealers who RECUR across shows (injected into generated
@@ -439,6 +442,10 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       archLabel: arch.label,
       vibe: arch.vibe,
       buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
+      // Cash on hand for BUYING your cards — finite, seeded, scaled to the show's value
+      // band and archetype (whales carry the deepest till; lowballers the shallowest).
+      // Turns "dump everything on the High Roller" into a routing puzzle across the floor.
+      till: round2(hi * (4 + r() * 6) * (TILL_ARCH[arch.key] ?? 1)),
       stock: boothStock,
       products: boothSealed(r, arch, tier.valueBand),  // sealed + mystery packs on the table (may be empty)
       // grid position assigned by the floor layout
