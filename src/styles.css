@@ -1386,7 +1386,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .gr-val { position:relative; z-index:7; text-align:center; margin-top:5px; font-size:12px; font-weight:800; color:#0f2; }
 .gr-front .gr-val { color:#0a7; }
 .gr-gain { color:var(--green); font-weight:900; }
-.grade-reveal-card.gem .gr-flip { filter: drop-shadow(0 0 16px #ffcb0577); }
+/* Gem-10 glow. Must NOT be a filter on .gr-flip: filter is a CSS grouping property that
+   forces the flip container's preserve-3d flat, so a 10's slab could never flip face-up
+   (the reveal looked dead). The glow lives on the button via ::after — outside the 3D
+   pipeline — and only once .flipped, so a face-down slab doesn't spoil which one is the gem. */
+.grade-reveal-card.gem { position: relative; }
+.grade-reveal-card.gem.flipped::after { content: ''; position: absolute; inset: -6px; border-radius: 16px;
+  box-shadow: 0 0 22px 7px #ffcb0566; pointer-events: none; }
 
 /* --- Show floor: mystery packs + trade panel ----------------------------- */
 .vendoritem.sealed-mystery { border:1px solid color-mix(in srgb, var(--accent2) 45%, var(--line));
