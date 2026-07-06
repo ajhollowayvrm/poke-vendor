@@ -44,7 +44,7 @@ export default function Calendar({ onAttend }) {
       <div className="tierlegend">
         {Object.entries(SHOW_TIERS).map(([k, t]) => (
           <span key={k} className="legend" style={{ borderColor: t.color }}>
-            <i style={{ background: t.color }} /> {t.name} <em>· {t.days}d</em>
+            <i style={{ background: t.color }} /> {t.name} <em>· {Math.max(1, t.days - (upgrades.tourVan ? 1 : 0))}d{upgrades.tourVan && t.days > 1 ? ' 🚐' : ''}</em>
             {notoriety < t.minNotoriety && <em> · unlock @ {t.minNotoriety}</em>}
           </span>
         ))}
@@ -56,20 +56,21 @@ export default function Calendar({ onAttend }) {
         {shows.map(show => {
           const tier = SHOW_TIERS[show.tierKey]
           const canAfford = cash >= tier.entryFee
-          const vendorCost = tier.entryFee + (tier.vendorFee || 0)
+          const vendorCost = tier.entryFee + (upgrades.sponsorship ? 0 : (tier.vendorFee || 0)) // 📣 booth fee sponsored
           const canVendor = !!upgrades.vendorSetup
+          const tripDays = Math.max(1, tier.days - (upgrades.tourVan ? 1 : 0)) // 🚐 the van shaves a day
           const canAffordVendor = cash >= vendorCost
-          const endsDay = Math.min(30, show.day + tier.days - 1)
+          const endsDay = Math.min(30, show.day + tripDays - 1)
           const leads = (showLeads || []).filter(l => l.showId === show.id)
           // Expected online orders during the show's run (rough), and whether the
           // player would MISS them (no Smartphone to manage online while away).
-          const expOnline = dayOrderChance('online', notoriety) * tier.days
+          const expOnline = dayOrderChance('online', notoriety) * tripDays
           const onlineCovered = !!upgrades.smartphone
           return (
             <div key={show.id} className={`calcard ${show.locked ? 'locked' : ''} ${show.day === currentDay ? 'today' : ''} ${leads.length ? 'has-leads' : ''}`} style={{ borderLeftColor: tier.color }}>
               <div className="calday">
                 {show.day === currentDay ? 'TODAY' : `Day ${show.day}`}
-                {tier.days > 1 && <span className="dur"> · {tier.days} days (thru {endsDay})</span>}
+                {tripDays > 1 && <span className="dur"> · {tripDays} days (thru {endsDay})</span>}
               </div>
               <h4>{show.name}</h4>
               <div className="muted" style={{ fontSize: 12 }}>{show.tier} · {tier.booths} booths</div>
@@ -97,11 +98,11 @@ export default function Calendar({ onAttend }) {
                   <>
                     <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show, 'shop')}
                       title="Shopper ticket — walk the floor and buy. No booth.">
-                      🛍️ Attend · ${tier.entryFee}{tier.days > 1 ? ` · ${tier.days}d` : ''}
+                      🛍️ Attend · ${tier.entryFee}{tripDays > 1 ? ` · ${tripDays}d` : ''}
                     </button>
                     <button className="btn" disabled={!canVendor || !canAffordVendor} onClick={() => onAttend(show, 'vendor')}
                       title={canVendor
-                        ? `Run a booth to sell your cards. Entry $${tier.entryFee} + booth $${tier.vendorFee}.`
+                        ? `Run a booth to sell your cards. Entry $${tier.entryFee}${upgrades.sponsorship ? ' — booth fee sponsored 📣' : ` + booth $${tier.vendorFee}`}.`
                         : 'Requires the 🎪 Vendor Setup upgrade'}>
                       {canVendor ? `🎪 Vendor · $${vendorCost}` : '🎪 Vendor · 🔒 needs setup'}
                     </button>

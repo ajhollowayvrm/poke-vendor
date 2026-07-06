@@ -38,7 +38,7 @@ export default function BoothInbox() {
   const shopDisplay = useGame(s => s.shopDisplay) // legacy bucket — read only for inbox validation
   const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const sealedInventory = useGame(s => s.sealedInventory)
-  const FEATURED_MAX = useGame(s => s.FEATURED_MAX)
+  const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0)) // 🏛️ vault doubles the case
   // In-store services: holds for regulars, the consignment case, giveaways.
   const regulars = useGame(s => s.regulars)
   const storeConsignRequests = useGame(s => s.storeConsignRequests)
@@ -724,7 +724,7 @@ function StockLine({ line, holdEnabled, holdTitle, onHold, flash }) {
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const toggleLockSealed = useGame(s => s.toggleLockSealed)
   const lockMany = useGame(s => s.lockMany)
-  const FEATURED_MAX = useGame(s => s.FEATURED_MAX)
+  const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0)) // 🏛️ vault doubles the case
   const featuredTotal = useGame(s => s.collection.filter(c => c._featured).length)
   const { kind, first, items, unit, count } = line
   const keptN = items.filter(x => x.locked).length

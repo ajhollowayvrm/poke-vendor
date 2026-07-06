@@ -264,6 +264,8 @@ export function createEconomySlice(set, get) {
     attendShowDays(showDay, days) {
       set(s => ({ showsAttended: s.showsAttended + 1 }))
       get().bumpGoal('attend', 1) // credit today's "attend a show" goal before the day rolls
+      // 📣 Sponsorship: your banner hangs over every hall you work.
+      if (get().upgrades.sponsorship) { get().addNotoriety(2); get().log('show', '📣 Your sponsor banner hung over the hall (+2 notoriety)', 0) }
       // days waiting until the show opens (home, not away) + the show's run (away)
       const wait = Math.max(0, showDay - get().currentDay)
       const waitRes = wait > 0 ? advanceDaysWith(set, get, wait, false) : null

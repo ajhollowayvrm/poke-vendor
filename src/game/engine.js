@@ -1769,9 +1769,10 @@ function findRng(distId, weekIndex) {
   for (let i = 0; i < distId.length; i++) s = (s * 31 + distId.charCodeAt(i)) >>> 0
   return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
 }
-export function distributorVintageFind(dist, weekIndex = 0) {
+// `boost` scales the find rate (the 🕵️ Vintage Scout upgrade passes ~1.5).
+export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   if (!dist || !VINTAGE_SETS.length) return null
-  const rate = VINTAGE_FIND_RATE[dist.id] ?? 0.2
+  const rate = Math.min(0.85, (VINTAGE_FIND_RATE[dist.id] ?? 0.2) * boost)
   if (rate <= 0) return null
   const r = findRng(dist.id, weekIndex)
   if (r() >= rate) return null

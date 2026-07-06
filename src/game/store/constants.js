@@ -70,6 +70,7 @@ export function heldUnits(s) {
 }
 // Daily storage fee for the current inventory load (0 while under the free allowance).
 export function storageFee(s) {
+  if (s.upgrades?.vault) return 0 // 🏛️ The Vault & Showroom — storage is a solved problem
   const over = Math.max(0, heldUnits(s) - STORAGE_FREE_UNITS)
   return round2(over * STORAGE_PER_UNIT)
 }
@@ -308,4 +309,14 @@ export const UPGRADES = {
   autoSell: { name: 'Auto-Sell Service',    cost: 1800, desc: 'Hands-off selling: willing buyers auto-purchase your listings at 80% of market value — no need to accept each offer. Flag any listing to opt out and hold for a manual offer.', icon: '🤖' },
   autoBinder: { name: 'Binder Curator', cost: 2000, desc: 'A meticulous curator files your masterset binder overnight: every empty slot a loose copy can fill gets your best copy moved in automatically — the binder\'s "add everything possible", every night. Binder cards are safe from bulk actions; take one back out any time.', icon: '📒' },
   autoHold: { name: 'Client Concierge', cost: 3500, desc: 'Your assistant keeps a client ledger: overnight they set a sealed piece aside behind the counter for a regular with nothing on hold — matched to their collecting focus when possible. Pickups pay cash at the walk-in + hold premium. Never touches 🔒 kept stock or appreciating vintage/aftermarket sealed. Requires a Shop Assistant.', icon: '🗝️', needs: 'staff' },
+  wantBroker: { name: 'Want-List Broker', cost: 2800, desc: 'A broker works demand overnight: collector wants and forum WTB posts get filled automatically from your sellable cards — always the CHEAPEST matching copy, always at the want\'s premium over market. Never touches 🔒 kept, held, featured, or binder cards.', icon: '💼' },
+  repricer: { name: 'Repricing Service', cost: 1200, desc: 'No more stale listings: anything that sits a week with lookers but no bites gets walked down 5%/day toward market until it moves. Priced-right stock instead of a graveyard.', icon: '🏷️' },
+  offerDesk: { name: 'Offer Desk', cost: 1500, desc: 'Your desk accepts any standing offer that nets 90%+ of your ask — the "close enough, take it" call you\'d make yourself. Listings you flag 🤖-manual are left for you to judge. Requires the Auto-Sell Service.', icon: '📨', needs: 'autoSell' },
+  newsletter: { name: 'Client Newsletter', cost: 900, desc: 'A monthly mailer keeps your regulars warm: trust decays half as fast, and a lapsed regular occasionally comes back through the door. Requires a Brick-and-Mortar Store.', icon: '💌', needs: 'storefront' },
+  standingOrder: { name: 'Standing Order', cost: 2500, desc: 'Put one product on subscription with a distributor (tap 📋 on any product line in the Buy tab): it ships automatically every week at your rapport price, while they have stock and you have cash.', icon: '📋' },
+  vintageScout: { name: 'Vintage Scout', cost: 4000, desc: 'A picker who knows every back room: distributors turn up sealed vintage finds ~50% more often, and high-rapport sellers reserve holds for you more often too. Requires the Dealer Network.', icon: '🕵️', needs: 'network' },
+  security: { name: 'Security System', cost: 3000, desc: 'Cameras, sensors, and a loud alarm: nothing gets pocketed from your stock again — attempted thefts are caught at the door instead of costing you a card. Requires a Brick-and-Mortar Store.', icon: '🚨', needs: 'storefront' },
+  tourVan: { name: 'Tour Van', cost: 12000, desc: 'A kitted-out van with racks, cases, and a cot: every show trip takes ONE DAY FEWER (minimum 1) — Worlds in 3 days instead of 4. Less time away, fewer missed orders, less overhead per trip.', icon: '🚐' },
+  sponsorship: { name: 'Show Sponsorship', cost: 25000, tier: 'big', desc: 'Your name on the banners of the whole show circuit: vendor booth fees WAIVED at every show (premium spots included), pre-show leads seek you out far more often, and every show you attend pays +2 notoriety. Requires the Vendor Setup.', icon: '📣', needs: 'vendorSetup' },
+  vault: { name: 'The Vault & Showroom', cost: 35000, tier: 'big', desc: 'A climate-controlled vault behind a lit showroom floor: storage fees WAIVED entirely, the display case doubles to 8 featured slots (deeper whale bait), and cards never get dinged in storage again. The endgame home for a serious hoard. Requires a Brick-and-Mortar Store.', icon: '🏛️', needs: 'storefront' },
 }

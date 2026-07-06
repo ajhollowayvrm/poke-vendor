@@ -23,6 +23,8 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
   const sealedInventory = useGame(s => s.sealedInventory)
   const cash = useGame(s => s.cash)
   const hasPhone = useGame(s => !!s.upgrades.smartphone)
+  const sponsored = useGame(s => !!s.upgrades.sponsorship) // 📣 booth + spot fees waived
+  const hasVan = useGame(s => !!s.upgrades.tourVan)        // 🚐 trips run a day shorter
   const tier = SHOW_TIERS[show.tierKey]
 
   const [sort, setSort] = useState('value')
@@ -32,8 +34,9 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
   const [arrival, setArrival] = useState('open') // when you walk in to shop the floor
 
   const spotDef = SPOTS.find(s => s.key === spot) || SPOTS[0]
-  const spotFee = Math.round((tier.vendorFee || 0) * spotDef.feeMult)
-  const totalFee = tier.entryFee + (tier.vendorFee || 0) + spotFee
+  const spotFee = sponsored ? 0 : Math.round((tier.vendorFee || 0) * spotDef.feeMult)
+  const totalFee = tier.entryFee + (sponsored ? 0 : (tier.vendorFee || 0)) + spotFee
+  const tripDays = Math.max(1, tier.days - (hasVan ? 1 : 0))
 
   const view = useMemo(() => {
     return [...collection].sort((a, b) => sort === 'value' ? cardValue(b) - cardValue(a)
@@ -76,7 +79,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
           <div style={{ fontWeight: 800, fontSize: 18 }}>{show.name}</div>
           <div className="muted" style={{ fontSize: 13 }}>
             <span className="pill" style={{ background: tier.color + '33', color: tier.color }}>{tier.name}</span>
-            {' · '}Vendor {fmtMoney(tier.entryFee + (tier.vendorFee || 0))} <span style={{ opacity: 0.7 }}>(entry {fmtMoney(tier.entryFee)} + booth {fmtMoney(tier.vendorFee || 0)})</span> · {tier.days} day{tier.days > 1 ? 's' : ''}
+            {' · '}Vendor {fmtMoney(totalFee - spotFee)} <span style={{ opacity: 0.7 }}>(entry {fmtMoney(tier.entryFee)} + booth {sponsored ? 'sponsored 📣' : fmtMoney(tier.vendorFee || 0)})</span> · {tripDays} day{tripDays > 1 ? 's' : ''}{hasVan && tier.days > 1 ? ' 🚐' : ''}
           </div>
         </div>
         <div className="cash" style={{ marginLeft: 0 }}>{fmtMoney(cash)}<small>balance</small></div>
@@ -96,7 +99,7 @@ export default function ShowPrep({ show, onConfirm, onCancel }) {
               <button key={s.key} className={`chip-btn ${spot === s.key ? 'active' : ''}`} onClick={() => setSpot(s.key)}
                 title={s.blurb}>
                 <b>{s.label}</b>
-                <small>{s.feeMult ? `+${fmtMoney(Math.round((tier.vendorFee||0)*s.feeMult))}` : 'included'} · {s.blurb}</small>
+                <small>{s.feeMult ? (sponsored ? 'sponsored 📣' : `+${fmtMoney(Math.round((tier.vendorFee||0)*s.feeMult))}`) : 'included'} · {s.blurb}</small>
               </button>
             ))}
           </div>

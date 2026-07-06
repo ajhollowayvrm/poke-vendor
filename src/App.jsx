@@ -248,7 +248,8 @@ export default function App() {
     const tier = SHOW_TIERS[show.tierKey]
     if (mode === 'vendor') {
       if (!useGame.getState().upgrades.vendorSetup) return toast('You need the 🎪 Vendor Setup upgrade to run a booth. Buy it from Upgrades.')
-      const cost = tier.entryFee + (tier.vendorFee || 0)
+      // 📣 Sponsorship: booth fees are on the sponsor tab — you pay entry only.
+      const cost = tier.entryFee + (useGame.getState().upgrades.sponsorship ? 0 : (tier.vendorFee || 0))
       if (useGame.getState().cash < cost) return toast(`Not enough cash for the vendor fee (${'$'+cost}).`)
       setPreppingShow(show) // prep screen: pick the cards to bring to your booth
       return
@@ -263,13 +264,14 @@ export default function App() {
     const tier = SHOW_TIERS[show.tierKey]
     setShopperShow(null)
     if (!spend(tier.entryFee)) return toast('Not enough cash for the entry fee.')
+    const effDays = Math.max(1, tier.days - (useGame.getState().upgrades.tourVan ? 1 : 0)) // 🚐 the van shaves a day
     useGame.getState().bringToShow([], []) // ensure the booth is empty — you're here to buy
-    useGame.getState().log('show', `Attended ${show.name} as a shopper (${tier.days}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
+    useGame.getState().log('show', `Attended ${show.name} as a shopper (${effDays}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
     // Claim any pre-show leads for this show (vendor holds + buyer appointments) BEFORE
     // the days advance — the floor works off this copy (state leads expire with the calendar).
     const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
-    const summary = useGame.getState().attendShowDays(show.day, tier.days)
+    const summary = useGame.getState().attendShowDays(show.day, effDays)
     setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads })
   }
 
@@ -279,17 +281,19 @@ export default function App() {
   function enterShow(show, payload = {}) {
     const { cardUids, sealedUids, ...opts } = payload
     const tier = SHOW_TIERS[show.tierKey]
-    const spotFee = opts.spotFee || 0
-    const cost = tier.entryFee + (tier.vendorFee || 0) + spotFee
+    const sponsored = !!useGame.getState().upgrades.sponsorship // 📣 booth + spot fees on the sponsor tab
+    const spotFee = sponsored ? 0 : (opts.spotFee || 0)
+    const cost = tier.entryFee + (sponsored ? 0 : (tier.vendorFee || 0)) + spotFee
     if (!spend(cost)) { setPreppingShow(null); return toast(`Not enough cash for the vendor fee (${'$'+cost}).`) }
+    const effDays = Math.max(1, tier.days - (useGame.getState().upgrades.tourVan ? 1 : 0)) // 🚐 the van shaves a day
     useGame.getState().bringToShow(cardUids || [], sealedUids || [])
     const spotNote = spotFee ? ` + ${opts.spotLabel} $${spotFee}` : ''
-    useGame.getState().log('show', `Vended at ${show.name} (${tier.days}d · entry $${tier.entryFee} + booth $${tier.vendorFee}${spotNote})`, -cost)
+    useGame.getState().log('show', `Vended at ${show.name} (${effDays}d · entry $${tier.entryFee}${sponsored ? ' · booth sponsored 📣' : ` + booth $${tier.vendorFee}${spotNote}`})`, -cost)
     // Claim any pre-show leads for this show (vendor holds + buyer appointments) BEFORE
     // the days advance — the floor works off this copy (state leads expire with the calendar).
     const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
-    const summary = useGame.getState().attendShowDays(show.day, tier.days)
+    const summary = useGame.getState().attendShowDays(show.day, effDays)
     setPreppingShow(null)
     setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads })
   }
@@ -509,7 +513,8 @@ function GameClock() {
 // how the market moved, new collectors who found you, and the overhead that hit.
 function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
-    resolvedGrades, binderFiled, saleProceeds, notoDelta, missedOnline, missedWalkin, days, showName,
+    resolvedGrades, binderFiled, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
+    missedOnline, missedWalkin, days, showName,
     soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
@@ -517,7 +522,8 @@ function DaySummary({ summary, onClose }) {
   const sold = soldNames || []
   const events = lifeEvents || []
   const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
-  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || wages || rent || lease
+  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || wantsBrokered
+    || offersAccepted || wages || rent || lease
     || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || events.length || floorActive
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
@@ -569,9 +575,11 @@ function DaySummary({ summary, onClose }) {
               </div>
             )}
             {/* What sold */}
-            {(saleProceeds > 0 || sold.length > 0) && (
+            {(saleProceeds > 0 || sold.length > 0 || wantsBrokered > 0 || offersAccepted > 0) && (
               <div className="recap-sec">
                 <div className="recap-sec-h">🧾 Sold</div>
+                {wantsBrokered > 0 && <div className="recap-line"><span className="muted">💼 Broker filled {wantsBrokered} want{wantsBrokered === 1 ? '' : 's'}</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(brokerProceeds)}</b></div>}
+                {offersAccepted > 0 && <div className="recap-line"><span className="muted">📨 Offer desk closed {offersAccepted} deal{offersAccepted === 1 ? '' : 's'}</span></div>}
                 {bigSale && <div className="recap-line"><span>Biggest: <b>{bigSale.name}</b></span><b style={{ color: 'var(--green)' }}>+{fmtMoney(bigSale.net)}</b></div>}
                 {sold.filter(s => !bigSale || s.name !== bigSale.name || s.net !== bigSale.net).slice(0, 3).map((s, i) => (
                   <div className="recap-line" key={i}><span className="muted">{s.name}</span><span className="muted">+{fmtMoney(s.net)}</span></div>
@@ -833,6 +841,13 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy }) {
   const showStrike = price < (retail || 0) - 0.005
   const total = round2(price * qN)
 
+  // 📋 Standing order (upgrade): subscribe ONE regular product line to a weekly auto-ship.
+  const hasSO = useGame(s => !!s.upgrades.standingOrder)
+  const so = useGame(s => s.standingOrder)
+  const setSO = useGame(s => s.setStandingOrder)
+  const soHere = !!(so && so.distId === dist.id && so.setId === set.id && so.type === product.type)
+  const soEligible = hasSO && !product._case && !product._clearance
+
   return (
     <div className="prodrow">
       <div className="qty-ctl" aria-label="quantity">
@@ -841,6 +856,12 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy }) {
           onChange={e => clampSet(Number(e.target.value))} onFocus={e => e.target.select()} aria-label="quantity" />
         <button type="button" className="qty-step" disabled={!canBuy || qN >= maxBuy} onClick={() => clampSet(qN + 1)} aria-label="more">+</button>
       </div>
+      {soEligible && (
+        <button type="button" className={`qty-step so-btn ${soHere ? 'active' : ''}`}
+          title={soHere ? `📋 Standing order active — ${so.qty}× weekly at your rapport price. Tap to cancel.`
+            : `📋 Standing order: auto-buy ${qN}× ${product.type} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
+          onClick={() => setSO(soHere ? null : { distId: dist.id, setId: set.id, type: product.type, qty: qN })}>📋</button>
+      )}
       <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''}`}
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN)}
@@ -875,7 +896,8 @@ function StockBar({ qty, cap, out, days, color }) {
 function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
   if (!VINTAGE_SETS.length) return null
   const hold = rec?.hold || null
-  const find = useMemo(() => distributorVintageFind(dist, weekIndex), [dist, weekIndex])
+  const hasScout = useGame(s => !!s.upgrades.vintageScout) // 🕵️ scout turns up finds more often
+  const find = useMemo(() => distributorVintageFind(dist, weekIndex, hasScout ? 1.5 : 1), [dist, weekIndex, hasScout])
   if (!hold && !find) {
     return (
       <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>

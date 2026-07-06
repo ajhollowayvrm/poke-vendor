@@ -23,6 +23,13 @@ export function createSourcingSlice(set, get) {
     distributorRec(distId) {
       return get().distributors[distId] || { spend: 0, stock: {} }
     },
+    // 📋 Standing order (upgrade): one product on weekly auto-ship. Pass null to cancel.
+    // The delivery itself runs in the day tick (buyFromDistributorBulk at rapport price).
+    setStandingOrder(order) {
+      set({ standingOrder: order || null })
+      if (order) get().log('buy', `📋 Standing order set — ${order.qty}× ${order.type} ships weekly while stocked`, 0)
+      else get().log('buy', '📋 Standing order cancelled', 0)
+    },
     // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,
     // routes the actual purchase through buySealed (charge + stock the item + log), then
     // bumps your rapport with them and decrements their shelf. Returns the new inventory

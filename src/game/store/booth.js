@@ -295,7 +295,9 @@ export function createBoothSlice(set, get) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card || !get().upgrades.storefront) return false
       const on = !!card._featured
-      if (!on && get().collection.filter(c => c._featured).length >= get().FEATURED_MAX) return false
+      // 🏛️ The Vault & Showroom doubles the display case (4 → 8 featured slots).
+      const cap = get().FEATURED_MAX + (get().upgrades.vault ? 4 : 0)
+      if (!on && get().collection.filter(c => c._featured).length >= cap) return false
       set(s => ({ collection: s.collection.map(c => c.uid === uid ? { ...c, _featured: !on } : c) }))
       if (!on) get().log('shop', `⭐ Featured ${card.name} in the display case — the kind of piece whales come in for`, 0)
       return true

@@ -20,9 +20,9 @@ import {
   applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
   setMarketMults, distributorById, restockRate,
   marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
-  makeVintageHold, setById,
+  makeVintageHold, setById, distributorPrice,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
@@ -92,7 +92,7 @@ function restockDistributors(distributors, days) {
 const HOLD_RAPPORT_LEVEL = 2      // Preferred+ (a real relationship)
 const HOLD_CHANCE_PER_DAY = 0.05  // ~30% chance over a week without a hold
 const HOLD_DAYS = 12              // how long they'll hold it before it goes back on the shelf
-function applyVintageHolds(distributors, prev, days, absDay, log) {
+function applyVintageHolds(distributors, prev, days, absDay, log, holdBoost = 1) {
   if (!VINTAGE_SETS.length) return distributors
   const out = { ...distributors }
   for (const dist of DISTRIBUTORS) {
@@ -106,7 +106,7 @@ function applyVintageHolds(distributors, prev, days, absDay, log) {
     if (!hold && level >= HOLD_RAPPORT_LEVEL) {
       let created = null
       for (let i = 0; i < days && !created; i++) {
-        if (Math.random() < HOLD_CHANCE_PER_DAY) created = makeVintageHold(distributorDiscount(dist, level))
+        if (Math.random() < HOLD_CHANCE_PER_DAY * holdBoost) created = makeVintageHold(distributorDiscount(dist, level))
       }
       if (created) {
         hold = { ...created, heldUntilDay: absDay + HOLD_DAYS }
@@ -120,9 +120,9 @@ function applyVintageHolds(distributors, prev, days, absDay, log) {
 
 // Relationships cool when neglected: every regular loses a little trust per game-day,
 // floored so dormancy alone never burns them (only gouging does). Dealing them adds it back.
-function decayRegulars(regulars, days) {
+function decayRegulars(regulars, days, factor = 1) {
   if (!regulars?.length) return regulars || []
-  return regulars.map(r => ({ ...r, trust: Math.max(2, round2((r.trust || 0) - 0.5 * days)) }))
+  return regulars.map(r => ({ ...r, trust: Math.max(2, round2((r.trust || 0) - 0.5 * days * factor)) }))
 }
 
 // --- Forum (public wanted-ads board) ----------------------------------------
@@ -198,6 +198,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
   let soldProceeds = 0
   const sold = []
   const staleNow = []
+  const repriced = []
   let newOffers = 0
   let premiumOffers = 0 // offers landed on a hot-set card above market (the reading-the-market payoff)
   const remaining = []
@@ -208,6 +209,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
     // Is this card's SET hot right now? A hot set lets willing buyers stretch above market.
     const hot = marketMult(setIdOfCard(cur.card)) >= HOT_SET_MULT
     let didSell = false
+    let walked = false // 🏷️ repricing service touched it this tick — fresh chance before it's called stale
     // auto-sell is on when the upgrade is owned AND this listing hasn't opted out
     const autoSellOn = !!upgrades.autoSell && (cur.autoSell !== false)
     for (let day = 0; day < days && !didSell; day++) {
@@ -269,16 +271,26 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
         }
       }
       cur.age = (cur.age || 0) + 1
+      // 🏷️ Repricing service: a listing aged past stale with looks but no offers gets
+      // walked down 5%/day toward market (floor 100%) instead of sitting priced-too-high.
+      if (upgrades.repricer && (cur.age || 0) >= LISTING_STALE_DAYS && cur.offers.length === 0 && cur.askMult > 1.0) {
+        cur.askMult = Math.max(1.0, round2(cur.askMult - 0.05))
+        cur.ask = round2(cardValue(cur.card) * cur.askMult)
+        cur.net = round2(cur.ask - cur.ask * ONLINE_FEE_PCT - shippingCost(cur.ask))
+        cur.stale = false
+        walked = true
+        if (!repriced.includes(cur.card.name)) repriced.push(cur.card.name)
+      }
     }
     if (didSell) continue // sold → drops off the board
     // mark stale if it's drawn plenty of eyes over enough days with no traction
-    if (!cur.stale && (cur.age || 0) >= LISTING_STALE_DAYS && cur.offers.length === 0 && cur.views >= 5) {
+    if (!cur.stale && !walked && (cur.age || 0) >= LISTING_STALE_DAYS && cur.offers.length === 0 && cur.views >= 5) {
       cur.stale = true
       staleNow.push(cur.card.name)
     }
     remaining.push(cur)
   }
-  return { listings: remaining, soldProceeds, sold, newOffers, premiumOffers, staleNow }
+  return { listings: remaining, soldProceeds, sold, newOffers, premiumOffers, staleNow, repriced }
 }
 
 // --- Life events: "something can happen while time passes" -------------------
@@ -332,16 +344,27 @@ function applyLifeEvents(get, set, days) {
       get().log('life-good', line, amt); events.push({ icon: '🍀', line, cashDelta: amt })
     } else if (kind === 'ding') {
       const c = dingable[pickWeightedLowValue(dingable)]
-      const from = c.condition, to = COND_DOWN[from]
-      set(st => ({ collection: st.collection.map(x => x.uid === c.uid ? { ...x, condition: to } : x) }))
-      const line = `📦 ${c.name} got dinged in storage (${from}→${to})`
-      get().log('life-bad', line, 0); events.push({ icon: '📦', line, cashDelta: 0 })
+      if (get().upgrades.vault) {
+        // 🏛️ climate-controlled, padded, sleeved — storage damage is a solved problem
+        const line = `🏛️ ${c.name} slid off a shelf — the vault's padding saved it from a ding`
+        get().log('life-good', line, 0); events.push({ icon: '🏛️', line, cashDelta: 0 })
+      } else {
+        const from = c.condition, to = COND_DOWN[from]
+        set(st => ({ collection: st.collection.map(x => x.uid === c.uid ? { ...x, condition: to } : x) }))
+        const line = `📦 ${c.name} got dinged in storage (${from}→${to})`
+        get().log('life-bad', line, 0); events.push({ icon: '📦', line, cashDelta: 0 })
+      }
     } else if (kind === 'theft') {
       const c = stealable[pickWeightedLowValue(stealable)]
-      const val = cardValue(c)
-      set(st => ({ collection: st.collection.filter(x => x.uid !== c.uid) }))
-      const line = `🕵️ ${c.name} went missing (was ~$${val.toFixed(2)}) — lock cards to protect them`
-      get().log('life-bad', line, 0); events.push({ icon: '🕵️', line, cashDelta: 0 })
+      if (get().upgrades.security) {
+        const line = `🚨 Someone tried to pocket ${c.name} — the security system caught them at the door`
+        get().log('life-good', line, 0); events.push({ icon: '🚨', line, cashDelta: 0 })
+      } else {
+        const val = cardValue(c)
+        set(st => ({ collection: st.collection.filter(x => x.uid !== c.uid) }))
+        const line = `🕵️ ${c.name} went missing (was ~$${val.toFixed(2)}) — lock cards to protect them`
+        get().log('life-bad', line, 0); events.push({ icon: '🕵️', line, cashDelta: 0 })
+      }
     } else if (kind === 'offer_pull') {
       const l = withOffers[Math.floor(Math.random() * withOffers.length)]
       const off = l.offers[0]
@@ -584,6 +607,7 @@ export function advanceDaysWith(set, get, days, away) {
   // A spiking set drew premium offers ABOVE market — the reward for listing into a hot market.
   if (lt.premiumOffers) get().log('listing', `📈 ${lt.premiumOffers} buyer${lt.premiumOffers > 1 ? 's' : ''} offered OVER market on a hot set — list into the spike while it lasts.`, 0)
   for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
+  if (lt.repriced.length) get().log('listing', `🏷️ Repricing service walked ${lt.repriced.length} stale listing${lt.repriced.length > 1 ? 's' : ''} down toward market.`, 0)
 
   // --- Mystery pack sales over the days passed -----------------------------------
   // Your repack line sells on its enabled channels day by day: online orders ship out
@@ -745,7 +769,8 @@ export function advanceDaysWith(set, get, days, away) {
   const goalsExpired = !s.dailyGoals.length || newAbsDay - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS
   const periodGoals = goalsExpired ? makeWeeklyGoals(noto) : s.dailyGoals
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
-  const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days), s.distributors, days, newAbsDay, get().log)
+  const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days), s.distributors, days, newAbsDay, get().log,
+    s.upgrades.vintageScout ? 1.6 : 1) // 🕵️ the scout keeps sellers thinking of you
   // --- Pre-show leads: people DM you BEFORE a show, giving that trip a reason -----
   // Expire leads whose show has passed unattended (attending claims them at entry),
   // then maybe generate fresh ones for unlocked shows 1–4 days out: a recurring
@@ -763,8 +788,10 @@ export function advanceDaysWith(set, get, days, away) {
       if (showX.day <= d || showX.day - d > LEAD_WINDOW) continue
       if (leadsNext.some(l => l.showId === showX.id)) continue
       const absShowDay = absoluteDay(showX.day, months)
-      const wantVendorLead = rapportVendors.length > 0 && Math.random() < 0.30
-      const wantBuyerLead = !wantVendorLead && noto >= 20 && Math.random() < 0.35
+      // 📣 A sponsor's name on the banner makes people plan around seeing you there.
+      const sponsor = !!s.upgrades.sponsorship
+      const wantVendorLead = rapportVendors.length > 0 && Math.random() < (sponsor ? 0.55 : 0.30)
+      const wantBuyerLead = !wantVendorLead && noto >= 20 && Math.random() < (sponsor ? 0.65 : 0.35)
       let lead = null
       if (wantVendorLead) {
         const vendor = rapportVendors[Math.floor(Math.random() * rapportVendors.length)]
@@ -805,7 +832,7 @@ export function advanceDaysWith(set, get, days, away) {
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
-    regulars: decayRegulars(st.regulars, days),                           // relationships cool if you neglect them
+    regulars: decayRegulars(st.regulars, days, s.upgrades.newsletter ? 0.5 : 1), // relationships cool if you neglect them (💌 newsletter halves it)
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
     giveawaysToday: 0,                                                     // fresh day → giveaway rep is full value again
   }))
@@ -835,6 +862,68 @@ export function advanceDaysWith(set, get, days, away) {
   // The Binder Curator files overnight — the binder's "add everything possible" sweep, run
   // for you after the day's cards (pulls, buys, returned slabs) have all landed.
   const binderFiled = s.upgrades.autoBinder ? get().addAllToBinder(null) : 0
+  // 💼 Want-List Broker: fills collector wants + forum WTB posts overnight from the
+  // sellable pool — always the CHEAPEST matching copy, so the good copies stay for the
+  // binder, the case, and grading. Runs AFTER the curator: binder slots outrank cash.
+  // Keepers (🔒), held items, and featured pieces are never handed over.
+  let wantsBrokered = 0, brokerProceeds = 0
+  if (s.upgrades.wantBroker) {
+    const pickFor = w => get().collection
+      .filter(c => cardMatchesWant(c, w) && !c.locked && !c._heldFor && !c._featured)
+      .sort((a, b) => cardValue(a) - cardValue(b))[0]
+    for (const w of [...get().wantList]) {
+      const c = pickFor(w); if (!c) continue
+      const r = get().fulfillWant(w.id, c.uid)
+      if (r) { wantsBrokered++; brokerProceeds = round2(brokerProceeds + r.payout) }
+    }
+    for (const p of [...(get().forumPosts || [])]) {
+      const c = pickFor(p); if (!c) continue
+      const r = get().fulfillForumPost(p.id, c.uid)
+      if (r) { wantsBrokered++; brokerProceeds = round2(brokerProceeds + r.payout) }
+    }
+  }
+  // 📨 Offer Desk: accept any standing offer netting ≥90% of what the ask would — the
+  // "close enough, take it" call. Listings flagged 🤖-manual are left for you to judge.
+  let offersAccepted = 0
+  if (s.upgrades.offerDesk) {
+    for (const l of [...get().listings]) {
+      if (l.autoSell === false || l.expired) continue
+      const target = round2((l.net ?? l.ask ?? cardValue(l.card)) * 0.9)
+      const best = (l.offers || []).filter(o => o.net >= target).sort((a, b) => b.net - a.net)[0]
+      if (!best) continue
+      const idx = get().listings.findIndex(x => x.card.uid === l.card.uid)
+      if (idx >= 0) { get().acceptOffer(idx, best.id); offersAccepted++ }
+    }
+  }
+  // 📋 Standing order: once a week the subscribed product ships automatically at your
+  // rapport price — as long as the distributor has it and the till covers it. A missed
+  // week (out of stock / short on cash) just retries daily until it lands.
+  if (s.upgrades.standingOrder && get().standingOrder) {
+    const so = get().standingOrder
+    if (newAbsDay - (so.lastDay ?? -999) >= 7) {
+      const dist = distributorById(so.distId)
+      const pokeSet = setById(so.setId)
+      const product = pokeSet ? (pokeSet.products || []).find(p => p.type === so.type) : null
+      if (dist && pokeSet && product) {
+        const level = rapportLevel((get().distributors[so.distId]?.spend) || 0).level
+        const price = distributorPrice(dist, product.price, level)
+        const r = get().buyFromDistributorBulk(so.distId, pokeSet, product, price, so.qty)
+        if (r) {
+          set({ standingOrder: { ...so, lastDay: newAbsDay } })
+          get().log('buy', `📋 Standing order delivered — ${r.bought}× ${product.type} (${pokeSet.name})`, 0)
+        }
+      }
+    }
+  }
+  // 💌 Newsletter: now and then it warms a lapsed regular back through the door.
+  if (s.upgrades.newsletter && Math.random() < 0.12 * days) {
+    const cold = (get().regulars || []).filter(r => !r.flags?.burned && (r.trust || 0) < 50)
+      .sort((a, b) => (a.trust || 0) - (b.trust || 0))[0]
+    if (cold) {
+      get().bumpTrust(cold.id, 6, 0)
+      get().log('regular', `💌 Your newsletter brought ${cold.emoji} ${cold.name} back around (+trust)`, 0)
+    }
+  }
   // Daily catch-all for milestones — sweeps up any slow-moving thresholds (net worth,
   // notoriety, cumulative counters) that the instant per-action checks don't cover.
   get().checkMilestones()
@@ -851,7 +940,8 @@ export function advanceDaysWith(set, get, days, away) {
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
     lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
     listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
-    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled, days,
+    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled,
+    wantsBrokered, brokerProceeds, offersAccepted, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
@@ -886,6 +976,9 @@ export function mergeSummaries(a, b) {
     resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
     resolvedGradeCards: [...(a.resolvedGradeCards || []), ...(b.resolvedGradeCards || [])],
     binderFiled: add(a.binderFiled, b.binderFiled),
+    wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
+    brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),
+    offersAccepted: add(a.offersAccepted, b.offersAccepted),
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
     counterIncome: round2(add(a.counterIncome, b.counterIncome)),
     soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),
