@@ -158,6 +158,7 @@ export function omniShelfCards(listings) {
 // cards on consignment for a cut. Tuning for all three lives here.
 export const HOLD_DAYS_STORE = 4        // how long you'll hold an item for a regular before it goes back out
 export const HOLD_PICKUP_PREMIUM = 0.05 // they pay a little extra on top of the in-person premium — the favor is worth it
+export const CONCIERGE_HOLDS_PER_TICK = 2 // new holds the Client Concierge sets aside per day-advance
 export const GIVEAWAY_BUZZ_DAYS = 3     // how long giveaway word-of-mouth pumps walk-in traffic
 export const GIVEAWAY_TRAFFIC_MULT = 1.35
 export const CONSIGN_REQ_CAP = 2        // at most this many locals waiting on a consignment answer
@@ -305,4 +306,6 @@ export const UPGRADES = {
   network:  { name: 'Dealer Network',       cost: 1500, desc: 'Famous vendors reveal their best stock — and flag underpriced DEALS and OVER-priced asks so you never overpay.', icon: '🤝' },
   banner:   { name: 'Charity Banner',       cost: 300, desc: 'Generous acts (giving cards away, fair deals) grant +50% extra notoriety.', icon: '🎗️' },
   autoSell: { name: 'Auto-Sell Service',    cost: 1800, desc: 'Hands-off selling: willing buyers auto-purchase your listings at 80% of market value — no need to accept each offer. Flag any listing to opt out and hold for a manual offer.', icon: '🤖' },
+  autoBinder: { name: 'Binder Curator', cost: 2000, desc: 'A meticulous curator files your masterset binder overnight: every empty slot a loose copy can fill gets your best copy moved in automatically — the binder\'s "add everything possible", every night. Binder cards are safe from bulk actions; take one back out any time.', icon: '📒' },
+  autoHold: { name: 'Client Concierge', cost: 3500, desc: 'Your assistant keeps a client ledger: overnight they set a sealed piece aside behind the counter for a regular with nothing on hold — matched to their collecting focus when possible. Pickups pay cash at the walk-in + hold premium. Never touches 🔒 kept stock or appreciating vintage/aftermarket sealed. Requires a Shop Assistant.', icon: '🗝️', needs: 'staff' },
 }

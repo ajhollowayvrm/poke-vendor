@@ -150,6 +150,10 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   padding: 2px 7px; border-radius: 8px; background: var(--green); color: #03301f; }
 .cardtile .gradechip { position:absolute; top:6px; right:6px; background:#fff; color:#111; font-weight:900; z-index: 4;
   font-size:11px; padding:2px 6px; border-radius:6px; }
+/* Which set the card is from — on every tile, so a card is never contextless. */
+.cardtile .settag { position: absolute; top: 6px; right: 6px; z-index: 4; font-size: 9px; font-weight: 700;
+  color: var(--dim); padding: 2px 6px; border-radius: 6px; background: #000a; backdrop-filter: blur(4px);
+  max-width: 58%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @keyframes sheen { 0%{background-position:0% 0%} 100%{background-position:-200% -200%} }
 
 /* ---------- Graded SLAB (PSA-style plastic case) ---------- */

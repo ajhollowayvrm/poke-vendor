@@ -29,7 +29,8 @@ import {
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
-  HOLD_PICKUP_PREMIUM, GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
+  HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
+  GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS,
 } from './constants'
@@ -59,6 +60,9 @@ const FORUM_REFILL_CHANCE = 0.7  // per game-day chance a fresh post appears (if
 // per set for the Prices-tab sparkline.
 const MARKET_EVENT_CHANCE = 0.10
 const MARKET_HISTORY_LEN = 14
+// Sets whose sealed product appreciates (vintage-style drift) — the Client Concierge
+// never auto-holds these: setting one aside is selling down the player's hoard.
+const SECONDARY_IDS = new Set(SECONDARY_SETS.map(s => s.id))
 
 // Restock every distributor's depleted stock over `days` passed. Each stock entry is
 // { q, cap }; it climbs back toward cap at the distributor's restock rate. Entries that
@@ -644,6 +648,29 @@ export function advanceDaysWith(set, get, days, away) {
     }).filter(Boolean)
     collectionNext = tickHolds(collectionNext, false)
     sealedInvNext = tickHolds(sealedInvNext, true)
+    // 1b) CONCIERGE: with the Client Concierge, sealed gets set aside for regulars
+    //     overnight — the same 🗝️ hold you'd make by hand, minus the clicking. Highest-
+    //     trust regulars without a hold get one first, matched to their collecting focus
+    //     when the floor has it, else the best piece out there. Keepers (🔒) and
+    //     appreciating vintage/aftermarket sealed stay put. Stamped AFTER tickHolds so a
+    //     fresh hold gets its full window starting tomorrow.
+    if (s.upgrades.autoHold) {
+      const alreadyHeldFor = new Set([...collectionNext, ...sealedInvNext].filter(x => x._heldFor).map(x => x._heldFor.regularId))
+      const queue = (s.regulars || [])
+        .filter(r => !r.flags?.burned && !alreadyHeldFor.has(r.id))
+        .sort((a, b) => (b.trust || 0) - (a.trust || 0))
+        .slice(0, CONCIERGE_HOLDS_PER_TICK)
+      let floor = sealedInvNext.filter(it => !it._heldFor && !it.locked && !it.vintage && !SECONDARY_IDS.has(it.setId))
+      for (const reg of queue) {
+        if (!floor.length) break
+        const pick = (reg.focus?.setId && floor.find(it => it.setId === reg.focus.setId))
+          || floor.reduce((best, it) => sealedValue(it) > sealedValue(best) ? it : best, floor[0])
+        const held = { regularId: reg.id, name: reg.name, emoji: reg.emoji, daysLeft: HOLD_DAYS_STORE }
+        sealedInvNext = sealedInvNext.map(x => x.uid === pick.uid ? { ...x, _heldFor: held } : x)
+        floor = floor.filter(x => x.uid !== pick.uid)
+        get().log('shop', `🗝️ Your concierge set the ${pick.product.type} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
+      }
+    }
   }
   // 2) CONSIGNMENT CASE: locals' cards you carry sell across the counter as days pass —
   //    you bank the commission (their money isn't yours). Unsold past the window goes
@@ -805,6 +832,9 @@ export function advanceDaysWith(set, get, days, away) {
   for (const ev of market.events) get().log(ev.kind === 'hype' ? 'market-hype' : 'market-crash', `${ev.kind === 'hype' ? '📈' : '📉'} ${ev.line}`, 0)
   // Resolve any grades whose day count was reached during these days (currentDay is now updated).
   const resolvedGrades = get().resolveGrades()
+  // The Binder Curator files overnight — the binder's "add everything possible" sweep, run
+  // for you after the day's cards (pulls, buys, returned slabs) have all landed.
+  const binderFiled = s.upgrades.autoBinder ? get().addAllToBinder(null) : 0
   // Daily catch-all for milestones — sweeps up any slow-moving thresholds (net worth,
   // notoriety, cumulative counters) that the instant per-action checks don't cover.
   get().checkMilestones()
@@ -821,7 +851,7 @@ export function advanceDaysWith(set, get, days, away) {
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
     lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
     listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
-    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, days,
+    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
@@ -855,6 +885,7 @@ export function mergeSummaries(a, b) {
     premiumOffers: add(a.premiumOffers, b.premiumOffers),
     resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
     resolvedGradeCards: [...(a.resolvedGradeCards || []), ...(b.resolvedGradeCards || [])],
+    binderFiled: add(a.binderFiled, b.binderFiled),
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
     counterIncome: round2(add(a.counterIncome, b.counterIncome)),
     soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),

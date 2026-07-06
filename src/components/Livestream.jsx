@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGame } from '../game/store'
-import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, sealedCard, round2, cardImg } from '../game/engine'
+import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
@@ -1001,7 +1001,8 @@ function NowRevealing({ card }) {
       <div className="rip-side-head">Now revealing</div>
       {card ? (() => {
         const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
-        const label = card.foil ? card.foil.label : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
+        const setNm = setNameOfCard(card)
+        const label = `${card.foil ? card.foil.label : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`}${setNm ? ` · ${setNm}` : ''}`
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
             <img src={cardImg(card)} alt={card.name} decoding="async" fetchpriority="high" />

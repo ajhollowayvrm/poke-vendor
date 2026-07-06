@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGame } from '../game/store'
-import { fmtMoney, cardValue, cardImg } from '../game/engine'
+import { fmtMoney, cardValue, cardImg, setNameOfCard } from '../game/engine'
 
 // The "on the market" panel — cards you've listed on your own site (browsed by
 // real customers) and cards you've consigned. Lives on the Sell tab.
@@ -26,7 +26,7 @@ export default function SellStrips() {
           <b>↗ Consigned ({consignments.length})</b>
           {consignments.map((c, i) => (
             <span key={i} className="pill" title={`Pays ${fmtMoney(c.net)} when it sells`}>
-              {c.card.name} · {fmtMoney(c.net)} · {c.daysLeft}d
+              {c.card.name}{setNameOfCard(c.card) ? ` (${setNameOfCard(c.card)})` : ''} · {fmtMoney(c.net)} · {c.daysLeft}d
             </span>
           ))}
           <span className="muted" style={{ fontSize: 12 }}>— pays out as the days pass / when you attend a show</span>
@@ -77,6 +77,7 @@ function ListingRow({ l }) {
         <div className="listing-info">
           <div className="listing-name">
             {l.card.name}
+            {setNameOfCard(l.card) && <span className="muted" style={{ marginLeft: 6, fontSize: 11, fontWeight: 400 }}>{setNameOfCard(l.card)}</span>}
             {l.card.grade && (
               <span className="pill" style={{ marginLeft: 6, fontSize: 11, background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)', border: '1px solid color-mix(in srgb, var(--gold) 27%, transparent)' }}>
                 PSA {l.card.grade.overall}

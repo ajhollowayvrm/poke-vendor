@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
 import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
@@ -94,7 +94,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
             <h2>{card.name}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
               <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{card.rarity}</span>
-              {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{card.number}
+              {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{card.number}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}
               {!g && card.condition && CONDITIONS[card.condition] && (
                 <> · <span style={{ color: CONDITIONS[card.condition].color, fontWeight: 800 }}>{CONDITIONS[card.condition].label}</span></>
               )}

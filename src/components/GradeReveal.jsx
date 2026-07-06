@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { cardValue, rawValue, fmtMoney, GRADING } from '../game/engine'
+import { cardValue, rawValue, fmtMoney, GRADING, setNameOfCard } from '../game/engine'
 import HiResImg from './HiResImg'
 import { gradeLabel, rarityColor } from './CardTile'
 import Burst from './Burst'
@@ -55,7 +55,7 @@ export default function GradeReveal({ cards, onDone }) {
                   <div className="gr-back">
                     <div className="gr-back-brand">PSA</div>
                     <div className="gr-back-q">?</div>
-                    <div className="gr-back-name">{card.name}</div>
+                    <div className="gr-back-name">{card.name}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}</div>
                     <div className="gr-back-hint">tap to reveal</div>
                   </div>
                   {/* revealed: the graded slab */}
@@ -64,7 +64,7 @@ export default function GradeReveal({ cards, onDone }) {
                     <div className="slab-label">
                       <div className="slab-brand">PSA</div>
                       <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
-                      <div className="slab-cert">{card.name}</div>
+                      <div className="slab-cert">{card.name}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}</div>
                     </div>
                     <div className="slab-window"><HiResImg card={card} alt={card.name} decoding="async" /></div>
                     <div className="gr-val">

@@ -130,6 +130,7 @@ export function createCollectionSlice(set, get) {
       // best copy first so the nicest condition/grade lands in the binder
       const coll = [...get().collection].sort((a, b) => cardValue(b) - cardValue(a))
       for (const c of coll) {
+        if (c._heldFor) continue // promised to a regular — the hold keeps its word
         const cSet = setIdOf(c)
         const set_ = sets.find(s => s.id === cSet)
         if (!set_) continue

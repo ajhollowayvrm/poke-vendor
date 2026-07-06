@@ -1,4 +1,4 @@
-import { cardValue, isHit, fmtMoney, CONDITIONS, cardImg } from '../game/engine'
+import { cardValue, isHit, fmtMoney, CONDITIONS, cardImg, setNameOfCard } from '../game/engine'
 import HoloCard from './HoloCard'
 
 const RARITY_COLOR = {
@@ -19,6 +19,7 @@ export function gradeLabel(g) {
 export default function CardTile({ card, onClick, interactive = true, noBorder = false }) {
   const hit = isHit(card) || card._isHit
   const foil = card.foil
+  const setName = setNameOfCard(card)
 
   // Graded cards render as a PSA-style SLAB: a glossy plastic case with a label
   // header (grade + descriptor) above the encased art. The grade tier tints the gloss.
@@ -36,7 +37,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
               <b>{g}</b>
               <span>{gradeLabel(g)}</span>
             </div>
-            <div className="slab-cert">{card.name}</div>
+            <div className="slab-cert">{card.name}{setName ? ` · ${setName}` : ''}</div>
           </div>
           <div className="slab-window">
             <img src={cardImg(card)} alt={card.name} loading="lazy" decoding="async" />
@@ -58,6 +59,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
           {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}
         </span>
         {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
+        {setName && <span className="settag" title={setName}>{setName}</span>}
         {!card.grade && card.condition && card.condition !== 'NM' && (
           <span className="condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
         )}

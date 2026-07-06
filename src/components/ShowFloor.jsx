@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg } from '../game/engine'
+import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -140,7 +140,7 @@ export default function ShowFloor({ show, onLeave }) {
       const best = pack.reduce((b, c) => cardValue(c) > cardValue(b) ? c : b, pack[0])
       if (pack._god || pack._demigod || isBigPull(best)) {
         const who = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)]
-        const what = pack._god ? 'a GOD PACK 🤯' : pack._demigod ? 'a DEMIGOD PACK ⭐' : `${best.foil ? best.foil.label + ' ' : ''}${best.name}`
+        const what = pack._god ? 'a GOD PACK 🤯' : pack._demigod ? 'a DEMIGOD PACK ⭐' : `${best.foil ? best.foil.label + ' ' : ''}${best.name}${setNameOfCard(best) ? ` (${setNameOfCard(best)})` : ''}`
         const verb = HYPE[Math.floor(Math.random() * HYPE.length)]
         const at = booths[npc.booth]?.name
         // Hype only rubs off on YOU if they bought the sealed from your booth.

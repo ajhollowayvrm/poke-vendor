@@ -1,6 +1,6 @@
 import HoloCard from './HoloCard'
 import { useModalEscape } from '../ui/dialog'
-import { cardValue, sealedValue, fmtMoney, setById } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, setById, setNameOfCard } from '../game/engine'
 import HiResImg from './HiResImg'
 
 const TONE_ICON = { kind: '💛', fair: '🤝', cold: '🥶' }
@@ -25,6 +25,7 @@ function TradeItem({ card, sealed }) {
         <HiResImg card={card} alt={card.name} decoding="async" />
       </HoloCard>
       <div className="trade-name">{card.name}</div>
+      {setNameOfCard(card) && <div className="muted" style={{ fontSize: 10 }}>{setNameOfCard(card)}</div>}
       <div className="trade-val">{fmtMoney(cardValue(card))}</div>
     </div>
   )
@@ -79,8 +80,9 @@ export default function Encounter({ data, onPick, onClose }) {
             </div>
           </div>
         ) : data.card && (
-          <div style={{ display:'flex', justifyContent:'center', margin:'8px 0' }}>
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap: 4, margin:'8px 0' }}>
             <HoloCard card={data.card} maxTilt={16} className="enc-card"><HiResImg card={data.card} alt={data.card.name} decoding="async" fetchpriority="high" /></HoloCard>
+            {setNameOfCard(data.card) && <div className="muted" style={{ fontSize: 11 }}>{setNameOfCard(data.card)}</div>}
           </div>
         )}
 

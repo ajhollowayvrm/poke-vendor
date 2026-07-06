@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS } from '../game/store'
-import { fmtMoney, cardValue, sealedValue, setById, round2, cardImg } from '../game/engine'
+import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, round2, cardImg } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 import Encounter from './Encounter'
@@ -219,6 +219,7 @@ export default function BoothInbox() {
                       <div key={r.id} className="product">
                         {cardImg(r.card) && <img src={cardImg(r.card)} alt="" style={{ width: 56, borderRadius: 8, alignSelf: 'center' }} />}
                         <h3 style={{ fontSize: 14, margin: 0 }}>{r.who} brings a {r.card.name}</h3>
+                        {setNameOfCard(r.card) && <div className="muted" style={{ fontSize: 11 }}>{setNameOfCard(r.card)}</div>}
                         <div className="meta" style={{ flex: 1 }}>
                           Their ask <b>{fmtMoney(r.ask)}</b> · your cut <b style={{ color: 'var(--green)' }}>{Math.round(r.commissionPct * 100)}% ({fmtMoney(r.ask * r.commissionPct)})</b>
                           <br />Carry it ~{r.days}d · they'll wait {r.pendingDays}d for an answer
@@ -300,7 +301,7 @@ export default function BoothInbox() {
                           ? <img className="tl-thumb" src={cardImg(it)} alt="" loading="lazy" decoding="async" />
                           : <span className="tl-icon">{it.product.icon || '📦'}</span>}
                         <div className="tl-info">
-                          <div className="tl-name">{kind === 'card' ? it.name : `${it.product.type} · ${setById(it.setId)?.name || 'sealed'}`}</div>
+                          <div className="tl-name">{kind === 'card' ? `${it.name}${setNameOfCard(it) ? ` · ${setNameOfCard(it)}` : ''}` : `${it.product.type} · ${setById(it.setId)?.name || 'sealed'}`}</div>
                           <div className="tl-sub muted">held for {it._heldFor.emoji} {it._heldFor.name} · {it._heldFor.daysLeft}d left</div>
                         </div>
                         <span className="tl-unit">{fmtMoney(kind === 'card' ? cardValue(it) : sealedValue(it))}</span>
@@ -552,6 +553,7 @@ export default function BoothInbox() {
                     <div key={key} className="product" style={{ cursor: 'pointer' }} onClick={() => setActive({ enc, idx: i })}>
                       <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
                       {enc.card && <img src={cardImg(enc.card)} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
+                      {enc.card && setNameOfCard(enc.card) && <div className="muted" style={{ fontSize: 10.5, textAlign: 'center' }}>{setNameOfCard(enc.card)}</div>}
                       <h3 style={{ fontSize: 15, margin: 0 }}>{enc.title}</h3>
                       <div className="meta" style={{ flex: 1 }}>{enc.body.slice(0, 90)}…</div>
                       <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →' : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>

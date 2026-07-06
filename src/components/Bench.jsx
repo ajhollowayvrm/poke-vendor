@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate, cardImg } from '../game/engine'
+import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -33,7 +33,7 @@ export default function Bench() {
                 <img src={cardImg(p.card)} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>
-                  <div className="muted" style={{ fontSize: 12 }}>{GRADING[p.tierKey].name} grading</div>
+                  <div className="muted" style={{ fontSize: 12 }}>{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}{GRADING[p.tierKey].name} grading</div>
                   <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                     <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,var(--accent2),var(--green))', transition: 'width .25s' }} />
                   </div>
