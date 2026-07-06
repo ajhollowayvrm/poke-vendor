@@ -120,8 +120,10 @@ export function createCollectionSlice(set, get) {
 
     // Fill every EMPTY binder slot for a set from your collection in one go — "add everything
     // possible." Picks one copy per open slot (best copy first). Pass no setId to sweep all
-    // sets. Returns the number of cards moved.
-    addAllToBinder(setId = null) {
+    // sets. Returns the number of cards moved. `skipGraded` leaves slabs alone — the Binder
+    // Curator's nightly sweep uses it so a freshly returned PSA slab (always the "best copy")
+    // isn't whisked out of the sellable pool the same night it comes back from grading.
+    addAllToBinder(setId = null, { skipGraded = false } = {}) {
       const sets = setId ? [setById(setId)].filter(Boolean) : SETS
       if (!sets.length) return 0
       const binder = get().binder || []
@@ -131,6 +133,7 @@ export function createCollectionSlice(set, get) {
       const coll = [...get().collection].sort((a, b) => cardValue(b) - cardValue(a))
       for (const c of coll) {
         if (c._heldFor) continue // promised to a regular — the hold keeps its word
+        if (skipGraded && c.grade) continue // slabs are placed by hand
         const cSet = setIdOf(c)
         const set_ = sets.find(s => s.id === cSet)
         if (!set_) continue

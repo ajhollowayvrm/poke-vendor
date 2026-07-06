@@ -860,8 +860,10 @@ export function advanceDaysWith(set, get, days, away) {
   // Resolve any grades whose day count was reached during these days (currentDay is now updated).
   const resolvedGrades = get().resolveGrades()
   // The Binder Curator files overnight — the binder's "add everything possible" sweep, run
-  // for you after the day's cards (pulls, buys, returned slabs) have all landed.
-  const binderFiled = s.upgrades.autoBinder ? get().addAllToBinder(null) : 0
+  // for you after the day's cards (pulls, buys) have all landed. Graded slabs are skipped:
+  // a slab fresh back from grading is always the "best copy", and auto-filing it made
+  // returned slabs vanish from the collection the same night the player revealed them.
+  const binderFiled = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true }) : 0
   // 💼 Want-List Broker: fills collector wants + forum WTB posts overnight from the
   // sellable pool — always the CHEAPEST matching copy, so the good copies stay for the
   // binder, the case, and grading. Runs AFTER the curator: binder slots outrank cash.
