@@ -206,14 +206,24 @@ export async function loadFromCloud({ prev = false } = {}) {
   clearTimeout(timer)     // drop any pending push of the about-to-be-replaced local data
   applyingRemote = true
   try {
-    // Keep the save being replaced in a local rollback slot: if the rehydrate below
-    // throws (bad migration, corrupt-but-parseable blob), the previous game is one
-    // localStorage restore away instead of destroyed.
     const prior = readBlob()
     const priorSavedAt = localSavedAt()
     const priorBase = baseSavedAt()
-    if (prior) localStorage.setItem(SAVE_KEY + '-prev', prior)
-    localStorage.setItem(SAVE_KEY, blob)
+    // Drop the old rollback slot BEFORE writing the incoming save. localStorage caps at
+    // ~5MB and a grown collection is a big blob: holding the outgoing save, its old -prev
+    // copy AND the incoming one at once is what used to blow the quota mid-load. The
+    // rehydrate rollback below reads `prior` from memory, so the key is only a manual
+    // recovery breadcrumb — freeing it costs nothing and buys the room for the write.
+    localStorage.removeItem(SAVE_KEY + '-prev')
+    try {
+      localStorage.setItem(SAVE_KEY, blob)
+    } catch {
+      const e = new Error('This browser is out of storage space, so the cloud save couldn’t be written — kept this device’s game.')
+      e.code = 'quota'; setSyncStatus('error', 'Out of local storage space.'); throw e
+    }
+    // Re-file the replaced save as the rollback breadcrumb, but never at the cost of the
+    // load we just completed: if there's no room left, go without it.
+    if (prior) { try { localStorage.setItem(SAVE_KEY + '-prev', prior) } catch {} }
     setLocalSavedAt(j.savedAt || Date.now()) // adopt the cloud data's logical time
     // Loading the CURRENT cloud save puts us exactly in sync with it (CAS base = its
     // savedAt). Loading the #prev backup does NOT — the cloud current is still something
@@ -225,7 +235,9 @@ export async function loadFromCloud({ prev = false } = {}) {
     } catch (err) {
       if (prior) {
         // Roll everything back — data AND sync markers, so this device doesn't claim
-        // to be in sync with a cloud save it failed to load.
+        // to be in sync with a cloud save it failed to load. The rollback write must not
+        // be the thing that fails: clear the breadcrumb copy first so there's room for it.
+        localStorage.removeItem(SAVE_KEY + '-prev')
         localStorage.setItem(SAVE_KEY, prior)
         setLocalSavedAt(priorSavedAt || Date.now())
         setBaseSavedAt(priorBase)
