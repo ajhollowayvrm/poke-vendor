@@ -12,6 +12,20 @@
   --accent-light: #9db8ff; --gold-muted: #ffe48a; --red-muted: #ff9aa6;
   /* Standard ghost-button hover wash — one value so hover brightness stops drifting. */
   --hover: #ffffff16;
+  /* --- Device safe areas -------------------------------------------------------------
+     The iPhone's Dynamic Island / status bar (top) and home indicator (bottom) sit OVER
+     the page, because the viewport is `viewport-fit=cover`. Named here rather than calling
+     env() at each site for two reasons: one place to reason about them, and they can be
+     OVERRIDDEN in a test to simulate a real device — Chromium reports env(safe-area-inset-*)
+     as 0, so without this a desktop browser can never show you the notch collision that a
+     phone actually has. (Test does: :root { --sat: 59px; --sab: 34px }.)
+     0px fallbacks mean desktop and Android are completely unaffected. */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  /* Apple's Human Interface Guidelines minimum comfortable tap target. */
+  --tap: 44px;
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
@@ -30,10 +44,13 @@ button { font-family: inherit; cursor: pointer; }
 .app { max-width: 1180px; margin: 0 auto;
   /* fill at least the viewport so short pages don't leave dead space below */
   min-height: 100dvh; display: flex; flex-direction: column;
-  /* Ignore the device safe zones: fill edge-to-edge (viewport-fit=cover) with fixed
-     padding instead of reserving the notch / home-indicator insets, so there's no dark
-     strip ("bar") above the top bar or below the nav. */
-  padding: 16px 20px 60px; }
+  /* Fill edge-to-edge (viewport-fit=cover) — the BACKGROUND runs under the notch and home
+     indicator, which is what we want (no dark strip). But the CONTENT must not: reserve the
+     top inset so the header clears the Dynamic Island. This used to be a flat 16px, which is
+     fine in Safari (the browser chrome covers the island) and broken in an installed PWA,
+     where the app is truly full-screen and the island ate the top of the header.
+     env() is 0px everywhere else, so desktop is untouched. */
+  padding: calc(16px + var(--sat)) calc(20px + var(--sar)) 60px calc(20px + var(--sal)); }
 /* the routed view grows to fill the space between top bar and bottom nav */
 .content { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
 /* Each routed pane is a transparent flex passthrough (so .empty / full-height children
@@ -874,7 +891,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
 /* ===================== Mobile + touch optimization ===================== */
 @media (max-width: 640px) {
-  .app { padding-left: 10px; padding-right: 10px; }
+  .app { padding-left: calc(10px + var(--sal)); padding-right: calc(10px + var(--sar)); }
   /* App shell — applied ONLY to the main view (the .app that contains the bottom nav). Lock
      it to the visual viewport and scroll the CONTENT region instead of the page body, so the
      nav becomes a normal footer row that can't drift during iOS toolbar show/hide (the old
@@ -930,9 +947,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
        drift during iOS toolbar show/hide. The content region above scrolls; this stays put.
        Tabs share the width evenly — no horizontal scrolling. */
     display: flex; gap: 2px; flex: 0 0 auto; z-index: 60;
-    /* Flush to the bottom edge — no safe-area inset reserved (full-screen app).
-       Small fixed bottom gap keeps the labels off the very edge / home indicator. */
-    padding: 6px 4px 8px;
+    /* The bar's BACKGROUND runs to the physical bottom edge (no dark strip), but its LABELS
+       must clear the home indicator. A flat 8px was the old attempt at that and isn't enough
+       on a modern iPhone (the indicator reserves ~34px), so the labels sat under it. max()
+       keeps the 8px floor wherever there's no inset (Android, desktop) and reserves the real
+       thing where there is one. */
+    padding: 6px 4px max(8px, var(--sab));
     background: var(--bg);
     box-shadow: 0 -6px 24px #0007;
   }
@@ -948,7 +968,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .bnav-icon { position: relative; font-size: 20px; line-height: 1;
     padding: 4px 12px; border-radius: 999px; }
   /* labels shrink to fit the narrower per-tab width; truncate rather than wrap */
-  .bnav-label { font-size: 10px; line-height: 1; max-width: 100%; overflow: hidden;
+  .bnav-label { font-size: 11px; line-height: 1; max-width: 100%; overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap; }
   .bnav-badge {
     position: absolute; top: -5px; right: -10px; min-width: 15px; height: 15px; padding: 0 3px;
@@ -976,12 +996,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .detailflex { gap: 12px; } .detailflex img, .modal-holo { width: 200px; }
   .encounter { max-width: 94vw; }
 
-  /* bigger, comfier tap targets */
-  .btn, .prodbtn, .encbtn, .tab { min-height: 40px; }
+  /* TAP TARGETS — Apple's HIG minimum is 44x44pt. These were 40px (buttons) and 33px
+     (sub-tabs), and the quantity steppers were a 26px-wide strip: all comfortably missable
+     with a thumb. Everything you can press is now at least 44pt on its short axis. */
+  .btn, .prodbtn, .encbtn, .tab, .subtab, select, .search { min-height: var(--tap); }
+  .subtab { padding: 8px 14px; }
   .encbtn { padding: 14px 16px; }
+  /* the −/+ steppers were 26px wide — widen them; they're the fiddliest control in the game */
+  .qty-step { min-width: var(--tap); font-size: 18px; }
+  /* checkboxes render ~13px natively; scale them up so they're actually pressable */
+  input[type="checkbox"], input[type="radio"] { min-width: 20px; min-height: 20px; }
+  .tweet-toggle { min-height: var(--tap); }
 
   .hall-announce { max-width: 92vw; top: 70px; }
   .calgrid { grid-template-columns: 1fr; }
+
 }
 
 /* prevent iOS auto-zoom on focus (form controls ≥16px) + smoother momentum scroll */
@@ -1469,3 +1498,40 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .product.vintage-held { border:1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 30%, transparent), 0 6px 18px #0006;
   background: linear-gradient(160deg, color-mix(in srgb, var(--gold) 9%, var(--panel)), var(--panel2)); }
+
+/* ===========================================================================
+   PHONE LEGIBILITY & TOUCH — last in the file ON PURPOSE.
+   These override rules that appear EARLIER (a media query adds no specificity, so a later
+   plain rule like `.stockbar-label` would otherwise win on source order alone), and they
+   match the specificity of the rules they're beating (`.prodbtn .prodmeta`, not `.prodmeta`).
+   Both of those bit me: the first attempt at this block sat mid-file and silently did nothing.
+   =========================================================================== */
+@media (max-width: 640px) {
+  /* A pile of 9–11px labels: fine on a 27" monitor, squinty on a phone at arm's length.
+     12px is about the floor for comfortable reading at this density. Desktop is untouched. */
+  .prodbtn .prodmeta,
+  .distrib-chip .dc-rep,
+  .stockbar-label,
+  .prodprice s.retail,
+  .jobbtn .jobwage,
+  .tierlegend .legend,
+  .cardtile .tag,
+  .cardtile .settag,
+  .cardtile.slab .slab-cert,
+  .goal-reward,
+  .calday, .calday .dur,
+  .rip-hit-meta, .rip-hit-psa10, .rip-hit-want { font-size: 12px; }
+
+  /* The 🔓 lock on a card tile was a 24px dot — a genuine thumb-missing target sat right on
+     top of the card art, so a miss opens the card instead of locking it. */
+  .coll-lock { width: 34px; height: 34px; top: 4px; left: 4px; font-size: 15px; }
+
+  /* The five vendors wrapped into a 2-wide, 3-row block that ate ~180px — a fifth of the
+     screen — before you could see a single product. Same treatment the tier legend already
+     gets: one swipeable row. Nothing is lost (the active vendor is still obvious) and the
+     shelf you actually came for moves above the fold. */
+  .distrib-picker { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity; padding-bottom: 4px; margin-top: 12px; scrollbar-width: none; }
+  .distrib-picker::-webkit-scrollbar { display: none; }
+  .distrib-chip { flex: 0 0 auto; min-width: 128px; scroll-snap-align: start; }
+}
