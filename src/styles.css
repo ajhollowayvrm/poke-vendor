@@ -83,8 +83,23 @@ button { font-family: inherit; cursor: pointer; }
    the rip content is centred below it. */
 .rip-overlay { position: fixed; inset: 0; z-index: 25; overflow-y: auto;
   background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
-  padding: calc(80px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
+  padding: calc(80px + var(--sat)) calc(20px + var(--sar)) calc(80px + var(--sab)) calc(20px + var(--sal));
   transition: opacity .2s ease, visibility .2s ease; }
+/* The overlay is a FIXED, self-scrolling layer — and padding-top does NOT clip. Scroll the rip
+   and its cards travel up THROUGH that padding and paint in the strip above the top bar: on a
+   phone, straight into the notch / status-bar area, behind the clock and the battery icon.
+   (The bar itself is opaque and covers its own band; the bare strip ABOVE it — the app's top
+   padding plus the safe area — was covered by nothing at all.)
+   This masks exactly that strip. It lives in the overlay's OWN stacking context, so a high
+   z-index here paints over the scrolling rip content (several rip children carry their own
+   z-index — a teased chase card is z-2, the hit strip stacks above the row — so a low value
+   loses to them) while the top bar, a sibling at z-30 outside this context, still paints over
+   the whole overlay exactly as before.
+   The 28px is where the top bar's own opaque band begins: .app's 16px top padding plus the
+   bar's 12px sticky offset. Mask 16px alone and a 12px sliver of card art still shows through
+   between the two — which is exactly what the first attempt did. */
+.rip-overlay::before { content: ''; position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  height: calc(28px + var(--sat)); background: var(--bg); pointer-events: none; }
 /* keep it mounted (rip state preserved) but faded + inert when off the Buy tab */
 .rip-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .rip-overlay { transition: none; } }
@@ -1563,6 +1578,20 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
   /* Chat is ambience — give it a floor, not a third of the page. */
   .chat-feed { max-height: 150px !important; min-height: 110px !important; }
+
+  /* ---- PACK RIP (the Buy-tab overlay) ------------------------------------------------
+     Same problem the live stage had: 150px cards fit only TWO per row on a phone, so a
+     ten-card pack became five tall rows you had to scroll through mid-reveal — and the
+     "Now revealing" callout and the hit list got pushed off-screen entirely. ~4 per row
+     keeps the whole pack, the callout and the running hits in view at once. */
+  .rip-overlay .reveal-card { width: 96px; border-radius: 9px; }
+  .rip-overlay .reveal-card .flip,
+  .rip-overlay .reveal-card .flip-front,
+  .rip-overlay .reveal-card .flip-back { border-radius: 8px; }
+  .rip-overlay .reveal-row { gap: 8px; }
+  .rip-overlay .stage { gap: 12px; padding: 10px 0 6px; }
+  /* the rip's side panels stack under the cards on a phone — don't let them eat the width */
+  .rip-overlay .rip-side { flex: 1 1 auto; align-self: stretch; }
 
   /* ORDERS are the one thing you must not miss: they're time-limited, capped at three, and
      they were landing far below the fold while you watched the rip — money quietly expiring
