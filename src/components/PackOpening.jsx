@@ -458,10 +458,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
                       <div className="flip">
                         <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
-                        {/* decoding="async": never decode on the main thread mid-flip —
+                        {/* decoding="async": never decode on the main thread mid-reveal —
                             a sync decode here stalls the compositor and leaves cards frozen
                             face-down mid-reveal. preloadCardImages() already warms the decoded
-                            bitmap (img.decode()), so the front still paints whole and instant. */}
+                            bitmap (img.decode()), so the art is ready the instant the shimmer
+                            wipes it in. */}
                         <div className="flip-front"><img src={cardImg(c)} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
                       </div>
                     </HoloCard>

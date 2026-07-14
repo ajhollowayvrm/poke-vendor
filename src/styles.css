@@ -252,25 +252,56 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   animation: sheen 2.5s linear infinite; pointer-events:none; }
 
 .reveal-row { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; max-width: 980px; }
-/* reveal-card is a HoloCard (JS handles hover tilt on the outer element). Cards land
-   face-DOWN as a stack of backs and flip up when revealed — the .flip inner element
-   does the 3D turn; the border stays neutral until shown so nothing is spoiled. */
+/* reveal-card is a HoloCard (JS handles hover tilt on the outer element, and supplies its
+   own perspective() inline — this element must NOT declare one). Cards land face-DOWN as a
+   stack of backs and are REVEALED BY A SHIMMER: a bright band sweeps across the card and the
+   art materialises in its wake. No 3D turn — the card never shows an edge, so there's no
+   half-flipped moment and the reveal reads as the card "developing" rather than spinning.
+   The border stays neutral until shown so nothing is spoiled. */
 .reveal-card { width: 150px; aspect-ratio: 5 / 7; border-radius: 12px; position:relative; background:#0c0f1a;
-  border:1px solid var(--line); perspective: 900px; }
-/* the whole card fills the aspect-boxed frame so geometry is stable before the
-   front image decodes; will-change promotes .flip to its own layer so the 3D turn
-   composites as one texture (otherwise it tile-paints in — half flips, then fills). */
-.reveal-card .flip { position:absolute; inset:0; transform-style: preserve-3d;
-  will-change: transform; transition: transform .55s cubic-bezier(.3,.9,.3,1); transform: rotateY(180deg); }
-.reveal-card.shown .flip { transform: rotateY(0deg); }
-/* a flipped card is clickable — it sends itself back to the "Now revealing" callout so you
-   can read its cut. (.tappable, the manual-mode "flip me next" state, keeps its own styling.) */
-.reveal-card.shown { cursor: pointer; }
-.reveal-card .flip-front, .reveal-card .flip-back {
-  position:absolute; inset:0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 11px; overflow: hidden; }
+  border:1px solid var(--line); }
+/* .flip is the clipping frame the shimmer sweeps inside (the name is historical — it no
+   longer flips). overflow:hidden keeps the sweep band and the wipe inside the card's radius. */
+.reveal-card .flip { position:absolute; inset:0; border-radius: 11px; overflow: hidden; }
+.reveal-card .flip-front, .reveal-card .flip-back { position:absolute; inset:0; border-radius: 11px; overflow: hidden; }
 .reveal-card .flip-front img { width:100%; height:100%; object-fit:cover; display:block; border-radius: 11px; }
+
+/* THE REVEAL. The art is wiped in left→right behind the shimmer band, so the band always
+   travels just ahead of the edge it's uncovering. will-change promotes both layers so the
+   wipe composites as one texture instead of tile-painting in halfway through.
+   Front starts clipped away and slightly overscaled; it settles to full size as it lands. */
+.reveal-card .flip-front {
+  opacity: 0; transform: scale(1.05); clip-path: inset(0 100% 0 0);
+  will-change: clip-path, opacity, transform;
+  transition: opacity .1s linear .06s,
+              transform .5s cubic-bezier(.2,1.1,.35,1),
+              clip-path .5s cubic-bezier(.35,.85,.3,1);
+}
+.reveal-card.shown .flip-front { opacity: 1; transform: scale(1); clip-path: inset(0 0 0 0); }
+/* the back dissolves out just behind the wipe rather than vanishing on frame 1 */
+.reveal-card .flip-back { opacity: 1; transition: opacity .3s ease .1s; }
+.reveal-card.shown .flip-back { opacity: 0; }
+/* the shimmer itself: one bright pass, tinted by the card's rarity so a hit's sweep glows
+   in its own colour. Sits above both faces (last child of .flip) and never eats clicks. */
+.reveal-card .flip::after {
+  content:''; position:absolute; top:-25%; bottom:-25%; left:0; width: 55%;
+  pointer-events:none; opacity:0; transform: translateX(-160%) rotate(8deg);
+  background: linear-gradient(90deg, #ffffff00 0%,
+    color-mix(in srgb, var(--rarity, #fff) 45%, #ffffff) 45%,
+    #ffffffee 52%,
+    color-mix(in srgb, var(--rarity, #fff) 45%, #ffffff) 60%, #ffffff00 100%);
+  filter: blur(3px);
+}
+.reveal-card.shown .flip::after { animation: revealSheen .6s cubic-bezier(.35,.85,.3,1) 1; }
+@keyframes revealSheen {
+  0%   { opacity: 0;   transform: translateX(-160%) rotate(8deg); }
+  12%  { opacity: .95; }
+  80%  { opacity: .8; }
+  100% { opacity: 0;   transform: translateX(300%) rotate(8deg); }
+}
+
 /* the card back — a faint set logo over a sheened panel */
-.reveal-card .flip-back { position:absolute; inset:0; transform: rotateY(180deg);
+.reveal-card .flip-back {
   display:flex; align-items:center; justify-content:center;
   background: radial-gradient(circle at 50% 34%, #3a4d8f 0 26%, #2b3a6b 27% 44%, #1c2848 45% 100%); }
 .reveal-card .flip-back img { width:56%; opacity:.2; filter: grayscale(.3) drop-shadow(0 2px 6px #0008); }
@@ -278,6 +309,9 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   box-shadow: inset 0 0 0 2px #ffffff12, inset 0 0 0 6px #ffffff08;
   background: linear-gradient(120deg,#ffffff00 42%,#ffffff26 50%,#ffffff00 58%); background-size:300% 300%;
   animation: sheen 3s linear infinite; }
+/* a revealed card is clickable — it sends itself back to the "Now revealing" callout so you
+   can read its cut. (.tappable, the manual-mode "reveal me next" state, keeps its own styling.) */
+.reveal-card.shown { cursor: pointer; }
 /* rarity border + glow only once revealed */
 .reveal-card.shown { border-color: var(--rarity, var(--line)); }
 .reveal-card.hit.shown { border-width: 2px;
@@ -289,9 +323,10 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   45%  { box-shadow: 0 0 0 2px var(--rarity), 0 0 44px 4px color-mix(in srgb, var(--rarity) 70%, transparent); }
   100% { box-shadow: 0 0 26px color-mix(in srgb, var(--rarity) 70%, transparent), 0 0 0 2px var(--rarity); }
 }
-/* an upcoming chase card — teased before it flips (bob + rarity glow on the back) */
-.reveal-card.peek { animation: peekbob 1s ease-in-out infinite; z-index: 2; }
-.reveal-card.peek .flip-back { box-shadow: 0 0 34px 5px color-mix(in srgb, var(--rarity) 75%, transparent); }
+/* an upcoming chase card — teased before it reveals (bob + rarity glow). The glow lives on
+   the CARD, not on .flip-back: .flip now clips its children, which would eat the halo. */
+.reveal-card.peek { animation: peekbob 1s ease-in-out infinite; z-index: 2;
+  box-shadow: 0 0 34px 5px color-mix(in srgb, var(--rarity) 75%, transparent); }
 @keyframes peekbob { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-7px) } }
 .reveal-card.tappable { cursor: pointer; }
 /* the next card a manual tap will flip gets a soft pulse so it reads as tappable */
@@ -303,10 +338,13 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .rip-tap-hint { font-size: 13px; font-weight: 700; color: #cdd6f4; text-align:center; margin: 2px 0;
   animation: taphint 1.4s ease-in-out infinite; }
 @keyframes taphint { 0%,100%{opacity:.55} 50%{opacity:1} }
-/* respect reduced-motion: cut the big animations, keep cards flipping instantly */
+/* respect reduced-motion: cut the big animations. Cards still reveal — they just cut
+   straight to face-up (no wipe, no shimmer pass) instead of animating. */
 @media (prefers-reduced-motion: reduce) {
   .pack3d.shake { animation: none; }
-  .reveal-card .flip { transition: none; }
+  .reveal-card .flip-front, .reveal-card .flip-back { transition: none; }
+  .reveal-card .flip-front { transform: none; }
+  .reveal-card.shown .flip::after { animation: none; }
   .reveal-card.peek, .reveal-card.chase.shown, .reveal-card.tappable, .rip-tap-hint, .reveal-card .flip-back::after { animation: none; }
 }
 .hitburst { position:fixed; inset:0; pointer-events:none; z-index:60; }
