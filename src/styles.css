@@ -998,7 +998,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .grid { gap: 10px; }
 
   /* modals go near-fullscreen and scroll */
-  .modal { max-height: 92vh; padding: 16px; border-radius: 16px; }
+  /* 92vh was wrong on iOS: `vh` is the LARGE viewport (it ignores the browser's chrome and the
+     safe areas), so a tall modal — a 40-card bulk buy-in, say — was physically taller than the
+     part of the screen you can see. Its header vanished off the top, its only exit button sat
+     off the bottom, and the backdrop you'd tap to dismiss was reduced to a sliver. `dvh` is the
+     DYNAMIC viewport (what's actually visible right now); subtracting the safe areas keeps the
+     whole modal, and crucially its close button, on screen and inside its own scroll box. */
+  .modalbg { padding: calc(12px + var(--sat)) 12px calc(12px + var(--sab)); }
+  .modal { max-height: calc(100dvh - 24px - var(--sat) - var(--sab)); padding: 16px; border-radius: 16px;
+    overscroll-behavior: contain; } /* don't chain the scroll to the locked page behind it */
+  /* The ✕ is absolutely positioned inside the modal — and an absolute child of a SCROLL box
+     scrolls away with the content. Scroll down through a 40-card lot and your only exit is
+     gone. Pin it to the viewport instead, so it's always right there under your thumb, and
+     make it a proper 44pt target. */
+  .modal-close { position: fixed; top: calc(20px + var(--sat)); right: 22px; z-index: 90;
+    width: var(--tap); height: var(--tap); font-size: 17px; }
   /* The card detail is too tall to ever fit, so centering it at the 92vh cap just
      leaves a dead band below that floats the content upward. Make it a full-height
      sheet instead: edge-to-edge, top-anchored, safe-area aware, content scrolls. */
@@ -1007,7 +1021,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
     max-height: none; width: 100%; border-radius: 0; border: 0;
     padding: calc(14px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
   }
-  .modal-detail .modal-close { top: calc(8px + env(safe-area-inset-top)); }
+  /* the card detail is an edge-to-edge sheet (no 12px inset), so its ✕ sits a touch higher/righter */
+  .modal-detail .modal-close { top: calc(10px + var(--sat)); right: 12px; }
   .detailflex { gap: 12px; } .detailflex img, .modal-holo { width: 200px; }
   .encounter { max-width: 94vw; }
 

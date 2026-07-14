@@ -609,6 +609,7 @@ export default function BoothInbox() {
       {givePick && (
         <div className="modalbg" onClick={() => setGivePick(false)}>
           <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
+            <button className="modal-close" aria-label="Close" onClick={() => setGivePick(false)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎁 In-store giveaway</h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
               Pick the prize. A pricier card makes a bigger splash — more notoriety, and a
@@ -638,6 +639,10 @@ export default function BoothInbox() {
       {buyinReveal && (
         <div className="modalbg" onClick={() => setBuyinReveal(null)}>
           <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
+            {/* A bulk lot can be 40+ cards — far taller than a phone screen. Without a pinned ✕
+                the only way out was a button buried at the bottom of the scroll, or a backdrop
+                tap on the sliver of screen the modal didn't cover. */}
+            <button className="modal-close" aria-label="Close" onClick={() => setBuyinReveal(null)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>
               {buyinReveal.market >= buyinReveal.paid * 1.3 ? '🤑' : buyinReveal.market >= buyinReveal.paid ? '🙂' : '😬'} The lot, flipped through
             </h2>
@@ -662,6 +667,7 @@ export default function BoothInbox() {
       {rafflePick && (
         <div className="modalbg" onClick={() => setRafflePick(false)}>
           <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
+            <button className="modal-close" aria-label="Close" onClick={() => setRafflePick(false)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
               A flashier prize sells more tickets worth of goodwill — bigger notoriety pop when it's drawn.
@@ -694,6 +700,7 @@ export default function BoothInbox() {
         return (
         <div className="modalbg" onClick={() => setWantPick(null)}>
           <div className="modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
+            <button className="modal-close" aria-label="Close" onClick={() => setWantPick(null)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety} notoriety.</p>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
