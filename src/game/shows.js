@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
@@ -738,7 +738,12 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   const featuredPool = walkin ? offerPool.filter(c => c._featured) : []
   const whaleGate = featuredPool.length ? 60 : WHALE_NOTO_GATE
   if ((online || walkin) && notoriety >= whaleGate && offerPool.length) {
-    const pWhale = Math.min(0.22, (0.05 + Math.max(0, notoriety - whaleGate) / 1200) * (featuredPool.length ? 1.7 : 1))
+    // Whale frequency used to cap at 22% (reached around noto 260) — the biggest buyers in the
+    // game stopped caring how famous you got. Now a real name keeps pulling them in, up to a
+    // 45% rail (a whale every other encounter is already a lot).
+    const pWhale = Math.min(0.45,
+      (Math.min(0.22, 0.05 + Math.max(0, notoriety - whaleGate) / 1200) + fameBeyond(notoriety, 260) * 0.05)
+      * (featuredPool.length ? 1.7 : 1))
     if (Math.random() < pWhale) {
       const pickPool = featuredPool.length ? featuredPool : offerPool
       const target = pickPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
@@ -952,7 +957,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     card: null,
     options: [
       { text: online ? 'Send a friendly note + deal' : 'Give them a warm welcome', tone: 'kind',
-        effect: { type: 'browseSale', pool, payMethod: pay, chance: 0.5 + Math.min(0.4, notoriety/200), notoriety: 1, msg: 'Friendliness pays off.' } },
+        effect: { type: 'browseSale', pool, payMethod: pay, chance: Math.min(0.95, 0.5 + Math.min(0.4, notoriety/200) + fameBeyond(notoriety, 80) * 0.02), notoriety: 1, msg: 'Friendliness pays off.' } },
       { text: online ? 'Let them browse' : 'Let them browse in peace', tone: 'fair',
         effect: { type: 'browseSale', pool, payMethod: pay, chance: 0.3, notoriety: 0, msg: 'They look around quietly.' } },
     ],

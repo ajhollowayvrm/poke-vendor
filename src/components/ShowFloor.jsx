@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard } from '../game/engine'
+import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, fameMult, fameBeyond } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -9,7 +9,12 @@ import CardTile from './CardTile'
 import { useModalEscape } from '../ui/dialog'
 
 const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
-const MAX_WALKUPS_PER_DAY = 3    // cap unsolicited walk-ups per show day
+// How many unsolicited walk-ups your booth can get in a show day. This was a flat 3 — so a
+// world-famous vendor's table was as quiet as an unknown's, which is exactly backwards. A big
+// name draws a crowd: 3 at noto 0 → 5 at 100 → 7 at 300 → 10 (the hard rail) past ~700.
+function maxWalkupsPerDay(notoriety) {
+  return Math.min(10, Math.round(2 + fameMult(notoriety)))
+}
 // A pull worth announcing to the whole hall: SIR-or-better, any special foil, or grail.
 const ANNOUNCE_RANK = rarityRank('Special Illustration Rare')
 function isBigPull(card) {
@@ -167,9 +172,11 @@ export default function ShowFloor({ show, onLeave }) {
     if (!show._asVendor) return // shoppers have no booth → no walk-up buyers
     const id = setInterval(() => {
       if (encounter || boothAlert) return
-      if (walkupsRef.current >= MAX_WALKUPS_PER_DAY) return // hit the per-day cap
+      if (walkupsRef.current >= maxWalkupsPerDay(notoriety)) return // hit the per-day cap
       if (Date.now() - lastEncounterRef.current < ENCOUNTER_COOLDOWN) return
-      const notoBonus = Math.min(0.5, notoriety / 300)
+      // Booth pull used to cap at +50% (reached at noto 150) and go flat. It keeps growing now
+      // — a famous vendor's table is mobbed, which is what the whole show ladder is FOR.
+      const notoBonus = Math.min(0.5, notoriety / 300) + fameBeyond(notoriety, 150) * 0.35
       const inv = useGame.getState().showInventory || []
       const showcaseN = inv.filter(c => c._showcase).length
       const dealActive = inv.some(c => c._deal)
@@ -195,8 +202,9 @@ export default function ShowFloor({ show, onLeave }) {
     if (boothAlert) { setEncounter({ enc: boothAlert, atBooth: true }); setBoothAlert(null); return }
     // Tending draws from the SAME daily walk-up budget as auto walk-ups (was uncapped, so
     // mashing ★/Enter spawned unlimited encounters — a rep/price-check farm). Once the
-    // booth's had its ~3 visitors for the day, tending just finds a quiet table.
-    if (walkupsRef.current >= MAX_WALKUPS_PER_DAY) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
+    // booth's had its visitors for the day, tending just finds a quiet table. That budget now
+    // grows with your name (maxWalkupsPerDay), so a famous vendor's table stays busy longer.
+    if (walkupsRef.current >= maxWalkupsPerDay(notoriety)) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
     const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now(); walkupsRef.current++
@@ -509,8 +517,10 @@ function pickBoothIdx(booths) {
 }
 function spawnCrowd(booths, count, notoriety = 0) {
   // The better-known you are, the more of the floor's rippers bought their sealed
-  // from YOUR booth (so their big pulls hype your name). 0 → ~10%, 100+ → ~55%.
-  const yourShare = Math.min(0.55, 0.1 + notoriety / 220)
+  // from YOUR booth (so their big pulls hype your name). 0 → ~10%, 100 → ~55%, and past that
+  // it used to go flat; now it keeps creeping toward "most of this hall bought from me"
+  // (hard-railed at 85% — some of the floor is always someone else's customer).
+  const yourShare = Math.min(0.85, 0.1 + notoriety / 220 + fameBeyond(notoriety, 100) * 0.06)
   const npcs = []
   for (let i = 0; i < count; i++) {
     const ripping = Math.random() < 0.3 // ~30% are cracking sealed as they browse

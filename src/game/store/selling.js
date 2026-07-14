@@ -6,7 +6,7 @@
 // good deal). The passage of days that actually sells listings lives in daytick.js
 // (tickListings); this slice is the player-facing actions around them.
 
-import { cardValue, dailyViewers, buyerMaxMult, BUYER_SAVVY, round2, bulkSellableUids } from '../engine'
+import { cardValue, dailyViewers, buyerMaxMult, BUYER_SAVVY, round2, bulkSellableUids, fameMult, fameBeyond } from '../engine'
 import { cardMatchesWant, makeRegular } from '../shows'
 import { REGULAR_FORM_GATE, ONLINE_FEE_PCT, shippingCost } from './constants'
 
@@ -226,8 +226,15 @@ export function createSellingSlice(set, get) {
       const channel = seed.channel === 'walkin' ? 'walkin' : 'online'
       const roster = get().regulars || []
       const sameChan = roster.filter(r => r.channel === channel && !r.flags?.burned)
-      const CAP = channel === 'walkin' ? 3 : 6
-      const pForm = (seed.generous ? 0.5 : 0.28) + Math.min(0.2, get().notoriety / 500)
+      const noto = get().notoriety
+      // A famous shop keeps a bigger book of regulars, and more of the people you treat well
+      // stick around. Both used to be flat/capped (3 & 6 regulars; the fame lift maxed at noto
+      // 100), so building a name did nothing for your customer base past the early game.
+      //   roster:  walk-in 3 → 6 · online 6 → 12, by ~noto 400
+      const fame = fameMult(noto)
+      const CAP = Math.round((channel === 'walkin' ? 3 : 6) * Math.min(2, 0.75 + 0.25 * fame))
+      const pForm = Math.min(0.9,
+        (seed.generous ? 0.5 : 0.28) + Math.min(0.2, noto / 500) + fameBeyond(noto, 100) * 0.04)
       if (Math.random() > pForm) return
       let kept = roster
       if (sameChan.length >= CAP) {

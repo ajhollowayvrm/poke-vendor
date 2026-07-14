@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useGame, dayOrderChance } from '../game/store'
+import { useGame, dayOrderRate } from '../game/store'
 import { generateCalendar, SHOW_TIERS } from '../game/shows'
 import { fmtMoney } from '../game/engine'
 
@@ -64,7 +64,9 @@ export default function Calendar({ onAttend }) {
           const leads = (showLeads || []).filter(l => l.showId === show.id)
           // Expected online orders during the show's run (rough), and whether the
           // player would MISS them (no Smartphone to manage online while away).
-          const expOnline = dayOrderChance('online', notoriety) * tripDays
+          // dayOrderRate is a true expected COUNT per day, so this figure is now honest at
+          // high fame (where several orders a day can arrive) instead of capping out at 1/day.
+          const expOnline = dayOrderRate('online', notoriety) * tripDays
           const onlineCovered = !!upgrades.smartphone
           return (
             <div key={show.id} className={`calcard ${show.locked ? 'locked' : ''} ${show.day === currentDay ? 'today' : ''} ${leads.length ? 'has-leads' : ''}`} style={{ borderLeftColor: tier.color }}>

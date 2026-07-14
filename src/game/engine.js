@@ -1278,12 +1278,43 @@ export function cardDesirability(card) {
   return Math.max(0.5, +d.toFixed(2))
 }
 
+// --- FAME: the one curve --------------------------------------------------------------
+// Notoriety is the game's long arc, but for a long time it bought HARD UNLOCKS (show tiers,
+// jobs) plus a handful of soft curves that ALL flatlined by ~noto 235 — while the show ladder
+// runs to 280. Past that, extra fame bought you nothing. This is the single curve that fixes
+// it: everything that should scale with your name multiplies by fameMult(), so getting famous
+// keeps paying instead of hitting a wall.
+//
+// Diminishing returns, but NO ceiling — the sub-1 exponent means each point of fame is worth
+// a little less than the last, yet the curve never goes flat:
+//   noto    0 → 1.00×      noto  200 → 3.67×
+//   noto   50 → 1.94×      noto  400 → 5.49×
+//   noto  100 → 2.59×      noto  800 → 8.55×   (still climbing, slowly)
+// Tuned so a world-famous vendor's shop is a genuinely different business from a local's,
+// without going superlinear and printing money.
+export const FAME_KNEE = 54    // notoriety at which fame is worth ~2×
+export const FAME_POWER = 0.75 // <1 → diminishing returns, but never a hard wall
+export function fameMult(notoriety) {
+  return 1 + Math.pow(Math.max(0, notoriety || 0) / FAME_KNEE, FAME_POWER)
+}
+// Fame earned BEYOND the point where an old curve used to flatline: 0 until `saturateAt`,
+// then grows without a wall. This is the safe way to revive a dead ceiling — bolt it onto the
+// existing formula and the early/mid game is bit-for-bit unchanged (it contributes exactly 0
+// below the old saturation point); only the dead zone past it comes alive. Used wherever a
+// Math.min(cap, …) had quietly killed the fame curve.
+export function fameBeyond(notoriety, saturateAt) {
+  return Math.max(0, fameMult(notoriety) - fameMult(saturateAt))
+}
+
 // The MOST a given buyer will pay for this card, as a multiple of market.
 // = their base savvy tolerance, lifted by your notoriety (a known shop commands a
 // premium) and the card's desirability (hot cards carry a markup), plus a little jitter.
 export function buyerMaxMult(savvyKey, notoriety, card, rnd = Math.random) {
   const base = (BUYER_SAVVY[savvyKey] || BUYER_SAVVY.average).tolerance
-  const notoLift = Math.min(0.35, notoriety / 400)        // up to +0.35× at high fame
+  // The lift used to cap at +0.35× (reached at noto 140) — a household name commanded no more
+  // than a locally-known one. It keeps growing now, but SLOWLY and with a hard stop: this is
+  // a price multiplier on every sale, so it's the most dangerous dial in the game to open up.
+  const notoLift = Math.min(0.6, Math.min(0.35, notoriety / 400) + fameBeyond(notoriety, 140) * 0.05)
   const desireLift = (cardDesirability(card) - 1) * 0.18  // hot cards tolerate more
   const jitter = (rnd() - 0.5) * 0.12                     // ±0.06 buyer-to-buyer noise
   return Math.max(0.6, base + notoLift + desireLift + jitter)
@@ -1294,7 +1325,10 @@ export function buyerMaxMult(savvyKey, notoriety, card, rnd = Math.random) {
 // still get looked at — and passed on). Floors at a trickle so something always happens.
 // `boost` multiplies the eyes (e.g. a recent livestream's afterglow pulls extra shoppers in).
 export function dailyViewers(card, askMult, notoriety, rnd = Math.random, boost = 1) {
-  const fame = 0.6 + Math.min(2.6, notoriety / 60)        // ~0.6 at noto 0 → ~3.2 high
+  // Fame used to cap at 3.2 eyes/day (reached at noto 156) and go flat forever after. Now it
+  // keeps climbing past that: ~4.9 at noto 300, ~9.6 at noto 800 — a famous seller's listings
+  // are genuinely busy, which is the whole point of building a name.
+  const fame = 0.6 + Math.min(2.6, notoriety / 60) + fameBeyond(notoriety, 156) * 1.2
   const desire = cardDesirability(card)
   // overpricing softly suppresses eyeballs (window-shoppers skip the obvious gouge)
   const priceDrag = askMult <= 1.2 ? 1 : Math.max(0.45, 1 - (askMult - 1.2) * 0.4)

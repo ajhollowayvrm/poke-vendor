@@ -25,9 +25,10 @@ import {
 import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
 import {
-  CALENDAR_DAYS, INBOX_CAP, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
+  CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
-  employeeById, dayOrderChance, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
+  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY,
+  fameMult, fameBeyond, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
   GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
@@ -130,8 +131,13 @@ function decayRegulars(regulars, days, factor = 1) {
 // Reuses makeWant() for the post shape (kind/cardId/rarity/premiumMult/daysLeft/who).
 function tickForum(posts, days, noto) {
   let board = (posts || []).map(p => ({ ...p, daysLeft: p.daysLeft - days })).filter(p => p.daysLeft > 0)
-  for (let i = 0; i < days && board.length < FORUM_MAX_POSTS; i++) {
-    if (Math.random() < FORUM_REFILL_CHANCE) board = [{ ...makeWant(noto >= 120), forum: true }, ...board]
+  // Board size grows with your name: people post where the known dealer is reading. This was a
+  // flat 6 posts / 70% refill at every fame level — the forum was the ONE demand channel that
+  // never noticed you'd become famous. 6 at noto 0 → 9 at 100 → 12 at 300 → 16 (rail).
+  const maxPosts = Math.min(16, Math.round(FORUM_MAX_POSTS * (0.6 + 0.4 * fameMult(noto))))
+  const refill = Math.min(0.95, FORUM_REFILL_CHANCE * (0.85 + 0.15 * fameMult(noto)))
+  for (let i = 0; i < days && board.length < maxPosts; i++) {
+    if (Math.random() < refill) board = [{ ...makeWant(noto >= 120), forum: true }, ...board]
   }
   return board
 }
@@ -472,8 +478,11 @@ export function advanceDaysWith(set, get, days, away) {
     // multi-day jump that crosses a month boundary charges the higher rate for later days.
     rentDue += rentPerDay(s.monthsElapsed + Math.floor((s.currentDay + i) / CALENDAR_DAYS))
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
-    // online channel (employees raise the hit chance). Only if you have something listed.
-    if (openOnline && Math.random() < Math.min(0.97, (dayOrderChance('online', noto, hasBargain) + followerBump) * orderMult)) {
+    // ONLINE channel (employees raise throughput). Only if you have something listed.
+    // A COUNT, not a coin flip: a famous vendor wakes up to several orders, not "maybe one".
+    const onlineRate = (dayOrderRate('online', noto, hasBargain) + followerBump) * orderMult
+    const nOnline = Math.min(MAX_ORDERS_PER_DAY, drawCount(onlineRate))
+    for (let k = 0; k < nOnline && openOnline; k++) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
@@ -483,7 +492,10 @@ export function advanceDaysWith(set, get, days, away) {
     // display case). Store buzz (giveaways + events) pumps foot traffic for its window.
     const buzz = buzzDays0 > i ? GIVEAWAY_TRAFFIC_MULT : 1
     const signageMult = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% store foot traffic
-    if (hasStore && openWalkin && Math.random() < Math.min(0.97, dayOrderChance('walkin', noto) * orderMult * buzz * signageMult)) {
+    // FOOT TRAFFIC, as a count. A known shop gets a stream of people through the door.
+    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult
+    const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
+    for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
         // ~35% of walk-ins come in ASKING for a specific item (sealed or single) rather than
         // browsing — the store's demand layer. The rest are the usual offer/browse/trade mix.
@@ -525,7 +537,18 @@ export function advanceDaysWith(set, get, days, away) {
   if (hasStore && walkinOK) {
     const stocked = shelfCards.length > 0 || sellableSealed.length > 0
     const signage = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% foot traffic
-    const perDay = Math.min(250, (15 + noto) * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6) * signage)
+    // Counter trade used to be min(250, 15 + noto) — it hit the $250 wall around noto 235, so a
+    // world-famous shop took exactly as much over the counter as a locally-known one.
+    //
+    // The base is ALREADY linear in fame (15 + noto), so multiplying it by the full fame curve
+    // on top made the whole thing superlinear and turned the till into a money printer (~$2.5k
+    // /day at noto 800 — measured). We take the SQUARE ROOT of the fame boost instead: the wall
+    // is gone and fame still compounds, but passive income can't outrun the actual card
+    // business. This is the single most dangerous dial here — it's money for doing nothing.
+    //   noto 100 → $115/day (unchanged) · 200 → $256 · 300 → $421 · 500 → $804 · 800 → $1.2k (rail)
+    const fameBoost = Math.sqrt(Math.max(1, fameMult(noto) / fameMult(100)))
+    const perDay = Math.min(COUNTER_MAX_PER_DAY,
+      (15 + noto) * fameBoost * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6) * signage)
     counterRevenue = round2(perDay * days)
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }
@@ -706,7 +729,11 @@ export function advanceDaysWith(set, get, days, away) {
       let left = c.daysLeft, sold = false
       for (let dd = 0; dd < days && !sold && left > 0; dd++) {
         const buzzMult = buzzDays0 > dd ? 1.25 : 1
-        if (walkinOK && Math.random() < Math.min(0.30, (0.10 + noto / 500) * buzzMult)) sold = true
+        // Consigned cards move faster through a famous case. Used to cap at 30%/day (noto 100);
+        // now a big name keeps shifting locals' stock quicker, up to a 70% rail.
+        const consignSellChance = Math.min(0.70,
+          (Math.min(0.30, 0.10 + noto / 500) + fameBeyond(noto, 100) * 0.05) * buzzMult)
+        if (walkinOK && Math.random() < consignSellChance) sold = true
         else left--
       }
       if (sold) {
@@ -724,9 +751,14 @@ export function advanceDaysWith(set, get, days, away) {
   let consignReqsNext = (s.storeConsignRequests || [])
     .map(r => ({ ...r, pendingDays: r.pendingDays - days }))
     .filter(r => r.pendingDays > 0)
+  // Opportunity flow scales with your name: the better known you are, the more locals think of
+  // YOU first when they want something sold or bought. These arrival rates were flat — fame
+  // only gated them on/off — so a household name got no more offers than a nobody who'd just
+  // cleared the gate. Railed below 1/day so it stays a trickle of chances, not a firehose.
+  const oppMult = fameMult(noto) / fameMult(CONSIGN_MIN_NOTO)
   if (hasStore && noto >= CONSIGN_MIN_NOTO) {
     for (let i = 0; i < days && consignReqsNext.length < CONSIGN_REQ_CAP; i++) {
-      if (Math.random() < CONSIGN_REQ_CHANCE) {
+      if (Math.random() < Math.min(0.9, CONSIGN_REQ_CHANCE * oppMult)) {
         const req = makeConsignRequest(noto)
         consignReqsNext = [req, ...consignReqsNext]
         get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on the Sell tab.`, 0)
@@ -740,7 +772,7 @@ export function advanceDaysWith(set, get, days, away) {
     .filter(o => o.pendingDays > 0)
   if (hasStore && noto >= BUYIN_MIN_NOTO) {
     for (let i = 0; i < days && buyinsNext.length < BUYIN_CAP; i++) {
-      if (Math.random() < BUYIN_CHANCE) {
+      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult)) {
         const offer = makeBuyinOffer(noto)
         buyinsNext = [offer, ...buyinsNext]
         get().log('shop', `🛍️ ${offer.who.charAt(0).toUpperCase() + offer.who.slice(1)} came in with ${offer.count} cards to SELL — asking $${offer.askCash.toFixed(2)}. Appraise it on the Sell tab.`, 0)
@@ -807,7 +839,10 @@ export function advanceDaysWith(set, get, days, away) {
     currentDay: d, showSeed: seed, monthsElapsed: months,
     marketMults: market.marketMults, marketHistory: market.marketHistory,
     onlineOrdersEver: (st.onlineOrdersEver || 0) + onlineCount,
-    boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, INBOX_CAP),
+    // Cap grows with fame — otherwise a famous vendor's extra orders would be generated and
+    // then silently thrown away by a fixed 8-slot cap, and the whole traffic buff would be
+    // invisible. (INBOX_CAP is still the floor, via inboxCap().)
+    boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, inboxCap(st.notoriety)),
     consignments: remainingConsign,
     supplyChannel: remainingSupply,
     distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds

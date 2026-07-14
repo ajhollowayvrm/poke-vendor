@@ -12,11 +12,12 @@
 //   • Payments:         PAYMENT_METHODS, acceptedMethods, processingFee, netsZero
 //   • Calendar/inbox:   CALENDAR_DAYS, INBOX_CAP, absoluteDay
 //   • Weekly goals:     GOAL_POOL, GOAL_PERIOD_DAYS, makeWeeklyGoals
-//   • Demand gates:     INBOUND_NOTORIETY_GATE, REGULAR_FORM_GATE, BARGAIN_ASK_MULT, dayOrderChance
+//   • Fame curve:       fameMult, fameBeyond (re-exported from engine) — the one dial notoriety turns
+//   • Demand gates:     INBOUND_NOTORIETY_GATE, REGULAR_FORM_GATE, BARGAIN_ASK_MULT, dayOrderRate
 //   • Livestream:       STREAM_HYPE_DAYS
 //   • Upgrades table:   UPGRADES
 
-import { round2 } from '../engine'
+import { round2, fameMult } from '../engine'
 
 export const STARTING_CASH = 2500
 
@@ -250,6 +251,11 @@ export function makeWeeklyGoals(noto) {
   })
 }
 
+// FAME lives in engine.js (pure game math — shows.js and the components need it too, and
+// constants.js already depends on engine, so it can't be the other way round). Re-exported
+// here so the store slices can keep importing their tuning from one place.
+export { fameMult, fameBeyond, FAME_KNEE, FAME_POWER } from '../engine'
+
 // Notoriety you must earn before strangers seek YOU out with unsolicited orders. Below
 // this you're a nobody — nobody DMs you to buy. Your early-game demand is the public
 // FORUM (people posting what they want; you go find/rip it). See FORUM_* + forumPosts.
@@ -260,24 +266,58 @@ export const REGULAR_FORM_GATE = 8
 // online deal-hunters will find on their own — even for an unknown vendor below the
 // notoriety gate. (askMult is "fraction of market"; see listOnSite.)
 export const BARGAIN_ASK_MULT = 0.70
-// Per-day probability that an unsolicited home order arrives on each channel. Zero until
-// you've made a name (INBOUND_NOTORIETY_GATE), then ramps from a sparse floor toward a cap.
-// e.g. online: 0 below the gate → ~0.10/day just past it → ~0.85 at noto 200.
+// EXPECTED NUMBER of unsolicited orders per day on a channel — a RATE, not a probability.
+// That distinction is the whole point: this used to return a chance capped at 0.85/0.95, so
+// no matter how famous you got, at most ONE walk-in and ONE online order could ever arrive
+// in a day. Fame saturated at noto ~212 and the busiest shop in the world had the same
+// footfall as a locally-known one. Now the ramp sets the early shape and fameMult multiplies
+// it, so a real name means a genuine QUEUE:
+//   walk-ins/day: noto 12 → 0.16 · 100 → ~1.0 · 200 → ~2.3 · 300 → ~3.3 · 800 → ~6.1
+//   online/day:   noto 12 → 0.10 · 100 → ~0.9 · 200 → ~2.1 · 300 → ~3.0 · 800 → ~5.5
+// Zero until you've made a name (INBOUND_NOTORIETY_GATE) — below that you're a nobody.
 // EXCEPTION: if you've listed something really cheap (hasBargain), online bargain-hunters
 // trickle in regardless of fame — a deliberate fire-sale is the other way to start the loop.
-export function dayOrderChance(channel, notoriety, hasBargain = false) {
+// Callers draw an integer count from this via drawCount() in the day tick.
+export function dayOrderRate(channel, notoriety, hasBargain = false) {
   if (notoriety < INBOUND_NOTORIETY_GATE) {
     // unknown vendor → no inbound from reputation; the only draw is a steep deal.
     return channel === 'online' && hasBargain ? 0.18 : 0
   }
   // A physical store is your biggest DEMAND engine — local foot traffic beats an unknown
   // web listing, so walk-ins come MORE often than online orders (that's what the lease buys).
-  const floor = channel === 'online' ? 0.10 : 0.16 // chance just past the gate
-  const cap   = channel === 'online' ? 0.85 : 0.95
-  const ramp  = Math.min(1, (notoriety - INBOUND_NOTORIETY_GATE) / 200) // 0→1 across the fame curve
+  const floor = channel === 'online' ? 0.10 : 0.16 // rate just past the gate
+  const cap   = channel === 'online' ? 0.85 : 0.95 // the old (flatlining) ceiling
+  const ramp  = Math.min(1, (notoriety - INBOUND_NOTORIETY_GATE) / 200)
   const base  = floor + (cap - floor) * ramp
+  // Fame relative to the gate — exactly 1.0× for an unknown, so the early game is unchanged
+  // and the multiplier only bites once you've actually built a name.
+  const vol = fameMult(notoriety) / fameMult(INBOUND_NOTORIETY_GATE)
+  const rate = base * vol
   // A bargain listing adds extra pull on top of your reputation, too.
-  return channel === 'online' && hasBargain ? Math.min(0.9, base + 0.12) : base
+  return channel === 'online' && hasBargain ? rate + 0.12 : rate
+}
+
+// Draw an integer count of events from an expected rate (e.g. 2.4 orders/day → 2, sometimes
+// 3). The whole number is guaranteed; the fraction is the odds of one more.
+export function drawCount(rate, rnd = Math.random) {
+  if (!(rate > 0)) return 0
+  const whole = Math.floor(rate)
+  return whole + (rnd() < rate - whole ? 1 : 0)
+}
+// Sanity rail: however famous you get, one channel can't bury you in more than this many
+// encounters in a single day. Fame should make you rich, not unplayable.
+export const MAX_ORDERS_PER_DAY = 6
+// Ceiling on passive counter trade. Generous (a famous shop SHOULD tick over nicely) but
+// firmly finite — the real money must stay in the cards you actually MOVE, not in an idle
+// till that prints while you do nothing. Reached around noto 700.
+export const COUNTER_MAX_PER_DAY = 1200
+
+// The booth inbox holds unhandled encounters; anything past the cap is DISCARDED. So the cap
+// has to grow with fame, or a famous vendor's extra orders would silently evaporate — the
+// bigger your name, the more you can have waiting on you.
+//   noto 0 → 8 · 100 → 11 · 300 → 16 · 500+ → 20
+export function inboxCap(notoriety) {
+  return Math.min(20, 8 + Math.round(Math.max(0, notoriety || 0) / 37))
 }
 
 // Going live pumps your whole storefront for a few days after: every listing draws
