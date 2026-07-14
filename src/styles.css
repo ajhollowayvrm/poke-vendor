@@ -1212,7 +1212,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* On a livestream the card being pulled is the SHOW — stack the "Now revealing" hero
    centered on top, with the full reveal row of pulls beneath it (also centered). */
 .stream-revealwrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
-.stream-now { flex:none; width:200px; max-width:60vw; }
+/* align-self:center is load-bearing: .rip-side (which this shares) sets align-self:stretch for
+   the three-column rip layout, and that BEATS the wrapper's align-items:center — so the hero
+   card was pinned to the left edge with a screen-wide dead gap beside it. Painful on a phone,
+   where it wasted half the width. */
+.stream-now { flex:none; width:200px; max-width:60vw; align-self:center; }
 .stream-now .rip-side-head { text-align:center; }
 .stream-now .rip-now-card { margin:0 auto; }
 .stream-now .rip-now-card img { width:100%; border-radius:10px; }
@@ -1534,4 +1538,44 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
     scroll-snap-type: x proximity; padding-bottom: 4px; margin-top: 12px; scrollbar-width: none; }
   .distrib-picker::-webkit-scrollbar { display: none; }
   .distrib-chip { flex: 0 0 auto; min-width: 128px; scroll-snap-align: start; }
+
+  /* ---- LIVE STREAM ------------------------------------------------------------------
+     The live stage measured 1,968px tall on a 956px screen — you were scrolling two and a
+     half screens DURING a live broadcast, while cards were revealing, chat was moving, and
+     time-limited orders were arriving off-screen. The reveal row was most of it: 150px cards
+     wrapped two-per-row, so a ten-card pack became five rows and ~1,050px on its own.
+     Everything below targets that: keep the show, the chat and the orders on ONE screen. */
+  .stream-hud { gap: 6px 8px; padding: 8px 10px; font-size: 13px; }
+  .stream-goal { margin: 0 0 8px; padding: 6px 10px; font-size: 12px; }
+
+  /* the hero: centred (see .stream-now above) and a touch smaller */
+  .stream-now { width: 150px; }
+  .stream-now .rip-now-card img { border-radius: 8px; }
+
+  /* Pack tiles small enough that a whole pack is visible at once instead of a five-row
+     column. ~4 per row on a 420px content width. */
+  .stream-revealwrap { gap: 10px; }
+  .stream-revealwrap .reveal-row { gap: 7px; }
+  .stream-revealwrap .reveal-card { width: 94px; border-radius: 9px; }
+  .stream-revealwrap .reveal-card .flip,
+  .stream-revealwrap .reveal-card .flip-front,
+  .stream-revealwrap .reveal-card .flip-back { border-radius: 8px; }
+
+  /* Chat is ambience — give it a floor, not a third of the page. */
+  .chat-feed { max-height: 150px !important; min-height: 110px !important; }
+
+  /* ORDERS are the one thing you must not miss: they're time-limited, capped at three, and
+     they were landing far below the fold while you watched the rip — money quietly expiring
+     off-screen. Hoist them to the TOP of the stage (order:-1) and pin them there, so an
+     incoming order is always visible and always tappable.
+     Pinned to the top, not the bottom: bottom-sticky sat on top of the Giveaway / End-early
+     buttons that follow it in the DOM. Top-sticky only ever overlays content scrolling AWAY
+     beneath it, which is exactly what you want. */
+  .rip-orders { order: -1; position: sticky; top: 0; z-index: 25; margin: 0 0 10px;
+    box-shadow: 0 8px 22px #000a; }
+  /* the explainer tail ("— viewers buying rips & your mystery packs…") wrapped to two lines
+     inside a panel that's now pinned to the top; the orders themselves say it all. */
+  .rip-orders .rip-side-head { font-size: 11px; }
+  .rip-orders .rip-side-head .muted { display: none; }
+  .rip-order .ro-btn { max-width: none; min-height: var(--tap); padding: 6px 14px; }
 }
