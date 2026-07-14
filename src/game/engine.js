@@ -1547,6 +1547,37 @@ const FUZZY_SHORT = {
   'Sharp':      'nice?',
   'Pristine':   'nice?',
 }
+// --- Binder standards -------------------------------------------------------
+// The bar a RAW card must clear to be filed into the masterset binder. Both are ordered
+// worst → best, so "at least X" is a simple index comparison.
+//
+// Graded slabs are deliberately exempt from these: a slab's GRADE is its quality statement,
+// and the raw condition/cut underneath it is a historical curiosity. A PSA 10 should never be
+// held out of your binder because the cut it was sealed at reads "Clean".
+export const CONDITION_ORDER = ['DMG', 'MP', 'LP', 'NM']   // worst → best
+export const CUT_ORDER = ['Rough', 'Off-center', 'Clean', 'Sharp', 'Pristine']
+
+export function conditionRank(key) {
+  const i = CONDITION_ORDER.indexOf(key)
+  return i === -1 ? CONDITION_ORDER.length - 1 : i // unknown/absent = treat as best, never block
+}
+// A card's true cut tier index (0 Rough … 4 Pristine). Null cut (old saves) reads as 'Clean'.
+export function cutRank(card) {
+  const cut = card?._cut ?? 0.5
+  const i = CUT_TIERS.findIndex(t => cut >= t.min && cut < t.max)
+  return i === -1 ? CUT_TIERS.length - 1 : i
+}
+// Does this card meet the binder standard? Slabs always pass (see above); raw cards must clear
+// BOTH bars. Defaults ('DMG'/'Rough') are the lowest rungs, so an unset standard accepts
+// everything — exactly the behaviour before this existed.
+export function meetsBinderStandard(card, minCondition = 'DMG', minCut = 'Rough') {
+  if (!card) return false
+  if (card.grade) return true
+  if (conditionRank(card.condition) < conditionRank(minCondition)) return false
+  if (cutRank(card) < Math.max(0, CUT_ORDER.indexOf(minCut))) return false
+  return true
+}
+
 export function cutEstimate(card, precise) {
   // Null-safe: _cut==null means an old save with no cut data; treat as 0.5 (Clean).
   const cut = card._cut ?? 0.5
@@ -2001,19 +2032,29 @@ export function cardMastersetVariants(set, card) {
 // own. `binderCards` are the copies physically slotted into the binder; `ownedCards` is any
 // other bucket (collection) whose variants count as "available to place". Returns per-slot
 // totals so the UI can render progress + a fill button.
-export function mastersetStats(set, binderCards, ownedCards = []) {
+// `standard` = { minCondition, minCut } — your binder's quality bar (see meetsBinderStandard).
+// A copy that doesn't clear it isn't "placeable", so the fill button's count matches what the
+// button will actually do. `belowBar` reports the slots you own a copy for but rejected, so the
+// UI can explain an empty slot instead of leaving it looking like a bug.
+export function mastersetStats(set, binderCards, ownedCards = [], standard = null) {
   const binderKeys = new Set(binderCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
-  const looseKeys = new Set(ownedCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
-  let total = 0, placed = 0, placeable = 0
+  const mine = ownedCards.filter(c => setIdOfCard(c) === set.id)
+  const ok = standard
+    ? mine.filter(c => meetsBinderStandard(c, standard.minCondition, standard.minCut))
+    : mine
+  const looseKeys = new Set(ok.map(c => `${c.id}:${cardVariant(c)}`))
+  const anyKeys = new Set(mine.map(c => `${c.id}:${cardVariant(c)}`))
+  let total = 0, placed = 0, placeable = 0, belowBar = 0
   for (const card of set.cards) {
     for (const v of cardMastersetVariants(set, card)) {
       total++
       const key = `${card.id}:${v}`
       if (binderKeys.has(key)) placed++
       else if (looseKeys.has(key)) placeable++
+      else if (anyKeys.has(key)) belowBar++ // you own one, but it's under your bar
     }
   }
-  return { total, placed, placeable, pct: total ? Math.round((placed / total) * 100) : 0,
+  return { total, placed, placeable, belowBar, pct: total ? Math.round((placed / total) * 100) : 0,
     complete: total > 0 && placed === total }
 }
 

@@ -8,7 +8,7 @@
 import {
   cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
   rollGrade, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
-  setById, cardVariant, cardMastersetVariants,
+  setById, cardVariant, cardMastersetVariants, meetsBinderStandard,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay } from './constants'
@@ -123,14 +123,26 @@ export function createCollectionSlice(set, get) {
     // sets. Returns the number of cards moved. `skipGraded` leaves slabs alone — the Binder
     // Curator's nightly sweep uses it so a freshly returned PSA slab (always the "best copy")
     // isn't whisked out of the sellable pool the same night it comes back from grading.
+    //
+    // BINDER STANDARDS: a masterset is a display piece, and a beaten-up off-centre copy in a
+    // slot is worse than an empty one for a lot of collectors — so `settings.binderMinCondition`
+    // and `settings.binderMinCut` set the bar a RAW card must clear to be filed. Both apply to
+    // the nightly Curator sweep AND the manual "fill every slot" button, because they're a
+    // statement about what your binder is, not about which button you pressed. Slabs are exempt
+    // (their grade IS the quality bar). Defaults are the lowest rungs = accept everything, so
+    // existing saves behave exactly as before.
     addAllToBinder(setId = null, { skipGraded = false } = {}) {
       const sets = setId ? [setById(setId)].filter(Boolean) : SETS
       if (!sets.length) return 0
+      const st = get().settings || {}
+      const minCond = st.binderMinCondition || 'DMG'
+      const minCut = st.binderMinCut || 'Rough'
       const binder = get().binder || []
       const placed = new Set(binder.map(b => `${setIdOf(b)}:${b.id}:${cardVariant(b)}`))
       const chosen = new Map() // slotKey → card (first/best copy wins)
       // best copy first so the nicest condition/grade lands in the binder
       const coll = [...get().collection].sort((a, b) => cardValue(b) - cardValue(a))
+      let heldBack = 0 // copies that COULD have filled a slot but didn't meet your standard
       for (const c of coll) {
         if (c._heldFor) continue // promised to a regular — the hold keeps its word
         if (skipGraded && c.grade) continue // slabs are placed by hand
@@ -144,9 +156,13 @@ export function createCollectionSlice(set, get) {
         if (!cardMastersetVariants(set_, cardDef).includes(variant)) continue
         const slotKey = `${cSet}:${c.id}:${variant}`
         if (placed.has(slotKey) || chosen.has(slotKey)) continue
+        // The slot IS open and this copy could fill it — so the standard is the only thing
+        // stopping it. Counted here (not earlier) so "held back" means "a slot stayed empty
+        // because of your bar", not "some spare copy in a pile didn't qualify".
+        if (!meetsBinderStandard(c, minCond, minCut)) { heldBack++; continue }
         chosen.set(slotKey, c)
       }
-      if (!chosen.size) return 0
+      if (!chosen.size) return { moved: 0, heldBack }
       const movingUids = new Set([...chosen.values()].map(c => c.uid))
       const moving = get().collection.filter(c => movingUids.has(c.uid))
       set(s => ({
@@ -154,8 +170,9 @@ export function createCollectionSlice(set, get) {
         binder: [...(s.binder || []), ...moving],
       }))
       const label = setId ? `for ${setById(setId)?.name || 'the set'}` : 'across your collection'
-      get().log('binder', `📒 Filled ${moving.length} binder slot${moving.length > 1 ? 's' : ''} ${label}`, 0)
-      return moving.length
+      const note = heldBack ? ` · ${heldBack} ${heldBack === 1 ? 'copy' : 'copies'} held back below your binder standard` : ''
+      get().log('binder', `📒 Filled ${moving.length} binder slot${moving.length > 1 ? 's' : ''} ${label}${note}`, 0)
+      return { moved: moving.length, heldBack }
     },
 
     // Take a card back out of the binder, into your collection (to sell or reslot).

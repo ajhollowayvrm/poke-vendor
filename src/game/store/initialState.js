@@ -109,6 +109,10 @@ export function initialState() {
     // sound/haptics: synthesized rip SFX + phone vibration (see game/feedback.js).
     // keepOne ("Protect set singles"): bulk sells skip your last copy of each card so a
     // sweep only dumps duplicates — the master-set safety net (see engine.bulkSellableUids).
-    settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false },
+    // binderMinCondition / binderMinCut: the bar a RAW copy must clear to be filed into the
+    // masterset binder (by hand or by the overnight Curator). The lowest rungs by default =
+    // accept anything, which is how the binder behaved before the setting existed.
+    settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false,
+      binderMinCondition: 'DMG', binderMinCut: 'Rough' },
   }
 }

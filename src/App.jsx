@@ -560,7 +560,7 @@ function GameClock() {
 // how the market moved, new collectors who found you, and the overhead that hit.
 function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
-    resolvedGrades, binderFiled, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
+    resolvedGrades, binderFiled, binderHeldBack, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
     soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
@@ -569,7 +569,7 @@ function DaySummary({ summary, onClose }) {
   const sold = soldNames || []
   const events = lifeEvents || []
   const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
-  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || wantsBrokered
+  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderHeldBack || wantsBrokered
     || offersAccepted || wages || rent || lease
     || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || events.length || floorActive
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
@@ -650,7 +650,7 @@ function DaySummary({ summary, onClose }) {
             )}
 
             {/* Inbox / interest */}
-            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || resolvedGrades > 0 || binderFiled > 0 || notoDelta > 0) && (
+            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || resolvedGrades > 0 || binderFiled > 0 || binderHeldBack > 0 || notoDelta > 0) && (
               <div className="recap-sec">
                 <div className="recap-sec-h">📬 New</div>
                 {newWants > 0 && <div className="recap-line"><span>🐋 {newWants} collector want{newWants === 1 ? '' : 's'} found you</span><span className="muted">Sell tab</span></div>}
@@ -659,6 +659,9 @@ function DaySummary({ summary, onClose }) {
                 {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}
                 {resolvedGrades > 0 && <div className="recap-line"><span className="muted">{resolvedGrades} slab{resolvedGrades === 1 ? '' : 's'} back from grading</span></div>}
                 {binderFiled > 0 && <div className="recap-line"><span className="muted">📒 Curator filed {binderFiled} card{binderFiled === 1 ? '' : 's'} into your binder</span></div>}
+                {/* Say WHY a slot stayed empty — otherwise a strict binder standard reads as
+                    the Curator quietly not doing its job. */}
+                {binderHeldBack > 0 && <div className="recap-line"><span className="muted">🎚️ {binderHeldBack} {binderHeldBack === 1 ? 'copy' : 'copies'} held back — below your binder standard</span></div>}
                 {notoDelta > 0 && <div className="recap-line"><span className="muted">Notoriety</span><b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b></div>}
               </div>
             )}

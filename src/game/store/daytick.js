@@ -898,7 +898,11 @@ export function advanceDaysWith(set, get, days, away) {
   // for you after the day's cards (pulls, buys) have all landed. Graded slabs are skipped:
   // a slab fresh back from grading is always the "best copy", and auto-filing it made
   // returned slabs vanish from the collection the same night the player revealed them.
-  const binderFiled = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true }) : 0
+  // (addAllToBinder returns { moved, heldBack } — heldBack is copies your binder standard
+  // refused; the recap surfaces it so an empty slot never looks like a bug.)
+  const binderSweep = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true }) : { moved: 0, heldBack: 0 }
+  const binderFiled = binderSweep.moved
+  const binderHeldBack = binderSweep.heldBack
   // 💼 Want-List Broker: fills collector wants + forum WTB posts overnight from the
   // sellable pool — always the CHEAPEST matching copy, so the good copies stay for the
   // binder, the case, and grading. Runs AFTER the curator: binder slots outrank cash.
@@ -977,7 +981,7 @@ export function advanceDaysWith(set, get, days, away) {
   return { added: newOrders.length, missedOnline, missedWalkin, wages: round2(wagesEarned), rent: round2(rentDue),
     lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
     listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
-    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled,
+    resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled, binderHeldBack,
     wantsBrokered, brokerProceeds, offersAccepted, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
@@ -1013,6 +1017,7 @@ export function mergeSummaries(a, b) {
     resolvedGrades: add(a.resolvedGrades, b.resolvedGrades),
     resolvedGradeCards: [...(a.resolvedGradeCards || []), ...(b.resolvedGradeCards || [])],
     binderFiled: add(a.binderFiled, b.binderFiled),
+    binderHeldBack: add(a.binderHeldBack, b.binderHeldBack),
     wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
     brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),
     offersAccepted: add(a.offersAccepted, b.offersAccepted),

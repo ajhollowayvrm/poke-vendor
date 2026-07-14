@@ -1608,3 +1608,19 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .rip-orders .rip-side-head .muted { display: none; }
   .rip-order .ro-btn { max-width: none; min-height: var(--tap); padding: 6px 14px; }
 }
+
+/* --- Binder standard (the quality bar for filing into the masterset) ------- */
+.binder-standard { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:12px;
+  background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:12px; padding:10px 14px; }
+.binder-standard .bs-head { font-weight:800; font-size:13.5px; }
+.binder-standard .bs-head .muted { font-weight:600; font-size:12px; }
+.binder-standard .bs-field { display:flex; align-items:center; gap:6px; font-size:12.5px; }
+.binder-standard .bs-field select { font-size:13px; padding:5px 8px; }
+.binder-standard .bs-note { font-size:12px; margin-left:auto; text-align:right; max-width:340px; }
+@media (max-width: 640px) {
+  .binder-standard { gap:8px; }
+  .binder-standard .bs-field { flex:1 1 100%; justify-content:space-between; }
+  .binder-standard .bs-field select { flex:1; margin-left:8px; }
+  .binder-standard .bs-note { margin-left:0; text-align:left; max-width:none; }
+}
