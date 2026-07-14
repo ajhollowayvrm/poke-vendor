@@ -91,8 +91,11 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw)
   const totalPacks = queue.reduce((a, e) => a + e.product.packs, 0)
 
+  // Going live with NOTHING queued is allowed — that's a "taking orders" show: you sit on air
+  // with your inventory behind you and only crack what viewers actually pay you to crack (rip
+  // orders + mystery-pack orders). It's the low-risk way to stream: you never open product on
+  // spec, so every pack you rip is already sold.
   function go() {
-    if (!queue.length) return
     primeAudio() // this click is our chance to start audio under the browser's autoplay policy
     const sessionQueue = []
     const escrowEntries = [] // store-side session record — survives reload/unmount
@@ -117,7 +120,9 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
       sessionQueue.push({ invUid: row.invUid, set, product, isBreak, spots, spotsSold, filled: spotsSold, perSpot, spotGross, owners, orderedBy: null })
       escrowEntries.push({ invUid: row.invUid, item: it, packs: product.packs, packsDone: 0, spotGross })
     }
-    if (!sessionQueue.length) return toast('Nothing left to stream — your queued product is gone.')
+    // Only a bug if you queued something and it ALL vanished; an intentionally empty queue is
+    // a valid orders-only show.
+    if (queue.length && !sessionQueue.length) return toast('Nothing left to stream — your queued product is gone.')
     useGame.getState().startStreamEscrow(escrowEntries)
     onGoLive({ queue: sessionQueue })
   }
@@ -200,13 +205,18 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
           )}
 
           <div className="row" style={{ marginTop: 16, justifyContent: 'center' }}>
-            <button className="btn gold" style={{ maxWidth: 320 }} disabled={!queue.length} onClick={go}>
-              🔴 Go live — rip {queue.length || ''} product{queue.length !== 1 ? 's' : ''} ({totalPacks} pk)
+            {/* An empty queue is a valid show — you go on air and rip only what viewers buy. */}
+            <button className="btn gold" style={{ maxWidth: 340 }} onClick={go}>
+              {queue.length
+                ? <>🔴 Go live — rip {queue.length} product{queue.length !== 1 ? 's' : ''} ({totalPacks} pk)</>
+                : <>🔴 Go live — take orders only</>}
             </button>
           </div>
           <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
             {queue.length === 0
-              ? 'Add at least one product to your queue to go live.'
+              ? <>Nothing queued — you'll go on air with an empty table and rip only what viewers <b>order</b> (your mystery packs, plus your held sealed if you have the 🎟️ Live Rip Service). Nothing gets opened on spec.
+                  {' '}Expecting ~{expected.toLocaleString()} viewers.
+                  {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh</span>}</>
               : <>Expecting ~{expected.toLocaleString()} viewers
                 {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
                 {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
@@ -250,9 +260,13 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [queueVer, setQueueVer] = useState(0)
   const bumpQueue = () => setQueueVer(v => v + 1)
 
-  // The room drifts toward the biggest-draw product's settled viewer count.
-  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) *
-    Math.max(...queueRef.current.map(e => streamDrawMult(e.set, e.product))))
+  // The room drifts toward the biggest-draw product's settled viewer count. An orders-only
+  // show starts with an empty queue, so guard the Math.max — on an empty array it returns
+  // -Infinity and the whole viewer count goes NaN. Draw 1 = no product bonus, just your name.
+  const draw = queueRef.current.length
+    ? Math.max(...queueRef.current.map(e => streamDrawMult(e.set, e.product)))
+    : 1
+  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) * draw)
 
   const [entryIdx, setEntryIdx] = useState(0)
   const [packNo, setPackNo] = useState(0)
@@ -269,7 +283,10 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [tips, setTips] = useState(0)
   const [hypeMoments, setHypeMoments] = useState(0)
   const [liveSpotFlash, setLiveSpotFlash] = useState(null)
-  const [done, setDone] = useState(false)
+  // `done` = nothing left in the queue to rip. It does NOT mean the stream is over — you stay
+  // on air, and viewers keep ordering. An orders-only show starts out done (empty table) and
+  // flips back to live-ripping the moment you accept an order.
+  const [done, setDone] = useState(session.queue.length === 0)
   // Hype train (consecutive hits stack a tip multiplier) + a live combo counter.
   const [hypeLevel, setHypeLevel] = useState(0)
   const [combo, setCombo] = useState(0)
@@ -291,7 +308,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const idxRef = useRef(0)           // mirror of entryIdx, readable inside timer callbacks
   const packRef = useRef(0)          // mirror of packNo
   const phaseRef = useRef('idle')    // mirror of phase
-  const doneRef = useRef(false)      // mirror of done
+  const doneRef = useRef(session.queue.length === 0) // mirror of done
   const hypeRef = useRef(0)          // mirror of hypeLevel readable inside timer callbacks
   const entryDoneRef = useRef(new Set()) // entry indices whose promo has been minted (idempotent)
   const regularsRef = useRef([])     // live online-regular roster for chat attribution
@@ -356,7 +373,11 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   //      Live Rip Service upgrade). Frequency scales with the crowd.
   useEffect(() => {
     const id = setInterval(() => {
-      if (doneRef.current || finishedRef.current) return
+      // NOT gated on `done`. An empty queue means "nothing of MINE left to crack" — the room is
+      // still there and still buying, and an orders-only show has an empty queue by definition.
+      // Gating this on `done` was what made a take-orders stream impossible: the instant you ran
+      // dry, the orders dried up too and your only move was to end the broadcast.
+      if (finishedRef.current) return
       setOrders(prev => {
         if (prev.length >= 3) return prev
         const g = useGame.getState()
@@ -519,6 +540,22 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     if (idx >= queueRef.current.length - 1) setDoneX(true) // whole queue finished
   }
 
+  // An accepted order just landed on the queue — start ripping it. Two cases:
+  //   • the table was BARE (orders-only show, or you'd already cashed the queue out): the new
+  //     entry IS entry 0, so rip where we stand. goNextEntry() would hunt for idx+1 and find
+  //     nothing, leaving you on air staring at a product you'd already been paid for.
+  //   • the queue had merely wrapped: flow into the next entry as usual.
+  function startAppendedEntry(wasEmpty) {
+    if (finishedRef.current) return
+    if (!wasEmpty) { if (doneRef.current) goNextEntry(); return }
+    setIdxX(0)
+    packRef.current = 0; setPackNo(0)
+    setPulls([]); setShown(0); setCurrent(null); setIsGod(false); setIsDemigod(false)
+    setPhaseX('idle')
+    setDoneX(false) // ripPack() refuses while done — re-open the room first
+    after(() => ripPack(), ms(300))
+  }
+
   // Move to the next queued product and start ripping it (keeps the broadcast continuous).
   function goNextEntry() {
     if (finishedRef.current) return
@@ -555,7 +592,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   // A PACK order sells one of your built mystery packs the same way — the sale (cash, rep
   // swing, log) settles now via sellBuiltPack, and the contents get ripped on camera next.
   function acceptOrder(order) {
-    if (done || finishedRef.current) return
+    // Accepting while `done` is the WHOLE POINT of an orders-only show — the queue being empty
+    // is exactly when you want to take work. Only a finished (cashed-out) stream refuses.
+    if (finishedRef.current) return
+    // Was the table bare? Then this order is the first thing of the night and starts at entry 0
+    // — goNextEntry() would look for idx+1 and find nothing.
+    const wasEmpty = queueRef.current.length === 0
     if (order.kind === 'pack') {
       const r = useGame.getState().sellBuiltPack(order.packUid, { channel: 'stream', buyer: order.buyer })
       if (!r) { setOrders(o => o.filter(x => x.id !== order.id)); return toast('That pack is already gone.') }
@@ -570,7 +612,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       setOrders(o => o.filter(x => x.id !== order.id))
       bumpQueue()
       pushChat({ handle: 'system', text: `✅ ${order.buyer} bought a ${r.tier.icon} ${r.tier.name} (${fmtMoney(r.gross)}) — ripping it live!`, tip: true })
-      if (doneRef.current) goNextEntry()
+      startAppendedEntry(wasEmpty)
       return
     }
     const it = ripSealedAction(order.invUid)
@@ -585,8 +627,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     setOrders(o => o.filter(x => x.id !== order.id))
     bumpQueue()
     pushChat({ handle: 'system', text: `✅ accepted ${order.buyer}'s rip order — ${order.product.type} added to the queue`, tip: true })
-    // If the queue had already wrapped, re-open it and flow into the new product.
-    if (doneRef.current) goNextEntry()
+    startAppendedEntry(wasEmpty)
   }
   function declineOrder(id) { setOrders(o => o.filter(x => x.id !== id)) }
 
@@ -832,7 +873,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 
       <div className="stream-body">
         <div className="stream-stage">
-          {pulls.length === 0 && !done && (
+          {pulls.length === 0 && !done && entry && (
             <div className="stream-prompt">
               <div className="pack3d" onClick={ripPack} style={{ cursor:'pointer' }}
                 role="button" tabIndex={0} aria-label="Rip the first pack live"
@@ -841,6 +882,22 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 {entry?.set.logo ? <img className="logo" src={entry.set.logo} alt={entry.set.name} /> : <b>{entry?.set.name}</b>}
                 <span className="hint">▶ Rip {entryIdx === 0 ? 'the first pack' : `${entry?.product.type}`} live</span>
               </div>
+            </div>
+          )}
+
+          {/* ON AIR with nothing to crack. Not an error state and not the end of the show — it's
+              the orders-only stream: you're live, the room is filling, and you rip whatever
+              viewers pay you to rip. Also what you see after cashing out a queue but staying on. */}
+          {pulls.length === 0 && done && (
+            <div className="stream-prompt stream-waiting">
+              <div className="stream-waiting-icon">🎙️</div>
+              <h3 style={{ margin: '6px 0 2px' }}>On air — taking orders</h3>
+              <p className="muted" style={{ fontSize: 13, margin: 0, maxWidth: 420, textAlign: 'center' }}>
+                Nothing on your table. You'll rip whatever the room <b>buys</b> — your mystery packs,
+                and your held sealed if you have the 🎟️ Live Rip Service. Accept an order and it goes
+                straight to the table.
+                {!orders.length && <><br /><span style={{ opacity: 0.75 }}>Waiting for someone to bite…</span></>}
+              </p>
             </div>
           )}
 
@@ -908,7 +965,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                   <b className="ro-buyer" style={{ color: handleColor(o.buyer) }}>{o.buyer}</b>
                   <span className="ro-prod">{o.product.icon || '📦'} {o.product.type}</span>
                   <span className="ro-price">{fmtMoney(o.price)}</span>
-                  <button className="btn gold ro-btn" disabled={done} onClick={() => acceptOrder(o)}>Accept</button>
+                  {/* Not disabled on `done` — taking orders with an empty table is the point. */}
+                  <button className="btn gold ro-btn" onClick={() => acceptOrder(o)}>Accept</button>
                   <button className="btn alt ro-btn" onClick={() => declineOrder(o.id)}>Pass</button>
                 </div>
               ))}
