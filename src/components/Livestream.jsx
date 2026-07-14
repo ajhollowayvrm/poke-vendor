@@ -4,7 +4,7 @@ import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fm
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
-  rollRipOrder, randomChatHandle,
+  rollRipOrder, randomChatHandle, ripOrderPrice,
 } from '../game/stream'
 import { packSaleChance } from '../game/mysterypacks'
 import { rarityColor } from './CardTile'
@@ -54,11 +54,34 @@ export default function Livestream() {
 // You can ONLY stream product you already HOLD in sealed inventory — no buying right before
 // a stream. Source low (shop / shows), hold it, then queue it up and break it live for tips
 // + fame. Build a QUEUE of held products; the stream rips through them back-to-back.
+// What viewers are allowed to ask you to rip tonight. Two independent rules, and BOTH matter:
+//
+//  1. It must be something you actually have and could actually part with. This mirrors the
+//     game's canonical "sellable sealed" test (daytick.js `sellableSealed`): a 🔒 LOCKED item
+//     is one you've explicitly said you won't sell, and a `_heldFor` item is already promised
+//     to a regular behind the counter. The stream used to ignore both — so a viewer could buy
+//     a locked pack out from under you, or make you rip the very thing you'd set aside for a
+//     customer. Neither should ever be orderable.
+//
+//  2. It must be something you OPENED UP for this broadcast (`policy`) — see the setup screen.
+//
+// `exclude` is the uids already sitting in the pending-order box, so the room can't order the
+// same physical pack twice.
+function orderableSealed(inventory, policy, exclude = new Set()) {
+  const mode = policy?.sealed || 'all'
+  if (mode === 'none') return []
+  const allow = new Set(policy?.uids || [])
+  return (inventory || []).filter(it =>
+    !exclude.has(it.uid) && !it.locked && !it._heldFor &&
+    (mode === 'all' || allow.has(it.uid)))
+}
+
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const followers = useGame(s => s.followers || 0)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   const inventory = useGame(s => s.sealedInventory)
   const ripSealedAction = useGame(s => s.ripSealed)
+  const hasRipService = useGame(s => !!s.upgrades.ripService) // 🎟️ lets viewers order YOUR sealed
   // Built mystery packs with the 🔴 stream channel on — viewers can order them mid-stream.
   const streamPacks = useGame(s => (s.builtPacks || [])
     .filter(p => (s.packTiers || []).find(t => t.id === p.tierId)?.channels?.stream).length)
@@ -67,9 +90,34 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const [queue, setQueue] = useState([])
   const [pick, setPick] = useState(null) // the inventory item currently selected to add
 
+  // WHAT YOU'RE WILLING TO SELL TONIGHT. 'all' = anything in the case is fair game; 'picked' =
+  // only the units you tick; 'none' = queue only, take no rip orders at all. Locked and
+  // held-for-a-regular items are never orderable under ANY mode (see orderableSealed).
+  const [orderMode, setOrderMode] = useState('all')     // all | picked | none
+  const [orderUids, setOrderUids] = useState(() => new Set())
+  const [allowPacks, setAllowPacks] = useState(true)    // per-stream override on top of each
+                                                        // tier's 🔴 stream channel setting
+
   // Available = held items not already queued (each physical unit can be queued once).
   const queuedUids = new Set(queue.map(q => q.invUid))
   const available = inventory.filter(it => !queuedUids.has(it.uid))
+  // The units a viewer could ever ask for: not queued (those get consumed at go-live), not
+  // locked, not promised to a regular. This is the shelf you're choosing from below.
+  const offerable = available.filter(it => !it.locked && !it._heldFor)
+  const reserved = available.length - offerable.length // locked / held-for-a-regular
+  const toggleOrderUid = (uid) => setOrderUids(prev => {
+    const next = new Set(prev)
+    next.has(uid) ? next.delete(uid) : next.add(uid)
+    return next
+  })
+  // Only ever offer units that are still offerable (you might have queued one after ticking it).
+  const offerUids = [...orderUids].filter(uid => offerable.some(it => it.uid === uid))
+  const orderPolicy = { sealed: orderMode, uids: offerUids, packs: allowPacks }
+  const openCount = orderMode === 'all' ? offerable.length : orderMode === 'picked' ? offerUids.length : 0
+  // Could ANY order actually arrive tonight? Sealed rips need the upgrade AND something open;
+  // pack orders need a built pack on the stream channel AND tonight's toggle on.
+  const canTakeSealed = hasRipService && openCount > 0
+  const canTakePacks = allowPacks && streamPacks > 0
   useEffect(() => {
     if (!available.find(it => it.uid === pick)) setPick(available[0]?.uid || null)
   }, [available, pick])
@@ -90,6 +138,9 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const draw = queue.length ? Math.max(...queue.map(e => streamDrawMult(setById(e.setId) || SHOP_SETS[0], e.product))) : 1
   const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw)
   const totalPacks = queue.reduce((a, e) => a + e.product.packs, 0)
+  // Dead air: nothing queued AND nothing a viewer could possibly order. Going live on that
+  // would burn a game-day watching an empty table.
+  const deadAir = queue.length === 0 && !canTakeSealed && !canTakePacks
 
   // Going live with NOTHING queued is allowed — that's a "taking orders" show: you sit on air
   // with your inventory behind you and only crack what viewers actually pay you to crack (rip
@@ -124,7 +175,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
     // a valid orders-only show.
     if (queue.length && !sessionQueue.length) return toast('Nothing left to stream — your queued product is gone.')
     useGame.getState().startStreamEscrow(escrowEntries)
-    onGoLive({ queue: sessionQueue })
+    onGoLive({ queue: sessionQueue, orderPolicy })
   }
 
   return (
@@ -141,13 +192,17 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
           🎁 {streamPacks} mystery pack{streamPacks > 1 ? 's' : ''} ready for live orders</span>}
       </div>
 
-      {inventory.length === 0 ? (
+      {/* No sealed AND no stream-channel mystery packs = genuinely nothing to broadcast. With
+          packs but no sealed you can still go live and take pack orders, so don't dead-end. */}
+      {inventory.length === 0 && streamPacks === 0 ? (
         <div className="empty" style={{ marginTop: 20 }}>
           📦 You have no sealed product to break. Streams rip from your <b>held inventory</b> only —
           <b> buy sealed on the Buy tab</b> (or source it at a show), then come back and queue it up live.
+          <br /><span className="muted" style={{ fontSize: 12.5 }}>You can also go live with nothing but <b>mystery packs</b> — build a pack line with the 🔴 Stream channel on (Sell → ❓ Packs) and viewers will order them on air.</span>
         </div>
       ) : (
         <>
+          {inventory.length > 0 && (
           <div className="market-panel" style={{ marginTop: 14 }}>
             <div className="market-head">🎬 Build your rip queue <span className="muted">— from your 📦 inventory</span></div>
             <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
@@ -163,6 +218,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
               <button className="btn" disabled={!pick} onClick={addToQueue}>➕ Add to queue</button>
             </div>
           </div>
+          )}
 
           {queue.length > 0 && (
             <div className="market-panel" style={{ marginTop: 12 }}>
@@ -204,17 +260,79 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
             </div>
           )}
 
+          {/* WHAT YOU'LL SELL TONIGHT. Viewers can only ever ask for something you actually hold
+              AND opened up here — never a 🔒 locked unit, never one promised to a regular. */}
+          <div className="market-panel" style={{ marginTop: 12 }}>
+            <div className="market-head">
+              🎟️ Open for orders <span className="muted">— what viewers may ask you to rip tonight</span>
+            </div>
+            <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+              {[
+                { key: 'all',    label: '📦 Everything I hold', hint: 'Any sealed unit in your case is fair game.' },
+                { key: 'picked', label: '✅ Only what I pick',   hint: 'Tick the exact units you\'re willing to part with.' },
+                { key: 'none',   label: '🚫 Nothing',            hint: 'Take no rip orders — you\'ll only rip your own queue.' },
+              ].map(o => (
+                <button key={o.key} className={`subtab ${orderMode === o.key ? 'active' : ''}`}
+                  title={o.hint} onClick={() => setOrderMode(o.key)}>{o.label}</button>
+              ))}
+            </div>
+
+            {!hasRipService && orderMode !== 'none' && (
+              <p className="muted" style={{ fontSize: 12, margin: '8px 0 0' }}>
+                ⚠️ Viewers can't order your <b>sealed</b> without the 🎟️ <b>Live Rip Service</b> upgrade — until you own it,
+                this only governs your mystery packs.
+              </p>
+            )}
+
+            {orderMode === 'picked' && (
+              offerable.length === 0
+                ? <p className="muted" style={{ fontSize: 12.5, margin: '8px 0 0' }}>Nothing available to offer — it's all queued, locked, or held for a regular.</p>
+                : <div className="stream-offer-grid" style={{ marginTop: 8 }}>
+                    {offerable.map(it => {
+                      const s = setById(it.setId)
+                      const on = orderUids.has(it.uid)
+                      return (
+                        <label key={it.uid} className={`tweet-toggle ${on ? 'on' : ''}`} style={{ fontSize: 12.5 }}>
+                          <input type="checkbox" checked={on} onChange={() => toggleOrderUid(it.uid)} />
+                          {it.vintage ? '🗝️ ' : ''}{it.product.icon || '📦'} {s?.name} {it.product.type}
+                          <span className="muted"> · {fmtMoney(ripOrderPrice(it.product, notoriety, s))}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+            )}
+
+            <div className="row" style={{ gap: 10, marginTop: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <label className="tweet-toggle" style={{ fontSize: 13 }}
+                title="Your built mystery packs with the 🔴 Stream channel on. Turn this off to take no pack orders tonight without changing the pack line itself.">
+                <input type="checkbox" checked={allowPacks} onChange={e => setAllowPacks(e.target.checked)} />
+                🎁 Sell my mystery packs on this stream{streamPacks > 0 ? ` (${streamPacks} ready)` : ''}
+              </label>
+              <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>
+                {openCount > 0
+                  ? <>Viewers can order <b>{openCount}</b> sealed unit{openCount === 1 ? '' : 's'}</>
+                  : <>No sealed open for orders</>}
+                {reserved > 0 && <> · <b>{reserved}</b> held back (🔒 locked or promised to a regular)</>}
+              </span>
+            </div>
+          </div>
+
           <div className="row" style={{ marginTop: 16, justifyContent: 'center' }}>
-            {/* An empty queue is a valid show — you go on air and rip only what viewers buy. */}
-            <button className="btn gold" style={{ maxWidth: 340 }} onClick={go}>
+            {/* An empty queue is a valid show — you go on air and rip only what viewers buy. But
+                an empty queue with nothing ORDERABLE either is just dead air: no queue, no rip
+                orders (or no upgrade to take them), no packs. Don't let it burn a game-day. */}
+            <button className="btn gold" style={{ maxWidth: 340 }} disabled={deadAir} onClick={go}
+              title={deadAir ? "Nothing to rip and nothing viewers could order — you'd burn a day on dead air." : ''}>
               {queue.length
                 ? <>🔴 Go live — rip {queue.length} product{queue.length !== 1 ? 's' : ''} ({totalPacks} pk)</>
                 : <>🔴 Go live — take orders only</>}
             </button>
           </div>
           <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
-            {queue.length === 0
-              ? <>Nothing queued — you'll go on air with an empty table and rip only what viewers <b>order</b> (your mystery packs, plus your held sealed if you have the 🎟️ Live Rip Service). Nothing gets opened on spec.
+            {deadAir
+              ? <span style={{ color: 'var(--red)' }}>Nothing queued and nothing viewers could order — queue a product, open some sealed for orders{!hasRipService && ' (needs the 🎟️ Live Rip Service)'}, or put a mystery pack line on the 🔴 Stream channel.</span>
+              : queue.length === 0
+              ? <>Nothing queued — you'll go on air with an empty table and rip only what viewers <b>order</b>. Nothing gets opened on spec.
                   {' '}Expecting ~{expected.toLocaleString()} viewers.
                   {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh</span>}</>
               : <>Expecting ~{expected.toLocaleString()} viewers
@@ -283,6 +401,11 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const [tips, setTips] = useState(0)
   const [hypeMoments, setHypeMoments] = useState(0)
   const [liveSpotFlash, setLiveSpotFlash] = useState(null)
+  // What you agreed to sell tonight (set on the go-live screen). Frozen for the session — a
+  // viewer can't start asking for something you never put on the table. Old saves / a resumed
+  // session with no policy default to "everything", which is the pre-existing behaviour.
+  const policy = session.orderPolicy || { sealed: 'all', uids: [], packs: true }
+
   // `done` = nothing left in the queue to rip. It does NOT mean the stream is over — you stay
   // on air, and viewers keep ordering. An orders-only show starts out done (empty table) and
   // flips back to live-ripping the moment you accept an order.
@@ -382,8 +505,13 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         if (prev.length >= 3) return prev
         const g = useGame.getState()
         const pendingUids = new Set(prev.map(o => o.invUid || o.packUid))
-        const packsOut = (g.packsForChannel?.('stream') || []).filter(p => !pendingUids.has(p.uid))
-        const held = hasRipService ? (g.sealedInventory || []).filter(it => !pendingUids.has(it.uid)) : []
+        // Viewers can only ask for what you ACTUALLY hold and are willing to part with tonight:
+        // never a 🔒 locked unit, never one promised to a regular, and never one you didn't open
+        // up in the setup screen. (Re-read from the live store each tick, so a unit that gets
+        // locked or reserved mid-stream stops being orderable immediately.)
+        const packsOut = policy.packs === false ? []
+          : (g.packsForChannel?.('stream') || []).filter(p => !pendingUids.has(p.uid))
+        const held = hasRipService ? orderableSealed(g.sealedInventory, policy, pendingUids) : []
         if (!packsOut.length && !held.length) return prev
         const chance = Math.min(0.6, 0.12 + peakRef.current / 4000) // bigger room ⇒ more orders
         if (Math.random() > chance) return prev
@@ -614,6 +742,14 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       pushChat({ handle: 'system', text: `✅ ${order.buyer} bought a ${r.tier.icon} ${r.tier.name} (${fmtMoney(r.gross)}) — ripping it live!`, tip: true })
       startAppendedEntry(wasEmpty)
       return
+    }
+    // Re-check the unit is still yours to give at the moment you ACCEPT — an order can sit in
+    // the box while the thing it names gets locked, promised to a regular, or sold out from
+    // under it. The roll filtered on this, but the roll happened seconds ago.
+    const still = (useGame.getState().sealedInventory || []).find(x => x.uid === order.invUid)
+    if (!still || still.locked || still._heldFor) {
+      setOrders(o => o.filter(x => x.id !== order.id))
+      return toast(still ? "That one's spoken for now — not yours to rip." : 'That product just left your inventory.')
     }
     const it = ripSealedAction(order.invUid)
     if (!it) { setOrders(o => o.filter(x => x.id !== order.id)); return toast('That product just left your inventory.') }

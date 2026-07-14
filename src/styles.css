@@ -703,6 +703,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   padding:4px 6px; font-size:12px; font-weight:700; text-align:right; }
 .tweet-toggle { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; cursor:pointer; user-select:none; }
 .tweet-toggle .muted { font-weight:400; }
+/* "Open for orders" picker: the exact sealed units you're willing to let viewers buy tonight */
+.stream-offer-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:6px 14px;
+  max-height: 190px; overflow-y:auto; padding: 8px 10px; border-radius:10px; background:#ffffff06; }
+.stream-offer-grid .tweet-toggle.on { color: var(--gold); }
+/* on-air with an empty table: the orders-only idle stage */
+.stream-waiting { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.stream-waiting-icon { font-size: 40px; opacity:.85; animation: taphint 2s ease-in-out infinite; }
 .bulk-grade-group { display: flex; align-items: center; gap: 6px; }
 .bulk-grade-group select { flex: 0 0 auto; max-width: 150px; }
 
