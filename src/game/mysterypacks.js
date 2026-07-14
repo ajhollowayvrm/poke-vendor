@@ -26,6 +26,60 @@ export function defaultPackTiers() {
 }
 export const PACK_TIER_CAP = 6     // product lines you can run at once
 export const PACK_ICONS = ['❓', '🎁', '👑', '💎', '🎰', '🧧', '🎩', '🔮']
+// How many packs one 🪄 Auto-build click may seal. A guard rail, not a rule: sealing a
+// thousand packs in one click would be a miserable undo, so we stop and say how many are left.
+export const AUTO_BUILD_CAP = 100
+
+// --- What a line is MADE OF -------------------------------------------------
+// A tier can restrict itself to a kind of card — "graded slabs only", "PSA 10 only", "raw
+// only". This is the line's PROMISE, the same way bandLo..bandHi is its promise about value.
+// It drives 🪄 Auto-build and the builder's "add all that fit", and (like the band) the game
+// won't stop you hand-sealing something that breaks it — it just warns you first.
+//   only:     'any' | 'raw' | 'slab'
+//   minGrade: only meaningful for 'slab' — 0 = any slab, 9 = PSA 9+, 10 = PSA 10 only
+export const PACK_ONLY_OPTS = [
+  { key: 'any',  label: 'Anything' },
+  { key: 'raw',  label: 'Raw cards only' },
+  { key: 'slab', label: 'Graded slabs only' },
+]
+export const PACK_GRADE_OPTS = [
+  { key: 0,  label: 'Any grade' },
+  { key: 8,  label: 'PSA 8+' },
+  { key: 9,  label: 'PSA 9+' },
+  { key: 10, label: 'PSA 10 only' },
+]
+
+// Does this card satisfy the tier's CONTENT rule? (Value/band is a separate question — see
+// cardFitsTier.) Split out so the builder can tell "wrong kind of card" from "wrong price".
+export function cardMatchesContents(card, tier) {
+  const only = tier?.only || 'any'
+  const g = card?.grade?.overall ?? null
+  if (only === 'raw') return g == null
+  if (only === 'slab') return g != null && g >= (tier?.minGrade || 0)
+  return true
+}
+
+// Is this card a candidate for the tier — right KIND (contents rule) and right PRICE (inside
+// the advertised band, inclusive)? This is exactly what Auto-build sweeps up.
+export function cardFitsTier(card, tier) {
+  if (!tier || !cardMatchesContents(card, tier)) return false
+  const v = cardValue(card)
+  return v >= (tier.bandLo ?? 0) && v <= (tier.bandHi ?? Infinity)
+}
+
+// One-line English for a line's content rule ("PSA 10 slabs, $1–$10"). Used on the tier card
+// and in the builder header so the promise is always visible while you're filling packs.
+export function tierContentsLabel(tier) {
+  const only = tier?.only || 'any'
+  if (only === 'raw') return 'raw cards only'
+  if (only === 'slab') {
+    const m = tier?.minGrade || 0
+    if (m >= 10) return 'PSA 10 slabs only'
+    if (m > 0) return `PSA ${m}+ slabs only`
+    return 'graded slabs only'
+  }
+  return 'any card'
+}
 
 // Live market value of everything sealed inside a pack.
 export function packValue(pack) {

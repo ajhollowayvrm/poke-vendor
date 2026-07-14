@@ -10,8 +10,9 @@
 // `sealedInventory` into the pack (like the binder / show table — one bucket per uid).
 // Unbuilding returns them. Selling ships the contents to the buyer — they leave the game.
 
-import { round2, setIdOfCard } from '../engine'
-import { packValue, packBestItem, packOutcome, packBuyerName, PACK_TIER_CAP, defaultPackTiers } from '../mysterypacks'
+import { round2, cardValue, setIdOfCard } from '../engine'
+import { packValue, packBestItem, packOutcome, packBuyerName, cardFitsTier, tierContentsLabel,
+  PACK_TIER_CAP, AUTO_BUILD_CAP, defaultPackTiers } from '../mysterypacks'
 import { ONLINE_FEE_PCT, shippingCost, processingFee, absoluteDay } from './constants'
 
 let packSuffix = 0
@@ -70,6 +71,50 @@ export function createPacksSlice(set, get) {
       get().log('packs', `Sealed a ${tier.icon} ${tier.name} — ${cards.length} card${cards.length === 1 ? '' : 's'}${sealed.length ? ` + ${sealed.length} sealed` : ''} inside (~$${v.toFixed(2)} of stuff, sells at $${tier.price.toFixed(2)})`, 0)
       return pack
     },
+    // Every loose card that fits a tier RIGHT NOW: the right kind (its contents rule — raw /
+    // slabs / PSA 10 only) at the right price (inside the advertised band). Cheapest first, so
+    // a capped Auto-build clears the bulk you're trying to get rid of rather than your grails.
+    // Only `collection` is eligible — cards in the binder, on the shop shelf, at the grader or
+    // on a show table are spoken for, and silently sealing those away would be a nasty surprise.
+    eligibleForTier(tierId) {
+      const tier = (get().packTiers || []).find(t => t.id === tierId)
+      if (!tier) return []
+      return get().collection
+        .filter(c => cardFitsTier(c, tier))
+        .sort((a, b) => cardValue(a) - cardValue(b))
+    },
+
+    // 🪄 AUTO-BUILD: seal ONE pack per eligible card, in one go. Set a line to $1–$10 and this
+    // turns all 20 qualifying cards into 20 sealed packs — the whole point being that hand-
+    // picking twenty packs one modal at a time is nobody's idea of a good evening.
+    //
+    // Sealed product is never swept up: it has no grade and no obvious 1-per-pack reading, so
+    // it stays a deliberate choice in the manual builder.
+    //
+    // Returns { built, value, skipped } — `skipped` is how many eligible cards the cap left
+    // behind, so the UI can say "100 sealed, 43 still eligible" instead of quietly truncating.
+    autoBuildPacks(tierId) {
+      const tier = (get().packTiers || []).find(t => t.id === tierId)
+      if (!tier) return null
+      const all = get().eligibleForTier(tierId)
+      if (!all.length) return { built: 0, value: 0, skipped: 0 }
+      const take = all.slice(0, AUTO_BUILD_CAP)
+      const skipped = all.length - take.length
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      const uids = new Set(take.map(c => c.uid))
+      const packs = take.map(c => ({ uid: nextPackUid(), tierId, cards: [c], sealed: [], builtDay: day }))
+      const value = round2(take.reduce((a, c) => a + cardValue(c), 0))
+      // One transaction: the cards leave the collection and land in packs together, so a
+      // 100-pack sweep can't half-apply and duplicate a card into both places.
+      set(s => ({
+        collection: s.collection.filter(c => !uids.has(c.uid)),
+        builtPacks: [...packs, ...(s.builtPacks || [])],
+        packStats: { ...s.packStats, built: (s.packStats?.built || 0) + packs.length },
+      }))
+      get().log('packs', `🪄 Auto-built ${packs.length}× ${tier.icon} ${tier.name} — one card each, ${tierContentsLabel(tier)}, $${tier.bandLo}–$${tier.bandHi} (~$${value.toFixed(2)} of stock sealed away)`, 0)
+      return { built: packs.length, value, skipped }
+    },
+
     // Tear a built pack back open — contents return to your collection / inventory.
     unbuildPack(uid) {
       const pack = (get().builtPacks || []).find(p => p.uid === uid)
@@ -148,15 +193,21 @@ export function createPacksSlice(set, get) {
 }
 
 // Clamp/normalize a tier's fields; null if it can't be a real product.
-function sanitizeTier({ name, icon, price, bandLo, bandHi, channels }) {
+function sanitizeTier({ name, icon, price, bandLo, bandHi, channels, only, minGrade }) {
   const p = round2(Math.max(1, Math.min(2000, +price || 0)))
   if (!(p > 0)) return null
   let lo = round2(Math.max(0.25, +bandLo || 1))
   let hi = round2(Math.max(lo, +bandHi || lo * 3))
+  // The content rule. An absent `only` (every tier saved before this existed) reads as
+  // 'any', so old lines keep behaving exactly as they did.
+  const o = ['any', 'raw', 'slab'].includes(only) ? only : 'any'
   return {
     name: String(name || 'Mystery Pack').slice(0, 40),
     icon: String(icon || '❓').slice(0, 4),
     price: p, bandLo: lo, bandHi: hi,
+    only: o,
+    // Only a slab line can carry a grade floor; clamp to a real PSA grade.
+    minGrade: o === 'slab' ? Math.max(0, Math.min(10, Math.floor(+minGrade || 0))) : 0,
     channels: {
       show: channels?.show !== false, store: channels?.store !== false,
       online: channels?.online !== false, stream: channels?.stream !== false,

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, round2 } from '../game/engine'
-import { packValue, packBestItem, packRepLabel, packSaleChance, PACK_ICONS, PACK_TIER_CAP } from '../game/mysterypacks'
+import { packValue, packBestItem, packRepLabel, packSaleChance, cardFitsTier, cardMatchesContents,
+  tierContentsLabel, PACK_ICONS, PACK_TIER_CAP, PACK_ONLY_OPTS, PACK_GRADE_OPTS, AUTO_BUILD_CAP } from '../game/mysterypacks'
 import CardTile from './CardTile'
 import { useModalEscape } from '../ui/dialog'
 
@@ -31,6 +32,7 @@ export default function MysteryPacks() {
   const [toast, setToast] = useState(null)
   const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 3000) }
   useModalEscape(() => { if (building) setBuilding(null); else if (editing) setEditing(null) })
+  const autoBuildPacks = useGame(s => s.autoBuildPacks)
 
   const rep = packRepLabel(packRep)
   const stockByTier = useMemo(() => {
@@ -38,6 +40,20 @@ export default function MysteryPacks() {
     for (const p of (builtPacks || [])) (m[p.tierId] = m[p.tierId] || []).push(p)
     return m
   }, [builtPacks])
+  // How many loose cards each line could sweep up right now — drives the 🪄 Auto-build count,
+  // so you can see there's work to do without opening anything.
+  const eligibleByTier = useMemo(() => {
+    const m = {}
+    for (const t of (packTiers || [])) m[t.id] = collection.filter(c => cardFitsTier(c, t)).length
+    return m
+  }, [packTiers, collection])
+
+  function autoBuild(tier) {
+    const r = autoBuildPacks(tier.id)
+    if (!r || !r.built) return flash(`Nothing in your loose cards fits ${tier.icon} ${tier.name} (${tierContentsLabel(tier)}, ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)}).`)
+    flash(`${tier.icon} Sealed ${r.built} ${tier.name}${r.built === 1 ? '' : 's'} — one card each, ${fmtMoney(r.value)} of stock inside.`
+      + (r.skipped ? ` ${r.skipped} more still fit — run it again.` : ''))
+  }
 
   return (
     <>
@@ -64,6 +80,7 @@ export default function MysteryPacks() {
         <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', marginTop: 4 }}>
           {(packTiers || []).map(tier => {
             const stock = stockByTier[tier.id] || []
+            const eligible = eligibleByTier[tier.id] || 0
             const chans = CHANNEL_DEFS.filter(c => tier.channels?.[c.key])
             // A rough "how fast would this move" read for the best enabled channel today.
             const bestChance = Math.max(0, ...chans.filter(c => c.key === 'online' || c.key === 'store')
@@ -75,14 +92,26 @@ export default function MysteryPacks() {
                   Sells at <b style={{ color: 'var(--green)' }}>{fmtMoney(tier.price)}</b> · advertised
                   {' '}<b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside
                   <br />
+                  <span className="muted" style={{ fontSize: 11.5 }}>Takes: {tierContentsLabel(tier)}</span>
+                  <br />
                   {chans.length
                     ? <>On: {chans.map(c => <span key={c.key} title={c.hint}>{c.icon} </span>)}
                         {chans.some(c => c.key === 'store') && !hasStore && <span className="muted">(store needs a storefront)</span>}</>
                     : <span style={{ color: 'var(--red)' }}>No channels enabled — it can't sell</span>}
                   {bestChance > 0 && stock.length > 0 && <><br /><span className="muted" style={{ fontSize: 11.5 }}>≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame</span></>}
                 </div>
+                {/* 🪄 Auto-build: seal every loose card that fits this line into its own pack,
+                    in one click. The count IS the pitch — "18 fit" tells you the work is there. */}
+                <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12, marginBottom: 5 }}
+                  disabled={!eligible}
+                  title={eligible
+                    ? `Seal ${Math.min(eligible, AUTO_BUILD_CAP)} pack${eligible === 1 ? '' : 's'} — one card each, every loose ${tierContentsLabel(tier)} worth ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)}`
+                    : `No loose cards fit this line right now (${tierContentsLabel(tier)}, ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)})`}
+                  onClick={() => autoBuild(tier)}>
+                  🪄 Auto-build{eligible ? ` ${eligible} pack${eligible === 1 ? '' : 's'}` : ' — nothing fits'}
+                </button>
                 <div className="row" style={{ gap: 5 }}>
-                  <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12 }}
+                  <button className="btn alt" style={{ padding: '6px 8px', fontSize: 12 }}
                     disabled={!collection.length && !(sealedInventory || []).length}
                     onClick={() => setBuilding(tier)}>🛠️ Build one</button>
                   <span className="pill" style={{ alignSelf: 'center' }} title="Sealed and ready to sell">{stock.length} in stock</span>
@@ -151,10 +180,19 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
   const [price, setPrice] = useState(tier?.price ?? 25)
   const [bandLo, setBandLo] = useState(tier?.bandLo ?? 5)
   const [bandHi, setBandHi] = useState(tier?.bandHi ?? 75)
+  const [only, setOnly] = useState(tier?.only || 'any')
+  const [minGrade, setMinGrade] = useState(tier?.minGrade ?? 0)
   const [channels, setChannels] = useState({ show: true, store: true, online: true, stream: true, ...(tier?.channels || {}) })
+  const collection = useGame(s => s.collection)
+  // Live preview: with these settings, how many loose cards would 🪄 Auto-build sweep up?
+  // Shown while you're still typing the band, so you can dial it in before you commit.
+  const wouldFit = useMemo(() => {
+    const draft = { bandLo: +bandLo || 0, bandHi: +bandHi || 0, only, minGrade: +minGrade || 0 }
+    return collection.filter(c => cardFitsTier(c, draft)).length
+  }, [collection, bandLo, bandHi, only, minGrade])
 
   function save() {
-    const payload = { name, icon, price: +price, bandLo: +bandLo, bandHi: +bandHi, channels }
+    const payload = { name, icon, price: +price, bandLo: +bandLo, bandHi: +bandHi, channels, only, minGrade: +minGrade }
     if (tier) { updatePackTier(tier.id, payload); flash(`${icon} ${name} updated.`) }
     else {
       const t = addPackTier(payload)
@@ -193,6 +231,28 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
             <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Advertised high $
               <input type="number" min="1" value={bandHi} onChange={e => setBandHi(e.target.value)} style={{ width: '100%', marginTop: 3 }} />
             </label>
+          </div>
+          {/* What the line is MADE of. Together with the band above, this is what 🪄 Auto-build
+              sweeps up — "PSA 10 slabs, $1–$10" is a product definition, not just a filter. */}
+          <div className="row" style={{ gap: 8 }}>
+            <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Contents
+              <select value={only} onChange={e => setOnly(e.target.value)} style={{ width: '100%', marginTop: 3 }}>
+                {PACK_ONLY_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+              </select>
+            </label>
+            {only === 'slab' && (
+              <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Minimum grade
+                <select value={minGrade} onChange={e => setMinGrade(+e.target.value)} style={{ width: '100%', marginTop: 3 }}>
+                  {PACK_GRADE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                </select>
+              </label>
+            )}
+          </div>
+          <div className="banner" style={{ fontSize: 12.5, margin: 0 }}>
+            🪄 With these settings, <b>{wouldFit}</b> loose card{wouldFit === 1 ? '' : 's'} in your collection
+            {wouldFit === 1 ? ' fits' : ' fit'} this line ({tierContentsLabel({ only, minGrade: +minGrade })},
+            {' '}{fmtMoney(+bandLo || 0)}–{fmtMoney(+bandHi || 0)}) — Auto-build would seal
+            {' '}<b>{Math.min(wouldFit, AUTO_BUILD_CAP)}</b> pack{Math.min(wouldFit, AUTO_BUILD_CAP) === 1 ? '' : 's'}, one card each.
           </div>
           <div>
             <span className="muted" style={{ fontSize: 12.5 }}>Sells at</span>
@@ -253,6 +313,13 @@ function PackBuilder({ tier, onClose, flash }) {
     return next
   })
 
+  // Every loose card that fits the line (right kind, right price). "Add all that fit" stuffs
+  // them ALL into THIS one pack — the opposite of 🪄 Auto-build, which gives each its own pack.
+  const fitting = useMemo(() => collection.filter(c => cardFitsTier(c, tier)), [collection, tier])
+  // Cards you've hand-picked that break the line's own contents promise. Not blocked — the
+  // game never stops you mislabeling (same as the band) — but you should know you did it.
+  const offRule = pickedCards.filter(c => !cardMatchesContents(c, tier))
+
   function seal() {
     const pack = buildPack(tier.id, [...cardIds], [...sealIds])
     flash(pack ? `${tier.icon} Sealed a ${tier.name} — ${fmtMoney(total)} of stuff inside, sells at ${fmtMoney(tier.price)}.` : 'Pick something to seal in first.')
@@ -264,7 +331,8 @@ function PackBuilder({ tier, onClose, flash }) {
       <div className="modal" style={{ maxWidth: 760 }} onClick={e => e.stopPropagation()}>
         <h2 style={{ fontSize: 18, marginBottom: 2 }}>🛠️ Build a {tier.icon} {tier.name}</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-          Sells at <b>{fmtMoney(tier.price)}</b>, advertising <b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside.
+          Sells at <b>{fmtMoney(tier.price)}</b>, advertising <b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside
+          {' '}· takes <b>{tierContentsLabel(tier)}</b>.
           Tap items to seal them in — the buyer gets <b>everything</b> in the pack.
         </p>
         <div className="toolbar" style={{ marginTop: 0, position: 'sticky', top: 0, zIndex: 2 }}>
@@ -272,7 +340,27 @@ function PackBuilder({ tier, onClose, flash }) {
             {n} item{n === 1 ? '' : 's'} · <b>{fmtMoney(total)}</b> inside
           </span>
           {read && <span className="pill" style={{ background: `${read.c === 'var(--gold)' ? '#ffcb05' : ''}22`, color: read.c }}>{read.t}</span>}
+          {/* Bulk-select every card that fits — into THIS pack. (For one-card-per-pack, use
+              🪄 Auto-build on the line itself.) */}
+          <button className="btn alt" style={{ flex: 'none', maxWidth: 190, padding: '4px 10px', fontSize: 12, marginLeft: 'auto' }}
+            disabled={!fitting.length}
+            title={fitting.length
+              ? `Seal all ${fitting.length} loose ${tierContentsLabel(tier)} worth ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)} into this ONE pack`
+              : 'No loose cards fit this line right now'}
+            onClick={() => setCardIds(new Set(fitting.map(c => c.uid)))}>
+            ＋ Add all {fitting.length} that fit
+          </button>
+          {n > 0 && (
+            <button className="btn alt" style={{ flex: 'none', maxWidth: 80, padding: '4px 10px', fontSize: 12 }}
+              onClick={() => { setCardIds(new Set()); setSealIds(new Set()) }}>Clear</button>
+          )}
         </div>
+        {offRule.length > 0 && (
+          <div className="banner" style={{ fontSize: 12.5, marginTop: 8, color: 'var(--red)' }}>
+            ⚠️ {offRule.length} card{offRule.length === 1 ? '' : 's'} in here {offRule.length === 1 ? "doesn't" : "don't"} match
+            {' '}this line's promise of <b>{tierContentsLabel(tier)}</b>. You can still seal it — but that's what the line advertises.
+          </div>
+        )}
         <div className="subtabs" style={{ marginTop: 8 }}>
           <button className={`subtab ${pane === 'cards' ? 'active' : ''}`} onClick={() => setPane('cards')}>🗂️ Cards ({collection.length})</button>
           <button className={`subtab ${pane === 'sealed' ? 'active' : ''}`} onClick={() => setPane('sealed')}>📦 Sealed ({(sealedInventory || []).length})</button>
