@@ -1666,7 +1666,19 @@ export function makeProductPromo(set, product) {
 export const SEALED_FLIP_RATE = 0.80   // quick-flip payout as a fraction of live market value
 export function sealedValue(item) {
   if (!item?.product) return 0
-  return round2((item.product.price || 0) * marketMult(item.setId))
+  return round2(sealedBase(item.product) * marketMult(item.setId))
+}
+// The market price of ONE unit of a sealed product, before the set's market drift.
+//
+// A CASE is the exception and it was silently broken: the shop builds its case product by
+// spreading the underlying BOX (`{ ...lot.unit, packs: 216, _retail: 3592, _case: true }`), so
+// the case carried the BOX's `price`. A case you paid ~$3,000 for therefore valued at $598 —
+// one sixth of its worth — in your inventory, your net worth, and any listing you made of it.
+// `_retail` is the case's real (6-box) price, so prefer it whenever it's there.
+export function sealedBase(product) {
+  if (!product) return 0
+  if (product._case && product._retail) return product._retail
+  return product.price || 0
 }
 // Wrap a sealed item in a card-shaped object so a sealed LISTING flows through the
 // exact same listing / offer / browsing machinery as a single card (no duplicated
@@ -1685,7 +1697,9 @@ export function sealedCard(item) {
     number: 'sealed',
     rarity: 'Rare Holo',
     supertype: 'Sealed Product',
-    price: p.price,
+    // sealedBase, not p.price — a CASE carries the underlying box's price (see sealedBase), so
+    // listing one used to put a $3,600 case on your site with a $599 sticker on it.
+    price: sealedBase(p),
     img: art,
     imgLarge: art,
     foil: null, reverse: false, condition: null, grade: null,
@@ -1697,6 +1711,46 @@ export function sealedCard(item) {
 // Wholesale price for a product at a flat discount (retail × (1−discount)).
 export function wholesalePrice(retail, discount) {
   return round2(retail * (1 - (discount || 0)))
+}
+
+// --- Breaking sealed product down -------------------------------------------------------
+// Real vendors buy big and sell small: a case gets split into boxes, a box into loose packs.
+// This returns what a held sealed unit can be broken INTO — each option is a real product of
+// the same set, with the count and what the resulting pile is worth at market.
+//
+// The value delta is the whole decision and we surface it rather than hiding it: sealed product
+// carries a per-pack PREMIUM the further up the chain it sits (the live data prices a Destined
+// Rivals box at $598 — about $16.60 a pack — while a single pack is $10.62). So splitting a case
+// into boxes is roughly value-neutral and pure margin over what you paid, while cracking boxes
+// down into singles gives up real money in exchange for liquidity: 216 cheap packs move through a
+// store, a stream and repacks far faster than one $3,600 case ever will. Both are legitimate;
+// the UI shows the numbers and lets the player choose.
+//
+// Returns [] for something already atomic (a single pack).
+export function breakOptions(item) {
+  const set = SET_BY_ID[item?.setId]
+  const p = item?.product
+  if (!set || !p) return []
+  const n = p.packs || 1
+  if (n < 2) return []
+  const products = setProducts(set)
+  const single = products.find(x => (x.packs || 1) === 1)
+  const opts = []
+  // A case breaks into its boxes first — derive the box from the pack maths rather than a
+  // stored type string, because the shop's case product overrides `type` with the case's name.
+  if (p._case && p.boxes > 1) {
+    const box = products.find(x => (x.packs || 0) === Math.round(n / p.boxes))
+    if (box) opts.push({ product: box, count: p.boxes })
+  }
+  // Anything multi-pack can go all the way down to loose packs.
+  if (single && single.type !== p.type) opts.push({ product: single, count: n })
+  const mult = marketMult(item.setId)
+  const was = round2(sealedBase(p) * mult)
+  return opts.map(o => {
+    const unit = round2(sealedBase(o.product) * mult)
+    const total = round2(unit * o.count)
+    return { ...o, unit, total, was, delta: round2(total - was) }
+  })
 }
 
 // A CASE LOT: N boxes of a set bought together at an extra bulk cut on top of the

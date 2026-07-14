@@ -9,7 +9,7 @@
 
 import {
   round2, distributorById, rapportLevel, distributorPrice, stockKey, stockState,
-  sealedValue, sealedCard, SEALED_FLIP_RATE, setById,
+  sealedValue, sealedCard, SEALED_FLIP_RATE, setById, breakOptions,
 } from '../engine'
 import { absoluteDay, weekIndexOf } from './constants'
 import { nextSealedSuffix } from './ids'
@@ -201,6 +201,48 @@ export function createSourcingSlice(set, get) {
         boughtPrice: round2(boughtPrice),
         vintage: !!pokeSet.vintage,
       }
+    },
+
+    // BREAK a held sealed unit down into its parts: a case into its boxes, a box / ETB / bundle
+    // into loose packs. The classic vendor move — buy a case, sell 216 singles.
+    //
+    // The cost BASIS is split evenly across the children, so your P&L stays honest: break a
+    // $3,000 case into 6 boxes and each box carries $500 of cost, not $0 (which would have made
+    // every box read as pure profit) and not $3,000 (which would have made each look like a
+    // disaster). `locked` carries over — breaking up a unit you'd set aside shouldn't quietly
+    // put all its parts on the shop floor.
+    //
+    // Refuses an item promised to a regular: they're waiting on THAT product, not a pile of its
+    // parts. Returns { count, type, value } or { error }.
+    breakSealed(uid, targetType) {
+      const item = (get().sealedInventory || []).find(i => i.uid === uid)
+      if (!item) return { error: 'That product is gone.' }
+      if (item._heldFor) return { error: `That one's promised to ${item._heldFor.name} — you can't break it up.` }
+      const opt = breakOptions(item).find(o => o.product.type === targetType)
+      if (!opt) return { error: "That can't be broken down any further." }
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      // Split the cost basis so it's EXACTLY conserved. Naively rounding each share invents (or
+      // destroys) money: $3,000 / 216 rounds to $13.89 a pack, which adds back up to $3,000.24.
+      // Round each share down and hand the leftover cents to the first unit.
+      const total = round2(item.boughtPrice || 0)
+      const share = Math.floor((total / opt.count) * 100) / 100
+      const remainder = round2(total - share * opt.count)
+      const rows = Array.from({ length: opt.count }, (_, i) => ({
+        uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
+        setId: item.setId,
+        // The canonical sub-product, deliberately clean: no _case/_retail/_buyPrice/_distId from
+        // the parent. A pack that came out of a case was never bought from a distributor as a
+        // pack, so it must not look re-buyable ("Rip another") — see App's ripAvailability.
+        product: { ...opt.product },
+        boughtDay: item.boughtDay ?? day,
+        boughtPrice: i === 0 ? round2(share + remainder) : share,
+        vintage: item.vintage,
+        ...(item.locked ? { locked: true } : {}),
+      }))
+      set(s => ({ sealedInventory: [...rows, ...(s.sealedInventory || []).filter(i => i.uid !== uid)] }))
+      const nm = setById(item.setId)?.name || ''
+      get().log('sealed', `🔨 Broke a ${nm} ${item.product.type} into ${opt.count}× ${opt.product.type} (worth $${opt.total.toFixed(2)})`, 0)
+      return { count: opt.count, type: opt.product.type, value: opt.total }
     },
 
     // Pull a held product out of inventory to RIP it. Removes it and returns the item

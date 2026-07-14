@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useGame } from '../game/store'
-import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE } from '../game/engine'
+import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE, breakOptions } from '../game/engine'
 import { toast } from '../ui/dialog'
 import { AskPicker } from '../ui/AskPicker'
 
@@ -73,7 +73,10 @@ function SealedRow({ items, onRip, hasStore }) {
   const listSealedMany = useGame(s => s.listSealedMany)
   const toggleLockSealed = useGame(s => s.toggleLockSealed)
   const quickFlipSealed = useGame(s => s.quickFlipSealed)
+  const breakSealed = useGame(s => s.breakSealed)
+  useGame(s => s.marketMults) // break values are market-priced — re-read them as the market drifts
   const [listing, setListing] = useState(false)
+  const [breaking, setBreaking] = useState(false)
   const [mult, setMult] = useState(1.0)
   const [qtySel, setQtySel] = useState(1)   // how many units of the stack an action applies to
 
@@ -88,6 +91,8 @@ function SealedRow({ items, onRip, hasStore }) {
   const pct = cost ? Math.round((delta / cost) * 100) : 0
   const up = delta >= 0
   const flip = unit * SEALED_FLIP_RATE
+  // What one unit of this stack can be split into (empty for a single pack — already atomic).
+  const breaks = useMemo(() => breakOptions(item), [item])
   const pickUids = (k) => items.slice(0, k).map(i => i.uid) // the first k units of the stack
 
   function doList() {
@@ -107,6 +112,14 @@ function SealedRow({ items, onRip, hasStore }) {
   function doFlip() {
     const net = quickFlipSealed(item.uid)
     if (net != null) toast(`Quick-flipped a ${item.product.type} for ${fmtMoney(net)}.`)
+  }
+  // Break ONE unit of the stack (breaking the whole stack at once would be a very expensive
+  // mis-tap: a case is thousands of dollars of product and there's no undo).
+  function doBreak(opt) {
+    const r = breakSealed(item.uid, opt.product.type)
+    if (r?.error) return toast(r.error)
+    toast(`🔨 Broke a ${item.product.type} into ${r.count}× ${r.type} — ${fmtMoney(r.value)} of product.`)
+    setBreaking(false)
   }
 
   return (
@@ -152,8 +165,43 @@ function SealedRow({ items, onRip, hasStore }) {
             {item.locked ? '🔓 Unkeep' : '🔒 Keep'}{qty > 1 ? ` ${n}` : ''}
           </button>
         )}
+        {breaks.length > 0 && (
+          <button className={`btn ${breaking ? 'gold' : 'alt'}`} onClick={() => setBreaking(v => !v)}
+            title={`Split it up — a case into boxes, a box into loose packs`}>
+            {breaking ? 'Cancel' : '🔨 Break'}
+          </button>
+        )}
         <button className="btn" onClick={doFlip} title={`Instant cash at ${Math.round(SEALED_FLIP_RATE * 100)}% of value`}>⚡ Flip {fmtMoney(flip)}</button>
       </div>
+
+      {/* BREAK IT DOWN. Every option shows what the resulting pile is worth against what the
+          sealed unit is worth now, because that delta IS the decision: splitting a case into
+          boxes is ~free money over what you paid, while cracking boxes into singles gives up
+          the sealed premium in exchange for product that actually moves. */}
+      {breaking && (
+        <div className="sealed-list-ctl">
+          <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+            Break <b>one</b> {item.product.type} ({fmtMoney(unit)}) into:
+          </div>
+          {breaks.map(o => {
+            const gain = o.delta >= 0
+            return (
+              <button key={o.product.type} className="btn alt sealed-break-opt" onClick={() => doBreak(o)}>
+                <span>{o.product.icon || '📦'} <b>{o.count}× {o.product.type}</b> <span className="muted">({fmtMoney(o.unit)} ea)</span></span>
+                <span style={{ marginLeft: 'auto', fontWeight: 800 }}>{fmtMoney(o.total)}</span>
+                <span className="pill" style={{ background: gain ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: gain ? 'var(--green)' : 'var(--red)' }}>
+                  {/* fmtMoney of a negative renders "$-1298.76" — sign it properly instead */}
+                  {gain ? '+' : '−'}{fmtMoney(Math.abs(o.delta))}
+                </span>
+              </button>
+            )
+          })}
+          <div className="muted" style={{ fontSize: 11, marginTop: 6 }}>
+            Sealed product carries a premium the bigger the unit — breaking down to singles trades
+            value for <b>liquidity</b> (loose packs sell, stream and repack far faster than a case).
+          </div>
+        </div>
+      )}
 
       {listing && (
         <div className="sealed-list-ctl">
