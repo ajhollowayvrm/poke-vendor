@@ -906,7 +906,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 
 /* ===================== Mobile + touch optimization ===================== */
 @media (max-width: 640px) {
-  .app { padding-left: calc(10px + var(--sal)); padding-right: calc(10px + var(--sar)); }
+  /* Trim the top cushion on phones: --sat already clears the Dynamic Island, so the
+     extra 16px desktop breathing room is pure wasted height above the header. 6px is
+     enough to keep the brand off the island's edge while giving the scroll region back
+     ~10px. (padding-bottom is zeroed by the app-shell rule below.) */
+  .app { padding-top: calc(6px + var(--sat));
+    padding-left: calc(10px + var(--sal)); padding-right: calc(10px + var(--sar)); }
   /* App shell — applied ONLY to the main view (the .app that contains the bottom nav). Lock
      it to the visual viewport and scroll the CONTENT region instead of the page body, so the
      nav becomes a normal footer row that can't drift during iOS toolbar show/hide (the old
@@ -934,13 +939,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
      top gradient bleeding into the top safe area plus the navy topbar/nav fills. The
      box-shadows still give subtle separation; borders are dropped. */
   body { background: var(--bg); }
-  .topbar { gap: 8px; padding: 10px 12px; flex-wrap: wrap; background: var(--bg); border-color: transparent; }
+  .topbar { gap: 6px; padding: 4px 12px 6px; flex-wrap: wrap; background: var(--bg); border-color: transparent; }
   .brand { font-size: 17px; }
-  .cash { font-size: 18px; } .worth { font-size: 14px; } .noto-chip { font-size: 15px; }
-  /* tighten the right-side chip cluster (clock · notoriety · balance) so they don't
-     jam together on a phone; smaller sub-labels and a snugger gap give them air. */
-  .topbar-right { gap: 9px !important; flex: 1 1 100% !important; flex-wrap: wrap;
-    justify-content: flex-end; min-width: 0; }
+  .cash { font-size: 17px; } .worth { font-size: 13px; } .noto-chip { font-size: 14px; }
+  /* Dissolve the right-side wrapper into the top bar's own flex row (display:contents),
+     so the clock/Next-Day/notoriety/cash/net-worth chips flow individually and fill the
+     empty space BESIDE the brand instead of being forced onto their own line below it.
+     Wrapped as one group they took 3 rows (brand / chips / net-worth-alone); flowing as
+     peers they pack into 2, handing the content viewport back a whole row (~40px). The
+     !important beats the inline `display:flex` on the wrapper in App.jsx. */
+  .topbar-right { display: contents !important; }
+  /* Right-align the figures on whatever row they land: cash's auto left-margin eats the
+     free space so cash+net-worth hug the right edge under the brand, and a 6px gap keeps
+     the chips from jamming. */
+  .topbar { row-gap: 6px; column-gap: 6px; }
+  .noto-chip, .clock-chip, .next-day-btn { flex: 0 0 auto; }
   .clock-chip { font-size: 13px; } .clock-chip small, .noto-chip small, .cash small, .worth small { font-size: 10px; }
   /* stack each setting row: label block on top, control below — the segmented
      controls otherwise crush the description into a ~73px column. */
@@ -967,13 +980,13 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
        on a modern iPhone (the indicator reserves ~34px), so the labels sat under it. max()
        keeps the 8px floor wherever there's no inset (Android, desktop) and reserves the real
        thing where there is one. */
-    padding: 6px 4px max(8px, var(--sab));
+    padding: 3px 4px max(6px, var(--sab));
     background: var(--bg);
     box-shadow: 0 -6px 24px #0007;
   }
   .bnav-btn {
-    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
-    background: transparent; border: 0; color: var(--dim); padding: 5px 2px 3px; border-radius: 12px;
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: transparent; border: 0; color: var(--dim); padding: 3px 2px 2px; border-radius: 12px;
     font-weight: 700; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
   /* tight highlight: a pill hugging just the icon (not the full-width cell) */
@@ -981,7 +994,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .bnav-btn.active .bnav-icon { background: var(--accent2); }
   .bnav-btn:active { transform: scale(.95); }
   .bnav-icon { position: relative; font-size: 20px; line-height: 1;
-    padding: 4px 12px; border-radius: 999px; }
+    padding: 3px 12px; border-radius: 999px; }
   /* labels shrink to fit the narrower per-tab width; truncate rather than wrap */
   .bnav-label { font-size: 11px; line-height: 1; max-width: 100%; overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap; }
