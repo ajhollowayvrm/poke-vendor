@@ -1762,7 +1762,13 @@ export function distributorCatalog(dist, sets, weekIndex = 0) {
 // and ROTATES week to week. That's the hook: check your vendors regularly to catch one. Not
 // every vendor deals vintage — Pokémon Center is new-product-only; the local shop and hobby
 // channels turn it up most. Priced at current market (vintage appreciates) plus a small finder
-// markup. Returns { setId, setName, logo, product, price } or null.
+// markup. Returns { setId, setName, logo, product, price, qty } or null.
+//
+// `qty` is the whole point of the fiction: this is old, out-of-print product a vendor
+// happened to turn up — a couple of packs from a collection they bought, not a case they
+// can reorder. So the shelf holds ONE (usually) or TWO, and once you've bought them the
+// shelf is BARE until next week's find. Vintage must never be a bottomless well you can
+// grind for cash; scarcity is what makes it worth hunting.
 const VINTAGE_FIND_RATE = { lgs: 0.45, tcgplayer: 0.30, dna: 0.32, amazon: 0.15, pokecenter: 0 }
 function findRng(distId, weekIndex) {
   let s = ((weekIndex + 1) * 2654435761) >>> 0
@@ -1780,7 +1786,10 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   const product = vintageProduct(set)
   const markup = 1.05 + r() * 0.2 // 1.05–1.25× current market
   const price = round2(sealedValue({ product, setId: set.id }) * markup)
-  return { setId: set.id, setName: set.name, logo: set.logo, product, price }
+  // Drawn LAST so the rate/set/markup draws above keep their existing sequence — adding a
+  // qty roll must not silently reshuffle which set turns up this week, or at what price.
+  const qty = r() < 0.25 ? 2 : 1 // they usually turn up a single pack; sometimes a pair
+  return { setId: set.id, setName: set.name, logo: set.logo, product, price, qty }
 }
 // Build a vintage item a high-rapport vendor RESERVES for you (the "we'll hold it" perk). Priced
 // at market with the vendor's standing rapport discount — the relationship perk is a fair price

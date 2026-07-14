@@ -223,6 +223,13 @@ export const GOAL_PERIOD_DAYS = 7
 // Absolute day counter that doesn't wrap at the month boundary (currentDay resets to 1
 // each new calendar month). Goal cadence keys off this so a week spans months cleanly.
 export function absoluteDay(currentDay, monthsElapsed) { return (monthsElapsed || 0) * CALENDAR_DAYS + currentDay }
+// Which WEEK we're in, absolute (month-safe). The distributors' rotating catalogue, the
+// clearance lot, and the weekly vintage find all key off this — and so does the record of
+// how much of that find you've already bought. Shop UI and store MUST agree on the number,
+// or a find could look in-stock in one place and sold-out in the other; hence one helper.
+export function weekIndexOf(currentDay, monthsElapsed) {
+  return Math.floor(absoluteDay(currentDay, monthsElapsed) / 7)
+}
 
 export function makeWeeklyGoals(noto) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)

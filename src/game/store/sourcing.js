@@ -11,9 +11,9 @@ import {
   round2, distributorById, rapportLevel, distributorPrice, stockKey, stockState,
   sealedValue, sealedCard, SEALED_FLIP_RATE, setById,
 } from '../engine'
-import { absoluteDay } from './constants'
+import { absoluteDay, weekIndexOf } from './constants'
 import { nextSealedSuffix } from './ids'
-import { methodLabel } from './helpers'
+import { methodLabel, vintageLeft } from './helpers'
 
 export function createSourcingSlice(set, get) {
   return {
@@ -110,15 +110,30 @@ export function createSourcingSlice(set, get) {
     // Buy a VINTAGE find (or a reserved hold) from a distributor. Charges `price`, stocks the
     // sealed item to hold, builds rapport with that distributor (it's real business), and — if
     // this was their reserved hold — clears the hold. Returns the stocked item or null.
+    //
+    // The weekly find is FINITE (vintageLeft): a vendor turns up a pack or two of out-of-print
+    // product, not a case they can reorder. Taking the last one clears their shelf until next
+    // week's find rotates in — so this refuses once the shelf is bare, and every buy records
+    // what you took. A reserved hold is exempt: it's a separate one-off piece set aside for
+    // you, and it's consumed by clearing `hold` below.
     buyDistributorVintage(distId, setId, product, price, opts = {}) {
       const pokeSet = setById(setId)
       if (!pokeSet) return null
-      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, vintage: true }, price)
+      const week = weekIndexOf(get().currentDay, get().monthsElapsed)
+      if (!opts.fromHold && vintageLeft(get(), distId, setId) < 1) return null // shelf is bare
+      // Tag the copy with the vendor it came from, so "Rip another" can check THEIR shelf for
+      // one more instead of conjuring a fresh pack out of nowhere.
+      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, _distId: distId, vintage: true }, price)
       if (!item) return null
       set(s => {
         const cur = s.distributors[distId] || { spend: 0, stock: {} }
         const next = { ...cur, spend: round2((cur.spend || 0) + price) }
         if (opts.fromHold) next.hold = null // they handed over the piece they were holding
+        else {
+          // {week, taken} self-expires when the week rolls over — no restock tick needed.
+          const prior = cur.vintage?.week === week ? (cur.vintage.taken || 0) : 0
+          next.vintage = { week, taken: prior + 1 }
+        }
         return { distributors: { ...s.distributors, [distId]: next } }
       })
       return item

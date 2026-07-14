@@ -263,6 +263,9 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .reveal-card .flip { position:absolute; inset:0; transform-style: preserve-3d;
   will-change: transform; transition: transform .55s cubic-bezier(.3,.9,.3,1); transform: rotateY(180deg); }
 .reveal-card.shown .flip { transform: rotateY(0deg); }
+/* a flipped card is clickable — it sends itself back to the "Now revealing" callout so you
+   can read its cut. (.tappable, the manual-mode "flip me next" state, keeps its own styling.) */
+.reveal-card.shown { cursor: pointer; }
 .reveal-card .flip-front, .reveal-card .flip-back {
   position:absolute; inset:0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 11px; overflow: hidden; }
 .reveal-card .flip-front img { width:100%; height:100%; object-fit:cover; display:block; border-radius: 11px; }
@@ -744,6 +747,14 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   letter-spacing: .2px; }
 .rip-now-psa10 b { font-weight: 900; }
 .rip-hit-psa10 { font-size: 10px; font-weight: 700; color: #7cf0ff; margin-top: 1px; text-align: right; }
+/* cut/centering read, straight off the rip. Tinted by the cut tier (colour comes inline from
+   cutEstimate), so a Pristine pull reads at a glance without opening the card page. */
+.rip-now-cut { margin-top: 5px; }
+.rip-cut-pill { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .2px;
+  padding: 2px 7px; border-radius: 6px; }
+.rip-now-cut-note { font-size: 10px; font-weight: 500; margin-top: 2px; color: var(--muted); }
+/* compact version on the hit rows — smaller, sits under the rarity line */
+.rip-hit-info .rip-cut-pill { font-size: 9.5px; padding: 1px 5px; margin-top: 2px; }
 /* "fills a want" badge — gold, consistent with psa10 positioning */
 .rip-now-want { font-size: 11px; font-weight: 700; margin-top: 3px; color: var(--gold); letter-spacing: .2px; }
 .rip-now-want-note { font-size: 10px; font-weight: 500; color: var(--gold); opacity: 0.85; }

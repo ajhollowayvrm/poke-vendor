@@ -5,8 +5,9 @@
 //   • Per-set ledger:   setIdOf, bumpSet   (used by economy.recordSetSpend + collection.addPulls)
 //   • Payment messaging: methodLabel, feeNote, appendFeeMsg  (used by booth + sourcing)
 //   • Liquidation value: realizableAssets  (used by daytick.settleRent + economy.netWorth)
+//   • Vintage shelf:     vintageFindOf, vintageLeft  (used by sourcing + the Buy screen)
 
-import { round2, cardValue, sealedValue } from '../engine'
+import { round2, cardValue, sealedValue, distributorById, distributorVintageFind } from '../engine'
 
 // Card ids are "<setId>-<number>" (e.g. "me4-2"); the set id is everything before
 // the last hyphen so multi-hyphen set ids like "sv8pt5" survive.
@@ -87,4 +88,36 @@ export function netWorthFull(s) {
     // Built mystery packs: the contents are still your assets until a buyer takes the pack.
     + (s.builtPacks || []).reduce((a, p) => a + cv(p.cards) + (p.sealed || []).reduce((x, it) => x + sealedValue(it), 0), 0)
     - (s.storeCredit || 0)) // issued store credit is a liability — locals will spend it out of your future takings
+}
+
+// --- The vintage shelf ------------------------------------------------------
+// This week's vintage find at a distributor (see engine.distributorVintageFind). Reads the
+// live 🕵️ Vintage Scout upgrade so the shop UI and the buy path agree on what's out there.
+import { weekIndexOf } from './constants'
+
+export function vintageFindOf(s, distId) {
+  const dist = distributorById(distId)
+  if (!dist) return null
+  return distributorVintageFind(dist, weekIndexOf(s.currentDay, s.monthsElapsed), s.upgrades?.vintageScout ? 1.5 : 1)
+}
+
+// How many of this week's find are STILL on the shelf. The find carries a small `qty` (1–2)
+// — it's out-of-print product the vendor happened to turn up, not something they can reorder
+// — so buying it clears the shelf until next week rotates in a new find.
+//
+// We store what you've TAKEN as {week, taken} rather than a remaining count: the tally
+// self-expires the moment the week rolls over, so there's no restock tick to run, and a save
+// written before this existed simply reads as "none taken yet" instead of "sold out".
+//
+// `setId`, when given, also demands the find BE that set — you can only re-buy a particular
+// vintage pack while that exact pack is the one they've got out. Anywhere else it came from
+// (a show, a trade, a DM deal) there's no shelf to go back to, and this correctly returns 0.
+export function vintageLeft(s, distId, setId = null) {
+  if (!distId) return 0
+  const find = vintageFindOf(s, distId)
+  if (!find) return 0
+  if (setId && find.setId !== setId) return 0
+  const rec = s.distributors?.[distId]?.vintage
+  const taken = rec?.week === weekIndexOf(s.currentDay, s.monthsElapsed) ? (rec.taken || 0) : 0
+  return Math.max(0, (find.qty || 1) - taken)
 }

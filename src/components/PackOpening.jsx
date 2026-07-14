@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, HIT_THRESHOLD, cardImg } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -15,7 +15,7 @@ function isChase(c) { return c.foil?.key === 'masterball' || rarityRank(c.rarity
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherPrice, ripAnotherStock = 0, paused = false }) {
+export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false }) {
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -39,6 +39,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [ripValue, setRipValue] = useState(0)     // cumulative card value across the WHOLE rip
   const [packsOpened, setPacksOpened] = useState(0) // how many packs we've fully opened this rip
   const addPulls = useGame(s => s.addPulls)
+  const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise cut read vs a fuzzy eyeball one
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
   const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
@@ -59,6 +60,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
 
   const last = packNo >= totalPacks
+
+  // Why "Rip another" is dead, when it is. It's gated on whether you can actually GET one —
+  // from your own 📦 stock or off a shelf that still has it — so an empty shelf and an empty
+  // wallet are different problems and get different words. Both buttons below share this.
+  const ripBlockedWhy = ripAnotherSoldOut
+    ? `You're out of ${product?.type || 'packs'} and no shop has one left to sell.`
+    : 'Not enough cash to rip another.'
 
   function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
 
@@ -276,6 +284,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               <div className="rip-summary-hits-grid">
                 {[...hits].sort((a, b) => cardValue(b) - cardValue(a)).map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+                  // The cut read sits next to the PSA-10 number on purpose: together they're
+                  // the "is this worth grading?" call, made right here instead of card-by-card.
+                  const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
                   return (
                     <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
                       <img src={cardImg(c)} alt="" />
@@ -284,6 +295,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                         <div className="rip-hit-meta" style={{ color: edge }}>
                           {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
                         </div>
+                        {cut && (
+                          <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}
+                            title={hasLoupe ? `Cut: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}` : "An eyeball read — the 🔍 Jeweler's Loupe gives a precise one."}>
+                            👁️ {cut.short}
+                          </span>
+                        )}
                       </div>
                       <div className="rip-hit-val">
                         {fmtMoney(cardValue(c))}
@@ -302,7 +319,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                 className="btn gold"
                 style={{ maxWidth: 220 }}
                 disabled={!canRipAnother}
-                title={canRipAnother ? '' : 'Not enough cash'}
+                title={canRipAnother ? '' : ripBlockedWhy}
                 onClick={onRipAnother}>
                 {/* Held stock rips free (already paid) — only an empty 📦 shows a price */}
                 Rip another{ripAnotherStock > 0 ? ` (📦 ${ripAnotherStock} held)` : ripAnotherPrice != null ? ` (${fmtMoney(ripAnotherPrice)})` : ''} ↻
@@ -311,7 +328,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
             <button className={`btn ${onRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
           </div>
           {onRipAnother && !canRipAnother && (
-            <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>Not enough cash to rip another.</p>
+            <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>{ripBlockedWhy}</p>
           )}
         </div>
       </div>
@@ -397,7 +414,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                     className="btn gold"
                     style={{ maxWidth: 200 }}
                     disabled={onRipAnother ? !canRipAnother : false}
-                    title={onRipAnother && !canRipAnother ? 'Not enough cash' : ''}
+                    title={onRipAnother && !canRipAnother ? ripBlockedWhy : ''}
                     onClick={onRipAnother || resetForNext}>
                     Rip another ({onRipAnother && ripAnotherStock > 0
                       ? `📦 ${ripAnotherStock} held`
@@ -406,15 +423,20 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onExit}>Done →</button>
                 </>
               )}
+              {/* A dead "Rip another" always says why — an empty shelf reads very differently
+                  from an empty wallet, and silently greying the button explains neither. */}
+              {onRipAnother && !multi && !singleNoReRip && !canRipAnother && (
+                <p className="muted" style={{ fontSize: 12, margin: '6px 0 0', width: '100%', textAlign: 'center' }}>{ripBlockedWhy}</p>
+              )}
             </div>
           )}
 
           {/* TOP — running list of hits for the whole rip (horizontal strip above the reveal) */}
-          <HitList hits={hits} />
+          <HitList hits={hits} hasLoupe={hasLoupe} />
 
           <div className="rip-layout">
-            {/* LEFT — live callout naming every card as it reveals */}
-            <NowRevealing card={current} />
+            {/* LEFT — live callout naming every card as it reveals (and its cut read) */}
+            <NowRevealing card={current} hasLoupe={hasLoupe} />
 
             {/* CENTER — the reveal row + pack-value summary */}
             <div className="rip-center">
@@ -427,9 +449,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   const isShown = i < shown
                   const isNext = phase === 'revealing' && awaiting && i === shown // the card a manual tap will flip
                   const peek = chase && (suspenseIdx === i || isNext)
+                  // Tapping an already-flipped card pulls it back into the callout, so you can
+                  // read the cut on ANY card you just ripped — not only the one that landed last.
                   return (
                     <HoloCard key={c.uid} card={c} interactive={isShown}
-                      onClick={isNext ? advanceManual : undefined}
+                      onClick={isNext ? advanceManual : isShown ? () => setCurrent(c) : undefined}
                       extraStyle={{ '--rarity': edge }}
                       className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
                       <div className="flip">
@@ -468,6 +492,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                     Cards added to your collection. Best pull:{' '}
                     <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
                   </p>
+                  <p className="muted" style={{ fontSize: 11.5, marginTop: 2 }}>👆 Tap any card to check its cut before you decide what to grade.</p>
                 </div>
               )}
             </div>
@@ -478,8 +503,10 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   )
 }
 
-// Left-side callout: names the card currently being revealed, tinted by rarity.
-function NowRevealing({ card }) {
+// Left-side callout: names the card currently being revealed, tinted by rarity. Clicking any
+// already-revealed card in the row sends it back through here, so this doubles as the
+// "look closer at what I just pulled" panel for the whole pack.
+function NowRevealing({ card, hasLoupe }) {
   return (
     <aside className="rip-side rip-now">
       <div className="rip-side-head">Now revealing</div>
@@ -488,12 +515,28 @@ function NowRevealing({ card }) {
         const label = card.foil ? card.foil.label
           : card.grade ? `PSA ${card.grade.overall} · ${card.rarity}`
           : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
+        // The cut/centering read, right off the rip — it's what decides whether a hit is a
+        // gem-10 candidate or just a nice card, so you shouldn't have to dig into the card
+        // page to see it. Fuzzy without the 🔍 Jeweler's Loupe (cutEstimate handles that);
+        // graded slabs already carry a real grade, so there's nothing to eyeball.
+        const cut = !card.grade ? cutEstimate(card, hasLoupe) : null
         return (
           <div className="rip-now-card" style={{ '--rarity': edge }}>
             <img src={cardImg(card)} alt={card.name} decoding="async" fetchpriority="high" />
             <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
             <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
             <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
+            {cut && (
+              <div className="rip-now-cut" title={hasLoupe
+                ? `Cut: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}`
+                : `An eyeball read. The 🔍 Jeweler's Loupe gives a precise cut/centering read.`}>
+                <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>
+                  👁️ Cut: {cut.label}
+                </span>
+                {hasLoupe && cut.detail && <div className="rip-now-cut-note">{cut.detail}</div>}
+                {!hasLoupe && <div className="rip-now-cut-note">🔍 Loupe gives a precise read</div>}
+              </div>
+            )}
             {!card.grade && (
               <div className="rip-now-psa10" title="Market value if this card graded PSA 10 / PSA 9">
                 💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
@@ -517,7 +560,7 @@ function NowRevealing({ card }) {
 }
 
 // Running tally of every hit/foil pulled this rip — a horizontal strip above the reveal.
-function HitList({ hits }) {
+function HitList({ hits, hasLoupe }) {
   // Count true rarity/foil hits only; wanted cards still render in the list (with their
   // ⭐ badge) but aren't counted as "Hits" so the tally matches the game's hit meaning.
   const hitCount = hits.filter(c => c._isHit || c.foil).length
@@ -530,6 +573,7 @@ function HitList({ hits }) {
         <div className="rip-hits-list">
           {[...hits].sort((a, b) => cardValue(b) - cardValue(a)).map((c, i) => {
             const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+            const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
             return (
               <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
                 <img src={cardImg(c)} alt="" />
@@ -538,6 +582,12 @@ function HitList({ hits }) {
                   <div className="rip-hit-meta" style={{ color: edge }}>
                     {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
                   </div>
+                  {cut && (
+                    <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}
+                      title={hasLoupe ? `Cut: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}` : "An eyeball read — the 🔍 Jeweler's Loupe gives a precise one."}>
+                      👁️ {cut.short}
+                    </span>
+                  )}
                 </div>
                 <div className="rip-hit-val">
                   {fmtMoney(cardValue(c))}

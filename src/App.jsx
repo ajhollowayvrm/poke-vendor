@@ -5,7 +5,8 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
-import { netWorthFull } from './game/store/helpers'
+import { netWorthFull, vintageLeft } from './game/store/helpers'
+import { weekIndexOf } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -58,6 +59,37 @@ function heldMatches(state, set, product) {
   return (state.sealedInventory || []).filter(i => i.setId === set?.id && i.product?.type === product?.type)
 }
 
+// Can you actually GET another one of these right now? "Rip another" used to ask only "can
+// you afford it?", so it stayed lit when your own stock was empty AND nobody had one left to
+// sell — the click then bounced off an error toast. This answers the real question, and the
+// button now mirrors it exactly:
+//   • hold one → yes, and it's free (you already paid for it).
+//   • a distributor's product (`_distId`) → only while THEY still have one on the shelf.
+//   • vintage → only from that vendor's live weekly find, and only while it's still the same
+//     set. Vintage picked up anywhere else (a show, a trade, a DM deal) has no shelf to go
+//     back to — it's out of print, so when your stock is gone, it's gone.
+//   • anything else with no shop behind it → nowhere to buy a replacement, so no re-rip.
+// Returns { held, price, ok, soldOut, broke } — `soldOut` and `broke` drive the button's
+// explanation, so a dead button always says WHY it's dead.
+function ripAvailability(state, set, product) {
+  const held = heldMatches(state, set, product).length
+  const price = liveProductPrice(set, product)
+  if (held > 0) return { held, price, ok: true, soldOut: false, broke: false }
+
+  let inStock
+  if (product?.vintage) {
+    inStock = vintageLeft(state, product._distId, set?.id) > 0
+  } else if (product?._distId) {
+    const dist = distributorById(product._distId)
+    const rec = state.distributors?.[product._distId] || { spend: 0, stock: {} }
+    inStock = !stockState(dist, rec.stock, set, product, rapportLevel(rec.spend).level).out
+  } else {
+    inStock = false // no vendor attached — nothing to re-buy from
+  }
+  const broke = state.cash < price
+  return { held, price, ok: inStock && !broke, soldOut: !inStock, broke }
+}
+
 export default function App() {
   const [tab, setTab] = useState('shop')
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
@@ -74,9 +106,14 @@ export default function App() {
   // income/spend moves it. Recomputed on any state change; returns a number so it only
   // re-renders the header when the figure actually changes.
   const worth = useGame(s => netWorthFull(s))
-  // How many copies of the in-progress rip's product are still held in 📦 Inventory —
-  // drives the "Rip another" label/gate (rip your own stock free before re-buying).
+  // Whether another copy of the in-progress rip's product can be had at all — from your own
+  // 📦 Inventory (free) or, failing that, off the shelf of the vendor it came from. Drives the
+  // "Rip another" label AND its gate, so the button is only ever lit when the click will work.
+  // Subscribed as separate primitives: a fresh object each render would re-render the app on
+  // every unrelated store change.
   const ripStock = useGame(s => ripping ? heldMatches(s, ripping.set, ripping.product).length : 0)
+  const ripCanGet = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).ok : false)
+  const ripSoldOut = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).soldOut : false)
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
   const pendingCount = useGame(s => s.pendingGrades.length)
@@ -201,18 +238,21 @@ export default function App() {
   function buyDistVintage(distId, find, opts = {}) {
     if (cash < find.price) return toast(`Not enough cash for the ${find.setName} pack (${fmtMoney(find.price)}).`)
     const item = useGame.getState().buyDistributorVintage(distId, find.setId, find.product, find.price, opts)
-    if (!item) return
+    // The weekly find is finite — refuses once their shelf is bare (say the buy raced a click).
+    if (!item) return toast(`${distributorById(distId)?.name || 'They'} have no more sealed ${find.setName} — it's out of print. A fresh find turns up next week.`)
     toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Cards → 📦 Sealed.`)
   }
 
   // "Rip another" from the end-of-rip summary: keep chasing without going back to the
   // shop. It reconciles with 📦 Inventory first — holding more of the SAME product
   // means the next rip comes from YOUR stock (already paid; no charge). Only when
-  // you're out does it re-buy: a distributor product (`_distId`) re-buys through that
-  // distributor so its STOCK and your RAPPORT stay honest — it's stocked then
-  // immediately pulled back out to rip (no double-charge), and refuses if they've
-  // sold out. Vintage / shop-less products fall back to a plain re-buy. Bails (no
-  // charge) if you can't afford it.
+  // you're out does it re-buy, and a re-buy must come from a REAL shelf: a distributor
+  // product (`_distId`) re-buys through that distributor so its STOCK and your RAPPORT
+  // stay honest, and vintage re-buys off that vendor's finite weekly find. Both are
+  // stocked then immediately pulled back out to rip (no double-charge). A product with
+  // no vendor behind it can't be re-bought at all — there's nowhere to buy it from.
+  // ripAvailability() gates the button on exactly these rules, so the toasts here are
+  // the backstop for a click that raced a state change, not the everyday path.
   function ripAnother(set, product) {
     const held = heldMatches(useGame.getState(), set, product)[0]
     if (held) {
@@ -223,18 +263,24 @@ export default function App() {
     }
     const price = liveProductPrice(set, product)
     if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
-    if (product._distId) {
-      const item = useGame.getState().buyFromDistributor(product._distId, set, product, price)
-      if (!item) return toast(`${distributorById(product._distId)?.name || 'They'} are out of ${product.type} — can't rip another right now.`)
-      useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
-      setRipping(r => ({ set, product, nonce: (r?.nonce ?? 0) + 1 }))
-      setTab('shop')
-      return
+
+    // Pull one more off a shelf, then rip it. Returns the freshly stocked item, or null if
+    // that shelf is bare — vintage and modern differ only in WHICH shelf they come from.
+    const restock = () => product.vintage
+      ? useGame.getState().buyDistributorVintage(product._distId, set.id, product, price)
+      : useGame.getState().buyFromDistributor(product._distId, set, product, price)
+
+    if (!product._distId) {
+      return toast(`No shop stocks that ${product?.type || 'pack'} — you'd have to find another one out in the wild.`)
     }
-    if (!spend(price)) return
-    useGame.getState().recordSetSpend(set.id, price)
-    const wholesaleNote = product._buyPrice != null && product._buyPrice < product.price ? ' (wholesale)' : ''
-    useGame.getState().log('buy', `Bought ${product?.type || 'pack'} (${set.name})${wholesaleNote}`, -price)
+    const who = distributorById(product._distId)?.name || 'They'
+    const item = restock()
+    if (!item) {
+      return toast(product.vintage
+        ? `${who} have no more sealed ${set.name} — it's out of print. A fresh find turns up next week.`
+        : `${who} are out of ${product.type} — can't rip another right now.`)
+    }
+    useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
     setRipping(r => ({ set, product, nonce: (r?.nonce ?? 0) + 1 }))
     setTab('shop')
   }
@@ -453,7 +499,8 @@ export default function App() {
             onExit={() => setRipping(null)}
             ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
             ripAnotherStock={ripStock}
-            canRipAnother={ripStock > 0 || cash >= liveProductPrice(ripping.set, ripping.product)}
+            canRipAnother={ripCanGet}
+            ripAnotherSoldOut={ripSoldOut}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
         </div>
@@ -688,8 +735,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   const dist = distributorById(distId) || DISTRIBUTORS[0]
   const rec = distributors[distId] || { spend: 0, stock: {} }
   const lvl = rapportLevel(rec.spend)
-  // Week index drives Greg's rotating catalog (month-safe; 30 days/month).
-  const weekIndex = Math.floor(((monthsElapsed || 0) * 30 + currentDay) / 7)
+  // Week index drives Greg's rotating catalog (month-safe; 30 days/month). Shared with the
+  // store so the vintage shelf can't read as in-stock here and sold-out at the buy path.
+  const weekIndex = weekIndexOf(currentDay, monthsElapsed)
   const catalog = distributorCatalog(dist, SHOP_SETS, weekIndex)
   // Greg flags one set's box as a clearance lot each week — a steep, thin-stock steal.
   const clearanceSetId = dist.clearance && catalog.length ? catalog[weekIndex % catalog.length].id : null
@@ -898,6 +946,10 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
   const hold = rec?.hold || null
   const hasScout = useGame(s => !!s.upgrades.vintageScout) // 🕵️ scout turns up finds more often
   const find = useMemo(() => distributorVintageFind(dist, weekIndex, hasScout ? 1.5 : 1), [dist, weekIndex, hasScout])
+  // The find is FINITE — a pack or two the vendor turned up, not a case they can reorder.
+  // Once you've taken them the shelf is bare until next week rotates in a new find.
+  const left = useGame(s => vintageLeft(s, dist.id, find?.setId))
+  const cleanedOut = !!find && left < 1
   if (!hold && !find) {
     return (
       <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
@@ -905,21 +957,32 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
       </div>
     )
   }
-  const Card = ({ f, held }) => {
+  // `held` = the rapport hold (a separate one-off piece set aside for you, always exactly 1).
+  // `n` = how many of the weekly find remain; a bare shelf renders the card greyed and dead.
+  const Card = ({ f, held, n }) => {
     const p = sealedValue({ product: f.product, setId: f.setId })
     const up = p >= (f.product.price || 0)
+    const out = !held && n < 1
+    const broke = cash < f.price
     return (
-      <div className={`product ${held ? 'vintage-held' : ''}`} key={(held ? 'h' : 'f') + f.setId}>
+      <div className={`product ${held ? 'vintage-held' : ''}`} style={out ? { opacity: 0.55 } : undefined} key={(held ? 'h' : 'f') + f.setId}>
         {f.logo && <img className="logo" src={f.logo} alt={f.setName} />}
         <h3>{f.setName}</h3>
-        <div className="meta">{held ? '🗝️ Reserved for you' : '🗝️ Vintage find'} · sealed {f.product.type}</div>
+        <div className="meta">
+          {held ? '🗝️ Reserved for you' : '🗝️ Vintage find'} · sealed {f.product.type}
+          {!held && (out
+            ? <> · <b style={{ color: 'var(--red)' }}>cleaned out</b></>
+            : <> · <b>{n} left</b></>)}
+        </div>
         <div className="prodlist">
-          <button className="prodbtn" disabled={cash < f.price}
+          <button className="prodbtn" disabled={out || broke}
             onClick={() => onBuyVintage(dist.id, f, { fromHold: held })}
-            title={`${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}`}>
+            title={out
+              ? `${dist.name} has no more sealed ${f.setName} — vintage is out of print. A new find turns up next week.`
+              : `${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}`}>
             <span className="prodname">{f.product.icon || '📦'} {f.product.type}</span>
             <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
-            <span className="prodprice">{fmtMoney(f.price)}</span>
+            <span className="prodprice">{out ? '—' : fmtMoney(f.price)}</span>
           </button>
         </div>
       </div>
@@ -927,11 +990,16 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
   }
   return (
     <div className="market-panel vintage-vault" style={{ marginTop: 18 }}>
-      <div className="market-head">🗝️ Vintage on {dist.name}'s shelf <span className="muted">— old sealed, buy &amp; hold (vintage appreciates) or rip it. Rotates weekly; rapport gets pieces reserved for you.</span></div>
+      <div className="market-head">🗝️ Vintage on {dist.name}'s shelf <span className="muted">— old sealed, buy &amp; hold (vintage appreciates) or rip it. It's out of print: what they turn up is all there is, and it rotates weekly. Rapport gets pieces reserved for you.</span></div>
       <div className="grid shop-grid" style={{ marginTop: 10 }}>
-        {hold && <Card f={hold} held />}
-        {find && <Card f={find} />}
+        {hold && <Card f={hold} held n={1} />}
+        {find && <Card f={find} n={left} />}
       </div>
+      {cleanedOut && (
+        <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+          You've cleared {dist.name} out of {find.setName}. Vintage is out of print — check back next week for a fresh find, or hunt the show floor.
+        </p>
+      )}
     </div>
   )
 }
