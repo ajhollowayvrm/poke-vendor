@@ -543,16 +543,18 @@ export function advanceDaysWith(set, get, days, away) {
     const fameBoost = Math.sqrt(Math.max(1, fameMult(noto) / fameMult(100)))
     const budget = Math.min(COUNTER_MAX_PER_DAY,
       (15 + noto) * fameBoost * (1 + empThroughput * 0.6) * signage) * days
-    // Everyday floor stock the counter can move: unlocked, un-held, NON-featured floor items
-    // (the featured display case is reserved for the whale/browse encounters, which pay a
-    // premium — the counter shouldn't undercut them). Cheapest FIRST: the counter is the
-    // bulk/singles trade, so it chews through commons and leaves pricier floored stock to
-    // linger for the premium encounters. Income is capped at the budget either way.
+    // Everyday stock the counter can move: unlocked, un-held, NON-featured items — from the
+    // floor AND the storeroom, so backstock fills routine orders too (the counter is the
+    // bulk/singles/supplies trade; it isn't limited to what's on display). The featured
+    // display case is reserved for the whale/browse encounters, which pay a premium, so the
+    // counter never undercuts them; Personal (locked) is never touched. Cheapest FIRST — the
+    // counter chews through commons and leaves pricier pieces to linger for the premium
+    // encounters. Income is capped at the day's budget either way.
     const cur = get()
     const everyday = [
-      ...(cur.collection || []).filter(c => c.loc === 'floor' && !c.locked && !c._heldFor && !c._featured)
+      ...(cur.collection || []).filter(c => !c.locked && !c._heldFor && !c._featured)
         .map(c => ({ kind: 'c', uid: c.uid, v: cardValue(c) })),
-      ...(cur.sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked && !it._heldFor)
+      ...(cur.sealedInventory || []).filter(it => !it.locked && !it._heldFor)
         .map(it => ({ kind: 's', uid: it.uid, v: sealedValue(it) })),
     ].sort((a, b) => a.v - b.v)
     let acc = 0

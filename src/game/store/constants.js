@@ -104,6 +104,36 @@ export function floorCount(s) {
 }
 export function floorFreeSlots(s) { return Math.max(0, floorCapacity(s) - floorCount(s)) }
 
+// --- Per-SKU floor depth (replaces the old flat slot ceiling) ----------------
+// A real shop floor limits DEPTH per line, not total count: you show a few copies of each
+// card/product, not fifty of one common. So the floor cap is per-SKU (how many of ONE thing
+// can be out at once), with unlimited VARIETY. Vintage sealed is exempt — it lives in its own
+// bucket (display-worthy; show as many as you like). Upgrades add depth, not a global ceiling.
+export const FLOOR_SKU_BASE = 4       // copies of one SKU out on the floor at once
+export const FLOOR_SKU_CASES = 2      // 🗄️ Glass Display Cases add depth
+export const FLOOR_SKU_VAULT = 2      // 🏛️ The Vault & Showroom adds more
+export function floorSkuCap(s) {
+  if (!s?.upgrades?.storefront) return 0
+  return FLOOR_SKU_BASE + (s.upgrades.cases ? FLOOR_SKU_CASES : 0) + (s.upgrades.vault ? FLOOR_SKU_VAULT : 0)
+}
+// A vintage sealed pack/box is exempt from the per-SKU depth cap (its own bucket).
+export function isVintageFloorItem(kind, it) { return kind === 'sealed' && !!it?.vintage }
+// SKU identity for the depth cap: a card by its printing, a sealed row by set + product type.
+export function floorSkuKey(kind, it) {
+  return kind === 'sealed' ? `s:${it.setId}:${it.product?.type || ''}` : `c:${it.id || it.uid}`
+}
+// Current floor DEPTH per SKU (non-vintage only; vintage is uncapped and not counted).
+export function floorSkuCounts(s) {
+  const m = new Map()
+  const add = (kind, it) => {
+    if (it.loc !== 'floor' || it.locked || isVintageFloorItem(kind, it)) return
+    const k = floorSkuKey(kind, it); m.set(k, (m.get(k) || 0) + 1)
+  }
+  for (const c of (s.collection || [])) add('card', c)
+  for (const it of (s.sealedInventory || [])) add('sealed', it)
+  return m
+}
+
 // Rolling window (game-days) of net-worth / cash samples kept for the Stats trend
 // sparkline and the daily recap's "net worth" line. One sample per day-advance.
 export const WORTH_HISTORY_LEN = 30

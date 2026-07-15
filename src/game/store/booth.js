@@ -31,7 +31,8 @@ function randomSealedInRange(lo, hi) {
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
 const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots } from './constants'
+  STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
+  floorSkuCap, floorSkuKey, floorSkuCounts, isVintageFloorItem } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -298,15 +299,22 @@ export function createBoothSlice(set, get) {
       const ids = new Set(Array.isArray(uids) ? uids : [uids])
       if (!ids.size) return { moved: 0, capped: 0 }
       const arrKey = kind === 'sealed' ? 'sealedInventory' : 'collection'
-      let free = dest === 'floor' ? floorFreeSlots(get()) : Infinity
+      // Floor is limited per-SKU (depth), not by a global slot count. Track the live floor
+      // depth of each SKU and let a line out only until it hits the cap; vintage is exempt.
+      const skuCap = floorSkuCap(get())
+      const counts = dest === 'floor' ? floorSkuCounts(get()) : null
       let moved = 0, capped = 0
       set(s => ({
         [arrKey]: (s[arrKey] || []).map(x => {
           if (!ids.has(x.uid)) return x
           if (dest === 'floor') {
             if (x.loc === 'floor' && !x.locked) return x // already out front
-            if (free <= 0) { capped++; return x }        // floor is full — leave it in back
-            free--; moved++
+            if (!isVintageFloorItem(kind, x)) {          // vintage bypasses the depth cap
+              const k = floorSkuKey(kind, x)
+              if ((counts.get(k) || 0) >= skuCap) { capped++; return x } // this SKU is full up front
+              counts.set(k, (counts.get(k) || 0) + 1)
+            }
+            moved++
             const { locked, ...rest } = x
             return { ...rest, loc: 'floor' }
           }
@@ -330,14 +338,23 @@ export function createBoothSlice(set, get) {
     restockFloor() {
       const s = get()
       if (!s.upgrades?.storefront) return 0
-      const free = floorFreeSlots(s)
-      if (free <= 0) return 0
-      const cand = [
+      const skuCap = floorSkuCap(s)
+      const counts = floorSkuCounts(s)
+      // Best product first (featured, then value), filling each SKU up to its depth cap.
+      // Vintage always goes out (its own bucket). Unlimited variety, limited depth.
+      const cand = []
+      const pool = [
         ...(s.collection || []).filter(c => c.loc !== 'floor' && !c.locked && !c._heldFor)
-          .map(c => ({ uid: c.uid, kind: 'c', v: cardValue(c), feat: !!c._featured })),
+          .map(c => ({ uid: c.uid, kind: 'c', mkind: 'card', it: c, v: cardValue(c), feat: !!c._featured })),
         ...(s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor)
-          .map(it => ({ uid: it.uid, kind: 's', v: sealedValue(it), feat: false })),
-      ].sort((a, b) => (b.feat - a.feat) || (b.v - a.v)).slice(0, free)
+          .map(it => ({ uid: it.uid, kind: 's', mkind: 'sealed', it, v: sealedValue(it), feat: false })),
+      ].sort((a, b) => (b.feat - a.feat) || (b.v - a.v))
+      for (const x of pool) {
+        if (isVintageFloorItem(x.mkind, x.it)) { cand.push(x); continue }
+        const k = floorSkuKey(x.mkind, x.it)
+        if ((counts.get(k) || 0) >= skuCap) continue // this SKU is already deep enough up front
+        counts.set(k, (counts.get(k) || 0) + 1); cand.push(x)
+      }
       if (!cand.length) return 0
       const cUids = new Set(cand.filter(x => x.kind === 'c').map(x => x.uid))
       const sUids = new Set(cand.filter(x => x.kind === 's').map(x => x.uid))

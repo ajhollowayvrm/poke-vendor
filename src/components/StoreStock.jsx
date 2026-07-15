@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useGame, floorCapacity, floorCount } from '../game/store'
+import { useGame, floorCount, floorSkuCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
 import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 
@@ -43,8 +43,9 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
   useGame(s => s.marketMults) // re-render on market drift so values stay live
-  const cap = useGame(floorCapacity)
-  const onFloorNow = useGame(floorCount)
+  const skuCap = useGame(floorSkuCap)          // max copies of ONE thing on the floor
+  const onFloorNow = useGame(floorCount)       // total items out front (for the readout)
+  const floorSkus = useMemo(() => floorSkuCounts({ collection, sealedInventory }), [collection, sealedInventory])
   const restockFloor = useGame(s => s.restockFloor)
   const [toast, setToast] = useState(null)
   const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2600) }
@@ -68,22 +69,20 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
   }, [collection, sealedInventory, place])
 
   const meta = PLACE[place]
-  const floorFull = place !== 'personal' && cap > 0 && onFloorNow >= cap
 
   return (
     <>
-      {/* Header: what this place is + the floor capacity meter + restock lever */}
+      {/* Header: what this place is + the floor depth readout + restock lever */}
       <div className="banner" style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
         <span>{meta.icon} <b>{meta.title}</b> — {totalCount} item{totalCount === 1 ? '' : 's'} · <b>{fmtMoney(totalValue)}</b>
           {place === 'personal' && <> · <span className="muted">yours first — not for sale except to fill a want</span></>}
-          {place === 'floor' && <> · <span className={floorFull ? '' : 'muted'} style={floorFull ? { color: 'var(--gold)' } : undefined}>{onFloorNow}/{cap} floor slots{floorFull ? ' — full' : ''}</span></>}
-          {place === 'storeroom' && <> · <span className="muted">backstock (sells nothing until you stock the floor)</span></>}
+          {place === 'floor' && <> · <span className="muted">{onFloorNow} out front · up to {skuCap} of each · 🗝️ vintage unlimited</span></>}
+          {place === 'storeroom' && <> · <span className="muted">backstock — sells routine counter orders; stock the floor for walk-ins & whales</span></>}
         </span>
         {place !== 'personal' && (
           <button className="btn" style={{ flex: 'none', marginLeft: 'auto', padding: '5px 12px' }}
-            disabled={floorFull || (place === 'floor' && onFloorNow >= cap)}
-            title={floorFull ? 'The floor is full — move something off it first' : 'Fill every open floor slot from your storeroom, best product first'}
-            onClick={() => { const n = restockFloor(); flash(n ? `Put ${n} item${n === 1 ? '' : 's'} out on the floor.` : 'Nothing to stock (storeroom empty or floor full).') }}>
+            title={`Fill each line up to ${skuCap} out front (vintage unlimited), best product first`}
+            onClick={() => { const n = restockFloor(); flash(n ? `Put ${n} item${n === 1 ? '' : 's'} out on the floor.` : 'Nothing to stock (storeroom empty or every line already out).') }}>
             🛒 Stock the floor
           </button>
         )}
@@ -107,7 +106,7 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
               <div className="stock-lines">
                 {g.lines.map(line => (
                   <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
-                    cap={cap} onFloorNow={onFloorNow} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash} />
+                    skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash} />
                 ))}
               </div>
             </div>
@@ -120,7 +119,7 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
 }
 
 // One SKU line (identical copies stacked) + the actions that fit its place.
-function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }) {
+function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash }) {
   const moveStock = useGame(s => s.moveStock)
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const quickSell = useGame(s => s.quickSell)
@@ -135,7 +134,10 @@ function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }
   const label = kind === 'card' ? first.name : `${first.product.type} · ${set?.name || 'sealed'}`
   const uids = items.map(x => x.uid)
   const featuredCopy = kind === 'card' ? items.find(x => x._featured) : null
-  const floorFull = cap > 0 && onFloorNow >= cap
+  // Per-SKU floor depth: how many of THIS line are already out front (vintage is uncapped).
+  const vintageLine = isVintageFloorItem(kind, first)
+  const onFloorForSku = floorSkus.get(floorSkuKey(kind, first)) || 0
+  const skuFull = !vintageLine && skuCap > 0 && onFloorForSku >= skuCap
 
   const move = (dest, verb) => {
     const r = moveStock(kind, uids, dest)
@@ -174,7 +176,7 @@ function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }
       </>}
 
       {place === 'storeroom' && <>
-        <button className="stock-act" disabled={floorFull} title={floorFull ? 'Floor is full' : 'Put it out on the sales floor'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
+        <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${skuCap} of this out front — the floor holds a few of each` : 'Put it out on the sales floor'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
         {onHold && <button className="stock-act" title="Save one for a regular — pick who from those who want it" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
         <button className="stock-act" title="Keep it for yourself (Personal)" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
         {kind === 'card' ? <>
@@ -191,7 +193,7 @@ function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }
         {kind === 'sealed' && (
           <button className="stock-act" title="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
         )}
-        <button className="stock-act" disabled={floorFull} title={floorFull ? 'Floor is full' : 'Put it out on the sales floor (for sale to walk-ins)'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
+        <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${skuCap} of this out front — the floor holds a few of each` : 'Put it out on the sales floor (for sale to walk-ins)'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
         <button className="stock-act" title="Move to the storeroom — sellable backstock, but not yet on the floor" onClick={() => move('storeroom', '📦 To the storeroom')}>📦</button>
       </>}
     </div>
