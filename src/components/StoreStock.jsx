@@ -283,18 +283,21 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
 function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash, selectMode, selected, onToggle }) {
   const moveStock = useGame(s => s.moveStock)
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
+  const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
   const quickSell = useGame(s => s.quickSell)
   const listOnSite = useGame(s => s.listOnSite)
   const quickFlipSealed = useGame(s => s.quickFlipSealed)
   const listSealed = useGame(s => s.listSealed)
   const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0))
-  const featuredTotal = useGame(s => s.collection.filter(c => c._featured).length)
+  // Featured singles + featured sealed share the one display case, so the "full" check counts both.
+  const featuredTotal = useGame(s => s.collection.filter(c => c._featured).length + (s.sealedInventory || []).filter(it => it._featured).length)
 
   const { kind, first, items, unit, count } = line
   const set = kind === 'sealed' ? setById(first.setId) : null
   const label = kind === 'card' ? first.name : `${first.product.type} · ${set?.name || 'sealed'}`
   const uids = items.map(x => x.uid)
   const featuredCopy = kind === 'card' ? items.find(x => x._featured) : null
+  const featuredSealed = kind === 'sealed' ? items.find(x => x._featured) : null // vintage showpiece under glass
   // Per-SKU floor depth: how many of THIS line are already out front (vintage is uncapped).
   const vintageLine = isVintageFloorItem(kind, first)
   const onFloorForSku = floorSkus.get(floorSkuKey(kind, first)) || 0
@@ -310,6 +313,11 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
     if (featuredTotal >= FEATURED_MAX) { flash(`Display case is full (max ${FEATURED_MAX}).`); return }
     if (toggleFeatureCard(items[0].uid)) flash(`⭐ ${label} is in the display case — whales take notice.`)
   }
+  function featureSealedToggle() {
+    if (featuredSealed) { toggleFeatureSealed(featuredSealed.uid); flash(`Unfeatured ${label}.`); return }
+    if (featuredTotal >= FEATURED_MAX) { flash(`Display case is full (max ${FEATURED_MAX}).`); return }
+    if (toggleFeatureSealed(items[0].uid)) flash(`⭐ ${label} is under glass — a vintage showpiece whales come in for.`)
+  }
 
   return (
     <div className={`trade-line stock-line ${selectMode ? 'selectable' : ''} ${selected ? 'picked' : ''}`}
@@ -320,7 +328,7 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
             onClick={selectMode ? undefined : () => onPick && onPick(first)} style={!selectMode && onPick ? { cursor: 'pointer' } : undefined} />
         : <span className="tl-icon">{first.product.icon || '📦'}</span>}
       <div className="tl-info" onClick={selectMode ? undefined : () => kind === 'card' && onPick && onPick(first)} style={!selectMode && kind === 'card' && onPick ? { cursor: 'pointer' } : undefined}>
-        <div className="tl-name">{featuredCopy ? '⭐ ' : ''}{label}</div>
+        <div className="tl-name">{(featuredCopy || featuredSealed) ? '⭐ ' : ''}{label}</div>
         <div className="tl-sub muted">
           {kind === 'card' ? skuBadge(first) : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
         </div>
@@ -332,6 +340,9 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
       {!selectMode && place === 'floor' && <>
         {kind === 'card' && (
           <button className={`stock-act ${featuredCopy ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
+        )}
+        {kind === 'sealed' && first.vintage && (
+          <button className={`stock-act ${featuredSealed ? 'on' : ''}`} title="Feature this 🗝️ vintage showpiece in the display case — pulls whales" onClick={featureSealedToggle}>{featuredSealed ? '⭐' : '☆'}</button>
         )}
         <button className="stock-act" title="Take it home (Personal) — off the sales floor, not for sale" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
         <button className="stock-act" title="Send to the storeroom (off the floor)" onClick={() => move('storeroom', '📦 Moved to back')}>📦</button>

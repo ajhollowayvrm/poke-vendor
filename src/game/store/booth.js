@@ -9,7 +9,7 @@
 // The two ownership helpers below let a sale resolve against whichever bucket holds the
 // card (collection / listings / show inventory / shop shelf).
 
-import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue,
+import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
   SHOP_SETS, SECONDARY_SETS, setProducts, marketMult } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../shows'
 
@@ -39,6 +39,10 @@ import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 // show inventory (cards you brought to the show), or on your shop shelf. These let an
 // encounter sale resolve against whichever bucket holds the card.
 function findOwnedAnywhere(s, uid) {
+  // A featured sealed showpiece a whale is buying lives in sealedInventory — return it
+  // card-shaped (name/value) so the shared sellOwned/counter handlers read it like a card.
+  const sealed = (s.sealedInventory || []).find(it => it.uid === uid)
+  if (sealed) return sealedCard(sealed)
   return s.collection.find(c => c.uid === uid)
     || (s.listings || []).find(l => l.card.uid === uid)?.card
     || (s.showInventory || []).find(c => c.uid === uid)
@@ -51,8 +55,13 @@ function removeOwnedAnywhere(set, uid) {
     listings: (st.listings || []).filter(l => l.card.uid !== uid),
     showInventory: (st.showInventory || []).filter(c => c.uid !== uid),
     shopDisplay: (st.shopDisplay || []).filter(c => c.uid !== uid),
+    sealedInventory: (st.sealedInventory || []).filter(it => it.uid !== uid),
   }))
 }
+// Display-case occupancy across BOTH buckets — featured singles + featured sealed share
+// the same (few) slots, so featuring is always a curation choice about what goes under glass.
+const featuredCount = (s) => (s.collection || []).filter(c => c._featured).length
+  + (s.sealedInventory || []).filter(it => it._featured).length
 
 export function createBoothSlice(set, get) {
   return {
@@ -374,12 +383,28 @@ export function createBoothSlice(set, get) {
       const on = !!card._featured
       // 🏛️ The Vault & Showroom doubles the display case (4 → 8 featured slots).
       const cap = get().FEATURED_MAX + (get().upgrades.vault ? 4 : 0)
-      if (!on && get().collection.filter(c => c._featured).length >= cap) return false
+      if (!on && featuredCount(get()) >= cap) return false
       // The display case IS the floor's spotlight — featuring puts the card out front (loc floor,
       // not kept). The few featured slots (≤8) sit inside the much larger floor, so no cap check.
       set(s => ({ collection: s.collection.map(c => c.uid === uid
         ? (on ? { ...c, _featured: false } : (({ locked, ...rest }) => ({ ...rest, _featured: true, loc: 'floor' }))(c)) : c) }))
       if (!on) get().log('shop', `⭐ Featured ${card.name} in the display case — the kind of piece whales come in for`, 0)
+      return true
+    },
+    // Feature a VINTAGE sealed showpiece in the display case (shares FEATURED_MAX with cards).
+    // Only vintage qualifies — a rare out-of-print booster under glass is whale bait; a $7 modern
+    // pack isn't. Like a featured single, it draws whales earlier/more often and gets premium
+    // offers through the same encounter engine (via its card-shaped wrapper in the shelf pool).
+    toggleFeatureSealed(uid) {
+      const item = (get().sealedInventory || []).find(it => it.uid === uid)
+      if (!item || !get().upgrades.storefront) return false
+      if (!item.vintage) return false // showpiece-worthy only
+      const on = !!item._featured
+      const cap = get().FEATURED_MAX + (get().upgrades.vault ? 4 : 0)
+      if (!on && featuredCount(get()) >= cap) return false
+      set(s => ({ sealedInventory: s.sealedInventory.map(it => it.uid === uid
+        ? (on ? { ...it, _featured: false } : (({ locked, ...rest }) => ({ ...rest, _featured: true, loc: 'floor' }))(it)) : it) }))
+      if (!on) get().log('shop', `⭐ Featured a sealed ${item.product.type} (${setById(item.setId)?.name || 'vintage'}) in the display case — a showpiece whales come in for`, 0)
       return true
     },
     // Flip KEEP (not for sale) on a sealed item. Kept sealed stays yours to rip/stream/

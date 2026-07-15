@@ -19,7 +19,7 @@ import {
   SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, driftMult, driftMultVintage,
   applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
   setMarketMults, distributorById, restockRate,
-  marketMult, setIdOfCard, sealedValue, DISTRIBUTORS, rapportLevel, distributorDiscount,
+  marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
@@ -459,7 +459,13 @@ export function advanceDaysWith(set, get, days, away) {
   // storeroom sells nothing until you move it out front. Kept (🔒 locked) and held items are
   // off the floor by definition. Cards listed EVERYWHERE (omni) are deliberately out too, so
   // they ride along regardless of loc. Only meaningful with a storefront (every roll gates on it).
-  const shelfCards = [...(s.collection || []).filter(c => c.loc === 'floor' && !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
+  // Featured VINTAGE sealed is a display-case showpiece: wrap it card-shaped so the whale/offer
+  // engine can price & target it exactly like a featured single. (Everyday sealed still sells via
+  // browseSale, which rebuilds its own pool — only the FEATURED piece rides the premium channel.)
+  const featuredSealedCards = (s.sealedInventory || [])
+    .filter(it => it._featured && it.loc === 'floor' && !it.locked && !it._heldFor)
+    .map(it => ({ ...sealedCard(it), _featured: true }))
+  const shelfCards = [...(s.collection || []).filter(c => c.loc === 'floor' && !c.locked && !c._heldFor), ...omniShelfCards(s.listings), ...featuredSealedCards]
   const sellableSealed = (s.sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked && !it._heldFor)
   // No storefront, no inbox. Strangers only message you about cards you've actually
   // put up for sale: online needs a live listing, walk-ins need sellable stock out.
@@ -554,7 +560,7 @@ export function advanceDaysWith(set, get, days, away) {
     const everyday = [
       ...(cur.collection || []).filter(c => !c.locked && !c._heldFor && !c._featured)
         .map(c => ({ kind: 'c', uid: c.uid, v: cardValue(c) })),
-      ...(cur.sealedInventory || []).filter(it => !it.locked && !it._heldFor)
+      ...(cur.sealedInventory || []).filter(it => !it.locked && !it._heldFor && !it._featured)
         .map(it => ({ kind: 's', uid: it.uid, v: sealedValue(it) })),
     ].sort((a, b) => a.v - b.v)
     let acc = 0
