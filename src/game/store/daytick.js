@@ -455,11 +455,12 @@ export function advanceDaysWith(set, get, days, away) {
   const listedCards = (s.listings || []).map(l => l.card)
   // A deeply-underpriced live listing draws online deal-hunters even before you're known.
   const hasBargain = (s.listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
-  // The store IS your inventory: walk-ins buy/offer on your whole collection (plus cards
-  // listed EVERYWHERE), except items 🔒 kept (locked = not for sale) or HELD behind the
-  // counter for a regular. Only meaningful with a storefront (every walk-in roll gates on it).
-  const shelfCards = [...(s.collection || []).filter(c => !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
-  const sellableSealed = (s.sealedInventory || []).filter(it => !it.locked && !it._heldFor)
+  // Walk-ins & the counter buy ONLY from the SALES FLOOR (loc==='floor') — backstock in the
+  // storeroom sells nothing until you move it out front. Kept (🔒 locked) and held items are
+  // off the floor by definition. Cards listed EVERYWHERE (omni) are deliberately out too, so
+  // they ride along regardless of loc. Only meaningful with a storefront (every roll gates on it).
+  const shelfCards = [...(s.collection || []).filter(c => c.loc === 'floor' && !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
+  const sellableSealed = (s.sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked && !it._heldFor)
   // No storefront, no inbox. Strangers only message you about cards you've actually
   // put up for sale: online needs a live listing, walk-ins need sellable stock out.
   // With nothing out on a channel there's nobody to hear from there — so we skip the
@@ -524,32 +525,49 @@ export function advanceDaysWith(set, get, days, away) {
     }
   }
   // BRICK & MORTAR "counter business": beyond the individual walk-up encounters above, a real
-  // shop does steady everyday trade — singles, supplies, bulk to local kids/parents. That
-  // baseline income scales with your local fame (foot traffic) and staffing, and rewards
-  // keeping the case STOCKED (a neglected, empty shop barely ticks over). It's the recurring
-  // revenue that makes the lease worth carrying once you've built a name. Also, running a
-  // storefront steadily grows your name in town (passive notoriety). Capped so it never
-  // becomes a runaway printer — the big money is still in the cards you move.
-  // A LOCKED shop does zero counter trade: while you're away at a show with no staff
-  // (walkinOK false), there's nobody behind the counter — no revenue, no name-building.
-  // (It used to bank up to $250/day from a locked door for a whole Worlds trip.)
+  // shop does steady everyday trade — singles, supplies, bulk to local kids/parents. This now
+  // sells REAL stock off your SALES FLOOR instead of printing abstract cash: each day locals
+  // ring up everyday floor items (cheapest first, up to a fame-scaled trade budget), and that
+  // stock LEAVES your inventory. So the counter only earns while the floor is kept stocked with
+  // everyday product — an empty or grail-only floor barely ticks over. Running the shop still
+  // grows your name in town (passive notoriety). A LOCKED shop does zero counter trade: away at
+  // a show with no staff (walkinOK false) there's nobody behind the counter.
   let counterRevenue = 0
+  const counterSoldC = new Set(), counterSoldS = new Set()
   if (hasStore && walkinOK) {
-    const stocked = shelfCards.length > 0 || sellableSealed.length > 0
     const signage = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% foot traffic
-    // Counter trade used to be min(250, 15 + noto) — it hit the $250 wall around noto 235, so a
-    // world-famous shop took exactly as much over the counter as a locally-known one.
-    //
-    // The base is ALREADY linear in fame (15 + noto), so multiplying it by the full fame curve
-    // on top made the whole thing superlinear and turned the till into a money printer (~$2.5k
-    // /day at noto 800 — measured). We take the SQUARE ROOT of the fame boost instead: the wall
-    // is gone and fame still compounds, but passive income can't outrun the actual card
-    // business. This is the single most dangerous dial here — it's money for doing nothing.
-    //   noto 100 → $115/day (unchanged) · 200 → $256 · 300 → $421 · 500 → $804 · 800 → $1.2k (rail)
+    // The day's counter TRADE BUDGET — dollars of everyday goods locals will buy — on the same
+    // fame/staffing curve as before (sqrt fame boost keeps it from outrunning the card business;
+    // COUNTER_MAX_PER_DAY is the hard rail). It's now a CEILING on real sales, not free money.
+    //   noto 100 → ~$115/day · 200 → $256 · 300 → $421 · 500 → $804 · 800 → $1.2k (rail)
     const fameBoost = Math.sqrt(Math.max(1, fameMult(noto) / fameMult(100)))
-    const perDay = Math.min(COUNTER_MAX_PER_DAY,
-      (15 + noto) * fameBoost * (stocked ? 1 : 0.35) * (1 + empThroughput * 0.6) * signage)
-    counterRevenue = round2(perDay * days)
+    const budget = Math.min(COUNTER_MAX_PER_DAY,
+      (15 + noto) * fameBoost * (1 + empThroughput * 0.6) * signage) * days
+    // Everyday floor stock the counter can move: unlocked, un-held, NON-featured floor items
+    // (the featured display case is reserved for the whale/browse encounters, which pay a
+    // premium — the counter shouldn't undercut them). Cheapest FIRST: the counter is the
+    // bulk/singles trade, so it chews through commons and leaves pricier floored stock to
+    // linger for the premium encounters. Income is capped at the budget either way.
+    const cur = get()
+    const everyday = [
+      ...(cur.collection || []).filter(c => c.loc === 'floor' && !c.locked && !c._heldFor && !c._featured)
+        .map(c => ({ kind: 'c', uid: c.uid, v: cardValue(c) })),
+      ...(cur.sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked && !it._heldFor)
+        .map(it => ({ kind: 's', uid: it.uid, v: sealedValue(it) })),
+    ].sort((a, b) => a.v - b.v)
+    let acc = 0
+    for (const x of everyday) {
+      if (acc >= budget) break
+      acc += x.v
+      ;(x.kind === 'c' ? counterSoldC : counterSoldS).add(x.uid)
+    }
+    counterRevenue = round2(acc)
+    if (counterSoldC.size || counterSoldS.size) {
+      set(st => ({
+        collection: counterSoldC.size ? st.collection.filter(c => !counterSoldC.has(c.uid)) : st.collection,
+        sealedInventory: counterSoldS.size ? (st.sealedInventory || []).filter(it => !counterSoldS.has(it.uid)) : st.sealedInventory,
+      }))
+    }
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }
   // STORE CREDIT redemption: locals holding credit spend it at the counter — those
@@ -580,7 +598,10 @@ export function advanceDaysWith(set, get, days, away) {
   // resolve consignments whose timer elapsed over the days passed. Seed proceeds with the
   // storefront's counter business (logged separately below so the recap can show it).
   let soldProceeds = counterRevenue
-  if (counterRevenue > 0) get().log('shop', `🏬 Storefront counter sales — singles, supplies & bulk to locals (+$${counterRevenue.toFixed(2)})`, counterRevenue)
+  if (counterRevenue > 0) {
+    const nCounter = counterSoldC.size + counterSoldS.size
+    get().log('shop', `🏬 Counter sales — ${nCounter} everyday item${nCounter === 1 ? '' : 's'} off the floor to locals (singles, supplies & bulk) (+$${counterRevenue.toFixed(2)})`, counterRevenue)
+  }
   // Names + biggest single sale over the window, for the daily recap's "what sold" list.
   const soldNames = []
   let bigSale = null

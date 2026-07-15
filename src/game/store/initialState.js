@@ -17,7 +17,11 @@ import { defaultPackTiers } from '../mysterypacks'
 export function initialState() {
   return {
     cash: STARTING_CASH,
-    collection: [],          // owned cards (instances)
+    // Owned cards (instances). With a storefront each carries a `loc` ('floor' | 'storeroom')
+    // splitting it into Shop Floor (the only stock walk-ins/counter buy) vs Storeroom backstock;
+    // a `locked` card is PERSONAL (kept, not for sale). Missing loc reads as storeroom. See the
+    // three-inventory notes in constants.js (floorCapacity) + the migration in index.js (v43).
+    collection: [],
     binder: [],              // cards physically slotted into your masterset binder — moved OUT of the collection (protected from bulk actions); one per {set,card,variant} slot
 
     pendingGrades: [],       // {card, tierKey, readyOnDay, submittedAt, paidFee}

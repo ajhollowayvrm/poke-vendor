@@ -24,9 +24,9 @@
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { GRADING, setMarketMults } from '../engine'
+import { GRADING, setMarketMults, cardValue, sealedValue } from '../engine'
 import { makeShowVendors } from '../shows'
-import { jobById, STARTER_JOB, absoluteDay } from './constants'
+import { jobById, STARTER_JOB, absoluteDay, floorCapacity } from './constants'
 import { newlyUnlocked } from '../milestones'
 import { seedOfferId } from './ids'
 import { initialState } from './initialState'
@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 42,
+  version: 43,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -431,6 +431,34 @@ export const useGame = create(persist((set, get) => ({
       if ((state.shopSealed || []).length) {
         state.sealedInventory = [...state.shopSealed, ...(state.sealedInventory || [])]
         state.shopSealed = []
+      }
+    }
+    if (version < 43) {
+      // Three inventories (Shop Floor / Storeroom / Personal). Every single & sealed row now
+      // carries a `loc`. Seed the FLOOR from existing sellable stock so a running store keeps
+      // trading through the update: featured pieces first (they were already the case draw),
+      // then the highest-value stock, up to the floor's capacity. Everything else falls back
+      // to the STOREROOM. Kept (🔒 locked) stock is left as-is → it reads as Personal.
+      if (state.upgrades?.storefront) {
+        const cap = floorCapacity(state)
+        // Candidates for the floor: unlocked, not-held singles + sealed, tagged by kind so we
+        // can write the loc back onto the right array afterward.
+        const cand = [
+          ...(state.collection || []).map((c, i) => ({ kind: 'c', i, v: cardValue(c), feat: !!c._featured, locked: !!c.locked, held: !!c._heldFor })),
+          ...(state.sealedInventory || []).map((it, i) => ({ kind: 's', i, v: sealedValue(it), feat: false, locked: !!it.locked, held: !!it._heldFor })),
+        ].filter(x => !x.locked && !x.held)
+        cand.sort((a, b) => (b.feat - a.feat) || (b.v - a.v))
+        const onFloorC = new Set(), onFloorS = new Set()
+        for (const x of cand.slice(0, cap)) (x.kind === 'c' ? onFloorC : onFloorS).add(x.i)
+        state.collection = (state.collection || []).map((c, i) =>
+          c.locked ? c : { ...c, loc: onFloorC.has(i) ? 'floor' : 'storeroom' })
+        state.sealedInventory = (state.sealedInventory || []).map((it, i) =>
+          it.locked ? it : { ...it, loc: onFloorS.has(i) ? 'floor' : 'storeroom' })
+      } else {
+        // No storefront yet: no floor exists. Park everything in the storeroom so the moment
+        // they open a shop the Store tab is populated and ready to stock.
+        state.collection = (state.collection || []).map(c => c.locked ? c : { ...c, loc: c.loc || 'storeroom' })
+        state.sealedInventory = (state.sealedInventory || []).map(it => it.locked ? it : { ...it, loc: it.loc || 'storeroom' })
       }
     }
     return state

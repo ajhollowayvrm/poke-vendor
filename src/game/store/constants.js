@@ -76,6 +76,34 @@ export function storageFee(s) {
   return round2(over * STORAGE_PER_UNIT)
 }
 
+// --- Three inventories: Shop Floor / Storeroom / Personal -------------------
+// With a storefront your stock lives in three places, tracked by a per-item `loc`:
+//   • 'floor'     — out on the SALES FLOOR. The ONLY stock walk-ins & the counter can buy.
+//                   Capacity-limited (floorCapacity) — a real shop floor only holds so much.
+//   • 'storeroom' — backstock (the default for anything you buy). Safe, but sells nothing
+//                   until you move it out front. This is what makes merchandise actually MOVE.
+//   • (personal)  — NOT a loc value: "Personal" = your keepsakes, modelled by the existing
+//                   `locked` (🔒 not-for-sale) flag + the masterset binder. Locked stock is
+//                   already excluded from every sell path, so Personal needs no new plumbing.
+// Singles (collection) and sealed rows (sealedInventory) both carry `loc`. A pre-v43 save
+// with no `loc` reads as storeroom; the v43 migration seeds the floor from existing stock.
+export const FLOOR_BASE = 60         // sales-floor slots before any upgrades
+export const FLOOR_CASES_BONUS = 30  // 🗄️ Glass Display Cases add shelf space
+export const FLOOR_VAULT_BONUS = 60  // 🏛️ The Vault & Showroom's lit showroom floor
+// How many items fit on the sales floor right now (0 without a storefront — no floor exists).
+export function floorCapacity(s) {
+  if (!s?.upgrades?.storefront) return 0
+  return FLOOR_BASE + (s.upgrades.cases ? FLOOR_CASES_BONUS : 0) + (s.upgrades.vault ? FLOOR_VAULT_BONUS : 0)
+}
+// One sellable item is "on the floor": loc==='floor', not kept (locked), not held for a regular.
+export const onFloor = (it) => it?.loc === 'floor' && !it?.locked && !it?._heldFor
+// Items currently occupying floor slots (held-for-a-regular still counts — it came off a slot).
+export function floorCount(s) {
+  const f = (arr) => (arr || []).filter(x => x.loc === 'floor' && !x.locked).length
+  return f(s.collection) + f(s.sealedInventory)
+}
+export function floorFreeSlots(s) { return Math.max(0, floorCapacity(s) - floorCount(s)) }
+
 // Rolling window (game-days) of net-worth / cash samples kept for the Stats trend
 // sparkline and the daily recap's "net worth" line. One sample per day-advance.
 export const WORTH_HISTORY_LEN = 30
@@ -307,9 +335,10 @@ export function drawCount(rate, rnd = Math.random) {
 // Sanity rail: however famous you get, one channel can't bury you in more than this many
 // encounters in a single day. Fame should make you rich, not unplayable.
 export const MAX_ORDERS_PER_DAY = 6
-// Ceiling on passive counter trade. Generous (a famous shop SHOULD tick over nicely) but
-// firmly finite — the real money must stay in the cards you actually MOVE, not in an idle
-// till that prints while you do nothing. Reached around noto 700.
+// Ceiling on the day's counter TRADE BUDGET (dollars of everyday goods locals buy). Generous
+// (a famous shop SHOULD tick over nicely) but firmly finite. The counter no longer prints free
+// cash — it now sells REAL floor stock up to this budget, so it only earns while the floor is
+// kept stocked with everyday product. Reached around noto 700.
 export const COUNTER_MAX_PER_DAY = 1200
 
 // The booth inbox holds unhandled encounters; anything past the cap is DISCARDED. So the cap

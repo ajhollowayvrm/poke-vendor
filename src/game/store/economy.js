@@ -58,10 +58,11 @@ export function createEconomySlice(set, get) {
       set(s => ({ upgrades: { ...s.upgrades, [key]: true } }))
       get().log('upgrade', `Bought ${u.name}`, -u.cost)
       if (key === 'storefront') {
-        // The store IS your inventory: everything you own goes out on the floor. No
-        // separate shelf to stock — flag keepers 🔒 (not for sale) and ⭐ feature your
-        // best pieces from the Sell → Shop floor tab.
-        get().log('shop', `🏬 Doors open — your whole collection & sealed stock is now out on the store floor. 🔒 Keep anything that's not for sale, ⭐ feature your best pieces to draw whales.`, 0)
+        // Opening day: fill the sales floor from your existing stock (best pieces first) so the
+        // shop trades from hour one. The rest waits in the Storeroom — restock the floor from
+        // the 🏬 Store tab as it sells. Keep 🔒 anything personal; ⭐ feature your best draws.
+        const put = get().restockFloor()
+        get().log('shop', `🏬 Doors open — stocked ${put} item${put === 1 ? '' : 's'} onto the sales floor. The rest is in your Storeroom; restock the floor as stock sells. 🔒 Keep personal pieces, ⭐ feature your best to draw whales.`, 0)
       }
       return true
     },

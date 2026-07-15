@@ -31,7 +31,7 @@ function randomSealedInRange(lo, hi) {
 // trade-off for the +25% booth traffic it pulls). See setDealOfShow / ShowFloor boothMult.
 const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS } from './constants'
+  STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -207,8 +207,10 @@ export function createBoothSlice(set, get) {
       const inv = get().showInventory || []
       const sealed = get().showSealed || []
       if (inv.length || sealed.length) {
-        const home = inv.map(({ _showcase, _deal, ...c }) => c)
-        const homeSealed = sealed.map(({ _showcase, _deal, ...it }) => it)
+        // Unsold stock comes home to the STOREROOM (not straight back onto the floor) — you
+        // decide what to put back out. Strip transient booth flags (showcase / deal-of-show).
+        const home = inv.map(({ _showcase, _deal, ...c }) => ({ ...c, loc: 'storeroom' }))
+        const homeSealed = sealed.map(({ _showcase, _deal, ...it }) => ({ ...it, loc: 'storeroom' }))
         set(s => ({
           collection: [...home, ...s.collection],
           showInventory: [],
@@ -279,15 +281,73 @@ export function createBoothSlice(set, get) {
       return { payout }
     },
 
-    // --- Store stock (brick & mortar) ---------------------------------------------
-    // ONE inventory: with a storefront, your collection + sealed inventory ARE the store
-    // stock — everything is out for walk-ins by default. Per-item flags do the rest:
-    //   locked    — 🔒 KEEP: not for sale in the store (and safe from bulk sweeps)
-    //   _heldFor  — behind the counter for a regular (off the sellable floor)
-    //   _featured — in the display-case spotlight (cards only) — pulls WHALES
-    // Streams, rips, shows, and mystery packs all draw from this same stock. (The old
-    // stock/pull shelf shuffling is gone — legacy shopDisplay/shopSealed merge home in
-    // the v42 migration.)
+    // --- Store stock (brick & mortar): Shop Floor / Storeroom / Personal ----------
+    // Singles (collection) and sealed rows (sealedInventory) each carry a `loc`:
+    //   loc==='floor'     — out on the SALES FLOOR. The ONLY stock walk-ins & the counter buy.
+    //   loc==='storeroom' — backstock (the buy-in default). Sells nothing until moved out front.
+    //   locked (🔒)       — PERSONAL: your keepsakes, not for sale (and safe from bulk sweeps).
+    // Per-item flags layer on top of a floor item: _heldFor (behind the counter for a regular),
+    // _featured (display-case spotlight — pulls whales; floor-only). Streams, rips, shows, and
+    // mystery packs draw from ALL your stock regardless of loc — the floor only gates walk-ins.
+    //
+    // Move stock between the three inventories. `dest` ∈ 'floor' | 'storeroom' | 'personal'.
+    // Floor is capacity-limited (floorCapacity) — a partial move fills what fits and reports
+    // how many landed. Moving OFF the floor clears the display-case spotlight (_featured is a
+    // floor-only thing). Returns { moved, capped } — capped = how many didn't fit the floor.
+    moveStock(kind, uids, dest) {
+      const ids = new Set(Array.isArray(uids) ? uids : [uids])
+      if (!ids.size) return { moved: 0, capped: 0 }
+      const arrKey = kind === 'sealed' ? 'sealedInventory' : 'collection'
+      let free = dest === 'floor' ? floorFreeSlots(get()) : Infinity
+      let moved = 0, capped = 0
+      set(s => ({
+        [arrKey]: (s[arrKey] || []).map(x => {
+          if (!ids.has(x.uid)) return x
+          if (dest === 'floor') {
+            if (x.loc === 'floor' && !x.locked) return x // already out front
+            if (free <= 0) { capped++; return x }        // floor is full — leave it in back
+            free--; moved++
+            const { locked, ...rest } = x
+            return { ...rest, loc: 'floor' }
+          }
+          if (dest === 'personal') {
+            moved++
+            const { _featured, _heldFor, ...rest } = x
+            return { ...rest, locked: true, loc: 'storeroom' }
+          }
+          // storeroom
+          if (x.loc !== 'floor' && !x.locked) return x
+          moved++
+          const { locked, _featured, ...rest } = x
+          return { ...rest, loc: 'storeroom' }
+        }),
+      }))
+      return { moved, capped }
+    },
+    // One-tap "Stock the floor": fill every open floor slot from the storeroom, best product
+    // first (featured picks, then highest market value) — the pieces most likely to sell. Kept
+    // (Personal) and already-floored stock are left alone. Returns how many items you put out.
+    restockFloor() {
+      const s = get()
+      if (!s.upgrades?.storefront) return 0
+      const free = floorFreeSlots(s)
+      if (free <= 0) return 0
+      const cand = [
+        ...(s.collection || []).filter(c => c.loc !== 'floor' && !c.locked && !c._heldFor)
+          .map(c => ({ uid: c.uid, kind: 'c', v: cardValue(c), feat: !!c._featured })),
+        ...(s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor)
+          .map(it => ({ uid: it.uid, kind: 's', v: sealedValue(it), feat: false })),
+      ].sort((a, b) => (b.feat - a.feat) || (b.v - a.v)).slice(0, free)
+      if (!cand.length) return 0
+      const cUids = new Set(cand.filter(x => x.kind === 'c').map(x => x.uid))
+      const sUids = new Set(cand.filter(x => x.kind === 's').map(x => x.uid))
+      set(st => ({
+        collection: (st.collection || []).map(c => cUids.has(c.uid) ? { ...c, loc: 'floor' } : c),
+        sealedInventory: (st.sealedInventory || []).map(it => sUids.has(it.uid) ? { ...it, loc: 'floor' } : it),
+      }))
+      get().log('shop', `🏬 Stocked the floor — put ${cand.length} item${cand.length > 1 ? 's' : ''} out front`, 0)
+      return cand.length
+    },
     FEATURED_MAX: 4,
     // Feature/unfeature a card in the display case (cap FEATURED_MAX). Featured pieces
     // attract deep-pocketed whales — they show up earlier and more often for them.
@@ -298,7 +358,10 @@ export function createBoothSlice(set, get) {
       // 🏛️ The Vault & Showroom doubles the display case (4 → 8 featured slots).
       const cap = get().FEATURED_MAX + (get().upgrades.vault ? 4 : 0)
       if (!on && get().collection.filter(c => c._featured).length >= cap) return false
-      set(s => ({ collection: s.collection.map(c => c.uid === uid ? { ...c, _featured: !on } : c) }))
+      // The display case IS the floor's spotlight — featuring puts the card out front (loc floor,
+      // not kept). The few featured slots (≤8) sit inside the much larger floor, so no cap check.
+      set(s => ({ collection: s.collection.map(c => c.uid === uid
+        ? (on ? { ...c, _featured: false } : (({ locked, ...rest }) => ({ ...rest, _featured: true, loc: 'floor' }))(c)) : c) }))
       if (!on) get().log('shop', `⭐ Featured ${card.name} in the display case — the kind of piece whales come in for`, 0)
       return true
     },

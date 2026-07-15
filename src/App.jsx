@@ -25,6 +25,7 @@ import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
 import Binder from './components/Binder'
 import Regulars from './components/Regulars'
+import StoreStock from './components/StoreStock'
 import GradeReveal from './components/GradeReveal'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -38,7 +39,7 @@ import { milestoneById } from './game/milestones'
 // screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
 // behind the gear in the top bar.
 const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
-const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Cards' }
+const TAB_LABEL = { shop: 'Buy', myshop: 'Store', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Cards' }
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
 
@@ -119,6 +120,11 @@ export default function App() {
   const pendingCount = useGame(s => s.pendingGrades.length)
   const sealedCount = useGame(s => s.sealedInventory.length)
   const regularsCount = useGame(s => (s.regulars || []).filter(r => !r.flags?.burned).length)
+  const hasStore = useGame(s => !!s.upgrades.storefront)
+  // With a storefront your stock splits into Shop Floor / Storeroom (on the 🏬 Store tab) and
+  // the Cards tab becomes your PERSONAL collection. A pre-store flipper keeps the flat "All"
+  // cards view + Sealed + Regulars here — the three-inventory world is a storefront feature.
+  const personalCount = useGame(s => (s.collection || []).filter(c => c.locked).length + (s.sealedInventory || []).filter(it => it.locked).length)
   // only count orders still valid (card not since sold) so the tab badge matches the list
   const inboxCount = useGame(s => s.boothInbox.filter(e => encounterStillValid(e, s.collection, s.listings, s.shopDisplay)).length)
   const offerCount = useGame(s => s.listings.filter(l => (l.offers?.length || 0) > 0).length)
@@ -206,7 +212,7 @@ export default function App() {
     const item = useGame.getState().buyFromDistributor(distId, set, product, price)
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
-    toast(`Stocked ${product.type} of ${set.name} — rip, list, or flip it from Cards → 📦 Sealed.`)
+    toast(`Stocked ${product.type} of ${set.name} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Cards → 📦 Sealed'}: rip, list, or flip it whenever.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -448,26 +454,28 @@ export default function App() {
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
-        {tab === 'myshop' && <div className="pane"><BoothInbox /></div>}
+        {tab === 'myshop' && <div className="pane"><BoothInbox onRip={ripFromInventory} onPick={setPicked} /></div>}
         {tab === 'stream' && <div className="pane"><Livestream /></div>}
         {tab === 'stats' && <div className="pane"><Stats /></div>}
 
         {tab === 'collection' && (
           <>
             <div className="subtabs">
-              <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>🗂️ All</button>
-              <button className={`subtab ${collTab === 'sealed' ? 'active' : ''}`} onClick={() => setCollTab('sealed')}>📦 Sealed{sealedCount ? ` (${sealedCount})` : ''}</button>
+              <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>
+                {hasStore ? `🗂️ Personal${personalCount ? ` (${personalCount})` : ''}` : '🗂️ All'}
+              </button>
+              {!hasStore && <button className={`subtab ${collTab === 'sealed' ? 'active' : ''}`} onClick={() => setCollTab('sealed')}>📦 Sealed{sealedCount ? ` (${sealedCount})` : ''}</button>}
               <button className={`subtab ${collTab === 'binder' ? 'active' : ''}`} onClick={() => setCollTab('binder')}>📒 Binder</button>
               <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
-              <button className={`subtab ${collTab === 'regulars' ? 'active' : ''}`} onClick={() => setCollTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>
+              {!hasStore && <button className={`subtab ${collTab === 'regulars' ? 'active' : ''}`} onClick={() => setCollTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>}
               <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
             </div>
             <div className="pane" key={collTab}>
-              {collTab === 'cards' && <Collection onPick={setPicked} />}
-              {collTab === 'sealed' && <SealedInventory onRip={ripFromInventory} />}
+              {collTab === 'cards' && (hasStore ? <StoreStock place="personal" onPick={setPicked} /> : <Collection onPick={setPicked} />)}
+              {collTab === 'sealed' && !hasStore && <SealedInventory onRip={ripFromInventory} />}
               {collTab === 'binder' && <Binder onPick={setPicked} />}
               {collTab === 'grader' && <Bench />}
-              {collTab === 'regulars' && <Regulars />}
+              {collTab === 'regulars' && !hasStore && <Regulars />}
               {collTab === 'prices' && <PriceGuide />}
             </div>
           </>

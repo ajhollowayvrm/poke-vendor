@@ -3,12 +3,13 @@ import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY
   STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, round2, cardImg } from '../game/engine'
 import { encounterStillValid } from '../game/shows'
-import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 import Encounter from './Encounter'
 import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
 import MysteryPacks from './MysteryPacks'
+import StoreStock from './StoreStock'
+import Regulars from './Regulars'
 import { useModalEscape } from '../ui/dialog'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
@@ -17,7 +18,7 @@ const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff
 // Your storefront. Orders accrue per game-DAY — pass a day (here or by attending
 // a show) to generate them. While you're away at a show, online orders need a
 // Smartphone and walk-ins need a Shop Assistant, or they're missed.
-export default function BoothInbox() {
+export default function BoothInbox({ onRip, onPick }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
   const upgrades = useGame(s => s.upgrades)
@@ -73,7 +74,6 @@ export default function BoothInbox() {
   const [givePick, setGivePick] = useState(false) // picking a card for the in-store giveaway
   const [rafflePick, setRafflePick] = useState(false) // picking the raffle prize card
   const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
-  const [showAllStock, setShowAllStock] = useState(false) // store-stock SKU list: show past the first 60 lines
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const [toast, setToast] = useState(null)
   useModalEscape(() => { // close the top-most picker on Esc
@@ -86,10 +86,11 @@ export default function BoothInbox() {
   // Sell splits into sub-tabs: day-to-day Orders, your Shop floor (case, holds,
   // consignment intake, giveaways), your Mystery pack line, the public Forum board,
   // and On the market.
-  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'store' | 'packs' | 'forum' | 'market'
+  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'store' (floor) | 'storeroom' | 'regulars' | 'packs' | 'forum' | 'market'
   const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
   const marketCount = listings.length + consignments.length
   const forumCount = (forumPosts || []).length
+  const regularsCount = (regulars || []).filter(r => !r.flags?.burned).length
   const builtPackCount = useGame(s => (s.builtPacks || []).length)
 
   const hasStore = !!upgrades.storefront
@@ -113,10 +114,20 @@ export default function BoothInbox() {
           const waiting = (storeConsignRequests || []).length + (buyinOffers || []).length
           return (
             <button className={`subtab ${sellTab === 'store' ? 'active' : ''}`} onClick={() => setSellTab('store')}>
-              🏬 Shop floor{waiting ? ` (${waiting})` : ''}
+              🛒 Floor{waiting ? ` (${waiting})` : ''}
             </button>
           )
         })()}
+        {hasStore && (
+          <button className={`subtab ${sellTab === 'storeroom' ? 'active' : ''}`} onClick={() => setSellTab('storeroom')}>
+            📦 Storeroom
+          </button>
+        )}
+        {hasStore && (
+          <button className={`subtab ${sellTab === 'regulars' ? 'active' : ''}`} onClick={() => setSellTab('regulars')}>
+            🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}
+          </button>
+        )}
         <button className={`subtab ${sellTab === 'packs' ? 'active' : ''}`} onClick={() => setSellTab('packs')}>
           ❓ Packs{builtPackCount ? ` (${builtPackCount})` : ''}
         </button>
@@ -137,6 +148,13 @@ export default function BoothInbox() {
       ) : sellTab === 'packs' ? (
         // Your custom mystery-pack product line: tiers, the builder, and built stock.
         <MysteryPacks />
+      ) : sellTab === 'storeroom' ? (
+        // 📦 Backstock — everything sellable that ISN'T out on the floor. Grouped by set;
+        // stock the floor from here (only floor stock sells to walk-ins & the counter).
+        <StoreStock place="storeroom" onRip={onRip} onPick={onPick} />
+      ) : sellTab === 'regulars' ? (
+        // 🤝 Your persistent named customers — moved onto the Store tab where the shop lives.
+        <Regulars />
       ) : sellTab === 'store' ? (
         // ---- 🏬 Shop floor: the physical store, in sections — what's in the case
         // (singles + sealed), holds behind the counter, the consignment case you run
@@ -144,30 +162,20 @@ export default function BoothInbox() {
         (() => {
           const omni = listings.map((l, idx) => ({ l, idx })).filter(({ l }) => l.everywhere && !l.expired && !l.card?._sealed)
           const activeRegulars = (regulars || []).filter(r => !r.flags?.burned)
-          const holdBtnTitle = activeRegulars.length ? 'Set one aside for a regular — they come pick it up at a premium' : 'No regulars yet — treat walk-ins and online buyers well and they\'ll become regulars you can hold items for'
-          // ONE inventory: every collection card + held sealed IS the store stock. Grouped
-          // into SKU lines (identical copies stack into one row with a quantity).
+          // Held-for-a-regular stock (behind the counter) + the featured display-case picks —
+          // the floor stock list itself now renders via <StoreStock place="floor"> (grouped by set).
           const heldItems = [
             ...collection.filter(c => c._heldFor).map(it => ({ kind: 'card', it })),
             ...(sealedInventory || []).filter(x => x._heldFor).map(it => ({ kind: 'sealed', it })),
           ]
           const featured = collection.filter(c => c._featured)
-          const stockCards = collection.filter(c => !c._heldFor)
-          const stockSealed = (sealedInventory || []).filter(it => !it._heldFor)
-          const lines = [
-            ...groupCardLines(stockCards, c => round2(cardValue(c))).map(l => ({ ...l, kind: 'card' })),
-            ...groupLines(stockSealed, it => sealedSku(it.setId, it.product), it => round2(sealedValue(it))).map(l => ({ ...l, kind: 'sealed' })),
-          ].sort((a, b) => b.unit - a.unit)
-          const stockValue = lines.reduce((a, l) => a + l.unit * l.count, 0)
-          const keptCount = stockCards.filter(c => c.locked).length + stockSealed.filter(it => it.locked).length
-          const shownLines = showAllStock ? lines : lines.slice(0, 60)
           return (
             <>
               <div className="banner" style={{ marginTop: 16 }}>
-                🏬 <b>Your store IS your inventory.</b> Everything you own is out on the floor for walk-ins
-                (+12% in person, no fees) unless you <b>🔒 Keep</b> it. <b>⭐ Feature</b> your best pieces —
-                that's what whales come in for. Buy collections off locals, hold pieces for regulars, carry
-                consignments, host events, and run a 🎁 giveaway when the room needs a jolt.
+                🏬 <b>Only your Shop Floor sells to walk-ins</b> (+12% in person, no fees) — stock it from the
+                📦 <b>Storeroom</b> and restock as it sells. <b>⭐ Feature</b> your best floor pieces — that's what
+                whales come in for. Buy collections off locals, hold pieces for regulars, carry consignments,
+                host events, and run a 🎁 giveaway when the room needs a jolt.
                 {giveawayDaysLeft > 0 && <> <b style={{ color: 'var(--gold)' }}> 🎉 Buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
                 {(storeCredit || 0) > 0 && <> <span className="pill" title="Outstanding store credit you've issued — locals spend it down at your counter over the coming days; a little never gets redeemed at all." style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>💳 {fmtMoney(storeCredit)} credit outstanding</span></>}
               </div>
@@ -252,43 +260,22 @@ export default function BoothInbox() {
                 )}
               </div>
 
-              {/* 🏪 Store stock — the ONE inventory, one line per SKU */}
-              <div className="wants">
-                <div className="wants-head">🏪 Store stock <span className="muted">— {stockCards.length} card{stockCards.length === 1 ? '' : 's'} + {stockSealed.length} sealed · {fmtMoney(stockValue)} on the floor{keptCount ? ` · ${keptCount} kept back` : ''}</span></div>
-                <p className="muted" style={{ fontSize: 12, margin: '2px 2px 4px' }}>
-                  Your whole collection & sealed inventory is the store's stock — identical copies stack into one
-                  line. <b>🔒 Keep</b> a line to take it off sale (streams, rips, shows & repacks can still use it).
-                </p>
-                {lines.length === 0 ? (
-                  <div className="empty" style={{ marginTop: 4 }}>Nothing in stock — rip product, buy collections, or hit the Buy tab. 🛒</div>
-                ) : (
-                  <div className="stock-lines">
-                    {shownLines.map(line => (
-                      <StockLine key={`${line.kind}|${line.key}`} line={line}
-                        holdEnabled={!!activeRegulars.length} holdTitle={holdBtnTitle}
-                        onHold={(kind, uid, label) => setHoldPick({ kind, uid, label })} flash={flash} />
-                    ))}
-                    {lines.length > shownLines.length && (
-                      <button className="btn alt" style={{ marginTop: 4 }} onClick={() => setShowAllStock(true)}>
-                        Show all {lines.length} lines ({lines.length - shownLines.length} more)
-                      </button>
-                    )}
-                  </div>
-                )}
-                {omni.length > 0 && (
-                  <div className="toolbar" style={{ marginTop: 8 }}>
-                    <span className="muted" style={{ fontSize: 12 }}>🌐 {omni.length} listed-everywhere card{omni.length > 1 ? 's' : ''} also in the case:</span>
-                    {omni.sort((a, b) => cardValue(b.l.card) - cardValue(a.l.card)).map(({ l, idx }) => (
-                      <span key={l.card.uid} className="pill" style={{ background: '#5aa0ff22', color: '#5aa0ff' }}
-                        title="Listed everywhere — also up on your site. Whichever channel sells it first takes it. Tap to make it online-only.">
-                        {l.card.name} · {fmtMoney(l.ask)}
-                        <button className="btn alt" style={{ marginLeft: 6, padding: '1px 6px', fontSize: 11 }}
-                          onClick={() => { setListingEverywhere(idx, false); flash(`${l.card.name} is online-only now.`) }}>↩</button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* 🛒 Shop floor stock — grouped by set, only this sells to walk-ins & the counter */}
+              <StoreStock place="floor" onRip={onRip} onPick={onPick}
+                onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
+              {omni.length > 0 && (
+                <div className="toolbar" style={{ marginTop: 8 }}>
+                  <span className="muted" style={{ fontSize: 12 }}>🌐 {omni.length} listed-everywhere card{omni.length > 1 ? 's' : ''} also in the case:</span>
+                  {omni.sort((a, b) => cardValue(b.l.card) - cardValue(a.l.card)).map(({ l, idx }) => (
+                    <span key={l.card.uid} className="pill" style={{ background: '#5aa0ff22', color: '#5aa0ff' }}
+                      title="Listed everywhere — also up on your site. Whichever channel sells it first takes it. Tap to make it online-only.">
+                      {l.card.name} · {fmtMoney(l.ask)}
+                      <button className="btn alt" style={{ marginLeft: 6, padding: '1px 6px', fontSize: 11 }}
+                        onClick={() => { setListingEverywhere(idx, false); flash(`${l.card.name} is online-only now.`) }}>↩</button>
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/* 🔒 Behind the counter — holds for regulars */}
               {heldItems.length > 0 && (
@@ -724,66 +711,3 @@ export default function BoothInbox() {
   )
 }
 
-// One STORE STOCK line: a SKU (identical copies stacked) with its quantity and the three
-// per-item levers — ⭐ Feature (cards; whale bait, capped), 🔒 Keep (not for sale; applies
-// to every copy on the line), and 🗝️ Hold (set one copy aside for a regular).
-function StockLine({ line, holdEnabled, holdTitle, onHold, flash }) {
-  const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
-  const toggleLockSealed = useGame(s => s.toggleLockSealed)
-  const lockMany = useGame(s => s.lockMany)
-  const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0)) // 🏛️ vault doubles the case
-  const featuredTotal = useGame(s => s.collection.filter(c => c._featured).length)
-  const { kind, first, items, unit, count } = line
-  const keptN = items.filter(x => x.locked).length
-  const allKept = keptN === count
-  const featuredCopy = kind === 'card' ? items.find(x => x._featured) : null
-  const set = kind === 'sealed' ? setById(first.setId) : null
-  const label = kind === 'card' ? first.name : `${first.product.type} · ${set?.name || 'sealed'}`
-  const sellable = items.find(x => !x.locked)
-  const capFull = !featuredCopy && featuredTotal >= FEATURED_MAX
-
-  function keepToggle() {
-    if (kind === 'card') {
-      lockMany(items.map(x => x.uid), !allKept)
-    } else {
-      for (const it of items) if (!!it.locked === allKept) toggleLockSealed(it.uid)
-    }
-    flash(allKept ? `${label} is back up for sale.` : `🔒 Keeping ${count > 1 ? `all ${count}× ` : ''}${label} — off the sales floor.`)
-  }
-  function featureToggle() {
-    if (featuredCopy) { toggleFeatureCard(featuredCopy.uid); return }
-    if (capFull) { flash(`Display case is full — unfeature something first (max ${FEATURED_MAX}).`); return }
-    const target = sellable || items[0]
-    if (toggleFeatureCard(target.uid)) flash(`⭐ ${label} is in the display case — whales take notice.`)
-  }
-
-  return (
-    <div className={`trade-line stock-line ${allKept ? 'kept' : ''}`}>
-      {kind === 'card'
-        ? <img className="tl-thumb" src={cardImg(first)} alt="" loading="lazy" decoding="async" />
-        : <span className="tl-icon">{first.product.icon || '📦'}</span>}
-      <div className="tl-info">
-        <div className="tl-name">{featuredCopy ? '⭐ ' : ''}{label}</div>
-        <div className="tl-sub muted">
-          {kind === 'card' ? skuBadge(first) : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
-          {allKept ? ' · 🔒 kept (not for sale)' : keptN ? ` · ${keptN}/${count} kept` : ''}
-        </div>
-      </div>
-      <span className="tl-unit">{fmtMoney(unit)}</span>
-      <span className="tl-count" title={`${count} identical cop${count === 1 ? 'y' : 'ies'} in stock`}>×{count}</span>
-      {kind === 'card' && (
-        <button className={`stock-act ${featuredCopy ? 'on' : ''}`} disabled={!featuredCopy && !sellable}
-          title={featuredCopy ? 'Featured in the display case — tap to unfeature'
-            : !sellable ? 'Kept items can\'t be featured — put one up for sale first'
-            : capFull ? `Display case is full (max ${FEATURED_MAX})`
-            : 'Feature in the display case — featured pieces pull deep-pocketed whales'}
-          onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
-      )}
-      <button className={`stock-act ${allKept ? 'on' : ''}`}
-        title={allKept ? 'Kept — not for sale. Tap to put the line back on the floor.' : 'Keep this line — walk-ins can\'t buy it (you can still rip, stream, show, or repack it)'}
-        onClick={keepToggle}>{allKept ? '🔒' : '🔓'}</button>
-      <button className="stock-act" disabled={!holdEnabled || !sellable} title={holdTitle}
-        onClick={() => sellable && onHold(kind, sellable.uid, label)}>🗝️</button>
-    </div>
-  )
-}
