@@ -487,7 +487,7 @@ export default function App() {
               <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
             </div>
             <div className="pane" key={collTab}>
-              {collTab === 'cards' && (hasStore ? <StoreStock place="personal" onPick={setPicked} /> : <Collection onPick={setPicked} />)}
+              {collTab === 'cards' && (hasStore ? <StoreStock place="personal" onRip={ripFromInventory} onPick={setPicked} /> : <Collection onPick={setPicked} />)}
               {collTab === 'sealed' && !hasStore && <SealedInventory onRip={ripFromInventory} />}
               {collTab === 'binder' && <Binder onPick={setPicked} />}
               {collTab === 'grader' && <Bench />}

@@ -375,33 +375,36 @@ export function createBoothSlice(set, get) {
     },
 
     // --- In-store services: holds, giveaways, the consignment case ---------------
-    // Put a stock item aside for a REGULAR: it comes off the sellable floor and waits
-    // behind the counter. Over the next few days they come in and buy it at a small
-    // premium over the walk-in price (trust-scaled odds, resolved in the day-tick);
-    // if they never show, the hold lapses and it goes back out.
+    // Put a stock item aside for a REGULAR: it moves into the storeroom's "saved for
+    // regulars" section (loc:'storeroom', off the sellable floor). Over the next few days
+    // they come in and buy it at a small premium over the walk-in price (trust-scaled odds,
+    // resolved in the day-tick); if they never show, the hold lapses and it becomes ordinary
+    // backstock.
     holdShelfItem(kind, uid, regularId) {
       const reg = (get().regulars || []).find(r => r.id === regularId && !r.flags?.burned)
       if (!reg) return false
       const held = { regularId: reg.id, name: reg.name, emoji: reg.emoji, daysLeft: HOLD_DAYS_STORE }
+      const stamp = x => ({ ...x, _heldFor: held, loc: 'storeroom' })
       if (kind === 'sealed') {
         const it = (get().sealedInventory || []).find(x => x.uid === uid)
         if (!it) return false
-        set(s => ({ sealedInventory: s.sealedInventory.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
+        set(s => ({ sealedInventory: s.sealedInventory.map(x => x.uid === uid ? stamp(x) : x) }))
         get().log('shop', `Set the ${it.product.type} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
       } else {
         const c = get().collection.find(x => x.uid === uid)
         if (!c) return false
-        set(s => ({ collection: s.collection.map(x => x.uid === uid ? { ...x, _heldFor: held } : x) }))
+        set(s => ({ collection: s.collection.map(x => x.uid === uid ? stamp(x) : x) }))
         get().log('shop', `Set ${c.name} aside for ${reg.emoji} ${reg.name} — holding it ~${HOLD_DAYS_STORE} days`, 0)
       }
       return true
     },
-    // Put a held item back out on the sellable floor.
+    // Drop a hold: the item stays in the storeroom as ordinary backstock (re-stock the floor
+    // from there when you want it sellable again).
     releaseHold(kind, uid) {
       const strip = arr => (arr || []).map(x => x.uid === uid ? (({ _heldFor, ...rest }) => rest)(x) : x)
       if (kind === 'sealed') set(s => ({ sealedInventory: strip(s.sealedInventory) }))
       else set(s => ({ collection: strip(s.collection) }))
-      get().log('shop', 'Put the held item back out on the floor', 0)
+      get().log('shop', 'Dropped the hold — back in the storeroom', 0)
     },
 
     // Run an IN-STORE GIVEAWAY: give a card from your collection away to the locals.

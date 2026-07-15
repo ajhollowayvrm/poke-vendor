@@ -57,9 +57,9 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
     } else if (place === 'floor') {
       cards = (collection || []).filter(c => c.loc === 'floor' && !c.locked)
       sealed = (sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked)
-    } else { // storeroom: sellable, not out front
-      cards = (collection || []).filter(c => c.loc !== 'floor' && !c.locked)
-      sealed = (sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked)
+    } else { // storeroom: sellable backstock, not out front and not held for a regular
+      cards = (collection || []).filter(c => c.loc !== 'floor' && !c.locked && !c._heldFor)
+      sealed = (sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor)
     }
     const groups = bySet(cards, sealed)
     const totalValue = groups.reduce((a, g) => a + g.value, 0)
@@ -175,6 +175,7 @@ function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }
 
       {place === 'storeroom' && <>
         <button className="stock-act" disabled={floorFull} title={floorFull ? 'Floor is full' : 'Put it out on the sales floor'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
+        {onHold && <button className="stock-act" title="Save one for a regular — pick who from those who want it" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
         <button className="stock-act" title="Keep it for yourself (Personal)" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
         {kind === 'card' ? <>
           <button className="stock-act" title="List one online" onClick={() => { if (listOnSite(items[0].uid, 0.9)) flash(`Listed ${label} online.`) }}>🏷️</button>
@@ -186,9 +187,12 @@ function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }
         </>}
       </>}
 
-      {place === 'personal' && (
+      {place === 'personal' && <>
+        {kind === 'sealed' && (
+          <button className="stock-act" title="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
+        )}
         <button className="stock-act" title="Put it back in the storeroom (makes it sellable again)" onClick={() => move('storeroom', '📦 Back in the storeroom')}>📦</button>
-      )}
+      </>}
     </div>
   )
 }

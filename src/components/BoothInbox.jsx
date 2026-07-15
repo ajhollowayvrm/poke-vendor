@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS } from '../game/store'
-import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, round2, cardImg } from '../game/engine'
-import { encounterStillValid } from '../game/shows'
+import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg } from '../game/engine'
+import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
 import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
@@ -149,9 +149,43 @@ export default function BoothInbox({ onRip, onPick }) {
         // Your custom mystery-pack product line: tiers, the builder, and built stock.
         <MysteryPacks />
       ) : sellTab === 'storeroom' ? (
-        // 📦 Backstock — everything sellable that ISN'T out on the floor. Grouped by set;
-        // stock the floor from here (only floor stock sells to walk-ins & the counter).
-        <StoreStock place="storeroom" onRip={onRip} onPick={onPick} />
+        // 📦 Backstock — everything sellable that ISN'T out on the floor, plus the
+        // "saved for regulars" holds. Stock the floor from here (only floor stock sells
+        // to walk-ins & the counter).
+        (() => {
+          const activeRegulars = (regulars || []).filter(r => !r.flags?.burned)
+          const heldItems = [
+            ...collection.filter(c => c._heldFor).map(it => ({ kind: 'card', it })),
+            ...(sealedInventory || []).filter(x => x._heldFor).map(it => ({ kind: 'sealed', it })),
+          ]
+          return (
+            <>
+              {/* 🗝️ Saved for regulars — a hold sits here until they come pick it up */}
+              {heldItems.length > 0 && (
+                <div className="wants" style={{ marginTop: 14 }}>
+                  <div className="wants-head">🗝️ Saved for regulars <span className="muted">— held off the floor; they come in within a few days and pay a premium</span></div>
+                  <div className="stock-lines">
+                    {heldItems.map(({ kind, it }) => (
+                      <div key={it.uid} className="trade-line stock-line" style={{ cursor: 'default' }}>
+                        {kind === 'card'
+                          ? <img className="tl-thumb" src={cardImg(it)} alt="" loading="lazy" decoding="async" />
+                          : <span className="tl-icon">{it.product.icon || '📦'}</span>}
+                        <div className="tl-info">
+                          <div className="tl-name">{kind === 'card' ? `${it.name}${setNameOfCard(it) ? ` · ${setNameOfCard(it)}` : ''}` : `${it.product.type} · ${setById(it.setId)?.name || 'sealed'}`}</div>
+                          <div className="tl-sub muted">held for {it._heldFor.emoji} {it._heldFor.name} · {it._heldFor.daysLeft}d left</div>
+                        </div>
+                        <span className="tl-unit">{fmtMoney(kind === 'card' ? cardValue(it) : sealedValue(it))}</span>
+                        <button className="stock-act" title="Drop the hold — it becomes ordinary backstock" onClick={() => { releaseHold(kind, it.uid); flash('Hold dropped — back in the storeroom.') }}>↩ Release</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <StoreStock place="storeroom" onRip={onRip} onPick={onPick}
+                onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
+            </>
+          )
+        })()
       ) : sellTab === 'regulars' ? (
         // 🤝 Your persistent named customers — moved onto the Store tab where the shop lives.
         <Regulars />
@@ -162,12 +196,8 @@ export default function BoothInbox({ onRip, onPick }) {
         (() => {
           const omni = listings.map((l, idx) => ({ l, idx })).filter(({ l }) => l.everywhere && !l.expired && !l.card?._sealed)
           const activeRegulars = (regulars || []).filter(r => !r.flags?.burned)
-          // Held-for-a-regular stock (behind the counter) + the featured display-case picks —
-          // the floor stock list itself now renders via <StoreStock place="floor"> (grouped by set).
-          const heldItems = [
-            ...collection.filter(c => c._heldFor).map(it => ({ kind: 'card', it })),
-            ...(sealedInventory || []).filter(x => x._heldFor).map(it => ({ kind: 'sealed', it })),
-          ]
+          // Featured display-case picks — the floor stock list itself renders via
+          // <StoreStock place="floor"> (grouped by set); holds live in the Storeroom tab.
           const featured = collection.filter(c => c._featured)
           return (
             <>
@@ -274,28 +304,6 @@ export default function BoothInbox({ onRip, onPick }) {
                         onClick={() => { setListingEverywhere(idx, false); flash(`${l.card.name} is online-only now.`) }}>↩</button>
                     </span>
                   ))}
-                </div>
-              )}
-
-              {/* 🔒 Behind the counter — holds for regulars */}
-              {heldItems.length > 0 && (
-                <div className="wants">
-                  <div className="wants-head">🗝️ Behind the counter <span className="muted">— held for regulars; they come in within a few days and pay a premium</span></div>
-                  <div className="stock-lines">
-                    {heldItems.map(({ kind, it }) => (
-                      <div key={it.uid} className="trade-line stock-line" style={{ cursor: 'default' }}>
-                        {kind === 'card'
-                          ? <img className="tl-thumb" src={cardImg(it)} alt="" loading="lazy" decoding="async" />
-                          : <span className="tl-icon">{it.product.icon || '📦'}</span>}
-                        <div className="tl-info">
-                          <div className="tl-name">{kind === 'card' ? `${it.name}${setNameOfCard(it) ? ` · ${setNameOfCard(it)}` : ''}` : `${it.product.type} · ${setById(it.setId)?.name || 'sealed'}`}</div>
-                          <div className="tl-sub muted">held for {it._heldFor.emoji} {it._heldFor.name} · {it._heldFor.daysLeft}d left</div>
-                        </div>
-                        <span className="tl-unit">{fmtMoney(kind === 'card' ? cardValue(it) : sealedValue(it))}</span>
-                        <button className="stock-act" onClick={() => { releaseHold(kind, it.uid); flash('Back on the floor.') }}>↩ Release</button>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               )}
 
@@ -561,24 +569,41 @@ export default function BoothInbox({ onRip, onPick }) {
             onDone={() => setActive(null)} onCancel={() => setActive(null)} />
         : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />)}
 
-      {/* Hold picker: choose WHICH regular you're setting the item aside for. */}
+      {/* Hold picker: choose WHICH regular you're saving the item for — only regulars who
+          actually collect this item/set are shown, so you never hold a Perfect Order pack
+          for someone building Generations. */}
       {holdPick && (() => {
-        const activeRegulars = (regulars || []).filter(r => !r.flags?.burned)
+        // The item being held, so we can match it against each regular's focus (collecting lane).
+        const item = holdPick.kind === 'sealed'
+          ? (sealedInventory || []).find(x => x.uid === holdPick.uid)
+          : collection.find(c => c.uid === holdPick.uid)
+        const itemSetId = item ? (holdPick.kind === 'sealed' ? item.setId : setIdOfCard(item)) : null
+        // For a card, reuse cardMatchesFocus (respects rarity-rank lanes); for a sealed pack,
+        // a set/rarity focus for that set matches, and an 'any' focus always matches.
+        const wants = (r) => {
+          const f = r.focus
+          if (!f) return false
+          if (f.kind === 'any') return true
+          if (holdPick.kind === 'card') return item ? cardMatchesFocus(item, f) : false
+          return f.setId === itemSetId
+        }
+        const candidates = (regulars || []).filter(r => !r.flags?.burned && wants(r))
         return (
           <div className="modalbg" onClick={() => setHoldPick(null)}>
             <div className="modal" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
-              <h2 style={{ fontSize: 18, marginBottom: 2 }}>🔒 Hold {holdPick.label} for…</h2>
+              <h2 style={{ fontSize: 18, marginBottom: 2 }}>🔒 Save {holdPick.label} for…</h2>
               <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-                It goes behind the counter (off the sellable floor) for ~{HOLD_DAYS_STORE} days. The more they
-                trust you, the sooner they come in — and they pay a small premium for the favor.
+                It goes to the storeroom's "saved for regulars" shelf (off the sellable floor) for
+                ~{HOLD_DAYS_STORE} days. The more they trust you, the sooner they come in — and they
+                pay a small premium for the favor.
               </p>
-              {activeRegulars.length === 0 ? (
-                <div className="empty">No regulars yet — great deals turn walk-ins into regulars.</div>
+              {candidates.length === 0 ? (
+                <div className="empty">No regular is collecting this{itemSetId ? ' set' : ''} right now — holds only make sense for someone who wants it.</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {activeRegulars.map(r => (
+                  {candidates.map(r => (
                     <button key={r.id} className="encbtn" onClick={() => {
-                      if (holdShelfItem(holdPick.kind, holdPick.uid, r.id)) flash(`Holding ${holdPick.label} for ${r.emoji} ${r.name}.`)
+                      if (holdShelfItem(holdPick.kind, holdPick.uid, r.id)) flash(`Saved ${holdPick.label} for ${r.emoji} ${r.name}.`)
                       setHoldPick(null)
                     }}>
                       {r.emoji} <b>{r.name}</b> · {r.channel === 'walkin' ? '🏬 store regular' : '🌐 online regular'} · trust {Math.round(r.trust || 0)}{r.focus?.label ? ` · ${r.focus.label}` : ''}
