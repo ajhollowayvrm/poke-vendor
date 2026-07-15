@@ -1271,7 +1271,34 @@ function pickRegular(pool) {
 // The seed a good deal leaves behind, from which a regular is built. Stamped on the
 // transacting option's effect; store.formRegular rolls on it after the deal resolves.
 function mkSeed(card, channel, generous = false) {
-  return { channel, setId: setIdOfCard(card), setName: setNameOfCard(card), cardName: card.name, rarity: card.rarity, generous }
+  return { channel, setId: setIdOfCard(card), setName: setNameOfCard(card), cardName: card.name,
+    rarity: card.rarity, supertype: card.supertype, generous }
+}
+
+// Iconic species that most often spawn a single-species superfan (the "Umbreon person",
+// the "Charizard whale"). ANY species can hook a collector, but these do so far more readily.
+const ICONIC_SPECIES = new Set([
+  'Charizard','Pikachu','Eevee','Umbreon','Espeon','Sylveon','Vaporeon','Jolteon','Flareon','Leafeon','Glaceon',
+  'Mewtwo','Mew','Gengar','Rayquaza','Lugia','Ho-Oh','Gyarados','Snorlax','Dragonite','Blastoise','Venusaur',
+  'Lucario','Greninja','Gardevoir','Tyranitar','Garchomp','Metagross','Zoroark','Sableye','Mimikyu','Snom',
+  'Arcanine','Machamp','Alakazam','Ampharos','Absol','Aerodactyl','Scizor','Darkrai','Giratina','Zorua',
+])
+
+// Boil a card name down to its core species so a species-focus can match every form of it —
+// "Dark Umbreon", "Umbreon ex", "Umbreon VMAX", "M Charizard EX" all reduce to the species.
+// Returns null for names that aren't a clean single species (tag-teams' second name, owner
+// cards like "Misty's Gyarados", Trainers) so we don't spawn a nonsense focus.
+export function speciesOf(name) {
+  if (!name) return null
+  let n = String(name).split(/\s*&\s*/)[0]                 // tag team → first species
+  n = n.replace(/\s+δ\b.*$/i, '')                          // "Umbreon δ" → "Umbreon"
+  n = n.replace(/[-\s](ex|gx|v|vmax|vstar|v-?union|break|legend|star|prime|lv\.?x)\b.*$/i, '') // drop form suffix
+  n = n.replace(/^(dark|light|shining|radiant|mega|m|alolan|galarian|hisuian|paldean|origin forme)\s+/i, '') // drop qualifier
+  n = n.trim()
+  // A real species is one clean word (allow a hyphen/apostrophe: Ho-Oh, Farfetch'd). Reject
+  // anything with spaces left (owner cards, multi-word Trainers) or that's too short.
+  if (!/^[A-Za-z][A-Za-z.'’-]{2,}$/.test(n)) return null
+  return n
 }
 
 // Build a collecting focus from the card that won them over. A set-focus is robust and
@@ -1279,7 +1306,29 @@ function mkSeed(card, channel, generous = false) {
 function makeFocus(seed) {
   const set = setById(seed.setId)
   const setName = set?.name || seed.setName || 'modern sets'
-  if (seed.rarity && rarityRank(seed.rarity) >= rarityRank('Illustration Rare') && seed.setId) {
+  const rank = seed.rarity ? rarityRank(seed.rarity) : 0
+  const isPokemon = !seed.supertype || seed.supertype === 'Pokémon'
+
+  // NICHE — single-species superfan ("collecting every Umbreon"). Born when a Pokémon card
+  // wins them over; far likelier for an iconic species and for a higher-rarity seed (a grail
+  // hooks them on the whole line). Matches that species across EVERY set — the deep cross-set
+  // coverage is what makes this a real, fillable lane.
+  if (isPokemon) {
+    const sp = speciesOf(seed.cardName)
+    if (sp) {
+      const p = (ICONIC_SPECIES.has(sp) ? 0.5 : 0.16) + Math.min(0.28, rank * 0.045)
+      if (Math.random() < p) return { kind: 'pokemon', species: sp, label: `collecting every ${sp}` }
+    }
+  }
+
+  // NICHE — cross-set chase hunter ("chasing alt-arts & secret rares"). Born from a high-end
+  // seed; only ever wants Illustration Rare+ product, from any set.
+  if (rank >= rarityRank('Special Illustration Rare') && Math.random() < 0.5) {
+    return { kind: 'chase', rarity: 'Illustration Rare', label: 'chasing alt-arts & secret rares' }
+  }
+
+  // set-scoped rarity hunter, then plain set-builder, then a deal-hunter with no fixed lane.
+  if (seed.rarity && rank >= rarityRank('Illustration Rare') && seed.setId) {
     return { kind: 'rarity', setId: seed.setId, rarity: seed.rarity, setName, label: `hunting ${seed.rarity}s from ${setName}` }
   }
   if (seed.setId) return { kind: 'set', setId: seed.setId, setName, label: `building ${setName}` }
@@ -1314,6 +1363,14 @@ export function cardMatchesFocus(card, focus) {
   if (!focus) return false
   if (focus.kind === 'set') return setIdOfCard(card) === focus.setId
   if (focus.kind === 'rarity') return setIdOfCard(card) === focus.setId && rarityRank(card.rarity) >= rarityRank(focus.rarity)
+  // NICHE: species superfan — any card whose name carries the species (all forms count:
+  // "Umbreon ex", "Dark Umbreon", "Umbreon & Darkrai GX"). Word-boundary so "Mew" ≠ "Mewtwo".
+  if (focus.kind === 'pokemon') {
+    if (!card?.name || !focus.species) return false
+    return new RegExp(`\\b${focus.species.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(card.name)
+  }
+  // NICHE: cross-set chase hunter — Illustration Rare+ from ANY set.
+  if (focus.kind === 'chase') return rarityRank(card.rarity) >= rarityRank(focus.rarity)
   if (focus.kind === 'any') return true
   return false
 }
@@ -1335,7 +1392,12 @@ export function regularEncounter(regular, offerPool, channel, accepted, notoriet
     const market = cardValue(target)
     // trust 0→1.2, full trust lifts their tolerance; low trust drags it into lowball land.
     const trustFactor = 0.6 + 0.6 * ((regular.trust || 0) / 100)
-    const mult = Math.max(0.45, Math.min(1.4, arch.tolerance * trustFactor + (Math.random() - 0.5) * 0.08))
+    // A niche superfan pays UP for their grail — the Umbreon person will overpay to complete
+    // the line, the chase hunter for a clean alt-art. Nudges their offer above market (still
+    // budget-capped) so filling a niche lane is worth the hunt.
+    const niche = regular.focus?.kind === 'pokemon' || regular.focus?.kind === 'chase'
+    const mult = Math.max(0.45, Math.min(niche ? 1.55 : 1.4,
+      arch.tolerance * trustFactor * (niche ? 1.12 : 1) + (Math.random() - 0.5) * 0.08))
     const offer = round2(Math.min(market * mult, regular.budget))
     const fair = offer >= market * 0.9
     const capped = offer >= regular.budget - 0.005 && market * mult > regular.budget // budget-limited

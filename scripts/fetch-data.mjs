@@ -192,6 +192,8 @@ const EN_RARITY_MAP = {
   'Rare Shining':   'Hyper Rare',
   'Rare Shiny':     'Special Illustration Rare',   // Hidden Fates Shiny Vault
   'Rare Shiny GX':  'Hyper Rare',          // Shiny Vault GX
+  'Shiny Rare':       'Ultra Rare',        // SWSH Shiny Vault baby-shinies (Shining Fates)
+  'Shiny Ultra Rare': 'Hyper Rare',        // SWSH Shiny Vault V/VMAX shinies
   'Rare Prime':     'Ultra Rare',
   'Rare ACE':       'Ultra Rare',
   'LEGEND':         'Hyper Rare',
@@ -396,10 +398,21 @@ async function getJSON(url, extraHeaders = {}) {
     'Accept': 'application/json',
     ...extraHeaders,
   }
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, { headers })
+  for (let attempt = 0; attempt < 5; attempt++) {
+    let res
+    try {
+      res = await fetch(url, { headers })
+    } catch (e) { // network blip (ECONNRESET, timeout) — back off and retry
+      await new Promise(r => setTimeout(r, 1200 * (attempt + 1)))
+      continue
+    }
     if (res.ok) return res.json()
-    if (res.status === 429) { await new Promise(r => setTimeout(r, 1500 * (attempt + 1))); continue }
+    // Retry transient statuses: 429 rate-limit, 5xx gateway errors, and a 404 (pokemontcg.io
+    // intermittently 404s a valid set's cards endpoint under load — a real miss survives all retries).
+    if (res.status === 429 || res.status >= 500 || res.status === 404) {
+      await new Promise(r => setTimeout(r, 1200 * (attempt + 1)))
+      continue
+    }
     throw new Error(`${res.status} ${url}`)
   }
   throw new Error('too many retries ' + url)
@@ -794,6 +807,7 @@ async function main() {
 
   const out = []
   for (const cfg of setsToFetch) {
+   try {
     console.log(`  ${cfg.name} (${cfg.id})…`)
     const { cards, products: rawProducts, meta } = await fetchEnglishSet(cfg, psaMap)
 
@@ -839,6 +853,12 @@ async function main() {
       products,
     })
     await new Promise(r => setTimeout(r, 200))
+   } catch (e) {
+    // A single set's transient API failure (a 404 under load, a schema hiccup) must NOT
+    // abort the whole run. Skip it — the validation gate below carries forward the prior
+    // snapshot's copy if one exists; a brand-new set that fails can be re-fetched via ONLY=.
+    console.log(`  ⚠️  ${cfg.name} (${cfg.id}) failed: ${e.message} — skipping this set`)
+   }
   }
 
   // Fold the freshly-fetched sets into the existing snapshot. This is ALWAYS
