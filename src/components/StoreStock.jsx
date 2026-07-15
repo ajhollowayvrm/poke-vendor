@@ -14,7 +14,7 @@ import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 const PLACE = {
   floor:     { icon: '🛒', title: 'Shop Floor', empty: 'The floor is empty — stock it from your Storeroom so walk-ins have something to buy.' },
   storeroom: { icon: '📦', title: 'Storeroom', empty: 'Storeroom empty — everything you own is out on the floor (or kept). Buy or rip product to restock.' },
-  personal:  { icon: '🗂️', title: 'Personal', empty: 'Nothing kept for yourself yet — hit 🔒 Keep on any stock line to move it here, off the sales floor.' },
+  personal:  { icon: '🗂️', title: 'Personal', empty: 'Nothing here yet — everything you rip lands here first. Send singles out to the floor 🛒 or storeroom 📦 when you want to sell them.' },
 }
 
 // Split the raw items into { kind, it } and group them by set, biggest set (by value) first.
@@ -75,7 +75,7 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
       {/* Header: what this place is + the floor capacity meter + restock lever */}
       <div className="banner" style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
         <span>{meta.icon} <b>{meta.title}</b> — {totalCount} item{totalCount === 1 ? '' : 's'} · <b>{fmtMoney(totalValue)}</b>
-          {place === 'personal' && <> · <span className="muted">kept for yourself, not for sale</span></>}
+          {place === 'personal' && <> · <span className="muted">yours first — not for sale except to fill a want</span></>}
           {place === 'floor' && <> · <span className={floorFull ? '' : 'muted'} style={floorFull ? { color: 'var(--gold)' } : undefined}>{onFloorNow}/{cap} floor slots{floorFull ? ' — full' : ''}</span></>}
           {place === 'storeroom' && <> · <span className="muted">backstock (sells nothing until you stock the floor)</span></>}
         </span>
@@ -191,7 +191,8 @@ function StockRow({ line, place, cap, onFloorNow, onRip, onPick, onHold, flash }
         {kind === 'sealed' && (
           <button className="stock-act" title="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
         )}
-        <button className="stock-act" title="Put it back in the storeroom (makes it sellable again)" onClick={() => move('storeroom', '📦 Back in the storeroom')}>📦</button>
+        <button className="stock-act" disabled={floorFull} title={floorFull ? 'Floor is full' : 'Put it out on the sales floor (for sale to walk-ins)'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
+        <button className="stock-act" title="Move to the storeroom — sellable backstock, but not yet on the floor" onClick={() => move('storeroom', '📦 To the storeroom')}>📦</button>
       </>}
     </div>
   )

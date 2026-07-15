@@ -922,7 +922,7 @@ export function advanceDaysWith(set, get, days, away) {
   // (addAllToBinder returns { moved, reserved } — reserved is slots left open because the only
   // copy you own is being held back for grading; the recap surfaces it so an empty slot never
   // looks like a bug.)
-  const binderSweep = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true }) : { moved: 0, reserved: 0 }
+  const binderSweep = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true, skipLocked: true }) : { moved: 0, reserved: 0 }
   const binderFiled = binderSweep.moved
   const binderReserved = binderSweep.reserved
   // 💼 Want-List Broker: fills collector wants + forum WTB posts overnight from the

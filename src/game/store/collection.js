@@ -32,6 +32,12 @@ export function createCollectionSlice(set, get) {
   return {
     addPulls(cards, setName, packs = 1) {
       set(s => {
+        // With a storefront, everything you pull is YOURS first: singles land in Personal
+        // (locked), and you decide what goes out to the floor or into the storeroom. Nothing
+        // sells from Personal except a manual want fulfilment. Without a store the flag would
+        // just block the bulk-sell flow, so keep the old behaviour there.
+        const hasStore = !!s.upgrades?.storefront
+        const incoming = hasStore ? cards.map(c => ({ ...c, locked: true, loc: 'storeroom' })) : cards
         const hits = cards.filter(c => c._isHit).length
         const best = cards.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestPull)
         // track best foil pulled (by value) for the stats page
@@ -50,7 +56,7 @@ export function createCollectionSlice(set, get) {
         }
         if (firstSet) bySet = bumpSet(bySet, firstSet, { packsOpened: packs })
         return {
-          collection: [...cards, ...s.collection],
+          collection: [...incoming, ...s.collection],
           bySet,
           stats: {
             ...s.stats,
@@ -131,7 +137,7 @@ export function createCollectionSlice(set, get) {
     // stays empty — never bury a grade-worthy card. Applies to BOTH the nightly Curator sweep
     // and the manual "fill every slot" button (it's a statement about what your binder is, not
     // which button you pressed). Slabs are exempt. Unset ('off') = file everything.
-    addAllToBinder(setId = null, { skipGraded = false } = {}) {
+    addAllToBinder(setId = null, { skipGraded = false, skipLocked = false } = {}) {
       const sets = setId ? [setById(setId)].filter(Boolean) : SETS
       if (!sets.length) return 0
       const reserveCut = (get().settings || {}).binderReserveCut || 'off'
@@ -143,6 +149,7 @@ export function createCollectionSlice(set, get) {
       const coll = [...get().collection].sort((a, b) => cardValue(b) - cardValue(a))
       for (const c of coll) {
         if (c._heldFor) continue // promised to a regular — the hold keeps its word
+        if (skipLocked && c.locked) continue // 🔒 Personal — the overnight Curator leaves it alone
         if (skipGraded && c.grade) continue // slabs are placed by hand
         const cSet = setIdOf(c)
         const set_ = sets.find(s => s.id === cSet)
