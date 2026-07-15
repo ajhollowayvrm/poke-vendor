@@ -27,7 +27,7 @@ import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
-  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY,
+  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, MACHINE_MAX_PER_DAY,
   fameMult, fameBeyond, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
@@ -572,6 +572,32 @@ export function advanceDaysWith(set, get, days, away) {
     }
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }
+  // 🎰 PACK MACHINE: locals feed the machine a flat price for a RANDOM sealed pack. A price
+  // below the average stocked pack's value pulls a crowd; a steep markup slows sales. Each vend
+  // pulls one random pack out and banks the flat price (in-store cash). Hard-railed per day.
+  let machineRevenue = 0, machineSold = 0
+  {
+    const pm = get().packMachine || { price: 0, stock: [] }
+    const mstock = pm.stock || []
+    if (hasStore && walkinOK && pm.price > 0 && mstock.length) {
+      const avgVal = mstock.reduce((a, it) => a + sealedValue(it), 0) / mstock.length
+      const dealMult = Math.max(0.35, Math.min(2.2, avgVal / pm.price)) // good deal → more buyers
+      const signage = s.upgrades?.signage ? 1.15 : 1
+      const rate = (0.4 + noto / 350) * dealMult * signage
+      const want = Math.min(MACHINE_MAX_PER_DAY * days, mstock.length, drawCount(rate * days))
+      if (want > 0) {
+        const stock = [...mstock]
+        for (let k = 0; k < want && stock.length; k++) stock.splice(Math.floor(Math.random() * stock.length), 1)
+        machineSold = mstock.length - stock.length
+        machineRevenue = round2(machineSold * pm.price)
+        set(st => ({ packMachine: { ...st.packMachine, stock,
+          sold: (st.packMachine.sold || 0) + machineSold,
+          revenue: round2((st.packMachine.revenue || 0) + machineRevenue) } }))
+        get().addNotoriety(round2(0.1 * days))
+        get().log('shop', `🎰 Pack Machine — vended ${machineSold} pack${machineSold === 1 ? '' : 's'} at $${pm.price.toFixed(2)} each (+$${machineRevenue.toFixed(2)})`, machineRevenue)
+      }
+    }
+  }
   // STORE CREDIT redemption: locals holding credit spend it at the counter — those
   // sales come out of the day's takings instead of arriving as cash. A slice of
   // outstanding credit is simply never redeemed (breakage) — which is exactly why
@@ -599,7 +625,7 @@ export function advanceDaysWith(set, get, days, away) {
   }
   // resolve consignments whose timer elapsed over the days passed. Seed proceeds with the
   // storefront's counter business (logged separately below so the recap can show it).
-  let soldProceeds = counterRevenue
+  let soldProceeds = round2(counterRevenue + machineRevenue)
   if (counterRevenue > 0) {
     const nCounter = counterSoldC.size + counterSoldS.size
     get().log('shop', `🏬 Counter sales — ${nCounter} everyday item${nCounter === 1 ? '' : 's'} off the floor to locals (singles, supplies & bulk) (+$${counterRevenue.toFixed(2)})`, counterRevenue)
@@ -1008,6 +1034,7 @@ export function advanceDaysWith(set, get, days, away) {
     resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled, binderReserved,
     wantsBrokered, brokerProceeds, offersAccepted, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
+    machineIncome: round2(machineRevenue), machineSold,
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
@@ -1042,6 +1069,8 @@ export function mergeSummaries(a, b) {
     resolvedGradeCards: [...(a.resolvedGradeCards || []), ...(b.resolvedGradeCards || [])],
     binderFiled: add(a.binderFiled, b.binderFiled),
     binderReserved: add(a.binderReserved, b.binderReserved),
+    machineIncome: round2(add(a.machineIncome, b.machineIncome)),
+    machineSold: add(a.machineSold, b.machineSold),
     wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
     brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),
     offersAccepted: add(a.offersAccepted, b.offersAccepted),

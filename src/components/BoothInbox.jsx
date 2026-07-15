@@ -8,6 +8,7 @@ import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
 import MysteryPacks from './MysteryPacks'
+import PackMachine from './PackMachine'
 import StoreStock from './StoreStock'
 import Regulars from './Regulars'
 import { useModalEscape } from '../ui/dialog'
@@ -92,6 +93,7 @@ export default function BoothInbox({ onRip, onPick }) {
   const forumCount = (forumPosts || []).length
   const regularsCount = (regulars || []).filter(r => !r.flags?.burned).length
   const builtPackCount = useGame(s => (s.builtPacks || []).length)
+  const machineStock = useGame(s => (s.packMachine?.stock || []).length)
 
   const hasStore = !!upgrades.storefront
   const accepted = acceptedMethods(upgrades)
@@ -131,6 +133,11 @@ export default function BoothInbox({ onRip, onPick }) {
         <button className={`subtab ${sellTab === 'packs' ? 'active' : ''}`} onClick={() => setSellTab('packs')}>
           ❓ Packs{builtPackCount ? ` (${builtPackCount})` : ''}
         </button>
+        {hasStore && (
+          <button className={`subtab ${sellTab === 'machine' ? 'active' : ''}`} onClick={() => setSellTab('machine')}>
+            🎰 Machine{machineStock ? ` (${machineStock})` : ''}
+          </button>
+        )}
         <button className={`subtab ${sellTab === 'forum' ? 'active' : ''}`} onClick={() => setSellTab('forum')}>
           📋 Forum{forumCount ? ` (${forumCount})` : ''}
         </button>
@@ -148,6 +155,9 @@ export default function BoothInbox({ onRip, onPick }) {
       ) : sellTab === 'packs' ? (
         // Your custom mystery-pack product line: tiers, the builder, and built stock.
         <MysteryPacks />
+      ) : sellTab === 'machine' ? (
+        // 🎰 The Pack Machine: load real single booster packs, set one flat price, vend random.
+        <PackMachine />
       ) : sellTab === 'storeroom' ? (
         // 📦 Backstock — everything sellable that ISN'T out on the floor, plus the
         // "saved for regulars" holds. Stock the floor from here (only floor stock sells

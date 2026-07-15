@@ -586,7 +586,7 @@ function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, floor } = summary
+    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, machineIncome, machineSold, floor } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
@@ -656,6 +656,7 @@ function DaySummary({ summary, onClose }) {
                   <div className="recap-line" key={i}><span className="muted">{s.name}</span><span className="muted">+{fmtMoney(s.net)}</span></div>
                 ))}
                 {counterIncome > 0 && <div className="recap-line"><span className="muted">🏬 Storefront counter (singles/supplies/bulk)</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(counterIncome)}</b></div>}
+                {machineIncome > 0 && <div className="recap-line"><span className="muted">🎰 Pack Machine ({machineSold} pack{machineSold === 1 ? '' : 's'})</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(machineIncome)}</b></div>}
                 {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(saleProceeds)}</b></div>}
               </div>
             )}

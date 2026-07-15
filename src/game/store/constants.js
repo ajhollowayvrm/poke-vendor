@@ -371,6 +371,11 @@ export const MAX_ORDERS_PER_DAY = 6
 // kept stocked with everyday product. Reached around noto 700.
 export const COUNTER_MAX_PER_DAY = 1200
 
+// 🎰 Pack Machine: the most single packs it can vend in one day (a hard rail so a fully-loaded
+// machine can't drain in a single tick). Demand also scales with fame + how good a deal the
+// flat price is versus the average pack's value.
+export const MACHINE_MAX_PER_DAY = 8
+
 // The booth inbox holds unhandled encounters; anything past the cap is DISCARDED. So the cap
 // has to grow with fame, or a famous vendor's extra orders would silently evaporate — the
 // bigger your name, the more you can have waiting on you.

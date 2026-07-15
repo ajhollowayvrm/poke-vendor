@@ -100,6 +100,9 @@ export const useGame = create(persist((set, get) => ({
       for (const c of (p?.cards || [])) if (c?.uid) seen.add(c.uid)
       for (const it of (p?.sealed || [])) if (it?.uid) seen.add(it.uid)
     }
+    // Pack Machine stock is sealed packs pulled out of sealedInventory (one bucket per uid) —
+    // register them too so a stray duplicate elsewhere gets dropped, not the machine's copy.
+    for (const it of (state.packMachine?.stock || [])) if (it?.uid) seen.add(it.uid)
     // Priority: the IN-FLIGHT money-bearing buckets win over a stray collection duplicate,
     // so a corruption-repair never silently discards a card you've already paid a grading
     // fee for (pendingGrades) or are owed proceeds on (listings/consignments). The card

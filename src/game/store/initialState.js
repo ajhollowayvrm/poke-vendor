@@ -80,6 +80,10 @@ export function initialState() {
     builtPacks: [],          // assembled mystery packs: {uid, tierId, cards:[...], sealed:[...], builtDay} — contents moved OUT of collection/inventory; sold sight-unseen at the tier price
     packRep: 50,             // 0..100 repack reputation (50 = unproven) — moved by what buyers find inside; drives pack demand
     packStats: { built: 0, sold: 0, revenue: 0, delighted: 0, burned: 0 }, // lifetime mystery-pack tallies
+    // 🎰 The Pack Machine: a vending fixture you STOCK with real individual booster packs and
+    // set ONE flat price for. Walk-ins pay that price for a RANDOM pack out of it — a sealed-pack
+    // mystery box. `stock` holds full sealed items moved out of sealedInventory (one bucket per uid).
+    packMachine: { price: 0, stock: [], sold: 0, revenue: 0 },
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     standingOrder: null,     // 📋 { distId, setId, type, qty, lastDay } — one product on weekly auto-ship from a distributor (Standing Order upgrade)

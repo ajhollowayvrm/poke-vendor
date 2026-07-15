@@ -424,6 +424,40 @@ export function createBoothSlice(set, get) {
       get().log('shop', 'Dropped the hold — back in the storeroom', 0)
     },
 
+    // --- 🎰 Pack Machine: real single packs, one flat price, vended at random ---------
+    // Set the machine's flat price (what a customer pays for ANY random pack out of it).
+    setMachinePrice(price) {
+      const p = Math.max(0, round2(Number(price) || 0))
+      set(s => ({ packMachine: { ...s.packMachine, price: p } }))
+    },
+    // Load sealed SINGLE packs into the machine (they leave sealedInventory). Boxes/cases and
+    // kept/held items can't go in — the machine dispenses single packs only.
+    stockMachine(uids) {
+      const ids = new Set(Array.isArray(uids) ? uids : [uids])
+      if (!ids.size) return 0
+      const moving = (get().sealedInventory || []).filter(it =>
+        ids.has(it.uid) && (it.product?.packs || 1) === 1 && !it.locked && !it._heldFor)
+      if (!moving.length) return 0
+      const movingIds = new Set(moving.map(it => it.uid))
+      set(s => ({
+        sealedInventory: s.sealedInventory.filter(it => !movingIds.has(it.uid)),
+        packMachine: { ...s.packMachine, stock: [...(s.packMachine.stock || []),
+          ...moving.map(({ loc, _featured, ...rest }) => rest)] },
+      }))
+      get().log('shop', `🎰 Loaded ${moving.length} pack${moving.length > 1 ? 's' : ''} into the Pack Machine`, 0)
+      return moving.length
+    },
+    // Pull a pack back out of the machine — it returns to the storeroom.
+    unstockMachine(uid) {
+      const it = (get().packMachine?.stock || []).find(x => x.uid === uid)
+      if (!it) return false
+      set(s => ({
+        packMachine: { ...s.packMachine, stock: s.packMachine.stock.filter(x => x.uid !== uid) },
+        sealedInventory: [...s.sealedInventory, { ...it, loc: 'storeroom' }],
+      }))
+      return true
+    },
+
     // Run an IN-STORE GIVEAWAY: give a card from your collection away to the locals.
     // Costs the card, but word spreads — a notoriety pop (generous, so the Charity
     // Banner boosts it), a walk-in traffic buzz window, and every regular warms up.
