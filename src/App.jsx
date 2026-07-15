@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
@@ -142,6 +142,22 @@ export default function App() {
     }
     document.body.classList.remove('rip-lock')
   }, [ripping, tab])
+
+  // Publish the top bar's live height as --topbar-h. The bar is sticky and opaque; the
+  // fixed rip overlay (and anything else that must clear it) can't otherwise know how
+  // tall it is — and it's now variable, since on a narrow/half-width desktop window the
+  // tab strip (and, narrower still, the figures) wrap onto extra rows. A stale fixed
+  // guess let the taller bar paint over the top of the rip screen's controls.
+  const topbarRef = useRef(null)
+  useEffect(() => {
+    const el = topbarRef.current
+    if (!el) return
+    const setVar = () => document.documentElement.style.setProperty('--topbar-h', `${el.offsetHeight}px`)
+    setVar()
+    const ro = new ResizeObserver(setVar)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   // If the page was reloaded while a show was open, the floor view (React state) is
   // gone but show-inventory cards AND sealed may still be stranded on the table — bring
@@ -405,7 +421,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="topbar">
+      <div className="topbar" ref={topbarRef}>
         <div className="brand">Poké<b>Vendor</b></div>
         <div className="tabs">
           {TABS.map(t => (

@@ -83,7 +83,11 @@ button { font-family: inherit; cursor: pointer; }
    the rip content is centred below it. */
 .rip-overlay { position: fixed; inset: 0; z-index: 25; overflow-y: auto;
   background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
-  padding: calc(80px + var(--sat)) calc(20px + var(--sar)) calc(80px + var(--sab)) calc(20px + var(--sal));
+  /* Top pad clears the sticky, opaque top bar (which paints over this overlay). Its
+     height is variable — it wraps to extra rows on narrow/half-width windows — so track
+     it live via --topbar-h (set in App.jsx) plus a small gap; fall back to the old fixed
+     80px total before the var is measured. */
+  padding: calc(var(--topbar-h, 52px) + 28px + var(--sat)) calc(20px + var(--sar)) calc(80px + var(--sab)) calc(20px + var(--sal));
   transition: opacity .2s ease, visibility .2s ease; }
 /* The overlay is a FIXED, self-scrolling layer — and padding-top does NOT clip. Scroll the rip
    and its cards travel up THROUGH that padding and paint in the strip above the top bar: on a
