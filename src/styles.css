@@ -717,6 +717,25 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   background: var(--green); color: #07140c; font-weight: 900; font-size: 14px; display:flex;
   align-items:center; justify-content:center; box-shadow: 0 1px 5px rgba(0,0,0,.5); }
 
+/* Centering read under a grid tile — pairs with the on-tile condition chip so both the
+   "cut" (centering) and condition are legible at a glance when picking cards to grade. */
+.cut-row { text-align: center; margin-top: 4px; }
+.cut-chip { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .02em;
+  padding: 1px 6px; border-radius: 5px; }
+
+/* Table/grid view switch (Personal). A compact segmented control. */
+.view-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.vt-btn { background: #ffffff10; color: var(--dim); border: none; padding: 5px 10px; font-size: 14px;
+  cursor: pointer; line-height: 1; }
+.vt-btn + .vt-btn { border-left: 1px solid var(--line); }
+.vt-btn.on { background: var(--accent2); color: #fff; }
+
+/* Sealed keepsake tile in the grid (no card art to show — a big product icon instead). */
+.sealed-tile { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; aspect-ratio: 2.5 / 3.5; padding: 10px; text-align: center; }
+.sealed-ico { font-size: 46px; line-height: 1; }
+.sealed-name { font-size: 12px; font-weight: 700; color: var(--txt); }
+
 /* Per-card lock: a small toggle in the corner of each collection tile. Subtle until
    locked, so an unlocked grid stays clean. */
 .coll-lock { position: absolute; top: 6px; left: 6px; z-index: 6; width: 24px; height: 24px;
