@@ -8,7 +8,7 @@
 import {
   cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
   rollGrade, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
-  setById, cardVariant, cardMastersetVariants, meetsBinderStandard,
+  setById, cardVariant, cardMastersetVariants, fileableInBinder,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay } from './constants'
@@ -124,25 +124,23 @@ export function createCollectionSlice(set, get) {
     // Curator's nightly sweep uses it so a freshly returned PSA slab (always the "best copy")
     // isn't whisked out of the sellable pool the same night it comes back from grading.
     //
-    // BINDER STANDARDS: a masterset is a display piece, and a beaten-up off-centre copy in a
-    // slot is worse than an empty one for a lot of collectors — so `settings.binderMinCondition`
-    // and `settings.binderMinCut` set the bar a RAW card must clear to be filed. Both apply to
-    // the nightly Curator sweep AND the manual "fill every slot" button, because they're a
-    // statement about what your binder is, not about which button you pressed. Slabs are exempt
-    // (their grade IS the quality bar). Defaults are the lowest rungs = accept everything, so
-    // existing saves behave exactly as before.
+    // BINDER RESERVE: a masterset is where DUPLICATE / display copies live — the genuinely
+    // sharp copies are worth more graded and sold than buried in a slot. So `settings.binderReserveCut`
+    // is a CEILING: a RAW copy whose cut is at/above it is reserved (held out, free to grade
+    // & sell), and only lesser copies get filed. If a slot's ONLY copy is reserved, the slot
+    // stays empty — never bury a grade-worthy card. Applies to BOTH the nightly Curator sweep
+    // and the manual "fill every slot" button (it's a statement about what your binder is, not
+    // which button you pressed). Slabs are exempt. Unset ('off') = file everything.
     addAllToBinder(setId = null, { skipGraded = false } = {}) {
       const sets = setId ? [setById(setId)].filter(Boolean) : SETS
       if (!sets.length) return 0
-      const st = get().settings || {}
-      const minCond = st.binderMinCondition || 'DMG'
-      const minCut = st.binderMinCut || 'Rough'
+      const reserveCut = (get().settings || {}).binderReserveCut || 'off'
       const binder = get().binder || []
       const placed = new Set(binder.map(b => `${setIdOf(b)}:${b.id}:${cardVariant(b)}`))
-      const chosen = new Map() // slotKey → card (first/best copy wins)
-      // best copy first so the nicest condition/grade lands in the binder
+      const chosen = new Map()   // slotKey → the copy we'll file (best FILEABLE copy wins)
+      const reservedSlots = new Set() // open slots we own only reserved copies for
+      // best copy first so the nicest FILEABLE copy lands in the binder
       const coll = [...get().collection].sort((a, b) => cardValue(b) - cardValue(a))
-      let heldBack = 0 // copies that COULD have filled a slot but didn't meet your standard
       for (const c of coll) {
         if (c._heldFor) continue // promised to a regular — the hold keeps its word
         if (skipGraded && c.grade) continue // slabs are placed by hand
@@ -156,13 +154,13 @@ export function createCollectionSlice(set, get) {
         if (!cardMastersetVariants(set_, cardDef).includes(variant)) continue
         const slotKey = `${cSet}:${c.id}:${variant}`
         if (placed.has(slotKey) || chosen.has(slotKey)) continue
-        // The slot IS open and this copy could fill it — so the standard is the only thing
-        // stopping it. Counted here (not earlier) so "held back" means "a slot stayed empty
-        // because of your bar", not "some spare copy in a pile didn't qualify".
-        if (!meetsBinderStandard(c, minCond, minCut)) { heldBack++; continue }
-        chosen.set(slotKey, c)
+        // Slot is open and unfilled. A fileable copy claims it; a reserved copy is noted but
+        // left out (a lesser copy seen later can still claim the slot, clearing the note).
+        if (fileableInBinder(c, reserveCut)) { chosen.set(slotKey, c); reservedSlots.delete(slotKey) }
+        else reservedSlots.add(slotKey)
       }
-      if (!chosen.size) return { moved: 0, heldBack }
+      const reserved = reservedSlots.size
+      if (!chosen.size) return { moved: 0, reserved }
       const movingUids = new Set([...chosen.values()].map(c => c.uid))
       const moving = get().collection.filter(c => movingUids.has(c.uid))
       set(s => ({
@@ -170,9 +168,9 @@ export function createCollectionSlice(set, get) {
         binder: [...(s.binder || []), ...moving],
       }))
       const label = setId ? `for ${setById(setId)?.name || 'the set'}` : 'across your collection'
-      const note = heldBack ? ` · ${heldBack} ${heldBack === 1 ? 'copy' : 'copies'} held back below your binder standard` : ''
+      const note = reserved ? ` · ${reserved} ${reserved === 1 ? 'slot' : 'slots'} left open (reserved for grading)` : ''
       get().log('binder', `📒 Filled ${moving.length} binder slot${moving.length > 1 ? 's' : ''} ${label}${note}`, 0)
-      return { moved: moving.length, heldBack }
+      return { moved: moving.length, reserved }
     },
 
     // Take a card back out of the binder, into your collection (to sell or reslot).

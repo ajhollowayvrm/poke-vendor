@@ -1547,13 +1547,17 @@ const FUZZY_SHORT = {
   'Sharp':      'nice?',
   'Pristine':   'nice?',
 }
-// --- Binder standards -------------------------------------------------------
-// The bar a RAW card must clear to be filed into the masterset binder. Both are ordered
-// worst → best, so "at least X" is a simple index comparison.
+// --- Binder reserve ---------------------------------------------------------
+// A masterset is where DUPLICATE / display copies live — the genuinely sharp copies are
+// worth more graded and sold than buried in a slot. So the binder "reserve" is a CEILING,
+// not a floor: a raw copy whose cut is AT OR ABOVE the reserve tier is held OUT of the
+// auto-fill and the nightly Curator, left free to grade & sell. Everything BELOW the tier
+// is binder-grade and gets filed. Tiers are ordered worst → best, so "at or above X" is a
+// simple index comparison.
 //
-// Graded slabs are deliberately exempt from these: a slab's GRADE is its quality statement,
-// and the raw condition/cut underneath it is a historical curiosity. A PSA 10 should never be
-// held out of your binder because the cut it was sealed at reads "Clean".
+// Graded slabs are exempt (always eligible to file): a slab is no longer a "card to grade",
+// so whether to sell it or slot it is a per-card decision you make by hand — the reserve,
+// which is about NOT burying grade-worthy RAW cards, doesn't apply to it.
 export const CONDITION_ORDER = ['DMG', 'MP', 'LP', 'NM']   // worst → best
 export const CUT_ORDER = ['Rough', 'Off-center', 'Clean', 'Sharp', 'Pristine']
 
@@ -1567,15 +1571,23 @@ export function cutRank(card) {
   const i = CUT_TIERS.findIndex(t => cut >= t.min && cut < t.max)
   return i === -1 ? CUT_TIERS.length - 1 : i
 }
-// Does this card meet the binder standard? Slabs always pass (see above); raw cards must clear
-// BOTH bars. Defaults ('DMG'/'Rough') are the lowest rungs, so an unset standard accepts
-// everything — exactly the behaviour before this existed.
-export function meetsBinderStandard(card, minCondition = 'DMG', minCut = 'Rough') {
+// The cut-tier index at/above which raw copies are RESERVED (held out of the binder). Null
+// (reserveCut unset / 'off') means reserve nothing. See the reserve note above.
+export function reserveRank(reserveCut) {
+  if (!reserveCut || reserveCut === 'off') return null
+  const i = CUT_ORDER.indexOf(reserveCut)
+  return i === -1 ? null : i
+}
+// Is this card eligible to be FILED into the masterset (i.e. NOT reserved for grading)?
+// Slabs always qualify (see above). A raw card qualifies only if its cut is BELOW the
+// reserve tier; a cut at/above it is your grade-and-sell copy and stays out. With no
+// reserve set, everything qualifies — exactly the behaviour before the reserve existed.
+export function fileableInBinder(card, reserveCut) {
   if (!card) return false
   if (card.grade) return true
-  if (conditionRank(card.condition) < conditionRank(minCondition)) return false
-  if (cutRank(card) < Math.max(0, CUT_ORDER.indexOf(minCut))) return false
-  return true
+  const bar = reserveRank(reserveCut)
+  if (bar == null) return true
+  return cutRank(card) < bar
 }
 
 export function cutEstimate(card, precise) {
@@ -2086,29 +2098,26 @@ export function cardMastersetVariants(set, card) {
 // own. `binderCards` are the copies physically slotted into the binder; `ownedCards` is any
 // other bucket (collection) whose variants count as "available to place". Returns per-slot
 // totals so the UI can render progress + a fill button.
-// `standard` = { minCondition, minCut } — your binder's quality bar (see meetsBinderStandard).
-// A copy that doesn't clear it isn't "placeable", so the fill button's count matches what the
-// button will actually do. `belowBar` reports the slots you own a copy for but rejected, so the
-// UI can explain an empty slot instead of leaving it looking like a bug.
-export function mastersetStats(set, binderCards, ownedCards = [], standard = null) {
+// `reserveCut` = your binder reserve tier (see fileableInBinder). A copy at/above it isn't
+// "placeable", so the fill button's count matches what the button will actually do. `reserved`
+// reports the slots where the ONLY copy you own is being held out for grading, so the UI can
+// explain an empty slot instead of leaving it looking like a bug.
+export function mastersetStats(set, binderCards, ownedCards = [], reserveCut = null) {
   const binderKeys = new Set(binderCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
   const mine = ownedCards.filter(c => setIdOfCard(c) === set.id)
-  const ok = standard
-    ? mine.filter(c => meetsBinderStandard(c, standard.minCondition, standard.minCut))
-    : mine
-  const looseKeys = new Set(ok.map(c => `${c.id}:${cardVariant(c)}`))
+  const looseKeys = new Set(mine.filter(c => fileableInBinder(c, reserveCut)).map(c => `${c.id}:${cardVariant(c)}`))
   const anyKeys = new Set(mine.map(c => `${c.id}:${cardVariant(c)}`))
-  let total = 0, placed = 0, placeable = 0, belowBar = 0
+  let total = 0, placed = 0, placeable = 0, reserved = 0
   for (const card of set.cards) {
     for (const v of cardMastersetVariants(set, card)) {
       total++
       const key = `${card.id}:${v}`
       if (binderKeys.has(key)) placed++
       else if (looseKeys.has(key)) placeable++
-      else if (anyKeys.has(key)) belowBar++ // you own one, but it's under your bar
+      else if (anyKeys.has(key)) reserved++ // you own a copy, but it's reserved for grading
     }
   }
-  return { total, placed, placeable, belowBar, pct: total ? Math.round((placed / total) * 100) : 0,
+  return { total, placed, placeable, reserved, pct: total ? Math.round((placed / total) * 100) : 0,
     complete: total > 0 && placed === total }
 }
 

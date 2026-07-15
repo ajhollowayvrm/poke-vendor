@@ -3,7 +3,7 @@ import { useGame } from '../game/store'
 import {
   SETS, setCompletion, completionReward, isChaseCard, fmtMoney,
   cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
-  CONDITIONS, CONDITION_ORDER, CUT_ORDER,
+  CUT_ORDER,
 } from '../game/engine'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
@@ -22,14 +22,13 @@ export default function Binder({ onPick }) {
   const addToBinder = useGame(s => s.addToBinder)
   const addAllToBinder = useGame(s => s.addAllToBinder)
   const removeFromBinder = useGame(s => s.removeFromBinder)
-  // Your binder's quality bar. Applies to the "Add everything possible" sweep AND the 📒 Binder
-  // Curator's nightly one — it's a statement about what your masterset is, not about which
-  // button you pressed. Graded slabs are exempt (their grade is the bar).
+  // Your binder RESERVE — a ceiling, not a floor. A raw copy whose cut is at/above this tier is
+  // held OUT of the masterset (free to grade & sell); only lesser copies get filed. Applies to the
+  // "Add everything possible" sweep AND the 📒 Curator's nightly one — it's a statement about what
+  // your masterset is, not which button you pressed. Graded slabs are exempt.
   const setSetting = useGame(s => s.setSetting)
-  const minCondition = useGame(s => s.settings.binderMinCondition ?? 'DMG')
-  const minCut = useGame(s => s.settings.binderMinCut ?? 'Rough')
+  const reserveCut = useGame(s => s.settings.binderReserveCut ?? 'off')
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
-  const standard = useMemo(() => ({ minCondition, minCut }), [minCondition, minCut])
 
   const [setId, setSetId] = useState(SETS[0].id)
   const [missingOnly, setMissingOnly] = useState(false)
@@ -48,7 +47,7 @@ export default function Binder({ onPick }) {
     return { placed, loose }
   }, [binder, collection, set.id])
 
-  const ms = useMemo(() => mastersetStats(set, binder, collection, standard), [set, binder, collection, standard])
+  const ms = useMemo(() => mastersetStats(set, binder, collection, reserveCut), [set, binder, collection, reserveCut])
   // Plain set-completion (one of every card, any variant) drives the one-time bonus badge.
   const ownedIds = useMemo(() => {
     const s = new Set()
@@ -73,12 +72,12 @@ export default function Binder({ onPick }) {
   }, [set, placed, missingOnly])
 
   function fillAll() {
-    const { moved, heldBack } = addAllToBinder(set.id)
-    const held = heldBack ? ` ${heldBack} ${heldBack === 1 ? 'copy' : 'copies'} didn't meet your standard.` : ''
+    const { moved, reserved } = addAllToBinder(set.id)
+    const held = reserved ? ` ${reserved} slot${reserved === 1 ? '' : 's'} left open — top copy reserved to grade & sell.` : ''
     toast(moved
       ? `📒 Slotted ${moved} card${moved > 1 ? 's' : ''} into the ${set.name} binder.${held}`
-      : heldBack
-        ? `No slots filled — ${heldBack} ${heldBack === 1 ? 'copy was' : 'copies were'} below your binder standard. Loosen it, or find nicer copies.`
+      : reserved
+        ? `No slots filled — your only cop${reserved === 1 ? 'y is' : 'ies are'} being reserved to grade & sell. Raise the reserve tier to file them, or find lesser copies.`
         : 'No open slots you own a copy for — rip or buy more first.')
   }
   function slotClick(card, variant) {
@@ -131,32 +130,28 @@ export default function Binder({ onPick }) {
         ))}
       </div>
 
-      {/* BINDER STANDARD — the bar a raw copy must clear to be filed, by hand or by the
-          overnight Curator. A masterset is a display piece; for a lot of collectors a beaten,
-          off-centre copy in a slot is worse than an empty one. */}
+      {/* BINDER RESERVE — a CEILING, not a floor. Your sharpest copies are worth more graded
+          and sold than buried in a slot, so a raw copy whose cut is at/above this tier is held
+          OUT of the fill (by hand or by the overnight Curator), free to grade & sell. Only lesser
+          copies get filed; if a slot's only copy is reserved, it stays open. */}
       <div className="binder-standard">
-        <span className="bs-head">🎚️ Binder standard <span className="muted">— what's good enough to slot</span></span>
+        <span className="bs-head">🎚️ Binder reserve <span className="muted">— keep your best cut out to grade &amp; sell</span></span>
         <label className="bs-field">
-          <span className="muted">Min condition</span>
-          <select value={minCondition} onChange={e => setSetting('binderMinCondition', e.target.value)}>
-            {CONDITION_ORDER.map(k => (
-              <option key={k} value={k}>{k === 'DMG' ? 'Any condition' : `${CONDITIONS[k].label} (${k}) or better`}</option>
-            ))}
-          </select>
-        </label>
-        <label className="bs-field">
-          <span className="muted">Min cut</span>
-          <select value={minCut} onChange={e => setSetting('binderMinCut', e.target.value)}>
-            {CUT_ORDER.map(k => (
-              <option key={k} value={k}>{k === 'Rough' ? 'Any cut' : `${k} or better`}</option>
+          <span className="muted">Reserve cut</span>
+          <select value={reserveCut} onChange={e => setSetting('binderReserveCut', e.target.value)}>
+            <option value="off">Off — file everything</option>
+            {CUT_ORDER.slice(1).map(k => (
+              <option key={k} value={k}>{k} &amp; up — keep out</option>
             ))}
           </select>
         </label>
         <span className="muted bs-note">
-          {ms.belowBar > 0
-            ? <><b style={{ color: 'var(--gold)' }}>{ms.belowBar}</b> open slot{ms.belowBar === 1 ? '' : 's'} you own a copy for {ms.belowBar === 1 ? 'is' : 'are'} below this bar — {ms.belowBar === 1 ? 'it stays' : 'they stay'} out.</>
-            : <>Graded slabs always qualify — their grade is the bar.</>}
-          {!hasLoupe && minCut !== 'Rough' && <><br />🔍 Without the Jeweler's Loupe your own cut read is fuzzy, but your curator measures precisely.</>}
+          {ms.reserved > 0
+            ? <><b style={{ color: 'var(--gold)' }}>{ms.reserved}</b> open slot{ms.reserved === 1 ? '' : 's'} {ms.reserved === 1 ? 'has' : 'have'} only a reserved copy — {ms.reserved === 1 ? 'it stays' : 'they stay'} out for grading.</>
+            : reserveCut !== 'off'
+              ? <>Copies at <b>{reserveCut}</b> cut or better stay out to grade &amp; sell; graded slabs are always eligible.</>
+              : <>Every copy you own is eligible to file. Set a reserve to keep your sharpest cuts out for grading.</>}
+          {!hasLoupe && reserveCut !== 'off' && <><br />🔍 Without the Jeweler's Loupe your own cut read is fuzzy, but your curator measures precisely.</>}
         </span>
       </div>
 
