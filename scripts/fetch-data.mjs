@@ -31,7 +31,11 @@ const EUR_USD = 1.08
 // `vintage:true` sets are hidden from the shop and sold only via the Vintage Vault vendor.
 // `ep` is kept as a comment for reference but is no longer used for fetching.
 const EN_SETS = [
-  // modern (newest → oldest)
+  // ========================= SHOP — in-print, sold FRESH by distributors =========================
+  // What a real modern card shop stocks new right now: the current Mega Evolution block + recent
+  // Scarlet & Violet, plus the evergreen reprints (151, Prismatic) that never really leave shelves.
+  // Ordered newest → oldest; SHOP_SETS is re-sorted by releaseDate in engine.js so scoped fetches
+  // can't scramble the "newest" that Pokémon Center gets first dibs on.
   { id: 'me4',      name: 'Chaos Rising' },
   { id: 'me3',      name: 'Perfect Order' },
   { id: 'me2pt5',   name: 'Ascended Heroes' },
@@ -40,39 +44,121 @@ const EN_SETS = [
   { id: 'zsv10pt5', name: 'Black Bolt' },
   { id: 'rsv10pt5', name: 'White Flare' },
   { id: 'sv10',     name: 'Destined Rivals' },
+  { id: 'sv9',      name: 'Journey Together' },
+  { id: 'sv8',      name: 'Surging Sparks' },
   { id: 'sv8pt5',   name: 'Prismatic Evolutions' },
-  // Celebrations is a 50-card set: the 25-card main set (cel25) + the 25-card Classic
-  // Collection reprints (cel25c — Base Charizard etc.), which are the premium inserts.
-  // alsoFetch pulls the Classic Collection and merges it into this set.
-  { id: 'cel25',    name: 'Celebrations', alsoFetch: ['cel25c'] },
-  { id: 'g1',       name: 'Generations' },
+  { id: 'sv7',      name: 'Stellar Crown' },
+  { id: 'sv6pt5',   name: 'Shrouded Fable' },
+  { id: 'sv6',      name: 'Twilight Masquerade' },
+  { id: 'sv5',      name: 'Temporal Forces' },
   { id: 'sv3pt5',   name: '151' },
-  // aftermarket (find-only) — older sealed you "can still kinda find": not sold fresh by
-  // modern distributors, surfaced as secondary-market finds (shows / aftermarket source).
-  // Full product lineups (unlike the single-pack vintage Vault sets).
-  { id: 'sm9',    name: 'Team Up',         secondary: true },
-  // Hidden Fates ships a 94-card "Shiny Vault" subset (sma — shiny Charizard-GX etc.); merge
-  // it so the set is complete (69 main + 94 Shiny Vault = 163), mirroring Celebrations.
-  { id: 'sm115',  name: 'Hidden Fates',    secondary: true, alsoFetch: ['sma'] },
-  { id: 'sm10',   name: 'Unbroken Bonds',  secondary: true },
-  { id: 'sm11',   name: 'Unified Minds',   secondary: true },
-  { id: 'sm12',   name: 'Cosmic Eclipse',  secondary: true },
-  { id: 'sm8',    name: 'Lost Thunder',    secondary: true },
-  { id: 'xy12',   name: 'Evolutions',      secondary: true },
-  { id: 'xy10',   name: 'Fates Collide',   secondary: true },
-  { id: 'xy11',   name: 'Steam Siege',     secondary: true },
-  { id: 'xy9',    name: 'BREAKpoint',      secondary: true },
-  { id: 'xy8',    name: 'BREAKthrough',    secondary: true },
-  { id: 'xy6',    name: 'Roaring Skies',   secondary: true },
-  // vintage (sold only via the Vintage Vault) — most desirable older chase sets
-  { id: 'ex15',    name: 'EX Dragon Frontiers',    vintage: true },
+
+  // ===================== SECONDARY — online + vendor-show finds (not sold fresh) =====================
+  // Older but still-findable aftermarket product. Surfaces at show-floor booths and online listings,
+  // never on a distributor's fresh shelf. Full product lineups (unlike the single-pack vintage packs).
+  // --- Scarlet & Violet (early, out of fresh print) ---
+  { id: 'sv4pt5',   name: 'Paldean Fates',    secondary: true },
+  { id: 'sv4',      name: 'Paradox Rift',     secondary: true },
+  { id: 'sv3',      name: 'Obsidian Flames',  secondary: true },
+  { id: 'sv2',      name: 'Paldea Evolved',   secondary: true },
+  { id: 'sv1',      name: 'Scarlet & Violet', secondary: true },
+  // --- Sword & Shield era ---
+  // Crown Zenith ships a 70-card "Galarian Gallery" subset (swsh12pt5gg); merge it so the set is complete.
+  { id: 'swsh12pt5', name: 'Crown Zenith',    secondary: true, alsoFetch: ['swsh12pt5gg'] },
+  { id: 'swsh12',   name: 'Silver Tempest',   secondary: true },
+  { id: 'swsh11',   name: 'Lost Origin',      secondary: true },
+  { id: 'swsh10',   name: 'Astral Radiance',  secondary: true },
+  { id: 'swsh9',    name: 'Brilliant Stars',  secondary: true },
+  { id: 'swsh8',    name: 'Fusion Strike',    secondary: true },
+  { id: 'swsh7',    name: 'Evolving Skies',   secondary: true },
+  { id: 'swsh6',    name: 'Chilling Reign',   secondary: true },
+  { id: 'swsh5',    name: 'Battle Styles',    secondary: true },
+  // Shining Fates ships a 122-card "Shiny Vault" subset (swsh45sv — shiny Charizard VMAX etc.); merge it.
+  { id: 'swsh45',   name: 'Shining Fates',    secondary: true, alsoFetch: ['swsh45sv'] },
+  { id: 'swsh4',    name: 'Vivid Voltage',    secondary: true },
+  { id: 'swsh35',   name: "Champion's Path",  secondary: true },
+  { id: 'swsh3',    name: 'Darkness Ablaze',  secondary: true },
+  { id: 'swsh2',    name: 'Rebel Clash',      secondary: true },
+  { id: 'swsh1',    name: 'Sword & Shield',   secondary: true },
+  // --- Sun & Moon era ---
+  { id: 'sm12',   name: 'Cosmic Eclipse',   secondary: true },
+  { id: 'sm11',   name: 'Unified Minds',    secondary: true },
+  // Hidden Fates ships a 94-card "Shiny Vault" subset (sma — shiny Charizard-GX etc.); merge it.
+  { id: 'sm115',  name: 'Hidden Fates',     secondary: true, alsoFetch: ['sma'] },
+  { id: 'sm10',   name: 'Unbroken Bonds',   secondary: true },
+  { id: 'sm9',    name: 'Team Up',          secondary: true },
+  { id: 'sm8',    name: 'Lost Thunder',     secondary: true },
+  { id: 'sm75',   name: 'Dragon Majesty',   secondary: true },
+  { id: 'sm7',    name: 'Celestial Storm',  secondary: true },
+  { id: 'sm6',    name: 'Forbidden Light',  secondary: true },
+  { id: 'sm5',    name: 'Ultra Prism',      secondary: true },
+  { id: 'sm4',    name: 'Crimson Invasion', secondary: true },
+  { id: 'sm35',   name: 'Shining Legends',  secondary: true },
+  { id: 'sm3',    name: 'Burning Shadows',  secondary: true },
+  { id: 'sm2',    name: 'Guardians Rising', secondary: true },
+  { id: 'sm1',    name: 'Sun & Moon',       secondary: true },
+  // --- XY era ---
+  { id: 'xy12',   name: 'Evolutions',       secondary: true },
+  { id: 'xy11',   name: 'Steam Siege',      secondary: true },
+  { id: 'xy10',   name: 'Fates Collide',    secondary: true },
+  { id: 'xy9',    name: 'BREAKpoint',       secondary: true },
+  { id: 'xy8',    name: 'BREAKthrough',     secondary: true },
+  { id: 'xy7',    name: 'Ancient Origins',  secondary: true },
+  { id: 'xy6',    name: 'Roaring Skies',    secondary: true },
+  { id: 'xy5',    name: 'Primal Clash',     secondary: true },
+  { id: 'xy4',    name: 'Phantom Forces',   secondary: true },
+  { id: 'xy3',    name: 'Furious Fists',    secondary: true },
+  { id: 'xy2',    name: 'Flashfire',        secondary: true },
+  { id: 'xy1',    name: 'XY',               secondary: true },
+  { id: 'g1',     name: 'Generations',      secondary: true },
+  // Celebrations (2021, out of print) — 25-card main + 25-card Classic Collection reprints (cel25c).
+  { id: 'cel25',  name: 'Celebrations',     secondary: true, alsoFetch: ['cel25c'] },
+
+  // ===================== VINTAGE — out-of-print chase; surfaces as random finds =====================
+  // --- Black & White / Call of Legends ---
+  { id: 'bw11',    name: 'Legendary Treasures',  vintage: true },
+  { id: 'bw9',     name: 'Plasma Freeze',        vintage: true },
+  { id: 'bw1',     name: 'Black & White',        vintage: true },
+  { id: 'col1',    name: 'Call of Legends',      vintage: true },
+  // --- HeartGold & SoulSilver ---
+  { id: 'hgss1',   name: 'HeartGold SoulSilver', vintage: true },
+  { id: 'hgss4',   name: 'Triumphant',           vintage: true },
+  // --- Diamond & Pearl ---
+  { id: 'dp1',     name: 'Diamond & Pearl',      vintage: true },
+  { id: 'dp3',     name: 'Secret Wonders',       vintage: true },
+  // --- EX era ---
+  { id: 'ex16',    name: 'Power Keepers',        vintage: true },
+  { id: 'ex15',    name: 'EX Dragon Frontiers',  vintage: true },
+  { id: 'ex14',    name: 'Crystal Guardians',    vintage: true },
+  { id: 'ex13',    name: 'Holon Phantoms',       vintage: true },
+  { id: 'ex12',    name: 'Legend Maker',         vintage: true },
+  { id: 'ex11',    name: 'Delta Species',        vintage: true },
+  { id: 'ex10',    name: 'Unseen Forces',        vintage: true },
+  { id: 'ex9',     name: 'Emerald',              vintage: true },
+  { id: 'ex8',     name: 'EX Deoxys',            vintage: true },
   { id: 'ex7',     name: 'EX Team Rocket Returns', vintage: true },
-  { id: 'ex8',     name: 'EX Deoxys',              vintage: true },
-  { id: 'ecard3',  name: 'Skyridge',               vintage: true },
-  { id: 'neo4',    name: 'Neo Destiny',            vintage: true },
-  { id: 'ecard2',  name: 'Aquapolis',              vintage: true },
-  { id: 'neo1',    name: 'Neo Genesis',            vintage: true },
-  { id: 'base6',   name: 'Legendary Collection',   vintage: true },
+  { id: 'ex6',     name: 'FireRed & LeafGreen',  vintage: true },
+  { id: 'ex5',     name: 'Hidden Legends',       vintage: true },
+  { id: 'ex4',     name: 'Team Magma vs Team Aqua', vintage: true },
+  { id: 'ex3',     name: 'Dragon',               vintage: true },
+  { id: 'ex2',     name: 'Sandstorm',            vintage: true },
+  { id: 'ex1',     name: 'Ruby & Sapphire',      vintage: true },
+  // --- WOTC (1999–2002) ---
+  { id: 'ecard3',  name: 'Skyridge',             vintage: true },
+  { id: 'ecard2',  name: 'Aquapolis',            vintage: true },
+  { id: 'ecard1',  name: 'Expedition',           vintage: true },
+  { id: 'neo4',    name: 'Neo Destiny',          vintage: true },
+  { id: 'neo3',    name: 'Neo Revelation',       vintage: true },
+  { id: 'neo2',    name: 'Neo Discovery',        vintage: true },
+  { id: 'neo1',    name: 'Neo Genesis',          vintage: true },
+  { id: 'gym2',    name: 'Gym Challenge',        vintage: true },
+  { id: 'gym1',    name: 'Gym Heroes',           vintage: true },
+  { id: 'base5',   name: 'Team Rocket',          vintage: true },
+  { id: 'base4',   name: 'Base Set 2',           vintage: true },
+  { id: 'base3',   name: 'Fossil',               vintage: true },
+  { id: 'base2',   name: 'Jungle',               vintage: true },
+  { id: 'base1',   name: 'Base Set',             vintage: true },
+  { id: 'base6',   name: 'Legendary Collection', vintage: true },
 ]
 // Sets flagged `vintage` are NOT sold in the normal shop — they only surface via
 // the rare "Vintage Vault" vendor that occasionally appears at higher-tier shows.
@@ -91,7 +177,12 @@ const EN_RARITY_MAP = {
   'Rare Ultra':     'Ultra Rare',          // modern/Generations full-art ultra
   'Rare Holo V':    'Ultra Rare',          // SWSH-era V (Celebrations reprints) — chase tier
   'Rare Holo VMAX': 'Ultra Rare',          // SWSH-era VMAX (Celebrations reprints) — chase tier
+  'Rare Holo VSTAR': 'Ultra Rare',         // SWSH-era VSTAR (Brilliant Stars+) — chase tier
   'Radiant Rare':   'Ultra Rare',          // SWSH Radiant — same era, map preemptively
+  'Amazing Rare':   'Ultra Rare',          // SWSH Amazing Rare (Vivid Voltage era)
+  'Trainer Gallery Rare Holo': 'Illustration Rare', // SWSH Trainer/Galarian Gallery alt-arts
+  'Rare Shiny V':    'Special Illustration Rare', // Shining Fates Shiny Vault
+  'Rare Shiny VMAX': 'Hyper Rare',         // Shiny Vault VMAX
   'Classic Collection': 'Special Illustration Rare', // Celebrations Classic reprints (Base Zard etc.)
   // SM / XY-era chases (aftermarket sets: Team Up, Hidden Fates, Evolutions, Fates Collide…)
   'Rare Holo GX':   'Ultra Rare',          // SM GX full-bodies
@@ -134,41 +225,113 @@ const RARITY_ID_OVERRIDE = {
 // Maps our set ids → TCGplayer group ids on tcgcsv.com (category 3).
 const TCGCSV = 'https://tcgcsv.com/tcgplayer/3'
 const SET_GROUP = {
-  sv8pt5:   23821, // Prismatic Evolutions
+  // --- SHOP (in-print) ---
+  me4:      24655, // Chaos Rising
+  me3:      24587, // Perfect Order
+  me2pt5:   24541, // Ascended Heroes
+  me2:      24448, // Phantasmal Flames
+  me1:      24380, // Mega Evolution
   zsv10pt5: 24325, // Black Bolt
   rsv10pt5: 24326, // White Flare
   sv10:     24269, // Destined Rivals
+  sv9:      24073, // Journey Together
+  sv8:      23651, // Surging Sparks
+  sv8pt5:   23821, // Prismatic Evolutions
+  sv7:      23537, // Stellar Crown
+  sv6pt5:   23529, // Shrouded Fable
+  sv6:      23473, // Twilight Masquerade
+  sv5:      23381, // Temporal Forces
   sv3pt5:   23237, // 151
-  cel25:    2867,  // Celebrations
-  g1:       1728,  // Generations
-  base1:    604,   // Base Set (1999) — vintage vault product
-  me1:      24380, // Mega Evolution
-  me2:      24448, // Phantasmal Flames
-  me2pt5:   24541, // Ascended Heroes
-  me3:      24587, // Perfect Order
-  me4:      24655, // Chaos Rising
-  // aftermarket (find-only) older sets — TCGplayer group ids for sealed products + price fallback
-  sm9:     2377,   // SM Team Up
-  sm115:   2480,   // Hidden Fates
-  sm10:    2420,   // SM Unbroken Bonds
-  sm11:    2464,   // SM Unified Minds
-  sm12:    2534,   // SM Cosmic Eclipse
-  sm8:     2328,   // SM Lost Thunder
-  xy12:    1842,   // XY Evolutions
-  xy10:    1780,   // XY Fates Collide (Mega Zygarde-EX product line)
-  xy11:    1815,   // XY Steam Siege
-  xy9:     1701,   // XY BREAKpoint
-  xy8:     1661,   // XY BREAKthrough
-  xy6:     1534,   // XY Roaring Skies
-  // vintage sets — used for sealed products + singles price fallback
-  ex15:    1411,   // EX Dragon Frontiers
-  ex7:     1428,   // EX Team Rocket Returns
-  ex8:     1404,   // EX Deoxys
-  ecard3:  1372,   // Skyridge
-  neo4:    1444,   // Neo Destiny
-  ecard2:  1397,   // Aquapolis
-  neo1:    1396,   // Neo Genesis
-  base6:   1374,   // Legendary Collection
+  // --- SECONDARY (aftermarket) — TCGplayer group ids for sealed products + singles price fallback ---
+  sv4pt5:  23353, // Paldean Fates
+  sv4:     23286, // Paradox Rift
+  sv3:     23228, // Obsidian Flames
+  sv2:     23120, // Paldea Evolved
+  sv1:     22873, // Scarlet & Violet Base
+  swsh12pt5: 17688, // Crown Zenith
+  swsh12:  3170,  // Silver Tempest
+  swsh11:  3118,  // Lost Origin
+  swsh10:  3040,  // Astral Radiance
+  swsh9:   2948,  // Brilliant Stars
+  swsh8:   2906,  // Fusion Strike
+  swsh7:   2848,  // Evolving Skies
+  swsh6:   2807,  // Chilling Reign
+  swsh5:   2765,  // Battle Styles
+  swsh45:  2754,  // Shining Fates
+  swsh4:   2701,  // Vivid Voltage
+  swsh35:  2685,  // Champion's Path
+  swsh3:   2675,  // Darkness Ablaze
+  swsh2:   2626,  // Rebel Clash
+  swsh1:   2585,  // Sword & Shield Base
+  sm12:    2534,  // SM Cosmic Eclipse
+  sm11:    2464,  // SM Unified Minds
+  sm115:   2480,  // Hidden Fates
+  sm10:    2420,  // SM Unbroken Bonds
+  sm9:     2377,  // SM Team Up
+  sm8:     2328,  // SM Lost Thunder
+  sm75:    2295,  // Dragon Majesty
+  sm7:     2278,  // SM Celestial Storm
+  sm6:     2209,  // SM Forbidden Light
+  sm5:     2178,  // SM Ultra Prism
+  sm4:     2071,  // SM Crimson Invasion
+  sm35:    2054,  // Shining Legends
+  sm3:     1957,  // SM Burning Shadows
+  sm2:     1919,  // SM Guardians Rising
+  sm1:     1863,  // SM Base Set
+  xy12:    1842,  // XY Evolutions
+  xy11:    1815,  // XY Steam Siege
+  xy10:    1780,  // XY Fates Collide
+  xy9:     1701,  // XY BREAKpoint
+  xy8:     1661,  // XY BREAKthrough
+  xy7:     1576,  // XY Ancient Origins
+  xy6:     1534,  // XY Roaring Skies
+  xy5:     1509,  // XY Primal Clash
+  xy4:     1494,  // XY Phantom Forces
+  xy3:     1481,  // XY Furious Fists
+  xy2:     1464,  // XY Flashfire
+  xy1:     1387,  // XY Base Set
+  cel25:   2867,  // Celebrations
+  g1:      1728,  // Generations
+  // --- VINTAGE — sealed products + singles price fallback ---
+  bw11:    1409,  // Legendary Treasures
+  bw9:     1382,  // Plasma Freeze
+  bw1:     1400,  // Black & White
+  col1:    1415,  // Call of Legends
+  hgss1:   1402,  // HeartGold SoulSilver
+  hgss4:   1381,  // HS Triumphant
+  dp1:     1430,  // Diamond & Pearl
+  dp3:     1380,  // Secret Wonders
+  ex16:    1383,  // Power Keepers
+  ex15:    1411,  // EX Dragon Frontiers
+  ex14:    1395,  // Crystal Guardians
+  ex13:    1379,  // Holon Phantoms
+  ex12:    1378,  // Legend Maker
+  ex11:    1429,  // Delta Species
+  ex10:    1398,  // Unseen Forces
+  ex9:     1410,  // Emerald
+  ex8:     1404,  // EX Deoxys
+  ex7:     1428,  // EX Team Rocket Returns
+  ex6:     1419,  // FireRed & LeafGreen
+  ex5:     1416,  // Hidden Legends
+  ex4:     1377,  // Team Magma vs Team Aqua
+  ex3:     1376,  // Dragon
+  ex2:     1392,  // Sandstorm
+  ex1:     1393,  // Ruby & Sapphire
+  ecard3:  1372,  // Skyridge
+  ecard2:  1397,  // Aquapolis
+  ecard1:  1375,  // Expedition
+  neo4:    1444,  // Neo Destiny
+  neo3:    1389,  // Neo Revelation
+  neo2:    1434,  // Neo Discovery
+  neo1:    1396,  // Neo Genesis
+  gym2:    1440,  // Gym Challenge
+  gym1:    1441,  // Gym Heroes
+  base5:   1373,  // Team Rocket
+  base4:   605,   // Base Set 2
+  base3:   630,   // Fossil
+  base2:   635,   // Jungle
+  base1:   604,   // Base Set (1999)
+  base6:   1374,  // Legendary Collection
 }
 
 // Classify a sealed product by name → { type, packs, bonus }.

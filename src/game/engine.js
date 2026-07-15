@@ -50,7 +50,11 @@ export function preloadCardImages(cards) {
 // rare "Vintage Vault" vendor at higher-tier shows).
 // Modern, in-print product the distributors sell fresh. Excludes vintage (Vault-only) AND
 // secondary (older "aftermarket" sets you find rather than buy fresh — see SECONDARY_SETS).
+// Sorted NEWEST → OLDEST by release date so the "first dibs on new sets" logic in
+// distributorCatalog is correct no matter what order sets.json is written in (a scoped
+// re-fetch appends fetched sets, which would otherwise scramble release order).
 export const SHOP_SETS = data.sets.filter(s => !s.vintage && !s.secondary)
+  .sort((a, b) => String(b.releaseDate || '').localeCompare(String(a.releaseDate || '')))
 // Vintage sets, keyed for the Vault vendor. The Vault sells these heavy old packs.
 export const VINTAGE_SETS = data.sets.filter(s => s.vintage)
 // Aftermarket / "still findable" older sets (SM + XY era). Not sold by modern distributors;
@@ -1868,13 +1872,14 @@ const LGS_SHELF_SIZE = 5
 const NEW_EXCLUSIVE_COUNT = 1
 
 // Which sets a retailer carries right now. `weekIndex` rotates the LGS shelf.
-// `sets` is the in-print shop list (SHOP_SETS), newest last. Perk-driven (not id-based).
+// `sets` is the in-print shop list (SHOP_SETS), newest FIRST (see the sort above). Perk-driven
+// (not id-based): first-dibs gets the newest N; everyone else is behind on the very newest.
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
-  if (dist.firstDibs) return sets.slice(Math.max(0, sets.length - NEW_SET_COUNT)) // newest releases (incl. the exclusive)
+  if (dist.firstDibs) return sets.slice(0, NEW_SET_COUNT)  // the newest releases (incl. the exclusive)
   // Everyone else can't get the very newest release yet — it's the first-dibs seller's
   // exclusive until it filters out to the wider market. Drop it from their shelves.
-  const wide = sets.slice(0, Math.max(0, sets.length - NEW_EXCLUSIVE_COUNT))
+  const wide = sets.slice(NEW_EXCLUSIVE_COUNT)
   if (dist.cases) return wide.filter(s => caseLot(s))                             // box/case-friendly sets
   if (dist.rotating) {                                                            // small weekly shelf
     const n = wide.length
