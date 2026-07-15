@@ -136,6 +136,16 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .tab.active { background: var(--accent2); color: #fff; }
 .tab:hover:not(.active) { color: var(--txt); background: var(--hover); }
 
+/* Half-width desktop windows (above the 640px phone breakpoint, but too narrow for the
+   brand + figures + inline tab strip to share one row): the right-side cluster is
+   fixed-width and wide, so it starves the flexible .tabs strip down to an unusable
+   scrolling sliver. Let the bar wrap and drop the tab strip to its own full-width row
+   so all six tabs stay visible. */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .topbar { flex-wrap: wrap; }
+  .tabs { order: 1; flex-basis: 100%; }
+}
+
 /* ⚙️ gear button in the top bar (opens Settings + Stats overlay) */
 .gear-btn { flex: 0 0 auto; background: #ffffff10; border: 1px solid var(--line); color: var(--dim);
   width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; line-height: 1; }
