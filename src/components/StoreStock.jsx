@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, floorCount, floorSkuCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
-import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard } from '../game/engine'
+import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 
 // The grouped-by-SET inventory view shared by all three stock places:
@@ -47,8 +47,16 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
   const onFloorNow = useGame(floorCount)       // total items out front (for the readout)
   const floorSkus = useMemo(() => floorSkuCounts({ collection, sealedInventory }), [collection, sealedInventory])
   const restockFloor = useGame(s => s.restockFloor)
+  const moveStock = useGame(s => s.moveStock)
+  const submitGradesBulk = useGame(s => s.submitGradesBulk)
+  const gradesSubmitted = useGame(s => s.gradesSubmitted)
   const [toast, setToast] = useState(null)
   const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2600) }
+
+  // Multi-select: pick whole SKU lines, then act on all of them at once (bulk moves + grade).
+  const [selectMode, setSelectMode] = useState(false)
+  const [picked, setPicked] = useState(() => new Set()) // set of line keys
+  const [gradeTier, setGradeTier] = useState('economy')
 
   const { groups, totalValue, totalCount } = useMemo(() => {
     let cards, sealed
@@ -70,6 +78,42 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
 
   const meta = PLACE[place]
 
+  // Flatten to lines for select-all + the selection's derived totals.
+  const allLines = useMemo(() => groups.flatMap(g => g.lines), [groups])
+  const selectedLines = useMemo(() => allLines.filter(l => picked.has(l.key)), [allLines, picked])
+  const sel = useMemo(() => {
+    const cardUids = [], sealedUids = [], rawCardUids = []
+    let value = 0, count = 0
+    for (const l of selectedLines) {
+      count += l.count
+      for (const it of l.items) {
+        value += l.kind === 'sealed' ? sealedValue(it) : cardValue(it)
+        if (l.kind === 'sealed') sealedUids.push(it.uid)
+        else { cardUids.push(it.uid); if (!it.grade) rawCardUids.push(it.uid) }
+      }
+    }
+    return { cardUids, sealedUids, rawCardUids, value, count }
+  }, [selectedLines])
+  const gradeTotal = round2(gradingFee(gradeTier, gradesSubmitted, sel.rawCardUids.length || 1) * sel.rawCardUids.length)
+
+  function toggleLine(key) { setPicked(p => { const n = new Set(p); n.has(key) ? n.delete(key) : n.add(key); return n }) }
+  function selectAll() { setPicked(p => (p.size === allLines.length ? new Set() : new Set(allLines.map(l => l.key)))) }
+  function exitSelect() { setSelectMode(false); setPicked(new Set()) }
+  function bulkMove(dest, verb) {
+    let moved = 0, capped = 0
+    if (sel.cardUids.length) { const r = moveStock('card', sel.cardUids, dest); moved += r.moved; capped += r.capped || 0 }
+    if (sel.sealedUids.length) { const r = moveStock('sealed', sel.sealedUids, dest); moved += r.moved; capped += r.capped || 0 }
+    flash(capped ? `${verb} ${moved} — ${capped} didn't fit the floor (per-line cap).` : `${verb} ${moved} item${moved === 1 ? '' : 's'}.`)
+    exitSelect()
+  }
+  function bulkGrade() {
+    if (!sel.rawCardUids.length) return
+    const n = sel.rawCardUids.length
+    submitGradesBulk(sel.rawCardUids, gradeTier)
+    flash(`Submitted ${n} card${n === 1 ? '' : 's'} to ${GRADING[gradeTier].name} grading.`)
+    exitSelect()
+  }
+
   return (
     <>
       {/* Header: what this place is + the floor depth readout + restock lever */}
@@ -79,14 +123,30 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
           {place === 'floor' && <> · <span className="muted">{onFloorNow} out front · up to {skuCap} of each · 🗝️ vintage unlimited</span></>}
           {place === 'storeroom' && <> · <span className="muted">backstock — sells routine counter orders; stock the floor for walk-ins & whales</span></>}
         </span>
-        {place !== 'personal' && (
-          <button className="btn" style={{ flex: 'none', marginLeft: 'auto', padding: '5px 12px' }}
-            title={`Fill each line up to ${skuCap} out front (vintage unlimited), best product first`}
-            onClick={() => { const n = restockFloor(); flash(n ? `Put ${n} item${n === 1 ? '' : 's'} out on the floor.` : 'Nothing to stock (storeroom empty or every line already out).') }}>
-            🛒 Stock the floor
-          </button>
-        )}
+        <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {totalCount > 0 && (
+            <button className={`btn ${selectMode ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '5px 12px' }}
+              onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}>
+              {selectMode ? '✕ Cancel' : '☑️ Select'}
+            </button>
+          )}
+          {selectMode && allLines.length > 0 && (
+            <button className="btn alt" style={{ flex: 'none', padding: '5px 12px' }} onClick={selectAll}>
+              {picked.size === allLines.length ? 'Deselect all' : `Select all (${allLines.length})`}
+            </button>
+          )}
+          {!selectMode && place !== 'personal' && (
+            <button className="btn" style={{ flex: 'none', padding: '5px 12px' }}
+              title={`Fill each line up to ${skuCap} out front (vintage unlimited), best product first`}
+              onClick={() => { const n = restockFloor(); flash(n ? `Put ${n} item${n === 1 ? '' : 's'} out on the floor.` : 'Nothing to stock (storeroom empty or every line already out).') }}>
+              🛒 Stock the floor
+            </button>
+          )}
+        </span>
       </div>
+      {selectMode && (
+        <p className="muted" style={{ fontSize: 12, margin: '2px 2px 6px' }}>Tap lines to select, then choose a bulk action below.</p>
+      )}
 
       {place === 'floor' && (
         <p className="muted" style={{ fontSize: 12, margin: '2px 2px 6px' }}>
@@ -106,11 +166,39 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
               <div className="stock-lines">
                 {g.lines.map(line => (
                   <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
-                    skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash} />
+                    skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash}
+                    selectMode={selectMode} selected={picked.has(line.key)} onToggle={() => toggleLine(line.key)} />
                 ))}
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {/* Floating bulk-action bar — appears when lines are selected. Actions are place-aware. */}
+      {selectMode && sel.count > 0 && (
+        <div className="bulk-bar">
+          <div className="bulk-bar-summary"><b>{sel.count} selected</b> · {fmtMoney(sel.value)} market</div>
+          <div className="bulk-bar-actions">
+            {place !== 'floor' && (
+              <button className="btn" onClick={() => bulkMove('floor', '🛒 Out on the floor —')}>🛒 To floor</button>
+            )}
+            {place !== 'storeroom' && (
+              <button className="btn alt" onClick={() => bulkMove('storeroom', '📦 To the storeroom —')}>📦 To storeroom</button>
+            )}
+            {place !== 'personal' && (
+              <button className="btn alt" onClick={() => bulkMove('personal', '🔒 Kept —')}>🔒 Keep (Personal)</button>
+            )}
+            {sel.rawCardUids.length > 0 && (
+              <div className="bulk-grade-group">
+                <select value={gradeTier} onClick={e => e.stopPropagation()} onChange={e => setGradeTier(e.target.value)}>
+                  {Object.entries(GRADING).map(([key, t]) => (
+                    <option key={key} value={key}>{t.name} · ~{t.days}d</option>
+                  ))}
+                </select>
+                <button className="btn alt" onClick={bulkGrade}>🔬 Grade {sel.rawCardUids.length} ({fmtMoney(gradeTotal)})</button>
+              </div>
+            )}
+          </div>
         </div>
       )}
       {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
@@ -119,7 +207,7 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
 }
 
 // One SKU line (identical copies stacked) + the actions that fit its place.
-function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash }) {
+function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash, selectMode, selected, onToggle }) {
   const moveStock = useGame(s => s.moveStock)
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const quickSell = useGame(s => s.quickSell)
@@ -151,12 +239,14 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
   }
 
   return (
-    <div className="trade-line stock-line">
+    <div className={`trade-line stock-line ${selectMode ? 'selectable' : ''} ${selected ? 'picked' : ''}`}
+      onClick={selectMode ? onToggle : undefined} style={selectMode ? { cursor: 'pointer' } : undefined}>
+      {selectMode && <span className={`stock-check ${selected ? 'on' : ''}`}>{selected ? '✓' : ''}</span>}
       {kind === 'card'
         ? <img className="tl-thumb" src={cardImg(first)} alt="" loading="lazy" decoding="async"
-            onClick={() => onPick && onPick(first)} style={onPick ? { cursor: 'pointer' } : undefined} />
+            onClick={selectMode ? undefined : () => onPick && onPick(first)} style={!selectMode && onPick ? { cursor: 'pointer' } : undefined} />
         : <span className="tl-icon">{first.product.icon || '📦'}</span>}
-      <div className="tl-info" onClick={() => kind === 'card' && onPick && onPick(first)} style={kind === 'card' && onPick ? { cursor: 'pointer' } : undefined}>
+      <div className="tl-info" onClick={selectMode ? undefined : () => kind === 'card' && onPick && onPick(first)} style={!selectMode && kind === 'card' && onPick ? { cursor: 'pointer' } : undefined}>
         <div className="tl-name">{featuredCopy ? '⭐ ' : ''}{label}</div>
         <div className="tl-sub muted">
           {kind === 'card' ? skuBadge(first) : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
@@ -165,8 +255,8 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
       <span className="tl-unit">{fmtMoney(unit)}</span>
       <span className="tl-count" title={`${count} in stock`}>×{count}</span>
 
-      {/* Move + sell actions per place */}
-      {place === 'floor' && <>
+      {/* Move + sell actions per place (hidden in select mode — use the bulk bar) */}
+      {!selectMode && place === 'floor' && <>
         {kind === 'card' && (
           <button className={`stock-act ${featuredCopy ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
         )}
@@ -175,7 +265,7 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
         {onHold && <button className="stock-act" title="Set one aside for a regular — they come pick it up at a premium" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
       </>}
 
-      {place === 'storeroom' && <>
+      {!selectMode && place === 'storeroom' && <>
         <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${skuCap} of this out front — the floor holds a few of each` : 'Put it out on the sales floor'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
         {onHold && <button className="stock-act" title="Save one for a regular — pick who from those who want it" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
         <button className="stock-act" title="Keep it for yourself (Personal)" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
@@ -189,7 +279,7 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
         </>}
       </>}
 
-      {place === 'personal' && <>
+      {!selectMode && place === 'personal' && <>
         {kind === 'sealed' && (
           <button className="stock-act" title="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
         )}
