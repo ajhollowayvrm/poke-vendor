@@ -980,24 +980,25 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
        on a modern iPhone (the indicator reserves ~34px), so the labels sat under it. max()
        keeps the 8px floor wherever there's no inset (Android, desktop) and reserves the real
        thing where there is one. */
-    padding: 3px 4px max(6px, var(--sab));
+    padding: 2px 4px max(4px, var(--sab));
     background: var(--bg);
     box-shadow: 0 -6px 24px #0007;
   }
   .bnav-btn {
-    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
-    background: transparent; border: 0; color: var(--dim); padding: 3px 2px 2px; border-radius: 12px;
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 0;
+    background: transparent; border: 0; color: var(--dim); padding: 2px; border-radius: 12px;
     font-weight: 700; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
   /* tight highlight: a pill hugging just the icon (not the full-width cell) */
   .bnav-btn.active { color: #fff; background: transparent; }
   .bnav-btn.active .bnav-icon { background: var(--accent2); }
   .bnav-btn:active { transform: scale(.95); }
-  .bnav-icon { position: relative; font-size: 20px; line-height: 1;
-    padding: 3px 12px; border-radius: 999px; }
-  /* labels shrink to fit the narrower per-tab width; truncate rather than wrap */
-  .bnav-label { font-size: 11px; line-height: 1; max-width: 100%; overflow: hidden;
-    text-overflow: ellipsis; white-space: nowrap; }
+  .bnav-icon { position: relative; font-size: 17px; line-height: 1;
+    padding: 2px 13px; border-radius: 999px; }
+  /* Icon-only bar to keep the footer half-height: the text labels (icon + label stacked)
+     roughly doubled the bar's height. The active tab is still marked by the filled pill
+     behind its icon, so which tab you're on stays obvious without the words. */
+  .bnav-label { display: none; }
   .bnav-badge {
     position: absolute; top: -5px; right: -10px; min-width: 15px; height: 15px; padding: 0 3px;
     border-radius: 999px; background: var(--red, #ff5e6c); color: #fff; font-size: 9.5px; font-weight: 900;
