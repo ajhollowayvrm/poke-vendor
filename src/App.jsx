@@ -756,6 +756,19 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   const supplyVendors = useGame(s => s.supplyVendors)
   const supplyChannel = useGame(s => s.supplyChannel || [])
   useGame(s => s.marketMults) // keep strike-through retail honest as the market drifts
+  // How many sealed copies of each product you already hold (set + product type), so the
+  // buy shelf shows "📦 N" on a line you're already sitting on. Sealed on hand all lives in
+  // sealedInventory (personal / storeroom / floor); a piece out at a show or in the pack
+  // machine has left that bucket and isn't counted here — this is your buyable-decision stock.
+  const sealedInventory = useGame(s => s.sealedInventory)
+  const ownedCounts = useMemo(() => {
+    const m = new Map()
+    for (const it of (sealedInventory || [])) {
+      const k = `${it.setId}|${it.product?.type || ''}`
+      m.set(k, (m.get(k) || 0) + 1)
+    }
+    return m
+  }, [sealedInventory])
   const [distId, setDistId] = useState(DISTRIBUTORS[0].id)
   const [toastMsg, setToastMsg] = useState(null)
   const flash = (m) => { setToastMsg(m); setTimeout(() => setToastMsg(null), 2600) }
@@ -791,7 +804,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         <div className="grid shop-grid">
           {catalog.map(set => (
             <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={rec.stock}
-              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} />
+              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={ownedCounts} />
           ))}
         </div>
       )}
@@ -865,7 +878,7 @@ function RapportBanner({ dist, rec, lvl }) {
 
 // One set on a distributor's shelf: its products (priced at your rapport), plus a case
 // lot (if they sell cases and you've earned it) and a clearance lot (Greg, weekly).
-function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance }) {
+function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned }) {
   const products = setProducts(set)
   const showCases = dist.cases && lvl.level >= dist.casesMinLevel
   const lot = showCases ? caseLot(set) : null
@@ -877,15 +890,15 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance }) {
       <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
       <div className="prodlist">
         {products.map(p => (
-          <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} />
+          <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} />
         ))}
         {lot && (
           <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy}
-            product={{ ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, bonus: lot.bonus, boxes: lot.boxes, _retail: lot.retail, _case: true }} />
+            product={{ ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, bonus: lot.bonus, boxes: lot.boxes, _retail: lot.retail, _case: true }} owned={owned} />
         )}
         {clearance && box && (
           <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy}
-            product={{ ...box, type: `Clearance ${box.type}`, icon: '🏷️', _clearanceOf: box.price, _clearance: true }} />
+            product={{ ...box, type: `Clearance ${box.type}`, icon: '🏷️', _clearanceOf: box.price, _clearance: true }} owned={owned} />
         )}
       </div>
     </div>
@@ -896,7 +909,8 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance }) {
 // bar, and disables itself when sold out (with a restock ETA) or you can't afford it.
 // A quantity stepper lets you buy several at once (type "10" → ten ETBs in one purchase),
 // capped to what's in stock and what you can afford.
-function StockButton({ dist, set, product, lvl, stock, cash, onBuy }) {
+function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned }) {
+  const ownedN = owned?.get(`${set.id}|${product.type}`) || 0 // sealed copies of this exact line you already hold
   let price
   if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
   else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level) * 0.65)
@@ -943,6 +957,7 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy }) {
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN)}
         title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now`}>
         <span className="prodname">{product.icon} {product.type}</span>
+        {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
         <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}</span>
         <StockBar qty={stockQty} cap={cap} out={out} days={days} color={dist.color} />
