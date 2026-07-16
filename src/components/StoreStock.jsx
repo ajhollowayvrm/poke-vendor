@@ -73,6 +73,22 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
   const [pickedUids, setPickedUids] = useState(() => new Set()) // grid: set of card/sealed uids
   const [gradeTier, setGradeTier] = useState('economy')
 
+  // Click a set's title to collapse its lines (the header keeps showing count + value, so a
+  // collapsed set still reads at a glance). Sticky per-place via localStorage so folding a set
+  // away survives a reload. Keyed by setId within this place.
+  const collapseKey = `pv-collapsed-${place}`
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(collapseKey) || '[]')) } catch { return new Set() }
+  })
+  function toggleCollapse(setId) {
+    setCollapsed(prev => {
+      const next = new Set(prev)
+      next.has(setId) ? next.delete(setId) : next.add(setId)
+      try { localStorage.setItem(collapseKey, JSON.stringify([...next])) } catch { /* private mode */ }
+      return next
+    })
+  }
+
   const { groups, totalValue, totalCount, cards, sealed } = useMemo(() => {
     let cards, sealed
     if (place === 'personal') {
@@ -231,20 +247,30 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
         </div>
       ) : (
         <div className="store-sets">
-          {groups.map(g => (
+          {groups.map(g => {
+            const isCollapsed = collapsed.has(g.setId)
+            return (
             <div key={g.setId} className="wants" style={{ marginTop: 10 }}>
-              <div className="wants-head">
-                {g.name} <span className="muted">— {g.count} item{g.count === 1 ? '' : 's'} · {fmtMoney(g.value)}</span>
+              <div className="wants-head" role="button" tabIndex={0} aria-expanded={!isCollapsed}
+                title={isCollapsed ? 'Show this set' : 'Hide this set'}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => toggleCollapse(g.setId)}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(g.setId) } }}>
+                <span aria-hidden style={{ display: 'inline-block', width: 12, fontSize: 10, opacity: 0.7, transition: 'transform .15s', transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}>▼</span>
+                {' '}{g.name} <span className="muted">— {g.count} item{g.count === 1 ? '' : 's'} · {fmtMoney(g.value)}</span>
               </div>
-              <div className="stock-lines">
-                {g.lines.map(line => (
-                  <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
-                    skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash}
-                    selectMode={selectMode} selected={picked.has(line.key)} onToggle={() => toggleLine(line.key)} />
-                ))}
-              </div>
+              {!isCollapsed && (
+                <div className="stock-lines">
+                  {g.lines.map(line => (
+                    <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
+                      skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash}
+                      selectMode={selectMode} selected={picked.has(line.key)} onToggle={() => toggleLine(line.key)} />
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
       {/* Floating bulk-action bar — appears when lines are selected. Actions are place-aware. */}
