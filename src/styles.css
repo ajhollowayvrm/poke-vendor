@@ -884,7 +884,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rip-summary-hits-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
   max-height: 300px; overflow-y: auto; }
 @media (max-width: 560px) { .rip-summary-hits-grid { grid-template-columns: 1fr; } }
-/* stack the side panels under the cards on narrow screens */
+/* stack the side panels under the cards on narrow screens (Livestream stage still uses these) */
 @media (max-width: 860px) {
   .rip-layout { flex-direction: column; align-items: stretch; }
   .rip-side { flex: none; }
@@ -893,6 +893,39 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .rip-hits-list { max-height: 220px; flex-direction: row; flex-wrap: wrap; }
   .rip-hit-row { flex: 1 1 45%; }
 }
+
+/* ---------- Rip screen: Cards / Hits tabs, big reveal grid, per-card footer ---------- */
+.rip-tabs { display:flex; gap:6px; justify-content:center; width:100%; max-width:1100px; }
+.rip-tab { background:#ffffff0e; border:1px solid var(--line); color:var(--dim);
+  padding:7px 18px; border-radius:999px; font-weight:800; font-size:13.5px; cursor:pointer;
+  transition: background .12s, color .12s, border-color .12s; }
+.rip-tab:hover:not(.active) { background: var(--hover); color: var(--txt); }
+.rip-tab.active { background: var(--accent2); color:#fff; border-color: var(--accent2); }
+
+.rip-cards-pane { display:flex; flex-direction:column; align-items:center; gap:16px; width:100%; }
+.rip-pack-summary { max-width:760px; }
+
+/* Every revealed card gets the star treatment: a big tile that lands with its own name +
+   value footer. Cells top-align so a just-flipped card's footer doesn't shove its neighbours. */
+.rip-reveal-grid { align-items:flex-start; gap:22px 18px; }
+.rip-cell { display:flex; flex-direction:column; align-items:center; width:190px; }
+.rip-cell .reveal-card { width:190px; }
+.rip-cell-foot { background:none; border:none; color:inherit; cursor:pointer; padding:0;
+  margin-top:10px; width:100%; text-align:center; animation: foilpop .3s cubic-bezier(.2,1.4,.5,1); }
+.rc-name { font-weight:800; font-size:13.5px; line-height:1.2; }
+.rc-meta { font-size:11px; font-weight:700; margin-top:2px; }
+.rc-val { font-size:15px; font-weight:900; color:var(--green); margin-top:3px; }
+.rc-badges { display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:5px; }
+.rc-want { font-size:10.5px; font-weight:800; color:var(--gold); }
+.rip-cell-foot:hover .rc-name { text-decoration: underline; }
+
+/* Hits tab: a full-width panel of hit rows (reuses .rip-hit-row, made tappable → card page) */
+.rip-hits-pane { width:100%; max-width:760px; background: linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--line); border-radius:14px; padding:14px; }
+.rip-hits-panel-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+button.rip-hit-row { width:100%; text-align:left; border:none; border-left:3px solid var(--rarity,var(--line));
+  cursor:pointer; font:inherit; color:inherit; transition: background .12s; }
+button.rip-hit-row:hover { background:#ffffff14; }
 
 /* ---------- Shop product list ---------- */
 .prodlist { display:flex; flex-direction:column; gap:6px; margin-top:auto; }
@@ -1667,6 +1700,15 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   .rip-overlay .stage { gap: 12px; padding: 10px 0 6px; }
   /* the rip's side panels stack under the cards on a phone — don't let them eat the width */
   .rip-overlay .rip-side { flex: 1 1 auto; align-self: stretch; }
+
+  /* Big-card reveal grid on a phone: a clean 2-up grid so each pull still reads as a feature,
+     with its name/value footer beneath. (Explicit 2-col grid beats flex-wrap here — at 44vw the
+     cells sat a hair over half-width and wrapped to one giant card per row.) Overrides the 96px
+     reveal-card above for grid cells. */
+  .rip-overlay .rip-reveal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }
+  .rip-overlay .rip-cell { width: auto; }
+  .rip-overlay .rip-cell .reveal-card { width: 100%; }
+  .rip-overlay .rip-hits-pane { padding: 12px; }
 
   /* Pack-done controls (Next pack / Rip another / Done) are pulled to the TOP of the stage
      by design (above the cards). On desktop the whole column fits, so "top" is in view. On a

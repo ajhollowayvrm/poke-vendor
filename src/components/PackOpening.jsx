@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
+import CardModal from './CardModal'
 import HoloCard from './HoloCard'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxTension, sfxGod } from '../game/feedback'
@@ -32,8 +34,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [burst, setBurst] = useState(false)
   const [isGod, setIsGod] = useState(false)
   const [isDemigod, setIsDemigod] = useState(false)
-  const [current, setCurrent] = useState(null)    // the card being revealed right now (side callout)
-  const [hits, setHits] = useState([])            // every hit/foil pulled this whole rip (right list)
+  const [hits, setHits] = useState([])            // every hit/foil pulled this whole rip (Hits tab)
+  const [tab, setTab] = useState('cards')         // rip screen: 'cards' (the reveal grid) | 'hits'
+  const [modalCard, setModalCard] = useState(null) // a revealed card tapped for its full read-only card page
   const [finished, setFinished] = useState(false) // whole product done
   const [extra, setExtra] = useState([])          // promo + fast-forwarded packs (for the summary)
   const [ripValue, setRipValue] = useState(0)     // cumulative card value across the WHOLE rip
@@ -81,7 +84,6 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     const demigod = !!cards._demigod
     setIsGod(god)
     setIsDemigod(demigod)
-    setCurrent(null)
     setAwaiting(false)
     setSuspenseIdx(-1)
     setPulls(cards)
@@ -126,7 +128,6 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     }
     setShown(i + 1)
     const special = c._isHit || c.foil || c._fillsWant
-    setCurrent(c) // side callout names every card as it lands
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
       setHits(h => [c, ...h])
@@ -178,8 +179,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function resetForNext() {
     committed.current = false
     autoRipped.current = false
-    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false); setCurrent(null)
-    setAwaiting(false); setSuspenseIdx(-1); setTear(0)
+    setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false)
+    setAwaiting(false); setSuspenseIdx(-1); setTear(0); setTab('cards')
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -252,6 +253,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const ripCost = product?.price ?? packPrice(set) * totalPacks
   const ripProfit = ripValue - ripCost
 
+  // Tapping any revealed card (in the grid, the Hits tab, or the finished summary) opens its
+  // full card page — read-only, since mid-rip you're studying the pull, not selling it. It's
+  // portalled to <body> so it escapes the rip overlay's stacking context and paints over the
+  // top bar like every other modal (the overlay itself sits below the bar at z-25).
+  const modalEl = modalCard && createPortal(
+    <CardModal card={modalCard} readOnly onClose={() => setModalCard(null)} />, document.body)
+
   if (finished) {
     const promo = extra.find(c => c._promo)
     return (
@@ -288,7 +296,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   // the "is this worth grading?" call, made right here instead of card-by-card.
                   const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
                   return (
-                    <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
+                    <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}
+                      onClick={() => setModalCard(c)} title="Tap for the full card details">
                       <img src={cardImg(c)} alt="" />
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -296,8 +305,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                           {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
                         </div>
                         {cut && (
-                          <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}
-                            title={hasLoupe ? `Cut: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}` : "An eyeball read — the 🔍 Jeweler's Loupe gives a precise one."}>
+                          <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>
                             👁️ {cut.short}
                           </span>
                         )}
@@ -307,12 +315,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                         {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10 / PSA 9">💎 10 {fmtMoney(psaValueAt(c, 10))} · 9 {fmtMoney(psaValueAt(c, 9))}</div>}
                         {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                       </div>
-                    </div>
+                    </button>
                   )
                 })}
               </div>
             )}
           </div>
+          {modalEl}
           <div className="row" style={{ justifyContent: 'center', marginTop: 12 }}>
             {onRipAnother && (
               <button
@@ -338,6 +347,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const packTotal = pulls.reduce((a, c) => a + cardValue(c), 0)
   const profit = packTotal - packPrice(set)
   const multi = totalPacks > 1
+  // Count true rarity/foil hits only for the tab badge; wanted cards still list on the Hits
+  // tab (with their ⭐) but don't inflate the tally — matches the game's "hit" meaning.
+  const hitCount = hits.filter(c => c._isHit || c.foil).length
   // packs still un-opened: the current one counts only while it's idle (not yet ripped)
   const remainingToOpen = totalPacks - packNo + (phase === 'idle' ? 1 : 0)
   // manual mode: is the next card to flip a chase? (drives the spotlight + tap hint)
@@ -431,41 +443,60 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
             </div>
           )}
 
-          {/* TOP — running list of hits for the whole rip (horizontal strip above the reveal) */}
-          <HitList hits={hits} hasLoupe={hasLoupe} />
+          {/* Two views of the same rip: the reveal grid, and a running Hits list on its own
+              tab (kept off the reveal so it doesn't crowd the cards). */}
+          <div className="rip-tabs">
+            <button className={`rip-tab ${tab === 'cards' ? 'active' : ''}`} onClick={() => setTab('cards')}>🎴 Cards</button>
+            <button className={`rip-tab ${tab === 'hits' ? 'active' : ''}`} onClick={() => setTab('hits')}>
+              ✨ Hits{hitCount ? ` (${hitCount})` : ''}
+            </button>
+          </div>
 
-          <div className="rip-layout">
-            {/* LEFT — live callout naming every card as it reveals (and its cut read) */}
-            <NowRevealing card={current} hasLoupe={hasLoupe} />
-
-            {/* CENTER — the reveal row + pack-value summary */}
-            <div className="rip-center">
-              {/* a chase card being teased (auto suspense beat, or the next manual tap)
-                  dims the rest of the row to spotlight it */}
-              <div className={`reveal-row ${isGod ? 'god' : isDemigod ? 'demigod' : ''} ${(suspenseIdx >= 0 || nextIsChase) ? 'focus' : ''}`}>
+          {tab === 'cards' ? (
+            <div className="rip-cards-pane">
+              {/* Every card gets the star treatment: a big tile that lands with its own name +
+                  value, and opens its full card page on tap. A chase card being teased (auto
+                  suspense beat, or the next manual tap) dims the rest of the grid to spotlight it. */}
+              <div className={`reveal-row rip-reveal-grid ${isGod ? 'god' : isDemigod ? 'demigod' : ''} ${(suspenseIdx >= 0 || nextIsChase) ? 'focus' : ''}`}>
                 {pulls.map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   const chase = isChase(c)
                   const isShown = i < shown
                   const isNext = phase === 'revealing' && awaiting && i === shown // the card a manual tap will flip
                   const peek = chase && (suspenseIdx === i || isNext)
-                  // Tapping an already-flipped card pulls it back into the callout, so you can
-                  // read the cut on ANY card you just ripped — not only the one that landed last.
+                  const cut = isShown && !c.grade ? cutEstimate(c, hasLoupe) : null
                   return (
-                    <HoloCard key={c.uid} card={c} interactive={isShown}
-                      onClick={isNext ? advanceManual : isShown ? () => setCurrent(c) : undefined}
-                      extraStyle={{ '--rarity': edge }}
-                      className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
-                      <div className="flip">
-                        <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
-                        {/* decoding="async": never decode on the main thread mid-reveal —
-                            a sync decode here stalls the compositor and leaves cards frozen
-                            face-down mid-reveal. preloadCardImages() already warms the decoded
-                            bitmap (img.decode()), so the art is ready the instant the shimmer
-                            wipes it in. */}
-                        <div className="flip-front"><img src={cardImg(c)} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
-                      </div>
-                    </HoloCard>
+                    <div key={c.uid} className="rip-cell">
+                      <HoloCard card={c} interactive={isShown}
+                        onClick={isNext ? advanceManual : isShown ? () => setModalCard(c) : undefined}
+                        extraStyle={{ '--rarity': edge }}
+                        className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
+                        <div className="flip">
+                          <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
+                          {/* decoding="async": never decode on the main thread mid-reveal —
+                              a sync decode here stalls the compositor and leaves cards frozen
+                              face-down mid-reveal. preloadCardImages() already warms the decoded
+                              bitmap (img.decode()), so the art is ready the instant the shimmer
+                              wipes it in. */}
+                          <div className="flip-front"><img src={cardImg(c)} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
+                        </div>
+                      </HoloCard>
+                      {isShown && (
+                        <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
+                          <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
+                          <div className="rc-meta" style={{ color: edge }}>
+                            {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
+                          </div>
+                          <div className="rc-val">{fmtMoney(cardValue(c))}</div>
+                          {(cut || c._fillsWant) && (
+                            <div className="rc-badges">
+                              {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
+                              {c._fillsWant && <span className="rc-want">⭐ Want</span>}
+                            </div>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   )
                 })}
               </div>
@@ -473,7 +504,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                 <p className="rip-tap-hint">👆 Tap the {nextIsChase ? 'glowing ' : ''}card to reveal it</p>
               )}
               {phase === 'done' && (
-                <div style={{ textAlign: 'center' }}>
+                <div className="rip-pack-summary" style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 15, marginBottom: multi ? 4 : 8 }}>
                     Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
                     <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>
@@ -493,90 +524,39 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                     Cards added to your collection. Best pull:{' '}
                     <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
                   </p>
-                  <p className="muted" style={{ fontSize: 11.5, marginTop: 2 }}>👆 Tap any card to check its cut before you decide what to grade.</p>
+                  <p className="muted" style={{ fontSize: 11.5, marginTop: 2 }}>👆 Tap any card for its full details — cut, PSA-if-graded values, and price history.</p>
                 </div>
               )}
             </div>
-          </div>
+          ) : (
+            <HitsPane hits={hits} hitCount={hitCount} hasLoupe={hasLoupe} onInspect={setModalCard} />
+          )}
         </>
       )}
+      {modalEl}
     </div>
   )
 }
 
-// Left-side callout: names the card currently being revealed, tinted by rarity. Clicking any
-// already-revealed card in the row sends it back through here, so this doubles as the
-// "look closer at what I just pulled" panel for the whole pack.
-function NowRevealing({ card, hasLoupe }) {
+// The Hits tab: a full-width panel listing every hit/foil/wanted card pulled this rip, biggest
+// value first. Each row opens that card's full page (tap `onInspect`). Lives on its own tab so
+// it never crowds the reveal grid.
+function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
   return (
-    <aside className="rip-side rip-now">
-      <div className="rip-side-head">Now revealing</div>
-      {card ? (() => {
-        const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
-        const label = card.foil ? card.foil.label
-          : card.grade ? `PSA ${card.grade.overall} · ${card.rarity}`
-          : `${card.reverse ? 'Reverse Holo · ' : ''}${card.rarity}`
-        // The cut/centering read, right off the rip — it's what decides whether a hit is a
-        // gem-10 candidate or just a nice card, so you shouldn't have to dig into the card
-        // page to see it. Fuzzy without the 🔍 Jeweler's Loupe (cutEstimate handles that);
-        // graded slabs already carry a real grade, so there's nothing to eyeball.
-        const cut = !card.grade ? cutEstimate(card, hasLoupe) : null
-        return (
-          <div className="rip-now-card" style={{ '--rarity': edge }}>
-            <img src={cardImg(card)} alt={card.name} decoding="async" fetchpriority="high" />
-            <div className="rip-now-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
-            <div className="rip-now-meta" style={{ color: edge }}>{label}</div>
-            <div className="rip-now-val">{fmtMoney(cardValue(card))}</div>
-            {cut && (
-              <div className="rip-now-cut" title={hasLoupe
-                ? `Cut: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}`
-                : `An eyeball read. The 🔍 Jeweler's Loupe gives a precise cut/centering read.`}>
-                <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>
-                  👁️ Cut: {cut.label}
-                </span>
-                {hasLoupe && cut.detail && <div className="rip-now-cut-note">{cut.detail}</div>}
-                {!hasLoupe && <div className="rip-now-cut-note">🔍 Loupe gives a precise read</div>}
-              </div>
-            )}
-            {!card.grade && (
-              <div className="rip-now-psa10" title="Market value if this card graded PSA 10 / PSA 9">
-                💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
-              </div>
-            )}
-            {card._fillsWant && (
-              <div className="rip-now-want">
-                ⭐ Fills a want!
-                <div className="rip-now-want-note">
-                  {card._wantForum
-                    ? `+${Math.round((card._wantPremium - 1) * 100)}% on the forum`
-                    : `${card._wantWho} wants this`}
-                </div>
-              </div>
-            )}
-          </div>
-        )
-      })() : <div className="muted" style={{ fontSize: 12 }}>Tearing it open…</div>}
-    </aside>
-  )
-}
-
-// Running tally of every hit/foil pulled this rip — a horizontal strip above the reveal.
-function HitList({ hits, hasLoupe }) {
-  // Count true rarity/foil hits only; wanted cards still render in the list (with their
-  // ⭐ badge) but aren't counted as "Hits" so the tally matches the game's hit meaning.
-  const hitCount = hits.filter(c => c._isHit || c.foil).length
-  return (
-    <aside className="rip-side rip-hits rip-hits-top">
-      <div className="rip-side-head">Hits {hitCount ? `(${hitCount})` : ''}</div>
+    <div className="rip-hits-pane">
+      <div className="rip-side-head">✨ Hits this rip {hitCount ? `(${hitCount})` : ''}</div>
       {hits.length === 0 ? (
-        <div className="muted" style={{ fontSize: 12 }}>No hits yet — fingers crossed. 🤞</div>
+        <p className="muted" style={{ fontSize: 13, margin: '6px 0 2px' }}>
+          No hits yet — every foil, rare hit, and wanted card lands here as you rip. 🤞
+        </p>
       ) : (
-        <div className="rip-hits-list">
+        <div className="rip-hits-panel-list">
           {[...hits].sort((a, b) => cardValue(b) - cardValue(a)).map((c, i) => {
             const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
             const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
             return (
-              <div key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}>
+              <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}
+                onClick={() => onInspect(c)} title="Tap for the full card details">
                 <img src={cardImg(c)} alt="" />
                 <div className="rip-hit-info">
                   <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -584,8 +564,7 @@ function HitList({ hits, hasLoupe }) {
                     {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
                   </div>
                   {cut && (
-                    <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}
-                      title={hasLoupe ? `Cut: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}` : "An eyeball read — the 🔍 Jeweler's Loupe gives a precise one."}>
+                    <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>
                       👁️ {cut.short}
                     </span>
                   )}
@@ -595,12 +574,12 @@ function HitList({ hits, hasLoupe }) {
                   {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
                   {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                 </div>
-              </div>
+              </button>
             )
           })}
         </div>
       )}
-    </aside>
+    </div>
   )
 }
 

@@ -12,7 +12,10 @@ import PriceChart from './PriceChart'
 // offers). `inspect` renders it read-only for a card you DON'T own — a vendor's booth
 // single at a show — so you can study the PSA-if-graded values, the cut/centering read,
 // and the price history before paying their ask (`ask` shows their price vs market).
-export default function CardModal({ card, onClose, inspect = false, ask = null }) {
+// `readOnly` shows the full read — art/slab, market value, PSA-if-graded tiers, cut, price
+// history — but hides every action (sell/list/grade/lock/binder). Used to study a card you
+// can't act on here, e.g. inspecting a fresh pull mid-rip before it's even in your collection.
+export default function CardModal({ card, onClose, inspect = false, ask = null, readOnly = false }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const hasScope = useGame(s => !!s.upgrades.gradescope)
   const quickSell = useGame(s => s.quickSell)
@@ -203,7 +206,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
               </div>
             )}
 
-            {!inspect && inBinder && (
+            {!inspect && !readOnly && inBinder && (
               <div className="sell-options" style={{ marginTop: 14 }}>
                 <div className="banner" style={{ marginTop: 0 }}>
                   📒 Slotted in your masterset binder as the{' '}
@@ -217,7 +220,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
               </div>
             )}
 
-            {!inspect && !inBinder && (!listing ? (
+            {!inspect && !readOnly && !inBinder && (!listing ? (
               <div className="sell-options" style={{ marginTop: 14 }}>
                 <button className="btn alt sellopt" disabled={slotTaken}
                   title={slotTaken ? 'Your binder already has this variant slotted' : undefined}
@@ -290,7 +293,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null }
               </div>
             ))}
 
-            {!inspect && !inBinder && !g && (
+            {!inspect && !readOnly && !inBinder && !g && (
               <>
                 <div style={{ display:'flex', alignItems:'center', gap: 8, margin: '18px 0 6px' }}>
                   <span className="muted" style={{ fontSize: 13 }}>Submit for PSA-style grading</span>
