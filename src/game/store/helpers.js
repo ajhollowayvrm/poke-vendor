@@ -7,7 +7,7 @@
 //   • Liquidation value: realizableAssets  (used by daytick.settleRent + economy.netWorth)
 //   • Vintage shelf:     vintageFindOf, vintageLeft  (used by sourcing + the Buy screen)
 
-import { round2, cardValue, sealedValue, distributorById, distributorVintageFind } from '../engine'
+import { round2, cardValue, sealedValue, distributorById, distributorVintageFind, DISTRIBUTOR_NOTO, DISTRIBUTOR_WORTH } from '../engine'
 
 // Card ids are "<setId>-<number>" (e.g. "me4-2"); the set id is everything before
 // the last hyphen so multi-hyphen set ids like "sv8pt5" survive.
@@ -64,6 +64,7 @@ export function realizableAssets(s) {
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + sv(s.sealedInventory) + sv(s.showSealed) + sv(s.shopSealed)
+    + (s.lgsCredit || 0)          // LGS store credit you hold is spendable value → an asset
     - (s.storeCredit || 0))
 }
 
@@ -87,7 +88,15 @@ export function netWorthFull(s) {
     + (s.shopSealed || []).reduce((a, it) => a + sealedValue(it), 0)
     // Built mystery packs: the contents are still your assets until a buyer takes the pack.
     + (s.builtPacks || []).reduce((a, p) => a + cv(p.cards) + (p.sealed || []).reduce((x, it) => x + sealedValue(it), 0), 0)
+    + (s.lgsCredit || 0)   // LGS store credit you hold is spendable value → an asset
     - (s.storeCredit || 0)) // issued store credit is a liability — locals will spend it out of your future takings
+}
+
+// Have you crossed into being a DISTRIBUTOR yourself? The endgame status: a Household Name
+// (notoriety) AND a millionaire (net worth) at once — both bars, not either. Once true, the
+// trade orders wholesale from you (a passive daily margin resolved in the day tick).
+export function isDistributor(s) {
+  return (s.notoriety || 0) >= DISTRIBUTOR_NOTO && netWorthFull(s) >= DISTRIBUTOR_WORTH
 }
 
 // --- The vintage shelf ------------------------------------------------------

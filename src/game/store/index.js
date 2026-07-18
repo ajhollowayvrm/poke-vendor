@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 43,
+  version: 44,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -463,6 +463,13 @@ export const useGame = create(persist((set, get) => ({
         state.collection = (state.collection || []).map(c => c.locked ? c : { ...c, loc: c.loc || 'storeroom' })
         state.sealedInventory = (state.sealedInventory || []).map(it => it.locked ? it : { ...it, loc: it.loc || 'storeroom' })
       }
+    }
+    if (version < 44) {
+      // Bulk turn-in now pays LGS store credit (an asset you hold) instead of the old cash
+      // buylist/sell-raw exits; and the top of the game turns YOU into a distributor. Both new
+      // and additive — start empty. `buylistRate` is retired; leaving a stale copy is harmless.
+      state.lgsCredit = state.lgsCredit ?? 0
+      state.distributorSince = state.distributorSince ?? null
     }
     return state
   },

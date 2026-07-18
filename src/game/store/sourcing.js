@@ -23,6 +23,24 @@ export function createSourcingSlice(set, get) {
     distributorRec(distId) {
       return get().distributors[distId] || { spend: 0, stock: {} }
     },
+    // --- Local Game Store credit -------------------------------------------------
+    // Credit you hold at the LGS (earned turning in bulk at 5¢/card) pays for LGS purchases
+    // automatically, like a gift card. Rather than thread a second payment rail through
+    // buySealed/spend, we top the till up FROM credit right before the charge (moving up to
+    // `cost` of credit into cash), let the normal charge run, and hand back the amount drawn so
+    // the caller can refund it if the buy falls through. Net worth is conserved (credit was
+    // already counted as an asset), and the cost BASIS stays the full sticker price — the credit
+    // is a separate asset you spent, and the full spend still builds LGS rapport. Non-LGS: no-op.
+    _drawLgsCredit(distId, cost) {
+      if (distId !== 'lgs') return 0
+      const c = round2(Math.min(get().lgsCredit || 0, cost || 0))
+      if (c > 0) set(s => ({ cash: round2(s.cash + c), lgsCredit: round2((s.lgsCredit || 0) - c) }))
+      return c
+    },
+    _refundLgsCredit(amount) {
+      if (amount > 0) set(s => ({ cash: round2(s.cash - amount), lgsCredit: round2((s.lgsCredit || 0) + amount) }))
+    },
+
     // 📋 Standing order (upgrade): one product on weekly auto-ship. Pass null to cancel.
     // The delivery itself runs in the day tick (buyFromDistributorBulk at rapport price).
     setStandingOrder(order) {
@@ -42,9 +60,11 @@ export function createSourcingSlice(set, get) {
       const level = rapportLevel(rec.spend).level
       const key = stockKey(pokeSet, product)
       if (stockState(dist, rec.stock, pokeSet, product, level).out) return null // sold out
-      const item = get().buySealed(pokeSet, product, price) // spends, stocks, logs; null if broke
-      if (!item) return null
       const paid = price ?? product._buyPrice ?? product.price ?? 0
+      const drawn = get()._drawLgsCredit(distId, paid) // gift-card the till from LGS credit first
+      const item = get().buySealed(pokeSet, product, price) // spends, stocks, logs; null if broke
+      if (!item) { get()._refundLgsCredit(drawn); return null }
+      if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       set(s => {
         const cur = s.distributors[distId] || { spend: 0, stock: {} }
         const st = stockState(dist, cur.stock, pokeSet, product, level) // fresh; cap ratchets up with rapport
@@ -76,11 +96,15 @@ export function createSourcingSlice(set, get) {
       const unit = round2(price ?? product._buyPrice ?? product.price ?? 0)
       // !out means at least one whole unit is buyable (mirrors the single-buy semantics).
       const inStock = st.out ? 0 : Math.max(1, Math.floor(st.q))
-      const affordable = unit > 0 ? Math.floor(get().cash / unit) : want
+      // Affordability counts LGS credit as spendable — it tops the till up before the charge.
+      const credit = distId === 'lgs' ? (get().lgsCredit || 0) : 0
+      const affordable = unit > 0 ? Math.floor((get().cash + credit) / unit) : want
       const n = Math.min(want, inStock, affordable)
       if (n < 1) return null
       const total = round2(unit * n)
-      if (!get().spend(total)) return null
+      const drawn = get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
+      if (!get().spend(total)) { get()._refundLgsCredit(drawn); return null }
+      if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       get().recordSetSpend(pokeSet.id, total)
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
       const items = []

@@ -1,14 +1,14 @@
 // Collection slice — cards you own and how they leave the collection for cash.
 //
 // createCollectionSlice(set, get) returns: addPulls (rip → collection + stats/ledger),
-// master-set completion, the quick-sell / buylist / consign exits (single + bulk), and the
+// master-set completion, the quick-sell / bulk-turn-in / consign exits (single + bulk), and the
 // full grading lifecycle (submit, bulk-submit, resolve). Listing on your own site lives in
 // the SELLING slice; buying sealed lives in SOURCING.
 
 import {
   cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
   rollGrade, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
-  setById, cardVariant, cardMastersetVariants, fileableInBinder,
+  setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay } from './constants'
@@ -242,51 +242,32 @@ export function createCollectionSlice(set, get) {
       get().bumpGoal('sell', 1); get().bumpGoal('profit', v)
     },
 
-    sellAllUngraded() {
-      const { collection, quickSellRate } = get()
-      // Bulk = raw, unfoiled, below the hit threshold (by live rarity, not the stale
-      // _isHit flag) — so a MEGA_ATTACK / SIR / foil acquired without that flag is safe.
-      // Then filter through the protection net (locks + keep-one) so a sweep never eats
-      // a card you're keeping for a set.
+    // Turn in ALL raw bulk (commons/uncommons/plain rares — no hits/graded/foils) at the Local
+    // Game Store for IN-STORE CREDIT at a flat nickel a card. This is the realistic bulk exit:
+    // commons aren't worth cash, they're worth a little credit toward your next order. The credit
+    // (lgsCredit) is an asset, spent automatically the next time you buy from the LGS.
+    //
+    // Bulk is defined by LIVE rarity (not the stale _isHit flag), then filtered through the
+    // protection net (locks + keep-one) so a sweep never eats a card you're keeping for a set.
+    // Replaces the old cash buylist / sell-raw exits (retired — bulk was never really worth cash).
+    turnInBulk() {
+      const { collection } = get()
       const candidates = collection.filter(isBulkCard).map(c => c.uid)
       const { sell, kept } = bulkSellableUids(collection, candidates, { keepOne: get().settings?.keepOne })
+      if (!sell.length) return { credit: 0, sold: 0, kept: kept.length }
       const sellSet = new Set(sell)
       const toSell = collection.filter(c => sellSet.has(c.uid))
-      // Progressive dump penalty across the batch: the deeper you dump in one go, the more
-      // it floods the buylist and the less each additional card fetches.
-      const prior = get().quickSellsToday || 0
-      const total = round2(toSell.reduce((a, c, i) => a + cardValue(c) * dumpRate(quickSellRate, prior + i), 0))
+      const credit = round2(toSell.length * BULK_CREDIT_PER_CARD)
       set(s => ({
         collection: s.collection.filter(c => !sellSet.has(c.uid)),
-        quickSellsToday: prior + toSell.length,
-        lastBulkSale: { cards: toSell, total, noto: 0, qsDelta: toSell.length, ts: Date.now() },
+        lgsCredit: round2((s.lgsCredit || 0) + credit),
+        // Credit-mode bulk sale — undo restores the cards and claws the credit back (see undoBulkSale).
+        lastBulkSale: { cards: toSell, credit, mode: 'credit', noto: 0, qsDelta: 0, ts: Date.now() },
       }))
-      get().earn(total)
       const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
-      const avgPct = toSell.length ? Math.round((total / toSell.reduce((a, c) => a + cardValue(c), 0)) * 100) : Math.round(quickSellRate*100)
-      get().log('sell', `Quick-sold ${toSell.length} raw commons/uncommons @ ~${avgPct}%${keptNote}`, total)
-      return { got: total, sold: toSell.length, kept: kept.length }
-    },
-
-    // Buylist: instantly dump ALL raw bulk (commons/uncommons/rares, no hits/graded)
-    // to a shop at a flat buylist rate — fast cash, but a punishing cut under market.
-    buylistRate: 0.45,
-    sellToBuylist() {
-      const { collection, buylistRate } = get()
-      const candidates = collection.filter(isBulkCard).map(c => c.uid)
-      const { sell, kept } = bulkSellableUids(collection, candidates, { keepOne: get().settings?.keepOne })
-      if (!sell.length) return 0
-      const sellSet = new Set(sell)
-      const toSell = collection.filter(c => sellSet.has(c.uid))
-      const total = round2(toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0))
-      set(s => ({
-        collection: s.collection.filter(c => !sellSet.has(c.uid)),
-        lastBulkSale: { cards: toSell, total, noto: 0, qsDelta: 0, ts: Date.now() },
-      }))
-      get().earn(total)
-      const keptNote = kept.length ? ` (kept ${kept.length} protected)` : ''
-      get().log('sell', `Buylisted ${toSell.length} bulk cards @ ${Math.round(buylistRate*100)}%${keptNote}`, total)
-      return total
+      get().log('sell', `📦 Turned in ${toSell.length} bulk cards at the Local Game Store — +${fmtMoney(credit)} store credit (5¢/card)${keptNote}`, 0)
+      get().bumpGoal('sell', toSell.length)
+      return { credit, sold: toSell.length, kept: kept.length }
     },
 
     // ↩︎ Undo the most recent bulk sale (surfaced as an Undo button on the sale toast).
@@ -297,6 +278,18 @@ export function createCollectionSlice(set, get) {
       const u = get().lastBulkSale
       if (!u || !u.cards?.length) return false
       if (Date.now() - u.ts > 15000) return false // undo window is the toast, ~5-6s
+      // Credit-mode (bulk turn-in): claw the store credit back instead of cash. Blocked if you've
+      // already spent that credit down below what the undo would remove.
+      if (u.mode === 'credit') {
+        if ((get().lgsCredit || 0) < u.credit) return false
+        set(s => ({
+          collection: [...u.cards, ...s.collection],
+          lgsCredit: round2((s.lgsCredit || 0) - u.credit),
+          lastBulkSale: null,
+        }))
+        get().log('undo', `↩︎ Undid the bulk turn-in — ${u.cards.length} card${u.cards.length > 1 ? 's' : ''} back, $${u.credit.toFixed(2)} credit reversed`, 0)
+        return true
+      }
       if (get().cash < u.total) return false      // already spent the money — can't unwind
       set(s => ({
         collection: [...u.cards, ...s.collection],

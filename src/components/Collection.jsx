@@ -1,19 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids } from '../game/engine'
+import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids, BULK_CREDIT_PER_CARD } from '../game/engine'
 import { toast as notify } from '../ui/dialog'
 import { AskPicker } from '../ui/AskPicker'
 import CardTile from './CardTile'
 
 // Shared Undo affordance for the bulk-sale toasts: reverses the sale atomically
-// (cards back, cash/stats/rep unwound) while the toast is up.
-const undoAction = { label: '↩︎ Undo', onClick: () => { if (useGame.getState().undoBulkSale()) notify('↩︎ Sale undone — cards restored.') } }
+// (cards back, cash/credit/stats/rep unwound) while the toast is up.
+const undoAction = { label: '↩︎ Undo', onClick: () => { if (useGame.getState().undoBulkSale()) notify('↩︎ Undone — cards restored.') } }
 
 export default function Collection({ onPick }) {
   const collection = useGame(s => s.collection)
-  const sellAllUngraded = useGame(s => s.sellAllUngraded)
-  const sellToBuylist = useGame(s => s.sellToBuylist)
-  const buylistRate = useGame(s => s.buylistRate)
+  const turnInBulk = useGame(s => s.turnInBulk)
+  const lgsCredit = useGame(s => s.lgsCredit)
   const submitted = useGame(s => s.gradesSubmitted)
   // bulk action handlers
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
@@ -61,19 +60,17 @@ export default function Collection({ onPick }) {
   // and never sweeps a MEGA_ATTACK / SIR / foil that happens to lack the _isHit flag.
   // Route it through the protection net so the labels reflect exactly what the action
   // will sell (locks + keep-one held back), and we can surface how many are protected.
-  const { bulk, bulkVal, buylistVal, bulkKept } = useMemo(() => {
+  const { bulk, creditVal, bulkKept } = useMemo(() => {
     const bulkAll = collection.filter(isBulkCard)
     const { sell, kept } = bulkSellableUids(collection, bulkAll.map(c => c.uid), { keepOne })
     const sellSet = new Set(sell)
     const toSell = bulkAll.filter(c => sellSet.has(c.uid))
     return {
       bulk: toSell,
-      bulkVal: toSell.reduce((a, c) => a + cardValue(c) * quickSellRate, 0),
-      buylistVal: toSell.reduce((a, c) => a + cardValue(c) * buylistRate, 0),
+      creditVal: toSell.length * BULK_CREDIT_PER_CARD, // flat 5¢/card, in LGS store credit
       bulkKept: kept.length,
     }
-  }, [collection, keepOne, quickSellRate, buylistRate])
-  const buylistBulk = bulk
+  }, [collection, keepOne])
 
   function flash(m) { setToast(m); setTimeout(() => setToast(null), 2800) }
   // Appended to a bulk-action toast when the protection net held cards back.
@@ -138,24 +135,20 @@ export default function Collection({ onPick }) {
           onClick={() => setSetting('keepOne', !keepOne)}>
           {keepOne ? '🔒 Keeping singles' : '🔓 Keep singles'}
         </button>
-        {!selectMode && buylistBulk.length > 0 && (
-          <button className="btn alt" style={{ flex: 'none', marginLeft: 'auto' }}
-            title={`Dump all bulk to a shop's buylist at ${Math.round(buylistRate*100)}% of market — instant cash${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
-            onClick={() => {
-              const n = buylistBulk.length
-              const got = sellToBuylist()
-              if (got) notify(`Buylisted ${n} card${n > 1 ? 's' : ''} for ${fmtMoney(got)}.`, 6000, undoAction)
-            }}>Buylist {buylistBulk.length} → {fmtMoney(buylistVal)}</button>
-        )}
         {!selectMode && bulk.length > 0 && (
-          <button className="btn gold" style={{ flex: 'none', marginLeft: buylistBulk.length ? 0 : 'auto' }}
-            title={`Quick-sell all raw commons/uncommons (non-hits) instantly${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
+          <button className="btn gold" style={{ flex: 'none', marginLeft: 'auto' }}
+            title={`Turn in all raw commons/uncommons/rares (non-hits) at the Local Game Store for in-store credit — a flat 5¢ a card, spent automatically on your next LGS order${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
-              const { got, sold } = sellAllUngraded()
-              if (sold) notify(`Quick-sold ${sold} raw card${sold > 1 ? 's' : ''} for ${fmtMoney(got)}.`, 6000, undoAction)
-            }}>Sell {bulk.length} raw → {fmtMoney(bulkVal)}</button>
+              const { credit, sold } = turnInBulk()
+              if (sold) notify(`📦 Turned in ${sold} bulk card${sold > 1 ? 's' : ''} for ${fmtMoney(credit)} LGS credit.`, 6000, undoAction)
+            }}>📦 Turn in {bulk.length} bulk → {fmtMoney(creditVal)} credit</button>
         )}
       </div>
+      {!selectMode && (lgsCredit || 0) > 0 && (
+        <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
+          💳 <b style={{ color: 'var(--green)' }}>{fmtMoney(lgsCredit)}</b> Local Game Store credit — applied automatically when you buy from the LGS.
+        </p>
+      )}
       {!selectMode && bulkKept > 0 && (
         <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
           🔒 {bulkKept} card{bulkKept>1?'s':''} protected from the bulk sweep — {keepOne ? 'set singles + locked' : 'locked'}.

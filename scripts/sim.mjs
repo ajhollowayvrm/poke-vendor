@@ -130,12 +130,13 @@ try {
   console.log('\nLIQUIDATION RATES — every instant exit < 1.00x market:')
   const rates = await page.evaluate(async () => {
     const { useGame } = await import('/src/game/store/index.js')
-    const c = await import('/src/game/store/constants.js')
+    const e = await import('/src/game/engine.js')
     const g = useGame.getState()
-    return { quickSell: g.quickSellRate, buylist: g.buylistRate, flip: c.SEALED_FLIP_RATE ?? null }
+    return { quickSell: g.quickSellRate, bulkCredit: e.BULK_CREDIT_PER_CARD ?? null, flip: e.SEALED_FLIP_RATE ?? null }
   })
   pass(`quick-sell ${rates.quickSell}`, rates.quickSell > 0 && rates.quickSell <= 0.6)
-  pass(`buylist ${rates.buylist}`, rates.buylist > 0 && rates.buylist <= 0.5)
+  // Bulk isn't a cash exit anymore — it's a flat, small per-card STORE CREDIT (a nickel-ish).
+  pass(`bulk credit ${rates.bulkCredit}/card`, rates.bulkCredit > 0 && rates.bulkCredit <= 0.25)
   if (rates.flip != null) pass(`sealed flip ${rates.flip}`, rates.flip > 0 && rates.flip < 1)
 
   await browser.close()

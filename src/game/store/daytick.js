@@ -35,7 +35,8 @@ import {
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS,
 } from './constants'
-import { realizableAssets, netWorthFull } from './helpers'
+import { realizableAssets, netWorthFull, isDistributor } from './helpers'
+import { DISTRIBUTOR_NOTO } from '../engine'
 
 // A set trading at or above this multiple of its base price is "hot" — willing buyers
 // on a hot card pay a premium above market, so LISTING a card whose set is spiking can
@@ -43,6 +44,11 @@ import { realizableAssets, netWorthFull } from './helpers'
 // selling can never beat market; auto-sell caps at 80%). Reading the market pays off.
 const HOT_SET_MULT = 1.2
 const HOT_PREMIUM = 0.15
+
+// Distributor wholesale income (once you're big enough to BE a distributor — see isDistributor):
+// a passive daily margin of the sealed stock you keep on hand, capped, then scaled by reputation.
+const WHOLESALE_DAILY_RATE = 0.012  // 1.2%/day of your sealed inventory value moves as wholesale
+const WHOLESALE_DAILY_CAP = 6000    // per-day ceiling (before the reputation multiplier)
 import { nextOfferId } from './ids'
 
 // --- daytick-only tuning constants ------------------------------------------
@@ -691,6 +697,21 @@ export function advanceDaysWith(set, get, days, away) {
     if (left <= 0) { soldProceeds = round2(soldProceeds + w.net); get().log('supply', `Channel order filled: ${w.label} (+$${w.net.toFixed(2)})`, w.net) }
     else remainingSupply.push({ ...w, daysLeft: left })
   }
+  // DISTRIBUTOR wholesale income: once you're a Household Name AND a millionaire, the trade
+  // orders wholesale FROM you. A passive daily margin scaled by (a) your reputation past the
+  // threshold and (b) the sealed stock you keep on hand to fill orders from — no stock, no
+  // orders. It doesn't consume inventory (it's your distribution arm's margin, not your shelf).
+  let wholesaleIncome = 0
+  if (isDistributor(s)) {
+    const sealedVal = (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
+    const repMult = Math.min(3, 1 + Math.max(0, (s.notoriety || 0) - DISTRIBUTOR_NOTO) / DISTRIBUTOR_NOTO)
+    const perDay = Math.min(sealedVal * WHOLESALE_DAILY_RATE, WHOLESALE_DAILY_CAP) * repMult
+    wholesaleIncome = round2(perDay * days)
+    if (wholesaleIncome > 0) {
+      soldProceeds = round2(soldProceeds + wholesaleIncome)
+      get().log('supply', `📦 Wholesale orders filled for other shops — your distribution margin (+$${wholesaleIncome.toFixed(2)})`, wholesaleIncome)
+    }
+  }
   // resolve your own-site listings: real CUSTOMERS browse them over the days passed
   // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
   // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
@@ -947,7 +968,14 @@ export function advanceDaysWith(set, get, days, away) {
     regulars: decayRegulars(st.regulars, days, s.upgrades.newsletter ? 0.5 : 1), // relationships cool if you neglect them (💌 newsletter halves it)
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
     giveawaysToday: 0,                                                     // fresh day → giveaway rep is full value again
+    // The day you first crossed into being a distributor (Household Name + millionaire). Stamped
+    // once and kept — gates the passive wholesale income and the one-time unlock notice below.
+    distributorSince: (isDistributor(s) && !s.distributorSince) ? newAbsDay : (s.distributorSince ?? null),
   }))
+  // One-time fanfare the first day you become a distributor yourself.
+  if (isDistributor(s) && !s.distributorSince) {
+    get().log('milestone', `🏆 You're a distributor now — a Household Name AND a millionaire. Other shops will start ordering wholesale from you.`, 0)
+  }
   // pay sales + wages in, then settle rent.
   if (soldProceeds > 0) get().earn(soldProceeds)
   // credit listing sales toward the daily sell/profit goals
@@ -1063,6 +1091,7 @@ export function advanceDaysWith(set, get, days, away) {
     wantsBrokered, brokerProceeds, offersAccepted, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     machineIncome: round2(machineRevenue), machineSold,
+    wholesaleIncome: round2(wholesaleIncome),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
@@ -1099,6 +1128,7 @@ export function mergeSummaries(a, b) {
     binderReserved: add(a.binderReserved, b.binderReserved),
     machineIncome: round2(add(a.machineIncome, b.machineIncome)),
     machineSold: add(a.machineSold, b.machineSold),
+    wholesaleIncome: round2(add(a.wholesaleIncome, b.wholesaleIncome)),
     wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
     brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),
     offersAccepted: add(a.offersAccepted, b.offersAccepted),

@@ -74,6 +74,8 @@ export function initialState() {
     giveawayDaysLeft: 0,     // store buzz window (giveaways + hosted events): walk-in traffic boost days remaining
     buyinOffers: [],         // locals selling YOU their cards: {id, who, hint, cards, askCash, estimate, estimateTight, pendingDays} — pay cash or store credit
     storeCredit: 0,          // outstanding store credit you've issued (a liability — drains from counter takings as locals spend it; counts against net worth)
+    lgsCredit: 0,            // in-store credit YOU hold at the Local Game Store (an ASSET) — earned by turning in bulk at 5¢/card, spent automatically on LGS purchases
+    distributorSince: null,  // absolute day you first became a distributor (Household Name + millionaire); null until then. Gates the passive wholesale income + the one-time unlock notice.
     storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
     eventCooldownLeft: 0,    // days before you can host another event
     packTiers: defaultPackTiers(), // your mystery-pack PRODUCT LINES: {id,name,icon,price,bandLo,bandHi,channels:{show,store,online,stream}} — price + advertised band are yours to set

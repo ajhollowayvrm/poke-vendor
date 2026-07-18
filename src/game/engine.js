@@ -1680,6 +1680,18 @@ export function makeProductPromo(set, product) {
 // LISTING a sealed item (patient, rides the buyer engine, can catch a hot-set spike) has a
 // reason to exist. Was 0.92 (too close to market — it dominated listing); now a clear haircut.
 export const SEALED_FLIP_RATE = 0.80   // quick-flip payout as a fraction of live market value
+
+// Bulk (raw commons/uncommons/plain rares) isn't worth cash — you turn it in at the Local
+// Game Store for IN-STORE CREDIT at a flat nickel a card (real bulk economics; a common is
+// worth ~$0.08, so this is right in the ballpark and honest about what bulk is). That credit
+// is spendable on LGS product, so bulk feeds the loop that restocks your shelves.
+export const BULK_CREDIT_PER_CARD = 0.05
+
+// You, the distributor. At the very top of the game — a Household Name AND a millionaire — the
+// trade starts treating YOU as a source: other shops place standing wholesale orders, a passive
+// daily margin scaled by your reputation and the sealed stock you keep on hand to fill them.
+export const DISTRIBUTOR_NOTO = 250        // Household Name
+export const DISTRIBUTOR_WORTH = 1_000_000 // Millionaire
 export function sealedValue(item) {
   if (!item?.product) return 0
   return round2(sealedBase(item.product) * marketMult(item.setId))

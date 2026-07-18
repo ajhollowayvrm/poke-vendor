@@ -586,7 +586,7 @@ function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, machineIncome, machineSold, floor } = summary
+    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, machineIncome, machineSold, wholesaleIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
@@ -657,6 +657,7 @@ function DaySummary({ summary, onClose }) {
                 ))}
                 {counterIncome > 0 && <div className="recap-line"><span className="muted">🏬 Storefront counter (singles/supplies/bulk)</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(counterIncome)}</b></div>}
                 {machineIncome > 0 && <div className="recap-line"><span className="muted">🎰 Pack Machine ({machineSold} pack{machineSold === 1 ? '' : 's'})</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(machineIncome)}</b></div>}
+                {wholesaleIncome > 0 && <div className="recap-line"><span className="muted">📦 Wholesale to other shops (your distribution margin)</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(wholesaleIncome)}</b></div>}
                 {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(saleProceeds)}</b></div>}
               </div>
             )}
@@ -752,6 +753,7 @@ function GameOver() {
 function Shop({ cash, onBuy, onBuyVintage }) {
   const distributors = useGame(s => s.distributors)
   const notoriety = useGame(s => s.notoriety)
+  const lgsCredit = useGame(s => s.lgsCredit)
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const supplyVendors = useGame(s => s.supplyVendors)
@@ -802,6 +804,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       <div className="banner" style={{ marginTop: 14 }}>
         {dist.icon} <b style={{ color: dist.color }}>{dist.name}</b> — {dist.blurb}
         {' '}Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.
+        {dist.id === 'lgs' && (lgsCredit || 0) > 0 && (
+          <> {' '}<span className="pill" title="In-store credit from turning in bulk (5¢/card). Applied automatically at checkout here." style={{ background: '#5ec98a22', color: 'var(--green)' }}>💳 {fmtMoney(lgsCredit)} store credit — spent automatically here</span></>
+        )}
       </div>
 
       {catalog.length === 0 ? (
