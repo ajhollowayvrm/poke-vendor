@@ -1704,8 +1704,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
   /* Big-card reveal grid on a phone: a clean 2-up grid so each pull still reads as a feature,
      with its name/value footer beneath. (Explicit 2-col grid beats flex-wrap here — at 44vw the
      cells sat a hair over half-width and wrapped to one giant card per row.) Overrides the 96px
-     reveal-card above for grid cells. */
-  .rip-overlay .rip-reveal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }
+     reveal-card above for grid cells.
+     width:100% is load-bearing: the pane is a center-aligned flex column, so without an explicit
+     width the grid shrinks to its CONTENT — and face-down cards have almost none, collapsing the
+     whole grid to a couple of dots in manual reveal mode. Pin it to the pane width so the 1fr
+     columns always have real space to fill. */
+  .rip-overlay .rip-reveal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 10px; width: 100%; }
   .rip-overlay .rip-cell { width: auto; }
   .rip-overlay .rip-cell .reveal-card { width: 100%; }
   .rip-overlay .rip-hits-pane { padding: 12px; }
