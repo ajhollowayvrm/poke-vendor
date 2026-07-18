@@ -1483,7 +1483,10 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .sealed-now { font-size:20px; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; }
 .sealed-delta { font-size:11px; font-weight:800; }
 .sealed-actions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
-.sealed-actions .btn { flex:1 1 0; min-width:0; padding:8px 6px; font-size:12.5px; white-space:nowrap; }
+/* min-width:max-content so a button never shrinks narrower than its own label — the ⚡ Flip
+   button carries a live price ("Flip $28.83") that's wider than an equal quarter-share, and
+   with nowrap it used to spill outside the button. Now the row wraps to a second line instead. */
+.sealed-actions .btn { flex:1 1 auto; min-width:max-content; padding:8px 6px; font-size:12.5px; white-space:nowrap; }
 .sealed-list-ctl { margin-top:8px; border-top:1px solid var(--line); padding-top:8px; }
 /* Quantity stepper on a stacked sealed row (list/stock N units at once). */
 .sealed-qty-ctl { display:flex; align-items:center; gap:6px; margin-top:8px; }
