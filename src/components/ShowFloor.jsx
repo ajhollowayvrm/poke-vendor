@@ -396,7 +396,7 @@ export default function ShowFloor({ show, onLeave }) {
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
         onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled}
-        takenIds={takenIds} onTaken={markTaken}
+        takenIds={takenIds} onTaken={markTaken} asVendor={show._asVendor}
         tillLeft={Math.max(0, round2((openBooth.till || 0) - (tillSpent[tillKey(openBooth)] || 0)))}
         onTillSpend={(amt) => markTillSpend(openBooth, amt)} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}

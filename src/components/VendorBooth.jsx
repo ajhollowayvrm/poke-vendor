@@ -8,9 +8,9 @@ import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
-export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend }) {
+export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false }) {
   if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} asVendor={asVendor} />
 }
 
 // On-site grading kiosk (National+ shows): submit a raw card and it comes back slabbed in
@@ -63,7 +63,7 @@ function KioskBooth({ booth, onClose, flash }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend }) {
+function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend, asVendor = false }) {
   const haggled = haggledIds || new Set()
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
@@ -146,17 +146,19 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     setPendingBuy({ card, price })
   }
   // Commit the agreed buy. `toShowInventory` lists it for sale at your booth;
-  // otherwise it goes home to your collection.
+  // otherwise it goes home to your collection. Listing needs a booth at THIS show
+  // (asVendor) — a shopper has no table, so a buy can only go to the collection.
   function commitBuy(toShowInventory) {
     if (committingRef.current || !pendingBuy) return // ignore a double-click re-entry
     committingRef.current = true
     const { card, price } = pendingBuy
     setPendingBuy(null)
-    if (buyFromVendor(card, price, { toShowInventory, vendorId: booth.vendorId })) {
+    const list = toShowInventory && asVendor
+    if (buyFromVendor(card, price, { toShowInventory: list, vendorId: booth.vendorId })) {
       onTaken?.([card.uid]) // off the table for good — reopening the booth can't re-serve it
       setStock(s => s.filter(c => c.uid !== card.uid))
       const deal = price < cardValue(card) * 0.85 ? ' — great deal!' : ''
-      flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${toShowInventory ? ' · listed at your booth' : ' · added to your collection'}`)
+      flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${list ? ' · listed at your booth' : ' · added to your collection'}`)
     }
   }
   function sellAt(card, price) {
@@ -413,15 +415,21 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
               What do you want to do with it?
             </p>
             <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
-              <button className="btn gold" onClick={() => commitBuy(true)}>
+              {/* Listing at your booth needs a booth at THIS show. Without the 🎪 Vendor Setup
+                  upgrade you can only attend to shop, so there's no table to list on — disable it. */}
+              <button className={`btn ${asVendor ? 'gold' : 'alt'}`} disabled={!asVendor}
+                title={asVendor ? undefined : "You're not running a booth at this show — attend as a vendor (needs the 🎪 Vendor Setup upgrade) to sell cards at your own table."}
+                onClick={() => commitBuy(true)}>
                 🪧 List it at your booth — sell it here
               </button>
-              <button className="btn alt" onClick={() => commitBuy(false)}>
+              <button className={`btn ${asVendor ? 'alt' : 'gold'}`} onClick={() => commitBuy(false)}>
                 🗂️ Keep it in your collection
               </button>
             </div>
             <p className="muted" style={{ fontSize: 11, marginTop: 10 }}>
-              Listed cards are offered to shoppers at your table; unsold ones come home when you leave.
+              {asVendor
+                ? 'Listed cards are offered to shoppers at your table; unsold ones come home when you leave.'
+                : "You're here to shop, not vend — it goes to your collection. Run a booth (🎪 Vendor Setup) to flip buys at your own table."}
             </p>
           </div>
         </div>
