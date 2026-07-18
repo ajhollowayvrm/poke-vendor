@@ -61,6 +61,15 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
   // Keep the feedback module's sound/haptics gates in sync with the user's settings.
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
+  // When a pack finishes, snap the self-scrolling overlay back to the top so the pack-done
+  // controls (Next pack / Rip another / Done) — which sit at the top of the stage — are always
+  // in view. Without this, finishing a rip while scrolled down through the reveal grid leaves
+  // the finish button off-screen up top (the bug the old sticky pin tried, and failed, to fix).
+  useEffect(() => {
+    if (phase !== 'done') return
+    const ov = document.querySelector('.rip-overlay')
+    if (ov) ov.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [phase])
 
   const last = packNo >= totalPacks
 

@@ -1715,18 +1715,11 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .rip-overlay .rip-cell .reveal-card { width: 100%; }
   .rip-overlay .rip-hits-pane { padding: 12px; }
 
-  /* Pack-done controls (Next pack / Rip another / Done) are pulled to the TOP of the stage
-     by design (above the cards). On desktop the whole column fits, so "top" is in view. On a
-     phone it isn't: when a pack finishes the self-scrolling overlay is sitting at the BOTTOM —
-     showing the just-revealed cards — so the finish button is hundreds of px off-screen up
-     top, and scrolling up to it slides it under the sticky top bar. You literally can't end
-     the rip. Pin it sticky just below the top bar (same offset as the overlay's own top pad,
-     so it lands flush under the bar, never behind it) so it's always visible and tappable
-     wherever you've scrolled. Opaque bg + shadow so cards scroll cleanly underneath it. */
-  .rip-overlay .rip-top-actions { position: sticky; z-index: 6;
-    top: calc(var(--topbar-h, 52px) + 28px + var(--sat));
-    background: var(--bg); padding: 8px 0 10px; margin-top: -8px;
-    box-shadow: 0 8px 16px -4px var(--bg); }
+  /* Pack-done controls (Next pack / Rip another / Done) live at the TOP of the stage, above
+     the cards. On a phone they must actually be IN VIEW when a pack finishes — if you'd
+     scrolled down through the reveal grid they'd be off-screen up top. We handle that by
+     scrolling the overlay back to the top on 'done' (see PackOpening), which lands them
+     flush under the top bar in normal flow — no sticky offset to float them mid-grid. */
 
   /* ORDERS are the one thing you must not miss: they're time-limited, capped at three, and
      they were landing far below the fold while you watched the rip — money quietly expiring
