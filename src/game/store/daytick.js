@@ -65,19 +65,41 @@ const MARKET_HISTORY_LEN = 14
 // never auto-holds these: setting one aside is selling down the player's hoard.
 const SECONDARY_IDS = new Set(SECONDARY_SETS.map(s => s.id))
 
+// Did a wave-restock "drop" land in the window (prevDay, absDay]? Drops fall on days that are
+// multiples of `waveDays`; true if the last such multiple at/below absDay is newer than the
+// window's start. Deterministic, and correct across multi-day jumps (a show trip).
+function waveDropCrossed(absDay, days, waveDays) {
+  const start = absDay - days                            // exclusive lower bound
+  const lastDrop = Math.floor(absDay / waveDays) * waveDays
+  return lastDrop > start
+}
+
 // Restock every distributor's depleted stock over `days` passed. Each stock entry is
 // { q, cap }; it climbs back toward cap at the distributor's restock rate. Entries that
 // reach the cap are dropped (an absent key means "fully stocked" — keeps the map lean).
-function restockDistributors(distributors, days) {
+//
+// A WAVE-restock seller (Pokémon Center) is the exception: no daily trickle at all. Its shelf
+// only depletes as you buy, then a fresh allocation "drops" every `restockWaveDays` and refills
+// everything to full at once (clearing its stock map → all shelves read full). Between drops the
+// shelf stays exactly as you left it — that's what makes a hot new drop sell out and stay out.
+function restockDistributors(distributors, days, absDay) {
   const out = {}
   for (const [id, d] of Object.entries(distributors || {})) {
     const dist = distributorById(id)
     const stock = {}
     if (dist) {
-      for (const [key, e] of Object.entries(d.stock || {})) {
-        const rate = restockRate(dist, e.cap)
-        const q = Math.min(e.cap, e.q + rate * days)
-        if (q < e.cap - 1e-6) stock[key] = { q, cap: e.cap } // still short → keep
+      if (dist.restockWaveDays) {
+        // Carry the depleted shelf forward UNCHANGED unless a drop landed this window; on a
+        // drop, leave `stock` empty so every product reads fully allocated again.
+        if (!waveDropCrossed(absDay, days, dist.restockWaveDays)) {
+          for (const [key, e] of Object.entries(d.stock || {})) stock[key] = e
+        }
+      } else {
+        for (const [key, e] of Object.entries(d.stock || {})) {
+          const rate = restockRate(dist, e.cap)
+          const q = Math.min(e.cap, e.q + rate * days)
+          if (q < e.cap - 1e-6) stock[key] = { q, cap: e.cap } // still short → keep
+        }
       }
     }
     out[id] = { ...d, stock }
@@ -856,7 +878,7 @@ export function advanceDaysWith(set, get, days, away) {
   const goalsExpired = !s.dailyGoals.length || newAbsDay - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS
   const periodGoals = goalsExpired ? makeWeeklyGoals(noto) : s.dailyGoals
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
-  const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days), s.distributors, days, newAbsDay, get().log,
+  const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days, newAbsDay), s.distributors, days, newAbsDay, get().log,
     s.upgrades.vintageScout ? 1.6 : 1) // 🕵️ the scout keeps sellers thinking of you
   // --- Pre-show leads: people DM you BEFORE a show, giving that trip a reason -----
   // Expire leads whose show has passed unattended (attending claims them at entry),

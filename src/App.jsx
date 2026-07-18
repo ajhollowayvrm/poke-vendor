@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
-  distributorDiscount, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
+  distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
@@ -751,6 +751,7 @@ function GameOver() {
 
 function Shop({ cash, onBuy, onBuyVintage }) {
   const distributors = useGame(s => s.distributors)
+  const notoriety = useGame(s => s.notoriety)
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const supplyVendors = useGame(s => s.supplyVendors)
@@ -779,14 +780,19 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   // Week index drives Greg's rotating catalog (month-safe; 30 days/month). Shared with the
   // store so the vintage shelf can't read as in-stock here and sold-out at the buy path.
   const weekIndex = weekIndexOf(currentDay, monthsElapsed)
+  const unlocked = distributorUnlocked(dist, notoriety)
   const catalog = distributorCatalog(dist, SHOP_SETS, weekIndex)
   // Greg flags one set's box as a clearance lot each week — a steep, thin-stock steal.
   const clearanceSetId = dist.clearance && catalog.length ? catalog[weekIndex % catalog.length].id : null
-  const showSupply = dist.supply && lvl.level >= dist.supplyMinLevel
+  const showSupply = unlocked && dist.supply && lvl.level >= dist.supplyMinLevel
 
   return (
     <>
-      <DistributorPicker distributorState={distributors} selected={distId} onSelect={setDistId} />
+      <DistributorPicker distributorState={distributors} notoriety={notoriety} selected={distId} onSelect={setDistId} />
+
+      {!unlocked ? (
+        <LockedDistributor dist={dist} notoriety={notoriety} />
+      ) : (<>
       <RapportBanner dist={dist} rec={rec} lvl={lvl} />
 
       {showSupply && (
@@ -810,26 +816,55 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       )}
 
       <VintageShelf dist={dist} rec={rec} weekIndex={weekIndex} cash={cash} onBuyVintage={onBuyVintage} />
+      </>)}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )
 }
 
+// A distributor that won't open a wholesale account with you yet (notoriety-gated). Shown in
+// place of their shelves — states the bar and how far you are from it, so it reads as a goal.
+function LockedDistributor({ dist, notoriety }) {
+  const need = dist.minNotoriety || 0
+  const pct = Math.min(100, Math.round(((notoriety || 0) / need) * 100))
+  return (
+    <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66', textAlign: 'center' }}>
+      <div style={{ fontSize: 30, marginBottom: 6 }}>🔒</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} isn't taking accounts your size yet</div>
+      <p className="muted" style={{ fontSize: 13, margin: '8px auto 12px', maxWidth: 440 }}>
+        A hobby giant this size only opens a wholesale account with an established name. Build your
+        <b> notoriety</b> — run shows, fill wants, move product — and they'll come to the table.
+      </p>
+      <div className="distrib-bar" style={{ maxWidth: 320, margin: '0 auto' }}>
+        <div style={{ width: pct + '%', background: dist.color }} />
+      </div>
+      <div className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
+        <b style={{ color: dist.color }}>{Math.round(notoriety || 0)}</b> / {need} notoriety
+        {' '}· {Math.max(0, need - Math.round(notoriety || 0))} to go
+      </div>
+    </div>
+  )
+}
+
 // Pick which distributor you're buying from. Each chip shows their icon, name, and your
 // rapport (filled stars), tinted with their brand colour.
-function DistributorPicker({ distributorState, selected, onSelect }) {
+function DistributorPicker({ distributorState, notoriety, selected, onSelect }) {
   return (
     <div className="distrib-picker">
       {DISTRIBUTORS.map(d => {
         const rec = distributorState[d.id] || { spend: 0 }
         const level = rapportLevel(rec.spend).level
         const max = RAPPORT_LEVELS.length - 1
+        const locked = !distributorUnlocked(d, notoriety)
         return (
-          <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''}`}
-            style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}>
+          <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''} ${locked ? 'locked' : ''}`}
+            style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}
+            title={locked ? `Locked — reach ${d.minNotoriety} notoriety to open an account` : undefined}>
             <span className="dc-icon">{d.icon}</span>
             <span className="dc-name">{d.name}</span>
-            <span className="dc-rep" aria-label={`${level} of ${max} rapport`}>{'★'.repeat(level)}{'☆'.repeat(max - level)}</span>
+            {locked
+              ? <span className="dc-rep" aria-label={`Locked — ${d.minNotoriety} notoriety needed`}>🔒 {d.minNotoriety}</span>
+              : <span className="dc-rep" aria-label={`${level} of ${max} rapport`}>{'★'.repeat(level)}{'☆'.repeat(max - level)}</span>}
           </button>
         )
       })}

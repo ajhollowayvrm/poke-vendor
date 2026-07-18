@@ -1842,8 +1842,9 @@ export const DISTRIBUTORS = [
   },
   {
     id: 'pokecenter', name: 'Pokémon Center', icon: '⚡', color: '#ffcb05',
-    blurb: 'The official store — the ONLY place stocking brand-new sets at MSRP the day they drop (everyone else is weeks behind), and it never runs dry on a fresh release. Grab the newest product here first.',
+    blurb: 'The official store — the ONLY place stocking brand-new sets at MSRP the day they drop (everyone else is weeks behind). But allocation is thin and it SELLS OUT FAST: a fresh drop lands, gets bought out in a hurry, and the shelf stays bare until the next restock wave a few days later. Be quick on a drop.',
     priceMult: 1.0, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.95, firstDibs: true,
+    shelfMult: 0.35, restockWaveDays: 3, // thin shelves + drops in WAVES (no daily trickle) — hot product sells out fast
   },
   {
     id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
@@ -1857,12 +1858,19 @@ export const DISTRIBUTORS = [
   },
   {
     id: 'dna', name: "Dave & Adam's", icon: '🃏', color: '#b98cff',
-    blurb: 'A hobby giant — real case pricing and bulk supply once you are a known buyer. The volume play.',
+    blurb: 'A hobby giant — real case pricing and bulk supply. But a distributor this size only opens a wholesale account once you are a name in the hobby: build your notoriety first, then earn rapport with them. The volume play, late-game.',
     priceMult: 0.93, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.7,
     cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
+    minNotoriety: 75, // won't open an account until you're an established name — reputation is the door; rapport is the relationship after
   },
 ]
 export function distributorById(id) { return DISTRIBUTORS.find(d => d.id === id) || null }
+// Whether a distributor will do business with you yet. Most are open from day one; a big
+// wholesaler (Dave & Adam's) gates the whole account behind a NOTORIETY threshold — you have to
+// be an established name before they'll take you on. Once open, rapport builds from scratch.
+export function distributorUnlocked(dist, notoriety) {
+  return !dist?.minNotoriety || (notoriety || 0) >= dist.minNotoriety
+}
 
 // How many of the NEWEST sets a first-dibs seller carries, and how many the LGS rotates.
 const NEW_SET_COUNT = 6
@@ -1970,7 +1978,8 @@ export function stockCap(dist, product, level) {
   else base = 10                          // single booster / sleeved pack
   const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
   const allo = 1 + 0.25 * (level || 0)      // bigger allocation as rapport grows (up to +100%)
-  return Math.max(1, Math.round(base * rel * allo))
+  const shelf = dist.shelfMult || 1         // thin-shelf sellers (Pokémon Center) hold a fraction of a normal allocation → sell out fast
+  return Math.max(1, Math.round(base * rel * allo * shelf))
 }
 // Units of stock a distributor regains per day (toward the cap).
 export function restockRate(dist, cap) {
