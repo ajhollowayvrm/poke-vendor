@@ -1668,6 +1668,19 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   /* the rip's side panels stack under the cards on a phone — don't let them eat the width */
   .rip-overlay .rip-side { flex: 1 1 auto; align-self: stretch; }
 
+  /* Pack-done controls (Next pack / Rip another / Done) are pulled to the TOP of the stage
+     by design (above the cards). On desktop the whole column fits, so "top" is in view. On a
+     phone it isn't: when a pack finishes the self-scrolling overlay is sitting at the BOTTOM —
+     showing the just-revealed cards — so the finish button is hundreds of px off-screen up
+     top, and scrolling up to it slides it under the sticky top bar. You literally can't end
+     the rip. Pin it sticky just below the top bar (same offset as the overlay's own top pad,
+     so it lands flush under the bar, never behind it) so it's always visible and tappable
+     wherever you've scrolled. Opaque bg + shadow so cards scroll cleanly underneath it. */
+  .rip-overlay .rip-top-actions { position: sticky; z-index: 6;
+    top: calc(var(--topbar-h, 52px) + 28px + var(--sat));
+    background: var(--bg); padding: 8px 0 10px; margin-top: -8px;
+    box-shadow: 0 8px 16px -4px var(--bg); }
+
   /* ORDERS are the one thing you must not miss: they're time-limited, capped at three, and
      they were landing far below the fold while you watched the rip — money quietly expiring
      off-screen. Hoist them to the TOP of the stage (order:-1) and pin them there, so an
