@@ -1,4 +1,5 @@
-import { cardValue, isHit, fmtMoney, CONDITIONS, cardImg, setNameOfCard } from '../game/engine'
+import { cardValue, isHit, fmtMoney, CONDITIONS, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { useGame } from '../game/store'
 import HoloCard from './HoloCard'
 
 const RARITY_COLOR = {
@@ -20,6 +21,10 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
   const hit = isHit(card) || card._isHit
   const foil = card.foil
   const setName = setNameOfCard(card)
+  // The precise cut/centering read is a 🔍 Jeweler's Loupe perk — without it the eyeball read is
+  // fuzzy and must NOT name the tier, so the abbreviated cut badge (Pris/Shrp/OC…) is loupe-gated.
+  const hasLoupe = useGame(s => !!s.upgrades.loupe)
+  const cut = !card.grade && hasLoupe ? cutEstimate(card, true) : null
 
   // Graded cards render as a PSA-style SLAB: a glossy plastic case with a label
   // header (grade + descriptor) above the encased art. The grade tier tints the gloss.
@@ -60,8 +65,13 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
         </span>
         {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
         {setName && <span className="settag" title={setName}>{setName}</span>}
-        {!card.grade && card.condition && card.condition !== 'NM' && (
-          <span className="condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
+        {!card.grade && (cut || (card.condition && card.condition !== 'NM')) && (
+          <span className="tile-chips">
+            {cut && <span className="chip cutchip" style={{ color: cut.color }} title={`Centering: ${cut.label}`}>{cut.abbr}</span>}
+            {card.condition && card.condition !== 'NM' && (
+              <span className="chip condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
+            )}
+          </span>
         )}
         <img src={cardImg(card)} alt={card.name} loading="lazy" decoding="async" />
         <span className="price">{fmtMoney(cardValue(card))}</span>

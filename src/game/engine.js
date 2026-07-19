@@ -1526,11 +1526,11 @@ export function gradePrediction(card, luck = 0, samples = 600) {
 // Also appends a condition-cap note for played cards (LP/MP/DMG).
 // Backward-compat: _cut==null → treat as 0.5 (Clean) so old saves show a neutral read.
 const CUT_TIERS = [
-  { tier: 'Rough',      min: 0,    max: 0.20, label: 'Rough',      color: '#ff5e6c', detail: 'Off-center with edge wear' },
-  { tier: 'Off-center', min: 0.20, max: 0.40, label: 'Off-center', color: '#ff9f43', detail: 'Noticeably off-center' },
-  { tier: 'Clean',      min: 0.40, max: 0.65, label: 'Clean',      color: '#9db8ff', detail: 'Decent centering, minor flaws' },
-  { tier: 'Sharp',      min: 0.65, max: 0.85, label: 'Sharp',      color: '#36d399', detail: 'Well-centered, crisp edges' },
-  { tier: 'Pristine',   min: 0.85, max: 1.01, label: 'Pristine',   color: '#7cf0ff', detail: 'Dead-centered, sharp corners' },
+  { tier: 'Rough',      min: 0,    max: 0.20, label: 'Rough',      abbr: 'Rgh',  color: '#ff5e6c', detail: 'Off-center with edge wear' },
+  { tier: 'Off-center', min: 0.20, max: 0.40, label: 'Off-center', abbr: 'OC',   color: '#ff9f43', detail: 'Noticeably off-center' },
+  { tier: 'Clean',      min: 0.40, max: 0.65, label: 'Clean',      abbr: 'Cln',  color: '#9db8ff', detail: 'Decent centering, minor flaws' },
+  { tier: 'Sharp',      min: 0.65, max: 0.85, label: 'Sharp',      abbr: 'Shrp', color: '#36d399', detail: 'Well-centered, crisp edges' },
+  { tier: 'Pristine',   min: 0.85, max: 1.01, label: 'Pristine',   abbr: 'Pris', color: '#7cf0ff', detail: 'Dead-centered, sharp corners' },
 ]
 // Fuzzy labels span ~±1 tier in wording; never name the exact tier confidently.
 const FUZZY_LABELS = {
@@ -1603,9 +1603,9 @@ export function cutEstimate(card, precise) {
   // `short` is a compact word for tight UI: the exact tier when precise, a coarse
   // never-leaks-the-tier word when fuzzy. `label` is the full read for roomy UI.
   if (precise) {
-    return { tier: t.tier, label: t.label, short: t.label, detail: t.detail + capNote, color: t.color }
+    return { tier: t.tier, label: t.label, short: t.label, abbr: t.abbr, detail: t.detail + capNote, color: t.color }
   }
-  return { tier: t.tier, label: FUZZY_LABELS[t.tier] + capNote, short: FUZZY_SHORT[t.tier], detail: null, color: t.color }
+  return { tier: t.tier, label: FUZZY_LABELS[t.tier] + capNote, short: FUZZY_SHORT[t.tier], abbr: null, detail: null, color: t.color }
 }
 
 export function round2(n) { return Math.round(n * 100) / 100 }
