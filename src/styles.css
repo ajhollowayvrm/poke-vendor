@@ -1034,6 +1034,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
      box-shadows still give subtle separation; borders are dropped. */
   body { background: var(--bg); }
   .topbar { gap: 6px; padding: 4px 12px 6px; flex-wrap: wrap; background: var(--bg); border-color: transparent; }
+  /* During an active rip the game top bar (a flat, borderless band on phones) is hidden so the
+     rip is a clean full-screen takeover — reveal cards no longer clip into an invisible dark
+     band as they scroll ("going under the top banner"). The bottom nav stays for navigation,
+     and the rip has its own Done / Back / Rip-another controls. With the bar gone, the overlay
+     reclaims its height: pad down to just the notch mask (28px + safe-area) plus a small gap. */
+  .topbar.rip-hide { display: none; }
+  .rip-overlay.rip-full { padding-top: calc(36px + var(--sat)); }
   .brand { font-size: 17px; }
   .cash { font-size: 17px; } .worth { font-size: 13px; } .noto-chip { font-size: 14px; }
   /* Dissolve the right-side wrapper into the top bar's own flex row (display:contents),

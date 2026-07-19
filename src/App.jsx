@@ -426,7 +426,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="topbar" ref={topbarRef}>
+      <div className={`topbar ${ripping && tab === 'shop' ? 'rip-hide' : ''}`} ref={topbarRef}>
         <div className="brand">Poké<b>Vendor</b></div>
         <div className="tabs">
           {TABS.map(t => (
@@ -519,7 +519,7 @@ export default function App() {
           tab switches; hidden (not unmounted) when you're off the Buy tab, so leaving and
           returning resumes the same rip rather than discarding it. */}
       {ripping && (
-        <div className={`rip-overlay ${tab === 'shop' ? '' : 'hidden'}`}>
+        <div className={`rip-overlay rip-full ${tab === 'shop' ? '' : 'hidden'}`}>
           <PackOpening
             key={ripping.nonce ?? 0}
             set={ripping.set}
