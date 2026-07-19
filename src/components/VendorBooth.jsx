@@ -139,6 +139,15 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   }
 
   const seeDeals = upgrades.network
+  // Deal/OVER read for a sealed entry, mirroring the singles logic in renderBuy: compare the
+  // (rapport-discounted) ask against the product's live market value. Vendor markups on sealed —
+  // especially vintage, which can ask 2×+ market — used to be totally opaque here: no mkt line,
+  // no OVER flag, so nothing stopped you paying $1,500 for a $700 pack. { mkt, ask, deal, over }.
+  const sealedRead = (entry) => {
+    const mkt = sealedValue({ product: entry.product, setId: entry.set?.id })
+    const ask = eff(entry._ask)
+    return { mkt, ask, deal: mkt > 0 && ask < mkt * 0.85, over: mkt > 0 && ask > mkt * 1.2 }
+  }
 
   // A buy is agreed (at ask or via haggle) → ask where it goes before committing.
   function buyAt(card, price) {
@@ -297,10 +306,15 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                     {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
                     {entry._origin === 'aftermarket' ? ' · 🕰️ older sealed' : ''}
                   </div>
+                  {(() => { const { mkt, ask, deal, over } = sealedRead(entry); return (<>
                   <div className="askrow" style={{ justifyContent:'center' }}>
                     {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(entry._ask)}</s>}
-                    <span className="ask">{fmtMoney(eff(entry._ask))}</span>
+                    <span className="ask">{fmtMoney(ask)}</span>
+                    {seeDeals && deal && <span className="dealtag">DEAL</span>}
+                    {seeDeals && over && <span className="overtag">OVER</span>}
                   </div>
+                  {mkt > 0 && <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>mkt {fmtMoney(mkt)}</div>}
+                  </>) })()}
                   <button className="btn gold" disabled={cash < eff(entry._ask)} onClick={() => setPendingSealed(entry)}>
                     {cash < eff(entry._ask) ? `Need ${fmtMoney(eff(entry._ask))}` : 'Buy →'}
                   </button>
@@ -389,8 +403,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
             </h3>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
               {pendingSealed.set.name} · {fmtMoney(eff(pendingSealed._ask))} <span style={{ opacity: 0.8 }}>({disc > 0 ? 'after your rapport discount' : 'vendor markup'})</span>.
+              {(() => { const { mkt } = sealedRead(pendingSealed); return mkt > 0 ? <> Market is <b>{fmtMoney(mkt)}</b>.</> : null })()}
               {pendingSealed._origin === 'vintage' ? ' A sealed vintage gamble.' : ''} Rip it now, or stock it to rip/list/flip later?
             </p>
+            {(() => { const { mkt, ask, over } = sealedRead(pendingSealed); return over ? (
+              <p style={{ color: 'var(--red)', fontSize: 12.5, fontWeight: 700, marginTop: -4 }}>
+                ⚠️ You're paying {fmtMoney(ask)} for a {fmtMoney(mkt)} product — {Math.round((ask / mkt - 1) * 100)}% over market.
+              </p>
+            ) : null })()}
             <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
               <button className="btn gold" disabled={cash < eff(pendingSealed._ask)} onClick={() => ripSealedNow(pendingSealed)}>
                 📦 Rip it here on the floor →
