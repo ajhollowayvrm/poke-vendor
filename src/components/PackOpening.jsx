@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
@@ -464,9 +464,10 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   value, and opens its full card page on tap. A chase card being teased (auto
                   suspense beat, or the next manual tap) dims the rest of the grid to spotlight it. */}
               {phase === 'revealing' ? (
-                /* The reveal itself: cards deal out left→right into a fan, the newest spotlighted
-                   on top with a caption. When the pack finishes it settles into the grid below. */
-                <FanReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
+                /* The reveal itself: the pack starts as a face-down deck, each card pulled off the
+                   top and dropped onto a growing pile below — newest on top with a caption. When
+                   the pack finishes it settles into the grid below. */
+                <StackReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
                   setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
               ) : (
                 /* Done: the fan settles into a readable 2-up grid — every card big, with its name
@@ -539,57 +540,57 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   )
 }
 
-// The reveal, as a fan: each card deals out left→right into an overlapping spread, the newest
-// dealt on top (highest z) with a pop, and a caption naming what just landed. The fan compresses
-// (accordion) as more cards join so it always fits the width. In manual mode a face-down deck
-// sits at the right — tap it to deal the next card. Tapping any dealt card opens its full page.
-function FanReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
-  const wrapRef = useRef(null)
-  const [w, setW] = useState(0)
-  useLayoutEffect(() => {
-    const el = wrapRef.current
-    if (!el) return
-    const ro = new ResizeObserver(() => setW(el.clientWidth))
-    ro.observe(el); setW(el.clientWidth)
-    return () => ro.disconnect()
-  }, [])
+// The reveal, as a two-stack deal: the pack starts as a face-down DECK up top; each reveal pulls
+// the top card off the deck and drops it onto a growing PILE below — the newest landing face-up
+// and clean on top (a drop-in pop), with a caption naming what it is. The deck thins as the pile
+// grows. In manual mode the deck's top card is the tap target; tapping any pile card opens its page.
+function StackReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
   const dealt = pulls.slice(0, shown)
   const n = dealt.length
   const newest = n ? dealt[n - 1] : null
+  const remaining = pulls.length - shown
   const manualNext = revealMode === 'manual' && awaiting && shown < pulls.length
-  const slots = n + (manualNext ? 1 : 0) // include the deck as a phantom slot for centering/spread
-  const mid = (slots - 1) / 2
-  // Card ~150px; spread so the whole fan fits the measured width, capped so a small pack doesn't
-  // splay too far. Rotation around each card's bottom edge gives the fan its arc.
-  const CARD_W = 150
-  const totalAngle = Math.min(46, slots * 7)
-  const per = slots > 1 ? totalAngle / (slots - 1) : 0
-  const stepX = slots > 1 ? Math.min(52, Math.max(16, ((w || 360) - CARD_W) / (slots - 1))) : 0
-  // The just-landed card sits upright (the spotlight); the rest fan out with rotation.
-  const place = (i, upright) => ({
-    transform: `translateX(calc(-50% + ${(i - mid) * stepX}px)) rotate(${upright ? 0 : (-totalAngle / 2 + i * per)}deg)`,
-    zIndex: 10 + i,
-  })
+  // Cap the rendered "thickness" of each stack — a few edges reads the same as many, and keeps
+  // the DOM light. The frontmost deck back (k = deckN-1) is the next card up: the manual tap target.
+  const DECK_MAX = 6, PILE_MAX = 6
+  const deckN = Math.min(remaining, DECK_MAX)
   return (
-    <div className="rip-fan-wrap" ref={wrapRef}>
-      <div className="rip-fan">
+    <div className="rip-stack-wrap">
+      {/* Deck: undealt cards, face-down, stacked. Empty once the pack is fully revealed. */}
+      <div className="rip-deck-zone">
+        {remaining > 0 && <span className="rip-deck-count">{remaining} left</span>}
+        {remaining > 0 && Array.from({ length: deckN }).map((_, k) => {
+          const top = k === deckN - 1 // frontmost = next to deal
+          const style = { transform: `translate(-50%, ${-k * 2}px) rotate(${(k % 2 ? 1 : -1) * 0.6 * k}deg)`, zIndex: k }
+          const back = <span className="stack-card-inner">{setLogo ? <img src={setLogo} alt="" /> : null}</span>
+          return top && manualNext ? (
+            <button type="button" key={`deck${k}`} className="stack-card deck-card tappable" style={style}
+              onClick={onTapNext} aria-label="Deal the next card">{back}</button>
+          ) : (
+            <div key={`deck${k}`} className="stack-card deck-card" style={style} aria-hidden="true">{back}</div>
+          )
+        })}
+      </div>
+      {/* Pile: revealed cards, face-up, newest clean on top (drops in); older ones peek beneath. */}
+      <div className="rip-pile-zone">
         {dealt.map((c, i) => {
+          const fromTop = (n - 1) - i // 0 = newest (top of the pile)
+          if (fromTop > PILE_MAX) return null // buried deep — don't render
           const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
           const special = c._isHit || c.foil || c._fillsWant
+          const off = Math.min(fromTop, PILE_MAX), dir = i % 2 ? 1 : -1
+          const style = {
+            transform: `translate(calc(-50% + ${dir * off * 2}px), ${off * 3}px) rotate(${fromTop ? dir * Math.min(off, 4) : 0}deg)`,
+            zIndex: 10 + i, '--rarity': edge,
+          }
           return (
-            <button key={c.uid} type="button" style={{ ...place(i, i === n - 1), '--rarity': edge }}
-              className={`fan-card ${i === n - 1 ? 'newest' : ''} ${special ? 'hit' : ''} ${isChase(c) ? 'chase' : ''}`}
+            <button key={c.uid} type="button" style={style}
+              className={`stack-card pile-card ${fromTop === 0 ? 'newest' : ''} ${special ? 'hit' : ''} ${isChase(c) ? 'chase' : ''}`}
               onClick={() => onInspect(c)} title={`${c.name} — tap for details`}>
-              <span className="fan-card-inner"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></span>
+              <span className="stack-card-inner"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></span>
             </button>
           )
         })}
-        {manualNext && (
-          <button type="button" className="fan-card fan-deck" style={place(n, false)}
-            onClick={onTapNext} aria-label="Deal the next card">
-            <span className="fan-card-inner">{setLogo ? <img src={setLogo} alt="" /> : null}</span>
-          </button>
-        )}
       </div>
       {newest && <FanCaption card={newest} hasLoupe={hasLoupe} />}
       {manualNext && <p className="rip-tap-hint">👆 Tap the deck to deal the next card ({shown}/{pulls.length})</p>}

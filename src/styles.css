@@ -410,6 +410,9 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   .reveal-card .flip-front { transform: none; }
   .reveal-card.shown .flip::after { animation: none; }
   .reveal-card.peek, .reveal-card.chase.shown, .reveal-card.tappable, .rip-tap-hint, .reveal-card .flip-back::after { animation: none; }
+  /* rip deal: cards still land, they just cut straight to the pile (no drop-in) */
+  .pile-card.newest .stack-card-inner, .pile-card.chase.newest .stack-card-inner,
+  .deck-card.tappable .stack-card-inner { animation: none; }
 }
 .hitburst { position:fixed; inset:0; pointer-events:none; z-index:60; }
 
@@ -938,32 +941,39 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rip-cell-foot:hover .rc-name { text-decoration: underline; }
 
 /* ---------- Rip reveal: the fan (cards deal out left→right during the reveal) ---------- */
-.rip-fan-wrap { width:100%; max-width:1100px; display:flex; flex-direction:column; align-items:center; gap:16px; }
-/* the stage the cards are absolutely positioned on. tall enough to hold a 150px card plus the
-   arc the outer rotations swing the tops through; overflow visible so nothing clips the fan. */
-.rip-fan { position:relative; width:100%; height:290px; overflow:visible; }
-/* each dealt card: anchored bottom-centre, rotated around its bottom edge to form the fan arc.
-   the outer element carries the fan transform (transitions as the fan re-centres); the inner
-   carries the art + the pop-in. */
-.fan-card { position:absolute; left:50%; bottom:0; width:150px; aspect-ratio:5/7; padding:0; margin:0;
-  border:none; background:none; cursor:pointer; transform-origin:50% 100%;
-  transition: transform .4s cubic-bezier(.2,.85,.3,1); will-change:transform; }
-.fan-card-inner { display:block; width:100%; height:100%; border-radius:11px; overflow:hidden;
+.rip-stack-wrap { width:100%; max-width:1100px; display:flex; flex-direction:column; align-items:center; gap:14px; }
+/* Two stacked zones — the face-down DECK above, the face-up PILE below. Each is a single card's
+   footprint; its cards are absolutely stacked within it, anchored bottom-centre. The gap between
+   the zones is the distance the newest card visibly travels as it "drops" onto the pile. */
+.rip-deck-zone, .rip-pile-zone { position:relative; width:150px; height:210px; }
+/* a small count chip pinned inside the deck's top edge (kept off the tab strip above the zone) */
+.rip-deck-count { position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:20;
+  font-size:11px; font-weight:800; color:#e6ecff; background:#0c0f1acc; padding:2px 9px;
+  border-radius:999px; border:1px solid #ffffff24; white-space:nowrap; }
+/* a card in either stack: anchored bottom-centre; the outer carries the stack offset (transitions
+   as the stacks re-settle), the inner carries the art + border + the drop-in pop. */
+.stack-card { position:absolute; left:50%; bottom:0; width:150px; aspect-ratio:5/7; padding:0; margin:0;
+  border:none; background:none; transform-origin:50% 100%;
+  transition: transform .35s cubic-bezier(.2,.85,.3,1); will-change:transform; }
+.stack-card-inner { display:block; width:100%; height:100%; border-radius:11px; overflow:hidden;
   border:2px solid var(--rarity, var(--line)); background:#0c0f1a; box-shadow:0 6px 18px #0009; }
-.fan-card-inner img { width:100%; height:100%; object-fit:cover; display:block; }
-/* the just-landed card pops (the inner scales/settles) — its upright transform comes inline */
-.fan-card.newest .fan-card-inner { animation: fanpop .42s cubic-bezier(.2,1.5,.4,1);
-  box-shadow: 0 12px 30px #000b, 0 0 0 1px var(--rarity); }
-@keyframes fanpop { 0% { transform: translateY(-16px) scale(.66); opacity:.25 }
-  60% { transform: translateY(0) scale(1.07); opacity:1 } 100% { transform:none } }
-.fan-card.hit .fan-card-inner { box-shadow: 0 8px 22px color-mix(in srgb, var(--rarity) 45%, #0009), 0 0 0 1px var(--rarity); }
-.fan-card.chase.newest .fan-card-inner { animation: fanpop .5s cubic-bezier(.2,1.5,.4,1), chaseRim 1.4s ease-out .4s 1; }
-/* the face-down deck you tap in manual mode — the next card to deal */
-.fan-deck { cursor:pointer; }
-.fan-deck .fan-card-inner { border-style:dashed; border-color: var(--accent2);
-  display:flex; align-items:center; justify-content:center; background:#141a2b;
+.stack-card-inner img { width:100%; height:100%; object-fit:cover; display:block; }
+/* deck backs: face-down, set logo watermark; the frontmost taps to deal in manual mode */
+.deck-card .stack-card-inner { display:flex; align-items:center; justify-content:center;
+  background:#141a2b; border-color:#ffffff18; }
+.deck-card .stack-card-inner img { width:64%; height:auto; object-fit:contain; opacity:.4; filter:grayscale(.3); }
+.deck-card.tappable { cursor:pointer; }
+.deck-card.tappable .stack-card-inner { border-style:dashed; border-color: var(--accent2);
   box-shadow:0 6px 18px #0009, 0 0 0 1px #ffffff10; animation: tapready 1.3s ease-in-out infinite; }
-.fan-deck .fan-card-inner img { width:60%; height:auto; opacity:.35; filter:grayscale(.3); }
+/* pile cards: face-up; the newest sits clean on top and drops in from the deck above */
+.pile-card { cursor:pointer; }
+.pile-card.hit .stack-card-inner { box-shadow: 0 8px 22px color-mix(in srgb, var(--rarity) 45%, #0009), 0 0 0 1px var(--rarity); }
+.pile-card.newest .stack-card-inner { animation: dealdrop .44s cubic-bezier(.2,1.3,.4,1);
+  box-shadow: 0 12px 30px #000b, 0 0 0 1px var(--rarity); }
+.pile-card.chase.newest .stack-card-inner { animation: dealdrop .5s cubic-bezier(.2,1.3,.4,1), chaseRim 1.4s ease-out .42s 1; }
+/* pulled off the deck (up top) and dropped onto the pile: starts where the deck sits, settles clean */
+@keyframes dealdrop { 0% { transform: translateY(-224px) scale(.9) rotate(-5deg); opacity:.35 }
+  55% { transform: translateY(0) scale(1.06); opacity:1 } 100% { transform:none } }
 .fan-caption { text-align:center; max-width:420px; animation: foilpop .3s cubic-bezier(.2,1.4,.5,1); }
 .fan-cap-name { font-weight:800; font-size:16px; line-height:1.2; }
 .fan-cap-meta { font-size:13px; margin-top:3px; }
