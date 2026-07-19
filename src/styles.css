@@ -124,8 +124,27 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   border-radius: 16px; position: sticky; top: 12px; z-index: 30; box-shadow: 0 8px 30px #0006; }
 .brand { font-weight: 800; font-size: 20px; letter-spacing: -.3px; flex: 0 0 auto; }
 .brand b { color: var(--accent); }
-.cash { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 800; font-size: 22px; color: var(--green); }
+.cash { position: relative; margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 800; font-size: 22px; color: var(--green); }
 .cash small { color: var(--dim); font-weight: 600; font-size: 12px; display:block; text-align:right;}
+
+/* Floating "+$100 / −$40" money bubbles. Anchored to whatever chip carries the balance
+   (top-bar .cash, floor .cash-pill), they rise off the bottom edge and fade — a quick,
+   glanceable cue that money moved. pointer-events:none so they never eat a tap; hugging
+   the chip's bottom edge keeps them clear of the phone notch above the top bar. */
+.cash-flash-wrap { position: absolute; top: 100%; right: 0; pointer-events: none; z-index: 5; }
+.cash-flash { position: absolute; top: 0; right: 0; white-space: nowrap; font-size: 14px;
+  font-weight: 800; font-variant-numeric: tabular-nums; text-shadow: 0 1px 3px #000a;
+  animation: cashfloat 1.5s ease-out forwards; }
+.cash-flash.up { color: var(--green); }
+.cash-flash.down { color: var(--red); }
+@keyframes cashfloat {
+  0%   { opacity: 0; transform: translateY(6px); }
+  18%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-16px); }
+}
+/* The floor HUD cash pill: a positioning context for its bubbles + a hair more weight so
+   the balance reads as the number that matters while you're buying at booths. */
+.cash-pill { position: relative; font-weight: 800; font-variant-numeric: tabular-nums; }
 /* Net worth sits beside cash — the stable "total worth" figure. Styled as a secondary
    readout (smaller, cooler colour) so cash-on-hand stays the headline number. */
 .worth { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 18px; color: var(--accent-light); cursor: help; }

@@ -49,3 +49,43 @@ export function AnimatedNumber({ value, format = (n) => Math.round(n).toLocaleSt
   const flashCls = flash && dir === 1 ? ' num-flash-up' : flash && dir === -1 ? ' num-flash-down' : ''
   return <span className={`num-anim${flashCls}${className ? ' ' + className : ''}`}>{format(display)}</span>
 }
+
+// Floating "+$120 / −$40" bubbles that rise and fade whenever the tracked value moves —
+// a quick, glanceable cue that money actually changed hands (an outside order filled, a
+// sale closed, a booth buy went out) so income doesn't just quietly appear in the balance.
+// Anchor it inside a position:relative parent (the .cash chip / a floor pill) and feed it
+// the SAME value the parent already subscribes to (no second store subscription). Skips the
+// initial value, ignores sub-cent noise, and stacks bubbles if money moves in a flurry.
+let _flashSeq = 0
+export function CashFlash({ value, format = (n) => '$' + Math.round(n).toLocaleString(), min = 0.5 }) {
+  const prevRef = useRef(value)
+  const timersRef = useRef([])
+  const [bubbles, setBubbles] = useState([])
+
+  useEffect(() => {
+    const delta = value - prevRef.current
+    prevRef.current = value
+    if (Math.abs(delta) < min) return
+    const reduce = typeof window !== 'undefined' && window.matchMedia
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return // no floating motion for reduced-motion users; the number itself still flashes
+    const id = ++_flashSeq
+    setBubbles(b => [...b, { id, delta }])
+    // Own timer per bubble; removal is NOT tied to effect cleanup, so a rapid second
+    // change can't cancel the first bubble's exit. All timers are cleared on unmount.
+    timersRef.current.push(setTimeout(() => setBubbles(b => b.filter(x => x.id !== id)), 1500))
+  }, [value, min])
+
+  useEffect(() => () => timersRef.current.forEach(clearTimeout), [])
+
+  if (!bubbles.length) return null
+  return (
+    <span className="cash-flash-wrap" aria-hidden="true">
+      {bubbles.map(b => (
+        <span key={b.id} className={`cash-flash ${b.delta > 0 ? 'up' : 'down'}`}>
+          {b.delta > 0 ? '+' : '−'}{format(Math.abs(b.delta))}
+        </span>
+      ))}
+    </span>
+  )
+}

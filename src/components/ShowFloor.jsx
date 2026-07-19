@@ -7,6 +7,7 @@ import Encounter from './Encounter'
 import PackOpening from './PackOpening'
 import CardTile from './CardTile'
 import { useModalEscape } from '../ui/dialog'
+import { AnimatedNumber, CashFlash } from '../ui/AnimatedNumber'
 
 const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
 // How many unsolicited walk-ups your booth can get in a show day. This was a flat 3 — so a
@@ -28,6 +29,7 @@ const HYPE = ['just hit a', 'PULLED a', 'cracked a', 'opened a', 'just ripped a'
 // announced to the whole room. Pre-show leads surface as appointments + held items.
 export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
+  const cash = useGame(s => s.cash) // shown on the floor HUD — you buy at booths here, so your balance must be visible
   const upgrades = useGame(s => s.upgrades)
   // Snapshot the money/rep state the moment you walk the floor, so leaving can recap what
   // the FLOOR itself did (buying, selling, encounters) — distinct from the days-away home
@@ -259,6 +261,9 @@ export default function ShowFloor({ show, onLeave }) {
           </button>
         )}
         <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>Notoriety {Math.round(notoriety)}</span>
+        <span className="pill cash-pill" title="Cash on hand — what you can spend at booths right now">
+          💵 <AnimatedNumber value={cash} format={fmtMoney} /><CashFlash value={cash} />
+        </span>
         {show._asVendor ? (
           <>
             <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
