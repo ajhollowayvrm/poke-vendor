@@ -953,6 +953,30 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .prodbtn .prodowned { flex:none; font-size:11px; font-weight:800; white-space:nowrap;
   color:var(--accent-light); background:color-mix(in srgb, var(--accent2) 20%, transparent);
   border-radius:6px; padding:1px 6px; }
+/* a buy that will ride the credit line reads blue instead of the usual neutral tile */
+.prodbtn.on-credit { border-color: color-mix(in srgb, var(--accent2) 60%, var(--line));
+  background: color-mix(in srgb, var(--accent2) 16%, transparent); }
+.prodbtn.on-credit:hover:not(:disabled) { background: color-mix(in srgb, var(--accent2) 24%, transparent); }
+
+/* ---------- Distributor credit line panel ---------- */
+.credit-panel { margin-top: 14px; background: linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+.credit-panel.frozen { border-color: color-mix(in srgb, var(--red) 55%, var(--line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 22%, transparent); }
+.credit-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.credit-head { font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; }
+.credit-badge { font-size:10px; font-weight:900; letter-spacing:.5px; color:#fff;
+  background: var(--red); border-radius:6px; padding:2px 6px; }
+.credit-toggle { display:flex; gap:6px; margin-left:auto; }
+.credit-toggle .btn { flex:none; padding:6px 12px; font-size:12.5px; }
+.credit-stats { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:13px; color:var(--muted); }
+.credit-stats b { color:var(--txt); font-variant-numeric:tabular-nums; margin-left:3px; }
+.credit-stats b.credit-avail { color:var(--green); }
+.credit-stats b.credit-owe { color:var(--gold); }
+.credit-note { font-size:11.5px; line-height:1.35; }
+.credit-pay { display:flex; flex-direction:column; gap:8px; }
+.credit-pay-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.credit-pay-btns .btn { flex:1 1 auto; min-width:max-content; padding:8px 10px; font-size:12.5px; }
 
 /* ---------- Hall announcements (big pulls on the floor) ---------- */
 .hall-announce { position: fixed; top: 88px; left: 50%; transform: translateX(-50%); z-index: 70;

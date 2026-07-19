@@ -32,7 +32,7 @@ export function bumpSet(bySet, setId, delta) {
 }
 
 // --- Payment-method result messaging ----------------------------------------
-import { PAYMENT_METHODS } from './constants'
+import { PAYMENT_METHODS, CREDIT_LIMIT_PCT, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR } from './constants'
 
 export function methodLabel(key) {
   const m = PAYMENT_METHODS[key]
@@ -65,7 +65,8 @@ export function realizableAssets(s) {
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + sv(s.sealedInventory) + sv(s.showSealed) + sv(s.shopSealed)
     + (s.lgsCredit || 0)          // LGS store credit you hold is spendable value → an asset
-    - (s.storeCredit || 0))
+    - (s.storeCredit || 0)
+    - (s.credit?.balance || 0))   // distributor credit you owe is a liability you must dig out of
 }
 
 // FULL net worth: cash on hand + the market value of EVERY asset you hold, wherever it
@@ -89,7 +90,28 @@ export function netWorthFull(s) {
     // Built mystery packs: the contents are still your assets until a buyer takes the pack.
     + (s.builtPacks || []).reduce((a, p) => a + cv(p.cards) + (p.sealed || []).reduce((x, it) => x + sealedValue(it), 0), 0)
     + (s.lgsCredit || 0)   // LGS store credit you hold is spendable value → an asset
-    - (s.storeCredit || 0)) // issued store credit is a liability — locals will spend it out of your future takings
+    - (s.storeCredit || 0)  // issued store credit is a liability — locals will spend it out of your future takings
+    - (s.credit?.balance || 0)) // distributor credit balance is money you owe — a liability
+}
+
+// Your distributor credit line and how much of it is still open. The limit scales with net
+// worth (they lend against what you're worth). We base it on your DEBT-FREE net worth — add
+// the balance back before applying the percentage — so drawing on the line moves `available`
+// down 1:1 with the balance instead of the limit shrinking underneath you as you borrow.
+export function creditLimit(s) {
+  const base = netWorthFull(s) + (s.credit?.balance || 0) // assets net of other liabilities, before this debt
+  return Math.max(0, round2(CREDIT_LIMIT_PCT * base))
+}
+export function creditAvailable(s) {
+  if (s.credit?.frozen) return 0 // line suspended until a missed minimum is cured
+  return Math.max(0, round2(creditLimit(s) - (s.credit?.balance || 0)))
+}
+// The monthly minimum payment on the current balance (10% of it, at least the floor, never
+// more than the balance itself). Shared by the auto-settle and the "pay minimum" UI.
+export function creditMinimum(s) {
+  const bal = s.credit?.balance || 0
+  if (bal <= 0) return 0
+  return round2(Math.min(bal, Math.max(CREDIT_MIN_FLOOR, bal * CREDIT_MIN_PCT)))
 }
 
 // Have you crossed into being a DISTRIBUTOR yourself? The endgame status: a Household Name

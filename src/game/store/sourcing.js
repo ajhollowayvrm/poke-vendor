@@ -52,7 +52,7 @@ export function createSourcingSlice(set, get) {
     // routes the actual purchase through buySealed (charge + stock the item + log), then
     // bumps your rapport with them and decrements their shelf. Returns the new inventory
     // item, or null if out of stock / unaffordable.
-    buyFromDistributor(distId, pokeSet, product, price) {
+    buyFromDistributor(distId, pokeSet, product, price, opts = {}) {
       const dist = distributorById(distId)
       if (!dist) return null
       if (!distributorUnlocked(dist, get().notoriety)) return null // account not open yet (notoriety-gated)
@@ -61,8 +61,9 @@ export function createSourcingSlice(set, get) {
       const key = stockKey(pokeSet, product)
       if (stockState(dist, rec.stock, pokeSet, product, level).out) return null // sold out
       const paid = price ?? product._buyPrice ?? product.price ?? 0
-      const drawn = get()._drawLgsCredit(distId, paid) // gift-card the till from LGS credit first
-      const item = get().buySealed(pokeSet, product, price) // spends, stocks, logs; null if broke
+      // On credit, the full price rides the line — don't also draw down held LGS store credit.
+      const drawn = opts.onCredit ? 0 : get()._drawLgsCredit(distId, paid) // gift-card the till from LGS credit first
+      const item = get().buySealed(pokeSet, product, price, opts) // spends/credits, stocks, logs; null if broke
       if (!item) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       set(s => {
@@ -84,7 +85,7 @@ export function createSourcingSlice(set, get) {
     // Clamps to what's actually in stock and what you can afford, charges the total once,
     // stocks each unit, decrements their shelf by the amount bought, and bumps rapport once.
     // Returns { items, bought, spent, unit } or null if not even one could be bought.
-    buyFromDistributorBulk(distId, pokeSet, product, price, qty) {
+    buyFromDistributorBulk(distId, pokeSet, product, price, qty, opts = {}) {
       const dist = distributorById(distId)
       if (!dist) return null
       if (!distributorUnlocked(dist, get().notoriety)) return null // account not open yet (notoriety-gated)
@@ -96,14 +97,16 @@ export function createSourcingSlice(set, get) {
       const unit = round2(price ?? product._buyPrice ?? product.price ?? 0)
       // !out means at least one whole unit is buyable (mirrors the single-buy semantics).
       const inStock = st.out ? 0 : Math.max(1, Math.floor(st.q))
-      // Affordability counts LGS credit as spendable — it tops the till up before the charge.
-      const credit = distId === 'lgs' ? (get().lgsCredit || 0) : 0
-      const affordable = unit > 0 ? Math.floor((get().cash + credit) / unit) : want
+      // On credit, affordability is capped by your open credit line (no LGS credit in the mix);
+      // on cash, LGS store credit tops the till up before the charge.
+      const lgs = (!opts.onCredit && distId === 'lgs') ? (get().lgsCredit || 0) : 0
+      const spendable = opts.onCredit ? get().creditAvailable() : (get().cash + lgs)
+      const affordable = unit > 0 ? Math.floor(spendable / unit) : want
       const n = Math.min(want, inStock, affordable)
       if (n < 1) return null
       const total = round2(unit * n)
-      const drawn = get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
-      if (!get().spend(total)) { get()._refundLgsCredit(drawn); return null }
+      const drawn = opts.onCredit ? 0 : get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
+      if (opts.onCredit ? !get().chargeCredit(total) : !get().spend(total)) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       get().recordSetSpend(pokeSet.id, total)
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
@@ -129,7 +132,7 @@ export function createSourcingSlice(set, get) {
           },
         }
       })
-      get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}`, -total)
+      get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${opts.onCredit ? ' on credit 💳' : ''}`, opts.onCredit ? 0 : -total)
       get().bumpGoal('buy', n)
       return { items, bought: n, spent: total, unit }
     },
@@ -199,9 +202,12 @@ export function createSourcingSlice(set, get) {
     // wholesale, or vintage market), attributes the spend to the set, and stocks the
     // item. Returns the new item (so the caller can immediately rip it if Auto-rip is on),
     // or null if you couldn't afford it.
-    buySealed(pokeSet, product, price) {
+    // `opts.onCredit` charges the distributor credit line instead of cash (fails if the line
+    // is frozen or the buy is over your available credit). The cash-delta logged is 0 on
+    // credit — no cash left your pocket, you took on debt instead.
+    buySealed(pokeSet, product, price, opts = {}) {
       const cost = price ?? product._buyPrice ?? product.price
-      if (!get().spend(cost)) return null
+      if (opts.onCredit ? !get().chargeCredit(cost) : !get().spend(cost)) return null
       get().recordSetSpend(pokeSet.id, cost)
       const item = {
         uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
@@ -212,7 +218,7 @@ export function createSourcingSlice(set, get) {
         vintage: !!pokeSet.vintage,
       }
       set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
-      get().log('buy', `Stocked ${product.type} (${pokeSet.name})`, -cost)
+      get().log('buy', `Stocked ${product.type} (${pokeSet.name})${opts.onCredit ? ' — on credit 💳' : ''}`, opts.onCredit ? 0 : -cost)
       get().bumpGoal('buy', 1)
       return item
     },

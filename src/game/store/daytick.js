@@ -33,6 +33,7 @@ import {
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
   GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
+  CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
@@ -990,6 +991,10 @@ export function advanceDaysWith(set, get, days, away) {
   // Brick & mortar: settle the daily lease + payroll. Failing this over the grace window
   // closes the store (you keep the cards/cash — you just lose the lease + staff).
   if (hasStore && (leaseDue + payrollDue) > 0) settleStore(set, get, leaseDue, payrollDue, days)
+  // Distributor credit: at each month rollover crossed in this window, accrue interest on the
+  // carried balance and auto-pay the monthly minimum from cash (short pay → freeze + rep ding).
+  const monthsRolled = months - s.monthsElapsed
+  if (monthsRolled > 0 && (s.credit?.balance || 0) > 0) settleCredit(set, get, monthsRolled)
   set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
   // Life events: something may have happened while these days passed (expense, ding, theft,
   // a buyer walking, a windfall). Applied after settlement so the recap's cashDelta captures it.
@@ -1143,6 +1148,31 @@ export function mergeSummaries(a, b) {
     cashDelta: round2(add(a.cashDelta, b.cashDelta)),
     notoDelta: round2(add(a.notoDelta, b.notoDelta)),
     days: add(a.days, b.days),
+  }
+}
+
+// Monthly distributor-credit billing. Runs once per month rollover crossed in a day-advance:
+// interest accrues on the carried balance, then the monthly minimum is auto-paid from cash
+// (like rent). Cover it and a frozen line thaws; fall short and the line freezes (cash-only)
+// with a small notoriety ding until you catch up. Interest still accrues while frozen.
+function settleCredit(set, get, monthsRolled) {
+  for (let i = 0; i < monthsRolled; i++) {
+    let bal = get().credit?.balance || 0
+    if (bal <= 0) { if (get().credit?.frozen) set(st => ({ credit: { ...st.credit, frozen: false } })); continue }
+    const interest = round2(bal * CREDIT_MONTHLY_RATE)
+    bal = round2(bal + interest)
+    const minDue = round2(Math.min(bal, Math.max(CREDIT_MIN_FLOOR, bal * CREDIT_MIN_PCT)))
+    const pay = round2(Math.min(minDue, Math.max(0, get().cash)))
+    if (pay > 0) get().spend(pay)
+    const newBal = Math.max(0, round2(bal - pay))
+    const missed = pay + 1e-9 < minDue
+    set(() => ({ credit: { balance: newBal, frozen: missed } }))
+    if (interest > 0) get().log('credit', `💳 Credit interest +$${interest.toFixed(2)} on your distributor balance (now $${bal.toFixed(2)})`, 0)
+    if (pay > 0) get().log('credit', `💳 Credit minimum paid −$${pay.toFixed(2)} · balance $${newBal.toFixed(2)}`, -pay)
+    if (missed) {
+      get().addNotoriety(-CREDIT_MISS_NOTORIETY)
+      get().log('credit', `⚠️ Missed the credit minimum ($${minDue.toFixed(2)}) — your line is frozen (cash only) until you pay it down. (−${CREDIT_MISS_NOTORIETY}★)`, 0)
+    }
   }
 }
 

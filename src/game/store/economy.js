@@ -12,7 +12,7 @@ import {
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
   storageFee, heldUnits, STORAGE_FREE_UNITS,
 } from './constants'
-import { bumpSet, realizableAssets } from './helpers'
+import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
 import { advanceDaysWith, mergeSummaries } from './daytick'
 import { initialState } from './initialState'
 import { newlyUnlocked } from '../milestones'
@@ -168,6 +168,37 @@ export function createEconomySlice(set, get) {
         set(s => ({ stats: { ...s.stats, goalsCompleted: (s.stats.goalsCompleted || 0) + 1 } }))
         get().log('goal', `Daily goal complete: ${completed.label}${paidCash?` (+$${paidCash})`:''}${paidNoto?` (+${paidNoto}★)`:''}`, paidCash || 0)
       }
+    },
+
+    // --- Distributor credit line ---
+    // Selectors (thin wrappers over the pure helpers) so the UI reads one source of truth.
+    creditLimit() { return creditLimitOf(get()) },
+    creditAvailable() { return creditAvailableOf(get()) },
+    creditMinimum() { return creditMinimumOf(get()) },
+    // Put `amount` on the credit line — a buy charged to credit instead of cash. Refuses if
+    // the line is frozen or the amount is over what's available. Returns true on success.
+    chargeCredit(amount) {
+      const amt = round2(amount)
+      if (!(amt > 0)) return false
+      if (creditAvailableOf(get()) + 1e-9 < amt) return false // frozen, or over the limit
+      set(s => ({ credit: { ...s.credit, balance: round2((s.credit?.balance || 0) + amt) } }))
+      return true
+    },
+    // Pay `amount` down from cash toward the balance (clamped to the balance and your cash).
+    // A payment that covers the current monthly minimum — or clears the balance — thaws a
+    // frozen line. Returns the amount actually paid.
+    payCredit(amount) {
+      const bal = get().credit?.balance || 0
+      if (bal <= 0) return 0
+      const minDue = creditMinimumOf(get())
+      const pay = round2(Math.min(amount, bal, get().cash))
+      if (!(pay > 0)) return 0
+      get().spend(pay)
+      const newBal = Math.max(0, round2(bal - pay))
+      const cured = newBal <= 0 || pay + 1e-9 >= minDue
+      set(s => ({ credit: { balance: newBal, frozen: cured ? false : !!(s.credit?.frozen) } }))
+      get().log('credit', `Paid down distributor credit (−$${pay.toFixed(2)}) · balance $${newBal.toFixed(2)}`, -pay)
+      return pay
     },
 
     // --- Jobs (the survival layer) ---

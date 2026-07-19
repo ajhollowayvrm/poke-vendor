@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
-import { weekIndexOf } from './game/store/constants'
+import { weekIndexOf, CREDIT_MONTHLY_RATE } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -212,23 +212,28 @@ export default function App() {
   // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses
   // that to rip immediately (the old instant-rip behaviour); the "Auto-rip" pacing toggle
   // does NOT, so turning on auto-advance no longer silently skips the inventory.
-  function buyProduct(distId, set, product, qty = 1) {
+  function buyProduct(distId, set, product, qty = 1, opts = {}) {
     // The Buy UI passes `_buyPrice` = the actual charged price (the distributor's price
     // at your rapport, a case lot, or a clearance lot), so shown == charged.
     const price = product._buyPrice ?? product.price
-    if (cash < price) return toast(`Not enough cash for ${product.type}.`)
+    const onCredit = !!opts.onCredit
+    // Credit buys ride the distributor line; check it can cover the (single-unit) charge.
+    if (onCredit) {
+      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
+      if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${product.type}. Pay down your balance or buy with cash.`)
+    } else if (cash < price) return toast(`Not enough cash for ${product.type}.`)
     const n = Math.max(1, Math.floor(qty))
     if (n > 1) {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
-      const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n)
+      const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit })
       if (!res) return toast(`${distributorById(distId)?.name || 'They'} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
-      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${short} — in Cards → 📦 Sealed.`)
+      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${onCredit ? ' on credit 💳' : ''}${short} — in Cards → 📦 Sealed.`)
     }
-    const item = useGame.getState().buyFromDistributor(distId, set, product, price)
+    const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit })
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
-    toast(`Stocked ${product.type} of ${set.name} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Cards → 📦 Sealed'}: rip, list, or flip it whenever.`)
+    toast(`Stocked ${product.type} of ${set.name}${onCredit ? ' on credit 💳' : ''} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Cards → 📦 Sealed'}: rip, list, or flip it whenever.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -775,6 +780,16 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   const [distId, setDistId] = useState(DISTRIBUTORS[0].id)
   const [toastMsg, setToastMsg] = useState(null)
   const flash = (m) => { setToastMsg(m); setTimeout(() => setToastMsg(null), 2600) }
+  // Distributor credit line: a global account (not per-distributor) that scales with net worth.
+  const creditBalance = useGame(s => s.credit?.balance || 0)
+  const creditFrozen = useGame(s => !!s.credit?.frozen)
+  const creditLimitV = useGame(s => s.creditLimit())
+  const creditAvail = useGame(s => s.creditAvailable())
+  const creditMin = useGame(s => s.creditMinimum())
+  const payCredit = useGame(s => s.payCredit)
+  const [payCreditMode, setPayCreditMode] = useState(false) // is the buy toggle set to "credit"?
+  // Never leave the toggle stuck on credit when the line can't be used — fall back to cash.
+  const onCredit = payCreditMode && !creditFrozen && creditAvail > 0
 
   const dist = distributorById(distId) || DISTRIBUTORS[0]
   const rec = distributors[distId] || { spend: 0, stock: {} }
@@ -809,13 +824,18 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         )}
       </div>
 
+      <CreditPanel balance={creditBalance} limit={creditLimitV} avail={creditAvail} min={creditMin}
+        frozen={creditFrozen} cash={cash} onCredit={payCreditMode} setOnCredit={setPayCreditMode}
+        onPay={(amt) => { const paid = payCredit(amt); if (paid > 0) flash(`Paid ${fmtMoney(paid)} toward your credit line.`) }} />
+
       {catalog.length === 0 ? (
         <p className="muted" style={{ marginTop: 18 }}>{dist.name} has nothing on the shelf right now — check back next week.</p>
       ) : (
         <div className="grid shop-grid">
           {catalog.map(set => (
             <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={rec.stock}
-              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={ownedCounts} />
+              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={ownedCounts}
+              onCredit={onCredit} creditAvail={creditAvail} />
           ))}
         </div>
       )}
@@ -824,6 +844,50 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       </>)}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
+  )
+}
+
+// The distributor credit line — a single global account (limit scales with net worth). Shows
+// the balance / limit / available, a Cash⇄Credit toggle that routes every buy on this tab, and
+// pay-down controls. Carrying a balance accrues monthly interest; the minimum auto-pays from
+// cash each month, and missing it freezes the line (surfaced here) until you pay it down.
+function CreditPanel({ balance, limit, avail, min, frozen, cash, onCredit, setOnCredit, onPay }) {
+  const canUseCredit = !frozen && avail > 0
+  const hasBalance = balance > 0.005
+  const ratePct = Math.round(CREDIT_MONTHLY_RATE * 100)
+  return (
+    <div className={`credit-panel ${frozen ? 'frozen' : ''}`}>
+      <div className="credit-top">
+        <div className="credit-head">💳 Credit line{frozen && <span className="credit-badge">FROZEN</span>}</div>
+        <div className="credit-toggle" role="group" aria-label="Pay with">
+          <button className={`btn ${!onCredit ? 'gold' : 'alt'}`} onClick={() => setOnCredit(false)}>💵 Cash</button>
+          <button className={`btn ${onCredit && canUseCredit ? 'gold' : 'alt'}`} disabled={!canUseCredit}
+            title={frozen ? 'Frozen — pay your balance down to buy on credit again'
+              : avail <= 0 ? 'No credit available yet — your line grows with your net worth (and frees up as you pay down the balance)'
+              : `Charge buys to your credit line (up to ${fmtMoney(avail)} available)`}
+            onClick={() => setOnCredit(true)}>💳 Credit</button>
+        </div>
+      </div>
+      <div className="credit-stats">
+        <span>Balance <b className={hasBalance ? 'credit-owe' : ''}>{fmtMoney(balance)}</b></span>
+        <span>Limit <b>{fmtMoney(limit)}</b></span>
+        <span>Available <b className="credit-avail">{fmtMoney(avail)}</b></span>
+        {hasBalance && <span>Min/mo <b>{fmtMoney(min)}</b></span>}
+      </div>
+      {hasBalance ? (
+        <div className="credit-pay">
+          <div className="muted credit-note">~{ratePct}%/mo interest on the balance · the minimum auto-pays from cash each month{frozen ? ' — pay it down to un-freeze the line' : ''}.</div>
+          <div className="credit-pay-btns">
+            <button className="btn alt" disabled={cash <= 0} onClick={() => onPay(min)}>Pay min {fmtMoney(min)}</button>
+            <button className="btn gold" disabled={cash <= 0} onClick={() => onPay(balance)}>
+              {cash + 0.005 < balance ? `Pay ${fmtMoney(cash)} (all cash)` : `Pay off ${fmtMoney(balance)}`}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="muted credit-note">Buy sealed on credit and pay it off monthly — your line grows with your net worth. Carry a balance and it accrues ~{ratePct}%/mo.</div>
+      )}
+    </div>
   )
 }
 
@@ -918,11 +982,12 @@ function RapportBanner({ dist, rec, lvl }) {
 
 // One set on a distributor's shelf: its products (priced at your rapport), plus a case
 // lot (if they sell cases and you've earned it) and a clearance lot (Greg, weekly).
-function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned }) {
+function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned, onCredit, creditAvail }) {
   const products = setProducts(set)
   const showCases = dist.cases && lvl.level >= dist.casesMinLevel
   const lot = showCases ? caseLot(set) : null
   const box = [...products].sort((a, b) => b.packs - a.packs)[0]
+  const credit = { onCredit, creditAvail }
   return (
     <div className="product">
       {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
@@ -930,14 +995,14 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
       <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
       <div className="prodlist">
         {products.map(p => (
-          <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} />
+          <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
         ))}
         {lot && (
-          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy}
+          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
             product={{ ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, bonus: lot.bonus, boxes: lot.boxes, _retail: lot.retail, _case: true }} owned={owned} />
         )}
         {clearance && box && (
-          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy}
+          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
             product={{ ...box, type: `Clearance ${box.type}`, icon: '🏷️', _clearanceOf: box.price, _clearance: true }} owned={owned} />
         )}
       </div>
@@ -949,7 +1014,7 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
 // bar, and disables itself when sold out (with a restock ETA) or you can't afford it.
 // A quantity stepper lets you buy several at once (type "10" → ten ETBs in one purchase),
 // capped to what's in stock and what you can afford.
-function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned }) {
+function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCredit = false, creditAvail = 0 }) {
   const ownedN = owned?.get(`${set.id}|${product.type}`) || 0 // sealed copies of this exact line you already hold
   let price
   if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
@@ -958,8 +1023,10 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned }) {
 
   const { q: stockQty, cap, out } = stockState(dist, stock, set, product, lvl.level)
   const days = out ? daysToRestock(dist, stockQty, cap) : 0
-  // How many you can buy right now: at least 1 if in stock, capped by stock and your cash.
-  const affordable = price > 0 ? Math.floor(cash / price) : 999
+  // How many you can buy right now: at least 1 if in stock, capped by stock and your spendable
+  // funds — cash, or your open credit line when buying on credit.
+  const spendable = onCredit ? creditAvail : cash
+  const affordable = price > 0 ? Math.floor(spendable / price) : 999
   const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable))
 
   const [buyQty, setBuyQty] = useState(1)
@@ -992,11 +1059,11 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned }) {
             : `📋 Standing order: auto-buy ${qN}× ${product.type} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
           onClick={() => setSO(soHere ? null : { distId: dist.id, setId: set.id, type: product.type, qty: qN })}>📋</button>
       )}
-      <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''}`}
+      <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''} ${onCredit && canBuy ? 'on-credit' : ''}`}
         disabled={!canBuy}
-        onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN)}
-        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now`}>
-        <span className="prodname">{product.icon} {product.type}</span>
+        onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit })}
+        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : ''}`}>
+        <span className="prodname">{onCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
         {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
         <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}</span>

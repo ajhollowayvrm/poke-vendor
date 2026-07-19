@@ -75,6 +75,10 @@ export function initialState() {
     buyinOffers: [],         // locals selling YOU their cards: {id, who, hint, cards, askCash, estimate, estimateTight, pendingDays} — pay cash or store credit
     storeCredit: 0,          // outstanding store credit you've issued (a liability — drains from counter takings as locals spend it; counts against net worth)
     lgsCredit: 0,            // in-store credit YOU hold at the Local Game Store (an ASSET) — earned by turning in bulk at 5¢/card, spent automatically on LGS purchases
+    // Distributor credit line: buy sealed on credit (net terms) and carry a revolving balance.
+    // balance = what you owe (principal + accrued interest); frozen = line suspended after a
+    // missed monthly minimum (cash-only until you catch up). Limit scales with net worth.
+    credit: { balance: 0, frozen: false },
     distributorSince: null,  // absolute day you first became a distributor (Household Name + millionaire); null until then. Gates the passive wholesale income + the one-time unlock notice.
     storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
     eventCooldownLeft: 0,    // days before you can host another event

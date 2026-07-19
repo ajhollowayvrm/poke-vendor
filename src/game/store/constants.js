@@ -51,6 +51,17 @@ export const STARTER_JOB = JOBS.find(j => j.id === 'retail')
 export function jobById(id) { return JOBS.find(j => j.id === id) || null }
 // Days you can stay behind on rent before it's game over (the grace/comeback window).
 export const RENT_GRACE_DAYS = 3
+
+// --- Distributor credit line ------------------------------------------------
+// Buy sealed on credit and carry a revolving balance you pay down monthly. The line
+// scales with net worth (they lend against what you're worth); the balance accrues
+// interest each month, a minimum is auto-paid from cash at each month rollover, and
+// missing it freezes the line (cash-only) plus a small rep ding until you catch up.
+export const CREDIT_LIMIT_PCT = 0.5      // credit line = 50% of (debt-free) net worth
+export const CREDIT_MONTHLY_RATE = 0.04  // 4%/mo interest applied to the carried balance
+export const CREDIT_MIN_PCT = 0.10       // monthly minimum = 10% of the balance...
+export const CREDIT_MIN_FLOOR = 50       // ...but at least this much (capped at the balance)
+export const CREDIT_MISS_NOTORIETY = 3   // small notoriety hit when you miss the minimum
 // Rolling window (game-days) used to estimate your card income/day for the full-time
 // sustainability readout. Long enough to smooth out spiky sale days.
 export const INCOME_WINDOW_DAYS = 7
