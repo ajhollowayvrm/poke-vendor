@@ -153,7 +153,7 @@ export function createSourcingSlice(set, get) {
       if (!opts.fromHold && vintageLeft(get(), distId, setId) < 1) return null // shelf is bare
       // Tag the copy with the vendor it came from, so "Rip another" can check THEIR shelf for
       // one more instead of conjuring a fresh pack out of nowhere.
-      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, _distId: distId, vintage: true }, price)
+      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, _distId: distId, vintage: true }, price, { onCredit: opts.onCredit })
       if (!item) return null
       set(s => {
         const cur = s.distributors[distId] || { spend: 0, stock: {} }

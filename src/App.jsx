@@ -263,11 +263,17 @@ export default function App() {
   // Buy a vintage FIND (or a reserved rapport hold) off a distributor — stocks it to hold
   // (vintage appreciates), builds rapport with them, and clears the hold if it was reserved.
   function buyDistVintage(distId, find, opts = {}) {
-    if (cash < find.price) return toast(`Not enough cash for the ${find.setName} pack (${fmtMoney(find.price)}).`)
-    const item = useGame.getState().buyDistributorVintage(distId, find.setId, find.product, find.price, opts)
+    const onCredit = !!opts.onCredit
+    // Vintage sealed can ride the distributor credit line too (the panel promises "buy sealed
+    // on credit"), so gate on the line when credit is on, otherwise on cash — mirrors buyProduct.
+    if (onCredit) {
+      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
+      if (useGame.getState().creditAvailable() + 1e-9 < find.price) return toast(`Not enough credit available for the ${find.setName} pack. Pay down your balance or buy with cash.`)
+    } else if (cash < find.price) return toast(`Not enough cash for the ${find.setName} pack (${fmtMoney(find.price)}).`)
+    const item = useGame.getState().buyDistributorVintage(distId, find.setId, find.product, find.price, { ...opts, onCredit })
     // The weekly find is finite — refuses once their shelf is bare (say the buy raced a click).
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} have no more sealed ${find.setName} — it's out of print. A fresh find turns up next week.`)
-    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Cards → 📦 Sealed.`)
+    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${onCredit ? ' on credit 💳' : ''}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Cards → 📦 Sealed.`)
   }
 
   // "Rip another" from the end-of-rip summary: keep chasing without going back to the
@@ -847,7 +853,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         </div>
       )}
 
-      <VintageShelf dist={dist} rec={rec} weekIndex={weekIndex} cash={cash} onBuyVintage={onBuyVintage} />
+      <VintageShelf dist={dist} rec={rec} weekIndex={weekIndex} cash={cash} onBuyVintage={onBuyVintage} onCredit={onCredit} creditAvail={creditAvail} />
       </>)}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
@@ -1113,7 +1119,7 @@ function StockBar({ qty, cap, out, days, color }) {
 // This panel shows the selected distributor's current vintage: a reserved HOLD (a rapport
 // perk that persists until you grab it) and/or a rotating weekly FIND. Re-prices as the market
 // drifts (the parent Shop already subscribes to marketMults).
-function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
+function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = false, creditAvail = 0 }) {
   if (!VINTAGE_SETS.length) return null
   const hold = rec?.hold || null
   const hasScout = useGame(s => !!s.upgrades.vintageScout) // 🕵️ scout turns up finds more often
@@ -1135,7 +1141,11 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
     const p = sealedValue({ product: f.product, setId: f.setId })
     const up = p >= (f.product.price || 0)
     const out = !held && n < 1
-    const broke = cash < f.price
+    // Vintage sealed can be bought on credit too — gate affordability on the open credit
+    // line when credit's toggled on, otherwise on cash (matches the modern StockButton path).
+    const spendable = onCredit ? creditAvail : cash
+    const broke = spendable < f.price
+    const buyOnCredit = onCredit && !out && !broke
     return (
       <div className={`product ${held ? 'vintage-held' : ''}`} style={out ? { opacity: 0.55 } : undefined} key={(held ? 'h' : 'f') + f.setId}>
         {f.logo && <img className="logo" src={f.logo} alt={f.setName} />}
@@ -1147,12 +1157,12 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage }) {
             : <> · <b>{n} left</b></>)}
         </div>
         <div className="prodlist">
-          <button className="prodbtn" disabled={out || broke}
-            onClick={() => onBuyVintage(dist.id, f, { fromHold: held })}
+          <button className={`prodbtn ${buyOnCredit ? 'on-credit' : ''}`} disabled={out || broke}
+            onClick={() => onBuyVintage(dist.id, f, { fromHold: held, onCredit })}
             title={out
               ? `${dist.name} has no more sealed ${f.setName} — vintage is out of print. A new find turns up next week.`
-              : `${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}`}>
-            <span className="prodname">{f.product.icon || '📦'} {f.product.type}</span>
+              : `${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${buyOnCredit ? ' — charged to your 💳 credit line' : ''}`}>
+            <span className="prodname">{buyOnCredit ? '💳 ' : ''}{f.product.icon || '📦'} {f.product.type}</span>
             <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
             <span className="prodprice">{out ? '—' : fmtMoney(f.price)}</span>
           </button>
