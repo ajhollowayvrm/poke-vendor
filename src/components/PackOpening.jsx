@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { openPack, openProduct, makeProductPromo, isHit, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
@@ -361,9 +361,6 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const hitCount = hits.filter(c => c._isHit || c.foil).length
   // packs still un-opened: the current one counts only while it's idle (not yet ripped)
   const remainingToOpen = totalPacks - packNo + (phase === 'idle' ? 1 : 0)
-  // manual mode: is the next card to flip a chase? (drives the spotlight + tap hint)
-  const nextCard = pulls[shown]
-  const nextIsChase = phase === 'revealing' && awaiting && !!nextCard && isChase(nextCard)
 
   return (
     <div className="stage">
@@ -466,31 +463,29 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               {/* Every card gets the star treatment: a big tile that lands with its own name +
                   value, and opens its full card page on tap. A chase card being teased (auto
                   suspense beat, or the next manual tap) dims the rest of the grid to spotlight it. */}
-              <div className={`reveal-row rip-reveal-grid ${isGod ? 'god' : isDemigod ? 'demigod' : ''} ${(suspenseIdx >= 0 || nextIsChase) ? 'focus' : ''}`}>
-                {pulls.map((c, i) => {
-                  const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
-                  const chase = isChase(c)
-                  const isShown = i < shown
-                  const isNext = phase === 'revealing' && awaiting && i === shown // the card a manual tap will flip
-                  const peek = chase && (suspenseIdx === i || isNext)
-                  const cut = isShown && !c.grade ? cutEstimate(c, hasLoupe) : null
-                  return (
-                    <div key={c.uid} className="rip-cell">
-                      <HoloCard card={c} interactive={isShown}
-                        onClick={isNext ? advanceManual : isShown ? () => setModalCard(c) : undefined}
-                        extraStyle={{ '--rarity': edge }}
-                        className={`reveal-card ${isShown ? 'shown' : 'facedown'} ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''} ${peek ? 'peek' : ''} ${isNext ? 'tappable' : ''}`}>
-                        <div className="flip">
-                          <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
-                          {/* decoding="async": never decode on the main thread mid-reveal —
-                              a sync decode here stalls the compositor and leaves cards frozen
-                              face-down mid-reveal. preloadCardImages() already warms the decoded
-                              bitmap (img.decode()), so the art is ready the instant the shimmer
-                              wipes it in. */}
-                          <div className="flip-front"><img src={cardImg(c)} alt={isShown ? c.name : ''} decoding="async" fetchpriority="high" /></div>
-                        </div>
-                      </HoloCard>
-                      {isShown && (
+              {phase === 'revealing' ? (
+                /* The reveal itself: cards deal out left→right into a fan, the newest spotlighted
+                   on top with a caption. When the pack finishes it settles into the grid below. */
+                <FanReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
+                  setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
+              ) : (
+                /* Done: the fan settles into a readable 2-up grid — every card big, with its name
+                   + value, opening its full card page on tap. */
+                <div className={`reveal-row rip-reveal-grid ${isGod ? 'god' : isDemigod ? 'demigod' : ''}`}>
+                  {pulls.map((c) => {
+                    const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+                    const chase = isChase(c)
+                    const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
+                    return (
+                      <div key={c.uid} className="rip-cell">
+                        <HoloCard card={c} interactive onClick={() => setModalCard(c)}
+                          extraStyle={{ '--rarity': edge }}
+                          className={`reveal-card shown ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
+                          <div className="flip">
+                            <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
+                            <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
+                          </div>
+                        </HoloCard>
                         <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
                           <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                           <div className="rc-meta" style={{ color: edge }}>
@@ -504,13 +499,10 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                             </div>
                           )}
                         </button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              {phase === 'revealing' && awaiting && (
-                <p className="rip-tap-hint">👆 Tap the {nextIsChase ? 'glowing ' : ''}card to reveal it</p>
+                      </div>
+                    )
+                  })}
+                </div>
               )}
               {phase === 'done' && (
                 <div className="rip-pack-summary" style={{ textAlign: 'center' }}>
@@ -543,6 +535,88 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
         </>
       )}
       {modalEl}
+    </div>
+  )
+}
+
+// The reveal, as a fan: each card deals out left→right into an overlapping spread, the newest
+// dealt on top (highest z) with a pop, and a caption naming what just landed. The fan compresses
+// (accordion) as more cards join so it always fits the width. In manual mode a face-down deck
+// sits at the right — tap it to deal the next card. Tapping any dealt card opens its full page.
+function FanReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
+  const wrapRef = useRef(null)
+  const [w, setW] = useState(0)
+  useLayoutEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setW(el.clientWidth))
+    ro.observe(el); setW(el.clientWidth)
+    return () => ro.disconnect()
+  }, [])
+  const dealt = pulls.slice(0, shown)
+  const n = dealt.length
+  const newest = n ? dealt[n - 1] : null
+  const manualNext = revealMode === 'manual' && awaiting && shown < pulls.length
+  const slots = n + (manualNext ? 1 : 0) // include the deck as a phantom slot for centering/spread
+  const mid = (slots - 1) / 2
+  // Card ~150px; spread so the whole fan fits the measured width, capped so a small pack doesn't
+  // splay too far. Rotation around each card's bottom edge gives the fan its arc.
+  const CARD_W = 150
+  const totalAngle = Math.min(46, slots * 7)
+  const per = slots > 1 ? totalAngle / (slots - 1) : 0
+  const stepX = slots > 1 ? Math.min(52, Math.max(16, ((w || 360) - CARD_W) / (slots - 1))) : 0
+  // The just-landed card sits upright (the spotlight); the rest fan out with rotation.
+  const place = (i, upright) => ({
+    transform: `translateX(calc(-50% + ${(i - mid) * stepX}px)) rotate(${upright ? 0 : (-totalAngle / 2 + i * per)}deg)`,
+    zIndex: 10 + i,
+  })
+  return (
+    <div className="rip-fan-wrap" ref={wrapRef}>
+      <div className="rip-fan">
+        {dealt.map((c, i) => {
+          const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+          const special = c._isHit || c.foil || c._fillsWant
+          return (
+            <button key={c.uid} type="button" style={{ ...place(i, i === n - 1), '--rarity': edge }}
+              className={`fan-card ${i === n - 1 ? 'newest' : ''} ${special ? 'hit' : ''} ${isChase(c) ? 'chase' : ''}`}
+              onClick={() => onInspect(c)} title={`${c.name} — tap for details`}>
+              <span className="fan-card-inner"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></span>
+            </button>
+          )
+        })}
+        {manualNext && (
+          <button type="button" className="fan-card fan-deck" style={place(n, false)}
+            onClick={onTapNext} aria-label="Deal the next card">
+            <span className="fan-card-inner">{setLogo ? <img src={setLogo} alt="" /> : null}</span>
+          </button>
+        )}
+      </div>
+      {newest && <FanCaption card={newest} hasLoupe={hasLoupe} />}
+      {manualNext && <p className="rip-tap-hint">👆 Tap the deck to deal the next card ({shown}/{pulls.length})</p>}
+    </div>
+  )
+}
+
+// The spotlight caption under the fan: names the card that just landed, its rarity/foil + value,
+// and its cut read — the "what did I just pull" line, tinted by rarity.
+function FanCaption({ card, hasLoupe }) {
+  const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
+  const cut = !card.grade ? cutEstimate(card, hasLoupe) : null
+  return (
+    <div className="fan-caption" style={{ '--rarity': edge }}>
+      <div className="fan-cap-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
+      <div className="fan-cap-meta">
+        <span style={{ color: edge, fontWeight: 800 }}>
+          {card.foil ? card.foil.label : card.grade ? `PSA ${card.grade.overall}` : `${card.reverse ? 'Reverse · ' : ''}${card.rarity}`}
+        </span>
+        {' · '}<b style={{ color: 'var(--green)' }}>{fmtMoney(cardValue(card))}</b>
+      </div>
+      {(cut || card._fillsWant) && (
+        <div className="fan-cap-badges">
+          {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
+          {card._fillsWant && <span className="rc-want">⭐ Fills a want!</span>}
+        </div>
+      )}
     </div>
   )
 }
