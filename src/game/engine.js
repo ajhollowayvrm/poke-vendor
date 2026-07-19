@@ -84,15 +84,14 @@ export function isHit(card) {
   return rarityRank(card.rarity) >= HIT_THRESHOLD || cardValue(card) > HIT_VALUE_THRESHOLD
 }
 
-// Is this a "bulk" / non-worth card — safe to sweep into a bulk/quick-sell?
-// Decided by LIVE card attributes, NOT the `_isHit` flag (which is only stamped at
-// pull time, so a hit acquired any other way — bought, gifted, an old save — would
-// have no flag and slip through). A card is bulk only if it's raw, unfoiled, and not a
-// hit — where "hit" now includes anything worth more than HIT_VALUE_THRESHOLD (see isHit),
-// so a valuable single is never swept. A graded slab, a special foil, any Double-Rare+
-// (incl. MEGA_ATTACK / Mega Hyper / Black White), or any $20+ card is NEVER bulk.
+// A card counts as "bulk" purely by WORTH, not rarity: any raw card whose live market value
+// is under BULK_VALUE_THRESHOLD. So a rarity chase or a foil that the market values at pennies
+// IS bulk (it's genuinely worthless), while a plain common worth a few dollars is NOT — the
+// thing that protects a card from the bulk sweep is its value, full stop. Graded slabs are never
+// bulk (they live in a case, sold individually). Uses LIVE cardValue, so it tracks the market.
+export const BULK_VALUE_THRESHOLD = 1 // under a dollar = bulk
 export function isBulkCard(card) {
-  return !card.grade && !card.foil && !isHit(card)
+  return !card.grade && cardValue(card) < BULK_VALUE_THRESHOLD
 }
 
 export function cardsByRarity(set) {

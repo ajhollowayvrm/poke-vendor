@@ -56,10 +56,9 @@ export default function Collection({ onPick }) {
   useEffect(() => { setShown(PAGE) }, [sort]) // new ordering → back to the top slice
 
   const quickSellRate = useGame(s => s.quickSellRate)
-  // "Bulk" by live attributes (raw, unfoiled, below the hit threshold) — matches the
-  // store's isBulkCard exactly, so the button counts/value reflect what actually sells
-  // and never sweeps a MEGA_ATTACK / SIR / foil that happens to lack the _isHit flag.
-  // Route it through the protection net so the labels reflect exactly what the action
+  // "Bulk" by live WORTH (raw, under a dollar) — matches the store's isBulkCard exactly, so
+  // the button counts/value reflect what actually sells and never sweeps a card worth real
+  // money. Route it through the protection net so the labels reflect exactly what the action
   // will sell (locks + keep-one held back), and we can surface how many are protected.
   const { bulk, creditVal, bulkKept } = useMemo(() => {
     const bulkAll = collection.filter(isBulkCard)
@@ -139,7 +138,7 @@ export default function Collection({ onPick }) {
         </button>
         {!selectMode && bulk.length > 0 && (
           <button className="btn gold" style={{ flex: 'none', marginLeft: 'auto' }}
-            title={`Turn in all raw commons/uncommons/rares (non-hits) at the Local Game Store for in-store credit — a flat 5¢ a card, spent automatically on your next LGS order${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
+            title={`Turn in every raw card worth under a dollar at the Local Game Store for in-store credit — a flat 5¢ a card, spent automatically on your next LGS order${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
               const { credit, sold } = turnInBulk()
               if (sold) notify(`📦 Turned in ${sold} bulk card${sold > 1 ? 's' : ''} for ${fmtMoney(credit)} LGS credit.`, 6000, undoAction)

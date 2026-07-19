@@ -242,14 +242,14 @@ export function createCollectionSlice(set, get) {
       get().bumpGoal('sell', 1); get().bumpGoal('profit', v)
     },
 
-    // Turn in ALL raw bulk (commons/uncommons/plain rares — no hits/graded/foils) at the Local
+    // Turn in ALL raw bulk (every raw card worth under a dollar — no graded slabs) at the Local
     // Game Store for IN-STORE CREDIT at a flat nickel a card. This is the realistic bulk exit:
-    // commons aren't worth cash, they're worth a little credit toward your next order. The credit
-    // (lgsCredit) is an asset, spent automatically the next time you buy from the LGS.
+    // sub-dollar cards aren't worth cash, they're worth a little credit toward your next order.
+    // The credit (lgsCredit) is an asset, spent automatically the next time you buy from the LGS.
     //
-    // Bulk is defined by LIVE rarity (not the stale _isHit flag), then filtered through the
-    // protection net (locks + keep-one) so a sweep never eats a card you're keeping for a set.
-    // Replaces the old cash buylist / sell-raw exits (retired — bulk was never really worth cash).
+    // Bulk is defined by LIVE market WORTH (see isBulkCard — under $1, not by rarity), then
+    // filtered through the protection net (locks + keep-one) so a sweep never eats a card you're
+    // keeping for a set. Replaces the old cash buylist / sell-raw exits (retired — never worth cash).
     turnInBulk() {
       const { collection } = get()
       const candidates = collection.filter(isBulkCard).map(c => c.uid)
