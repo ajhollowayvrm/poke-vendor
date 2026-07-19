@@ -1684,8 +1684,8 @@ button.rip-hit-row:hover { background:#ffffff14; }
 /* --- Grade reveal (slabs back from grading) ------------------------------ */
 .grade-reveal-bg { background:#000d; }
 .grade-reveal { text-align:center; }
-.grade-reveal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px;
-  margin-top:14px; max-height:60vh; overflow-y:auto; padding:6px 4px; }
+.grade-reveal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:22px 18px;
+  margin-top:14px; max-height:60vh; overflow-y:auto; padding:8px 4px; }
 .grade-reveal-card { background:none; border:0; padding:0; cursor:pointer; perspective:1000px; aspect-ratio:0.68; }
 .gr-flip { position:relative; width:100%; height:100%; transform-style:preserve-3d;
   transition:transform .6s cubic-bezier(.2,.85,.25,1); }
@@ -1699,6 +1699,14 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .gr-back-name { font-size:11px; color:var(--dim); max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .gr-back-hint { font-size:10px; color:var(--accent-light); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
 .gr-front { transform:rotateY(180deg); }
+/* Keep every revealed slab filling its flip box EXACTLY. Without this the slab is content-height
+   (its .slab-window img is width:100% / height:auto, so height follows each card image's intrinsic
+   size), so taller cards overflowed the fixed aspect box — spilling the price below and crowding
+   the next row unevenly. Flex the window to fill the leftover space instead; rows stay uniform. */
+.grade-reveal-card .gr-front { display:flex; flex-direction:column; overflow:hidden; }
+.grade-reveal-card .gr-front .slab-window { flex:1 1 auto; min-height:0; }
+.grade-reveal-card .gr-front .slab-window img { height:100%; object-fit:cover; }
+.grade-reveal-card .gr-front .gr-val { flex:none; }
 .gr-val { position:relative; z-index:7; text-align:center; margin-top:5px; font-size:12px; font-weight:800; color:#0f2; }
 .gr-front .gr-val { color:#0a7; }
 .gr-gain { color:var(--green); font-weight:900; }
