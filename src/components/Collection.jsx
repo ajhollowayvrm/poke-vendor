@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rarityRank, fmtMoney, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids, BULK_CREDIT_PER_CARD } from '../game/engine'
+import { cardValue, rarityRank, fmtMoney, psaValueAt, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids, BULK_CREDIT_PER_CARD } from '../game/engine'
 import { toast as notify } from '../ui/dialog'
 import { AskPicker } from '../ui/AskPicker'
 import CardTile from './CardTile'
@@ -43,6 +43,7 @@ export default function Collection({ onPick }) {
   // the slabs up naturally by their graded value.
   const view = useMemo(() => {
     return [...collection].sort((a, b) => sort === 'value' ? cardValue(b) - cardValue(a)
+      : sort === 'psa10' ? psaValueAt(b, 10) - psaValueAt(a, 10) // rank by gem-mint upside
       : sort === 'rarity' ? rarityRank(b.rarity) - rarityRank(a.rarity)
       : a.name.localeCompare(b.name))
   }, [collection, sort])
@@ -117,7 +118,8 @@ export default function Collection({ onPick }) {
       <div className="toolbar" style={{ marginTop: 8 }}>
         <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>{collection.length} card{collection.length === 1 ? '' : 's'}</span>
         <select value={sort} onChange={e => setSort(e.target.value)}>
-          <option value="value">Sort: Value</option><option value="rarity">Sort: Rarity</option>
+          <option value="value">Sort: Value</option><option value="psa10">Sort: PSA 10 price</option>
+          <option value="rarity">Sort: Rarity</option>
           <option value="name">Sort: Name</option>
         </select>
         <button className={`btn ${selectMode ? 'gold' : 'alt'}`} style={{ flex: 'none' }}

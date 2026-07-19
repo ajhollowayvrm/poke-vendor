@@ -648,6 +648,11 @@ function FanCaption({ card, hasLoupe }) {
         </span>
         {' · '}<b style={{ color: 'var(--green)' }}>{fmtMoney(cardValue(card))}</b>
       </div>
+      {!card.grade && (
+        <div className="fan-cap-psa" title="What this raw card would be worth if it graded">
+          💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
+        </div>
+      )}
       {(cut || card._fillsWant) && (
         <div className="fan-cap-badges">
           {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
