@@ -316,7 +316,7 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .cardtile.rarity-edge.r-hit { box-shadow: 0 0 0 1px var(--rarity), 0 6px 22px color-mix(in srgb, var(--rarity) 35%, transparent); }
 
 /* Pack opening stage */
-.stage { display:flex; flex-direction: column; align-items: center; gap: 18px; padding: 30px 0 10px; }
+.stage { display:flex; flex-direction: column; align-items: center; gap: 18px; padding: 80px 0 10px; }
 .pack-progress { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
 .pack3d { width: 230px; height: 360px; border-radius: 16px; position: relative; cursor: pointer;
   background: linear-gradient(160deg,#2b3a6b,#1a2138); display:flex; align-items:center; justify-content:center;
@@ -1649,6 +1649,7 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .reg-stats { display:flex; gap:14px; font-size:12px; color:var(--dim); }
 .reg-hint { font-size:12px; color:var(--dim); border-top:1px solid var(--line); padding-top:7px; }
 .reg-hint.hot { color:var(--green); font-weight:600; }
+.reg-hint.call { color:var(--gold); font-weight:700; }
 
 /* aftermarket "older sealed" finds at show booths — a warm collector tint */
 .vendoritem.sealed-aftermarket { border-color:#c89a5e66; background:linear-gradient(180deg,#191207,var(--panel2)); }
@@ -1831,7 +1832,7 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .rip-overlay .reveal-card .flip-front,
   .rip-overlay .reveal-card .flip-back { border-radius: 8px; }
   .rip-overlay .reveal-row { gap: 8px; }
-  .rip-overlay .stage { gap: 12px; padding: 10px 0 6px; }
+  .rip-overlay .stage { gap: 12px; padding: 60px 0 6px; }
   /* the rip's side panels stack under the cards on a phone — don't let them eat the width */
   .rip-overlay .rip-side { flex: 1 1 auto; align-self: stretch; }
 

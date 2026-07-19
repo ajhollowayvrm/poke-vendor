@@ -96,6 +96,10 @@ export default function App() {
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
+  // Where to land when a rip finishes. A rip you START from your collection/store/inbox
+  // (via ripFromInventory) should drop you back THERE on Done — not on the Buy tab where the
+  // overlay lives. Captured as the tab you launched from; a "Rip another" chain keeps it.
+  const [ripReturn, setRipReturn] = useState(null)
   const [picked, setPicked] = useState(null)     // card for modal
   const [preppingShow, setPreppingShow] = useState(null) // show selected; picking which cards to bring
   const [activeShow, setActiveShow] = useState(null) // show being attended
@@ -248,6 +252,7 @@ export default function App() {
     const oneByOne = useGame.getState().settings.openSealedOneByOne
     const animated = product.packs === 1 || oneByOne
     if (animated) {
+      setRipReturn(tab)     // came from Cards/Store/Inbox → Done should return you here
       setRipping({ set, product })
       setTab('shop')
       return
@@ -258,6 +263,13 @@ export default function App() {
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+  }
+
+  // Close the rip overlay. If the rip was launched from your collection/store/inbox, land
+  // back on that tab (ripReturn) instead of leaving you on Buy where the overlay lived.
+  function exitRip() {
+    setRipping(null)
+    if (ripReturn) { selectTab(ripReturn); setRipReturn(null) }
   }
 
   // Buy a vintage FIND (or a reserved rapport hold) off a distributor — stocks it to hold
@@ -531,7 +543,7 @@ export default function App() {
             set={ripping.set}
             product={ripping.product}
             paused={tab !== 'shop'}
-            onExit={() => setRipping(null)}
+            onExit={exitRip}
             ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
             ripAnotherStock={ripStock}
             canRipAnother={ripCanGet}
@@ -597,7 +609,7 @@ function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, marketMovers, netWorth, lifeEvents, counterIncome, machineIncome, machineSold, wholesaleIncome, floor } = summary
+    soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, machineIncome, machineSold, wholesaleIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
@@ -606,7 +618,7 @@ function DaySummary({ summary, onClose }) {
   const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderReserved || wantsBrokered
     || offersAccepted || wages || rent || lease
-    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || events.length || floorActive
+    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
   const multiDay = days > 1
@@ -687,10 +699,12 @@ function DaySummary({ summary, onClose }) {
             )}
 
             {/* Inbox / interest */}
-            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || resolvedGrades > 0 || binderFiled > 0 || binderReserved > 0 || notoDelta > 0) && (
+            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || regularCalls > 0 || regularsWon > 0 || resolvedGrades > 0 || binderFiled > 0 || binderReserved > 0 || notoDelta > 0) && (
               <div className="recap-sec">
                 <div className="recap-sec-h">📬 New</div>
                 {newWants > 0 && <div className="recap-line"><span>🐋 {newWants} collector want{newWants === 1 ? '' : 's'} found you</span><span className="muted">Sell tab</span></div>}
+                {regularCalls > 0 && <div className="recap-line"><span>📞 {regularCalls} regular{regularCalls === 1 ? '' : 's'} asked you to stock their lane</span><span className="muted">🤝 Regulars</span></div>}
+                {regularsWon > 0 && <div className="recap-line"><span style={{ color: 'var(--green)' }}>🤝 You came through for {regularsWon} regular{regularsWon === 1 ? '' : 's'}</span></div>}
                 {premiumOffers > 0 && <div className="recap-line"><span style={{ color: 'var(--green)' }}>📈 {premiumOffers} over-market offer{premiumOffers === 1 ? '' : 's'} (hot set)</span></div>}
                 {added > 0 && <div className="recap-line"><span className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</span></div>}
                 {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}

@@ -75,6 +75,9 @@ export default function Regulars() {
                 <span title="Times they've come by">👋 {r.visits || 0} visit{r.visits === 1 ? '' : 's'}</span>
               </div>
 
+              {!r.flags?.burned && r.request && !matches.length && (
+                <div className="reg-hint call">📞 Called you — asked you to stock {r.request.line}</div>
+              )}
               {!r.flags?.burned && (
                 matches.length
                   ? <div className="reg-hint hot">📦 You're holding {matches.length} {matches.length === 1 ? 'card' : 'cards'} they want (~{fmtMoney(matchVal)})</div>

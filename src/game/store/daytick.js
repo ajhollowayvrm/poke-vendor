@@ -22,7 +22,7 @@ import {
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
@@ -148,11 +148,55 @@ function applyVintageHolds(distributors, prev, days, absDay, log, holdBoost = 1)
   return out
 }
 
-// Relationships cool when neglected: every regular loses a little trust per game-day,
-// floored so dormancy alone never burns them (only gouging does). Dealing them adds it back.
-function decayRegulars(regulars, days, factor = 1) {
-  if (!regulars?.length) return regulars || []
-  return regulars.map(r => ({ ...r, trust: Math.max(2, round2((r.trust || 0) - 0.5 * days * factor)) }))
+// Regulars, once a day: cool the relationship, punish a lane you never carry, and let a
+// trusting-but-underserved regular CALL to ask you to stock what they collect.
+//   • Base cool — every regular loses a little trust per day (floored at 2 so dormancy alone
+//     never burns them; dealing them adds it back). 💌 newsletter halves it via `factor`.
+//   • Neglected lane — if you're currently carrying NOTHING in their focus (servedIds says
+//     so), they cool FASTER, and the penalty escalates the longer their lane sits empty
+//     (unmetDays). Carry a match and unmetDays resets.
+//   • Call-in — a regular with a real relationship (trust ≥ 30) whose lane has been empty a
+//     few days may phone and ask you to get some in. One open ask at a time, one new call
+//     per tick. Filling the lane later clears the ask and warms them (handled on `served`).
+// Pure: returns the next roster + event lists so the caller logs/recaps AFTER the state write.
+function tickRegulars(regulars, days, factor, servedIds, absDay) {
+  if (!regulars?.length) return { regulars: regulars || [], requested: [], fulfilled: [] }
+  const requested = [], fulfilled = []
+  const next = regulars.map(r => {
+    if (r.flags?.burned) return r
+    const base = 0.5 * factor * days
+    if (servedIds.has(r.id)) {
+      // You carry their lane. Base cool only, unmet counter reset — and if they'd called
+      // asking for it, you came through: clear the ask and warm them up.
+      const out = { ...r, unmetDays: 0, trust: Math.max(2, round2((r.trust || 0) - base)) }
+      if (r.request) { fulfilled.push(r); out.request = null; out.trust = Math.min(100, round2(out.trust + 5)) }
+      return out
+    }
+    const unmet = Math.min(30, (r.unmetDays || 0) + days)
+    const drop = base + (0.35 + 0.03 * unmet) * days // escalating neglect penalty
+    const out = { ...r, unmetDays: unmet, trust: Math.max(2, round2((r.trust || 0) - drop)) }
+    if (!r.request && requested.length < 1 && (r.trust || 0) >= 30 && unmet >= 3 && Math.random() < 0.1 * days) {
+      out.request = { line: r.focus?.label || 'good deals', day: absDay }
+      requested.push(out)
+    }
+    return out
+  })
+  return { regulars: next, requested, fulfilled }
+}
+
+// Which regulars' lanes you currently carry: online buyers shop your LISTINGS, in-store
+// regulars shop your STORE STOCK (unlocked, unheld). No store → a walk-in regular has no
+// shelf to check, so treat them as served (don't punish what they can't reach).
+function servedRegularIds(regulars, listings, storeStock, hasStore) {
+  const ids = new Set()
+  const listed = (listings || []).map(l => l.card)
+  for (const r of (regulars || [])) {
+    if (r.flags?.burned) continue
+    if (r.channel === 'walkin' && !hasStore) { ids.add(r.id); continue }
+    const pool = r.channel === 'walkin' ? storeStock : listed
+    if (pool.some(c => cardMatchesFocus(c, r.focus))) ids.add(r.id)
+  }
+  return ids
 }
 
 // --- Forum (public wanted-ads board) ----------------------------------------
@@ -939,6 +983,14 @@ export function advanceDaysWith(set, get, days, away) {
     }
   }
   for (const l of newLeads) get().log('lead', `📬 ${l.text}`, 0)
+  // Regulars pass: cool relationships, escalate a neglected lane, and roll a call-in. Computed
+  // here (before the write) off the POST-tick stock so "do you carry their lane" is current.
+  const regStoreStock = hasStore ? collectionNext.filter(c => !c.locked && !c._heldFor) : []
+  // Read the LIVE roster — hold pickups/concierge earlier this tick may have bumped trust via
+  // get(); basing the pass on the stale top-of-tick snapshot would clobber those.
+  const regsLive = get().regulars
+  const servedIds = servedRegularIds(regsLive, remainingListings, regStoreStock, hasStore)
+  const regTick = tickRegulars(regsLive, days, s.upgrades.newsletter ? 0.5 : 1, servedIds, newAbsDay)
   set(st => ({
     currentDay: d, showSeed: seed, monthsElapsed: months,
     marketMults: market.marketMults, marketHistory: market.marketHistory,
@@ -973,7 +1025,7 @@ export function advanceDaysWith(set, get, days, away) {
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
-    regulars: decayRegulars(st.regulars, days, s.upgrades.newsletter ? 0.5 : 1), // relationships cool if you neglect them (💌 newsletter halves it)
+    regulars: regTick.regulars, // cooled + neglect-penalized + call-ins rolled (see tickRegulars)
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
     giveawaysToday: 0,                                                     // fresh day → giveaway rep is full value again
     // The day you first crossed into being a distributor (Household Name + millionaire). Stamped
@@ -1074,6 +1126,9 @@ export function advanceDaysWith(set, get, days, away) {
       }
     }
   }
+  // Regular call-ins + "you came through" — logged here (after the write) from the pass above.
+  for (const r of regTick.requested) get().log('regular', `📞 ${r.emoji} ${r.name} called — any chance you can stock ${r.request.line}? They'll swing by for it.`, 0)
+  for (const r of regTick.fulfilled) get().log('regular', `🤝 You came through for ${r.emoji} ${r.name} — you're carrying ${r.focus?.label || 'their lane'} now (+trust).`, 0)
   // 💌 Newsletter: now and then it warms a lapsed regular back through the door.
   if (s.upgrades.newsletter && Math.random() < 0.12 * days) {
     const cold = (get().regulars || []).filter(r => !r.flags?.burned && (r.trust || 0) < 50)
@@ -1106,6 +1161,7 @@ export function advanceDaysWith(set, get, days, away) {
     wholesaleIncome: round2(wholesaleIncome),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
+    regularCalls: regTick.requested.length, regularsWon: regTick.fulfilled.length,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
     lifeEvents,
     netWorth,
@@ -1149,6 +1205,8 @@ export function mergeSummaries(a, b) {
     soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),
     bigSale,
     newWants: add(a.newWants, b.newWants),
+    regularCalls: add(a.regularCalls, b.regularCalls),
+    regularsWon: add(a.regularsWon, b.regularsWon),
     marketMovers: [...(a.marketMovers || []), ...(b.marketMovers || [])],
     lifeEvents: [...(a.lifeEvents || []), ...(b.lifeEvents || [])],
     netWorth: b.netWorth != null ? b.netWorth : a.netWorth, // latest (end-of-trip) worth
