@@ -410,9 +410,8 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   .reveal-card .flip-front { transform: none; }
   .reveal-card.shown .flip::after { animation: none; }
   .reveal-card.peek, .reveal-card.chase.shown, .reveal-card.tappable, .rip-tap-hint, .reveal-card .flip-back::after { animation: none; }
-  /* rip deal: cards still land, they just cut straight to the pile (no drop-in) */
-  .pile-card.newest .stack-card-inner, .pile-card.chase.newest .stack-card-inner,
-  .deck-card.tappable .stack-card-inner { animation: none; }
+  /* rip hand: cards still reveal, they just cut straight in (no rise-in pop) */
+  .hand-current .hand-face, .hand-current.chase .hand-face { animation: none; }
 }
 .hitburst { position:fixed; inset:0; pointer-events:none; z-index:60; }
 
@@ -940,40 +939,44 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rc-want { font-size:10.5px; font-weight:800; color:var(--gold); }
 .rip-cell-foot:hover .rc-name { text-decoration: underline; }
 
-/* ---------- Rip reveal: the fan (cards deal out left→right during the reveal) ---------- */
-.rip-stack-wrap { width:100%; max-width:1100px; display:flex; flex-direction:column; align-items:center; gap:14px; }
-/* Two stacked zones — the face-down DECK above, the face-up PILE below. Each is a single card's
-   footprint; its cards are absolutely stacked within it, anchored bottom-centre. The gap between
-   the zones is the distance the newest card visibly travels as it "drops" onto the pile. */
-.rip-deck-zone, .rip-pile-zone { position:relative; width:150px; height:210px; }
-/* a small count chip pinned inside the deck's top edge (kept off the tab strip above the zone) */
-.rip-deck-count { position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:20;
-  font-size:11px; font-weight:800; color:#e6ecff; background:#0c0f1acc; padding:2px 9px;
-  border-radius:999px; border:1px solid #ffffff24; white-space:nowrap; }
-/* a card in either stack: anchored bottom-centre; the outer carries the stack offset (transitions
-   as the stacks re-settle), the inner carries the art + border + the drop-in pop. */
-.stack-card { position:absolute; left:50%; bottom:0; width:150px; aspect-ratio:5/7; padding:0; margin:0;
-  border:none; background:none; transform-origin:50% 100%;
-  transition: transform .35s cubic-bezier(.2,.85,.3,1); will-change:transform; }
-.stack-card-inner { display:block; width:100%; height:100%; border-radius:11px; overflow:hidden;
-  border:2px solid var(--rarity, var(--line)); background:#0c0f1a; box-shadow:0 6px 18px #0009; }
-.stack-card-inner img { width:100%; height:100%; object-fit:cover; display:block; }
-/* deck backs: face-down, set logo watermark; the frontmost taps to deal in manual mode */
-.deck-card .stack-card-inner { display:flex; align-items:center; justify-content:center;
-  background:#141a2b; border-color:#ffffff18; }
-.deck-card .stack-card-inner img { width:64%; height:auto; object-fit:contain; opacity:.4; filter:grayscale(.3); }
-.deck-card.tappable { cursor:pointer; }
-.deck-card.tappable .stack-card-inner { border-style:dashed; border-color: var(--accent2);
-  box-shadow:0 6px 18px #0009, 0 0 0 1px #ffffff10; animation: tapready 1.3s ease-in-out infinite; }
-/* pile cards: face-up; the newest sits clean on top and drops in from the deck above */
-.pile-card { cursor:pointer; }
-.pile-card.hit .stack-card-inner { box-shadow: 0 8px 22px color-mix(in srgb, var(--rarity) 45%, #0009), 0 0 0 1px var(--rarity); }
-.pile-card.newest .stack-card-inner { animation: dealdrop .44s cubic-bezier(.2,1.3,.4,1);
-  box-shadow: 0 12px 30px #000b, 0 0 0 1px var(--rarity); }
-.pile-card.chase.newest .stack-card-inner { animation: dealdrop .5s cubic-bezier(.2,1.3,.4,1), chaseRim 1.4s ease-out .42s 1; }
-/* pulled off the deck (up top) and dropped onto the pile: starts where the deck sits, settles clean */
-@keyframes dealdrop { 0% { transform: translateY(-224px) scale(.9) rotate(-5deg); opacity:.35 }
-  55% { transform: translateY(0) scale(1.06); opacity:1 } 100% { transform:none } }
+/* ---------- Rip reveal: the hand (riffle through the pack, pull the top card off to the side) ---------- */
+.hand-wrap { width:100%; max-width:1100px; display:flex; flex-direction:column; align-items:center; gap:14px;
+  margin-top:30px; } /* headroom so the fanned/riffled edges clear the tab strip above */
+/* the stage the hand sits on: one card's footprint plus headroom above (upcoming edges peek up) and
+   room below-left (the set-aside pile overhangs). overflow visible so a flung card can fly off. */
+.hand-stage { position:relative; width:150px; height:300px; overflow:visible; touch-action:none; }
+/* every card in the hand is anchored bottom-centre of the stage */
+.hand-face { display:block; width:150px; aspect-ratio:5/7; border-radius:11px; overflow:hidden;
+  border:2px solid var(--rarity, var(--line)); background:#0c0f1a; box-shadow:0 8px 20px #0009; }
+.hand-face img { width:100%; height:100%; object-fit:cover; display:block; }
+.hand-face.back { background:#141a2b; border-color:var(--rarity, #ffffff18); }
+.hand-back-logo { width:64%!important; height:auto!important; object-fit:contain!important;
+  margin:auto; opacity:.45; filter:grayscale(.3); position:absolute; inset:0; }
+.hand-seen, .hand-up, .hand-current { position:absolute; left:50%; bottom:44px; width:150px;
+  transform-origin:50% 100%; transition: transform .3s cubic-bezier(.2,.85,.3,1); will-change:transform; }
+.hand-current { padding:0; margin:0; border:none; background:none; }
+.hand-current .hand-face { box-shadow:0 14px 34px #000b, 0 0 0 1px var(--rarity); animation: handrise .42s cubic-bezier(.2,1.35,.4,1); }
+.hand-current.dragging { transition:none; } /* follow the finger 1:1 while dragging */
+.hand-current.hit .hand-face { box-shadow:0 14px 34px color-mix(in srgb, var(--rarity) 45%, #000b), 0 0 0 1px var(--rarity); }
+.hand-current.chase .hand-face { animation: handrise .5s cubic-bezier(.2,1.35,.4,1), chaseRim 1.5s ease-out .4s 1; }
+/* the incoming card rises up as the previous one is pulled away */
+@keyframes handrise { 0% { transform: translateY(10px) scale(.94); opacity:.3 }
+  55% { transform: translateY(0) scale(1.03); opacity:1 } 100% { transform:none } }
+/* upcoming cards: only their top edge peeks above the current card — a coloured border strip tints
+   it by rarity; a chase/foil border shows a rainbow so it telegraphs before you reach it. */
+/* upcoming edges stay a neutral slate — so a chase card's rainbow strip is the ONE that pops, not
+   drowned out by a common's rarity colour. Only foil/chase get the tell-tale rainbow border. */
+.hand-up .hand-face { position:relative; }
+.hand-up .hand-face::before { content:''; position:absolute; inset:0 0 auto 0; height:20px;
+  background:#2b3550; border-radius:9px 9px 0 0; }
+.hand-up .hand-face.back { border-color:#ffffff14; } /* neutral frame — a common shouldn't shout */
+.hand-up.teased .hand-face::before { height:22px;
+  background: linear-gradient(90deg,#ff5d5d,#ffb347,#ffe74d,#5dff8f,#5dc8ff,#b45dff,#ff5db0); }
+.hand-up.teased .hand-face.back { border-color:#ffffff66; box-shadow:0 8px 20px #0009, 0 0 16px #ffffff44; }
+/* the set-aside pile: cards you've already pulled off, tucked to the lower-left */
+.hand-seen .hand-face { box-shadow:0 6px 14px #0009; }
+.hand-seen .hand-face.back img { width:60%; height:auto; object-fit:contain; opacity:.4;
+  filter:grayscale(.35); position:absolute; inset:0; margin:auto; }
 .fan-caption { text-align:center; max-width:420px; animation: foilpop .3s cubic-bezier(.2,1.4,.5,1); }
 .fan-cap-name { font-weight:800; font-size:16px; line-height:1.2; }
 .fan-cap-meta { font-size:13px; margin-top:3px; }

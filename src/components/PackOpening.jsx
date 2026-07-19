@@ -464,10 +464,10 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                   value, and opens its full card page on tap. A chase card being teased (auto
                   suspense beat, or the next manual tap) dims the rest of the grid to spotlight it. */}
               {phase === 'revealing' ? (
-                /* The reveal itself: the pack starts as a face-down deck, each card pulled off the
-                   top and dropped onto a growing pile below — newest on top with a caption. When
-                   the pack finishes it settles into the grid below. */
-                <StackReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
+                /* The reveal itself: you hold the pack as a stack, the current card face-up on top;
+                   pull it off to the side to reach the next, with upcoming border edges peeking
+                   (a rainbow chase telegraphs itself). When the pack finishes it settles into the grid. */
+                <HandReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
                   setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
               ) : (
                 /* Done: the fan settles into a readable 2-up grid — every card big, with its name
@@ -540,60 +540,96 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   )
 }
 
-// The reveal, as a two-stack deal: the pack starts as a face-down DECK up top; each reveal pulls
-// the top card off the deck and drops it onto a growing PILE below — the newest landing face-up
-// and clean on top (a drop-in pop), with a caption naming what it is. The deck thins as the pile
-// grows. In manual mode the deck's top card is the tap target; tapping any pile card opens its page.
-function StackReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
-  const dealt = pulls.slice(0, shown)
-  const n = dealt.length
-  const newest = n ? dealt[n - 1] : null
-  const remaining = pulls.length - shown
-  const manualNext = revealMode === 'manual' && awaiting && shown < pulls.length
-  // Cap the rendered "thickness" of each stack — a few edges reads the same as many, and keeps
-  // the DOM light. The frontmost deck back (k = deckN-1) is the next card up: the manual tap target.
-  const DECK_MAX = 6, PILE_MAX = 6
-  const deckN = Math.min(remaining, DECK_MAX)
+// The reveal, as a hand you riffle through: you hold the whole pack stacked, the current card
+// face-up on top, and pull it off to the side to get to the next one. The unseen cards behind it
+// peek their border edges — a rainbow-bordered chase (SIR/hyper) telegraphs itself as a rainbow
+// sliver before you reach it. Manual: swipe the top card away (tap works too); press-and-hold to
+// riffle the stack and peek further ahead. Auto: the same hand advances on the reveal timers.
+function HandReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
+  const n = pulls.length
+  const manual = revealMode === 'manual'
+  const canAdvance = manual && awaiting && shown < n
+  const curIdx = shown - 1
+  const current = curIdx >= 0 ? pulls[curIdx] : null   // face-up card on top of the hand
+  const upcoming = pulls.slice(shown)                  // still unseen — only their edges peek
+  const seenN = Math.max(0, shown - 1)                 // cards already pulled off to the side
+  const UP_MAX = 5, SEEN_MAX = 3
+  const DISCARD = 84                                   // px of drag that commits the pull-off
+
+  const [drag, setDrag] = useState(0)                  // live x-offset of the top card (manual drag)
+  const [riffle, setRiffle] = useState(false)          // press-and-hold fans the hand to peek ahead
+  const g = useRef({ active: false, startX: 0, dx: 0, moved: false, riffled: false, holdT: null })
+  const clearHold = () => { if (g.current.holdT) { clearTimeout(g.current.holdT); g.current.holdT = null } }
+  const advance = () => { setDrag(0); onTapNext() }
+  const onDown = (e) => {
+    if (!canAdvance) return
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* older browsers */ }
+    g.current = { active: true, startX: e.clientX, dx: 0, moved: false, riffled: false,
+      holdT: setTimeout(() => { if (g.current.active && !g.current.moved) { g.current.riffled = true; setRiffle(true) } }, 165) }
+  }
+  const onMove = (e) => {
+    if (!g.current.active) return
+    const dx = e.clientX - g.current.startX
+    if (!g.current.moved && Math.abs(dx) > 6) { g.current.moved = true; clearHold(); if (g.current.riffled) { g.current.riffled = false; setRiffle(false) } }
+    if (g.current.moved) { g.current.dx = dx; setDrag(dx) }
+  }
+  const onUp = () => {
+    if (!g.current.active) return
+    clearHold(); g.current.active = false
+    const { dx, moved, riffled } = g.current
+    if (moved && Math.abs(dx) >= DISCARD) { setDrag(Math.sign(dx) * 560); setTimeout(advance, 170) } // flung → pull off + reveal next
+    else if (moved) setDrag(0)          // partial drag → snap back
+    else if (riffled) setRiffle(false)  // was a peek-riffle → just close it
+    else advance()                      // quick tap → advance (the fallback)
+  }
+  const onCancel = () => { clearHold(); g.current.active = false; setRiffle(false); setDrag(0) }
+
+  const edgeOf = (c) => c.foil ? c.foil.color : rarityColor(c.rarity)
   return (
-    <div className="rip-stack-wrap">
-      {/* Deck: undealt cards, face-down, stacked. Empty once the pack is fully revealed. */}
-      <div className="rip-deck-zone">
-        {remaining > 0 && <span className="rip-deck-count">{remaining} left</span>}
-        {remaining > 0 && Array.from({ length: deckN }).map((_, k) => {
-          const top = k === deckN - 1 // frontmost = next to deal
-          const style = { transform: `translate(-50%, ${-k * 2}px) rotate(${(k % 2 ? 1 : -1) * 0.6 * k}deg)`, zIndex: k }
-          const back = <span className="stack-card-inner">{setLogo ? <img src={setLogo} alt="" /> : null}</span>
-          return top && manualNext ? (
-            <button type="button" key={`deck${k}`} className="stack-card deck-card tappable" style={style}
-              onClick={onTapNext} aria-label="Deal the next card">{back}</button>
-          ) : (
-            <div key={`deck${k}`} className="stack-card deck-card" style={style} aria-hidden="true">{back}</div>
-          )
-        })}
-      </div>
-      {/* Pile: revealed cards, face-up, newest clean on top (drops in); older ones peek beneath. */}
-      <div className="rip-pile-zone">
-        {dealt.map((c, i) => {
-          const fromTop = (n - 1) - i // 0 = newest (top of the pile)
-          if (fromTop > PILE_MAX) return null // buried deep — don't render
-          const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
-          const special = c._isHit || c.foil || c._fillsWant
-          const off = Math.min(fromTop, PILE_MAX), dir = i % 2 ? 1 : -1
-          const style = {
-            transform: `translate(calc(-50% + ${dir * off * 2}px), ${off * 3}px) rotate(${fromTop ? dir * Math.min(off, 4) : 0}deg)`,
-            zIndex: 10 + i, '--rarity': edge,
-          }
+    <div className="hand-wrap">
+      <div className={`hand-stage ${riffle ? 'riffle' : ''}`}>
+        {/* Set aside: the cards you've already pulled off, stacked to the side. */}
+        {seenN > 0 && Array.from({ length: Math.min(seenN, SEEN_MAX) }).map((_, k) => (
+          <div key={`seen${k}`} className="hand-seen" aria-hidden="true"
+            style={{ transform: `translate(calc(-50% - ${92 + k * 5}px), ${30 + k * 3}px) rotate(${-9 - k}deg) scale(.6)`, zIndex: k }}>
+            <span className="hand-face back">{setLogo ? <img src={setLogo} alt="" /> : null}</span>
+          </div>
+        ))}
+        {/* The rest of the hand behind the current card — edges peek; a chase border shows rainbow. */}
+        {upcoming.slice(0, UP_MAX).map((c, k) => {
+          const depth = k + 1
+          const teased = !!c.foil || isChase(c) // rainbow/foil border — worth telegraphing
           return (
-            <button key={c.uid} type="button" style={style}
-              className={`stack-card pile-card ${fromTop === 0 ? 'newest' : ''} ${special ? 'hit' : ''} ${isChase(c) ? 'chase' : ''}`}
-              onClick={() => onInspect(c)} title={`${c.name} — tap for details`}>
-              <span className="stack-card-inner"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></span>
-            </button>
+            <div key={c.uid} className={`hand-up ${teased ? 'teased' : ''}`} aria-hidden="true"
+              style={{ transform: `translate(calc(-50% + ${depth * 3}px), ${-depth * (riffle ? 17 : 10)}px) rotate(${depth * 0.8}deg)`,
+                       zIndex: 40 - depth, '--rarity': edgeOf(c) }}>
+              <span className="hand-face back" />
+            </div>
           )
         })}
+        {/* The active top card: the face-up current card (or the face-down top before card 1 —
+            shown in both modes so the pack reads as a held stack even while auto-revealing). */}
+        {(current || upcoming.length > 0) && (
+          <button type="button" key={current ? current.uid : 'top-back'}
+            className={`hand-current ${current ? '' : 'facedown'} ${drag ? 'dragging' : ''}${current && (current._isHit || current.foil || current._fillsWant) ? ' hit' : ''}${current && isChase(current) ? ' chase' : ''}`}
+            style={{ transform: `translate(calc(-50% + ${drag}px), 0) rotate(${drag * 0.03}deg)`, zIndex: 60,
+                     '--rarity': current ? edgeOf(current) : 'var(--line)', cursor: canAdvance ? 'grab' : 'default' }}
+            onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}
+            aria-label={current ? current.name : 'Reveal the first card'}>
+            <span className="hand-face">
+              {current ? <img src={cardImg(current)} alt={current.name} decoding="async" fetchpriority="high" />
+                       : (setLogo ? <img src={setLogo} alt="" className="hand-back-logo" /> : null)}
+            </span>
+          </button>
+        )}
       </div>
-      {newest && <FanCaption card={newest} hasLoupe={hasLoupe} />}
-      {manualNext && <p className="rip-tap-hint">👆 Tap the deck to deal the next card ({shown}/{pulls.length})</p>}
+      {current && <FanCaption card={current} hasLoupe={hasLoupe} />}
+      {canAdvance && (
+        <p className="rip-tap-hint">
+          {shown === 0 ? '👆 Swipe or tap to reveal your first card'
+                       : `👆 Swipe the card away — or tap — for the next (${shown}/${n}) · hold to peek ahead`}
+        </p>
+      )}
     </div>
   )
 }
