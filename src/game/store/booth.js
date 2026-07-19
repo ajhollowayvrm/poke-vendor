@@ -865,8 +865,10 @@ export function createBoothSlice(set, get) {
       return msg
     },
 
-    clearInboxItem(idx) {
-      set(s => ({ boothInbox: s.boothInbox.filter((_, i) => i !== idx) }))
+    // Clear one inbox order by its stable id (NOT array index — a resolve/prune shifts indices,
+    // so an index captured at click time can point at the wrong order by the time this runs).
+    clearInboxItem(id) {
+      set(s => ({ boothInbox: s.boothInbox.filter(e => e.id !== id) }))
     },
   }
 }

@@ -69,7 +69,7 @@ export default function BoothInbox({ onRip, onPick }) {
     () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings, shopDisplay)),
     [inbox, collection, listings, shopDisplay])
   const consignments = useGame(s => s.consignments)
-  const [active, setActive] = useState(null) // {enc, idx}
+  const [active, setActive] = useState(null) // {enc, id}
   const [wantPick, setWantPick] = useState(null) // a want/forum post being fulfilled {kind:'want'|'forum', item}
   const [holdPick, setHoldPick] = useState(null) // shelf item being held for a regular {kind, uid, label}
   const [givePick, setGivePick] = useState(false) // picking a card for the in-store giveaway
@@ -102,7 +102,9 @@ export default function BoothInbox({ onRip, onPick }) {
   function pick(opt) {
     const msg = resolveEncounter(opt.effect)
     flash(msg)
-    if (active) clearItem(active.idx)
+    // Clear by stable id: resolveEncounter may prune the inbox (a sold card's orders drop),
+    // shifting indices — an index captured at open time would now clear the wrong order.
+    if (active) clearItem(active.id)
     setActive(null)
   }
 
@@ -553,9 +555,9 @@ export default function BoothInbox({ onRip, onPick }) {
                   const badge = CHANNEL_BADGE[enc.channel] || CHANNEL_BADGE.online
                   // Key on stable per-encounter content, NOT the array index — clearing an item
                   // shifts indices and would make React reconcile tiles to the wrong encounter.
-                  const key = enc.card?.uid || enc.ownedUid || `${enc.channel || 'c'}:${enc.title}`
+                  const key = enc.id || enc.card?.uid || enc.ownedUid || `${enc.channel || 'c'}:${enc.title}`
                   return (
-                    <div key={key} className="product" style={{ cursor: 'pointer' }} onClick={() => setActive({ enc, idx: i })}>
+                    <div key={key} className="product" style={{ cursor: 'pointer' }} onClick={() => setActive({ enc, id: enc.id })}>
                       <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
                       {enc.card && <img src={cardImg(enc.card)} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
                       {enc.card && setNameOfCard(enc.card) && <div className="muted" style={{ fontSize: 10.5, textAlign: 'center' }}>{setNameOfCard(enc.card)}</div>}
@@ -575,7 +577,7 @@ export default function BoothInbox({ onRip, onPick }) {
 
       {toast && <div className="toast">{toast}</div>}
       {active && (active.enc.kind === 'sealedDeal' && active.enc.deal
-        ? <SealedDealModal enc={active.enc} idx={active.idx} flash={flash}
+        ? <SealedDealModal enc={active.enc} id={active.id} flash={flash}
             onDone={() => setActive(null)} onCancel={() => setActive(null)} />
         : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />)}
 

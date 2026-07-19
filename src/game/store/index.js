@@ -28,7 +28,7 @@ import { GRADING, setMarketMults, cardValue, sealedValue } from '../engine'
 import { makeShowVendors } from '../shows'
 import { jobById, STARTER_JOB, absoluteDay, floorCapacity } from './constants'
 import { newlyUnlocked } from '../milestones'
-import { seedOfferId } from './ids'
+import { seedOfferId, seedInboxId, nextInboxId } from './ids'
 import { initialState } from './initialState'
 import { createEconomySlice } from './economy'
 import { createCollectionSlice } from './collection'
@@ -487,6 +487,13 @@ export const useGame = create(persist((set, get) => ({
       let maxOffer = 0
       for (const l of (state.listings || [])) for (const o of (l.offers || [])) if (typeof o.id === 'number' && o.id > maxOffer) maxOffer = o.id
       seedOfferId(maxOffer)
+      // Same for the booth inbox: seed the id counter past the highest persisted id, then
+      // backfill an id onto any pre-fix order that predates ids — so identity-based clear /
+      // authenticate can't hit the wrong (or a shifted-away) slot after a resolve/prune.
+      let maxInbox = 0
+      for (const e of (state.boothInbox || [])) { const n = typeof e.id === 'string' && e.id.startsWith('ib') ? parseInt(e.id.slice(2), 10) : 0; if (n > maxInbox) maxInbox = n }
+      seedInboxId(maxInbox)
+      for (const e of (state.boothInbox || [])) if (!e.id) e.id = nextInboxId()
       // Settle any grades whose readyOnDay <= currentDay (e.g. migrated from wall-clock).
       state.resolveGrades?.()
     }

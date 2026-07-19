@@ -50,7 +50,7 @@ const HOT_PREMIUM = 0.15
 // a passive daily margin of the sealed stock you keep on hand, capped, then scaled by reputation.
 const WHOLESALE_DAILY_RATE = 0.012  // 1.2%/day of your sealed inventory value moves as wholesale
 const WHOLESALE_DAILY_CAP = 6000    // per-day ceiling (before the reputation multiplier)
-import { nextOfferId } from './ids'
+import { nextOfferId, nextInboxId } from './ids'
 
 // --- daytick-only tuning constants ------------------------------------------
 // After this many days drawing browsers with zero buyers/offers, a listing goes
@@ -941,7 +941,9 @@ export function advanceDaysWith(set, get, days, away) {
     // Cap grows with fame — otherwise a famous vendor's extra orders would be generated and
     // then silently thrown away by a fixed 8-slot cap, and the whole traffic buff would be
     // invisible. (INBOX_CAP is still the floor, via inboxCap().)
-    boothInbox: [...newOrders.reverse(), ...st.boothInbox].slice(0, inboxCap(st.notoriety)),
+    // Every new order gets a stable id so clear/authenticate address it by identity, not by a
+    // fragile array index (a resolve/prune reshuffles the array — see nextInboxId's note).
+    boothInbox: [...newOrders.reverse().map(o => ({ ...o, id: o.id ?? nextInboxId() })), ...st.boothInbox].slice(0, inboxCap(st.notoriety)),
     consignments: remainingConsign,
     supplyChannel: remainingSupply,
     distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds

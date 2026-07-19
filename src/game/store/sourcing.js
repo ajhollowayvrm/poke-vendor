@@ -335,8 +335,8 @@ export function createSourcingSlice(set, get) {
     // Pay a fee to authenticate a deal before buying (gated by the Jeweler's Loupe). Returns
     // a READ correlated with the hidden truth but not perfect — a clever fake (esp. vintage)
     // can pass. The result is persisted on the inbox item so re-opening can't re-roll it.
-    authenticateDeal(idx) {
-      const item = get().boothInbox[idx]
+    authenticateDeal(id) {
+      const item = get().boothInbox.find(e => e.id === id)
       if (!item?.deal) return { error: 'Nothing to authenticate.' }
       if (item.authResult) return item.authResult           // already read — no re-charge / re-roll
       if (!get().upgrades.authkit) return { error: 'You need an Authentication Kit to authenticate.' }
@@ -351,7 +351,7 @@ export function createSourcingSlice(set, get) {
       const detect = item.deal.detectability ?? (item.deal.origin === 'vintage' ? 0.72 : 0.85)
       const looksFake = item.deal.fake ? Math.random() < detect : Math.random() < FALSE_POSITIVE
       const read = { looksFake, confidence: item.deal.origin === 'vintage' ? 72 : 85, fee }
-      set(s => ({ boothInbox: s.boothInbox.map((e, i) => i === idx ? { ...e, authResult: read } : e) }))
+      set(s => ({ boothInbox: s.boothInbox.map(e => e.id === id ? { ...e, authResult: read } : e) }))
       get().log('auth', `Authenticated a ${item.deal.what} — $${fee.toFixed(2)}`, -fee)
       return read
     },

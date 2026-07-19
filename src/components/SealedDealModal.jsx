@@ -10,7 +10,7 @@ const RAIL_LABEL = { venmo: 'Venmo', cash: 'cash', paypal: 'PayPal', card: 'card
 // (needs a Jeweler's Loupe — a paid, fallible read), BUY it, or PASS. Buying reveals
 // whether it was real (stocked to your held inventory) or a scam; if you paid by a
 // reversible rail (card / PayPal) you can file a CHARGEBACK to claw money back.
-export default function SealedDealModal({ enc, idx, onDone, onCancel, flash }) {
+export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
   const deal = enc.deal
   const cash = useGame(s => s.cash)
   const hasAuthKit = useGame(s => !!s.upgrades.authkit)
@@ -29,19 +29,19 @@ export default function SealedDealModal({ enc, idx, onDone, onCancel, flash }) {
   const rail = RAIL_LABEL[deal.payMethod] || 'cash'
 
   function doAuth() {
-    const r = authenticateDeal(idx)
+    const r = authenticateDeal(id)
     if (r?.error) { flash?.(r.error); return }
     setAuthRead(r)
   }
   function doBuy() {
     const r = buyDeal(deal)
     if (r?.error) { flash?.(r.msg); return }
-    clearItem(idx)         // consumed — clear now so a re-open can't double-buy
+    clearItem(id)          // consumed — clear now so a re-open can't double-buy
     setOutcome(r)
   }
   function doCharge() { setCharge(chargebackDeal(deal)) }
   function pass() {
-    clearItem(idx)
+    clearItem(id)
     flash?.(deal.fake ? 'Smart — that one had scam written all over it.' : 'You let a real deal walk. Can’t win them all.')
     onDone?.()
   }

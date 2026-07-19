@@ -22,3 +22,11 @@ export function seedOfferId(max) { if (max > _offerSeq) _offerSeq = max }
 // Returns a base36 string (post-increment, matching the old `(_sealedSeq++).toString(36)`).
 let _sealedSeq = 0
 export function nextSealedSuffix() { return (_sealedSeq++).toString(36) }
+
+// Booth-inbox encounter ids. Same story as offers: encounters persist in boothInbox across a
+// reload, but were addressed by ARRAY INDEX — so a resolve/prune that shifts the array made
+// clear/authenticate hit the wrong slot. A stable `id` fixes identity. `seedInboxId(max)`
+// re-seeds past the highest persisted id on rehydrate so a fresh order never reuses one.
+let _inboxSeq = 0
+export function nextInboxId() { return `ib${++_inboxSeq}` }
+export function seedInboxId(max) { if (max > _inboxSeq) _inboxSeq = max }
