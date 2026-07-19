@@ -32,7 +32,7 @@ import {
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
   GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
-  BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
+  BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS,
 } from './constants'
@@ -872,9 +872,14 @@ export function advanceDaysWith(set, get, days, away) {
   if (hasStore && noto >= BUYIN_MIN_NOTO) {
     for (let i = 0; i < days && buyinsNext.length < BUYIN_CAP; i++) {
       if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult)) {
-        const offer = makeBuyinOffer(noto)
+        // Some sellers are leaving the hobby: a whole-collection lot with SEALED product in it.
+        const estate = Math.random() < BUYIN_ESTATE_CHANCE
+        const offer = makeBuyinOffer(noto, { estate })
         buyinsNext = [offer, ...buyinsNext]
-        get().log('shop', `🛍️ ${offer.who.charAt(0).toUpperCase() + offer.who.slice(1)} came in with ${offer.count} cards to SELL — asking $${offer.askCash.toFixed(2)}. Appraise it on the Sell tab.`, 0)
+        const who = offer.who.charAt(0).toUpperCase() + offer.who.slice(1)
+        const sealedNote = offer.sealedCount ? ` + ${offer.sealedCount} sealed` : ''
+        const askNote = offer.free ? 'giving it away FREE' : `asking $${offer.askCash.toFixed(2)}`
+        get().log('shop', `🛍️ ${who} came in with ${offer.count} cards${sealedNote} to SELL — ${askNote}. Appraise it on the Sell tab.`, 0)
       }
     }
   }

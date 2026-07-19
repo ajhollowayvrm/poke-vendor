@@ -1601,6 +1601,9 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .shelf-sealed img { width:100%; max-width:96px; object-fit:contain; border-radius:6px; }
 .shelf-sealed .shelf-sealed-icon { font-size:36px; }
 .shelf-sealed .shelf-sealed-label { font-size:11px; font-weight:700; text-align:center; line-height:1.15; }
+/* A "leaving the hobby" estate lot — a whole collection (with sealed) — gets a warm accent. */
+.product.estate-lot { border-color:#c8962e66; background:linear-gradient(180deg,#191307,var(--panel2)); box-shadow:0 0 0 1px #c8962e22; }
+
 .vintage-vault { border-color:#c8962e55; background:linear-gradient(180deg,#1a1407,var(--panel2)); }
 .vintage-vault .prodbtn .prodmeta { font-weight:800; }
 

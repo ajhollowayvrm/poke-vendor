@@ -1086,31 +1086,70 @@ const BUYIN_SELLERS = [
   { who: 'a sharp-eyed flipper flipping through you', tone: 'sharp' },
   { who: 'a grinder who knows every comp', tone: 'sharp' },
 ]
-export function makeBuyinOffer(notoriety) {
-  const seller = BUYIN_SELLERS[Math.floor(Math.random() * BUYIN_SELLERS.length)]
-  // The lot: a stack of bulk with 1–2 real pieces mixed in (scaled by your local fame —
-  // better-known shops get brought better collections).
-  const n = 5 + Math.floor(Math.random() * 8)
+// "Leaving the hobby" sellers — they're offloading EVERYTHING, singles and sealed alike, and
+// mostly just want it gone. A storefront is what makes you the person they bring it all to.
+const ESTATE_SELLERS = [
+  { who: 'a burned-out collector leaving the hobby', tone: 'soft' },
+  { who: 'someone quitting for good — the whole collection', tone: 'soft' },
+  { who: 'a guy moving overseas, everything must go', tone: 'soft' },
+  { who: 'a retiree finally done with cards', tone: 'soft' },
+  { who: 'a parent clearing their grown kid\'s whole stash', tone: 'soft' },
+  { who: 'a streamer who rage-quit collecting', tone: 'mid' },
+]
+// A random sealed product for an estate lot: a set + one of its products, valued live.
+function randomSealedForLot() {
+  const pool = [...SHOP_SETS, ...SECONDARY_SETS]
+  const set = pool[Math.floor(Math.random() * pool.length)]
+  const products = setProducts(set)
+  if (!set || !products.length) return null
+  const product = products[Math.floor(Math.random() * products.length)]
+  return { setId: set.id, product: { ...product } }
+}
+export function makeBuyinOffer(notoriety, opts = {}) {
+  const estate = !!opts.estate
+  const seller = estate
+    ? ESTATE_SELLERS[Math.floor(Math.random() * ESTATE_SELLERS.length)]
+    : BUYIN_SELLERS[Math.floor(Math.random() * BUYIN_SELLERS.length)]
+  // The lot. Estate = a whole collection: far more cards, more real pieces, and SEALED product
+  // mixed in. Ordinary = a stack of bulk with 1–2 real pieces. Scaled by your local fame.
+  const n = estate ? 18 + Math.floor(Math.random() * 28) : 5 + Math.floor(Math.random() * 8)
+  const hits = estate ? 3 + Math.floor(Math.random() * 4) : 1 + (Math.random() < 0.4 ? 1 : 0)
   const cards = []
-  const hits = 1 + (Math.random() < 0.4 ? 1 : 0)
-  for (let i = 0; i < n - hits; i++) cards.push(cardInValueRange(0.25, 6))
+  for (let i = 0; i < Math.max(0, n - hits); i++) cards.push(cardInValueRange(0.25, 6))
   for (let i = 0; i < hits; i++) cards.push(cardInValueRange(5, 18 + notoriety * 0.4))
-  const market = round2(cards.reduce((a, c) => a + cardValue(c), 0))
-  // Ask by seller tone: soft sellers leave meat on the bone; sharp ones price tight.
-  const askMult = seller.tone === 'soft' ? 0.45 + Math.random() * 0.15
+  // Estate lots come with SEALED product — the influx a storefront pulls in.
+  const sealed = []
+  if (estate) {
+    const sn = 2 + Math.floor(Math.random() * 5) // 2–6 sealed items
+    for (let i = 0; i < sn; i++) { const s = randomSealedForLot(); if (s) sealed.push(s) }
+  }
+  const cardsMarket = cards.reduce((a, c) => a + cardValue(c), 0)
+  const sealedMarket = sealed.reduce((a, s) => a + sealedValue(s), 0)
+  const market = round2(cardsMarket + sealedMarket)
+  // Some leaving-the-hobby sellers just GIVE it away — a pure-upside moment (rare).
+  const free = estate && Math.random() < 0.10
+  // Ask by tone: soft sellers leave meat on the bone; sharp ones price tight. Estate sellers
+  // want it GONE, so they go soft regardless.
+  const askMult = free ? 0
+    : estate ? 0.38 + Math.random() * 0.17
+    : seller.tone === 'soft' ? 0.45 + Math.random() * 0.15
     : seller.tone === 'sharp' ? 0.62 + Math.random() * 0.13
     : 0.52 + Math.random() * 0.15
-  const askCash = Math.max(1, round2(market * askMult))
+  const askCash = free ? 0 : Math.max(1, round2(market * askMult))
   // Two pre-rolled estimates so the readout is stable: the naked-eye one (±25%) and
   // the Loupe one (±8%) — the UI shows whichever your gear earns.
   const noisy = (band) => round2(market * (1 - band + Math.random() * band * 2))
   return {
     id: `bi${Math.floor(Math.random() * 1e9).toString(36)}`,
-    who: seller.who, tone: seller.tone,
-    hint: seller.tone === 'sharp' ? 'priced like someone who checked comps' : seller.tone === 'soft' ? 'just wants it gone' : 'seems reasonable',
-    cards, count: n, market, askCash,
+    who: seller.who, tone: seller.tone, estate, free,
+    hint: free ? 'just wants it out of the house — take it'
+      : estate ? 'leaving the hobby — everything must go'
+      : seller.tone === 'sharp' ? 'priced like someone who checked comps'
+      : seller.tone === 'soft' ? 'just wants it gone' : 'seems reasonable',
+    cards, count: n, sealed, sealedCount: sealed.length, sealedMarket: round2(sealedMarket),
+    market, askCash,
     estimate: noisy(0.25), estimateTight: noisy(0.08),
-    pendingDays: 2,
+    pendingDays: estate ? 3 : 2, // a whole collection gives you a little longer to decide
   }
 }
 

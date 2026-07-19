@@ -242,9 +242,13 @@ export const CONSIGN_MIN_NOTO = 15      // nobody trusts an unknown shop with th
 // or STORE CREDIT at a bonus. Credit is the real LGS trick: no cash leaves today,
 // the seller comes back as a customer, and their credit drains out of your daily
 // counter takings over time (with a little breakage that's never redeemed at all).
-export const BUYIN_CHANCE = 0.16        // per-day chance a seller walks in (storefront + a bit of a name)
-export const BUYIN_CAP = 2              // at most this many lots waiting on an answer
+// A storefront makes you the place people bring collections — so sellers walk in a LOT more
+// often, and some are leaving the hobby entirely: whole-collection "estate" lots that come with
+// SEALED product mixed in (and once in a while, they just give it away).
+export const BUYIN_CHANCE = 0.30        // per-day chance a seller walks in (storefront + a bit of a name)
+export const BUYIN_CAP = 4              // at most this many lots waiting on an answer
 export const BUYIN_MIN_NOTO = 10
+export const BUYIN_ESTATE_CHANCE = 0.35 // share of buy-ins that are a whole "leaving the hobby" collection (incl. sealed)
 export const STORE_CREDIT_BONUS = 0.25  // credit offer = cash ask × (1 + bonus) — they take more in credit
 export const CREDIT_REDEEM_SHARE = 0.6  // share of each day's counter takings credit-holders can spend down
 export const CREDIT_BREAKAGE = 0.02     // daily % of outstanding credit that's simply never redeemed

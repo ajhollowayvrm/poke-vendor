@@ -230,26 +230,31 @@ export default function BoothInbox({ onRip, onPick }) {
                     {buyinOffers.map(o => {
                       const est = upgrades.loupe ? o.estimateTight : o.estimate
                       const credit = Math.round(o.askCash * (1 + STORE_CREDIT_BONUS) * 100) / 100
+                      const stuff = o.sealedCount ? 'of cards & sealed' : 'of cards'
                       return (
-                        <div key={o.id} className="product">
-                          <h3 style={{ fontSize: 14, margin: 0 }}>{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
+                        <div key={o.id} className={`product ${o.estate ? 'estate-lot' : ''}`}>
+                          <h3 style={{ fontSize: 14, margin: 0 }}>{o.estate ? '📦 ' : ''}{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
                           <div className="meta" style={{ flex: 1 }}>
-                            A lot of <b>{o.count} cards</b> — {o.hint}.<br />
+                            A lot of <b>{o.count} cards</b>{o.sealedCount ? <> + <b>{o.sealedCount} sealed</b></> : ''} — {o.hint}.<br />
                             Your read: <b title={upgrades.loupe ? 'Loupe appraisal — tight (±8%)' : 'Eyeball estimate (±25%) — the 🔍 Jeweler\'s Loupe reads lots much tighter'}>
-                              ~{fmtMoney(est)} of cards {upgrades.loupe ? '🔍' : '👁️'}</b>
-                            <br />Asking <b>{fmtMoney(o.askCash)}</b> cash · they'll wait {o.pendingDays}d
+                              ~{fmtMoney(est)} {stuff} {upgrades.loupe ? '🔍' : '👁️'}</b>
+                            <br />{o.free
+                              ? <b style={{ color: 'var(--green)' }}>Free — they just want it gone</b>
+                              : <>Asking <b>{fmtMoney(o.askCash)}</b> cash</>} · they'll wait {o.pendingDays}d
                           </div>
                           <div className="row" style={{ gap: 5 }}>
-                            <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12 }} disabled={cash < o.askCash}
-                              title="Pay their ask in cash — done and dusted"
+                            <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12 }} disabled={!o.free && cash < o.askCash}
+                              title={o.free ? 'Take the whole collection — they\'re giving it away' : 'Pay their ask in cash — done and dusted'}
                               onClick={() => { const r = acceptBuyin(o.id, 'cash'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
-                              💵 {fmtMoney(o.askCash)}
+                              {o.free ? '🎁 Take it — FREE' : `💵 ${fmtMoney(o.askCash)}`}
                             </button>
-                            <button className="btn" style={{ padding: '6px 8px', fontSize: 12 }}
-                              title={`No cash down — issue ${fmtMoney(credit)} store credit instead. They spend it back at your counter over time (and some never gets redeemed). Credit sellers tend to become regulars.`}
-                              onClick={() => { const r = acceptBuyin(o.id, 'credit'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
-                              💳 {fmtMoney(credit)}
-                            </button>
+                            {!o.free && (
+                              <button className="btn" style={{ padding: '6px 8px', fontSize: 12 }}
+                                title={`No cash down — issue ${fmtMoney(credit)} store credit instead. They spend it back at your counter over time (and some never gets redeemed). Credit sellers tend to become regulars.`}
+                                onClick={() => { const r = acceptBuyin(o.id, 'credit'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
+                                💳 {fmtMoney(credit)}
+                              </button>
+                            )}
                             <button className="btn alt" style={{ flex: 'none', maxWidth: 70, padding: '6px 8px', fontSize: 12 }}
                               onClick={() => { declineBuyin(o.id); flash('Passed on the lot.') }}>Pass</button>
                           </div>
@@ -671,11 +676,25 @@ export default function BoothInbox({ onRip, onPick }) {
               {buyinReveal.market >= buyinReveal.paid * 1.3 ? '🤑' : buyinReveal.market >= buyinReveal.paid ? '🙂' : '😬'} The lot, flipped through
             </h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-              Paid <b>{buyinReveal.method === 'credit' ? `${fmtMoney(buyinReveal.paid)} store credit` : `${fmtMoney(buyinReveal.paid)} cash`}</b> ·
+              {buyinReveal.free
+                ? <><b style={{ color: 'var(--green)' }}>Free</b> — the whole collection, no charge · </>
+                : <>Paid <b>{buyinReveal.method === 'credit' ? `${fmtMoney(buyinReveal.paid)} store credit` : `${fmtMoney(buyinReveal.paid)} cash`}</b> · </>}
               market value <b style={{ color: buyinReveal.market >= buyinReveal.paid ? 'var(--green)' : 'var(--red)' }}>{fmtMoney(buyinReveal.market)}</b>
-              {buyinReveal.method === 'credit' ? ' · no cash left the till — they\'ll spend the credit back at your counter.' : ''} All {buyinReveal.cards.length} cards are in your collection.
+              {buyinReveal.method === 'credit' && !buyinReveal.free ? ' · no cash left the till — they\'ll spend the credit back at your counter.' : ''} All {buyinReveal.cards.length} cards are in your collection{buyinReveal.sealed?.length ? `; ${buyinReveal.sealed.length} sealed went to your 📦 storeroom` : ''}.
             </p>
-            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(110px,1fr))' }}>
+            {buyinReveal.sealed?.length > 0 && (
+              <div className="wants" style={{ marginTop: 4 }}>
+                <div className="wants-head" style={{ fontSize: 13 }}>📦 Sealed in the lot <span className="muted">— now in your storeroom to rip, list, or flip</span></div>
+                <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
+                  {buyinReveal.sealed.map(it => (
+                    <span key={it.uid} className="pill" style={{ background: '#5aa0ff22', color: '#9dc3ff', fontSize: 12 }}>
+                      {it.product.icon || '📦'} {it.product.type}{setById(it.setId)?.name ? ` · ${setById(it.setId).name}` : ''} · <b style={{ color: 'var(--green)' }}>{fmtMoney(sealedValue(it))}</b>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(110px,1fr))', marginTop: 8 }}>
               {[...buyinReveal.cards].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
                 <div key={c.uid} className="vendoritem">
                   <CardTile card={c} interactive={false} />

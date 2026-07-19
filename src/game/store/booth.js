@@ -539,8 +539,11 @@ export function createBoothSlice(set, get) {
     acceptBuyin(id, method = 'cash') {
       const offer = (get().buyinOffers || []).find(o => o.id === id)
       if (!offer) return { error: 'They already left.' }
+      const free = offer.askCash <= 0 // a leaving-the-hobby giveaway
       let paid
-      if (method === 'credit') {
+      if (free) {
+        paid = 0 // they're just handing it over
+      } else if (method === 'credit') {
         paid = round2(offer.askCash * (1 + STORE_CREDIT_BONUS))
         if ((get().storeCredit || 0) + paid > creditIssueCap(get().notoriety)) {
           return { error: 'Too much credit outstanding — locals want cash until some of it gets spent.' }
@@ -550,19 +553,24 @@ export function createBoothSlice(set, get) {
         paid = offer.askCash
         if (!get().spend(paid)) return { error: `You can't cover the $${paid.toFixed(2)} in cash.` }
       }
+      // Mint any sealed product in the lot into your storeroom backstock (no extra charge — it
+      // came with the collection). Cards go straight into your collection as before.
+      const sealedRows = (offer.sealed || []).map(s => get().mintSealedRow(setById(s.setId), s.product, 0)).filter(Boolean)
       set(s => ({
         collection: [...offer.cards, ...s.collection],
+        sealedInventory: sealedRows.length ? [...sealedRows, ...(s.sealedInventory || [])] : s.sealedInventory,
         buyinOffers: s.buyinOffers.filter(o => o.id !== id),
       }))
-      const label = method === 'credit' ? `$${paid.toFixed(2)} store credit` : `$${paid.toFixed(2)} cash`
-      get().log('buy', `Bought ${offer.count} cards off ${offer.who} for ${label} (lot market ~$${offer.market.toFixed(2)})`, method === 'credit' ? 0 : -paid)
-      get().addNotoriety(1) // the shop that buys collections gets talked about
+      const sealedNote = sealedRows.length ? ` + ${sealedRows.length} sealed` : ''
+      const label = free ? 'FREE — they gave it away' : method === 'credit' ? `$${paid.toFixed(2)} store credit` : `$${paid.toFixed(2)} cash`
+      get().log('buy', `Bought ${offer.count} cards${sealedNote} off ${offer.who} for ${label} (lot market ~$${offer.market.toFixed(2)})`, (method === 'credit' || free) ? 0 : -paid)
+      get().addNotoriety(offer.estate ? 2 : 1) // a shop that takes in whole collections gets talked about
       get().bumpGoal('buy', offer.count)
-      // A credit deal keeps them in your orbit — good odds they become a regular.
-      if (method === 'credit') get().formRegular({ setId: setIdOfCard(offer.cards[0]), channel: 'walkin', generous: true })
+      // A credit deal — or a grateful giveaway — keeps them in your orbit as a regular.
+      if ((method === 'credit' || free) && offer.cards[0]) get().formRegular({ setId: setIdOfCard(offer.cards[0]), channel: 'walkin', generous: true })
       get().checkCompletions() // a bought lot can finish a set
       get().checkMilestones()
-      return { cards: offer.cards, market: offer.market, paid, method }
+      return { cards: offer.cards, sealed: sealedRows, market: offer.market, paid, method, free }
     },
     declineBuyin(id) {
       const offer = (get().buyinOffers || []).find(o => o.id === id)
