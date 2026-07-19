@@ -175,7 +175,7 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 
 .product { background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
   border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.product img.logo { height: 54px; object-fit: contain; align-self: center; filter: drop-shadow(0 4px 8px #0008); }
+.product img.logo { max-height: 54px; max-width: 100%; width: auto; object-fit: contain; align-self: center; filter: drop-shadow(0 4px 8px #0008); }
 .product h3 { margin: 0; font-size: 17px; }
 .product .meta { color: var(--dim); font-size: 12.5px; }
 
