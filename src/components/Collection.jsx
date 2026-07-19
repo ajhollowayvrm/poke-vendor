@@ -194,7 +194,8 @@ export default function Collection({ onPick }) {
             {rawSelected.length > 0 && (
               <div className="bulk-grade-group">
                 <select value={gradeTier} onClick={e => e.stopPropagation()} onChange={e => setGradeTier(e.target.value)}>
-                  {Object.entries(GRADING).map(([key, t]) => (
+                  {/* Mail-in tiers only — the On-Site Kiosk (onSite) is a show-floor service. */}
+                  {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => (
                     <option key={key} value={key}>{t.name} · ~{t.days}d</option>
                   ))}
                 </select>
