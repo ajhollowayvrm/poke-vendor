@@ -178,6 +178,24 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .product img.logo { height: 54px; object-fit: contain; align-self: center; filter: drop-shadow(0 4px 8px #0008); }
 .product h3 { margin: 0; font-size: 17px; }
 .product .meta { color: var(--dim); font-size: 12.5px; }
+
+/* Collapsible shelf: the catalog opens as a scannable list of set-logo rows; tap a row to
+   expand its products. One column so an expanding row never disrupts a grid around it. */
+.shop-list { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; max-width: 760px; }
+.product.set-acc { padding: 0; gap: 0; }
+.set-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 14px;
+  background: none; border: none; color: inherit; cursor: pointer; text-align: left; font: inherit;
+  border-radius: 16px; transition: background .12s; }
+.set-head:hover { background: #ffffff08; }
+.set-acc.open .set-head { border-radius: 16px 16px 0 0; border-bottom: 1px solid var(--line); }
+.set-head img.logo { height: 38px; width: 64px; object-fit: contain; flex: none; margin: 0; align-self: center; }
+.set-logo-fallback { font-size: 26px; width: 64px; text-align: center; flex: none; }
+.set-head-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.set-head-name { font-size: 15.5px; font-weight: 800; line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.set-head .meta { color: var(--dim); font-size: 12px; }
+.set-caret { flex: none; color: var(--dim); font-size: 13px; margin-left: 6px; }
+.set-acc .prodlist { padding: 10px 14px 14px; margin-top: 0; }
 .buyrow { display: flex; gap: 8px; margin-top: auto; }
 .btn { background: var(--accent2); color: #fff; border: none; border-radius: 10px; padding: 10px 12px;
   font-weight: 800; font-size: 14px; flex: 1; transition: transform .08s, filter .15s; }
@@ -1434,10 +1452,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
 
 /* Distributor picker: one chip per wholesaler, tinted with their brand colour. */
 .distrib-picker { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
-.distrib-chip { display:flex; flex-direction:column; align-items:flex-start; gap:2px; flex:1 1 150px;
+.distrib-chip { position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; flex:1 1 150px;
   background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
   border-radius:12px; padding:9px 12px; color:var(--txt); text-align:left;
   transition: border-color .12s, background .12s, transform .06s; }
+/* 🗝️ marker: this store has vintage sealed on the shelf this week */
+.distrib-chip .dc-vintage { position:absolute; top:5px; right:7px; font-size:12.5px; line-height:1;
+  filter: drop-shadow(0 1px 2px #000b); }
 .distrib-chip:hover:not(.active) { border-color: var(--dc); background:#ffffff10; }
 .distrib-chip:active { transform: translateY(1px); }
 .distrib-chip.active { border-color: var(--dc); box-shadow: 0 0 0 1px var(--dc), 0 4px 14px #0006;

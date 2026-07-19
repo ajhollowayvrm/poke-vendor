@@ -790,6 +790,13 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   const [payCreditMode, setPayCreditMode] = useState(false) // is the buy toggle set to "credit"?
   // Never leave the toggle stuck on credit when the line can't be used — fall back to cash.
   const onCredit = payCreditMode && !creditFrozen && creditAvail > 0
+  // Which distributors have vintage on the shelf this week (a weekly find still in stock, or a
+  // rapport hold set aside for you) — drives the 🗝️ marker on their picker chip. Selected as a
+  // stable string so the Set below only rebuilds when the actual set of vintage-having stores changes.
+  const vintageDistKey = useGame(s => DISTRIBUTORS
+    .filter(d => vintageLeft(s, d.id) > 0 || s.distributors?.[d.id]?.hold)
+    .map(d => d.id).join(','))
+  const vintageDists = useMemo(() => new Set(vintageDistKey ? vintageDistKey.split(',') : []), [vintageDistKey])
 
   const dist = distributorById(distId) || DISTRIBUTORS[0]
   const rec = distributors[distId] || { spend: 0, stock: {} }
@@ -805,7 +812,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
   return (
     <>
-      <DistributorPicker distributorState={distributors} notoriety={notoriety} selected={distId} onSelect={setDistId} />
+      <DistributorPicker distributorState={distributors} notoriety={notoriety} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
 
       {!unlocked ? (
         <LockedDistributor dist={dist} notoriety={notoriety} />
@@ -831,7 +838,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       {catalog.length === 0 ? (
         <p className="muted" style={{ marginTop: 18 }}>{dist.name} has nothing on the shelf right now — check back next week.</p>
       ) : (
-        <div className="grid shop-grid">
+        <div className="shop-list">
           {catalog.map(set => (
             <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={rec.stock}
               cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={ownedCounts}
@@ -917,7 +924,7 @@ function LockedDistributor({ dist, notoriety }) {
 
 // Pick which distributor you're buying from. Each chip shows their icon, name, and your
 // rapport (filled stars), tinted with their brand colour.
-function DistributorPicker({ distributorState, notoriety, selected, onSelect }) {
+function DistributorPicker({ distributorState, notoriety, selected, onSelect, vintageDists }) {
   return (
     <div className="distrib-picker">
       {DISTRIBUTORS.map(d => {
@@ -925,10 +932,13 @@ function DistributorPicker({ distributorState, notoriety, selected, onSelect }) 
         const level = rapportLevel(rec.spend).level
         const max = RAPPORT_LEVELS.length - 1
         const locked = !distributorUnlocked(d, notoriety)
+        const hasVintage = !locked && vintageDists?.has(d.id)
         return (
           <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''} ${locked ? 'locked' : ''}`}
             style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}
-            title={locked ? `Locked — reach ${d.minNotoriety} notoriety to open an account` : undefined}>
+            title={locked ? `Locked — reach ${d.minNotoriety} notoriety to open an account`
+              : hasVintage ? `${d.name} has vintage sealed on the shelf this week` : undefined}>
+            {hasVintage && <span className="dc-vintage" title="Vintage in stock this week" aria-label="Vintage in stock">🗝️</span>}
             <span className="dc-icon">{d.icon}</span>
             <span className="dc-name">{d.name}</span>
             {locked
@@ -988,24 +998,36 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
   const lot = showCases ? caseLot(set) : null
   const box = [...products].sort((a, b) => b.packs - a.packs)[0]
   const credit = { onCredit, creditAvail }
+  // Collapsed by default: the shelf opens as a scannable list of set logos; tap a row to expand
+  // its products. Summary on the collapsed row = how many lines and the cheapest one, at rapport.
+  const [open, setOpen] = useState(false)
+  const count = products.length + (lot ? 1 : 0) + (clearance && box ? 1 : 0)
+  const cheapest = products.length ? Math.min(...products.map(p => distributorPrice(dist, p.price, lvl.level))) : 0
   return (
-    <div className="product">
-      {set.logo && <img className="logo" src={set.logo} alt={set.name} />}
-      <h3>{set.name}</h3>
-      <div className="meta">{set.series} · {set.printedTotal} numbered / {set.total} total</div>
-      <div className="prodlist">
-        {products.map(p => (
-          <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
-        ))}
-        {lot && (
-          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
-            product={{ ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, bonus: lot.bonus, boxes: lot.boxes, _retail: lot.retail, _case: true }} owned={owned} />
-        )}
-        {clearance && box && (
-          <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
-            product={{ ...box, type: `Clearance ${box.type}`, icon: '🏷️', _clearanceOf: box.price, _clearance: true }} owned={owned} />
-        )}
-      </div>
+    <div className={`product set-acc ${open ? 'open' : ''}`}>
+      <button className="set-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <span className="set-logo-fallback">📦</span>}
+        <span className="set-head-info">
+          <span className="set-head-name">{set.name}</span>
+          <span className="meta">{set.series} · {count} product{count !== 1 ? 's' : ''}{cheapest ? ` · from ${fmtMoney(cheapest)}` : ''}</span>
+        </span>
+        <span className="set-caret" aria-hidden="true">{open ? '▾' : '▸'}</span>
+      </button>
+      {open && (
+        <div className="prodlist">
+          {products.map(p => (
+            <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
+          ))}
+          {lot && (
+            <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
+              product={{ ...lot.unit, type: lot.type, icon: lot.icon, packs: lot.packs, bonus: lot.bonus, boxes: lot.boxes, _retail: lot.retail, _case: true }} owned={owned} />
+          )}
+          {clearance && box && (
+            <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
+              product={{ ...box, type: `Clearance ${box.type}`, icon: '🏷️', _clearanceOf: box.price, _clearance: true }} owned={owned} />
+          )}
+        </div>
+      )}
     </div>
   )
 }
