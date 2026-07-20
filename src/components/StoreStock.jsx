@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, floorCount, floorSkuCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
-import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate } from '../game/engine'
+import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, breakOptions } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 import CardTile from './CardTile'
 
@@ -315,6 +315,7 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
   const listOnSite = useGame(s => s.listOnSite)
   const quickFlipSealed = useGame(s => s.quickFlipSealed)
   const listSealed = useGame(s => s.listSealed)
+  const breakSealed = useGame(s => s.breakSealed)
   const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0))
   // Featured singles + featured sealed share the one display case, so the "full" check counts both.
   const featuredTotal = useGame(s => s.collection.filter(c => c._featured).length + (s.sealedInventory || []).filter(it => it._featured).length)
@@ -329,6 +330,11 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
   const vintageLine = isVintageFloorItem(kind, first)
   const onFloorForSku = floorSkus.get(floorSkuKey(kind, first)) || 0
   const skuFull = !vintageLine && skuCap > 0 && onFloorForSku >= skuCap
+  // What one unit of this sealed line splits into — a case → boxes, a box → its loose packs.
+  // Empty for a single pack (already atomic) or for cards. breakOptions[0] is the "one tier
+  // down" split (box → packs), which is exactly what a box wants.
+  const breaks = useMemo(() => (kind === 'sealed' ? breakOptions(first) : []), [kind, first])
+  const breakOpt = breaks[0] || null
 
   const move = (dest, verb) => {
     const r = moveStock(kind, uids, dest)
@@ -344,6 +350,18 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
     if (featuredSealed) { toggleFeatureSealed(featuredSealed.uid); flash(`Unfeatured ${label}.`); return }
     if (featuredTotal >= FEATURED_MAX) { flash(`Display case is full (max ${FEATURED_MAX}).`); return }
     if (toggleFeatureSealed(items[0].uid)) flash(`⭐ ${label} is under glass — a vintage showpiece whales come in for.`)
+  }
+  // Crack ONE unit of this line down a tier (box → loose packs). Breaks a single unit at a
+  // time — a mis-tap on a whole stack of boxes would be an expensive, un-undoable mistake.
+  // The packs land in the Storeroom (no floor loc); Stock the Floor puts them out.
+  function doBreak() {
+    if (!breakOpt) return
+    const r = breakSealed(items[0].uid, breakOpt.product.type)
+    if (r?.error) return flash(r.error)
+    // Broken packs inherit the parent's kept flag: a kept (Personal) box → kept packs stay in
+    // Personal; anything else lands in the Storeroom, ready to stock the floor.
+    const dest = first.locked ? 'Personal' : 'the Storeroom — stock the floor to sell them'
+    flash(`🔨 Broke a ${label} into ${r.count}× ${r.type} (in ${dest}).`)
   }
 
   return (
@@ -371,6 +389,9 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
         {kind === 'sealed' && first.vintage && (
           <button className={`stock-act ${featuredSealed ? 'on' : ''}`} title="Feature this 🗝️ vintage showpiece in the display case — pulls whales" onClick={featureSealedToggle}>{featuredSealed ? '⭐' : '☆'}</button>
         )}
+        {kind === 'sealed' && (
+          <button className="stock-act" title="Rip one now — cracks it right off the floor" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
+        )}
         <button className="stock-act" title="Take it home (Personal) — off the sales floor, not for sale" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
         <button className="stock-act" title="Send to the storeroom (off the floor)" onClick={() => move('storeroom', '📦 Moved to back')}>📦</button>
         {onHold && <button className="stock-act" title="Set one aside for a regular — they come pick it up at a premium" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
@@ -384,6 +405,7 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
           <button className="stock-act" title="List one online" onClick={() => { if (listOnSite(items[0].uid, 0.9)) flash(`Listed ${label} online.`) }}>🏷️</button>
           <button className="stock-act" title="Quick-sell one now" onClick={() => { quickSell(items[0].uid); flash(`Quick-sold ${label}.`) }}>💵</button>
         </> : <>
+          {breakOpt && <button className="stock-act" title={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (lands in the Storeroom)`} onClick={doBreak}>🔨</button>}
           <button className="stock-act" title="Rip one now" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
           <button className="stock-act" title="List one online" onClick={() => { if (listSealed(items[0].uid, 1.0)) flash(`Listed ${label} online.`) }}>🏷️</button>
           <button className="stock-act" title="Quick-flip one for fast cash" onClick={() => { quickFlipSealed(items[0].uid); flash(`Flipped ${label}.`) }}>💵</button>
@@ -391,6 +413,9 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
       </>}
 
       {!selectMode && place === 'personal' && <>
+        {kind === 'sealed' && breakOpt && (
+          <button className="stock-act" title={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (kept, stays in Personal)`} onClick={doBreak}>🔨</button>
+        )}
         {kind === 'sealed' && (
           <button className="stock-act" title="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
         )}
