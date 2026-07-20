@@ -40,7 +40,7 @@ function bySet(cards, sealed) {
   return groups.sort((a, b) => b.value - a.value)
 }
 
-export default function StoreStock({ place, onRip, onPick, onHold, only }) {
+export default function StoreStock({ place, onRip, onPick, onHold, only, split }) {
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
   useGame(s => s.marketMults) // re-render on market drift so values stay live
@@ -116,7 +116,7 @@ export default function StoreStock({ place, onRip, onPick, onHold, only }) {
     })
   }
 
-  const { groups, totalValue, totalCount, cards, sealed } = useMemo(() => {
+  const { groups, totalValue, totalCount, cards, sealed, cardGroups, sealedGroups } = useMemo(() => {
     let cards, sealed
     if (place === 'personal') {
       cards = (collection || []).filter(c => c.locked)
@@ -134,8 +134,13 @@ export default function StoreStock({ place, onRip, onPick, onHold, only }) {
     const groups = bySet(cards, sealed)
     const totalValue = groups.reduce((a, g) => a + g.value, 0)
     const totalCount = groups.reduce((a, g) => a + g.count, 0)
-    return { groups, totalValue, totalCount, cards, sealed }
-  }, [collection, sealedInventory, place, only])
+    // `split` renders singles and sealed as two separate shelves (real-shop feel). Each is the
+    // same set-grouped list, just filtered to one kind. Selection still runs off `groups`, whose
+    // line keys are identical, so nothing else needs to know about the split.
+    const cardGroups = split ? bySet(cards, []) : null
+    const sealedGroups = split ? bySet([], sealed) : null
+    return { groups, totalValue, totalCount, cards, sealed, cardGroups, sealedGroups }
+  }, [collection, sealedInventory, place, only, split])
 
   const meta = PLACE[place]
   // Kind-scoped empty copy so a Personal ▸ Sealed tab doesn't show the cards blurb.
@@ -186,6 +191,33 @@ export default function StoreStock({ place, onRip, onPick, onHold, only }) {
     return { cardUids, sealedUids, rawCardUids, value, count }
   }, [gridMode, gridItems, pickedUids, selectedLines])
   const gradeTotal = round2(gradingFee(gradeTier, gradesSubmitted, sel.rawCardUids.length || 1) * sel.rawCardUids.length)
+
+  // Render a set-grouped list of SKU lines. `kp` prefixes React keys so the same set can appear in
+  // both the Singles and Sealed shelves (split view) without a key collision.
+  const renderGroups = (list, kp) => list.map(g => {
+    const isCollapsed = collapsed.has(g.setId)
+    return (
+      <div key={`${kp}${g.setId}`} className="wants" style={{ marginTop: 10 }}>
+        <div className="wants-head" role="button" tabIndex={0} aria-expanded={!isCollapsed}
+          title={isCollapsed ? 'Show this set' : 'Hide this set'}
+          style={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => toggleCollapse(g.setId)}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(g.setId) } }}>
+          <span aria-hidden style={{ display: 'inline-block', width: 12, fontSize: 10, opacity: 0.7, transition: 'transform .15s', transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}>▼</span>
+          {' '}{g.name} <span className="muted">— {g.count} item{g.count === 1 ? '' : 's'} · {fmtMoney(g.value)}</span>
+        </div>
+        {!isCollapsed && (
+          <div className="stock-lines">
+            {g.lines.map(line => (
+              <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
+                skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash}
+                selectMode={selectMode} selected={picked.has(line.key)} onToggle={() => toggleLine(line.key)} />
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  })
 
   function toggleLine(key) { setPicked(p => { const n = new Set(p); n.has(key) ? n.delete(key) : n.add(key); return n }) }
   function toggleUid(uid) { setPickedUids(p => { const n = new Set(p); n.has(uid) ? n.delete(uid) : n.add(uid); return n }) }
@@ -312,33 +344,20 @@ export default function StoreStock({ place, onRip, onPick, onHold, only }) {
             )
           })}
         </div>
+      ) : split ? (
+        // Two shelves — singles and sealed kept apart, like a real shop's case vs its wall.
+        <>
+          <div className="floor-sec-h">🃏 Singles <span className="muted">— {cards.length} item{cards.length === 1 ? '' : 's'} · {fmtMoney(cardGroups.reduce((a, g) => a + g.value, 0))}</span></div>
+          {cardGroups.length
+            ? <div className="store-sets">{renderGroups(cardGroups, 'c')}</div>
+            : <div className="floor-sec-empty muted">No singles out on the floor — stock some from the 📦 Storeroom.</div>}
+          <div className="floor-sec-h">📦 Sealed <span className="muted">— {sealed.length} item{sealed.length === 1 ? '' : 's'} · {fmtMoney(sealedGroups.reduce((a, g) => a + g.value, 0))}</span></div>
+          {sealedGroups.length
+            ? <div className="store-sets">{renderGroups(sealedGroups, 's')}</div>
+            : <div className="floor-sec-empty muted">No sealed out on the floor — stock boxes & packs from the 📦 Storeroom.</div>}
+        </>
       ) : (
-        <div className="store-sets">
-          {groups.map(g => {
-            const isCollapsed = collapsed.has(g.setId)
-            return (
-            <div key={g.setId} className="wants" style={{ marginTop: 10 }}>
-              <div className="wants-head" role="button" tabIndex={0} aria-expanded={!isCollapsed}
-                title={isCollapsed ? 'Show this set' : 'Hide this set'}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => toggleCollapse(g.setId)}
-                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(g.setId) } }}>
-                <span aria-hidden style={{ display: 'inline-block', width: 12, fontSize: 10, opacity: 0.7, transition: 'transform .15s', transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}>▼</span>
-                {' '}{g.name} <span className="muted">— {g.count} item{g.count === 1 ? '' : 's'} · {fmtMoney(g.value)}</span>
-              </div>
-              {!isCollapsed && (
-                <div className="stock-lines">
-                  {g.lines.map(line => (
-                    <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
-                      skuCap={skuCap} floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash}
-                      selectMode={selectMode} selected={picked.has(line.key)} onToggle={() => toggleLine(line.key)} />
-                  ))}
-                </div>
-              )}
-            </div>
-            )
-          })}
-        </div>
+        <div className="store-sets">{renderGroups(groups, '')}</div>
       )}
       {/* Floating bulk-action bar — appears when lines are selected. Actions are place-aware. */}
       {selectMode && sel.count > 0 && (

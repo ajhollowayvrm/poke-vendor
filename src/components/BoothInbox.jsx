@@ -307,8 +307,9 @@ export default function BoothInbox({ onRip, onPick }) {
                 )}
               </div>
 
-              {/* 🛒 Shop floor stock — grouped by set, only this sells to walk-ins & the counter */}
-              <StoreStock place="floor" onRip={onRip} onPick={onPick}
+              {/* 🛒 Shop floor stock — singles and sealed on separate shelves, only this sells to
+                  walk-ins & the counter */}
+              <StoreStock place="floor" split onRip={onRip} onPick={onPick}
                 onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
               {omni.length > 0 && (
                 <div className="toolbar" style={{ marginTop: 8 }}>
