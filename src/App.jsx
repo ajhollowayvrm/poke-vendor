@@ -166,12 +166,15 @@ export default function App() {
   // If the page was reloaded while a show was open, the floor view (React state) is
   // gone but show-inventory cards AND sealed may still be stranded on the table — bring
   // them home. (Sealed matters too: a sealed-only booth used to strand showSealed forever.)
+  // A show cash wallet (showReserve = the cash you left at home) also settles here: endShow
+  // folds it back into spendable cash, so a shopper who brought only cash — no cards/sealed —
+  // never has that reserve stranded after a mid-show reload.
   // Same for a livestream that died mid-broadcast: settle its escrow (product back or
   // cracked into the collection, pre-paid spot cash refunded, the day still spent).
   // Also kick off cloud auto-sync (no-ops unless the AWS backend is configured + signed in).
   useEffect(() => {
     const g = useGame.getState()
-    if ((g.showInventory || []).length || (g.showSealed || []).length) g.endShow()
+    if ((g.showInventory || []).length || (g.showSealed || []).length || (g.showReserve || 0) > 0) g.endShow()
     if (g.streamEscrow) {
       const r = g.settleAbandonedStream()
       if (r) toast(`⚠️ Your last stream cut out mid-broadcast — ${[
