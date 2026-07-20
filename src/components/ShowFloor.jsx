@@ -96,6 +96,22 @@ export default function ShowFloor({ show, onLeave }) {
   const markTillSpend = (booth, amt) => setTillSpent(prev => ({ ...prev, [tillKey(booth)]: (prev[tillKey(booth)] || 0) + amt }))
 
   const [openBooth, setOpenBooth] = useState(null)
+  // Booths you've walked up to this show — the directory greys the ones you've already
+  // seen so you can tell at a glance what's left to browse. Session-scoped (a fresh floor
+  // each show/day starts blank); recurring vendors keep a stable id, so they stay ticked.
+  const [visitedBooths, setVisitedBooths] = useState(() => new Set())
+  const visitBooth = useCallback((b) => {
+    if (b?.id) setVisitedBooths(prev => prev.has(b.id) ? prev : new Set(prev).add(b.id))
+    setOpenBooth(b)
+  }, [])
+  // "Come back to this" stars: eyeing an item at one booth, then walking the rest of the
+  // floor before you commit. Keyed by boothId + item key (a card uid / a sealed `_tk`); the
+  // directory highlights any booth holding a star so you can find your way back.
+  const [starred, setStarred] = useState(() => new Set())
+  const toggleStar = useCallback((boothId, key) => setStarred(prev => {
+    const n = new Set(prev); const k = `${boothId}|${key}`; n.has(k) ? n.delete(k) : n.add(k); return n
+  }), [])
+  const starredBooths = useMemo(() => new Set([...starred].map(s => s.split('|')[0])), [starred])
   // Cards you've already haggled this show — one negotiation per card (no re-rolling
   // a vendor by re-opening the haggle). Persists across booth re-opens for the whole show.
   const [haggledIds, setHaggledIds] = useState(() => new Set())
@@ -331,7 +347,7 @@ export default function ShowFloor({ show, onLeave }) {
                 <span className="muted"> · held at {fmtMoney(l.price)} — find their table below</span>
               </div>
               <button className="btn" style={{ flex: 'none', padding: '6px 12px' }}
-                onClick={() => { const b = booths.find(x => x.vendorId === l.vendorId); if (b) setOpenBooth(b) }}>
+                onClick={() => { const b = booths.find(x => x.vendorId === l.vendorId); if (b) visitBooth(b) }}>
                 Go →
               </button>
             </div>
@@ -345,7 +361,7 @@ export default function ShowFloor({ show, onLeave }) {
           const crowd = boothCrowd[booths.indexOf(booth)] || 0
           if (booth.special === 'kiosk') {
             return (
-              <div key={booth.id} className="vdir-row kiosk" onClick={() => setOpenBooth(booth)}>
+              <div key={booth.id} className="vdir-row kiosk" onClick={() => visitBooth(booth)}>
                 <span className="vdir-icon">🔬</span>
                 <div className="vdir-info">
                   <div className="vdir-name">{booth.name} <span className="pill vdir-arch">{booth.archLabel}</span></div>
@@ -359,26 +375,33 @@ export default function ShowFloor({ show, onLeave }) {
           const sealedN = (booth.products || []).filter(p => !p.mystery).length
           const mysteryN = (booth.products || []).filter(p => p.mystery).length
           const hasVintage = (booth.products || []).some(p => p._origin === 'vintage')
+          // Out-of-print "aftermarket" sealed (Fusion Strike, Evolving Skies, Team Up…): not
+          // old enough to be vintage, but no longer printed — you can't buy it fresh in the shop.
+          const hasAftermarket = (booth.products || []).some(p => p._origin === 'aftermarket')
           const top = booth.stock.reduce((b, c) => (!b || (c._ask || 0) > (b._ask || 0)) ? c : b, null)
           const deals = upgrades.network ? booth.stock.filter(c => (c._ask || 0) < cardValue(c) * 0.85).length : 0
+          const visited = visitedBooths.has(booth.id)
+          const starredHere = starredBooths.has(booth.id)
           return (
-            <div key={booth.id} className={`vdir-row arch-${booth.archetype} ${crowd >= 3 ? 'busy' : ''} ${booth.leadNote ? 'lead' : ''}`}
-              onClick={() => setOpenBooth(booth)}>
+            <div key={booth.id} className={`vdir-row arch-${booth.archetype} ${crowd >= 3 ? 'busy' : ''} ${booth.leadNote ? 'lead' : ''} ${visited ? 'visited' : ''} ${starredHere ? 'starred' : ''}`}
+              onClick={() => visitBooth(booth)}>
               <span className="vdir-icon">{booth.recurring ? '🤝' : '🛒'}</span>
               <div className="vdir-info">
                 <div className="vdir-name">
                   {booth.name}
                   <span className="pill vdir-arch">{booth.archLabel}</span>
+                  {starredHere && <span className="pill vdir-starred" title="You starred something here — come back for it">⭐ come back</span>}
                   {rap && rap.level > 0 && <span className="pill" style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{rap.disc ? ` · ${Math.round(rap.disc * 100)}% off` : ''}</span>}
                   {booth.leadNote && <span className="pill vdir-held">🗝️ set aside for you</span>}
                   {crowd >= 2 && <span className="pill vdir-crowd" title={`${crowd} shoppers at this table`}>👥 {crowd}</span>}
+                  {visited && <span className="pill vdir-visited" title="You've already walked up to this table">✓ visited</span>}
                 </div>
                 <div className="vdir-sub muted">
                   {cap(booth.vibe)} · pays {Math.round(booth.buyMult * 100)}% for yours
                 </div>
                 <div className="vdir-sub">
                   🃏 {booth.stock.length} singles
-                  {sealedN > 0 && <> · 📦 {sealedN} sealed{hasVintage ? ' (🗝️ vintage!)' : ''}</>}
+                  {sealedN > 0 && <> · 📦 {sealedN} sealed{hasVintage ? ' (🗝️ vintage!)' : ''}{hasAftermarket ? ' (🕰️ out-of-print!)' : ''}</>}
                   {mysteryN > 0 && <> · ❓ mystery</>}
                   {top && <> · ⭐ {top.grade ? `PSA ${top.grade.overall} ` : ''}{top.name} {fmtMoney(top._ask)}</>}
                   {deals > 0 && <span style={{ color: 'var(--green)' }}> · {deals} DEAL{deals > 1 ? 'S' : ''} flagged</span>}
@@ -409,7 +432,9 @@ export default function ShowFloor({ show, onLeave }) {
         onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled}
         takenIds={takenIds} onTaken={markTaken} asVendor={show._asVendor}
         tillLeft={Math.max(0, round2((openBooth.till || 0) - (tillSpent[tillKey(openBooth)] || 0)))}
-        onTillSpend={(amt) => markTillSpend(openBooth, amt)} />}
+        onTillSpend={(amt) => markTillSpend(openBooth, amt)}
+        starredKeys={new Set([...starred].filter(s => s.startsWith(openBooth.id + '|')).map(s => s.slice(openBooth.id.length + 1)))}
+        onToggleStar={(key) => toggleStar(openBooth.id, key)} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
       {vaultRip && (

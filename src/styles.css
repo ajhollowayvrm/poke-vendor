@@ -566,8 +566,25 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .vdir-arch { background:#ffffff10; color:var(--dim); }
 .vdir-held { background:#ffcb0522; color:var(--gold); }
 .vdir-crowd { background:#ffcb0522; color:#ffd84d; }
+/* Booths you've already walked up to — greyed so a glance shows what's left to browse. */
+.vdir-row.visited { opacity: .58; }
+.vdir-row.visited:hover { opacity: .85; }
+.vdir-visited { background:#ffffff12; color:var(--dim); }
+/* A booth where you starred something to come back to — highlighted (and never greyed, even
+   once visited) so you can find your way back after a lap of the floor. */
+.vdir-row.starred { opacity: 1; border-color:#ffcb0577; box-shadow: 0 0 0 1px #ffcb0544, 0 6px 18px #ffcb0522; }
+.vdir-starred { background:#ffcb0522; color:var(--gold); font-weight:800; }
 .vdir-sub { font-size: 12px; margin-top: 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .vdir-go { flex:none; font-size: 22px; color: var(--dim); }
+
+/* "Come back to this" star toggle on a booth item (single / sealed). */
+.vendoritem { position: relative; }
+.booth-star { position:absolute; top:4px; right:4px; z-index:4; width:26px; height:26px; border-radius:50%;
+  border:1px solid var(--line); background:#0c0f1acc; color:var(--dim); font-size:15px; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition: color .12s, border-color .12s, background .12s; }
+.booth-star:hover { color:var(--gold); border-color:#ffcb0577; }
+.booth-star.on { color:var(--gold); border-color:#ffcb05aa; background:#3a2f0acc; }
+.vendoritem.starred { outline:1px solid #ffcb0566; outline-offset:1px; border-radius:10px; }
 
 /* Pre-show appointments (buyer meets + vendor holds) at the top of the floor. */
 .appt-strip { background: linear-gradient(160deg, color-mix(in srgb, var(--accent2) 10%, var(--panel)), var(--panel2));

@@ -8,9 +8,9 @@ import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
-export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false }) {
+export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
   if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} asVendor={asVendor} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} asVendor={asVendor} starredKeys={starredKeys} onToggleStar={onToggleStar} />
 }
 
 // On-site grading kiosk (National+ shows): submit a raw card and it comes back slabbed in
@@ -63,8 +63,18 @@ function KioskBooth({ booth, onClose, flash }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend, asVendor = false }) {
+function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
   const haggled = haggledIds || new Set()
+  // "Come back to this" stars, keyed by item (card uid / sealed `_tk`). isStarred reads the
+  // set ShowFloor passes for THIS booth; a tap toggles it and highlights the booth in the
+  // directory so you can find your way back after a lap of the floor.
+  const starSet = starredKeys || new Set()
+  const StarBtn = ({ k }) => onToggleStar ? (
+    <button type="button" className={`booth-star ${starSet.has(k) ? 'on' : ''}`}
+      title={starSet.has(k) ? 'Starred — come back for it (tap to unstar)' : 'Star it — come back to this booth later'}
+      aria-pressed={starSet.has(k)}
+      onClick={(e) => { e.stopPropagation(); onToggleStar(k) }}>{starSet.has(k) ? '★' : '☆'}</button>
+  ) : null
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
   const buyFromVendor = useGame(s => s.buyFromVendor)
@@ -225,7 +235,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     const ask = eff(card._ask)  // rapport discount applied
     const deal = ask < mkt * 0.85
     return (
-      <div key={card.uid} className={`vendoritem ${featured ? 'featured' : ''}`}>
+      <div key={card.uid} className={`vendoritem ${featured ? 'featured' : ''} ${starSet.has(card.uid) ? 'starred' : ''}`}>
+        <StarBtn k={card.uid} />
         {/* Tap the card itself to open its page — PSA-if-graded values, the cut/centering
             read, and price history. How you shop for gem-10 candidates. */}
         <div style={{ cursor: 'zoom-in' }} title="Tap to inspect — grade upside, cut read, price history"
@@ -279,7 +290,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
             <div className="showcase-head">📦 Sealed & mystery <span className="muted">— sealed rips on the floor or stocks to hold; mystery packs open on the spot (vendor markup applies)</span></div>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))' }}>
               {sealed.map((entry, idx) => entry.mystery ? (
-                <div key={idx} className="vendoritem featured sealed-mystery">
+                <div key={idx} className={`vendoritem featured sealed-mystery ${entry._tk && starSet.has(entry._tk) ? 'starred' : ''}`}>
+                  {entry._tk && <StarBtn k={entry._tk} />}
                   <div style={{ fontSize: 34, textAlign: 'center' }}>{entry.icon}</div>
                   <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>{entry.name}</div>
                   <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>{entry.blurb}</div>
@@ -291,7 +303,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                   </button>
                 </div>
               ) : (
-                <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''}`}>
+                <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''} ${entry._tk && starSet.has(entry._tk) ? 'starred' : ''}`}>
+                  {entry._tk && <StarBtn k={entry._tk} />}
                   {entry._lead && (
                     <span className="pill" style={{ alignSelf: 'center', fontSize: 10.5, background: '#ffcb0522', color: 'var(--gold)' }}
                       title="They set this aside for you before the show — at the price they quoted.">
@@ -300,11 +313,11 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                   )}
                   {entry.set.logo && <img src={entry.set.logo} alt={entry.set.name} style={{ height: 34, objectFit:'contain', alignSelf:'center' }} />}
                   <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>
-                    {entry._origin === 'vintage' ? '🗝️ ' : entry.product.icon + ' '}{entry.product.type}
+                    {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry.product.icon + ' '}{entry.product.type}
                   </div>
                   <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>
                     {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
-                    {entry._origin === 'aftermarket' ? ' · 🕰️ older sealed' : ''}
+                    {entry._origin === 'aftermarket' ? ' · 🕰️ out-of-print — not in the shop' : ''}
                   </div>
                   {(() => { const { mkt, ask, deal, over } = sealedRead(entry); return (<>
                   <div className="askrow" style={{ justifyContent:'center' }}>
