@@ -1667,6 +1667,21 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .chip-btn.active { border-color:var(--accent2); background:#5aa0ff1f; }
 .chip-btn.active small { color:var(--txt); }
 
+/* Prep: "who's expecting you" — pre-show leads (held items + buyer appointments). */
+.prep-leads { margin-top:12px; border:1px solid color-mix(in srgb, var(--accent2) 30%, transparent);
+  background: color-mix(in srgb, var(--accent2) 8%, transparent); border-radius:12px; padding:10px 14px; }
+.prep-leads-h { font-weight:800; font-size:13px; margin-bottom:6px; color: var(--accent-light); }
+.prep-lead-row { display:flex; gap:8px; align-items:flex-start; font-size:13px; padding:3px 0; }
+.prep-lead-ic { flex:none; }
+
+/* Prep: cash-to-bring wallet control. */
+.prep-wallet { margin-top:12px; border:1px solid color-mix(in srgb, var(--green) 30%, transparent);
+  background: color-mix(in srgb, var(--green) 7%, transparent); border-radius:12px; padding:10px 14px; }
+.prep-wallet-top { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.prep-wallet-fig { font-variant-numeric:tabular-nums; font-size:15px; }
+.prep-wallet-fig small { font-size:11.5px; font-weight:600; }
+.prep-wallet-range { width:100%; margin-top:8px; accent-color: var(--green); }
+
 /* --- Show floor on phones: the directory scrolls with the page ------------- */
 /* Attending a show is a full-screen view with NO bottom nav, so the .pane fix above
    doesn't reach it — just keep a small bottom pad under the last vendor row. */

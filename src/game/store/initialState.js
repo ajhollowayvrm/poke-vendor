@@ -67,6 +67,7 @@ export function initialState() {
     listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
     showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
     showSealed: [],          // SEALED product you brought to the current show to sell at your booth — floor buyers can buy it; unsold comes home (to sealedInventory) when you leave
+    showReserve: 0,          // cash you deliberately LEFT AT HOME when attending a show: while the show is active, `cash` holds only what you brought (your floor wallet); endShow() folds this back in. Counted in net worth so leaving money home never reads as losing it.
     shopDisplay: [],         // LEGACY (pre-v42): cards once lived on a separate store shelf. With a storefront the whole COLLECTION is store stock now (🔒 locked = not for sale, _featured = display-case spotlight, _heldFor = behind the counter). Kept empty for save-merge compat.
     shopSealed: [],          // LEGACY (pre-v42): sealed shelf — sealedInventory IS the store's sealed stock now. Kept empty for save-merge compat.
     storeConsignRequests: [], // locals waiting on an answer: {id, who, card, ask, commissionPct, days, pendingDays} — carry their card for a cut, or pass

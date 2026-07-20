@@ -59,6 +59,7 @@ export function realizableAssets(s) {
   const sv = (arr) => (arr || []).reduce((a, it) => a + sealedValue(it) * FLIP, 0)
   return round2(
     (s.cash || 0)
+    + (s.showReserve || 0)  // cash left at home for a show — still yours, still spendable
     + cv(s.collection) + cv(s.binder) + cv(s.shopDisplay) + cv(s.showInventory)
     + (s.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
@@ -80,6 +81,7 @@ export function netWorthFull(s) {
   const cv = (arr) => (arr || []).reduce((a, c) => a + cardValue(c), 0)
   return round2(
     (s.cash || 0)
+    + (s.showReserve || 0)  // cash left at home for a show — still yours, still spendable
     + cv(s.collection) + cv(s.binder) + cv(s.shopDisplay) + cv(s.showInventory)
     + (s.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)

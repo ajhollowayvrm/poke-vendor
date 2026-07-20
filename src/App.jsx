@@ -101,9 +101,9 @@ export default function App() {
   // overlay lives. Captured as the tab you launched from; a "Rip another" chain keeps it.
   const [ripReturn, setRipReturn] = useState(null)
   const [picked, setPicked] = useState(null)     // card for modal
-  const [preppingShow, setPreppingShow] = useState(null) // show selected; picking which cards to bring
+  const [preppingShow, setPreppingShow] = useState(null) // show selected; on the prep screen (pick cards/sealed/cash, review who's expecting you)
+  const [prepMode, setPrepMode] = useState('shop')       // 'shop' (attend to buy) | 'vendor' (run a booth) — every show goes through prep now
   const [activeShow, setActiveShow] = useState(null) // show being attended
-  const [shopperShow, setShopperShow] = useState(null) // shopper attending: pick arrival timing first
   const cash = useGame(s => s.cash)
   // Total net worth: cash + market value of every asset you hold (collection, listings,
   // sealed, cards at the grader, etc.). Shown next to cash so moving value around (grading,
@@ -330,11 +330,11 @@ export default function App() {
     setTab('shop')
   }
 
-  // Attend a show in one of two modes:
-  //   'shop'   — buy a shopper ticket (entryFee) and walk the floor to BUY. No booth.
-  //   'vendor' — entryFee + the show's vendorFee, and you run a BOOTH to sell your own
-  //              cards. Requires the one-time Vendor Setup upgrade. Opens prep to pick stock.
-  // No money/days are spent until you confirm (vendor → prep; shopper → straight in).
+  // Attend a show in one of two modes — BOTH now open the same prep screen first (pick the
+  // cards/sealed to bring, choose how much cash to bring, and review who's expecting you):
+  //   'shop'   — pay the entry fee, walk the floor to BUY. No booth.
+  //   'vendor' — entry + vendorFee, run a BOOTH to sell. Needs the 🎪 Vendor Setup upgrade.
+  // No money/days are spent until you confirm on the prep screen.
   function attendShow(show, mode = 'shop') {
     const tier = SHOW_TIERS[show.tierKey]
     if (mode === 'vendor') {
@@ -342,35 +342,39 @@ export default function App() {
       // 📣 Sponsorship: booth fees are on the sponsor tab — you pay entry only.
       const cost = tier.entryFee + (useGame.getState().upgrades.sponsorship ? 0 : (tier.vendorFee || 0))
       if (useGame.getState().cash < cost) return toast(`Not enough cash for the vendor fee (${'$'+cost}).`)
-      setPreppingShow(show) // prep screen: pick the cards to bring to your booth
-      return
+    } else if (useGame.getState().cash < tier.entryFee) {
+      return toast('Not enough cash for the entry fee.')
     }
-    if (useGame.getState().cash < tier.entryFee) return toast('Not enough cash for the entry fee.')
-    setShopperShow(show) // pick when you'll walk the floor (open vs late), then enter
+    setPrepMode(mode)
+    setPreppingShow(show) // prep screen: pick stock + cash to bring, review appointments
   }
 
-  // Enter a show as a SHOPPER: charge only the entry fee, no booth, straight to the floor.
-  // `arrival` ('open' | 'late') sets how picked-over the vendor floors are.
-  function enterAsShopper(show, arrival = 'open') {
+  // Enter a show as a SHOPPER (confirmed from prep): charge the entry fee, bring any picked
+  // cards/sealed to sell/trade on the floor, set your floor cash wallet, then walk in.
+  function enterAsShopper(show, payload = {}) {
+    const { cardUids, sealedUids, budget, arrival = 'open' } = payload
     const tier = SHOW_TIERS[show.tierKey]
-    setShopperShow(null)
-    if (!spend(tier.entryFee)) return toast('Not enough cash for the entry fee.')
+    if (!spend(tier.entryFee)) { setPreppingShow(null); return toast('Not enough cash for the entry fee.') }
     const effDays = Math.max(1, tier.days - (useGame.getState().upgrades.tourVan ? 1 : 0)) // 🚐 the van shaves a day
-    useGame.getState().bringToShow([], []) // ensure the booth is empty — you're here to buy
+    useGame.getState().bringToShow(cardUids || [], sealedUids || []) // may be empty — you're mainly here to buy
     useGame.getState().log('show', `Attended ${show.name} as a shopper (${effDays}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
     // Claim any pre-show leads for this show (vendor holds + buyer appointments) BEFORE
     // the days advance — the floor works off this copy (state leads expire with the calendar).
     const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
     const summary = useGame.getState().attendShowDays(show.day, effDays)
+    // Wallet LAST — after entry fee + the days' overhead settle against full cash, stash the
+    // rest at home so `cash` on the floor is exactly what you chose to bring.
+    if (budget != null) useGame.getState().beginShowWallet(budget)
+    setPreppingShow(null)
     setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads })
   }
 
   // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee (+ booth-spot
   // fee), move the picked cards onto your booth, advance the calendar past the show, enter
-  // as a vendor. `opts` carries the booth spot (traffic mult + fee) and arrival timing.
+  // as a vendor. `opts` carries the booth spot (traffic mult + fee), arrival, and cash budget.
   function enterShow(show, payload = {}) {
-    const { cardUids, sealedUids, ...opts } = payload
+    const { cardUids, sealedUids, budget, ...opts } = payload
     const tier = SHOW_TIERS[show.tierKey]
     const sponsored = !!useGame.getState().upgrades.sponsorship // 📣 booth + spot fees on the sponsor tab
     const spotFee = sponsored ? 0 : (opts.spotFee || 0)
@@ -385,6 +389,7 @@ export default function App() {
     const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
     const summary = useGame.getState().attendShowDays(show.day, effDays)
+    if (budget != null) useGame.getState().beginShowWallet(budget) // wallet last (see enterAsShopper)
     setPreppingShow(null)
     setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads })
   }
@@ -420,8 +425,8 @@ export default function App() {
   if (preppingShow) {
     return (
       <div className="app">
-        <ShowPrep show={preppingShow}
-          onConfirm={(payload) => enterShow(preppingShow, payload)}
+        <ShowPrep show={preppingShow} mode={prepMode}
+          onConfirm={(payload) => (prepMode === 'vendor' ? enterShow : enterAsShopper)(preppingShow, payload)}
           onCancel={() => setPreppingShow(null)} />
         {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
         <DialogHost />
@@ -554,19 +559,6 @@ export default function App() {
       )}
 
       {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
-
-      {/* Shopper arrival choice: first dibs at open vs. marked-down late. */}
-      {shopperShow && (
-        <Modal onClose={() => setShopperShow(null)} style={{ textAlign: 'center' }} label={`Attend ${shopperShow.name}`}>
-          <h2 style={{ marginTop: 0 }}>🛍️ {shopperShow.name}</h2>
-          <p className="muted" style={{ marginTop: 0 }}>Entry {fmtMoney(SHOW_TIERS[shopperShow.tierKey].entryFee)}. When do you walk the floor?</p>
-          <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
-            <button className="btn gold" onClick={() => enterAsShopper(shopperShow, 'open')}>🌅 Arrive at open — first dibs on the showcases</button>
-            <button className="btn alt" onClick={() => enterAsShopper(shopperShow, 'late')}>🌇 Roll in late — picked over, but vendors mark it down</button>
-          </div>
-          <button className="btn alt" style={{ marginTop: 12, maxWidth: 120 }} onClick={() => setShopperShow(null)}>Cancel</button>
-        </Modal>
-      )}
       <DialogHost />
       <ToastHost />
 

@@ -210,10 +210,23 @@ export function createBoothSlice(set, get) {
       if (parts.length) get().log('show', `Brought ${parts.join(' + ')} to sell at the show`, 0)
       return bringing.length + bringingSealed.length
     },
+    // Set the FLOOR WALLET when entering a show: `budget` is the cash you chose to bring.
+    // The rest is stashed in showReserve (still counted in net worth) and folded back into
+    // cash on endShow — so at the show `cash` IS your spend limit, and every existing cash
+    // check enforces it with no changes to any buy path. Clamped to what you actually hold.
+    beginShowWallet(budget) {
+      const cash = get().cash
+      const brought = Math.max(0, Math.min(round2(budget ?? cash), cash))
+      set({ cash: brought, showReserve: round2(cash - brought) })
+      return brought
+    },
     // Leaving the show: unsold show-inventory cards return to your collection and unsold
     // sealed returns to your held inventory. Strip the transient booth flags (showcase /
-    // deal-of-show) — they only matter at the show.
+    // deal-of-show) — they only matter at the show. Also fold the at-home reserve back into
+    // cash (the money you didn't bring), so leaving reunites your wallet with your savings.
     endShow() {
+      const reserve = get().showReserve || 0
+      if (reserve) set(s => ({ cash: round2(s.cash + reserve), showReserve: 0 }))
       const inv = get().showInventory || []
       const sealed = get().showSealed || []
       if (inv.length || sealed.length) {

@@ -30,6 +30,7 @@ const HYPE = ['just hit a', 'PULLED a', 'cracked a', 'opened a', 'just ripped a'
 export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
   const cash = useGame(s => s.cash) // shown on the floor HUD — you buy at booths here, so your balance must be visible
+  const showReserve = useGame(s => s.showReserve || 0) // cash you left safely at home for this trip
   const upgrades = useGame(s => s.upgrades)
   // Snapshot the money/rep state the moment you walk the floor, so leaving can recap what
   // the FLOOR itself did (buying, selling, encounters) — distinct from the days-away home
@@ -261,9 +262,14 @@ export default function ShowFloor({ show, onLeave }) {
           </button>
         )}
         <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>Notoriety {Math.round(notoriety)}</span>
-        <span className="pill cash-pill" title="Cash on hand — what you can spend at booths right now">
+        <span className="pill cash-pill" title="Your floor wallet — what you brought to spend here. Selling on the floor tops it back up.">
           💵 <AnimatedNumber value={cash} format={fmtMoney} /><CashFlash value={cash} />
         </span>
+        {showReserve > 0 && (
+          <span className="pill" style={{ flex: 'none', opacity: 0.85 }} title="Cash you left safely at home — it's waiting for you and can't be spent on the floor. Yours again when you leave.">
+            🏦 {fmtMoney(showReserve)} at home
+          </span>
+        )}
         {show._asVendor ? (
           <>
             <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
