@@ -40,7 +40,7 @@ function bySet(cards, sealed) {
   return groups.sort((a, b) => b.value - a.value)
 }
 
-export default function StoreStock({ place, onRip, onPick, onHold }) {
+export default function StoreStock({ place, onRip, onPick, onHold, only }) {
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
   useGame(s => s.marketMults) // re-render on market drift so values stay live
@@ -128,13 +128,22 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
       cards = (collection || []).filter(c => c.loc !== 'floor' && !c.locked && !c._heldFor)
       sealed = (sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor)
     }
+    // `only` narrows the view to one kind — used to give Personal separate Cards / Sealed tabs.
+    if (only === 'cards') sealed = []
+    else if (only === 'sealed') cards = []
     const groups = bySet(cards, sealed)
     const totalValue = groups.reduce((a, g) => a + g.value, 0)
     const totalCount = groups.reduce((a, g) => a + g.count, 0)
     return { groups, totalValue, totalCount, cards, sealed }
-  }, [collection, sealedInventory, place])
+  }, [collection, sealedInventory, place, only])
 
   const meta = PLACE[place]
+  // Kind-scoped empty copy so a Personal ▸ Sealed tab doesn't show the cards blurb.
+  const emptyMsg = only === 'sealed'
+    ? 'No sealed keepsakes — 🔒 Keep a box or pack (from the Store floor or storeroom) to stash it here.'
+    : only === 'cards'
+    ? 'No kept cards yet — 🔒 Keep a single to set it aside here, off the sales floor.'
+    : meta.empty
 
   // Grid view shows every copy on its own tile (uncollapsed), value-first, so per-card
   // centering is meaningful. Only built when the grid is actually up.
@@ -257,7 +266,7 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
       )}
 
       {groups.length === 0 ? (
-        <div className="empty" style={{ marginTop: 12 }}>{meta.empty}</div>
+        <div className="empty" style={{ marginTop: 12 }}>{emptyMsg}</div>
       ) : gridMode ? (
         <div className="grid coll-grid" style={{ marginTop: 12 }}>
           {gridItems.map(({ kind, it }) => {
