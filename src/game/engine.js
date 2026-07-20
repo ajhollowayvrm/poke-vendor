@@ -1243,19 +1243,24 @@ export function cardValue(card, multOverride) { return card.grade ? gradedValue(
 // What counts as a "DEAL" on a vendor's single, per the player's own definition. Defaults
 // reproduce the old flat "15%+ under market" rule; the settings let you narrow it to, say,
 // "a Near-Mint, ungraded card at or under market" (the classic gem-hunter's buy).
-export const DEFAULT_DEAL_CFG = { dealMaxMult: 0.85, dealCondition: 'any', dealUngradedOnly: false, dealMinValue: 0 }
+export const DEFAULT_DEAL_CFG = { dealMaxMult: 0.85, dealCondition: 'any', dealUngradedOnly: false, dealMinValue: 0, dealCut: 'any' }
 const CONDITION_RANK = { NM: 3, LP: 2, MP: 1, DMG: 0 }
 // Is `card` a deal at `ask`, under config `cfg`? maxMult is the ceiling on ask as a fraction
-// of market (0.85 = 15% under; 1.05 = "around market"). condition/ungraded filters apply to
-// RAW cards (a slab has no raw condition); minValue skips bulk so cheap cards don't spam.
+// of market (0.85 = 15% under; 1.05 = "around market"). condition/cut/ungraded filters apply
+// to RAW cards (a slab has no raw condition or cut to read); minValue skips bulk. The cut
+// filter uses the card's true hidden cut tier (Rough…Pristine) — the detector surfaces
+// sharp-cut gems for you even before you loupe them. Slabs skip condition/cut (already graded).
 export function isCardDeal(card, ask, cfg = DEFAULT_DEAL_CFG) {
   const mkt = cardValue(card)
   if (!(mkt > 0) || !(ask >= 0)) return false
   const c = cfg || DEFAULT_DEAL_CFG
   if (c.dealMinValue && mkt < c.dealMinValue) return false
   if (c.dealUngradedOnly && card.grade) return false
-  if (c.dealCondition && c.dealCondition !== 'any' && !card.grade) {
+  if (!card.grade && c.dealCondition && c.dealCondition !== 'any') {
     if ((CONDITION_RANK[card.condition] ?? 3) < (CONDITION_RANK[c.dealCondition] ?? 0)) return false
+  }
+  if (!card.grade && c.dealCut && c.dealCut !== 'any') {
+    if (cutRank(card) < CUT_ORDER.indexOf(c.dealCut)) return false
   }
   return ask <= mkt * (c.dealMaxMult ?? 0.85) + 1e-6
 }

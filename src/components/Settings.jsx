@@ -25,6 +25,7 @@ export default function Settings() {
   const hasNetwork = useGame(s => !!s.upgrades.network)
   const dealMaxMult = useGame(s => s.settings.dealMaxMult ?? 0.85)
   const dealCondition = useGame(s => s.settings.dealCondition ?? 'any')
+  const dealCut = useGame(s => s.settings.dealCut ?? 'any')
   const dealUngradedOnly = useGame(s => s.settings.dealUngradedOnly ?? false)
   const dealMinValue = useGame(s => s.settings.dealMinValue ?? 0)
   const setSetting = useGame(s => s.setSetting)
@@ -239,6 +240,19 @@ export default function Settings() {
           {[['Any', 'any'], ['LP+', 'LP'], ['NM only', 'NM']].map(([lbl, v]) => (
             <button key={v} className={`segbtn ${dealCondition === v ? 'on' : ''}`}
               onClick={() => setSetting('dealCondition', v)}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Cut quality</div>
+          <div className="muted" style={{ fontSize: 12 }}>Only flag raw cards whose cut is this sharp or better — a Sharp/Pristine cut is the grade-worthy gem. Slabs ignore this.</div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          {[['Any', 'any'], ['Clean+', 'Clean'], ['Sharp+', 'Sharp'], ['Pristine', 'Pristine']].map(([lbl, v]) => (
+            <button key={v} className={`segbtn ${dealCut === v ? 'on' : ''}`}
+              onClick={() => setSetting('dealCut', v)}>{lbl}</button>
           ))}
         </div>
       </div>

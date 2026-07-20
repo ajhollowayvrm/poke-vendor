@@ -131,6 +131,6 @@ export function initialState() {
       binderReserveCut: 'off',
       // Deal detector (needs the 🤝 Dealer Network upgrade to show). Defaults reproduce the
       // old "15%+ under market, any card" rule; customize what YOU call a deal.
-      dealMaxMult: 0.85, dealCondition: 'any', dealUngradedOnly: false, dealMinValue: 0 },
+      dealMaxMult: 0.85, dealCondition: 'any', dealUngradedOnly: false, dealMinValue: 0, dealCut: 'any' },
   }
 }
