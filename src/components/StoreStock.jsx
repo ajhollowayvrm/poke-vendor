@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, floorCount, floorSkuCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
-import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, breakOptions } from '../game/engine'
+import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, breakOptions, psaValueAt, rarityRank } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 import CardTile from './CardTile'
 
@@ -66,6 +66,16 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
     setSelectMode(false); setPicked(new Set()); setPickedUids(new Set()) // selection semantics differ per view
   }
 
+  // Personal keepsakes get the same sort options as the no-storefront Collection view —
+  // Value / PSA-10 upside / Rarity / Name. Sorting is a flat-list idea, so choosing one drops
+  // the set grouping and drives the grid. Sticky per localStorage like the view mode.
+  const [sortMode, setSortMode] = useState(() => (gridOK && localStorage.getItem('pv-personal-sort')) || 'value')
+  function setSort(v) {
+    setSortMode(v)
+    if (gridOK) localStorage.setItem('pv-personal-sort', v)
+    if (viewMode !== 'grid') setView('grid') // sorting only reads in the flat grid, so switch to it
+  }
+
   // Multi-select: table picks whole SKU lines; grid picks individual cards (so you can grade
   // by centering, which varies copy-to-copy and is hidden inside a collapsed SKU line).
   const [selectMode, setSelectMode] = useState(false)
@@ -113,11 +123,20 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
   // centering is meaningful. Only built when the grid is actually up.
   const gridItems = useMemo(() => {
     if (!(gridOK && viewMode === 'grid')) return []
-    return [
+    const arr = [
       ...cards.map(it => ({ kind: 'card', it, v: cardValue(it) })),
       ...sealed.map(it => ({ kind: 'sealed', it, v: sealedValue(it) })),
-    ].sort((a, b) => b.v - a.v)
-  }, [cards, sealed, gridOK, viewMode])
+    ]
+    // Sort keys mirror Collection's. PSA-10 upside and rarity are card-only concepts, so sealed
+    // keepsakes fall back to their market value on those and simply sort among themselves by worth.
+    const keyOf = {
+      value: x => -x.v,
+      psa10: x => -(x.kind === 'card' ? psaValueAt(x.it, 10) : x.v),
+      rarity: x => -(x.kind === 'card' ? rarityRank(x.it.rarity) : -1),
+      name: x => (x.kind === 'card' ? x.it.name : x.it.product.type).toLowerCase(),
+    }[sortMode] || (x => -x.v)
+    return arr.sort((a, b) => { const ka = keyOf(a), kb = keyOf(b); return ka < kb ? -1 : ka > kb ? 1 : 0 })
+  }, [cards, sealed, gridOK, viewMode, sortMode])
 
   const gridMode = gridOK && viewMode === 'grid'
 
@@ -176,6 +195,14 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
           {place === 'storeroom' && <> · <span className="muted">backstock — sells routine counter orders; stock the floor for walk-ins & whales</span></>}
         </span>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {gridOK && totalCount > 0 && (
+            <select value={sortMode} onChange={e => setSort(e.target.value)} title="Sort your keepsakes (switches to the grid)">
+              <option value="value">Sort: Value</option>
+              <option value="psa10">Sort: PSA 10 price</option>
+              <option value="rarity">Sort: Rarity</option>
+              <option value="name">Sort: Name</option>
+            </select>
+          )}
           {gridOK && totalCount > 0 && (
             <span className="view-toggle" role="group" aria-label="View">
               <button className={`vt-btn ${!gridMode ? 'on' : ''}`} title="Table — SKU list with prices" onClick={() => setView('table')}>☰</button>
