@@ -128,19 +128,20 @@ export function floorSkuCap(s) {
   return FLOOR_SKU_BASE + (s.upgrades.cases ? FLOOR_SKU_CASES : 0) + (s.upgrades.vault ? FLOOR_SKU_VAULT : 0)
 }
 // Loose booster packs are the exception: a real shop puts out a whole bin of them, not a few of
-// each. So single-pack sealed gets its own, much deeper depth (still upgrade-scaled). Everything
-// else — singles, boxes, ETBs — uses the standard per-SKU cap above.
-export const FLOOR_PACK_BASE = 18     // loose booster packs out on the floor at once
-export const FLOOR_PACK_CASES = 6     // upgrades deepen the pack bin too
-export const FLOOR_PACK_VAULT = 6
+// each. So single-pack sealed gets its own, much deeper depth — and that depth is a BUILD-OUT you
+// purchase: a storefront starts with a modest bin, and the 🧺 Pack Bin / 🧱 Wall of Packs upgrades
+// deepen it. Everything else — singles, boxes, ETBs — uses the standard per-SKU cap above.
+export const FLOOR_PACK_BASE = 12     // loose packs on the floor with just a storefront
+export const FLOOR_PACK_BIN = 12      // 🧺 Pack Bin adds depth
+export const FLOOR_PACK_WALL = 12     // 🧱 Wall of Packs adds more
 export function isLoosePackItem(kind, it) { return kind === 'sealed' && (it?.product?.packs || 0) === 1 }
-// The floor depth cap for a SPECIFIC item — loose packs get the deep bin, everything else the
-// standard cap. Use this (not floorSkuCap) wherever a real item is in hand.
+// The floor depth cap for a SPECIFIC item — loose packs get the (upgradeable) bin, everything else
+// the standard cap. Use this (not floorSkuCap) wherever a real item is in hand.
 export function floorItemCap(s, kind, it) {
   const base = floorSkuCap(s)
   if (base <= 0) return 0
   if (isLoosePackItem(kind, it)) {
-    return FLOOR_PACK_BASE + (s.upgrades.cases ? FLOOR_PACK_CASES : 0) + (s.upgrades.vault ? FLOOR_PACK_VAULT : 0)
+    return FLOOR_PACK_BASE + (s.upgrades.packBin ? FLOOR_PACK_BIN : 0) + (s.upgrades.packWall ? FLOOR_PACK_WALL : 0)
   }
   return base
 }
@@ -443,6 +444,8 @@ export const UPGRADES = {
 
   signage:  { name: 'Eye-Catching Signage', cost: 150,  desc: '+15% foot traffic (shows, and your store if open).', icon: '🪧' },
   cases:    { name: 'Glass Display Cases',  cost: 500,  desc: 'Offers on your cards come in ~12% higher.', icon: '🗄️' },
+  packBin:  { name: 'Pack Bin',             cost: 750,  desc: 'A big wire display bin for loose singles packs — doubles how many of ONE pack you can keep out on the floor (12 → 24). Loose packs are your highest-turnover impulse buy; a deep bin means walk-ins never find it empty. Requires a Brick-and-Mortar Store.', icon: '🧺', needs: 'storefront' },
+  packWall: { name: 'Wall of Packs',        cost: 3000, desc: 'A floor-to-ceiling pegboard pack wall behind the counter — the shop that\'s ALL packs. Deepens the loose-pack floor limit again (24 → 36). Requires a Pack Bin.', icon: '🧱', needs: 'packBin' },
   ticker:   { name: 'Visitor Ticker',       cost: 200,  desc: 'Alerts you when someone is at your stand while you browse a show hall.', icon: '🔔' },
   loupe:    { name: "Jeweler's Loupe",      cost: 450,  desc: 'Slightly better grade odds when you submit cards. Also gives a PRECISE cut/centering read on any raw card — without it the eyeball read is fuzzy.', icon: '🔍' },
   gradescope: { name: 'Grading Scope & Pop Guide', cost: 1400, desc: 'A pro-grade microscope plus population data. PREDICTS the likely PSA grade RANGE — the most probable grade, a confidence band, and the gem-10 odds — for any raw card before you pay to submit it. Requires the Jeweler\'s Loupe.', icon: '🔭', needs: 'loupe' },
