@@ -271,12 +271,15 @@ function boothSealed(r, arch, band = [1, 100]) {
     const markup = 1.12 + r() * (boxes ? 0.33 : 0.18)
     out.push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
   }
-  if (isWhale || r() < 0.62) addModern(isWhale)       // most tables now stock modern sealed
-  if (r() < 0.30) addModern(isWhale || r() < 0.4)     // a good chunk carry a second item too
-  // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fates Collide, the Zygarde /
-  // Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old ETB / box /
-  // tin on the table at a collector's markup.
-  if (SECONDARY_SETS.length && r() < 0.38) {
+  // A show floor should be wall-to-wall sealed product. Most tables lay out a modern item,
+  // many carry a second, and older/vintage sealed turns up often too. (Counts bumped so no
+  // vendor reads as "doesn't do sealed" — a floor guarantee below backs it up.)
+  if (isWhale || r() < 0.82) addModern(isWhale)       // nearly every table stocks modern sealed
+  if (r() < 0.45) addModern(isWhale || r() < 0.4)     // a good chunk carry a second item too
+  // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fusion Strike, Fates Collide, the
+  // Zygarde / Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old
+  // ETB / box / tin on the table at a collector's markup.
+  if (SECONDARY_SETS.length && r() < 0.50) {
     const sSet = pickR(r, SECONDARY_SETS)
     const prods = setProducts(sSet)
     const product = prods.length ? prods[Math.floor(r() * prods.length)] : null
@@ -286,12 +289,16 @@ function boothSealed(r, arch, band = [1, 100]) {
     }
   }
   // A surprise vintage sealed pack on a regular table — any booth at any show.
-  if (VINTAGE_SETS.length && r() < 0.16) {
+  if (VINTAGE_SETS.length && r() < 0.22) {
     const vSet = pickR(r, VINTAGE_SETS)
     const product = vintageProduct(vSet)
     const markup = 1.2 + r() * 0.5
     out.push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
   }
+  // FLOOR GUARANTEE: every booth carries sealed. If the rolls above happened to produce none
+  // (no vendor should read as "doesn't do sealed"), lay out a modern item so the table always
+  // has at least one thing to buy or trade for.
+  if (!out.some(e => !e.mystery)) addModern(isWhale)
   // MYSTERY PACKS: repackaged grab-bags — pay a fixed price, get one random pull (usually a
   // single, occasionally a sealed product) whose value lands somewhere in the pack's band
   // (usually a small loss, sometimes a jackpot). A show-floor staple. Prices are CAPPED at

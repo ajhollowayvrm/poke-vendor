@@ -128,6 +128,9 @@ export function initialState() {
     // masterset (by hand or by the overnight Curator), free to grade & sell; only lesser copies get
     // filed. 'off' by default = file everything, which is how the binder behaved before it existed.
     settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false,
-      binderReserveCut: 'off' },
+      binderReserveCut: 'off',
+      // Deal detector (needs the 🤝 Dealer Network upgrade to show). Defaults reproduce the
+      // old "15%+ under market, any card" rule; customize what YOU call a deal.
+      dealMaxMult: 0.85, dealCondition: 'any', dealUngradedOnly: false, dealMinValue: 0 },
   }
 }

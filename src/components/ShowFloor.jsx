@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, fameMult, fameBeyond } from '../game/engine'
+import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, fameMult, fameBeyond, isCardDeal } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -31,6 +31,7 @@ export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
   const cash = useGame(s => s.cash) // shown on the floor HUD — you buy at booths here, so your balance must be visible
   const showReserve = useGame(s => s.showReserve || 0) // cash you left safely at home for this trip
+  const settings = useGame(s => s.settings) // deal-detector config (what YOU count as a deal)
   const upgrades = useGame(s => s.upgrades)
   // Snapshot the money/rep state the moment you walk the floor, so leaving can recap what
   // the FLOOR itself did (buying, selling, encounters) — distinct from the days-away home
@@ -379,7 +380,7 @@ export default function ShowFloor({ show, onLeave }) {
           // old enough to be vintage, but no longer printed — you can't buy it fresh in the shop.
           const hasAftermarket = (booth.products || []).some(p => p._origin === 'aftermarket')
           const top = booth.stock.reduce((b, c) => (!b || (c._ask || 0) > (b._ask || 0)) ? c : b, null)
-          const deals = upgrades.network ? booth.stock.filter(c => (c._ask || 0) < cardValue(c) * 0.85).length : 0
+          const deals = upgrades.network ? booth.stock.filter(c => isCardDeal(c, c._ask || 0, settings)).length : 0
           const visited = visitedBooths.has(booth.id)
           const starredHere = starredBooths.has(booth.id)
           return (

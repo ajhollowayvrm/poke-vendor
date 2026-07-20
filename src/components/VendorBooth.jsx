@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, setById, cardImg } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, setById, cardImg, isCardDeal } from '../game/engine'
 import { vendorRapport, nextVendorRapport } from '../game/shows'
 import CardTile, { rarityColor } from './CardTile'
 import CardModal from './CardModal'
@@ -77,6 +77,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   ) : null
   const cash = useGame(s => s.cash)
   const upgrades = useGame(s => s.upgrades)
+  const settings = useGame(s => s.settings) // deal-detector config (what YOU count as a deal)
   const buyFromVendor = useGame(s => s.buyFromVendor)
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
@@ -156,7 +157,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const sealedRead = (entry) => {
     const mkt = sealedValue({ product: entry.product, setId: entry.set?.id })
     const ask = eff(entry._ask)
-    return { mkt, ask, deal: mkt > 0 && ask < mkt * 0.85, over: mkt > 0 && ask > mkt * 1.2 }
+    // Sealed has no condition/grade, so only the price ceiling of your deal config applies here.
+    return { mkt, ask, deal: mkt > 0 && ask <= mkt * (settings?.dealMaxMult ?? 0.85), over: mkt > 0 && ask > mkt * 1.2 }
   }
 
   // A buy is agreed (at ask or via haggle) → ask where it goes before committing.
@@ -176,7 +178,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     if (buyFromVendor(card, price, { toShowInventory: list, vendorId: booth.vendorId })) {
       onTaken?.([card.uid]) // off the table for good — reopening the booth can't re-serve it
       setStock(s => s.filter(c => c.uid !== card.uid))
-      const deal = price < cardValue(card) * 0.85 ? ' — great deal!' : ''
+      const deal = isCardDeal(card, price, settings) ? ' — great deal!' : ''
       flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${list ? ' · listed at your booth' : ' · added to your collection'}`)
     }
   }
@@ -233,7 +235,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   function renderBuy(card, featured) {
     const mkt = cardValue(card) // grade-aware true value
     const ask = eff(card._ask)  // rapport discount applied
-    const deal = ask < mkt * 0.85
+    const deal = isCardDeal(card, ask, settings)
     return (
       <div key={card.uid} className={`vendoritem ${featured ? 'featured' : ''} ${starSet.has(card.uid) ? 'starred' : ''}`}>
         <StarBtn k={card.uid} />
@@ -328,9 +330,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                   </div>
                   {mkt > 0 && <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>mkt {fmtMoney(mkt)}</div>}
                   </>) })()}
-                  <button className="btn gold" disabled={cash < eff(entry._ask)} onClick={() => setPendingSealed(entry)}>
-                    {cash < eff(entry._ask) ? `Need ${fmtMoney(eff(entry._ask))}` : 'Buy →'}
-                  </button>
+                  <div className="row" style={{ gap: 6 }}>
+                    <button className="btn gold" disabled={cash < eff(entry._ask)} onClick={() => setPendingSealed(entry)}>
+                      {cash < eff(entry._ask) ? `Need ${fmtMoney(eff(entry._ask))}` : 'Buy →'}
+                    </button>
+                    <button className="btn alt" style={{ flex: 'none', maxWidth: 84 }} disabled={!canTrade}
+                      title={canTrade ? 'Build a trade — offer your cards/sealed (± cash) for this sealed and more' : 'You have nothing to trade'}
+                      onClick={() => setTradeFor({ sealed: entry })}>🔄 Trade</button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -479,7 +486,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
       )}
 
       {tradeFor && (
-        <TradePanel booth={booth} seedCard={tradeFor.card} boothCards={stock} boothSealed={sealed}
+        <TradePanel booth={booth} seedCard={tradeFor.card} seedSealed={tradeFor.sealed} boothCards={stock} boothSealed={sealed}
           collection={collection} sealedInventory={sealedInventory} eff={eff}
           onTrade={doTrade} onClose={() => setTradeFor(null)} />
       )}
@@ -560,7 +567,7 @@ function QtyLine({ thumb, name, sub, count, qty, onAdd, onSub }) {
 // bundle of the booth's cards + sealed. Your items are valued at the vendor's BUY rate (what
 // they'd pay); their items at their (rapport-discounted) ask. Cash closes the gap either way.
 // Every SKU is one line — duplicates stack, and you dial in how many with the stepper.
-function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, sealedInventory, eff, onTrade, onClose }) {
+function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, collection, sealedInventory, eff, onTrade, onClose }) {
   const cash = useGame(s => s.cash)
   useModalEscape(onClose)
   const buyMult = booth.buyMult || 0.6
@@ -578,7 +585,9 @@ function TradePanel({ booth, seedCard, boothCards, boothSealed, collection, seal
   const [giveQty, setGiveQty] = useState({})
   const [giveSealQty, setGiveSealQty] = useState({})
   const [getQty, setGetQty] = useState(() => seedCard ? { [`${cardSku(seedCard)}|${eff(seedCard._ask).toFixed(2)}`]: 1 } : {})
-  const [getSealQty, setGetSealQty] = useState({})
+  // Tapping "Trade" on a sealed item seeds its line at 1 on the get side (mirror of seedCard).
+  const [getSealQty, setGetSealQty] = useState(() => seedSealed
+    ? { [`${sealedSku(seedSealed.set?.id, seedSealed.product)}|${eff(seedSealed._ask).toFixed(2)}`]: 1 } : {})
   const bump = (setter, key, delta, max) => setter(prev => {
     const n = Math.max(0, Math.min(max, (prev[key] || 0) + delta))
     const next = { ...prev }

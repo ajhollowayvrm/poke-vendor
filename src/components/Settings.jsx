@@ -21,6 +21,12 @@ export default function Settings() {
   const revealMode = useGame(s => s.settings.revealMode ?? 'auto')
   const sound = useGame(s => s.settings.sound ?? true)
   const haptics = useGame(s => s.settings.haptics ?? true)
+  // Deal detector (needs the 🤝 Dealer Network upgrade to actually show tags on the floor).
+  const hasNetwork = useGame(s => !!s.upgrades.network)
+  const dealMaxMult = useGame(s => s.settings.dealMaxMult ?? 0.85)
+  const dealCondition = useGame(s => s.settings.dealCondition ?? 'any')
+  const dealUngradedOnly = useGame(s => s.settings.dealUngradedOnly ?? false)
+  const dealMinValue = useGame(s => s.settings.dealMinValue ?? 0)
   const setSetting = useGame(s => s.setSetting)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [progress, setProgress] = useState(null)
@@ -201,6 +207,67 @@ export default function Settings() {
           onClick={() => setSetting('ripOnBuy', !ripOnBuy)}>
           {ripOnBuy ? 'On' : 'Off'}
         </button>
+      </div>
+
+      <h3 style={{ margin: '18px 0 4px' }}>🤝 Deal detector</h3>
+      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        Define what counts as a <b>DEAL</b> on a vendor's singles — the floor flags any card that matches.
+        {hasNetwork
+          ? ' Tags show at shows now that you own the Dealer Network.'
+          : ' Buy the 🤝 Dealer Network upgrade to see the tags at shows; you can still set your preferences here.'}
+      </p>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Price vs market</div>
+          <div className="muted" style={{ fontSize: 12 }}>How cheap the ask must be to flag. "Around market" catches fair asks; the lower settings only flag real bargains.</div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          {[['15% under', 0.85], ['10% under', 0.9], ['At market', 1.0], ['Around mkt', 1.05]].map(([lbl, v]) => (
+            <button key={v} className={`segbtn ${Math.abs(dealMaxMult - v) < 1e-6 ? 'on' : ''}`}
+              onClick={() => setSetting('dealMaxMult', v)}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Condition</div>
+          <div className="muted" style={{ fontSize: 12 }}>Only flag raw cards this clean or better (a mint, ungraded card is the classic gem-hunter's buy). Slabs ignore this.</div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          {[['Any', 'any'], ['LP+', 'LP'], ['NM only', 'NM']].map(([lbl, v]) => (
+            <button key={v} className={`segbtn ${dealCondition === v ? 'on' : ''}`}
+              onClick={() => setSetting('dealCondition', v)}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Ungraded only</div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            {dealUngradedOnly ? 'On — only RAW cards flag as deals (graded slabs are skipped).' : 'Off — graded slabs can flag as deals too.'}
+          </div>
+        </div>
+        <button className={`btn ${dealUngradedOnly ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          role="switch" aria-checked={dealUngradedOnly}
+          onClick={() => setSetting('dealUngradedOnly', !dealUngradedOnly)}>
+          {dealUngradedOnly ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <div className="setting-card">
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>Ignore cheap cards</div>
+          <div className="muted" style={{ fontSize: 12 }}>Skip low-value bulk so the tag means something. Only cards worth at least this flag.</div>
+        </div>
+        <div className="seg" style={{ flex: 'none' }}>
+          {[['Any', 0], ['$5+', 5], ['$20+', 20], ['$50+', 50]].map(([lbl, v]) => (
+            <button key={v} className={`segbtn ${dealMinValue === v ? 'on' : ''}`}
+              onClick={() => setSetting('dealMinValue', v)}>{lbl}</button>
+          ))}
+        </div>
       </div>
 
       <h3 style={{ margin: '18px 0 4px' }}>Card prices</h3>
