@@ -315,8 +315,10 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
                 {kind === 'card'
                   ? <CardTile card={it} noBorder interactive={!selectMode} />
                   : <div className="cardtile no-edge sealed-tile">
-                      <span className="sealed-ico">{it.product.icon || '📦'}</span>
-                      <div className="sealed-name">{it.product.type}</div>
+                      {sealedSet?.logo
+                        ? <img className="sealed-tile-logo" src={sealedSet.logo} alt={sealedSet.name} loading="lazy" decoding="async" />
+                        : <span className="sealed-ico">{it.product.icon || '📦'}</span>}
+                      <div className="sealed-name">{it.product.icon || '📦'} {it.product.type}</div>
                       {sealedSet && <div className="sealed-set" title={sealedSet.name}>{sealedSet.name}</div>}
                       <div className="sealed-sub muted">{it.product.packs} pk{it.vintage ? ' · 🗝️ vintage' : ''}</div>
                       <span className="price">{fmtMoney(sealedValue(it))}</span>
@@ -457,7 +459,9 @@ function StockRow({ line, place, skuCap, floorSkus, onRip, onPick, onHold, flash
       {kind === 'card'
         ? <img className="tl-thumb" src={cardImg(first)} alt="" loading="lazy" decoding="async"
             onClick={selectMode ? undefined : () => onPick && onPick(first)} style={!selectMode && onPick ? { cursor: 'pointer' } : undefined} />
-        : <span className="tl-icon">{first.product.icon || '📦'}</span>}
+        : (set?.logo
+            ? <img className="tl-thumb sealed-thumb" src={set.logo} alt={set.name} loading="lazy" decoding="async" title={`${first.product.type} · ${set.name}`} />
+            : <span className="tl-icon">{first.product.icon || '📦'}</span>)}
       <div className="tl-info" onClick={selectMode ? undefined : () => kind === 'card' && onPick && onPick(first)} style={!selectMode && kind === 'card' && onPick ? { cursor: 'pointer' } : undefined}>
         <div className="tl-name">{(featuredCopy || featuredSealed) ? '⭐ ' : ''}{label}</div>
         <div className="tl-sub muted">
