@@ -1164,10 +1164,10 @@ function estimateByRarity(r) {
 }
 
 // Graded value multiplier by PSA grade (fallback heuristic when no real comp exists).
-// Tuned so a blind standard-fee submission is a true gamble (slightly -EV), and the
-// edge comes from the tools: loupe/cut-reading + loyalty/bulk fee discounts turn the
-// same roll clearly +EV. PSA 9 ≈ modest premium, PSA 8 ≈ just under raw (real-world
-// modern behavior); the dream stays in the 10.
+// With real-world gem odds (blind ~24%), grading a decent card is a genuine, profitable
+// business — the tools (pre-screen/loupe/cut) + fee discounts only widen an already-positive
+// edge. PSA 9 ≈ modest premium, PSA 8 ≈ just under raw (real-world modern behavior); the
+// dream stays in the 10.
 const GRADE_MULT = { 10: 5.0, 9: 1.35, 8: 0.95, 7: 0.8, 6: 0.6, 5: 0.5, 4: 0.4, 3: 0.35, 2: 0.3, 1: 0.25 }
 // Real PSA median-sale comp for a grade, if the snapshot captured one for this card.
 // `card.psa` is { "10": usd, "9": usd, ... } from eBay sold listings (pokemon-api.com).
@@ -1477,15 +1477,17 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   const sub = () => {
     const r = Math.random()
     const b = (p) => Math.max(0.001, Math.min(0.999, p + effectiveLuck * (1 - p))) // pull each cutoff toward 1 by combined lean
-    // P(sub 10) = 28% baseline → overall PSA-10 ≈ 7-8% untooled, ≈ 13% with loupe +
-    // express + a well-cut card. (Was 36% / ≈13% baseline — which, with no downside on
-    // low grades, made grading a free option on every NM card. Now the prediction tools
-    // and cut-reading are what tilt a gamble into an edge.)
-    if (r < b(0.28)) return 10
-    if (r < b(0.58)) return 9
-    if (r < b(0.83)) return 8
-    if (r < b(0.93)) return 7
-    if (r < b(0.97)) return 6
+    // Subgrade cutoffs are calibrated to REAL modern-Pokémon PSA data. An untooled, average-cut
+    // card lands ≈ 24% PSA 10 · 50% PSA 9 · 20% PSA 8 · 6% ≤7 overall — matching pop-report gem
+    // rates for modern chase sets (Paradox Rift 32%, 151 31%, Surging Sparks 35% are pre-screened
+    // submissions; unscreened runs a touch under). The tools + cut ARE the pre-screen: loupe /
+    // express / a pristine cut push the gem rate to ≈ 32-38% (well-screened levels). Modern print
+    // quality means the low tail is thin — a ≤7 is a genuinely rough card.
+    if (r < b(0.40)) return 10
+    if (r < b(0.76)) return 9
+    if (r < b(0.93)) return 8
+    if (r < b(0.985)) return 7
+    if (r < b(0.996)) return 6
     return 4 + Math.floor(Math.random()*2)
   }
   // condition caps how high this card can possibly grade (a played card won't gem).

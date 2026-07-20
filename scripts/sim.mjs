@@ -6,9 +6,10 @@
 //   1. RIP EV      — ripping sealed is -EV for every modern shop set ("the chase is
 //                    the point"). A set whose packs pay out more than they cost is a
 //                    balance regression.
-//   2. GRADING EV  — a blind standard-fee submission is a gamble (EV <= ~0), and the
-//                    edge comes from tools: loupe + good cut + fee discounts flip it
-//                    positive. Gem odds stay in the designed band.
+//   2. GRADING EV  — gem odds match REAL modern-Pokémon PSA data (blind P10 ~24%), which
+//                    makes grading a genuine, profitable business (blind EV > 0) — as it is
+//                    in real life. The edge still ladders up: tools/pre-screen beat blind,
+//                    and endgame fee discounts beat that. Gem odds stay in the real-world band.
 //   3. REPACK EV   — show-floor mystery packs pay out LESS than they cost on average
 //                    (a slot machine, not an ATM), across all three tiers.
 //   4. LIQUIDATION — every instant exit (quick-sell, buylist, sealed flip) is a real
@@ -94,9 +95,12 @@ try {
     }
     return { blind: run(0, null, 60), tooled: run(0.13, 0.8, 60), endgame: run(0.13, 0.8, 8) }
   })
-  pass(`blind standard: EV $${grade.blind.ev.toFixed(2)} (want <= 0), P10 ${(grade.blind.p10 * 100).toFixed(1)}% (want 5-10%)`,
-    grade.blind.ev <= 0 && grade.blind.p10 >= 0.05 && grade.blind.p10 <= 0.10)
-  pass(`tooled standard: EV $${grade.tooled.ev.toFixed(2)} (want > 0)`, grade.tooled.ev > 0)
+  // Gem odds are anchored to real modern-Pokémon PSA data (blind P10 ~18-30%), which makes
+  // grading a real, profitable business (blind EV > 0) rather than a suppressed gamble. The
+  // ladder still has to hold: pre-screen/tools beat blind, and endgame fee discounts beat that.
+  pass(`blind standard: EV $${grade.blind.ev.toFixed(2)} (want > 0 — grading is a real business), P10 ${(grade.blind.p10 * 100).toFixed(1)}% (want 18-30%, real modern data)`,
+    grade.blind.ev > 0 && grade.blind.p10 >= 0.18 && grade.blind.p10 <= 0.30)
+  pass(`tooled standard: EV $${grade.tooled.ev.toFixed(2)} (want > blind — pre-screen is the edge)`, grade.tooled.ev > grade.blind.ev)
   pass(`endgame fees: EV $${grade.endgame.ev.toFixed(2)} (want > tooled)`, grade.endgame.ev > grade.tooled.ev)
 
   // ---- 3. Repack EV through the REAL store action ---------------------------------
