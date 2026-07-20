@@ -49,11 +49,28 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
   const floorSkus = useMemo(() => floorSkuCounts({ collection, sealedInventory }), [collection, sealedInventory])
   const restockFloor = useGame(s => s.restockFloor)
   const moveStock = useGame(s => s.moveStock)
+  const breakSealed = useGame(s => s.breakSealed)
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
   const gradesSubmitted = useGame(s => s.gradesSubmitted)
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise centering read vs a fuzzy eyeball one
   const [toast, setToast] = useState(null)
   const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2600) }
+
+  // Per-tile quick actions for the grid — the same moves the table rows offer, so switching to
+  // the tile view isn't a dead end. move out of Personal un-keeps the item (moveStock strips the
+  // kept flag); break/rip are sealed-only.
+  function tileMove(kind, uid, dest) {
+    const r = moveStock(kind, [uid], dest)
+    if (dest === 'floor' && r.capped) return flash("Floor's full for that one — still in back.")
+    flash(dest === 'floor' ? '🛒 Out on the floor.' : '📦 Moved to the storeroom.')
+  }
+  function tileBreak(it) {
+    const opt = breakOptions(it)[0]
+    if (!opt) return
+    const r = breakSealed(it.uid, opt.product.type)
+    if (r?.error) return flash(r.error)
+    flash(`🔨 Broke into ${r.count}× ${r.type} (in the Storeroom).`)
+  }
 
   // Personal keepsakes can be browsed as the SKU table (default) or as a big-art grid — the
   // grid is where you eyeball centering + condition before picking a batch to grade. Sticky
@@ -248,6 +265,8 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
             // they're the "is this worth grading?" call. Fuzzy without the 🔍 loupe.
             const cut = kind === 'card' && !it.grade ? cutEstimate(it, hasLoupe) : null
             const isPicked = pickedUids.has(it.uid)
+            const sealedSet = kind === 'sealed' ? setById(it.setId) : null
+            const canBreak = kind === 'sealed' && breakOptions(it).length > 0
             return (
               <div key={it.uid} className={`coll-cell ${selectMode ? 'selectable' : ''} ${isPicked ? 'picked' : ''}`}
                 onClick={() => (selectMode ? toggleUid(it.uid) : (kind === 'card' && onPick && onPick(it)))}
@@ -257,6 +276,8 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
                   : <div className="cardtile no-edge sealed-tile">
                       <span className="sealed-ico">{it.product.icon || '📦'}</span>
                       <div className="sealed-name">{it.product.type}</div>
+                      {sealedSet && <div className="sealed-set" title={sealedSet.name}>{sealedSet.name}</div>}
+                      <div className="sealed-sub muted">{it.product.packs} pk{it.vintage ? ' · 🗝️ vintage' : ''}</div>
                       <span className="price">{fmtMoney(sealedValue(it))}</span>
                     </div>}
                 {cut && (
@@ -265,6 +286,16 @@ export default function StoreStock({ place, onRip, onPick, onHold }) {
                       title={hasLoupe ? `Centering: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}` : "Eyeball read of the centering — the 🔍 Jeweler's Loupe reads it precisely."}>
                       {hasLoupe ? '🔍' : '👁️'} {cut.short}
                     </span>
+                  </div>
+                )}
+                {/* Quick actions per tile so the grid keeps the table's reach. Stop propagation so a
+                    button tap doesn't also open the card modal / toggle selection. */}
+                {!selectMode && (
+                  <div className="tile-acts" onClick={e => e.stopPropagation()}>
+                    {canBreak && <button className="stock-act" title="Break down a tier (box → loose packs)" onClick={() => tileBreak(it)}>🔨</button>}
+                    {kind === 'sealed' && <button className="stock-act" title="Rip it now" onClick={() => onRip && onRip(it.uid)}>🎬</button>}
+                    <button className="stock-act" title="Put it out on the sales floor" onClick={() => tileMove(kind, it.uid, 'floor')}>🛒</button>
+                    <button className="stock-act" title="Send it to the storeroom" onClick={() => tileMove(kind, it.uid, 'storeroom')}>📦</button>
                   </div>
                 )}
                 {selectMode && isPicked && <span className="coll-check">✓</span>}
