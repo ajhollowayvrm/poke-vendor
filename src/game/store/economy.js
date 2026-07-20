@@ -201,6 +201,28 @@ export function createEconomySlice(set, get) {
       return pay
     },
 
+    // Pay `amount` by CASH FIRST, then put the remainder on the credit line — the "combine
+    // cash and credit" checkout, for when a buy costs more than the cash in your pocket but
+    // cash + open credit covers it. Pre-checks the credit leg (frozen / over-limit) so it
+    // NEVER half-charges: returns { cashPart, creditPart } on success, false without mutating
+    // if the shortfall can't ride the line. A buy fully covered by cash just spends cash
+    // (creditPart 0), so callers can use this as a safe superset of spend().
+    paySplit(amount) {
+      const total = round2(amount)
+      if (!(total > 0)) return false
+      const cashPart = round2(Math.min(get().cash, total))
+      const creditPart = round2(total - cashPart)
+      if (creditPart > 1e-9) {
+        if (get().credit?.frozen) return false
+        if (creditAvailableOf(get()) + 1e-9 < creditPart) return false
+      }
+      // Both legs are pre-checked above (cashPart ≤ cash, creditPart ≤ available), so neither
+      // can fail now — no rollback path to get wrong.
+      if (cashPart > 0) get().spend(cashPart)
+      if (creditPart > 1e-9) get().chargeCredit(creditPart)
+      return { cashPart, creditPart }
+    },
+
     // --- Jobs (the survival layer) ---
     // Net worth = cash + collection liquidation value (for job gating + UI runway).
     netWorth() { return realizableAssets(get()) },

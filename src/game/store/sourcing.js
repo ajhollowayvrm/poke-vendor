@@ -61,8 +61,9 @@ export function createSourcingSlice(set, get) {
       const key = stockKey(pokeSet, product)
       if (stockState(dist, rec.stock, pokeSet, product, level).out) return null // sold out
       const paid = price ?? product._buyPrice ?? product.price ?? 0
-      // On credit, the full price rides the line — don't also draw down held LGS store credit.
-      const drawn = opts.onCredit ? 0 : get()._drawLgsCredit(distId, paid) // gift-card the till from LGS credit first
+      // On credit (pure or split), the line carries it — don't also draw down held LGS store
+      // credit (it stays simple: LGS credit only tops up a straight cash buy).
+      const drawn = (opts.onCredit || opts.split) ? 0 : get()._drawLgsCredit(distId, paid) // gift-card the till from LGS credit first
       const item = get().buySealed(pokeSet, product, price, opts) // spends/credits, stocks, logs; null if broke
       if (!item) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
@@ -97,16 +98,20 @@ export function createSourcingSlice(set, get) {
       const unit = round2(price ?? product._buyPrice ?? product.price ?? 0)
       // !out means at least one whole unit is buyable (mirrors the single-buy semantics).
       const inStock = st.out ? 0 : Math.max(1, Math.floor(st.q))
-      // On credit, affordability is capped by your open credit line (no LGS credit in the mix);
-      // on cash, LGS store credit tops the till up before the charge.
-      const lgs = (!opts.onCredit && distId === 'lgs') ? (get().lgsCredit || 0) : 0
-      const spendable = opts.onCredit ? get().creditAvailable() : (get().cash + lgs)
+      // Affordability by pay mode: split = cash + open credit; pure credit = the line only;
+      // cash = cash (+ LGS store credit topping the till, at the LGS only). LGS credit stays
+      // out of the credit/split mixes to keep the split math a clean cash-then-credit draw.
+      const lgs = (!opts.onCredit && !opts.split && distId === 'lgs') ? (get().lgsCredit || 0) : 0
+      const spendable = opts.split ? round2(get().cash + get().creditAvailable())
+        : opts.onCredit ? get().creditAvailable() : (get().cash + lgs)
       const affordable = unit > 0 ? Math.floor(spendable / unit) : want
       const n = Math.min(want, inStock, affordable)
       if (n < 1) return null
       const total = round2(unit * n)
-      const drawn = opts.onCredit ? 0 : get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
-      if (opts.onCredit ? !get().chargeCredit(total) : !get().spend(total)) { get()._refundLgsCredit(drawn); return null }
+      const drawn = (opts.onCredit || opts.split) ? 0 : get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
+      let split = null
+      if (opts.split) { split = get().paySplit(total); if (!split) { get()._refundLgsCredit(drawn); return null } }
+      else if (opts.onCredit ? !get().chargeCredit(total) : !get().spend(total)) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       get().recordSetSpend(pokeSet.id, total)
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
@@ -132,9 +137,12 @@ export function createSourcingSlice(set, get) {
           },
         }
       })
-      get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${opts.onCredit ? ' on credit 💳' : ''}`, opts.onCredit ? 0 : -total)
+      const note = opts.onCredit ? ' on credit 💳'
+        : (split && split.creditPart > 0 ? ` ($${split.cashPart.toFixed(2)} cash + $${split.creditPart.toFixed(2)} credit 💳)` : '')
+      const cashOut = opts.onCredit ? 0 : split ? -split.cashPart : -total
+      get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note}`, cashOut)
       get().bumpGoal('buy', n)
-      return { items, bought: n, spent: total, unit }
+      return { items, bought: n, spent: total, unit, cashPart: split ? split.cashPart : (opts.onCredit ? 0 : total), creditPart: split ? split.creditPart : (opts.onCredit ? total : 0) }
     },
     // Buy a VINTAGE find (or a reserved hold) from a distributor. Charges `price`, stocks the
     // sealed item to hold, builds rapport with that distributor (it's real business), and — if
@@ -153,7 +161,7 @@ export function createSourcingSlice(set, get) {
       if (!opts.fromHold && vintageLeft(get(), distId, setId) < 1) return null // shelf is bare
       // Tag the copy with the vendor it came from, so "Rip another" can check THEIR shelf for
       // one more instead of conjuring a fresh pack out of nowhere.
-      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, _distId: distId, vintage: true }, price, { onCredit: opts.onCredit })
+      const item = get().buySealed(pokeSet, { ...product, _buyPrice: price, _distId: distId, vintage: true }, price, { onCredit: opts.onCredit, split: opts.split })
       if (!item) return null
       set(s => {
         const cur = s.distributors[distId] || { spend: 0, stock: {} }
@@ -207,7 +215,10 @@ export function createSourcingSlice(set, get) {
     // credit — no cash left your pocket, you took on debt instead.
     buySealed(pokeSet, product, price, opts = {}) {
       const cost = price ?? product._buyPrice ?? product.price
-      if (opts.onCredit ? !get().chargeCredit(cost) : !get().spend(cost)) return null
+      // Three ways to pay: split (cash first, credit for the rest), pure credit, or cash.
+      let split = null
+      if (opts.split) { split = get().paySplit(cost); if (!split) return null }
+      else if (opts.onCredit ? !get().chargeCredit(cost) : !get().spend(cost)) return null
       get().recordSetSpend(pokeSet.id, cost)
       const item = {
         uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
@@ -218,7 +229,12 @@ export function createSourcingSlice(set, get) {
         vintage: !!pokeSet.vintage,
       }
       set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
-      get().log('buy', `Stocked ${product.type} (${pokeSet.name})${opts.onCredit ? ' — on credit 💳' : ''}`, opts.onCredit ? 0 : -cost)
+      // Only real cash out of pocket moves the ledger: pure-credit is 0, a split logs just the
+      // cash leg (the credit leg is debt), plain cash logs the full cost.
+      const note = opts.onCredit ? ' — on credit 💳'
+        : (split && split.creditPart > 0 ? ` — $${split.cashPart.toFixed(2)} cash + $${split.creditPart.toFixed(2)} credit 💳` : '')
+      const cashOut = opts.onCredit ? 0 : split ? -split.cashPart : -cost
+      get().log('buy', `Stocked ${product.type} (${pokeSet.name})${note}`, cashOut)
       get().bumpGoal('buy', 1)
       return item
     },
