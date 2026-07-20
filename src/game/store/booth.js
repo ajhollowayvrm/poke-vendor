@@ -32,7 +32,7 @@ function randomSealedInRange(lo, hi) {
 const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
-  floorSkuCap, floorSkuKey, floorSkuCounts, isVintageFloorItem } from './constants'
+  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -323,8 +323,8 @@ export function createBoothSlice(set, get) {
       const arrKey = kind === 'sealed' ? 'sealedInventory' : 'collection'
       // Floor is limited per-SKU (depth), not by a global slot count. Track the live floor
       // depth of each SKU and let a line out only until it hits the cap; vintage is exempt.
-      const skuCap = floorSkuCap(get())
-      const counts = dest === 'floor' ? floorSkuCounts(get()) : null
+      const st = get()
+      const counts = dest === 'floor' ? floorSkuCounts(st) : null
       let moved = 0, capped = 0
       set(s => ({
         [arrKey]: (s[arrKey] || []).map(x => {
@@ -333,7 +333,7 @@ export function createBoothSlice(set, get) {
             if (x.loc === 'floor' && !x.locked) return x // already out front
             if (!isVintageFloorItem(kind, x)) {          // vintage bypasses the depth cap
               const k = floorSkuKey(kind, x)
-              if ((counts.get(k) || 0) >= skuCap) { capped++; return x } // this SKU is full up front
+              if ((counts.get(k) || 0) >= floorItemCap(st, kind, x)) { capped++; return x } // this SKU is full up front (loose packs get a deeper bin)
               counts.set(k, (counts.get(k) || 0) + 1)
             }
             moved++
@@ -360,7 +360,6 @@ export function createBoothSlice(set, get) {
     restockFloor() {
       const s = get()
       if (!s.upgrades?.storefront) return 0
-      const skuCap = floorSkuCap(s)
       const counts = floorSkuCounts(s)
       // Best product first (featured, then value), filling each SKU up to its depth cap.
       // Vintage always goes out (its own bucket). Unlimited variety, limited depth.
@@ -374,7 +373,7 @@ export function createBoothSlice(set, get) {
       for (const x of pool) {
         if (isVintageFloorItem(x.mkind, x.it)) { cand.push(x); continue }
         const k = floorSkuKey(x.mkind, x.it)
-        if ((counts.get(k) || 0) >= skuCap) continue // this SKU is already deep enough up front
+        if ((counts.get(k) || 0) >= floorItemCap(s, x.mkind, x.it)) continue // deep enough up front (loose packs get a bigger bin)
         counts.set(k, (counts.get(k) || 0) + 1); cand.push(x)
       }
       if (!cand.length) return 0

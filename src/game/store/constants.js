@@ -127,6 +127,23 @@ export function floorSkuCap(s) {
   if (!s?.upgrades?.storefront) return 0
   return FLOOR_SKU_BASE + (s.upgrades.cases ? FLOOR_SKU_CASES : 0) + (s.upgrades.vault ? FLOOR_SKU_VAULT : 0)
 }
+// Loose booster packs are the exception: a real shop puts out a whole bin of them, not a few of
+// each. So single-pack sealed gets its own, much deeper depth (still upgrade-scaled). Everything
+// else — singles, boxes, ETBs — uses the standard per-SKU cap above.
+export const FLOOR_PACK_BASE = 18     // loose booster packs out on the floor at once
+export const FLOOR_PACK_CASES = 6     // upgrades deepen the pack bin too
+export const FLOOR_PACK_VAULT = 6
+export function isLoosePackItem(kind, it) { return kind === 'sealed' && (it?.product?.packs || 0) === 1 }
+// The floor depth cap for a SPECIFIC item — loose packs get the deep bin, everything else the
+// standard cap. Use this (not floorSkuCap) wherever a real item is in hand.
+export function floorItemCap(s, kind, it) {
+  const base = floorSkuCap(s)
+  if (base <= 0) return 0
+  if (isLoosePackItem(kind, it)) {
+    return FLOOR_PACK_BASE + (s.upgrades.cases ? FLOOR_PACK_CASES : 0) + (s.upgrades.vault ? FLOOR_PACK_VAULT : 0)
+  }
+  return base
+}
 // A vintage sealed pack/box is exempt from the per-SKU depth cap (its own bucket).
 export function isVintageFloorItem(kind, it) { return kind === 'sealed' && !!it?.vintage }
 // SKU identity for the depth cap: a card by its printing, a sealed row by set + product type.
