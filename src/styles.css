@@ -1163,12 +1163,11 @@ button.rip-hit-row:hover { background:#ffffff14; }
      child with its own overflow (the tier-legend chip row) has NO automatic min-height —
      it gets crushed to a sliver. Pin children to natural height; .content does the scrolling. */
   .app:has(> .bottomnav) .content > * { flex-shrink: 0; }
-  /* Short routed views spread to the edges: headers/panels stay snug under the tabs while
-     the final list is pushed to the bottom (above the nav), so the leftover space lands in
-     the middle instead of as a dead band at the bottom. margin-top:auto collapses to 0 when
-     the content overflows (tall lists just scroll from the top). :not(:first-child) leaves
-     single-block views top-anchored rather than dropping their only child to the bottom. */
-  .app:has(> .bottomnav) .pane > *:last-child:not(:first-child) { margin-top: auto; }
+  /* Short routed views stay TOP-anchored — the conventional mobile layout. An earlier rule
+     gave the pane's last child `margin-top:auto` to float leftover space into the middle, but
+     on short lists (e.g. a small Personal collection or the empty Grader) that dropped the
+     content ~280px down and read as a broken gap rather than a deliberate spread. Content now
+     starts right under the sub-tabs; the natural scroll region absorbs any slack at the bottom. */
   /* Flatten the top/bottom framing to the flat dark base on phones so the notch and
      home-indicator safe areas don't show a navy bar — the navy came from the body's
      top gradient bleeding into the top safe area plus the navy topbar/nav fills. The
@@ -1649,6 +1648,18 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .stock-act.on { border-color:var(--gold); color:var(--gold); background:#ffcb0518; }
 .stock-act:disabled { opacity:.35; cursor:not-allowed; }
 @media (max-width:640px){ .stock-line .tl-unit { min-width:48px; } }
+/* Touch devices: the per-row / per-tile icon actions (🛒 📦 🔨 🎬) render ~26-28px, well under
+   a comfortable finger target. Grow them to ~40px on coarse pointers so a mis-tap doesn't fire
+   the wrong action or (in the grid) open the card modal instead. Desktop mouse stays compact. */
+@media (pointer: coarse) {
+  /* Grow the VERTICAL target (the finger-reliability win) without widening the row: the
+     per-row action strip already scrolls horizontally when a SKU has many actions, so forcing
+     a min-width would just push more buttons off-screen. Height + a little padding is enough. */
+  .stock-act { min-height: 40px; padding-top: 0; padding-bottom: 0; }
+  /* Grid tiles have room for square targets (they wrap under the art), so size them up fully. */
+  .tile-acts .stock-act { width: 40px; height: 40px; font-size: 16px; }
+  .seg .segbtn { padding: 11px 14px; min-height: 42px; }
+}
 
 /* --- Sealed inventory (buy & hold) ---------------------------------------- */
 .sealed-item { display:flex; flex-direction:column; gap:6px; align-items:stretch; }
