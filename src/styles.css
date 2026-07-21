@@ -1681,6 +1681,10 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .shelf-sealed .shelf-sealed-label { font-size:11px; font-weight:700; text-align:center; line-height:1.15; }
 /* A "leaving the hobby" estate lot — a whole collection (with sealed) — gets a warm accent. */
 .product.estate-lot { border-color:#c8962e66; background:linear-gradient(180deg,#191307,var(--panel2)); box-shadow:0 0 0 1px #c8962e22; }
+/* A buy-in hiding a crown-jewel sealed vintage pack — brighter gold, a subtle glow. */
+.product.jewel-lot { border-color:#ffd45e99; background:linear-gradient(180deg,#20180a,var(--panel2)); box-shadow:0 0 0 1px #ffd45e44, 0 0 14px #ffd45e22; }
+/* The crack/flip/hold decision banner on a vintage sealed pack — gold-tinted to match the jewel. */
+.banner.jewel-call { border-color:#ffd45e55; background:linear-gradient(180deg,#211809,#17120a); }
 
 .vintage-vault { border-color:#c8962e55; background:linear-gradient(180deg,#1a1407,var(--panel2)); }
 .vintage-vault .prodbtn .prodmeta { font-weight:800; }

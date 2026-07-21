@@ -16,6 +16,8 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
   const moveStock = useGame(s => s.moveStock)
   const listSealed = useGame(s => s.listSealed)
   const quickFlipSealed = useGame(s => s.quickFlipSealed)
+  const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
+  const upgrades = useGame(s => s.upgrades)
   useGame(s => s.marketMults) // keep value live as the market drifts
   const [showPrices, setShowPrices] = useState(false) // price-sheet sub-view toggle
 
@@ -119,6 +121,19 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
               </button>
             )}
 
+            {/* The crack-or-flip-or-hold call, laid out with the numbers so the decision is legible
+                rather than buried in a wall of buttons. Vintage tilts the whole thing: its sealed is
+                finite and trends UP, and it's worth more unopened than the rip — so holding is a real,
+                named path, not just "didn't sell yet". */}
+            <div className={`banner ${item.vintage ? 'jewel-call' : ''}`} style={{ marginTop: 12 }}>
+              <div style={{ fontWeight: 800, marginBottom: 2 }}>{item.vintage ? '🗝️ Your call' : 'Your call'}</div>
+              <div>🎬 <b>Crack it</b> — a shot at this set's chase{gem && gem.total > 0 ? <> ({Math.round(gem.pct * 100)}% of its {gem.total} hits clear $100 in a PSA 10)</> : ''}. The gamble.</div>
+              <div style={{ marginTop: 3 }}>💵 <b>Flip sealed</b> — <b style={{ color: 'var(--green)' }}>{fmtMoney(round2(value * SEALED_FLIP_RATE))}</b> cash now, or list at ~<b style={{ color: 'var(--green)' }}>{fmtMoney(value)}</b>. The sure thing.</div>
+              {item.vintage
+                ? <div style={{ marginTop: 3 }}>🗝️ <b>Hold it</b> — vintage sealed is finite and <b>trends up</b>; it's worth more unopened than the rip. Sit on it as it climbs, or feature it as a showpiece to pull whale offers.</div>
+                : <div style={{ marginTop: 3 }}>📦 <b>Hold it</b> — sit on it in the storeroom and let a hot-set spike come to you before you decide.</div>}
+            </div>
+
             {/* Actions — the moves that make sense for a sealed unit, mirroring the shelf row */}
             <div className="sell-options" style={{ marginTop: 14 }}>
               <button className="btn alt sellopt" onClick={() => { onClose(); onRip && onRip(item.uid) }}>
@@ -129,6 +144,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
                 <button className="btn alt sellopt" onClick={doBreak}>
                   <b>🔨 Break down · {breaks[0].count}× {breaks[0].product.type}</b>
                   <small>Split one tier down into {fmtMoney(breaks[0].total)} of smaller product (lands in the {item.locked ? 'Personal' : 'Storeroom'})</small>
+                </button>
+              )}
+              {/* The vintage HOLD, made actionable: park it under glass where it draws whales and
+                  premium offers while it appreciates — the collector's move on a crown-jewel pack. */}
+              {item.vintage && upgrades?.storefront && !item._featured && place !== 'personal' && (
+                <button className="btn alt sellopt" onClick={() => { if (toggleFeatureSealed(item.uid)) fin(`⭐ ${title} is under glass — a showpiece whales come in for.`) }}>
+                  <b>⭐ Feature as showpiece — hold & display</b>
+                  <small>Put this vintage pack under glass: it pulls whale offers and appreciates while it sits</small>
                 </button>
               )}
               {place !== 'floor' && (

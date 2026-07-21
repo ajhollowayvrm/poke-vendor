@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
+import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
@@ -1084,39 +1084,87 @@ export function makeConsignRequest(notoriety) {
 // ESTIMATE of the lot's market value (±25%; the Jeweler's Loupe tightens it to ±8%)
 // plus a vibe hint. Their ask runs 45–70% of true market — most lots are profitable
 // if you read them right; the sharky sellers price tight.
-const BUYIN_SELLERS = [
-  { who: 'a kid clearing out his binder', tone: 'soft' },
-  { who: 'a parent selling an outgrown collection', tone: 'soft' },
-  { who: 'a college student who needs rent', tone: 'soft' },
-  { who: 'a local downsizing before a move', tone: 'mid' },
-  { who: 'a weekend collector thinning doubles', tone: 'mid' },
-  { who: 'a sharp-eyed flipper flipping through you', tone: 'sharp' },
-  { who: 'a grinder who knows every comp', tone: 'sharp' },
+// --- Seller archetypes: a walk-in collection is somebody's ERA ----------------
+// Every lot is one person's window in the hobby. An archetype fixes who they are, the vibe of
+// their ask, and — crucially — the SET POOL their sealed product is drawn from, so a lot reads
+// as a coherent collection (a '99 attic hoard, a lapsed XY player's run, a pandemic Sword &
+// Shield binge) instead of a random grab-bag. That coherence is what makes buy-ins keep
+// surfacing sealed you'd never stock yourself — the reason the loop is worth leaning into.
+// `vault` archetypes are the leaving-the-hobby VINTAGE hoarders whose lot can hide the crown
+// jewel: a single sealed vintage pack, worth far more unopened than the rip and appreciating
+// while it sits — the purest crack-or-hold gut-check in the game.
+
+// Era → the set pool a seller's sealed is drawn from. Vintage eras resolve to VINTAGE_SETS
+// (their sealed is old and scarce); modern eras to the sets that were in print then.
+function eraPool(era) {
+  switch (era) {
+    case 'wotc':       return VINTAGE_SETS.filter(s => (s.releaseDate || '') < '2004')   // Base/Gym/Neo/e-Card
+    case 'midvintage': return VINTAGE_SETS.filter(s => (s.releaseDate || '') >= '2004')  // EX/DP/Platinum/HGSS/B&W
+    case 'xy':         return SECONDARY_SETS.filter(s => s.series === 'XY')
+    case 'sunmoon':    return SECONDARY_SETS.filter(s => s.series === 'Sun & Moon')
+    case 'swsh':       return SECONDARY_SETS.filter(s => s.series === 'Sword & Shield')
+    case 'modern':     return SHOP_SETS
+    default:           return [...SHOP_SETS, ...SECONDARY_SETS]
+  }
+}
+
+// Non-estate walk-ins: a stack, no sealed. `era` only flavors the persona (their cards come
+// from the global pool). Sharp sellers price tight; soft ones leave meat on the bone.
+const WALKIN_ARCHETYPES = [
+  { key: 'binder',  tone: 'soft',  era: 'modern', who: ['a kid clearing out his binder', 'a parent selling an outgrown collection', 'a college student who needs rent'] },
+  { key: 'thinner', tone: 'mid',   era: 'modern', who: ['a local downsizing before a move', 'a weekend collector thinning doubles'] },
+  { key: 'flipper', tone: 'sharp', era: 'modern', who: ['a sharp-eyed flipper flipping through you', 'a grinder who knows every comp'] },
 ]
-// "Leaving the hobby" sellers — they're offloading EVERYTHING, singles and sealed alike, and
-// mostly just want it gone. A storefront is what makes you the person they bring it all to.
-const ESTATE_SELLERS = [
-  { who: 'a burned-out collector leaving the hobby', tone: 'soft' },
-  { who: 'someone quitting for good — the whole collection', tone: 'soft' },
-  { who: 'a guy moving overseas, everything must go', tone: 'soft' },
-  { who: 'a retiree finally done with cards', tone: 'soft' },
-  { who: 'a parent clearing their grown kid\'s whole stash', tone: 'soft' },
-  { who: 'a streamer who rage-quit collecting', tone: 'mid' },
+
+// Estate lots — leaving the hobby, singles AND sealed. `vault` archetypes draw vintage; their
+// `jewel` is the per-lot chance of ONE sealed vintage pack (else the lot is old singles only).
+// Non-vault estate lots carry 2–6 sealed from their era, the way they always have.
+const ESTATE_ARCHETYPES = [
+  { key: 'attic',    tone: 'soft', era: 'wotc',       vault: true, jewel: 0.5,
+    who: ['a widow clearing out her late husband’s attic collection', 'a guy who found a shoebox of ’99 cards in the attic', 'an estate handler liquidating an old-timer’s hoard', 'a retiree who started at Base Set and is finally done'],
+    hint: 'old-school — this stuff predates most of the hobby' },
+  { key: 'junkwax',  tone: 'soft', era: 'midvintage', vault: true, jewel: 0.4,
+    who: ['a collector offloading their EX-era binders', 'a dad clearing out a Diamond & Pearl-era stash', 'someone who quit around Black & White and kept it all'],
+    hint: 'mid-2000s to early 2010s — deep, not flashy' },
+  { key: 'xy',       tone: 'mid',  era: 'xy',
+    who: ['a lapsed player who stopped collecting around 2016', 'someone selling their whole XY-era run'],
+    hint: 'XY era — the last time they collected' },
+  { key: 'sunmoon',  tone: 'soft', era: 'sunmoon',
+    who: ['a parent clearing their grown kid’s Sun & Moon binders', 'a Gen-7 collector finally moving on'],
+    hint: 'Sun & Moon era — a full run' },
+  { key: 'pandemic', tone: 'mid',  era: 'swsh',
+    who: ['a pandemic returner cashing out their 2020 haul', 'a streamer who rage-quit collecting', 'someone who went deep on Sword & Shield and burned out'],
+    hint: 'Sword & Shield — bought heavy, quitting now' },
 ]
-// A random sealed product for an estate lot: a set + one of its products, valued live.
-function randomSealedForLot() {
-  const pool = [...SHOP_SETS, ...SECONDARY_SETS]
-  const set = pool[Math.floor(Math.random() * pool.length)]
-  const products = setProducts(set)
+
+// One sealed item drawn from a set pool (an era's lineup). Estate lots fill their sealed slots
+// from here. `vintage` is flagged so the UI/mint path treats an old pack as the showpiece it is.
+function sealedFromPool(pool) {
+  const set = wpick(pool.length ? pool : [...SHOP_SETS, ...SECONDARY_SETS])
+  const products = set ? setProducts(set) : []
   if (!set || !products.length) return null
   const product = products[Math.floor(Math.random() * products.length)]
-  return { setId: set.id, product: { ...product } }
+  return { setId: set.id, product: { ...product }, vintage: !!set.vintage }
+}
+
+// The crown jewel: ONE sealed vintage pack from the archetype's era, its value ceiling scaled by
+// your notoriety — a bigger name draws bigger collections, so a $250 attic pack turns up for a
+// small shop and a $2k+ EX-era pack only once you're known. Returns null if nothing fits.
+function vintageJewel(era, notoriety) {
+  const ceil = 200 + notoriety * 18   // ~$380 at noto 10 → ~$2,900 at noto 150
+  const pool = eraPool(era).filter(s => {
+    const p = vintageProduct(s)
+    return p && sealedBase(p) <= ceil
+  })
+  if (!pool.length) return null
+  const set = wpick(pool)
+  const product = vintageProduct(set)
+  return product ? { setId: set.id, product: { ...product }, vintage: true, jewel: true } : null
 }
 export function makeBuyinOffer(notoriety, opts = {}) {
   const estate = !!opts.estate
-  const seller = estate
-    ? ESTATE_SELLERS[Math.floor(Math.random() * ESTATE_SELLERS.length)]
-    : BUYIN_SELLERS[Math.floor(Math.random() * BUYIN_SELLERS.length)]
+  const arch = wpick(estate ? ESTATE_ARCHETYPES : WALKIN_ARCHETYPES)
+  const who = wpick(arch.who)
   // The lot. Estate = a whole collection: far more cards, more real pieces, and SEALED product
   // mixed in. Ordinary = a stack of bulk with 1–2 real pieces. Scaled by your local fame.
   const n = estate ? 18 + Math.floor(Math.random() * 28) : 5 + Math.floor(Math.random() * 8)
@@ -1124,23 +1172,34 @@ export function makeBuyinOffer(notoriety, opts = {}) {
   const cards = []
   for (let i = 0; i < Math.max(0, n - hits); i++) cards.push(cardInValueRange(0.25, 6))
   for (let i = 0; i < hits; i++) cards.push(cardInValueRange(5, 18 + notoriety * 0.4))
-  // Estate lots come with SEALED product — the influx a storefront pulls in.
+  // Estate lots come with SEALED product — the influx a storefront pulls in. A vintage hoarder
+  // (vault) brings old SINGLES with maybe ONE crown-jewel sealed pack; everyone else brings a
+  // handful of sealed from their own era.
   const sealed = []
+  let jewel = null
   if (estate) {
-    const sn = 2 + Math.floor(Math.random() * 5) // 2–6 sealed items
-    for (let i = 0; i < sn; i++) { const s = randomSealedForLot(); if (s) sealed.push(s) }
+    if (arch.vault) {
+      if (Math.random() < (arch.jewel || 0)) jewel = vintageJewel(arch.era, notoriety)
+      if (jewel) sealed.push(jewel)
+    } else {
+      const sn = 2 + Math.floor(Math.random() * 5) // 2–6 sealed items
+      const pool = eraPool(arch.era)
+      for (let i = 0; i < sn; i++) { const s = sealedFromPool(pool); if (s) sealed.push(s) }
+    }
   }
   const cardsMarket = cards.reduce((a, c) => a + cardValue(c), 0)
   const sealedMarket = sealed.reduce((a, s) => a + sealedValue(s), 0)
   const market = round2(cardsMarket + sealedMarket)
-  // Some leaving-the-hobby sellers just GIVE it away — a pure-upside moment (rare).
-  const free = estate && Math.random() < 0.10
-  // Ask by tone: soft sellers leave meat on the bone; sharp ones price tight. Estate sellers
-  // want it GONE, so they go soft regardless.
+  // Some leaving-the-hobby sellers just GIVE it away — a pure-upside moment (rare). A lot with a
+  // crown-jewel vintage pack in it is never free — nobody hands THAT over.
+  const free = estate && !jewel && Math.random() < 0.10
+  // Ask by tone. Estate sellers want it GONE, so they go soft — EXCEPT a vault seller who knows
+  // the sealed vintage pack is the crown jewel and prices that one lot a touch firmer.
   const askMult = free ? 0
+    : jewel ? 0.55 + Math.random() * 0.17
     : estate ? 0.38 + Math.random() * 0.17
-    : seller.tone === 'soft' ? 0.45 + Math.random() * 0.15
-    : seller.tone === 'sharp' ? 0.62 + Math.random() * 0.13
+    : arch.tone === 'soft' ? 0.45 + Math.random() * 0.15
+    : arch.tone === 'sharp' ? 0.62 + Math.random() * 0.13
     : 0.52 + Math.random() * 0.15
   const askCash = free ? 0 : Math.max(1, round2(market * askMult))
   // Two pre-rolled estimates so the readout is stable: the naked-eye one (±25%) and
@@ -1148,11 +1207,12 @@ export function makeBuyinOffer(notoriety, opts = {}) {
   const noisy = (band) => round2(market * (1 - band + Math.random() * band * 2))
   return {
     id: `bi${Math.floor(Math.random() * 1e9).toString(36)}`,
-    who: seller.who, tone: seller.tone, estate, free,
+    who, tone: arch.tone, estate, free, archetype: arch.key, jewel: !!jewel,
     hint: free ? 'just wants it out of the house — take it'
-      : estate ? 'leaving the hobby — everything must go'
-      : seller.tone === 'sharp' ? 'priced like someone who checked comps'
-      : seller.tone === 'soft' ? 'just wants it gone' : 'seems reasonable',
+      : jewel ? 'leaving the hobby — and there’s a sealed vintage pack buried in here'
+      : arch.hint || (estate ? 'leaving the hobby — everything must go'
+      : arch.tone === 'sharp' ? 'priced like someone who checked comps'
+      : arch.tone === 'soft' ? 'just wants it gone' : 'seems reasonable'),
     cards, count: n, sealed, sealedCount: sealed.length, sealedMarket: round2(sealedMarket),
     market, askCash,
     estimate: noisy(0.25), estimateTight: noisy(0.08),

@@ -232,10 +232,11 @@ export default function BoothInbox({ onRip, onPick }) {
                       const credit = Math.round(o.askCash * (1 + STORE_CREDIT_BONUS) * 100) / 100
                       const stuff = o.sealedCount ? 'of cards & sealed' : 'of cards'
                       return (
-                        <div key={o.id} className={`product ${o.estate ? 'estate-lot' : ''}`}>
-                          <h3 style={{ fontSize: 14, margin: 0 }}>{o.estate ? '📦 ' : ''}{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
+                        <div key={o.id} className={`product ${o.estate ? 'estate-lot' : ''} ${o.jewel ? 'jewel-lot' : ''}`}>
+                          <h3 style={{ fontSize: 14, margin: 0 }}>{o.jewel ? '🗝️ ' : o.estate ? '📦 ' : ''}{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
                           <div className="meta" style={{ flex: 1 }}>
                             A lot of <b>{o.count} cards</b>{o.sealedCount ? <> + <b>{o.sealedCount} sealed</b></> : ''} — {o.hint}.<br />
+                            {o.jewel && <><b style={{ color: 'var(--gold, #ffd45e)' }}>🗝️ A sealed vintage pack is in this lot</b> — worth more unopened than the rip, and it climbs while you hold it.<br /></>}
                             Your read: <b title={upgrades.loupe ? 'Loupe appraisal — tight (±8%)' : 'Eyeball estimate (±25%) — the 🔍 Jeweler\'s Loupe reads lots much tighter'}>
                               ~{fmtMoney(est)} {stuff} {upgrades.loupe ? '🔍' : '👁️'}</b>
                             <br />{o.free
@@ -685,14 +686,21 @@ export default function BoothInbox({ onRip, onPick }) {
             </p>
             {buyinReveal.sealed?.length > 0 && (
               <div className="wants" style={{ marginTop: 4 }}>
-                <div className="wants-head" style={{ fontSize: 13 }}>📦 Sealed in the lot <span className="muted">— now in your storeroom to rip, list, or flip</span></div>
+                <div className="wants-head" style={{ fontSize: 13 }}>📦 Sealed in the lot <span className="muted">— now in your storeroom to rip, list, flip, or hold</span></div>
                 <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
                   {buyinReveal.sealed.map(it => (
-                    <span key={it.uid} className="pill" style={{ background: '#5aa0ff22', color: '#9dc3ff', fontSize: 12 }}>
-                      {it.product.icon || '📦'} {it.product.type}{setById(it.setId)?.name ? ` · ${setById(it.setId).name}` : ''} · <b style={{ color: 'var(--green)' }}>{fmtMoney(sealedValue(it))}</b>
+                    <span key={it.uid} className="pill" style={it.vintage
+                      ? { background: '#ffd45e22', color: '#ffd45e', fontSize: 12, boxShadow: '0 0 0 1px #ffd45e55 inset' }
+                      : { background: '#5aa0ff22', color: '#9dc3ff', fontSize: 12 }}>
+                      {it.vintage ? '🗝️' : (it.product.icon || '📦')} {it.product.type}{setById(it.setId)?.name ? ` · ${setById(it.setId).name}` : ''} · <b style={{ color: 'var(--green)' }}>{fmtMoney(sealedValue(it))}</b>
                     </span>
                   ))}
                 </div>
+                {buyinReveal.sealed.some(it => it.vintage) && (
+                  <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
+                    🗝️ That vintage pack is worth <b>more sealed than the rip</b> — and vintage sealed <b>appreciates</b> while it sits. Cracking it is the gamble; holding (or flipping) is the sure thing. Your call in the storeroom.
+                  </p>
+                )}
               </div>
             )}
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(110px,1fr))', marginTop: 8 }}>
