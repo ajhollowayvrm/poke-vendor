@@ -668,9 +668,23 @@ function openCelebrationsPack(set) {
   return pulls
 }
 
+// Sets with an in-set "Shiny Vault" subset that, in real life, lands in the REVERSE slot at a
+// high aggregate rate (replacing the ordinary reverse holo). Rates from published pull data
+// (ThePriceDex): Shining Fates ~1 in 2.8 packs; Hidden Fates a touch rarer. Without this, the
+// Vault shinies only trickled out of the generic rare/reverse ladder (~1 in 7) — far too stingy.
+const VAULT_SLOT = {
+  swsh45: { odds: 0.36, test: id => id.startsWith('swsh45sv-') }, // Shining Fates Shiny Vault
+  sm115:  { odds: 0.30, test: id => id.startsWith('sma-') },      // Hidden Fates Shiny Vault
+}
+
 export function openPack(set) {
   if (set.id === 'cel25') return openCelebrationsPack(set) // bespoke 4-card structure
   const byR = cardsByRarity(set)
+  // A Shiny Vault subset comes ONLY from its dedicated reverse slot below (at its real rate) —
+  // strip it from the generic rarity pools so it can't also leak out of the rare/reverse ladder
+  // and double-count. Without this the effective rate overshoots (~1 in 2.4 instead of 1 in 2.8).
+  const vault = VAULT_SLOT[set.id]
+  if (vault) for (const k of Object.keys(byR)) byR[k] = byR[k].filter(c => !vault.test(c.id))
   const rates = ratesFor(set)
   const commons = byR['Common'] || byR['Uncommon'] || set.cards
   const uncommons = byR['Uncommon'] || commons
@@ -711,10 +725,14 @@ export function openPack(set) {
   const chaseHit = rates.chase ? rollSlot(byR, rates.chase) : null
   if (chaseHit) pulls.push(instance(chaseHit))
 
-  // REVERSE slot — sets with an ACE SPEC subset land one ~1 in 5 packs here; otherwise
-  // it's an IR/SIR/Hyper upgrade > special foil > ordinary reverse holo.
+  // REVERSE slot — a Shiny Vault card lands here at its real rate (Shining/Hidden Fates), else
+  // sets with an ACE SPEC subset land one ~1 in 5 packs; otherwise it's an IR/SIR/Hyper upgrade
+  // > special foil > ordinary reverse holo.
+  const vaultPool = vault && Math.random() < vault.odds ? set.cards.filter(c => vault.test(c.id)) : null
   const aceSpecPool = byR['ACE SPEC Rare']
-  if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
+  if (vaultPool?.length) {
+    pulls.push(instance(pick(vaultPool)))
+  } else if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
     pulls.push(instance(pick(aceSpecPool)))
   } else {
     const revHit = rollSlot(byR, rates.reverse)
@@ -1846,18 +1864,16 @@ export function makeProductPromo(set, product, rnd = Math.random) {
     const exact = cardById(product.fixedPromo)
     if (exact) return tag(instance(exact))
   }
-  // 2. Explicit card name.
+  // 2. Explicit card name — pin the in-set card, else the era Black Star Promo, else mint.
   if (product.fixedPromoName) {
-    const card = findSetCardByName(set, product.fixedPromoName)
+    const card = findSetCardByName(set, product.fixedPromoName) || findEraPromo(set, product.fixedPromoName)
     return tag(card ? instance(card) : mintSyntheticPromo(set, product.fixedPromoName, seed))
   }
-  // 3. Build & Battle's real small pool — one of N, varying per box.
+  // 3. Build & Battle's real small pool — one of N, varying per box (an id, or a name to resolve).
   if (product.promoPool?.length) {
     const choice = pick(product.promoPool, rnd)
-    const byId = cardById(choice)
-    if (byId) return tag(instance(byId))
-    const byName = findSetCardByName(set, choice)
-    return tag(byName ? instance(byName) : mintSyntheticPromo(set, choice, `${seed}|${choice}`))
+    const card = cardById(choice) || findSetCardByName(set, choice) || findEraPromo(set, choice)
+    return tag(card ? instance(card) : mintSyntheticPromo(set, choice, `${seed}|${choice}`))
   }
   // 4. Identity parsed from the product name.
   const name = promoNameFromProduct(set, product)

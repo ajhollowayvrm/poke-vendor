@@ -238,6 +238,55 @@ const EN_SETS = [
 // the rare "Vintage Vault" vendor that occasionally appears at higher-tier shows.
 const VINTAGE_SETS = new Set(['base1', ...EN_SETS.filter(s => s.vintage).map(s => s.id)])
 
+// Real sealed-product promos, researched + verified against Bulbapedia / PSA-GameStop /
+// TCGplayer labels (SVP & SWSH numbers validated against the fetched card data). Applied to
+// each set's products after they're built so a re-fetch never loses them (products are rebuilt
+// from scratch by classifyProduct). `etb`/`pcEtb`/`bb` use exact card ids; `etbName`/`bbNames`
+// pin by name (engine resolves in-set → era Black Star Promo → mints) for promos whose card we
+// don't have (Mega Evolution's MEP set isn't on pokemontcg.io; svp 209/210 beyond our snapshot).
+// The engine reads fixedPromo (id) / fixedPromoName (string) / promoPool (1-of-N) — see engine.js.
+const PROMO_MAP = {
+  sv1:      { etb: 'svp-14',  pcEtb: 'svp-13',  bb: ['svp-5','svp-6','svp-7','svp-8'] },
+  sv2:      { etb: 'svp-27',  bb: ['svp-19','svp-20','svp-21','svp-22'] },
+  sv3:      { etb: 'svp-44',  bb: ['svp-36','svp-37','svp-38','svp-39'] },
+  sv3pt5:   { etb: 'svp-51' },
+  sv4:      { etb: 'svp-65',  pcEtb: 'svp-66',  bb: ['svp-57','svp-58','svp-59','svp-60'] },
+  sv4pt5:   { etb: 'svp-75' },
+  sv5:      { etb: 'svp-97',  pcEtb: 'svp-98',  bb: ['svp-89','svp-90','svp-91','svp-92'] },
+  sv6:      { etb: 'svp-123', bb: ['svp-115','svp-116','svp-117','svp-118'] },
+  sv6pt5:   { etb: 'svp-129' },
+  sv7:      { etb: 'svp-141', bb: ['svp-133','svp-134','svp-135','svp-136'] },
+  sv8:      { etb: 'svp-159', bb: ['svp-151','svp-152','svp-153','svp-154'] },
+  sv8pt5:   { etb: 'svp-173' },
+  sv9:      { etb: 'svp-189', bb: ['svp-181','svp-182','svp-183','svp-184'] },
+  sv10:     { etb: 'svp-203', bb: ['sv10-34','sv10-49','sv10-87','sv10-96'] },
+  zsv10pt5: { etbName: 'Thundurus' },
+  rsv10pt5: { etbName: 'Tornadus' },
+  swsh7:     { bb: ['swshp-SWSH122','swshp-SWSH123','swshp-SWSH124','swshp-SWSH125'] },
+  swsh9:     { bb: ['swshp-SWSH185','swshp-SWSH186','swshp-SWSH187','swshp-SWSH188'] },
+  swsh10:    { bb: ['swshp-SWSH205','swshp-SWSH206','swshp-SWSH207','swshp-SWSH208'] },
+  swsh11:    { bb: ['swshp-SWSH240','swshp-SWSH241','swshp-SWSH242','swshp-SWSH243'] },
+  swsh12:    { bb: ['swshp-SWSH269','swshp-SWSH270','swshp-SWSH271','swshp-SWSH272'] },
+  swsh12pt5: { etb: 'swshp-SWSH291' },
+  me1:      { etbName: 'Riolu',     bbNames: ['Meganium','Inteleon','Alakazam','Lunatone'] },
+  me2:      { etbName: 'Charcadet', bbNames: ['Ceruledge','Zacian','Flygon','Toxtricity'] },
+  me2pt5:   { etbName: "N's Zekrom" },
+  me3:      { etbName: 'Tyrunt',    bbNames: ['Serperior','Barbaracle','Tyrantrum','Doublade'] },
+  me4:      { etbName: 'Fennekin',  bbNames: ['Delphox','Ampharos','Crobat','Goodra'] },
+  me5:      { etbName: 'Zarude',    bbNames: ['Miraidon','Slowbro','Dhelmise','Bastiodon'] },
+}
+// Stamp a set's products with its researched promos (in place). Safe no-op for sets not in the map.
+function applyPromoMap(setId, products) {
+  const m = PROMO_MAP[setId]
+  if (!m) return
+  const etb = products.find(p => p.type === 'Elite Trainer Box')
+  const pcEtb = products.find(p => p.type === 'Pokémon Center Elite Trainer Box')
+  const bb = products.find(p => p.type === 'Build & Battle Box')
+  if (etb) { if (m.etb) etb.fixedPromo = m.etb; else if (m.etbName) etb.fixedPromoName = m.etbName }
+  if (pcEtb) { const id = m.pcEtb || m.etb; if (id) pcEtb.fixedPromo = id; else if (m.etbName) pcEtb.fixedPromoName = m.etbName }
+  if (bb) { if (m.bb) bb.promoPool = m.bb; else if (m.bbNames) bb.promoPool = m.bbNames }
+}
+
 // pokemontcg.io rarity → engine rarity (RARITY_ORDER in engine.js). Modern sets
 // already match. Vintage eras add Gold Star / Shining / Crystal / EX rarities —
 // map them into engine tiers so they're treated as the chases they are.
@@ -927,6 +976,8 @@ async function main() {
       const spc = products.find(p => p.type === 'Super-Premium Collection')
       if (spc) spc.fixedPromo = `${cfg.id}-167`
     }
+    // Stamp researched real ETB / Build & Battle promos onto this set's products.
+    applyPromoMap(cfg.id, products)
 
     // Vintage sets sell ONE marked-up heavy pack via the Vault, never in the shop.
     if (cfg.vintage) {
