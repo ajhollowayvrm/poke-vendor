@@ -134,7 +134,7 @@ const BASELINE_RATES = {
     { rarity: 'Hyper Rare',                p: 0.0185 }, // 1 in 54
     { rarity: 'Mega Hyper Rare',           p: 0.0035 }, // chase — ~1 in 285
   ],
-  aceSpec: 0.20, // ~1 in 5 packs in sets that have an ACE SPEC subset
+  aceSpec: 0.05, // ~1 in 20 packs — the real SV ACE SPEC rate (was 0.20, ~4x too generous)
   chase: [
     { rarity: 'MEGA_ATTACK_RARE', p: 0.0090 }, // Mega-era ultra-chase — ~1 in 111
     { rarity: 'Black White Rare', p: 0.0040 }, // top chase — ~1 in 250
@@ -550,6 +550,124 @@ const SET_RATES = {
   ex15: { rare: [{ rarity: 'Ultra Rare', p: 0.0830 }], reverse: [{ rarity: 'Hyper Rare', p: 0.0140 }] }, // EX Dragon Frontiers (Gold Star)
   ex8:  { rare: [{ rarity: 'Ultra Rare', p: 0.0740 }], reverse: [{ rarity: 'Hyper Rare', p: 0.0093 }, { rarity: 'Special Illustration Rare', p: 0.0083 }] }, // EX Deoxys
   ecard3: { rare: [], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0460 }] }, // Skyridge Crystals
+
+  // ===== EXHAUSTIVE AUDIT — researched real per-set rates (scripts/audit-pulls.mjs). Sources per era below. =====
+  // --- Scarlet & Violet (DigitalTQ 500-700pk; ThePriceDex/TCGplayer 1000+pk). ACE SPEC returned in Paradox
+  //     Rift, so sv4+ carry aceSpec ~1 in 20 (baseline's 1 in 5 was ~4x too generous). ---
+  sv1: { rare: [{ rarity: 'Double Rare', p: 0.140 }, { rarity: 'Ultra Rare', p: 0.065 }], reverse: [{ rarity: 'Illustration Rare', p: 0.077 }, { rarity: 'Special Illustration Rare', p: 0.031 }, { rarity: 'Hyper Rare', p: 0.019 }] },
+  sv2: { rare: [{ rarity: 'Double Rare', p: 0.143 }, { rarity: 'Ultra Rare', p: 0.075 }], reverse: [{ rarity: 'Illustration Rare', p: 0.077 }, { rarity: 'Special Illustration Rare', p: 0.029 }, { rarity: 'Hyper Rare', p: 0.024 }] },
+  sv3: { rare: [{ rarity: 'Double Rare', p: 0.142 }, { rarity: 'Ultra Rare', p: 0.060 }], reverse: [{ rarity: 'Illustration Rare', p: 0.084 }, { rarity: 'Special Illustration Rare', p: 0.036 }, { rarity: 'Hyper Rare', p: 0.020 }] },
+  sv4: { rare: [{ rarity: 'Double Rare', p: 0.153 }, { rarity: 'Ultra Rare', p: 0.075 }], reverse: [{ rarity: 'Illustration Rare', p: 0.084 }, { rarity: 'Special Illustration Rare', p: 0.019 }, { rarity: 'Hyper Rare', p: 0.012 }], aceSpec: 0.05 },
+  sv4pt5: { rare: [{ rarity: 'Double Rare', p: 0.133 }, { rarity: 'Ultra Rare', p: 0.200 }], reverse: [{ rarity: 'Illustration Rare', p: 0.086 }, { rarity: 'Special Illustration Rare', p: 0.015 }, { rarity: 'Hyper Rare', p: 0.093 }] }, // Paldean Fates shiny set: Shiny Rare→Ultra Rare, Shiny Ultra Rare→Hyper Rare (both dominant)
+  sv5: { rare: [{ rarity: 'Double Rare', p: 0.180 }, { rarity: 'Ultra Rare', p: 0.078 }], reverse: [{ rarity: 'Illustration Rare', p: 0.083 }, { rarity: 'Special Illustration Rare', p: 0.016 }, { rarity: 'Hyper Rare', p: 0.0072 }], aceSpec: 0.05 },
+  sv6: { rare: [{ rarity: 'Double Rare', p: 0.169 }, { rarity: 'Ultra Rare', p: 0.066 }], reverse: [{ rarity: 'Illustration Rare', p: 0.078 }, { rarity: 'Special Illustration Rare', p: 0.0117 }, { rarity: 'Hyper Rare', p: 0.0068 }], aceSpec: 0.05 },
+  sv6pt5: { rare: [{ rarity: 'Double Rare', p: 0.167 }, { rarity: 'Ultra Rare', p: 0.070 }], reverse: [{ rarity: 'Illustration Rare', p: 0.077 }, { rarity: 'Special Illustration Rare', p: 0.0115 }, { rarity: 'Hyper Rare', p: 0.0078 }], aceSpec: 0.05 },
+  sv7: { rare: [{ rarity: 'Double Rare', p: 0.169 }, { rarity: 'Ultra Rare', p: 0.068 }], reverse: [{ rarity: 'Illustration Rare', p: 0.078 }, { rarity: 'Special Illustration Rare', p: 0.0111 }, { rarity: 'Hyper Rare', p: 0.0073 }], aceSpec: 0.05 },
+  sv8: { rare: [{ rarity: 'Double Rare', p: 0.169 }, { rarity: 'Ultra Rare', p: 0.068 }], reverse: [{ rarity: 'Illustration Rare', p: 0.077 }, { rarity: 'Special Illustration Rare', p: 0.0115 }, { rarity: 'Hyper Rare', p: 0.0053 }], aceSpec: 0.05 },
+  sv9: { rare: [{ rarity: 'Double Rare', p: 0.204 }, { rarity: 'Ultra Rare', p: 0.065 }], reverse: [{ rarity: 'Illustration Rare', p: 0.085 }, { rarity: 'Special Illustration Rare', p: 0.0116 }, { rarity: 'Hyper Rare', p: 0.0073 }] },
+  me5: { rare: [{ rarity: 'Double Rare', p: 0.200 }, { rarity: 'Ultra Rare', p: 0.083 }], reverse: [{ rarity: 'Illustration Rare', p: 0.110 }, { rarity: 'Special Illustration Rare', p: 0.012 }, { rarity: 'Mega Hyper Rare', p: 0.0007 }] }, // Pitch Black — provisional (no large sample yet), mirrors me3/me4
+  // --- Sword & Shield (elitefourum 2.7-5k pk / DigitalTQ / ThePriceDex). Ultra Rare = base Holo V + VMAX/VSTAR/
+  //     Radiant/Amazing + full-art V (all → 'Ultra Rare' in our data). Trainer/Galarian Gallery + Shiny Vault are
+  //     separate SUBSET_SLOT pulls. Hyper Rare = Rainbow + Gold Secret. ---
+  swsh1: { rare: [{ rarity: 'Ultra Rare', p: 0.207 }], reverse: [{ rarity: 'Hyper Rare', p: 0.016 }] },
+  swsh2: { rare: [{ rarity: 'Ultra Rare', p: 0.205 }], reverse: [{ rarity: 'Hyper Rare', p: 0.018 }] },
+  swsh3: { rare: [{ rarity: 'Ultra Rare', p: 0.208 }], reverse: [{ rarity: 'Hyper Rare', p: 0.016 }] },
+  swsh4: { rare: [{ rarity: 'Ultra Rare', p: 0.267 }], reverse: [{ rarity: 'Hyper Rare', p: 0.024 }] }, // incl. Amazing Rare
+  swsh5: { rare: [{ rarity: 'Ultra Rare', p: 0.158 }], reverse: [{ rarity: 'Hyper Rare', p: 0.020 }] },
+  swsh6: { rare: [{ rarity: 'Ultra Rare', p: 0.161 }], reverse: [{ rarity: 'Hyper Rare', p: 0.020 }] },
+  swsh7: { rare: [{ rarity: 'Ultra Rare', p: 0.205 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }, { rarity: 'Hyper Rare', p: 0.021 }] }, // Evolving Skies — alt-art SIR 1 in 72
+  swsh8: { rare: [{ rarity: 'Ultra Rare', p: 0.186 }], reverse: [{ rarity: 'Hyper Rare', p: 0.016 }] },
+  swsh9: { rare: [{ rarity: 'Ultra Rare', p: 0.237 }], reverse: [{ rarity: 'Hyper Rare', p: 0.028 }] },
+  swsh10: { rare: [{ rarity: 'Ultra Rare', p: 0.289 }], reverse: [{ rarity: 'Hyper Rare', p: 0.024 }] }, // incl. Radiant
+  swsh11: { rare: [{ rarity: 'Ultra Rare', p: 0.228 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.005 }, { rarity: 'Hyper Rare', p: 0.020 }] },
+  swsh12: { rare: [{ rarity: 'Ultra Rare', p: 0.290 }], reverse: [{ rarity: 'Hyper Rare', p: 0.029 }] },
+  swsh35: { rare: [{ rarity: 'Ultra Rare', p: 0.253 }], reverse: [{ rarity: 'Hyper Rare', p: 0.020 }] }, // Champion's Path
+  swsh45: { rare: [{ rarity: 'Ultra Rare', p: 0.200 }], reverse: [{ rarity: 'Hyper Rare', p: 0.021 }] }, // Shining Fates — Shiny Vault via SUBSET_SLOT
+  swsh12pt5: { rare: [{ rarity: 'Ultra Rare', p: 0.300 }] }, // Crown Zenith — secrets live in the Galarian Gallery (SUBSET_SLOT)
+  // --- Sun & Moon (PullRates + box-break). Ultra Rare = GX + full-art GX/EX (→ 'Ultra Rare'). Hyper = Rainbow +
+  //     Gold Secret. holoRare ~1 in 3 for the non-GX rare. ---
+  sm1: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.023 }], holoRare: 0.33 },
+  sm2: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.023 }], holoRare: 0.33 },
+  sm3: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.023 }], holoRare: 0.33 },
+  sm4: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.023 }], holoRare: 0.33 },
+  sm5: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.020 }], holoRare: 0.33 },
+  sm6: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.020 }], holoRare: 0.33 },
+  sm7: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Hyper Rare', p: 0.020 }], holoRare: 0.33 },
+  sm35: { rare: [{ rarity: 'Ultra Rare', p: 0.153 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.111 }, { rarity: 'Hyper Rare', p: 0.020 }], holoRare: 0.33 }, // Shining Legends — Shining Pokémon → SIR
+  sm75: { rare: [{ rarity: 'Ultra Rare', p: 0.193 }], reverse: [{ rarity: 'Hyper Rare', p: 0.022 }], holoRare: 0.33 }, // Dragon Majesty
+  // --- XY (PullRates). Ultra Rare = EX + M-EX + full-art (→ 'Ultra Rare'). Secret Rare → SIR in our data
+  //     (XY has no Rainbow/Hyper tier). ---
+  xy1: { rare: [{ rarity: 'Ultra Rare', p: 0.157 }], holoRare: 0.33 }, // XY base — no Secret Rare
+  xy2: { rare: [{ rarity: 'Ultra Rare', p: 0.161 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.010 }], holoRare: 0.33 },
+  xy3: { rare: [{ rarity: 'Ultra Rare', p: 0.161 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.010 }], holoRare: 0.33 },
+  xy4: { rare: [{ rarity: 'Ultra Rare', p: 0.161 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.010 }], holoRare: 0.33 },
+  xy5: { rare: [{ rarity: 'Ultra Rare', p: 0.167 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.010 }], holoRare: 0.33 },
+  xy7: { rare: [{ rarity: 'Ultra Rare', p: 0.167 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.013 }], holoRare: 0.33 },
+  xy12: { rare: [{ rarity: 'Ultra Rare', p: 0.141 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.013 }], holoRare: 0.33 }, // Evolutions
+  // ===== VINTAGE (era profiles; medium/low confidence — box-break + Flipside/community. holoRare = the era's
+  //     ~1 in 3-3.5 holo rate, so vintage packs stop coming out ~92% holo). Tier→rarity per our data. =====
+  // Black & White: Full Art → Ultra Rare, Secret → SIR.
+  bw1: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw2: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], holoRare: 0.28 }, // Emerging Powers — no Secret Rare
+  bw3: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw4: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw5: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw6: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw7: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw8: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw9: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw10: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  bw11: { rare: [{ rarity: 'Ultra Rare', p: 0.06 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.014 }], holoRare: 0.28 },
+  col1: { rare: [], holoRare: 0.28 }, // Call of Legends — Shiny Legendary SL cards are Rare Holo (pull via holo slot)
+  // HGSS: Prime → Ultra Rare, LEGEND → Hyper Rare, Shiny (base only) → SIR.
+  hgss1: { rare: [{ rarity: 'Ultra Rare', p: 0.15 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.028 }, { rarity: 'Hyper Rare', p: 0.067 }], holoRare: 0.28 },
+  hgss2: { rare: [{ rarity: 'Ultra Rare', p: 0.15 }], reverse: [{ rarity: 'Hyper Rare', p: 0.067 }], holoRare: 0.28 },
+  hgss3: { rare: [{ rarity: 'Ultra Rare', p: 0.15 }], reverse: [{ rarity: 'Hyper Rare', p: 0.067 }], holoRare: 0.28 },
+  hgss4: { rare: [{ rarity: 'Ultra Rare', p: 0.15 }], reverse: [{ rarity: 'Hyper Rare', p: 0.067 }], holoRare: 0.28 },
+  // Platinum: Lv.X → Ultra Rare, shiny Secret → SIR.
+  pl1: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.028 }], holoRare: 0.28 },
+  pl2: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.028 }], holoRare: 0.28 },
+  pl3: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], reverse: [{ rarity: 'Special Illustration Rare', p: 0.028 }], holoRare: 0.28 },
+  pl4: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 }, // Arceus — no shiny Secret
+  // Diamond & Pearl: Lv.X → Ultra Rare.
+  dp1: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  dp2: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  dp3: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  dp4: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  dp5: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  dp6: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  dp7: { rare: [{ rarity: 'Ultra Rare', p: 0.05 }], holoRare: 0.28 },
+  // EX era: ex → Ultra Rare, Gold Star → Hyper Rare (ex9 Team Rocket Returns onward only).
+  ex1: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex2: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex3: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex4: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex5: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex6: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex7: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 },
+  ex9: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], holoRare: 0.28 }, // Emerald — no Gold Star (secret filled by backstop)
+  ex10: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], reverse: [{ rarity: 'Hyper Rare', p: 0.014 }], holoRare: 0.28 },
+  ex11: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], reverse: [{ rarity: 'Hyper Rare', p: 0.014 }], holoRare: 0.28 },
+  ex12: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], reverse: [{ rarity: 'Hyper Rare', p: 0.014 }], holoRare: 0.28 },
+  ex13: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], reverse: [{ rarity: 'Hyper Rare', p: 0.014 }], holoRare: 0.28 },
+  ex14: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], reverse: [{ rarity: 'Hyper Rare', p: 0.014 }], holoRare: 0.28 },
+  ex16: { rare: [{ rarity: 'Ultra Rare', p: 0.08 }], reverse: [{ rarity: 'Hyper Rare', p: 0.030 }], holoRare: 0.28 }, // Power Keepers — Gold Star richer (~1 in 33)
+  // e-Card: Crystal → SIR (Aquapolis/Skyridge only; Expedition has none).
+  ecard1: { rare: [], holoRare: 0.28 }, // Expedition — no Crystals
+  ecard2: { rare: [], reverse: [{ rarity: 'Special Illustration Rare', p: 0.030 }], holoRare: 0.28 }, // Aquapolis
+  // WOTC: holo IS the chase (~1 in 3.5); Shining Pokémon → Hyper Rare (Neo Revelation/Destiny only).
+  base1: { rare: [], holoRare: 0.28 },
+  base2: { rare: [], holoRare: 0.28 },
+  base3: { rare: [], holoRare: 0.28 },
+  base4: { rare: [], holoRare: 0.28 },
+  base5: { rare: [], holoRare: 0.28 },
+  base6: { rare: [], holoRare: 0.28 },
+  gym1: { rare: [], holoRare: 0.28 },
+  gym2: { rare: [], holoRare: 0.28 },
+  neo1: { rare: [], holoRare: 0.28 },
+  neo2: { rare: [], holoRare: 0.28 },
+  neo3: { rare: [], reverse: [{ rarity: 'Hyper Rare', p: 0.012 }], holoRare: 0.28 }, // Neo Revelation — Shining Pokémon
+  neo4: { rare: [], reverse: [{ rarity: 'Hyper Rare', p: 0.012 }], holoRare: 0.28 }, // Neo Destiny — Shining Pokémon
 }
 function ratesFor(set) { return SET_RATES[set.id] || BASELINE_RATES }
 // Which sets carry an explicit (researched) rate config vs. falling back to BASELINE_RATES —
@@ -574,7 +692,7 @@ function topRarityPool(byR) {
 // so present-rarity odds stay true to the published rates).
 function rollSlot(byR, table) {
   let roll = Math.random()
-  for (const h of table) {
+  for (const h of (table || [])) { // a config may omit `reverse`/`chase` entirely
     const pool = byR[h.rarity]
     if (pool && pool.length) {
       if (roll < h.p) return pick(pool)
@@ -728,11 +846,18 @@ export function openPack(set) {
   for (let i = 0; i < nCommon; i++) pulls.push(instance(pick(commons)))
   for (let i = 0; i < nUncommon; i++) pulls.push(instance(pick(uncommons)))
 
-  // RARE slot — Double/Ultra Rare upgrade, else Rare Holo, else plain Rare.
+  // RARE slot — an upgrade (Double/Ultra Rare) if it hits, else the base rare. For MODERN sets
+  // the base rare is a plain Rare (holo is its own upgrade tier). VINTAGE sets are different: the
+  // slot is a HOLO only ~1 in 3 packs (`rates.holoRare`), else a non-holo Rare — without that,
+  // every vintage pack came out holo (~92%) instead of the real ~28%.
   const rareHit = rollSlot(byR, rates.rare)
-  const rareCard = rareHit
-    || (byR['Rare Holo']?.length ? pick(byR['Rare Holo']) : null)
-    || (byR['Rare']?.length ? pick(byR['Rare']) : pick(uncommons))
+  let rareCard = rareHit
+  if (!rareCard) {
+    const wantHolo = rates.holoRare == null || Math.random() < rates.holoRare
+    rareCard = (wantHolo && byR['Rare Holo']?.length ? pick(byR['Rare Holo']) : null)
+      || (byR['Rare']?.length ? pick(byR['Rare']) : null)
+      || (byR['Rare Holo']?.length ? pick(byR['Rare Holo']) : pick(uncommons))
+  }
   pulls.push(instance(rareCard))
 
   // Top-end chase shot (MEGA_ATTACK / Black White) — a rare extra upgrade that can
@@ -750,7 +875,14 @@ export function openPack(set) {
   } else if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
     pulls.push(instance(pick(aceSpecPool)))
   } else {
-    const revHit = rollSlot(byR, rates.reverse)
+    // Effective reverse table = the set's configured reverse tiers PLUS baseline coverage for any
+    // chase rarity the set HAS but its config didn't route — so a set's SIR/Hyper/IR secrets are
+    // never fully orphaned by an incomplete per-set config. Subset cards were already stripped from
+    // byR above, so subset-covered tiers self-exclude (their byR bucket is empty).
+    const cfgRev = rates.reverse || []
+    const seen = new Set(cfgRev.map(e => e.rarity))
+    const effReverse = [...cfgRev, ...BASELINE_RATES.reverse.filter(e => !seen.has(e.rarity) && byR[e.rarity]?.length)]
+    const revHit = rollSlot(byR, effReverse)
     if (revHit) {
       pulls.push(instance(revHit))
     } else {

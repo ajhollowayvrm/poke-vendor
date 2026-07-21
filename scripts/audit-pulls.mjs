@@ -47,8 +47,10 @@ function auditSet(s) {
   const eff = effectiveRates(s.id)
   const routed = new Set([...(eff.rare || []), ...(eff.reverse || []), ...(eff.chase || [])].map(e => e.rarity))
   if (eff.aceSpec) routed.add('ACE SPEC Rare')
+  // ...and it actually never pulls in the sample (so tiers covered by a SUBSET_SLOT — Trainer
+  // Gallery / Shiny Vault, which show observed > 0 — are correctly NOT flagged).
   for (const t of CHASE_TIERS) {
-    if (has(t) && !routed.has(t)) flags.push(`chase-orphan:${t}(has ${byR[t].length}, no slot routes to it; ${(rate(t)*100).toFixed(2)}% observed)`)
+    if (has(t) && !routed.has(t) && (tierCount[t] || 0) === 0) flags.push(`chase-orphan:${t}(has ${byR[t].length}, never pulls)`)
   }
   // config-ghost: rate config assigns odds to a rarity the set has NO cards for (odds wasted).
   if (cfg) {
