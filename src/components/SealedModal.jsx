@@ -101,7 +101,7 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
                   <span className="muted"> ({gem.count} of {gem.total})</span>.
                 </div>
               )}
-              {p.bonus === 'promo' && <div style={{ marginTop: 4 }}>🎁 Ships a <b>guaranteed promo</b> hit on top of the packs.</div>}
+              {p.bonus === 'promo' && <div style={{ marginTop: 4 }}>🎁 Ships a <b>guaranteed promo card</b> on top of the packs — a fixed foil (a headline ex/V chase in premium boxes).</div>}
               {breaks.length > 0 && (
                 <div style={{ marginTop: 4 }}>
                   🔨 Breaks into {breaks.map((b, i) => (

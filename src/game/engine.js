@@ -1687,7 +1687,8 @@ export function openProduct(set, product) {
     if (pack._god) pack.forEach(c => { c._fromGod = true })
     all.push(...pack)
   }
-  // Bonus promo: a guaranteed hit-tier card (ETBs/tins/premiums include one).
+  // Bonus promo: the single fixed card this product ships (see makeProductPromo) — usually a
+  // cheap black-star foil, occasionally a headline ex/GX/V chase in a premium collection / box.
   const promo = makeProductPromo(set, product)
   if (promo) all.push(promo)
   // NOTE: each pack is deduped internally (a single pack never repeats a card), but a
@@ -1696,19 +1697,150 @@ export function openProduct(set, product) {
   return all
 }
 
-// Mint the guaranteed bonus promo for a product (null if it has no bonus).
-// A product may pin an EXACT card via `fixedPromo` (a card id) — e.g. the
-// Prismatic Evolutions Super-Premium Collection always ships the Eevee ex #174.
-export function makeProductPromo(set, product) {
+// --- Guaranteed bonus promos -------------------------------------------------
+// In real life a sealed product's bonus promo is a SINGLE fixed card the packaging tells
+// you about — a "Mini Tin [Flareon]" always holds the Flareon promo, a "Charizard ex Box"
+// always holds a Charizard ex. It is NOT a random chase re-rolled every rip. We honor that:
+// the promo a product yields is DETERMINISTIC (same product → same card, every time),
+// recovered from explicit data or the product name. The lone real exception is a Build &
+// Battle Box, which ships 1 of a small fixed pool (usually 4) of foil promos — that stays
+// randomised, but only within its real pool, never the whole set's chase.
+//
+// Real promos also skew CHEAP: most (bare-Pokémon blister/tin promos — Pachirisu, Cottonee)
+// are their own low-value black-star foil print, not the set's holo. Only the headline
+// ex/GX/V/VMAX/VSTAR promos in premium collections and ex/V boxes are genuinely valuable, and
+// those we pin to the real in-set card. This replaces the old behavior, which handed out a
+// randomly-drawn Ultra/Illustration Rare on EVERY etb/tin/blister rip — both unrealistic and
+// far too generous.
+
+// FNV-1a 32-bit string hash — a stable, deterministic pick seed so a given product always
+// yields the same promo WITHOUT touching Math.random (which would re-roll on every rip).
+function hashStr(s) {
+  const str = String(s)
+  let h = 2166136261
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) }
+  return h >>> 0
+}
+
+// A promo whose name carries an ex/GX/V/VMAX/VSTAR suffix is a valuable headline foil (pinned
+// to the real in-set card); a bare-Pokémon name is a cheap black-star foil print (minted).
+const CHASE_SUFFIX = /\b(?:ex|gx|v|vmax|vstar)$/i
+
+// Recover the featured promo's card name from a product name, or null when the name reveals no
+// single card (a plain ETB / Build & Battle / generic collection):
+//   "… Mini Tin [Flareon]"                 → "Flareon"
+//   "… Tin [Mega Feraligatr ex]"           → "Mega Feraligatr ex"
+//   "Blastoise GX Premium Collection"      → "Blastoise GX"
+//   "Charizard EX Box"                     → "Charizard EX"
+//   "Ascended Heroes Mega Feraligatr ex Box" → "Mega Feraligatr ex" (set-name prefix stripped)
+function promoNameFromProduct(set, product) {
+  let raw = product.name || ''
+  const br = raw.match(/\[([^\]]+)\]/)
+  // "[Luxray Line]" → "Luxray", "[Zorua & Cramorant]" → "Zorua" (a blister ships ONE promo).
+  if (br) return br[1].replace(/\s+line\b/i, '').replace(/\s*&.*$/, '').trim()
+  if (set?.name && raw.toLowerCase().startsWith(set.name.toLowerCase())) raw = raw.slice(set.name.length).trim()
+  const m = raw.match(/^(.+?\b(?:ex|gx|v|vmax|vstar))\s+(?:premium\s+)?(?:collection|box|powers)\b/i)
+  return m ? m[1].trim() : null
+}
+
+// Normalize a card/promo name for loose matching ("Charizard EX" ≡ "Charizard ex").
+function normName(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() }
+
+// Find the in-set card that best matches a promo name (highest-value match wins — premium
+// collections feature the fancy chase art), or null if the set has no such card.
+function findSetCardByName(set, name) {
+  const want = normName(name)
+  if (!want) return null
+  const matches = set.cards.filter(c => normName(c.name) === want)
+  if (!matches.length) return null
+  return matches.reduce((best, c) => (cardValue(c) > cardValue(best) ? c : best))
+}
+
+// Mint a synthetic low-value black-star promo print for a name not in the set. Deterministic
+// value in ~$2–6 (where real bare-Pokémon foil promos actually trade). Its id carries exactly
+// one hyphen so setIdOfCard resolves it to the real set for market drift.
+function mintSyntheticPromo(set, name, seed) {
+  const price = round2(2 + (hashStr(seed) % 400) / 100) // $2.00–$5.99, stable per product
+  return instance({
+    id: `${set.id}-promo${normName(name).replace(/\s+/g, '')}`,
+    name, number: 'PROMO', rarity: 'Promo', supertype: 'Pokémon',
+    price, foil: null, reverse: false,
+  })
+}
+
+// The candidate pool the deterministic ETB / Build & Battle fallbacks draw from. Real promos
+// there are foil POKÉMON in a believable ~$1–15 band — never bulk energy/Trainer chaff, never
+// a re-rolled chase. Falls back gracefully to the set's foil tiers, then anything.
+function promoCandidates(set) {
+  const pokemon = set.cards.filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
+  const src = pokemon.length ? pokemon : set.cards
+  const band = src.filter(c => { const v = cardValue(c); return v >= 1 && v <= 15 })
+  if (band.length) return band
+  const byR = cardsByRarity(set)
+  const foils = [...(byR['Rare Holo'] || []), ...(byR['Double Rare'] || []), ...(byR['Rare'] || [])]
+    .filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
+  return foils.length ? foils : src
+}
+
+// The deterministic promo an ETB / unresolved product falls back to: a real, stable card from
+// the candidate pool above (never a re-rolled chase). Same product → same card, every rip.
+function fallbackPromoCard(set, seed) {
+  const src = promoCandidates(set)
+  if (!src.length) return null
+  return instance(src[hashStr(seed) % src.length])
+}
+
+// Mint the guaranteed bonus promo for a product (null if it has no bonus). Resolution order:
+//   1. `fixedPromo`     — an exact card id (the featured chase, e.g. Prismatic SPC Eevee ex).
+//   2. `fixedPromoName` — a card NAME: pinned to the in-set card if present, else minted.
+//   3. `promoPool`      — Build & Battle's real 1-of-N: a RANDOM pick (per box) among ids/names.
+//   4. product name     — bracket [X] or "<Card> ex/GX/… Box/Collection": pin chase / mint cheap.
+//   5. Build & Battle   — no data: 1-of-4 random from a deterministic cheap set slice.
+//   6. fallback         — a deterministic cheap set card (plain ETBs, generic collections).
+export function makeProductPromo(set, product, rnd = Math.random) {
   if (product.bonus !== 'promo') return null
+  const tag = c => { if (c) c._promo = true; return c }
+  const seed = `${set.id}|${product.name || product.type}`
+
+  // 1. Exact card id.
   if (product.fixedPromo) {
     const exact = set.cards.find(c => c.id === product.fixedPromo)
-    if (exact) { const c = instance(exact); c._promo = true; return c }
+    if (exact) return tag(instance(exact))
   }
-  const byR = cardsByRarity(set)
-  const promoPool = byR['Ultra Rare'] || byR['Illustration Rare'] || byR['Double Rare'] || byR['Rare Holo']
-  if (!promoPool?.length) return null
-  const c = instance(pick(promoPool)); c._promo = true; return c
+  // 2. Explicit card name.
+  if (product.fixedPromoName) {
+    const card = findSetCardByName(set, product.fixedPromoName)
+    return tag(card ? instance(card) : mintSyntheticPromo(set, product.fixedPromoName, seed))
+  }
+  // 3. Build & Battle's real small pool — one of N, varying per box.
+  if (product.promoPool?.length) {
+    const choice = pick(product.promoPool, rnd)
+    const byId = set.cards.find(c => c.id === choice)
+    if (byId) return tag(instance(byId))
+    const byName = findSetCardByName(set, choice)
+    return tag(byName ? instance(byName) : mintSyntheticPromo(set, choice, `${seed}|${choice}`))
+  }
+  // 4. Identity parsed from the product name.
+  const name = promoNameFromProduct(set, product)
+  if (name) {
+    if (CHASE_SUFFIX.test(name)) {
+      const card = findSetCardByName(set, name)
+      if (card) return tag(instance(card)) // valuable headline foil → the real in-set card
+      // A chase name we can't resolve — don't fabricate a valuable card; fall through.
+    } else {
+      return tag(mintSyntheticPromo(set, name, seed)) // cheap bare-Pokémon black-star foil
+    }
+  }
+  // 5. Build & Battle with no explicit pool: a real 1-of-4 from a deterministic candidate slice.
+  if (/build\s*&?\s*battle/i.test(product.type || '')) {
+    const src = promoCandidates(set)
+    if (src.length) {
+      const slice = Array.from({ length: Math.min(4, src.length) }, (_, i) => src[(hashStr(seed) + i * 2654435761) % src.length])
+      return tag(instance(pick(slice, rnd)))
+    }
+  }
+  // 6. Deterministic cheap set-card fallback.
+  return tag(fallbackPromoCard(set, seed))
 }
 
 // ---- Sealed inventory -------------------------------------------------------
