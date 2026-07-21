@@ -668,23 +668,30 @@ function openCelebrationsPack(set) {
   return pulls
 }
 
-// Sets with an in-set "Shiny Vault" subset that, in real life, lands in the REVERSE slot at a
-// high aggregate rate (replacing the ordinary reverse holo). Rates from published pull data
-// (ThePriceDex): Shining Fates ~1 in 2.8 packs; Hidden Fates a touch rarer. Without this, the
-// Vault shinies only trickled out of the generic rare/reverse ladder (~1 in 7) — far too stingy.
-const VAULT_SLOT = {
-  swsh45: { odds: 0.36, test: id => id.startsWith('swsh45sv-') }, // Shining Fates Shiny Vault
-  sm115:  { odds: 0.30, test: id => id.startsWith('sma-') },      // Hidden Fates Shiny Vault
+// In-set alt-art SUBSETS that, in real life, land in the REVERSE slot at a published aggregate
+// rate (replacing the ordinary reverse holo) rather than trickling out of the generic rare/reverse
+// ladder. Rates from pull-tracker samples of thousands of packs (DigitalTQ / ThePriceDex):
+//   Shiny Vault      — Shining Fates ~1 in 2.8, Hidden Fates a touch rarer
+//   Galarian Gallery — Crown Zenith ~1 in 3
+//   Trainer Gallery  — SWSH sets ~1 in 8 (Brilliant Stars 1,004-pack sample; applied across the era)
+const SUBSET_SLOT = {
+  swsh45:    { odds: 0.36,  test: id => id.startsWith('swsh45sv-') },    // Shining Fates Shiny Vault
+  sm115:     { odds: 0.30,  test: id => id.startsWith('sma-') },         // Hidden Fates Shiny Vault
+  swsh12pt5: { odds: 0.30,  test: id => id.startsWith('swsh12pt5gg-') }, // Crown Zenith Galarian Gallery
+  swsh9:     { odds: 0.126, test: id => id.startsWith('swsh9tg-') },     // Brilliant Stars Trainer Gallery
+  swsh10:    { odds: 0.126, test: id => id.startsWith('swsh10tg-') },    // Astral Radiance Trainer Gallery
+  swsh11:    { odds: 0.126, test: id => id.startsWith('swsh11tg-') },    // Lost Origin Trainer Gallery
+  swsh12:    { odds: 0.126, test: id => id.startsWith('swsh12tg-') },    // Silver Tempest Trainer Gallery
 }
 
 export function openPack(set) {
   if (set.id === 'cel25') return openCelebrationsPack(set) // bespoke 4-card structure
   const byR = cardsByRarity(set)
-  // A Shiny Vault subset comes ONLY from its dedicated reverse slot below (at its real rate) —
-  // strip it from the generic rarity pools so it can't also leak out of the rare/reverse ladder
-  // and double-count. Without this the effective rate overshoots (~1 in 2.4 instead of 1 in 2.8).
-  const vault = VAULT_SLOT[set.id]
-  if (vault) for (const k of Object.keys(byR)) byR[k] = byR[k].filter(c => !vault.test(c.id))
+  // An alt-art subset (Shiny Vault / Galarian or Trainer Gallery) comes ONLY from its dedicated
+  // reverse slot below (at its real rate) — strip it from the generic rarity pools so it can't
+  // also leak out of the rare/reverse ladder and double-count (which overshoots the real rate).
+  const subset = SUBSET_SLOT[set.id]
+  if (subset) for (const k of Object.keys(byR)) byR[k] = byR[k].filter(c => !subset.test(c.id))
   const rates = ratesFor(set)
   const commons = byR['Common'] || byR['Uncommon'] || set.cards
   const uncommons = byR['Uncommon'] || commons
@@ -725,13 +732,13 @@ export function openPack(set) {
   const chaseHit = rates.chase ? rollSlot(byR, rates.chase) : null
   if (chaseHit) pulls.push(instance(chaseHit))
 
-  // REVERSE slot — a Shiny Vault card lands here at its real rate (Shining/Hidden Fates), else
-  // sets with an ACE SPEC subset land one ~1 in 5 packs; otherwise it's an IR/SIR/Hyper upgrade
-  // > special foil > ordinary reverse holo.
-  const vaultPool = vault && Math.random() < vault.odds ? set.cards.filter(c => vault.test(c.id)) : null
+  // REVERSE slot — an alt-art subset card (Shiny Vault / Galarian or Trainer Gallery) lands here
+  // at its real rate, else sets with an ACE SPEC subset land one ~1 in 5 packs; otherwise it's an
+  // IR/SIR/Hyper upgrade > special foil > ordinary reverse holo.
+  const subsetPool = subset && Math.random() < subset.odds ? set.cards.filter(c => subset.test(c.id)) : null
   const aceSpecPool = byR['ACE SPEC Rare']
-  if (vaultPool?.length) {
-    pulls.push(instance(pick(vaultPool)))
+  if (subsetPool?.length) {
+    pulls.push(instance(pick(subsetPool)))
   } else if (aceSpecPool?.length && rates.aceSpec && Math.random() < rates.aceSpec) {
     pulls.push(instance(pick(aceSpecPool)))
   } else {
