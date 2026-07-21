@@ -36,6 +36,7 @@ const EN_SETS = [
   // Scarlet & Violet, plus the evergreen reprints (151, Prismatic) that never really leave shelves.
   // Ordered newest → oldest; SHOP_SETS is re-sorted by releaseDate in engine.js so scoped fetches
   // can't scramble the "newest" that Pokémon Center gets first dibs on.
+  { id: 'me5',      name: 'Pitch Black' },
   { id: 'me4',      name: 'Chaos Rising' },
   { id: 'me3',      name: 'Perfect Order' },
   { id: 'me2pt5',   name: 'Ascended Heroes' },
@@ -65,6 +66,7 @@ const EN_SETS = [
   // --- Sword & Shield era ---
   // Crown Zenith ships a 70-card "Galarian Gallery" subset (swsh12pt5gg); merge it so the set is complete.
   { id: 'swsh12pt5', name: 'Crown Zenith',    secondary: true, alsoFetch: ['swsh12pt5gg'] },
+  { id: 'pgo',      name: 'Pokémon GO',       secondary: true },
   { id: 'swsh12',   name: 'Silver Tempest',   secondary: true },
   { id: 'swsh11',   name: 'Lost Origin',      secondary: true },
   { id: 'swsh10',   name: 'Astral Radiance',  secondary: true },
@@ -117,15 +119,35 @@ const EN_SETS = [
   // ===================== VINTAGE — out-of-print chase; surfaces as random finds =====================
   // --- Black & White / Call of Legends ---
   { id: 'bw11',    name: 'Legendary Treasures',  vintage: true },
+  { id: 'bw10',    name: 'Plasma Blast',         vintage: true },
   { id: 'bw9',     name: 'Plasma Freeze',        vintage: true },
+  { id: 'bw8',     name: 'Plasma Storm',         vintage: true },
+  { id: 'bw7',     name: 'Boundaries Crossed',   vintage: true },
+  { id: 'bw6',     name: 'Dragons Exalted',      vintage: true },
+  { id: 'bw5',     name: 'Dark Explorers',       vintage: true },
+  { id: 'bw4',     name: 'Next Destinies',       vintage: true },
+  { id: 'bw3',     name: 'Noble Victories',      vintage: true },
+  { id: 'bw2',     name: 'Emerging Powers',      vintage: true },
   { id: 'bw1',     name: 'Black & White',        vintage: true },
   { id: 'col1',    name: 'Call of Legends',      vintage: true },
   // --- HeartGold & SoulSilver ---
   { id: 'hgss1',   name: 'HeartGold SoulSilver', vintage: true },
+  { id: 'hgss2',   name: 'HS Unleashed',         vintage: true },
+  { id: 'hgss3',   name: 'HS Undaunted',         vintage: true },
   { id: 'hgss4',   name: 'Triumphant',           vintage: true },
+  // --- Platinum ---
+  { id: 'pl4',     name: 'Arceus',               vintage: true },
+  { id: 'pl3',     name: 'Supreme Victors',      vintage: true },
+  { id: 'pl2',     name: 'Rising Rivals',        vintage: true },
+  { id: 'pl1',     name: 'Platinum',             vintage: true },
   // --- Diamond & Pearl ---
   { id: 'dp1',     name: 'Diamond & Pearl',      vintage: true },
+  { id: 'dp2',     name: 'Mysterious Treasures', vintage: true },
   { id: 'dp3',     name: 'Secret Wonders',       vintage: true },
+  { id: 'dp4',     name: 'Great Encounters',     vintage: true },
+  { id: 'dp5',     name: 'Majestic Dawn',        vintage: true },
+  { id: 'dp6',     name: 'Legends Awakened',     vintage: true },
+  { id: 'dp7',     name: 'Stormfront',           vintage: true },
   // --- EX era ---
   { id: 'ex16',    name: 'Power Keepers',        vintage: true },
   { id: 'ex15',    name: 'EX Dragon Frontiers',  vintage: true },
@@ -228,6 +250,7 @@ const RARITY_ID_OVERRIDE = {
 const TCGCSV = 'https://tcgcsv.com/tcgplayer/3'
 const SET_GROUP = {
   // --- SHOP (in-print) ---
+  me5:      24688, // Pitch Black
   me4:      24655, // Chaos Rising
   me3:      24587, // Perfect Order
   me2pt5:   24541, // Ascended Heroes
@@ -250,6 +273,7 @@ const SET_GROUP = {
   sv3:     23228, // Obsidian Flames
   sv2:     23120, // Paldea Evolved
   sv1:     22873, // Scarlet & Violet Base
+  pgo:     3064,  // Pokémon GO
   swsh12pt5: 17688, // Crown Zenith
   swsh12:  3170,  // Silver Tempest
   swsh11:  3118,  // Lost Origin
@@ -296,13 +320,32 @@ const SET_GROUP = {
   g1:      1728,  // Generations
   // --- VINTAGE — sealed products + singles price fallback ---
   bw11:    1409,  // Legendary Treasures
+  bw10:    1370,  // Plasma Blast
   bw9:     1382,  // Plasma Freeze
+  bw8:     1413,  // Plasma Storm
+  bw7:     1408,  // Boundaries Crossed
+  bw6:     1394,  // Dragons Exalted
+  bw5:     1386,  // Dark Explorers
+  bw4:     1412,  // Next Destinies
+  bw3:     1385,  // Noble Victories
+  bw2:     1424,  // Emerging Powers
   bw1:     1400,  // Black & White
   col1:    1415,  // Call of Legends
   hgss1:   1402,  // HeartGold SoulSilver
+  hgss2:   1399,  // HS Unleashed
+  hgss3:   1403,  // HS Undaunted
   hgss4:   1381,  // HS Triumphant
+  pl4:     1391,  // Arceus
+  pl3:     1384,  // Supreme Victors
+  pl2:     1367,  // Rising Rivals
+  pl1:     1406,  // Platinum
   dp1:     1430,  // Diamond & Pearl
+  dp2:     1368,  // Mysterious Treasures
   dp3:     1380,  // Secret Wonders
+  dp4:     1405,  // Great Encounters
+  dp5:     1390,  // Majestic Dawn
+  dp6:     1417,  // Legends Awakened
+  dp7:     1369,  // Stormfront
   ex16:    1383,  // Power Keepers
   ex15:    1411,  // EX Dragon Frontiers
   ex14:    1395,  // Crystal Guardians
@@ -342,6 +385,10 @@ const SET_GROUP = {
 // (cases, code cards, singles, display cases, accessories).
 function classifyProduct(name) {
   const n = name.toLowerCase()
+  // Pokémon Center Elite Trainer Box — a store-exclusive ETB (same 9 packs, extra promo). Matched
+  // BEFORE the hard-reject because "(Exclusive)" would otherwise drop it; still reject its case/display
+  // variants via the guard so "…ETB Case (Exclusive)" stays out.
+  if (/pok[eé]?mon center.*elite trainer box/.test(n) && !/\bcase\b|display/.test(n)) return { type: 'Pokémon Center Elite Trainer Box', icon: '🎁', packs: 9, bonus: 'promo' }
   // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs, and —
   // for older sets — fixed THEME/THUNDER decks (no booster packs) and loose energy singles.
   if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|\bpin\b|pin collection|figure collection|art bundle|accessory|exclusive|theme deck|\bdeck\b|\benergy\b|unnumbered/.test(n)) return null
@@ -349,6 +396,9 @@ function classifyProduct(name) {
   if (/premium .*collection$|premium figure collection$/.test(n)) return { type: 'Premium Collection', icon: '💎', packs: 7, bonus: 'promo' }
   if (/build (&|and) battle/.test(n))       return { type: 'Build & Battle Box', icon: '⚔️', packs: 4, bonus: 'promo' }
   if (/elite trainer box$/.test(n))         return { type: 'Elite Trainer Box', icon: '📦', packs: 9, bonus: 'promo' }
+  // Half Booster Box — a retail half-size box (18 packs). Must precede the full Booster Box rule
+  // because the singular "Half Booster Box" also ends in "booster box".
+  if (/half booster box(es)?$/.test(n)) return { type: 'Half Booster Box', icon: '🗃️', packs: 18, bonus: null }
   if (/booster box$/.test(n))               return { type: 'Booster Box', icon: '🗃️', packs: 36, bonus: null }
   if (/booster bundle$/.test(n))            return { type: 'Booster Bundle', icon: '🎟️', packs: 6, bonus: null }
   if (/surprise box$/.test(n))              return { type: 'Surprise Box', icon: '🎁', packs: 8, bonus: 'promo' }
@@ -360,6 +410,9 @@ function classifyProduct(name) {
   if (/2-pack blister|two pack blister/.test(n))   return { type: '2-Pack Blister', icon: '🪟', packs: 2, bonus: 'promo' }
   // A single-pack blister: one booster + a fixed promo card.
   if (/single pack blister|1-pack blister|single booster/.test(n)) return { type: 'Blister', icon: '🪟', packs: 1, bonus: 'promo' }
+  // Premium Checklane Blister — a checkout-lane blister that ships a booster + a guaranteed foil promo.
+  // Precedes the plain checklane→Sleeved Pack rule so it keeps its promo.
+  if (/premium checklane|checklane blister/.test(n)) return { type: 'Premium Checklane Blister', icon: '🪟', packs: 1, bonus: 'promo' }
   if (/sleeved booster( pack)?$|checklane/.test(n))   return { type: 'Sleeved Pack', icon: '🛡️', packs: 1, bonus: null }
   // "<Pokémon> ex Box" / "V Box" / "VMAX Box" — a small box built around a chase card.
   if (/\bex box$|\bv box$|\bvmax box$|\bvstar box$/.test(n)) return { type: 'ex Box', icon: '🎁', packs: 4, bonus: 'promo' }
@@ -569,6 +622,7 @@ async function fetchSealed(groupId) {
 const TCGDEX = 'https://api.tcgdex.net/v2/en'
 // Our set id → TCGdex set id. Only lists the ones that differ.
 const TCGDEX_ID = {
+  me5:      'me05',
   me4:      'me04',
   me3:      'me03',
   me2pt5:   'me02.5',
@@ -750,8 +804,8 @@ async function fetchEnglishSet(cfg, psaMap) {
 
 
 // Canonical display order for product types.
-const PRODUCT_ORDER = ['Booster Pack','Sleeved Pack','2-Pack Blister','3-Pack Blister','Mini Tin',
-  'Booster Bundle','ex Box','Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Booster Box',
+const PRODUCT_ORDER = ['Booster Pack','Sleeved Pack','Premium Checklane Blister','2-Pack Blister','3-Pack Blister','Mini Tin',
+  'Booster Bundle','ex Box','Elite Trainer Box','Pokémon Center Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Half Booster Box','Booster Box',
   'Box','Collection','Blister','Sealed Product']
 function sortProducts(arr) {
   const rank = t => { const i = PRODUCT_ORDER.indexOf(t); return i === -1 ? PRODUCT_ORDER.length : i }
