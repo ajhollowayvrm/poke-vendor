@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "sim": "node scripts/sim.mjs"
+    "sim": "node scripts/sim.mjs",
+    "audit-pulls": "vite-node scripts/audit-pulls.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

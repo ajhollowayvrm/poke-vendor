@@ -438,7 +438,8 @@ const SET_RATES = {
       { rarity: 'Ultra Rare',  p: 0.0746 },  // 1 in 13.4
     ],
     reverse: [
-      { rarity: 'Illustration Rare',         p: 0.0800 },
+      // Prismatic has NO Illustration Rares — its reverse chase is the SIR pool (32 cards) + the
+      // Poké/Master Ball foils below. (Earlier configs listed an IR line the set can't fill.)
       { rarity: 'Special Illustration Rare', p: 0.0222 }, // 1 in 45 (the famous ~2× rate)
       { rarity: 'Hyper Rare',                p: 0.0056 }, // 1 in 178.6
     ],
@@ -551,6 +552,13 @@ const SET_RATES = {
   ecard3: { rare: [], reverse: [{ rarity: 'Special Illustration Rare', p: 0.0460 }] }, // Skyridge Crystals
 }
 function ratesFor(set) { return SET_RATES[set.id] || BASELINE_RATES }
+// Which sets carry an explicit (researched) rate config vs. falling back to BASELINE_RATES —
+// exposed for the pull-rate audit (scripts/audit-pulls.mjs) so it can flag baseline-only sets.
+export const RATED_SET_IDS = new Set(Object.keys(SET_RATES))
+export function rateConfigFor(setId) { return SET_RATES[setId] || null }
+// The EFFECTIVE rate config a set actually runs on (its own, else the baseline). The audit uses
+// this to tell a truly-orphaned chase tier (no slot routes to it) from a merely-brutal grail.
+export function effectiveRates(setId) { return SET_RATES[setId] || BASELINE_RATES }
 
 // Highest-rarity cards in a set, for stuffing a god pack with hits.
 function topRarityPool(byR) {
