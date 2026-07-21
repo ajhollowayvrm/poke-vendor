@@ -1393,6 +1393,18 @@ export function psaValueAt(card, grade) {
 // existing callers; the general per-grade function is psaValueAt.
 export function psa10Value(card) { return psaValueAt(card, 10) }
 
+// Chase quality of a set's HIT pool: of the cards that count as a hit when pulled (Double
+// Rare and up — the set's real chase lineup), what fraction would clear `$threshold` if they
+// graded PSA `grade`. A quick read on how stacked a set is — a box whose hits are mostly
+// $100+ gems is a very different rip than one whose hits top out at $20. Rides the living
+// market (psaValueAt does), so a hot set's rate climbs with it. Returns { pct, count, total }.
+export function hitGemRate(set, threshold = 100, grade = 10) {
+  const hits = (set?.cards || []).filter(c => rarityRank(c.rarity) >= HIT_THRESHOLD)
+  if (!hits.length) return { pct: 0, count: 0, total: 0 }
+  const count = hits.reduce((n, c) => n + (psaValueAt(c, grade) > threshold ? 1 : 0), 0)
+  return { pct: count / hits.length, count, total: hits.length }
+}
+
 // A per-card PRICE HISTORY series over a set's recent market-multiplier samples
 // (store.marketHistory[setId], the same ring the Price-guide sparkline uses). We recompute
 // the card's value through the real pricing path under EACH historical multiplier, oldest

@@ -1,6 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { useGame } from '../game/store'
-import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, SEALED_FLIP_RATE } from '../game/engine'
+import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE } from '../game/engine'
+
+// Code-split: the set price sheet (every card + PSA estimates) is only pulled when the
+// player taps to open it, so its chunk + a set's worth of card art stay off the rip path.
+const SetPriceList = lazy(() => import('./SetPriceList'))
 
 // The sealed-product page — the counterpart to CardModal, so a booster box / ETB / blister
 // is more than a thumbnail + price on the shelf. Opening it shows WHAT the product is (the
@@ -13,13 +17,15 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
   const listSealed = useGame(s => s.listSealed)
   const quickFlipSealed = useGame(s => s.quickFlipSealed)
   useGame(s => s.marketMults) // keep value live as the market drifts
+  const [showPrices, setShowPrices] = useState(false) // price-sheet sub-view toggle
 
-  // close on Escape — clicking the backdrop already closes; this adds keyboard parity
+  // close on Escape — clicking the backdrop already closes; this adds keyboard parity.
+  // From the price sheet, Escape steps back to the detail first (one layer at a time).
   useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onClose() }
+    const onKey = e => { if (e.key === 'Escape') showPrices ? setShowPrices(false) : onClose() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [onClose, showPrices])
   if (!item?.product) return null
 
   const p = item.product
@@ -31,6 +37,8 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
   const gain = cost != null ? round2(value - cost) : null
   const title = p.name || `${set?.name ? set.name + ' ' : ''}${p.type}`
   const year = (set?.releaseDate || '').slice(0, 4)
+  // How stacked this set's chase lineup is: of its hits, what share clears $100 in a PSA 10.
+  const gem = set ? hitGemRate(set, 100, 10) : null
 
   const fin = (msg) => { if (msg && flash) flash(msg); onClose() }
   const move = (dest, verb) => { moveStock('sealed', [item.uid], dest); fin(`${verb} ${title}.`) }
@@ -41,6 +49,21 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
     if (r?.error) return fin(r.error)
     const where = item.locked ? 'Personal' : 'the Storeroom'
     fin(`🔨 Broke into ${r.count}× ${r.type} (in ${where}).`)
+  }
+
+  // Price-sheet sub-view: full-width, replaces the detail. A ← Back returns to the detail.
+  if (showPrices) {
+    return (
+      <div className="modalbg" onClick={onClose}>
+        <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
+          <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+          <button className="btn alt" style={{ padding: '5px 12px', marginBottom: 12 }} onClick={() => setShowPrices(false)}>← Back to {p.type}</button>
+          <Suspense fallback={<div className="empty" style={{ marginTop: 12 }}>Loading price sheet…</div>}>
+            <SetPriceList setId={item.setId} />
+          </Suspense>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -72,6 +95,12 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
 
             <div className="banner" style={{ marginTop: 8 }}>
               <div>📦 <b>{p.packs}</b> booster pack{p.packs === 1 ? '' : 's'} inside{p.packs > 1 ? ` (~${fmtMoney(round2(base / p.packs))}/pack)` : ''}.</div>
+              {gem && gem.total > 0 && (
+                <div style={{ marginTop: 4 }}>
+                  💎 <b>{Math.round(gem.pct * 100)}%</b> of this set's {gem.total} hit{gem.total === 1 ? '' : 's'} clear <b>$100</b> graded PSA 10
+                  <span className="muted"> ({gem.count} of {gem.total})</span>.
+                </div>
+              )}
               {p.bonus === 'promo' && <div style={{ marginTop: 4 }}>🎁 Ships a <b>guaranteed promo</b> hit on top of the packs.</div>}
               {breaks.length > 0 && (
                 <div style={{ marginTop: 4 }}>
@@ -81,6 +110,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
                 </div>
               )}
             </div>
+
+            {/* Drill-down: the whole set priced out, card by card — the "is this a chase set
+                or a deep one?" read. Lazy-loaded on tap (see the code-split import up top). */}
+            {set && (
+              <button className="btn" style={{ width: '100%', marginTop: 12 }} onClick={() => setShowPrices(true)}>
+                📋 See the full {set.name} price sheet →
+              </button>
+            )}
 
             {/* Actions — the moves that make sense for a sealed unit, mirroring the shelf row */}
             <div className="sell-options" style={{ marginTop: 14 }}>

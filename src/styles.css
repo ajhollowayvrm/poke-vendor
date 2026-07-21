@@ -888,6 +888,22 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .priceitem .ptag { font-size:11px; font-weight:800; }
 .priceitem .pval { font-size:13px; font-weight:800; color: var(--green); }
 
+/* ---------- Sealed-modal set price sheet (lazy sub-view) ---------- */
+.setprice-head { display:flex; align-items:center; gap:12px; }
+.setprice-logo { height:40px; max-width:150px; object-fit:contain; flex:none; }
+.setprice-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; margin-top:10px; }
+.setprice-cell { background:#0c0f1a; border:1px solid var(--line); border-radius:10px; overflow:hidden;
+  display:flex; flex-direction:column; content-visibility:auto; contain-intrinsic-size:auto 260px; }
+.setprice-cell > img { width:100%; display:block; }
+.setprice-cell .spc-body { padding:6px 8px 8px; display:flex; flex-direction:column; gap:2px; }
+.spc-name { font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.spc-rarity { font-size:11px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.spc-prices { display:flex; flex-direction:column; gap:1px; margin-top:4px; }
+.spc-prices span { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:12px; }
+.spc-prices small { color: var(--dim); font-size:10.5px; text-transform:uppercase; letter-spacing:.3px; }
+.spc-prices b { font-weight:800; }
+.spc-prices .spc-gem { color: var(--gold, #ffd24a); }
+
 /* ---------- Special foils & god packs ---------- */
 .cardtile.foil-pokeball  { border-color: var(--red);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 40%, transparent), 0 8px 20px color-mix(in srgb, var(--red) 13%, transparent); }
