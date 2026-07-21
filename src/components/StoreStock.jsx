@@ -3,6 +3,7 @@ import { useGame, floorCount, floorSkuCap, floorItemCap, floorSkuCounts, floorSk
 import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, breakOptions, psaValueAt, rarityRank } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
 import CardTile from './CardTile'
+import SealedModal from './SealedModal'
 
 // The grouped-by-SET inventory view shared by all three stock places:
 //   place='floor'     — what's out on the sales floor (walk-ins & the counter buy this)
@@ -56,6 +57,9 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise centering read vs a fuzzy eyeball one
   const [toast, setToast] = useState(null)
   const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2600) }
+  // Tapping a sealed line/tile opens its detail modal — the "what is this?" read the tiny
+  // set-symbol thumbnail can't give. Lives here (not routed through onPick, which is card-only).
+  const [sealedView, setSealedView] = useState(null)
 
   // Per-tile quick actions for the grid — the same moves the table rows offer, so switching to
   // the tile view isn't a dead end. move out of Personal un-keeps the item (moveStock strips the
@@ -211,7 +215,7 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
           <div className="stock-lines">
             {g.lines.map(line => (
               <StockRow key={`${line.kind}|${line.key}`} line={line} place={place}
-                floorSkus={floorSkus} onRip={onRip} onPick={onPick} onHold={onHold} flash={flash}
+                floorSkus={floorSkus} onRip={onRip} onPick={onPick} onInspect={setSealedView} onHold={onHold} flash={flash}
                 selectMode={selectMode} selected={picked.has(line.key)} onToggle={() => toggleLine(line.key)} />
             ))}
           </div>
@@ -311,8 +315,8 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
             const canBreak = kind === 'sealed' && breakOptions(it).length > 0
             return (
               <div key={it.uid} className={`coll-cell ${selectMode ? 'selectable' : ''} ${isPicked ? 'picked' : ''}`}
-                onClick={() => (selectMode ? toggleUid(it.uid) : (kind === 'card' && onPick && onPick(it)))}
-                style={selectMode || (kind === 'card' && onPick) ? { cursor: 'pointer' } : undefined}>
+                onClick={() => (selectMode ? toggleUid(it.uid) : (kind === 'card' ? (onPick && onPick(it)) : setSealedView(it)))}
+                style={selectMode || kind === 'sealed' || (kind === 'card' && onPick) ? { cursor: 'pointer' } : undefined}>
                 {kind === 'card'
                   ? <CardTile card={it} noBorder interactive={!selectMode} />
                   : <div className="cardtile no-edge sealed-tile">
@@ -391,12 +395,13 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
         </div>
       )}
       {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
+      {sealedView && <SealedModal item={sealedView} place={place} onClose={() => setSealedView(null)} onRip={onRip} flash={flash} />}
     </>
   )
 }
 
 // One SKU line (identical copies stacked) + the actions that fit its place.
-function StockRow({ line, place, floorSkus, onRip, onPick, onHold, flash, selectMode, selected, onToggle }) {
+function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, flash, selectMode, selected, onToggle }) {
   const moveStock = useGame(s => s.moveStock)
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
@@ -463,9 +468,14 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onHold, flash, select
         ? <img className="tl-thumb" src={cardImg(first)} alt="" loading="lazy" decoding="async"
             onClick={selectMode ? undefined : () => onPick && onPick(first)} style={!selectMode && onPick ? { cursor: 'pointer' } : undefined} />
         : (set?.logo
-            ? <img className="tl-thumb sealed-thumb" src={set.logo} alt={set.name} loading="lazy" decoding="async" title={`${first.product.type} · ${set.name}`} />
-            : <span className="tl-icon">{first.product.icon || '📦'}</span>)}
-      <div className="tl-info" onClick={selectMode ? undefined : () => kind === 'card' && onPick && onPick(first)} style={!selectMode && kind === 'card' && onPick ? { cursor: 'pointer' } : undefined}>
+            ? <img className="tl-thumb sealed-thumb" src={set.logo} alt={set.name} loading="lazy" decoding="async"
+                title={`${first.product.type} · ${set.name} — tap for details`}
+                onClick={selectMode ? undefined : () => onInspect && onInspect(first)} style={!selectMode && onInspect ? { cursor: 'pointer' } : undefined} />
+            : <span className="tl-icon" title="Tap for details"
+                onClick={selectMode ? undefined : () => onInspect && onInspect(first)} style={!selectMode && onInspect ? { cursor: 'pointer' } : undefined}>{first.product.icon || '📦'}</span>)}
+      <div className="tl-info"
+        onClick={selectMode ? undefined : () => (kind === 'card' ? (onPick && onPick(first)) : (onInspect && onInspect(first)))}
+        style={!selectMode && (kind === 'card' ? onPick : onInspect) ? { cursor: 'pointer' } : undefined}>
         <div className="tl-name">{(featuredCopy || featuredSealed) ? '⭐ ' : ''}{label}</div>
         <div className="tl-sub muted">
           {kind === 'card' ? skuBadge(first) : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}

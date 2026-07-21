@@ -466,6 +466,15 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .modal-holo img { border-radius: 12px; display:block; width:100%;
   border: 3px solid var(--rarity, var(--line));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--rarity, transparent) 40%, transparent), 0 10px 30px #0008; }
+/* Sealed detail modal — a framed product panel standing in for the card art */
+.sealed-modal-art { width: 260px; flex: none; border-radius: 12px; background: var(--panel2);
+  border: 1px solid var(--line); box-shadow: 0 10px 30px #0008; padding: 22px 18px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: 200px; }
+.sealed-modal-art img { width: 100%; max-width: 210px; height: auto; border-radius: 0; box-shadow: none; border: none; }
+.sealed-modal-ico { font-size: 90px; line-height: 1; }
+.sealed-modal-badge { font-size: 12.5px; font-weight: 700; color: var(--dim);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+@media (max-width: 640px) { .sealed-modal-art { width: 200px; min-height: 150px; padding: 18px 14px; } .sealed-modal-ico { font-size: 64px; } }
 .subgrades { display:grid; grid-template-columns: repeat(2,1fr); gap:8px; margin: 10px 0; }
 .sg { background: var(--panel2); border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
 .sg b { font-size: 20px; } .sg span { color: var(--dim); font-size:12px; display:block; }
