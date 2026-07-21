@@ -204,6 +204,7 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
   return (
     <div className="modalbg" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <h2 style={{ fontSize: 18, marginBottom: 2 }}>{tier ? 'Edit pack line' : 'New pack line'}</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
           The band is what you <b>advertise</b> is inside — the game won't stop you mislabeling,
@@ -329,6 +330,7 @@ function PackBuilder({ tier, onClose, flash }) {
   return (
     <div className="modalbg" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 760 }} onClick={e => e.stopPropagation()}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <h2 style={{ fontSize: 18, marginBottom: 2 }}>🛠️ Build a {tier.icon} {tier.name}</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
           Sells at <b>{fmtMoney(tier.price)}</b>, advertising <b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside

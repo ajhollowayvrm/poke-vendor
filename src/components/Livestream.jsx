@@ -1157,6 +1157,7 @@ function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
   return (
     <div className="modalbg" onClick={onClose} style={{ zIndex: 30 }}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🎁 Give away a card</h2>
           <span className="pill">{pool.length} eligible</span>

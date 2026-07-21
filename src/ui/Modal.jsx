@@ -44,6 +44,7 @@ export function Modal({ children, onClose, dismissable = true, label, labelledBy
       <div ref={panelRef} className={`modal ${className}`.trim()} onClick={e => e.stopPropagation()}
         style={{ maxWidth, ...style }} role="dialog" aria-modal="true"
         aria-label={label} aria-labelledby={labelledBy} tabIndex={-1}>
+        {dismissable && <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>}
         {children}
       </div>
     </div>

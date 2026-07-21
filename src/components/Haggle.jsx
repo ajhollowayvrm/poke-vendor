@@ -93,6 +93,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   return (
     <div className="modalbg" onClick={close}>
       <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
+        <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
         <h2 style={{ fontSize: 19, marginBottom: 2 }}>Haggle · {vendorName}</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
           {card?.name} · market {fmtMoney(market)} · {arch.label} ({side === 'buy' ? 'selling to you' : 'buying from you'})

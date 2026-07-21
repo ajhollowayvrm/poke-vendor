@@ -610,6 +610,7 @@ export default function BoothInbox({ onRip, onPick }) {
         return (
           <div className="modalbg" onClick={() => setHoldPick(null)}>
             <div className="modal" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
+              <button className="modal-close" aria-label="Close" onClick={() => setHoldPick(null)}>✕</button>
               <h2 style={{ fontSize: 18, marginBottom: 2 }}>🔒 Save {holdPick.label} for…</h2>
               <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
                 It goes to the storeroom's "saved for regulars" shelf (off the sellable floor) for

@@ -453,6 +453,7 @@ export default function ShowFloor({ show, onLeave }) {
         return (
           <div className="modalbg" style={{ zIndex: 25 }} onClick={() => setMeetPick(null)}>
             <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
+              <button className="modal-close" aria-label="Close" onClick={() => setMeetPick(null)}>✕</button>
               <h2 style={{ fontSize: 18, marginBottom: 2 }}>🤝 Meet {meetPick.who}</h2>
               <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
                 As arranged — they're buying <b>{meetPick.desc}</b> at <b>{Math.round(meetPick.premiumMult * 100)}% of market</b>, cash on the spot (+{meetPick.notoriety}★).
@@ -485,6 +486,7 @@ export default function ShowFloor({ show, onLeave }) {
       {showTable && (
         <div className="modalbg" onClick={() => setShowTable(false)}>
           <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
+            <button className="modal-close" aria-label="Close" onClick={() => setShowTable(false)}>✕</button>
             <div className="row" style={{ alignItems: 'baseline' }}>
               <h2 style={{ marginRight: 'auto' }}>🪧 Your table</h2>
               {(() => {

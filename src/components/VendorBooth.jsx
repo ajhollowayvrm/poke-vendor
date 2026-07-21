@@ -32,6 +32,7 @@ function KioskBooth({ booth, onClose, flash }) {
   return (
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🔬 On-Site Grading Kiosk</h2>
           <span className="pill" style={{ background: '#7cf0ff22', color: '#7cf0ff' }}>~{days}-day turnaround</span>
@@ -270,6 +271,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   return (
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <div className="row" style={{ alignItems:'baseline' }}>
           <h2 style={{ marginRight:'auto' }}>{booth.recurring ? '🤝 ' : ''}{booth.name}</h2>
           {rap && <span className="pill" title="Your standing with this recurring dealer"
@@ -418,6 +420,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
       {pendingSealed && (
         <div className="modalbg" style={{ zIndex: 20 }} onClick={() => setPendingSealed(null)}>
           <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, textAlign: 'center' }}>
+            <button className="modal-close" aria-label="Close" onClick={() => setPendingSealed(null)}>✕</button>
             <h3 style={{ marginTop: 0 }}>
               {pendingSealed._origin === 'vintage' ? '🗝️ ' : (pendingSealed.product.icon || '📦') + ' '}{pendingSealed.product.type}
             </h3>
@@ -449,6 +452,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
       {pendingBuy && (
         <div className="modalbg" style={{ zIndex: 20 }} onClick={() => setPendingBuy(null)}>
           <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 380, textAlign: 'center' }}>
+            <button className="modal-close" aria-label="Close" onClick={() => setPendingBuy(null)}>✕</button>
             <h3 style={{ marginTop: 0 }}>Bought {pendingBuy.card.name}</h3>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
               for {fmtMoney(pendingBuy.price)} · market {fmtMoney(cardValue(pendingBuy.card))}.
@@ -504,6 +508,7 @@ function MysteryReveal({ result, onClose }) {
     return (
       <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
         <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
+          <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
           <h3 style={{ marginTop: 0 }}>📦 {packName}</h3>
           <div className="vendoritem featured" style={{ maxWidth: 200, margin: '0 auto' }}>
             {set?.logo && <img src={set.logo} alt={set?.name || ''} style={{ height: 44, objectFit: 'contain', alignSelf: 'center' }} />}
@@ -526,6 +531,7 @@ function MysteryReveal({ result, onClose }) {
   return (
     <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <h3 style={{ marginTop: 0 }}>{hit ? '🎉 ' : '❓ '}{packName}</h3>
         <div className="vendoritem featured" style={{ '--rarity': edge, maxWidth: 200, margin: '0 auto' }}>
           <img src={cardImg(card)} alt={card.name} style={{ width: '100%', borderRadius: 8 }} />
@@ -623,6 +629,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
   return (
     <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
       <div className="modal trade-builder" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
+        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <h3 style={{ marginTop: 0 }}>🔁 Build a trade with {booth.name}</h3>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
           One line per SKU — duplicates stack, tap a line (or +) to add copies. They value your
