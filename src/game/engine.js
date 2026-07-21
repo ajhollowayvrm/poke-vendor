@@ -53,13 +53,19 @@ export function preloadCardImages(cards) {
 // Sorted NEWEST → OLDEST by release date so the "first dibs on new sets" logic in
 // distributorCatalog is correct no matter what order sets.json is written in (a scoped
 // re-fetch appends fetched sets, which would otherwise scramble release order).
-export const SHOP_SETS = data.sets.filter(s => !s.vintage && !s.secondary)
+export const SHOP_SETS = data.sets.filter(s => !s.vintage && !s.secondary && !s.extra)
   .sort((a, b) => String(b.releaseDate || '').localeCompare(String(a.releaseDate || '')))
 // Vintage sets, keyed for the Vault vendor. The Vault sells these heavy old packs.
 export const VINTAGE_SETS = data.sets.filter(s => s.vintage)
 // Aftermarket / "still findable" older sets (SM + XY era). Not sold by modern distributors;
 // they surface as finds at show-floor booths (full product lineups, at a collector's markup).
 export const SECONDARY_SETS = data.sets.filter(s => s.secondary)
+// `extra` sets — Black Star Promos, McDonald's, POP, trainer kits, one-off specials. These have
+// NO sealed product to buy: they never enter the shop, distributors, or the Vault. They exist as
+// a card POOL — browsable in the price guide, and the source the real bonus promos pin to (a
+// "151 ETB" ships an svp black-star promo, a card that lives in an `extra` set, not sv3pt5). Kept
+// out of SHOP_SETS above so their cards never flood modern shop stock / offers / wants.
+export const EXTRA_SETS = data.sets.filter(s => s.extra)
 export function vintageProduct(set) {
   return (set.products || []).find(p => p.vintage) || setProducts(set)[0]
 }
@@ -995,6 +1001,12 @@ export function setIdOfCard(card) {
 
 const SET_BY_ID = Object.fromEntries(SETS.map(s => [s.id, s]))
 export function setById(setId) { return SET_BY_ID[setId] }
+// Every card across EVERY set (shop + secondary + vintage + extra), indexed by id. This is the
+// lookup a product's bonus promo uses to pin its REAL card, which often lives in a different set
+// than the product — a "151 ETB" ships an svp Black Star Promo, whose card id is `svp-…`.
+const CARD_BY_ID = new Map()
+for (const s of SETS) for (const c of (s.cards || [])) CARD_BY_ID.set(c.id, c)
+export function cardById(id) { return CARD_BY_ID.get(id) || null }
 export function setNameOfId(setId) { return SET_BY_ID[setId]?.name }
 export function setNameOfCard(card) { const id = setIdOfCard(card); return id ? SET_BY_ID[id]?.name : undefined }
 
@@ -1756,6 +1768,31 @@ function findSetCardByName(set, name) {
   return matches.reduce((best, c) => (cardValue(c) > cardValue(best) ? c : best))
 }
 
+// The Black Star Promo `extra` set that pairs with a main set's era. A bare-Pokémon blister/tin
+// promo is a REAL card from here — a "Surging Sparks [Pachirisu]" blister ships the svp Pachirisu
+// black-star promo, not a synthetic. Only modern eras press blister/tin promos we can pin.
+function eraPromoSetId(setId) {
+  const id = String(setId || '')
+  if (/^(sv|me|zsv|rsv)/.test(id)) return 'svp'
+  if (/^swsh/.test(id)) return 'swshp'
+  if (/^sm/.test(id)) return 'smp'
+  if (/^xy/.test(id)) return 'xyp'
+  if (/^bw/.test(id)) return 'bwp'
+  return null
+}
+
+// Resolve a bare-Pokémon promo name to the real Black Star Promo in the set's era pool. Prefers an
+// exact name match; among ties picks the CHEAPEST — a blister/tin promo is the cheap black-star
+// print, never a set's pricey alt-art of the same Pokémon. null if none (→ synthetic mint).
+function findEraPromo(set, name) {
+  const promoSet = SET_BY_ID[eraPromoSetId(set.id)]
+  if (!promoSet?.cards?.length) return null
+  const want = normName(name)
+  const matches = promoSet.cards.filter(c => normName(c.name) === want)
+  if (!matches.length) return null
+  return matches.reduce((lo, c) => (cardValue(c) < cardValue(lo) ? c : lo))
+}
+
 // Mint a synthetic low-value black-star promo print for a name not in the set. Deterministic
 // value in ~$2–6 (where real bare-Pokémon foil promos actually trade). Its id carries exactly
 // one hyphen so setIdOfCard resolves it to the real set for market drift.
@@ -1794,7 +1831,8 @@ function fallbackPromoCard(set, seed) {
 //   1. `fixedPromo`     — an exact card id (the featured chase, e.g. Prismatic SPC Eevee ex).
 //   2. `fixedPromoName` — a card NAME: pinned to the in-set card if present, else minted.
 //   3. `promoPool`      — Build & Battle's real 1-of-N: a RANDOM pick (per box) among ids/names.
-//   4. product name     — bracket [X] or "<Card> ex/GX/… Box/Collection": pin chase / mint cheap.
+//   4. product name     — bracket [X] or "<Card> ex/GX/… Box/Collection": pin in-set chase, or
+//                         pin the real era Black Star Promo for a bare Pokémon (else mint cheap).
 //   5. Build & Battle   — no data: 1-of-4 random from a deterministic cheap set slice.
 //   6. fallback         — a deterministic cheap set card (plain ETBs, generic collections).
 export function makeProductPromo(set, product, rnd = Math.random) {
@@ -1802,9 +1840,10 @@ export function makeProductPromo(set, product, rnd = Math.random) {
   const tag = c => { if (c) c._promo = true; return c }
   const seed = `${set.id}|${product.name || product.type}`
 
-  // 1. Exact card id.
+  // 1. Exact card id — resolved across ALL sets, so it can pin a Black Star Promo (e.g. svp-…)
+  //    that lives in an `extra` set rather than the product's own set.
   if (product.fixedPromo) {
-    const exact = set.cards.find(c => c.id === product.fixedPromo)
+    const exact = cardById(product.fixedPromo)
     if (exact) return tag(instance(exact))
   }
   // 2. Explicit card name.
@@ -1815,7 +1854,7 @@ export function makeProductPromo(set, product, rnd = Math.random) {
   // 3. Build & Battle's real small pool — one of N, varying per box.
   if (product.promoPool?.length) {
     const choice = pick(product.promoPool, rnd)
-    const byId = set.cards.find(c => c.id === choice)
+    const byId = cardById(choice)
     if (byId) return tag(instance(byId))
     const byName = findSetCardByName(set, choice)
     return tag(byName ? instance(byName) : mintSyntheticPromo(set, choice, `${seed}|${choice}`))
@@ -1828,7 +1867,10 @@ export function makeProductPromo(set, product, rnd = Math.random) {
       if (card) return tag(instance(card)) // valuable headline foil → the real in-set card
       // A chase name we can't resolve — don't fabricate a valuable card; fall through.
     } else {
-      return tag(mintSyntheticPromo(set, name, seed)) // cheap bare-Pokémon black-star foil
+      // A bare-Pokémon promo is a real Black Star Promo — pin it from the era's promo pool if we
+      // have that card, else mint a cheap stand-in with the right name.
+      const real = findEraPromo(set, name)
+      return tag(real ? instance(real) : mintSyntheticPromo(set, name, seed))
     }
   }
   // 5. Build & Battle with no explicit pool: a real 1-of-4 from a deterministic candidate slice.

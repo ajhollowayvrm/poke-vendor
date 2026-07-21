@@ -67,10 +67,11 @@ const EN_SETS = [
   // Crown Zenith ships a 70-card "Galarian Gallery" subset (swsh12pt5gg); merge it so the set is complete.
   { id: 'swsh12pt5', name: 'Crown Zenith',    secondary: true, alsoFetch: ['swsh12pt5gg'] },
   { id: 'pgo',      name: 'Pokémon GO',       secondary: true },
-  { id: 'swsh12',   name: 'Silver Tempest',   secondary: true },
-  { id: 'swsh11',   name: 'Lost Origin',      secondary: true },
-  { id: 'swsh10',   name: 'Astral Radiance',  secondary: true },
-  { id: 'swsh9',    name: 'Brilliant Stars',  secondary: true },
+  // SWSH sets ship a "Trainer Gallery" (*tg) subset of alt-art chases (Charizard TG, etc.); merge each.
+  { id: 'swsh12',   name: 'Silver Tempest',   secondary: true, alsoFetch: ['swsh12tg'] },
+  { id: 'swsh11',   name: 'Lost Origin',      secondary: true, alsoFetch: ['swsh11tg'] },
+  { id: 'swsh10',   name: 'Astral Radiance',  secondary: true, alsoFetch: ['swsh10tg'] },
+  { id: 'swsh9',    name: 'Brilliant Stars',  secondary: true, alsoFetch: ['swsh9tg'] },
   { id: 'swsh8',    name: 'Fusion Strike',    secondary: true },
   { id: 'swsh7',    name: 'Evolving Skies',   secondary: true },
   { id: 'swsh6',    name: 'Chilling Reign',   secondary: true },
@@ -181,6 +182,57 @@ const EN_SETS = [
   { id: 'base2',   name: 'Jungle',               vintage: true },
   { id: 'base1',   name: 'Base Set',             vintage: true },
   { id: 'base6',   name: 'Legendary Collection', vintage: true },
+
+  // ===================== EXTRA — promo & collectible card POOLS (no sealed product) =====================
+  // These have no booster/box to buy: they're a card pool, browsable in the price guide and — crucially —
+  // the source the real bonus promos pin to (a "151 ETB" ships an svp Black Star Promo). `extra:true`
+  // keeps them out of the shop, distributors, and the Vault. No SET_GROUP → no products, prices come
+  // straight from pokemontcg.io's tcgplayer data.
+  // --- Black Star Promos (every era) ---
+  { id: 'svp',     name: 'Scarlet & Violet Black Star Promos', extra: true },
+  { id: 'swshp',   name: 'SWSH Black Star Promos',             extra: true },
+  { id: 'smp',     name: 'SM Black Star Promos',               extra: true },
+  { id: 'xyp',     name: 'XY Black Star Promos',               extra: true },
+  { id: 'bwp',     name: 'BW Black Star Promos',               extra: true },
+  { id: 'hsp',     name: 'HGSS Black Star Promos',             extra: true },
+  { id: 'dpp',     name: 'DP Black Star Promos',               extra: true },
+  { id: 'np',      name: 'Nintendo Black Star Promos',         extra: true },
+  { id: 'basep',   name: 'Wizards Black Star Promos',          extra: true },
+  // --- McDonald's Collections ---
+  { id: 'mcd22',   name: "McDonald's Collection 2022", extra: true },
+  { id: 'mcd21',   name: "McDonald's Collection 2021", extra: true },
+  { id: 'mcd19',   name: "McDonald's Collection 2019", extra: true },
+  { id: 'mcd18',   name: "McDonald's Collection 2018", extra: true },
+  { id: 'mcd17',   name: "McDonald's Collection 2017", extra: true },
+  { id: 'mcd16',   name: "McDonald's Collection 2016", extra: true },
+  { id: 'mcd15',   name: "McDonald's Collection 2015", extra: true },
+  { id: 'mcd14',   name: "McDonald's Collection 2014", extra: true },
+  { id: 'mcd12',   name: "McDonald's Collection 2012", extra: true },
+  { id: 'mcd11',   name: "McDonald's Collection 2011", extra: true },
+  // --- POP Series (organized-play promos) ---
+  { id: 'pop9',    name: 'POP Series 9', extra: true },
+  { id: 'pop8',    name: 'POP Series 8', extra: true },
+  { id: 'pop7',    name: 'POP Series 7', extra: true },
+  { id: 'pop6',    name: 'POP Series 6', extra: true },
+  { id: 'pop5',    name: 'POP Series 5', extra: true },
+  { id: 'pop4',    name: 'POP Series 4', extra: true },
+  { id: 'pop3',    name: 'POP Series 3', extra: true },
+  { id: 'pop2',    name: 'POP Series 2', extra: true },
+  { id: 'pop1',    name: 'POP Series 1', extra: true },
+  // --- Trainer Kits & one-off specials ---
+  { id: 'tk2a',    name: 'EX Trainer Kit 2 Plusle', extra: true },
+  { id: 'tk2b',    name: 'EX Trainer Kit 2 Minun',  extra: true },
+  { id: 'tk1a',    name: 'EX Trainer Kit Latias',   extra: true },
+  { id: 'tk1b',    name: 'EX Trainer Kit Latios',   extra: true },
+  { id: 'sve',     name: 'Scarlet & Violet Energies', extra: true },
+  { id: 'det1',    name: 'Detective Pikachu',       extra: true },
+  { id: 'dc1',     name: 'Double Crisis',           extra: true },
+  { id: 'xy0',     name: 'Kalos Starter Set',       extra: true },
+  { id: 'dv1',     name: 'Dragon Vault',            extra: true },
+  { id: 'ru1',     name: 'Pokémon Rumble',          extra: true },
+  { id: 'bp',      name: 'Best of Game',            extra: true },
+  { id: 'si1',     name: 'Southern Islands',        extra: true },
+  { id: 'fut20',   name: 'Pokémon Futsal Collection', extra: true },
 ]
 // Sets flagged `vintage` are NOT sold in the normal shop — they only surface via
 // the rare "Vintage Vault" vendor that occasionally appears at higher-tier shows.
@@ -223,6 +275,9 @@ const EN_RARITY_MAP = {
   'Art Rare':         'Illustration Rare',
   'Special Art Rare': 'Special Illustration Rare',
   'SECRET RARE':      'Mega Hyper Rare',
+  // Black Star Promo / trainer-kit / McDonald's card pools (extra sets): a foil promo tier.
+  // Their real worth rides the fetched market price, not the rarity, so this is mostly cosmetic.
+  'Promo':            'Rare Holo',
 }
 const KNOWN_RARITIES = new Set([
   'Common','Uncommon','Rare','Rare Holo','Double Rare','ACE SPEC Rare','Illustration Rare',
@@ -903,6 +958,7 @@ async function main() {
       symbol: meta.images?.symbol,
       vintage: cfg.vintage || undefined,
       secondary: cfg.secondary || undefined,
+      extra: cfg.extra || undefined,
       cards,
       products,
     })
