@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "sim": "node scripts/sim.mjs",
-    "audit-pulls": "vite-node scripts/audit-pulls.mjs"
+    "audit-pulls": "vite-node scripts/audit-pulls.mjs",
+    "verify-prices": "node scripts/verify-prices.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
