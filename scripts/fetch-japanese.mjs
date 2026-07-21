@@ -30,12 +30,14 @@ const JT = 'https://api.justtcg.com/v1'
 const JA = 'https://api.tcgdex.net/v2/ja'
 const GAME = 'pokemon-japan'
 const PAGE = 20                               // free-tier max cards/call
-const MAX_CALLS = Number(process.env.MAX_CALLS || 95)
+const CALL_GAP = Number(process.env.CALL_GAP || 350)  // ms between JustTCG calls (free tier throttles ~10/s but bursts 429)
+const STOP_AT = Number(process.env.STOP_AT || 3)      // stop when this few daily calls remain
+const MAX_CALLS = Number(process.env.MAX_CALLS || 500)// safety cap only (real limit is the server daily quota)
 const round2 = n => Math.round(n * 100) / 100
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
-let jtCalls = 0
-let dailyRemaining = Infinity
+let okCalls = 0                               // successful JustTCG calls this run
+let dailyRemaining = Infinity                 // server-reported daily quota left (authoritative)
 
 async function tcgdex(url, tries = 3) {
   for (let i = 0; i < tries; i++) {
@@ -45,28 +47,31 @@ async function tcgdex(url, tries = 3) {
   return null
 }
 
-// One JustTCG call. Returns parsed json (or null). Tracks budget from _metadata + our own counter.
-async function justtcg(path, tries = 3) {
+// One JustTCG call. Returns parsed json on success; throws 'justtcg-failed' if it can't get a 200
+// after retries (caller treats the whole set as failed, not silently empty). Honors Retry-After.
+async function justtcg(path, tries = 12) {
   for (let i = 0; i < tries; i++) {
-    try {
-      const r = await fetch(`${JT}${path}`, { headers: { 'x-api-key': KEY } })
-      const j = await r.json().catch(() => null)
-      jtCalls++
-      const md = j?._metadata
-      if (md?.apiDailyRequestsRemaining != null) dailyRemaining = md.apiDailyRequestsRemaining
-      if (r.ok) return j
-      if (r.status === 429) { await sleep(1500 * (i + 1)); continue }   // rate limited — back off
-      console.error(`  JustTCG ${r.status}: ${j?.error || ''}`)
-      return null
-    } catch { await sleep(400 * (i + 1)) }
+    let r
+    try { r = await fetch(`${JT}${path}`, { headers: { 'x-api-key': KEY } }) }
+    catch { await sleep(1000 * (i + 1)); continue }
+    const j = await r.json().catch(() => null)
+    const md = j?._metadata
+    if (md?.apiDailyRequestsRemaining != null) dailyRemaining = md.apiDailyRequestsRemaining
+    if (r.ok) { okCalls++; return j }
+    if (r.status === 429) {                                        // rate limited (doesn't count vs quota) — wait it out
+      const ra = Number(r.headers.get('retry-after')) || Math.min(2 + i, 12)
+      await sleep(ra * 1000)
+      continue
+    }
+    throw new Error(`justtcg ${r.status}: ${j?.error || ''}`)
   }
-  return null
+  throw new Error('justtcg-failed')
 }
 
 // JustTCG rarity → our RARITY_ORDER tier (JP vocab: SR/RR/AR/SAR/UR + the SV/SWSH English tiers).
 const RARITY_MAP = {
   common: 'Common', uncommon: 'Uncommon', rare: 'Rare',
-  'double rare': 'Double Rare', 'ace spec rare': 'ACE SPEC Rare',
+  'double rare': 'Double Rare', 'ace spec rare': 'ACE SPEC Rare', 'ace rare': 'ACE SPEC Rare',
   'illustration rare': 'Illustration Rare', 'special illustration rare': 'Special Illustration Rare',
   'art rare': 'Illustration Rare', 'special art rare': 'Special Illustration Rare',
   'character rare': 'Illustration Rare', 'character super rare': 'Special Illustration Rare',
@@ -130,9 +135,9 @@ async function fetchSet(pair) {
   // Page through every JustTCG card in this set.
   const jcards = []
   for (let offset = 0; ; offset += PAGE) {
-    if (jtCalls >= MAX_CALLS || dailyRemaining < 2) throw new Error('budget')
+    if (okCalls >= MAX_CALLS || dailyRemaining <= STOP_AT) throw new Error('budget')
     const j = await justtcg(`/cards?game=${GAME}&set=${encodeURIComponent(jtId)}&limit=${PAGE}&offset=${offset}`)
-    await sleep(120)                                                      // stay under 10 req/s
+    await sleep(CALL_GAP)
     if (!j?.data?.length) break
     jcards.push(...j.data)
     if (!j.meta?.hasMore) break
@@ -218,7 +223,7 @@ async function main() {
     try {
       const s = await fetchSet(p)
       if (!s) { console.log('empty — skipped'); continue }
-      console.log(`${s.cards.length} cards (${s._priced} priced, ${s._art} art)  [${jtCalls} calls, ${dailyRemaining} left today]`)
+      console.log(`${s.cards.length} cards (${s._priced} priced, ${s._art} art)  [${dailyRemaining} calls left today]`)
       delete s._priced; delete s._art
       out.push(s)
     } catch (e) {
@@ -236,7 +241,7 @@ async function main() {
   const jp = meta.sets.filter(s => s.japanese)
   const jpCards = jp.reduce((a, s) => a + s.cards.length, 0)
   const jpPriced = jp.reduce((a, s) => a + s.cards.filter(c => c.price != null).length, 0)
-  console.log(`\nWrote ${out.length} JP sets this run (${jtCalls} JustTCG calls). Total JP: ${jp.length} sets, ${jpCards} cards (${jpCards ? Math.round(jpPriced / jpCards * 100) : 0}% priced).`)
+  console.log(`\nWrote ${out.length} JP sets this run (${okCalls} JustTCG calls). Total JP: ${jp.length} sets, ${jpCards} cards (${jpCards ? Math.round(jpPriced / jpCards * 100) : 0}% priced).`)
   if (stopped) console.log('Daily budget hit — rerun the same command tomorrow to fetch the rest.')
   if (unknownRarities.size) console.log(`Unmapped rarities (→ Rare): ${[...unknownRarities].join(', ')}`)
 }
