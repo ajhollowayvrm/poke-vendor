@@ -154,13 +154,15 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
                   <small>Put this vintage pack under glass: it pulls whale offers and appreciates while it sits</small>
                 </button>
               )}
-              {place !== 'floor' && (
+              {/* Floor / storeroom are store concepts — only offered when there's a storefront.
+                  Without one (the no-store Sealed inventory) the product just lives on hand. */}
+              {upgrades?.storefront && place !== 'floor' && (
                 <button className="btn alt sellopt" onClick={() => move('floor', '🛒 Out on the floor —')}>
                   <b>🛒 Put out on the floor</b>
                   <small>Stock it up front so walk-ins can buy it</small>
                 </button>
               )}
-              {place !== 'storeroom' && (
+              {upgrades?.storefront && place !== 'storeroom' && (
                 <button className="btn alt sellopt" onClick={() => move('storeroom', '📦 To the storeroom —')}>
                   <b>📦 Send to the storeroom</b>
                   <small>Backstock — off the floor, still sellable to counter orders</small>

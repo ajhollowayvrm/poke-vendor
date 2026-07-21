@@ -3,6 +3,7 @@ import { useGame } from '../game/store'
 import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE, breakOptions } from '../game/engine'
 import { toast } from '../ui/dialog'
 import { AskPicker } from '../ui/AskPicker'
+import SealedModal from './SealedModal'
 
 // Your SEALED product on hand — bought but not yet ripped. Identical products (same set +
 // type) STACK into one row with a quantity; each can be ripped (launches the normal rip,
@@ -14,6 +15,9 @@ export default function SealedInventory({ onRip }) {
   const listSealedMany = useGame(s => s.listSealedMany)
   // subscribe to the market so values re-render after a day-tick / drift event
   useGame(s => s.marketMults)
+  // Tapping a stack's header opens its detail modal — the same product read (chase density,
+  // price sheet, break-down) the store's StoreStock gives, so a no-store player isn't shorted it.
+  const [sealedView, setSealedView] = useState(null)
 
   // Group identical products (same set + type + vintage + kept flag) into stacks. Value is
   // the same per unit (product.price × current market); cost is summed across the units.
@@ -60,15 +64,16 @@ export default function SealedInventory({ onRip }) {
         <button className="btn alt" style={{ flex: 'none' }} onClick={listAll}>🌐 List all online</button>
       </div>
       <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', marginTop: 12 }}>
-        {groups.map(items => <SealedRow key={items[0].uid} items={items} onRip={onRip} hasStore={hasStore} />)}
+        {groups.map(items => <SealedRow key={items[0].uid} items={items} onRip={onRip} hasStore={hasStore} onInspect={setSealedView} />)}
       </div>
+      {sealedView && <SealedModal item={sealedView} place="inventory" onClose={() => setSealedView(null)} onRip={onRip} flash={toast} />}
     </>
   )
 }
 
 // One stacked row for a group of identical sealed products. Actions act on ONE unit at a
 // time (the stack decrements); with qty > 1 the row just stays and shows the new count.
-function SealedRow({ items, onRip, hasStore }) {
+function SealedRow({ items, onRip, hasStore, onInspect }) {
   const listSealed = useGame(s => s.listSealed)
   const listSealedMany = useGame(s => s.listSealedMany)
   const toggleLockSealed = useGame(s => s.toggleLockSealed)
@@ -124,7 +129,11 @@ function SealedRow({ items, onRip, hasStore }) {
 
   return (
     <div className="product sealed-item">
-      <div className="sealed-head">
+      <div className="sealed-head" role="button" tabIndex={0}
+        title="Tap for product details — value, chase density & the full set price sheet"
+        style={{ cursor: 'pointer' }}
+        onClick={() => onInspect && onInspect(item)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInspect && onInspect(item) } }}>
         {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
         <div style={{ flex: 1, minWidth: 0 }}>
           <b className="sealed-name">{item.product.icon || '📦'} {item.product.type}</b>
