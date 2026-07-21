@@ -1052,6 +1052,20 @@ export function cardInValueRange(min, max, rnd = Math.random, exclude = null) {
   return instance(sorted[0], 'floor', rnd)
 }
 
+// Cards drawn from a SPECIFIC set of sets, within a value band — the piece that makes an era
+// buy-in cohere: a '99 attic lot's SINGLES read as old cards, not just its sealed pack. Value
+// stays inside [min,max] on BOTH paths (an in-band era card, else the global picker), so era
+// theming changes WHICH cards appear, never their worth — the economy is unmoved by it.
+export function cardFromSetsInRange(sets, min, max, rnd = Math.random) {
+  const inBand = []
+  for (const s of sets || []) for (const c of (s.cards || [])) {
+    const v = c.price
+    if (v != null && v >= min && v <= max) inBand.push(c)
+  }
+  if (inBand.length) return instance(pick(inBand, rnd), 'floor', rnd) // singles in the wild vary in condition
+  return cardInValueRange(min, max, rnd) // era had nothing in this band — stay in-band via the global pool
+}
+
 // A graded copy of a real card (used for premium vendor stock / encounters).
 // High bands draw ONLY from real (card, grade) sale comps — a $35k slab in a showcase
 // is a card that has actually sold for $35k at that grade. Modest bands keep the old

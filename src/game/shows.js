@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
+import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
@@ -1169,9 +1169,14 @@ export function makeBuyinOffer(notoriety, opts = {}) {
   // mixed in. Ordinary = a stack of bulk with 1–2 real pieces. Scaled by your local fame.
   const n = estate ? 18 + Math.floor(Math.random() * 28) : 5 + Math.floor(Math.random() * 8)
   const hits = estate ? 3 + Math.floor(Math.random() * 4) : 1 + (Math.random() < 0.4 ? 1 : 0)
+  // The SINGLES are drawn from the seller's era too, so the whole lot reads as one person's
+  // collection (an attic hoard is old cards AND an old pack). Value stays in-band either way —
+  // see cardFromSetsInRange — so this is pure flavor, no economic shift.
+  const cardPool = eraPool(arch.era)
+  const drawCard = (lo, hi) => cardPool.length ? cardFromSetsInRange(cardPool, lo, hi) : cardInValueRange(lo, hi)
   const cards = []
-  for (let i = 0; i < Math.max(0, n - hits); i++) cards.push(cardInValueRange(0.25, 6))
-  for (let i = 0; i < hits; i++) cards.push(cardInValueRange(5, 18 + notoriety * 0.4))
+  for (let i = 0; i < Math.max(0, n - hits); i++) cards.push(drawCard(0.25, 6))
+  for (let i = 0; i < hits; i++) cards.push(drawCard(5, 18 + notoriety * 0.4))
   // Estate lots come with SEALED product — the influx a storefront pulls in. A vintage hoarder
   // (vault) brings old SINGLES with maybe ONE crown-jewel sealed pack; everyone else brings a
   // handful of sealed from their own era.
