@@ -491,8 +491,11 @@ function classifyProduct(name) {
   const n = name.toLowerCase()
   // Pokémon Center Elite Trainer Box — a store-exclusive ETB (same 9 packs, extra promo). Matched
   // BEFORE the hard-reject because "(Exclusive)" would otherwise drop it; still reject its case/display
-  // variants via the guard so "…ETB Case (Exclusive)" stays out.
-  if (/pok[eé]?mon center.*elite trainer box/.test(n) && !/\bcase\b|display/.test(n)) return { type: 'Pokémon Center Elite Trainer Box', icon: '🎁', packs: 9, bonus: 'promo' }
+  // variants via the guard so "…ETB Case (Exclusive)" stays out. The guard MUST also drop the code
+  // card ("Code Card - … Pokémon Center Elite Trainer Box"): it carries "pokémon center" +
+  // "elite trainer box" so it matches here, and fetchSealed keeps the CHEAPEST match per type — so a
+  // $0.91 code card silently replaced the real ~$290 box (this rule runs before the /code card/ reject).
+  if (/pok[eé]?mon center.*elite trainer box/.test(n) && !/\bcase\b|display|code card|^code /.test(n)) return { type: 'Pokémon Center Elite Trainer Box', icon: '🎁', packs: 9, bonus: 'promo' }
   // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs, and —
   // for older sets — fixed THEME/THUNDER decks (no booster packs) and loose energy singles.
   if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|\bpin\b|pin collection|figure collection|art bundle|accessory|exclusive|theme deck|\bdeck\b|\benergy\b|unnumbered/.test(n)) return null
