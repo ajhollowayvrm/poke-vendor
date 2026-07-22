@@ -92,6 +92,8 @@ export function initialState() {
     // set ONE flat price for. Walk-ins pay that price for a RANDOM pack out of it — a sealed-pack
     // mystery box. `stock` holds full sealed items moved out of sealedInventory (one bucket per uid).
     packMachine: { price: 0, stock: [], sold: 0, revenue: 0 },
+    supplies: {},            // 🧢 accessory rack stock, { [supplyId]: qty } — fungible units bought wholesale (SUPPLIES in constants.js), sold at retail through the counter; storage-fee exempt
+    suppliesStats: { sold: 0, revenue: 0 }, // lifetime accessory tallies (Shop floor readout)
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     standingOrder: null,     // 📋 { distId, setId, type, qty, lastDay } — one product on weekly auto-ship from a distributor (Standing Order upgrade)

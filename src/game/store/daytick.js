@@ -35,6 +35,7 @@ import {
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult,
+  supplyById, pickSupplyId,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -493,6 +494,22 @@ export function advanceDaysWith(set, get, days, away) {
   let buzzDays0 = s.giveawayDaysLeft || 0
   let eventCooldown = Math.max(0, (s.eventCooldownLeft || 0) - days)
   let eventExtraWalkins = 0
+  // 🧢 Supplies sell through the tick two ways: an event-night burst (league/tournament
+  // crowds sleeve decks, below) and the daily counter attach (with the counter block).
+  // Mutations land on this local copy; one write at the end carries it all.
+  const suppliesNext = { ...(s.supplies || {}) }
+  let suppliesRevenue = 0, suppliesSold = 0
+  const sellSupplies = (units) => {
+    let n = 0
+    for (let k = 0; k < units; k++) {
+      const id = pickSupplyId(suppliesNext)
+      if (!id) break
+      suppliesNext[id] -= 1
+      suppliesRevenue = round2(suppliesRevenue + supplyById(id).retail)
+      suppliesSold++; n++
+    }
+    return n
+  }
   {
     const plan = s.storeEventPlanned
     const ev = plan ? STORE_EVENTS[plan.type] : null
@@ -513,6 +530,11 @@ export function advanceDaysWith(set, get, days, away) {
         set(st => ({ generousActs: st.generousActs + 1 }))
         get().log('give', `🎟️ Raffle drawn — ${plan.prizeCard.name} ($${pv.toFixed(2)}) went home with a winner (+${pop}★)`, 0)
         get().bumpGoal('help', 1)
+      }
+      // 🧢 A player crowd clears the accessory rack — sleeves and boxes for tonight's decks.
+      if (ev.suppliesBurst) {
+        const cleared = sellSupplies(8 + Math.floor(Math.random() * 8))
+        if (cleared > 0) get().log('shop', `🧢 The ${ev.name} crowd cleared ${cleared} accessor${cleared === 1 ? 'y' : 'ies'} off the rack`, 0)
       }
       if (ev.trust) set(st => ({ regulars: (st.regulars || []).map(r => r.flags?.burned ? r : { ...r, trust: Math.min(100, (r.trust || 0) + ev.trust) }) }))
       if (ev.formsRegular) get().formRegular({ setId: SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]?.id, channel: 'walkin', generous: true })
@@ -636,6 +658,11 @@ export function advanceDaysWith(set, get, days, away) {
     // never undercuts them; Personal (locked) is never touched. Cheapest FIRST — the
     // counter chews through commons and leaves pricier pieces to linger for the premium
     // encounters. Income is capped at the day's budget either way.
+    // 🧢 Supplies attach to the day's footfall first — a few accessory units move per day,
+    // more as the shop gets busier (fame via the walk-in rate, staff, weekends via footWeight).
+    // Rung up at retail, additive to the counter's card trade (its own recap line).
+    const supplyRate = (1 + dayOrderRate('walkin', noto) * 2) * (1 + empThroughput * 0.3) * signage
+    sellSupplies(drawCount(supplyRate * footWeight))
     const cur = get()
     const everyday = [
       ...(cur.collection || []).filter(c => onFloor(c) && !c._featured)
@@ -721,10 +748,13 @@ export function advanceDaysWith(set, get, days, away) {
   }
   // resolve consignments whose timer elapsed over the days passed. Seed proceeds with the
   // storefront's counter business (logged separately below so the recap can show it).
-  let soldProceeds = round2(counterRevenue + machineRevenue)
+  let soldProceeds = round2(counterRevenue + machineRevenue + suppliesRevenue)
   if (counterRevenue > 0) {
     const nCounter = counterSoldC.size + counterSoldS.size
-    get().log('shop', `🏬 Counter sales — ${nCounter} everyday item${nCounter === 1 ? '' : 's'} off the floor to locals (singles, supplies & bulk) (+$${counterRevenue.toFixed(2)})`, counterRevenue)
+    get().log('shop', `🏬 Counter sales — ${nCounter} everyday item${nCounter === 1 ? '' : 's'} off the floor to locals (singles & bulk) (+$${counterRevenue.toFixed(2)})`, counterRevenue)
+  }
+  if (suppliesRevenue > 0) {
+    get().log('shop', `🧢 Supplies & accessories — ${suppliesSold} unit${suppliesSold === 1 ? '' : 's'} across the counter (+$${suppliesRevenue.toFixed(2)})`, suppliesRevenue)
   }
   // Names + biggest single sale over the window, for the daily recap's "what sold" list.
   const soldNames = []
@@ -1035,6 +1065,9 @@ export function advanceDaysWith(set, get, days, away) {
     storeConsignRequests: consignReqsNext,  // fresh asks in, stale asks gone
     buyinOffers: buyinsNext,                // sellers waiting on an answer (fresh in, stale gone)
     demandLog: (st.demandLog || []).filter(e => newAbsDay - (e.day || 0) <= 14), // the board tracks a fortnight
+    supplies: suppliesNext,                 // 🧢 accessory units sold off the rack this window
+    suppliesStats: { sold: (st.suppliesStats?.sold || 0) + suppliesSold,
+      revenue: round2((st.suppliesStats?.revenue || 0) + suppliesRevenue) },
 
     storeCredit: storeCreditNext,           // credit spent at the counter + breakage
     storeEventPlanned: null,                // tonight happened (or couldn't) — either way it's spent
@@ -1179,6 +1212,7 @@ export function advanceDaysWith(set, get, days, away) {
     resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled, binderReserved,
     wantsBrokered, brokerProceeds, offersAccepted, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
+    suppliesIncome: round2(suppliesRevenue), suppliesSold,
     machineIncome: round2(machineRevenue), machineSold,
     wholesaleIncome: round2(wholesaleIncome),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
@@ -1224,6 +1258,8 @@ export function mergeSummaries(a, b) {
     offersAccepted: add(a.offersAccepted, b.offersAccepted),
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
     counterIncome: round2(add(a.counterIncome, b.counterIncome)),
+    suppliesIncome: round2(add(a.suppliesIncome, b.suppliesIncome)),
+    suppliesSold: add(a.suppliesSold, b.suppliesSold),
     soldNames: [...(a.soldNames || []), ...(b.soldNames || [])].slice(0, 6),
     bigSale,
     newWants: add(a.newWants, b.newWants),

@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 45,
+  version: 46,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -476,6 +476,11 @@ export const useGame = create(persist((set, get) => ({
       // for" panel on the Shop floor. New list; starts empty. (In-flight buy-in offers from
       // older saves also lack the new hidden haggle floor — counterBuyin defaults it.)
       state.demandLog = state.demandLog ?? []
+    }
+    if (version < 46) {
+      // 🧢 Supplies & accessories: the rack starts empty — stock it from the Shop floor tab.
+      state.supplies = state.supplies ?? {}
+      state.suppliesStats = state.suppliesStats ?? { sold: 0, revenue: 0 }
     }
     return state
   },

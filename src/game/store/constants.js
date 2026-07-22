@@ -284,13 +284,39 @@ export const STORE_EVENTS = {
     buzzDays: 1, extraWalkins: 2, trust: 4, noto: 3 },
   leagueNight: { name: 'League Night', icon: '🎮', cost: 100, minNoto: 0,
     desc: 'Host the local league — snacks, sleeves and singles move all night, and a kid at the counter tonight is a regular next month.',
-    buzzDays: 1, extraWalkins: 1, trust: 3, noto: 2, income: (noto) => 40 + noto * 0.5, formsRegular: true },
+    buzzDays: 1, extraWalkins: 1, trust: 3, noto: 2, income: (noto) => 40 + noto * 0.5, formsRegular: true, suppliesBurst: true },
   tournament: { name: 'Tournament', icon: '🏆', cost: 250, minNoto: 40,
     desc: 'A sanctioned tournament: entry fees in, prize support out (covered by the fee). Serious players travel for it — a real notoriety pop and days of buzz.',
-    buzzDays: 2, extraWalkins: 2, trust: 2, noto: 8, income: (noto) => 140 + noto * 1.2 },
+    buzzDays: 2, extraWalkins: 2, trust: 2, noto: 8, income: (noto) => 140 + noto * 1.2, suppliesBurst: true },
   raffle: { name: 'Raffle Night', icon: '🎟️', cost: 40, minNoto: 0, needsPrize: true,
     desc: 'Put up a prize card and sell tickets. Ticket money in, the prize goes home with a winner — generosity with a box-office.',
     buzzDays: 2, extraWalkins: 1, trust: 3, income: (noto) => Math.min(400, 50 + noto * 1.5) },
+}
+
+// --- 🧢 Supplies & accessories (the real-LGS margin engine) --------------------
+// Sleeves, toploaders, binders — the ~50%-margin steady trade that pays a real shop's
+// lease while card prices fluctuate. Bought wholesale by the case, sold at retail through
+// the counter as footfall passes; league/tournament crowds burst-buy (players sleeve
+// decks at the table). Fungible stock (a quantity per line, no uids) in `supplies`;
+// deliberately EXEMPT from heldUnits storage fees (a rack of accessories isn't a hoard).
+export const SUPPLY_CASE = 10 // units per wholesale case
+export const SUPPLIES = [
+  { id: 'sleeves',    name: 'Card Sleeves (100ct)', icon: '🃏', cost: 2.5, retail: 5,  demandWeight: 5 },
+  { id: 'toploaders', name: 'Toploaders (25ct)',    icon: '🗂️', cost: 3,   retail: 6,  demandWeight: 4 },
+  { id: 'deckbox',    name: 'Deck Box',             icon: '🎴', cost: 3.5, retail: 8,  demandWeight: 3 },
+  { id: 'dice',       name: 'Dice & Counters',      icon: '🎲', cost: 1.5, retail: 4,  demandWeight: 3 },
+  { id: 'binder9',    name: '9-Pocket Binder',      icon: '📒', cost: 12,  retail: 25, demandWeight: 2 },
+  { id: 'playmat',    name: 'Playmat',              icon: '🖼️', cost: 9,   retail: 20, demandWeight: 2 },
+]
+export function supplyById(id) { return SUPPLIES.find(x => x.id === id) || null }
+// Weighted pick of one in-stock supply line (sleeves move most). Returns an id or null.
+export function pickSupplyId(supplies, rnd = Math.random) {
+  const inStock = SUPPLIES.filter(x => (supplies?.[x.id] || 0) > 0)
+  if (!inStock.length) return null
+  let tot = 0; for (const x of inStock) tot += x.demandWeight
+  let r = rnd() * tot
+  for (const x of inStock) { r -= x.demandWeight; if (r <= 0) return x.id }
+  return inStock[inStock.length - 1].id
 }
 
 export const CALENDAR_DAYS = 30

@@ -32,7 +32,8 @@ function randomSealedInRange(lo, hi) {
 const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
-  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor, absoluteDay } from './constants'
+  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor, absoluteDay,
+  SUPPLY_CASE, supplyById } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -492,6 +493,20 @@ export function createBoothSlice(set, get) {
         packMachine: { ...s.packMachine, stock: s.packMachine.stock.filter(x => x.uid !== uid) },
         sealedInventory: [...s.sealedInventory, { ...it, loc: 'storeroom' }],
       }))
+      return true
+    },
+
+    // --- 🧢 Supplies rack: buy accessory stock wholesale, by the case ---------------
+    // Fungible units into the `supplies` quantity map; the counter sells them at retail
+    // as footfall passes (see the day-tick), league/tournament crowds burst-buy.
+    buySupplies(id, cases = 1) {
+      const item = supplyById(id)
+      if (!item || !get().upgrades.storefront) return false
+      const n = Math.max(1, Math.floor(cases))
+      const cost = round2(item.cost * SUPPLY_CASE * n)
+      if (!get().spend(cost)) return false
+      set(s => ({ supplies: { ...(s.supplies || {}), [id]: (s.supplies?.[id] || 0) + SUPPLY_CASE * n } }))
+      get().log('buy', `🧢 Restocked the supplies rack — ${SUPPLY_CASE * n}× ${item.name}`, -cost)
       return true
     },
 

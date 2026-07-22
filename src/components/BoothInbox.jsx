@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS } from '../game/store'
+  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
@@ -55,6 +55,9 @@ export default function BoothInbox({ onRip, onPick }) {
   const cash = useGame(s => s.cash)
   const buyinOffers = useGame(s => s.buyinOffers)
   const demandLog = useGame(s => s.demandLog)
+  const supplies = useGame(s => s.supplies)
+  const suppliesStats = useGame(s => s.suppliesStats)
+  const buySupplies = useGame(s => s.buySupplies)
   const storeCredit = useGame(s => s.storeCredit)
   const storeEventPlanned = useGame(s => s.storeEventPlanned)
   const eventCooldownLeft = useGame(s => s.eventCooldownLeft)
@@ -309,6 +312,35 @@ export default function BoothInbox({ onRip, onPick }) {
                   </div>
                 </div>
               )}
+
+              {/* 🧢 Supplies rack: the accessory margin engine — wholesale in, retail out */}
+              <div className="wants">
+                <div className="wants-head">🧢 Supplies rack <span className="muted">— sleeves & accessories sell across the counter at ~50% margin (league nights clear the rack); buy wholesale by the case</span></div>
+                <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', marginTop: 4 }}>
+                  {SUPPLIES.map(it => {
+                    const qty = supplies?.[it.id] || 0
+                    const caseCost = it.cost * SUPPLY_CASE
+                    return (
+                      <div key={it.id} className="product">
+                        <h3 style={{ fontSize: 13, margin: 0 }}>{it.icon} {it.name}</h3>
+                        <div className="meta" style={{ flex: 1 }}>
+                          In stock: <b style={{ color: qty ? 'var(--green)' : 'var(--red)' }}>{qty}</b> · retails at <b>{fmtMoney(it.retail)}</b>
+                        </div>
+                        <button className="btn" style={{ padding: '6px 8px', fontSize: 12 }} disabled={cash < caseCost}
+                          title={`Wholesale a case of ${SUPPLY_CASE} at ${fmtMoney(it.cost)}/unit — sells through at ${fmtMoney(it.retail)}`}
+                          onClick={() => { if (buySupplies(it.id, 1)) flash(`🧢 Stocked ${SUPPLY_CASE}× ${it.name}.`) }}>
+                          Case of {SUPPLY_CASE} · {fmtMoney(caseCost)}
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+                {(suppliesStats?.sold || 0) > 0 && (
+                  <div className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
+                    Lifetime: <b>{suppliesStats.sold}</b> sold · <b style={{ color: 'var(--green)' }}>{fmtMoney(suppliesStats.revenue)}</b> rung up
+                  </div>
+                )}
+              </div>
 
               {/* Consignment intake: locals waiting on a yes/no */}
               {(storeConsignRequests || []).length > 0 && (
