@@ -27,6 +27,7 @@ import Binder from './components/Binder'
 import Regulars from './components/Regulars'
 import StoreStock from './components/StoreStock'
 import GradeReveal from './components/GradeReveal'
+import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
 import { AnimatedNumber, CashFlash } from './ui/AnimatedNumber'
@@ -866,6 +867,10 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
       {/* 📰 Reprint wave: industry news — shows whichever storefront is selected */}
       <ReprintWaveBanner cash={cash} flash={flash} />
+
+      {/* Buy-tab intel (each self-gates on its upgrade): 📈 demand + movers · 📐 rip EV */}
+      <HobbyWire />
+      <BreakersAlmanac />
 
       {!unlocked ? (
         <LockedDistributor dist={dist} notoriety={notoriety} />
