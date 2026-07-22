@@ -1070,6 +1070,68 @@ export function makeShopRequest(s, accepted = null) {
     loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'card', uid: hit?.uid, setId: setIdOfCard(want) })
 }
 
+// --- Seasonal gift buyers (Nov–Dec walk-ins) -------------------------------------
+// A parent/relative hunting a GIFT with a budget, not a specific card. The shop finds the
+// best giftable thing on the FLOOR within it — sealed first (a wrapped box IS a gift),
+// else a single — and rings it up at the in-store markup + a gift-wrap premium via the
+// same fulfillRequest plumbing walk-in requests use. Nothing giftable in budget → a
+// requestMiss that lands "a giftable sealed around $X" on the demand board.
+const GIFT_WRAP_PREMIUM = 0.08
+export function makeGiftBuyer(s, accepted = null, notoriety = 0) {
+  const pay = pickPayMethod('walkin', accepted)
+  const budget = round2(20 + Math.random() * 60 + Math.min(60, (notoriety || 0) * 0.2))
+  const who = pickAny(null, ['a parent hunting a birthday gift', 'an aunt shopping for her nephew',
+    'a grandpa buying for the grandkids', 'a mom whose kid is "into Pokémon now"',
+    'an office worker with a Secret Santa draw'])
+  const kid = pickAny(null, ['my nephew', 'my niece', 'my kid', 'the grandkids', 'a coworker\'s son'])
+  const sealedPick = (s.sealedInventory || [])
+    .filter(it => it.loc === 'floor' && !it.locked && !it._heldFor)
+    .map(it => ({ it, price: round2(sealedValue(it) * (1 + SEALED_SHOP_MARKUP + GIFT_WRAP_PREMIUM)) }))
+    .filter(x => x.price <= budget)
+    .sort((a, b) => b.price - a.price)[0]
+  const cardPick = sealedPick ? null : (s.collection || [])
+    .filter(c => c.loc === 'floor' && !c.locked && !c._heldFor)
+    .map(c => ({ c, price: round2(cardValue(c) * (1 + STORE_SALE_PREMIUM + GIFT_WRAP_PREMIUM)) }))
+    .filter(x => x.price <= budget && x.price >= budget * 0.25) // a 30¢ common isn't a gift
+    .sort((a, b) => b.price - a.price)[0]
+  const title = `🎁 ${cap(who)} needs a gift`
+  const body = `"${cap(kid)}'s obsessed with Pokémon and I don't know where to start — what can I get for about $${Math.round(budget)}?"`
+  if (sealedPick || cardPick) {
+    const label = sealedPick
+      ? `${sealedPick.it.product.type} of ${setById(sealedPick.it.setId)?.name || 'that set'}`
+      : cardPick.c.name
+    const price = sealedPick ? sealedPick.price : cardPick.price
+    const img = sealedPick ? (setById(sealedPick.it.setId)?.logo || null) : cardImg(cardPick.c)
+    return {
+      kind: 'request', channel: 'walkin',
+      title, body,
+      card: img ? { name: label, img, imgLarge: img } : null,
+      options: [
+        { text: `Wrap up the ${label} — $${price.toFixed(2)}`, tone: 'kind',
+          effect: { type: 'fulfillRequest', kind: sealedPick ? 'sealed' : 'card',
+            uid: sealedPick ? sealedPick.it.uid : cardPick.c.uid, price, payMethod: pay, notoriety: 2,
+            msg: 'Wrapped, ribboned, and rung up — one very happy kid coming. 🎁' } },
+        { text: 'Send them to the mall instead', tone: 'cold',
+          effect: { type: 'none', notoriety: -1, msg: 'They leave to buy a gift card somewhere else.' } },
+      ],
+    }
+  }
+  const wantLabel = `a giftable sealed around $${Math.round(budget)}`
+  return {
+    kind: 'request', channel: 'walkin',
+    title, body,
+    card: null,
+    options: [
+      { text: 'Apologize — nothing in that range out front', tone: 'fair',
+        effect: { type: 'requestMiss', what: wantLabel, reqKind: 'sealed', setId: null, notoriety: -1,
+          msg: 'Nothing giftable on the floor in their budget — they leave for the mall. 😞' } },
+      { text: 'Take their number and promise to stock up', tone: 'kind',
+        effect: { type: 'requestMiss', what: wantLabel, reqKind: 'sealed', setId: null, notoriety: 0,
+          msg: 'You promise to get gift-friendly product in. Stock the floor to catch the season.' } },
+    ],
+  }
+}
+
 // --- Walk-in consignment intake ------------------------------------------------
 // A local wants YOU to sell their card: it sits in your case at their asking price,
 // and when it sells you keep a commission — zero capital tied up, pure counter fee.

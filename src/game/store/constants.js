@@ -357,6 +357,35 @@ export function weekIndexOf(currentDay, monthsElapsed) {
 // job) via buyinDayMult. Online demand is untouched — the internet is open 24/7.
 // Both tables average ~1.0 across a week, so overall fame tuning is unchanged;
 // the week just has a SHAPE now (dead Tuesdays, packed Saturdays).
+// --- Seasons: the year has a shape too ------------------------------------------
+// monthsElapsed maps onto a real calendar (the game opens in September — back-to-school
+// straight away, the December gift rush lands ~M4, the summer lull ~M10; START_MONTH is
+// the tunable). Each month carries { walkin, kids, gift }: `walkin` rides the same per-day
+// multiplier as weekdays (so the counter/supplies/machine follow through footWeight),
+// `kids` boosts the kid channels (pack machine + bulk bin), and `gift` is the share of
+// walk-ins who are GIFT BUYERS (Nov–Dec only — see makeGiftBuyer in shows.js).
+// A December Saturday is the biggest day of the year, which is exactly right.
+export const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+export const START_MONTH = 8 // game month 0 = September
+export function monthIndexOf(monthsElapsed) { return (START_MONTH + Math.max(0, monthsElapsed || 0)) % 12 }
+export function monthName(monthsElapsed) { return MONTH_NAMES[monthIndexOf(monthsElapsed)] }
+export function yearOf(monthsElapsed) { return 1 + Math.floor((START_MONTH + Math.max(0, monthsElapsed || 0)) / 12) }
+const SEASON_MULTS = [
+  /* Jan */ { walkin: 0.85, kids: 1.0,  gift: 0    }, // post-holiday lull
+  /* Feb */ { walkin: 0.95, kids: 1.0,  gift: 0    },
+  /* Mar */ { walkin: 1.0,  kids: 1.0,  gift: 0    },
+  /* Apr */ { walkin: 1.0,  kids: 1.0,  gift: 0    },
+  /* May */ { walkin: 1.0,  kids: 1.0,  gift: 0    },
+  /* Jun */ { walkin: 0.9,  kids: 1.25, gift: 0    }, // summer: slower retail, school's out
+  /* Jul */ { walkin: 0.9,  kids: 1.25, gift: 0    },
+  /* Aug */ { walkin: 0.9,  kids: 1.25, gift: 0    },
+  /* Sep */ { walkin: 1.05, kids: 1.3,  gift: 0    }, // back-to-school
+  /* Oct */ { walkin: 1.0,  kids: 1.0,  gift: 0    },
+  /* Nov */ { walkin: 1.15, kids: 1.0,  gift: 0.10 }, // the ramp begins
+  /* Dec */ { walkin: 1.3,  kids: 1.1,  gift: 0.22 }, // gift rush
+]
+export function seasonOf(monthsElapsed) { return SEASON_MULTS[monthIndexOf(monthsElapsed)] }
+
 export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export function weekdayOf(absDay) { return WEEKDAYS[((absDay - 1) % 7 + 7) % 7] }
 const WALKIN_DAY_MULT = { Mon: 0.8, Tue: 0.75, Wed: 0.85, Thu: 0.95, Fri: 1.15, Sat: 1.45, Sun: 1.2 }

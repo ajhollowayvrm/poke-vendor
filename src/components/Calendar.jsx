@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useGame, dayOrderRate } from '../game/store'
+import { useGame, dayOrderRate, monthName, yearOf } from '../game/store'
 import { generateCalendar, SHOW_TIERS } from '../game/shows'
 import { fmtMoney } from '../game/engine'
 
@@ -20,7 +20,7 @@ export default function Calendar({ onAttend }) {
   return (
     <>
       <div className="toolbar">
-        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>📅 Day {currentDay} / 30{monthsElapsed ? ` · Month ${monthsElapsed + 1}` : ''}</span>
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>📅 Day {currentDay} / 30 · {monthName(monthsElapsed)}{yearOf(monthsElapsed) > 1 ? ` Y${yearOf(monthsElapsed)}` : ''}</span>
         {/* keep the Notoriety label and its bar together as one unit so they don't
             split across rows when the toolbar wraps on a phone. */}
         <span className="noto-group">

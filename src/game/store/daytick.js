@@ -22,7 +22,7 @@ import {
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
@@ -34,7 +34,7 @@ import {
   GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
-  STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult,
+  STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
   supplyById, pickSupplyId,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
@@ -598,16 +598,23 @@ export function advanceDaysWith(set, get, days, away) {
     // display case). Store buzz (giveaways + events) pumps foot traffic for its window.
     const buzz = buzzDays0 > i ? GIVEAWAY_TRAFFIC_MULT : 1
     const signageMult = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% store foot traffic
-    const dayMult = walkinDayMult(enteringAbsDay) // dead Tuesdays, packed Saturdays
+    // Weekday × season shape the day: dead Tuesdays, packed Saturdays — and a December
+    // Saturday is the biggest day of the year. Month computed per-day the way rent is,
+    // so a window crossing the month boundary shifts season mid-jump.
+    const season = seasonOf(s.monthsElapsed + Math.floor((s.currentDay + i) / CALENDAR_DAYS))
+    const dayMult = walkinDayMult(enteringAbsDay) * season.walkin
     footWeight += dayMult
     // FOOT TRAFFIC, as a count. A known shop gets a stream of people through the door.
     const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult
     const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
     for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
-        // ~35% of walk-ins come in ASKING for a specific item (sealed or single) rather than
-        // browsing — the store's demand layer. The rest are the usual offer/browse/trade mix.
-        const enc = Math.random() < 0.35
+        // Season first: in Nov–Dec a slice of walk-ins are GIFT BUYERS with a budget, not a
+        // want. Then ~35% come in ASKING for a specific item (the store's demand layer); the
+        // rest are the usual offer/browse/trade mix.
+        const enc = (season.gift > 0 && Math.random() < season.gift)
+          ? makeGiftBuyer(s, accepted, noto)
+          : Math.random() < 0.35
           ? makeShopRequest(s, accepted)
           : boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
         // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies — a
@@ -706,7 +713,8 @@ export function advanceDaysWith(set, get, days, away) {
       const avgVal = mstock.reduce((a, it) => a + sealedValue(it), 0) / mstock.length
       const dealMult = Math.max(0.35, Math.min(2.2, avgVal / pm.price)) // good deal → more buyers
       const signage = s.upgrades?.signage ? 1.15 : 1
-      const rate = (0.4 + noto / 350) * dealMult * signage
+      // Kid channel: summer/back-to-school swells the machine crowd (seasonOf .kids).
+      const rate = (0.4 + noto / 350) * dealMult * signage * seasonOf(s.monthsElapsed).kids
       const want = Math.min(MACHINE_MAX_PER_DAY * days, mstock.length, drawCount(rate * footWeight))
       if (want > 0) {
         const stock = [...mstock]
