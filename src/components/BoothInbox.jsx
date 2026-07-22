@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE } from '../game/store'
+  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
@@ -65,6 +65,8 @@ export default function BoothInbox({ onRip, onPick }) {
   const acceptBuyin = useGame(s => s.acceptBuyin)
   const declineBuyin = useGame(s => s.declineBuyin)
   const counterBuyin = useGame(s => s.counterBuyin)
+  const buylistPolicy = useGame(s => s.buylistPolicy)
+  const setBuylistPolicy = useGame(s => s.setBuylistPolicy)
   const [haggleId, setHaggleId] = useState(null) // buy-in offer with the haggle strip open
   const [haggleVal, setHaggleVal] = useState('')
   const planStoreEvent = useGame(s => s.planStoreEvent)
@@ -232,6 +234,19 @@ export default function BoothInbox({ onRip, onPick }) {
                 host events, and run a 🎁 giveaway when the room needs a jolt.
                 {giveawayDaysLeft > 0 && <> <b style={{ color: 'var(--gold)' }}> 🎉 Buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
                 {(storeCredit || 0) > 0 && <> <span className="pill" title="Outstanding store credit you've issued — locals spend it down at your counter over the coming days; a little never gets redeemed at all." style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>💳 {fmtMoney(storeCredit)} credit outstanding</span></>}
+              </div>
+
+              {/* 🛍️ The sign on the counter: posted buylist rate — always visible, it's the
+                  shop's standing posture (volume vs margin on walk-in collections). */}
+              <div className="toolbar" style={{ marginTop: 10, gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                <span className="muted" style={{ fontSize: 12.5 }}>🛍️ Buylist sign:</span>
+                {Object.entries(BUYLIST_POLICIES).map(([k, p]) => (
+                  <button key={k} className={`btn ${buylistPolicy === k ? 'gold' : 'alt'}`}
+                    style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
+                    title={p.blurb} onClick={() => { setBuylistPolicy(k); flash(`Sign changed — "${p.label} on collections."`) }}>
+                    {p.label}
+                  </button>
+                ))}
               </div>
 
               {/* Collection buy-ins: locals selling YOU their cards */}

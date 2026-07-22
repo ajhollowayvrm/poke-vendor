@@ -1,6 +1,6 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
 import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
-import { omniShelfCards } from './store/constants'
+import { omniShelfCards, BUYLIST_POLICIES } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -1274,12 +1274,16 @@ export function makeBuyinOffer(notoriety, opts = {}) {
   const free = estate && !jewel && Math.random() < 0.10
   // Ask by tone. Estate sellers want it GONE, so they go soft — EXCEPT a vault seller who knows
   // the sealed vintage pack is the crown jewel and prices that one lot a touch firmer.
-  const askMult = free ? 0
+  const baseAskMult = free ? 0
     : jewel ? 0.55 + Math.random() * 0.17
     : estate ? 0.38 + Math.random() * 0.17
     : arch.tone === 'soft' ? 0.45 + Math.random() * 0.15
     : arch.tone === 'sharp' ? 0.62 + Math.random() * 0.13
     : 0.52 + Math.random() * 0.15
+  // The sign on the counter: your posted buylist rate shifts what sellers expect
+  // (BUYLIST_POLICIES.askShift), clamped so nobody asks pennies or over-market.
+  const pol = BUYLIST_POLICIES[opts.policy] || BUYLIST_POLICIES.fair
+  const askMult = free ? 0 : clampN(baseAskMult + pol.askShift, 0.30, 0.85)
   const askCash = free ? 0 : Math.max(1, round2(market * askMult))
   // Hidden haggle floor, pre-rolled like a sealed deal's `fake`: the least they'd take, as a
   // fraction of their ask. Soft sellers leave real room; sharp ones barely any; a crown-jewel

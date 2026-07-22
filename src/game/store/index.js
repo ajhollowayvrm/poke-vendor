@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 47,
+  version: 48,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -488,6 +488,10 @@ export const useGame = create(persist((set, get) => ({
       // 🗑️ The Bulk Bin: the storefront's quarter box (the patient alternative to the LGS
       // bulk turn-in). Starts empty at the classic 25¢.
       state.bulkBin = state.bulkBin ?? { price: 0.25, stock: [], sold: 0, revenue: 0 }
+    }
+    if (version < 48) {
+      // 🛍️ Posted buylist policy: every existing shop was running market-standard rates.
+      state.buylistPolicy = state.buylistPolicy ?? 'fair'
     }
     return state
   },

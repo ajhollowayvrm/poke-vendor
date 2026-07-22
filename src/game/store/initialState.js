@@ -74,6 +74,7 @@ export function initialState() {
     storeConsignments: [],   // cards you're carrying for locals: {id, who, card, ask, commissionPct, daysLeft} — NOT yours; a sale pays your commission, unsold goes home
     giveawayDaysLeft: 0,     // store buzz window (giveaways + hosted events): walk-in traffic boost days remaining
     buyinOffers: [],         // locals selling YOU their cards: {id, who, hint, cards, askCash, estimate, estimateTight, pendingDays} — pay cash or store credit
+    buylistPolicy: 'fair',   // the posted "we pay ~X%" sign (BUYLIST_POLICIES): volume-vs-margin dial on walk-in collections
     demandLog: [],           // the DEMAND BOARD: walk-in requests you couldn't fill — {what, kind, setId, day}; a fortnight's worth, surfaced on the Shop floor tab so you stock what the town wants
     storeCredit: 0,          // outstanding store credit you've issued (a liability — drains from counter takings as locals spend it; counts against net worth)
     lgsCredit: 0,            // in-store credit YOU hold at the Local Game Store (an ASSET) — earned by turning in bulk at 5¢/card, spent automatically on LGS purchases

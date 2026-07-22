@@ -641,10 +641,20 @@ export function createBoothSlice(set, get) {
       get().addNotoriety(offer.estate ? 2 : 1) // a shop that takes in whole collections gets talked about
       get().bumpGoal('buy', offer.count)
       // A credit deal — or a grateful giveaway — keeps them in your orbit as a regular.
-      if ((method === 'credit' || free) && offer.cards[0]) get().formRegular({ setId: setIdOfCard(offer.cards[0]), channel: 'walkin', generous: true })
+      // A GENEROUS posted buylist does the same for cash sellers: the shop that pays well
+      // is the shop people come back to (the volume-side payoff of the thinner margin).
+      if ((method === 'credit' || free || get().buylistPolicy === 'generous') && offer.cards[0]) {
+        get().formRegular({ setId: setIdOfCard(offer.cards[0]), channel: 'walkin', generous: true })
+      }
       get().checkCompletions() // a bought lot can finish a set
       get().checkMilestones()
       return { cards: offer.cards, sealed: sealedRows, market: offer.market, paid, method, free }
+    },
+    // Change the sign on the counter (BUYLIST_POLICIES): volume-vs-margin on buy-ins.
+    setBuylistPolicy(key) {
+      if (!['tight', 'fair', 'generous'].includes(key)) return
+      set({ buylistPolicy: key })
+      get().log('shop', `🛍️ New sign on the counter — "${key === 'tight' ? 'We pay ~40%' : key === 'generous' ? 'We pay ~70%' : 'We pay ~55%'} on collections."`, 0)
     },
     declineBuyin(id) {
       const offer = (get().buyinOffers || []).find(o => o.id === id)

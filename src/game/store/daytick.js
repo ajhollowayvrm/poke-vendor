@@ -35,7 +35,7 @@ import {
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
-  supplyById, pickSupplyId,
+  supplyById, pickSupplyId, BUYLIST_POLICIES,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -1006,11 +1006,14 @@ export function advanceDaysWith(set, get, days, away) {
     .map(o => ({ ...o, pendingDays: o.pendingDays - days }))
     .filter(o => o.pendingDays > 0)
   if (hasStore && noto >= BUYIN_MIN_NOTO) {
+    // The sign on the counter: your posted buylist rate scales how many sellers walk in
+    // (BUYLIST_POLICIES.chanceMult) and shifts their asks (applied inside makeBuyinOffer).
+    const polMult = (BUYLIST_POLICIES[s.buylistPolicy] || BUYLIST_POLICIES.fair).chanceMult
     for (let i = 0; i < days && buyinsNext.length < BUYIN_CAP; i++) {
-      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * buyinDayMult(startAbs + i + 1))) {
+      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * polMult * buyinDayMult(startAbs + i + 1))) {
         // Some sellers are leaving the hobby: a whole-collection lot with SEALED product in it.
         const estate = Math.random() < BUYIN_ESTATE_CHANCE
-        const offer = makeBuyinOffer(noto, { estate })
+        const offer = makeBuyinOffer(noto, { estate, policy: s.buylistPolicy })
         buyinsNext = [offer, ...buyinsNext]
         const who = offer.who.charAt(0).toUpperCase() + offer.who.slice(1)
         const sealedNote = offer.sealedCount ? ` + ${offer.sealedCount} sealed` : ''

@@ -275,6 +275,21 @@ export const CREDIT_REDEEM_SHARE = 0.6  // share of each day's counter takings c
 export const CREDIT_BREAKAGE = 0.02     // daily % of outstanding credit that's simply never redeemed
 // Locals stop accepting credit when you owe too much of it (scales with your name).
 export function creditIssueCap(notoriety) { return 200 + (notoriety || 0) * 2 }
+// --- Posted buylist policy: the sign on the counter ---------------------------------
+// "We pay ~X% on collections" — the shop's standing posture, chosen by the player.
+// Volume vs margin, ~EV-neutral by construction: generous pulls ~50% more sellers through
+// the door at ~8pp higher asks; tight is the inverse. Applied to the buy-in arrival roll
+// (chanceMult, day-tick) and the ask distribution (askShift, makeBuyinOffer — the hidden
+// haggle floor derives AFTER the shift, so it scales with your posted rate). Free lots
+// and crown-jewel firmness are untouched — the policy never nerfs the loop, it aims it.
+export const BUYLIST_POLICIES = {
+  tight:    { label: 'We pay ~40%', chanceMult: 0.6, askShift: -0.08,
+    blurb: 'Sharky rates: fewer sellers walk in, but the lots that do come carry fatter margin.' },
+  fair:     { label: 'We pay ~55%', chanceMult: 1.0, askShift: 0,
+    blurb: 'Market-standard buylist — the normal flow of walk-in collections.' },
+  generous: { label: 'We pay ~70%', chanceMult: 1.5, askShift: 0.08,
+    blurb: 'The shop that pays: ~50% more sellers at thinner margins, and cash sellers tend to become regulars.' },
+}
 
 // --- Hosted store events ---------------------------------------------------------
 // Real shops live on recurring events — they create foot traffic, community, and
