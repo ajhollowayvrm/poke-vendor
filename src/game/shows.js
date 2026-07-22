@@ -986,7 +986,9 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
 // The premium is already baked into the returned price (in-store premium + a "came for it"
 // bump), so resolveEncounter charges effect.price as-is (no double premium).
 const REQUEST_PREMIUM = 0.06
-export function makeShopRequest(s, accepted = null) {
+// `opts.biasSetId`: during a reprint wave's launch week, walk-in requests lean hard toward
+// that set's sealed (the day-tick passes the wave set) — stock the drop or watch them miss.
+export function makeShopRequest(s, accepted = null, opts = {}) {
   const pay = pickPayMethod('walkin', accepted)
   const visitor = visitorFor('walkin', 'offer')
   // Sealed carries the fatter shop retail markup; singles the plain walk-in premium. Both add
@@ -1030,7 +1032,7 @@ export function makeShopRequest(s, accepted = null) {
   // STOREROOM is "the back" — you own it but it's not out, so grabbing it for a customer is
   // a choice you make on the spot. 🔒 Personal keepsakes aren't for sale at all (they read
   // as not-owned here), and items held for a regular are behind the counter and off-limits.
-  const wantSealed = Math.random() < 0.5
+  const wantSealed = opts.biasSetId ? Math.random() < 0.75 : Math.random() < 0.5
   if (wantSealed) {
     const shelf = (s.sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked && !it._heldFor).map(it => ({ it, loc: 'shelf' }))
     const back = (s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor).map(it => ({ it, loc: 'back' }))
@@ -1041,8 +1043,9 @@ export function makeShopRequest(s, accepted = null) {
       return build({ label: `${it.product.type} of ${set?.name || 'that set'}`, article: 'a', img: set?.logo || null,
         price: priceFor(sealedValue(it), true), loc, kind: 'sealed', uid: it.uid, setId: it.setId })
     }
-    // a random product they want — maybe you happen to have it, usually not
-    const set = pickAny(null, SHOP_SETS)
+    // a random product they want — maybe you happen to have it, usually not. Launch week
+    // aims half these hunts straight at the reprint-wave set.
+    const set = (opts.biasSetId && Math.random() < 0.5 && setById(opts.biasSetId)) || pickAny(null, SHOP_SETS)
     const prod = pickAny(null, setProducts(set))
     const pool = (s.sealedInventory || []).filter(it => !it.locked && !it._heldFor)
     const hit = pool.find(x => x.setId === set.id && x.product.type === prod.type)

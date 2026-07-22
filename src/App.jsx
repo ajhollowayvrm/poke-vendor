@@ -864,6 +864,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
     <>
       <DistributorPicker distributorState={distributors} notoriety={notoriety} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
 
+      {/* 📰 Reprint wave: industry news — shows whichever storefront is selected */}
+      <ReprintWaveBanner cash={cash} flash={flash} />
+
       {!unlocked ? (
         <LockedDistributor dist={dist} notoriety={notoriety} />
       ) : (<>
@@ -901,6 +904,48 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       </>)}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
+  )
+}
+
+// 📰 The reprint-wave preorder banner (Buy tab). Shows the active wave: what's restocking,
+// days to drop, your allocation at the locked unit price, and how many locals have paid
+// deposits at your counter. The lifecycle itself lives in the day-tick; committing here
+// goes through sourcing.preorderWave (prepaid — stock lands in the storeroom on drop day).
+function ReprintWaveBanner({ cash, flash }) {
+  const wave = useGame(s => s.reprintWave)
+  const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
+  const preorderWave = useGame(s => s.preorderWave)
+  useGame(s => s.marketMults) // the announcement dip moves the strike-through retail
+  const [qty, setQty] = useState(1)
+  if (!wave || wave.doneDay != null) return null
+  const absNow = absoluteDay(currentDay, monthsElapsed)
+  if (absNow >= wave.dropDay) return null
+  const daysLeft = wave.dropDay - absNow
+  const room = Math.max(0, (wave.allocCap || 0) - (wave.preordered || 0))
+  const q = Math.max(1, Math.min(qty, Math.max(1, room)))
+  const cost = round2(q * wave.unit)
+  const waveSet = setById(wave.setId)
+  return (
+    <div className="banner" style={{ marginTop: 12, borderColor: 'var(--gold, #ffd45e)' }}>
+      📰 <b>Reprint wave</b> — <b>{wave.label}</b> restocks in <b>{daysLeft} day{daysLeft > 1 ? 's' : ''}</b>.
+      {' '}Allocation via {wave.distName}: <b>{wave.preordered}/{wave.allocCap}</b> committed at <b>{fmtMoney(wave.unit)}</b> each
+      {waveSet ? <> (retail ~{fmtMoney((waveSet.products || []).find(p => p.type === wave.productType)?.price || 0)})</> : null}.
+      {(wave.custPreorders || 0) > 0 && <> <span className="pill" style={{ background: '#ffd45e22', color: 'var(--gold, #ffd45e)' }}
+        title="Locals who paid deposits at your counter — they pick up (and pay the balance at retail + a premium) on drop day. Short them and it's refunds + a grudge.">
+        🧾 {wave.custPreorders} local deposit{wave.custPreorders > 1 ? 's' : ''} riding on it</span></>}
+      {room > 0 ? (
+        <span className="row" style={{ gap: 6, marginTop: 6, alignItems: 'center', display: 'inline-flex', marginLeft: 8 }}>
+          <button className="btn alt" style={{ flex: 'none', padding: '2px 9px' }} onClick={() => setQty(v => Math.max(1, v - 1))}>−</button>
+          <b>{q}</b>
+          <button className="btn alt" style={{ flex: 'none', padding: '2px 9px' }} onClick={() => setQty(v => Math.min(room, v + 1))}>+</button>
+          <button className="btn gold" style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }} disabled={cash < cost}
+            onClick={() => { const r = preorderWave(q); flash(r.error || `📰 Preordered ${r.bought} — lands on drop day.`); if (!r.error) setQty(1) }}>
+            Preorder {q} · {fmtMoney(cost)}
+          </button>
+        </span>
+      ) : <b style={{ marginLeft: 8 }}> Allocation fully committed.</b>}
+    </div>
   )
 }
 

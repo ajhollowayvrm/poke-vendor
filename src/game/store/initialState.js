@@ -102,6 +102,10 @@ export function initialState() {
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     standingOrder: null,     // 📋 { distId, setId, type, qty, lastDay } — one product on weekly auto-ship from a distributor (Standing Order upgrade)
+    // 📰 The active (or just-finished, cooling-down) reprint wave: hot sets restock in
+    // announced waves — preorder window (allocCap via rapport, locals pay deposits), then
+    // drop day lands the stock + a launch rush. null until the first announcement.
+    reprintWave: null,
     sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
     wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
     showLeads: [],           // pre-show DMs: vendors holding an item for you / buyers arranging to meet you AT an upcoming show. Claimed on entry (→ activeShow._leads); expire if the show passes unattended.

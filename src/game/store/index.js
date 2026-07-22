@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 48,
+  version: 49,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -492,6 +492,10 @@ export const useGame = create(persist((set, get) => ({
     if (version < 48) {
       // 🛍️ Posted buylist policy: every existing shop was running market-standard rates.
       state.buylistPolicy = state.buylistPolicy ?? 'fair'
+    }
+    if (version < 49) {
+      // 📰 Reprint waves: no wave in flight on an old save — the day tick announces the first.
+      state.reprintWave = state.reprintWave ?? null
     }
     return state
   },

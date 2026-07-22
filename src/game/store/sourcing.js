@@ -48,6 +48,32 @@ export function createSourcingSlice(set, get) {
       if (order) get().log('buy', `📋 Standing order set — ${order.qty}× ${order.type} ships weekly while stocked`, 0)
       else get().log('buy', '📋 Standing order cancelled', 0)
     },
+    // 📰 Reprint-wave preorder: commit to `qty` units of the announced wave at the locked
+    // unit price, PREPAID — the stock lands in your storeroom on drop day (resolved in the
+    // day tick). Clamped to your allocation; the spend builds rapport with the shipping
+    // distributor like any wholesale order. Returns { ok, bought, cost } or { error }.
+    preorderWave(qty) {
+      const w = get().reprintWave
+      const absNow = absoluteDay(get().currentDay, get().monthsElapsed)
+      if (!w || w.doneDay != null || absNow >= w.dropDay) return { error: 'No wave open for preorders right now.' }
+      const n = Math.max(1, Math.floor(Number(qty) || 0))
+      const room = Math.max(0, (w.allocCap || 0) - (w.preordered || 0))
+      if (room < 1) return { error: 'Your allocation is fully committed.' }
+      const take = Math.min(n, room)
+      const cost = round2(take * w.unit)
+      if (!get().spend(cost)) return { error: `You can't cover the $${cost.toFixed(2)} prepay.` }
+      set(s => {
+        const cur = s.distributors[w.distId] || { spend: 0, stock: {} }
+        return {
+          reprintWave: { ...s.reprintWave, preordered: (s.reprintWave.preordered || 0) + take, prepaid: round2((s.reprintWave.prepaid || 0) + cost) },
+          distributors: { ...s.distributors, [w.distId]: { ...cur, spend: round2((cur.spend || 0) + cost) } },
+        }
+      })
+      get().log('buy', `📰 Preordered ${take}× ${w.label} for the reprint wave (−$${cost.toFixed(2)} prepaid — lands on drop day)`, -cost)
+      get().bumpGoal('buy', take)
+      return { ok: true, bought: take, cost }
+    },
+
     // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,
     // routes the actual purchase through buySealed (charge + stock the item + log), then
     // bumps your rapport with them and decrements their shelf. Returns the new inventory

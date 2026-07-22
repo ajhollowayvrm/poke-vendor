@@ -18,7 +18,7 @@ import {
   round2, cardValue, dailyViewers, rollBuyerSavvy, buyerMaxMult, BUYER_SAVVY,
   SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, driftMult, driftMultVintage,
   applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
-  setMarketMults, distributorById, restockRate,
+  setMarketMults, distributorById, restockRate, distributorUnlocked,
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice,
 } from '../engine'
@@ -69,6 +69,21 @@ const FORUM_REFILL_CHANCE = 0.7  // per game-day chance a fresh post appears (if
 // per set for the Prices-tab sparkline.
 const MARKET_EVENT_CHANCE = 0.10
 const MARKET_HISTORY_LEN = 14
+// --- 📰 Reprint waves: the modern-Pokémon restock cycle -------------------------------
+// Hot sets sell out industry-wide, then come back in ANNOUNCED waves: a preorder window
+// (allocation scaled by distributor rapport; locals pay deposits at your counter), then
+// DROP DAY — prepaid stock lands, deposit-holders pick up at retail+premium, and a launch
+// rush works the shop for a couple of days. The announcement itself SOFTENS the set's
+// market mult (reprint incoming) — held sealed dips while cheap supply opens up.
+const WAVE_ANNOUNCE_CHANCE = 0.125 // per eligible day (~one wave every 2-3 weeks with cooldown)
+const WAVE_COOLDOWN_DAYS = 10      // quiet days after a drop before the next can be announced
+const WAVE_NOTO_GATE = 20          // you hear allocation news once you're a little plugged in
+const WAVE_CUST_CAP = 8            // most locals who'll preorder through one shop
+const WAVE_DEPOSIT_FRAC = 0.3      // deposit = this share of the product's base retail
+const WAVE_RUSH_DAYS = 2           // launch-week buzz + request bias after the drop
+const WAVE_PICKUP_PREMIUM = 0.05   // preorder pickups pay retail markup + this
+const WAVE_REPRINT_EVENT = { kind: 'crash', pct: [-0.15, -0.08],
+  lines: ['Reprint wave announced — {set} supply is coming back, and singles & sealed ease off'] }
 // Sets whose sealed product appreciates (vintage-style drift) — the Client Concierge
 // never auto-holds these: setting one aside is selling down the player's hoard.
 const SECONDARY_IDS = new Set(SECONDARY_SETS.map(s => s.id))
@@ -569,6 +584,11 @@ export function advanceDaysWith(set, get, days, away) {
   // that isn't open. (A deep bargain listing still counts as "open online".)
   const openOnline = listedCards.length > 0 || hasBargain
   const openWalkin = shelfCards.length > 0 || sellableSealed.length > 0
+  // Launch week: right after a reprint wave drops, a big share of walk-in requests hunt
+  // exactly that set's product (makeShopRequest biasSetId) — stock it or watch them miss.
+  const waveRushSetId = (s.reprintWave && s.reprintWave.doneDay != null
+    && absoluteDay(s.currentDay, s.monthsElapsed) < s.reprintWave.dropDay + WAVE_RUSH_DAYS)
+    ? s.reprintWave.setId : null
   // Footfall weight of the days passed: Σ of each day's weekday multiplier (≈ `days` on
   // average, more if the window covers a weekend). The counter and pack machine scale by
   // this instead of a flat day count, so a Saturday genuinely rings up more than a Tuesday.
@@ -615,7 +635,7 @@ export function advanceDaysWith(set, get, days, away) {
         const enc = (season.gift > 0 && Math.random() < season.gift)
           ? makeGiftBuyer(s, accepted, noto)
           : Math.random() < 0.35
-          ? makeShopRequest(s, accepted)
+          ? makeShopRequest(s, accepted, { biasSetId: waveRushSetId })
           : boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
         // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies — a
         // card sells for more across your counter than in a web listing. (fulfillRequest already
@@ -1046,6 +1066,106 @@ export function advanceDaysWith(set, get, days, away) {
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
   const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days, newAbsDay), s.distributors, days, newAbsDay, get().log,
     s.upgrades.vintageScout ? 1.6 : 1) // 🕵️ the scout keeps sellers thinking of you
+  // --- 📰 Reprint-wave lifecycle: announce → window (deposits) → drop (stock + rush) ----
+  let waveNext = s.reprintWave || null
+  let rushBuzz = false
+  {
+    const active = waveNext && waveNext.doneDay == null
+    if (active) {
+      // Preorder window: locals put deposits down at your counter (storefront, minded).
+      const openDays = Math.max(0, Math.min(days, waveNext.dropDay - (newAbsDay - days)))
+      if (hasStore && walkinOK && openDays > 0 && (waveNext.custPreorders || 0) < WAVE_CUST_CAP) {
+        const rate = Math.min(1.5, 0.25 + noto / 300)
+        const n = Math.min(WAVE_CUST_CAP - (waveNext.custPreorders || 0), drawCount(rate * openDays))
+        if (n > 0) {
+          const dep = round2(waveNext.depositEach * n)
+          get().earn(dep)
+          waveNext = { ...waveNext, custPreorders: (waveNext.custPreorders || 0) + n, custDeposit: round2((waveNext.custDeposit || 0) + dep) }
+          get().log('shop', `📰 ${n} local${n > 1 ? 's' : ''} put a deposit down for the ${waveNext.label} wave (+$${dep.toFixed(2)}) — don't short them on drop day.`, dep)
+        }
+      }
+      if (newAbsDay >= waveNext.dropDay) {
+        // DROP DAY. Prepaid allocation lands in the storeroom; deposit-holders pick up at
+        // retail + premium (their rows ship straight out); anyone you can't fill gets a
+        // refund, a grudge, and a line on the demand board. Then the launch rush begins.
+        const set_ = setById(waveNext.setId)
+        const product = set_ && (set_.products || []).find(p => p.type === waveNext.productType)
+        if (set_ && product && (waveNext.preordered || waveNext.custPreorders)) {
+          const rows = []
+          for (let k = 0; k < (waveNext.preordered || 0); k++) rows.push({ ...get().mintSealedRow(set_, product, waveNext.unit), loc: 'storeroom' })
+          const pickups = Math.min(waveNext.custPreorders || 0, rows.length)
+          let pickupNet = 0
+          for (let k = 0; k < pickups; k++) {
+            const row = rows.shift() // ships to the preorder customer
+            const price = round2(sealedValue(row) * (1 + SEALED_SHOP_MARKUP + WAVE_PICKUP_PREMIUM))
+            pickupNet = round2(pickupNet + Math.max(0, round2(price - waveNext.depositEach)))
+          }
+          if (rows.length) set(st => ({ sealedInventory: [...rows, ...(st.sealedInventory || [])] }))
+          if (pickups > 0) {
+            get().earn(pickupNet)
+            get().addNotoriety(pickups)
+            get().log('sell', `📦 Drop day — ${pickups} preorder pickup${pickups > 1 ? 's' : ''} of the ${waveNext.label} paid their balance (+$${pickupNet.toFixed(2)}, +${pickups}★)`, pickupNet)
+            get().bumpGoal('sell', pickups); get().bumpGoal('profit', pickupNet)
+          }
+          const shorted = (waveNext.custPreorders || 0) - pickups
+          if (shorted > 0) {
+            const refund = round2(shorted * waveNext.depositEach)
+            const pay = Math.min(refund, Math.max(0, round2(get().cash)))
+            if (pay > 0) get().spend(pay)
+            get().addNotoriety(-shorted)
+            get().log('shop', `😤 Drop day — you couldn't fill ${shorted} preorder${shorted > 1 ? 's' : ''} of the ${waveNext.label}; deposits refunded (−$${refund.toFixed(2)}, −${shorted}★)`, -pay)
+            set(st => ({ demandLog: [
+              ...Array.from({ length: Math.min(shorted, 3) }, () => ({ what: waveNext.label, kind: 'sealed', setId: waveNext.setId, day: newAbsDay })),
+              ...(st.demandLog || []),
+            ].slice(0, 40) }))
+          }
+          if (rows.length) get().log('shop', `📰 The ${waveNext.label} wave landed — ${rows.length} in your storeroom, and launch-week hunters are coming through the door.`, 0)
+        } else if (set_) {
+          get().log('shop', `📰 The ${waveNext.label} wave dropped — you sat it out, but launch hunters will still come asking.`, 0)
+        }
+        rushBuzz = hasStore
+        waveNext = { ...waveNext, doneDay: newAbsDay }
+      }
+    } else if (noto >= WAVE_NOTO_GATE && (!waveNext || newAbsDay >= (waveNext.doneDay || 0) + WAVE_COOLDOWN_DAYS)) {
+      // Roll an announcement across the days passed. Hot sets (high mult) get reprinted.
+      let announced = false
+      for (let i = 0; i < days && !announced; i++) announced = Math.random() < WAVE_ANNOUNCE_CHANCE
+      if (announced && SHOP_SETS.length) {
+        const weights = SHOP_SETS.map(x => Math.max(0.2, (market.marketMults[x.id] ?? 1) - 0.7))
+        let tot = 0; for (const w of weights) tot += w
+        let r = Math.random() * tot, waveSet = SHOP_SETS[0]
+        for (let i = 0; i < SHOP_SETS.length; i++) { r -= weights[i]; if (r <= 0) { waveSet = SHOP_SETS[i]; break } }
+        const prods = waveSet.products || []
+        const product = prods.find(p => /booster box/i.test(p.type)) || prods.find(p => /elite trainer/i.test(p.type)) || prods[0]
+        if (product && product.price > 0) {
+          // Your allocation ships via your best-rapport unlocked distributor.
+          let best = null
+          for (const dv of DISTRIBUTORS) {
+            if (!distributorUnlocked(dv, noto)) continue
+            const level = rapportLevel((s.distributors?.[dv.id]?.spend) || 0).level
+            if (!best || level > best.level) best = { dist: dv, level }
+          }
+          if (best) {
+            const unit = round2(distributorPrice(best.dist, product.price, best.level) * 0.97)
+            const dropDay = newAbsDay + 5 + Math.floor(Math.random() * 4)
+            // Reprint news softens the set's market — the other edge of cheap supply.
+            const rr = applyMarketEvent(market.marketMults[waveSet.id] ?? 1, WAVE_REPRINT_EVENT)
+            market.marketMults[waveSet.id] = rr.mult
+            setMarketMults(market.marketMults)
+            market.events.push({ setId: waveSet.id, setName: waveSet.name, kind: 'crash', pct: rr.pct, line: rr.line.replace('{set}', waveSet.name) })
+            waveNext = {
+              setId: waveSet.id, productType: product.type, label: `${product.type} of ${waveSet.name}`,
+              announceDay: newAbsDay, dropDay, allocCap: 4 + 3 * best.level, unit,
+              distId: best.dist.id, distName: best.dist.name,
+              preordered: 0, prepaid: 0, custPreorders: 0, custDeposit: 0,
+              depositEach: round2(product.price * WAVE_DEPOSIT_FRAC), doneDay: null,
+            }
+            get().log('shop', `📰 Reprint wave announced — ${waveNext.label} restocks in ${dropDay - newAbsDay} days. Your allocation: up to ${waveNext.allocCap} at $${unit.toFixed(2)} via ${best.dist.name}. Preorder on the Buy tab.`, 0)
+          }
+        }
+      }
+    }
+  }
   // --- Pre-show leads: people DM you BEFORE a show, giving that trip a reason -----
   // Expire leads whose show has passed unattended (attending claims them at entry),
   // then maybe generate fresh ones for unlocked shows 1–4 days out: a recurring
@@ -1117,7 +1237,10 @@ export function advanceDaysWith(set, get, days, away) {
     storeCredit: storeCreditNext,           // credit spent at the counter + breakage
     storeEventPlanned: null,                // tonight happened (or couldn't) — either way it's spent
     eventCooldownLeft: eventCooldown,
-    giveawayDaysLeft: Math.max(0, buzzDays0 - days), // buzz (giveaway/event) ages out
+    // Buzz (giveaway/event) ages out — unless a reprint wave just dropped, which opens
+    // its own launch-week window.
+    giveawayDaysLeft: Math.max(Math.max(0, buzzDays0 - days), rushBuzz ? WAVE_RUSH_DAYS : 0),
+    reprintWave: waveNext,                  // 📰 announced / deposits taken / dropped+cooling
     forumPosts,
     dailyGoals: periodGoals,                       // weekly set; refreshed every 7 days
     goalsDay: goalsExpired ? newAbsDay : (s.goalsDay || newAbsDay),
