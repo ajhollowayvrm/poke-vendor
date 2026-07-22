@@ -92,6 +92,10 @@ export function initialState() {
     // set ONE flat price for. Walk-ins pay that price for a RANDOM pack out of it — a sealed-pack
     // mystery box. `stock` holds full sealed items moved out of sealedInventory (one bucket per uid).
     packMachine: { price: 0, stock: [], sold: 0, revenue: 0 },
+    // 🗑️ The Bulk Bin: the quarter box kids dig through. Toss raw cheap cards in (they move
+    // OUT of the collection, like machine stock), set one flat price, and it drains daily
+    // with foot traffic — the patient 5× alternative to the instant LGS bulk turn-in.
+    bulkBin: { price: 0.25, stock: [], sold: 0, revenue: 0 },
     supplies: {},            // 🧢 accessory rack stock, { [supplyId]: qty } — fungible units bought wholesale (SUPPLIES in constants.js), sold at retail through the counter; storage-fee exempt
     suppliesStats: { sold: 0, revenue: 0 }, // lifetime accessory tallies (Shop floor readout)
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass

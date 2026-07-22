@@ -12,6 +12,7 @@ const undoAction = { label: '↩︎ Undo', onClick: () => { if (useGame.getState
 export default function Collection({ onPick }) {
   const collection = useGame(s => s.collection)
   const turnInBulk = useGame(s => s.turnInBulk)
+  const stockBinBulk = useGame(s => s.stockBinBulk)
   const lgsCredit = useGame(s => s.lgsCredit)
   const submitted = useGame(s => s.gradesSubmitted)
   // bulk action handlers
@@ -136,13 +137,24 @@ export default function Collection({ onPick }) {
           onClick={() => setSetting('keepOne', !keepOne)}>
           {keepOne ? '🔒 Keeping singles' : '🔓 Keep singles'}
         </button>
-        {!selectMode && bulk.length > 0 && (
+        {/* Bulk exits: with a storefront YOU are the shop — the primary move is tossing bulk
+            in your own quarter bin (retails at ~5× the LGS rate, paid as it drains); the LGS
+            turn-in stays as the smaller instant-credit path. No store → LGS only, as ever. */}
+        {!selectMode && bulk.length > 0 && hasStore && (
           <button className="btn gold" style={{ flex: 'none', marginLeft: 'auto' }}
+            title={`Toss every raw card worth under a dollar into your store's bulk bin — kids dig them out at your bin price as foot traffic passes (manage it on the Shop floor tab)${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
+            onClick={() => {
+              const { tossed, kept } = stockBinBulk()
+              if (tossed) notify(`🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in the quarter bin.${kept ? ` ${kept} protected.` : ''}`, 6000)
+            }}>🗑️ Toss {bulk.length} bulk in the bin</button>
+        )}
+        {!selectMode && bulk.length > 0 && (
+          <button className={`btn ${hasStore ? 'alt' : 'gold'}`} style={{ flex: 'none', ...(hasStore ? {} : { marginLeft: 'auto' }) }}
             title={`Turn in every raw card worth under a dollar at the Local Game Store for in-store credit — a flat 5¢ a card, spent automatically on your next LGS order${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
               const { credit, sold } = turnInBulk()
               if (sold) notify(`📦 Turned in ${sold} bulk card${sold > 1 ? 's' : ''} for ${fmtMoney(credit)} LGS credit.`, 6000, undoAction)
-            }}>📦 Turn in {bulk.length} bulk → {fmtMoney(creditVal)} credit</button>
+            }}>📦 {hasStore ? 'LGS credit' : `Turn in ${bulk.length} bulk → ${fmtMoney(creditVal)} credit`}</button>
         )}
       </div>
       {!selectMode && (lgsCredit || 0) > 0 && (

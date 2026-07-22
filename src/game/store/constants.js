@@ -75,6 +75,9 @@ export const INCOME_WINDOW_DAYS = 7
 export const STORAGE_FREE_UNITS = 15   // this many held items cost nothing to store
 export const STORAGE_PER_UNIT = 2      // $/day for each held item beyond the allowance
 // How many held units are you carrying right now (drives the storage fee + the readout).
+// Deliberately EXEMPT: pack-machine + bulk-bin stock and the supplies rack — store fixtures
+// full of cheap everyday product aren't a hoard, and taxing them would punish exactly the
+// keep-the-counter-stocked behavior the store rewards.
 export function heldUnits(s) {
   return (s.sealedInventory?.length || 0) + (s.listings?.length || 0)
     + (s.consignments?.length || 0) + (s.shopDisplay?.length || 0) + (s.shopSealed?.length || 0)
@@ -478,6 +481,8 @@ export const COUNTER_MAX_PER_DAY = 1200
 // machine can't drain in a single tick). Demand also scales with fame + how good a deal the
 // flat price is versus the average pack's value.
 export const MACHINE_MAX_PER_DAY = 8
+// 🗑️ Bulk Bin: same idea — the quarter box only moves so many cards a day, however deep it is.
+export const BIN_MAX_PER_DAY = 10
 
 // The booth inbox holds unhandled encounters; anything past the cap is DISCARDED. So the cap
 // has to grow with fame, or a famous vendor's extra orders would silently evaporate — the

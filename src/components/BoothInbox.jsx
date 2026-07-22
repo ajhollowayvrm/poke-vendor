@@ -9,6 +9,7 @@ import CardTile from './CardTile'
 import SellStrips from './SellStrips'
 import MysteryPacks from './MysteryPacks'
 import PackMachine from './PackMachine'
+import BulkBin from './BulkBin'
 import StoreStock from './StoreStock'
 import Regulars from './Regulars'
 import { useModalEscape } from '../ui/dialog'
@@ -341,6 +342,9 @@ export default function BoothInbox({ onRip, onPick }) {
                   </div>
                 )}
               </div>
+
+              {/* 🗑️ Bulk bin: the quarter box — chaff in, foot-traffic cash out */}
+              <BulkBin />
 
               {/* Consignment intake: locals waiting on a yes/no */}
               {(storeConsignRequests || []).length > 0 && (

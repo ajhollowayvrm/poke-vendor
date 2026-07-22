@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 46,
+  version: 47,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -103,6 +103,8 @@ export const useGame = create(persist((set, get) => ({
     // Pack Machine stock is sealed packs pulled out of sealedInventory (one bucket per uid) —
     // register them too so a stray duplicate elsewhere gets dropped, not the machine's copy.
     for (const it of (state.packMachine?.stock || [])) if (it?.uid) seen.add(it.uid)
+    // Bulk Bin stock is cards pulled out of the collection — same rule as the machine.
+    for (const c of (state.bulkBin?.stock || [])) if (c?.uid) seen.add(c.uid)
     // Priority: the IN-FLIGHT money-bearing buckets win over a stray collection duplicate,
     // so a corruption-repair never silently discards a card you've already paid a grading
     // fee for (pendingGrades) or are owed proceeds on (listings/consignments). The card
@@ -481,6 +483,11 @@ export const useGame = create(persist((set, get) => ({
       // 🧢 Supplies & accessories: the rack starts empty — stock it from the Shop floor tab.
       state.supplies = state.supplies ?? {}
       state.suppliesStats = state.suppliesStats ?? { sold: 0, revenue: 0 }
+    }
+    if (version < 47) {
+      // 🗑️ The Bulk Bin: the storefront's quarter box (the patient alternative to the LGS
+      // bulk turn-in). Starts empty at the classic 25¢.
+      state.bulkBin = state.bulkBin ?? { price: 0.25, stock: [], sold: 0, revenue: 0 }
     }
     return state
   },

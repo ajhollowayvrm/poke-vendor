@@ -10,7 +10,7 @@
 // card (collection / listings / show inventory / shop shelf).
 
 import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
-  SHOP_SETS, SECONDARY_SETS, setProducts, marketMult } from '../engine'
+  SHOP_SETS, SECONDARY_SETS, setProducts, marketMult, isBulkCard, bulkSellableUids } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin } from '../shows'
 
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
@@ -492,6 +492,50 @@ export function createBoothSlice(set, get) {
       set(s => ({
         packMachine: { ...s.packMachine, stock: s.packMachine.stock.filter(x => x.uid !== uid) },
         sealedInventory: [...s.sealedInventory, { ...it, loc: 'storeroom' }],
+      }))
+      return true
+    },
+
+    // --- 🗑️ Bulk Bin: the quarter box kids dig through -----------------------------
+    // Toss raw cheap cards in at one flat price; the day-tick drains it with foot traffic.
+    // The patient ~5× alternative to the instant LGS bulk turn-in (turnInBulk).
+    setBinPrice(price) {
+      const p = Math.max(0, round2(Number(price) || 0))
+      set(s => ({ bulkBin: { ...s.bulkBin, price: p } }))
+    },
+    // Move specific cards into the bin (they leave the collection, like machine stock).
+    // Raw cards only — a slab in the quarter box would be a crime. Kept/held stay out.
+    stockBin(uids) {
+      const ids = new Set(Array.isArray(uids) ? uids : [uids])
+      if (!ids.size) return 0
+      const moving = get().collection.filter(c =>
+        ids.has(c.uid) && !c.grade && !c.locked && !c._heldFor)
+      if (!moving.length) return 0
+      const movingIds = new Set(moving.map(c => c.uid))
+      set(s => ({
+        collection: s.collection.filter(c => !movingIds.has(c.uid)),
+        bulkBin: { ...s.bulkBin, stock: [...(s.bulkBin.stock || []),
+          ...moving.map(({ loc, _featured, ...rest }) => rest)] },
+      }))
+      return moving.length
+    },
+    // One-tap "toss all bulk": every sub-$1 raw card, through the same keep-singles /
+    // locked safety net the LGS turn-in uses. Returns { tossed, kept }.
+    stockBinBulk() {
+      const s = get()
+      const bulkAll = s.collection.filter(isBulkCard)
+      const { sell, kept } = bulkSellableUids(s.collection, bulkAll.map(c => c.uid), { keepOne: s.settings?.keepOne })
+      const tossed = get().stockBin(sell)
+      if (tossed) get().log('shop', `🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in the quarter bin`, 0)
+      return { tossed, kept: kept.length }
+    },
+    // Fish one back out — it returns to the storeroom.
+    unstockBin(uid) {
+      const c = (get().bulkBin?.stock || []).find(x => x.uid === uid)
+      if (!c) return false
+      set(s => ({
+        bulkBin: { ...s.bulkBin, stock: s.bulkBin.stock.filter(x => x.uid !== uid) },
+        collection: [{ ...c, loc: 'storeroom' }, ...s.collection],
       }))
       return true
     },

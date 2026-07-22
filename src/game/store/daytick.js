@@ -27,7 +27,7 @@ import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
-  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, MACHINE_MAX_PER_DAY,
+  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, MACHINE_MAX_PER_DAY, BIN_MAX_PER_DAY,
   fameMult, fameBeyond, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
@@ -729,6 +729,40 @@ export function advanceDaysWith(set, get, days, away) {
       }
     }
   }
+  // 🗑️ BULK BIN: kids dig through the quarter box. Drains with foot traffic (kid-season
+  // boosted), hard-railed per day; each card leaves at the flat price. A dug-out card worth
+  // several times the price is somebody's best day of the week — the charm is the point.
+  let binRevenue = 0, binSold = 0
+  {
+    const bin = get().bulkBin || { price: 0, stock: [] }
+    const bstock = bin.stock || []
+    if (hasStore && walkinOK && bin.price > 0 && bstock.length) {
+      const avgVal = bstock.reduce((a, c) => a + cardValue(c), 0) / bstock.length
+      const dealMult = Math.max(0.35, Math.min(2.2, avgVal / bin.price)) // fat bin → more diggers
+      const signage = s.upgrades?.signage ? 1.15 : 1
+      const rate = (0.6 + noto / 250) * dealMult * signage * seasonOf(s.monthsElapsed).kids
+      const want = Math.min(BIN_MAX_PER_DAY * days, bstock.length, drawCount(rate * footWeight))
+      if (want > 0) {
+        const stock = [...bstock]
+        let treasure = null
+        for (let k = 0; k < want && stock.length; k++) {
+          const [sold] = stock.splice(Math.floor(Math.random() * stock.length), 1)
+          const v = cardValue(sold)
+          if (v >= Math.max(3, bin.price * 8) && (!treasure || v > treasure.v)) treasure = { name: sold.name, v }
+        }
+        binSold = bstock.length - stock.length
+        binRevenue = round2(binSold * bin.price)
+        set(st => ({ bulkBin: { ...st.bulkBin, stock,
+          sold: (st.bulkBin.sold || 0) + binSold,
+          revenue: round2((st.bulkBin.revenue || 0) + binRevenue) } }))
+        get().log('shop', `🗑️ Bulk bin — kids dug out ${binSold} card${binSold === 1 ? '' : 's'} at $${bin.price.toFixed(2)} each (+$${binRevenue.toFixed(2)})`, binRevenue)
+        if (treasure) {
+          get().addNotoriety(1)
+          get().log('shop', `🤩 A kid dug a ${treasure.name} (~$${treasure.v.toFixed(2)}) out of the quarter bin — best day of their week (+1★)`, 0)
+        }
+      }
+    }
+  }
   // STORE CREDIT redemption: locals holding credit spend it at the counter — those
   // sales come out of the day's takings instead of arriving as cash. A slice of
   // outstanding credit is simply never redeemed (breakage) — which is exactly why
@@ -756,7 +790,7 @@ export function advanceDaysWith(set, get, days, away) {
   }
   // resolve consignments whose timer elapsed over the days passed. Seed proceeds with the
   // storefront's counter business (logged separately below so the recap can show it).
-  let soldProceeds = round2(counterRevenue + machineRevenue + suppliesRevenue)
+  let soldProceeds = round2(counterRevenue + machineRevenue + suppliesRevenue + binRevenue)
   if (counterRevenue > 0) {
     const nCounter = counterSoldC.size + counterSoldS.size
     get().log('shop', `🏬 Counter sales — ${nCounter} everyday item${nCounter === 1 ? '' : 's'} off the floor to locals (singles & bulk) (+$${counterRevenue.toFixed(2)})`, counterRevenue)
@@ -1222,6 +1256,7 @@ export function advanceDaysWith(set, get, days, away) {
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     suppliesIncome: round2(suppliesRevenue), suppliesSold,
     machineIncome: round2(machineRevenue), machineSold,
+    binIncome: round2(binRevenue), binSold,
     wholesaleIncome: round2(wholesaleIncome),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
@@ -1260,6 +1295,8 @@ export function mergeSummaries(a, b) {
     binderReserved: add(a.binderReserved, b.binderReserved),
     machineIncome: round2(add(a.machineIncome, b.machineIncome)),
     machineSold: add(a.machineSold, b.machineSold),
+    binIncome: round2(add(a.binIncome, b.binIncome)),
+    binSold: add(a.binSold, b.binSold),
     wholesaleIncome: round2(add(a.wholesaleIncome, b.wholesaleIncome)),
     wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
     brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),
