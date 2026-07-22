@@ -54,6 +54,7 @@ export default function BoothInbox({ onRip, onPick }) {
   // Buy-ins (locals selling to you), store credit, and hosted events.
   const cash = useGame(s => s.cash)
   const buyinOffers = useGame(s => s.buyinOffers)
+  const demandLog = useGame(s => s.demandLog)
   const storeCredit = useGame(s => s.storeCredit)
   const storeEventPlanned = useGame(s => s.storeEventPlanned)
   const eventCooldownLeft = useGame(s => s.eventCooldownLeft)
@@ -211,6 +212,10 @@ export default function BoothInbox({ onRip, onPick }) {
         (() => {
           const omni = listings.map((l, idx) => ({ l, idx })).filter(({ l }) => l.everywhere && !l.expired && !l.card?._sealed)
           const activeRegulars = (regulars || []).filter(r => !r.flags?.burned)
+          // Demand board: missed walk-in requests, tallied by item (a fortnight's worth).
+          const demandTop = Object.entries((demandLog || []).reduce((m, e) => {
+            m[e.what] = (m[e.what] || 0) + 1; return m
+          }, {})).sort((a, b) => b[1] - a[1]).slice(0, 8)
           // Featured display-case picks — the floor stock list itself renders via
           // <StoreStock place="floor"> (grouped by set); holds live in the Storeroom tab.
           const featured = collection.filter(c => c._featured)
@@ -287,6 +292,20 @@ export default function BoothInbox({ onRip, onPick }) {
                         </div>
                       )
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* 📊 Demand board: what walk-ins hunted for and left without — stock it */}
+              {demandTop.length > 0 && (
+                <div className="wants">
+                  <div className="wants-head">📊 What the town's asking for <span className="muted">— walk-ins who left empty-handed this fortnight; stock it to catch the sale</span></div>
+                  <div className="row" style={{ flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                    {demandTop.map(([what, n]) => (
+                      <span key={what} className="pill" style={{ background: '#ffcb0522', color: 'var(--gold, #ffd45e)' }}>
+                        {what}{n > 1 ? <b> ×{n}</b> : ''}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}

@@ -1034,6 +1034,8 @@ export function advanceDaysWith(set, get, days, away) {
     storeConsignments: storeConsignsNext,   // consigned sales banked, expiries returned
     storeConsignRequests: consignReqsNext,  // fresh asks in, stale asks gone
     buyinOffers: buyinsNext,                // sellers waiting on an answer (fresh in, stale gone)
+    demandLog: (st.demandLog || []).filter(e => newAbsDay - (e.day || 0) <= 14), // the board tracks a fortnight
+
     storeCredit: storeCreditNext,           // credit spent at the counter + breakage
     storeEventPlanned: null,                // tonight happened (or couldn't) — either way it's spent
     eventCooldownLeft: eventCooldown,

@@ -995,7 +995,9 @@ export function makeShopRequest(s, accepted = null) {
 
   // Assemble the encounter once the desired item + its location are known.
   //   loc: 'shelf' (on display) | 'back' (owned, not out) | 'none' (don't own it)
-  function build({ label, article, img, price, loc, kind, uid }) {
+  // `setId` rides along on a MISS so the demand board can aggregate what the town keeps
+  // asking for (see resolveEncounter's requestMiss → demandLog).
+  function build({ label, article, img, price, loc, kind, uid, setId }) {
     const has = loc === 'shelf' || loc === 'back'
     const options = has
       ? [
@@ -1009,9 +1011,9 @@ export function makeShopRequest(s, accepted = null) {
         ]
       : [
           { text: "Apologize — you don't have it", tone: 'fair',
-            effect: { type: 'requestMiss', what: label, notoriety: -1, msg: `You don't stock ${article} ${label}. They leave disappointed. 😞` } },
+            effect: { type: 'requestMiss', what: label, reqKind: kind, setId, notoriety: -1, msg: `You don't stock ${article} ${label}. They leave disappointed. 😞` } },
           { text: 'Offer to try and get one in', tone: 'kind',
-            effect: { type: 'requestMiss', what: label, notoriety: 0, msg: `You take their number and promise to hunt one down. Stock ${label} to catch this demand.` } },
+            effect: { type: 'requestMiss', what: label, reqKind: kind, setId, notoriety: 0, msg: `You take their number and promise to hunt one down. Stock ${label} to catch this demand.` } },
         ]
     return {
       kind: 'request', channel: 'walkin', // no ownedUid → never auto-pruned; the sell option re-validates on click
@@ -1037,7 +1039,7 @@ export function makeShopRequest(s, accepted = null) {
       const { it, loc } = pickAny(null, have)
       const set = setById(it.setId)
       return build({ label: `${it.product.type} of ${set?.name || 'that set'}`, article: 'a', img: set?.logo || null,
-        price: priceFor(sealedValue(it), true), loc, kind: 'sealed', uid: it.uid })
+        price: priceFor(sealedValue(it), true), loc, kind: 'sealed', uid: it.uid, setId: it.setId })
     }
     // a random product they want — maybe you happen to have it, usually not
     const set = pickAny(null, SHOP_SETS)
@@ -1046,7 +1048,7 @@ export function makeShopRequest(s, accepted = null) {
     const hit = pool.find(x => x.setId === set.id && x.product.type === prod.type)
     return build({ label: `${prod.type} of ${set.name}`, article: 'a', img: set.logo || null,
       price: priceFor(hit ? sealedValue(hit) : prod.price, true),
-      loc: hit ? (hit.loc === 'floor' ? 'shelf' : 'back') : 'none', kind: 'sealed', uid: hit?.uid })
+      loc: hit ? (hit.loc === 'floor' ? 'shelf' : 'back') : 'none', kind: 'sealed', uid: hit?.uid, setId: set.id })
   }
 
   // singles — the shelf is the shop-floor cards PLUS any card listed everywhere
@@ -1057,15 +1059,15 @@ export function makeShopRequest(s, accepted = null) {
   const have = [...shelf, ...back]
   if (have.length && Math.random() < 0.55) {
     const { c, loc } = pickAny(null, have)
-    return build({ label: c.name, article: 'a', img: cardImg(c), price: priceFor(cardValue(c)), loc, kind: 'card', uid: c.uid })
+    return build({ label: c.name, article: 'a', img: cardImg(c), price: priceFor(cardValue(c)), loc, kind: 'card', uid: c.uid, setId: setIdOfCard(c) })
   }
   const want = cardInValueRange(1, 300)
   const onShelf = caseCards.find(x => x.id === want.id)
   const inBack = (s.collection || []).find(x => x.id === want.id && x.loc !== 'floor' && !x.locked && !x._heldFor)
   const hit = onShelf || inBack
-  return build({ label: want.name, article: 'a', img: want.img,
+  return build({ label: want.name, article: 'a', img: cardImg(want),
     price: priceFor(hit ? cardValue(hit) : cardValue(want)),
-    loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'card', uid: hit?.uid })
+    loc: onShelf ? 'shelf' : inBack ? 'back' : 'none', kind: 'card', uid: hit?.uid, setId: setIdOfCard(want) })
 }
 
 // --- Walk-in consignment intake ------------------------------------------------

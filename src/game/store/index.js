@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 44,
+  version: 45,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -470,6 +470,12 @@ export const useGame = create(persist((set, get) => ({
       // and additive — start empty. `buylistRate` is retired; leaving a stale copy is harmless.
       state.lgsCredit = state.lgsCredit ?? 0
       state.distributorSince = state.distributorSince ?? null
+    }
+    if (version < 45) {
+      // The DEMAND BOARD: missed walk-in requests aggregate into a "what the town's asking
+      // for" panel on the Shop floor. New list; starts empty. (In-flight buy-in offers from
+      // older saves also lack the new hidden haggle floor — counterBuyin defaults it.)
+      state.demandLog = state.demandLog ?? []
     }
     return state
   },

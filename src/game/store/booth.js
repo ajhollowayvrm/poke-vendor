@@ -32,7 +32,7 @@ function randomSealedInRange(lo, hi) {
 const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
-  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor } from './constants'
+  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor, absoluteDay } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -872,10 +872,16 @@ export function createBoothSlice(set, get) {
           break
         }
         case 'requestMiss': {
-          // You couldn't produce what the walk-in wanted — a small rep ding (or none) and a
-          // demand signal in the log so you know what locals are hunting for.
+          // You couldn't produce what the walk-in wanted — a small rep ding (or none), a
+          // demand signal in the log, and an entry on the DEMAND BOARD (the Shop floor's
+          // "what the town's asking for" panel; aged out after a fortnight in the day-tick).
           s.addNotoriety(effect.notoriety || 0)
           s.log('demand', `Missed demand: a walk-in wanted ${effect.what} and left empty-handed`, 0)
+          set(st => ({ demandLog: [
+            { what: effect.what, kind: effect.reqKind || 'card', setId: effect.setId || null,
+              day: absoluteDay(st.currentDay, st.monthsElapsed) },
+            ...(st.demandLog || []),
+          ].slice(0, 40) }))
           break
         }
         case 'buySealedDeal': {
