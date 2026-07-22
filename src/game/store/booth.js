@@ -11,7 +11,7 @@
 
 import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
   SHOP_SETS, SECONDARY_SETS, setProducts, marketMult } from '../engine'
-import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant } from '../shows'
+import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin } from '../shows'
 
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
 // repack could plausibly hide. Returns { set, product } or null when nothing fits the band.
@@ -592,6 +592,34 @@ export function createBoothSlice(set, get) {
       if (!offer) return
       set(s => ({ buyinOffers: s.buyinOffers.filter(o => o.id !== id) }))
       get().log('shop', `Passed on ${offer.who}'s collection — they'll try the shop across town`, 0)
+    },
+    // Counter a buy-in's cash ask (haggle). Up to 2 rounds per seller; every outcome updates
+    // the SAME pending offer, so the accept/decline flow is unchanged — a successful haggle
+    // just lowers askCash (and with it the derived store-credit figure) before you pay.
+    // Resolution lives in haggleBuyin (shows.js) against the lot's pre-rolled hidden floor.
+    counterBuyin(id, offerAmount) {
+      const o = (get().buyinOffers || []).find(x => x.id === id)
+      if (!o) return { error: 'They already left.' }
+      if (o.free) return { error: "They're giving it away — just take it." }
+      if (o.haggled) return { error: 'You already shook on a number.' }
+      if ((o.haggleRounds || 0) >= 2) return { error: "They're done haggling — it's the ask or nothing." }
+      const amt = round2(Number(offerAmount) || 0)
+      if (!(amt > 0)) return { error: 'Name a real number.' }
+      const r = haggleBuyin(o, amt)
+      const who = o.who.charAt(0).toUpperCase() + o.who.slice(1)
+      if (r.walk) {
+        set(s => ({ buyinOffers: s.buyinOffers.filter(x => x.id !== id) }))
+        get().log('shop', `Haggled too hard — ${o.who} packed the lot back up for the shop across town.`, 0)
+        return { walked: true }
+      }
+      if (r.accept) {
+        set(s => ({ buyinOffers: s.buyinOffers.map(x => x.id === id ? { ...x, askCash: r.price, haggled: true } : x) }))
+        get().log('shop', `${who} took your $${r.price.toFixed(2)} for the lot — pay them to close it.`, 0)
+        return { accepted: true, price: r.price }
+      }
+      set(s => ({ buyinOffers: s.buyinOffers.map(x => x.id === id ? { ...x, askCash: r.counter, haggleRounds: (x.haggleRounds || 0) + 1 } : x) }))
+      get().log('shop', `${who} countered at $${r.counter.toFixed(2)} — "that's already less than it's worth."`, 0)
+      return { counter: r.counter }
     },
 
     // --- Hosted store events -------------------------------------------------------

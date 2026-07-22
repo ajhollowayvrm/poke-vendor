@@ -59,6 +59,9 @@ export default function BoothInbox({ onRip, onPick }) {
   const eventCooldownLeft = useGame(s => s.eventCooldownLeft)
   const acceptBuyin = useGame(s => s.acceptBuyin)
   const declineBuyin = useGame(s => s.declineBuyin)
+  const counterBuyin = useGame(s => s.counterBuyin)
+  const [haggleId, setHaggleId] = useState(null) // buy-in offer with the haggle strip open
+  const [haggleVal, setHaggleVal] = useState('')
   const planStoreEvent = useGame(s => s.planStoreEvent)
   const cancelStoreEvent = useGame(s => s.cancelStoreEvent)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
@@ -259,6 +262,28 @@ export default function BoothInbox({ onRip, onPick }) {
                             <button className="btn alt" style={{ flex: 'none', maxWidth: 70, padding: '6px 8px', fontSize: 12 }}
                               onClick={() => { declineBuyin(o.id); flash('Passed on the lot.') }}>Pass</button>
                           </div>
+                          {/* 🤝 Haggle the ask: their hidden floor was rolled when they walked in — the
+                              hint line is your tell. Push too hard and the whole lot walks. */}
+                          {!o.free && !o.haggled && (o.haggleRounds || 0) < 2 && (haggleId === o.id ? (
+                            <div className="row" style={{ gap: 5, marginTop: 4, alignItems: 'center' }}>
+                              <input type="number" min="1" step="1" value={haggleVal} onChange={e => setHaggleVal(e.target.value)}
+                                style={{ width: 84, padding: '5px 6px', fontSize: 12 }} aria-label="Your counter-offer" />
+                              <button className="btn" style={{ flex: 'none', padding: '6px 10px', fontSize: 12 }} onClick={() => {
+                                const r = counterBuyin(o.id, Number(haggleVal))
+                                if (r.error) flash(r.error)
+                                else if (r.walked) { flash('They took the lowball badly — packed it all up and walked.'); setHaggleId(null) }
+                                else if (r.accepted) { flash(`🤝 Deal — they'll take ${fmtMoney(r.price)}. Pay to close it.`); setHaggleId(null) }
+                                else flash(`They countered at ${fmtMoney(r.counter)}${(o.haggleRounds || 0) >= 1 ? " — that's their final round" : ''}.`)
+                              }}>Offer</button>
+                              <span className="muted" style={{ fontSize: 11 }}>{2 - (o.haggleRounds || 0)} round{2 - (o.haggleRounds || 0) > 1 ? 's' : ''} left · walk risk rises the lower you go</span>
+                            </div>
+                          ) : (
+                            <button className="btn alt" style={{ padding: '4px 8px', fontSize: 12, marginTop: 4, alignSelf: 'flex-start' }}
+                              title="Counter their ask. Estate sellers usually have room ('just wants it gone'); comp-checkers barely budge — and pushing too hard loses the whole lot."
+                              onClick={() => { setHaggleId(o.id); setHaggleVal(String(Math.max(1, Math.round(o.askCash * 0.85)))) }}>
+                              🤝 Haggle
+                            </button>
+                          ))}
                         </div>
                       )
                     })}

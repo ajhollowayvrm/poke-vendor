@@ -1217,12 +1217,20 @@ export function makeBuyinOffer(notoriety, opts = {}) {
     : arch.tone === 'sharp' ? 0.62 + Math.random() * 0.13
     : 0.52 + Math.random() * 0.15
   const askCash = free ? 0 : Math.max(1, round2(market * askMult))
+  // Hidden haggle floor, pre-rolled like a sealed deal's `fake`: the least they'd take, as a
+  // fraction of their ask. Soft sellers leave real room; sharp ones barely any; a crown-jewel
+  // lot is priced FIRM (min 0.90 — nobody gets talked down on the vintage showpiece). The
+  // seller's `hint` ("just wants it gone" vs "checked comps") is the player's tell.
+  const floorFrac = arch.tone === 'sharp' ? 0.93 + Math.random() * 0.04
+    : arch.tone === 'mid' ? 0.86 + Math.random() * 0.06
+    : 0.80 + Math.random() * 0.08
+  const _floorCash = free ? 0 : Math.max(1, round2(askCash * (jewel ? Math.max(0.90, floorFrac) : floorFrac)))
   // Two pre-rolled estimates so the readout is stable: the naked-eye one (±25%) and
   // the Loupe one (±8%) — the UI shows whichever your gear earns.
   const noisy = (band) => round2(market * (1 - band + Math.random() * band * 2))
   return {
     id: `bi${Math.floor(Math.random() * 1e9).toString(36)}`,
-    who, tone: arch.tone, estate, free, archetype: arch.key, jewel: !!jewel,
+    who, tone: arch.tone, estate, free, archetype: arch.key, jewel: !!jewel, _floorCash,
     hint: free ? 'just wants it out of the house — take it'
       : jewel ? 'leaving the hobby — and there’s a sealed vintage pack buried in here'
       : arch.hint || (estate ? 'leaving the hobby — everything must go'
@@ -1233,6 +1241,28 @@ export function makeBuyinOffer(notoriety, opts = {}) {
     estimate: noisy(0.25), estimateTight: noisy(0.08),
     pendingDays: estate ? 3 : 2, // a whole collection gives you a little longer to decide
   }
+}
+
+// Resolve one counter-offer on a collection buy-in. The seller's hidden floor was rolled
+// when the lot walked in (_floorCash): at/above it they take your number on the spot; at
+// or over their ask the deal just closes at the ask. Below the floor they may WALK —
+// estate sellers rarely do (they want it gone), sharp flippers do fast, and each extra
+// round of nickel-and-diming raises the odds — or they counter partway between ask and
+// offer, never below the floor. Deliberately NOT haggleRound(): that engine's floors
+// assume vendor asks at/above market, while buy-in asks already sit at 38–75% of market —
+// so the floor here hangs off the ASK. Haggling can only ADD player upside (5–20% off,
+// walk risk priced in); it never changes lot contents, frequency, or base asks.
+export function haggleBuyin(offer, yourOffer) {
+  const ask = offer.askCash
+  if (yourOffer >= ask) return { accept: true, price: ask }
+  const floor = offer._floorCash ?? round2(ask * 0.88) // in-flight pre-update offers: a sane default
+  if (yourOffer >= floor) return { accept: true, price: round2(yourOffer) }
+  const shortfall = (floor - yourOffer) / Math.max(1, floor)
+  const walkBase = offer.tone === 'sharp' ? 0.45 : offer.estate ? 0.10 : 0.22
+  const walkChance = Math.min(0.9, walkBase + shortfall * 1.6 + (offer.haggleRounds || 0) * 0.15)
+  if (Math.random() < walkChance) return { walk: true }
+  const counter = Math.max(floor, round2(ask - (ask - yourOffer) * 0.5))
+  return { counter }
 }
 
 // An "offer" encounter is built around a specific card you own. If you sell that
