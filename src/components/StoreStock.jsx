@@ -19,7 +19,8 @@ const PLACE = {
   personal:  { icon: '🗂️', title: 'Personal', empty: 'Nothing here yet — everything you rip lands here first. Send singles out to the floor 🛒 or storeroom 📦 when you want to sell them.' },
 }
 
-// Split the raw items into { kind, it } and group them by set, biggest set (by value) first.
+// Split the raw items into { kind, it } and group them by set, newest set first (release date,
+// then name — a stable order, so groups don't reshuffle as the market drifts).
 function bySet(cards, sealed) {
   const setsMap = new Map() // setId -> { setId, name, items:[{kind,it}], value }
   const push = (setId, kind, it, v) => {
@@ -38,7 +39,11 @@ function bySet(cards, sealed) {
     ].sort((a, b) => b.unit - a.unit)
     return { ...g, lines, count: g.items.length }
   })
-  return groups.sort((a, b) => b.value - a.value)
+  return groups.sort((a, b) => {
+    const da = setById(a.setId)?.releaseDate || ''
+    const db = setById(b.setId)?.releaseDate || ''
+    return db.localeCompare(da) || a.name.localeCompare(b.name)
+  })
 }
 
 export default function StoreStock({ place, onRip, onPick, onHold, only, split }) {
