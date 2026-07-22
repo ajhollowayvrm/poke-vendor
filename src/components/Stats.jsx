@@ -306,7 +306,7 @@ function FinanceCard() {
       )}
       {storage.fee > 0 && (
         <div className="finance-warn" style={{ background: '#ff9f4315', borderColor: '#ff9f4340', color: '#ffcf9e' }}>
-          📦 Storage −{fmtMoney(storage.fee)}/day — you're holding {storage.units} items ({storage.free} free). Capital's tied up; move stock or thin your inventory.
+          📦 Storage −{fmtMoney(storage.fee)}/day — {storage.units} idle sealed in the back ({storage.free} free). Put it on the floor, list it, rip it, or flip it — only the untouched hoard bleeds.
         </div>
       )}
       {/* Full-time sustainability readout (Phase 3) */}

@@ -14,6 +14,10 @@
 //                    (a slot machine, not an ATM), across all three tiers.
 //   4. LIQUIDATION — every instant exit (quick-sell, buylist, sealed flip) is a real
 //                    haircut (< 1x market).
+//   5. STORAGE     — the daily fee taxes ONLY the idle storeroom hoard: floor stock,
+//                    listings, consignments, built packs, 🔒 keepsakes and held-for-a-
+//                    regular are all exempt; the free allowance grows with a storefront;
+//                    the Vault waives it entirely.
 //
 // Any violated invariant prints in red and the process exits nonzero, so this can run
 // after balance changes as a regression gate.
@@ -142,6 +146,42 @@ try {
   // Bulk isn't a cash exit anymore — it's a flat, small per-card STORE CREDIT (a nickel-ish).
   pass(`bulk credit ${rates.bulkCredit}/card`, rates.bulkCredit > 0 && rates.bulkCredit <= 0.25)
   if (rates.flip != null) pass(`sealed flip ${rates.flip}`, rates.flip > 0 && rates.flip < 1)
+
+  // ---- 5. Storage fee targets only the idle hoard -----------------------------------
+  // Pure-function checks against synthetic states: the fee must bite an idle storeroom
+  // hoard and NOTHING else. If a future change quietly re-adds listings/keepsakes/floor
+  // stock to heldUnits (the pre-2026-07 behavior), this is what catches it.
+  console.log('\nSTORAGE FEE — idle storeroom sealed only:')
+  const storage = await page.evaluate(async () => {
+    const k = await import('/src/game/store/constants.js')
+    const rows = (n, over = {}) => Array.from({ length: n }, (_, i) =>
+      ({ uid: 'sim' + i, setId: 'x', product: { type: 'Booster Box', packs: 36, price: 150 }, loc: 'storeroom', ...over }))
+    const S = (over = {}) => ({ upgrades: {}, sealedInventory: [], listings: [], consignments: [], builtPacks: [], ...over })
+    return {
+      freeBase: k.storageFreeUnits(S()),
+      freeStore: k.storageFreeUnits(S({ upgrades: { storefront: true } })),
+      perUnit: k.STORAGE_PER_UNIT,
+      hoard: k.storageFee(S({ sealedInventory: rows(k.STORAGE_FREE_UNITS + 5) })),
+      underStoreAllowance: k.storageFee(S({ upgrades: { storefront: true }, sealedInventory: rows(k.STORAGE_FREE_UNITS + 5) })),
+      keepsakes: k.storageFee(S({ sealedInventory: rows(60, { locked: true }) })),
+      floorStock: k.storageFee(S({ upgrades: { storefront: true }, sealedInventory: rows(200, { loc: 'floor' }) })),
+      heldForRegular: k.storageFee(S({ sealedInventory: rows(60, { _heldFor: 'sim-regular' }) })),
+      listings: k.storageFee(S({ listings: rows(60) })),
+      consignments: k.storageFee(S({ consignments: rows(60) })),
+      builtPacks: k.storageFee(S({ builtPacks: rows(60) })),
+      vault: k.storageFee(S({ upgrades: { vault: true }, sealedInventory: rows(200) })),
+    }
+  })
+  pass(`idle hoard bleeds: ${storage.freeBase + 5} storeroom boxes → $${storage.hoard}/day`, storage.hoard === 5 * storage.perUnit)
+  pass(`storefront allowance: ${storage.freeBase} free → ${storage.freeStore} with a store (same hoard → $${storage.underStoreAllowance})`,
+    storage.freeStore > storage.freeBase && storage.underStoreAllowance === 0)
+  pass(`🔒 keepsakes exempt ($${storage.keepsakes})`, storage.keepsakes === 0)
+  pass(`floor stock exempt ($${storage.floorStock})`, storage.floorStock === 0)
+  pass(`held-for-a-regular exempt ($${storage.heldForRegular})`, storage.heldForRegular === 0)
+  pass(`listings exempt ($${storage.listings})`, storage.listings === 0)
+  pass(`consignments exempt ($${storage.consignments})`, storage.consignments === 0)
+  pass(`built packs exempt ($${storage.builtPacks})`, storage.builtPacks === 0)
+  pass(`🏛️ Vault waives all ($${storage.vault})`, storage.vault === 0)
 
   await browser.close()
 } catch (e) {

@@ -10,7 +10,7 @@ import { round2, setMarketMults } from '../engine'
 import {
   UPGRADES, rentPerDay, STORE_LEASE_PER_DAY, employeeById, jobById,
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
-  storageFee, heldUnits, STORAGE_FREE_UNITS,
+  storageFee, heldUnits, storageFreeUnits,
 } from './constants'
 import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
 import { advanceDaysWith, mergeSummaries } from './daytick'
@@ -275,7 +275,7 @@ export function createEconomySlice(set, get) {
     // Inventory storage readout for the finance panel: current daily fee + how loaded you are.
     storageStatus() {
       const s = get()
-      return { fee: storageFee(s), units: heldUnits(s), free: STORAGE_FREE_UNITS }
+      return { fee: storageFee(s), units: heldUnits(s), free: storageFreeUnits(s) }
     },
 
     // --- Brick & mortar employees (Phase 4) ---

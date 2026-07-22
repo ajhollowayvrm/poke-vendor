@@ -66,27 +66,34 @@ export const CREDIT_MISS_NOTORIETY = 3   // small notoriety hit when you miss th
 // sustainability readout. Long enough to smooth out spiky sale days.
 export const INCOME_WINDOW_DAYS = 7
 
-// --- Inventory carrying cost (money tied up in unsold stock BITES) -----------
-// Sitting on a pile of sealed product and unsold listings isn't free — you're
-// renting space and capital is frozen. You get a free allowance; every item beyond
-// it drains a small daily storage fee. This turns "buy the whole case and hoard it"
-// into a real decision: hold too much unsold and the daily bleed eats your runway.
-// Counted units = sealed inventory + live listings + consignments + shop-shelf cards.
-export const STORAGE_FREE_UNITS = 15   // this many held items cost nothing to store
-export const STORAGE_PER_UNIT = 2      // $/day for each held item beyond the allowance
-// How many held units are you carrying right now (drives the storage fee + the readout).
-// Deliberately EXEMPT: pack-machine + bulk-bin stock and the supplies rack — store fixtures
-// full of cheap everyday product aren't a hoard, and taxing them would punish exactly the
-// keep-the-counter-stocked behavior the store rewards.
-export function heldUnits(s) {
-  return (s.sealedInventory?.length || 0) + (s.listings?.length || 0)
-    + (s.consignments?.length || 0) + (s.shopDisplay?.length || 0) + (s.shopSealed?.length || 0)
-    + (s.builtPacks?.length || 0) // a sealed repack on the shelf is stock like any other
+// --- Inventory carrying cost (an idle sealed hoard BITES) --------------------
+// Sitting on a case of unsold boxes isn't free — you're renting space and capital
+// is frozen. You get a free allowance; every IDLE sealed unit beyond it drains a
+// small daily fee, keeping "buy the whole case and let it ripen in the back" a
+// real decision. The fee taxes ONLY the idle hoard, never active selling:
+//   COUNTED — sealed sitting in the back, unsold and unspoken-for.
+//   EXEMPT  — floor sealed (out for sale in space the lease already pays for),
+//             live listings + consignments (actively selling / not your stock),
+//             built packs (store product, like the pack machine + bulk bin +
+//             supplies rack), 🔒 kept sealed (frozen capital is already the
+//             cost of a keepsake), and _heldFor (promised to a regular).
+export const STORAGE_FREE_UNITS = 15   // free idle-sealed allowance without a storefront
+export const STORAGE_STORE_BONUS = 25  // a leased storeroom holds this much more for free
+export const STORAGE_PER_UNIT = 2      // $/day for each idle unit beyond the allowance
+// The free allowance scales with your footprint: a storefront's lease is already
+// paying for a real storeroom, so it shouldn't bill like an apartment closet.
+export function storageFreeUnits(s) {
+  return STORAGE_FREE_UNITS + (s?.upgrades?.storefront ? STORAGE_STORE_BONUS : 0)
 }
-// Daily storage fee for the current inventory load (0 while under the free allowance).
+// Idle sealed units right now (drives the fee + the finance readout). Pre-v43 rows
+// with no `loc` read as storeroom — for a flipper with no store, everything's "the back".
+export function heldUnits(s) {
+  return (s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor).length
+}
+// Daily storage fee for the current idle hoard (0 while under the free allowance).
 export function storageFee(s) {
   if (s.upgrades?.vault) return 0 // 🏛️ The Vault & Showroom — storage is a solved problem
-  const over = Math.max(0, heldUnits(s) - STORAGE_FREE_UNITS)
+  const over = Math.max(0, heldUnits(s) - storageFreeUnits(s))
   return round2(over * STORAGE_PER_UNIT)
 }
 
