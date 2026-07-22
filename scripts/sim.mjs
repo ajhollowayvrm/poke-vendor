@@ -16,7 +16,8 @@
 //                    haircut (< 1x market).
 //   5. STORAGE     — the daily fee taxes ONLY the idle storeroom hoard: floor stock,
 //                    listings, consignments, built packs, 🔒 keepsakes and held-for-a-
-//                    regular are all exempt; the free allowance grows with a storefront;
+//                    regular are all exempt; loose packs rack 36-to-a-tray (a box's worth
+//                    of shelf, not 36 units); the free allowance grows with a storefront;
 //                    the Vault waives it entirely.
 //
 // Any violated invariant prints in red and the process exits nonzero, so this can run
@@ -170,6 +171,14 @@ try {
       consignments: k.storageFee(S({ consignments: rows(60) })),
       builtPacks: k.storageFee(S({ builtPacks: rows(60) })),
       vault: k.storageFee(S({ upgrades: { vault: true }, sealedInventory: rows(200) })),
+      packsPerRack: k.PACKS_PER_RACK,
+      // Loose packs rack 36-to-a-tray: 15 boxes fill the base allowance, then 180 loose
+      // packs bill as ceil(180/36)=5 units — not 180. Same count of BOXES bills in full.
+      looseRacked: k.storageFee(S({ sealedInventory: [
+        ...rows(15),
+        ...rows(180, { product: { type: 'Booster Pack', packs: 1, price: 6 } }),
+      ] })),
+      looseAsBoxes: k.storageFee(S({ sealedInventory: rows(195) })),
     }
   })
   pass(`idle hoard bleeds: ${storage.freeBase + 5} storeroom boxes → $${storage.hoard}/day`, storage.hoard === 5 * storage.perUnit)
@@ -182,6 +191,8 @@ try {
   pass(`consignments exempt ($${storage.consignments})`, storage.consignments === 0)
   pass(`built packs exempt ($${storage.builtPacks})`, storage.builtPacks === 0)
   pass(`🏛️ Vault waives all ($${storage.vault})`, storage.vault === 0)
+  pass(`loose packs rack ${storage.packsPerRack}/tray: 15 boxes + 180 loose → $${storage.looseRacked}/day (as boxes: $${storage.looseAsBoxes})`,
+    storage.looseRacked === 5 * storage.perUnit && storage.looseAsBoxes === 180 * storage.perUnit)
 
   await browser.close()
 } catch (e) {

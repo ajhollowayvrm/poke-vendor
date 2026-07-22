@@ -85,10 +85,16 @@ export const STORAGE_PER_UNIT = 2      // $/day for each idle unit beyond the al
 export function storageFreeUnits(s) {
   return STORAGE_FREE_UNITS + (s?.upgrades?.storefront ? STORAGE_STORE_BONUS : 0)
 }
+// Loose packs RACK: 36 single-pack units fit the shelf space of one box (that's literally
+// what a box is), so billing each loose pack as a full unit would charge 36× for the crime
+// of breaking early. Backstock boosters bill by the tray, not the pack.
+export const PACKS_PER_RACK = 36
 // Idle sealed units right now (drives the fee + the finance readout). Pre-v43 rows
 // with no `loc` read as storeroom — for a flipper with no store, everything's "the back".
 export function heldUnits(s) {
-  return (s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor).length
+  const idle = (s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor)
+  const loose = idle.reduce((n, it) => n + ((it.product?.packs || 1) === 1 ? 1 : 0), 0)
+  return (idle.length - loose) + Math.ceil(loose / PACKS_PER_RACK)
 }
 // Daily storage fee for the current idle hoard (0 while under the free allowance).
 export function storageFee(s) {
@@ -555,6 +561,7 @@ export const UPGRADES = {
   autoBinder: { name: 'Binder Curator', cost: 2000, desc: 'A meticulous curator files your masterset binder overnight: every empty slot a loose copy can fill gets your best copy moved in automatically — the binder\'s "add everything possible", every night. Graded slabs are left for you to place by hand. Binder cards are safe from bulk actions; take one back out any time.', icon: '📒' },
   autoHold: { name: 'Client Concierge', cost: 3500, desc: 'Your assistant keeps a client ledger: overnight they set a sealed piece aside behind the counter for a regular with nothing on hold — matched to their collecting focus when possible. Pickups pay cash at the walk-in + hold premium. Never touches 🔒 kept stock or appreciating vintage/aftermarket sealed. Requires a Shop Assistant.', icon: '🗝️', needs: 'staff' },
   wantBroker: { name: 'Want-List Broker', cost: 2800, desc: 'A broker works demand overnight: collector wants and forum WTB posts get filled automatically from your sellable cards — always the CHEAPEST matching copy, always at the want\'s premium over market. Never touches 🔒 kept, held, featured, or binder cards.', icon: '💼' },
+  binKeeper: { name: 'Bin Keeper', cost: 1800, desc: 'A tireless closer who keeps your loose-pack bin full overnight: every bin you\'re running gets topped back up from storeroom packs — and when the backstock runs dry, they break product down for you (a case into boxes, then whichever box gives up the least paper value into packs). Never touches 🔒 kept, held, or vintage sealed. Requires a Pack Bin.', icon: '🪓', needs: 'packBin' },
   repricer: { name: 'Repricing Service', cost: 1200, desc: 'No more stale listings: anything that sits a week with lookers but no bites gets walked down 5%/day toward market until it moves. Priced-right stock instead of a graveyard.', icon: '🏷️' },
   offerDesk: { name: 'Offer Desk', cost: 1500, desc: 'Your desk accepts any standing offer that nets 90%+ of your ask — the "close enough, take it" call you\'d make yourself. Listings you flag 🤖-manual are left for you to judge. Requires the Auto-Sell Service.', icon: '📨', needs: 'autoSell' },
   newsletter: { name: 'Client Newsletter', cost: 900, desc: 'A monthly mailer keeps your regulars warm: trust decays half as fast, and a lapsed regular occasionally comes back through the door. Requires a Brick-and-Mortar Store.', icon: '💌', needs: 'storefront' },

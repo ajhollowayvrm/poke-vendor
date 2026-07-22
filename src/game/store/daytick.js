@@ -20,7 +20,7 @@ import {
   applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
   setMarketMults, distributorById, restockRate, distributorUnlocked,
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
-  makeVintageHold, setById, distributorPrice,
+  makeVintageHold, setById, distributorPrice, breakOptions,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
@@ -36,6 +36,7 @@ import {
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
   supplyById, pickSupplyId, BUYLIST_POLICIES,
+  floorItemCap, floorSkuCounts, floorSkuKey, floorFreeSlots,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -1349,6 +1350,69 @@ export function advanceDaysWith(set, get, days, away) {
       }
     }
   }
+  // 🪓 Bin Keeper: keeps the loose-pack bin full overnight. Every loose-pack SKU you're
+  // running (loose rows in stock now, or packs that were OUT ON THE FLOOR when the tick
+  // began — so a sellout night still gets refilled) is topped back up to its bin depth
+  // from storeroom packs first; if the backstock runs dry, ONE product gets broken down
+  // per SKU per night — a case into boxes (value-neutral), then whichever box gives up
+  // the least paper value into packs (breakOptions' delta, so cheap-to-crack sets go
+  // first and a premium box survives). Leftover packs rack in the back (PACKS_PER_RACK)
+  // as the next nights' backstock. 🔒 kept / held / vintage are never touched — and only
+  // the set's canonical single (what a break produces) is ever broken FOR; sleeved packs
+  // and blisters just get topped up if you stock them.
+  let keeperStocked = 0, keeperBroke = 0
+  if (s.upgrades.binKeeper && s.upgrades.storefront) {
+    const isLoose = it => (it.product?.packs || 1) === 1 && !it.vintage
+    const usable = it => !it.locked && !it._heldFor
+    const skuOf = it => `${it.setId}|${it.product?.type || ''}`
+    const skus = new Set([
+      ...(get().sealedInventory || []).filter(it => isLoose(it) && usable(it)).map(skuOf),
+      // `s` is the top-of-tick snapshot — floor bins as they stood before the day's sales.
+      ...(s.sealedInventory || []).filter(it => it.loc === 'floor' && isLoose(it) && !it.locked).map(skuOf),
+    ])
+    const toFloor = (uids) => set(st => ({ sealedInventory: (st.sealedInventory || [])
+      .map(it => uids.has(it.uid) ? { ...it, loc: 'floor' } : it) }))
+    for (const sku of skus) {
+      const [setId, type] = sku.split('|')
+      const st0 = get()
+      const cap = floorItemCap(st0, 'sealed', { product: { packs: 1 } })
+      const have = (floorSkuCounts(st0).get(`s:${setId}:${type}`) || 0)
+      let need = Math.min(Math.max(0, cap - have), floorFreeSlots(st0))
+      if (need <= 0) continue
+      // 1) Top up from existing loose backstock of this exact SKU.
+      const back = st0.sealedInventory.filter(it =>
+        it.setId === setId && it.product?.type === type && isLoose(it) && usable(it) && it.loc !== 'floor')
+      const move = back.slice(0, need)
+      if (move.length) { toFloor(new Set(move.map(it => it.uid))); keeperStocked += move.length; need -= move.length }
+      if (need <= 0) continue
+      // 2) Backstock's dry — break something down, but only for the canonical single.
+      const single = (setById(setId)?.products || []).find(p => (p.packs || 1) === 1)
+      if (!single || single.type !== type) continue
+      const sources = () => get().sealedInventory.filter(it =>
+        it.setId === setId && (it.product?.packs || 1) > 1 && usable(it) && !it.vintage && it.loc !== 'floor')
+      // A case cracks to boxes first (value-neutral) so we never dump 216 packs at once.
+      const cs = sources().find(it => it.product?._case)
+      if (cs && !sources().some(it => !it.product?._case)) {
+        const boxOpt = breakOptions(cs).find(o => (o.product.packs || 1) > 1)
+        if (boxOpt) get().breakSealed(cs.uid, boxOpt.product.type)
+      }
+      const boxes = sources().filter(it => !it.product?._case)
+        .map(it => ({ it, opt: breakOptions(it).find(o => o.product.type === single.type) }))
+        .filter(x => x.opt)
+        .sort((a, b) => b.opt.delta - a.opt.delta) // least paper-value loss first
+      const pick = boxes[0]
+      if (!pick) continue
+      const beforeUids = new Set(get().sealedInventory.map(it => it.uid))
+      const r = get().breakSealed(pick.it.uid, single.type)
+      if (r?.count) {
+        keeperBroke++
+        const fresh = get().sealedInventory.filter(it => !beforeUids.has(it.uid)).slice(0, need)
+        toFloor(new Set(fresh.map(it => it.uid))); keeperStocked += fresh.length
+        get().log('shop', `🪓 Bin Keeper broke a ${setById(setId)?.name || ''} ${pick.it.product.type} — bin +${fresh.length}, ${r.count - fresh.length} racked in back`, 0)
+      }
+    }
+    if (keeperStocked > 0 && !keeperBroke) get().log('shop', `🪓 Bin Keeper topped the pack bin${skus.size > 1 ? 's' : ''} up — +${keeperStocked} from backstock`, 0)
+  }
   // Regular call-ins + "you came through" — logged here (after the write) from the pass above.
   for (const r of regTick.requested) get().log('regular', `📞 ${r.emoji} ${r.name} called — any chance you can stock ${r.request.line}? They'll swing by for it.`, 0)
   for (const r of regTick.fulfilled) get().log('regular', `🤝 You came through for ${r.emoji} ${r.name} — you're carrying ${r.focus?.label || 'their lane'} now (+trust).`, 0)
@@ -1378,7 +1442,7 @@ export function advanceDaysWith(set, get, days, away) {
     lease: round2(leaseDue), payroll: round2(payrollDue), storage: round2(storageDue),
     listingsSold: lt.sold.length, listingOffers: lt.newOffers, premiumOffers: lt.premiumOffers || 0,
     resolvedGrades: resolvedGrades.length, resolvedGradeCards: resolvedGrades, binderFiled, binderReserved,
-    wantsBrokered, brokerProceeds, offersAccepted, days,
+    wantsBrokered, brokerProceeds, offersAccepted, keeperStocked, keeperBroke, days,
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     suppliesIncome: round2(suppliesRevenue), suppliesSold,
     machineIncome: round2(machineRevenue), machineSold,
@@ -1427,6 +1491,8 @@ export function mergeSummaries(a, b) {
     wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
     brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),
     offersAccepted: add(a.offersAccepted, b.offersAccepted),
+    keeperStocked: add(a.keeperStocked, b.keeperStocked),
+    keeperBroke: add(a.keeperBroke, b.keeperBroke),
     saleProceeds: round2(add(a.saleProceeds, b.saleProceeds)),
     counterIncome: round2(add(a.counterIncome, b.counterIncome)),
     suppliesIncome: round2(add(a.suppliesIncome, b.suppliesIncome)),

@@ -633,7 +633,7 @@ function GameClock() {
 // how the market moved, new collectors who found you, and the overhead that hit.
 function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
-    resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, saleProceeds, notoDelta,
+    resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, keeperStocked, keeperBroke, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
     soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, suppliesIncome, suppliesSold, machineIncome, machineSold, binIncome, binSold, wholesaleIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
@@ -644,7 +644,7 @@ function DaySummary({ summary, onClose }) {
   const events = lifeEvents || []
   const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderReserved || wantsBrokered
-    || offersAccepted || wages || rent || lease
+    || offersAccepted || keeperStocked || wages || rent || lease
     || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
@@ -728,7 +728,7 @@ function DaySummary({ summary, onClose }) {
             )}
 
             {/* Inbox / interest */}
-            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || regularCalls > 0 || regularsWon > 0 || resolvedGrades > 0 || binderFiled > 0 || binderReserved > 0 || notoDelta > 0) && (
+            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || regularCalls > 0 || regularsWon > 0 || resolvedGrades > 0 || binderFiled > 0 || binderReserved > 0 || keeperStocked > 0 || notoDelta > 0) && (
               <div className="recap-sec">
                 <div className="recap-sec-h">📬 New</div>
                 {newWants > 0 && <div className="recap-line"><span>🐋 {newWants} collector want{newWants === 1 ? '' : 's'} found you</span><span className="muted">Sell tab</span></div>}
@@ -739,6 +739,7 @@ function DaySummary({ summary, onClose }) {
                 {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}
                 {resolvedGrades > 0 && <div className="recap-line"><span className="muted">{resolvedGrades} slab{resolvedGrades === 1 ? '' : 's'} back from grading</span></div>}
                 {binderFiled > 0 && <div className="recap-line"><span className="muted">📒 Curator filed {binderFiled} card{binderFiled === 1 ? '' : 's'} into your binder</span></div>}
+                {keeperStocked > 0 && <div className="recap-line"><span className="muted">🪓 Bin Keeper stocked {keeperStocked} pack{keeperStocked === 1 ? '' : 's'}{keeperBroke > 0 ? ` (broke ${keeperBroke} product${keeperBroke === 1 ? '' : 's'} down)` : ' from backstock'}</span></div>}
                 {/* Say WHY a slot stayed empty — otherwise the reserve reads as the Curator
                     quietly not doing its job. */}
                 {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — top copy reserved to grade & sell</span></div>}
