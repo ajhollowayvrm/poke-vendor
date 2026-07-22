@@ -127,9 +127,9 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
   }
   function setAllCollapsed(fold) {
     setCollapsed(prev => {
-      // Touch only the sets in this view — collapse state for sets not currently stocked survives.
+      // Touch only the sections in this view — collapse state for sets not currently stocked survives.
       const next = new Set(prev)
-      groups.forEach(g => (fold ? next.add(g.setId) : next.delete(g.setId)))
+      collapseIds.forEach(id => (fold ? next.add(id) : next.delete(id)))
       try { localStorage.setItem(collapseKey, JSON.stringify([...next])) } catch { /* private mode */ }
       return next
     })
@@ -160,6 +160,15 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
     const sealedGroups = split ? bySet([], sealed) : null
     return { groups, totalValue, totalCount, cards, sealed, cardGroups, sealedGroups }
   }, [collection, sealedInventory, place, only, split])
+
+  // Every collapsible section's id. In the split view the SAME set appears as two independent
+  // sections (Singles + Sealed shelves), so ids carry the shelf prefix ('c'/'s') — folding one
+  // shelf's section must not fold the other's. Non-split sections keep the bare setId.
+  const collapseIds = useMemo(() => (
+    split
+      ? [...(cardGroups || []).map(g => 'c' + g.setId), ...(sealedGroups || []).map(g => 's' + g.setId)]
+      : groups.map(g => g.setId)
+  ), [split, cardGroups, sealedGroups, groups])
 
   const meta = PLACE[place]
   // Kind-scoped empty copy so a Personal ▸ Sealed tab doesn't show the cards blurb.
@@ -214,14 +223,15 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
   // Render a set-grouped list of SKU lines. `kp` prefixes React keys so the same set can appear in
   // both the Singles and Sealed shelves (split view) without a key collision.
   const renderGroups = (list, kp) => list.map(g => {
-    const isCollapsed = collapsed.has(g.setId)
+    const cid = `${kp}${g.setId}` // shelf-prefixed in split view so Singles/Sealed fold independently
+    const isCollapsed = collapsed.has(cid)
     return (
-      <div key={`${kp}${g.setId}`} className="wants" style={{ marginTop: 10 }}>
+      <div key={cid} className="wants" style={{ marginTop: 10 }}>
         <div className="wants-head" role="button" tabIndex={0} aria-expanded={!isCollapsed}
           title={isCollapsed ? 'Show this set' : 'Hide this set'}
           style={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => toggleCollapse(g.setId)}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(g.setId) } }}>
+          onClick={() => toggleCollapse(cid)}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(cid) } }}>
           <span aria-hidden style={{ display: 'inline-block', width: 12, fontSize: 10, opacity: 0.7, transition: 'transform .15s', transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}>▼</span>
           {' '}{g.name} <span className="muted">— {g.count} item{g.count === 1 ? '' : 's'} · {fmtMoney(g.value)}</span>
         </div>
@@ -286,8 +296,8 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
               <button className={`vt-btn ${gridMode ? 'on' : ''}`} title="Grid — big card art with centering + condition at a glance" onClick={() => setView('grid')}>🔲</button>
             </span>
           )}
-          {place !== 'personal' && groups.length > 1 && (() => {
-            const allFolded = groups.every(g => collapsed.has(g.setId))
+          {place !== 'personal' && collapseIds.length > 1 && (() => {
+            const allFolded = collapseIds.every(id => collapsed.has(id))
             return (
               <button className="btn alt" style={{ flex: 'none', padding: '5px 12px' }}
                 title={allFolded ? 'Open every set section' : 'Fold every set down to its header'}
