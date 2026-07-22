@@ -411,13 +411,12 @@ export function createBoothSlice(set, get) {
     toggleFeatureSealed(uid) {
       const item = (get().sealedInventory || []).find(it => it.uid === uid)
       if (!item || !get().upgrades.storefront) return false
-      if (!item.vintage) return false // showpiece-worthy only
       const on = !!item._featured
       const cap = get().FEATURED_MAX + (get().upgrades.vault ? 4 : 0)
       if (!on && featuredCount(get()) >= cap) return false
       set(s => ({ sealedInventory: s.sealedInventory.map(it => it.uid === uid
         ? (on ? { ...it, _featured: false } : (({ locked, ...rest }) => ({ ...rest, _featured: true, loc: 'floor' }))(it)) : it) }))
-      if (!on) get().log('shop', `⭐ Featured a sealed ${item.product.type} (${setById(item.setId)?.name || 'vintage'}) in the display case — a showpiece whales come in for`, 0)
+      if (!on) get().log('shop', `⭐ Featured a sealed ${item.product.type} (${setById(item.setId)?.name || 'sealed'}) in the display case — a showpiece whales come in for`, 0)
       return true
     },
     // Flip KEEP (not for sale) on a sealed item. Kept sealed stays yours to rip/stream/

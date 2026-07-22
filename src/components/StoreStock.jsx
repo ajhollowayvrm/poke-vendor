@@ -455,7 +455,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
   const label = kind === 'card' ? first.name : `${first.product.type} · ${set?.name || 'sealed'}`
   const uids = items.map(x => x.uid)
   const featuredCopy = kind === 'card' ? items.find(x => x._featured) : null
-  const featuredSealed = kind === 'sealed' ? items.find(x => x._featured) : null // vintage showpiece under glass
+  const featuredSealed = kind === 'sealed' ? items.find(x => x._featured) : null // showpiece under glass
   // Per-SKU floor depth: how many of THIS line are already out front (vintage is uncapped).
   const vintageLine = isVintageFloorItem(kind, first)
   const onFloorForSku = floorSkus.get(floorSkuKey(kind, first)) || 0
@@ -479,7 +479,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
   function featureSealedToggle() {
     if (featuredSealed) { toggleFeatureSealed(featuredSealed.uid); flash(`Unfeatured ${label}.`); return }
     if (featuredTotal >= FEATURED_MAX) { flash(`Display case is full (max ${FEATURED_MAX}).`); return }
-    if (toggleFeatureSealed(items[0].uid)) flash(`⭐ ${label} is under glass — a vintage showpiece whales come in for.`)
+    if (toggleFeatureSealed(items[0].uid)) flash(`⭐ ${label} is under glass — a showpiece whales come in for.`)
   }
   // Crack ONE unit of this line down a tier (box → loose packs). Breaks a single unit at a
   // time — a mis-tap on a whole stack of boxes would be an expensive, un-undoable mistake.
@@ -523,8 +523,8 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         {kind === 'card' && (
           <button className={`stock-act ${featuredCopy ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
         )}
-        {kind === 'sealed' && first.vintage && (
-          <button className={`stock-act ${featuredSealed ? 'on' : ''}`} title="Feature this 🗝️ vintage showpiece in the display case — pulls whales" onClick={featureSealedToggle}>{featuredSealed ? '⭐' : '☆'}</button>
+        {kind === 'sealed' && (
+          <button className={`stock-act ${featuredSealed ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureSealedToggle}>{featuredSealed ? '⭐' : '☆'}</button>
         )}
         {kind === 'sealed' && (
           <button className="stock-act" title="Rip one now — cracks it right off the floor" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>

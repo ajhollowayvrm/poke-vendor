@@ -146,12 +146,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
                   <small>Split one tier down into {fmtMoney(breaks[0].total)} of smaller product (lands in the {item.locked ? 'Personal' : 'Storeroom'})</small>
                 </button>
               )}
-              {/* The vintage HOLD, made actionable: park it under glass where it draws whales and
-                  premium offers while it appreciates — the collector's move on a crown-jewel pack. */}
-              {item.vintage && upgrades?.storefront && !item._featured && place !== 'personal' && (
+              {/* The HOLD, made actionable: park it under glass where it draws whales and
+                  premium offers — the collector's move on a crown-jewel piece. */}
+              {upgrades?.storefront && !item._featured && place !== 'personal' && (
                 <button className="btn alt sellopt" onClick={() => { if (toggleFeatureSealed(item.uid)) fin(`⭐ ${title} is under glass — a showpiece whales come in for.`) }}>
                   <b>⭐ Feature as showpiece — hold & display</b>
-                  <small>Put this vintage pack under glass: it pulls whale offers and appreciates while it sits</small>
+                  <small>{item.vintage
+                    ? 'Put this vintage pack under glass: it pulls whale offers and appreciates while it sits'
+                    : 'Put it under glass: whales come in for featured pieces and pay a premium'}</small>
                 </button>
               )}
               {/* Floor / storeroom are store concepts — only offered when there's a storefront.

@@ -86,6 +86,7 @@ export default function BoothInbox({ onRip, onPick }) {
   const [rafflePick, setRafflePick] = useState(false) // picking the raffle prize card
   const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
+  const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
   const [toast, setToast] = useState(null)
   useModalEscape(() => { // close the top-most picker on Esc
     if (buyinReveal) setBuyinReveal(null)
@@ -222,9 +223,10 @@ export default function BoothInbox({ onRip, onPick }) {
           const demandTop = Object.entries((demandLog || []).reduce((m, e) => {
             m[e.what] = (m[e.what] || 0) + 1; return m
           }, {})).sort((a, b) => b[1] - a[1]).slice(0, 8)
-          // Featured display-case picks — the floor stock list itself renders via
-          // <StoreStock place="floor"> (grouped by set); holds live in the Storeroom tab.
+          // Featured display-case picks (singles AND sealed share the case) — the floor stock
+          // list itself renders via <StoreStock place="floor">; holds live in the Storeroom tab.
           const featured = collection.filter(c => c._featured)
+          const featuredSealed = (sealedInventory || []).filter(it => it._featured)
           return (
             <>
               <div className="banner" style={{ marginTop: 16 }}>
@@ -387,8 +389,8 @@ export default function BoothInbox({ onRip, onPick }) {
 
               {/* ⭐ Display case features — the whale bait */}
               <div className="wants">
-                <div className="wants-head">⭐ Display case <span className="muted">— feature up to {FEATURED_MAX} pieces; featured cards are what deep-pocketed whales come in for (they show up earlier and pay 1.15–1.6×)</span></div>
-                {featured.length === 0 ? (
+                <div className="wants-head">⭐ Display case <span className="muted">— feature up to {FEATURED_MAX} pieces (singles or sealed); featured pieces are what deep-pocketed whales come in for (they show up earlier and pay 1.15–1.6×)</span></div>
+                {featured.length + featuredSealed.length === 0 ? (
                   <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>Nothing featured yet — hit <b>⭐</b> on a stock line below to spotlight your best pieces.</div>
                 ) : (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', marginTop: 4 }}>
@@ -399,6 +401,24 @@ export default function BoothInbox({ onRip, onPick }) {
                           onClick={() => toggleFeatureCard(c.uid)}>☆ Unfeature</button>
                       </div>
                     ))}
+                    {featuredSealed.map(it => {
+                      const fset = setById(it.setId)
+                      return (
+                        <div key={it.uid} className="vendoritem featured">
+                          <div className="cardtile no-edge sealed-tile">
+                            {fset?.logo
+                              ? <img className="sealed-tile-logo" src={fset.logo} alt={fset.name} loading="lazy" decoding="async" />
+                              : <span className="sealed-ico">{it.product.icon || '📦'}</span>}
+                            <div className="sealed-name">{it.product.icon || '📦'} {it.product.type}</div>
+                            {fset && <div className="sealed-set" title={fset.name}>{fset.name}</div>}
+                            <div className="sealed-sub muted">{it.product.packs} pk{it.vintage ? ' · 🗝️ vintage' : ''}</div>
+                            <span className="price">{fmtMoney(sealedValue(it))}</span>
+                          </div>
+                          <button className="btn alt" style={{ padding: '4px 8px', fontSize: 12 }}
+                            onClick={() => toggleFeatureSealed(it.uid)}>☆ Unfeature</button>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </div>
