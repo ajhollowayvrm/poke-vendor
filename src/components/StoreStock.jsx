@@ -125,6 +125,15 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
       return next
     })
   }
+  function setAllCollapsed(fold) {
+    setCollapsed(prev => {
+      // Touch only the sets in this view — collapse state for sets not currently stocked survives.
+      const next = new Set(prev)
+      groups.forEach(g => (fold ? next.add(g.setId) : next.delete(g.setId)))
+      try { localStorage.setItem(collapseKey, JSON.stringify([...next])) } catch { /* private mode */ }
+      return next
+    })
+  }
 
   const { groups, totalValue, totalCount, cards, sealed, cardGroups, sealedGroups } = useMemo(() => {
     let cards, sealed
@@ -277,6 +286,16 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
               <button className={`vt-btn ${gridMode ? 'on' : ''}`} title="Grid — big card art with centering + condition at a glance" onClick={() => setView('grid')}>🔲</button>
             </span>
           )}
+          {place !== 'personal' && groups.length > 1 && (() => {
+            const allFolded = groups.every(g => collapsed.has(g.setId))
+            return (
+              <button className="btn alt" style={{ flex: 'none', padding: '5px 12px' }}
+                title={allFolded ? 'Open every set section' : 'Fold every set down to its header'}
+                onClick={() => setAllCollapsed(!allFolded)}>
+                {allFolded ? '▸ Expand all' : '▾ Collapse all'}
+              </button>
+            )
+          })()}
           {totalCount > 0 && (
             <button className={`btn ${selectMode ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '5px 12px' }}
               onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}>
