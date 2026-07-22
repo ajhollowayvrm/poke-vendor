@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
-import { weekIndexOf, CREDIT_MONTHLY_RATE } from './game/store/constants'
+import { weekIndexOf, weekdayOf, absoluteDay, CREDIT_MONTHLY_RATE } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -612,13 +612,14 @@ export default function App() {
   )
 }
 
-// Simple day display — no countdown, no real-time timer.
+// Simple day display — no countdown, no real-time timer. The weekday is the store's
+// heartbeat: walk-in traffic (and the counter) swells Fri–Sun and thins midweek.
 function GameClock() {
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   return (
     <span className="clock-chip">
-      📅 Day {currentDay}{monthsElapsed ? ` · M${monthsElapsed + 1}` : ''}
+      📅 {weekdayOf(absoluteDay(currentDay, monthsElapsed))} · Day {currentDay}{monthsElapsed ? ` · M${monthsElapsed + 1}` : ''}
     </span>
   )
 }
@@ -632,6 +633,7 @@ function DaySummary({ summary, onClose }) {
     missedOnline, missedWalkin, days, showName,
     soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, machineIncome, machineSold, wholesaleIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
   const movers = marketMovers || []
   const sold = soldNames || []
@@ -647,7 +649,7 @@ function DaySummary({ summary, onClose }) {
     <Modal onClose={onClose} className="recap" maxWidth={430} label="Day summary">
       <>
       {/* recap body */}
-        <h2 style={{ marginBottom: 2, textAlign: 'center' }}>{showName ? `🎪 Back from ${showName}` : `📅 Day ${currentDay}`}</h2>
+        <h2 style={{ marginBottom: 2, textAlign: 'center' }}>{showName ? `🎪 Back from ${showName}` : `📅 ${weekdayOf(absoluteDay(currentDay, monthsElapsed))} · Day ${currentDay}`}</h2>
         {multiDay && <div className="muted" style={{ fontSize: 13, marginBottom: 6, textAlign: 'center' }}>{days} days passed</div>}
 
         {/* Headline: net cash for the day + current net worth */}

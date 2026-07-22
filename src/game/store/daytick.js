@@ -34,7 +34,7 @@ import {
   GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
-  STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor,
+  STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -547,6 +547,10 @@ export function advanceDaysWith(set, get, days, away) {
   // that isn't open. (A deep bargain listing still counts as "open online".)
   const openOnline = listedCards.length > 0 || hasBargain
   const openWalkin = shelfCards.length > 0 || sellableSealed.length > 0
+  // Footfall weight of the days passed: Σ of each day's weekday multiplier (≈ `days` on
+  // average, more if the window covers a weekend). The counter and pack machine scale by
+  // this instead of a flat day count, so a Saturday genuinely rings up more than a Tuesday.
+  let footWeight = 0
   for (let i = 0; i < days; i++) {
     const dayNo = s.currentDay + i + 1 // the day being entered (in-month, may exceed 30 mid-loop)
     // a pending job starts paying once its start day arrives — compared in ABSOLUTE days
@@ -572,8 +576,10 @@ export function advanceDaysWith(set, get, days, away) {
     // display case). Store buzz (giveaways + events) pumps foot traffic for its window.
     const buzz = buzzDays0 > i ? GIVEAWAY_TRAFFIC_MULT : 1
     const signageMult = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% store foot traffic
+    const dayMult = walkinDayMult(enteringAbsDay) // dead Tuesdays, packed Saturdays
+    footWeight += dayMult
     // FOOT TRAFFIC, as a count. A known shop gets a stream of people through the door.
-    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult
+    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult
     const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
     for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
@@ -620,8 +626,9 @@ export function advanceDaysWith(set, get, days, away) {
     // COUNTER_MAX_PER_DAY is the hard rail). It's now a CEILING on real sales, not free money.
     //   noto 100 → ~$115/day · 200 → $256 · 300 → $421 · 500 → $804 · 800 → $1.2k (rail)
     const fameBoost = Math.sqrt(Math.max(1, fameMult(noto) / fameMult(100)))
+    // Scaled by footWeight, not flat days — a weekend window does real Saturday numbers.
     const budget = Math.min(COUNTER_MAX_PER_DAY,
-      (15 + noto) * fameBoost * (1 + empThroughput * 0.6) * signage) * days
+      (15 + noto) * fameBoost * (1 + empThroughput * 0.6) * signage) * footWeight
     // Everyday stock the counter can move: NON-featured items out on the SHOP FLOOR only —
     // the storeroom is backstock and sells nothing until you move it out front (the floor
     // contract in constants.js; restockFloor() is the one-tap refill). The featured display
@@ -673,7 +680,7 @@ export function advanceDaysWith(set, get, days, away) {
       const dealMult = Math.max(0.35, Math.min(2.2, avgVal / pm.price)) // good deal → more buyers
       const signage = s.upgrades?.signage ? 1.15 : 1
       const rate = (0.4 + noto / 350) * dealMult * signage
-      const want = Math.min(MACHINE_MAX_PER_DAY * days, mstock.length, drawCount(rate * days))
+      const want = Math.min(MACHINE_MAX_PER_DAY * days, mstock.length, drawCount(rate * footWeight))
       if (want > 0) {
         const stock = [...mstock]
         for (let k = 0; k < want && stock.length; k++) stock.splice(Math.floor(Math.random() * stock.length), 1)
@@ -909,9 +916,12 @@ export function advanceDaysWith(set, get, days, away) {
   // only gated them on/off — so a household name got no more offers than a nobody who'd just
   // cleared the gate. Railed below 1/day so it stays a trickle of chances, not a firehose.
   const oppMult = fameMult(noto) / fameMult(CONSIGN_MIN_NOTO)
+  // Sellers and consigners are the same weekend crowd: attic-cleaning happens on a
+  // Saturday, so lots walk in heavier on weekends (buyinDayMult, per day of the window).
+  const startAbs = absoluteDay(s.currentDay, s.monthsElapsed)
   if (hasStore && noto >= CONSIGN_MIN_NOTO) {
     for (let i = 0; i < days && consignReqsNext.length < CONSIGN_REQ_CAP; i++) {
-      if (Math.random() < Math.min(0.9, CONSIGN_REQ_CHANCE * oppMult)) {
+      if (Math.random() < Math.min(0.9, CONSIGN_REQ_CHANCE * oppMult * buyinDayMult(startAbs + i + 1))) {
         const req = makeConsignRequest(noto)
         consignReqsNext = [req, ...consignReqsNext]
         get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on the Sell tab.`, 0)
@@ -925,7 +935,7 @@ export function advanceDaysWith(set, get, days, away) {
     .filter(o => o.pendingDays > 0)
   if (hasStore && noto >= BUYIN_MIN_NOTO) {
     for (let i = 0; i < days && buyinsNext.length < BUYIN_CAP; i++) {
-      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult)) {
+      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * buyinDayMult(startAbs + i + 1))) {
         // Some sellers are leaving the hobby: a whole-collection lot with SEALED product in it.
         const estate = Math.random() < BUYIN_ESTATE_CHANCE
         const offer = makeBuyinOffer(noto, { estate })

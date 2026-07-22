@@ -323,6 +323,21 @@ export function weekIndexOf(currentDay, monthsElapsed) {
   return Math.floor(absoluteDay(currentDay, monthsElapsed) / 7)
 }
 
+// --- Day of week: the rhythm of retail ----------------------------------------
+// Real card shops live Friday→Sunday. Absolute day 1 is a Monday; weeks run straight
+// across month boundaries (30-day months mean the weekend drifts through the calendar,
+// like real retail). Walk-in traffic, the counter, and the pack machine ride
+// walkinDayMult; collection sellers cluster on weekends (attic-cleaning is a Saturday
+// job) via buyinDayMult. Online demand is untouched — the internet is open 24/7.
+// Both tables average ~1.0 across a week, so overall fame tuning is unchanged;
+// the week just has a SHAPE now (dead Tuesdays, packed Saturdays).
+export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+export function weekdayOf(absDay) { return WEEKDAYS[((absDay - 1) % 7 + 7) % 7] }
+const WALKIN_DAY_MULT = { Mon: 0.8, Tue: 0.75, Wed: 0.85, Thu: 0.95, Fri: 1.15, Sat: 1.45, Sun: 1.2 }
+const BUYIN_DAY_MULT  = { Mon: 0.9, Tue: 0.9,  Wed: 0.9,  Thu: 0.9,  Fri: 0.9,  Sat: 1.4,  Sun: 1.4 }
+export function walkinDayMult(absDay) { return WALKIN_DAY_MULT[weekdayOf(absDay)] }
+export function buyinDayMult(absDay) { return BUYIN_DAY_MULT[weekdayOf(absDay)] }
+
 export function makeWeeklyGoals(noto) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
   const count = 3 + (Math.random() < 0.5 ? 1 : 0) // 3–4 goals for the week
