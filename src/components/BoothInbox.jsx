@@ -153,7 +153,7 @@ export default function BoothInbox({ onRip, onPick }) {
         // its own tab so a long listings panel doesn't bury the day-to-day orders.
         (listings.length || consignments.length)
           ? <SellStrips />
-          : <div className="empty">Nothing on the market. List or consign cards from your collection (Cards → Select) to sell them here. 🌐</div>
+          : <div className="empty">Nothing on the market. List or consign cards from your collection (Inventory → Select) to sell them here. 🌐</div>
       ) : sellTab === 'packs' ? (
         // Your custom mystery-pack product line: tiers, the builder, and built stock.
         <MysteryPacks />

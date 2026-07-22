@@ -39,7 +39,7 @@ import { milestoneById } from './game/milestones'
 // screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
 // behind the gear in the top bar.
 const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
-const TAB_LABEL = { shop: 'Buy', myshop: 'Store', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Cards' }
+const TAB_LABEL = { shop: 'Buy', myshop: 'Store', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Inventory' }
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
 
@@ -248,14 +248,14 @@ export default function App() {
       if (!res) return toast(`${distributorById(distId)?.name || 'They'} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
-      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short} — in Cards → 📦 Sealed.`)
+      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     const cashPart = Math.min(cash, price), creditPart = round2(price - cashPart)
     const pay = onCredit ? ' on credit 💳' : split ? splitNote(cashPart, creditPart) : ''
-    toast(`Stocked ${product.type} of ${set.name}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Cards → 📦 Sealed'}: rip, list, or flip it whenever.`)
+    toast(`Stocked ${product.type} of ${set.name}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -312,7 +312,7 @@ export default function App() {
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} have no more sealed ${find.setName} — it's out of print. A fresh find turns up next week.`)
     const cashPart = Math.min(cash, find.price), creditPart = round2(find.price - cashPart)
     const pay = onCredit ? ' on credit 💳' : (split && creditPart > 0) ? ` — ${fmtMoney(cashPart)} cash + ${fmtMoney(creditPart)} credit 💳` : ''
-    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${pay}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Cards → 📦 Sealed.`)
+    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${pay}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Inventory → 📦 Sealed.`)
   }
 
   // "Rip another" from the end-of-rip summary: keep chasing without going back to the
