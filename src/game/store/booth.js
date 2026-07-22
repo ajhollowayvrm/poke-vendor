@@ -32,7 +32,7 @@ function randomSealedInRange(lo, hi) {
 const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
-  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem } from './constants'
+  floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -500,7 +500,10 @@ export function createBoothSlice(set, get) {
     // Banner boosts it), a walk-in traffic buzz window, and every regular warms up.
     runGiveaway(uid) {
       const card = get().collection.find(c => c.uid === uid)
-      if (!card || !get().upgrades.storefront) return false
+      // 🔒 Personal keepsakes and counter holds can't be given away — locked stock is excluded
+      // from every other exit path, and the value-sorted picker would otherwise put your best
+      // (usually locked) piece right under a misclick.
+      if (!card || card.locked || card._heldFor || !get().upgrades.storefront) return false
       const value = cardValue(card)
       // Anti-farm: penny cards give no rep (a $0.10 common giveaway wasn't "generous"),
       // and each successive giveaway THE SAME DAY pays sharply less (halving) — so you
@@ -606,6 +609,8 @@ export function createBoothSlice(set, get) {
       if (ev.needsPrize) {
         prizeCard = s.collection.find(c => c.uid === prizeUid)
         if (!prizeCard) return { error: 'Pick a prize card for the raffle.' }
+        // Same rail as the giveaway: 🔒 keepsakes and held items can't be raffled off.
+        if (prizeCard.locked || prizeCard._heldFor) return { error: 'That one is a 🔒 personal keepsake — unlock it first if you really mean to raffle it.' }
       }
       if (!get().spend(ev.cost)) return { error: `You can't cover the $${ev.cost} to run it.` }
       set(st => ({
@@ -712,12 +717,13 @@ export function createBoothSlice(set, get) {
                ...(get().showSealed || []).map(it => ({ item: it, sealed: true }))]
             : pool === 'listings' ? (get().listings || []).map(l => ({ item: l.card, sealed: false }))
             : pool === 'shop'
-            // The store = your WHOLE stock: every collection card + held sealed is out for
-            // walk-ins unless it's 🔒 kept (locked) or held behind the counter for a regular.
-            // Cards listed EVERYWHERE (online + in-store) are browsable too.
-            ? [...get().collection.filter(c => !c.locked && !c._heldFor).map(c => ({ item: c, sealed: false })),
+            // The store = your SHOP FLOOR: a browser can only buy what you've put out front
+            // (loc 'floor', not 🔒 kept, not held for a regular) — storeroom backstock sells
+            // nothing until you move it out (see the three-inventory notes in constants.js).
+            // Cards listed EVERYWHERE (online + in-store) are deliberately out too.
+            ? [...get().collection.filter(c => onFloor(c)).map(c => ({ item: c, sealed: false })),
                ...omniShelfCards(get().listings).map(c => ({ item: c, sealed: false })),
-               ...(get().sealedInventory || []).filter(it => !it.locked && !it._heldFor).map(it => ({ item: it, sealed: true }))]
+               ...(get().sealedInventory || []).filter(it => onFloor(it)).map(it => ({ item: it, sealed: true }))]
             : get().collection.map(c => ({ item: c, sealed: false }))
           // Your CUSTOM MYSTERY PACKS sit on the same table/shelf — impulse product a
           // browser can grab at its fixed tier price (channel-gated per tier).

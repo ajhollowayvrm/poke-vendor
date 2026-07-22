@@ -34,7 +34,7 @@ import {
   GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
-  STORE_EVENTS, EVENT_COOLDOWN_DAYS,
+  STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -622,18 +622,18 @@ export function advanceDaysWith(set, get, days, away) {
     const fameBoost = Math.sqrt(Math.max(1, fameMult(noto) / fameMult(100)))
     const budget = Math.min(COUNTER_MAX_PER_DAY,
       (15 + noto) * fameBoost * (1 + empThroughput * 0.6) * signage) * days
-    // Everyday stock the counter can move: unlocked, un-held, NON-featured items — from the
-    // floor AND the storeroom, so backstock fills routine orders too (the counter is the
-    // bulk/singles/supplies trade; it isn't limited to what's on display). The featured
-    // display case is reserved for the whale/browse encounters, which pay a premium, so the
-    // counter never undercuts them; Personal (locked) is never touched. Cheapest FIRST — the
+    // Everyday stock the counter can move: NON-featured items out on the SHOP FLOOR only —
+    // the storeroom is backstock and sells nothing until you move it out front (the floor
+    // contract in constants.js; restockFloor() is the one-tap refill). The featured display
+    // case is reserved for the whale/browse encounters, which pay a premium, so the counter
+    // never undercuts them; Personal (locked) is never touched. Cheapest FIRST — the
     // counter chews through commons and leaves pricier pieces to linger for the premium
     // encounters. Income is capped at the day's budget either way.
     const cur = get()
     const everyday = [
-      ...(cur.collection || []).filter(c => !c.locked && !c._heldFor && !c._featured)
+      ...(cur.collection || []).filter(c => onFloor(c) && !c._featured)
         .map(c => ({ kind: 'c', uid: c.uid, v: cardValue(c) })),
-      ...(cur.sealedInventory || []).filter(it => !it.locked && !it._heldFor && !it._featured)
+      ...(cur.sealedInventory || []).filter(it => onFloor(it) && !it._featured)
         .map(it => ({ kind: 's', uid: it.uid, v: sealedValue(it) })),
     ].sort((a, b) => a.v - b.v)
     // Two tallies: `moved` is the market value of goods carried out (gates against the day's
@@ -654,6 +654,10 @@ export function advanceDaysWith(set, get, days, away) {
         collection: counterSoldC.size ? st.collection.filter(c => !counterSoldC.has(c.uid)) : st.collection,
         sealedInventory: counterSoldS.size ? (st.sealedInventory || []).filter(it => !counterSoldS.has(it.uid)) : st.sealedInventory,
       }))
+    } else if (budget > 0) {
+      // Locals came to spend and the floor had nothing everyday out — surface the miss so an
+      // unstocked floor never reads as "the counter just stopped working".
+      get().log('shop', `🏬 The counter had nothing everyday to sell — stock the floor from the storeroom.`, 0)
     }
     get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
   }

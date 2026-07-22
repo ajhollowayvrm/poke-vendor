@@ -980,7 +980,7 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
 
 // --- Brick-and-mortar walk-in REQUESTS ---------------------------------------
 // A walk-in asks for a SPECIFIC thing (a sealed product or a single). If it's on your SHELF
-// → instant, happy sale. If it's in the BACK (your collection / held inventory) → you can grab
+// (shop floor) → instant, happy sale. If it's in the BACK (the storeroom) → you can grab
 // it. If you don't have it AT ALL → they leave disappointed (a demand signal + small rep ding).
 // ~55% of requests are for something you actually have, so keeping stock stocked pays off.
 // The premium is already baked into the returned price (in-store premium + a "came for it"
@@ -1024,13 +1024,14 @@ export function makeShopRequest(s, accepted = null) {
     }
   }
 
-  // ONE store inventory: everything unlocked is "on the floor" (shelf); 🔒 kept items are
-  // "in the back" — you own it but it's not for sale, so selling one is a choice you make
-  // on the spot. Items held for a regular are behind the counter and off-limits entirely.
+  // THREE inventories (see constants.js): the FLOOR is the shelf (what's out front); the
+  // STOREROOM is "the back" — you own it but it's not out, so grabbing it for a customer is
+  // a choice you make on the spot. 🔒 Personal keepsakes aren't for sale at all (they read
+  // as not-owned here), and items held for a regular are behind the counter and off-limits.
   const wantSealed = Math.random() < 0.5
   if (wantSealed) {
-    const shelf = (s.sealedInventory || []).filter(it => !it.locked && !it._heldFor).map(it => ({ it, loc: 'shelf' }))
-    const back = (s.sealedInventory || []).filter(it => it.locked && !it._heldFor).map(it => ({ it, loc: 'back' }))
+    const shelf = (s.sealedInventory || []).filter(it => it.loc === 'floor' && !it.locked && !it._heldFor).map(it => ({ it, loc: 'shelf' }))
+    const back = (s.sealedInventory || []).filter(it => it.loc !== 'floor' && !it.locked && !it._heldFor).map(it => ({ it, loc: 'back' }))
     const have = [...shelf, ...back]
     if (have.length && Math.random() < 0.55) {
       const { it, loc } = pickAny(null, have)
@@ -1041,18 +1042,18 @@ export function makeShopRequest(s, accepted = null) {
     // a random product they want — maybe you happen to have it, usually not
     const set = pickAny(null, SHOP_SETS)
     const prod = pickAny(null, setProducts(set))
-    const pool = (s.sealedInventory || []).filter(it => !it._heldFor)
+    const pool = (s.sealedInventory || []).filter(it => !it.locked && !it._heldFor)
     const hit = pool.find(x => x.setId === set.id && x.product.type === prod.type)
     return build({ label: `${prod.type} of ${set.name}`, article: 'a', img: set.logo || null,
       price: priceFor(hit ? sealedValue(hit) : prod.price, true),
-      loc: hit ? (hit.locked ? 'back' : 'shelf') : 'none', kind: 'sealed', uid: hit?.uid })
+      loc: hit ? (hit.loc === 'floor' ? 'shelf' : 'back') : 'none', kind: 'sealed', uid: hit?.uid })
   }
 
-  // singles — the floor is every unlocked collection card PLUS any card listed everywhere
-  // (online + in-store); 🔒 locked cards are keepers "in the back."
-  const caseCards = [...(s.collection || []).filter(c => !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
+  // singles — the shelf is the shop-floor cards PLUS any card listed everywhere
+  // (online + in-store); unlocked storeroom cards are "in the back."
+  const caseCards = [...(s.collection || []).filter(c => c.loc === 'floor' && !c.locked && !c._heldFor), ...omniShelfCards(s.listings)]
   const shelf = caseCards.map(c => ({ c, loc: 'shelf' }))
-  const back = (s.collection || []).filter(c => c.locked && !c._heldFor).map(c => ({ c, loc: 'back' }))
+  const back = (s.collection || []).filter(c => c.loc !== 'floor' && !c.locked && !c._heldFor).map(c => ({ c, loc: 'back' }))
   const have = [...shelf, ...back]
   if (have.length && Math.random() < 0.55) {
     const { c, loc } = pickAny(null, have)
@@ -1060,7 +1061,7 @@ export function makeShopRequest(s, accepted = null) {
   }
   const want = cardInValueRange(1, 300)
   const onShelf = caseCards.find(x => x.id === want.id)
-  const inBack = (s.collection || []).find(x => x.id === want.id && x.locked)
+  const inBack = (s.collection || []).find(x => x.id === want.id && x.loc !== 'floor' && !x.locked && !x._heldFor)
   const hit = onShelf || inBack
   return build({ label: want.name, article: 'a', img: want.img,
     price: priceFor(hit ? cardValue(hit) : cardValue(want)),

@@ -648,7 +648,7 @@ export default function BoothInbox({ onRip, onPick }) {
               {' '}{GIVEAWAY_BUZZ_DAYS}-day walk-in buzz either way. Every regular warms up a little.
             </p>
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
-              {[...collection].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => {
+              {collection.filter(c => !c.locked && !c._heldFor).sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => {
                 const pop = Math.min(15, Math.round(2 + Math.sqrt(cardValue(c))))
                 return (
                   <div key={c.uid} className="vendoritem">
@@ -726,9 +726,9 @@ export default function BoothInbox({ onRip, onPick }) {
               A flashier prize sells more tickets worth of goodwill — bigger notoriety pop when it's drawn.
               Costs ${STORE_EVENTS.raffle.cost} to run; ticket money comes in when the night happens.
             </p>
-            {collection.length === 0 ? <div className="empty">No cards to raffle.</div> : (
+            {collection.filter(c => !c.locked && !c._heldFor).length === 0 ? <div className="empty">No cards to raffle (🔒 keepsakes are excluded).</div> : (
               <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
-                {[...collection].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => (
+                {collection.filter(c => !c.locked && !c._heldFor).sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => (
                   <div key={c.uid} className="vendoritem">
                     <CardTile card={c} interactive={false} />
                     <button className="btn gold" style={{ padding: '4px 8px', fontSize: 12 }} onClick={() => {
