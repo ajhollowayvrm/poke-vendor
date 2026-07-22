@@ -82,6 +82,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const inventory = useGame(s => s.sealedInventory)
   const ripSealedAction = useGame(s => s.ripSealed)
   const hasRipService = useGame(s => !!s.upgrades.ripService) // 🎟️ lets viewers order YOUR sealed
+  const hasStore = useGame(s => !!s.upgrades.storefront)
   // Built mystery packs with the 🔴 stream channel on — viewers can order them mid-stream.
   const streamPacks = useGame(s => (s.builtPacks || [])
     .filter(p => (s.packTiers || []).find(t => t.id === p.tierId)?.channels?.stream).length)
@@ -101,6 +102,20 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   // Available = held items not already queued (each physical unit can be queued once).
   const queuedUids = new Set(queue.map(q => q.invUid))
   const available = inventory.filter(it => !queuedUids.has(it.uid))
+  // WHERE THE PICKER LOOKS. With a storefront your sealed splits into a 🔒 personal stash
+  // (locked) and store stock (floor + storeroom), and a streamer who rips their own keepsakes
+  // shouldn't have to scroll the whole store case to find them — so the picker narrows by
+  // source, defaults to Personal, and remembers the choice. Without a storefront there's no
+  // split; the chips don't render and everything shows.
+  const [src, setSrc] = useState(() => {
+    if (!hasStore) return 'all'
+    try { return localStorage.getItem('pv-stream-src') || 'personal' } catch { return 'personal' }
+  })
+  const pickSrc = (k) => { setSrc(k); try { localStorage.setItem('pv-stream-src', k) } catch { /* private mode */ } }
+  const srcCounts = { personal: available.filter(it => it.locked).length }
+  srcCounts.store = available.length - srcCounts.personal
+  const shown = !hasStore || src === 'all' ? available
+    : available.filter(it => src === 'personal' ? it.locked : !it.locked)
   // The units a viewer could ever ask for: not queued (those get consumed at go-live), not
   // locked, not promised to a regular. This is the shelf you're choosing from below.
   const offerable = available.filter(it => !it.locked && !it._heldFor)
@@ -119,8 +134,8 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const canTakeSealed = hasRipService && openCount > 0
   const canTakePacks = allowPacks && streamPacks > 0
   useEffect(() => {
-    if (!available.find(it => it.uid === pick)) setPick(available[0]?.uid || null)
-  }, [available, pick])
+    if (!shown.find(it => it.uid === pick)) setPick(shown[0]?.uid || null)
+  }, [shown, pick])
 
   function addToQueue() {
     const it = available.find(x => x.uid === pick)
@@ -205,11 +220,25 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
           {inventory.length > 0 && (
           <div className="market-panel" style={{ marginTop: 14 }}>
             <div className="market-head">🎬 Build your rip queue <span className="muted">— from your 📦 inventory</span></div>
+            {hasStore && (
+              <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                {[
+                  { key: 'personal', label: `🔒 Personal (${srcCounts.personal})`, hint: 'Only your kept sealed — the stash you 🔒 set aside for yourself.' },
+                  { key: 'store',    label: `🏬 Store stock (${srcCounts.store})`, hint: 'Sealed on the sales floor or in the storeroom.' },
+                  { key: 'all',      label: `📦 Everything (${available.length})`, hint: 'All held sealed, wherever it lives.' },
+                ].map(o => (
+                  <button key={o.key} className={`subtab ${src === o.key ? 'active' : ''}`} title={o.hint}
+                    onClick={() => pickSrc(o.key)}>{o.label}</button>
+                ))}
+              </div>
+            )}
             <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-              <select value={pick || ''} onChange={e => setPick(e.target.value)} disabled={!available.length} style={{ flex: 1, minWidth: 220 }}>
-                {available.length === 0
-                  ? <option value="">— everything's queued —</option>
-                  : available.map(it => {
+              <select value={pick || ''} onChange={e => setPick(e.target.value)} disabled={!shown.length} style={{ flex: 1, minWidth: 220 }}>
+                {shown.length === 0
+                  ? <option value="">{available.length === 0 ? "— everything's queued —"
+                      : src === 'personal' ? '— no 🔒 kept sealed — Keep some from your Store stock —'
+                      : '— no store sealed — check 🔒 Personal —'}</option>
+                  : shown.map(it => {
                     const s = setById(it.setId)
                     const tag = it.vintage ? '🗝️ ' : s?.secondary ? '🕰️ ' : ''
                     return <option key={it.uid} value={it.uid}>{tag}{it.product.icon || '📦'} {s?.name} {it.product.type} · {it.product.packs} pk</option>
