@@ -22,7 +22,7 @@ import {
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { boothEncounter, makeShopRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
@@ -636,13 +636,19 @@ export function advanceDaysWith(set, get, days, away) {
       ...(cur.sealedInventory || []).filter(it => !it.locked && !it._heldFor && !it._featured)
         .map(it => ({ kind: 's', uid: it.uid, v: sealedValue(it) })),
     ].sort((a, b) => a.v - b.v)
-    let acc = 0
+    // Two tallies: `moved` is the market value of goods carried out (gates against the day's
+    // trade BUDGET — how much stuff locals buy); `revenue` is that same stock rung up at the
+    // shop's RETAIL markup (sealed carries the fatter margin, singles the plain premium). So the
+    // counter now turns a real margin on everyday trade instead of selling at cost.
+    let moved = 0, revenue = 0
     for (const x of everyday) {
-      if (acc >= budget) break
-      acc += x.v
+      if (moved >= budget) break
+      moved += x.v
+      const markup = x.kind === 's' ? SEALED_SHOP_MARKUP : STORE_SALE_PREMIUM
+      revenue += x.v * (1 + markup)
       ;(x.kind === 'c' ? counterSoldC : counterSoldS).add(x.uid)
     }
-    counterRevenue = round2(acc)
+    counterRevenue = round2(revenue)
     if (counterSoldC.size || counterSoldS.size) {
       set(st => ({
         collection: counterSoldC.size ? st.collection.filter(c => !counterSoldC.has(c.uid)) : st.collection,
@@ -819,7 +825,7 @@ export function advanceDaysWith(set, get, days, away) {
       for (let dd = 0; dd < days && left > 0; dd++) {
         if (walkinOK && reg && Math.random() < Math.min(0.6, 0.3 + (reg.trust || 0) / 250)) {
           const label = isSealed ? it.product.type : it.name
-          const price = round2((isSealed ? sealedValue(it) : cardValue(it)) * (1 + STORE_SALE_PREMIUM + HOLD_PICKUP_PREMIUM))
+          const price = round2((isSealed ? sealedValue(it) : cardValue(it)) * (1 + (isSealed ? SEALED_SHOP_MARKUP : STORE_SALE_PREMIUM) + HOLD_PICKUP_PREMIUM))
           soldProceeds = round2(soldProceeds + price)
           noteSale(label, price)
           get().log('sell', `${reg.emoji} ${reg.name} came in for the ${label} you were holding — paid $${price.toFixed(2)} cash, delighted`, price)

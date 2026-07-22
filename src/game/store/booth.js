@@ -11,7 +11,7 @@
 
 import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
   SHOP_SETS, SECONDARY_SETS, setProducts, marketMult } from '../engine'
-import { encounterStillValid, STORE_SALE_PREMIUM, cardMatchesWant } from '../shows'
+import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant } from '../shows'
 
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
 // repack could plausibly hide. Returns { set, product } or null when nothing fits the band.
@@ -750,7 +750,9 @@ export function createBoothSlice(set, get) {
             // markdown (that's the trade-off for the crowd it draws). ~12% off.
             if (item._deal) price = round2(price * (1 - DEAL_OF_SHOW_MARKDOWN))
             if (get().upgrades.cases) price = round2(price * 1.12)
-            if (effect.inStore) price = round2(price * (1 + STORE_SALE_PREMIUM)) // in-person shop premium
+            // In-store retail markup — sealed carries the fatter shop margin (that's the point of
+            // stocking modern boosters on the shelf); singles get the plain walk-in premium.
+            if (effect.inStore) price = round2(price * (1 + (pick.sealed ? SEALED_SHOP_MARKUP : STORE_SALE_PREMIUM)))
             const { net, fee } = processingFee(price, effect.payMethod)
             if (pick.sealed) set(st => ({
               showSealed: (st.showSealed || []).filter(x => x.uid !== item.uid),

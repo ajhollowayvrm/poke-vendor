@@ -545,6 +545,13 @@ function visitorFor(channel, kind) {
 // the same card sells for more across your counter than in a web listing. Applied at sale
 // resolution to walk-in sale/counter/browse effects (see store/booth.resolveEncounter).
 export const STORE_SALE_PREMIUM = 0.12
+// Modern sealed is a real shop's bread and butter: you stock boosters/ETBs/bundles and sell
+// them at a RETAIL markup over what you paid the distributor — a bigger spread than the plain
+// walk-in premium, because sticker price on sealed is the whole point of a brick-and-mortar
+// shelf. This is what lets "keep modern sealed on the shelf" actually sustain the store instead
+// of running at cost. Applied to every in-store sealed sale (counter trade, browse, held pickup,
+// walk-in requests) in place of STORE_SALE_PREMIUM. Singles keep the plain premium.
+export const SEALED_SHOP_MARKUP = 0.20
 // Online buyers can\'t hand you cash. In-person can use anything you accept.
 const ONLINE_METHODS = ['venmo', 'paypal', 'card']
 const INPERSON_METHODS = ['cash', 'venmo', 'card', 'paypal']
@@ -982,7 +989,9 @@ const REQUEST_PREMIUM = 0.06
 export function makeShopRequest(s, accepted = null) {
   const pay = pickPayMethod('walkin', accepted)
   const visitor = visitorFor('walkin', 'offer')
-  const priceFor = (base) => round2((base || 0) * (1 + STORE_SALE_PREMIUM + REQUEST_PREMIUM))
+  // Sealed carries the fatter shop retail markup; singles the plain walk-in premium. Both add
+  // the "came in asking for it" bump on top.
+  const priceFor = (base, sealed = false) => round2((base || 0) * (1 + (sealed ? SEALED_SHOP_MARKUP : STORE_SALE_PREMIUM) + REQUEST_PREMIUM))
 
   // Assemble the encounter once the desired item + its location are known.
   //   loc: 'shelf' (on display) | 'back' (owned, not out) | 'none' (don't own it)
@@ -1027,7 +1036,7 @@ export function makeShopRequest(s, accepted = null) {
       const { it, loc } = pickAny(null, have)
       const set = setById(it.setId)
       return build({ label: `${it.product.type} of ${set?.name || 'that set'}`, article: 'a', img: set?.logo || null,
-        price: priceFor(sealedValue(it)), loc, kind: 'sealed', uid: it.uid })
+        price: priceFor(sealedValue(it), true), loc, kind: 'sealed', uid: it.uid })
     }
     // a random product they want — maybe you happen to have it, usually not
     const set = pickAny(null, SHOP_SETS)
@@ -1035,7 +1044,7 @@ export function makeShopRequest(s, accepted = null) {
     const pool = (s.sealedInventory || []).filter(it => !it._heldFor)
     const hit = pool.find(x => x.setId === set.id && x.product.type === prod.type)
     return build({ label: `${prod.type} of ${set.name}`, article: 'a', img: set.logo || null,
-      price: priceFor(hit ? sealedValue(hit) : prod.price),
+      price: priceFor(hit ? sealedValue(hit) : prod.price, true),
       loc: hit ? (hit.locked ? 'back' : 'shelf') : 'none', kind: 'sealed', uid: hit?.uid })
   }
 
