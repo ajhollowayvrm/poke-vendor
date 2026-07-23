@@ -523,6 +523,9 @@ export function inboxCap(notoriety) {
 // Going live pumps your whole storefront for a few days after: every listing draws
 // far more eyes (stream viewers who came to shop).
 export const STREAM_HYPE_DAYS = 4
+// ❤️ Each subscriber pays a small daily drip (~$3/mo) while the channel is alive. A channel
+// gone dark for over a week starts bleeding subs (see daytick).
+export const SUB_DAILY = 0.10
 
 // --- Upgrades: buy once, keep forever ---------------------------------------
 // Costs are scaled to the real economy: packs ~$5-15, ETBs ~$150, show entry up

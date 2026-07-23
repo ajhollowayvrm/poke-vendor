@@ -146,6 +146,62 @@ export function promoDeliveryFollowers(promo) {
   return 10 + Math.min(80, Math.round((promo?.cardValue || 0) * 0.4))
 }
 
+// 🎯 Chase bounty: declaring "if I pull {card} tonight, chat wins it" before a rip. The
+// conditional promise alone draws a crowd — scaled by how badly people want the card,
+// capped so the stakes never outdraw your actual fame.
+export function bountyDrawMult(value) {
+  return 1 + Math.min(0.25, (value || 0) / 800)
+}
+
+// 📆 Weekly rhythm: streaming on a steady cadence (~3–10 days apart) builds a loyal crowd
+// that shows up bigger every time. The streak is the count of consecutive on-rhythm streams;
+// going dark >10 days forfeits it (rhythmStreakNow), bingeing just doesn't grow it (and
+// fatigue already bites). Up to +30% at a 6-streak.
+export function rhythmMult(streak) {
+  return 1 + Math.min(0.30, Math.max(0, streak || 0) * 0.05)
+}
+// The streak that's actually LIVE right now: a long absence forfeits it even before the
+// next endStream writes the reset — the comeback stream must not inherit the old bonus.
+export function rhythmStreakNow(streak, lastStreamDay, today) {
+  if (lastStreamDay == null) return 0
+  return (today - lastStreamDay > 10) ? 0 : Math.max(0, streak || 0)
+}
+
+// ❤️ Subscribers won by a live moment. Hype converts watchers into paying members of the
+// channel; a god pack or a raid converts hardest. Always at least 1 — somebody in the
+// room was on the fence.
+export function subsFor(viewers, kind, rnd = Math.random) {
+  const base = kind === 'god' ? 4 : kind === 'raid' ? 3 : kind === 'giveaway' ? 2 : 1
+  return Math.max(1, Math.round(base + viewers * 0.002 * (0.5 + rnd())))
+}
+
+// 🎬 Does tonight's best moment become a CLIP? A god pack always clips; otherwise a big
+// enough single pull (≥$60). The clip circulates for a few days after the wrap, recruiting
+// followers daily — deliberately NOT gated on a flop: nobody saw it live, but the clip
+// blowing up afterward is half the fantasy.
+export function clipFor(peakViewers, bestValue, hadGod, bestName) {
+  if (hadGod) return { daysLeft: 3, perDay: Math.min(40, Math.round(10 + peakViewers * 0.008)), label: 'god pack' }
+  if ((bestValue || 0) >= 60) return { daysLeft: 3, perDay: Math.min(30, Math.round(4 + bestValue * 0.05)), label: `${bestName} pull` }
+  return null
+}
+
+// 💥 Raids: when your room is popping off, another streamer may send their whole audience
+// over. Size scales with YOUR standing (a raid finds you through the clips and the name).
+const RAIDERS = ['PackKingLive', 'HoloHannah', 'TheBreakRoomTV', 'SlabCitySteve', 'RipsNGiggles',
+  'MintyMara', 'ChaseCardCarl', 'VintageVeraTV']
+export function rollRaid(notoriety, followers, rnd = Math.random) {
+  const size = Math.round((25 + rnd() * 75)
+    * (1 + Math.min(3, Math.max(0, followers) / 300))
+    * (1 + Math.min(1.5, Math.max(0, notoriety) / 250)))
+  return { by: RAIDERS[Math.floor(rnd() * RAIDERS.length)], size }
+}
+
+// 🛍️ Mid-stream shelf sale premium: a hyped room shops impulsively — the hotter the train,
+// the more a viewer will pay over market for a single off your store floor.
+export function streamSaleMult(hypeLevel) {
+  return 1.06 + Math.min(HYPE_TRAIN_MAX, Math.max(0, hypeLevel)) * 0.045
+}
+
 // --- Live chat ---------------------------------------------------------------
 // Procedural chat handles + lines. We react to the moment (hype / hit / bulk / tips /
 // ambient) so the feed feels alive without any real text. Handles are gamer-y.

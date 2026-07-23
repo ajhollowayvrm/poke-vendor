@@ -85,6 +85,13 @@ npm run dev      # opens http://localhost:5179
     - **Queue multiple products** — line up as many held products as you like before going live; the stream rips through them **back-to-back** in one broadcast, and you can **add more from inventory mid-stream** without ending it.
     - **📦 Box breaks** — mark any multi-pack product in your queue as a break: sell **spots** (random teams) up front, rip the box live, and each spot's cards **ship to its buyer** (unsold spots' cards stay yours). A hot pull can sell a lingering spot live.
     - **🎟️ Live Rip Service** (upgrade) — take **rip orders** on stream: viewers pay a **premium** to have you crack a product you hold on camera. You bank the markup **no matter what hits**, rip it live in your queue, and **every card ships to that buyer** — a steady, low-variance income while you broadcast.
+    - **📣 Announced streams** — promise a broadcast **1–3 days ahead**, optionally headlining **one card you own** as the night's giveaway. Go live on the promised night for a much bigger room (lead time + prize value stack, up to ×1.8); **deliver the promised card on air** for a rep pop and bonus followers. Skip the night — or bait the room and never raffle the card — and your name takes the hit.
+    - **🎯 Chase bounty** — before a rip, promise the room: *"if I pull {card} tonight, chat wins it."* The stakes alone draw a bigger crowd; if it hits, the room detonates (hype train to max, subs pour in) and the pulled copy ships to a lucky viewer. If it never hits, no harm — everyone knew the odds.
+    - **❤️ Subscribers** — hype moments, raids, and giveaways convert watchers into **paying channel members** who drip a little cash **every day**. Go dark for over a week and subs start drifting off — the channel wants feeding.
+    - **📆 Weekly rhythm** — stream on a steady cadence (every ~3–10 days) and a **loyal crowd** builds, showing up bigger every time (up to +30%). Go dark for 10+ days and the streak forfeits.
+    - **💥 Raids** — a room that's popping off can attract another streamer's whole audience mid-stream: a sudden viewer flood, new followers, and a sub or two.
+    - **🎬 Clips** — a god pack or a monster pull gets **clipped**, and the clip keeps recruiting followers for days after the wrap — even if almost nobody saw it live.
+    - **🛍️ Shelf sales on air** — with the hype train rolling (≥×2), viewers impulse-buy **singles off your store floor** at a stream premium.
 
 **Notoriety** drives everything: how many orders/walk-ins you get, which shows you can attend, vendor deals, want-list volume, daily-goal payouts, and how buyers treat you.
 

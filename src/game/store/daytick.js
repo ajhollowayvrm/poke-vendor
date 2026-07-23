@@ -35,7 +35,7 @@ import {
   BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
   CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
-  supplyById, pickSupplyId, BUYLIST_POLICIES,
+  supplyById, pickSupplyId, BUYLIST_POLICIES, SUB_DAILY,
   floorItemCap, floorSkuCounts, floorSkuKey, floorFreeSlots,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
@@ -1072,6 +1072,24 @@ export function advanceDaysWith(set, get, days, away) {
   let promoNext = s.streamPromo || null
   let promoFizzled = false
   if (promoNext && newAbsDay > promoNext.day) { promoFizzled = !promoNext.delivered; promoNext = null }
+  // --- ❤️ Subscribers: the channel pays its daily drip; a channel gone dark for over a
+  // week starts bleeding members (they subbed for streams, not silence).
+  let subsNext = s.subs || 0
+  let subIncome = 0
+  let subsDark = false
+  if (subsNext > 0) {
+    subsDark = s.lastStreamDay != null && newAbsDay - s.lastStreamDay > 7
+    if (subsDark) subsNext = Math.floor(subsNext * Math.pow(0.97, days))
+    subIncome = round2(subsNext * SUB_DAILY * days)
+    if (subIncome > 0) get().earn(subIncome)
+  }
+  // --- 🎬 A clip making the rounds keeps recruiting followers for a few days post-stream.
+  let clipNext = s.streamClip || null
+  let clipGain = 0
+  if (clipNext) {
+    clipGain = Math.round((clipNext.perDay || 0) * Math.min(days, clipNext.daysLeft || 0))
+    clipNext = (clipNext.daysLeft || 0) - days > 0 ? { ...clipNext, daysLeft: clipNext.daysLeft - days } : null
+  }
   // --- 📰 Reprint-wave lifecycle: announce → window (deposits) → drop (stock + rush) ----
   let waveNext = s.reprintWave || null
   let rushBuzz = false
@@ -1254,6 +1272,9 @@ export function advanceDaysWith(set, get, days, away) {
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
     streamPromo: promoNext,                 // 📣 an announced stream survives the day unless its night passed
+    subs: subsNext,                         // ❤️ paying members (bled down if the channel's gone dark)
+    streamClip: clipNext,                   // 🎬 the circulating clip ages out
+    followers: Math.max(0, (st.followers || 0) + clipGain), // clip keeps recruiting while it circulates
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
     regulars: regTick.regulars, // cooled + neglect-penalized + call-ins rolled (see tickRegulars)
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
@@ -1266,6 +1287,8 @@ export function advanceDaysWith(set, get, days, away) {
     get().addNotoriety(-2)
     get().log('stream', `📣 You never went live for the stream you announced — the room you hyped up moved on. (-2★)`, 0)
   }
+  if (subIncome > 0) get().log('stream', `❤️ ${subsNext} subscriber${subsNext === 1 ? '' : 's'} — +$${subIncome.toFixed(2)} sub income${subsDark ? ' (channel dark over a week — subs are drifting off)' : ''}`, subIncome)
+  if (clipGain > 0) get().log('stream', `🎬 Your ${s.streamClip.label} clip is making the rounds — +${clipGain} followers`, 0)
   // One-time fanfare the first day you become a distributor yourself.
   if (isDistributor(s) && !s.distributorSince) {
     get().log('milestone', `🏆 You're a distributor now — a Household Name AND a millionaire. Other shops will start ordering wholesale from you.`, 0)

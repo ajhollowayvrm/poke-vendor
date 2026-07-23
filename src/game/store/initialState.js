@@ -62,6 +62,10 @@ export function initialState() {
     streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, // lifetime livestream tallies
     streamEscrow: null,      // live-session escrow: { entries:[{invUid,item,packs,packsDone,spotGross}], ts } — non-null = ON AIR; settled at endStream or boot rescue
     streamPromo: null,       // 📣 announced stream: { day, lead, announcedOn, cardUid, cardName, cardValue, delivered } — null = nothing promised
+    subs: 0,                 // ❤️ paying subscribers — SUB_DAILY drip each per day; drift off if the channel goes dark >7 days
+    streamClip: null,        // 🎬 circulating clip: { daysLeft, perDay, label } — recruits followers daily after a big on-stream moment
+    rhythmStreak: 0,         // 📆 weekly-rhythm streak: consecutive streams ~3–10 days apart → loyal-crowd viewer mult (rhythmMult)
+    lastStreamDay: null,     // absolute day of the last stream (drives rhythm gaps + sub churn)
     generousActs: 0,
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance

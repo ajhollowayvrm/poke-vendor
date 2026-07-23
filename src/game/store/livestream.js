@@ -171,6 +171,20 @@ export function createLivestreamSlice(set, get) {
       return { card, followers: gained }
     },
 
+    // 🛍️ A hyped room shops your shelf mid-stream: a viewer buys a single straight off the
+    // store FLOOR at a stream premium. Same contract as every other sale channel — only
+    // loc==='floor', never 🔒 locked, never held for a regular (re-checked here at the
+    // moment of sale, not just at the roll). Returns { card, price } or null.
+    streamFloorSale(uid, mult = 1.1) {
+      const card = get().collection.find(c => c.uid === uid && c.loc === 'floor' && !c.locked && !c._heldFor)
+      if (!card) return null
+      const price = round2(cardValue(card) * Math.max(1, mult))
+      set(s => ({ collection: s.collection.filter(c => c.uid !== uid) }))
+      get().earn(price)
+      get().log('stream', `🛍️ A viewer bought ${card.name} off your shelf mid-stream — $${price.toFixed(2)} (${Math.round((Math.max(1, mult) - 1) * 100)}% stream premium)`, price)
+      return { card, price }
+    },
+
     // --- 📣 Announced streams ------------------------------------------------------
     // Promise a broadcast 1–3 days ahead, optionally headlining one card from your
     // collection as the night's giveaway. One promise at a time. The payoff is a bigger
@@ -221,7 +235,7 @@ export function createLivestreamSlice(set, get) {
     // burn a game-day — prepping & broadcasting takes the day, so the world advances
     // (orders/rent/etc.) just like any other day. A stream is now a real time cost,
     // not a free action, and over-streaming thins your crowd until you rest.
-    endStream({ tips = 0, noto = 0, peakViewers = 0, followers = 0 } = {}) {
+    endStream({ tips = 0, noto = 0, peakViewers = 0, followers = 0, subs = 0, clip = null } = {}) {
       get().clearStreamEscrow() // clean settlement — the escrow's job is done
       // 📣 Announced-stream settlement: if tonight WAS the promised night, the promise is
       // spent either way. Delivered → the rep pop already landed at the giveaway moment.
@@ -237,9 +251,23 @@ export function createLivestreamSlice(set, get) {
       }
       if (tips > 0) get().earn(round2(tips))
       if (noto) get().addNotoriety(noto) // may be negative after a flop
+      // 📆 Weekly rhythm: an on-cadence stream (3–10 days since the last) grows the loyal-crowd
+      // streak; going dark >10 days forfeits it; bingeing neither grows nor resets it (fatigue
+      // already punishes that). lastStreamDay is stamped BEFORE the day-tick below advances time.
+      const today = absoluteDay(get().currentDay, get().monthsElapsed)
+      const gap = get().lastStreamDay == null ? null : today - get().lastStreamDay
+      const rhythmNext = gap == null ? 0
+        : gap > 10 ? 0
+        : gap >= 3 ? Math.min(6, (get().rhythmStreak || 0) + 1)
+        : (get().rhythmStreak || 0)
+      if (clip) get().log('stream', `🎬 Someone clipped your ${clip.label} — it'll pull new followers for ${clip.daysLeft} days.`, 0)
       set(s => ({
         streamHypeDaysLeft: noto > 0 ? STREAM_HYPE_DAYS : 0, // a flop earns no afterglow
         followers: Math.max(0, (s.followers || 0) + followers), // returning audience grows
+        subs: Math.max(0, (s.subs || 0) + subs),                // ❤️ new paying members of the channel
+        streamClip: clip || s.streamClip,                       // 🎬 tonight's clip replaces the one circulating (if any)
+        rhythmStreak: rhythmNext,
+        lastStreamDay: today,
         streamStats: {
           ...s.streamStats, // carry ripOrders/ripRevenue (banked live) through untouched
           streams: (s.streamStats?.streams || 0) + 1,
@@ -250,7 +278,8 @@ export function createLivestreamSlice(set, get) {
       }))
       const afterglow = noto > 0 ? ` Your shop is buzzing for ${STREAM_HYPE_DAYS} days.` : ''
       const follow = followers > 0 ? ` +${followers} followers.` : ''
-      get().log('stream', `Wrapped a livestream — ${Math.round(peakViewers)} peak viewers, $${round2(tips).toFixed(2)} in tips (${noto >= 0 ? '+' : ''}${noto}★).${follow}${afterglow}`, round2(tips))
+      const subLine = subs > 0 ? ` +${subs} ❤️ subs.` : ''
+      get().log('stream', `Wrapped a livestream — ${Math.round(peakViewers)} peak viewers, $${round2(tips).toFixed(2)} in tips (${noto >= 0 ? '+' : ''}${noto}★).${follow}${subLine}${afterglow}`, round2(tips))
       // streaming consumes the day — advance the world one game-day (home, not away).
       advanceDaysWith(set, get, 1, false)
       // Fatigue AFTER the day-tick: the tick's rest-recovery (-1/day) used to erase the
