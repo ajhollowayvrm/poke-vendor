@@ -832,8 +832,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     }
   }, [hits, hypeLevel, goal, goalMet, pushChat])
 
-  // Skip the slog: instantly rip every remaining pack across ALL remaining queued products
-  // (no animation), tallying viewers/tips/hits/spot-fills, then jump to the wrap-up.
+  // Instantly rip every remaining pack across ALL remaining queued products (no animation),
+  // tallying viewers/tips/hits/spot-fills, then jump to the wrap-up. Only reachable via
+  // endEarly() — a broadcast otherwise plays out pack by pack.
   function skipRest() {
     if (done || finishedRef.current) return
     let addedTips = 0, hype = 0
@@ -1105,11 +1106,6 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             {atEntryEnd && (
               <button className="btn gold" style={{ maxWidth: 260 }} onClick={goNextEntry}>
                 Next product → {queueRef.current[entryIdx + 1]?.product.icon || '📦'} {queueRef.current[entryIdx + 1]?.product.type}
-              </button>
-            )}
-            {!done && (totalPacksAll - packsDone) >= 2 && phase !== 'revealing' && (
-              <button className="btn alt" style={{ flex:'none', maxWidth: 210 }} onClick={skipRest}>
-                ⏩ Skip to end ({totalPacksAll - packsDone} pk left)
               </button>
             )}
             {!done && (
