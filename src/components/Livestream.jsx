@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useGame } from '../game/store'
+import { useGame, absoluteDay } from '../game/store'
 import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
   rollRipOrder, randomChatHandle, ripOrderPrice,
+  giveawayViewerMult, giveawayTips, promoViewerMult, promoDeliveryFollowers,
 } from '../game/stream'
 import { packSaleChance } from '../game/mysterypacks'
 import { rarityColor } from './CardTile'
@@ -79,6 +80,12 @@ function orderableSealed(inventory, policy, exclude = new Set()) {
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const followers = useGame(s => s.followers || 0)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
+  // 📣 Announced streams: promise a night ahead of time for a bigger room.
+  const streamPromo = useGame(s => s.streamPromo)
+  const announceStream = useGame(s => s.announceStream)
+  const cancelStreamPromo = useGame(s => s.cancelStreamPromo)
+  const collection = useGame(s => s.collection)
+  const today = useGame(s => absoluteDay(s.currentDay, s.monthsElapsed))
   const inventory = useGame(s => s.sealedInventory)
   const ripSealedAction = useGame(s => s.ripSealed)
   const hasRipService = useGame(s => !!s.upgrades.ripService) // 🎟️ lets viewers order YOUR sealed
@@ -147,11 +154,21 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
     setQueue(q => q.map(e => e.invUid === uid ? { ...e, brk: { ...e.brk, ...patch } } : e))
   }
 
+  // 📣 The announce builder: lead time + an optional headline giveaway card. The card pool
+  // is anything you own worth featuring (≥$5) — promising a penny common hypes no one.
+  const [promoLead, setPromoLead] = useState(1)
+  const [promoCardUid, setPromoCardUid] = useState('')
+  const promoPool = [...collection].filter(c => cardValue(c) >= 5)
+    .sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60)
+  const promoCard = promoPool.find(c => c.uid === promoCardUid) || null
+  const promoTonight = streamPromo && today >= streamPromo.day // tonight's the promised night
+  const promoInDays = streamPromo ? streamPromo.day - today : 0
+
   const fresh = fatigueMult(fatigue)
   // The room drifts toward the biggest-draw product in the queue (a vintage box later
   // shouldn't cap the crowd at a $5 pack's draw).
   const draw = queue.length ? Math.max(...queue.map(e => streamDrawMult(setById(e.setId) || SHOP_SETS[0], e.product))) : 1
-  const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw)
+  const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw * (promoTonight ? promoViewerMult(streamPromo) : 1))
   const totalPacks = queue.reduce((a, e) => a + e.product.packs, 0)
   // Dead air: nothing queued AND nothing a viewer could possibly order. Going live on that
   // would burn a game-day watching an empty table.
@@ -205,6 +222,59 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
         {streamPacks > 0 && <span className="pill" style={{ marginLeft: 8, background: '#ffcb0522', color: 'var(--gold)' }}
           title="Built mystery packs with the 🔴 Stream channel on — viewers order them mid-stream and you rip them on camera">
           🎁 {streamPacks} mystery pack{streamPacks > 1 ? 's' : ''} ready for live orders</span>}
+      </div>
+
+      {/* 📣 Announce a FUTURE stream: promise a night (and optionally a headline giveaway
+          card) and the room shows up bigger — if you actually deliver. One promise at a time.
+          Always visible so an armed promise is never out of sight. */}
+      <div className="market-panel" style={{ marginTop: 14 }}>
+        <div className="market-head">📣 Announced stream <span className="muted">— hype a broadcast before you go live</span></div>
+        {streamPromo ? (
+          promoTonight ? (
+            <p style={{ fontSize: 13, margin: '8px 0 0' }}>
+              🔥 <b>Tonight's the night!</b> You promised this broadcast{streamPromo.cardName ? <> — headlining a <b>{streamPromo.cardName}</b> ({fmtMoney(streamPromo.cardValue)}) giveaway</> : null}.
+              Expect a <b style={{ color: 'var(--gold)' }}>×{promoViewerMult(streamPromo).toFixed(2)}</b> crowd.
+              {streamPromo.cardName && !streamPromo.delivered && <span className="muted"> Raffle the promised card on air (🎁 Giveaway) or the room turns on you (−2★).</span>}
+            </p>
+          ) : (
+            <div className="row" style={{ gap: 10, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 13 }}>
+                📅 Announced for <b>{promoInDays === 1 ? 'tomorrow' : `in ${promoInDays} days`}</b>
+                {streamPromo.cardName ? <> — headlining a <b>{streamPromo.cardName}</b> ({fmtMoney(streamPromo.cardValue)}) giveaway</> : null}.
+                Go live that day for a <b style={{ color: 'var(--gold)' }}>×{promoViewerMult(streamPromo).toFixed(2)}</b> crowd{streamPromo.cardName ? <span className="muted"> — and don't part with the prize before the show</span> : null}.
+              </span>
+              <button className="btn alt" style={{ flex: 'none', maxWidth: 130, marginLeft: 'auto' }}
+                onClick={async () => { if (await confirmDialog({ title: 'Call off the announced stream?', body: 'The room you hyped up will shrug and move on (−1★).', confirmText: 'Call it off', danger: true })) cancelStreamPromo() }}>
+                Call it off</button>
+            </div>
+          )
+        ) : (
+          <>
+            <p className="muted" style={{ fontSize: 12.5, margin: '8px 0 0' }}>
+              Promise a broadcast ahead of time and the room shows up bigger on the night — more lead time and a
+              headline giveaway people actually want mean a bigger crowd. <b>Skip the night (or the promised card) and your rep takes the hit.</b>
+            </p>
+            <div className="row" style={{ gap: 8, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span className="muted" style={{ fontSize: 12 }}>When</span>
+              {[1, 2, 3].map(n => (
+                <button key={n} className={`pctbtn ${promoLead === n ? 'on' : ''}`} onClick={() => setPromoLead(n)}>
+                  {n === 1 ? 'Tomorrow' : `In ${n} days`}</button>
+              ))}
+            </div>
+            <div className="row" style={{ gap: 10, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <select value={promoCardUid} onChange={e => setPromoCardUid(e.target.value)} style={{ flex: 1, minWidth: 220 }}
+                title="Headline ONE card you own as the night's giveaway — the pricier the prize, the bigger the promised crowd">
+                <option value="">— no headline giveaway —</option>
+                {promoPool.map(c => (
+                  <option key={c.uid} value={c.uid}>🎁 {c.name} · {fmtMoney(cardValue(c))}</option>
+                ))}
+              </select>
+              <button className="btn" style={{ flex: 'none' }} onClick={() => announceStream({ daysAhead: promoLead, card: promoCard })}>
+                📣 Announce (×{promoViewerMult({ lead: promoLead, cardValue: promoCard ? cardValue(promoCard) : 0 }).toFixed(2)})
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* No sealed AND no stream-channel mystery packs = genuinely nothing to broadcast. With
@@ -363,8 +433,10 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
               : queue.length === 0
               ? <>Nothing queued — you'll go on air with an empty table and rip only what viewers <b>order</b>. Nothing gets opened on spec.
                   {' '}Expecting ~{expected.toLocaleString()} viewers.
+                  {promoTonight && <span style={{ color: 'var(--gold)' }}> · 📣 announced show</span>}
                   {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh</span>}</>
               : <>Expecting ~{expected.toLocaleString()} viewers
+                {promoTonight && <span style={{ color: 'var(--gold)' }}> · 📣 announced show</span>}
                 {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
                 {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
                 {' · costs 1 game-day'}</>}
@@ -391,6 +463,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const regulars = useGame(s => s.regulars)
   const collection = useGame(s => s.collection)
   const giveawayCard = useGame(s => s.giveawayCard)
+  // 📣 Announced-stream payoff: if tonight is the promised night, the room shows up bigger,
+  // and raffling the promised card live is the delivery moment.
+  const streamPromo = useGame(s => s.streamPromo)
+  const deliverStreamPromo = useGame(s => s.deliverStreamPromo)
+  const todayAbs = useGame(s => absoluteDay(s.currentDay, s.monthsElapsed))
+  const promoLive = streamPromo && todayAbs >= streamPromo.day ? streamPromo : null
   // Live Rip Service upgrade + its plumbing.
   const hasRipService = useGame(s => !!s.upgrades.ripService)
   const collectRipOrder = useGame(s => s.collectRipOrder)
@@ -413,7 +491,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const draw = queueRef.current.length
     ? Math.max(...queueRef.current.map(e => streamDrawMult(e.set, e.product)))
     : 1
-  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) * draw)
+  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) * draw
+    * (promoLive ? promoViewerMult(promoLive) : 1)) // 📣 the announced-night crowd
 
   const [entryIdx, setEntryIdx] = useState(0)
   const [packNo, setPackNo] = useState(0)
@@ -466,6 +545,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const regularsRef = useRef([])     // live online-regular roster for chat attribution
   // every card pulled, tagged with its entry + break spot (for shipping at the end)
   const allPulled = useRef([])       // { card, spot, entryIdx }  (spot only set for break/order entries)
+  const givenRef = useRef(new Set()) // uids raffled away this session — no longer "kept" (Net/summary honesty)
   regularsRef.current = (regulars || []).filter(r => !r.flags?.burned)
 
   // Synced setters: keep the ref mirror and the render state in lockstep so timer callbacks
@@ -804,18 +884,38 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
       .map(p => p.card.uid)
   )
 
-  // Raffle ANY card you own to a lucky viewer — a follower pop + chat frenzy. `uid` comes from
-  // the giveaway picker.
+  // Raffle ANY card you own to a lucky viewer — a follower pop + chat frenzy, and the raffle
+  // itself HYPES the room: the crowd surges to watch, the hype train climbs, grateful chat
+  // tips. Allowed even with a bare table (`done`) — hyping an orders-only show is the point.
+  // If the card is the one you PROMISED in an announced stream, this is the delivery moment.
   function runGiveaway(uid) {
-    if (done || finishedRef.current) return
+    if (finishedRef.current) return
     const res = giveawayCard(uid, peakRef.current)
     if (!res) return toast('That card is no longer in your collection.')
+    const val = cardValue(res.card)
     setGiveawayOpen(false)
     setGiveaways(n => n + 1)
-    setSessionFollowers(f => f + res.followers)
+    givenRef.current.add(uid)                       // it left with the winner — stop counting it as kept
+    setHits(h => h.filter(c => c.uid !== uid))      // …including on the hits strip / summary
+    const isPromo = !!(promoLive && !promoLive.delivered && promoLive.cardUid === uid)
+    if (isPromo) deliverStreamPromo()               // rep pop now; follower payoff below at cash-out
+    const gainedFollowers = res.followers + (isPromo ? promoDeliveryFollowers(promoLive) : 0)
+    setSessionFollowers(f => f + gainedFollowers)
+    // Room surge (value-scaled, the promised card doubly so), clamped like every other moment.
+    const surge = giveawayViewerMult(val) * (isPromo ? 1.25 : 1)
+    setViewers(v => {
+      const next = Math.max(1, Math.min(Math.round(settled * 8), Math.round(v * surge)))
+      peakRef.current = Math.max(peakRef.current, next); viewersRef.current = next; return next
+    })
+    // The train climbs only for a prize worth watching — bulk raffles don't stack the multiplier.
+    const step = isPromo ? 3 : val >= 25 ? 2 : val >= 5 ? 1 : 0
+    if (step) { hypeRef.current = Math.min(HYPE_TRAIN_MAX, hypeRef.current + step); setHypeLevel(hypeRef.current) }
+    const gt = giveawayTips(val, viewersRef.current, Math.random, hypeTrainMult(hypeRef.current))
+    if (gt > 0) { setTips(x => Math.round((x + gt) * 100) / 100); after(() => pushChat(chatLine('tip')), ms(250)) }
     setBurst(true); after(() => setBurst(false), ms(1500))
-    pushChat({ handle: 'system', text: `🎁 GIVEAWAY! ${res.card.name} goes to a lucky viewer — +${res.followers} followers`, tip: true })
-    for (let k = 0; k < 3; k++) after(() => pushChat(chatLine('hype', Math.random, res.card)), ms(150 * (k + 1)))
+    pushChat({ handle: 'system', text: `🎁 GIVEAWAY! ${res.card.name} goes to a lucky viewer — +${gainedFollowers} followers`, tip: true })
+    if (isPromo) pushChat({ handle: 'system', text: `📣 THE PROMISED ${res.card.name.toUpperCase()}!! the room got what it came for`, tip: true })
+    for (let k = 0; k < (isPromo ? 5 : 3); k++) after(() => pushChat(chatLine('hype', Math.random, res.card)), ms(150 * (k + 1)))
   }
 
   // Watch the per-stream goal; reward followers the moment it's met.
@@ -982,7 +1082,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const keptValue = Math.round(allPulled.current.reduce((a, p) => {
     const e = queueRef.current[p.entryIdx]
     const shipping = p.spot != null && p.spot < e.filled
-    return a + (shipping ? 0 : cardValue(p.card))
+    const given = givenRef.current.has(p.card.uid) // raffled to a viewer — not yours anymore
+    return a + (shipping || given ? 0 : cardValue(p.card))
   }, 0) * 100) / 100
   const totalCost = Math.round(queueRef.current.reduce((a, e) => a + (e.product.price || 0), 0) * 100) / 100
   const net = Math.round((tips + collectedCash + keptValue - totalCost) * 100) / 100
@@ -1003,6 +1104,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         {hypeLevel > 0 && (
           <span className={`pill hype-train lvl-${Math.min(HYPE_TRAIN_MAX, hypeLevel)}`} title="Consecutive hits stack a tip multiplier — keep the train rolling!">
             ⚡ Hype ×{hypeLevel} · tips {hypeTrainMult(hypeLevel).toFixed(1)}×{combo > 2 ? ` · 🔥${combo}` : ''}
+          </span>
+        )}
+        {promoLive && (
+          <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}
+            title="You announced this stream ahead of time — the room showed up bigger for it">
+            📣 ×{promoViewerMult(promoLive).toFixed(2)}{promoLive.cardUid ? (promoLive.delivered ? ' · 🎁 delivered ✓' : ` · promised: ${promoLive.cardName}`) : ''}
           </span>
         )}
         {keptValue > 0 && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}
@@ -1108,12 +1215,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 Next product → {queueRef.current[entryIdx + 1]?.product.icon || '📦'} {queueRef.current[entryIdx + 1]?.product.type}
               </button>
             )}
-            {!done && (
-              <button className="btn alt" style={{ flex:'none', maxWidth: 190 }} disabled={!collection.length} onClick={() => setGiveawayOpen(true)}
-                title={collection.length ? 'Raffle any card you own to a viewer — a burst of new followers (bigger cards = bigger pop)' : 'You have no cards to give away'}>
-                🎁 Giveaway{giveaways > 0 ? ` (${giveaways})` : ''}
-              </button>
-            )}
+            {/* Not gated on `done` — raffling with a bare table hypes an orders-only show,
+                and an announced stream's promised card must be deliverable any time on air. */}
+            <button className="btn alt" style={{ flex:'none', maxWidth: 190 }} disabled={!collection.length} onClick={() => setGiveawayOpen(true)}
+              title={collection.length ? 'Raffle any card you own to a viewer — the room surges, the hype train climbs, and followers pour in (bigger cards = bigger pop)' : 'You have no cards to give away'}>
+              🎁 Giveaway{giveaways > 0 ? ` (${giveaways})` : ''}
+            </button>
             {done && <button className="btn gold" style={{ maxWidth: 240 }} onClick={endStream}>End stream & cash out →</button>}
             {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endEarly}>End early</button>}
           </div>

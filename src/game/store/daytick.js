@@ -1067,6 +1067,11 @@ export function advanceDaysWith(set, get, days, away) {
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
   const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days, newAbsDay), s.distributors, days, newAbsDay, get().log,
     s.upgrades.vintageScout ? 1.6 : 1) // 🕵️ the scout keeps sellers thinking of you
+  // --- 📣 Announced-stream no-show: the promised night came and went without going live.
+  // (endStream settles the promise when you DO stream; this catches sleeping through it.)
+  let promoNext = s.streamPromo || null
+  let promoFizzled = false
+  if (promoNext && newAbsDay > promoNext.day) { promoFizzled = !promoNext.delivered; promoNext = null }
   // --- 📰 Reprint-wave lifecycle: announce → window (deposits) → drop (stock + rush) ----
   let waveNext = s.reprintWave || null
   let rushBuzz = false
@@ -1248,6 +1253,7 @@ export function advanceDaysWith(set, get, days, away) {
     job: activeJob,        // a pending job may have started during these days
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
+    streamPromo: promoNext,                 // 📣 an announced stream survives the day unless its night passed
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
     regulars: regTick.regulars, // cooled + neglect-penalized + call-ins rolled (see tickRegulars)
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
@@ -1256,6 +1262,10 @@ export function advanceDaysWith(set, get, days, away) {
     // once and kept — gates the passive wholesale income and the one-time unlock notice below.
     distributorSince: (isDistributor(s) && !s.distributorSince) ? newAbsDay : (s.distributorSince ?? null),
   }))
+  if (promoFizzled) {
+    get().addNotoriety(-2)
+    get().log('stream', `📣 You never went live for the stream you announced — the room you hyped up moved on. (-2★)`, 0)
+  }
   // One-time fanfare the first day you become a distributor yourself.
   if (isDistributor(s) && !s.distributorSince) {
     get().log('milestone', `🏆 You're a distributor now — a Household Name AND a millionaire. Other shops will start ordering wholesale from you.`, 0)

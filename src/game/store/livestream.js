@@ -9,7 +9,7 @@
 import { round2, cardValue, openPack, setById } from '../engine'
 import { fatigueMult } from '../stream'
 import { advanceDaysWith } from './daytick'
-import { STREAM_HYPE_DAYS, INCOME_WINDOW_DAYS } from './constants'
+import { STREAM_HYPE_DAYS, INCOME_WINDOW_DAYS, absoluteDay } from './constants'
 
 export function createLivestreamSlice(set, get) {
   return {
@@ -171,6 +171,40 @@ export function createLivestreamSlice(set, get) {
       return { card, followers: gained }
     },
 
+    // --- 📣 Announced streams ------------------------------------------------------
+    // Promise a broadcast 1–3 days ahead, optionally headlining one card from your
+    // collection as the night's giveaway. One promise at a time. The payoff is a bigger
+    // room IF you go live on the promised day (promoViewerMult); the cost is commitment —
+    // sleep through the night (daytick) or go live without raffling the promised card
+    // (endStream) and the stood-up room dents your name.
+    announceStream({ daysAhead = 1, card = null } = {}) {
+      if (get().streamPromo) return false
+      const lead = Math.max(1, Math.min(3, Math.round(daysAhead)))
+      const today = absoluteDay(get().currentDay, get().monthsElapsed)
+      const val = card ? cardValue(card) : 0
+      set({ streamPromo: { day: today + lead, lead, announcedOn: today,
+        cardUid: card?.uid || null, cardName: card?.name || null, cardValue: val, delivered: false } })
+      get().log('stream', `📣 Announced a live stream ${lead === 1 ? 'for tomorrow' : `in ${lead} days`}${card ? ` — headlining a ${card.name} ($${val.toFixed(2)}) giveaway` : ''}. Show up and the room shows up.`, 0)
+      return true
+    },
+    // Calling it off before the night: the people you hyped shrug and move on (-1★).
+    cancelStreamPromo() {
+      if (!get().streamPromo) return
+      set({ streamPromo: null })
+      get().addNotoriety(-1)
+      get().log('stream', `📣 Called off the announced stream — the room you hyped up moved on. (-1★)`, 0)
+    },
+    // The promised card just went to a viewer live on the promised night — keep your word,
+    // bank the rep pop now. The follower payoff is returned via the component (batched into
+    // endStream with every other session follower gain).
+    deliverStreamPromo() {
+      const promo = get().streamPromo
+      if (!promo || promo.delivered || !promo.cardUid) return
+      set({ streamPromo: { ...promo, delivered: true } })
+      get().addNotoriety(3, true)
+      get().log('stream', `📣 Delivered the promised ${promo.cardName} giveaway live on stream — the room got what it came for. (+3★)`, 0)
+    },
+
     // End-of-break settlement: cards that landed on FILLED spots ship to those buyers,
     // so they leave your collection. Cards on UNFILLED spots are yours to keep (you
     // "bought into" your own break for those teams). `shipUids` = the filled-spot cards.
@@ -189,6 +223,18 @@ export function createLivestreamSlice(set, get) {
     // not a free action, and over-streaming thins your crowd until you rest.
     endStream({ tips = 0, noto = 0, peakViewers = 0, followers = 0 } = {}) {
       get().clearStreamEscrow() // clean settlement — the escrow's job is done
+      // 📣 Announced-stream settlement: if tonight WAS the promised night, the promise is
+      // spent either way. Delivered → the rep pop already landed at the giveaway moment.
+      // Went live but the headline giveaway never happened → bait-and-switch (-2★). A
+      // promise with no featured card is fulfilled just by showing up.
+      const promo = get().streamPromo
+      if (promo && absoluteDay(get().currentDay, get().monthsElapsed) >= promo.day) {
+        set({ streamPromo: null })
+        if (promo.cardUid && !promo.delivered) {
+          get().addNotoriety(-2)
+          get().log('stream', `📣 The room came for the promised ${promo.cardName} giveaway… and never got it. (-2★)`, 0)
+        }
+      }
       if (tips > 0) get().earn(round2(tips))
       if (noto) get().addNotoriety(noto) // may be negative after a flop
       set(s => ({

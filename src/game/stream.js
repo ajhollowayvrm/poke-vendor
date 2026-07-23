@@ -113,6 +113,39 @@ export function streamNotoriety(peakViewers, hypeMoments) {
   return Math.round(fromCrowd + fromHype)
 }
 
+// --- Giveaways & announced streams -------------------------------------------
+// 🎁 A live giveaway hypes the ROOM, not just your follower count: the crowd surges to
+// watch the raffle. Value-scaled — a penny common barely moves the needle, a real chase
+// on the line pulls a spike.
+export function giveawayViewerMult(value) {
+  return 1.05 + Math.min(0.55, (value || 0) / 350)
+}
+
+// Gratitude tips while the raffle runs: the room throws money at a generous streamer.
+// Scaled by the live crowd and the prize (capped so a whale giveaway can't print cash).
+export function giveawayTips(value, viewers, rnd = Math.random, hypeMult = 1) {
+  const tippers = viewers * 0.004 * (1 + Math.min(3, (value || 0) / 100)) * (0.6 + rnd() * 0.8)
+  const perTip = 1 + rnd() * 3
+  return Math.round(tippers * perTip * Math.max(1, hypeMult) * 100) / 100
+}
+
+// 📣 Announced streams: promise a broadcast days ahead (optionally headlining ONE card
+// you'll give away on the night) and the room shows up bigger for it. Lead time builds
+// anticipation; a prize people actually want adds real draw. Capped so promo hype stays
+// a multiplier on your fame, not a replacement for it.
+export function promoViewerMult(promo) {
+  if (!promo) return 1
+  const lead = Math.min(3, Math.max(1, promo.lead || 1))
+  const prize = Math.min(0.45, (promo.cardValue || 0) / 400)
+  return Math.round(Math.min(1.8, 1 + 0.12 * lead + prize) * 100) / 100
+}
+
+// Extra followers for actually DELIVERING the promised giveaway on the night — the room
+// came for this exact moment, and keeping your word converts them.
+export function promoDeliveryFollowers(promo) {
+  return 10 + Math.min(80, Math.round((promo?.cardValue || 0) * 0.4))
+}
+
 // --- Live chat ---------------------------------------------------------------
 // Procedural chat handles + lines. We react to the moment (hype / hit / bulk / tips /
 // ambient) so the feed feels alive without any real text. Handles are gamer-y.

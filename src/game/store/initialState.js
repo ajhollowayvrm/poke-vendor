@@ -61,6 +61,7 @@ export function initialState() {
     followers: 0,            // channel followers: your returning audience — a reliable baseline crowd that grows with good streams
     streamStats: { streams: 0, tips: 0, peakViewers: 0, breaks: 0 }, // lifetime livestream tallies
     streamEscrow: null,      // live-session escrow: { entries:[{invUid,item,packs,packsDone,spotGross}], ts } — non-null = ON AIR; settled at endStream or boot rescue
+    streamPromo: null,       // 📣 announced stream: { day, lead, announcedOn, cardUid, cardName, cardValue, delivered } — null = nothing promised
     generousActs: 0,
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
