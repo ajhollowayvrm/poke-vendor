@@ -204,7 +204,7 @@ export default function BoothInbox({ onRip, onPick }) {
                   </div>
                 </div>
               )}
-              <StoreStock place="storeroom" onRip={onRip} onPick={onPick}
+              <StoreStock place="storeroom" split onRip={onRip} onPick={onPick}
                 onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
             </>
           )

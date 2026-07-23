@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useGame, floorCount, floorSkuCap, floorItemCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
-import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, breakOptions, psaValueAt, rarityRank } from '../game/engine'
-import { groupCardLines, groupLines, sealedSku, skuBadge } from './sku'
+import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, cutRank, CONDITIONS, breakOptions, psaValueAt, rarityRank } from '../game/engine'
+import { groupCardLines, groupLines, sealedSku } from './sku'
 import CardTile from './CardTile'
 import SealedModal from './SealedModal'
 
@@ -44,6 +44,28 @@ function bySet(cards, sealed) {
     const db = setById(b.setId)?.releaseDate || ''
     return db.localeCompare(da) || a.name.localeCompare(b.name)
   })
+}
+
+// One centering read for a whole SKU line. Copies on a line share id/condition/price but NOT
+// cut — that varies copy to copy — so a stack reads as a worst–best range and a single copy as
+// its plain read. The chip takes the BEST copy's colour: "is there a grading candidate in this
+// stack?" is the question the row scan answers. Fuzzy (no loupe) wording stays coarse.
+function lineCutSummary(items, precise) {
+  const ranked = [...items].sort((a, b) => cutRank(a) - cutRank(b))
+  const worst = cutEstimate(ranked[0], precise)
+  const best = cutEstimate(ranked[ranked.length - 1], precise)
+  const lo = precise ? worst.abbr : worst.short
+  const hi = precise ? best.abbr : best.short
+  return {
+    icon: precise ? '🔍' : '👁️',
+    text: lo === hi ? (precise ? best.label : best.short) : `${lo}–${hi}`,
+    color: best.color,
+    title: precise
+      ? (lo === hi
+          ? `Centering: ${best.label}${best.detail ? ` — ${best.detail}` : ''}`
+          : `Centering varies copy to copy: ${worst.label} → ${best.label} (chip coloured by the best copy)`)
+      : "Eyeball read of the centering — the 🔍 Jeweler's Loupe reads it precisely.",
+  }
 }
 
 export default function StoreStock({ place, onRip, onPick, onHold, only, split }) {
@@ -265,7 +287,7 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
     exitSelect()
   }
   function bulkGrade() {
-    if (!sel.rawCardUids.length) return
+    if (!sel.rawCardUids.length || sel.sealedUids.length) return // mixed picks — the button is locked
     const n = sel.rawCardUids.length
     submitGradesBulk(sel.rawCardUids, gradeTier)
     flash(`Submitted ${n} card${n === 1 ? '' : 's'} to ${GRADING[gradeTier].name} grading.`)
@@ -387,15 +409,20 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
         </div>
       ) : split ? (
         // Two shelves — singles and sealed kept apart, like a real shop's case vs its wall.
+        // Used by the floor AND the storeroom, so the empty copy is place-aware.
         <>
           <div className="floor-sec-h">🃏 Singles <span className="muted">— {cards.length} item{cards.length === 1 ? '' : 's'} · {fmtMoney(cardGroups.reduce((a, g) => a + g.value, 0))}</span></div>
           {cardGroups.length
             ? <div className="store-sets">{renderGroups(cardGroups, 'c')}</div>
-            : <div className="floor-sec-empty muted">No singles out on the floor — stock some from the 📦 Storeroom.</div>}
+            : <div className="floor-sec-empty muted">{place === 'floor'
+                ? 'No singles out on the floor — stock some from the 📦 Storeroom.'
+                : 'No singles in the back — rip product or buy a collection to restock.'}</div>}
           <div className="floor-sec-h">📦 Sealed <span className="muted">— {sealed.length} item{sealed.length === 1 ? '' : 's'} · {fmtMoney(sealedGroups.reduce((a, g) => a + g.value, 0))}</span></div>
           {sealedGroups.length
             ? <div className="store-sets">{renderGroups(sealedGroups, 's')}</div>
-            : <div className="floor-sec-empty muted">No sealed out on the floor — stock boxes & packs from the 📦 Storeroom.</div>}
+            : <div className="floor-sec-empty muted">{place === 'floor'
+                ? 'No sealed out on the floor — stock boxes & packs from the 📦 Storeroom.'
+                : 'No sealed in the back — order from a distributor to restock.'}</div>}
         </>
       ) : (
         <div className="store-sets">{renderGroups(groups, '')}</div>
@@ -415,14 +442,19 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
               <button className="btn alt" onClick={() => bulkMove('personal', '🔒 Kept —')}>🔒 Keep (Personal)</button>
             )}
             {sel.rawCardUids.length > 0 && (
+              // Grading is a singles-only pipeline: with sealed in the same selection the
+              // button locks rather than silently submitting half the picks — deselect the
+              // sealed (or grade first, move second) and it lights back up.
               <div className="bulk-grade-group">
-                <select value={gradeTier} onClick={e => e.stopPropagation()} onChange={e => setGradeTier(e.target.value)}>
+                <select value={gradeTier} disabled={sel.sealedUids.length > 0} onClick={e => e.stopPropagation()} onChange={e => setGradeTier(e.target.value)}>
                   {/* Mail-in tiers only — the On-Site Kiosk (onSite) is a show-floor service. */}
                   {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => (
                     <option key={key} value={key}>{t.name} · ~{t.days}d</option>
                   ))}
                 </select>
-                <button className="btn alt" onClick={bulkGrade}>🔬 Grade {sel.rawCardUids.length} ({fmtMoney(gradeTotal)})</button>
+                <button className="btn alt" disabled={sel.sealedUids.length > 0}
+                  title={sel.sealedUids.length ? "Sealed can't be graded — deselect the sealed items to submit these singles." : undefined}
+                  onClick={bulkGrade}>🔬 Grade {sel.rawCardUids.length} ({fmtMoney(gradeTotal)})</button>
               </div>
             )}
           </div>
@@ -437,6 +469,7 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
 // One SKU line (identical copies stacked) + the actions that fit its place.
 function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, flash, selectMode, selected, onToggle }) {
   const moveStock = useGame(s => s.moveStock)
+  const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 exact centering read vs a fuzzy eyeball one
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
   const quickSell = useGame(s => s.quickSell)
@@ -511,15 +544,37 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         onClick={selectMode ? undefined : () => (kind === 'card' ? (onPick && onPick(first)) : (onInspect && onInspect(first)))}
         style={!selectMode && (kind === 'card' ? onPick : onInspect) ? { cursor: 'pointer' } : undefined}>
         <div className="tl-name">{(featuredCopy || featuredSealed) ? '⭐ ' : ''}{label}</div>
+        {/* Card rows sit under their set's header, so the sub line spends its (mobile-tight)
+            width on the grading read instead of repeating the set: condition + centering
+            chips for raw cards, the PSA grade for slabs, and the finish if it's special. */}
         <div className="tl-sub muted">
-          {kind === 'card' ? skuBadge(first) : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
+          {kind === 'card' ? <>
+            {first.grade
+              ? <span className="tl-chip" style={{ color: 'var(--gold)', background: '#ffcb0518' }}>PSA {first.grade.overall}</span>
+              : (() => {
+                  const cond = CONDITIONS[first.condition] || CONDITIONS.NM
+                  const cut = lineCutSummary(items, hasLoupe)
+                  return <>
+                    <span className="tl-chip" style={{ color: cond.color, background: cond.color + '22' }} title={cond.label}>{cond.short}</span>
+                    <span className="tl-chip" style={{ color: cut.color, background: cut.color + '22' }} title={cut.title}>{cut.icon} {cut.text}</span>
+                  </>
+                })()}
+            {(first.foil || first.reverse) && (
+              <span className="tl-chip" style={first.foil ? { color: first.foil.color } : undefined}>
+                {first.foil ? (first.foil.badge || first.foil.label || 'FOIL') : 'RH'}
+              </span>
+            )}
+          </> : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
         </div>
       </div>
       <span className="tl-unit">{fmtMoney(unit)}</span>
       <span className="tl-count" title={`${count} in stock`}>×{count}</span>
 
-      {/* Move + sell actions per place (hidden in select mode — use the bulk bar) */}
-      {!selectMode && place === 'floor' && <>
+      {/* Move + sell actions per place (hidden in select mode — use the bulk bar). Grouped in
+          one strip so phones can drop it to its own line instead of squeezing the name +
+          condition/centering chips — the at-a-glance read is the row's whole job. */}
+      {!selectMode && <span className="tl-acts">
+      {place === 'floor' && <>
         {kind === 'card' && (
           <button className={`stock-act ${featuredCopy ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
         )}
@@ -534,7 +589,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         {onHold && <button className="stock-act" title="Set one aside for a regular — they come pick it up at a premium" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
       </>}
 
-      {!selectMode && place === 'storeroom' && <>
+      {place === 'storeroom' && <>
         <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${lineCap} of this out front — the floor's full for this line` : 'Put it out on the sales floor'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
         {onHold && <button className="stock-act" title="Save one for a regular — pick who from those who want it" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
         <button className="stock-act" title="Keep it for yourself (Personal)" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
@@ -549,7 +604,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         </>}
       </>}
 
-      {!selectMode && place === 'personal' && <>
+      {place === 'personal' && <>
         {kind === 'sealed' && breakOpt && (
           <button className="stock-act" title={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (kept, stays in Personal)`} onClick={doBreak}>🔨</button>
         )}
@@ -559,6 +614,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${lineCap} of this out front — the floor's full for this line` : 'Put it out on the sales floor (for sale to walk-ins)'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
         <button className="stock-act" title="Move to the storeroom — sellable backstock, but not yet on the floor" onClick={() => move('storeroom', '📦 To the storeroom')}>📦</button>
       </>}
+      </span>}
     </div>
   )
 }

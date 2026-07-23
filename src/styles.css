@@ -1647,7 +1647,18 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .stock-act:hover:not(:disabled) { background:var(--hover); border-color:var(--accent2); }
 .stock-act.on { border-color:var(--gold); color:var(--gold); background:#ffcb0518; }
 .stock-act:disabled { opacity:.35; cursor:not-allowed; }
-@media (max-width:640px){ .stock-line .tl-unit { min-width:48px; } }
+/* Condition / centering / finish chips on a stock row's sub line — the "should I grade
+   this?" read without opening every card. Colours come inline (CONDITIONS / CUT_TIERS). */
+.tl-chip { display:inline-block; font-size:10px; font-weight:800; letter-spacing:.02em;
+  padding:0 5px; border-radius:5px; background:#ffffff10; margin-right:4px; vertical-align:middle; }
+/* The row's action strip. Inline on desktop; on phones it drops to its own right-aligned
+   line so the name + condition/centering chips keep the full row width (the glance read). */
+.tl-acts { display:flex; gap:8px; align-items:center; flex:none; }
+@media (max-width:640px){
+  .stock-line .tl-unit { min-width:48px; }
+  .stock-line { flex-wrap:wrap; row-gap:4px; }
+  .stock-line .tl-acts { flex-basis:100%; justify-content:flex-end; }
+}
 /* Touch devices: the per-row / per-tile icon actions (🛒 📦 🔨 🎬) render ~26-28px, well under
    a comfortable finger target. Grow them to ~40px on coarse pointers so a mis-tap doesn't fire
    the wrong action or (in the grid) open the card modal instead. Desktop mouse stays compact. */
