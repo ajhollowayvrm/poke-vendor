@@ -1,10 +1,29 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
-import { useGame } from '../game/store'
+import { useGame, flushSaveWrite } from '../game/store'
 import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE } from '../game/engine'
 
 // Code-split: the set price sheet (every card + PSA estimates) is only pulled when the
 // player taps to open it, so its chunk + a set's worth of card art stay off the rip path.
-const SetPriceList = lazy(() => import('./SetPriceList'))
+// GUARDED import: this game redeploys on every push, so a session left open across a
+// deploy asks the server for the OLD hashed chunk — which is gone (404) — and an unguarded
+// lazy() would throw all the way to the crash screen. A missing chunk means "the game
+// updated under you", so say that and offer a reload instead.
+const SetPriceList = lazy(() => import('./SetPriceList').catch(() => ({ default: StalePriceSheet })))
+
+function StalePriceSheet() {
+  return (
+    <div className="empty" style={{ marginTop: 12 }}>
+      📵 The game <b>updated since you opened it</b>, so this view couldn't load.
+      Your save is safe — reload to pick up the new version.
+      <div style={{ marginTop: 12 }}>
+        <button className="btn gold" style={{ maxWidth: 200, margin: '0 auto' }}
+          onClick={() => { try { flushSaveWrite() } catch { /* best effort */ } location.reload() }}>
+          🔄 Reload the game
+        </button>
+      </div>
+    </div>
+  )
+}
 
 // The sealed-product page — the counterpart to CardModal, so a booster box / ETB / blister
 // is more than a thumbnail + price on the shelf. Opening it shows WHAT the product is (the
