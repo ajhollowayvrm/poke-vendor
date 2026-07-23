@@ -59,6 +59,9 @@ export const RENT_GRACE_DAYS = 3
 // missing it freezes the line (cash-only) plus a small rep ding until you catch up.
 export const CREDIT_LIMIT_PCT = 0.5      // credit line = 50% of (debt-free) net worth
 export const CREDIT_MONTHLY_RATE = 0.04  // 4%/mo interest applied to the carried balance
+// 🏦 Preferred Account: the distributor finance desk matures — cheaper carry, deeper line.
+export function creditMonthlyRate(upgrades) { return upgrades?.preferredAccount ? 0.025 : CREDIT_MONTHLY_RATE }
+export function creditLimitPct(upgrades) { return upgrades?.preferredAccount ? 0.65 : CREDIT_LIMIT_PCT }
 export const CREDIT_MIN_PCT = 0.10       // monthly minimum = 10% of the balance...
 export const CREDIT_MIN_FLOOR = 50       // ...but at least this much (capped at the balance)
 export const CREDIT_MISS_NOTORIETY = 3   // small notoriety hit when you miss the minimum
@@ -84,7 +87,11 @@ export const STORAGE_PER_UNIT = 2      // $/day for each idle unit beyond the al
 // paying for a real storeroom, so it shouldn't bill like an apartment closet.
 export function storageFreeUnits(s) {
   return STORAGE_FREE_UNITS + (s?.upgrades?.storefront ? STORAGE_STORE_BONUS : 0)
+    + (s?.upgrades?.storageUnit ? STORAGE_UNIT_BONUS : 0) // 🏗️ a rented unit down the road
 }
+// 🏗️ Storage Unit upgrade: +allowance ONLY — the heldUnits definition (what counts as an
+// idle unit, what's exempt) is pinned by sim section 5 and must never widen here.
+export const STORAGE_UNIT_BONUS = 15
 // Loose packs RACK: 36 single-pack units fit the shelf space of one box (that's literally
 // what a box is), so billing each loose pack as a full unit would charge 36× for the crime
 // of breaking early. Backstock boosters bill by the tray, not the pack.
@@ -208,6 +215,7 @@ export const PAYMENT_METHODS = {
   cash:   { name: 'Cash',              short: 'Cash',    icon: '💵', viaUpgrade: 'storefront', feePct: 0,     feeFlat: 0 },
   paypal: { name: 'PayPal',            short: 'PayPal',  icon: '🅿️', viaUpgrade: 'payPaypal', feePct: 0.029, feeFlat: 0.30 },
   card:   { name: 'Credit/Debit Cards', short: 'Cards',  icon: '💳', viaUpgrade: 'payCard',   feePct: 0.029, feeFlat: 0.30 },
+  tap:    { name: 'Tap to Pay',         short: 'Tap',    icon: '📲', viaUpgrade: 'payTap',    feePct: 0.026, feeFlat: 0.10 }, // in-person only (see INPERSON_METHODS)
 }
 
 // Which payment methods can the player currently accept?
@@ -241,9 +249,13 @@ export const ONLINE_FEE_PCT = 0.05
 export const SHIP_FLAT = 0.60
 export const SHIP_PCT = 0.03
 export const SHIP_MAX_SHARE = 0.25
-export function shippingCost(amount) {
+// 📦 The Shipping Station upgrade HALVES the flat+pct drag (thermal labels, bulk mailers) —
+// halves, never removes: online must keep paying something so in-person keeps its edge.
+// Callers that know the player pass `upgrades`; pure callers omit it and get full freight.
+export function shippingCost(amount, upgrades) {
   if (!(amount > 0)) return 0
-  return round2(Math.min(SHIP_FLAT + SHIP_PCT * amount, amount * SHIP_MAX_SHARE))
+  const m = upgrades?.shipStation ? 0.5 : 1
+  return round2(Math.min((SHIP_FLAT + SHIP_PCT * amount) * m, amount * SHIP_MAX_SHARE))
 }
 
 // --- Omni-channel listings ("list everywhere") --------------------------------
@@ -267,6 +279,8 @@ export const CONCIERGE_HOLDS_PER_TICK = 2 // new holds the Client Concierge sets
 export const GIVEAWAY_BUZZ_DAYS = 3     // how long giveaway word-of-mouth pumps walk-in traffic
 export const GIVEAWAY_TRAFFIC_MULT = 1.35
 export const CONSIGN_REQ_CAP = 2        // at most this many locals waiting on a consignment answer
+// 🗄️ Locking Consignment Case: a proper secured case carries more locals' cards at once.
+export function consignReqCap(upgrades) { return upgrades?.consignCase ? 5 : CONSIGN_REQ_CAP }
 export const CONSIGN_REQ_CHANCE = 0.22  // per-day chance a local walks in asking you to carry their card
 export const CONSIGN_MIN_NOTO = 15      // nobody trusts an unknown shop with their cards
 
@@ -281,6 +295,8 @@ export const CONSIGN_MIN_NOTO = 15      // nobody trusts an unknown shop with th
 // SEALED product mixed in (and once in a while, they just give it away).
 export const BUYIN_CHANCE = 0.30        // per-day chance a seller walks in (storefront + a bit of a name)
 export const BUYIN_CAP = 4              // at most this many lots waiting on an answer
+// 🪑 Appraisal Desk: a real intake setup queues more lots (and buys a third haggle round — booth.js).
+export function buyinCap(upgrades) { return upgrades?.appraisalDesk ? 6 : BUYIN_CAP }
 export const BUYIN_MIN_NOTO = 10
 export const BUYIN_ESTATE_CHANCE = 0.35 // share of buy-ins that are a whole "leaving the hobby" collection (incl. sealed)
 export const STORE_CREDIT_BONUS = 0.25  // credit offer = cash ask × (1 + bonus) — they take more in credit
@@ -511,6 +527,9 @@ export const COUNTER_MAX_PER_DAY = 1200
 export const MACHINE_MAX_PER_DAY = 8
 // 🗑️ Bulk Bin: same idea — the quarter box only moves so many cards a day, however deep it is.
 export const BIN_MAX_PER_DAY = 10
+// 🎰 High-Capacity Vend Unit / 🗑️ Second Quarter Box: the daily rails deepen with the build-out.
+export function machineMaxPerDay(upgrades) { return upgrades?.vendUnit ? 14 : MACHINE_MAX_PER_DAY }
+export function binMaxPerDay(upgrades) { return upgrades?.secondBin ? 20 : BIN_MAX_PER_DAY }
 
 // The booth inbox holds unhandled encounters; anything past the cap is DISCARDED. So the cap
 // has to grow with fame, or a famous vendor's extra orders would silently evaporate — the
@@ -538,6 +557,8 @@ export const UPGRADES = {
   // Payment rails — each its own setup. Capture buyers who won't use Venmo.
   payPaypal: { name: 'Accept PayPal',            cost: 120,  desc: 'Take PayPal — a huge share of online buyers prefer it.', icon: '🅿️', group: 'payment' },
   payCard:   { name: 'Accept Credit/Debit Cards', cost: 400,  desc: 'A card reader / merchant account so buyers can pay by card. Captures the most sales.', icon: '💳', group: 'payment' },
+  payTap:    { name: 'Tap to Pay',                cost: 250,  desc: 'A contactless terminal on the counter — phone-tapping walk-ins stop fumbling for another way to pay. In-person only, and the cheapest card rail going (~2.6% + 10¢). Requires a Brick-and-Mortar Store.', icon: '📲', group: 'payment', needs: 'storefront' },
+  shipStation: { name: 'Shipping Station', cost: 800, desc: 'A thermal label printer, bulk mailers, and a real packing bench: shipping & packing costs on every online sale are CUT IN HALF. Online still pays its way — but it stops bleeding.', icon: '📦' },
 
   // Keep earning while you're away at a show.
   smartphone: { name: 'Smartphone', cost: 1000, desc: 'Field ONLINE orders from anywhere — they keep coming in even while you\'re away at a show, instead of being missed.', icon: '📱' },
@@ -552,9 +573,17 @@ export const UPGRADES = {
   cases:    { name: 'Glass Display Cases',  cost: 500,  desc: 'Offers on your cards come in ~12% higher.', icon: '🗄️' },
   packBin:  { name: 'Pack Bin',             cost: 750,  desc: 'A big wire display bin for loose singles packs — doubles how many of ONE pack you can keep out on the floor (12 → 24). Loose packs are your highest-turnover impulse buy; a deep bin means walk-ins never find it empty. Requires a Brick-and-Mortar Store.', icon: '🧺', needs: 'storefront' },
   packWall: { name: 'Wall of Packs',        cost: 3000, desc: 'A floor-to-ceiling pegboard pack wall behind the counter — the shop that\'s ALL packs. Deepens the loose-pack floor limit again (24 → 36). Requires a Pack Bin.', icon: '🧱', needs: 'packBin' },
+  vendUnit: { name: 'High-Capacity Vend Unit', cost: 1000, desc: 'A commercial-grade vending mechanism for the Pack Machine: the daily vend rail rises 8 → 14 packs — and if a 🪓 Bin Keeper is on staff, they keep the machine topped up overnight from storeroom packs too. Requires a Brick-and-Mortar Store.', icon: '🎰', needs: 'storefront' },
+  secondBin: { name: 'Second Quarter Box',  cost: 600,  desc: 'A second bin on the counter doubles how fast kids can dig: the bulk bin\'s daily drain rises 10 → 20 cards. The patient path for deep bulk, twice as wide. Requires a Brick-and-Mortar Store.', icon: '🗑️', needs: 'storefront' },
+  snackCooler: { name: 'Snack & Drink Cooler', cost: 500, desc: 'A humming cooler by the door: a little steady counter money every open day, and browsers who linger with a drink in hand buy more often (+10% on walk-in browse sales). Requires a Brick-and-Mortar Store.', icon: '🥤', needs: 'storefront' },
+  giftWrap: { name: 'Gift Wrap Counter',    cost: 700,  desc: 'Ribbon, boxes, and a wrapping station for the Nov–Dec gift rush: gift buyers pay a fatter wrap premium, and you can fetch a giftable sealed from the STOREROOM when the floor has nothing in budget — December misses stop walking to the mall. Requires a Brick-and-Mortar Store.', icon: '🎁', needs: 'storefront' },
+  eventsCoordinator: { name: 'Events Coordinator', cost: 2200, desc: 'A part-timer who runs your calendar: pick one hosted event to recur automatically EVERY WEEK (flagged 📆 on the event planner — costs paid from the till each time), and the room recovers faster between nights (event cooldown 2 days → 1). Requires a Brick-and-Mortar Store.', icon: '🎪', needs: 'storefront' },
   ticker:   { name: 'Visitor Ticker',       cost: 200,  desc: 'Alerts you when someone is at your stand while you browse a show hall.', icon: '🔔' },
   loupe:    { name: "Jeweler's Loupe",      cost: 450,  desc: 'Slightly better grade odds when you submit cards. Also gives a PRECISE cut/centering read on any raw card — without it the eyeball read is fuzzy.', icon: '🔍' },
   gradescope: { name: 'Grading Scope & Pop Guide', cost: 1400, desc: 'A pro-grade microscope plus population data. PREDICTS the likely PSA grade RANGE — the most probable grade, a confidence band, and the gem-10 odds — for any raw card before you pay to submit it. Requires the Jeweler\'s Loupe.', icon: '🔭', needs: 'loupe' },
+  graderAccount: { name: 'Grader Dealer Account', cost: 2400, desc: 'Your submissions ride the grader\'s dealer courier instead of the mail room: TURNAROUND CUT ~40% on every service tier (Economy 45 → 27 days, Standard 20 → 12, Express 5 → 3). Same fees, same odds — your capital just comes back faster. Requires the Grading Scope.', icon: '🚚', needs: 'gradescope' },
+  submissionRunner: { name: 'Submission Runner', cost: 3000, desc: 'An intern who preps subs overnight: each day, up to 2 raw cards whose 🔭 Scope prediction is CLEARLY +EV get auto-submitted at the Economy tier (fee paid from the till). Never touches 🔒 kept, held, floor, binder, or listed cards; pause it any time in ⚙️ Settings. Requires the Grading Scope.', icon: '🧾', needs: 'gradescope' },
+  appraisalDesk: { name: 'Appraisal Desk', cost: 1600, desc: 'A proper intake desk with good light and a comp station: up to 6 collection lots wait on an answer (was 4), and sellers sit for a THIRD round of haggling before the walk-away math bites. Requires the Jeweler\'s Loupe.', icon: '🪑', needs: 'loupe' },
   authkit:  { name: 'Authentication Kit',   cost: 600,  desc: 'A precision scale, UV blacklight & reference guides for spotting resealed wrappers and weighed/searched packs. Lets you AUTHENTICATE sealed deals from strangers before you buy — catching most fakes (crude ones almost always; sophisticated reseals can still slip through, especially vintage).', icon: '🔬' },
   network:  { name: 'Dealer Network',       cost: 1500, desc: 'Famous vendors reveal their best stock — and flag underpriced DEALS and OVER-priced asks so you never overpay.', icon: '🤝' },
   hobbyWire: { name: 'Hobby Wire',          cost: 800,  desc: 'A trade-news wire + your counter notebook, pinned to the Buy tab: what walk-ins keep asking for at your counter, and which sets are running hot or cold on the living market — so you source what will actually move.', icon: '📈' },
@@ -568,6 +597,13 @@ export const UPGRADES = {
   repricer: { name: 'Repricing Service', cost: 1200, desc: 'No more stale listings: anything that sits a week with lookers but no bites gets walked down 5%/day toward market until it moves. Priced-right stock instead of a graveyard.', icon: '🏷️' },
   offerDesk: { name: 'Offer Desk', cost: 1500, desc: 'Your desk accepts any standing offer that nets 90%+ of your ask — the "close enough, take it" call you\'d make yourself. Listings you flag 🤖-manual are left for you to judge. Requires the Auto-Sell Service.', icon: '📨', needs: 'autoSell' },
   newsletter: { name: 'Client Newsletter', cost: 900, desc: 'A monthly mailer keeps your regulars warm: trust decays half as fast, and a lapsed regular occasionally comes back through the door. Requires a Brick-and-Mortar Store.', icon: '💌', needs: 'storefront' },
+  consignCase: { name: 'Locking Consignment Case', cost: 900, desc: 'A locking glass case just for locals\' cards: carry up to 5 consignments at once (was 2), and the secure setup justifies a few extra points of commission on every deal. Requires a Brick-and-Mortar Store.', icon: '🗄️', needs: 'storefront' },
+  buyAd: { name: '"We Buy Collections" Ad', cost: 1200, desc: 'A radio spot and a big window banner: ~40% more collection sellers walk in wanting to sell you their cards. Stacks with your posted buylist rate — the volume play for the shop\'s best sourcing channel. Requires a Brick-and-Mortar Store.', icon: '📻', needs: 'storefront' },
+  preferredAccount: { name: 'Preferred Account', cost: 2000, desc: 'The distributor finance desk upgrades your paper: credit-line interest drops 4% → 2.5%/mo and the limit rises from 50% to 65% of your net worth. Leverage for the buy-big playstyle.', icon: '🏦' },
+  wrapPress: { name: 'Custom Wrap Press', cost: 800, desc: 'A foil sealer and custom-printed wrappers for your mystery packs: pro presentation sells more packs on every channel, and a thin pack stings buyers a little less — reputation losses are softened. The repack line goes retail-grade.', icon: '✨' },
+  storageUnit: { name: 'Storage Unit', cost: 1500, desc: 'A rented unit two streets over: +15 idle-sealed units stored free before the daily storage fee bites. The bridge between the apartment closet and the 🏛️ Vault.', icon: '🏗️' },
+  clipEditor: { name: 'Clip Editor', cost: 1100, desc: 'An editor cuts EVERY broadcast into a highlight reel: streams without an organic viral moment still put out a clip that recruits followers for a couple of days after the wrap. God-pack clips are untouched — those cut themselves. Requires a Streaming Setup.', icon: '🎬', needs: 'streaming' },
+  modTeam: { name: 'Mod Team', cost: 1500, desc: 'Trusted mods keep the channel alive between broadcasts: subscriber churn while you\'re dark is HALVED, and a well-run room gets raided by other streamers ~50% more often. Requires a Streaming Setup.', icon: '🛡️', needs: 'streaming' },
   standingOrder: { name: 'Standing Order', cost: 2500, desc: 'Put one product on subscription with a distributor (tap 📋 on any product line in the Buy tab): it ships automatically every week at your rapport price, while they have stock and you have cash.', icon: '📋' },
   vintageScout: { name: 'Vintage Scout', cost: 4000, desc: 'A picker who knows every back room: distributors turn up sealed vintage finds ~50% more often, and high-rapport sellers reserve holds for you more often too. Requires the Dealer Network.', icon: '🕵️', needs: 'network' },
   security: { name: 'Security System', cost: 3000, desc: 'Cameras, sensors, and a loud alarm: nothing gets pocketed from your stock again — attempted thefts are caught at the door instead of costing you a card. Requires a Brick-and-Mortar Store.', icon: '🚨', needs: 'storefront' },

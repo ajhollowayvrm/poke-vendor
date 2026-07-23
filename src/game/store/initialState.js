@@ -90,6 +90,7 @@ export function initialState() {
     distributorSince: null,  // absolute day you first became a distributor (Household Name + millionaire); null until then. Gates the passive wholesale income + the one-time unlock notice.
     storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
     eventCooldownLeft: 0,    // days before you can host another event
+    weeklyEvent: null,       // 🎪 { type, lastDay } — the Events Coordinator's standing weekly night (auto-planned in the day tick); null = manual only
     packTiers: defaultPackTiers(), // your mystery-pack PRODUCT LINES: {id,name,icon,price,bandLo,bandHi,channels:{show,store,online,stream}} — price + advertised band are yours to set
     builtPacks: [],          // assembled mystery packs: {uid, tierId, cards:[...], sealed:[...], builtDay} — contents moved OUT of collection/inventory; sold sight-unseen at the tier price
     packRep: 50,             // 0..100 repack reputation (50 = unproven) — moved by what buyers find inside; drives pack demand

@@ -21,19 +21,20 @@ import {
   setMarketMults, distributorById, restockRate, distributorUnlocked,
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice, breakOptions, setProducts,
+  gradePrediction, psaValueAt, gradingFee,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
-  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, MACHINE_MAX_PER_DAY, BIN_MAX_PER_DAY,
+  employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, machineMaxPerDay, binMaxPerDay,
   fameMult, fameBeyond, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
-  GIVEAWAY_TRAFFIC_MULT, CONSIGN_REQ_CAP, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
-  BUYIN_CHANCE, BUYIN_CAP, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
-  CREDIT_MONTHLY_RATE, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
+  GIVEAWAY_TRAFFIC_MULT, consignReqCap, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
+  BUYIN_CHANCE, buyinCap, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
+  creditMonthlyRate, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
   supplyById, pickSupplyId, BUYLIST_POLICIES, SUB_DAILY,
   floorItemCap, floorSkuCounts, floorSkuKey, floorFreeSlots,
@@ -336,7 +337,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
               const market = cardValue(cur.card)
               const amount = round2(market * Math.min(effMax, cur.askMult))
               const fee = round2(amount * ONLINE_FEE_PCT)
-              const net = round2(amount - fee - shippingCost(amount)) // online sale → ship it
+              const net = round2(amount - fee - shippingCost(amount, upgrades)) // online sale → ship it (📦 station halves it)
               soldProceeds = round2(soldProceeds + net)
               sold.push({ name: cur.card.name, net, savvy: label, auto: true })
               didSell = true
@@ -351,7 +352,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
             const amount = round2(market * payMult)
             const fee = round2(amount * ONLINE_FEE_PCT)
             const premium = amount > market * 1.02
-            cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount)), savvy, savvyLabel: label, icon, hot: hot && premium })
+            cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount, upgrades)), savvy, savvyLabel: label, icon, hot: hot && premium })
             newOffers++
             if (hot && premium) premiumOffers++
           }
@@ -364,7 +365,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
           const market = cardValue(cur.card)
           const amount = round2(market * max)
           const fee = round2(amount * ONLINE_FEE_PCT)
-          cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount)), savvy, savvyLabel: label, icon })
+          cur.offers.push({ id: nextOfferId(), amount, net: round2(amount - fee - shippingCost(amount, upgrades)), savvy, savvyLabel: label, icon })
           newOffers++
         }
       }
@@ -374,7 +375,7 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
       if (upgrades.repricer && (cur.age || 0) >= LISTING_STALE_DAYS && cur.offers.length === 0 && cur.askMult > 1.0) {
         cur.askMult = Math.max(1.0, round2(cur.askMult - 0.05))
         cur.ask = round2(cardValue(cur.card) * cur.askMult)
-        cur.net = round2(cur.ask - cur.ask * ONLINE_FEE_PCT - shippingCost(cur.ask))
+        cur.net = round2(cur.ask - cur.ask * ONLINE_FEE_PCT - shippingCost(cur.ask, upgrades))
         cur.stale = false
         walked = true
         if (!repriced.includes(cur.card.name)) repriced.push(cur.card.name)
@@ -558,7 +559,9 @@ export function advanceDaysWith(set, get, days, away) {
       if (ev.formsRegular) get().formRegular({ setId: SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]?.id, channel: 'walkin', generous: true })
       buzzDays0 = Math.max(buzzDays0, ev.buzzDays || 0)
       eventExtraWalkins = ev.extraWalkins || 0
-      eventCooldown = Math.max(eventCooldown, Math.max(0, EVENT_COOLDOWN_DAYS - (days - 1)))
+      // 🎪 An Events Coordinator turns the room over faster — one night's breather, not two.
+      const cooldownDays = s.upgrades.eventsCoordinator ? 1 : EVENT_COOLDOWN_DAYS
+      eventCooldown = Math.max(eventCooldown, Math.max(0, cooldownDays - (days - 1)))
     } else if (plan?.prizeCard) {
       // Store gone before the night came — the raffle can't run; the prize comes home.
       set(st => ({ collection: [plan.prizeCard, ...st.collection] }))
@@ -669,9 +672,12 @@ export function advanceDaysWith(set, get, days, away) {
   // everyday product — an empty or grail-only floor barely ticks over. Running the shop still
   // grows your name in town (passive notoriety). A LOCKED shop does zero counter trade: away at
   // a show with no staff (walkinOK false) there's nobody behind the counter.
-  let counterRevenue = 0
+  let counterRevenue = 0, coolerRevenue = 0
   const counterSoldC = new Set(), counterSoldS = new Set()
   if (hasStore && walkinOK) {
+    // 🥤 Snack Cooler: drinks and snacks ring up a little steady money every open day,
+    // riding the same footfall shape as the counter (a December Saturday sells more soda too).
+    if (s.upgrades.snackCooler) coolerRevenue = round2(Math.min(25, 8 + noto * 0.03) * footWeight)
     const signage = s.upgrades?.signage ? 1.15 : 1 // 🪧 +15% foot traffic
     // The day's counter TRADE BUDGET — dollars of everyday goods locals will buy — on the same
     // fame/staffing curve as before (sqrt fame boost keeps it from outrunning the card business;
@@ -738,7 +744,7 @@ export function advanceDaysWith(set, get, days, away) {
       const signage = s.upgrades?.signage ? 1.15 : 1
       // Kid channel: summer/back-to-school swells the machine crowd (seasonOf .kids).
       const rate = (0.4 + noto / 350) * dealMult * signage * seasonOf(s.monthsElapsed).kids
-      const want = Math.min(MACHINE_MAX_PER_DAY * days, mstock.length, drawCount(rate * footWeight))
+      const want = Math.min(machineMaxPerDay(s.upgrades) * days, mstock.length, drawCount(rate * footWeight))
       if (want > 0) {
         const stock = [...mstock]
         for (let k = 0; k < want && stock.length; k++) stock.splice(Math.floor(Math.random() * stock.length), 1)
@@ -764,7 +770,7 @@ export function advanceDaysWith(set, get, days, away) {
       const dealMult = Math.max(0.35, Math.min(2.2, avgVal / bin.price)) // fat bin → more diggers
       const signage = s.upgrades?.signage ? 1.15 : 1
       const rate = (0.6 + noto / 250) * dealMult * signage * seasonOf(s.monthsElapsed).kids
-      const want = Math.min(BIN_MAX_PER_DAY * days, bstock.length, drawCount(rate * footWeight))
+      const want = Math.min(binMaxPerDay(s.upgrades) * days, bstock.length, drawCount(rate * footWeight))
       if (want > 0) {
         const stock = [...bstock]
         let treasure = null
@@ -813,10 +819,13 @@ export function advanceDaysWith(set, get, days, away) {
   }
   // resolve consignments whose timer elapsed over the days passed. Seed proceeds with the
   // storefront's counter business (logged separately below so the recap can show it).
-  let soldProceeds = round2(counterRevenue + machineRevenue + suppliesRevenue + binRevenue)
+  let soldProceeds = round2(counterRevenue + machineRevenue + suppliesRevenue + binRevenue + coolerRevenue)
   if (counterRevenue > 0) {
     const nCounter = counterSoldC.size + counterSoldS.size
     get().log('shop', `🏬 Counter sales — ${nCounter} everyday item${nCounter === 1 ? '' : 's'} off the floor to locals (singles & bulk) (+$${counterRevenue.toFixed(2)})`, counterRevenue)
+  }
+  if (coolerRevenue > 0) {
+    get().log('shop', `🥤 The snack cooler hummed along (+$${coolerRevenue.toFixed(2)})`, coolerRevenue)
   }
   if (suppliesRevenue > 0) {
     get().log('shop', `🧢 Supplies & accessories — ${suppliesSold} unit${suppliesSold === 1 ? '' : 's'} across the counter (+$${suppliesRevenue.toFixed(2)})`, suppliesRevenue)
@@ -899,14 +908,14 @@ export function advanceDaysWith(set, get, days, away) {
       for (const tier of (get().packTiers || [])) {
         if (tier.channels?.online && onlineOK) {
           const q = get().packsForChannel('online').filter(p => p.tierId === tier.id)
-          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'online')) {
+          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'online', false, !!s.upgrades.wrapPress)) {
             const r = get().sellBuiltPack(q[0].uid, { channel: 'online' })
             if (r) noteSale(`${tier.name} (repack)`, r.net)
           }
         }
         if (tier.channels?.store && hasStore && walkinOK) {
           const q = get().packsForChannel('store').filter(p => p.tierId === tier.id)
-          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i)) {
+          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i, !!s.upgrades.wrapPress)) {
             const r = get().sellBuiltPack(q[0].uid, { channel: 'walkin' })
             if (r) noteSale(`${tier.name} (repack)`, r.net)
           }
@@ -1015,9 +1024,9 @@ export function advanceDaysWith(set, get, days, away) {
   // Saturday, so lots walk in heavier on weekends (buyinDayMult, per day of the window).
   const startAbs = absoluteDay(s.currentDay, s.monthsElapsed)
   if (hasStore && noto >= CONSIGN_MIN_NOTO) {
-    for (let i = 0; i < days && consignReqsNext.length < CONSIGN_REQ_CAP; i++) {
+    for (let i = 0; i < days && consignReqsNext.length < consignReqCap(s.upgrades); i++) {
       if (Math.random() < Math.min(0.9, CONSIGN_REQ_CHANCE * oppMult * buyinDayMult(startAbs + i + 1))) {
-        const req = makeConsignRequest(noto)
+        const req = makeConsignRequest(noto, { casePlus: !!s.upgrades.consignCase })
         consignReqsNext = [req, ...consignReqsNext]
         get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on the Sell tab.`, 0)
       }
@@ -1032,8 +1041,9 @@ export function advanceDaysWith(set, get, days, away) {
     // The sign on the counter: your posted buylist rate scales how many sellers walk in
     // (BUYLIST_POLICIES.chanceMult) and shifts their asks (applied inside makeBuyinOffer).
     const polMult = (BUYLIST_POLICIES[s.buylistPolicy] || BUYLIST_POLICIES.fair).chanceMult
-    for (let i = 0; i < days && buyinsNext.length < BUYIN_CAP; i++) {
-      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * polMult * buyinDayMult(startAbs + i + 1))) {
+    const adMult = s.upgrades.buyAd ? 1.4 : 1 // 📻 the radio spot pulls sellers through the door
+    for (let i = 0; i < days && buyinsNext.length < buyinCap(s.upgrades); i++) {
+      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * polMult * adMult * buyinDayMult(startAbs + i + 1))) {
         // Some sellers are leaving the hobby: a whole-collection lot with SEALED product in it.
         const estate = Math.random() < BUYIN_ESTATE_CHANCE
         const offer = makeBuyinOffer(noto, { estate, policy: s.buylistPolicy })
@@ -1081,7 +1091,8 @@ export function advanceDaysWith(set, get, days, away) {
   let subsDark = false
   if (subsNext > 0) {
     subsDark = s.lastStreamDay != null && newAbsDay - s.lastStreamDay > 7
-    if (subsDark) subsNext = Math.floor(subsNext * Math.pow(0.97, days))
+    // 🛡️ A Mod Team keeps the community warm between broadcasts — dark-channel churn halves.
+    if (subsDark) subsNext = Math.floor(subsNext * Math.pow(s.upgrades.modTeam ? 0.985 : 0.97, days))
     subIncome = round2(subsNext * SUB_DAILY * days)
     if (subIncome > 0) get().earn(subIncome)
   }
@@ -1366,6 +1377,34 @@ export function advanceDaysWith(set, get, days, away) {
       if (idx >= 0) { get().acceptOffer(idx, best.id); offersAccepted++ }
     }
   }
+  // 🧾 Submission Runner: overnight, up to 2 raw cards/day whose 🔭 Scope prediction is
+  // CLEARLY +EV go to Economy grading (fee from the till). Uses the SAME gradePrediction
+  // the player sees — no secret odds knowledge — and demands the predicted return clear the
+  // fee plus a fat margin over just holding the raw card, so it never grinds marginal subs.
+  // Never touches 🔒 kept, held, floor, binder (own bucket), or listed (own bucket) cards.
+  // Pausable in ⚙️ Settings (settings.submissionRunner).
+  if (s.upgrades.submissionRunner && (get().settings?.submissionRunner ?? true)) {
+    const luck = s.upgrades.loupe ? 0.08 : 0
+    const maxSubs = Math.min(6, 2 * days)
+    let runnerSent = 0
+    const cands = (get().collection || [])
+      .filter(c => !c.grade && !c.locked && !c._heldFor && !c._featured && c.loc !== 'floor' && cardValue(c) >= 10)
+      .sort((a, b) => cardValue(b) - cardValue(a))
+      .slice(0, 15) // evaluate the most valuable raws only — prediction is Monte-Carlo
+    for (const c of cands) {
+      if (runnerSent >= maxSubs) break
+      const fee = gradingFee('economy', get().gradesSubmitted)
+      if (get().cash < fee) break
+      const raw = cardValue(c)
+      const p = gradePrediction(c, luck, 240)
+      const tailG = Math.max(1, Math.min(8, p.likely))
+      const ev = p.gemChance * psaValueAt(c, 10)
+        + (p.highChance - p.gemChance) * psaValueAt(c, 9)
+        + (1 - p.highChance) * psaValueAt(c, tailG)
+      if (ev - fee > raw * 1.35) { get().submitGrade(c.uid, 'economy'); runnerSent++ }
+    }
+    if (runnerSent > 0) get().log('grade-submit', `🧾 Submission Runner prepped ${runnerSent} clearly-+EV card${runnerSent > 1 ? 's' : ''} for Economy grading overnight`, 0)
+  }
   // 🚢 Import shipments: orders on the water (Japan Direct's leadDays) LAND today if their
   // arrival day has come — the rows move from `imports` into the storeroom, ready to rip,
   // shelve, or list like any sealed. Ships still crossing stay in transit.
@@ -1401,6 +1440,36 @@ export function advanceDaysWith(set, get, days, away) {
           set({ standingOrder: { ...so, lastDay: newAbsDay } })
           get().log('buy', `📋 Standing order delivered — ${r.bought}× ${product.type} (${pokeSet.name})`, 0)
         }
+      }
+    }
+  }
+  // 🎰 High-Capacity Vend Unit + 🪓 Bin Keeper: the keeper also feeds the machine overnight —
+  // storeroom loose packs (never vintage, never 🔒 kept or held) top the hopper back up to a
+  // couple of days' vending. Runs BEFORE the keeper's floor-bin refill so the machine (a
+  // deliberately priced service) gets first draw on backstock; whatever's left fills the bin.
+  // No breaking product for the machine; it eats loose backstock only.
+  if (s.upgrades.binKeeper && s.upgrades.vendUnit && s.upgrades.storefront) {
+    const pm = get().packMachine || { price: 0, stock: [] }
+    const target = machineMaxPerDay(s.upgrades) * 2
+    if (pm.price > 0 && (pm.stock || []).length < target) {
+      const uids = (get().sealedInventory || [])
+        .filter(it => (it.product?.packs || 1) === 1 && !it.vintage && !it.locked && !it._heldFor && it.loc !== 'floor')
+        .slice(0, target - (pm.stock || []).length)
+        .map(it => it.uid)
+      if (uids.length) get().stockMachine(uids) // logs its own 🎰 line
+    }
+  }
+  // 🎪 Events Coordinator: the standing weekly night books itself. Runs AFTER the mid-tick
+  // state write (eventCooldownLeft is current), so planStoreEvent's own checks — storefront,
+  // cooldown, notoriety, cash — are the single source of truth. A blocked week (broke,
+  // cooling down) just retries next tick; lastDay only advances on a successful booking.
+  if (s.upgrades.eventsCoordinator && get().weeklyEvent && get().upgrades.storefront && !get().storeEventPlanned) {
+    const we = get().weeklyEvent
+    if (newAbsDay - (we.lastDay ?? -999) >= 7) {
+      const r = get().planStoreEvent(we.type)
+      if (r?.ok) {
+        set({ weeklyEvent: { ...we, lastDay: newAbsDay } })
+        get().log('shop', `📆 Events Coordinator booked tonight's ${STORE_EVENTS[we.type]?.name || 'event'} — it runs when the day turns.`, 0)
       }
     }
   }
@@ -1573,7 +1642,7 @@ function settleCredit(set, get, monthsRolled) {
   for (let i = 0; i < monthsRolled; i++) {
     let bal = get().credit?.balance || 0
     if (bal <= 0) { if (get().credit?.frozen) set(st => ({ credit: { ...st.credit, frozen: false } })); continue }
-    const interest = round2(bal * CREDIT_MONTHLY_RATE)
+    const interest = round2(bal * creditMonthlyRate(get().upgrades)) // 🏦 Preferred Account carries cheaper
     bal = round2(bal + interest)
     const minDue = round2(Math.min(bal, Math.max(CREDIT_MIN_FLOOR, bal * CREDIT_MIN_PCT)))
     const pay = round2(Math.min(minDue, Math.max(0, get().cash)))

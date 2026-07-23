@@ -25,6 +25,7 @@ export default function MysteryPacks() {
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
   const hasStore = useGame(s => !!s.upgrades.storefront)
+  const wrapPress = useGame(s => !!s.upgrades.wrapPress) // ✨ shown odds must match the real roll
   const unbuildPack = useGame(s => s.unbuildPack)
 
   const [editing, setEditing] = useState(null)  // tier being edited, or 'new'
@@ -84,7 +85,7 @@ export default function MysteryPacks() {
             const chans = CHANNEL_DEFS.filter(c => tier.channels?.[c.key])
             // A rough "how fast would this move" read for the best enabled channel today.
             const bestChance = Math.max(0, ...chans.filter(c => c.key === 'online' || c.key === 'store')
-              .map(c => packSaleChance(tier.price, notoriety, packRep, c.key === 'online' ? 'online' : 'store')))
+              .map(c => packSaleChance(tier.price, notoriety, packRep, c.key === 'online' ? 'online' : 'store', false, wrapPress)))
             return (
               <div key={tier.id} className="product">
                 <h3 style={{ fontSize: 15, margin: 0 }}>{tier.icon} {tier.name}</h3>

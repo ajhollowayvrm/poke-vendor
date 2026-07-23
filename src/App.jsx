@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
-import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, UPGRADES } from './game/store/constants'
+import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -972,7 +972,9 @@ function ReprintWaveBanner({ cash, flash }) {
 function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPayMode, onPay }) {
   const canUseCredit = !frozen && avail > 0
   const hasBalance = balance > 0.005
-  const ratePct = Math.round(CREDIT_MONTHLY_RATE * 100)
+  // 🏦 Preferred Account shows its cheaper carry — the panel must quote the real rate.
+  const preferred = useGame(s => !!s.upgrades.preferredAccount)
+  const ratePct = +( (preferred ? creditMonthlyRate({ preferredAccount: true }) : CREDIT_MONTHLY_RATE) * 100).toFixed(1)
   // A credit mode the line can't back reads as Cash (matches the Shop's onCredit/split gating).
   const active = canUseCredit ? payMode : 'cash'
   const creditTitle = frozen ? 'Frozen — pay your balance down to buy on credit again'

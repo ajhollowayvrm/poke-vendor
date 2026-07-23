@@ -71,6 +71,8 @@ export default function BoothInbox({ onRip, onPick }) {
   const [haggleVal, setHaggleVal] = useState('')
   const planStoreEvent = useGame(s => s.planStoreEvent)
   const cancelStoreEvent = useGame(s => s.cancelStoreEvent)
+  const weeklyEvent = useGame(s => s.weeklyEvent)     // 🎪 the coordinator's standing night
+  const setWeeklyEvent = useGame(s => s.setWeeklyEvent)
   useEffect(() => { ensureDailyGoals() }, [ensureDailyGoals])
   // Drop orders whose card you no longer own (e.g. sold it at a show) — keep the
   // original index so clearing/responding still targets the right inbox slot.
@@ -487,9 +489,10 @@ export default function BoothInbox({ onRip, onPick }) {
                     {Object.entries(STORE_EVENTS).map(([key, ev]) => {
                       const locked = notoriety < (ev.minNoto || 0)
                       const cantAfford = cash < ev.cost
+                      const isWeekly = weeklyEvent?.type === key
                       return (
                         <div key={key} className="product">
-                          <h3 style={{ fontSize: 14, margin: 0 }}>{ev.icon} {ev.name}</h3>
+                          <h3 style={{ fontSize: 14, margin: 0 }}>{ev.icon} {ev.name}{isWeekly ? <span className="pill" style={{ marginLeft: 6, fontSize: 11 }}>📆 weekly</span> : null}</h3>
                           <div className="meta" style={{ flex: 1 }}>{ev.desc}</div>
                           <button className="btn" disabled={locked || cantAfford}
                             title={locked ? `Needs ${ev.minNoto} notoriety` : ev.needsPrize ? 'Pick the prize card next' : undefined}
@@ -500,6 +503,17 @@ export default function BoothInbox({ onRip, onPick }) {
                             }}>
                             {locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
                           </button>
+                          {/* 🎪 Events Coordinator: flag ONE event as the standing weekly night (raffles
+                              can't recur — they need a prize picked each time). */}
+                          {upgrades.eventsCoordinator && !ev.needsPrize && !locked && (
+                            <button className="btn alt" style={{ marginTop: 6, padding: '4px 10px', fontSize: 12 }}
+                              onClick={() => {
+                                const r = setWeeklyEvent(isWeekly ? null : key)
+                                flash(r.error || (isWeekly ? '📆 Standing night cleared.' : `📆 ${ev.name} runs weekly now — the coordinator books it and pays from the till.`))
+                              }}>
+                              {isWeekly ? '📆 Stop weekly nights' : '📆 Make it weekly'}
+                            </button>
+                          )}
                         </div>
                       )
                     })}

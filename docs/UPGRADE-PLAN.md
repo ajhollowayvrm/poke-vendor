@@ -1,5 +1,8 @@
 # Existing-System Upgrades — Implementation Plan
 
+> **STATUS (2026-07-23): Phases 1–3 SHIPPED** (17 upgrades, persist v53) — sim green,
+> E2E playtest green. Phase 4 (Special Orders Book, Second Location) remains open.
+
 Eighteen new buy-once upgrades that deepen systems the game already has (the batch-1 list;
 the new-area unlocks like the shipped ⛩️ Import License are tracked separately). Grouped
 into four phases by risk and build size — each phase is one coherent ship: implement, run

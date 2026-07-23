@@ -179,9 +179,12 @@ export function subsFor(viewers, kind, rnd = Math.random) {
 // enough single pull (≥$60). The clip circulates for a few days after the wrap, recruiting
 // followers daily — deliberately NOT gated on a flop: nobody saw it live, but the clip
 // blowing up afterward is half the fantasy.
-export function clipFor(peakViewers, bestValue, hadGod, bestName) {
+export function clipFor(peakViewers, bestValue, hadGod, bestName, editor = false) {
   if (hadGod) return { daysLeft: 3, perDay: Math.min(40, Math.round(10 + peakViewers * 0.008)), label: 'god pack' }
   if ((bestValue || 0) >= 60) return { daysLeft: 3, perDay: Math.min(30, Math.round(4 + bestValue * 0.05)), label: `${bestName} pull` }
+  // 🎬 Clip Editor: no organic viral moment, but the editor still cuts a highlight reel —
+  // a modest drip for a couple of days, so no broadcast leaves nothing behind.
+  if (editor) return { daysLeft: 2, perDay: Math.min(12, Math.round(2 + peakViewers * 0.004)), label: bestName ? `${bestName} highlights` : 'stream highlights' }
   return null
 }
 

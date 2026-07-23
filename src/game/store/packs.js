@@ -152,14 +152,18 @@ export function createPacksSlice(set, get) {
       // Online pays the marketplace fee + shipping (same drag as a listing); in-person and
       // stream sales keep the whole ticket (minus any card-rail processing fee).
       let net = gross
-      if (channel === 'online') net = round2(gross - round2(gross * ONLINE_FEE_PCT) - shippingCost(gross))
+      if (channel === 'online') net = round2(gross - round2(gross * ONLINE_FEE_PCT) - shippingCost(gross, get().upgrades))
       if (payMethod) net = processingFee(net, payMethod).net
       const value = packValue(pack)
       const who = buyer || packBuyerName(channel)
       const out = packOutcome(value, gross, tier.bandLo, cap(who))
       // On stream the whole room saw it — reputation and fame swing harder both ways.
       const swing = channel === 'stream' ? 1.5 : 1
-      const repDelta = Math.round(out.repDelta * swing)
+      // ✨ Custom Wrap Press: pro presentation buys forgiveness — a thin pack stings less
+      // (negative rep swings softened 40%). It never juices a GOOD pull's rep; that'd be
+      // buying reputation, not packaging.
+      let repDelta = Math.round(out.repDelta * swing)
+      if (repDelta < 0 && get().upgrades.wrapPress) repDelta = Math.round(repDelta * 0.6)
       const notoDelta = Math.round(out.notoDelta * swing)
       set(s => ({
         builtPacks: s.builtPacks.filter(p => p.uid !== uid),

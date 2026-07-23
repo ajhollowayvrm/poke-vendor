@@ -28,6 +28,13 @@ function dumpRate(base, prior) {
   return base * (1 - Math.min(DUMP_PENALTY_MAX, DUMP_PENALTY_PER * Math.max(0, prior)))
 }
 
+// 🚚 Grader Dealer Account: submissions ride the courier — turnaround cut ~40% on every
+// tier (Economy 45→27, Standard 20→12, Express 5→3). Fees and odds untouched: the sim's
+// grading-EV ladder must never move because of this — it's capital velocity only.
+function gradeTurnaround(tier, upgrades) {
+  return upgrades?.graderAccount ? Math.max(1, Math.ceil(tier.days * 0.6)) : tier.days
+}
+
 export function createCollectionSlice(set, get) {
   return {
     addPulls(cards, setName, packs = 1) {
@@ -392,7 +399,7 @@ export function createCollectionSlice(set, get) {
       // raw `currentDay + tier.days` (e.g. economy's 45) could exceed the wrap and never
       // be reached — stranding the card + fee forever. absoluteDay never wraps.
       const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
-      const readyOnDay = submittedAt + tier.days
+      const readyOnDay = submittedAt + gradeTurnaround(tier, get().upgrades)
       // remember the fee actually paid so the resolved grade records it, not list price.
       set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyOnDay, submittedAt, paidFee: fee }] }))
       const disc = before.discount > 0 ? ` (${Math.round(before.discount*100)}% loyalty off)` : ''
@@ -417,7 +424,7 @@ export function createCollectionSlice(set, get) {
       const uidSet = new Set(cards.map(c => c.uid))
       // month-safe absolute day (see submitGrade) so a late-month bulk submit still resolves.
       const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
-      const readyOnDay = submittedAt + tier.days
+      const readyOnDay = submittedAt + gradeTurnaround(tier, get().upgrades)
       set(s => ({
         collection: s.collection.filter(c => !uidSet.has(c.uid)),
         gradesSubmitted: s.gradesSubmitted + cards.length,

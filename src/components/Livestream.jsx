@@ -686,7 +686,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           const tier = (g.packTiers || []).find(t => t.id === pack.tierId)
           if (!tier) return prev
           // Pricier packs need rep + fame to move, even to a hyped room.
-          if (Math.random() > Math.max(0.08, packSaleChance(tier.price, notoriety, g.packRep ?? 50, 'store', true) * 2.2)) return prev
+          if (Math.random() > Math.max(0.08, packSaleChance(tier.price, notoriety, g.packRep ?? 50, 'store', true, !!g.upgrades.wrapPress) * 2.2)) return prev
           const buyer = randomChatHandle()
           pushChat({ handle: buyer, text: `drop me a ${tier.icon} ${tier.name}!! paying ${fmtMoney(tier.price)}` })
           return [...prev, { id: `po-${pack.uid}-${Math.floor(Math.random() * 1e9)}`, kind: 'pack',
@@ -916,7 +916,9 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   // has to spread). The flood counts toward peak, some raiders follow, one usually subs.
   function maybeRaid() {
     if (raidRef.current || finishedRef.current) return
-    if (Math.random() > 0.18 + Math.min(0.12, notoriety / 1000)) return
+    // 🛡️ A well-modded room is safe to send a community into — raids find you more often.
+    const modBoost = useGame.getState().upgrades.modTeam ? 1.5 : 1
+    if (Math.random() > (0.18 + Math.min(0.12, notoriety / 1000)) * modBoost) return
     const raid = rollRaid(notoriety, followers)
     raidRef.current = raid
     after(() => {
@@ -1199,7 +1201,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
     // deliberately judged even on a flop: the clip blowing up after is half the fantasy)
     let best = null
     for (const p of allPulled.current) if (!best || cardValue(p.card) > cardValue(best)) best = p.card
-    const clip = clipFor(peak, best ? cardValue(best) : 0, godSeenRef.current, best?.name)
+    const clip = clipFor(peak, best ? cardValue(best) : 0, godSeenRef.current, best?.name, !!useGame.getState().upgrades.clipEditor)
     useGame.getState().endStream({ tips, noto, peakViewers: peak, followers: followerGain, subs: sessionSubs, clip })
     // A solid (non-flop) stream can win you a new online regular — streaming feeds the loyalty loop.
     // Guarded: an orders-only show where nobody bit wraps with an EMPTY queue.

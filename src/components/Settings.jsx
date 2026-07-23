@@ -18,6 +18,8 @@ export default function Settings() {
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
   const ripOnBuy = useGame(s => s.settings.ripOnBuy ?? false)
+  const hasRunner = useGame(s => !!s.upgrades.submissionRunner)
+  const runnerOn = useGame(s => s.settings.submissionRunner ?? true)
   const revealMode = useGame(s => s.settings.revealMode ?? 'auto')
   const sound = useGame(s => s.settings.sound ?? true)
   const haptics = useGame(s => s.settings.haptics ?? true)
@@ -209,6 +211,24 @@ export default function Settings() {
           {ripOnBuy ? 'On' : 'Off'}
         </button>
       </div>
+
+      {hasRunner && (
+        <div className="setting-card">
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700 }}>🧾 Submission Runner</div>
+            <div className="muted" style={{ fontSize: 12 }}>
+              {runnerOn
+                ? 'On — up to 2 clearly-+EV raw cards go to Economy grading overnight (fee from the till).'
+                : 'Paused — the runner submits nothing until you switch them back on.'}
+            </div>
+          </div>
+          <button className={`btn ${runnerOn ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+            role="switch" aria-checked={runnerOn}
+            onClick={() => setSetting('submissionRunner', !runnerOn)}>
+            {runnerOn ? 'On' : 'Paused'}
+          </button>
+        </div>
+      )}
 
       <h3 style={{ margin: '18px 0 4px' }}>🤝 Deal detector</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>

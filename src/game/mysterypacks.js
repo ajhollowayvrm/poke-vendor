@@ -99,13 +99,15 @@ export function packBestItem(pack) {
 // Per-day / per-encounter chance a buyer on `channel` takes ONE pack of this tier.
 // Cheap packs are impulse buys; a $500 repack needs a name AND a clean track record.
 //   packRep 0..100 (50 = unproven). Buzz = the store's giveaway/event traffic window.
-export function packSaleChance(price, notoriety, packRep, channel, hasBuzz = false) {
+export function packSaleChance(price, notoriety, packRep, channel, hasBuzz = false, wrapPress = false) {
   const priceFactor = 35 / (35 + Math.max(0, price))                    // $10 → .78 · $50 → .41 · $200 → .15
   const fame = 0.35 + Math.min(1.15, Math.max(0, notoriety) / 90)       // 0★ → .35 · 90★ → 1.35
   const rep = 0.25 + (Math.max(0, Math.min(100, packRep)) / 100) * 1.25 // burned → .25 · legendary → 1.5
   const base = channel === 'online' ? 0.55 : 0.4
   const buzz = channel !== 'online' && hasBuzz ? 1.35 : 1
-  return Math.max(0.01, Math.min(0.7, base * priceFactor * fame * rep * buzz))
+  // ✨ Custom Wrap Press: retail-grade foil + printed wrappers make the pack an easier grab.
+  const press = wrapPress ? 0.06 : 0
+  return Math.max(0.01, Math.min(0.7, base * priceFactor * fame * rep * buzz + press))
 }
 
 // The buyer opens it. Classify what they found vs what they paid (and vs what the tier

@@ -22,7 +22,7 @@ export function createSellingSlice(set, get) {
       const noto = get().notoriety
       const ask = round2(market * askMult)
       const fee = round2(ask * ONLINE_FEE_PCT) // ~5% marketplace fee
-      const ship = shippingCost(ask)           // shipping & packing — online only
+      const ship = shippingCost(ask, get().upgrades) // shipping & packing — online only (📦 station halves it)
       const net = round2(ask - fee - ship)
       const viewsPerDay = +(dailyViewers(card, askMult, noto, () => 0.5)).toFixed(0)
       // share of the browsing pool whose max-willingness covers this ask (use the

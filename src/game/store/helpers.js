@@ -32,7 +32,7 @@ export function bumpSet(bySet, setId, delta) {
 }
 
 // --- Payment-method result messaging ----------------------------------------
-import { PAYMENT_METHODS, CREDIT_LIMIT_PCT, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR } from './constants'
+import { PAYMENT_METHODS, creditLimitPct, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR } from './constants'
 
 export function methodLabel(key) {
   const m = PAYMENT_METHODS[key]
@@ -104,7 +104,7 @@ export function netWorthFull(s) {
 // down 1:1 with the balance instead of the limit shrinking underneath you as you borrow.
 export function creditLimit(s) {
   const base = netWorthFull(s) + (s.credit?.balance || 0) // assets net of other liabilities, before this debt
-  return Math.max(0, round2(CREDIT_LIMIT_PCT * base))
+  return Math.max(0, round2(creditLimitPct(s.upgrades) * base)) // 🏦 Preferred Account lends deeper
 }
 export function creditAvailable(s) {
   if (s.credit?.frozen) return 0 // line suspended until a missed minimum is cured

@@ -197,6 +197,9 @@ try {
       consignments: k.storageFee(S({ consignments: rows(60) })),
       builtPacks: k.storageFee(S({ builtPacks: rows(60) })),
       vault: k.storageFee(S({ upgrades: { vault: true }, sealedInventory: rows(200) })),
+      // 🏗️ Storage Unit: raises the ALLOWANCE only — heldUnits' definition must not move.
+      freeUnit: k.storageFreeUnits(S({ upgrades: { storageUnit: true } })),
+      unitAllowance: k.storageFee(S({ upgrades: { storageUnit: true }, sealedInventory: rows(k.STORAGE_FREE_UNITS + 10) })),
       packsPerRack: k.PACKS_PER_RACK,
       // Loose packs rack 36-to-a-tray: 15 boxes fill the base allowance, then 180 loose
       // packs bill as ceil(180/36)=5 units — not 180. Same count of BOXES bills in full.
@@ -217,6 +220,8 @@ try {
   pass(`consignments exempt ($${storage.consignments})`, storage.consignments === 0)
   pass(`built packs exempt ($${storage.builtPacks})`, storage.builtPacks === 0)
   pass(`🏛️ Vault waives all ($${storage.vault})`, storage.vault === 0)
+  pass(`🏗️ Storage Unit: allowance ${storage.freeBase} → ${storage.freeUnit} (+15), hoard of allowance+10 → $${storage.unitAllowance}`,
+    storage.freeUnit === storage.freeBase + 15 && storage.unitAllowance === 0)
   pass(`loose packs rack ${storage.packsPerRack}/tray: 15 boxes + 180 loose → $${storage.looseRacked}/day (as boxes: $${storage.looseAsBoxes})`,
     storage.looseRacked === 5 * storage.perUnit && storage.looseAsBoxes === 180 * storage.perUnit)
 

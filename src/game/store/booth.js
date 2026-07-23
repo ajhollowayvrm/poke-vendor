@@ -670,7 +670,10 @@ export function createBoothSlice(set, get) {
       if (!o) return { error: 'They already left.' }
       if (o.free) return { error: "They're giving it away — just take it." }
       if (o.haggled) return { error: 'You already shook on a number.' }
-      if ((o.haggleRounds || 0) >= 2) return { error: "They're done haggling — it's the ask or nothing." }
+      // 🪑 An Appraisal Desk keeps sellers seated for a third round — comfortable chairs
+      // and a comp screen buy patience the counter alone doesn't.
+      const maxRounds = get().upgrades.appraisalDesk ? 3 : 2
+      if ((o.haggleRounds || 0) >= maxRounds) return { error: "They're done haggling — it's the ask or nothing." }
       const amt = round2(Number(offerAmount) || 0)
       if (!(amt > 0)) return { error: 'Name a real number.' }
       const r = haggleBuyin(o, amt)
@@ -714,6 +717,22 @@ export function createBoothSlice(set, get) {
         collection: prizeCard ? st.collection.filter(c => c.uid !== prizeCard.uid) : st.collection,
       }))
       get().log('shop', `${ev.icon} Flyers up — hosting ${ev.name} tonight${prizeCard ? ` (prize: ${prizeCard.name})` : ''}. It happens when the day turns.`, -ev.cost)
+      return { ok: true }
+    },
+    // 🎪 Events Coordinator: choose ONE event to recur weekly (null clears it). The day tick
+    // auto-plans it every 7 days, paying the cost from the till. Raffles can't recur (they
+    // need a prize card picked each time).
+    setWeeklyEvent(type) {
+      if (!type) {
+        set({ weeklyEvent: null })
+        get().log('shop', '📆 Weekly event cleared — nights are back to manual.', 0)
+        return { ok: true }
+      }
+      const ev = STORE_EVENTS[type]
+      if (!ev || ev.needsPrize) return { error: 'That one needs a prize picked each time — it can\'t recur.' }
+      if (!get().upgrades.eventsCoordinator) return { error: 'You need an Events Coordinator to run a standing night.' }
+      set({ weeklyEvent: { type, lastDay: null } })
+      get().log('shop', `📆 ${ev.icon} ${ev.name} is now your standing weekly night — the coordinator books it from here.`, 0)
       return { ok: true }
     },
     // Call it off: refund the cost, return the raffle prize.
@@ -827,7 +846,10 @@ export function createBoothSlice(set, get) {
             const chan = pool === 'show' ? 'show' : 'store'
             for (const p of get().packsForChannel(chan)) owned.push({ item: p, pack: true })
           }
-          if (Math.random() < (effect.chance ?? 0.3) && owned.length) {
+          // 🥤 Snack Cooler: a browser who lingers with a drink in hand buys more often —
+          // walk-in (in-store) browses only; a show table has no cooler.
+          const coolerLift = effect.inStore && get().upgrades.snackCooler ? 0.10 : 0
+          if (Math.random() < (effect.chance ?? 0.3) + coolerLift && owned.length) {
             const blocked = s.paymentBlocked(effect.payMethod)
             if (blocked) { s.log('lost-sale', blocked, 0); msg = msg + ' …but ' + blocked.toLowerCase(); break }
             // they buy a random item from the relevant pool at market
