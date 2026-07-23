@@ -16,11 +16,11 @@
 
 import {
   round2, cardValue, dailyViewers, rollBuyerSavvy, buyerMaxMult, BUYER_SAVVY,
-  SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, driftMult, driftMultVintage,
+  SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, JP_SHOP_SETS, driftMult, driftMultVintage,
   applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
   setMarketMults, distributorById, restockRate, distributorUnlocked,
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
-  makeVintageHold, setById, distributorPrice, breakOptions,
+  makeVintageHold, setById, distributorPrice, breakOptions, setProducts,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
@@ -244,6 +244,8 @@ function driftMarket(mults, history, days, log) {
   const events = []
   for (let d = 0; d < days; d++) {
     for (const s of SHOP_SETS) next[s.id] = driftMult(next[s.id])
+    // 🎌 the import shelf lives on the same living market as the English shop sets.
+    for (const s of JP_SHOP_SETS) next[s.id] = driftMult(next[s.id])
     // vintage sealed trends upward (finite, shrinking supply) — tapering bias, no revert.
     for (const s of VINTAGE_SETS) next[s.id] = driftMultVintage(next[s.id])
     // aftermarket (older SM/XY) sealed also appreciates as supply dries up — same upward drift.
@@ -268,7 +270,7 @@ function driftMarket(mults, history, days, log) {
     }
   }
   // record one history sample per set per call (the post-drift value), capped.
-  for (const s of SHOP_SETS) {
+  for (const s of [...SHOP_SETS, ...JP_SHOP_SETS]) {
     hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
   }
   for (const s of VINTAGE_SETS) {
@@ -1165,7 +1167,8 @@ export function advanceDaysWith(set, get, days, away) {
           // Your allocation ships via your best-rapport unlocked distributor.
           let best = null
           for (const dv of DISTRIBUTORS) {
-            if (!distributorUnlocked(dv, noto)) continue
+            if (dv.japanese) continue // 🎌 the import channel doesn't ship English reprint waves
+            if (!distributorUnlocked(dv, noto, s.upgrades)) continue
             const level = rapportLevel((s.distributors?.[dv.id]?.spend) || 0).level
             if (!best || level > best.level) best = { dist: dv, level }
           }
@@ -1363,6 +1366,23 @@ export function advanceDaysWith(set, get, days, away) {
       if (idx >= 0) { get().acceptOffer(idx, best.id); offersAccepted++ }
     }
   }
+  // 🚢 Import shipments: orders on the water (Japan Direct's leadDays) LAND today if their
+  // arrival day has come — the rows move from `imports` into the storeroom, ready to rip,
+  // shelve, or list like any sealed. Ships still crossing stay in transit.
+  {
+    const landed = [], atSea = []
+    for (const sh of (s.imports || [])) ((sh.arrivesDay ?? 0) <= newAbsDay ? landed : atSea).push(sh)
+    if (landed.length) {
+      set(st => ({
+        imports: atSea,
+        sealedInventory: [...landed.flatMap(sh => sh.rows || []), ...(st.sealedInventory || [])],
+      }))
+      for (const sh of landed) {
+        const nm = setById(sh.setId)?.name || 'JP'
+        get().log('buy', `🎌 Import shipment landed — ${sh.qty}× ${sh.type} (${nm}) is in your storeroom`, 0)
+      }
+    }
+  }
   // 📋 Standing order: once a week the subscribed product ships automatically at your
   // rapport price — as long as the distributor has it and the till covers it. A missed
   // week (out of stock / short on cash) just retries daily until it lands.
@@ -1371,7 +1391,8 @@ export function advanceDaysWith(set, get, days, away) {
     if (newAbsDay - (so.lastDay ?? -999) >= 7) {
       const dist = distributorById(so.distId)
       const pokeSet = setById(so.setId)
-      const product = pokeSet ? (pokeSet.products || []).find(p => p.type === so.type) : null
+      // setProducts, not pokeSet.products — synthesized lineups (🎌 JP sets) have no stored list.
+      const product = pokeSet ? setProducts(pokeSet).find(p => p.type === so.type) : null
       if (dist && pokeSet && product) {
         const level = rapportLevel((get().distributors[so.distId]?.spend) || 0).level
         const price = distributorPrice(dist, product.price, level)

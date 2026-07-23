@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 51,
+  version: 52,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -105,6 +105,9 @@ export const useGame = create(persist((set, get) => ({
     for (const it of (state.packMachine?.stock || [])) if (it?.uid) seen.add(it.uid)
     // Bulk Bin stock is cards pulled out of the collection — same rule as the machine.
     for (const c of (state.bulkBin?.stock || [])) if (c?.uid) seen.add(c.uid)
+    // 🚢 Import shipments hold paid-for sealed rows still on the water — register them so a
+    // stray duplicate in a landed bucket gets dropped, never the copy your money is riding on.
+    for (const sh of (state.imports || [])) for (const it of (sh?.rows || [])) if (it?.uid) seen.add(it.uid)
     // Priority: the IN-FLIGHT money-bearing buckets win over a stray collection duplicate,
     // so a corruption-repair never silently discards a card you've already paid a grading
     // fee for (pendingGrades) or are owed proceeds on (listings/consignments). The card
@@ -132,7 +135,7 @@ export const useGame = create(persist((set, get) => ({
     // and boots the player into a FRESH GAME while their real save sits unreadable in
     // localStorage. merge()'s dedupe runs after migrate, so it can't catch this first.
     for (const k of ['collection', 'binder', 'showInventory', 'sealedInventory', 'showSealed',
-      'shopDisplay', 'shopSealed', 'pendingGrades', 'listings', 'consignments', 'builtPacks']) {
+      'shopDisplay', 'shopSealed', 'pendingGrades', 'listings', 'consignments', 'builtPacks', 'imports']) {
       if (state[k] !== undefined && Array.isArray(state[k])) {
         state[k] = state[k].filter(x => x && typeof x === 'object')
       }
@@ -507,6 +510,10 @@ export const useGame = create(persist((set, get) => ({
       state.streamClip = state.streamClip ?? null
       state.rhythmStreak = state.rhythmStreak ?? 0
       state.lastStreamDay = state.lastStreamDay ?? null
+    }
+    if (version < 52) {
+      // ⛩️ Import License → 🎌 Japan Direct: shipments on the water. Nothing in transit on an old save.
+      state.imports = state.imports ?? []
     }
     return state
   },

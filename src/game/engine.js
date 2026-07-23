@@ -66,6 +66,21 @@ export const SECONDARY_SETS = data.sets.filter(s => s.secondary)
 // "151 ETB" ships an svp black-star promo, a card that lives in an `extra` set, not sv3pt5). Kept
 // out of SHOP_SETS above so their cards never flood modern shop stock / offers / wants.
 export const EXTRA_SETS = data.sets.filter(s => s.extra)
+// 🎌 Japanese sets the IMPORT channel can actually sell SEALED (Import License upgrade →
+// the Japan Direct distributor). JP sets are `extra` (browse-only) by default; a set is
+// promoted onto the import shelf only when its data can compose an HONEST pack:
+//   • ≥95% card art (three fetched sets have none — TCGdex gaps — and would rip blank), and
+//   • real base Common/Uncommon/Rare pools once pattern parallels are set aside (JP 151
+//     fails this: JustTCG carries its commons ONLY as Master Ball mirrors — browse-only
+//     until a future fetch fills the base population).
+// Data-driven, so finishing a set's fetch later auto-promotes it here. Newest first.
+export const JP_SHOP_SETS = data.sets.filter(s => {
+  if (!s.japanese || !s.cards?.length) return false
+  if (s.cards.filter(c => c.img).length / s.cards.length < 0.95) return false
+  const base = s.cards.filter(c => !jpPatternTag(c))
+  const has = r => base.some(c => c.rarity === r)
+  return has('Common') && has('Uncommon') && (has('Rare') || has('Rare Holo'))
+}).sort((a, b) => String(b.releaseDate || '').localeCompare(String(a.releaseDate || '')))
 export function vintageProduct(set) {
   return (set.products || []).find(p => p.vintage) || setProducts(set)[0]
 }
@@ -810,7 +825,79 @@ const SUBSET_SLOT = {
   swsh12:    { odds: 0.126, test: id => id.startsWith('swsh12tg-') },    // Silver Tempest Trainer Gallery
 }
 
+// --- 🎌 Japanese packs (Import License) ----------------------------------------
+// JP boosters are their own animal: 5 cards at ~¥180, no reverse slot, and a single
+// rare-or-better slot with a DENSER hit ladder than English (why rippers import).
+// Rates approximate SV-era JP box breakdowns (per 30-pack box: ~7 RR, ~3 AR, ~1 SR,
+// a SAR every other box, a gold every ~5 boxes). JP rarity vocab maps onto our tiers
+// in the fetch (AR→Illustration Rare, SR→Ultra Rare, SAR→Special Illustration Rare).
+const JP_SLOT = [
+  { rarity: 'Special Illustration Rare', p: 0.016 },  // SAR — ~1 in 63 packs
+  { rarity: 'Hyper Rare',                p: 0.0066 }, // gold — ~1 in 150 (skipped if the set has none)
+  { rarity: 'Ultra Rare',                p: 0.033 },  // SR — ~1 per box
+  { rarity: 'Illustration Rare',         p: 0.10 },   // AR — ~3 per box
+  { rarity: 'Double Rare',               p: 0.23 },   // RR — ~7 per box
+]
+// Pattern-parallel print (Master Ball / Poké Ball mirror), tagged in the card id by the
+// JP fetch ("jp-SV2a-094MB"). These are separate PRICED cards sharing the base card's
+// number — they must stay out of the normal pull pools or a $500 MB mirror reads as a
+// common (this is also why 151 isn't rippable yet: JustTCG carries its C/U/R population
+// ONLY as MB parallels, so there's no honest base pool to fill a pack from).
+function jpPatternTag(card) {
+  const m = /(MB|PB|PT)x*$/.exec(card?.id || '')
+  return m ? m[1] : null
+}
+// Base (non-parallel) pools for a JP set, cached — pack composition and EV both read these.
+const JP_POOLS = new Map()
+function jpPools(set) {
+  let byR = JP_POOLS.get(set.id)
+  if (!byR) {
+    byR = {}
+    for (const c of set.cards) if (!jpPatternTag(c)) (byR[c.rarity] ||= []).push(c)
+    JP_POOLS.set(set.id, byR)
+  }
+  return byR
+}
+function openJapanesePack(set) {
+  const byR = jpPools(set)
+  const commons = byR['Common'] || byR['Uncommon'] || set.cards
+  const uncommons = byR['Uncommon'] || commons
+  // 5 cards: 3 commons + 1 uncommon + the rare slot (an upgrade if the ladder hits).
+  const pulls = []
+  for (let i = 0; i < 3; i++) pulls.push(instance(pick(commons)))
+  pulls.push(instance(pick(uncommons)))
+  const hit = rollSlot(byR, JP_SLOT)
+  const base = byR['Rare']?.length ? pick(byR['Rare'])
+    : byR['Rare Holo']?.length ? pick(byR['Rare Holo']) : pick(uncommons)
+  pulls.push(instance(hit || base))
+  dedupePack(pulls, byR)
+  pulls.sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity))
+  return pulls
+}
+// Analytic EV of one JP pack from BASE card prices (no market drift — product pricing
+// must be deterministic across sessions). Mirrors openJapanesePack exactly: 3 commons +
+// 1 uncommon + the slot ladder with skip-if-missing semantics, leftover to the base rare.
+const JP_EV = new Map()
+export function jpPackEV(set) {
+  let ev = JP_EV.get(set.id)
+  if (ev != null) return ev
+  const byR = jpPools(set)
+  const avg = (pool) => pool && pool.length ? pool.reduce((a, c) => a + (c.price || 0), 0) / pool.length : null
+  const commons = avg(byR['Common']) ?? avg(byR['Uncommon']) ?? 0
+  const uncommons = avg(byR['Uncommon']) ?? commons
+  let slot = 0, used = 0
+  for (const t of JP_SLOT) {
+    const a = avg(byR[t.rarity])
+    if (a != null) { slot += t.p * a; used += t.p }
+  }
+  slot += (1 - used) * (avg(byR['Rare']) ?? avg(byR['Rare Holo']) ?? uncommons)
+  ev = round2(3 * commons + uncommons + slot)
+  JP_EV.set(set.id, ev)
+  return ev
+}
+
 export function openPack(set) {
+  if (set.japanese) return openJapanesePack(set)     // 🎌 5-card JP structure, own hit ladder
   if (set.id === 'cel25') return openCelebrationsPack(set) // bespoke 4-card structure
   const byR = cardsByRarity(set)
   // An alt-art subset (Shiny Vault / Galarian or Trainer Gallery) comes ONLY from its dedicated
@@ -1855,6 +1942,7 @@ export function fmtMoney(n) {
 // without fetched data, synthesize a basic Pack + Box so the shop still works.
 export function setProducts(set) {
   if (set.products && set.products.length) return set.products
+  if (set.japanese) return jpProducts(set)
   const byR = cardsByRarity(set)
   const hasChase = (byR['Special Illustration Rare']?.length || 0) + (byR['Mega Hyper Rare']?.length || 0) > 0
   const pack = hasChase ? 4.49 : 3.99
@@ -1862,6 +1950,28 @@ export function setProducts(set) {
     { type: 'Booster Pack', icon: '🎴', packs: 1, bonus: null, price: pack },
     { type: 'Booster Box', icon: '🗃️', packs: 36, bonus: null, price: round2(pack * 36 * 0.92) },
   ]
+}
+// 🎌 JP sealed lineup — synthesized (JustTCG lists JP sealed without usable structure), but
+// PRICED off the set's own real singles market: import boxes trade where rippers price them,
+// a hair over aggregate pull EV. Box = 30 packs at ~78% EV-to-price (JP boxes run closer to
+// break-even than English product — that's the import play), floored at a $45 freight-real
+// minimum; the single pack carries the usual per-pack premium over the box rate. Derived
+// from BASE prices (not live drift) so the sticker is stable across sessions — the live
+// market still moves the VALUE of a held unit via sealedValue's marketMult, like any sealed.
+const JP_EV_RATIO = 0.78
+const JP_PRODUCTS = new Map()
+function jpProducts(set) {
+  let ps = JP_PRODUCTS.get(set.id)
+  if (!ps) {
+    const box = Math.max(45, Math.round(jpPackEV(set) * 30 / JP_EV_RATIO)) - 0.01
+    const pack = Math.round((box / 30) * 1.10 * 4) / 4 // per-pack premium, quarter-rounded
+    ps = [
+      { type: 'Booster Pack', icon: '🎴', packs: 1, bonus: null, price: pack },
+      { type: 'Booster Box', icon: '🗃️', packs: 30, bonus: null, price: box },
+    ]
+    JP_PRODUCTS.set(set.id, ps)
+  }
+  return ps
 }
 // Cheapest single-pack product for a set (used as the "pack price" baseline).
 export function packPrice(set) {
@@ -2265,12 +2375,22 @@ export const DISTRIBUTORS = [
     cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
     minNotoriety: 75, // won't open an account until you're an established name — reputation is the door; rapport is the relationship after
   },
+  {
+    id: 'japan', name: 'Japan Direct', icon: '🎌', color: '#ff5e6c',
+    blurb: 'Your import partner in Osaka — authentic Japanese sealed the local market never sees. JP boosters are 5 cards with a denser hit ladder (SARs the room will turn to look at), boxes run closer to break-even than English product, and everything ships across the Pacific: orders land in your storeroom a few days after you pay.',
+    priceMult: 1.0, discountStep: 0.025, maxDiscount: 0.12, reliability: 0.6,
+    requiresUpgrade: 'importLicense', // the ⛩️ Import License upgrade IS the account
+    leadDays: 3,     // 🚢 orders arrive this many days after purchase, not instantly
+    japanese: true,  // catalog = JP_SHOP_SETS, not the English shop list
+  },
 ]
 export function distributorById(id) { return DISTRIBUTORS.find(d => d.id === id) || null }
 // Whether a distributor will do business with you yet. Most are open from day one; a big
-// wholesaler (Dave & Adam's) gates the whole account behind a NOTORIETY threshold — you have to
-// be an established name before they'll take you on. Once open, rapport builds from scratch.
-export function distributorUnlocked(dist, notoriety) {
+// wholesaler (Dave & Adam's) gates the whole account behind a NOTORIETY threshold, and the
+// import channel (Japan Direct) behind the ⛩️ Import License UPGRADE — the license is the
+// account. Once open, rapport builds from scratch.
+export function distributorUnlocked(dist, notoriety, upgrades) {
+  if (dist?.requiresUpgrade && !(upgrades || {})[dist.requiresUpgrade]) return false
   return !dist?.minNotoriety || (notoriety || 0) >= dist.minNotoriety
 }
 
@@ -2286,6 +2406,7 @@ const NEW_EXCLUSIVE_COUNT = 1
 // (not id-based): first-dibs gets the newest N; everyone else is behind on the very newest.
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
+  if (dist.japanese) return JP_SHOP_SETS                   // 🎌 the import shelf — its own catalog entirely
   if (dist.firstDibs) return sets.slice(0, NEW_SET_COUNT)  // the newest releases (incl. the exclusive)
   // Everyone else can't get the very newest release yet — it's the first-dibs seller's
   // exclusive until it filters out to the wider market. Drop it from their shelves.
@@ -2315,7 +2436,7 @@ export function distributorCatalog(dist, sets, weekIndex = 0) {
 // can reorder. So the shelf holds ONE (usually) or TWO, and once you've bought them the
 // shelf is BARE until next week's find. Vintage must never be a bottomless well you can
 // grind for cash; scarcity is what makes it worth hunting.
-const VINTAGE_FIND_RATE = { lgs: 0.45, tcgplayer: 0.30, dna: 0.32, amazon: 0.15, pokecenter: 0 }
+const VINTAGE_FIND_RATE = { lgs: 0.45, tcgplayer: 0.30, dna: 0.32, amazon: 0.15, pokecenter: 0, japan: 0 }
 function findRng(distId, weekIndex) {
   let s = ((weekIndex + 1) * 2654435761) >>> 0
   for (let i = 0; i < distId.length; i++) s = (s * 31 + distId.charCodeAt(i)) >>> 0

@@ -82,6 +82,32 @@ try {
     pass(`${r.set}: EV $${r.ev.toFixed(2)} vs $${r.price.toFixed(2)} pack (${(ratio * 100).toFixed(0)}%)`, ratio < 1.0)
   }
 
+  // ---- 1b. 🎌 JP import rip EV ----------------------------------------------------
+  // The Import License shelf (JP_SHOP_SETS) prices sealed OFF the set's own singles EV
+  // (jpPackEV × 30 / 0.78 per box), so ripping imports must stay -EV too — closer to
+  // break-even than English product (that's the import play), but never over the line.
+  console.log('\n🎌 JP IMPORT RIP EV (5-card packs, N=5000 per set) — want < 1.00:')
+  const jpRip = await page.evaluate(async () => {
+    const eng = await import('/src/game/engine.js')
+    const out = []
+    for (const s of eng.JP_SHOP_SETS) {
+      const booster = eng.setProducts(s).find(p => p.packs === 1)
+      if (!booster?.price) continue
+      const N = 5000
+      let total = 0
+      for (let i = 0; i < N; i++) for (const c of eng.openPack(s)) total += eng.cardValue(c)
+      out.push({ set: s.name, price: booster.price, ev: total / N })
+    }
+    return out
+  })
+  for (const r of jpRip) {
+    const ratio = r.ev / r.price
+    pass(`${r.set}: EV $${r.ev.toFixed(2)} vs $${r.price.toFixed(2)} pack (${(ratio * 100).toFixed(0)}%)`, ratio < 1.0)
+  }
+  // The shelf must actually be stocked — a data regression that empties JP_SHOP_SETS would
+  // otherwise "pass" this section by testing nothing.
+  pass(`import shelf is stocked (${jpRip.length} JP sets rippable)`, jpRip.length >= 3)
+
   // ---- 2. Grading EV --------------------------------------------------------------
   console.log('\nGRADING EV ($100 comp-less NM card, N=40k rolls):')
   const grade = await page.evaluate(async () => {

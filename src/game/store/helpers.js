@@ -87,6 +87,8 @@ export function netWorthFull(s) {
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)
+    // 🚢 import shipments on the water are paid-for stock — assets in transit, not spent money
+    + (s.imports || []).reduce((a, sh) => a + (sh.rows || []).reduce((x, it) => x + sealedValue(it), 0), 0)
     + (s.showSealed || []).reduce((a, it) => a + sealedValue(it), 0)
     + (s.shopSealed || []).reduce((a, it) => a + sealedValue(it), 0)
     // Built mystery packs: the contents are still your assets until a buyer takes the pack.

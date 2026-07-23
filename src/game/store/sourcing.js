@@ -81,7 +81,13 @@ export function createSourcingSlice(set, get) {
     buyFromDistributor(distId, pokeSet, product, price, opts = {}) {
       const dist = distributorById(distId)
       if (!dist) return null
-      if (!distributorUnlocked(dist, get().notoriety)) return null // account not open yet (notoriety-gated)
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades)) return null // account not open yet
+      // 🚢 An import channel (leadDays) never hands stock over the counter — the single-buy
+      // rides the bulk path, which knows how to put an order on the water.
+      if (dist.leadDays) {
+        const r = get().buyFromDistributorBulk(distId, pokeSet, product, price, 1, opts)
+        return r?.items?.[0] ? { ...r.items[0], _inTransit: true } : null
+      }
       const rec = get().distributorRec(distId)
       const level = rapportLevel(rec.spend).level
       const key = stockKey(pokeSet, product)
@@ -115,7 +121,7 @@ export function createSourcingSlice(set, get) {
     buyFromDistributorBulk(distId, pokeSet, product, price, qty, opts = {}) {
       const dist = distributorById(distId)
       if (!dist) return null
-      if (!distributorUnlocked(dist, get().notoriety)) return null // account not open yet (notoriety-gated)
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades)) return null // account not open yet
       const want = Math.max(1, Math.floor(qty || 1))
       const rec = get().distributorRec(distId)
       const level = rapportLevel(rec.spend).level
@@ -149,11 +155,23 @@ export function createSourcingSlice(set, get) {
           boughtDay: day, boughtPrice: unit, vintage: !!pokeSet.vintage,
         })
       }
+      // 🚢 Import channel: the order is PAID and their shelf is decremented now, but the
+      // stock crosses the Pacific first — it rides `imports` until the day tick lands it
+      // in the storeroom `leadDays` from now. Net worth counts in-transit rows (they're
+      // paid-for assets), and merge() registers their uids like any sealed bucket.
+      const inTransit = (dist.leadDays || 0) > 0
+      const shipment = inTransit ? {
+        id: `imp${Date.now().toString(36)}${nextSealedSuffix()}`,
+        distId, setId: pokeSet.id, type: product.type, icon: product.icon || '📦',
+        qty: n, unit, arrivesDay: day + dist.leadDays, orderedDay: day, rows: items,
+      } : null
       set(s => {
         const cur = s.distributors[distId] || { spend: 0, stock: {} }
         const cst = stockState(dist, cur.stock, pokeSet, product, level) // fresh; cap ratchets w/ rapport
         return {
-          sealedInventory: [...items, ...(s.sealedInventory || [])],
+          ...(inTransit
+            ? { imports: [...(s.imports || []), shipment] }
+            : { sealedInventory: [...items, ...(s.sealedInventory || [])] }),
           distributors: {
             ...s.distributors,
             [distId]: {
@@ -166,9 +184,10 @@ export function createSourcingSlice(set, get) {
       const note = opts.onCredit ? ' on credit 💳'
         : (split && split.creditPart > 0 ? ` ($${split.cashPart.toFixed(2)} cash + $${split.creditPart.toFixed(2)} credit 💳)` : '')
       const cashOut = opts.onCredit ? 0 : split ? -split.cashPart : -total
-      get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note}`, cashOut)
+      if (inTransit) get().log('buy', `🚢 Import order placed — ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note} · lands in ~${dist.leadDays} days`, cashOut)
+      else get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note}`, cashOut)
       get().bumpGoal('buy', n)
-      return { items, bought: n, spent: total, unit, cashPart: split ? split.cashPart : (opts.onCredit ? 0 : total), creditPart: split ? split.creditPart : (opts.onCredit ? total : 0) }
+      return { items, bought: n, spent: total, unit, inTransit, cashPart: split ? split.cashPart : (opts.onCredit ? 0 : total), creditPart: split ? split.creditPart : (opts.onCredit ? total : 0) }
     },
     // Buy a VINTAGE find (or a reserved hold) from a distributor. Charges `price`, stocks the
     // sealed item to hold, builds rapport with that distributor (it's real business), and — if
@@ -182,7 +201,7 @@ export function createSourcingSlice(set, get) {
     buyDistributorVintage(distId, setId, product, price, opts = {}) {
       const pokeSet = setById(setId)
       if (!pokeSet) return null
-      if (!distributorUnlocked(distributorById(distId), get().notoriety)) return null // account not open yet
+      if (!distributorUnlocked(distributorById(distId), get().notoriety, get().upgrades)) return null // account not open yet
       const week = weekIndexOf(get().currentDay, get().monthsElapsed)
       if (!opts.fromHold && vintageLeft(get(), distId, setId) < 1) return null // shelf is bare
       // Tag the copy with the vendor it came from, so "Rip another" can check THEIR shelf for
@@ -208,7 +227,7 @@ export function createSourcingSlice(set, get) {
     // in at Dave & Adam's wholesale price; requires Trusted+ rapport with them.
     supplyVendors(pokeSet, product) {
       const dist = distributorById('dna')
-      if (!distributorUnlocked(dist, get().notoriety)) return false // account not open yet
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades)) return false // account not open yet
       const rec = get().distributorRec('dna')
       const level = rapportLevel(rec.spend).level
       if (!dist?.supply || level < dist.supplyMinLevel) return false

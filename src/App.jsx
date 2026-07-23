@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
-import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE } from './game/store/constants'
+import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, UPGRADES } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
 import PackOpening from './components/PackOpening'
@@ -243,16 +243,20 @@ export default function App() {
     // How the charge broke down, for the toast: cash-first, credit covers any shortfall.
     const splitNote = (cp, xp) => xp > 0 ? ` — ${fmtMoney(cp)} cash + ${fmtMoney(xp)} credit 💳` : ''
     const n = Math.max(1, Math.floor(qty))
+    const distName = distributorById(distId)?.name || 'They'
     if (n > 1) {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
       const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split })
-      if (!res) return toast(`${distributorById(distId)?.name || 'They'} can't fill that order right now.`)
+      if (!res) return toast(`${distName} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
+      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
       return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
-    if (!item) return toast(`${distributorById(distId)?.name || 'They'} are out of ${product.type} — check back after it restocks.`)
+    if (!item) return toast(`${distName} are out of ${product.type} — check back after it restocks.`)
+    // 🚢 An import buy is on the water — nothing to rip yet, whatever the Rip-on-buy setting says.
+    if (item._inTransit) return toast(`🚢 Import order placed — ${product.type} of ${set.name} is crossing the Pacific (lands in a few days).`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     const cashPart = Math.min(cash, price), creditPart = round2(price - cashPart)
     const pay = onCredit ? ' on credit 💳' : split ? splitNote(cashPart, creditPart) : ''
@@ -808,6 +812,7 @@ function GameOver() {
 function Shop({ cash, onBuy, onBuyVintage }) {
   const distributors = useGame(s => s.distributors)
   const notoriety = useGame(s => s.notoriety)
+  const upgrades = useGame(s => s.upgrades) // ⛩️ Import License gates the Japan Direct account
   const lgsCredit = useGame(s => s.lgsCredit)
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
@@ -856,7 +861,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   // Week index drives Greg's rotating catalog (month-safe; 30 days/month). Shared with the
   // store so the vintage shelf can't read as in-stock here and sold-out at the buy path.
   const weekIndex = weekIndexOf(currentDay, monthsElapsed)
-  const unlocked = distributorUnlocked(dist, notoriety)
+  const unlocked = distributorUnlocked(dist, notoriety, upgrades)
   const catalog = distributorCatalog(dist, SHOP_SETS, weekIndex)
   // Greg flags one set's box as a clearance lot each week — a steep, thin-stock steal.
   const clearanceSetId = dist.clearance && catalog.length ? catalog[weekIndex % catalog.length].id : null
@@ -864,7 +869,10 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
   return (
     <>
-      <DistributorPicker distributorState={distributors} notoriety={notoriety} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
+      <DistributorPicker distributorState={distributors} notoriety={notoriety} upgrades={upgrades} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
+
+      {/* 🚢 Import orders still crossing the Pacific — visible whichever shelf you're browsing */}
+      <ImportsInTransit />
 
       {/* 📰 Reprint wave: industry news — shows whichever storefront is selected */}
       <ReprintWaveBanner cash={cash} flash={flash} />
@@ -884,7 +892,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
       <div className="banner" style={{ marginTop: 14 }}>
         {dist.icon} <b style={{ color: dist.color }}>{dist.name}</b> — {dist.blurb}
-        {' '}Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.
+        {dist.japanese
+          ? <>{' '}Sealed priced off the <b>real JP singles market</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); JP boosters rip 5 cards on their own hit ladder. 🚢 Orders land in ~{dist.leadDays} days.</>
+          : <>{' '}Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.</>}
         {dist.id === 'lgs' && (lgsCredit || 0) > 0 && (
           <> {' '}<span className="pill" title="In-store credit from turning in bulk (5¢/card). Applied automatically at checkout here." style={{ background: '#5ec98a22', color: 'var(--green)' }}>💳 {fmtMoney(lgsCredit)} store credit — spent automatically here</span></>
         )}
@@ -1006,9 +1016,47 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
   )
 }
 
-// A distributor that won't open a wholesale account with you yet (notoriety-gated). Shown in
-// place of their shelves — states the bar and how far you are from it, so it reads as a goal.
+// 🚢 Import orders still on the water: what's coming and when it lands. Rendered on the
+// Buy tab whenever anything is in transit, whichever distributor shelf is selected.
+function ImportsInTransit() {
+  const imports = useGame(s => s.imports)
+  const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
+  if (!imports?.length) return null
+  const absNow = absoluteDay(currentDay, monthsElapsed)
+  return (
+    <div className="banner" style={{ marginTop: 12, borderColor: '#ff5e6c66' }}>
+      🚢 <b>On the water</b> — {imports.map((sh, i) => {
+        const d = Math.max(0, (sh.arrivesDay ?? 0) - absNow)
+        const nm = setById(sh.setId)?.name || 'JP'
+        return (
+          <span key={sh.id || i}>
+            {i > 0 && ' · '}
+            {sh.qty}× {sh.type} <span className="muted">({nm})</span> — <b>{d <= 0 ? 'lands today' : `${d} day${d > 1 ? 's' : ''} out`}</b>
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
+// A distributor that won't open a wholesale account with you yet. Two flavors: the big
+// wholesaler wants NOTORIETY (a bar you climb), the import channel wants the ⛩️ Import
+// License UPGRADE (a purchase). Shown in place of their shelves so each reads as a goal.
 function LockedDistributor({ dist, notoriety }) {
+  if (dist.requiresUpgrade) {
+    const u = UPGRADES[dist.requiresUpgrade]
+    return (
+      <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66', textAlign: 'center' }}>
+        <div style={{ fontSize: 30, marginBottom: 6 }}>{u?.icon || '🔒'}</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} needs the {u?.name || 'right paperwork'}</div>
+        <p className="muted" style={{ fontSize: 13, margin: '8px auto 0', maxWidth: 440 }}>
+          Importing means customs, freight, and a wholesale account overseas — buy the
+          <b> {u?.icon} {u?.name}</b> {u ? <>({fmtMoney(u.cost)}) </> : ''}in <b>⚙️ → Upgrades</b> and this shelf opens for good.
+        </p>
+      </div>
+    )
+  }
   const need = dist.minNotoriety || 0
   const pct = Math.min(100, Math.round(((notoriety || 0) / need) * 100))
   return (
@@ -1032,24 +1080,28 @@ function LockedDistributor({ dist, notoriety }) {
 
 // Pick which distributor you're buying from. Each chip shows their icon, name, and your
 // rapport (filled stars), tinted with their brand colour.
-function DistributorPicker({ distributorState, notoriety, selected, onSelect, vintageDists }) {
+function DistributorPicker({ distributorState, notoriety, upgrades, selected, onSelect, vintageDists }) {
   return (
     <div className="distrib-picker">
       {DISTRIBUTORS.map(d => {
         const rec = distributorState[d.id] || { spend: 0 }
         const level = rapportLevel(rec.spend).level
         const max = RAPPORT_LEVELS.length - 1
-        const locked = !distributorUnlocked(d, notoriety)
+        const locked = !distributorUnlocked(d, notoriety, upgrades)
+        const needsUpgrade = locked && d.requiresUpgrade
         const hasVintage = !locked && vintageDists?.has(d.id)
         return (
           <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''} ${locked ? 'locked' : ''}`}
             style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}
-            title={locked ? `Locked — reach ${d.minNotoriety} notoriety to open an account`
+            title={needsUpgrade ? `Locked — needs the ${UPGRADES[d.requiresUpgrade]?.name || 'right'} upgrade (⚙️ → Upgrades)`
+              : locked ? `Locked — reach ${d.minNotoriety} notoriety to open an account`
               : hasVintage ? `${d.name} has vintage sealed on the shelf this week` : undefined}>
             {hasVintage && <span className="dc-vintage" title="Vintage in stock this week" aria-label="Vintage in stock">🗝️</span>}
             <span className="dc-icon">{d.icon}</span>
             <span className="dc-name">{d.name}</span>
-            {locked
+            {needsUpgrade
+              ? <span className="dc-rep" aria-label={`Locked — needs the ${UPGRADES[d.requiresUpgrade]?.name} upgrade`}>🔒 {UPGRADES[d.requiresUpgrade]?.icon || '⛩️'}</span>
+              : locked
               ? <span className="dc-rep" aria-label={`Locked — ${d.minNotoriety} notoriety needed`}>🔒 {d.minNotoriety}</span>
               : <span className="dc-rep" aria-label={`${level} of ${max} rapport`}>{'★'.repeat(level)}{'☆'.repeat(max - level)}</span>}
           </button>
@@ -1231,6 +1283,10 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
   // Once you've taken them the shelf is bare until next week rotates in a new find.
   const left = useGame(s => vintageLeft(s, dist.id, find?.setId))
   const cleanedOut = !!find && left < 1
+  // 🎌 The import channel deals new JP product only — no vintage shelf, not even the "check
+  // back" tease. (After the hooks: `dist` swaps per selected chip, and an early return above
+  // them would change the hook count between renders.)
+  if (dist.japanese) return null
   if (!hold && !find) {
     return (
       <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
