@@ -24,7 +24,7 @@ import {
   gradePrediction, psaValueAt, gradingFee, distributorCatalog, stockState,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
-import { packSaleChance } from '../mysterypacks'
+import { packSaleChance, packValue } from '../mysterypacks'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
@@ -905,17 +905,22 @@ export function advanceDaysWith(set, get, days, away) {
     for (let i = 0; i < days; i++) {
       if (!(get().builtPacks || []).length) break
       const rep = get().packRep ?? 50
+      const streak = get().packStreak || 0
+      const certified = !!s.upgrades.certOdds
+      // A published line with a real chase still sealed inside advertises itself hardest.
+      const hasChaseIn = (q, tier) => !!tier.published && q.some(p => tier.price && packValue(p) >= tier.price * 2)
       for (const tier of (get().packTiers || [])) {
+        const packOpts = { published: !!tier.published, certified, streak }
         if (tier.channels?.online && onlineOK) {
           const q = get().packsForChannel('online').filter(p => p.tierId === tier.id)
-          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'online', false, !!s.upgrades.wrapPress)) {
+          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'online', false, !!s.upgrades.wrapPress, { ...packOpts, hasChase: hasChaseIn(q, tier) })) {
             const r = get().sellBuiltPack(q[0].uid, { channel: 'online' })
             if (r) noteSale(`${tier.name} (repack)`, r.net)
           }
         }
         if (tier.channels?.store && hasStore && walkinOK) {
           const q = get().packsForChannel('store').filter(p => p.tierId === tier.id)
-          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i, !!s.upgrades.wrapPress)) {
+          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i, !!s.upgrades.wrapPress, { ...packOpts, hasChase: hasChaseIn(q, tier) })) {
             const r = get().sellBuiltPack(q[0].uid, { channel: 'walkin' })
             if (r) noteSale(`${tier.name} (repack)`, r.net)
           }

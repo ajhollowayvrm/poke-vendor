@@ -99,7 +99,12 @@ export function packBestItem(pack) {
 // Per-day / per-encounter chance a buyer on `channel` takes ONE pack of this tier.
 // Cheap packs are impulse buys; a $500 repack needs a name AND a clean track record.
 //   packRep 0..100 (50 = unproven). Buzz = the store's giveaway/event traffic window.
-export function packSaleChance(price, notoriety, packRep, channel, hasBuzz = false, wrapPress = false) {
+//   opts.published  — the tier's odds board is public (transparency draws gamblers).
+//   opts.certified  — 📋 Certified Odds upgrade: a trusted, audited board pulls harder.
+//   opts.streak     — 🔥 hype streak (consecutive happy openings): a word-of-mouth tailwind.
+//   opts.hasChase   — a seeded banger still sits in this published line's stock (self-advertising).
+export function packSaleChance(price, notoriety, packRep, channel, hasBuzz = false, wrapPress = false, opts = {}) {
+  const { published = false, certified = false, streak = 0, hasChase = false } = opts
   const priceFactor = 35 / (35 + Math.max(0, price))                    // $10 → .78 · $50 → .41 · $200 → .15
   const fame = 0.35 + Math.min(1.15, Math.max(0, notoriety) / 90)       // 0★ → .35 · 90★ → 1.35
   const rep = 0.25 + (Math.max(0, Math.min(100, packRep)) / 100) * 1.25 // burned → .25 · legendary → 1.5
@@ -107,36 +112,65 @@ export function packSaleChance(price, notoriety, packRep, channel, hasBuzz = fal
   const buzz = channel !== 'online' && hasBuzz ? 1.35 : 1
   // ✨ Custom Wrap Press: retail-grade foil + printed wrappers make the pack an easier grab.
   const press = wrapPress ? 0.06 : 0
-  return Math.max(0.01, Math.min(0.7, base * priceFactor * fame * rep * buzz + press))
+  // 📋 Published odds board: gamblers who can see the pool bite more often. A CERTIFIED board
+  // (the upgrade) is trusted further, and a published line that still has a real chase sealed
+  // inside advertises itself hardest of all.
+  let pubMult = 1
+  if (published) { pubMult = certified ? 1.32 : 1.15; if (hasChase) pubMult *= 1.2 }
+  // 🔥 Hype streak: a run of happy openings is word-of-mouth — a temporary demand tailwind
+  // that caps out and snaps the moment a buyer gets burned (see packStreak in packs.js).
+  const hype = 1 + Math.min(0.3, Math.max(0, streak) * 0.03)
+  return Math.max(0.01, Math.min(0.75, base * priceFactor * fame * rep * buzz * pubMult * hype + press))
 }
 
 // The buyer opens it. Classify what they found vs what they paid (and vs what the tier
 // ADVERTISED). Mystery packs are usually a small loss for the buyer — that's the deal and
 // nobody's mad at ~60–80 cents on the dollar. Real anger starts when the pack is worth a
 // fraction of the price, or opens BELOW the advertised floor (false advertising).
+//   opts.published — the odds board is public. Buyers who saw the pool are MORE OK with a thin
+//     pack (they knew the gamble), so ordinary letdowns barely ding you — but a pack that opens
+//     UNDER the published floor is a public broken promise and burns HOTTER, not softer.
+//   opts.certified — 📋 Certified Odds: cushions honest letdowns a little further still.
 //   Returns { key, repDelta, notoDelta, line } — line is a log fragment for the sale entry.
-export function packOutcome(value, price, bandLo, buyer = 'The buyer') {
+export function packOutcome(value, price, bandLo, buyer = 'The buyer', opts = {}) {
+  const { published = false, certified = false } = opts
   const ratio = price > 0 ? value / price : 1
   const belowBand = value < (bandLo || 0) - 1e-9
   if (ratio >= 2) {
-    // They hit a banger — the dream that sells every future pack.
-    const noto = Math.min(6, 2 + Math.floor(value / 150))
-    return { key: 'jackpot', repDelta: +8, notoDelta: noto,
-      line: `${buyer} pulled a BANGER — word is spreading` }
+    // They hit a banger — the dream that sells every future pack. A published board turns the
+    // moment into a talker (people trust it was a fair draw), so it spreads a touch further.
+    const noto = Math.min(7, 2 + Math.floor(value / 150) + (published ? 1 : 0))
+    return { key: 'jackpot', repDelta: +8 + (published ? 1 : 0), notoDelta: noto,
+      line: published
+        ? `${buyer} pulled a BANGER off your posted board — word is spreading fast`
+        : `${buyer} pulled a BANGER — word is spreading` }
   }
   if (ratio >= 0.85) {
-    return { key: 'happy', repDelta: +3, notoDelta: Math.random() < 0.4 ? 1 : 0,
+    return { key: 'happy', repDelta: +3 + (published ? 1 : 0), notoDelta: Math.random() < 0.4 ? 1 : 0,
       line: `${buyer} got their money's worth — happy customer` }
   }
   if (ratio >= 0.45 && !belowBand) {
-    return { key: 'meh', repDelta: -1, notoDelta: 0,
-      line: `${buyer} shrugged — that's mystery packs for you` }
+    // A thin-but-fair pack. If you PUBLISHED the odds, the buyer knew the gamble going in — no
+    // rep ding at all. Undisclosed, it's the usual small shrug.
+    return { key: 'meh', repDelta: published ? 0 : -1, notoDelta: 0,
+      line: published ? `${buyer} shrugged — but they knew the odds going in` : `${buyer} shrugged — that's mystery packs for you` }
   }
-  // Ripoff. Pricier gouges burn hotter, and opening under the advertised floor is worse.
-  const noto = -Math.min(6, 1 + Math.floor(price / 80) + (belowBand ? 1 : 0))
-  return { key: 'ripoff', belowBand, repDelta: belowBand ? -12 : -8, notoDelta: noto,
-    line: belowBand
-      ? `${buyer} got LESS than the pack even advertised — they're telling everyone`
+  if (belowBand) {
+    // Below the advertised FLOOR — false advertising. On a PUBLISHED board that's a public
+    // broken promise: you posted a minimum and missed it, and the receipts travel. Harsher.
+    const noto = -Math.min(8, 1 + Math.floor(price / 80) + (published ? 3 : 1))
+    return { key: 'ripoff', belowBand: true, repDelta: published ? -16 : -12, notoDelta: noto,
+      line: published
+        ? `${buyer} opened UNDER your posted floor — the receipts are going around`
+        : `${buyer} got LESS than the pack even advertised — they're telling everyone` }
+  }
+  // A plain thin ripoff (over the floor, still a bad deal). Publishing the odds cushions the
+  // anger — they rolled the dice knowing the pool; a certified board cushions a little more.
+  const soften = published ? (certified ? 0.4 : 0.55) : 1
+  const noto = -Math.min(6, Math.max(1, Math.round((1 + Math.floor(price / 80)) * soften)))
+  return { key: 'ripoff', belowBand: false, repDelta: Math.round(-8 * soften), notoDelta: noto,
+    line: published
+      ? `${buyer} felt light — but the odds were posted, so it's on them`
       : `${buyer} felt ripped off — that stings your name` }
 }
 

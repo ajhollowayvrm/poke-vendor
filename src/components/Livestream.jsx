@@ -8,7 +8,7 @@ import {
   giveawayViewerMult, giveawayTips, promoViewerMult, promoDeliveryFollowers,
   bountyDrawMult, rhythmMult, rhythmStreakNow, subsFor, clipFor, rollRaid, streamSaleMult,
 } from '../game/stream'
-import { packSaleChance } from '../game/mysterypacks'
+import { packSaleChance, packValue } from '../game/mysterypacks'
 import { rarityColor } from './CardTile'
 import HoloCard from './HoloCard'
 import Burst from './Burst'
@@ -685,8 +685,11 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           const pack = packsOut[Math.floor(Math.random() * packsOut.length)]
           const tier = (g.packTiers || []).find(t => t.id === pack.tierId)
           if (!tier) return prev
-          // Pricier packs need rep + fame to move, even to a hyped room.
-          if (Math.random() > Math.max(0.08, packSaleChance(tier.price, notoriety, g.packRep ?? 50, 'store', true, !!g.upgrades.wrapPress) * 2.2)) return prev
+          // Pricier packs need rep + fame to move, even to a hyped room. A 📋 published (and
+          // certified) line, and a 🔥 hype streak, pull the room harder too.
+          const packOpts = { published: !!tier.published, certified: !!g.upgrades.certOdds, streak: g.packStreak || 0,
+            hasChase: !!tier.published && tier.price > 0 && packsOut.some(p => p.tierId === tier.id && packValue(p) >= tier.price * 2) }
+          if (Math.random() > Math.max(0.08, packSaleChance(tier.price, notoriety, g.packRep ?? 50, 'store', true, !!g.upgrades.wrapPress, packOpts) * 2.2)) return prev
           const buyer = randomChatHandle()
           pushChat({ handle: buyer, text: `drop me a ${tier.icon} ${tier.name}!! paying ${fmtMoney(tier.price)}` })
           return [...prev, { id: `po-${pack.uid}-${Math.floor(Math.random() * 1e9)}`, kind: 'pack',
