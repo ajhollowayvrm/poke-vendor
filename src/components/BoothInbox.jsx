@@ -13,6 +13,7 @@ import BulkBin from './BulkBin'
 import StoreStock from './StoreStock'
 import Regulars from './Regulars'
 import { useModalEscape } from '../ui/dialog'
+import { Collapse } from '../ui/Collapse'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
   walkin: { label: 'Walk-in', icon: '🏬', color: '#ffcb05' } }
@@ -253,10 +254,11 @@ export default function BoothInbox({ onRip, onPick }) {
                 ))}
               </div>
 
-              {/* Collection buy-ins: locals selling YOU their cards */}
+              {/* Collection buy-ins: locals selling YOU their cards — pending decisions, so open */}
               {(buyinOffers || []).length > 0 && (
-                <div className="wants">
-                  <div className="wants-head">🛍️ Collection buy-ins <span className="muted">— locals selling to you: appraise the lot, pay cash or store credit (+{Math.round(STORE_CREDIT_BONUS * 100)}%, they spend it back at your counter)</span></div>
+                <Collapse id="store-buyins" defaultOpen head="🛍️ Collection buy-ins"
+                  badge={`${buyinOffers.length} waiting`}
+                  hint={`— locals selling to you: appraise the lot, pay cash or store credit (+${Math.round(STORE_CREDIT_BONUS * 100)}%, they spend it back at your counter)`}>
                   <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(270px,1fr))' }}>
                     {buyinOffers.map(o => {
                       const est = upgrades.loupe ? o.estimateTight : o.estimate
@@ -316,13 +318,14 @@ export default function BoothInbox({ onRip, onPick }) {
                       )
                     })}
                   </div>
-                </div>
+                </Collapse>
               )}
 
               {/* 📊 Demand board: what walk-ins hunted for and left without — stock it */}
               {demandTop.length > 0 && (
-                <div className="wants">
-                  <div className="wants-head">📊 What the town's asking for <span className="muted">— walk-ins who left empty-handed this fortnight; stock it to catch the sale</span></div>
+                <Collapse id="store-demand" head="📊 What the town's asking for"
+                  badge={`${demandTop.length}`}
+                  hint="— walk-ins who left empty-handed this fortnight; stock it to catch the sale">
                   <div className="row" style={{ flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                     {demandTop.map(([what, n]) => (
                       <span key={what} className="pill" style={{ background: '#ffcb0522', color: 'var(--gold, #ffd45e)' }}>
@@ -330,12 +333,13 @@ export default function BoothInbox({ onRip, onPick }) {
                       </span>
                     ))}
                   </div>
-                </div>
+                </Collapse>
               )}
 
               {/* 🧢 Supplies rack: the accessory margin engine — wholesale in, retail out */}
-              <div className="wants">
-                <div className="wants-head">🧢 Supplies rack <span className="muted">— sleeves & accessories sell across the counter at ~50% margin (league nights clear the rack); buy wholesale by the case</span></div>
+              <Collapse id="store-supplies" head="🧢 Supplies rack"
+                badge={`${Object.values(supplies || {}).reduce((a, b) => a + b, 0)} in stock`}
+                hint="— sleeves & accessories sell across the counter at ~50% margin (league nights clear the rack); buy wholesale by the case">
                 <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', marginTop: 4 }}>
                   {SUPPLIES.map(it => {
                     const qty = supplies?.[it.id] || 0
@@ -360,15 +364,16 @@ export default function BoothInbox({ onRip, onPick }) {
                     Lifetime: <b>{suppliesStats.sold}</b> sold · <b style={{ color: 'var(--green)' }}>{fmtMoney(suppliesStats.revenue)}</b> rung up
                   </div>
                 )}
-              </div>
+              </Collapse>
 
               {/* 🗑️ Bulk bin: the quarter box — chaff in, foot-traffic cash out */}
               <BulkBin />
 
-              {/* Consignment intake: locals waiting on a yes/no */}
+              {/* Consignment intake: locals waiting on a yes/no — pending decisions, so open */}
               {(storeConsignRequests || []).length > 0 && (
-                <div className="wants">
-                  <div className="wants-head">🧾 Consignment intake <span className="muted">— locals want YOU to sell their card; you keep a cut, zero cash down</span></div>
+                <Collapse id="store-consign-intake" defaultOpen head="🧾 Consignment intake"
+                  badge={`${storeConsignRequests.length} waiting`}
+                  hint="— locals want YOU to sell their card; you keep a cut, zero cash down">
                   <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))' }}>
                     {storeConsignRequests.map(r => (
                       <div key={r.id} className="product">
@@ -386,12 +391,13 @@ export default function BoothInbox({ onRip, onPick }) {
                       </div>
                     ))}
                   </div>
-                </div>
+                </Collapse>
               )}
 
               {/* ⭐ Display case features — the whale bait */}
-              <div className="wants">
-                <div className="wants-head">⭐ Display case <span className="muted">— feature up to {FEATURED_MAX} pieces (singles or sealed); featured pieces are what deep-pocketed whales come in for (they show up earlier and pay 1.15–1.6×)</span></div>
+              <Collapse id="store-featured" head="⭐ Display case"
+                badge={`${featured.length + featuredSealed.length}/${FEATURED_MAX}`}
+                hint={`— feature up to ${FEATURED_MAX} pieces (singles or sealed); featured pieces are what deep-pocketed whales come in for (they show up earlier and pay 1.15–1.6×)`}>
                 {featured.length + featuredSealed.length === 0 ? (
                   <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>Nothing featured yet — hit <b>⭐</b> on a stock line below to spotlight your best pieces.</div>
                 ) : (
@@ -423,7 +429,7 @@ export default function BoothInbox({ onRip, onPick }) {
                     })}
                   </div>
                 )}
-              </div>
+              </Collapse>
 
               {/* 🛒 Shop floor stock — singles and sealed on separate shelves, only this sells to
                   walk-ins & the counter */}
@@ -445,8 +451,9 @@ export default function BoothInbox({ onRip, onPick }) {
 
               {/* Consignment case: locals' cards you're carrying */}
               {(storeConsignments || []).length > 0 && (
-                <div className="wants">
-                  <div className="wants-head">🤝 Consignment case <span className="muted">— locals' cards you're selling for a cut (not yours; unsold goes home)</span></div>
+                <Collapse id="store-consigncase" head="🤝 Consignment case"
+                  badge={`${storeConsignments.length}`}
+                  hint="— locals' cards you're selling for a cut (not yours; unsold goes home)">
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
                     {storeConsignments.map(c => (
                       <div key={c.id} className="vendoritem">
@@ -457,12 +464,13 @@ export default function BoothInbox({ onRip, onPick }) {
                       </div>
                     ))}
                   </div>
-                </div>
+                </Collapse>
               )}
 
               {/* Giveaway */}
-              <div className="wants">
-                <div className="wants-head">🎁 In-store giveaway <span className="muted">— give a card to the locals: goodwill, notoriety, and a {GIVEAWAY_BUZZ_DAYS}-day foot-traffic buzz</span></div>
+              <Collapse id="store-giveaway" head="🎁 In-store giveaway"
+                badge={giveawayDaysLeft > 0 ? `🎉 buzz ${giveawayDaysLeft}d` : null}
+                hint={`— give a card to the locals: goodwill, notoriety, and a ${GIVEAWAY_BUZZ_DAYS}-day foot-traffic buzz`}>
                 <div className="toolbar" style={{ marginTop: 4 }}>
                   <button className="btn gold" style={{ flex: 'none' }} disabled={!collection.length}
                     onClick={() => setGivePick(true)}>🎁 Pick a card to give away</button>
@@ -470,11 +478,12 @@ export default function BoothInbox({ onRip, onPick }) {
                     ? <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🎉 Buzz live · {giveawayDaysLeft}d left</span>
                     : <span className="muted" style={{ fontSize: 12 }}>Pricier card → bigger pop. Regulars warm up (+trust); the 🎗️ Charity Banner boosts the notoriety.</span>}
                 </div>
-              </div>
+              </Collapse>
 
               {/* Hosted events: plan tonight, it happens when the day turns */}
-              <div className="wants">
-                <div className="wants-head">🎪 Host an event <span className="muted">— recurring nights are what real shops run on: traffic, community, and money at the door</span></div>
+              <Collapse id="store-events" head="🎪 Host an event"
+                badge={storeEventPlanned ? `tonight: ${STORE_EVENTS[storeEventPlanned.type]?.icon || '🎪'}` : weeklyEvent ? '📆 weekly set' : eventCooldownLeft > 0 ? `resting ${eventCooldownLeft}d` : null}
+                hint="— recurring nights are what real shops run on: traffic, community, and money at the door">
                 {storeEventPlanned ? (
                   <div className="banner" style={{ marginTop: 4 }}>
                     {STORE_EVENTS[storeEventPlanned.type]?.icon} <b>Tonight: {STORE_EVENTS[storeEventPlanned.type]?.name}</b>
@@ -519,7 +528,7 @@ export default function BoothInbox({ onRip, onPick }) {
                     })}
                   </div>
                 )}
-              </div>
+              </Collapse>
             </>
           )
         })()

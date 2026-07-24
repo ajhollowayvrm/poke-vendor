@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, fmtMoney, round2 } from '../game/engine'
+import { Collapse } from '../ui/Collapse'
 
 // 🗑️ The Bulk Bin — the quarter box kids dig through. Toss raw cheap cards in (they leave
 // the collection, like Pack Machine stock), set ONE flat price, and it drains daily with
@@ -38,8 +39,9 @@ export default function BulkBin() {
   }
 
   return (
-    <div className="wants">
-      <div className="wants-head">🗑️ Bulk bin <span className="muted">— the quarter box kids dig through; ~5× the LGS turn-in rate, paid out as it drains with foot traffic</span></div>
+    <Collapse id="store-bulkbin" head="🗑️ Bulk bin"
+      badge={stock.length > 0 ? `${stock.length} in · ${fmtMoney(price)}/card${treasures.length ? ' · 🤿' : ''}` : null}
+      hint="— the quarter box kids dig through; ~5× the LGS turn-in rate, paid out as it drains with foot traffic">
       <div className="toolbar" style={{ marginTop: 6, gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
         <span className="muted">$</span>
         <input type="number" min="0" step="0.05" value={priceInput} onChange={e => setPriceInput(e.target.value)}
@@ -89,6 +91,6 @@ export default function BulkBin() {
         </div>
       )}
       {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
-    </div>
+    </Collapse>
   )
 }

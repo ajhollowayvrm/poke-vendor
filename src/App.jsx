@@ -4,6 +4,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
 import { Modal } from './ui/Modal'
+import { Collapse, useOpen, bigScreen } from './ui/Collapse'
 import { useGame } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
 import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from './game/store/constants'
@@ -983,20 +984,33 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
   const creditTitle = frozen ? 'Frozen — pay your balance down to buy on credit again'
     : avail <= 0 ? 'No credit available yet — your line grows with your net worth (and frees up as you pay down the balance)'
     : `up to ${fmtMoney(avail)} available`
+  // Collapsible (mobile declutter): the header always shows the load-bearing numbers —
+  // balance owed + open credit + the active pay mode — so closed still informs; the mode
+  // toggle and pay-down buttons live in the body. Sticky open state, desktop-open default.
+  const [openPanel, togglePanel] = useOpen('pv-col-credit', bigScreen())
   return (
     <div className={`credit-panel ${frozen ? 'frozen' : ''}`}>
-      <div className="credit-top">
+      <div className="credit-top" role="button" tabIndex={0} aria-expanded={openPanel}
+        style={{ cursor: 'pointer', userSelect: 'none' }} onClick={togglePanel}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePanel() } }}>
         <div className="credit-head">💳 Credit line{frozen && <span className="credit-badge">FROZEN</span>}</div>
-        <div className="credit-toggle" role="group" aria-label="Pay with">
-          <button className={`btn ${active === 'cash' ? 'gold' : 'alt'}`} onClick={() => setPayMode('cash')}
-            title="Pay with cash on hand">💵 Cash</button>
-          <button className={`btn ${active === 'split' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
-            title={canUseCredit ? `Pay cash first, then put the rest on credit (${creditTitle})` : creditTitle}
-            onClick={() => setPayMode('split')}>🔀 Cash + Credit</button>
-          <button className={`btn ${active === 'credit' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
-            title={canUseCredit ? `Charge buys to your credit line (${creditTitle})` : creditTitle}
-            onClick={() => setPayMode('credit')}>💳 Credit</button>
-        </div>
+        <span className="muted" style={{ fontSize: 12.5 }}>
+          {hasBalance ? <><b className="credit-owe">{fmtMoney(balance)}</b> owed · </> : null}
+          <b className="credit-avail">{fmtMoney(avail)}</b> open
+          {active !== 'cash' && <> · paying {active === 'split' ? '🔀 cash+credit' : '💳 credit'}</>}
+        </span>
+        <span className="muted" style={{ marginLeft: 'auto' }}>{openPanel ? '▾' : '▸'}</span>
+      </div>
+      {openPanel && (<>
+      <div className="credit-toggle" role="group" aria-label="Pay with" style={{ marginTop: 8 }}>
+        <button className={`btn ${active === 'cash' ? 'gold' : 'alt'}`} onClick={() => setPayMode('cash')}
+          title="Pay with cash on hand">💵 Cash</button>
+        <button className={`btn ${active === 'split' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
+          title={canUseCredit ? `Pay cash first, then put the rest on credit (${creditTitle})` : creditTitle}
+          onClick={() => setPayMode('split')}>🔀 Cash + Credit</button>
+        <button className={`btn ${active === 'credit' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
+          title={canUseCredit ? `Charge buys to your credit line (${creditTitle})` : creditTitle}
+          onClick={() => setPayMode('credit')}>💳 Credit</button>
       </div>
       <div className="credit-stats">
         <span>Balance <b className={hasBalance ? 'credit-owe' : ''}>{fmtMoney(balance)}</b></span>
@@ -1017,6 +1031,7 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
       ) : (
         <div className="muted credit-note">Buy sealed on credit and pay it off monthly — your line grows with your net worth. Carry a balance and it accrues ~{ratePct}%/mo.</div>
       )}
+      </>)}
     </div>
   )
 }
@@ -1042,13 +1057,12 @@ function ReorderPanel() {
   }, [hasImport])
   if (!owned) return null
   const points = pointsRaw || {}
-  const active = Object.values(points).some(v => v > 0)
+  const nActive = Object.values(points).filter(v => v > 0).length
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
-      <div className="market-head">🧮 Reorder points <span className="muted">
-        — the Purchasing Agent restocks every set to these minimums overnight: cheapest unlocked
-        distributor first at your rapport price, counting stock on hand, at shows, and 🚢 in transit.
-        {active ? '' : ' Set a minimum to put them to work.'}</span></div>
+    <Collapse id="reorder" className="market-panel" headClass="market-head" style={{ marginTop: 12 }}
+      head="🧮 Reorder points" defaultOpen={bigScreen()}
+      badge={nActive > 0 ? `${nActive} active` : 'off'}
+      hint="— the Purchasing Agent restocks every set to these minimums overnight: cheapest unlocked distributor first at your rapport price, counting stock on hand, at shows, and 🚢 in transit.">
       <div className="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
         {types.map(([type, info]) => {
           const q = points[type] || 0
@@ -1064,7 +1078,7 @@ function ReorderPanel() {
           )
         })}
       </div>
-    </div>
+    </Collapse>
   )
 }
 

@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { SHOP_SETS, openPack, cardValue, fmtMoney, hitGemRate, marketMult, round2 } from '../game/engine'
 import { useGame } from '../game/store'
+import { useOpen, bigScreen } from '../ui/Collapse'
 
 // Buy-tab intel panels, each gated behind its upgrade (they render null unowned):
 //   📈 Hobby Wire (upgrades.hobbyWire) — demand: what walk-ins asked for and you couldn't
@@ -9,15 +10,8 @@ import { useGame } from '../game/store'
 //      the REAL openPack/cardValue path (same definition as `npm run sim`'s RIP EV gate),
 //      so the numbers ride the living market and match the economy the sim enforces.
 
-// Sticky open/closed per panel (same localStorage idiom as StoreStock's collapse state —
-// UI preference, never part of the save).
-function useOpen(key, dflt) {
-  const [open, setOpen] = useState(() => {
-    try { const v = localStorage.getItem(key); return v == null ? dflt : v === '1' } catch { return dflt }
-  })
-  const toggle = () => setOpen(o => { try { localStorage.setItem(key, o ? '0' : '1') } catch { /* private mode */ }; return !o })
-  return [open, toggle]
-}
+// Sticky open/closed state now shared from ui/Collapse (default: open on desktop only —
+// on a phone these panels stack in front of the actual shop shelves).
 
 const trendPct = (mult, hist) => (hist && hist.length > 1 ? mult / hist[0] - 1 : 0)
 const TrendTag = ({ pct }) => Math.abs(pct) < 0.005 ? <span className="muted">→</span>
@@ -29,7 +23,7 @@ export function HobbyWire() {
   const demandLog = useGame(s => s.demandLog)
   const marketMults = useGame(s => s.marketMults)
   const marketHistory = useGame(s => s.marketHistory)
-  const [open, toggle] = useOpen('pv-wire-open', true)
+  const [open, toggle] = useOpen('pv-wire-open', bigScreen())
   if (!owned) return null
 
   // Tally the fortnight's missed walk-in asks by item — the same aggregation as the Store
@@ -92,7 +86,7 @@ export function BreakersAlmanac() {
   const currentDay = useGame(s => s.currentDay)
   const marketMults = useGame(s => s.marketMults)
   const marketHistory = useGame(s => s.marketHistory)
-  const [open, toggle] = useOpen('pv-almanac-open', true)
+  const [open, toggle] = useOpen('pv-almanac-open', bigScreen())
 
   // Monte-Carlo pack EV per shop set through the real openPack/cardValue path — the same
   // number the sim's RIP-EV gate computes, at a UI-friendly N. Recomputed once per game-day
