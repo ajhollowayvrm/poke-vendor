@@ -85,6 +85,14 @@ export function vintageProduct(set) {
   return (set.products || []).find(p => p.vintage) || setProducts(set)[0]
 }
 
+// --- Storefront branding -----------------------------------------------------
+// A store's identity is { name, tagline, icon, accent } (see initialState). These read it
+// with graceful fallbacks so an un-customized (or old-save) store still reads as "Your Store 🏬".
+export function shopName(store) { return (store?.name || '').trim() || 'Your Store' }
+export function shopIcon(store) { return (store?.icon || '').trim() || '🏬' }
+export function shopTagline(store) { return (store?.tagline || '').trim() }
+export function shopAccent(store) { return (store?.accent || '').trim() }
+
 // Rarity tiers ordered low → high, used for sorting/coloring and "hit" detection.
 export const RARITY_ORDER = [
   'Common', 'Uncommon', 'Rare', 'Rare Holo', 'Double Rare',

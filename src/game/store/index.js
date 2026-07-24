@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 54,
+  version: 55,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -522,6 +522,11 @@ export const useGame = create(persist((set, get) => ({
     if (version < 54) {
       // 🧮 Purchasing Agent's reorder points — no minimums set on an old save.
       state.reorderPoints = state.reorderPoints ?? {}
+    }
+    if (version < 55) {
+      // 🏬 Brick-and-mortar branding (name/tagline/icon/accent). New; start from the default
+      // identity so an existing store reads as "Your Store 🏬" until the owner customizes it.
+      state.store = { name: '', tagline: '', icon: '🏬', accent: '', ...(state.store || {}) }
     }
     return state
   },

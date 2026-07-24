@@ -297,6 +297,19 @@ export function createEconomySlice(set, get) {
       if (e) get().log('fire', `Let go of a ${e.title}.`, 0)
     },
 
+    // 🏬 Store branding: update any of { name, tagline, icon, accent }. Name/tagline are
+    // trimmed and length-capped so a stray paste can't break layouts; a patch only touches
+    // the keys it carries. Cosmetic only — never gates anything.
+    setStoreIdentity(patch) {
+      if (!patch || typeof patch !== 'object') return
+      const clean = {}
+      if ('name' in patch) clean.name = String(patch.name).slice(0, 40)
+      if ('tagline' in patch) clean.tagline = String(patch.tagline).slice(0, 60)
+      if ('icon' in patch) clean.icon = String(patch.icon).slice(0, 8)
+      if ('accent' in patch) clean.accent = String(patch.accent).slice(0, 24)
+      set(st => ({ store: { ...(st.store || {}), ...clean } }))
+    },
+
     // --- Advancing time ---
     // Pass a single day at home — generate that day's home orders into the inbox.
     // Flushes accumulated card income into the rolling window for the full-time readout.

@@ -49,6 +49,11 @@ export function initialState() {
     giveawaysToday: 0,      // giveaways done today — each successive one pays less rep (anti-farm). Reset daily.
 
     notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
+    // 🏬 Brick-and-mortar branding: the store's identity, set once you've opened a storefront.
+    // name/tagline default empty (UI falls back to "Your Store"); icon is your shop's emoji; a
+    // blank accent means "use the app's default accent". Surfaces on the Store panel, the
+    // walk-in customer feed, and your show-booth table sign.
+    store: { name: '', tagline: '', icon: '🏬', accent: '' },
     upgrades: {},            // { signage:true, ... }
     showSeed: 7,             // seed for the current month's calendar
     currentDay: 1,           // calendar day; attending a show advances this
