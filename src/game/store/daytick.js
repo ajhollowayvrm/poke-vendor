@@ -21,7 +21,7 @@ import {
   setMarketMults, distributorById, restockRate, distributorUnlocked,
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice, breakOptions, setProducts,
-  gradePrediction, psaValueAt, gradingFee,
+  gradePrediction, psaValueAt, gradingFee, distributorCatalog, stockState,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance } from '../mysterypacks'
@@ -1442,6 +1442,62 @@ export function advanceDaysWith(set, get, days, away) {
         }
       }
     }
+  }
+  // 🧮 Purchasing Agent: min/max reordering. For every product TYPE with a reorder point,
+  // every buyable set (the shop list, plus the 🎌 import shelf once licensed — its catalog
+  // comes from the same distributor loop) gets topped back up to the minimum overnight.
+  // "Have" counts stock anywhere it's still yours: sealed on hand (floor/storeroom/personal),
+  // out at a show, and on the water — so an import order in transit never double-buys.
+  // Buys cheapest-first at rapport pricing through the REAL buy path (stock clamps, rapport,
+  // LGS credit, 🚢 lead times all apply), CASH only (never the credit line), and always
+  // leaves a float in the till: $500 plus ~2 days of rent/lease/payroll.
+  if (s.upgrades.purchasingAgent && Object.values(get().reorderPoints || {}).some(v => v > 0)) {
+    const points = get().reorderPoints
+    const week = Math.floor(newAbsDay / 7) // same week index the Buy tab shops with
+    const have = new Map()
+    const addHave = (setId, type, n = 1) => { if (!setId || !type) return; const k = `${setId}|${type}`; have.set(k, (have.get(k) || 0) + n) }
+    for (const it of (get().sealedInventory || [])) addHave(it.setId, it.product?.type)
+    for (const it of (get().showSealed || [])) addHave(it.setId, it.product?.type)
+    for (const sh of (get().imports || [])) addHave(sh.setId, sh.type, (sh.rows || []).length)
+    // Who sells which set right now (rotating LGS shelf, PC exclusives, the JP catalog)?
+    const sellers = new Map() // setId -> [{ dv, level, set }]
+    for (const dv of DISTRIBUTORS) {
+      if (!distributorUnlocked(dv, noto, s.upgrades)) continue
+      const level = rapportLevel((get().distributors[dv.id]?.spend) || 0).level
+      for (const st of distributorCatalog(dv, SHOP_SETS, week)) {
+        if (!sellers.has(st.id)) sellers.set(st.id, [])
+        sellers.get(st.id).push({ dv, level, set: st })
+      }
+    }
+    const reserve = 500 + 2 * (rentPerDay(s.monthsElapsed)
+      + (hasStore ? STORE_LEASE_PER_DAY + empList.reduce((a, e) => a + e.wage, 0) : 0))
+    let agentBought = 0, agentSpent = 0, tillDry = false
+    for (const [setId, offers] of sellers) {
+      if (tillDry) break
+      const st = offers[0].set
+      for (const p of setProducts(st)) {
+        const min = points[p.type] || 0
+        let need = min - (have.get(`${setId}|${p.type}`) || 0)
+        if (need <= 0) continue
+        // cheapest in-stock seller first; fall through to the next if a buy comes up short
+        const opts = offers
+          .map(x => ({ ...x, price: distributorPrice(x.dv, p.price, x.level),
+            avail: !stockState(x.dv, (get().distributors[x.dv.id]?.stock) || {}, st, p, x.level).out }))
+          .filter(x => x.avail && x.price > 0)
+          .sort((a, b) => a.price - b.price)
+        for (const o of opts) {
+          if (need <= 0) break
+          const spendable = get().cash - reserve
+          if (spendable < o.price) { tillDry = true; break }
+          const q = Math.min(need, Math.floor(spendable / o.price))
+          const r = get().buyFromDistributorBulk(o.dv.id, st, p, o.price, q)
+          if (r) { need -= r.bought; agentBought += r.bought; agentSpent = round2(agentSpent + r.spent) }
+        }
+        if (tillDry) break
+      }
+    }
+    if (agentBought > 0) get().log('buy', `🧮 Purchasing Agent topped stock up to your reorder points — ${agentBought} unit${agentBought > 1 ? 's' : ''}, $${agentSpent.toFixed(2)}${tillDry ? ' (stopped at the till float — more to buy tomorrow)' : ''}`, 0)
+    else if (tillDry) get().log('buy', `🧮 Purchasing Agent held off — restocking to your reorder points would dip below the till float.`, 0)
   }
   // 🎰 High-Capacity Vend Unit + 🪓 Bin Keeper: the keeper also feeds the machine overnight —
   // storeroom loose packs (never vintage, never 🔒 kept or held) top the hopper back up to a

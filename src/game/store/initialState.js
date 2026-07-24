@@ -108,6 +108,7 @@ export function initialState() {
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
     distributors: {},        // { [distId]: { spend, stock:{ 'setId|type': {q,cap} } } } — per-distributor rapport ($ spent) + finite stock that restocks over days
     standingOrder: null,     // 📋 { distId, setId, type, qty, lastDay } — one product on weekly auto-ship from a distributor (Standing Order upgrade)
+    reorderPoints: {},       // 🧮 { [productType]: minQty } — Purchasing Agent keeps every buyable set at these minimums (nightly top-up in the day tick)
     imports: [],             // 🚢 shipments on the water from an import channel (Japan Direct): { id, distId, setId, type, icon, qty, unit, arrivesDay, orderedDay, rows:[sealed rows] } — rows land in sealedInventory on arrivesDay (day tick)
     // 📰 The active (or just-finished, cooling-down) reprint wave: hot sets restock in
     // announced waves — preorder window (allocCap via rapport, locals pay deposits), then

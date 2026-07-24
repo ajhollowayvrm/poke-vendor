@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
-  VINTAGE_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
+  VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
 import { Modal } from './ui/Modal'
 import { useGame } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
@@ -881,6 +881,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       <HobbyWire />
       <BreakersAlmanac />
 
+      {/* 🧮 Purchasing Agent's reorder-points ledger (self-gates on the upgrade) */}
+      <ReorderPanel />
+
       {!unlocked ? (
         <LockedDistributor dist={dist} notoriety={notoriety} />
       ) : (<>
@@ -1014,6 +1017,53 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
       ) : (
         <div className="muted credit-note">Buy sealed on credit and pay it off monthly — your line grows with your net worth. Carry a balance and it accrues ~{ratePct}%/mo.</div>
       )}
+    </div>
+  )
+}
+
+// 🧮 The Purchasing Agent's reorder-points ledger: one stepper per product TYPE across the
+// buyable shop list (incl. the 🎌 import shelf once licensed). The agent tops every set that
+// carries the type up to the minimum overnight — see the day tick for the buying rules.
+function ReorderPanel() {
+  const owned = useGame(s => !!s.upgrades.purchasingAgent)
+  const pointsRaw = useGame(s => s.reorderPoints)
+  const setReorderPoint = useGame(s => s.setReorderPoint)
+  const hasImport = useGame(s => !!s.upgrades.importLicense)
+  const types = useMemo(() => {
+    const m = new Map() // type -> { icon, sets }
+    for (const st of [...SHOP_SETS, ...(hasImport ? JP_SHOP_SETS : [])]) {
+      for (const p of setProducts(st)) {
+        const cur = m.get(p.type) || { icon: p.icon || '📦', sets: 0 }
+        cur.sets++
+        m.set(p.type, cur)
+      }
+    }
+    return [...m.entries()].sort((a, b) => b[1].sets - a[1].sets)
+  }, [hasImport])
+  if (!owned) return null
+  const points = pointsRaw || {}
+  const active = Object.values(points).some(v => v > 0)
+  return (
+    <div className="market-panel" style={{ marginTop: 12 }}>
+      <div className="market-head">🧮 Reorder points <span className="muted">
+        — the Purchasing Agent restocks every set to these minimums overnight: cheapest unlocked
+        distributor first at your rapport price, counting stock on hand, at shows, and 🚢 in transit.
+        {active ? '' : ' Set a minimum to put them to work.'}</span></div>
+      <div className="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+        {types.map(([type, info]) => {
+          const q = points[type] || 0
+          return (
+            <span key={type} className="pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, opacity: q > 0 ? 1 : 0.65 }}>
+              {info.icon} {type} <small className="muted">· {info.sets} set{info.sets > 1 ? 's' : ''}</small>
+              <button className="btn alt" style={{ flex: 'none', padding: '0 8px' }} disabled={q <= 0}
+                onClick={() => setReorderPoint(type, q - 1)} aria-label={`Lower ${type} minimum`}>−</button>
+              <b style={{ minWidth: 14, textAlign: 'center' }}>{q}</b>
+              <button className="btn alt" style={{ flex: 'none', padding: '0 8px' }} disabled={q >= 9}
+                onClick={() => setReorderPoint(type, q + 1)} aria-label={`Raise ${type} minimum`}>+</button>
+            </span>
+          )
+        })}
+      </div>
     </div>
   )
 }

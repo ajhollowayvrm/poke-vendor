@@ -41,6 +41,21 @@ export function createSourcingSlice(set, get) {
       if (amount > 0) set(s => ({ cash: round2(s.cash - amount), lgsCredit: round2((s.lgsCredit || 0) + amount) }))
     },
 
+    // 🧮 Purchasing Agent (upgrade): set the reorder point for one product TYPE (0 clears it).
+    // The nightly restock itself runs in the day tick — every shop set gets topped up to the
+    // minimum from the cheapest unlocked distributor with stock.
+    setReorderPoint(type, qty) {
+      const q = Math.max(0, Math.min(9, Math.floor(Number(qty) || 0)))
+      set(s => {
+        const points = { ...(s.reorderPoints || {}) }
+        if (q > 0) points[type] = q
+        else delete points[type]
+        return { reorderPoints: points }
+      })
+      if (q > 0) get().log('buy', `🧮 Reorder point set — keep at least ${q}× ${type} of every set in stock`, 0)
+      else get().log('buy', `🧮 Reorder point cleared for ${type}`, 0)
+    },
+
     // 📋 Standing order (upgrade): one product on weekly auto-ship. Pass null to cancel.
     // The delivery itself runs in the day tick (buyFromDistributorBulk at rapport price).
     setStandingOrder(order) {

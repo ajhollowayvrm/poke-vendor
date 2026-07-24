@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 53,
+  version: 54,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -518,6 +518,10 @@ export const useGame = create(persist((set, get) => ({
     if (version < 53) {
       // 🎪 Events Coordinator's standing weekly night — no recurring event chosen on an old save.
       state.weeklyEvent = state.weeklyEvent ?? null
+    }
+    if (version < 54) {
+      // 🧮 Purchasing Agent's reorder points — no minimums set on an old save.
+      state.reorderPoints = state.reorderPoints ?? {}
     }
     return state
   },
