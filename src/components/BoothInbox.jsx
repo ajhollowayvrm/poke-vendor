@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES } from '../game/store'
-import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg } from '../game/engine'
+import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
 import SealedDealModal from './SealedDealModal'
@@ -42,6 +42,7 @@ export default function BoothInbox({ onRip, onPick }) {
   const shopDisplay = useGame(s => s.shopDisplay) // legacy bucket — read only for inbox validation
   const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const sealedInventory = useGame(s => s.sealedInventory)
+  const store = useGame(s => s.store)
   const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0)) // 🏛️ vault doubles the case
   // In-store services: holds for regulars, the consignment case, giveaways.
   const regulars = useGame(s => s.regulars)
@@ -581,7 +582,7 @@ export default function BoothInbox({ onRip, onPick }) {
           // message you about cards you've actually listed (or, with a store, stock on your floor).
           ? <>🤫 Your shop's quiet — <b>nothing's up for sale</b>. Buyers only reach out about cards you've <b>listed online</b>{hasStore ? <> or have <b>in stock at the store</b></> : ''}. Put something out and orders start arriving (notoriety <b>{Math.round(notoriety)}</b>).</>
           : hasStore
-          ? <>🏬 You run a brick-and-mortar shop <b>and</b> sell online. Your whole stock is on the floor for walk-ins (🔒 keep anything that isn't); online orders come on what you've listed. Scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
+          ? <>{shopIcon(store)} <b>{shopName(store)}</b> is open — your brick-and-mortar shop <b>and</b> online counter. Your whole stock is on the floor for walk-ins (🔒 keep anything that isn't); online orders come on what you've listed. Scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
           : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders on what you've <b>listed</b> (notoriety <b>{Math.round(notoriety)}</b>). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
       </div>
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, fameMult, fameBeyond, isCardDeal } from '../game/engine'
+import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -59,6 +59,8 @@ export default function ShowFloor({ show, onLeave }) {
     onLeave(floor)
   }
   const showInventory = useGame(s => s.showInventory)
+  const showSealed = useGame(s => s.showSealed)   // sealed product you brought to your booth
+  const store = useGame(s => s.store)             // shop branding for the table sign
   const showVendors = useGame(s => s.showVendors) // recurring roster (stable identities)
   const vendorSpend = useGame(s => s.vendorSpend)
   const collection = useGame(s => s.collection)
@@ -290,9 +292,9 @@ export default function ShowFloor({ show, onLeave }) {
         {show._asVendor ? (
           <>
             <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
-              title="The cards you brought to sell at your booth"
+              title="The cards and sealed product you brought to sell at your booth"
               onClick={() => setShowTable(true)}>
-              🪧 Your table ({showInventory.length})
+              {shopIcon(store)} {shopName(store)} ({showInventory.length + (showSealed?.length || 0)})
             </button>
             <button className="btn gold" style={{ flex: 'none', maxWidth: 150, padding: '6px 12px' }}
               title="Step back to your own booth and see who's browsing"
@@ -488,7 +490,9 @@ export default function ShowFloor({ show, onLeave }) {
           <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
             <button className="modal-close" aria-label="Close" onClick={() => setShowTable(false)}>✕</button>
             <div className="row" style={{ alignItems: 'baseline' }}>
-              <h2 style={{ marginRight: 'auto' }}>🪧 Your table</h2>
+              <h2 style={{ marginRight: 'auto' }}>
+                <span style={shopAccent(store) ? { color: shopAccent(store) } : undefined}>{shopIcon(store)} {shopName(store)}</span>
+              </h2>
               {(() => {
                 const packsOut = useGame.getState().packsForChannel ? useGame.getState().packsForChannel('show').length : 0
                 return packsOut > 0 && (
@@ -498,12 +502,18 @@ export default function ShowFloor({ show, onLeave }) {
                   </span>
                 )
               })()}
+              {(showSealed?.length || 0) > 0 && (
+                <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 14%, transparent)', color: 'var(--gold)' }}>
+                  📦 {showSealed.length} sealed · {fmtMoney(showSealed.reduce((a, it) => a + sealedValue(it), 0))}
+                </span>
+              )}
               <span className="pill">{showInventory.length} card{showInventory.length === 1 ? '' : 's'} · {fmtMoney(showInventory.reduce((a, c) => a + cardValue(c), 0))}</span>
             </div>
+            {store?.tagline?.trim() && <p className="muted" style={{ margin: '2px 0 0', fontStyle: 'italic' }}>“{store.tagline.trim()}”</p>}
             <p className="muted" style={{ marginTop: 2 }}>
-              Shoppers who walk up to your booth buy from these. <b>Work your table</b> to pull more foot
-              traffic: feature your best pieces in the <b>⭐ showcase</b> (up to 3) and flag one
-              <b> 🏷️ Deal of the Show</b> as a crowd-drawing loss-leader.
+              Shoppers who walk up to your booth buy from these — cards <b>and any sealed product you brought</b>.
+              <b> Work your table</b> to pull more foot traffic: feature your best pieces in the <b>⭐ showcase</b> (up to 3)
+              and flag one <b> 🏷️ Deal of the Show</b> as a crowd-drawing loss-leader.
             </p>
             {show._asVendor && (
               <div className="banner" style={{ marginTop: 6 }}>
@@ -513,25 +523,51 @@ export default function ShowFloor({ show, onLeave }) {
                 {' — '}<span style={{ color: 'var(--green)' }}>traffic ×{( (show._boothMult||1) * (1 + Math.min(0.45, showInventory.filter(c=>c._showcase).length*0.15)) * (showInventory.some(c=>c._deal)?1.25:1) ).toFixed(2)}</span>
               </div>
             )}
-            {showInventory.length === 0 ? (
-              <div className="empty">Nothing on your table yet — buy from a vendor and list it here, or sell from your collection to other vendors.</div>
+            {showInventory.length === 0 && (showSealed?.length || 0) === 0 ? (
+              <div className="empty">Nothing on your table yet — buy from a vendor and list it here, or sell from your collection to other vendors. You can also pack cards and sealed from home before a show.</div>
             ) : (
-              <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(132px,1fr))', marginTop: 6 }}>
-                {[...showInventory].sort((a, b) => (b._showcase?1:0)-(a._showcase?1:0) || cardValue(b) - cardValue(a)).map(c => (
-                  <div key={c.uid} className={`vendoritem ${c._showcase ? 'featured' : ''}`}>
-                    <CardTile card={c} interactive={false} />
-                    <div className="muted" style={{ fontSize: 11 }}>{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
-                    <div className="row" style={{ gap: 5 }}>
-                      <button className={`btn ${c._showcase ? 'gold' : 'alt'}`} style={{ fontSize: 11, padding: '5px 6px' }}
-                        onClick={() => useGame.getState().toggleShowcase(c.uid)}
-                        title="Feature this piece in your showcase to pull more traffic">{c._showcase ? '★ Featured' : '☆ Showcase'}</button>
-                      <button className={`btn ${c._deal ? 'gold' : 'alt'}`} style={{ flex:'none', fontSize: 11, padding: '5px 6px' }}
-                        onClick={() => useGame.getState().setDealOfShow(c._deal ? null : c.uid)}
-                        title="Flag as the Deal of the Show — a loss-leader that draws a crowd">🏷️</button>
-                    </div>
+              <>
+                {showInventory.length > 0 && (
+                  <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(132px,1fr))', marginTop: 6 }}>
+                    {[...showInventory].sort((a, b) => (b._showcase?1:0)-(a._showcase?1:0) || cardValue(b) - cardValue(a)).map(c => (
+                      <div key={c.uid} className={`vendoritem ${c._showcase ? 'featured' : ''}`}>
+                        <CardTile card={c} interactive={false} />
+                        <div className="muted" style={{ fontSize: 11 }}>{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
+                        <div className="row" style={{ gap: 5 }}>
+                          <button className={`btn ${c._showcase ? 'gold' : 'alt'}`} style={{ fontSize: 11, padding: '5px 6px' }}
+                            onClick={() => useGame.getState().toggleShowcase(c.uid)}
+                            title="Feature this piece in your showcase to pull more traffic">{c._showcase ? '★ Featured' : '☆ Showcase'}</button>
+                          <button className={`btn ${c._deal ? 'gold' : 'alt'}`} style={{ flex:'none', fontSize: 11, padding: '5px 6px' }}
+                            onClick={() => useGame.getState().setDealOfShow(c._deal ? null : c.uid)}
+                            title="Flag as the Deal of the Show — a loss-leader that draws a crowd">🏷️</button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+                {(showSealed?.length || 0) > 0 && (
+                  <>
+                    <div className="muted" style={{ fontSize: 12, fontWeight: 700, margin: '14px 2px 4px' }}>📦 Sealed on your table</div>
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', marginTop: 2 }}>
+                      {[...showSealed].sort((a, b) => sealedValue(b) - sealedValue(a)).map(it => {
+                        const set = setById(it.setId)
+                        return (
+                          <div key={it.uid} className="product sealed-item">
+                            <div className="sealed-head">
+                              {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <b className="sealed-name">{it.product.icon || '📦'} {it.product.type}</b>
+                                <div className="muted" style={{ fontSize: 12 }}>{set?.name}{it.vintage ? ' · 🏛️ vintage' : ''} · {it.product.packs} pk</div>
+                              </div>
+                            </div>
+                            <div className="sealed-value"><span className="sealed-now">{fmtMoney(sealedValue(it))}</span></div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
+              </>
             )}
             <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={() => setShowTable(false)}>Close</button>
           </div>

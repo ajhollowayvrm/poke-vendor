@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
-import { cardValue, sealedValue, fmtMoney, round2, SETS } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, round2, SETS, shopName, shopIcon } from '../game/engine'
 import { MILESTONES, MILESTONE_GROUPS, milestoneProgress } from '../game/milestones'
 import { confirmDialog } from '../ui/dialog'
 
@@ -374,7 +375,9 @@ function StorePanel() {
   const counts = employees.reduce((m, id) => (m[id] = (m[id] || 0) + 1, m), {})
   return (
     <div className="store-panel">
-      <div className="store-head">🏬 Your Store <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>
+      <StoreBranding />
+      <div className="store-head">
+        <StoreSign /> <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>
         — lease ${STORE_LEASE_PER_DAY}/day{payroll ? ` + payroll $${payroll}/day` : ''}</span></div>
       {storeArrears > 0 && (
         <div className="finance-warn">⚠️ Behind on store overhead ({storeArrears}/{STORE_GRACE_DAYS} days). Cover it or you'll lose the shop.</div>
@@ -394,6 +397,76 @@ function StorePanel() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+// A shop's palette + emoji set for branding. Cosmetic only — chosen from a curated list so
+// the sign always reads well against the panel.
+const SHOP_ICONS = ['🏬', '🏪', '🎴', '🃏', '💎', '🔥', '⭐', '👑', '🎯', '🐉', '⚡', '🧧']
+const SHOP_ACCENTS = ['#e5484d', '#f5a524', '#ffcb05', '#30a46c', '#3e63dd', '#8e4ec6', '#e93d82', '#00b8d9']
+
+// The store's marquee — icon + name (+ tagline). Falls back to the generic "Your Store" until
+// the owner names the place (shopName/shopIcon live in engine.js, shared across components).
+function StoreSign() {
+  const store = useGame(s => s.store)
+  const accent = (store?.accent || '').trim()
+  return (
+    <>
+      <span style={{ fontSize: 18 }}>{shopIcon(store)}</span>{' '}
+      <b style={accent ? { color: accent } : undefined}>{shopName(store)}</b>
+      {store?.tagline?.trim() ? <span className="muted" style={{ fontSize: 12, fontWeight: 600, fontStyle: 'italic' }}> — “{store.tagline.trim()}”</span> : null}
+    </>
+  )
+}
+
+// Editor: name the shop, give it a motto, pick an icon + accent color. All cosmetic; surfaces
+// on this panel, the walk-in customer feed, and your show-booth table sign.
+function StoreBranding() {
+  const store = useGame(s => s.store) || {}
+  const setStoreIdentity = useGame(s => s.setStoreIdentity)
+  const [open, setOpen] = useState(false)
+  const accent = (store.accent || '').trim()
+  return (
+    <div className="store-branding">
+      <button className="store-branding-toggle" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        🎨 Storefront branding <span className="muted" style={{ fontWeight: 600 }}>{open ? '▾' : '▸'}</span>
+      </button>
+      {open && (
+        <div className="store-branding-body">
+          <label className="store-branding-field">
+            <span>Shop name</span>
+            <input type="text" value={store.name || ''} maxLength={40} placeholder="Your Store"
+              onChange={e => setStoreIdentity({ name: e.target.value })} />
+          </label>
+          <label className="store-branding-field">
+            <span>Tagline</span>
+            <input type="text" value={store.tagline || ''} maxLength={60} placeholder="Gotta sell ’em all"
+              onChange={e => setStoreIdentity({ tagline: e.target.value })} />
+          </label>
+          <div className="store-branding-field">
+            <span>Shop icon</span>
+            <div className="store-branding-swatches">
+              {SHOP_ICONS.map(ic => (
+                <button key={ic} className={`store-icon-chip ${shopIcon(store) === ic ? 'active' : ''}`}
+                  onClick={() => setStoreIdentity({ icon: ic })} title="Set shop icon">{ic}</button>
+              ))}
+            </div>
+          </div>
+          <div className="store-branding-field">
+            <span>Accent</span>
+            <div className="store-branding-swatches">
+              <button className={`store-accent-chip ${!accent ? 'active' : ''}`} onClick={() => setStoreIdentity({ accent: '' })}
+                title="Default accent" style={{ fontSize: 10 }}>Default</button>
+              {SHOP_ACCENTS.map(col => (
+                <button key={col} className={`store-accent-chip ${accent === col ? 'active' : ''}`}
+                  onClick={() => setStoreIdentity({ accent: col })} title={col}
+                  style={{ background: col }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
