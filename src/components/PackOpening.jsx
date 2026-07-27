@@ -286,7 +286,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           </p>
           {promo && (
             <p className="muted" style={{ fontSize: 13 }}>
-              🎁 Bonus promo: <b style={{ color: rarityColor(promo.rarity) }}>{promo.name}</b> · {fmtMoney(cardValue(promo))}
+              {promo._stamp === 'pc' ? '🏬 Pokémon Center stamped promo' : '🎁 Bonus promo'}: <b style={{ color: rarityColor(promo.rarity) }}>{promo.name}</b> · {fmtMoney(cardValue(promo))}
             </p>
           )}
           <div className="rip-summary-hits">
