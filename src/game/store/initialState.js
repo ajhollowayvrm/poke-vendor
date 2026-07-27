@@ -99,6 +99,7 @@ export function initialState() {
     packTiers: defaultPackTiers(), // your mystery-pack PRODUCT LINES: {id,name,icon,price,bandLo,bandHi,channels:{show,store,online,stream}} — price + advertised band are yours to set
     builtPacks: [],          // assembled mystery packs: {uid, tierId, cards:[...], sealed:[...], builtDay} — contents moved OUT of collection/inventory; sold sight-unseen at the tier price
     packRep: 50,             // 0..100 repack reputation (50 = unproven) — moved by what buyers find inside; drives pack demand
+    packStreak: 0,           // 🔥 word-of-mouth hype streak: +1/happy, +2/jackpot, snaps to 0 on a burned buyer; a temporary demand tailwind (packSaleChance)
     packStats: { built: 0, sold: 0, revenue: 0, delighted: 0, burned: 0 }, // lifetime mystery-pack tallies
     // 🎰 The Pack Machine: a vending fixture you STOCK with real individual booster packs and
     // set ONE flat price for. Walk-ins pay that price for a RANDOM pack out of it — a sealed-pack

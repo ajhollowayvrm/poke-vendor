@@ -156,7 +156,11 @@ export function createPacksSlice(set, get) {
       if (payMethod) net = processingFee(net, payMethod).net
       const value = packValue(pack)
       const who = buyer || packBuyerName(channel)
-      const out = packOutcome(value, gross, tier.bandLo, cap(who))
+      // 📋 A published board changes how the opening lands: honest thin packs are forgiven,
+      // but a pack that breaks a posted floor burns hotter. Certified boards cushion further.
+      const published = !!tier.published
+      const certified = !!get().upgrades.certOdds
+      const out = packOutcome(value, gross, tier.bandLo, cap(who), { published, certified })
       // On stream the whole room saw it — reputation and fame swing harder both ways.
       const swing = channel === 'stream' ? 1.5 : 1
       // ✨ Custom Wrap Press: pro presentation buys forgiveness — a thin pack stings less
@@ -165,9 +169,17 @@ export function createPacksSlice(set, get) {
       let repDelta = Math.round(out.repDelta * swing)
       if (repDelta < 0 && get().upgrades.wrapPress) repDelta = Math.round(repDelta * 0.6)
       const notoDelta = Math.round(out.notoDelta * swing)
+      // 🔥 Word-of-mouth streak: happy openings build a demand tailwind (jackpots build it
+      // fastest); a single burned buyer snaps it back to zero. Feeds packSaleChance's hype mult.
+      const curStreak = get().packStreak || 0
+      const nextStreak = out.key === 'jackpot' ? Math.min(12, curStreak + 2)
+        : out.key === 'happy' ? Math.min(12, curStreak + 1)
+        : out.key === 'ripoff' ? 0
+        : curStreak
       set(s => ({
         builtPacks: s.builtPacks.filter(p => p.uid !== uid),
         packRep: Math.max(0, Math.min(100, round2((s.packRep ?? 50) + repDelta))),
+        packStreak: nextStreak,
         packStats: {
           ...s.packStats,
           sold: (s.packStats?.sold || 0) + 1,
@@ -197,7 +209,7 @@ export function createPacksSlice(set, get) {
 }
 
 // Clamp/normalize a tier's fields; null if it can't be a real product.
-function sanitizeTier({ name, icon, price, bandLo, bandHi, channels, only, minGrade }) {
+function sanitizeTier({ name, icon, price, bandLo, bandHi, channels, only, minGrade, published }) {
   const p = round2(Math.max(1, Math.min(2000, +price || 0)))
   if (!(p > 0)) return null
   let lo = round2(Math.max(0.25, +bandLo || 1))
@@ -210,6 +222,8 @@ function sanitizeTier({ name, icon, price, bandLo, bandHi, channels, only, minGr
     icon: String(icon || '❓').slice(0, 4),
     price: p, bandLo: lo, bandHi: hi,
     only: o,
+    // 📋 Whether the odds board for this line is public (see packOutcome/packSaleChance).
+    published: !!published,
     // Only a slab line can carry a grade floor; clamp to a real PSA grade.
     minGrade: o === 'slab' ? Math.max(0, Math.min(10, Math.floor(+minGrade || 0))) : 0,
     channels: {

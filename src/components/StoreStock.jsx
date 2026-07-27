@@ -68,7 +68,7 @@ function lineCutSummary(items, precise) {
   }
 }
 
-export default function StoreStock({ place, onRip, onPick, onHold, only, split }) {
+export default function StoreStock({ place, onRip, onSift, onPick, onHold, only, split }) {
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
   useGame(s => s.marketMults) // re-render on market drift so values stay live
@@ -286,6 +286,14 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
     flash(capped ? `${verb} ${moved} — ${capped} didn't fit the floor (per-line cap).` : `${verb} ${moved} item${moved === 1 ? '' : 's'}.`)
     exitSelect()
   }
+  // ⚡ Hand the selected sealed to the auto-ripper (churns pack by pack, stops on big hits).
+  function bulkSift() {
+    if (!onSift || !sel.sealedUids.length) return
+    const ids = new Set(sel.sealedUids)
+    const items = (sealedInventory || []).filter(it => ids.has(it.uid))
+    if (items.length) onSift(items)
+    exitSelect()
+  }
   function bulkGrade() {
     if (!sel.rawCardUids.length || sel.sealedUids.length) return // mixed picks — the button is locked
     const n = sel.rawCardUids.length
@@ -440,6 +448,12 @@ export default function StoreStock({ place, onRip, onPick, onHold, only, split }
             )}
             {place !== 'personal' && (
               <button className="btn alt" onClick={() => bulkMove('personal', '🔒 Kept —')}>🔒 Keep (Personal)</button>
+            )}
+            {onSift && sel.sealedUids.length > 0 && (
+              <button className="btn gold" onClick={bulkSift}
+                title="Auto-rip these sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand">
+                ⚡ Sift-rip {sel.sealedUids.length}
+              </button>
             )}
             {sel.rawCardUids.length > 0 && (
               // Grading is a singles-only pipeline: with sealed in the same selection the

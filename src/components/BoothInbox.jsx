@@ -21,7 +21,7 @@ const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff
 // Your storefront. Orders accrue per game-DAY — pass a day (here or by attending
 // a show) to generate them. While you're away at a show, online orders need a
 // Smartphone and walk-ins need a Shop Assistant, or they're missed.
-export default function BoothInbox({ onRip, onPick }) {
+export default function BoothInbox({ onRip, onSift, onPick }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
   const upgrades = useGame(s => s.upgrades)
@@ -208,7 +208,7 @@ export default function BoothInbox({ onRip, onPick }) {
                   </div>
                 </div>
               )}
-              <StoreStock place="storeroom" split onRip={onRip} onPick={onPick}
+              <StoreStock place="storeroom" split onRip={onRip} onSift={onSift} onPick={onPick}
                 onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
             </>
           )
@@ -434,7 +434,7 @@ export default function BoothInbox({ onRip, onPick }) {
 
               {/* 🛒 Shop floor stock — singles and sealed on separate shelves, only this sells to
                   walk-ins & the counter */}
-              <StoreStock place="floor" split onRip={onRip} onPick={onPick}
+              <StoreStock place="floor" split onRip={onRip} onSift={onSift} onPick={onPick}
                 onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
               {omni.length > 0 && (
                 <div className="toolbar" style={{ marginTop: 8 }}>

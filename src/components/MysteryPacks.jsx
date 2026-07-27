@@ -13,6 +13,18 @@ const CHANNEL_DEFS = [
   { key: 'stream', icon: '🔴', label: 'Stream', hint: 'viewers order one live and you rip it on camera' },
 ]
 
+// The public "odds board" for a published line: aggregate every card + sealed item currently
+// sealed across its built stock, so the tier card can show buyers the pool (top pieces first).
+function lineBoard(stock) {
+  const items = []
+  for (const p of (stock || [])) {
+    for (const c of (p.cards || [])) items.push({ name: c.name, value: cardValue(c) })
+    for (const it of (p.sealed || [])) items.push({ name: it.product?.type || 'sealed', value: sealedValue(it) })
+  }
+  items.sort((a, b) => b.value - a.value)
+  return { count: items.length, top: items.slice(0, 3) }
+}
+
 // Your repack product line: define pack TIERS (name, price, the value band you ADVERTISE,
 // and which channels carry them), then seal exact cards/sealed product inside each pack.
 // Buyers pay sight-unseen; what they find moves your pack reputation — and your name.
@@ -20,12 +32,14 @@ export default function MysteryPacks() {
   const packTiers = useGame(s => s.packTiers)
   const builtPacks = useGame(s => s.builtPacks)
   const packRep = useGame(s => s.packRep ?? 50)
+  const packStreak = useGame(s => s.packStreak || 0) // 🔥 word-of-mouth demand tailwind
   const packStats = useGame(s => s.packStats)
   const notoriety = useGame(s => s.notoriety)
   const collection = useGame(s => s.collection)
   const sealedInventory = useGame(s => s.sealedInventory)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   const wrapPress = useGame(s => !!s.upgrades.wrapPress) // ✨ shown odds must match the real roll
+  const certified = useGame(s => !!s.upgrades.certOdds)  // 📋 audited boards pull harder
   const unbuildPack = useGame(s => s.unbuildPack)
 
   const [editing, setEditing] = useState(null)  // tier being edited, or 'new'
@@ -67,6 +81,12 @@ export default function MysteryPacks() {
           title={`Pack reputation ${Math.round(packRep)}/100 — moved by what buyers find vs what they paid. Drives how fast packs sell.`}>
           {rep.icon} {rep.label} · {Math.round(packRep)}/100
         </span>
+        {packStreak > 0 && (
+          <span className="pill" style={{ marginLeft: 8, background: '#ff6b0022', color: '#ff9f43' }}
+            title={`Word-of-mouth streak: a run of ${packStreak} happy openings is pulling extra buyers (about +${Math.round(Math.min(0.3, packStreak * 0.03) * 100)}% demand). One burned buyer snaps it back to zero.`}>
+            🔥 Packs trending · {packStreak}
+          </span>
+        )}
         {packStats?.sold ? <span className="muted"> · {packStats.sold} sold · {fmtMoney(packStats.revenue || 0)} lifetime{packStats.burned ? ` · ${packStats.burned} burned buyer${packStats.burned > 1 ? 's' : ''}` : ''}</span> : null}
       </div>
 
@@ -83,12 +103,20 @@ export default function MysteryPacks() {
             const stock = stockByTier[tier.id] || []
             const eligible = eligibleByTier[tier.id] || 0
             const chans = CHANNEL_DEFS.filter(c => tier.channels?.[c.key])
+            const board = lineBoard(stock)
+            const hasChase = !!tier.published && stock.some(p => tier.price && packValue(p) >= tier.price * 2)
+            const packOpts = { published: !!tier.published, certified, streak: packStreak, hasChase }
             // A rough "how fast would this move" read for the best enabled channel today.
             const bestChance = Math.max(0, ...chans.filter(c => c.key === 'online' || c.key === 'store')
-              .map(c => packSaleChance(tier.price, notoriety, packRep, c.key === 'online' ? 'online' : 'store', false, wrapPress)))
+              .map(c => packSaleChance(tier.price, notoriety, packRep, c.key === 'online' ? 'online' : 'store', false, wrapPress, packOpts)))
             return (
               <div key={tier.id} className="product">
-                <h3 style={{ fontSize: 15, margin: 0 }}>{tier.icon} {tier.name}</h3>
+                <h3 style={{ fontSize: 15, margin: 0 }}>
+                  {tier.icon} {tier.name}
+                  {tier.published && <span className="pill" style={{ marginLeft: 6, fontSize: 10.5, background: '#3e63dd22', color: '#8aa6ff' }}
+                    title={certified ? 'Odds board is public & certified — buyers trust it and bite more' : 'Odds board is public — draws gamblers; honest thin packs sting less'}>
+                    📋 {certified ? 'Certified' : 'Published'}</span>}
+                </h3>
                 <div className="meta" style={{ flex: 1 }}>
                   Sells at <b style={{ color: 'var(--green)' }}>{fmtMoney(tier.price)}</b> · advertised
                   {' '}<b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside
@@ -99,7 +127,14 @@ export default function MysteryPacks() {
                     ? <>On: {chans.map(c => <span key={c.key} title={c.hint}>{c.icon} </span>)}
                         {chans.some(c => c.key === 'store') && !hasStore && <span className="muted">(store needs a storefront)</span>}</>
                     : <span style={{ color: 'var(--red)' }}>No channels enabled — it can't sell</span>}
-                  {bestChance > 0 && stock.length > 0 && <><br /><span className="muted" style={{ fontSize: 11.5 }}>≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame</span></>}
+                  {bestChance > 0 && stock.length > 0 && <><br /><span className="muted" style={{ fontSize: 11.5 }}>≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame{tier.published ? ' (published)' : ''}</span></>}
+                  {/* 📋 The public odds board — what buyers see across this line's sealed stock. */}
+                  {tier.published && board.count > 0 && (
+                    <><br /><span className="muted" style={{ fontSize: 11.5 }} title="The pool buyers can see — the notable cards currently sealed across this line's packs">
+                      📋 Board: {board.count} card{board.count === 1 ? '' : 's'} across {stock.length} pack{stock.length === 1 ? '' : 's'}
+                      {board.top.length ? <> · top: {board.top.map(t => `${t.name} (${fmtMoney(t.value)})`).join(', ')}</> : null}
+                    </span></>
+                  )}
                 </div>
                 {/* 🪄 Auto-build: seal every loose card that fits this line into its own pack,
                     in one click. The count IS the pitch — "18 fit" tells you the work is there. */}
@@ -183,7 +218,9 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
   const [bandHi, setBandHi] = useState(tier?.bandHi ?? 75)
   const [only, setOnly] = useState(tier?.only || 'any')
   const [minGrade, setMinGrade] = useState(tier?.minGrade ?? 0)
+  const [published, setPublished] = useState(!!tier?.published)
   const [channels, setChannels] = useState({ show: true, store: true, online: true, stream: true, ...(tier?.channels || {}) })
+  const certified = useGame(s => !!s.upgrades.certOdds)
   const collection = useGame(s => s.collection)
   // Live preview: with these settings, how many loose cards would 🪄 Auto-build sweep up?
   // Shown while you're still typing the band, so you can dial it in before you commit.
@@ -193,7 +230,7 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
   }, [collection, bandLo, bandHi, only, minGrade])
 
   function save() {
-    const payload = { name, icon, price: +price, bandLo: +bandLo, bandHi: +bandHi, channels, only, minGrade: +minGrade }
+    const payload = { name, icon, price: +price, bandLo: +bandLo, bandHi: +bandHi, channels, only, minGrade: +minGrade, published }
     if (tier) { updatePackTier(tier.id, payload); flash(`${icon} ${name} updated.`) }
     else {
       const t = addPackTier(payload)
@@ -267,6 +304,23 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
                 </label>
               ))}
             </div>
+          </div>
+          {/* 📋 Publish the odds board — the headline transparency choice. */}
+          <div style={{ borderTop: '1px solid var(--line)', paddingTop: 10 }}>
+            <label className="tweet-toggle" style={{ fontSize: 13.5, fontWeight: 700 }}
+              title="Post the pull odds for this line publicly">
+              <input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} />
+              📋 Publish the odds board{certified && published ? ' — certified ✔' : ''}
+            </label>
+            <p className="muted" style={{ fontSize: 12, margin: '4px 0 0' }}>
+              Post the pull odds for buyers to see. Gamblers <b>bite more often</b>, and an honest thin
+              pack <b>barely dings your rep</b> — they knew the odds going in. But it's a public promise:
+              a pack that opens <b>under your advertised floor</b> ({fmtMoney(+bandLo || 0)}) burns
+              <b> hotter</b> than an unposted one.
+              {certified
+                ? <> Your <b>📋 Certified Odds</b> audit makes a posted board pull harder still.</>
+                : <> A <b>📋 Certified Odds</b> audit (Upgrades) would make it pull even harder.</>}
+            </p>
           </div>
         </div>
         <div className="row" style={{ marginTop: 14, gap: 8 }}>

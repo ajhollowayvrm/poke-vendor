@@ -2090,16 +2090,17 @@ function findEraPromo(set, name) {
   return matches.reduce((lo, c) => (cardValue(c) < cardValue(lo) ? c : lo))
 }
 
-// Mint a synthetic low-value black-star promo print for a name not in the set. Deterministic
-// value in ~$2–6 (where real bare-Pokémon foil promos actually trade). Its id carries exactly
-// one hyphen so setIdOfCard resolves it to the real set for market drift.
-function mintSyntheticPromo(set, name, seed) {
+// A synthetic low-value black-star promo print for a name not in the set. Deterministic value
+// in ~$2–6 (where real bare-Pokémon foil promos actually trade). Its id carries exactly one
+// hyphen so setIdOfCard resolves it to the real set for market drift. Returns a card OBJECT —
+// makeProductPromo mints the instance once, after optionally stamping it (see below).
+function synthPromoCard(set, name, seed) {
   const price = round2(2 + (hashStr(seed) % 400) / 100) // $2.00–$5.99, stable per product
-  return instance({
+  return {
     id: `${set.id}-promo${normName(name).replace(/\s+/g, '')}`,
     name, number: 'PROMO', rarity: 'Promo', supertype: 'Pokémon',
     price, foil: null, reverse: false,
-  })
+  }
 }
 
 // The candidate pool the deterministic ETB / Build & Battle fallbacks draw from. Real promos
@@ -2116,12 +2117,52 @@ function promoCandidates(set) {
   return foils.length ? foils : src
 }
 
-// The deterministic promo an ETB / unresolved product falls back to: a real, stable card from
-// the candidate pool above (never a re-rolled chase). Same product → same card, every rip.
+// The deterministic promo CARD (object) an ETB / unresolved product falls back to: a real,
+// stable card from the candidate pool above (never a re-rolled chase). Same product → same card.
 function fallbackPromoCard(set, seed) {
   const src = promoCandidates(set)
   if (!src.length) return null
-  return instance(src[hashStr(seed) % src.length])
+  return src[hashStr(seed) % src.length]
+}
+
+// Is this the Pokémon Center exclusive edition of a product? Those ship a Pokémon Center-
+// STAMPED promo — a distinct, pricier collectible print of the same featured card. Those stamped
+// cards aren't in the raw set data, so we mint the stamp on the fly (see pokemonCenterStamp).
+function isPokemonCenterProduct(product) {
+  return /pok[eé]mon\s*center/i.test(`${product?.type || ''} ${product?.name || ''}`)
+}
+
+// Turn a resolved base promo (a card OBJECT) into its Pokémon Center-stamped edition: a distinct
+// collectible id, a "(Pokémon Center)" name, and REAL price + graded data derived from the base
+// card — stamped PC promos trade above their plain siblings, in raw AND slabbed. Deterministic
+// per product, so a given PC box always stamps the same card at the same value.
+//
+// There's no live price source for the stamped prints specifically (see fetch-data.mjs — PSA
+// comps have no live feed either), so both the raw price and the whole PSA ladder are anchored
+// to the base card's real market data and lifted by the stamp premium. That keeps every figure
+// traceable to a real comp rather than invented, and preserves the ladder's monotonicity.
+function pokemonCenterStamp(base, set, seed) {
+  const basePrice = base.price ?? CANONICAL_PRICE[base.id] ?? estimateByRarity(base.rarity)
+  const premium = 1.7 + (hashStr(`${seed}|pc`) % 90) / 100 // 1.70–2.59×, stable per product
+  const baseSet = setIdOfCard(base) || set.id
+  const num = String(base.number || normName(base.name).replace(/\s+/g, '') || 'promo')
+  const card = {
+    ...base,
+    id: `${baseSet}-pcstamp${num}`,           // one hyphen → market drift still tracks the base set
+    name: `${base.name} (Pokémon Center)`,
+    rarity: base.rarity || 'Promo',
+    price: round2(Math.max(5, basePrice * premium)),
+    foil: null, reverse: false,               // premium is baked into price — no pattern mult on top
+  }
+  // Real graded data: scale each of the base card's captured PSA comps by the same premium, so a
+  // slabbed stamped promo has a full, monotonic grade ladder grounded in real comps. If the base
+  // has no comps, drop the key and the card grades on the same heuristic every comp-less card uses.
+  if (base.psa && typeof base.psa === 'object') {
+    card.psa = Object.fromEntries(Object.entries(base.psa).map(([g, v]) => [g, round2(v * premium)]))
+  } else {
+    delete card.psa
+  }
+  return card
 }
 
 // Mint the guaranteed bonus promo for a product (null if it has no bonus). Resolution order:
@@ -2134,38 +2175,51 @@ function fallbackPromoCard(set, seed) {
 //   6. fallback         — a deterministic cheap set card (plain ETBs, generic collections).
 export function makeProductPromo(set, product, rnd = Math.random) {
   if (product.bonus !== 'promo') return null
-  const tag = c => { if (c) c._promo = true; return c }
   const seed = `${set.id}|${product.name || product.type}`
+  const base = resolveBasePromo(set, product, seed, rnd)
+  if (!base) return null
+  // A Pokémon Center edition ships the STAMPED version of that promo — a distinct, pricier
+  // collectible we mint on the fly (those stamped prints aren't in the raw set data).
+  const isPC = isPokemonCenterProduct(product)
+  const inst = instance(isPC ? pokemonCenterStamp(base, set, seed) : base)
+  inst._promo = true
+  if (isPC) inst._stamp = 'pc'
+  return inst
+}
 
+// Resolve the CARD (object, pre-instance) a product's bonus promo pins to. Same resolution
+// order as before — explicit id, explicit name, Build & Battle pool, name parsed from the
+// product, B&B fallback slice, deterministic cheap fallback — but returning the card rather than
+// an instance, so makeProductPromo can optionally stamp it before minting the single instance.
+function resolveBasePromo(set, product, seed, rnd) {
   // 1. Exact card id — resolved across ALL sets, so it can pin a Black Star Promo (e.g. svp-…)
   //    that lives in an `extra` set rather than the product's own set.
   if (product.fixedPromo) {
     const exact = cardById(product.fixedPromo)
-    if (exact) return tag(instance(exact))
+    if (exact) return exact
   }
-  // 2. Explicit card name — pin the in-set card, else the era Black Star Promo, else mint.
+  // 2. Explicit card name — pin the in-set card, else the era Black Star Promo, else synth.
   if (product.fixedPromoName) {
-    const card = findSetCardByName(set, product.fixedPromoName) || findEraPromo(set, product.fixedPromoName)
-    return tag(card ? instance(card) : mintSyntheticPromo(set, product.fixedPromoName, seed))
+    return findSetCardByName(set, product.fixedPromoName) || findEraPromo(set, product.fixedPromoName)
+      || synthPromoCard(set, product.fixedPromoName, seed)
   }
   // 3. Build & Battle's real small pool — one of N, varying per box (an id, or a name to resolve).
   if (product.promoPool?.length) {
     const choice = pick(product.promoPool, rnd)
-    const card = cardById(choice) || findSetCardByName(set, choice) || findEraPromo(set, choice)
-    return tag(card ? instance(card) : mintSyntheticPromo(set, choice, `${seed}|${choice}`))
+    return cardById(choice) || findSetCardByName(set, choice) || findEraPromo(set, choice)
+      || synthPromoCard(set, choice, `${seed}|${choice}`)
   }
   // 4. Identity parsed from the product name.
   const name = promoNameFromProduct(set, product)
   if (name) {
     if (CHASE_SUFFIX.test(name)) {
       const card = findSetCardByName(set, name)
-      if (card) return tag(instance(card)) // valuable headline foil → the real in-set card
+      if (card) return card // valuable headline foil → the real in-set card
       // A chase name we can't resolve — don't fabricate a valuable card; fall through.
     } else {
       // A bare-Pokémon promo is a real Black Star Promo — pin it from the era's promo pool if we
-      // have that card, else mint a cheap stand-in with the right name.
-      const real = findEraPromo(set, name)
-      return tag(real ? instance(real) : mintSyntheticPromo(set, name, seed))
+      // have that card, else a cheap synthetic stand-in with the right name.
+      return findEraPromo(set, name) || synthPromoCard(set, name, seed)
     }
   }
   // 5. Build & Battle with no explicit pool: a real 1-of-4 from a deterministic candidate slice.
@@ -2173,11 +2227,11 @@ export function makeProductPromo(set, product, rnd = Math.random) {
     const src = promoCandidates(set)
     if (src.length) {
       const slice = Array.from({ length: Math.min(4, src.length) }, (_, i) => src[(hashStr(seed) + i * 2654435761) % src.length])
-      return tag(instance(pick(slice, rnd)))
+      return pick(slice, rnd)
     }
   }
   // 6. Deterministic cheap set-card fallback.
-  return tag(fallbackPromoCard(set, seed))
+  return fallbackPromoCard(set, seed)
 }
 
 // ---- Sealed inventory -------------------------------------------------------

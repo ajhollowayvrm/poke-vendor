@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 55,
+  version: 56,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -527,6 +527,11 @@ export const useGame = create(persist((set, get) => ({
       // 🏬 Brick-and-mortar branding (name/tagline/icon/accent). New; start from the default
       // identity so an existing store reads as "Your Store 🏬" until the owner customizes it.
       state.store = { name: '', tagline: '', icon: '🏬', accent: '', ...(state.store || {}) }
+    }
+    if (version < 56) {
+      // 🔥 Mystery-pack hype streak. New counter; start at 0 (existing pack lines stay
+      // unpublished — an absent tier.published reads as false everywhere).
+      state.packStreak = state.packStreak ?? 0
     }
     return state
   },
