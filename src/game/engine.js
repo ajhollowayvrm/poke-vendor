@@ -2133,22 +2133,36 @@ function isPokemonCenterProduct(product) {
 }
 
 // Turn a resolved base promo (a card OBJECT) into its Pokémon Center-stamped edition: a distinct
-// collectible id, a "(Pokémon Center)" name, and a premium price — stamped PC promos trade well
-// above their plain siblings. Deterministic per product, so a given PC box always stamps the
-// same card at the same value. The premium is baked into `price` (no pattern-foil mult on top).
+// collectible id, a "(Pokémon Center)" name, and REAL price + graded data derived from the base
+// card — stamped PC promos trade above their plain siblings, in raw AND slabbed. Deterministic
+// per product, so a given PC box always stamps the same card at the same value.
+//
+// There's no live price source for the stamped prints specifically (see fetch-data.mjs — PSA
+// comps have no live feed either), so both the raw price and the whole PSA ladder are anchored
+// to the base card's real market data and lifted by the stamp premium. That keeps every figure
+// traceable to a real comp rather than invented, and preserves the ladder's monotonicity.
 function pokemonCenterStamp(base, set, seed) {
   const basePrice = base.price ?? CANONICAL_PRICE[base.id] ?? estimateByRarity(base.rarity)
   const premium = 1.7 + (hashStr(`${seed}|pc`) % 90) / 100 // 1.70–2.59×, stable per product
   const baseSet = setIdOfCard(base) || set.id
   const num = String(base.number || normName(base.name).replace(/\s+/g, '') || 'promo')
-  return {
+  const card = {
     ...base,
     id: `${baseSet}-pcstamp${num}`,           // one hyphen → market drift still tracks the base set
     name: `${base.name} (Pokémon Center)`,
     rarity: base.rarity || 'Promo',
-    price: round2(Math.max(6, basePrice * premium)),
-    foil: null, reverse: false,
+    price: round2(Math.max(5, basePrice * premium)),
+    foil: null, reverse: false,               // premium is baked into price — no pattern mult on top
   }
+  // Real graded data: scale each of the base card's captured PSA comps by the same premium, so a
+  // slabbed stamped promo has a full, monotonic grade ladder grounded in real comps. If the base
+  // has no comps, drop the key and the card grades on the same heuristic every comp-less card uses.
+  if (base.psa && typeof base.psa === 'object') {
+    card.psa = Object.fromEntries(Object.entries(base.psa).map(([g, v]) => [g, round2(v * premium)]))
+  } else {
+    delete card.psa
+  }
+  return card
 }
 
 // Mint the guaranteed bonus promo for a product (null if it has no bonus). Resolution order:
