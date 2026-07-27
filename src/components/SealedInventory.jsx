@@ -9,7 +9,7 @@ import SealedModal from './SealedModal'
 // type) STACK into one row with a quantity; each can be ripped (launches the normal rip,
 // no re-charge), listed on your site, or quick-flipped for instant cash, one unit at a
 // time. Held value tracks the set's market multiplier, so vintage appreciates while it sits.
-export default function SealedInventory({ onRip }) {
+export default function SealedInventory({ onRip, onSift }) {
   const inventory = useGame(s => s.sealedInventory)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   const listSealedMany = useGame(s => s.listSealedMany)
@@ -18,6 +18,9 @@ export default function SealedInventory({ onRip }) {
   // Tapping a stack's header opens its detail modal — the same product read (chase density,
   // price sheet, break-down) the store's StoreStock gives, so a no-store player isn't shorted it.
   const [sealedView, setSealedView] = useState(null)
+  // ⚡ Sift-rip selection: pick a GROUP of sealed to auto-rip (stops on big-hit packs).
+  const [selecting, setSelecting] = useState(false)
+  const [selected, setSelected] = useState(() => new Set())
 
   // Group identical products (same set + type + vintage + kept flag) into stacks. Value is
   // the same per unit (product.price × current market); cost is summed across the units.
@@ -50,6 +53,27 @@ export default function SealedInventory({ onRip }) {
     if (n) toast(`Listed all ${n} sealed at 100% of market — track them on the Sell tab.`)
   }
 
+  // ⚡ Sift selection helpers. A stack is "in" when all its units are selected; tapping toggles
+  // the whole stack (units of one product rip identically, so per-unit granularity adds nothing).
+  const selItems = inventory.filter(it => selected.has(it.uid))
+  const selPacks = selItems.reduce((a, it) => a + (it.product?.packs || 1), 0)
+  function toggleStack(items) {
+    setSelected(prev => {
+      const n = new Set(prev)
+      const allIn = items.every(it => n.has(it.uid))
+      items.forEach(it => allIn ? n.delete(it.uid) : n.add(it.uid))
+      return n
+    })
+  }
+  function selectAll() {
+    setSelected(prev => prev.size === inventory.length ? new Set() : new Set(inventory.map(it => it.uid)))
+  }
+  function startSift() {
+    if (!selItems.length) return
+    onSift(selItems)
+    setSelecting(false); setSelected(new Set())
+  }
+
   return (
     <>
       <div className="banner" style={{ marginTop: 14 }}>
@@ -60,12 +84,36 @@ export default function SealedInventory({ onRip }) {
         {hasStore && <> <b>🏬 This IS your store's sealed stock</b> — walk-ins buy from it unless a unit is 🔒 kept.</>}
       </div>
       <div className="toolbar" style={{ marginTop: 10 }}>
-        <span className="muted" style={{ fontSize: 12 }}>Move it all at once:</span>
-        <button className="btn alt" style={{ flex: 'none' }} onClick={listAll}>🌐 List all online</button>
+        {selecting ? (
+          <>
+            <span className="muted" style={{ fontSize: 12 }}>Tap stacks to sift-rip:</span>
+            <button className="btn alt" style={{ flex: 'none' }} onClick={selectAll}>{selected.size === inventory.length ? 'Deselect all' : 'Select all'}</button>
+            <button className="btn alt" style={{ flex: 'none' }} onClick={() => { setSelecting(false); setSelected(new Set()) }}>Cancel</button>
+          </>
+        ) : (
+          <>
+            <span className="muted" style={{ fontSize: 12 }}>Move it all at once:</span>
+            <button className="btn alt" style={{ flex: 'none' }} onClick={listAll}>🌐 List all online</button>
+            {onSift && <button className="btn alt" style={{ flex: 'none' }} onClick={() => setSelecting(true)}
+              title="Auto-rip a group of sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand">⚡ Sift-rip…</button>}
+          </>
+        )}
       </div>
       <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', marginTop: 12 }}>
-        {groups.map(items => <SealedRow key={items[0].uid} items={items} onRip={onRip} hasStore={hasStore} onInspect={setSealedView} />)}
+        {groups.map(items => <SealedRow key={items[0].uid} items={items} onRip={onRip} hasStore={hasStore} onInspect={setSealedView}
+          selecting={selecting} selected={items.every(it => selected.has(it.uid)) && items.length > 0} onToggleSelect={() => toggleStack(items)} />)}
       </div>
+      {/* Sticky launch bar while picking a sift group. */}
+      {selecting && (
+        <div className="bulk-bar">
+          <div className="bulk-bar-summary">
+            {selItems.length ? <><b>{selItems.length} item{selItems.length === 1 ? '' : 's'}</b> · {selPacks} pack{selPacks === 1 ? '' : 's'} to sift</> : 'Tap the sealed stacks you want to sift-rip'}
+          </div>
+          <div className="bulk-bar-actions">
+            <button className="btn gold" disabled={!selItems.length} onClick={startSift}>⚡ Sift-rip {selPacks || ''} {selPacks ? 'packs' : ''} →</button>
+          </div>
+        </div>
+      )}
       {sealedView && <SealedModal item={sealedView} place="inventory" onClose={() => setSealedView(null)} onRip={onRip} flash={toast} />}
     </>
   )
@@ -73,7 +121,7 @@ export default function SealedInventory({ onRip }) {
 
 // One stacked row for a group of identical sealed products. Actions act on ONE unit at a
 // time (the stack decrements); with qty > 1 the row just stays and shows the new count.
-function SealedRow({ items, onRip, hasStore, onInspect }) {
+function SealedRow({ items, onRip, hasStore, onInspect, selecting, selected, onToggleSelect }) {
   const listSealed = useGame(s => s.listSealed)
   const listSealedMany = useGame(s => s.listSealedMany)
   const toggleLockSealed = useGame(s => s.toggleLockSealed)
@@ -127,13 +175,15 @@ function SealedRow({ items, onRip, hasStore, onInspect }) {
     setBreaking(false)
   }
 
+  const headClick = selecting ? onToggleSelect : () => onInspect && onInspect(item)
   return (
-    <div className="product sealed-item">
+    <div className="product sealed-item" style={selecting && selected ? { outline: '2px solid var(--gold)', borderRadius: 12 } : undefined}>
       <div className="sealed-head" role="button" tabIndex={0}
-        title="Tap for product details — value, chase density & the full set price sheet"
+        title={selecting ? 'Tap to add/remove this stack from the sift' : 'Tap for product details — value, chase density & the full set price sheet'}
         style={{ cursor: 'pointer' }}
-        onClick={() => onInspect && onInspect(item)}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInspect && onInspect(item) } }}>
+        onClick={headClick}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); headClick() } }}>
+        {selecting && <span className="sift-check" aria-hidden="true">{selected ? '✅' : '⬜'}</span>}
         {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
         <div style={{ flex: 1, minWidth: 0 }}>
           <b className="sealed-name">{item.product.icon || '📦'} {item.product.type}</b>

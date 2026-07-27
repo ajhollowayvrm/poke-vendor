@@ -22,6 +22,7 @@ import BoothInbox from './components/BoothInbox'
 import Settings from './components/Settings'
 import PriceGuide from './components/PriceGuide'
 import SealedInventory from './components/SealedInventory'
+import AutoRip from './components/AutoRip'
 import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
 import Binder from './components/Binder'
@@ -98,6 +99,7 @@ export default function App() {
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
+  const [sifting, setSifting] = useState(null)   // array of sealed items being auto-ripped ("sift")
   // Where to land when a rip finishes. A rip you START from your collection/store/inbox
   // (via ripFromInventory) should drop you back THERE on Done — not on the Buy tab where the
   // overlay lives. Captured as the tab you launched from; a "Rip another" chain keeps it.
@@ -288,6 +290,14 @@ export default function App() {
     setTab('collection')
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
+
+  // ⚡ Sift-rip: hand a GROUP of sealed to the auto-ripper — it churns pack by pack, banks the
+  // forgettable ones, and stops on any pack with a big hit so you can rip that one by hand.
+  function startSift(items) {
+    if (!items?.length) return
+    setSifting(items)
+  }
+  function exitSift() { setSifting(null) }
 
   // Close the rip overlay. If the rip was launched from your collection/store/inbox, land
   // back on that tab (ripReturn) instead of leaving you on Buy where the overlay lived.
@@ -531,7 +541,7 @@ export default function App() {
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
-        {tab === 'myshop' && <div className="pane"><BoothInbox onRip={ripFromInventory} onPick={setPicked} /></div>}
+        {tab === 'myshop' && <div className="pane"><BoothInbox onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /></div>}
         {tab === 'stream' && <div className="pane"><Livestream /></div>}
         {tab === 'stats' && <div className="pane"><Stats /></div>}
 
@@ -551,7 +561,7 @@ export default function App() {
             </div>
             <div className="pane" key={collTab}>
               {collTab === 'cards' && (hasStore ? <StoreStock place="personal" only="cards" onRip={ripFromInventory} onPick={setPicked} /> : <Collection onPick={setPicked} />)}
-              {collTab === 'sealed' && (hasStore ? <StoreStock place="personal" only="sealed" onRip={ripFromInventory} onPick={setPicked} /> : <SealedInventory onRip={ripFromInventory} />)}
+              {collTab === 'sealed' && (hasStore ? <StoreStock place="personal" only="sealed" onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /> : <SealedInventory onRip={ripFromInventory} onSift={startSift} />)}
               {collTab === 'binder' && <Binder onPick={setPicked} />}
               {collTab === 'grader' && <Bench />}
               {collTab === 'regulars' && !hasStore && <Regulars />}
@@ -590,6 +600,14 @@ export default function App() {
             ripAnotherSoldOut={ripSoldOut}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
+        </div>
+      )}
+
+      {/* ⚡ Sift-rip overlay — churns a group of sealed, stopping on big-hit packs. Visible on
+          whatever tab you launched it from (it owns the whole flow, so no tab gating). */}
+      {sifting && (
+        <div className="rip-overlay rip-full">
+          <AutoRip items={sifting} onExit={exitSift} />
         </div>
       )}
 

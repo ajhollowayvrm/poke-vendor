@@ -318,6 +318,18 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 /* Pack opening stage */
 .stage { display:flex; flex-direction: column; align-items: center; gap: 18px; padding: 80px 0 10px; }
 .pack-progress { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
+
+/* ⚡ Sift-rip (auto-rip a group, stop on big hits) */
+.sift-levels { margin-top: 12px; }
+.sift-churn { display:flex; flex-direction:column; align-items:center; gap:8px; padding: 24px 0; }
+.sift-spinner { font-size: 44px; animation: siftpulse 1.1s ease-in-out infinite; }
+@keyframes siftpulse { 0%,100% { transform: translateX(-6px); opacity:.85 } 50% { transform: translateX(6px); opacity:1 } }
+.sift-feed { width: 100%; max-width: 460px; display:flex; flex-direction:column; gap:5px; }
+.sift-feed-row { font-size: 12.5px; color: var(--dim); padding: 6px 10px; border-radius: 8px;
+  background: #ffffff06; border: 1px solid var(--line); animation: siftin .25s ease; }
+.sift-feed-row:first-child { color: var(--txt); background:#ffffff0d; }
+@keyframes siftin { from { opacity:0; transform: translateY(-4px) } to { opacity:1; transform:none } }
+.sift-check { font-size: 16px; margin-right: 2px; }
 .pack3d { width: 230px; height: 360px; border-radius: 16px; position: relative; cursor: pointer;
   background: linear-gradient(160deg,#2b3a6b,#1a2138); display:flex; align-items:center; justify-content:center;
   box-shadow: 0 20px 50px #000a, inset 0 0 0 2px #ffffff14; user-select:none; touch-action: none; }
