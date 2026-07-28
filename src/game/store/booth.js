@@ -520,12 +520,15 @@ export function createBoothSlice(set, get) {
     },
     // One-tap "toss all bulk": every sub-$1 raw card, through the same keep-singles /
     // locked safety net the LGS turn-in uses. Returns { tossed, kept }.
-    stockBinBulk() {
+    // `storeroomOnly` leaves anything already out on the sales floor alone — the nightly
+    // auto-fill uses it so keeping the box full can never quietly strip your display.
+    // `quiet` skips the log line (the caller writes its own).
+    stockBinBulk({ storeroomOnly = false, quiet = false } = {}) {
       const s = get()
-      const bulkAll = s.collection.filter(isBulkCard)
+      const bulkAll = s.collection.filter(c => isBulkCard(c) && !(storeroomOnly && c.loc === 'floor'))
       const { sell, kept } = bulkSellableUids(s.collection, bulkAll.map(c => c.uid), { keepOne: s.settings?.keepOne })
       const tossed = get().stockBin(sell)
-      if (tossed) get().log('shop', `🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in the quarter bin`, 0)
+      if (tossed && !quiet) get().log('shop', `🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in the quarter bin`, 0)
       return { tossed, kept: kept.length }
     },
     // Fish one back out — it returns to the storeroom.

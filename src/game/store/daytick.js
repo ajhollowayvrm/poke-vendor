@@ -29,6 +29,7 @@ import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, machineMaxPerDay, binMaxPerDay,
+  binDemand, BIN_GIVEUP_DAYS, BIN_MISS_NOTORIETY, BIN_MISS_DING_CAP,
   fameMult, fameBeyond, BARGAIN_ASK_MULT, storageFee, WORTH_HISTORY_LEN,
   ONLINE_FEE_PCT, shippingCost, omniShelfCards,
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
@@ -758,36 +759,100 @@ export function advanceDaysWith(set, get, days, away) {
       }
     }
   }
-  // 🗑️ BULK BIN: kids dig through the quarter box. Drains with foot traffic (kid-season
-  // boosted), hard-railed per day; each card leaves at the flat price. A dug-out card worth
+  // 🗑️ BULK BIN: the busiest fixture on the floor. This counts DIGGERS — kids who came in to
+  // work the quarter box today — and gives each one a HANDFUL, because nobody digs for twenty
+  // minutes and buys one card. Turnout rides fame, the deal you're offering, kid season and
+  // foot traffic; the daily rail is a sanity check, not the limit. A dug-out card worth
   // several times the price is somebody's best day of the week — the charm is the point.
-  let binRevenue = 0, binSold = 0
+  //
+  // And the flip side, which is the reason the box is worth stocking at all: a digger who
+  // finds an EMPTY box is a customer you turned away. That costs you rep, lands on the demand
+  // board, and — while they still bother checking back — leaves pent-up demand for the day you
+  // finally refill it. Ignore the box long enough (BIN_GIVEUP_DAYS) and the kids stop coming.
+  let binRevenue = 0, binSold = 0, binTurnedAway = 0, binAutoFilled = 0
   {
+    // ⚙️ "Keep the box full": the morning top-up, before the doors open. Storeroom bulk only
+    // (never your display floor), same keep-singles / locked / held protections as the manual
+    // toss. Opt-in — with it off, stocking the box stays a thing you decide to do.
+    if (hasStore && get().settings?.autoFillBin && (get().bulkBin?.price || 0) > 0) {
+      binAutoFilled = get().stockBinBulk({ storeroomOnly: true, quiet: true }).tossed
+      if (binAutoFilled > 0) get().log('shop', `🗑️ Topped the quarter box up with ${binAutoFilled} bulk card${binAutoFilled === 1 ? '' : 's'} from the storeroom`, 0)
+    }
     const bin = get().bulkBin || { price: 0, stock: [] }
     const bstock = bin.stock || []
-    if (hasStore && walkinOK && bin.price > 0 && bstock.length) {
-      const avgVal = bstock.reduce((a, c) => a + cardValue(c), 0) / bstock.length
-      const dealMult = Math.max(0.35, Math.min(2.2, avgVal / bin.price)) // fat bin → more diggers
-      const signage = s.upgrades?.signage ? 1.15 : 1
-      const rate = (0.6 + noto / 250) * dealMult * signage * seasonOf(s.monthsElapsed).kids
-      const want = Math.min(binMaxPerDay(s.upgrades) * days, bstock.length, drawCount(rate * footWeight))
-      if (want > 0) {
-        const stock = [...bstock]
-        let treasure = null
-        for (let k = 0; k < want && stock.length; k++) {
+    const dryDays = bin.dryDays || 0
+    // A $0 price means the box isn't out on the counter — no sales, and nobody's expecting
+    // it, so no disappointed kids either. That's the player's clean off-switch.
+    const binOut = bin.price > 0
+    // Kids only come looking for a quarter box they know you run — a shop that's never put
+    // one out isn't missing anything by not having one.
+    const binKnown = (bin.sold || 0) > 0
+    if (hasStore && walkinOK && binOut && (bstock.length || binKnown)) {
+      const avgVal = bstock.length ? bstock.reduce((a, c) => a + cardValue(c), 0) / bstock.length : 0
+      const { diggers: diggerRate, handful } = binDemand({
+        notoriety: noto, price: bin.price, avgVal, upgrades: s.upgrades,
+        monthsElapsed: s.monthsElapsed, dryDays, hasStock: bstock.length > 0,
+      })
+      const diggers = drawCount(diggerRate * footWeight)
+      const rail = binMaxPerDay(s.upgrades) * days
+      const stock = [...bstock]
+      let treasure = null, shorted = 0
+      for (let d0 = 0; d0 < diggers; d0++) {
+        // Nothing left to dig through — they came for the box and the box was bare.
+        if (!stock.length) { binTurnedAway++; continue }
+        const railLeft = rail - (bstock.length - stock.length)
+        if (railLeft <= 0) break // the day's rail is spent; the rest come back tomorrow
+        const want = Math.max(1, Math.round(handful * (0.55 + Math.random() * 0.9)))
+        const take = Math.min(want, stock.length, railLeft)
+        // Picked-over box: they'd have bought more if there'd been more to find. (Only when
+        // the STOCK ran short — the daily rail is a pacing device, not a thin bin.)
+        if (stock.length < want) shorted++
+        for (let k = 0; k < take; k++) {
           const [sold] = stock.splice(Math.floor(Math.random() * stock.length), 1)
           const v = cardValue(sold)
           if (v >= Math.max(3, bin.price * 8) && (!treasure || v > treasure.v)) treasure = { name: sold.name, v }
         }
-        binSold = bstock.length - stock.length
-        binRevenue = round2(binSold * bin.price)
+      }
+      binSold = bstock.length - stock.length
+      binRevenue = round2(binSold * bin.price)
+      if (diggers > 0) {
         set(st => ({ bulkBin: { ...st.bulkBin, stock,
           sold: (st.bulkBin.sold || 0) + binSold,
-          revenue: round2((st.bulkBin.revenue || 0) + binRevenue) } }))
-        get().log('shop', `🗑️ Bulk bin — kids dug out ${binSold} card${binSold === 1 ? '' : 's'} at $${bin.price.toFixed(2)} each (+$${binRevenue.toFixed(2)})`, binRevenue)
-        if (treasure) {
-          get().addNotoriety(1)
-          get().log('shop', `🤩 A kid dug a ${treasure.name} (~$${treasure.v.toFixed(2)}) out of the quarter bin — best day of their week (+1★)`, 0)
+          revenue: round2((st.bulkBin.revenue || 0) + binRevenue),
+          missed: (st.bulkBin.missed || 0) + binTurnedAway,
+          // The dry streak only breaks on a day nobody left empty-handed.
+          dryDays: binTurnedAway > 0 ? dryDays + days : 0 } }))
+      }
+      if (binSold > 0) {
+        const comeback = dryDays > 0 && binTurnedAway === 0
+        get().log('shop', `🗑️ Bulk bin — ${comeback ? `word got out the box is full again and kids cleaned out` : `kids dug out`} ${binSold} card${binSold === 1 ? '' : 's'} at $${bin.price.toFixed(2)} each${shorted > 0 ? ` (${shorted} of them wanted more than was left)` : ''} (+$${binRevenue.toFixed(2)})`, binRevenue)
+      }
+      if (treasure) {
+        get().addNotoriety(1)
+        get().log('shop', `🤩 A kid dug a ${treasure.name} (~$${treasure.v.toFixed(2)}) out of the quarter bin — best day of their week (+1★)`, 0)
+      }
+      if (binTurnedAway > 0) {
+        const newDry = dryDays + days
+        const kids = `${binTurnedAway} kid${binTurnedAway === 1 ? '' : 's'}`
+        // Turning diggers away costs you — capped per day, and it fades on its own as they
+        // give up on the box, so a dead bin bleeds your name slowly rather than fatally.
+        const ding = round2(Math.min(BIN_MISS_DING_CAP, binTurnedAway * BIN_MISS_NOTORIETY))
+        get().addNotoriety(-ding)
+        get().log('shop', binSold > 0
+          ? `😞 The quarter box got picked clean before closing — ${kids} showed up to a bare bin. (−${ding}★)`
+          : `😠 ${kids} came in to dig and the quarter box was EMPTY${newDry > days ? ` — ${newDry} days running` : ''}. Word gets around. (−${ding}★)`, 0)
+        // The town is asking for something you're not stocking — same board as a missed
+        // walk-in request, so "keep the bin full" shows up where you plan your sourcing. ONE
+        // entry per day, not one per kid: a dry fortnight shouldn't crowd every real want off
+        // a 40-slot board (the board tallies repeats, so a running streak still reads loud).
+        const missDay = absoluteDay(s.currentDay, s.monthsElapsed)
+        set(st => ({ demandLog: [
+          ...Array.from({ length: days }, () => ({ what: 'bulk for the quarter box', kind: 'bulk', setId: null, day: missDay })),
+          ...(st.demandLog || []),
+        ].slice(0, 40) }))
+        // One-time notice the day they write you off — and the crowd starts shrinking.
+        if (dryDays <= BIN_GIVEUP_DAYS && newDry > BIN_GIVEUP_DAYS) {
+          get().log('shop', `🚸 The kids have stopped checking your quarter box. Fill it and you'll have to win them back.`, 0)
         }
       }
     }
@@ -1630,7 +1695,7 @@ export function advanceDaysWith(set, get, days, away) {
     saleProceeds: round2(soldProceeds), counterIncome: round2(counterRevenue),
     suppliesIncome: round2(suppliesRevenue), suppliesSold,
     machineIncome: round2(machineRevenue), machineSold,
-    binIncome: round2(binRevenue), binSold,
+    binIncome: round2(binRevenue), binSold, binTurnedAway,
     wholesaleIncome: round2(wholesaleIncome),
     // Richer recap data: named sales, biggest single sale, market movers, new collectors.
     soldNames: soldNames.slice(0, 6), bigSale, newWants,
@@ -1671,6 +1736,7 @@ export function mergeSummaries(a, b) {
     machineSold: add(a.machineSold, b.machineSold),
     binIncome: round2(add(a.binIncome, b.binIncome)),
     binSold: add(a.binSold, b.binSold),
+    binTurnedAway: add(a.binTurnedAway, b.binTurnedAway),
     wholesaleIncome: round2(add(a.wholesaleIncome, b.wholesaleIncome)),
     wantsBrokered: add(a.wantsBrokered, b.wantsBrokered),
     brokerProceeds: round2(add(a.brokerProceeds, b.brokerProceeds)),

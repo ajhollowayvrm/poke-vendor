@@ -525,11 +525,81 @@ export const COUNTER_MAX_PER_DAY = 1200
 // machine can't drain in a single tick). Demand also scales with fame + how good a deal the
 // flat price is versus the average pack's value.
 export const MACHINE_MAX_PER_DAY = 8
-// 🗑️ Bulk Bin: same idea — the quarter box only moves so many cards a day, however deep it is.
-export const BIN_MAX_PER_DAY = 10
+// 🗑️ Bulk Bin: same idea — a sanity rail on how many cards can leave the quarter box in a
+// day, however deep it is. Deliberately far above normal demand (see binDemand below): the
+// box is limited by what you put IN it, not by an arbitrary ceiling.
+export const BIN_MAX_PER_DAY = 90
 // 🎰 High-Capacity Vend Unit / 🗑️ Second Quarter Box: the daily rails deepen with the build-out.
 export function machineMaxPerDay(upgrades) { return upgrades?.vendUnit ? 14 : MACHINE_MAX_PER_DAY }
-export function binMaxPerDay(upgrades) { return upgrades?.secondBin ? 20 : BIN_MAX_PER_DAY }
+export function binMaxPerDay(upgrades) { return upgrades?.secondBin ? 200 : BIN_MAX_PER_DAY }
+
+// --- 🗑️ The quarter box, as a demand model ---------------------------------------------
+// The bulk bin used to drain a card or two a day, which is not how a quarter box works. In a
+// real shop it's the busiest fixture on the floor: kids come in with a fistful of change,
+// dig for twenty minutes, and walk out with a STACK. So the model counts DIGGERS (people who
+// came to work the box today) and gives each one a HANDFUL, instead of counting cards.
+//
+// The important consequence is the other half: a channel with real demand can be MISSED. A
+// digger who walks up to an empty box is a turned-away customer — a rep ding and a line on
+// the demand board, exactly like a walk-in you couldn't sell. Keeping the box full is now a
+// job, and letting it run dry is a mistake with a cost.
+export const BIN_HANDFUL = 6            // cards the average digger walks out with
+export const BIN_DIGGER_BASE = 1.2      // diggers/day before fame — even a nobody's box gets worked
+export const BIN_DIGGER_FAME = 80       // + one more digger per this much notoriety
+// How long the kids keep checking back on a dead box before they give up on you. Up to this
+// many dry days demand PILES UP (they keep coming, and keep leaving unhappy — that's the
+// pressure); past it they stop bothering, and you have to earn the crowd back.
+export const BIN_GIVEUP_DAYS = 5
+// Rep cost per kid turned away from an empty box, capped per day. The crowd scales with your
+// fame, so the sting does too — a famous shop with a dead quarter box disappoints a dozen kids
+// a day and it shows. The cap (and the give-up curve above) keep it a slow bleed you can fix,
+// never a spiral: a box left empty until the town forgets it costs ~20★ in total and then stops.
+export const BIN_MISS_NOTORIETY = 0.2
+export const BIN_MISS_DING_CAP = 2
+
+// The deal the box is offering. NOT a straight value-for-money read: nobody digs a quarter
+// box expecting to beat market on every card — a real one sells commons worth eight cents for
+// a quarter and the shop can't keep it full, because the DIG is what people are buying. So
+// "fair" is a box whose cards average BIN_FAIR_RATIO of the asking price; the classic 25¢ box
+// of dime cards sits right at healthy, a dime box is mobbed, and a dollar box of chaff dies.
+//   avg $0.15 @ $0.25 → 1.2 · @ $0.10 → 2.2 (capped) · @ $1.00 → 0.35 (floored)
+// An EMPTY box can't be judged on its contents, so it's judged on reputation alone (mult 1) —
+// which is the whole point: the crowd still shows up, and that's what makes an empty box hurt.
+export const BIN_FAIR_RATIO = 0.5
+export function binDealMult(avgVal, price) {
+  if (!(price > 0)) return 0
+  if (!(avgVal > 0)) return 1
+  return Math.max(0.35, Math.min(2.2, avgVal / (price * BIN_FAIR_RATIO)))
+}
+// Pent-up demand from a dry spell, then the give-up slide once you've burned them. Kids keep
+// checking a box that's been empty a couple of days — that's the pressure, and it's why a dry
+// spell costs MORE the longer it runs. Past BIN_GIVEUP_DAYS they start writing you off, and
+// once a box has sat empty BIN_FORGOTTEN_DAYS it's off the map: nobody comes, so a bin you've
+// simply stopped running stops costing you rep instead of bleeding you forever.
+//   dry 0 → 1.0 · 2 → 1.4 · 5 → 2.0 (the peak) · 8 → 1.25 · 11 → 0.5 · 12+ → 0 (while empty)
+// Refill it and the crowd rebuilds from whatever's left of their patience — one quiet day,
+// then back to normal, because the streak breaks the first day nobody leaves empty-handed.
+export const BIN_FORGOTTEN_DAYS = 12
+export function binHunger(dryDays, hasStock = true) {
+  const dry = Math.max(0, dryDays || 0)
+  if (dry <= BIN_GIVEUP_DAYS) return 1 + Math.min(1, dry * 0.2)
+  if (!hasStock && dry >= BIN_FORGOTTEN_DAYS) return 0
+  return Math.max(0.25, 2 - (dry - BIN_GIVEUP_DAYS) * 0.25)
+}
+// The day's demand on the box. Returns the expected number of DIGGERS and the average
+// handful each takes, so the day-tick and the bin panel's "≈N cards a day" read the same
+// numbers. `avgVal` is the average live value of what's in the box (0 when it's empty).
+export function binDemand({ notoriety = 0, price = 0, avgVal = 0, upgrades = null, monthsElapsed = 0, dryDays = 0, hasStock = avgVal > 0 } = {}) {
+  const dealMult = binDealMult(avgVal, price)
+  const signage = upgrades?.signage ? 1.15 : 1
+  const hunger = binHunger(dryDays, hasStock)
+  const diggers = (BIN_DIGGER_BASE + Math.max(0, notoriety) / BIN_DIGGER_FAME)
+    * dealMult * signage * seasonOf(monthsElapsed).kids * hunger
+  // A good deal doesn't just bring more kids, it makes each one dig deeper — but gently, so
+  // price affects turnout more than it does stack size.
+  const handful = BIN_HANDFUL * (0.6 + dealMult * 0.4)
+  return { diggers, handful, cardsPerDay: Math.min(binMaxPerDay(upgrades), diggers * handful) }
+}
 
 // The booth inbox holds unhandled encounters; anything past the cap is DISCARDED. So the cap
 // has to grow with fame, or a famous vendor's extra orders would silently evaporate — the
@@ -574,7 +644,7 @@ export const UPGRADES = {
   packBin:  { name: 'Pack Bin',             cost: 750,  desc: 'A big wire display bin for loose singles packs — doubles how many of ONE pack you can keep out on the floor (12 → 24). Loose packs are your highest-turnover impulse buy; a deep bin means walk-ins never find it empty. Requires a Brick-and-Mortar Store.', icon: '🧺', needs: 'storefront' },
   packWall: { name: 'Wall of Packs',        cost: 3000, desc: 'A floor-to-ceiling pegboard pack wall behind the counter — the shop that\'s ALL packs. Deepens the loose-pack floor limit again (24 → 36). Requires a Pack Bin.', icon: '🧱', needs: 'packBin' },
   vendUnit: { name: 'High-Capacity Vend Unit', cost: 1000, desc: 'A commercial-grade vending mechanism for the Pack Machine: the daily vend rail rises 8 → 14 packs — and if a 🪓 Bin Keeper is on staff, they keep the machine topped up overnight from storeroom packs too. Requires a Brick-and-Mortar Store.', icon: '🎰', needs: 'storefront' },
-  secondBin: { name: 'Second Quarter Box',  cost: 600,  desc: 'A second bin on the counter doubles how fast kids can dig: the bulk bin\'s daily drain rises 10 → 20 cards. The patient path for deep bulk, twice as wide. Requires a Brick-and-Mortar Store.', icon: '🗑️', needs: 'storefront' },
+  secondBin: { name: 'Second Quarter Box',  cost: 600,  desc: 'A second bin on the counter means twice as many kids can dig at once: the bulk bin\'s daily rail rises 90 → 200 cards. The quarter box is the busiest fixture in a card shop — this is how you stop it being the bottleneck. Requires a Brick-and-Mortar Store.', icon: '🗑️', needs: 'storefront' },
   snackCooler: { name: 'Snack & Drink Cooler', cost: 500, desc: 'A humming cooler by the door: a little steady counter money every open day, and browsers who linger with a drink in hand buy more often (+10% on walk-in browse sales). Requires a Brick-and-Mortar Store.', icon: '🥤', needs: 'storefront' },
   giftWrap: { name: 'Gift Wrap Counter',    cost: 700,  desc: 'Ribbon, boxes, and a wrapping station for the Nov–Dec gift rush: gift buyers pay a fatter wrap premium, and you can fetch a giftable sealed from the STOREROOM when the floor has nothing in budget — December misses stop walking to the mall. Requires a Brick-and-Mortar Store.', icon: '🎁', needs: 'storefront' },
   eventsCoordinator: { name: 'Events Coordinator', cost: 2200, desc: 'A part-timer who runs your calendar: pick one hosted event to recur automatically EVERY WEEK (flagged 📆 on the event planner — costs paid from the till each time), and the room recovers faster between nights (event cooldown 2 days → 1). Requires a Brick-and-Mortar Store.', icon: '🎪', needs: 'storefront' },

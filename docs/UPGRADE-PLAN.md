@@ -53,8 +53,10 @@ Details:
 - **📻 "We Buy Collections" Ad** — multiply the buy-in arrival roll (daytick, where
   `BUYIN_CHANCE` × `buyinDayMult` × policy `chanceMult` compose) by 1.4. Stacks with
   the posted buylist policy by design — an advertised generous shop is the volume build.
-- **🗑️ Second Quarter Box** — `BIN_MAX_PER_DAY` 10 → 20 (upgrade-aware helper). Also
-  surface the deeper drain in the BulkBin.jsx panel copy.
+- **🗑️ Second Quarter Box** — `BIN_MAX_PER_DAY` 90 → 200 (upgrade-aware helper). Also
+  surface the deeper drain in the BulkBin.jsx panel copy. (Since the bin became a
+  digger/handful demand channel — `binDemand()` in constants.js — the base rail actually
+  binds around notoriety 800, so this upgrade is a real ceiling lift rather than a nicety.)
 - **🎰 High-Capacity Vend Unit** — `MACHINE_MAX_PER_DAY` 8 → 14; and in the daytick
   Bin Keeper block (~line 1400), when owned alongside 🪓 binKeeper, top the machine's
   stock back up overnight from storeroom loose packs (same never-touch rules).
