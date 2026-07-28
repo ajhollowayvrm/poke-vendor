@@ -658,7 +658,7 @@ function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, keeperStocked, keeperBroke, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, suppliesIncome, suppliesSold, machineIncome, machineSold, binIncome, binSold, wholesaleIncome, floor } = summary
+    soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, suppliesIncome, suppliesSold, machineIncome, machineSold, binIncome, binSold, binTurnedAway, wholesaleIncome, floor } = summary
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
@@ -668,7 +668,7 @@ function DaySummary({ summary, onClose }) {
   const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderReserved || wantsBrokered
     || offersAccepted || keeperStocked || wages || rent || lease
-    || payroll || storage || saleProceeds || notoDelta || missed || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
+    || payroll || storage || saleProceeds || notoDelta || missed || binTurnedAway || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
   // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
   // just the day you entered.
   const multiDay = days > 1
@@ -792,6 +792,15 @@ function DaySummary({ summary, onClose }) {
                 {storage > 0 && <div className="recap-line"><span className="muted">Inventory storage</span><span>-{fmtMoney(storage)}</span></div>}
                 {lease > 0 && <div className="recap-line"><span className="muted">Store lease</span><span>-{fmtMoney(lease)}</span></div>}
                 {payroll > 0 && <div className="recap-line"><span className="muted">Staff payroll</span><span>-{fmtMoney(payroll)}</span></div>}
+              </div>
+            )}
+
+            {/* Kids who walked up to an empty quarter box. A miss, not a sale — so it sits
+                with the other misses rather than hiding under the bin's income line. */}
+            {binTurnedAway > 0 && (
+              <div className="recap-line" style={{ color: 'var(--red)', marginTop: 4 }}>
+                <span>🗑️ {binTurnedAway} kid{binTurnedAway === 1 ? '' : 's'} found the quarter box empty</span>
+                <span className="muted">stock the bulk bin</span>
               </div>
             )}
 

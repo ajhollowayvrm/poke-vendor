@@ -83,7 +83,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 56,
+  version: 57,
   storage: createJSONStorage(() => debouncedStorage),
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
@@ -532,6 +532,12 @@ export const useGame = create(persist((set, get) => ({
       // 🔥 Mystery-pack hype streak. New counter; start at 0 (existing pack lines stay
       // unpublished — an absent tier.published reads as false everywhere).
       state.packStreak = state.packStreak ?? 0
+    }
+    if (version < 57) {
+      // 🗑️ The quarter box became a real demand channel (diggers take handfuls, and an empty
+      // box turns kids away). Existing bins start with a clean sheet — nobody's been let down
+      // yet, so an old save isn't retroactively in the hole.
+      state.bulkBin = { price: 0.25, stock: [], sold: 0, revenue: 0, ...(state.bulkBin || {}), missed: state.bulkBin?.missed ?? 0, dryDays: state.bulkBin?.dryDays ?? 0 }
     }
     return state
   },

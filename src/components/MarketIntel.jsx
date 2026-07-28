@@ -29,7 +29,7 @@ export function HobbyWire() {
   // Tally the fortnight's missed walk-in asks by item — the same aggregation as the Store
   // tab's demand board, compressed to pills for sourcing decisions.
   const asks = Object.entries((demandLog || []).reduce((m, e) => {
-    const k = `${e.kind === 'card' ? '🃏' : '📦'} ${e.what}`
+    const k = `${e.kind === 'card' ? '🃏' : e.kind === 'bulk' ? '🗑️' : '📦'} ${e.what}`
     m[k] = (m[k] || 0) + 1; return m
   }, {})).sort((a, b) => b[1] - a[1]).slice(0, 6)
 

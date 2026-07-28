@@ -107,8 +107,11 @@ export function initialState() {
     packMachine: { price: 0, stock: [], sold: 0, revenue: 0 },
     // 🗑️ The Bulk Bin: the quarter box kids dig through. Toss raw cheap cards in (they move
     // OUT of the collection, like machine stock), set one flat price, and it drains daily
-    // with foot traffic — the patient 5× alternative to the instant LGS bulk turn-in.
-    bulkBin: { price: 0.25, stock: [], sold: 0, revenue: 0 },
+    // with foot traffic — the patient 5× alternative to the instant LGS bulk turn-in. It's a
+    // real demand channel, so it can be MISSED: `missed` counts the kids who've walked up to
+    // an empty box and `dryDays` the current turned-them-away streak (pent-up demand, then a
+    // rep bleed, then they give up on you — see binDemand/binHunger in constants.js).
+    bulkBin: { price: 0.25, stock: [], sold: 0, revenue: 0, missed: 0, dryDays: 0 },
     supplies: {},            // 🧢 accessory rack stock, { [supplyId]: qty } — fungible units bought wholesale (SUPPLIES in constants.js), sold at retail through the counter; storage-fee exempt
     suppliesStats: { sold: 0, revenue: 0 }, // lifetime accessory tallies (Shop floor readout)
     supplyChannel: [],       // {label, net, daysLeft} — sealed product wholesaled to other vendors (distributor perk); pays out (net) as days pass
@@ -155,6 +158,10 @@ export function initialState() {
     // filed. 'off' by default = file everything, which is how the binder behaved before it existed.
     settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false,
       binderReserveCut: 'off',
+      // 🗑️ Keep the quarter box full: sweep the storeroom's sub-$1 raw bulk into the bin
+      // every night (same keep-singles / locked / held protections as the manual toss).
+      // Off by default — stocking the box is a decision until you decide it shouldn't be.
+      autoFillBin: false,
       // Deal detector (needs the 🤝 Dealer Network upgrade to show). Defaults reproduce the
       // old "15%+ under market, any card" rule; customize what YOU call a deal.
       dealMaxMult: 0.85, dealCondition: 'any', dealUngradedOnly: false, dealMinValue: 0, dealCut: 'any' },
