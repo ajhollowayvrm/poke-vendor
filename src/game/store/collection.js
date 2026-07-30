@@ -7,7 +7,7 @@
 
 import {
   cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
-  rollGrade, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
+  rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
@@ -383,13 +383,15 @@ export function createCollectionSlice(set, get) {
     },
 
     // --- Grading -----------------------------------------------------------------
-    submitGrade(uid, tierKey) {
+    // `company` picks WHICH grader (GRADERS in engine.js) — it changes the fee, the
+    // turnaround and what the returned slab is worth, never the grade roll itself.
+    submitGrade(uid, tierKey, company = DEFAULT_GRADER) {
       const tier = GRADING[tierKey]
       if (!tier) return
       const card = get().collection.find(c => c.uid === uid)
       if (!card || card.grade) return
       const before = graderTier(get().gradesSubmitted)
-      const fee = gradingFee(tierKey, get().gradesSubmitted)
+      const fee = gradingFee(tierKey, get().gradesSubmitted, 1, company)
       if (!get().spend(fee)) return
       set(s => ({
         collection: s.collection.filter(c => c.uid !== uid),
@@ -399,11 +401,11 @@ export function createCollectionSlice(set, get) {
       // raw `currentDay + tier.days` (e.g. economy's 45) could exceed the wrap and never
       // be reached — stranding the card + fee forever. absoluteDay never wraps.
       const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
-      const readyOnDay = submittedAt + gradeTurnaround(tier, get().upgrades)
+      const readyOnDay = submittedAt + gradeTurnaround({ ...tier, days: gradingDays(tierKey, company) }, get().upgrades)
       // remember the fee actually paid so the resolved grade records it, not list price.
-      set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, readyOnDay, submittedAt, paidFee: fee }] }))
+      set(s => ({ pendingGrades: [...s.pendingGrades, { card, tierKey, company, readyOnDay, submittedAt, paidFee: fee }] }))
       const disc = before.discount > 0 ? ` (${Math.round(before.discount*100)}% loyalty off)` : ''
-      get().log('grade-submit', `Submitted ${card.name} (${tier.name}, $${fee.toFixed(2)}${disc})`, -fee)
+      get().log('grade-submit', `Submitted ${card.name} to ${graderById(company).name} (${tier.name}, $${fee.toFixed(2)}${disc})`, -fee)
       // crossed into a new loyalty tier?
       const after = graderTier(get().gradesSubmitted)
       if (after.key !== before.key) get().log('grade-tier', `Grader loyalty: reached ${after.name} (${Math.round(after.discount*100)}% off future fees)`, 0)
@@ -412,28 +414,28 @@ export function createCollectionSlice(set, get) {
 
     // Submit several raw cards at once for a bulk per-card discount (stacks with
     // loyalty). Charges the total up front; each card resolves on its own timer.
-    submitGradesBulk(uids, tierKey) {
+    submitGradesBulk(uids, tierKey, company = DEFAULT_GRADER) {
       const tier = GRADING[tierKey]
       if (!tier || !uids?.length) return
       const cards = get().collection.filter(c => uids.includes(c.uid) && !c.grade)
       if (!cards.length) return
       const before = graderTier(get().gradesSubmitted)
-      const feePer = gradingFee(tierKey, get().gradesSubmitted, cards.length)
+      const feePer = gradingFee(tierKey, get().gradesSubmitted, cards.length, company)
       const total = round2(feePer * cards.length)
       if (!get().spend(total)) return
       const uidSet = new Set(cards.map(c => c.uid))
       // month-safe absolute day (see submitGrade) so a late-month bulk submit still resolves.
       const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
-      const readyOnDay = submittedAt + gradeTurnaround(tier, get().upgrades)
+      const readyOnDay = submittedAt + gradeTurnaround({ ...tier, days: gradingDays(tierKey, company) }, get().upgrades)
       set(s => ({
         collection: s.collection.filter(c => !uidSet.has(c.uid)),
         gradesSubmitted: s.gradesSubmitted + cards.length,
-        pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, readyOnDay, submittedAt, paidFee: feePer }))],
+        pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, company, readyOnDay, submittedAt, paidFee: feePer }))],
       }))
       const bulk = bulkDiscount(cards.length)
       const notes = [before.discount > 0 ? `${Math.round(before.discount*100)}% loyalty` : null,
         bulk > 0 ? `${Math.round(bulk*100)}% bulk` : null].filter(Boolean).join(' + ')
-      get().log('grade-submit', `Bulk-submitted ${cards.length} cards (${tier.name}, $${feePer.toFixed(2)}/ea${notes ? `, ${notes} off` : ''})`, -total)
+      get().log('grade-submit', `Bulk-submitted ${cards.length} cards to ${graderById(company).name} (${tier.name}, $${feePer.toFixed(2)}/ea${notes ? `, ${notes} off` : ''})`, -total)
       const after = graderTier(get().gradesSubmitted)
       if (after.key !== before.key) get().log('grade-tier', `Grader loyalty: reached ${after.name} (${Math.round(after.discount*100)}% off future fees)`, 0)
       get().bumpGoal('grade', cards.length)
@@ -449,11 +451,11 @@ export function createCollectionSlice(set, get) {
       const resolved = ready.map(p => {
         // A pricier grading tier grades a touch kinder (see GRADING[].luck), stacking with the loupe.
         const luck = loupeLuck + (GRADING[p.tierKey]?.luck || 0)
-        const grade = rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null)
+        const grade = rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null, p.company || DEFAULT_GRADER)
         // Append to a per-card grading history so the modal can show "this card was
         // graded PSA X (Standard, $Y) on day Z". (One entry today, but the array is
         // future-proof for a crack-a-slab regrade mechanic.)
-        const entry = { overall: grade.overall, tier: p.tierKey, fee: grade.fee, gradedAt: grade.gradedAt }
+        const entry = { overall: grade.overall, tier: p.tierKey, company: grade.company, fee: grade.fee, gradedAt: grade.gradedAt }
         const gradeHistory = [...(p.card.gradeHistory || []), entry]
         return { ...p.card, grade, gradeHistory }
       })
@@ -461,7 +463,10 @@ export function createCollectionSlice(set, get) {
         pendingGrades: s.pendingGrades.filter(p => day < p.readyOnDay),
         collection: [...resolved, ...s.collection],
       }))
-      for (const g of resolved) get().log('grade-done', `${g.name} graded PSA ${g.grade.overall}`, 0)
+      for (const g of resolved) {
+        const black = isBlackLabel(g.grade)
+        get().log('grade-done', `${g.name} graded ${graderById(g.grade.company).name} ${g.grade.overall}${black ? ' ⬛ BLACK LABEL!' : ''}`, 0)
+      }
       get().checkCompletions() // a returned slab may complete a set
       return resolved
     },

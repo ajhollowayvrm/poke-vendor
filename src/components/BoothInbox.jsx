@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES } from '../game/store'
+  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
 import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
+import TownRivalry from './TownRivalry'
 import MysteryPacks from './MysteryPacks'
 import PackMachine from './PackMachine'
 import BulkBin from './BulkBin'
@@ -58,6 +59,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const cash = useGame(s => s.cash)
   const buyinOffers = useGame(s => s.buyinOffers)
   const demandLog = useGame(s => s.demandLog)
+  const specialOrders = useGame(s => s.specialOrders || [])
+  const today = useGame(st => absoluteDay(st.currentDay, st.monthsElapsed))
   const supplies = useGame(s => s.supplies)
   const suppliesStats = useGame(s => s.suppliesStats)
   const buySupplies = useGame(s => s.buySupplies)
@@ -126,7 +129,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   return (
     <>
       <div className="subtabs">
-        <button className={`subtab ${sellTab === 'orders' ? 'active' : ''}`} onClick={() => setSellTab('orders')}>
+        <button className={`subtab ${sellTab === 'orders' ? 'active' : ''}`} onClick={() => setSellTab('orders')}
+          title="People who want to deal with you — online buyers messaging in, and (with a store) walk-ins at the counter. They arrive as game-days pass, so hit Next Day to bring more in. The number is how many are waiting on an answer; ignored ones eventually give up and drop off.">
           📨 Orders{validInbox.length ? ` (${validInbox.length})` : ''}
         </button>
         {hasStore && (() => {
@@ -254,6 +258,48 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                   </button>
                 ))}
               </div>
+
+              {/* 🏪 Who else the town can shop at, and 🏬 the branch you run yourself. */}
+              <TownRivalry />
+
+              {/* 📇 The Special Orders Book: promises you've taken deposits on. Open by default —
+                  every row here is a customer expecting a phone call, and the date matters. */}
+              {specialOrders.length > 0 && (
+                <Collapse id="store-special-orders" defaultOpen head="📇 Special orders"
+                  badge={`${specialOrders.length} on the book`}
+                  hint="— deposits taken; sourced automatically from your distributors, collected on the due date">
+                  <div className="market-list">
+                    {specialOrders.map(so => {
+                      const left = (so.dueDay ?? 0) - today
+                      const balance = Math.max(0, (so.price || 0) - (so.deposit || 0))
+                      return (
+                        <div className={`listing-row ${!so.sourced && left <= 1 ? 'stale' : ''}`} key={so.id}>
+                          <div className="listing-main">
+                            <div className="listing-info">
+                              <div className="listing-name">{so.what}</div>
+                              <div className="muted" style={{ fontSize: 12 }}>
+                                {fmtMoney(so.deposit)} deposit down · {fmtMoney(balance)} due at pickup
+                              </div>
+                              <div className="row" style={{ gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                                <span className="pill" style={{ color: so.sourced ? 'var(--green)' : 'var(--gold)' }}>
+                                  {so.sourced ? '📦 In and held for them' : '🔎 Still sourcing'}
+                                </span>
+                                <span className="pill" style={{ color: left < 0 ? 'var(--red)' : left <= 1 ? 'var(--gold)' : undefined }}>
+                                  {left < 0 ? `${-left}d overdue` : left === 0 ? 'due today' : `due in ${left}d`}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <p className="muted" style={{ fontSize: 11.5, marginTop: 6 }}>
+                    Sourcing buys from the cheapest distributor that has it, and never spends the till below a day's lease.
+                    A promise you can't fill costs the deposit back, 3★, and a line on the demand board.
+                  </p>
+                </Collapse>
+              )}
 
               {/* Collection buy-ins: locals selling YOU their cards — pending decisions, so open */}
               {(buyinOffers || []).length > 0 && (

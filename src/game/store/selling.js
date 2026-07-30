@@ -8,7 +8,8 @@
 
 import { cardValue, dailyViewers, buyerMaxMult, BUYER_SAVVY, round2, bulkSellableUids, fameMult, fameBeyond } from '../engine'
 import { cardMatchesWant, makeRegular } from '../shows'
-import { REGULAR_FORM_GATE, ONLINE_FEE_PCT, shippingCost } from './constants'
+import { expectedBidders, hammerMultiple, watcherDraw } from '../auctions'
+import { REGULAR_FORM_GATE, ONLINE_FEE_PCT, shippingCost, absoluteDay } from './constants'
 
 export function createSellingSlice(set, get) {
   return {
@@ -53,6 +54,45 @@ export function createSellingSlice(set, get) {
       }))
       get().log('listing', `Listed ${card.name} at $${q.ask.toFixed(2)} (${Math.round(askMult*100)}% of market)${everywhere ? ' — online + in your store case' : ''}`, 0)
       return q
+    },
+
+    // --- 🔨 Auctions -------------------------------------------------------------
+    // What the room is likely to look like BEFORE you commit the card: how many bidders
+    // your name is expected to pull, and what that many bidders historically pay. Shown
+    // on the auction picker so "my reach isn't worth auctioning this yet" is a call you
+    // can make with numbers instead of learning it the expensive way.
+    auctionQuote(card, days, reserve) {
+      const market = cardValue(card)
+      const bidders = expectedBidders(card, get().notoriety, days, reserve, get().streamHypeDaysLeft || 0)
+      // Price the middle case and the two tails at the SAME expected turnout — the spread
+      // is the auction's own weather, not a different room.
+      const mid = hammerMultiple(bidders, () => 0.5)
+      const low = hammerMultiple(Math.max(1, bidders - 1.2), () => 0.16)
+      const high = hammerMultiple(bidders + 1.2, () => 0.84)
+      const netOf = (mult) => {
+        const gross = round2(market * mult)
+        return round2(gross - gross * ONLINE_FEE_PCT - shippingCost(gross, get().upgrades))
+      }
+      return { market, bidders: +bidders.toFixed(1),
+        mid: netOf(mid), lo: netOf(low), hi: netOf(high),
+        midMult: +mid.toFixed(2), reserveAt: reserve ? round2(market * reserve) : 0 }
+    },
+
+    // Put a card up for auction: it leaves your collection and runs on the clock. Unlike a
+    // listing there's no ask to get wrong and no way to pull it back — a live auction is a
+    // promise to the people bidding on it. It settles in the day tick (tickAuctions).
+    listAtAuction(uid, days = 5, reserve = null) {
+      const card = get().collection.find(c => c.uid === uid)
+      if (!card) return false
+      const endsOn = absoluteDay(get().currentDay, get().monthsElapsed) + days
+      const auction = { id: `a${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`,
+        card, days, reserve: reserve ?? null, endsOn, watchers: watcherDraw(card, get().notoriety), bids: 0 }
+      set(s => ({
+        collection: s.collection.filter(c => c.uid !== uid),
+        auctions: [...(s.auctions || []), auction],
+      }))
+      get().log('auction', `🔨 ${card.name} is up for auction — ${days} days${reserve ? `, reserve $${round2(cardValue(card) * reserve).toFixed(2)}` : ', no reserve'}`, 0)
+      return auction
     },
 
     // Flip a live listing between online-only and everywhere (online + store case).

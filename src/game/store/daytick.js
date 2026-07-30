@@ -25,8 +25,12 @@ import {
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance, packValue } from '../mysterypacks'
+import { settleAuction, watcherDraw } from '../auctions'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
+  SPECIAL_ORDER_GRACE, RIVAL_NAMES, RIVAL_HEAT_START, RIVAL_HEAT_DRIFT, RIVAL_PROMO_GATE,
+  RIVAL_PROMO_CHANCE, RIVAL_PROMO_DAYS, RIVAL_PROMOS, rivalDrag,
+  BRANCH_LEASE_PER_DAY, BRANCH_SALE_SHARE, BRANCH_GRACE_DAYS, BRANCH_PREMIUM, EMPLOYEES, floorCount,
   STORE_GRACE_DAYS, GOAL_PERIOD_DAYS, absoluteDay, makeWeeklyGoals, acceptedMethods,
   employeeById, dayOrderRate, drawCount, MAX_ORDERS_PER_DAY, COUNTER_MAX_PER_DAY, machineMaxPerDay, binMaxPerDay,
   binDemand, BIN_GIVEUP_DAYS, BIN_MISS_NOTORIETY, BIN_MISS_DING_CAP,
@@ -632,7 +636,10 @@ export function advanceDaysWith(set, get, days, away) {
     const dayMult = walkinDayMult(enteringAbsDay) * season.walkin
     footWeight += dayMult
     // FOOT TRAFFIC, as a count. A known shop gets a stream of people through the door.
-    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult
+    // 🏪 A live promotion across town is a real hole in your own footfall — that's what
+    // makes the rival worth competing with rather than reading about.
+    const rivalMult = rivalDrag(s.rival)
+    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult * rivalMult
     const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
     for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
@@ -1274,6 +1281,199 @@ export function advanceDaysWith(set, get, days, away) {
       }
     }
   }
+  // --- 🔨 Auctions closing --------------------------------------------------------
+  // Live auctions gather watchers as the days pass; the ones whose clock ran out get
+  // settled by whoever turned up to bid (see game/auctions.js — the bidder count IS the
+  // price). A no-reserve auction always sells; a reserve that isn't met hands the card
+  // back, having spent the days for nothing. Both outcomes are the deal you took.
+  const auctionsLive = []
+  const auctionResults = []
+  for (const a of (s.auctions || [])) {
+    if ((a.endsOn ?? 0) > newAbsDay) {
+      // Still running — the room fills a little each day (pure readout, but it's the
+      // readout that tells you whether the hammer is going to hurt).
+      auctionsLive.push({ ...a, watchers: (a.watchers || 0) + Math.round(watcherDraw(a.card, noto) * days * 0.35) })
+      continue
+    }
+    auctionResults.push({ a, r: settleAuction(a, noto, streamBoostDays) })
+  }
+  for (const { a, r } of auctionResults) {
+    if (!r.met) {
+      // Reserve not met (or nobody bid at all) — the card comes home unsold.
+      set(st => ({ collection: [a.card, ...st.collection] }))
+      get().log('auction', r.bidders === 0
+        ? `🔨 ${a.card.name}'s auction closed with no bids — it's back in your collection. A bigger name draws a bigger room.`
+        : `🔨 ${a.card.name} closed at $${r.hammer.toFixed(2)} — under your $${r.reserveAt.toFixed(2)} reserve, so it didn't sell. Card's back with you.`, 0)
+      continue
+    }
+    const fee = round2(r.hammer * ONLINE_FEE_PCT)
+    const net = round2(r.hammer - fee - shippingCost(r.hammer, s.upgrades))
+    soldProceeds = round2(soldProceeds + net)
+    noteSale(a.card.name, net)
+    const vs = r.mult >= 1 ? `${Math.round((r.mult - 1) * 100)}% OVER market` : `${Math.round((1 - r.mult) * 100)}% under market`
+    get().log('sell', `🔨 ${a.card.name} hammered at $${r.hammer.toFixed(2)} (${r.bidders} bidder${r.bidders === 1 ? '' : 's'}, ${vs}) — net $${net.toFixed(2)}`, net)
+    get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
+    // A packed room is a reputation event in its own right — people saw that sale.
+    if (r.bidders >= 5) get().addNotoriety(1)
+  }
+
+  // --- 🏪 The shop across town ------------------------------------------------------
+  // They open the day you do. Heat is a tug-of-war settled every day: they gain ground for
+  // free if you coast, and lose it to the things a shop does to be liked — hosting nights,
+  // giving cards away, paying fairly for collections, keeping a floor worth walking into,
+  // being someone people have heard of. Hot enough and they start running promotions you
+  // can feel in your own footfall.
+  let rivalNext = s.rival
+  if (hasStore) {
+    if (!rivalNext) {
+      const name = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)]
+      rivalNext = { name, heat: RIVAL_HEAT_START, promo: null, lots: 0 }
+      get().log('shop', `🏪 ${name} across town has noticed you opened. You're in a market now, not a monopoly.`, 0)
+    }
+    // What you did lately, netted out. Each of these is a lever the player already has.
+    let push = RIVAL_HEAT_DRIFT * days                     // their baseline hustle
+    if (buzzDays0 > 0) push -= 1.4 * days                  // your buzz (giveaway / hosted event)
+    if ((s.buylistPolicy || 'fair') === 'generous') push -= 0.9 * days
+    if ((s.buylistPolicy || 'fair') === 'tight') push += 0.5 * days
+    push -= Math.min(2.2, noto / 90) * days                // a name of your own holds the line
+    if (floorCount(s) >= 12) push -= 0.7 * days            // a floor worth walking into
+    else if (floorCount(s) <= 2) push += 1.1 * days        // a bare shop sends people to them
+    push += Math.min(1.6, ((s.demandLog || []).length) * 0.12) * days // stuff the town asked you for and didn't get
+    const heat = Math.max(0, Math.min(100, round2((rivalNext.heat ?? RIVAL_HEAT_START) + push)))
+    // Their promo runs down; a new one can start once they're winning.
+    let promo = rivalNext.promo ? { ...rivalNext.promo, daysLeft: (rivalNext.promo.daysLeft || 0) - days } : null
+    if (promo && promo.daysLeft <= 0) {
+      get().log('shop', `🏪 ${rivalNext.name}'s ${promo.label} has wrapped up. Your footfall should recover.`, 0)
+      promo = null
+    }
+    if (!promo && heat >= RIVAL_PROMO_GATE) {
+      let fired = false
+      for (let i = 0; i < days && !fired; i++) fired = Math.random() < RIVAL_PROMO_CHANCE
+      if (fired) {
+        const pick = RIVAL_PROMOS[Math.floor(Math.random() * RIVAL_PROMOS.length)]
+        const [lo, hi] = RIVAL_PROMO_DAYS
+        promo = { ...pick, daysLeft: lo + Math.floor(Math.random() * (hi - lo + 1)) }
+        get().log('shop', `🏪 ${rivalNext.name} is running ${promo.label} — expect ${Math.round(promo.drag * 100)}% fewer walk-ins for ${promo.daysLeft} day${promo.daysLeft > 1 ? '' : ''}s. Give the town a reason to come to you instead.`, 0)
+      }
+    }
+    // Crossing the line in either direction is worth saying out loud.
+    if (heat >= RIVAL_PROMO_GATE && (rivalNext.heat ?? 0) < RIVAL_PROMO_GATE) {
+      get().log('shop', `🏪 ${rivalNext.name} is pulling ahead of you in town. They'll start running promotions.`, 0)
+    } else if (heat < 40 && (rivalNext.heat ?? 0) >= 40) {
+      get().log('shop', `🏪 Word is ${rivalNext.name} is quiet lately — the town's coming to you.`, 0)
+    }
+    rivalNext = { ...rivalNext, heat, promo }
+  }
+
+  // --- 🏬 Second location: the branch trades on its own ------------------------------
+  // A scaled-down mirror of the main store's day, out of the stock you sent it — and its
+  // own lease and payroll either way. It sells its highest-value stock first (a manager
+  // moves what moves), and it cannot touch anything you didn't allocate to it.
+  let branchNext = s.secondLoc
+  let branchRevenue = 0
+  let branchOverheadDue = 0
+  if (branchNext?.open) {
+    const mgr = employeeById(branchNext.managerId) || EMPLOYEES[2]
+    const overhead = round2((BRANCH_LEASE_PER_DAY + (mgr?.wage || 0)) * days)
+    // Volume mirrors the main store's footfall drivers, at BRANCH_SALE_SHARE of the pace.
+    const pace = BRANCH_SALE_SHARE * (1 + noto / 220) * walkinDayMult(newAbsDay) * rivalDrag(rivalNext)
+    const slots = drawCount(pace * days * 1.6)
+    const cards = [...(branchNext.cards || [])].sort((a, b) => cardValue(b) - cardValue(a))
+    const sealed = [...(branchNext.sealed || [])].sort((a, b) => sealedValue(b) - sealedValue(a))
+    let sold = 0
+    for (let i = 0; i < slots; i++) {
+      const wantSealed = sealed.length && (!cards.length || Math.random() < 0.45)
+      const item = wantSealed ? sealed.shift() : cards.shift()
+      if (!item) break
+      const gross = round2((wantSealed ? sealedValue(item) : cardValue(item)) * (1 + BRANCH_PREMIUM))
+      branchRevenue = round2(branchRevenue + gross)
+      sold++
+    }
+    if (branchRevenue > 0) {
+      // Banked with everything else the day sold (soldProceeds is paid out once, below) —
+      // earning it here as well would pay you twice for the same stock.
+      soldProceeds = round2(soldProceeds + branchRevenue)
+      get().log('sell', `🏬 The second location moved ${sold} item${sold === 1 ? '' : 's'} — +$${branchRevenue.toFixed(2)}`, branchRevenue)
+      get().bumpGoal('sell', sold); get().bumpGoal('profit', branchRevenue)
+    }
+    if (!cards.length && !sealed.length && branchRevenue === 0) {
+      get().log('store', `🏬 The second location sat empty all day and still cost you its lease. Send it stock or recall the keys.`, 0)
+    }
+    // Its overhead settles alongside the main store's, AFTER the day's takings land — a
+    // branch that earned its keep today should be able to pay for itself out of that.
+    branchOverheadDue = overhead
+    branchNext = { ...branchNext, cards, sealed,
+      revenue: round2((branchNext.revenue || 0) + branchRevenue), sold: (branchNext.sold || 0) + sold }
+  }
+
+  // --- 📇 Special orders: the promises in the book ---------------------------------
+  // Three things can happen to a promise. You SOURCE it (a distributor has it and the till
+  // covers the wholesale — it lands in your storeroom earmarked, and the customer's balance
+  // is the fat part of the sale). They COLLECT it on the due date. Or the date passes with
+  // nothing to hand over, and you refund the deposit, take the rep hit, and it goes on the
+  // demand board — the shop that can't get things in is the shop people stop asking.
+  let specialOrdersNext = (s.specialOrders || [])
+  if (specialOrdersNext.length) {
+    const kept = []
+    for (const so of specialOrdersNext) {
+      let order = so
+      // SOURCE: buy it in, once, from the cheapest unlocked distributor that stocks it.
+      if (!order.sourced) {
+        const set_ = setById(order.setId)
+        const product = set_ && (set_.products || []).find(p => p.type === order.productType)
+        let bought = null
+        if (set_ && product) {
+          for (const dv of DISTRIBUTORS) {
+            if (!distributorUnlocked(dv, noto, s.upgrades)) continue
+            const level = rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level
+            const unit = round2(distributorPrice(dv, product.price, level))
+            // Never spend the shop into arrears chasing one special order.
+            if (get().cash < unit + STORE_LEASE_PER_DAY) continue
+            if (!get().spend(unit)) continue
+            const row = { ...get().mintSealedRow(set_, product, unit), loc: 'storeroom', _specialOrder: order.id }
+            // Into the SNAPSHOT the end-of-tick write publishes — a bare set() here would be
+            // overwritten by that write (it restores sealedInvNext as computed earlier).
+            sealedInvNext = [row, ...sealedInvNext]
+            bought = { uid: row.uid, unit, dist: dv.name }
+            break
+          }
+        }
+        if (bought) {
+          order = { ...order, sourced: true, uid: bought.uid, cost: bought.unit }
+          get().log('buy', `📇 Special order sourced — ${order.what} in from ${bought.dist} ($${bought.unit.toFixed(2)}). Held for pickup.`, -bought.unit)
+        }
+      }
+      // COLLECT: on (or after) the due day, if the earmarked item is still in stock.
+      if (order.sourced && newAbsDay >= order.dueDay) {
+        const held = sealedInvNext.find(it => it.uid === order.uid)
+        if (held) {
+          const balance = Math.max(0, round2(order.price - order.deposit))
+          sealedInvNext = sealedInvNext.filter(it => it.uid !== order.uid)
+          get().addNotoriety(2)
+          soldProceeds = round2(soldProceeds + balance)   // banked with the rest of the day's sales
+          noteSale(order.what, balance)
+          get().log('sell', `📇 Special order collected — ${order.what}, balance $${balance.toFixed(2)} paid (+2★). That's what the book is for.`, balance)
+          get().bumpGoal('sell', 1); get().bumpGoal('profit', balance)
+          continue // fulfilled — off the book
+        }
+        // Sourced but the item is gone (sold out from under the promise). Falls through to
+        // the miss below — which is right: the customer doesn't care why.
+        order = { ...order, sourced: false, uid: null }
+      }
+      // MISS: past the promise plus a grace period with nothing to hand over.
+      if (newAbsDay > order.dueDay + SPECIAL_ORDER_GRACE) {
+        const refund = Math.min(order.deposit, Math.max(0, round2(get().cash)))
+        if (refund > 0) get().spend(refund)
+        get().addNotoriety(-3)
+        get().log('shop', `📇 You couldn't get the ${order.what} in — deposit refunded (−$${refund.toFixed(2)}, −3★). They'll ask somewhere else next time.`, -refund)
+        set(st => ({ demandLog: [{ what: order.what, kind: 'sealed', setId: order.setId, day: newAbsDay }, ...(st.demandLog || [])].slice(0, 40) }))
+        continue
+      }
+      kept.push(order)
+    }
+    specialOrdersNext = kept
+  }
+
   // --- Pre-show leads: people DM you BEFORE a show, giving that trip a reason -----
   // Expire leads whose show has passed unattended (attending claims them at entry),
   // then maybe generate fresh ones for unlocked shows 1–4 days out: a recurring
@@ -1328,6 +1528,14 @@ export function advanceDaysWith(set, get, days, away) {
     supplyChannel: remainingSupply,
     distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds
     listings: remainingListings,
+    auctions: auctionsLive,                 // 🔨 still running; the closed ones paid out (or came home) above
+    specialOrders: specialOrdersNext,       // 📇 promises still open (sourced or not); filled/failed ones are off the book
+    rival: rivalNext,                       // 🏪 the shop across town: heat re-settled, promo run down/started
+    ...(branchNext !== s.secondLoc ? { secondLoc: branchNext } : {}), // 🏬 branch traded (or closed) this window
+    auctions: auctionsLive,                 // 🔨 still running; the closed ones paid out (or came home) above
+    specialOrders: specialOrdersNext,       // 📇 promises still open (sourced or not); filled/failed ones are off the book
+    rival: rivalNext,                       // 🏪 the shop across town: heat re-settled, promo run down/started
+    ...(branchNext !== s.secondLoc ? { secondLoc: branchNext } : {}), // 🏬 branch traded (or closed) this window
     wantList: wants,
     showLeads: leadsNext,
     // Holds picked up / lapsed on the one store inventory. Only written with a store —
@@ -1391,6 +1599,9 @@ export function advanceDaysWith(set, get, days, away) {
   // Brick & mortar: settle the daily lease + payroll. Failing this over the grace window
   // closes the store (you keep the cards/cash — you just lose the lease + staff).
   if (hasStore && (leaseDue + payrollDue) > 0) settleStore(set, get, leaseDue, payrollDue, days)
+  // 🏬 The branch pays its own way or it doesn't — settled after the day's takings so a
+  // branch that traded well can cover itself, and closed by its manager if it can't.
+  if (branchOverheadDue > 0) settleBranch(set, get, branchOverheadDue, days)
   // Distributor credit: at each month rollover crossed in this window, accrue interest on the
   // carried balance and auto-pay the monthly minimum from cash (short pay → freeze + rep ding).
   const monthsRolled = months - s.monthsElapsed
@@ -1789,6 +2000,34 @@ function settleCredit(set, get, monthsRolled) {
 // Settle daily store overhead (lease + payroll). If cash covers it, pay and clear arrears.
 // If not, fall behind; past STORE_GRACE_DAYS you LOSE THE STORE (close it + let go of
 // staff) — you're back to flipping from home, not game over. Rent/game-over is separate.
+// 🏬 The second location's daily bill. Same shape as the main store's: pay it and the
+// clock resets; miss it and the arrears build until the manager locks the doors and sends
+// the stock home. The upgrade stays owned, so reopening is a decision, not a purchase.
+function settleBranch(set, get, due, days) {
+  const s = get()
+  const b = s.secondLoc
+  if (!b?.open) return
+  if (s.cash >= due) {
+    get().spend(due)
+    get().log('store', `🏬 Branch overhead paid — lease + manager (-$${due.toFixed(2)})`, -due)
+    if (b.arrears) set(st => ({ secondLoc: { ...st.secondLoc, arrears: 0 } }))
+    return
+  }
+  if (s.cash > 0) get().spend(round2(s.cash))
+  const arrears = (b.arrears || 0) + days
+  if (arrears > BRANCH_GRACE_DAYS) {
+    set(st => ({
+      collection: [...(st.secondLoc?.cards || []), ...st.collection],
+      sealedInventory: [...(st.secondLoc?.sealed || []), ...(st.sealedInventory || [])],
+      secondLoc: null,
+    }))
+    get().log('store-lost', `🏬 You couldn't cover the second location's overhead — it's closed and the stock has come home. Reopen it from the Store tab when you can carry it.`, 0)
+    return
+  }
+  set(st => ({ secondLoc: { ...st.secondLoc, arrears } }))
+  get().log('store-late', `🏬 Behind on the branch's overhead (${arrears}/${BRANCH_GRACE_DAYS} days) — stock it, or recall the keys before it closes.`, 0)
+}
+
 function settleStore(set, get, leaseDue, payrollDue, days) {
   const due = round2(leaseDue + payrollDue)
   const s = get()

@@ -1489,6 +1489,10 @@ export function gradedValue(card, multOverride) {
     // invert the ladder). Real comps are trusted as-is and never capped here.
     value = Math.min(value, gradedCeiling(card, g, multOverride))
   }
+  // Every comp and heuristic above is a PSA number — that's the market's reference holder.
+  // Re-price it for the holder this card is actually IN before the floors apply, so a
+  // strong slab still can't fall under the raw card no matter who graded it.
+  value *= slabMultiplier(card.grade)
   return round2(gradedFloor(card, g, value, multOverride))
 }
 
@@ -1726,6 +1730,61 @@ export const GRADING = {
   kiosk:    { name: 'On-Site Kiosk', fee: 240, days: 2, luck: 0.06, onSite: true },
 }
 
+// ---- Grading COMPANIES -------------------------------------------------------------
+// Who you mail the card to, as opposed to which service tier you buy. The three real
+// graders don't differ in how strictly they grade here — they differ in what a slab in
+// their holder is WORTH when you sell it, what they charge, and how long they take. That
+// keeps the tuning invariant intact (graders sell price/speed/resale, never odds: every
+// company runs the identical rollGrade), while making the choice a real one:
+//
+//   🟥 PSA — the benchmark. The market pays for the red label; nothing is cheap or fast.
+//   🟦 BGS — pricier and slower, and modern BGS trades a touch under PSA… except that a
+//            card grading all-10 subgrades comes back a BLACK LABEL, which is a different
+//            asset entirely. The lottery-ticket grader: submit your pristine cuts here.
+//   🟨 CGC — cheapest and quickest by a mile, and the slabs sell for meaningfully less.
+//            The volume grader: how you slab a stack of mid cards without tying up capital.
+//
+// A grade with no `company` is a PSA slab (every grade written before this existed).
+export const GRADERS = {
+  psa: { key: 'psa', name: 'PSA', full: 'Professional Sports Authenticator', icon: '🟥', color: '#ff5e6c',
+    feeMult: 1, daysMult: 1, slabMult: 1,
+    blurb: 'The benchmark. Slabs sell for exactly what the comps say — every PSA figure in this game is a PSA figure.' },
+  bgs: { key: 'bgs', name: 'BGS', full: 'Beckett Grading Services', icon: '🟦', color: '#3b6cff',
+    feeMult: 1.35, daysMult: 1.25, slabMult: 0.92, blackLabelMult: 2.4,
+    blurb: 'Dearer and slower, and modern BGS trades ~8% under PSA — but all-10 subgrades come back a ⬛ BLACK LABEL worth multiples of the same card in red. Send your pristine cuts.' },
+  cgc: { key: 'cgc', name: 'CGC', full: 'Certified Guaranty Company', icon: '🟨', color: '#ffcb05',
+    feeMult: 0.65, daysMult: 0.6, slabMult: 0.85,
+    blurb: 'A third cheaper and nearly twice as fast, at ~15% less on resale. The volume play: slab the mid stack without parking your capital for six weeks.' },
+}
+export const DEFAULT_GRADER = 'psa'
+export function graderById(key) { return GRADERS[key] || GRADERS[DEFAULT_GRADER] }
+// ⬛ Black label: a BGS slab whose four subgrades all came back 10. Nothing else earns it.
+export function isBlackLabel(grade) {
+  return grade?.company === 'bgs' && grade.centering === 10 && grade.corners === 10 &&
+    grade.edges === 10 && grade.surface === 10
+}
+// What this card's holder does to its market value, relative to the PSA comps everything
+// else in the game is priced from.
+export function slabMultiplier(grade) {
+  if (!grade) return 1
+  if (isBlackLabel(grade)) return GRADERS.bgs.blackLabelMult
+  return graderById(grade.company || DEFAULT_GRADER).slabMult
+}
+// How a slab reads on screen: "PSA 10", "CGC 9", "⬛ BGS 10". One helper so every surface
+// that used to hardcode `PSA ${grade.overall}` names the right holder.
+export function slabLabel(grade) {
+  if (!grade) return ''
+  if (isBlackLabel(grade)) return `⬛ BGS ${grade.overall}`
+  return `${graderById(grade.company || DEFAULT_GRADER).name} ${grade.overall}`
+}
+// Turnaround in days for a service tier at a given company (the courier upgrade still
+// applies on top, at the submission site).
+export function gradingDays(tierKey, company = DEFAULT_GRADER) {
+  const days = GRADING[tierKey]?.days
+  if (days == null) return null
+  return Math.max(1, Math.ceil(days * graderById(company).daysMult))
+}
+
 // Bulk submission discount: sending several cards in one batch cuts the per-card
 // fee (real grading bulk tiers work the same way). Stacks with loyalty discount.
 // Keyed by batch size thresholds, low → high.
@@ -1759,16 +1818,16 @@ export function nextGraderTier(submitted) {
 // Effective per-card fee for a service tier given how many cards you've submitted
 // total (loyalty) and, optionally, how many you're submitting in this batch (bulk).
 // The two discounts stack multiplicatively (you don't get more than 100% off).
-export function gradingFee(tierKey, submitted, batchCount = 1) {
+export function gradingFee(tierKey, submitted, batchCount = 1, company = DEFAULT_GRADER) {
   if (!GRADING[tierKey]) return 0
-  const base = GRADING[tierKey].fee
+  const base = GRADING[tierKey].fee * graderById(company).feeMult
   const loyalty = graderTier(submitted).discount
   const bulk = bulkDiscount(batchCount)
   return round2(base * (1 - loyalty) * (1 - bulk))
 }
 // Roll subgrades. Better cards (by value) get a slightly tighter distribution,
 // simulating that valuable cards are often handled carefully — but it's mostly luck.
-export function rollGrade(card, tier, luck = 0, paidFee = null) {
+export function rollGrade(card, tier, luck = 0, paidFee = null, company = DEFAULT_GRADER) {
   // luck (0..~0.1) shifts the distribution toward higher grades — e.g. the loupe.
   // It nudges each cutoff up proportionally rather than subtracting from the roll,
   // so the lower tail (6 and below) stays reachable instead of becoming impossible.
@@ -1815,8 +1874,10 @@ export function rollGrade(card, tier, luck = 0, paidFee = null) {
   const ceiling = min >= 9 ? 10 : min + 1 // one 9 subgrade no longer blocks a gem
   let overall = Math.round(Math.min(ceiling, avg))
   overall = Math.max(1, Math.min(cap, ceiling, overall))
-  // record the fee the player actually paid (after loyalty discount), not list price
-  return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier, gradedAt: Date.now() }
+  // record the fee the player actually paid (after loyalty discount), not list price, and
+  // WHICH grader's holder it came back in — that's what slabMultiplier prices off.
+  return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier,
+    company, gradedAt: Date.now() }
 }
 
 // Predicted grade RANGE for a still-raw card (the Grading Scope upgrade). Monte-Carlos the

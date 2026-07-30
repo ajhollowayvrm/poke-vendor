@@ -62,6 +62,9 @@ export function realizableAssets(s) {
     + (s.showReserve || 0)  // cash left at home for a show — still yours, still spendable
     + cv(s.collection) + cv(s.binder) + cv(s.shopDisplay) + cv(s.showInventory)
     + (s.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
+    + (s.auctions || []).reduce((a, x) => a + cardValue(x.card), 0)   // 🔨 a card mid-auction is still yours until the hammer falls
+    + (s.secondLoc?.cards || []).reduce((a, c) => a + cardValue(c), 0)  // 🏬 stock sent to the branch is still your stock
+    + (s.secondLoc?.sealed || []).reduce((a, it) => a + sealedValue(it), 0)
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + sv(s.sealedInventory) + sv(s.showSealed) + sv(s.shopSealed)
@@ -84,6 +87,9 @@ export function netWorthFull(s) {
     + (s.showReserve || 0)  // cash left at home for a show — still yours, still spendable
     + cv(s.collection) + cv(s.binder) + cv(s.shopDisplay) + cv(s.showInventory)
     + (s.listings || []).reduce((a, l) => a + cardValue(l.card), 0)
+    + (s.auctions || []).reduce((a, x) => a + cardValue(x.card), 0)   // 🔨 a card mid-auction is still yours until the hammer falls
+    + (s.secondLoc?.cards || []).reduce((a, c) => a + cardValue(c), 0)  // 🏬 stock sent to the branch is still your stock
+    + (s.secondLoc?.sealed || []).reduce((a, it) => a + sealedValue(it), 0)
     + (s.consignments || []).reduce((a, c) => a + (c.net || 0), 0)
     + (s.pendingGrades || []).reduce((a, p) => a + cardValue(p.card), 0)
     + (s.sealedInventory || []).reduce((a, it) => a + sealedValue(it), 0)

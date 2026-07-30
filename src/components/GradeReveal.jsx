@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { cardValue, rawValue, fmtMoney, GRADING, setNameOfCard } from '../game/engine'
+import { cardValue, rawValue, fmtMoney, GRADING, setNameOfCard, slabLabel } from '../game/engine'
 import HiResImg from './HiResImg'
 import { gradeLabel, rarityColor } from './CardTile'
 import Burst from './Burst'
@@ -49,7 +49,7 @@ export default function GradeReveal({ cards, onDone }) {
             const gain = round(cardValue(card) - rawValue(card))
             return (
               <button key={card.uid} className={`grade-reveal-card ${isRevealed ? 'flipped' : ''} grade-${g.overall} ${g.overall >= 10 ? 'gem' : ''}`}
-                style={{ '--rarity': edge }} onClick={() => reveal(card)} aria-label={isRevealed ? `${card.name} graded PSA ${g.overall}` : 'Reveal slab'}>
+                style={{ '--rarity': edge }} onClick={() => reveal(card)} aria-label={isRevealed ? `${card.name} graded ${slabLabel(g)}` : 'Reveal slab'}>
                 <div className="gr-flip">
                   {/* face-down: sealed grading return */}
                   <div className="gr-back">

@@ -205,6 +205,63 @@ export const EMPLOYEES = [
 ]
 export function employeeById(id) { return EMPLOYEES.find(e => e.id === id) || null }
 
+// --- 🏪 The shop across town ---------------------------------------------------
+// Your copy has always referred to a competitor — haggle a collection too hard and "you
+// lose the whole lot to the shop across town." This makes them a real business instead of
+// a turn of phrase, because a town with one card shop in it isn't a market, it's a monopoly.
+//
+// `heat` (0–100) is how much of the town they're winning. It is not a doom clock: it moves
+// BOTH ways, every day, off things you actually do. Sit still and it climbs — they're
+// working while you aren't. Host nights, give cards away, post a generous buylist, keep a
+// stocked floor, build a name, and it falls. Above HEAT_PROMO_GATE they start running
+// promotions that visibly pull your walk-ins for a few days, which is the point at which
+// ignoring them stops being free.
+export const RIVAL_NAMES = [
+  'Twin Pines Cards', 'Route 9 Collectibles', 'The Card Vault', 'Sunset Sports & TCG',
+  'Grandmaster Games', 'Pallet Town Trading Co.', 'Dragonspiral Hobby',
+]
+export const RIVAL_HEAT_START = 45
+export const RIVAL_HEAT_DRIFT = 1.6      // per day, if you give them a free run at the town
+export const RIVAL_PROMO_GATE = 62       // heat at which they start running promotions
+export const RIVAL_PROMO_CHANCE = 0.22   // per day, once they're hot enough
+export const RIVAL_PROMO_DAYS = [2, 4]
+export const RIVAL_PROMOS = [
+  { label: 'a 20%-off sealed weekend', drag: 0.18 },
+  { label: 'a "we pay MORE for your collection" push', drag: 0.12, buyinDrag: true },
+  { label: 'a free-pack-with-every-purchase promo', drag: 0.15 },
+  { label: 'a big grand-reopening event', drag: 0.24 },
+]
+// How much of your walk-in traffic a live rival promo takes.
+export function rivalDrag(rival) {
+  return rival?.promo ? Math.max(0, 1 - (rival.promo.drag || 0)) : 1
+}
+
+// --- 🏬 Second Location --------------------------------------------------------
+// A manager-run satellite. It is deliberately NOT a second UI to micromanage: you hire a
+// manager, you send it stock, and it trades on its own. What makes it a decision rather
+// than free money is that it has a lease and a payroll whether or not you keep it stocked —
+// an empty branch is a hole in the floor you pour money into.
+export const BRANCH_LEASE_PER_DAY = 95
+export const BRANCH_SALE_SHARE = 0.4     // it does ~40% of the main store's daily volume
+export const BRANCH_GRACE_DAYS = 6       // days underwater before the manager locks the doors
+export const BRANCH_PREMIUM = 0.10       // its own counter premium (a captive local market)
+
+// --- 📇 Special orders --------------------------------------------------------
+// A walk-in asks for a sealed product you don't stock. Without the Special Orders Book
+// that's a miss: a rep ding and a line on the demand board. With it there's a third
+// answer — take a deposit and order it in. That turns your worst outcome into your best
+// margin, because a customer who's already paid a deposit isn't price-shopping you.
+//
+// The catch is that it's a PROMISE. You owe them the item by `dueDay`; the sourcing runs
+// through the same distributors (and the same lead times) as everything else, so an order
+// you can't fill is a refund, a rep hit, and a demand-board entry that says you let them
+// down. Promising more than you can source is the failure mode, exactly as it should be.
+export const SPECIAL_ORDER_DEPOSIT = 0.35   // fraction of retail taken up front
+export const SPECIAL_ORDER_PREMIUM = 0.10   // markup on top of shop retail — the convenience fee
+export const SPECIAL_ORDER_DUE_DAYS = 7     // how long you promise them — enough for any lead time
+export const SPECIAL_ORDER_GRACE = 4        // days past the promise before they give up on you
+export const SPECIAL_ORDER_CAP = 6          // how many promises you can have outstanding
+
 // --- Payment methods ---------------------------------------------------------
 // You start accepting only Venmo. Buyers each prefer a method; if you can't take
 // it, the sale falls through. Some methods are unlocked by upgrades.
@@ -672,6 +729,8 @@ export const UPGRADES = {
   preferredAccount: { name: 'Preferred Account', cost: 2000, desc: 'The distributor finance desk upgrades your paper: credit-line interest drops 4% → 2.5%/mo and the limit rises from 50% to 65% of your net worth. Leverage for the buy-big playstyle.', icon: '🏦' },
   wrapPress: { name: 'Custom Wrap Press', cost: 800, desc: 'A foil sealer and custom-printed wrappers for your mystery packs: pro presentation sells more packs on every channel, and a thin pack stings buyers a little less — reputation losses are softened. The repack line goes retail-grade.', icon: '✨' },
   certOdds: { name: 'Certified Odds', cost: 1600, desc: 'A third-party audit stamps every 📋 PUBLISHED pack line with certified pull odds: shoppers trust a posted board far more, so published lines sell noticeably faster, and honest thin packs sting even less (buyers knew the real numbers). It does NOT cover a broken promise — a pack that opens under your posted floor burns hotter than ever. Publish a line from its editor to use it. Requires the Custom Wrap Press.', icon: '📋', needs: 'wrapPress' },
+  specialOrders: { name: 'Special Orders Book', cost: 1800, icon: '📇', needs: 'storefront', desc: 'A ledger by the till and an account with every distributor who\'ll take a one-off. When a walk-in asks for sealed you don\'t carry, you get a THIRD answer besides "sorry" — take a 35% deposit and order it in. They pay the balance at pickup, at retail plus a 10% convenience premium, and a customer who\'s already paid a deposit doesn\'t price-shop you. It is a promise, though: miss the date and it\'s a refund, a rep hit, and a line on the demand board. Requires a Brick-and-Mortar Store.' },
+  secondLocation: { name: 'Second Location', cost: 50000, tier: 'big', icon: '🏬', needs: 'storefront', desc: 'A second shop across the county, run by a manager you hire and stock you send over. It trades on its own each day — counter business, walk-ins, its own slice of the town\'s foot traffic — at roughly 40% of the main store\'s volume, entirely hands-off. It also has its own lease and its own payroll, and it does NOT get to raid the main store\'s shelves: it sells what you allocate to it and nothing else. Run it dry and it sits there costing you money; leave it unfunded too long and it closes. The endgame move from shopkeeper to owner. Requires a Brick-and-Mortar Store.' },
   storageUnit: { name: 'Storage Unit', cost: 1500, desc: 'A rented unit two streets over: +15 idle-sealed units stored free before the daily storage fee bites. The bridge between the apartment closet and the 🏛️ Vault.', icon: '🏗️' },
   clipEditor: { name: 'Clip Editor', cost: 1100, desc: 'An editor cuts EVERY broadcast into a highlight reel: streams without an organic viral moment still put out a clip that recruits followers for a couple of days after the wrap. God-pack clips are untouched — those cut themselves. Requires a Streaming Setup.', icon: '🎬', needs: 'streaming' },
   modTeam: { name: 'Mod Team', cost: 1500, desc: 'Trusted mods keep the channel alive between broadcasts: subscriber churn while you\'re dark is HALVED, and a well-run room gets raided by other streamers ~50% more often. Requires a Streaming Setup.', icon: '🛡️', needs: 'streaming' },
