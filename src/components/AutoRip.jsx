@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { openPack, openProduct, makeProductPromo, isHit, isChase, cardValue, fmtMoney, rarityRank,
-  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, setById } from '../game/engine'
+  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -347,7 +347,7 @@ export default function AutoRip({ items, onExit }) {
                       <img src={cardImg(c)} alt="" />
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
-                        <div className="rip-hit-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}</div>
+                        <div className="rip-hit-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : c.rarity}</div>
                       </div>
                       <div className="rip-hit-val">{fmtMoney(cardValue(c))}{c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}</div>
                     </button>
@@ -422,7 +422,7 @@ export default function AutoRip({ items, onExit }) {
                     </HoloCard>
                     <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
                       <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
-                      <div className="rc-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}</div>
+                      <div className="rc-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}</div>
                       <div className="rc-val">{fmtMoney(cardValue(c))}</div>
                       {(cut || c._fillsWant) && (
                         <div className="rc-badges">

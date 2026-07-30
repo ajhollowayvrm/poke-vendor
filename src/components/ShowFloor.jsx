@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
-import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent } from '../game/engine'
+import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
@@ -406,7 +406,7 @@ export default function ShowFloor({ show, onLeave }) {
                   🃏 {booth.stock.length} singles
                   {sealedN > 0 && <> · 📦 {sealedN} sealed{hasVintage ? ' (🗝️ vintage!)' : ''}{hasAftermarket ? ' (🕰️ out-of-print!)' : ''}</>}
                   {mysteryN > 0 && <> · ❓ mystery</>}
-                  {top && <> · ⭐ {top.grade ? `PSA ${top.grade.overall} ` : ''}{top.name} {fmtMoney(top._ask)}</>}
+                  {top && <> · ⭐ {top.grade ? `${slabLabel(top.grade)} ` : ''}{top.name} {fmtMoney(top._ask)}</>}
                   {deals > 0 && <span style={{ color: 'var(--green)' }}> · {deals} DEAL{deals > 1 ? 'S' : ''} flagged</span>}
                 </div>
               </div>

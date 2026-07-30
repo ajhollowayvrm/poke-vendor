@@ -53,7 +53,7 @@ const pass = (name, ok, detail) => {
 
 try {
   if (!(await waitForServer())) throw new Error('vite dev server did not come up')
-  const browser = await chromium.launch()
+  const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {})
   const page = await browser.newPage()
   await page.goto(URL)
   await page.evaluate(() => localStorage.clear())

@@ -29,6 +29,8 @@ import Binder from './components/Binder'
 import Regulars from './components/Regulars'
 import StoreStock from './components/StoreStock'
 import GradeReveal from './components/GradeReveal'
+import FirstRun, { NotorietyHelp } from './components/FirstRun'
+import { onUpdateReady, applyAppUpdate } from './game/appUpdate'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -509,7 +511,7 @@ export default function App() {
             title={activeShow ? 'Cannot advance while attending a show' : streamLive ? 'You’re live — end the stream first (it consumes the day itself)' : 'Advance one day'} onClick={handleNextDay}>
             Next Day →
           </button>
-          <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>notoriety</small></span>
+          <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>notoriety</small><NotorietyHelp /></span>
           <div className="cash" title="Cash on hand — spendable money right now"><AnimatedNumber value={cash} format={fmtMoney} /><small>cash on hand</small><CashFlash value={cash} /></div>
           <div className="worth" title="Net worth — cash + market value of everything you own (collection, listings, sealed, cards at the grader). Moving value around (grading, buying, listing) doesn't change it; only real income or spending does."><AnimatedNumber value={worth} format={fmtMoney} /><small>net worth</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
@@ -536,6 +538,8 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
+        <UpdatePill />
+        <FirstRun />
         {tab === 'shop' && (
           <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
         )}
@@ -1136,6 +1140,43 @@ function ImportsInTransit() {
 // A distributor that won't open a wholesale account with you yet. Two flavors: the big
 // wholesaler wants NOTORIETY (a bar you climb), the import channel wants the ⛩️ Import
 // License UPGRADE (a purchase). Shown in place of their shelves so each reads as a goal.
+
+// What a sealed product actually is, in one line. The playtest's complaint was that the Buy
+// tab lists a dozen product types and never says how any of them differ — "Booster Pack" and
+// "Sleeved Pack" cost different money for what looks like the same thing.
+
+// A new build is downloaded and waiting. Shown rather than applied: yanking the page out
+// from under a pack rip to install a copy change is worse than being a build behind. One
+// tap flushes the save and reloads onto the new version.
+function UpdatePill() {
+  const [ready, setReady] = useState(false)
+  useEffect(() => onUpdateReady(setReady), [])
+  if (!ready) return null
+  return (
+    <button type="button" className="update-pill" onClick={applyAppUpdate}
+      title="A newer version of the game has already downloaded — tap to switch to it. Your save is written first.">
+      🔄 <b>Update ready</b> — tap to reload into the new version
+    </button>
+  )
+}
+
+function productBlurb(product) {
+  const t = String(product?.type || '')
+  const packs = product?.packs || 1
+  const base = /sleeved/i.test(t)
+    ? 'The same booster pack in a sealed foil sleeve — the wrapper can\'t be felt or weighed through it, so retailers hang them where a loose pack would get searched. Same cards, small premium for the protection.'
+    : /booster box/i.test(t) ? `A retail box of ${packs} boosters — the cheapest way to buy packs by the pack, and the standard unit for a real break.`
+    : /elite trainer/i.test(t) ? `An ETB: ${packs} packs plus sleeves, dice and a storage box${product?.bonus ? ', and a guaranteed promo card' : ''}. Priced for the accessories as much as the packs.`
+    : /blister/i.test(t) ? `A hanging retail blister — ${packs} pack${packs > 1 ? 's' : ''}${product?.bonus ? ' with a guaranteed promo' : ''}.`
+    : /tin/i.test(t) ? `A collector's tin — ${packs} packs${product?.bonus ? ' and a promo' : ''} in reusable packaging.`
+    : /bundle/i.test(t) ? `A booster bundle — ${packs} packs, no extras, usually the best packs-per-dollar of the small products.`
+    : /premium|collection/i.test(t) ? `A premium collection — ${packs} packs built around a chase promo card.`
+    : /case/i.test(t) ? `A sealed case${product?.boxes ? ` of ${product.boxes} boxes` : ''} — distributor quantity, at distributor pricing.`
+    : /^booster pack$/i.test(t) ? 'A single loose booster — 10 cards. The cheapest way in, and the most -EV per dollar.'
+    : `${packs} pack${packs > 1 ? 's' : ''} of sealed product.`
+  return base
+}
+
 function LockedDistributor({ dist, notoriety }) {
   if (dist.requiresUpgrade) {
     const u = UPGRADES[dist.requiresUpgrade]
@@ -1339,7 +1380,7 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit, split })}
         title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
-        <span className="prodname">{useCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
+        <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
         {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
         <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}</span>

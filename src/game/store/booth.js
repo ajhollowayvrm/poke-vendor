@@ -33,7 +33,7 @@ const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
   floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor, absoluteDay,
-  SUPPLY_CASE, supplyById } from './constants'
+  SUPPLY_CASE, supplyById, SPECIAL_ORDER_DUE_DAYS, BRANCH_LEASE_PER_DAY, employeeById } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -964,6 +964,25 @@ export function createBoothSlice(set, get) {
           s.bumpGoal('sell', 1); s.bumpGoal('profit', net)
           break
         }
+        case 'specialOrder': {
+          // 📇 You promised to get it. Bank the deposit, write it in the book, and the day
+          // tick goes shopping for it (see the special-orders block there). From here it's
+          // an obligation with a date on it — the upside is a customer who's already paid.
+          const blocked = s.paymentBlocked(effect.payMethod)
+          if (blocked) { s.addNotoriety(-1); s.log('lost-sale', blocked, 0); return blocked }
+          const { net, fee } = processingFee(effect.deposit, effect.payMethod)
+          s.earn(net)
+          const day = absoluteDay(get().currentDay, get().monthsElapsed)
+          set(st => ({ specialOrders: [...(st.specialOrders || []), {
+            id: `so${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`,
+            what: effect.what, setId: effect.setId, productType: effect.productType,
+            deposit: net, price: effect.price, orderedDay: day,
+            dueDay: day + SPECIAL_ORDER_DUE_DAYS, sourced: false, uid: null,
+          }] }))
+          s.log('shop', `📇 Special order taken — ${effect.what}, $${net.toFixed(2)} deposit down${feeNote(fee)}. Due in ${SPECIAL_ORDER_DUE_DAYS} days.`, net)
+          msg = appendFeeMsg(msg, fee, effect.payMethod, net)
+          break
+        }
         case 'requestMiss': {
           // You couldn't produce what the walk-in wanted — a small rep ding (or none), a
           // demand signal in the log, and an entry on the DEMAND BOARD (the Shop floor's
@@ -1024,6 +1043,54 @@ export function createBoothSlice(set, get) {
     // so an index captured at click time can point at the wrong order by the time this runs).
     clearInboxItem(id) {
       set(s => ({ boothInbox: s.boothInbox.filter(e => e.id !== id) }))
+    },
+
+    // --- 🏬 Second Location --------------------------------------------------------
+    // Open the branch: hire a manager and unlock the doors. The lease starts running the
+    // moment it opens, so this is a commitment, not a formality.
+    openBranch(managerId = 'manager') {
+      if (!get().upgrades.secondLocation) return { error: 'You need the Second Location first.' }
+      if (get().secondLoc?.open) return { error: 'The branch is already open.' }
+      const mgr = employeeById(managerId)
+      if (!mgr) return { error: 'Pick a manager to run it.' }
+      set(() => ({ secondLoc: { open: true, managerId, cards: [], sealed: [], arrears: 0, revenue: 0, sold: 0, openedDay: absoluteDay(get().currentDay, get().monthsElapsed) } }))
+      get().log('store', `🏬 Second location open — ${mgr.title} hired at $${mgr.wage}/day, lease $${BRANCH_LEASE_PER_DAY}/day. Send it stock or it'll just burn money.`, 0)
+      return { ok: true }
+    },
+
+    // Send stock over from the storeroom. The branch sells ONLY what you allocate — it has
+    // no claim on the main store's shelves, which is what keeps it a decision.
+    sendToBranch(uids = []) {
+      const b = get().secondLoc
+      if (!b?.open) return { error: 'No branch open.' }
+      const ids = new Set(uids)
+      const cards = get().collection.filter(c => ids.has(c.uid) && !c.locked && !c._heldFor && c.loc !== 'floor')
+      const sealed = (get().sealedInventory || []).filter(it => ids.has(it.uid) && !it.locked && !it._heldFor && it.loc !== 'floor' && !it._specialOrder)
+      if (!cards.length && !sealed.length) return { error: 'Nothing eligible to send (floor stock, keepsakes and holds stay put).' }
+      const cardIds = new Set(cards.map(c => c.uid)), sealedIds = new Set(sealed.map(x => x.uid))
+      set(s => ({
+        collection: s.collection.filter(c => !cardIds.has(c.uid)),
+        sealedInventory: (s.sealedInventory || []).filter(it => !sealedIds.has(it.uid)),
+        secondLoc: { ...s.secondLoc, cards: [...cards, ...(s.secondLoc.cards || [])], sealed: [...sealed, ...(s.secondLoc.sealed || [])] },
+      }))
+      const n = cards.length + sealed.length
+      get().log('store', `🚚 Sent ${n} item${n === 1 ? '' : 's'} over to the second location.`, 0)
+      return { sent: n }
+    },
+
+    // Pull everything back — closing up, or reclaiming stock that isn't moving out there.
+    recallFromBranch() {
+      const b = get().secondLoc
+      if (!b) return { error: 'No branch.' }
+      const n = (b.cards || []).length + (b.sealed || []).length
+      if (!n) return { error: 'The branch has no stock to recall.' }
+      set(s => ({
+        collection: [...(s.secondLoc.cards || []), ...s.collection],
+        sealedInventory: [...(s.secondLoc.sealed || []), ...(s.sealedInventory || [])],
+        secondLoc: { ...s.secondLoc, cards: [], sealed: [] },
+      }))
+      get().log('store', `🚚 Recalled ${n} item${n === 1 ? '' : 's'} from the second location.`, 0)
+      return { recalled: n }
     },
   }
 }

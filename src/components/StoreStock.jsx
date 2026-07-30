@@ -575,7 +575,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
                 })()}
             {(first.foil || first.reverse) && (
               <span className="tl-chip" style={first.foil ? { color: first.foil.color } : undefined}>
-                {first.foil ? (first.foil.badge || first.foil.label || 'FOIL') : 'RH'}
+                <span title={first.foil ? undefined : 'Reverse Holo — the same card with a foil-patterned background, printed in the reverse slot of most packs. Worth a premium over the plain print (bigger on rarer cards).'}>{first.foil ? (first.foil.badge || first.foil.label || 'FOIL') : 'RH'}</span>
               </span>
             )}
           </> : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}

@@ -61,7 +61,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
       <div className={`cardtile ${noBorder ? 'no-edge' : 'rarity-edge'} ${hit ? 'r-hit' : ''} ${card._grail ? 'r-grail' : ''} ${foil ? 'foil-'+foil.key : ''}`}
         onClick={onClick} style={{ '--rarity': edge }}>
         <span className="tag" style={{ color: edge }}>
-          {foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}
+          <span title={card.reverse && !foil ? 'Reverse Holo — the same card with a foil-patterned background, printed in the reverse slot of most packs. Worth a premium over the plain print (bigger on rarer cards).' : undefined}>{foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}</span>
         </span>
         {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
         {setName && <span className="settag" title={setName}>{setName}</span>}

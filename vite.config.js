@@ -8,7 +8,15 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt', not 'autoUpdate'. autoUpdate silently swaps the CACHE but leaves the
+      // running page on its old JavaScript — and an installed PWA resumes rather than
+      // reloads, so a phone can sit on a build for days without knowing. src/game/appUpdate.js
+      // registers the worker itself, polls for new builds, and offers the reload.
+      registerType: 'prompt',
+      // We do the registering (appUpdate.js). Without this the plugin ALSO injects its own
+      // bare registerSW.js, which registers the worker and never tells anyone it updated —
+      // the exact bug this replaces.
+      injectRegister: null,
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       // precache the built app + the card images? No — card art is remote (CDN).
       // We precache the app shell + data so it loads instantly and works offline.

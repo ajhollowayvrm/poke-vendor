@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { GRADING, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -25,7 +25,7 @@ export default function Bench() {
       ) : (
         <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
           {pending.map((p) => {
-            const totalDays = GRADING[p.tierKey].days
+            const totalDays = gradingDays(p.tierKey, p.company)
             const daysLeft = Math.max(0, p.readyOnDay - today)
             const pct = Math.min(100, 100 * (totalDays - daysLeft) / totalDays)
             return (
@@ -33,7 +33,7 @@ export default function Bench() {
                 <img src={cardImg(p.card)} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>
-                  <div className="muted" style={{ fontSize: 12 }}>{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}{GRADING[p.tierKey].name} grading</div>
+                  <div className="muted" style={{ fontSize: 12 }}>{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}<span style={{ color: graderById(p.company).color, fontWeight: 700 }}>{graderById(p.company).icon} {graderById(p.company).name}</span> · {GRADING[p.tierKey].name}</div>
                   <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                     <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,var(--accent2),var(--green))', transition: 'width .25s' }} />
                   </div>
@@ -55,6 +55,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const [open, setOpen] = useState(false)
   const [tierKey, setTierKey] = useState('economy')
+  const [company, setCompany] = useState('psa')   // which grader the whole batch goes to
   const [picked, setPicked] = useState(() => new Set())
 
   // Only raw (ungraded) cards can be graded — sorted by value (highest first) so
@@ -63,7 +64,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
     () => collection.filter(c => !c.grade).sort((a, b) => rawValue(b) - rawValue(a)),
     [collection])
   const count = picked.size
-  const feePer = gradingFee(tierKey, submitted, count || 1)
+  const feePer = gradingFee(tierKey, submitted, count || 1, company)
   const total = +(feePer * count).toFixed(2)
   const bulk = bulkDiscount(count)
 
@@ -71,7 +72,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
     setPicked(p => { const n = new Set(p); n.has(uid) ? n.delete(uid) : n.add(uid); return n })
   }
   function submit() {
-    onSubmit([...picked], tierKey)
+    onSubmit([...picked], tierKey, company)
     setPicked(new Set()); setOpen(false)
   }
 
@@ -93,11 +94,23 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
 
       {open && (
         <>
+          {/* A batch goes to ONE grader — that's how a real bulk submission works, and it's
+              the whole decision: red-label resale, a black-label lottery, or cheap and fast. */}
+          <div className="grader-pick" style={{ marginTop: 10 }}>
+            {Object.values(GRADERS).map(g => (
+              <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
+                style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)} title={g.blurb}>
+                <b style={{ color: g.color }}>{g.icon} {g.name}</b>
+                <small>{g.slabMult === 1 ? 'benchmark resale' : `${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
+              </button>
+            ))}
+          </div>
+          <p className="muted" style={{ fontSize: 11.5, margin: '4px 0 0' }}>{graderById(company).blurb}</p>
           <div className="row" style={{ margin: '10px 0', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span className="muted" style={{ fontSize: 13 }}>Service:</span>
             {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => (
               <button key={key} className={`tab ${tierKey === key ? 'active' : ''}`} onClick={() => setTierKey(key)}>
-                {t.name} · ~{t.days}d
+                {t.name} · ~{gradingDays(key, company)}d
               </button>
             ))}
           </div>
@@ -176,7 +189,7 @@ function GraderRelationship({ submitted }) {
           ? <>Send <b>{next.min - submitted}</b> more card{next.min - submitted === 1 ? '' : 's'} to reach <b style={{ color: next.color }}>{next.name}</b> ({Math.round(next.discount * 100)}% off).</>
           : <>Top tier reached — the grader treats you like family.</>}
         {' '}Current fees: {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([k, t], i) => (
-          <span key={k}>{i ? ' · ' : ''}{t.name} <b>${gradingFee(k, submitted).toFixed(0)}</b></span>
+          <span key={k}>{i ? ' · ' : ''}{t.name} <b>${gradingFee(k, submitted, 1, 'psa').toFixed(0)}</b></span>
         ))}.
       </div>
     </div>

@@ -84,7 +84,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 58,
+  version: 59,
   storage: createJSONStorage(() => debouncedStorage),
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -112,8 +112,14 @@ export const useGame = create(persist((set, get) => ({
     // Pack Machine stock is sealed packs pulled out of sealedInventory (one bucket per uid) —
     // register them too so a stray duplicate elsewhere gets dropped, not the machine's copy.
     for (const it of (state.packMachine?.stock || [])) if (it?.uid) seen.add(it.uid)
+    // 🔨 A card at auction is out of the collection and under a promise to the bidders —
+    // register it first so a stray duplicate never survives at the auctioned copy's expense.
+    for (const a of (state.auctions || [])) if (a?.card?.uid) seen.add(a.card.uid)
     // Bulk Bin stock is cards pulled out of the collection — same rule as the machine.
     for (const c of (state.bulkBin?.stock || [])) if (c?.uid) seen.add(c.uid)
+    // 🏬 Stock allocated to the second location lives out there, not on your shelves.
+    for (const c of (state.secondLoc?.cards || [])) if (c?.uid) seen.add(c.uid)
+    for (const it of (state.secondLoc?.sealed || [])) if (it?.uid) seen.add(it.uid)
     // 🚢 Import shipments hold paid-for sealed rows still on the water — register them so a
     // stray duplicate in a landed bucket gets dropped, never the copy your money is riding on.
     for (const sh of (state.imports || [])) for (const it of (sh?.rows || [])) if (it?.uid) seen.add(it.uid)
@@ -557,6 +563,25 @@ export const useGame = create(persist((set, get) => ({
     // slimsave.js). There's no data step: the inflate at the top of this function has
     // already put the catalog back, and the next write goes out slim. The bump exists so
     // the version number honestly tracks the format on disk.
+    if (version < 59) {
+      // Six new systems land together (one bump per batch, house style):
+      //   🔨 auctions      — cards out on the block; nothing in flight on an old save
+      //   📇 specialOrders — promises taken at the counter; the book starts empty
+      //   🏪 rival         — the shop across town. Left NULL on purpose: the day tick
+      //                      opens them the first time it sees a storefront, so an
+      //                      existing shop meets them tomorrow with the same fanfare a
+      //                      new one gets, instead of silently starting mid-rivalry.
+      //   🏬 secondLoc     — the branch; null until the upgrade is bought AND opened
+      //   🏅 graders       — a grade with no `company` reads as PSA everywhere
+      //                      (slabMultiplier/slabLabel default it), so every slab already
+      //                      in a save keeps exactly the value it had. No backfill needed.
+      //   🎓 onboarding    — the first-run guide is localStorage-only (a UI preference,
+      //                      deliberately not part of the save), so nothing to seed.
+      state.auctions = state.auctions ?? []
+      state.specialOrders = state.specialOrders ?? []
+      state.rival = state.rival ?? null
+      state.secondLoc = state.secondLoc ?? null
+    }
     return state
   },
   // The pricing engine holds the live market multipliers in module state, which is empty

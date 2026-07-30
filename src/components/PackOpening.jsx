@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, isChase, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, isChase, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -308,7 +308,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                         <div className="rip-hit-meta" style={{ color: edge }}>
-                          {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
+                          {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : c.rarity}
                         </div>
                         {cut && (
                           <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>
@@ -487,7 +487,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                         <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
                           <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                           <div className="rc-meta" style={{ color: edge }}>
-                            {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
+                            {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
                           </div>
                           <div className="rc-val">{fmtMoney(cardValue(c))}</div>
                           {(cut || c._fillsWant) && (
@@ -560,7 +560,7 @@ function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
                 <div className="rip-hit-info">
                   <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                   <div className="rip-hit-meta" style={{ color: edge }}>
-                    {c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : c.rarity}
+                    {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : c.rarity}
                   </div>
                   {cut && (
                     <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { cardValue, psaValueAt, fmtMoney, cutEstimate, cardImg, isChase } from '../game/engine'
+import { cardValue, psaValueAt, fmtMoney, cutEstimate, cardImg, isChase, slabLabel } from '../game/engine'
 import { rarityColor } from './CardTile'
 
 // The reveal, as a hand you riffle through: you hold the whole pack stacked, the current card
@@ -110,7 +110,7 @@ function FanCaption({ card, hasLoupe }) {
       <div className="fan-cap-name">{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
       <div className="fan-cap-meta">
         <span style={{ color: edge, fontWeight: 800 }}>
-          {card.foil ? card.foil.label : card.grade ? `PSA ${card.grade.overall}` : `${card.reverse ? 'Reverse · ' : ''}${card.rarity}`}
+          {card.foil ? card.foil.label : card.grade ? slabLabel(card.grade) : `${card.reverse ? 'Reverse · ' : ''}${card.rarity}`}
         </span>
         {' · '}<b style={{ color: 'var(--green)' }}>{fmtMoney(cardValue(card))}</b>
       </div>

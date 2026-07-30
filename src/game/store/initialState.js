@@ -75,6 +75,10 @@ export function initialState() {
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
     listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
+    // 🔨 Live auctions: {id, card, days, reserve, endsOn, watchers, bids}. No ask and no pulling
+    // out — the day tick settles each one when its clock runs out, and how many bidders your
+    // NAME pulled is what sets the hammer price (see game/auctions.js).
+    auctions: [],
     showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
     showSealed: [],          // SEALED product you brought to the current show to sell at your booth — floor buyers can buy it; unsold comes home (to sealedInventory) when you leave
     showReserve: 0,          // cash you deliberately LEFT AT HOME when attending a show: while the show is active, `cash` holds only what you brought (your floor wallet); endShow() folds this back in. Counted in net worth so leaving money home never reads as losing it.
@@ -85,7 +89,18 @@ export function initialState() {
     giveawayDaysLeft: 0,     // store buzz window (giveaways + hosted events): walk-in traffic boost days remaining
     buyinOffers: [],         // locals selling YOU their cards: {id, who, hint, cards, askCash, estimate, estimateTight, pendingDays} — pay cash or store credit
     buylistPolicy: 'fair',   // the posted "we pay ~X%" sign (BUYLIST_POLICIES): volume-vs-margin dial on walk-in collections
+    // 📇 Promises in the Special Orders Book: {id, what, setId, productType, deposit, price,
+    // orderedDay, dueDay, sourced, uid}. Taken at the counter when a walk-in asks for sealed
+    // you don't carry; the day tick sources, delivers, or (past the date) refunds them.
+    specialOrders: [],
     demandLog: [],           // the DEMAND BOARD: walk-in requests you couldn't fill — {what, kind, setId, day}; a fortnight's worth, surfaced on the Shop floor tab so you stock what the town wants
+    // 🏪 The shop across town: { name, heat, promo:{label,drag,daysLeft}|null, lots }. Born the
+    // day you open a storefront. `heat` is their share of the town's business — it drifts up if
+    // you coast and falls when you actually compete (events, giveaways, a stocked floor, a name).
+    rival: null,
+    // 🏬 The satellite: { open, managerId, stock:[cards], sealed:[rows], arrears, revenue, sold }.
+    // Null until the Second Location upgrade is bought and the branch is opened.
+    secondLoc: null,
     storeCredit: 0,          // outstanding store credit you've issued (a liability — drains from counter takings as locals spend it; counts against net worth)
     lgsCredit: 0,            // in-store credit YOU hold at the Local Game Store (an ASSET) — earned by turning in bulk at 5¢/card, spent automatically on LGS purchases
     // Distributor credit line: buy sealed on credit (net terms) and carry a revolving balance.

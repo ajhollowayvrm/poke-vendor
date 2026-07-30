@@ -1,6 +1,6 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
 import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
-import { omniShelfCards, BUYLIST_POLICIES } from './store/constants'
+import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_PREMIUM, SPECIAL_ORDER_CAP } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -999,8 +999,14 @@ export function makeShopRequest(s, accepted = null, opts = {}) {
   //   loc: 'shelf' (on display) | 'back' (owned, not out) | 'none' (don't own it)
   // `setId` rides along on a MISS so the demand board can aggregate what the town keeps
   // asking for (see resolveEncounter's requestMiss → demandLog).
-  function build({ label, article, img, price, loc, kind, uid, setId }) {
+  function build({ label, article, img, price, loc, kind, uid, setId, productType }) {
     const has = loc === 'shelf' || loc === 'back'
+    // 📇 The Special Orders Book turns a sealed miss into a sale you just haven't made yet:
+    // take a deposit now, source it from a distributor, hand it over at pickup. Only offered
+    // on SEALED — you can order a product in, you can't order somebody a specific single.
+    const canSpecialOrder = !has && kind === 'sealed' && !!s.upgrades?.specialOrders &&
+      !!productType && (s.specialOrders || []).length < SPECIAL_ORDER_CAP
+    const deposit = round2(price * SPECIAL_ORDER_DEPOSIT)
     const options = has
       ? [
           { text: loc === 'shelf' ? `Ring it up — $${price.toFixed(2)}` : `Grab it from the back — $${price.toFixed(2)}`,
@@ -1012,6 +1018,12 @@ export function makeShopRequest(s, accepted = null, opts = {}) {
             effect: { type: 'none', notoriety: 0, msg: 'They shrug and move on — you had it but passed.' } },
         ]
       : [
+          ...(canSpecialOrder ? [{
+            text: `📇 Special-order it — $${deposit.toFixed(2)} deposit`, tone: 'kind',
+            effect: { type: 'specialOrder', what: label, setId, productType, deposit,
+              price: round2(price * (1 + SPECIAL_ORDER_PREMIUM)), payMethod: pay,
+              msg: `Deposit taken and written in the book — now go and actually get it.` },
+          }] : []),
           { text: "Apologize — you don't have it", tone: 'fair',
             effect: { type: 'requestMiss', what: label, reqKind: kind, setId, notoriety: -1, msg: `You don't stock ${article} ${label}. They leave disappointed. 😞` } },
           { text: 'Offer to try and get one in', tone: 'kind',
@@ -1041,7 +1053,7 @@ export function makeShopRequest(s, accepted = null, opts = {}) {
       const { it, loc } = pickAny(null, have)
       const set = setById(it.setId)
       return build({ label: `${it.product.type} of ${set?.name || 'that set'}`, article: 'a', img: set?.logo || null,
-        price: priceFor(sealedValue(it), true), loc, kind: 'sealed', uid: it.uid, setId: it.setId })
+        price: priceFor(sealedValue(it), true), loc, kind: 'sealed', uid: it.uid, setId: it.setId, productType: it.product?.type })
     }
     // a random product they want — maybe you happen to have it, usually not. Launch week
     // aims half these hunts straight at the reprint-wave set.
@@ -1051,7 +1063,7 @@ export function makeShopRequest(s, accepted = null, opts = {}) {
     const hit = pool.find(x => x.setId === set.id && x.product.type === prod.type)
     return build({ label: `${prod.type} of ${set.name}`, article: 'a', img: set.logo || null,
       price: priceFor(hit ? sealedValue(hit) : prod.price, true),
-      loc: hit ? (hit.loc === 'floor' ? 'shelf' : 'back') : 'none', kind: 'sealed', uid: hit?.uid, setId: set.id })
+      loc: hit ? (hit.loc === 'floor' ? 'shelf' : 'back') : 'none', kind: 'sealed', uid: hit?.uid, setId: set.id, productType: prod.type })
   }
 
   // singles — the shelf is the shop-floor cards PLUS any card listed everywhere

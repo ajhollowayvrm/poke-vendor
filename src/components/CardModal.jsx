@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, gradingFee, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADERS, gradingFee, gradingDays, graderById, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
 import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
@@ -24,6 +25,8 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   const listOnSite = useGame(s => s.listOnSite)
   const listingQuote = useGame(s => s.listingQuote)
   const submitGrade = useGame(s => s.submitGrade)
+  const listAtAuction = useGame(s => s.listAtAuction)
+  const auctionQuote = useGame(s => s.auctionQuote)
   const addToBinder = useGame(s => s.addToBinder)
   const removeFromBinder = useGame(s => s.removeFromBinder)
   const toggleLock = useGame(s => s.toggleLock)
@@ -43,7 +46,13 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   // market drifts each game-day). The chart needs the set's recent multiplier samples.
   const marketHistory = useGame(s => s.marketHistory)
   const hasStore = useGame(s => !!s.upgrades.storefront)
+  // Which grading company this card would go to. PSA is the market's reference holder, so
+  // it's the default; the other two trade resale value against fee and turnaround.
+  const [company, setCompany] = useState('psa')
   const [listing, setListing] = useState(false) // showing the list-on-site picker?
+  const [auctioning, setAuctioning] = useState(false) // showing the auction picker?
+  const [aucDays, setAucDays] = useState(5)
+  const [aucReserve, setAucReserve] = useState(null)
   const [askPct, setAskPct] = useState(90)
   // With a storefront, default to listing EVERYWHERE (online + your store case) —
   // in-person sales skip the fees + shipping and earn the walk-in premium.
@@ -69,6 +78,8 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   const next = nextGraderTier(submitted)
   const market = cardValue(card)
   const quote = listingQuote(card, askMult)
+  // Priced off the LIVE store (reach + hype), so the range moves as your name does.
+  const aucQuote = auctionQuote(card, aucDays, aucReserve)
   // This card's value reprojected across the set's recent market window (raw or graded).
   const priceSeries = valueHistory(card, marketHistory?.[setIdOfCard(card)])
 
@@ -127,7 +138,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     <div className="muted" style={{ fontSize: 11, textTransform:'uppercase', letterSpacing:'.5px', fontWeight:700 }}>Grading history</div>
                     {card.gradeHistory.map((h, i) => (
                       <div key={i} className="muted" style={{ fontSize: 12 }}>
-                        • PSA {h.overall} · {GRADING[h.tier]?.name || h.tier}{h.fee != null ? ` · $${h.fee.toFixed(2)} fee` : ''}
+                        • {graderById(h.company).name} {h.overall} · {GRADING[h.tier]?.name || h.tier}{h.fee != null ? ` · $${h.fee.toFixed(2)} fee` : ''}
                       </div>
                     ))}
                   </div>
@@ -220,7 +231,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
               </div>
             )}
 
-            {!inspect && !readOnly && !inBinder && (!listing ? (
+            {!inspect && !readOnly && !inBinder && ((!listing && !auctioning) ? (
               <div className="sell-options" style={{ marginTop: 14 }}>
                 <button className="btn alt sellopt" disabled={slotTaken}
                   title={slotTaken ? 'Your binder already has this variant slotted' : undefined}
@@ -236,6 +247,10 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                   <b>List for sale ↗{hasStore ? ' 🌐+🏬' : ''}</b>
                   <small>Set your price — sells over time. Online sales pay a 5% fee + shipping{hasStore ? '; list it everywhere and a walk-in can buy it fee-free at a premium instead' : ''}</small>
                 </button>
+                <button className="btn alt sellopt" onClick={() => setAuctioning(true)}>
+                  <b>🔨 Put it up for auction</b>
+                  <small>No price, no take-backs — it runs for a few days and whoever turns up sets the number. Your reach is the price: a big room bids past market, an empty one robs you.</small>
+                </button>
                 <button className="btn alt sellopt" onClick={() => { consign(card.uid); onClose() }}>
                   <b>Consign ↗</b>
                   <small>Hands-off: a service tries to sell it in a few days for ~0.85–0.95× market (18% fee). Usually moves it, but ~1 in 7 come back unsold.</small>
@@ -248,6 +263,51 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     ? 'Not for sale: off your store floor and safe from bulk sells. You can still grade, trade, or show it.'
                     : 'A hard "never bulk-sell this" guard for keepers.'}</small>
                 </button>
+              </div>
+            ) : auctioning ? (
+              <div className="list-picker" style={{ marginTop: 14 }}>
+                <div className="row" style={{ justifyContent:'space-between', alignItems:'baseline' }}>
+                  <b>🔨 Send it to auction</b>
+                  <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(market)}</span>
+                </div>
+                <div className="row" style={{ marginTop: 8, gap: 6, flexWrap: 'wrap' }}>
+                  {AUCTION_LENGTHS.map(l => (
+                    <button key={l.days} className={`chip-btn ${aucDays === l.days ? 'active' : ''}`} style={{ flex: '1 1 0' }}
+                      onClick={() => setAucDays(l.days)} title={l.blurb}><b>{l.label}</b><small>{l.blurb}</small></button>
+                  ))}
+                </div>
+                <div className="row" style={{ marginTop: 6, gap: 6, flexWrap: 'wrap' }}>
+                  {AUCTION_RESERVES.map(r => (
+                    <button key={r.label} className={`chip-btn ${aucReserve === r.mult ? 'active' : ''}`} style={{ flex: '1 1 0' }}
+                      onClick={() => setAucReserve(r.mult)} title={r.blurb}><b>{r.label}</b></button>
+                  ))}
+                </div>
+                <p className="muted" style={{ fontSize: 11.5, margin: '6px 2px 0' }}>
+                  {AUCTION_RESERVES.find(r => r.mult === aucReserve)?.blurb}
+                </p>
+                <div className="list-quote" style={{ marginTop: 8 }}>
+                  <div><span className="muted">Expected room</span>
+                    <b style={{ color: aucQuote.bidders >= 3 ? 'var(--green)' : aucQuote.bidders >= 2 ? 'var(--gold)' : 'var(--red)' }}>
+                      👥 ~{aucQuote.bidders}
+                    </b>
+                    <small className="muted">{aucQuote.bidders < 2 ? 'thin — your name is the bottleneck' : aucQuote.bidders < 3.5 ? 'a modest crowd' : 'a real bidding war'}</small>
+                  </div>
+                  <div><span className="muted">Likely nets</span><b style={{ color:'var(--green)' }}>{fmtMoney(aucQuote.mid)}</b>
+                    <small className="muted">{Math.round(aucQuote.midMult * 100)}% of market, after fee + shipping</small></div>
+                  <div><span className="muted">Range</span><b>{fmtMoney(aucQuote.lo)} – {fmtMoney(aucQuote.hi)}</b>
+                    <small className="muted">a quiet night vs a packed one</small></div>
+                </div>
+                <p className="muted" style={{ fontSize: 11.5, margin: '8px 2px 0' }}>
+                  {aucReserve
+                    ? `Under ${fmtMoney(aucQuote.reserveAt)} it doesn't sell and the card comes back — you'll have spent the ${aucDays} days for nothing.`
+                    : 'No reserve: this WILL sell in ' + aucDays + ' days, at whatever the room decides. There is no pulling it back.'}
+                </p>
+                <div className="row" style={{ marginTop: 10 }}>
+                  <button className="btn gold" onClick={() => { listAtAuction(card.uid, aucDays, aucReserve); onClose() }}>
+                    Start the auction 🔨
+                  </button>
+                  <button className="btn alt" style={{ maxWidth: 120 }} onClick={() => setAuctioning(false)}>← Back</button>
+                </div>
               </div>
             ) : (
               <div className="list-picker" style={{ marginTop: 14 }}>
@@ -312,16 +372,28 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     <span className="muted" style={{ fontSize: 11 }}>· 9+: {Math.round(prediction.highChance * 100)}%</span>
                   </div>
                 )}
+                {/* WHO grades it, then which service. The company changes the fee, the wait,
+                    and what the returned slab sells for — never the odds (see GRADERS). */}
+                <div className="grader-pick">
+                  {Object.values(GRADERS).map(g => (
+                    <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
+                      style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)} title={g.blurb}>
+                      <b style={{ color: g.color }}>{g.icon} {g.name}</b>
+                      <small>{g.slabMult === 1 ? 'benchmark resale' : `${g.slabMult > 1 ? '+' : ''}${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
+                    </button>
+                  ))}
+                </div>
+                <p className="muted" style={{ fontSize: 11.5, margin: '4px 0 2px' }}>{graderById(company).blurb}</p>
                 <div className="row">
                   {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => {
-                    const fee = gradingFee(key, submitted)
+                    const fee = gradingFee(key, submitted, 1, company)
                     const discounted = fee < t.fee
                     return (
                       <button key={key} className="btn alt" disabled={cash < fee}
-                        onClick={() => { submitGrade(card.uid, key); onClose() }}>
+                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}>
                         {t.name} · ${fee.toFixed(0)}
                         {discounted && <small style={{ textDecoration:'line-through', opacity:.5, marginLeft:4 }}>${t.fee}</small>}
-                        <br/><small className="muted">~{t.days}d</small>
+                        <br/><small className="muted">~{gradingDays(key, company)}d</small>
                       </button>
                     )
                   })}
@@ -333,7 +405,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 )}
                 {/* Don't let the player burn a fee on a card worth less than grading it.
                     Compare the cheapest (economy) fee against the raw value. */}
-                {gradingFee('economy', submitted) >= rawValue(card) && (
+                {gradingFee('economy', submitted, 1, company) >= rawValue(card) && (
                   <p style={{ fontSize: 11.5, marginTop: 6, color: 'var(--red)' }}>
                     ⚠️ Grading costs more than this card is worth (${rawValue(card).toFixed(2)} raw). Even a PSA 10 likely won't clear the fee — not worth grading.
                   </p>

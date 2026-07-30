@@ -2023,3 +2023,51 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .sealed-break-opt { display:flex; align-items:center; gap:8px; width:100%; max-width:none;
   justify-content:flex-start; text-align:left; padding:9px 12px; margin-bottom:6px; font-size:13px; }
 .sealed-break-opt .pill { flex:none; font-size:11.5px; }
+
+/* --- 🏅 Grading company picker (CardModal + Bench bulk submit) ----------------
+   Three side-by-side chips: who grades it, before which service tier. The active
+   chip takes the grader's own colour so the choice reads at a glance. */
+.grader-pick { display: flex; gap: 6px; margin: 6px 0 2px; }
+.grader-pick .chip-btn { padding: 6px 4px; text-align: center; }
+.grader-pick .chip-btn b { display: block; font-size: 12.5px; }
+.grader-pick .chip-btn small { display: block; font-size: 10px; color: var(--dim); margin-top: 1px; }
+.grader-pick .chip-btn.active { border-color: var(--rarity); box-shadow: 0 0 0 1px var(--rarity) inset; }
+
+/* --- 🎓 First-run guide -------------------------------------------------------
+   A dismissible card above the content that tracks the save, not the player.
+   Deliberately quiet: it never covers anything and never blocks a click. */
+.firstrun { border: 1px solid var(--line); background: var(--panel); border-radius: 12px;
+  padding: 10px 12px; margin: 0 0 12px; }
+.firstrun-steps { display: grid; gap: 6px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.firstrun-step { display: flex; gap: 8px; align-items: flex-start; padding: 7px 9px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.firstrun-step .fr-icon { font-size: 15px; line-height: 1.2; }
+.firstrun-step .fr-title { font-size: 12.5px; font-weight: 700; }
+.firstrun-step .fr-hint { font-size: 11px; margin-top: 3px; line-height: 1.35; }
+.firstrun-step.done { opacity: .5; }
+.firstrun-step.done .fr-icon { color: var(--green); font-weight: 800; }
+.firstrun-step.now { border-color: var(--gold); box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 30%, transparent) inset; }
+
+/* The "?" beside the notoriety star, and its explainer popover. */
+.noto-help { margin-left: 5px; width: 15px; height: 15px; border-radius: 50%; padding: 0;
+  border: 1px solid var(--line); background: var(--panel2); color: var(--dim);
+  font-size: 10px; font-weight: 800; cursor: pointer; line-height: 1; vertical-align: middle; }
+.noto-help:hover { color: var(--gold); border-color: var(--gold); }
+.noto-pop { position: absolute; z-index: 60; top: 100%; left: 0; margin-top: 6px; width: min(340px, 88vw);
+  text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; box-shadow: 0 10px 30px #0009; font-size: 12px; cursor: pointer; }
+.noto-pop p { margin: 5px 0; }
+.noto-pop ul { margin: 5px 0 5px 16px; padding: 0; }
+.noto-pop li { margin: 2px 0; }
+.noto-chip { position: relative; }
+
+/* --- 🔄 "Update ready" pill ----------------------------------------------------
+   An installed PWA resumes instead of reloading, so a new build can be sitting in the
+   cache unseen. This is how you find out — full-width, unmissable, and never automatic
+   (a forced reload mid-rip would be worse than the staleness). */
+.update-pill { display: block; width: 100%; margin: 0 0 12px; padding: 9px 12px;
+  border: 1px solid var(--gold); border-radius: 10px; cursor: pointer; text-align: center;
+  background: color-mix(in srgb, var(--gold) 12%, var(--panel)); color: var(--txt);
+  font-size: 13px; font-family: inherit; }
+.update-pill:hover { background: color-mix(in srgb, var(--gold) 20%, var(--panel)); }
+.update-pill b { color: var(--gold); }
