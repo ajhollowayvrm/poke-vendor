@@ -30,6 +30,7 @@ import Regulars from './components/Regulars'
 import StoreStock from './components/StoreStock'
 import GradeReveal from './components/GradeReveal'
 import FirstRun, { NotorietyHelp } from './components/FirstRun'
+import { onUpdateReady, applyAppUpdate } from './game/appUpdate'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -537,6 +538,7 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
+        <UpdatePill />
         <FirstRun />
         {tab === 'shop' && (
           <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
@@ -1142,6 +1144,22 @@ function ImportsInTransit() {
 // What a sealed product actually is, in one line. The playtest's complaint was that the Buy
 // tab lists a dozen product types and never says how any of them differ — "Booster Pack" and
 // "Sleeved Pack" cost different money for what looks like the same thing.
+
+// A new build is downloaded and waiting. Shown rather than applied: yanking the page out
+// from under a pack rip to install a copy change is worse than being a build behind. One
+// tap flushes the save and reloads onto the new version.
+function UpdatePill() {
+  const [ready, setReady] = useState(false)
+  useEffect(() => onUpdateReady(setReady), [])
+  if (!ready) return null
+  return (
+    <button type="button" className="update-pill" onClick={applyAppUpdate}
+      title="A newer version of the game has already downloaded — tap to switch to it. Your save is written first.">
+      🔄 <b>Update ready</b> — tap to reload into the new version
+    </button>
+  )
+}
+
 function productBlurb(product) {
   const t = String(product?.type || '')
   const packs = product?.packs || 1
