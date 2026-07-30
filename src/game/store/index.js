@@ -37,6 +37,7 @@ import { createSourcingSlice } from './sourcing'
 import { createBoothSlice } from './booth'
 import { createLivestreamSlice } from './livestream'
 import { createPacksSlice } from './packs'
+import { deflateState, inflateState } from './slimsave'
 import { defaultPackTiers } from '../mysterypacks'
 
 // Re-export the public API (constants + pure helpers) so `import { ... } from '../game/store'`
@@ -83,13 +84,21 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 57,
+  version: 58,
   storage: createJSONStorage(() => debouncedStorage),
+  // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
+  // price, psa comps…) — the game's own bundled data, written back into the save once per
+  // card. Past ~7,500 cards that blew the cloud item cap and the save stopped syncing at
+  // all. Strip anything the catalog can reproduce exactly on the way out; slimsave.js puts
+  // it back on the way in (see there for why this can't lose a card's own values).
+  partialize: deflateState,
   // Runs on EVERY load (after migrate). Dedupe any card uid that somehow appears in
   // more than one bucket (collection / pendingGrades / listings / consignments) — a
   // card can only be in one place at a time. First-seen wins, in that priority order.
   merge(persisted, current) {
-    const state = { ...current, ...(persisted || {}) }
+    // Lay the catalog rows back under every slimmed card before anything reads the state.
+    // No-op on a save that migrate() already inflated, and on pre-v58 fat saves.
+    const state = { ...current, ...inflateState(persisted || {}) }
     const seen = new Set()
     const keepFlat = (arr) => (arr || []).filter(c => c?.uid && !seen.has(c.uid) && seen.add(c.uid))
     const keepWrapped = (arr) => (arr || []).filter(e => e?.card?.uid && !seen.has(e.card.uid) && seen.add(e.card.uid))
@@ -129,6 +138,11 @@ export const useGame = create(persist((set, get) => ({
   // backfill fields added across versions so old saves keep working.
   migrate(state, version) {
     if (!state) return state
+    // Saves from v58 on are stored slim (see slimsave.js) — inflate FIRST so every step
+    // below reads whole cards. Migrations here compute over card data (v32's retro-credit
+    // walks net worth, v43 seeds the shop floor by cardValue); handing them a card with no
+    // price would silently mis-migrate. No-op on the fat saves that v1–57 wrote.
+    state = inflateState(state)
     // Corrupt-save guard: drop null/garbage entries from every card/item bucket BEFORE any
     // migration step maps over them. A single null in `collection` would otherwise throw
     // inside migrate (e.g. the v32 retro-credit reads card values), which aborts rehydrate
@@ -539,6 +553,10 @@ export const useGame = create(persist((set, get) => ({
       // yet, so an old save isn't retroactively in the hole.
       state.bulkBin = { price: 0.25, stock: [], sold: 0, revenue: 0, ...(state.bulkBin || {}), missed: state.bulkBin?.missed ?? 0, dryDays: state.bulkBin?.dryDays ?? 0 }
     }
+    // v58 is the slim save format (catalog fields stripped from every card — see
+    // slimsave.js). There's no data step: the inflate at the top of this function has
+    // already put the catalog back, and the next write goes out slim. The bump exists so
+    // the version number honestly tracks the format on disk.
     return state
   },
   // The pricing engine holds the live market multipliers in module state, which is empty

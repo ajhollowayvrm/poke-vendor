@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   cloudConfigured, autoSyncOn, setAutoSync, localOwnedByCurrentUser,
   pushLocalChange, loadFromCloud, peekCloud, reconcile,
-  getSyncStatus, restorePrevCloudSave,
+  getSyncStatus, restorePrevCloudSave, measureSave,
 } from '../game/cloudSave'
 import {
   currentUser, onAuthChange, signIn, signUp, confirmSignUp, resendCode,
@@ -36,6 +36,9 @@ export default function Account() {
   // of silently swallowed. A 'conflict' status means a same-account fork (this device
   // AND the cloud both changed since they last synced) — shows the pick-a-side panel.
   const [syncSt, setSyncSt] = useState(getSyncStatus())
+  // How close this save is to the cloud's size cap. Only shown once it's worth knowing —
+  // see sizeNote below.
+  const [size, setSize] = useState(null)
 
   useEffect(() => onAuthChange(setUser), [])
   useEffect(() => {
@@ -51,6 +54,14 @@ export default function Account() {
     else setCloudAt(null)
     return () => { alive = false }
   }, [user])
+
+  // Measure the save whenever this panel is looked at, and again after every sync — a push
+  // that just succeeded (or just failed on size) is exactly when the number is interesting.
+  useEffect(() => {
+    let alive = true
+    measureSave().then(r => { if (alive) setSize(r) }).catch(() => {})
+    return () => { alive = false }
+  }, [user, syncSt.at])
 
   if (!cloudConfigured()) {
     return (
@@ -256,6 +267,23 @@ export default function Account() {
     setAuto(next); setAutoSync(next)
   }
 
+  // Save-size readout. A cloud save is one DynamoDB item, so there IS a ceiling — but
+  // quoting a byte count at someone whose game is nowhere near it is just noise. Stay quiet
+  // under 60% of the cap, mention it from there, and go amber at 85% while a collection is
+  // still small enough to do something about.
+  const sizeNote = (() => {
+    if (!size?.cap) return null
+    const pct = size.payload / size.cap
+    if (pct < 0.6) return null
+    const kb = n => `${Math.round(n / 1024)}KB`
+    return (
+      <div style={{ fontSize: 11.5, color: pct >= 0.85 ? 'var(--gold)' : 'var(--dim)' }}>
+        {pct >= 0.85 ? '⚠️ ' : ''}Save size {kb(size.payload)} of {kb(size.cap)}
+        {pct >= 0.85 && ' — near the cloud limit. Selling or bulking out singles you don’t want brings it back down.'}
+      </div>
+    )
+  })()
+
   const note = msg && (
     <div className="muted" style={{ fontSize: 12, color: msg.kind === 'err' ? 'var(--red)' : msg.kind === 'ok' ? 'var(--green)' : 'var(--dim)' }}>
       {msg.text}
@@ -310,11 +338,16 @@ export default function Account() {
               <div className="muted" style={{ fontSize: 11.5 }}>Offline — will sync when the cloud is reachable again.</div>
             )}
             {syncSt.state === 'toolarge' && (
-              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>⚠️ This save is too large to sync — cloud backups are NOT updating.</div>
+              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>
+                ⚠️ This save is too large to sync — cloud backups are NOT updating. Your game is safe
+                on this device. Selling, consigning or bulking out singles you don’t want shrinks it;
+                sync resumes on its own once it fits.
+              </div>
             )}
             {syncSt.state === 'error' && (
               <div style={{ fontSize: 11.5, color: 'var(--red)' }}>⚠️ Cloud sync is failing ({syncSt.message || 'unknown error'}) — retrying as you play.</div>
             )}
+            {syncSt.state !== 'toolarge' && sizeNote}
           </>
         )}
 
