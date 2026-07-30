@@ -101,6 +101,13 @@ npm run dev      # opens http://localhost:5179
 
 Progress auto-saves to your browser (localStorage). Reset from the ⚙️ menu.
 
+Saved cards store only what's true of *your* copy — uid, condition, hidden cut, grade,
+where it's shelved — and the catalog row (name, rarity, price, comps) is laid back
+underneath from `src/data/sets.json` on load, since the app already ships it. A field is
+only dropped when the bundled data reproduces it byte-for-byte, so a copy the game changed
+is always written out in full. See `src/game/store/slimsave.js`; `npm run verify-slimsave`
+round-trips every card in the catalog and prints the save size against the cloud cap.
+
 ## Pull rates
 The hit-slot rarity ladder (`scripts/fetch-data.mjs` → `HIT_SLOT`) approximates
 modern Scarlet & Violet / Mega Evolution English booster pull rates:

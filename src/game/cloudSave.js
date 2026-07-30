@@ -30,6 +30,21 @@ const MAX_PUSH_BYTES = 350_000
 
 export function cloudConfigured() { return !!SYNC_URL && authConfigured() }
 
+// How big this save is on the wire: the EXACT bytes saveToCloud would push, gzipped and
+// base64'd the same way. Surfaced in ⚙️ → Account so a collection heading for the cap is
+// visible while there's still room to do something about it — before auto-sync stops dead
+// and the only signal is a red line in a settings panel.
+// → { payload, cap, raw } | null when there's nothing saved yet.
+export async function measureSave() {
+  const data = readBlob()
+  if (!data) return null
+  let payload = data
+  if (typeof CompressionStream !== 'undefined') {
+    try { payload = await gzipToB64(data) } catch { /* uncompressed, like the push would be */ }
+  }
+  return { payload: payload.length, cap: MAX_PUSH_BYTES, raw: data.length }
+}
+
 // --- sync status -----------------------------------------------------------------
 // One tiny observable so the UI can tell "synced" apart from "silently failing".
 // states: idle | ok | offline | error | conflict | toolarge
