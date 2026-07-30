@@ -112,6 +112,12 @@ export const HIT_VALUE_THRESHOLD = 20
 export function isHit(card) {
   return rarityRank(card.rarity) >= HIT_THRESHOLD || cardValue(card) > HIT_VALUE_THRESHOLD
 }
+// Chase tier: a rung above a plain hit — Master Ball foils and Special Illustration Rare or
+// better. These are the cards worth a suspense beat mid-reveal (PackOpening), a rainbow edge
+// peeking out of the hand (HandReveal), and stopping a whole sift for (AutoRip).
+export function isChase(card) {
+  return card?.foil?.key === 'masterball' || rarityRank(card?.rarity) >= rarityRank('Special Illustration Rare')
+}
 
 // A card counts as "bulk" purely by WORTH, not rarity: any raw card whose live market value
 // is under BULK_VALUE_THRESHOLD. So a rarity chase or a foil that the market values at pennies
