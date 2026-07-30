@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, cardValue, fmtMoney, rarityRank,
-  preloadCardImages, cardImg, setById } from '../game/engine'
+import { openPack, openProduct, makeProductPromo, isHit, isChase, cardValue, fmtMoney, rarityRank,
+  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, setById } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import CardModal from './CardModal'
 import HoloCard from './HoloCard'
+import HandReveal from './HandReveal'
 import Burst from './Burst'
-import { configureFeedback, primeAudio, sfxTear, sfxHit, sfxGod } from '../game/feedback'
-
-// Chase-tier = the cards worth stopping the whole sift for (Master Ball foils and SIR+).
-function isChase(c) { return c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare') }
+import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxGod } from '../game/feedback'
 
 // "Big hit" thresholds — how good a card has to be for the sifter to STOP and hand you the
 // pack to rip yourself. Chase-only sets the value bar to infinity, so only a Master Ball / SIR+
@@ -23,14 +21,27 @@ const STOP_LEVELS = [
   { key: Infinity, label: 'Chase only', blurb: 'Only a Master Ball / SIR+ stops it' },
 ]
 
-// AUTO-RIP / "sift": churn through a whole GROUP of sealed one pack at a time, banking the
-// forgettable packs automatically and STOPPING on any pack with a big hit so you can rip THAT
-// one by hand. `items` are sealed inventory rows; each is consumed (ripSealed) as its turn
-// comes up, its packs banked as they're opened — so backing out never loses product.
+// How much faster than a normal rip the churn runs. The sift shows the REAL rip — pack tears,
+// cards land in the hand one by one — just wound right up: a ~10-card pack goes by in about
+// eight tenths of a second instead of six seconds, so a booster box takes ~30s rather than
+// four minutes. Multiplies with the player's own rip-speed setting, so Turbo sifts a box in
+// well under ten seconds.
+const SIFT_SPEED = 8
+
+// AUTO-RIP / "sift": churn through a whole GROUP of sealed, speeding through the full rip
+// animation pack after pack and STOPPING on any pack holding something big — which it hands
+// you sealed, to tear open and reveal a card at a time yourself. `items` are sealed inventory
+// rows; each is consumed (ripSealed) as its turn comes up, its packs banked as they're opened —
+// so backing out never loses product.
+//
+// What it deliberately does NOT do is tell you what it found. The sifter knows (it looked at the
+// pack to decide), but naming the card before you've torn the wrap is handing you the punchline
+// first. You get "something's in this one" and the pack; the rest is yours to pull.
 export default function AutoRip({ items, onExit }) {
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const soundOn = useGame(s => s.settings.sound ?? true)
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
+  const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const addPulls = useGame(s => s.addPulls)
   const ripSealed = useGame(s => s.ripSealed)
   const wantList = useGame(s => s.wantList)
@@ -41,22 +52,31 @@ export default function AutoRip({ items, onExit }) {
   const [minValue, setMinValue] = useState(25)
   const [feed, setFeed] = useState([])
   const [stats, setStats] = useState({ packs: 0, value: 0, hitPacks: 0, best: null, hits: [] })
-  const [pending, setPending] = useState(null)   // { set, product, cards, hit } awaiting a manual rip
-  const [reveal, setReveal] = useState(null)     // { set, cards } — the hit pack you just tore open
+  const [pending, setPending] = useState(null)   // { set, product, cards } awaiting a manual rip
+  // The pack currently on screen — the same shape in both modes, because it IS the same UI:
+  // the churn drives `shown` on a timer, the manual rip drives it off your taps.
+  const [stack, setStack] = useState(null)       // { set, cards }
+  const [shown, setShown] = useState(0)          // how many of its cards are face-up
+  const [shaking, setShaking] = useState(false)  // the tear beat before cards start landing
+  const [awaiting, setAwaiting] = useState(false)// manual rip: waiting for your tap
+  const [settled, setSettled] = useState(false)  // manual rip: last card seen → the grid
   const [tear, setTear] = useState(0)
   const [burst, setBurst] = useState(false)
   const [modalCard, setModalCard] = useState(null)
 
   const speed = Math.max(0.25, ripSpeed)
   const ms = (n) => n / speed
+  const fast = (n) => ms(n) / SIFT_SPEED   // churn pacing: a real rip, wound up
   const timers = useRef([])
   const after = (fn, d) => { const id = setTimeout(() => { timers.current = timers.current.filter(t => t !== id); fn() }, d); timers.current.push(id); return id }
+  const cancelTimers = () => { timers.current.forEach(clearTimeout); timers.current = [] }
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
 
   // Work state lives in refs (the sift loop reads/advances it outside React's render cycle).
   const queue = useRef([...items])   // sealed rows not yet started (still in inventory)
   const cur = useRef(null)           // { set, product, packsLeft, promo }
-  const running = useRef(false)      // a between-packs timer is pending — don't double-pump
+  const running = useRef(false)      // a pack is mid-animation — don't double-pump
+  const inflight = useRef(null)      // { set, cards } opened and animating, not yet banked
   const minRef = useRef(minValue)
   minRef.current = minValue
 
@@ -81,7 +101,7 @@ export default function AutoRip({ items, onExit }) {
 
   // The heart of the sift: advance until we hit a big-hit pack (then stop for you) or run dry.
   function pump() {
-    if (running.current) return
+    if (running.current || flushed.current) return    // flushed = the rest was swept in; the sift is over
     if (!cur.current) {
       if (!queue.current.length) { setPhase('done'); return }
       const it = queue.current.shift()
@@ -94,19 +114,17 @@ export default function AutoRip({ items, onExit }) {
     if (!c.set) { cur.current = null; pump(); return }    // unknown set — skip it defensively
     if (c.packsLeft > 0) {
       const cards = tagCards(openPack(c.set))
-      const hit = bigHitIn(cards)
-      if (hit) {
-        // STOP — hand this pack to the player. It isn't banked or counted until they rip it.
-        setPending({ set: c.set, product: c.product, cards, hit })
+      // Look BEFORE we animate: a pack worth stopping for must never flash its cards past you
+      // on the churn clock. It goes back in your hands sealed instead.
+      if (bigHitIn(cards)) {
+        setPending({ set: c.set, product: c.product, cards })
+        setStack(null); setShown(0); setSettled(false); setAwaiting(false)
         setTear(0); setPhase('hit')
         setStats(s => ({ ...s, hitPacks: s.hitPacks + 1 }))
-        pushFeed(`🔥 ${c.set.name} — ${hit.name} (${fmtMoney(cardValue(hit))}) — rip it yourself →`)
+        pushFeed(`🔥 ${c.set.name} — the sifter stopped on this one. Rip it yourself →`)
         return
       }
-      bankPack(cards, c.set)
-      c.packsLeft--
-      running.current = true
-      after(() => { running.current = false; pump() }, ms(240))
+      churnPack(cards, c.set)
       return
     }
     if (c.promo) {
@@ -117,37 +135,99 @@ export default function AutoRip({ items, onExit }) {
         addPulls([promo], `${c.product.type} promo · ${c.set.name}`, 0)
         setStats(s => ({ ...s, value: s.value + cardValue(promo), best: pickBest(s.best, [promo]), hits: (promo._isHit || promo.foil) ? [promo, ...s.hits] : s.hits }))
         pushFeed(`${promo._stamp === 'pc' ? '🏬 PC stamped promo' : '🎁 Promo'}: ${promo.name} (${fmtMoney(cardValue(promo))})`)
+        setStack({ set: c.set, cards: [promo] }); setShown(1); setShaking(false)  // it gets its beat in the hand too
       }
       running.current = true
-      after(() => { running.current = false; pump() }, ms(200))
+      after(() => { running.current = false; pump() }, fast(900))
       return
     }
     cur.current = null                                    // this item is done — on to the next
     running.current = true
-    after(() => { running.current = false; pump() }, ms(120))
+    after(() => { running.current = false; pump() }, fast(400))
+  }
+
+  // Speed through one forgettable pack: the same tear + hand-reveal as a normal rip, on the
+  // churn clock. Banked only once every card has landed, so the tally never runs ahead of what
+  // you've watched go by.
+  function churnPack(cards, set) {
+    running.current = true
+    inflight.current = { cards, set }
+    preloadCardImages(cards)   // the hand shows one card at a time; warm them all during the tear
+    setStack({ set, cards }); setShown(0); setShaking(true)
+    after(() => { setShaking(false); churnStep(cards, set, 0) }, fast(900))
+  }
+  function churnStep(cards, set, i) {
+    // "Skip & bank the rest" flushes the remainder synchronously — including this pack, which is
+    // already out of its wrapper. Any reveal timer still in flight must NOT then bank it a second
+    // time. (finishRest cancels them; this is the belt to that pair of braces.)
+    if (flushed.current) return
+    if (i >= cards.length) {
+      bankPack(cards, set)
+      inflight.current = null
+      if (cur.current) cur.current.packsLeft--
+      after(() => { running.current = false; pump() }, fast(320))
+      return
+    }
+    setShown(i + 1)
+    // Hits under your stop bar still linger a beat longer than filler — the churn has a rhythm,
+    // not a metronome. No burst or sound down here: at better than a pack a second that's a strobe.
+    after(() => churnStep(cards, set, i + 1), fast((cards[i]._isHit || cards[i].foil) ? 1100 : 520))
   }
 
   function start() { primeAudio(); setPhase('sifting'); after(() => pump(), ms(300)) }
 
-  // Manually tear open the flagged hit pack, then reveal what stopped the sifter.
+  // Tear open the flagged pack yourself — and from here it's a normal manual rip: the pack lands
+  // as a face-down stack in your hand and every card waits for your tap.
   function ripPending() {
     if (!pending || phase !== 'hit') return
     primeAudio()
     preloadCardImages(pending.cards)
-    setPhase('reveal')
-    sfxTear()
     const p = pending
+    setPhase('reveal')
+    setStack({ set: p.set, cards: p.cards }); setShown(0); setSettled(false); setAwaiting(false); setShaking(true)
+    sfxTear()
     after(() => {
-      setReveal({ set: p.set, cards: p.cards })
+      setShaking(false)
+      setAwaiting(true)                                    // your tap turns the first card
       bankPack(p.cards, p.set)                             // the rip IS the acquisition
       if (cur.current) cur.current.packsLeft--
       setPending(null)                                     // banked now — flush must not re-bank it
-      const chase = isChase(p.hit) || p.cards._god
-      if (chase) { sfxGod() } else { sfxHit(rarityRank(p.hit.rarity) - rarityRank('Double Rare'), false) }
-      setBurst(true); after(() => setBurst(false), 1800)
     }, ms(650))
   }
-  function continueSift() { setPending(null); setReveal(null); setPhase('sifting'); after(() => pump(), ms(150)) }
+
+  // Reveal card i and fire its feedback, then wait for the next tap. Mirrors the normal rip's
+  // manual mode exactly, finale included — the god/demigod payoff lands on the last card, not
+  // the moment the wrapper comes off.
+  function revealStep(cards, i) {
+    if (i >= cards.length) {
+      if (cards._god) { setBurst(true); after(() => setBurst(false), 3000); sfxGod() }
+      else if (cards._demigod) { setBurst(true); after(() => setBurst(false), 1800); sfxGod() }
+      setSettled(true)
+      return
+    }
+    const c = cards[i]
+    setShown(i + 1)
+    const special = c._isHit || c.foil || c._fillsWant
+    if (special) {
+      setBurst(true); after(() => setBurst(false), ms(1200))
+      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, isChase(c))
+    } else {
+      sfxFlip()
+    }
+    if (i + 1 < cards.length) { setAwaiting(true); return }
+    after(() => revealStep(cards, i + 1), ms(700))         // last card seen — let it land, then settle
+  }
+  function advanceManual() {
+    if (phase !== 'reveal' || !awaiting || !stack) return
+    primeAudio()
+    setAwaiting(false)
+    revealStep(stack.cards, shown)
+  }
+
+  function continueSift() {
+    setPending(null); setStack(null); setShown(0); setSettled(false); setAwaiting(false)
+    setPhase('sifting'); after(() => pump(), ms(150))
+  }
 
   // Drag-to-rip on the flagged pack (mirrors the main opener's feel).
   const dragRef = useRef({ active: false, startY: 0 })
@@ -163,6 +243,9 @@ export default function AutoRip({ items, onExit }) {
   flush.current = () => {
     if (flushed.current) return                          // idempotent — never bank the remainder twice
     flushed.current = true
+    // A pack caught mid-animation is already OUT of the wrapper — bank the exact cards that were
+    // on screen rather than re-rolling a fresh pack for it.
+    if (inflight.current) { addPulls(inflight.current.cards, inflight.current.set.name, 1); if (cur.current) cur.current.packsLeft--; inflight.current = null }
     if (pending) { addPulls(tagCards(pending.cards), pending.set.name, 1); if (cur.current) cur.current.packsLeft--; }
     if (cur.current && cur.current.set) {
       for (let i = 0; i < cur.current.packsLeft; i++) addPulls(tagCards(openPack(cur.current.set)), cur.current.set.name, 1)
@@ -175,11 +258,12 @@ export default function AutoRip({ items, onExit }) {
       const all = openProduct(set, it.product); all.forEach(c => (c._isHit = isHit(c))); addPulls(all, set.name, it.product?.packs || 1)
     }
   }
-  useEffect(() => () => { timers.current.forEach(clearTimeout); flush.current() }, [])
+  useEffect(() => () => { cancelTimers(); flush.current() }, [])
 
-  // "Finish & bank the rest": stop sifting, sweep everything left straight into the collection.
-  function finishRest() { flush.current(); setPhase('done') }
-  function done() { flush.current(); onExit && onExit() }
+  // "Skip & bank the rest": stop sifting, sweep everything left straight into the collection.
+  // Kill the in-flight reveal timers FIRST — flush banks the pack that's mid-animation, so a
+  // surviving churn timer would land the same ten cards in your collection twice.
+  function finishRest() { cancelTimers(); running.current = false; flush.current(); setPhase('done') }
 
   const totalPacks = useMemo(() => items.reduce((a, it) => a + (it.product?.packs || 1), 0), [items])
   const remainingItems = () => queue.current.length + (cur.current ? 1 : 0)
@@ -192,8 +276,9 @@ export default function AutoRip({ items, onExit }) {
         <div style={{ textAlign: 'center', maxWidth: 520 }}>
           <h2 style={{ marginBottom: 4 }}>⚡ Sift-rip</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 13.5 }}>
-            Rips <b>{items.length} item{items.length === 1 ? '' : 's'}</b> — <b>{totalPacks} pack{totalPacks === 1 ? '' : 's'}</b> — one at a time,
-            banking the forgettable ones for you and <b>stopping on any pack with a big hit</b> so you can rip that one by hand.
+            Rips <b>{items.length} item{items.length === 1 ? '' : 's'}</b> — <b>{totalPacks} pack{totalPacks === 1 ? '' : 's'}</b>, speeding
+            through the rip pack after pack and <b>stopping on any pack with something big</b>, which it hands you sealed to open
+            a card at a time. It won't say what's in there.
           </p>
           <div className="sift-levels">
             <div className="rip-side-head">Stop the sifter on…</div>
@@ -227,6 +312,16 @@ export default function AutoRip({ items, onExit }) {
   const feedEl = (
     <div className="sift-feed">
       {feed.map(f => <div key={f.key} className="sift-feed-row">{f.line}</div>)}
+    </div>
+  )
+  // The sealed pack, mid-tear. Same element the normal opener shakes, so the churn and the
+  // hand-off look like one continuous rip.
+  const shakingPack = (logo, name) => (
+    <div className="pack-wrap">
+      <div className="pack3d shake">
+        <div className="foil" />
+        {logo ? <img className="logo" src={logo} alt="" /> : <b>{name}</b>}
+      </div>
     </div>
   )
 
@@ -270,15 +365,16 @@ export default function AutoRip({ items, onExit }) {
     )
   }
 
-  // ---- HIT: the flagged pack, waiting for you to tear it open --------------------------------
+  // ---- HIT: the flagged pack, sealed, waiting for you to tear it open ------------------------
+  // No card name, no value, no rarity colour: the sifter had to look inside to decide, but
+  // telling you would spend the pull before you've opened it.
   if (phase === 'hit') {
     return (
       <div className="stage">
         {tally}
         <div className="banner" style={{ maxWidth: 460, textAlign: 'center' }}>
-          🔥 <b>Big one here.</b> The sifter stopped — this {pending?.set?.name} pack is holding a{' '}
-          <b style={{ color: rarityColor(pending?.hit?.rarity) }}>{pending?.hit?.name}</b> ({fmtMoney(cardValue(pending?.hit || {}))}).
-          Rip it yourself.
+          🔥 <b>Something's in this one.</b> The sifter stopped on a {pending?.set?.name} pack and left it sealed —
+          rip it yourself and find out.
         </div>
         <div className="pack-wrap">
           <div className="pack3d" onClick={ripPending} role="button" tabIndex={0} aria-label="Rip the pack" style={{ '--tear': tear }}
@@ -290,32 +386,37 @@ export default function AutoRip({ items, onExit }) {
             <span className="hint">▶ Click or drag down to rip</span>
           </div>
         </div>
-        <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip & bank the rest</button>
+        <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip &amp; bank the rest</button>
         {feedEl}
       </div>
     )
   }
 
-  // ---- REVEAL: the torn-open hit pack, then continue -----------------------------------------
+  // ---- REVEAL: your pack, one card at a time, then the grid ----------------------------------
   if (phase === 'reveal') {
     return (
       <div className="stage">
         {burst && <Burst />}
         {tally}
-        {reveal ? (
+        {shaking || !stack ? shakingPack(stack?.set?.logo, stack?.set?.name) : settled ? (
           <>
+            {/* The normal rip flies this the moment the wrapper comes off — which here would be the
+                sifter telling you what it found. It waits until you've turned the last card. */}
+            {stack.cards._god && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
+            {stack.cards._demigod && <div className="demigodbanner">{(stack.cards._specialLabel || 'DEMIGOD PACK!')} <small>Most of the pack is a hit.</small></div>}
             <div className="rip-top-actions">
               <button className="btn gold" style={{ maxWidth: 240 }} onClick={continueSift}>{remainingItems() ? 'Keep sifting →' : 'Finish →'}</button>
             </div>
             <div className="reveal-row rip-reveal-grid">
-              {reveal.cards.map(c => {
+              {stack.cards.map(c => {
                 const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
+                const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
                 return (
                   <div key={c.uid} className="rip-cell">
                     <HoloCard card={c} interactive onClick={() => setModalCard(c)} extraStyle={{ '--rarity': edge }}
                       className={`reveal-card shown ${(c._isHit || c.foil) ? 'hit' : ''} ${isChase(c) ? 'chase' : ''}`}>
                       <div className="flip">
-                        <div className="flip-back" aria-hidden="true">{reveal.set.logo && <img src={reveal.set.logo} alt="" />}</div>
+                        <div className="flip-back" aria-hidden="true">{stack.set.logo && <img src={stack.set.logo} alt="" />}</div>
                         <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
                       </div>
                     </HoloCard>
@@ -323,30 +424,39 @@ export default function AutoRip({ items, onExit }) {
                       <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                       <div className="rc-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? `PSA ${c.grade.overall}` : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}</div>
                       <div className="rc-val">{fmtMoney(cardValue(c))}</div>
-                      {c._fillsWant && <div className="rc-badges"><span className="rc-want">⭐ Want</span></div>}
+                      {(cut || c._fillsWant) && (
+                        <div className="rc-badges">
+                          {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
+                          {c._fillsWant && <span className="rc-want">⭐ Want</span>}
+                        </div>
+                      )}
                     </button>
                   </div>
                 )
               })}
             </div>
-            {modalEl}
           </>
         ) : (
-          <div className="pack-wrap"><div className="pack3d shake"><div className="foil" />{pending?.set?.logo ? <img className="logo" src={pending.set.logo} alt="" /> : null}</div></div>
+          <HandReveal pulls={stack.cards} shown={shown} awaiting={awaiting} revealMode="manual"
+            setLogo={stack.set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
         )}
+        {modalEl}
       </div>
     )
   }
 
-  // ---- SIFTING: the churn --------------------------------------------------------------------
+  // ---- SIFTING: the real rip, wound right up -------------------------------------------------
   return (
     <div className="stage">
       {tally}
-      <div className="sift-churn">
-        <div className="sift-spinner" aria-hidden="true">📦💨</div>
-        <div className="muted" style={{ fontSize: 13 }}>Sifting through your sealed… stopping on the big ones.</div>
+      {shaking || !stack ? shakingPack(stack?.set?.logo, stack?.set?.name || '📦') : (
+        <HandReveal pulls={stack.cards} shown={shown} awaiting={false} revealMode="auto"
+          setLogo={stack.set.logo} hasLoupe={hasLoupe} onTapNext={() => {}} onInspect={() => {}} />
+      )}
+      <div className="muted" style={{ fontSize: 12.5, textAlign: 'center' }}>
+        ⚡ Sifting — it'll stop on its own when a pack is worth your hands.
       </div>
-      <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip & bank the rest</button>
+      <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip &amp; bank the rest</button>
       {feedEl}
     </div>
   )
