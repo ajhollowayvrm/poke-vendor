@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
-  VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind } from './game/engine'
+  VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind,
+  hypeSurge } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
 import { useGame } from './game/store'
@@ -1296,7 +1297,7 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
   // its products. Summary on the collapsed row = how many lines and the cheapest one, at rapport.
   const [open, setOpen] = useState(false)
   const count = products.length + (lot ? 1 : 0) + (clearance && box ? 1 : 0)
-  const cheapest = products.length ? Math.min(...products.map(p => distributorPrice(dist, p.price, lvl.level))) : 0
+  const cheapest = products.length ? Math.min(...products.map(p => distributorPrice(dist, p.price, lvl.level, { product: p, set }))) : 0
   return (
     <div className={`product set-acc ${open ? 'open' : ''}`}>
       <button className="set-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
@@ -1334,8 +1335,8 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   const ownedN = owned?.get(`${set.id}|${product.type}`) || 0 // sealed copies of this exact line you already hold
   let price
   if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
-  else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level) * 0.65)
-  else price = distributorPrice(dist, product.price, lvl.level)
+  else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level, { product, set }) * 0.65)
+  else price = distributorPrice(dist, product.price, lvl.level, { product, set })
 
   const { q: stockQty, cap, out } = stockState(dist, stock, set, product, lvl.level)
   const days = out ? daysToRestock(dist, stockQty, cap) : 0
@@ -1354,6 +1355,16 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   const retail = product._clearance ? product._clearanceOf : product._case ? product._retail : product.price
   const showStrike = price < (retail || 0) - 0.005
   const total = round2(price * qN)
+  // ⚡ MSRP shelf vs 🔥 scalped shelf — the two halves of the same story, so say which you're
+  // looking at. The struck-through number above is already the market price; this explains WHY
+  // it's crossed out (sticker price) or why the ask is over it (fresh-drop hype).
+  const atSticker = !!dist.msrp && !product._case && !product._clearance
+  const surge = atSticker ? 1 : hypeSurge(set)
+  const priceNote = atSticker
+    ? `⚡ Sticker price — the market says ${fmtMoney(retail)}. This is why drop day matters.`
+    : surge > 1.02
+      ? `🔥 Fresh-drop markup: +${Math.round((surge - 1) * 100)}% over the ${fmtMoney(retail)} market. It's worth market the moment you own it.`
+      : null
 
   // 📋 Standing order (upgrade): subscribe ONE regular product line to a weekly auto-ship.
   const hasSO = useGame(s => !!s.upgrades.standingOrder)
@@ -1379,11 +1390,15 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
       <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''} ${useCredit && canBuy ? 'on-credit' : ''}`}
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit, split })}
-        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
+        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
         <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
         {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
-        <span className="prodprice">{showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}</span>
+        <span className="prodprice">
+          {atSticker && <span className="pricetag msrp" title={priceNote}>MSRP</span>}
+          {!atSticker && surge > 1.02 && <span className="pricetag surge" title={priceNote}>🔥 +{Math.round((surge - 1) * 100)}%</span>}
+          {showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}
+        </span>
         <StockBar qty={stockQty} cap={cap} out={out} days={days} color={dist.color} />
       </button>
     </div>
@@ -1487,7 +1502,7 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
   const products = setProducts(set)
   const [type, setType] = useState(() => products.find(p => p.packs >= 10)?.type || products[0].type)
   const product = products.find(p => p.type === type) || products[0]
-  const cost = distributorPrice(dist, product.price, lvl.level)
+  const cost = distributorPrice(dist, product.price, lvl.level, { product, set })
   const pending = supplyChannel.reduce((a, w) => a + w.net, 0)
 
   function place() {

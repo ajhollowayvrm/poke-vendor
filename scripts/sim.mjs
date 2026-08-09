@@ -131,6 +131,39 @@ try {
       share >= 0.03 && share <= 0.25)
   }
 
+  // ---- 1c. 🛒 Shop scarcity + the MSRP arbitrage ------------------------------------
+  // Pokémon Center sells at STICKER while everyone else sells at market, so its shelf is a
+  // real arbitrage by design — that's what makes drop day worth racing for. It has to stay
+  // RATIONED though: the edge is bounded by allocation, not by price, so what matters is the
+  // total market value you could lift off one restock wave, not the per-unit multiple.
+  console.log('\n🛒 SHOP SCARCITY:')
+  const shop = await page.evaluate(async () => {
+    const eng = await import('/src/game/engine.js')
+    const cat = id => eng.distributorCatalog(eng.distributorById(id), eng.SHOP_SETS, 3).length
+    let outlay = 0, worth = 0
+    const pc = eng.distributorById('pokecenter')
+    for (const s of eng.distributorCatalog(pc, eng.SHOP_SETS, 3)) {
+      for (const p of eng.setProducts(s)) {
+        const n = eng.stockCap(pc, p, 0)
+        outlay += eng.distributorPrice(pc, p.price, 0, { product: p, set: s }) * n
+        worth += (p.price || 0) * n
+      }
+    }
+    return { inPrint: eng.IN_PRINT_SETS.length, outOfPrint: eng.OUT_OF_PRINT_SETS.length,
+      lgs: cat('lgs'), pc: cat('pokecenter'), amazon: cat('amazon'),
+      msrpOutlay: outlay, msrpWorth: worth }
+  })
+  pass(`in-print window is a rotating shelf, not a catalogue (${shop.inPrint} in print, ${shop.outOfPrint} out)`,
+    shop.inPrint >= 4 && shop.inPrint <= 10)
+  pass(`the local shop is a local shop (${shop.lgs} sets on the shelf)`, shop.lgs <= 3)
+  pass(`no retailer carries everything (biggest catalogue ${Math.max(shop.lgs, shop.pc, shop.amazon)} of ${shop.inPrint + shop.outOfPrint} sets)`,
+    Math.max(shop.lgs, shop.pc, shop.amazon) < shop.inPrint + shop.outOfPrint)
+  // The whole MSRP shelf, bought out: what it costs vs what it's worth. Must be a real prize
+  // (>1×, or drop day is pointless) but rationed enough that it isn't an infinite money pump.
+  const arb = shop.msrpWorth / Math.max(1, shop.msrpOutlay)
+  pass(`MSRP shelf is a prize, not a printer: buy it all for $${shop.msrpOutlay.toFixed(0)} → $${shop.msrpWorth.toFixed(0)} market (${arb.toFixed(1)}× per wave)`,
+    arb > 1.2 && arb < 6)
+
   // ---- 2. Grading EV --------------------------------------------------------------
   console.log('\nGRADING EV ($100 comp-less NM card, N=40k rolls):')
   const grade = await page.evaluate(async () => {

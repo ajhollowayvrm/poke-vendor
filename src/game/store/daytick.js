@@ -1264,7 +1264,7 @@ export function advanceDaysWith(set, get, days, away) {
             if (!best || level > best.level) best = { dist: dv, level }
           }
           if (best) {
-            const unit = round2(distributorPrice(best.dist, product.price, best.level) * 0.97)
+            const unit = round2(distributorPrice(best.dist, product.price, best.level, { product, set: waveSet }) * 0.97)
             const dropDay = newAbsDay + 5 + Math.floor(Math.random() * 4)
             // Reprint news softens the set's market — the other edge of cheap supply.
             const rr = applyMarketEvent(market.marketMults[waveSet.id] ?? 1, WAVE_REPRINT_EVENT)
@@ -1429,7 +1429,7 @@ export function advanceDaysWith(set, get, days, away) {
           for (const dv of DISTRIBUTORS) {
             if (!distributorUnlocked(dv, noto, s.upgrades)) continue
             const level = rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level
-            const unit = round2(distributorPrice(dv, product.price, level))
+            const unit = round2(distributorPrice(dv, product.price, level, { product, set: set_ }))
             // Never spend the shop into arrears chasing one special order.
             if (get().cash < unit + STORE_LEASE_PER_DAY) continue
             if (!get().spend(unit)) continue
@@ -1689,9 +1689,10 @@ export function advanceDaysWith(set, get, days, away) {
     }
     if (runnerSent > 0) get().log('grade-submit', `🧾 Submission Runner prepped ${runnerSent} clearly-+EV card${runnerSent > 1 ? 's' : ''} for Economy grading overnight`, 0)
   }
-  // 🚢 Import shipments: orders on the water (Japan Direct's leadDays) LAND today if their
-  // arrival day has come — the rows move from `imports` into the storeroom, ready to rip,
-  // shelve, or list like any sealed. Ships still crossing stay in transit.
+  // 🚢 In-transit orders (any distributor with leadDays — Japan Direct across the Pacific,
+  // Amazon out of a warehouse) LAND today if their arrival day has come: the rows move from
+  // `imports` into the storeroom, ready to rip, shelve or list like any sealed. Anything
+  // still in transit stays put.
   {
     const landed = [], atSea = []
     for (const sh of (s.imports || [])) ((sh.arrivesDay ?? 0) <= newAbsDay ? landed : atSea).push(sh)
@@ -1701,8 +1702,9 @@ export function advanceDaysWith(set, get, days, away) {
         sealedInventory: [...landed.flatMap(sh => sh.rows || []), ...(st.sealedInventory || [])],
       }))
       for (const sh of landed) {
-        const nm = setById(sh.setId)?.name || 'JP'
-        get().log('buy', `🎌 Import shipment landed — ${sh.qty}× ${sh.type} (${nm}) is in your storeroom`, 0)
+        const nm = setById(sh.setId)?.name || 'that set'
+        const tag = distributorById(sh.distId)?.japanese ? '🎌 Import shipment landed' : '📦 Delivery arrived'
+        get().log('buy', `${tag} — ${sh.qty}× ${sh.type} (${nm}) is in your storeroom`, 0)
       }
     }
   }
@@ -1718,7 +1720,7 @@ export function advanceDaysWith(set, get, days, away) {
       const product = pokeSet ? setProducts(pokeSet).find(p => p.type === so.type) : null
       if (dist && pokeSet && product) {
         const level = rapportLevel((get().distributors[so.distId]?.spend) || 0).level
-        const price = distributorPrice(dist, product.price, level)
+        const price = distributorPrice(dist, product.price, level, { product, set: pokeSet })
         const r = get().buyFromDistributorBulk(so.distId, pokeSet, product, price, so.qty)
         if (r) {
           set({ standingOrder: { ...so, lastDay: newAbsDay } })
@@ -1765,7 +1767,7 @@ export function advanceDaysWith(set, get, days, away) {
         if (need <= 0) continue
         // cheapest in-stock seller first; fall through to the next if a buy comes up short
         const opts = offers
-          .map(x => ({ ...x, price: distributorPrice(x.dv, p.price, x.level),
+          .map(x => ({ ...x, price: distributorPrice(x.dv, p.price, x.level, { product: p, set: st }),
             avail: !stockState(x.dv, (get().distributors[x.dv.id]?.stock) || {}, st, p, x.level).out }))
           .filter(x => x.avail && x.price > 0)
           .sort((a, b) => a.price - b.price)

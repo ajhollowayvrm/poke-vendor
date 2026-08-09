@@ -2559,6 +2559,7 @@ export const DISTRIBUTORS = [
     blurb: 'The official store — the ONLY place stocking brand-new sets at MSRP the day they drop (everyone else is weeks behind). But allocation is thin and it SELLS OUT FAST: a fresh drop lands, gets bought out in a hurry, and the shelf stays bare until the next restock wave a few days later. Be quick on a drop.',
     priceMult: 1.0, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.95, firstDibs: true,
     shelfMult: 0.35, restockWaveDays: 3, // thin shelves + drops in WAVES (no daily trickle) — hot product sells out fast
+    msrp: true,      // ⚡ sells at the STICKER, not at market — the only MSRP shelf in the game
   },
   {
     id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
@@ -2567,8 +2568,9 @@ export const DISTRIBUTORS = [
   },
   {
     id: 'amazon', name: 'Amazon', icon: '📦', color: '#ff9f43',
-    blurb: 'The everything store — pay a hair over list, but stock is GUARANTEED: it never sells out and never makes you wait for a restock. The convenience play when you need product now.',
+    blurb: 'The everything store — pay a hair over market and it is ALWAYS in stock, however hot the set. The catch is the one thing a warehouse can never sell you: it ships. Orders land in your storeroom a couple of days later, so Amazon is what you fall back on, never what you rip tonight.',
     priceMult: 1.06, discountStep: 0.015, maxDiscount: 0.08, reliability: 1.0, guaranteed: true,
+    leadDays: 2,     // 📦 always available, never immediate — availability stops being free
   },
   {
     id: 'dna', name: "Dave & Adam's", icon: '🃏', color: '#b98cff',
@@ -2598,7 +2600,20 @@ export function distributorUnlocked(dist, notoriety, upgrades) {
 
 // How many of the NEWEST sets a first-dibs seller carries, and how many the LGS rotates.
 const NEW_SET_COUNT = 6
-const LGS_SHELF_SIZE = 5
+// A real local shop stocks what one weekly case order gets them — two sets, maybe three, and
+// whatever's left of last month's. Not a catalogue.
+const LGS_SHELF_SIZE = 2
+// 🕰️ THE IN-PRINT WINDOW. Sealed product does not stay orderable forever: a set runs, then the
+// print run ends and the distribution channel moves on. Only the newest N sets can be ORDERED;
+// everything older still exists and still trades, but you hunt it on the aftermarket (vendors,
+// show floors, clearance bins) instead of clicking buy. This is what keeps the shop a rotating
+// window rather than an ever-growing list of every set ever printed.
+// NOTE this deliberately does NOT narrow SHOP_SETS itself — that pool still backs wants, walk-in
+// requests and the general card draw, and an out-of-print set's SINGLES are as obtainable as ever.
+// Only the sealed ORDER channel closes.
+export const IN_PRINT_COUNT = 8
+export const IN_PRINT_SETS = SHOP_SETS.slice(0, IN_PRINT_COUNT)
+export const OUT_OF_PRINT_SETS = SHOP_SETS.slice(IN_PRINT_COUNT)
 // The very newest release is EXCLUSIVE to the first-dibs seller (Pokémon Center) — everyone
 // else is behind on it. That's what makes "first crack at new sets" a real reason to shop PC.
 const NEW_EXCLUSIVE_COUNT = 1
@@ -2609,10 +2624,14 @@ const NEW_EXCLUSIVE_COUNT = 1
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
   if (dist.japanese) return JP_SHOP_SETS                   // 🎌 the import shelf — its own catalog entirely
-  if (dist.firstDibs) return sets.slice(0, NEW_SET_COUNT)  // the newest releases (incl. the exclusive)
+  // 🕰️ Clamp to what's still IN PRINT before anything else. Out-of-print sealed has left the
+  // distribution channel entirely — no retailer can reorder it, whatever their allocation.
+  // Done here rather than at each call site so every shelf in the game inherits it.
+  const live = (sets || []).slice(0, IN_PRINT_COUNT)
+  if (dist.firstDibs) return live.slice(0, NEW_SET_COUNT)  // the newest releases (incl. the exclusive)
   // Everyone else can't get the very newest release yet — it's the first-dibs seller's
   // exclusive until it filters out to the wider market. Drop it from their shelves.
-  const wide = sets.slice(NEW_EXCLUSIVE_COUNT)
+  const wide = live.slice(NEW_EXCLUSIVE_COUNT)
   if (dist.cases) return wide.filter(s => caseLot(s))                             // box/case-friendly sets
   if (dist.rotating) {                                                            // small weekly shelf
     const n = wide.length
@@ -2677,10 +2696,52 @@ export function distributorDiscount(dist, level) {
   if (!dist) return 0
   return Math.min(dist.maxDiscount, (level || 0) * dist.discountStep)
 }
-// Price a product from a distributor at a given rapport level.
-export function distributorPrice(dist, retail, level) {
+// ---- MSRP vs market: where the scalper premium actually lives -------------------------
+// `product.price` in the snapshot is real TCGplayer MARKET data — i.e. already the scalped
+// number for anything people want. What the game was missing is the other side: MSRP, the
+// sticker on the box, which in real life is basically FLAT by product shape ($4.49 a pack)
+// no matter whether the set is Prismatic Evolutions or a dud. The gap between the two IS
+// the scalper premium — enormous on a hot set, negative on a flop — and it's the reason
+// getting product at MSRP on drop day is worth fighting for.
+export const MSRP_PER_PACK = 4.49
+export function msrpOf(product) {
+  const packs = product?.packs || 1
+  // Sticker price ≈ packs at retail, plus whatever the box's accessories add.
+  const extras = packs >= 21 ? 0                    // booster box: it's just the packs
+    : packs >= 9 ? 12                               // ETB: sleeves, dice, dividers, the box
+    : packs >= 4 ? 3                                // bundle / B&B / collection: a promo + box
+    : packs >= 2 ? 4                                // blister / tin: a promo card
+    : product?.bonus ? 3 : 0                        // checklane with a promo
+  return round2(packs * MSRP_PER_PACK + extras)
+}
+// 🔥 Hype surge — what a scalper charges OVER market on a fresh drop, because everyone wants
+// it at once and supply hasn't caught up. Keyed on RECENCY RANK, not calendar age: the game
+// runs its own abstract calendar (year 1 opens in September) that never lines up with a set's
+// real-world release date, so "days since release" isn't computable. Rank is truer anyway —
+// the newest drop is the hyped one whatever the date says.
+// Deliberately applied to the SHOP ASK only, never to sealedValue: a scalped pack is worth
+// market the moment you own it, so buying into hype at full markup is a bad trade. That is
+// exactly what makes the MSRP shelf worth racing for.
+const HYPE_SURGE_MAX = 0.45
+const HYPE_SPAN = 5
+const HYPE_RANK = new Map(SHOP_SETS.map((s, i) => [s.id, i]))   // 0 = newest release
+export function hypeSurge(setOrId) {
+  const id = typeof setOrId === 'string' ? setOrId : setOrId?.id
+  const rank = HYPE_RANK.get(id)
+  if (rank == null) return 1                        // vintage / aftermarket / import: no drop hype
+  const fresh = Math.max(0, 1 - rank / HYPE_SPAN)
+  return 1 + HYPE_SURGE_MAX * fresh * fresh         // 1.45× newest → 1.29 → 1.16 → 1.07 → 1.02 → 1
+}
+
+// Price a product from a distributor at a given rapport level. `opts.product` + `opts.set`
+// unlock the MSRP/surge behaviour; without them this degrades to the old plain-market maths.
+export function distributorPrice(dist, retail, level, opts = {}) {
   if (!dist) return round2(retail || 0)
-  return round2((retail || 0) * dist.priceMult * (1 - distributorDiscount(dist, level)))
+  const { product, set } = opts
+  const base = (dist.msrp && product)
+    ? msrpOf(product)                               // ⚡ the sticker, not what the market will bear
+    : (retail || 0) * hypeSurge(set)                // everyone else rides the scalper surge
+  return round2(base * dist.priceMult * (1 - distributorDiscount(dist, level)))
 }
 // Case price from a distributor: wholesale on the boxes, then the extra case bulk cut.
 export function distributorCasePrice(dist, lot, level) {
@@ -2697,13 +2758,21 @@ export function stockCap(dist, product, level) {
   const packs = product?.packs || 1
   let base
   if (product?._case) base = 1
-  else if (packs >= 21) base = 1          // booster box
-  else if (packs >= 9) base = 3           // ETB / super-premium collection
-  else if (packs >= 2) base = 5           // booster bundle / premium / tin / blister
-  else base = 10                          // single booster / sleeved pack
+  else if (packs >= 21) base = 1          // booster box — a shop gets a couple a week, not a pallet
+  else if (packs >= 9) base = 2           // ETB / super-premium collection
+  else if (packs >= 2) base = 3           // booster bundle / premium / tin / blister
+  else base = 5                           // single booster / sleeved pack
   const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
   const allo = 1 + 0.25 * (level || 0)      // bigger allocation as rapport grows (up to +100%)
-  const shelf = dist.shelfMult || 1         // thin-shelf sellers (Pokémon Center) hold a fraction of a normal allocation → sell out fast
+  let shelf = dist.shelfMult || 1           // thin-shelf sellers (Pokémon Center) hold a fraction of a normal allocation → sell out fast
+  // ⚡ On an MSRP shelf, the hotter the item the harder it is to physically get one. A product
+  // trading at 9× its sticker (a Pokémon Center exclusive ETB) was gone in seconds to bots and
+  // queues — it is rationed by SCARCITY, not by price. Without this, the MSRP shelf would be a
+  // money printer: buy the $52 box, own the $461 box, repeat every restock wave.
+  if (dist.msrp && product?.price) {
+    const gap = (product.price || 0) / Math.max(1, msrpOf(product))
+    shelf *= gap >= 4 ? 0.2 : gap >= 2 ? 0.45 : 1
+  }
   return Math.max(1, Math.round(base * rel * allo * shelf))
 }
 // Units of stock a distributor regains per day (toward the cap).

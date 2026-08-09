@@ -170,10 +170,11 @@ export function createSourcingSlice(set, get) {
           boughtDay: day, boughtPrice: unit, vintage: !!pokeSet.vintage,
         })
       }
-      // 🚢 Import channel: the order is PAID and their shelf is decremented now, but the
-      // stock crosses the Pacific first — it rides `imports` until the day tick lands it
-      // in the storeroom `leadDays` from now. Net worth counts in-transit rows (they're
-      // paid-for assets), and merge() registers their uids like any sealed bucket.
+      // 🚢 Lead-time channel: the order is PAID and their shelf is decremented now, but the
+      // stock is in transit first — it rides `imports` until the day tick lands it in the
+      // storeroom `leadDays` from now. Net worth counts in-transit rows (they're paid-for
+      // assets), and merge() registers their uids like any sealed bucket. Used by Japan
+      // Direct (across the Pacific) AND Amazon (always in stock, never in your hands today).
       const inTransit = (dist.leadDays || 0) > 0
       const shipment = inTransit ? {
         id: `imp${Date.now().toString(36)}${nextSealedSuffix()}`,
@@ -199,7 +200,8 @@ export function createSourcingSlice(set, get) {
       const note = opts.onCredit ? ' on credit 💳'
         : (split && split.creditPart > 0 ? ` ($${split.cashPart.toFixed(2)} cash + $${split.creditPart.toFixed(2)} credit 💳)` : '')
       const cashOut = opts.onCredit ? 0 : split ? -split.cashPart : -total
-      if (inTransit) get().log('buy', `🚢 Import order placed — ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note} · lands in ~${dist.leadDays} days`, cashOut)
+      const placed = dist.japanese ? '🚢 Import order placed' : '📦 Order placed'
+      if (inTransit) get().log('buy', `${placed} — ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note} · lands in ~${dist.leadDays} days`, cashOut)
       else get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note}`, cashOut)
       get().bumpGoal('buy', n)
       return { items, bought: n, spent: total, unit, inTransit, cashPart: split ? split.cashPart : (opts.onCredit ? 0 : total), creditPart: split ? split.creditPart : (opts.onCredit ? total : 0) }
@@ -246,7 +248,7 @@ export function createSourcingSlice(set, get) {
       const rec = get().distributorRec('dna')
       const level = rapportLevel(rec.spend).level
       if (!dist?.supply || level < dist.supplyMinLevel) return false
-      const cost = distributorPrice(dist, product.price, level) // you buy in at wholesale
+      const cost = distributorPrice(dist, product.price, level, { product, set: pokeSet }) // you buy in at wholesale
       if (!get().spend(cost)) return false
       get().recordSetSpend(pokeSet.id, cost)
       set(s => { // the buy-in builds rapport with Dave & Adam's too
