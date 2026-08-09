@@ -77,6 +77,9 @@ const RARITY_MAP = {
   'character rare': 'Illustration Rare', 'character super rare': 'Special Illustration Rare',
   'ultra rare': 'Ultra Rare', 'super rare': 'Ultra Rare', 'hyper rare': 'Hyper Rare',
   'shiny rare': 'Ultra Rare', 'shiny super rare': 'Special Illustration Rare', 'shiny ultra rare': 'Hyper Rare',
+  // SV4a (Shiny Treasure ex) surfaced this one unmapped, where it fell through to plain 'Rare'.
+  // Mirrors the existing 'rare secret' mapping — a secret rare is never a base Rare.
+  'shiny secret rare': 'Special Illustration Rare',
   'radiant rare': 'Ultra Rare', 'amazing rare': 'Ultra Rare',
   'rare holo': 'Rare Holo', 'holo rare': 'Rare Holo', 'rare holo ex': 'Ultra Rare',
   'rare rainbow': 'Hyper Rare', 'rare secret': 'Special Illustration Rare',
@@ -201,8 +204,16 @@ async function main() {
     .map(s => { const j = jtByCode.get(s.id.toLowerCase()); return j ? { tcgdexId: s.id, jtId: j.id, jtName: j.name } : null })
     .filter(Boolean)
 
+  // ONLY=a,b,c is a PRIORITY list, not just a filter: fetch in the order given, so when the daily
+  // quota runs out mid-run the sets you actually wanted are the ones that landed.
   const onlyIds = (process.env.ONLY || '').split(',').map(s => s.trim()).filter(Boolean)
-  if (onlyIds.length) pairs = pairs.filter(p => onlyIds.includes(p.tcgdexId))
+  if (onlyIds.length) {
+    const rank = new Map(onlyIds.map((id, i) => [id.toLowerCase(), i]))
+    pairs = pairs.filter(p => rank.has(p.tcgdexId.toLowerCase()))
+                 .sort((a, b) => rank.get(a.tcgdexId.toLowerCase()) - rank.get(b.tcgdexId.toLowerCase()))
+    const missing = onlyIds.filter(id => !pairs.some(p => p.tcgdexId.toLowerCase() === id.toLowerCase()))
+    if (missing.length) console.log(`ONLY ids with no TCGdex↔JustTCG match (skipped): ${missing.join(', ')}\n`)
+  }
 
   // Resume: skip sets already priced in the snapshot.
   const here = dirname(fileURLToPath(import.meta.url))
