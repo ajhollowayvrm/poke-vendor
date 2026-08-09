@@ -19,7 +19,7 @@
 // to install a copy tweak is worse than the staleness — and this game has long sessions. You
 // get a pill; you take the update when you're between things.
 import { registerSW } from 'virtual:pwa-register'
-import { flushSaveWrite } from './store'
+import { flushSaveNow } from './store'
 
 const CHECK_EVERY_MS = 15 * 60 * 1000
 
@@ -41,9 +41,29 @@ export function updateReady() { return waiting }
 // Take the update: flush the pending save FIRST (writes are debounced ~400ms, and a reload
 // that beat the flush would drop the last few seconds of play), then swap in the new worker
 // and reload onto it.
-export function applyAppUpdate() {
-  flushSaveWrite()
-  applyUpdate(true)
+// Two things this has to survive, and the old two-liner survived neither.
+//
+// 1. The save write is ASYNCHRONOUS now (IndexedDB). `flushSaveWrite(); reload()` used to be
+//    safe when the store was synchronous localStorage; today it races the write and can drop
+//    the last few seconds of play. Await it.
+//
+// 2. vite-plugin-pwa's updateSW IGNORES its reloadPage argument — read its source: the
+//    parameter is literally named `_reloadPage` and never used. All it does is post
+//    SKIP_WAITING. The actual reload comes from a `controlling` event listener it registered
+//    when the prompt was raised, so if that event never fires — no live waiting worker, an
+//    iOS PWA that resumed rather than reloaded, a worker that was already activated — the tap
+//    is a silent no-op with nothing behind it. That is the "shows, tap does nothing" bug.
+//    So: ask nicely, then reload ourselves if the event hasn't done it for us.
+const UPDATE_FALLBACK_MS = 2500
+
+export async function applyAppUpdate() {
+  try { await flushSaveNow() } catch { /* a failed save must not trap you on the old build */ }
+  let done = false
+  const reload = () => { if (!done) { done = true; window.location.reload() } }
+  // If workbox's `controlling` listener gets there first this timer is moot — the page is
+  // already navigating. If it doesn't, this is the difference between an update and a dead pill.
+  const t = setTimeout(reload, UPDATE_FALLBACK_MS)
+  try { await applyUpdate(true) } catch { clearTimeout(t); reload() }
 }
 
 export function startUpdateChecks() {

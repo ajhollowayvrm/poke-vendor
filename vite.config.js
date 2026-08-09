@@ -34,7 +34,13 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'card-images',
-              expiration: { maxEntries: 6000, maxAgeSeconds: 60 * 60 * 24 * 30, purgeOnQuotaError: true },
+              // 6000 entries was ~470-880MB of CacheStorage at real card-art sizes. Browsers
+              // budget storage PER ORIGIN across CacheStorage, IndexedDB and localStorage, so a
+              // cache that size doesn't just hoard disk — it squeezes the save and can leave the
+              // service worker without room to stage a new build, which is one way an "Update
+              // ready" prompt never appears at all. 1000 recent cards is still a deep offline
+              // pool (you revisit far fewer than that in a session) for a tenth of the footprint.
+              expiration: { maxEntries: 1000, maxAgeSeconds: 60 * 60 * 24 * 14, purgeOnQuotaError: true },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

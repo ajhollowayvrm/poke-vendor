@@ -170,6 +170,13 @@ function writeLocalStorage(k, v) {
 // Write the pending blob. Never swallows a failure: this was `try { setItem } catch {}` once,
 // and when localStorage filled up every save from then on failed wordlessly while the game
 // carried on. A failed write KEEPS the pending blob so the next flush retries it.
+// The in-flight write, so callers that MUST NOT navigate away early can await it. Writing to
+// IndexedDB is asynchronous — a reload fired straight after flushSaveWrite() would race it and
+// lose the last few seconds, which is exactly what the app-update reload used to do safely when
+// the store was synchronous localStorage.
+let _writePromise = null
+export function flushSaveNow() { flushSaveWrite(); return _writePromise || Promise.resolve() }
+
 export function flushSaveWrite() {
   if (!_pendingSave) return
   const [k, v] = _pendingSave
@@ -178,7 +185,7 @@ export function flushSaveWrite() {
     // transaction opened here still commits while the page is being frozen or hidden, so the
     // pagehide flush works without blocking the way localStorage did.
     _pendingSave = null
-    idbSet(k, v).then(() => announceSave(false)).catch(() => {
+    _writePromise = idbSet(k, v).then(() => announceSave(false)).catch(() => {
       // Don't lose it: put it back so the next flush (or pagehide) tries again, and fall back
       // to localStorage right now in case this is the last chance we get.
       if (!_pendingSave) _pendingSave = [k, v]
