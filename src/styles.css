@@ -2076,3 +2076,12 @@ button.rip-hit-row:hover { background:#ffffff14; }
   font-size: 13px; font-family: inherit; }
 .update-pill:hover { background: color-mix(in srgb, var(--gold) 20%, var(--panel)); }
 .update-pill b { color: var(--gold); }
+
+/* --- Boot splash ---------------------------------------------------------------
+   Shown only while the save loads out of IndexedDB (async). Deliberately plain: it
+   should be gone in a frame or two, and anything animated would draw the eye to a
+   wait the player shouldn't notice. */
+.boot-splash { min-height: 100dvh; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px; color: var(--dim); }
+.boot-splash .boot-logo { font-size: 40px; opacity: .9; }
+.boot-splash .boot-text { font-size: 13px; letter-spacing: .02em; }

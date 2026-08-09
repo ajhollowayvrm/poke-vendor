@@ -1,12 +1,10 @@
 import { Component } from 'react'
-import { flushSaveWrite } from '../game/store'
-
-const SAVE_KEY = 'poke-vendor-save'
+import { flushSaveWrite, currentSaveBlob } from '../game/store'
 
 // Last line of defense: a render/effect crash anywhere in the tree used to white-screen
-// the PWA with no way back. The save in localStorage is almost always fine — the crash is
-// in code, not data — so tell the player that, offer a reload, and offer a one-tap backup
-// download of the raw save blob so nothing is ever unrecoverable.
+// the PWA with no way back. The saved game is almost always fine — the crash is in code,
+// not data — so tell the player that, offer a reload, and offer a one-tap backup download
+// of the raw save blob so nothing is ever unrecoverable.
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
@@ -18,7 +16,10 @@ export default class ErrorBoundary extends Component {
   }
   downloadSave = () => {
     try { flushSaveWrite() } catch {} // persist writes are debounced — capture the latest
-    const blob = localStorage.getItem(SAVE_KEY)
+    // Read the in-memory mirror, not the store: the save lives in IndexedDB now, and a crash
+    // screen can't await anything. The mirror is set the moment persist serializes, so it is
+    // if anything FRESHER than what's on disk.
+    const blob = currentSaveBlob()
     if (!blob) return
     const url = URL.createObjectURL(new Blob([blob], { type: 'application/json' }))
     const a = document.createElement('a')

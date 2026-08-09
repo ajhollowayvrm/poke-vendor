@@ -38,6 +38,7 @@ import { createBoothSlice } from './booth'
 import { createLivestreamSlice } from './livestream'
 import { createPacksSlice } from './packs'
 import { deflateState, inflateState } from './slimsave'
+import { idbAvailable, idbGet, idbSet, idbDel } from './idb'
 import { defaultPackTiers } from '../mysterypacks'
 
 // Re-export the public API (constants + pure helpers) so `import { ... } from '../game/store'`
@@ -51,9 +52,21 @@ export * from './constants'
 // latest blob and write after 400ms of quiet. Flushed on pagehide / tab-hidden (so an
 // iOS background-kill never loses more than the last 400ms) and before ANY direct read
 // of the blob (persist reads here; cloud pushes call flushSaveWrite via readBlob).
-let _pendingSave = null // [key, value] not yet written to localStorage
+let _pendingSave = null // [key, value] not yet written to storage
 let _saveTimer = null
 let _saveBlocked = false        // last write hit the quota — progress is NOT being persisted
+
+// Which store are we on? Decided ONCE, by actually opening IndexedDB rather than sniffing for
+// it — private browsing exposes the API and then refuses to open. Defaults to localStorage
+// until the probe resolves, and the probe is awaited inside getItem (the first thing persist
+// calls), so it's always settled before any write.
+let _useIdb = false
+let _idbProbe = null
+function probeIdb() {
+  if (!_idbProbe) _idbProbe = idbAvailable().then(ok => { _useIdb = ok; return ok }).catch(() => false)
+  return _idbProbe
+}
+export function usingIndexedDB() { return _useIdb }
 
 // Roughly how many UTF-16 chars this origin holds. Diagnostics only, so approximate is fine:
 // it turns "out of space" into a number the player can act on.
@@ -99,38 +112,133 @@ function announceSave(blocked) {
 // committed, so replacing a 3MB save with a 3MB save transiently wants 6MB of an ~5MB budget —
 // dropping the key first halves the peak. Second, a failed write must KEEP the pending blob so
 // the next flush retries it, instead of throwing away the only copy of the last few seconds.
+// The last blob persist handed us, kept in memory. This is what makes the move to an ASYNC
+// store a small change instead of a sprawling one: cloud pushes and the crash-screen backup
+// both need "the current save, right now, synchronously", and neither has to learn about
+// promises. It's also always at least as fresh as the store, since it's set the moment persist
+// serializes rather than when the write lands.
+let _mirror = null
+const SAVE_NAME = 'poke-vendor-save'
+const PREV_NAME = SAVE_NAME + '-prev'
+
+// Synchronous read of the live save, for the cloud push and the crash-screen backup. Falls back
+// to localStorage for the very first read of a session before persist has hydrated.
+export function currentSaveBlob() {
+  if (_mirror != null) return _mirror
+  try { return localStorage.getItem(SAVE_NAME) } catch { return null }
+}
+// Replace the save wholesale — what loadFromCloud does. Async because the destination may be.
+// Returns false if it couldn't be written, so the caller can keep the device's own game.
+export async function replaceSaveBlob(blob) {
+  _pendingSave = null; clearTimeout(_saveTimer)
+  if (_useIdb) {
+    try { await idbSet(SAVE_NAME, blob); _mirror = blob; announceSave(false); return true }
+    catch { /* fall through to localStorage */ }
+  }
+  const ok = writeLocalStorage(SAVE_NAME, blob)
+  if (ok) _mirror = blob
+  announceSave(!ok)
+  return ok
+}
+// The cloud rollback breadcrumb: a full second copy of the save. On localStorage that was
+// half the budget (and the likely reason a device ran out); in IndexedDB it's free.
+export async function writePrevBlob(blob) {
+  if (!blob) return
+  if (_useIdb) { try { await idbSet(PREV_NAME, blob); return } catch { /* fall through */ } }
+  try { localStorage.setItem(PREV_NAME, blob) } catch { /* no room — it's only a breadcrumb */ }
+}
+export async function dropPrevBlob() {
+  try { localStorage.removeItem(PREV_NAME) } catch { /* private mode */ }
+  if (_useIdb) await idbDel(PREV_NAME).catch(() => {})
+}
+
+// localStorage fallback, used only when IndexedDB is unavailable (private browsing, hardened
+// browsers). Keeps the old escalate-to-make-room behaviour, since that's the store with the
+// tight cap. IDB writes don't need any of it.
+function writeLocalStorage(k, v) {
+  try { localStorage.setItem(k, v); return true } catch { /* full — make room and retry */ }
+  const prior = (() => { try { return localStorage.getItem(k) } catch { return null } })()
+  try { localStorage.removeItem(k); localStorage.setItem(k, v); return true } catch { /* still full */ }
+  if (freeDisposableKeys()) {
+    try { localStorage.setItem(k, v); return true } catch { /* nothing left to free */ }
+  }
+  // Put back whatever was there so the device isn't left with NO save at all.
+  if (prior) { try { localStorage.setItem(k, prior) } catch { /* nothing more to do */ } }
+  return false
+}
+
+// Write the pending blob. Never swallows a failure: this was `try { setItem } catch {}` once,
+// and when localStorage filled up every save from then on failed wordlessly while the game
+// carried on. A failed write KEEPS the pending blob so the next flush retries it.
 export function flushSaveWrite() {
   if (!_pendingSave) return
   const [k, v] = _pendingSave
-  try {
-    localStorage.setItem(k, v)
-    _pendingSave = null; announceSave(false); return
-  } catch { /* full — make room and retry */ }
-  const prior = (() => { try { return localStorage.getItem(k) } catch { return null } })()
-  try {
-    localStorage.removeItem(k)
-    localStorage.setItem(k, v)
-    _pendingSave = null; announceSave(false); return
-  } catch { /* still full */ }
-  if (freeDisposableKeys()) {
-    try {
-      localStorage.setItem(k, v)
-      _pendingSave = null; announceSave(false); return
-    } catch { /* nothing left to free */ }
+  if (_useIdb) {
+    // Fire and don't await — IndexedDB writes off the main thread, which is the point. A
+    // transaction opened here still commits while the page is being frozen or hidden, so the
+    // pagehide flush works without blocking the way localStorage did.
+    _pendingSave = null
+    idbSet(k, v).then(() => announceSave(false)).catch(() => {
+      // Don't lose it: put it back so the next flush (or pagehide) tries again, and fall back
+      // to localStorage right now in case this is the last chance we get.
+      if (!_pendingSave) _pendingSave = [k, v]
+      announceSave(!writeLocalStorage(k, v))
+    })
+    return
   }
-  // Out of options. Put back whatever was there so the device isn't left with NO save at all,
-  // keep the pending blob for the next attempt, and make the failure visible.
-  if (prior) { try { localStorage.setItem(k, prior) } catch { /* nothing more to do */ } }
-  announceSave(true)
+  _pendingSave = null
+  if (writeLocalStorage(k, v)) announceSave(false)
+  else { _pendingSave = [k, v]; announceSave(true) }
 }
+
+// persist's storage. getItem is async (IDB is), which is why the app gates its first render on
+// hydration — see hasHydrated in main.jsx.
 const debouncedStorage = {
-  getItem: (k) => { flushSaveWrite(); return localStorage.getItem(k) },
-  setItem: (k, v) => {
+  async getItem(k) {
+    flushSaveWrite()
+    await probeIdb()
+    if (_useIdb) {
+      const fromIdb = await idbGet(k)
+      if (fromIdb != null) {
+        _mirror = fromIdb
+        // A leftover localStorage copy from before the move keeps occupying the ~5MB budget
+        // for nothing. Drop it — but ONLY when it is byte-identical to what IndexedDB holds.
+        // If they differ it might be the newer game (a session that fell back to localStorage
+        // after an IDB write failed), and no amount of reclaimed space is worth that risk.
+        try {
+          if (localStorage.getItem(k) === fromIdb) { localStorage.removeItem(k); localStorage.removeItem(PREV_NAME) }
+        } catch { /* private mode */ }
+        return fromIdb
+      }
+      // First run on IndexedDB: adopt whatever localStorage already holds, so an existing game
+      // survives the switch. Only once the IDB copy is safely written do we drop the old one —
+      // and dropping it matters, because leaving a 2.4MB blob behind would keep occupying the
+      // very ~5MB budget this move exists to escape. If the write fails we keep the original
+      // and simply stay on localStorage; nothing is lost either way.
+      const legacy = (() => { try { return localStorage.getItem(k) } catch { return null } })()
+      if (legacy != null) {
+        _mirror = legacy
+        idbSet(k, legacy)
+          .then(() => { try { localStorage.removeItem(k); localStorage.removeItem(PREV_NAME) } catch { /* private mode */ } })
+          .catch(() => { _useIdb = false })   // couldn't migrate — stay where the game already is
+      }
+      return legacy
+    }
+    const v = (() => { try { return localStorage.getItem(k) } catch { return null } })()
+    _mirror = v
+    return v
+  },
+  setItem(k, v) {
+    _mirror = v
     _pendingSave = [k, v]
     clearTimeout(_saveTimer)
     _saveTimer = setTimeout(flushSaveWrite, 400)
   },
-  removeItem: (k) => { _pendingSave = null; clearTimeout(_saveTimer); localStorage.removeItem(k) },
+  removeItem(k) {
+    _mirror = null; _pendingSave = null; clearTimeout(_saveTimer)
+    try { localStorage.removeItem(k) } catch { /* private mode */ }
+    if (_useIdb) idbDel(k).catch(() => {})
+  },
 }
 if (typeof window !== 'undefined') {
   window.addEventListener('pagehide', flushSaveWrite)
