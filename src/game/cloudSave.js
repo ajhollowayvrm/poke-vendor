@@ -13,7 +13,7 @@
 // advances only on a real local change and travels with the save. That's what lets the
 // backend's "refuse a push older than the cloud copy" guard work, and lets reconcile
 // pull a newer cloud save before you start playing on a device that's behind.
-import { useGame, flushSaveWrite } from './store'
+import { useGame, flushSaveWrite, storageUsedChars, freeDisposableKeys } from './store'
 import { SYNC_URL } from './syncConfig'
 import { authConfigured, currentUser, getIdToken } from './auth'
 
@@ -66,6 +66,19 @@ export function setAutoSync(on) { localStorage.setItem(AUTO_KEY, on ? '1' : '0')
 // Persist writes are debounced (store/index.js) — flush the pending one first so a
 // cloud push never uploads a blob that's up to 400ms behind the live game.
 function readBlob() { flushSaveWrite(); return localStorage.getItem(SAVE_KEY) }
+
+// Write the save, making room for it rather than giving up at the first throw. The write
+// that was failing needed the OUTGOING blob and the INCOMING one resident at the same time:
+// setItem doesn't free the old value until it has stored the new one, so a 3MB save being
+// replaced by a 3MB save wants 6MB of an ~5MB budget. Dropping the key first halves the peak.
+// `prior` is already held in memory by the caller, so nothing is at risk if the write fails.
+function writeSaveBlob(blob, prior) {
+  try { localStorage.removeItem(SAVE_KEY); localStorage.setItem(SAVE_KEY, blob); return true } catch { /* full */ }
+  freeDisposableKeys()
+  try { localStorage.setItem(SAVE_KEY, blob); return true } catch { /* still full */ }
+  if (prior) { try { localStorage.setItem(SAVE_KEY, prior) } catch { /* nothing more to do */ } }
+  return false
+}
 function localSavedAt() { return Number(localStorage.getItem(SAVEDAT_KEY)) || 0 }
 function setLocalSavedAt(ts) { localStorage.setItem(SAVEDAT_KEY, String(ts || Date.now())) }
 function baseSavedAt() { const n = Number(localStorage.getItem(BASE_KEY)); return n > 0 ? n : null }
@@ -230,10 +243,9 @@ export async function loadFromCloud({ prev = false } = {}) {
     // rehydrate rollback below reads `prior` from memory, so the key is only a manual
     // recovery breadcrumb — freeing it costs nothing and buys the room for the write.
     localStorage.removeItem(SAVE_KEY + '-prev')
-    try {
-      localStorage.setItem(SAVE_KEY, blob)
-    } catch {
-      const e = new Error('This browser is out of storage space, so the cloud save couldn’t be written — kept this device’s game.')
+    if (!writeSaveBlob(blob, prior)) {
+      const mb = (n) => `${(n / 524288).toFixed(1)}MB`   // UTF-16 chars → rough MB
+      const e = new Error(`This browser is out of storage space, so the cloud save couldn’t be written — kept this device’s game. The incoming save is ${mb(blob.length)} and this site is already holding ${mb(storageUsedChars())}; browsers cap it around 5MB.`)
       e.code = 'quota'; setSyncStatus('error', 'Out of local storage space.'); throw e
     }
     // Re-file the replaced save as the rollback breadcrumb, but never at the cost of the

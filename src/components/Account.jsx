@@ -8,6 +8,7 @@ import {
   currentUser, onAuthChange, signIn, signUp, confirmSignUp, resendCode,
   signOut, forgotPassword, confirmForgotPassword,
 } from '../game/auth'
+import { saveBlocked, storageUsedChars, freeDisposableKeys, flushSaveWrite } from '../game/store'
 import { confirmDialog } from '../ui/dialog'
 
 const inputStyle = {
@@ -39,6 +40,15 @@ export default function Account() {
   // How close this save is to the cloud's size cap. Only shown once it's worth knowing —
   // see sizeNote below.
   const [size, setSize] = useState(null)
+  // Local writes failing is its own alarm — it means this DEVICE isn't saving, cloud or not.
+  const [blocked, setBlocked] = useState(() => saveBlocked())
+  const [used, setUsed] = useState(() => storageUsedChars())
+
+  useEffect(() => {
+    const onSave = (e) => { setBlocked(!!e.detail?.blocked); setUsed(storageUsedChars()) }
+    window.addEventListener('poke-vendor-save-state', onSave)
+    return () => window.removeEventListener('poke-vendor-save-state', onSave)
+  }, [])
 
   useEffect(() => onAuthChange(setUser), [])
   useEffect(() => {
@@ -346,6 +356,29 @@ export default function Account() {
             )}
             {syncSt.state === 'error' && (
               <div style={{ fontSize: 11.5, color: 'var(--red)' }}>⚠️ Cloud sync is failing ({syncSt.message || 'unknown error'}) — retrying as you play.</div>
+            )}
+            {/* Out of localStorage is a different animal from a failed push: it means writes to
+                THIS DEVICE are failing too, so it needs its own words and a way out. */}
+            {blocked && (
+              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>
+                🛑 This browser is out of storage, so your progress is <b>not being saved to this
+                device</b> either. It's holding about {(used / 524288).toFixed(1)}MB and browsers cap
+                a site near 5MB. Free up what's safe to lose, then keep playing — the pending save
+                is retried automatically.
+              </div>
+            )}
+            {(blocked || syncSt.state === 'toolarge' || syncSt.state === 'error') && (
+              <button className="btn alt" style={{ maxWidth: 260, marginTop: 6 }}
+                onClick={() => {
+                  const n = freeDisposableKeys()
+                  flushSaveWrite()
+                  setUsed(storageUsedChars())
+                  setMsg({ kind: n ? 'ok' : 'info', text: n
+                    ? `Cleared ${n} cosmetic item${n === 1 ? '' : 's'} (collapsed panels and view preferences). Your game was not touched.`
+                    : 'Nothing cosmetic left to clear — the space is your save itself. Selling, consigning or bulking out singles you don’t want is what shrinks it.' })
+                }}>
+                🧹 Free up space ({(used / 524288).toFixed(1)}MB used)
+              </button>
             )}
             {syncSt.state !== 'toolarge' && sizeNote}
           </>

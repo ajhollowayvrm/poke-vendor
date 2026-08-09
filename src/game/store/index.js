@@ -53,11 +53,75 @@ export * from './constants'
 // of the blob (persist reads here; cloud pushes call flushSaveWrite via readBlob).
 let _pendingSave = null // [key, value] not yet written to localStorage
 let _saveTimer = null
+let _saveBlocked = false        // last write hit the quota — progress is NOT being persisted
+
+// Roughly how many UTF-16 chars this origin holds. Diagnostics only, so approximate is fine:
+// it turns "out of space" into a number the player can act on.
+export function storageUsedChars() {
+  let n = 0
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      n += (k?.length || 0) + (localStorage.getItem(k)?.length || 0)
+    }
+  } catch { /* private mode */ }
+  return n
+}
+// Cosmetic, regenerable keys: collapsed-section memory, view/sort prefs, the stream source
+// picker, and the cloud rollback breadcrumb. Never the save, auth, or the sync markers.
+// Dropping these buys room and costs the player a few reopened panels.
+export function freeDisposableKeys() {
+  try {
+    const doomed = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (!k) continue
+      if (k === 'poke-vendor-save-prev' || k.startsWith('pv-col-')
+        || k === 'pv-personal-view' || k === 'pv-personal-sort' || k === 'pv-stream-src') doomed.push(k)
+    }
+    for (const k of doomed) localStorage.removeItem(k)
+    return doomed.length
+  } catch { return 0 }
+}
+export function saveBlocked() { return _saveBlocked }
+function announceSave(blocked) {
+  if (blocked === _saveBlocked) return
+  _saveBlocked = blocked
+  try { window.dispatchEvent(new CustomEvent('poke-vendor-save-state', { detail: { blocked } })) } catch {}
+}
+// Write the pending blob, MAKING ROOM rather than failing silently.
+//
+// This used to be `try { setItem } catch {}` — a bare swallow. Once localStorage filled up,
+// every save from then on failed without a word: the game kept playing, the player kept
+// earning, and none of it was ever written. Silent progress loss is far worse than a warning.
+//
+// Two things matter on a full store. First, setItem holds the OLD value until the new one is
+// committed, so replacing a 3MB save with a 3MB save transiently wants 6MB of an ~5MB budget —
+// dropping the key first halves the peak. Second, a failed write must KEEP the pending blob so
+// the next flush retries it, instead of throwing away the only copy of the last few seconds.
 export function flushSaveWrite() {
   if (!_pendingSave) return
   const [k, v] = _pendingSave
-  _pendingSave = null
-  try { localStorage.setItem(k, v) } catch {}
+  try {
+    localStorage.setItem(k, v)
+    _pendingSave = null; announceSave(false); return
+  } catch { /* full — make room and retry */ }
+  const prior = (() => { try { return localStorage.getItem(k) } catch { return null } })()
+  try {
+    localStorage.removeItem(k)
+    localStorage.setItem(k, v)
+    _pendingSave = null; announceSave(false); return
+  } catch { /* still full */ }
+  if (freeDisposableKeys()) {
+    try {
+      localStorage.setItem(k, v)
+      _pendingSave = null; announceSave(false); return
+    } catch { /* nothing left to free */ }
+  }
+  // Out of options. Put back whatever was there so the device isn't left with NO save at all,
+  // keep the pending blob for the next attempt, and make the failure visible.
+  if (prior) { try { localStorage.setItem(k, prior) } catch { /* nothing more to do */ } }
+  announceSave(true)
 }
 const debouncedStorage = {
   getItem: (k) => { flushSaveWrite(); return localStorage.getItem(k) },
