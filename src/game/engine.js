@@ -69,17 +69,32 @@ export const EXTRA_SETS = data.sets.filter(s => s.extra)
 // 🎌 Japanese sets the IMPORT channel can actually sell SEALED (Import License upgrade →
 // the Japan Direct distributor). JP sets are `extra` (browse-only) by default; a set is
 // promoted onto the import shelf only when its data can compose an HONEST pack:
-//   • ≥95% card art (three fetched sets have none — TCGdex gaps — and would rip blank), and
-//   • real base Common/Uncommon/Rare pools once pattern parallels are set aside (JP 151
-//     fails this: JustTCG carries its commons ONLY as Master Ball mirrors — browse-only
-//     until a future fetch fills the base population).
+//   • ≥95% card art (several fetched sets have none — TCGdex gaps — and would rip blank), and
+//   • real base pools once pattern parallels are set aside: enough distinct low-rarity cards to
+//     fill a pack's four filler slots, plus a real hit lineup for the rare slot.
+// The failure mode this exists to catch is JP 151, where JustTCG carries the ENTIRE Common
+// population as Master Ball mirrors — set the parallels aside and there is nothing to fill a
+// pack with (baseLow = 0). It is NOT "this set lacks an English-style C/U/R ladder": JustTCG
+// labels every sub-Double-Rare card in some sets (SV8a) uniformly `common`, so they have 288
+// perfectly good base commons and zero Uncommons. openJapanesePack/jpPackEV already fall back
+// when a tier is missing (`byR['Uncommon'] || commons`), so demanding all three tiers was
+// stricter than the machinery needs and benched a fully-arted, fully-priced set.
 // Data-driven, so finishing a set's fetch later auto-promotes it here. Newest first.
+const JP_MIN_FILLER = 20   // distinct base Common/Uncommon cards — 4 slots/pack want real variety
+const JP_MIN_HITS = 5      // distinct base Double Rare+ cards for the hit slot to land on
+// Spelled out rather than via rarityRank(): this runs at module load, and RARITY_ORDER is a
+// `const` declared BELOW — reaching for it here is a temporal-dead-zone crash on boot.
+const JP_HIT_RARITIES = new Set([
+  'Double Rare', 'Ultra Rare', 'Illustration Rare', 'Special Illustration Rare',
+  'Hyper Rare', 'ACE SPEC Rare', 'Mega Hyper Rare', 'Black White Rare',
+])
 export const JP_SHOP_SETS = data.sets.filter(s => {
   if (!s.japanese || !s.cards?.length) return false
   if (s.cards.filter(c => c.img).length / s.cards.length < 0.95) return false
   const base = s.cards.filter(c => !jpPatternTag(c))
-  const has = r => base.some(c => c.rarity === r)
-  return has('Common') && has('Uncommon') && (has('Rare') || has('Rare Holo'))
+  const filler = base.filter(c => c.rarity === 'Common' || c.rarity === 'Uncommon').length
+  const hits = base.filter(c => JP_HIT_RARITIES.has(c.rarity)).length
+  return filler >= JP_MIN_FILLER && hits >= JP_MIN_HITS
 }).sort((a, b) => String(b.releaseDate || '').localeCompare(String(a.releaseDate || '')))
 export function vintageProduct(set) {
   return (set.products || []).find(p => p.vintage) || setProducts(set)[0]
