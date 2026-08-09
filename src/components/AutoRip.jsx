@@ -214,8 +214,10 @@ export default function AutoRip({ items, onExit }) {
     } else {
       sfxFlip()
     }
-    if (i + 1 < cards.length) { setAwaiting(true); return }
-    after(() => revealStep(cards, i + 1), ms(700))         // last card seen — let it land, then settle
+    // The last card waits for your tap too, exactly like every card before it. A timer here
+    // used to settle the pack 700ms after the final flip, and settling swaps the hand out for
+    // the grid — so the one card you stopped the whole sift to see got yanked off screen.
+    setAwaiting(true)
   }
   function advanceManual() {
     if (phase !== 'reveal' || !awaiting || !stack) return

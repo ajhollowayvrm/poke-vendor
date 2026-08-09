@@ -14,7 +14,9 @@ import { rarityColor } from './CardTile'
 export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
   const n = pulls.length
   const manual = revealMode === 'manual'
-  const canAdvance = manual && awaiting && shown < n
+  // `shown === n` still advances: that final tap is what closes the pack out to the summary,
+  // so the last card sits there until you're done looking at it (see PackOpening step()).
+  const canAdvance = manual && awaiting
   const curIdx = shown - 1
   const current = curIdx >= 0 ? pulls[curIdx] : null   // face-up card on top of the hand
   const upcoming = pulls.slice(shown)                  // still unseen — only their edges peek
@@ -93,6 +95,7 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
       {canAdvance && (
         <p className="rip-tap-hint">
           {shown === 0 ? '👆 Swipe or tap to reveal your first card'
+            : shown >= n ? `👆 That's the last card (${n}/${n}) — take your time, then tap to close the pack`
                        : `👆 Swipe the card away — or tap — for the next (${shown}/${n}) · hold to peek ahead`}
         </p>
       )}

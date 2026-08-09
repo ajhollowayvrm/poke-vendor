@@ -142,8 +142,15 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       sfxFlip()
     }
     const isLast = i + 1 >= cards.length
-    if (revealMode === 'manual' && !isLast) { setAwaiting(true); return }
-    const delay = special ? 1100 : 520
+    // Manual mode owns the pace — INCLUDING the last card. This used to read `&& !isLast`, so a
+    // player tapping through at their own speed had the payoff card snatched away to the pack
+    // summary 520ms after it flipped. Now the final card waits for a tap like every other one;
+    // advanceManual() then calls step() with i === length, which falls through to finish().
+    if (revealMode === 'manual') { setAwaiting(true); return }
+    // Auto mode: the last card is the one you actually want to look at, and the moment it lands
+    // the whole screen changes (phase 'done' swaps in the summary and scrolls the stage to top).
+    // Give it a real beat instead of the same 520ms as a card that's followed by another flip.
+    const delay = isLast ? (special ? 2200 : 1600) : (special ? 1100 : 520)
     after(() => step(cards, i + 1), ms(delay))
   }
 
