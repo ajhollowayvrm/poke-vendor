@@ -117,6 +117,25 @@ function patternTag(name) {
 }
 const numerator = num => String(num || '').split('/')[0].trim()          // "094/165" → "094"
 
+// JustTCG prefixes its JP set names with the set code ("SV8a: Terastal Fest ex"), which reads as
+// a part number in-game. Strip it — the code is still recoverable from the set id (jp-SV8a) — and
+// override the handful JustTCG abbreviates or mis-spells. Only names we're confident of go in the
+// map; everything else just loses the prefix, which is already the real name.
+const JP_SET_NAMES = {
+  SV2a: 'Pokémon Card 151',
+  SV8a: 'Terastal Festival ex',
+}
+// The 🎌 prefix is load-bearing, not decoration: JP SV11B/SV11W are literally named "Black Bolt"
+// and "White Flare", the same as their English counterparts, and the UI only distinguishes
+// japanese sets inside the distributor panel. Without it a JP card reads identically to a very
+// differently-priced English one in the collection, price guide and card modal.
+function setName(tcgdexId, jtName, tsetName) {
+  const base = JP_SET_NAMES[tcgdexId]
+    || String(jtName || '').replace(/^\s*[A-Za-z0-9.]+\s*:\s*/, '').trim()
+    || tsetName || tcgdexId
+  return `🎌 ${String(base).replace(/^🎌\s*/, '')}`      // idempotent — never double-prefix
+}
+
 // Build a NUMBER→image-base dict from a TCGdex set (keyed by localId, both padded + int form).
 async function tcgdexImages(tcgdexId) {
   const s = await tcgdex(`${JA}/sets/${tcgdexId}`)
@@ -174,7 +193,7 @@ async function fetchSet(pair) {
 
   return {
     id: `jp-${tcgdexId}`,
-    name: jtName || tset?.name || tcgdexId,
+    name: setName(tcgdexId, jtName, tset?.name),
     series: 'Japanese',
     releaseDate: tset?.releaseDate || null,
     printedTotal: tset?.cardCount?.official ?? cards.length,
