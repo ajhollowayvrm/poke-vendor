@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, JP_CARD_SETS, JP_SHOP_SETS, JP_WORLD_RATE, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
+import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, AFTERMARKET_SETS, JP_CARD_SETS, JP_SHOP_SETS, JP_WORLD_RATE, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_PREMIUM, SPECIAL_ORDER_CAP } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
@@ -279,8 +279,11 @@ function boothSealed(r, arch, band = [1, 100]) {
   // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fusion Strike, Fates Collide, the
   // Zygarde / Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old
   // ETB / box / tin on the table at a collector's markup.
-  if (SECONDARY_SETS.length && r() < 0.50) {
-    const sSet = pickR(r, SECONDARY_SETS)
+  // Draws from AFTERMARKET_SETS, not just the old SM/XY pool: a set that ages out of the shop's
+  // in-print window lands here too, so the show floor is where recently-retired product goes to
+  // be hunted rather than ordered.
+  if (AFTERMARKET_SETS.length && r() < 0.62) {
+    const sSet = pickR(r, AFTERMARKET_SETS)
     const prods = setProducts(sSet)
     const product = prods.length ? prods[Math.floor(r() * prods.length)] : null
     if (product) {

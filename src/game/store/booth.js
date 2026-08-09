@@ -102,7 +102,8 @@ export function createBoothSlice(set, get) {
       if (Math.random() < 0.12) {
         const found = randomSealedInRange(lo, hi)
         if (found) {
-          const item = get().mintSealedRow(found.set, found.product, price)
+          // 🔦 Show floor: the least trustworthy place to buy a loose old pack.
+          const item = get().mintSealedRow(found.set, found.product, price, 'floor')
           set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
           get().log('buy', `❓ Opened a mystery pack for $${round2(price).toFixed(2)} — a sealed ${found.product.type} of ${found.set.name} was inside! (~$${sealedValue(item).toFixed(2)}, stocked to 📦 Inventory)`, -price)
           get().bumpGoal('buy', 1)
@@ -161,7 +162,7 @@ export function createBoothSlice(set, get) {
       if (delta > 0 && get().cash < delta) return { error: `You can't cover the $${delta.toFixed(2)} on your side.` }
       // Received items land in the right buckets. Sealed lands in held inventory (rip/list/flip later).
       const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined }))
-      const gotSealed = getSealed.map(entry => get().mintSealedRow(entry.set, entry.product, entry.ask ?? entry.product?.price ?? 0))
+      const gotSealed = getSealed.map(entry => get().mintSealedRow(entry.set, entry.product, entry.ask ?? entry.product?.price ?? 0, 'vendor'))
       set(s => ({
         collection: [...gotCards, ...s.collection.filter(c => !cardIds.has(c.uid))],
         sealedInventory: [...gotSealed, ...(s.sealedInventory || []).filter(it => !sealIds.has(it.uid))],
@@ -631,7 +632,7 @@ export function createBoothSlice(set, get) {
       }
       // Mint any sealed product in the lot into your storeroom backstock (no extra charge — it
       // came with the collection). Cards go straight into your collection as before.
-      const sealedRows = (offer.sealed || []).map(s => get().mintSealedRow(setById(s.setId), s.product, 0)).filter(Boolean)
+      const sealedRows = (offer.sealed || []).map(s => get().mintSealedRow(setById(s.setId), s.product, 0, 'vendor')).filter(Boolean)
       set(s => ({
         collection: [...offer.cards, ...s.collection],
         sealedInventory: sealedRows.length ? [...sealedRows, ...(s.sealedInventory || [])] : s.sealedInventory,
@@ -924,7 +925,7 @@ export function createBoothSlice(set, get) {
             }))
           }
           const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined }))
-          const gotSealed = getSealed.map(e => get().mintSealedRow(e.set || setById(e.setId), e.product, e.ask ?? e.product?.price ?? 0))
+          const gotSealed = getSealed.map(e => get().mintSealedRow(e.set || setById(e.setId), e.product, e.ask ?? e.product?.price ?? 0, 'vendor'))
           set(st => ({ collection: [...gotCards, ...st.collection], sealedInventory: [...gotSealed, ...(st.sealedInventory || [])] }))
           if (adj > 0) s.earn(adj)
           else if (adj < 0) s.spend(-adj)

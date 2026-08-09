@@ -9,7 +9,7 @@
 
 import {
   round2, distributorById, distributorUnlocked, rapportLevel, distributorPrice, stockKey, stockState,
-  sealedValue, sealedCard, SEALED_FLIP_RATE, setById, breakOptions,
+  sealedValue, sealedCard, SEALED_FLIP_RATE, setById, breakOptions, searchable, rollSearched,
 } from '../engine'
 import { absoluteDay, weekIndexOf } from './constants'
 import { nextSealedSuffix } from './ids'
@@ -282,10 +282,13 @@ export function createSourcingSlice(set, get) {
       if (opts.split) { split = get().paySplit(cost); if (!split) return null }
       else if (opts.onCredit ? !get().chargeCredit(cost) : !get().spend(cost)) return null
       get().recordSetSpend(pokeSet.id, cost)
+      // A shop's loose out-of-print stock is the safest place to buy it, but not risk-free —
+      // they bought that box off somebody too. See SEARCH_RISK / mintSealedRow.
+      const searched = searchable(pokeSet, product) && rollSearched(opts.source || 'shop')
       const item = {
         uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
         setId: pokeSet.id,
-        product: { ...product },
+        product: { ...product, ...(searched ? { _searched: true } : {}) },
         boughtDay: absoluteDay(get().currentDay, get().monthsElapsed),
         boughtPrice: round2(cost),
         vintage: !!pokeSet.vintage,
@@ -304,11 +307,19 @@ export function createSourcingSlice(set, get) {
     // Mint a sealed-inventory row WITHOUT charging — for trades or grants where the item is
     // acquired by other means. Same uid/shape as buySealed; the CALLER adds it to inventory.
     // `boughtPrice` is the cost basis to record (e.g. the value given up in a trade).
-    mintSealedRow(pokeSet, product, boughtPrice = 0) {
+    // `source` is WHERE this came from, and it only matters for one thing: whether a loose
+    // out-of-print pack might already have been searched (see SEARCH_RISK). Rolled ONCE, here,
+    // and stamped on the item's own product copy — so it's a fact about the pack you bought,
+    // fixed from the moment you own it, not a coin flip re-rolled when you finally rip it.
+    // Anything minted without a source (breaking your own box, preorders, special orders) is
+    // clean by construction.
+    mintSealedRow(pokeSet, product, boughtPrice = 0, source = null) {
+      const searched = source && searchable(pokeSet, product) && rollSearched(source)
       return {
         uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
         setId: pokeSet.id,
-        product: { ...product, _ask: undefined, _mispriced: undefined, _highlight: undefined },
+        product: { ...product, _ask: undefined, _mispriced: undefined, _highlight: undefined,
+          ...(searched ? { _searched: true } : {}) },
         boughtDay: absoluteDay(get().currentDay, get().monthsElapsed),
         boughtPrice: round2(boughtPrice),
         vintage: !!pokeSet.vintage,

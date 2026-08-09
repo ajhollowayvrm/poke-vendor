@@ -2129,12 +2129,55 @@ export function packPrice(set) {
 
 // Open a sealed product: rip `packs` packs and (if any) add a guaranteed bonus
 // promo. Returns the flat array of all cards pulled.
-export function openProduct(set, product) {
+// 🔦 SEARCHED PACKS. A loose out-of-print pack has been out of the factory box for years, and
+// somebody along the chain may have weighed or candled it and pulled the holo before resealing.
+// The odds are a property of WHERE you bought it, rolled once at purchase and stamped on the
+// item — so it's a decision about who you trust, not a coin flip at rip time. A searched pack
+// still opens; it just can't hold a hit, because the hit already left.
+export const SEARCH_RISK = { shop: 0.03, vendor: 0.10, floor: 0.20, sketchy: 0.34 }
+// Only loose, out-of-print single packs carry the risk. A modern in-print pack came off a pallet
+// last month; a factory-sealed box is still shrink-wrapped whatever its age. And a pack you got
+// by BREAKING your own sealed box is clean by construction — which quietly makes buying boxes
+// and breaking them yourself the trustworthy way to get old singles.
+export function searchable(set, product) {
+  return !!set && product?.packs === 1 && (set.vintage || AFTERMARKET_SET_IDS.has(set.id))
+}
+export function rollSearched(sourceKey, rnd = Math.random) {
+  return rnd() < (SEARCH_RISK[sourceKey] ?? 0)
+}
+// Swap anything above a plain Rare for a common from the same set — what's left after someone
+// has been through it. Keeps the pack's SHAPE (same card count) so the rip still reads normally
+// right up to the moment you realise nothing good is coming.
+// The animated single-pack rip goes through openPack directly (not openProduct), so it needs
+// its own way in. Same rule: loose packs only, and the pack keeps its shape.
+export function openPackFor(set, product) {
+  const cards = openPack(set)
+  if (!product?._searched || product.packs !== 1) return cards
+  const out = stripSearched(cards, set)
+  out._searched = true
+  return out
+}
+function stripSearched(cards, set) {
+  const pool = (set.cards || []).filter(c => c.rarity === 'Common')
+  if (!pool.length) return cards
+  return cards.map(c => (rarityRank(c.rarity) > rarityRank('Rare') || c.foil)
+    ? instance(pool[Math.floor(Math.random() * pool.length)], c.condition || 'NM')
+    : c)
+}
+
+export function openProduct(set, product, opts = {}) {
   const all = []
   for (let i = 0; i < product.packs; i++) {
     const pack = openPack(set)
     if (pack._god) pack.forEach(c => { c._fromGod = true })
     all.push(...pack)
+  }
+  // Only a LOOSE pack can have been searched — a factory-sealed box or ETB is still shrink-
+  // wrapped, and nobody resealed that. Applied before the bonus promo so a product that ships
+  // one still gets it: the promo is on the packaging, not inside a pack somebody went through.
+  if ((opts.searched || product._searched) && product.packs === 1) {
+    all.splice(0, all.length, ...stripSearched(all, set))
+    all._searched = true
   }
   // Bonus promo: the single fixed card this product ships (see makeProductPromo) — usually a
   // cheap black-star foil, occasionally a headline ex/GX/V chase in a premium collection / box.
@@ -2677,8 +2720,37 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   // Drawn LAST so the rate/set/markup draws above keep their existing sequence — adding a
   // qty roll must not silently reshuffle which set turns up this week, or at what price.
   const qty = r() < 0.25 ? 2 : 1 // they usually turn up a single pack; sometimes a pair
+  // 🕰️ Some weeks the back room turns up recent OUT-OF-PRINT product instead of true vintage —
+  // the last sealed Prismatic ETB rather than a '99 pack. Same slot, same finite quantity, so
+  // the whole existing shelf works unchanged. Rolled LAST, after every draw above, so adding it
+  // can't reshuffle which vintage set surfaces on the weeks it doesn't fire.
+  if (AFTERMARKET_SETS.length && r() < AFTERMARKET_SHARE) {
+    const aset = AFTERMARKET_SETS[Math.floor(r() * AFTERMARKET_SETS.length)]
+    const aprods = setProducts(aset)
+    if (aprods.length) {
+      const aprod = aprods[Math.floor(r() * aprods.length)]
+      // Out-of-print sealed only goes one way, and a shop still holding it knows that.
+      const aprice = round2(sealedValue({ product: aprod, setId: aset.id }) * (1.12 + r() * 0.28))
+      return { setId: aset.id, setName: aset.name, logo: aset.logo, product: aprod, price: aprice,
+        qty: r() < 0.3 ? 2 : 1, aftermarket: true }
+    }
+  }
   return { setId: set.id, setName: set.name, logo: set.logo, product, price, qty }
 }
+// 🕰️ AFTERMARKET FIND — the other half of the in-print window. A set that ages out of the order
+// channel doesn't vanish; it ends up in the back room, on a clearance shelf, in the case a
+// vendor bought off a collector. This is where you hunt it. Same weekly-deterministic shape as
+// the vintage find (stable while you shop, rotates week to week), but drawn from the modern
+// out-of-print pool plus the older aftermarket sets — and priced ABOVE market, because a shop
+// that still has sealed Prismatic knows exactly what it's sitting on.
+export const AFTERMARKET_SETS = [...OUT_OF_PRINT_SETS, ...SECONDARY_SETS]
+const AFTERMARKET_SET_IDS = new Set(AFTERMARKET_SETS.map(s => s.id))
+// How often a back-room find is recent-out-of-print product rather than true vintage. Deliberately
+// routed through the SAME weekly find slot: a shop has one back room, and what's in it this week
+// is either a '99 pack or the last sealed Prismatic ETB nobody shifted. Sharing the slot means the
+// existing buy path, stock tracking and shelf UI all work unchanged.
+const AFTERMARKET_SHARE = 0.45
+
 // Build a vintage item a high-rapport vendor RESERVES for you (the "we'll hold it" perk). Priced
 // at market with the vendor's standing rapport discount — the relationship perk is a fair price
 // PLUS them setting it aside. `rnd` lets the caller vary the pick. Returns { setId, product, price }.

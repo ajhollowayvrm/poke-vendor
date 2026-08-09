@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, isChase, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
+import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -29,6 +29,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [suspenseIdx, setSuspenseIdx] = useState(-1) // auto mode: index of the chase card being teased pre-flip
   const [tear, setTear] = useState(0)            // drag-to-rip progress 0..1 on the idle pack
   const [burst, setBurst] = useState(false)
+  const [searched, setSearched] = useState(false)  // 🔦 this pack had already been gone through
   const [isGod, setIsGod] = useState(false)
   const [isDemigod, setIsDemigod] = useState(false)
   const [hits, setHits] = useState([])            // every hit/foil pulled this whole rip (Hits tab)
@@ -83,11 +84,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     if (phase !== 'idle') return
     primeAudio() // this click/drag is our chance to start audio under the autoplay policy
     setTear(0)
-    const cards = openPack(set)
+    const cards = openPackFor(set, product)
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
     cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     const god = !!cards._god
     const demigod = !!cards._demigod
+    setSearched(!!cards._searched)
     setIsGod(god)
     setIsDemigod(demigod)
     setAwaiting(false)
@@ -380,6 +382,14 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
             </span>
           )}
           {product?.bonus && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
+          {/* 🔦 Told only AFTER the reveal — the gut-punch is realising nothing good was ever
+              coming, which is exactly how buying a searched pack feels. */}
+          {searched && phase === 'done' && (
+            <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
+              title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
+              🔦 Searched — the hit was already gone
+            </span>
+          )}
           {(phase === 'idle' || phase === 'done') && remainingToOpen >= 2 && (
             <button className="btn alt" style={{ flex: 'none', maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
           )}

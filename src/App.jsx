@@ -1439,7 +1439,7 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
   if (!hold && !find) {
     return (
       <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
-        <div className="market-head">🗝️ Vintage <span className="muted">— nothing old on {dist.name}'s shelf this week. It turns up randomly here (check back), and always at shows. Build rapport and they'll hold pieces for you.</span></div>
+        <div className="market-head">🗝️ Back room <span className="muted">— nothing old on {dist.name}'s shelf this week. Vintage and out-of-print sealed turn up here at random (check back), and always at shows. Build rapport and they'll hold pieces for you.</span></div>
       </div>
     )
   }
@@ -1459,7 +1459,7 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
         {f.logo && <img className="logo" src={f.logo} alt={f.setName} />}
         <h3>{f.setName}</h3>
         <div className="meta">
-          {held ? '🗝️ Reserved for you' : '🗝️ Vintage find'} · sealed {f.product.type}
+          {held ? '🗝️ Reserved for you' : f.aftermarket ? '🕰️ Out-of-print find' : '🗝️ Vintage find'} · sealed {f.product.type}
           {!held && (out
             ? <> · <b style={{ color: 'var(--red)' }}>cleaned out</b></>
             : <> · <b>{n} left</b></>)}
@@ -1468,7 +1468,7 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
           <button className={`prodbtn ${useCredit ? 'on-credit' : ''}`} disabled={out || broke}
             onClick={() => onBuyVintage(dist.id, f, { fromHold: held, onCredit, split })}
             title={out
-              ? `${dist.name} has no more sealed ${f.setName} — vintage is out of print. A new find turns up next week.`
+              ? `${dist.name} has no more sealed ${f.setName} — it's out of print, so there's no reordering it. A new find turns up next week.`
               : `${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
             <span className="prodname">{useCredit ? '💳 ' : ''}{f.product.icon || '📦'} {f.product.type}</span>
             <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
