@@ -1,5 +1,5 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
-import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
+import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, JP_CARD_SETS, JP_SHOP_SETS, JP_WORLD_RATE, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_PREMIUM, SPECIAL_ORDER_CAP } from './store/constants'
 
 // --- Show tiers --------------------------------------------------------------
@@ -294,6 +294,18 @@ function boothSealed(r, arch, band = [1, 100]) {
     const product = vintageProduct(vSet)
     const markup = 1.2 + r() * 0.5
     out.push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
+  }
+  // 🎌 An import table. JP sealed on the show floor is the ONLY way to buy it without the
+  // Import License — a vendor who does the legwork, and charges for it. Steeper markup than
+  // aftermarket because he ate the freight and the exchange rate to get it here.
+  if (JP_SHOP_SETS.length && r() < 0.18) {
+    const jSet = pickR(r, JP_SHOP_SETS)
+    const prods = setProducts(jSet)
+    const product = prods.length ? pickR(r, prods) : null
+    if (product) {
+      const markup = 1.18 + r() * 0.34
+      out.push({ set: jSet, product, _ask: round2((product.price || 0) * markup), _origin: 'import' })
+    }
   }
   // FLOOR GUARANTEE: every booth carries sealed. If the rolls above happened to produce none
   // (no vendor should read as "doesn't do sealed"), lay out a modern item so the table always
@@ -1201,6 +1213,7 @@ function eraPool(era) {
     case 'sunmoon':    return SECONDARY_SETS.filter(s => s.series === 'Sun & Moon')
     case 'swsh':       return SECONDARY_SETS.filter(s => s.series === 'Sword & Shield')
     case 'modern':     return SHOP_SETS
+    case 'japan':      return JP_SHOP_SETS                                             // 🎌 import sealed
     default:           return [...SHOP_SETS, ...SECONDARY_SETS]
   }
 }
@@ -1232,6 +1245,11 @@ const ESTATE_ARCHETYPES = [
   { key: 'pandemic', tone: 'mid',  era: 'swsh',
     who: ['a pandemic returner cashing out their 2020 haul', 'a streamer who rage-quit collecting', 'someone who went deep on Sword & Shield and burned out'],
     hint: 'Sword & Shield — bought heavy, quitting now' },
+  // 🎌 The import lot: someone who bought at Japanese retail and is selling into a market that
+  // prices the same cards as imports. Deliberately `soft` — they paid conbini prices and know it.
+  { key: 'importer', tone: 'soft', era: 'japan',
+    who: ['someone who taught English in Osaka and collected the whole time', 'a returning expat clearing out their Japanese binders', 'a collector selling off the JP half of their collection', 'someone who did the Ikebukuro card-shop circuit every weekend for years'],
+    hint: 'Japanese product — bought over there, priced over here' },
 ]
 
 // One sealed item drawn from a set pool (an era's lineup). Estate lots fill their sealed slots
@@ -1419,7 +1437,11 @@ export function makeWant(rich = false) {
     // shop. A rich collector skews toward pricier cards; everyone else can ask for anything,
     // including cheap commons/uncommons (variety over value).
     const floor = rich ? 8 : 0
-    let all = SHOP_SETS.flatMap(s => s.cards.filter(c => (c.price ?? 0) >= floor))
+    // 🎌 A collector can absolutely be chasing a Japanese card. Fulfillable for the same reason
+    // it's askable: JP singles now turn up in vendor bins and online offers, and the import
+    // shelf sells the sealed. Same minority rate as everywhere else.
+    const wantSets = (JP_CARD_SETS.length && Math.random() < JP_WORLD_RATE) ? JP_CARD_SETS : SHOP_SETS
+    let all = wantSets.flatMap(s => s.cards.filter(c => (c.price ?? 0) >= floor))
     if (!all.length) all = SHOP_SETS.flatMap(s => s.cards)
     const card = wpick(all)
     const price = card.price ?? 0
@@ -1438,8 +1460,15 @@ export function makeWant(rich = false) {
       desc: `${cap(who)} wants a ${card.name}${setName ? ` (${setName})` : ''}`,
     }
   }
-  const set = wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
   const rar = wpickWeighted(WANT_RARITIES).rarity
+  // 🎌 An import set can headline a rarity want too — but ONLY if it actually holds that rarity.
+  // JustTCG labels every sub-Double-Rare card in some JP sets `common`, so "any Rare from
+  // Terastal Festival ex" would be an ask that can never be filled. Verify, else stay domestic.
+  // Restricted to the rippable shelf so the player has a way to go and find one.
+  const jpCandidates = (JP_SHOP_SETS.length && Math.random() < JP_WORLD_RATE)
+    ? JP_SHOP_SETS.filter(s => s.cards.some(c => c.rarity === rar)) : []
+  const set = jpCandidates.length ? wpick(jpCandidates)
+    : wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
   // Low-rarity asks pay a fatter multiple so a common/uncommon want is worth doing.
   const low = rarityRank(rar) < rarityRank('Double Rare')
   const premium = low ? 1.8 + Math.random() * 1.2   // 1.8–3× on commons/uncommons/rares

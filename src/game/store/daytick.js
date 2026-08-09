@@ -16,7 +16,7 @@
 
 import {
   round2, cardValue, dailyViewers, rollBuyerSavvy, buyerMaxMult, BUYER_SAVVY,
-  SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, JP_SHOP_SETS, driftMult, driftMultVintage,
+  SHOP_SETS, VINTAGE_SETS, SECONDARY_SETS, JP_SHOP_SETS, JP_CARD_SETS, driftMult, driftMultVintage,
   applyMarketEvent, MARKET_EVENTS, VINTAGE_CRASH_CHANCE, VINTAGE_CRASH_EVENTS,
   setMarketMults, distributorById, restockRate, distributorUnlocked,
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
@@ -250,8 +250,11 @@ function driftMarket(mults, history, days, log) {
   const events = []
   for (let d = 0; d < days; d++) {
     for (const s of SHOP_SETS) next[s.id] = driftMult(next[s.id])
-    // 🎌 the import shelf lives on the same living market as the English shop sets.
-    for (const s of JP_SHOP_SETS) next[s.id] = driftMult(next[s.id])
+    // 🎌 Every JP set with real prices drifts, not just the rippable shelf — browse-only sets
+    // (151's Master Ball parallels, Shiny Treasure ex) now circulate as SINGLES through vendor
+    // bins, wants and offers, so their market has to move like everything else. A set whose
+    // mult never drifts is a set whose cards are quietly frozen out of the living market.
+    for (const s of JP_CARD_SETS) next[s.id] = driftMult(next[s.id])
     // vintage sealed trends upward (finite, shrinking supply) — tapering bias, no revert.
     for (const s of VINTAGE_SETS) next[s.id] = driftMultVintage(next[s.id])
     // aftermarket (older SM/XY) sealed also appreciates as supply dries up — same upward drift.
@@ -276,7 +279,7 @@ function driftMarket(mults, history, days, log) {
     }
   }
   // record one history sample per set per call (the post-drift value), capped.
-  for (const s of [...SHOP_SETS, ...JP_SHOP_SETS]) {
+  for (const s of [...SHOP_SETS, ...JP_CARD_SETS]) {
     hist[s.id] = [...(hist[s.id] || []), next[s.id]].slice(-MARKET_HISTORY_LEN)
   }
   for (const s of VINTAGE_SETS) {

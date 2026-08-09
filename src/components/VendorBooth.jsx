@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, setById, cardImg, isCardDeal } from '../game/engine'
+import { cardValue, rawValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, overTierValue, DEFAULT_GRADER, setById, cardImg, isCardDeal } from '../game/engine'
 import { vendorRapport, nextVendorRapport } from '../game/shows'
 import CardTile, { rarityColor } from './CardTile'
 import CardModal from './CardModal'
@@ -23,9 +23,14 @@ function KioskBooth({ booth, onClose, flash }) {
   useModalEscape(onClose)
   const raw = [...collection].filter(c => !c.grade).sort((a, b) => cardValue(b) - cardValue(a))
   const days = GRADING.kiosk.days
+  // Per card now: the kiosk prices a card above its declared-value ceiling off what the card is
+  // WORTH, so a four-figure chase can't be slabbed on the flat sticker. `fee` stays the sticker
+  // for the blurb; every actual charge goes through feeFor.
+  const feeFor = (card) => gradingFee('kiosk', submitted, 1, DEFAULT_GRADER, rawValue(card))
   const fee = gradingFee('kiosk', submitted)
   function submit(card) {
-    if (cash < fee) { flash(`Not enough cash for the ${fmtMoney(fee)} kiosk fee.`); return }
+    const f = feeFor(card)
+    if (cash < f) { flash(`Not enough cash for the ${fmtMoney(f)} kiosk fee.`); return }
     useGame.getState().submitGrade(card.uid, 'kiosk')
     flash(`Submitted ${card.name} to the on-site grader — slabbed in ~${days} days.`)
   }
@@ -44,14 +49,17 @@ function KioskBooth({ booth, onClose, flash }) {
         {raw.length === 0 ? <p className="muted">You have no raw cards on you to grade.</p> : (
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))' }}>
             {raw.slice(0, 30).map(card => {
-              const worthIt = cardValue(card) >= fee
+              const f = feeFor(card)
+              const worthIt = cardValue(card) >= f
+              const byValue = overTierValue('kiosk', rawValue(card))
               return (
                 <div key={card.uid} className="vendoritem">
                   <CardTile card={card} interactive={false} />
                   <div className="muted" style={{ fontSize: 11 }}>mkt {fmtMoney(cardValue(card))}</div>
-                  <button className="btn" disabled={cash < fee} onClick={() => submit(card)}
-                    title={!worthIt ? 'Grading costs more than this card is worth' : undefined}>
-                    Grade {fmtMoney(fee)}{!worthIt ? ' ⚠️' : ''}
+                  <button className="btn" disabled={cash < f} onClick={() => submit(card)}
+                    title={byValue ? "Above the kiosk's declared-value ceiling — priced off what the card is worth, not the sticker"
+                      : !worthIt ? 'Grading costs more than this card is worth' : undefined}>
+                    Grade {fmtMoney(f)}{byValue ? ' 📈' : !worthIt ? ' ⚠️' : ''}
                   </button>
                 </div>
               )
@@ -317,11 +325,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                   )}
                   {entry.set.logo && <img src={entry.set.logo} alt={entry.set.name} style={{ height: 34, objectFit:'contain', alignSelf:'center' }} />}
                   <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>
-                    {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry.product.icon + ' '}{entry.product.type}
+                    {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry._origin === 'import' ? '🎌 ' : entry.product.icon + ' '}{entry.product.type}
                   </div>
                   <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>
                     {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
                     {entry._origin === 'aftermarket' ? ' · 🕰️ out-of-print — not in the shop' : ''}
+                    {entry._origin === 'import' ? ' · 🎌 import — no license needed here' : ''}
                   </div>
                   {(() => { const { mkt, ask, deal, over } = sealedRead(entry); return (<>
                   <div className="askrow" style={{ justifyContent:'center' }}>

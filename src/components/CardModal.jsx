@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADERS, gradingFee, gradingDays, graderById, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingDays, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
 import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
@@ -386,14 +386,16 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 <p className="muted" style={{ fontSize: 11.5, margin: '4px 0 2px' }}>{graderById(company).blurb}</p>
                 <div className="row">
                   {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => {
-                    const fee = gradingFee(key, submitted, 1, company)
-                    const discounted = fee < t.fee
+                    const fee = gradingFee(key, submitted, 1, company, rawValue(card))
+                    const byValue = overTierValue(key, rawValue(card))
+                    const discounted = !byValue && fee < t.fee
                     return (
                       <button key={key} className="btn alt" disabled={cash < fee}
-                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}>
+                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}
+                        title={byValue ? `Above this tier's $${t.maxValue.toLocaleString()} declared-value ceiling — priced at ${Math.round(GRADING_VALUE_RATE * 100)}% of the card's $${rawValue(card).toFixed(0)} value instead of the sticker.` : undefined}>
                         {t.name} · ${fee.toFixed(0)}
                         {discounted && <small style={{ textDecoration:'line-through', opacity:.5, marginLeft:4 }}>${t.fee}</small>}
-                        <br/><small className="muted">~{gradingDays(key, company)}d</small>
+                        <br/><small className="muted">{byValue ? '📈 by value' : `~${gradingDays(key, company)}d`}</small>
                       </button>
                     )
                   })}
@@ -405,7 +407,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 )}
                 {/* Don't let the player burn a fee on a card worth less than grading it.
                     Compare the cheapest (economy) fee against the raw value. */}
-                {gradingFee('economy', submitted, 1, company) >= rawValue(card) && (
+                {gradingFee('economy', submitted, 1, company, rawValue(card)) >= rawValue(card) && (
                   <p style={{ fontSize: 11.5, marginTop: 6, color: 'var(--red)' }}>
                     ⚠️ Grading costs more than this card is worth (${rawValue(card).toFixed(2)} raw). Even a PSA 10 likely won't clear the fee — not worth grading.
                   </p>

@@ -1076,6 +1076,17 @@ export function instance(card, source = 'sealed', rnd = Math.random) {
 const ALL_CARDS = SHOP_SETS.flatMap(s => s.cards)
 export function randomCard() { return instance(pick(ALL_CARDS)) }
 
+// 🎌 Japanese singles circulate in the wider hobby, not only through your import account.
+// The Import License is a WHOLESALE channel — it is not what makes JP cards exist. A show
+// vendor keeps a JP binder, a customer wants a Master Ball chase, an online offer surfaces
+// one. So imports join the general draw as a deliberate MINORITY: frequent enough to feel
+// like part of the world, rare enough that pulling one still reads as a find.
+// Every JP set with real prices qualifies, INCLUDING browse-only ones (jp-SV2a's Master Ball
+// parallels are perfectly real singles even though its base pool can't fill a pack).
+export const JP_CARD_SETS = data.sets.filter(s => s.japanese && s.cards?.some(c => c.price != null))
+const JP_CARDS = JP_CARD_SETS.flatMap(s => s.cards).filter(c => c.price != null)
+export const JP_WORLD_RATE = 0.12
+
 // Vintage singles (Base Charizard, Shining Gyarados, …). These never enter the shop,
 // wants, or online offers — but show vendors DO occasionally surface them in their bins,
 // so the floor is where you hunt loose vintage. Drawn via vintageCardInRange below.
@@ -1153,6 +1164,17 @@ export function cardInValueRange(min, max, rnd = Math.random, exclude = null) {
       const top = topCompSlabs()
       return mintSlab(top[Math.floor(rnd() * top.length)], rnd)
     }
+  }
+  // 🎌 Import roll, before the domestic draw: this is the single funnel every "a card appears"
+  // path runs through (vendor bins, wants, online offers, encounters, shop requests), so one
+  // hook here puts Japanese cards everywhere at once. It only ever REPLACES the pool, never
+  // widens the band, so the value the caller asked for is unchanged — era/import theming picks
+  // WHICH card shows up, never what it's worth. Empty band → fall straight through to domestic.
+  if (JP_CARDS.length && rnd() < JP_WORLD_RATE) {
+    const band = JP_CARDS.filter(c => { const v = c.price ?? 0; return v >= min && v <= max })
+    const unseenJp = band.filter(fresh)
+    const jpPool = unseenJp.length ? unseenJp : band
+    if (jpPool.length) return instance(pick(jpPool, rnd), 'floor', rnd)
   }
   const base = min >= VINTAGE_JOIN_MIN ? [...ALL_CARDS, ...VINTAGE_CARDS] : ALL_CARDS
   let pool = base.filter(c => {
@@ -1736,14 +1758,29 @@ export function valueHistory(card, history) {
 // aren't ONLY paying for speed — a pricier submission also gets a slightly better shot at the
 // gem (careful handling, a better grader queue). Economy is cheap + slow + no edge; Express /
 // Kiosk cost more but grade a touch kinder. Stacks with the Jeweler's Loupe.
+// Service tiers, priced off real PSA rate cards (Value ≈ $25, Regular ≈ $75, Express ≈ $150).
+// `maxValue` is the DECLARED-VALUE ceiling the tier covers — the part that was missing before,
+// and the reason grading used to cost a flat ~$70 no matter what you sent. A real grader will
+// not take a $9,000 card on a $25 bulk submission: above a tier's ceiling you are priced off
+// what the card is WORTH. See gradingFee.
+// `valueRate` is the slice of declared value charged ABOVE that ceiling. It rises with speed
+// for the same reason the sticker does — otherwise every tier converges on one number at the
+// top end and Express strictly dominates Economy (same price, nine times faster), which would
+// delete the speed-vs-cost decision exactly where it matters most.
 export const GRADING = {
-  economy: { name: 'Economy', fee: 20, days: 45, luck: 0 },
-  standard: { name: 'Standard', fee: 60, days: 20, luck: 0.02 },
-  express:  { name: 'Express',  fee: 130, days: 5, luck: 0.05 },
+  economy: { name: 'Economy', fee: 25, days: 45, luck: 0, maxValue: 499, valueRate: 0.03 },
+  standard: { name: 'Standard', fee: 75, days: 20, luck: 0.02, maxValue: 1499, valueRate: 0.05 },
+  express:  { name: 'Express',  fee: 150, days: 5, luck: 0.05, maxValue: 2499, valueRate: 0.08 },
   // On-site grading kiosk at big shows: skip the mail wait — results in ~2 days — but pay a
   // premium for it. `onSite` keeps it out of the normal (mail-in) Grader tier pickers.
-  kiosk:    { name: 'On-Site Kiosk', fee: 240, days: 2, luck: 0.06, onSite: true },
+  kiosk:    { name: 'On-Site Kiosk', fee: 300, days: 2, luck: 0.06, onSite: true, maxValue: 2499, valueRate: 0.12 },
 }
+// Above a tier's declared-value ceiling the fee becomes a percentage of the card's value, which
+// is how every real grader prices high-end submissions (PSA's premium tiers work out to ~4–6%).
+// This is the knob that makes slabbing a four-figure chase a real cost instead of a rounding
+// error — and it is deliberately NOT discountable: loyalty and bulk are volume perks on cheap
+// cards, and no grader hands you 45% off insuring a $20,000 card.
+export const GRADING_VALUE_RATE = 0.05
 
 // ---- Grading COMPANIES -------------------------------------------------------------
 // Who you mail the card to, as opposed to which service tier you buy. The three real
@@ -1833,12 +1870,33 @@ export function nextGraderTier(submitted) {
 // Effective per-card fee for a service tier given how many cards you've submitted
 // total (loyalty) and, optionally, how many you're submitting in this batch (bulk).
 // The two discounts stack multiplicatively (you don't get more than 100% off).
-export function gradingFee(tierKey, submitted, batchCount = 1, company = DEFAULT_GRADER) {
-  if (!GRADING[tierKey]) return 0
-  const base = GRADING[tierKey].fee * graderById(company).feeMult
+// `cardVal` is the card's declared value (raw market). Omit it and you get the old flat
+// sticker, which is still right for anything inside the tier's ceiling.
+export function gradingFee(tierKey, submitted, batchCount = 1, company = DEFAULT_GRADER, cardVal = 0) {
+  const g = GRADING[tierKey]
+  if (!g) return 0
+  const feeMult = graderById(company).feeMult
   const loyalty = graderTier(submitted).discount
   const bulk = bulkDiscount(batchCount)
-  return round2(base * (1 - loyalty) * (1 - bulk))
+  const sticker = g.fee * feeMult * (1 - loyalty) * (1 - bulk)
+  // Declared-value pricing kicks in only above the tier ceiling, so bulk slabbing of ordinary
+  // cards is untouched — it's the four-figure chase that now costs what it should.
+  const premium = (g.maxValue != null && cardVal > g.maxValue)
+    ? cardVal * (g.valueRate ?? GRADING_VALUE_RATE) * feeMult : 0
+  return round2(Math.max(sticker, premium))
+}
+// Does this card blow past the tier's declared-value ceiling (i.e. is it being priced off its
+// value rather than the sticker)? Drives the UI's "priced by value" note.
+export function overTierValue(tierKey, cardVal = 0) {
+  const cap = GRADING[tierKey]?.maxValue
+  return cap != null && cardVal > cap
+}
+// What a whole batch costs. Since declared-value pricing makes the per-card fee depend on the
+// CARD, a batch total is a sum, not a multiply — every quoting UI must go through this or it
+// will show a number the store then refuses to charge.
+export function gradingFeeTotal(cards, tierKey, submitted, company = DEFAULT_GRADER) {
+  const list = cards || []
+  return round2(list.reduce((a, c) => a + gradingFee(tierKey, submitted, list.length, company, rawValue(c)), 0))
 }
 // Roll subgrades. Better cards (by value) get a slightly tighter distribution,
 // simulating that valuable cards are often handled carefully — but it's mostly luck.

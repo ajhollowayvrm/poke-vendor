@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, floorCount, floorSkuCap, floorItemCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
-import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, cutEstimate, cutRank, CONDITIONS, breakOptions, psaValueAt, rarityRank } from '../game/engine'
+import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, gradingFeeTotal, cutEstimate, cutRank, CONDITIONS, breakOptions, psaValueAt, rarityRank } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku } from './sku'
 import CardTile from './CardTile'
 import SealedModal from './SealedModal'
@@ -225,22 +225,24 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   const allLines = useMemo(() => groups.flatMap(g => g.lines), [groups])
   const selectedLines = useMemo(() => allLines.filter(l => picked.has(l.key)), [allLines, picked])
   const sel = useMemo(() => {
-    const cardUids = [], sealedUids = [], rawCardUids = []
+    const cardUids = [], sealedUids = [], rawCardUids = [], rawCards = []
     let value = 0, count = 0
     const add = (kind, it) => {
       count += 1
       value += kind === 'sealed' ? sealedValue(it) : cardValue(it)
       if (kind === 'sealed') sealedUids.push(it.uid)
-      else { cardUids.push(it.uid); if (!it.grade) rawCardUids.push(it.uid) }
+      else { cardUids.push(it.uid); if (!it.grade) { rawCardUids.push(it.uid); rawCards.push(it) } }
     }
     if (gridMode) {
       for (const { kind, it } of gridItems) if (pickedUids.has(it.uid)) add(kind, it)
     } else {
       for (const l of selectedLines) for (const it of l.items) add(l.kind, it)
     }
-    return { cardUids, sealedUids, rawCardUids, value, count }
+    return { cardUids, sealedUids, rawCardUids, rawCards, value, count }
   }, [gridMode, gridItems, pickedUids, selectedLines])
-  const gradeTotal = round2(gradingFee(gradeTier, gradesSubmitted, sel.rawCardUids.length || 1) * sel.rawCardUids.length)
+  // Sum per card — declared-value pricing means a batch with a four-figure chase in it costs
+  // more than count × sticker (see gradingFeeTotal).
+  const gradeTotal = gradingFeeTotal(sel.rawCards, gradeTier, gradesSubmitted)
 
   // Render a set-grouped list of SKU lines. `kp` prefixes React keys so the same set can appear in
   // both the Singles and Sealed shelves (split view) without a key collision.

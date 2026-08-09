@@ -108,6 +108,29 @@ try {
   // otherwise "pass" this section by testing nothing.
   pass(`import shelf is stocked (${jpRip.length} JP sets rippable)`, jpRip.length >= 3)
 
+  // JP singles must actually CIRCULATE, not just sit on the import shelf. cardInValueRange is
+  // the one funnel every "a card appears" path runs through (vendor bins, wants, offers,
+  // encounters, shop requests), so sampling it measures the whole world at once. A refactor
+  // that drops the import roll, or data where no JP card lands in a common band, silently
+  // un-ships the feature — this is the tripwire.
+  const jpMix = await page.evaluate(async () => {
+    const eng = await import('/src/game/engine.js')
+    const bands = [[1, 20], [20, 120], [120, 600]]
+    const out = {}
+    for (const [lo, hi] of bands) {
+      let jp = 0
+      const N = 3000
+      for (let i = 0; i < N; i++) if (/^jp-/.test(eng.setIdOfCard(eng.cardInValueRange(lo, hi)) || '')) jp++
+      out[`$${lo}-${hi}`] = jp / N
+    }
+    return { mix: out, rate: eng.JP_WORLD_RATE }
+  })
+  for (const [band, share] of Object.entries(jpMix.mix)) {
+    // Want it near JP_WORLD_RATE: present everywhere, dominant nowhere.
+    pass(`🎌 imports circulate in ${band}: ${(share * 100).toFixed(1)}% of draws (want 3-25%)`,
+      share >= 0.03 && share <= 0.25)
+  }
+
   // ---- 2. Grading EV --------------------------------------------------------------
   console.log('\nGRADING EV ($100 comp-less NM card, N=40k rolls):')
   const grade = await page.evaluate(async () => {
@@ -124,15 +147,39 @@ try {
       }
       return { ev: sum / N - 100 - fee, p10: tens / N }
     }
-    return { blind: run(0, null, 60), tooled: run(0.13, 0.8, 60), endgame: run(0.13, 0.8, 8) }
+    // Read the fees from the REAL fee table rather than hardcoding them — a hardcoded 60/8 kept
+    // passing this gate after GRADING was repriced, which is precisely the regression the gate
+    // exists to catch. `blind`/`tooled` pay list; `endgame` is the platinum-loyalty + deep-bulk
+    // rate a late-game player actually pays. A $100 card sits under every tier's declared-value
+    // ceiling, so this measures the sticker path (the value premium is exercised separately).
+    const listFee = eng.gradingFee('standard', 0, 1)
+    const endgameFee = eng.gradingFee('standard', 250, 50)
+    return { blind: run(0, null, listFee), tooled: run(0.13, 0.8, listFee), endgame: run(0.13, 0.8, endgameFee),
+             fees: { list: listFee, endgame: endgameFee } }
   })
   // Gem odds are anchored to real modern-Pokémon PSA data (blind P10 ~18-30%), which makes
   // grading a real, profitable business (blind EV > 0) rather than a suppressed gamble. The
   // ladder still has to hold: pre-screen/tools beat blind, and endgame fee discounts beat that.
+  console.log(`  (fees read live from GRADING: list $${grade.fees.list.toFixed(2)}, endgame $${grade.fees.endgame.toFixed(2)})`)
   pass(`blind standard: EV $${grade.blind.ev.toFixed(2)} (want > 0 — grading is a real business), P10 ${(grade.blind.p10 * 100).toFixed(1)}% (want 18-30%, real modern data)`,
     grade.blind.ev > 0 && grade.blind.p10 >= 0.18 && grade.blind.p10 <= 0.30)
   pass(`tooled standard: EV $${grade.tooled.ev.toFixed(2)} (want > blind — pre-screen is the edge)`, grade.tooled.ev > grade.blind.ev)
   pass(`endgame fees: EV $${grade.endgame.ev.toFixed(2)} (want > tooled)`, grade.endgame.ev > grade.tooled.ev)
+
+  // Declared-value pricing: no grader slabs a four-figure card at the bulk sticker, and paying
+  // for speed must still cost more at the top end — otherwise Express strictly dominates.
+  const vfee = await page.evaluate(async () => {
+    const eng = await import('/src/game/engine.js')
+    return {
+      cheap: eng.gradingFee('economy', 250, 50, 'psa', 50),
+      rich: eng.gradingFee('economy', 250, 50, 'psa', 10000),
+      express: eng.gradingFee('express', 250, 50, 'psa', 10000),
+    }
+  })
+  pass(`declared value bites: $10k card costs $${vfee.rich.toFixed(0)}, not the $${vfee.cheap.toFixed(0)} bulk rate`,
+    vfee.rich > vfee.cheap * 5)
+  pass(`speed still costs at the top end: express $${vfee.express.toFixed(0)} > economy $${vfee.rich.toFixed(0)}`,
+    vfee.express > vfee.rich)
 
   // ---- 3. Repack EV through the REAL store action ---------------------------------
   console.log('\nREPACK EV (real buyMysteryPack, N=500 per tier) — want payout/price < 1.00:')

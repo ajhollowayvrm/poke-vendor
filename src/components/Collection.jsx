@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rarityRank, fmtMoney, psaValueAt, GRADING, gradingFee, bulkDiscount, isBulkCard, bulkSellableUids, BULK_CREDIT_PER_CARD } from '../game/engine'
+import { cardValue, rarityRank, fmtMoney, psaValueAt, GRADING, gradingFee, gradingFeeTotal, bulkDiscount, isBulkCard, bulkSellableUids, BULK_CREDIT_PER_CARD } from '../game/engine'
 import { toast as notify } from '../ui/dialog'
 import { AskPicker } from '../ui/AskPicker'
 import CardTile from './CardTile'
@@ -94,8 +94,9 @@ export default function Collection({ onPick }) {
   const count = selCards.length
   // grading is raw-only; selecting graded cards just can't be graded
   const rawSelected = selCards.filter(c => !c.grade)
-  const gradeFeePer = gradingFee(gradeTier, submitted, rawSelected.length || 1)
-  const gradeTotal = +(gradeFeePer * rawSelected.length).toFixed(2)
+  // Summed per card — a batch holding a four-figure chase is priced off its value, not the
+  // tier sticker, so a multiply here would quote a number the store won't charge.
+  const gradeTotal = gradingFeeTotal(rawSelected, gradeTier, submitted)
   const gradeBulk = bulkDiscount(rawSelected.length)
 
   // Live demand hint for the "List @ X%" slider — how much of the browsing pool

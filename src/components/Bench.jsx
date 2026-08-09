@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingFeeTotal, overTierValue, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, round2, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -64,8 +64,12 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
     () => collection.filter(c => !c.grade).sort((a, b) => rawValue(b) - rawValue(a)),
     [collection])
   const count = picked.size
-  const feePer = gradingFee(tierKey, submitted, count || 1, company)
-  const total = +(feePer * count).toFixed(2)
+  // Per-card, then summed: declared-value pricing means the pricey cards in a batch cost more
+  // than the sticker, so "feePer × count" would under-quote what the store charges.
+  const pickedCards = raw.filter(c => picked.has(c.uid))
+  const total = gradingFeeTotal(pickedCards, tierKey, submitted, company)
+  const feePer = count ? round2(total / count) : gradingFee(tierKey, submitted, 1, company)
+  const mixed = pickedCards.some(c => overTierValue(tierKey, rawValue(c)))
   const bulk = bulkDiscount(count)
 
   function toggle(uid) {
@@ -138,7 +142,9 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
             <span className="pill">{count} selected</span>
             {bulk > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>{Math.round(bulk*100)}% bulk discount</span>}
             <span className="muted" style={{ fontSize: 13 }}>
-              {count ? <>{fmtMoney(feePer)}/card × {count} = <b>{fmtMoney(total)}</b></> : 'Pick cards to grade'}
+              {!count ? 'Pick cards to grade'
+                : mixed ? <>{count} cards, priced by value = <b>{fmtMoney(total)}</b></>
+                : <>{fmtMoney(feePer)}/card × {count} = <b>{fmtMoney(total)}</b></>}
             </span>
             <button className="btn gold" style={{ flex: 'none', maxWidth: 220, marginLeft: 'auto' }}
               disabled={!count || cash < total} onClick={submit}>

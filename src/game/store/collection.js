@@ -6,7 +6,7 @@
 // the SELLING slice; buying sealed lives in SOURCING.
 
 import {
-  cardValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
+  cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
 } from '../engine'
@@ -391,7 +391,7 @@ export function createCollectionSlice(set, get) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card || card.grade) return
       const before = graderTier(get().gradesSubmitted)
-      const fee = gradingFee(tierKey, get().gradesSubmitted, 1, company)
+      const fee = gradingFee(tierKey, get().gradesSubmitted, 1, company, rawValue(card))
       if (!get().spend(fee)) return
       set(s => ({
         collection: s.collection.filter(c => c.uid !== uid),
@@ -420,8 +420,11 @@ export function createCollectionSlice(set, get) {
       const cards = get().collection.filter(c => uids.includes(c.uid) && !c.grade)
       if (!cards.length) return
       const before = graderTier(get().gradesSubmitted)
-      const feePer = gradingFee(tierKey, get().gradesSubmitted, cards.length, company)
-      const total = round2(feePer * cards.length)
+      // Per-card fees now, not one sticker × N: declared-value pricing means a batch holding a
+      // $3,000 chase and forty commons costs different amounts per card. Each pending grade
+      // records the fee ACTUALLY paid for that card, so the resolved slab reports it honestly.
+      const fees = cards.map(c => gradingFee(tierKey, get().gradesSubmitted, cards.length, company, rawValue(c)))
+      const total = round2(fees.reduce((a, f) => a + f, 0))
       if (!get().spend(total)) return
       const uidSet = new Set(cards.map(c => c.uid))
       // month-safe absolute day (see submitGrade) so a late-month bulk submit still resolves.
@@ -430,12 +433,16 @@ export function createCollectionSlice(set, get) {
       set(s => ({
         collection: s.collection.filter(c => !uidSet.has(c.uid)),
         gradesSubmitted: s.gradesSubmitted + cards.length,
-        pendingGrades: [...s.pendingGrades, ...cards.map(card => ({ card, tierKey, company, readyOnDay, submittedAt, paidFee: feePer }))],
+        pendingGrades: [...s.pendingGrades, ...cards.map((card, i) => ({ card, tierKey, company, readyOnDay, submittedAt, paidFee: fees[i] }))],
       }))
       const bulk = bulkDiscount(cards.length)
       const notes = [before.discount > 0 ? `${Math.round(before.discount*100)}% loyalty` : null,
         bulk > 0 ? `${Math.round(bulk*100)}% bulk` : null].filter(Boolean).join(' + ')
-      get().log('grade-submit', `Bulk-submitted ${cards.length} cards to ${graderById(company).name} (${tier.name}, $${feePer.toFixed(2)}/ea${notes ? `, ${notes} off` : ''})`, -total)
+      // Report the total, and only claim a flat per-card rate when the batch really was flat —
+      // a mixed-value batch has no single "/ea" figure any more.
+      const flat = fees.every(f => f === fees[0])
+      const rate = flat ? `$${fees[0].toFixed(2)}/ea` : `$${total.toFixed(2)} total, by card value`
+      get().log('grade-submit', `Bulk-submitted ${cards.length} cards to ${graderById(company).name} (${tier.name}, ${rate}${notes ? `, ${notes} off` : ''})`, -total)
       const after = graderTier(get().gradesSubmitted)
       if (after.key !== before.key) get().log('grade-tier', `Grader loyalty: reached ${after.name} (${Math.round(after.discount*100)}% off future fees)`, 0)
       get().bumpGoal('grade', cards.length)
