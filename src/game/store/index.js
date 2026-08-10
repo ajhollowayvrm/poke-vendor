@@ -23,7 +23,7 @@
 //   • livestream.js   — going live + box breaks
 
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import { GRADING, setMarketMults, cardValue, sealedValue } from '../engine'
 import { makeShowVendors } from '../shows'
 import { jobById, STARTER_JOB, absoluteDay, floorCapacity } from './constants'
@@ -121,10 +121,13 @@ let _mirror = null
 const SAVE_NAME = 'poke-vendor-save'
 const PREV_NAME = SAVE_NAME + '-prev'
 
-// Synchronous read of the live save, for the cloud push and the crash-screen backup. Falls back
-// to localStorage for the very first read of a session before persist has hydrated.
+// Synchronous read of the live save as a STRING, for the cloud push and the crash-screen backup.
+// The mirror holds the state OBJECT (see debouncedStorage) so the hot path never stringifies;
+// this is the one place that pays for it, and only when something actually asks.
+let _mirrorStr = null
 export function currentSaveBlob() {
-  if (_mirror != null) return _mirror
+  if (_mirrorStr != null) return _mirrorStr
+  if (_mirror != null) { try { _mirrorStr = JSON.stringify(_mirror) } catch { return null } ; return _mirrorStr }
   try { return localStorage.getItem(SAVE_NAME) } catch { return null }
 }
 // Replace the save wholesale — what loadFromCloud does. Async because the destination may be.
@@ -132,11 +135,11 @@ export function currentSaveBlob() {
 export async function replaceSaveBlob(blob) {
   _pendingSave = null; clearTimeout(_saveTimer)
   if (_useIdb) {
-    try { await idbSet(SAVE_NAME, blob); _mirror = blob; announceSave(false); return true }
+    try { await idbSet(SAVE_NAME, blob); _mirrorStr = blob; _mirror = parseSave(blob); announceSave(false); return true }
     catch { /* fall through to localStorage */ }
   }
   const ok = writeLocalStorage(SAVE_NAME, blob)
-  if (ok) _mirror = blob
+  if (ok) { _mirrorStr = blob; _mirror = parseSave(blob) }
   announceSave(!ok)
   return ok
 }
@@ -177,9 +180,18 @@ function writeLocalStorage(k, v) {
 let _writePromise = null
 export function flushSaveNow() { flushSaveWrite(); return _writePromise || Promise.resolve() }
 
+function parseSave(raw) {
+  if (raw == null) return null
+  try { return JSON.parse(raw) } catch { return null }
+}
+
 export function flushSaveWrite() {
   if (!_pendingSave) return
-  const [k, v] = _pendingSave
+  const [k, obj] = _pendingSave
+  // The ONE stringify per debounce window, instead of one per set().
+  let v
+  try { v = typeof obj === 'string' ? obj : JSON.stringify(obj) } catch { _pendingSave = null; return }
+  _mirrorStr = v
   if (_useIdb) {
     // Fire and don't await — IndexedDB writes off the main thread, which is the point. A
     // transaction opened here still commits while the page is being frozen or hidden, so the
@@ -188,18 +200,26 @@ export function flushSaveWrite() {
     _writePromise = idbSet(k, v).then(() => announceSave(false)).catch(() => {
       // Don't lose it: put it back so the next flush (or pagehide) tries again, and fall back
       // to localStorage right now in case this is the last chance we get.
-      if (!_pendingSave) _pendingSave = [k, v]
+      if (!_pendingSave) _pendingSave = [k, obj]
       announceSave(!writeLocalStorage(k, v))
     })
     return
   }
   _pendingSave = null
   if (writeLocalStorage(k, v)) announceSave(false)
-  else { _pendingSave = [k, v]; announceSave(true) }
+  else { _pendingSave = [k, obj]; announceSave(true) }
 }
 
 // persist's storage. getItem is async (IDB is), which is why the app gates its first render on
 // hydration — see hasHydrated in main.jsx.
+//
+// ⚡ This is a raw PersistStorage, NOT createJSONStorage, and that is the single biggest
+// performance decision in the app. createJSONStorage runs JSON.stringify over the WHOLE game on
+// every set() — and a rip fires several, while claiming set-completion rewards fired 489 of them
+// on a large save. At 20,000 cards that measured **11.6 SECONDS** of main-thread work and roughly
+// a gigabyte of transient garbage for one rip, which is exactly how an iPhone kills the tab
+// mid-animation. Taking the state OBJECT here instead lets the stringify happen once per debounce
+// window rather than once per state change: the same 400ms batching the write already had.
 const debouncedStorage = {
   async getItem(k) {
     flushSaveWrite()
@@ -207,7 +227,7 @@ const debouncedStorage = {
     if (_useIdb) {
       const fromIdb = await idbGet(k)
       if (fromIdb != null) {
-        _mirror = fromIdb
+        _mirrorStr = fromIdb; _mirror = parseSave(fromIdb)
         // A leftover localStorage copy from before the move keeps occupying the ~5MB budget
         // for nothing. Drop it — but ONLY when it is byte-identical to what IndexedDB holds.
         // If they differ it might be the newer game (a session that fell back to localStorage
@@ -215,7 +235,7 @@ const debouncedStorage = {
         try {
           if (localStorage.getItem(k) === fromIdb) { localStorage.removeItem(k); localStorage.removeItem(PREV_NAME) }
         } catch { /* private mode */ }
-        return fromIdb
+        return _mirror
       }
       // First run on IndexedDB: adopt whatever localStorage already holds, so an existing game
       // survives the switch. Only once the IDB copy is safely written do we drop the old one —
@@ -224,25 +244,26 @@ const debouncedStorage = {
       // and simply stay on localStorage; nothing is lost either way.
       const legacy = (() => { try { return localStorage.getItem(k) } catch { return null } })()
       if (legacy != null) {
-        _mirror = legacy
+        _mirrorStr = legacy; _mirror = parseSave(legacy)
         idbSet(k, legacy)
           .then(() => { try { localStorage.removeItem(k); localStorage.removeItem(PREV_NAME) } catch { /* private mode */ } })
           .catch(() => { _useIdb = false })   // couldn't migrate — stay where the game already is
       }
-      return legacy
+      return _mirror
     }
     const v = (() => { try { return localStorage.getItem(k) } catch { return null } })()
-    _mirror = v
-    return v
+    _mirrorStr = v; _mirror = parseSave(v)
+    return _mirror
   },
   setItem(k, v) {
-    _mirror = v
+    _mirror = v            // the state OBJECT — cheap. No stringify on the hot path.
+    _mirrorStr = null      // invalidated; rebuilt on demand by currentSaveBlob()
     _pendingSave = [k, v]
     clearTimeout(_saveTimer)
     _saveTimer = setTimeout(flushSaveWrite, 400)
   },
   removeItem(k) {
-    _mirror = null; _pendingSave = null; clearTimeout(_saveTimer)
+    _mirror = null; _mirrorStr = null; _pendingSave = null; clearTimeout(_saveTimer)
     try { localStorage.removeItem(k) } catch { /* private mode */ }
     if (_useIdb) idbDel(k).catch(() => {})
   },
@@ -264,7 +285,7 @@ export const useGame = create(persist((set, get) => ({
 }), {
   name: 'poke-vendor-save',
   version: 59,
-  storage: createJSONStorage(() => debouncedStorage),
+  storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
   // card. Past ~7,500 cards that blew the cloud item cap and the save stopped syncing at
