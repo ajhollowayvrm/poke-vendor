@@ -11,9 +11,10 @@ import {
   UPGRADES, rentPerDay, STORE_LEASE_PER_DAY, employeeById, jobById,
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
   storageFee, heldUnits, storageFreeUnits,
-  applyNotoGain, ledgerAdd, hypeGain, HYPE_MAX,
+  applyNotoGain, ledgerAdd, bumpHype,
 } from './constants'
 import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
+import { SHOW_TIERS } from '../shows'
 import { advanceDaysWith, mergeSummaries } from './daytick'
 import { initialState } from './initialState'
 import { newlyUnlocked } from '../milestones'
@@ -53,9 +54,7 @@ export function createEconomySlice(set, get) {
     // the cure-into-⭐ trickle happen once per day in the tick (rollRepDay in daytick.js).
     addHype(n) {
       if (!n) return
-      set(s => ({
-        hype: Math.max(0, Math.min(HYPE_MAX, round2((s.hype || 0) + (n > 0 ? hypeGain(s.hype, n) : n)))),
-      }))
+      set(s => ({ hype: bumpHype(s.hype, n) }))
     },
     buyUpgrade(key) {
       const u = UPGRADES[key]
@@ -335,9 +334,12 @@ export function createEconomySlice(set, get) {
     // upgrades; otherwise they're missed. Any other shows in the window are skipped.
     // Returns ONE merged summary of the whole trip (any home "wait" days + the away show
     // days) so the caller can recap the trip on leaving the floor.
-    attendShowDays(showDay, days) {
+    attendShowDays(showDay, days, tierKey = null) {
       set(s => ({ showsAttended: s.showsAttended + 1 }))
       get().bumpGoal('attend', 1) // credit today's "attend a show" goal before the day rolls
+      // 🔥 Working a show floor gets you seen — bigger halls, bigger buzz back home.
+      const tierIdx = Math.max(0, Object.keys(SHOW_TIERS).indexOf(tierKey))
+      get().addHype(4 + 2 * tierIdx)
       // 📣 Sponsorship: your banner hangs over every hall you work.
       if (get().upgrades.sponsorship) { get().addNotoriety(2, false, 'shows'); get().log('show', '📣 Your sponsor banner hung over the hall (+2 notoriety)', 0) }
       // days waiting until the show opens (home, not away) + the show's run (away)

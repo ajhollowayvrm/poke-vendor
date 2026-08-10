@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { useGame, acceptedMethods } from '../game/store'
+import { useGame, acceptedMethods, hypeDemandMult } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
@@ -14,8 +14,8 @@ const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer f
 // How many unsolicited walk-ups your booth can get in a show day. This was a flat 3 — so a
 // world-famous vendor's table was as quiet as an unknown's, which is exactly backwards. A big
 // name draws a crowd: 3 at noto 0 → 5 at 100 → 7 at 300 → 10 (the hard rail) past ~700.
-function maxWalkupsPerDay(notoriety) {
-  return Math.min(10, Math.round(2 + fameMult(notoriety)))
+function maxWalkupsPerDay(notoriety, shopHype = 0) {
+  return Math.min(10, Math.round((2 + fameMult(notoriety)) * hypeDemandMult(shopHype)))
 }
 // A pull worth announcing to the whole hall: SIR-or-better, any special foil, or grail.
 const ANNOUNCE_RANK = rarityRank('Special Illustration Rare')
@@ -30,6 +30,7 @@ const HYPE = ['just hit a', 'PULLED a', 'cracked a', 'opened a', 'just ripped a'
 // announced to the whole room. Pre-show leads surface as appointments + held items.
 export default function ShowFloor({ show, onLeave }) {
   const notoriety = useGame(s => s.notoriety)
+  const shopHype = useGame(s => s.hype || 0) // 🔥 a hot name pulls extra walk-ups to the table
   const cash = useGame(s => s.cash) // shown on the floor HUD — you buy at booths here, so your balance must be visible
   const showReserve = useGame(s => s.showReserve || 0) // cash you left safely at home for this trip
   const settings = useGame(s => s.settings) // deal-detector config (what YOU count as a deal)
@@ -211,7 +212,7 @@ export default function ShowFloor({ show, onLeave }) {
     if (!show._asVendor) return // shoppers have no booth → no walk-up buyers
     const id = setInterval(() => {
       if (encounter || boothAlert) return
-      if (walkupsRef.current >= maxWalkupsPerDay(notoriety)) return // hit the per-day cap
+      if (walkupsRef.current >= maxWalkupsPerDay(notoriety, shopHype)) return // hit the per-day cap
       if (Date.now() - lastEncounterRef.current < ENCOUNTER_COOLDOWN) return
       // Booth pull used to cap at +50% (reached at noto 150) and go flat. It keeps growing now
       // — a famous vendor's table is mobbed, which is what the whole show ladder is FOR.
@@ -243,7 +244,7 @@ export default function ShowFloor({ show, onLeave }) {
     // mashing ★/Enter spawned unlimited encounters — a rep/price-check farm). Once the
     // booth's had its visitors for the day, tending just finds a quiet table. That budget now
     // grows with your name (maxWalkupsPerDay), so a famous vendor's table stays busy longer.
-    if (walkupsRef.current >= maxWalkupsPerDay(notoriety)) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
+    if (walkupsRef.current >= maxWalkupsPerDay(notoriety, shopHype)) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
     const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now(); walkupsRef.current++

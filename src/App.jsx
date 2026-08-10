@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   hypeSurge } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
-import { useGame } from './game/store'
+import { useGame, repSourceLabel } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
 import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
@@ -112,6 +112,7 @@ export default function App() {
   const [prepMode, setPrepMode] = useState('shop')       // 'shop' (attend to buy) | 'vendor' (run a booth) — every show goes through prep now
   const [activeShow, setActiveShow] = useState(null) // show being attended
   const cash = useGame(s => s.cash)
+  const hype = useGame(s => s.hype || 0)
   // Total net worth: cash + market value of every asset you hold (collection, listings,
   // sealed, cards at the grader, etc.). Shown next to cash so moving value around (grading,
   // buying sealed, listing) doesn't read as your money vanishing/appearing — only real
@@ -408,7 +409,7 @@ export default function App() {
     // the days advance — the floor works off this copy (state leads expire with the calendar).
     const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
-    const summary = useGame.getState().attendShowDays(show.day, effDays)
+    const summary = useGame.getState().attendShowDays(show.day, effDays, show.tierKey)
     // Wallet LAST — after entry fee + the days' overhead settle against full cash, stash the
     // rest at home so `cash` on the floor is exactly what you chose to bring.
     if (budget != null) useGame.getState().beginShowWallet(budget)
@@ -434,7 +435,7 @@ export default function App() {
     // the days advance — the floor works off this copy (state leads expire with the calendar).
     const _leads = useGame.getState().claimShowLeads(show.id)
     // The trip's days pass now (at entry); stash the recap to show when you leave the floor.
-    const summary = useGame.getState().attendShowDays(show.day, effDays)
+    const summary = useGame.getState().attendShowDays(show.day, effDays, show.tierKey)
     if (budget != null) useGame.getState().beginShowWallet(budget) // wallet last (see enterAsShopper)
     setPreppingShow(null)
     setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads })
@@ -512,7 +513,12 @@ export default function App() {
             title={activeShow ? 'Cannot advance while attending a show' : streamLive ? 'You’re live — end the stream first (it consumes the day itself)' : 'Advance one day'} onClick={handleNextDay}>
             Next Day →
           </button>
-          <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>notoriety</small><NotorietyHelp /></span>
+          <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>reputation</small><NotorietyHelp /></span>
+          {hype >= 10 && (
+            <span className="hype-chip" title={`🔥 Shop heat ${Math.round(hype)}/100 — big moments (god packs, grails, streams, giveaways, events) heat the shop up. While hot, more buyers come through everywhere; it fades over a few days and a little settles into permanent reputation.`}>
+              🔥 <AnimatedNumber value={hype} format={(n) => Math.round(n)} /><small>hype</small>
+            </span>
+          )}
           <div className="cash" title="Cash on hand — spendable money right now"><AnimatedNumber value={cash} format={fmtMoney} /><small>cash on hand</small><CashFlash value={cash} /></div>
           <div className="worth" title="Net worth — cash + market value of everything you own (collection, listings, sealed, cards at the grader). Moving value around (grading, buying, listing) doesn't change it; only real income or spending does."><AnimatedNumber value={worth} format={fmtMoney} /><small>net worth</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
@@ -663,7 +669,7 @@ function DaySummary({ summary, onClose }) {
   const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
     resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, keeperStocked, keeperBroke, saleProceeds, notoDelta,
     missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, suppliesIncome, suppliesSold, machineIncome, machineSold, binIncome, binSold, binTurnedAway, wholesaleIncome, floor } = summary
+    soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, suppliesIncome, suppliesSold, machineIncome, machineSold, binIncome, binSold, binTurnedAway, wholesaleIncome, floor, hype, hypeDelta, notoBySrc } = summary
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const missed = (missedOnline || 0) + (missedWalkin || 0)
@@ -771,7 +777,15 @@ function DaySummary({ summary, onClose }) {
                 {/* Say WHY a slot stayed empty — otherwise the reserve reads as the Curator
                     quietly not doing its job. */}
                 {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — top copy reserved to grade & sell</span></div>}
-                {notoDelta > 0 && <div className="recap-line"><span className="muted">Notoriety</span><b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b></div>}
+                {notoDelta > 0 && (
+                  <div className="recap-line">
+                    <span className="muted">⭐ Reputation{(notoBySrc || []).length > 0 && (
+                      <span className="muted" style={{ fontSize: 12 }}> ({notoBySrc.map(([tag, d]) => `${repSourceLabel(tag).split(' ')[0]} ${d > 0 ? '+' : ''}${d}`).join(' · ')})</span>
+                    )}</span>
+                    <b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b>
+                  </div>
+                )}
+                {hype >= 10 && <div className="recap-line"><span className="muted">🔥 Shop heat</span><b style={{ color: 'var(--orange, #ff9f43)' }}>{Math.round(hype)}{hypeDelta > 0 ? ` (+${Math.round(hypeDelta)})` : ' (fading)'}</b></div>}
               </div>
             )}
 

@@ -37,6 +37,13 @@ export const HYPE_CURE_DAILY_CAP = 3 // ≤3⭐/day from cure — hype can't out
 // Diminishing intake: pumping an already-hot meter adds less (chaining giveaways can't rail it).
 export function hypeGain(cur, n) { return Math.max(0, n) * Math.max(0, 1 - (cur || 0) / 140) }
 export function decayHype(h, days) { return (h || 0) * Math.pow(0.5, (days || 1) / HYPE_HALF_LIFE) }
+// Clamped meter bump for batched writes: positive intake diminishes, negatives land full.
+// (economy.addHype wraps this; slices with an existing set() fold it in directly to keep
+// to one state write — see the save-write cost note in collection.checkCompletions.)
+export function bumpHype(cur, n) {
+  const next = (cur || 0) + (n > 0 ? hypeGain(cur, n) : (n || 0))
+  return Math.max(0, Math.min(HYPE_MAX, round2(next)))
+}
 // DEMAND multiplier — the main effect. 0→1.00× · 50→1.18× · 100→1.35× (hard cap).
 export function hypeDemandMult(h) { return 1 + Math.min(0.35, Math.max(0, h || 0) / 100 * 0.35) }
 // PRICE tolerance — deliberately tiny (exploit-dangerous dial): 100 hype → +5% max.

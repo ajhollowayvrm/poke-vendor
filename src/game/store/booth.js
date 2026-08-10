@@ -581,7 +581,7 @@ export function createBoothSlice(set, get) {
         generousActs: s.generousActs + 1,
         regulars: (s.regulars || []).map(r => r.flags?.burned ? r : { ...r, trust: Math.min(100, (r.trust || 0) + 3) }),
       }))
-      if (noto > 0) get().addNotoriety(noto, true)
+      if (noto > 0) { get().addNotoriety(noto, true); get().addHype(6) }
       const repNote = noto > 0 ? ` (+${noto}★)` : done > 0 ? ' (the room’s already seen your generosity today)' : ' (too minor to move your rep)'
       get().log('give', `🎁 In-store giveaway! Gave away ${card.name} ($${value.toFixed(2)}) — Word's out for ${GIVEAWAY_BUZZ_DAYS} days.${repNote}`, 0)
       get().bumpGoal('help', 1)

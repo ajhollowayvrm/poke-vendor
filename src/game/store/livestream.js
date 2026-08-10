@@ -251,6 +251,9 @@ export function createLivestreamSlice(set, get) {
       }
       if (tips > 0) get().earn(round2(tips))
       if (noto) get().addNotoriety(noto, false, 'stream') // may be negative after a flop
+      // 🔥 A stream that found a room heats the shop for days after — scaled by the peak
+      // crowd (noto already folds in the night's hype moments). Flops (< 12 peak) add none.
+      if (peakViewers >= 12) get().addHype(Math.min(25, Math.round(Math.log10(peakViewers + 1) * 6 + Math.max(0, noto))))
       // 📆 Weekly rhythm: an on-cadence stream (3–10 days since the last) grows the loyal-crowd
       // streak; going dark >10 days forfeits it; bingeing neither grows nor resets it (fatigue
       // already punishes that). lastStreamDay is stamped BEFORE the day-tick below advances time.

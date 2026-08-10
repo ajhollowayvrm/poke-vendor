@@ -11,7 +11,7 @@ import {
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
-import { absoluteDay, applyNotoGain, ledgerAdd } from './constants'
+import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype } from './constants'
 
 // Quick-selling is the instant-but-worst exit, and now it has teeth beyond the flat rate:
 //   • DUMP PENALTY — every quick-sell you make in a single day floods the buylist, so each
@@ -50,8 +50,15 @@ export function createCollectionSlice(set, get) {
         // track best foil pulled (by value) for the stats page
         const foils = cards.filter(c => c.foil)
         const bestFoil = foils.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestFoil)
-        const godPacks = (s.stats.godPacks || 0) + (cards._god || cards.some(c => c._fromGod) ? 1 : 0)
-        const demigodPacks = (s.stats.demigodPacks || 0) + (cards._demigod || cards.some(c => c._fromDemigod) ? 1 : 0)
+        const isGod = cards._god || cards.some(c => c._fromGod)
+        const isDemigod = cards._demigod || cards.some(c => c._fromDemigod)
+        const godPacks = (s.stats.godPacks || 0) + (isGod ? 1 : 0)
+        const demigodPacks = (s.stats.demigodPacks || 0) + (isDemigod ? 1 : 0)
+        // 🔥 A rip people talk about heats the shop up: god/demigod packs and grail-class
+        // pulls spike hype (decays over days, boosts demand while hot). Folded into this
+        // write — a rip is the hottest set() path in the game, no second write allowed.
+        const topVal = cards.reduce((m, c) => Math.max(m, cardValue(c)), 0)
+        const hypeAdd = (isGod ? 25 : isDemigod ? 12 : 0) + (topVal >= 5000 ? 20 : topVal >= 500 ? 8 : 0)
         // Fold pulled cards into the per-set ledger (grouped by set, in case a single
         // rip spans sets). Packs are attributed to the first card's set.
         let bySet = s.bySet
@@ -65,6 +72,7 @@ export function createCollectionSlice(set, get) {
         return {
           collection: [...incoming, ...s.collection],
           bySet,
+          ...(hypeAdd ? { hype: bumpHype(s.hype, hypeAdd) } : {}),
           stats: {
             ...s.stats,
             packsOpened: s.stats.packsOpened + packs,
@@ -116,6 +124,8 @@ export function createCollectionSlice(set, get) {
           cash: round2(st.cash + cash),
           notoriety: notoNext,
           repLedger: ledgerAdd(st.repLedger, 'sets', round2(notoNext - (st.notoriety || 0))),
+          hype: bumpHype(st.hype, Math.min(15, noto)), // finishing a set is a talked-about moment
+
           stats: { ...st.stats, earned: round2((st.stats?.earned || 0) + cash) },
           history: [
             ...rewards.map(({ set: s_, r }) => ({ t: Date.now(), type: 'complete', amount: r.cash,

@@ -511,6 +511,12 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* ---------- Notoriety chip ---------- */
 .noto-chip { font-weight: 800; font-size: 18px; color: var(--gold); font-variant-numeric: tabular-nums; }
 .noto-chip small { display:block; text-align:right; color: var(--dim); font-size: 11px; font-weight: 600; }
+/* 🔥 Hype chip — only rendered while the shop runs hot (hype ≥ 10), so it can afford a pulse */
+.hype-chip { font-weight: 800; font-size: 18px; color: #ff9f43; font-variant-numeric: tabular-nums;
+  animation: hype-pulse 2.4s ease-in-out infinite; }
+.hype-chip small { display:block; text-align:right; color: var(--dim); font-size: 11px; font-weight: 600; }
+@keyframes hype-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }
+@media (prefers-reduced-motion: reduce) { .hype-chip { animation: none; } }
 .clock-chip { font-weight: 800; font-size: 15px; color: var(--accent-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .next-day-btn { font-size: 13px; padding: 5px 12px; white-space: nowrap; flex: none; }
 

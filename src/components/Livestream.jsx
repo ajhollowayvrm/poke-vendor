@@ -80,6 +80,7 @@ function orderableSealed(inventory, policy, exclude = new Set()) {
 
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const followers = useGame(s => s.followers || 0)
+  const shopHype = useGame(s => s.hype || 0) // 🔥 a hot shop pulls extra rubberneckers on-air
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   // 📣 Announced streams: promise a night ahead of time for a bigger room.
   const streamPromo = useGame(s => s.streamPromo)
@@ -190,7 +191,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   // The room drifts toward the biggest-draw product in the queue (a vintage box later
   // shouldn't cap the crowd at a $5 pack's draw).
   const draw = queue.length ? Math.max(...queue.map(e => streamDrawMult(setById(e.setId) || SHOP_SETS[0], e.product))) : 1
-  const expected = Math.round(baseViewers(notoriety, fresh, followers) * draw
+  const expected = Math.round(baseViewers(notoriety, fresh, followers, shopHype) * draw
     * (promoTonight ? promoViewerMult(streamPromo) : 1)
     * rhythmMult(rhythmNow)
     * (bountyCard ? bountyDrawMult(cardValue(bountyCard)) : 1))
@@ -505,6 +506,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const soundOn = useGame(s => s.settings.sound ?? true)
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const followers = useGame(s => s.followers || 0)
+  const shopHype = useGame(s => s.hype || 0) // 🔥 same rubbernecker pull as the setup estimate
   const regulars = useGame(s => s.regulars)
   const collection = useGame(s => s.collection)
   const giveawayCard = useGame(s => s.giveawayCard)
@@ -540,7 +542,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const draw = queueRef.current.length
     ? Math.max(...queueRef.current.map(e => streamDrawMult(e.set, e.product)))
     : 1
-  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers) * draw
+  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers, shopHype) * draw
     * (promoLive ? promoViewerMult(promoLive) : 1)  // 📣 the announced-night crowd
     * rhythmMult(rhythmNow)                          // 📆 the loyal weekly crowd
     * (session.bounty ? bountyDrawMult(session.bounty.value) : 1)) // 🎯 here for the chase

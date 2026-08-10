@@ -385,16 +385,16 @@ export const EVENT_COOLDOWN_DAYS = 2 // the room (and you) need a breather betwe
 export const STORE_EVENTS = {
   tradeNight: { name: 'Trade Night', icon: '🔁', cost: 60, minNoto: 0,
     desc: 'Open the tables — locals bring binders. Builds trust with every regular, puts fresh trade offers in your inbox, and a night of browsers works your case.',
-    buzzDays: 1, extraWalkins: 2, trust: 4, noto: 3 },
+    buzzDays: 1, extraWalkins: 2, trust: 4, noto: 3, hype: 4 },
   leagueNight: { name: 'League Night', icon: '🎮', cost: 100, minNoto: 0,
     desc: 'Host the local league — snacks, sleeves and singles move all night, and a kid at the counter tonight is a regular next month.',
-    buzzDays: 1, extraWalkins: 1, trust: 3, noto: 2, income: (noto) => 40 + noto * 0.5, formsRegular: true, suppliesBurst: true },
+    buzzDays: 1, extraWalkins: 1, trust: 3, noto: 2, hype: 4, income: (noto) => 40 + noto * 0.5, formsRegular: true, suppliesBurst: true },
   tournament: { name: 'Tournament', icon: '🏆', cost: 250, minNoto: 40,
     desc: 'A sanctioned tournament: entry fees in, prize support out (covered by the fee). Serious players travel for it — a real notoriety pop and days of buzz.',
-    buzzDays: 2, extraWalkins: 2, trust: 2, noto: 8, income: (noto) => 140 + noto * 1.2, suppliesBurst: true },
+    buzzDays: 2, extraWalkins: 2, trust: 2, noto: 8, hype: 10, income: (noto) => 140 + noto * 1.2, suppliesBurst: true },
   raffle: { name: 'Raffle Night', icon: '🎟️', cost: 40, minNoto: 0, needsPrize: true,
     desc: 'Put up a prize card and sell tickets. Ticket money in, the prize goes home with a winner — generosity with a box-office.',
-    buzzDays: 2, extraWalkins: 1, trust: 3, income: (noto) => Math.min(400, 50 + noto * 1.5) },
+    buzzDays: 2, extraWalkins: 1, trust: 3, hype: 4, income: (noto) => Math.min(400, 50 + noto * 1.5) },
 }
 
 // --- 🧢 Supplies & accessories (the real-LGS margin engine) --------------------
@@ -525,7 +525,7 @@ export { fameMult, fameBeyond, FAME_KNEE, FAME_POWER } from '../engine'
 // rank ladder, attribution ledger) lives in rep.js — same re-export arrangement.
 export {
   applyNotoGain, NOTO_SOFT_CAP,
-  hypeGain, decayHype, hypeDemandMult, hypePriceMult,
+  hypeGain, bumpHype, decayHype, hypeDemandMult, hypePriceMult,
   HYPE_MAX, HYPE_HALF_LIFE, HYPE_CURE_RATE, HYPE_CURE_DAILY_CAP,
   ledgerAdd, ledgerRoll, repSourceLabel, REP_SOURCES, REP_LEDGER_DAYS,
   RANKS, DEEDS_NEEDED, rankForNotoriety, deedsDone, rankEligible, rankOf,

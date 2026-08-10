@@ -43,7 +43,7 @@ import {
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
   supplyById, pickSupplyId, BUYLIST_POLICIES, SUB_DAILY,
   floorItemCap, floorSkuCounts, floorSkuKey, floorFreeSlots,
-  decayHype, ledgerRoll, HYPE_CURE_RATE, HYPE_CURE_DAILY_CAP,
+  decayHype, ledgerRoll, HYPE_CURE_RATE, HYPE_CURE_DAILY_CAP, hypeDemandMult, hypePriceMult,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -302,7 +302,7 @@ function driftMarket(mults, history, days, log) {
 // Returns { listings, soldProceeds, sold:[{name,net,savvy,auto?}], newOffers, staleNow:[names] }.
 // `streamBoostDays` = how many of the first `days` fall inside a live stream-hype
 // window (a recent stream pumps EVERY listing's traffic).
-function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) {
+function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}, shopHype = 0) {
   let soldProceeds = 0
   const sold = []
   const staleNow = []
@@ -323,12 +323,14 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}) 
     for (let day = 0; day < days && !didSell; day++) {
       // Stream afterglow: a recent live stream pumps ALL listings for its window.
       const streamed = day < streamBoostDays
-      const boost = streamed ? STREAM_BOOST : 1
+      // 🔥 Shop hype pumps listing TRAFFIC (stacks with afterglow, both capped) and lets a
+      // hot moment's buyers stretch a hair further (≤+5% — the exploit-dangerous dial).
+      const boost = (streamed ? STREAM_BOOST : 1) * hypeDemandMult(shopHype)
       const viewers = dailyViewers(cur.card, cur.askMult, noto, Math.random, boost)
       cur.views += viewers
       for (let v = 0; v < viewers; v++) {
         const savvy = rollBuyerSavvy()
-        const max = buyerMaxMult(savvy, noto, cur.card)
+        const max = buyerMaxMult(savvy, noto, cur.card) * hypePriceMult(shopHype)
         // On a hot set a willing buyer will stretch a premium above what they'd normally
         // pay — so a manually-worked listing captures the spike (auto-sell never does).
         const effMax = hot ? max + HOT_PREMIUM : max
@@ -564,11 +566,13 @@ export function advanceDaysWith(set, get, days, away) {
         get().log('shop', `${ev.icon} ${ev.name} — a good room; word spreads.`, 0)
       }
       if (ev.noto) get().addNotoriety(ev.noto, false, 'events')
+      if (ev.hype) get().addHype(ev.hype) // 🔥 a packed room is a story people carry out the door
       if (plan.prizeCard) {
         // Raffle prize drawn — generosity with a box office (Charity Banner applies).
         const pv = cardValue(plan.prizeCard)
         const pop = Math.min(15, Math.round(2 + Math.sqrt(pv)))
         get().addNotoriety(pop, true, 'events')
+        get().addHype(6)
         set(st => ({ generousActs: st.generousActs + 1 }))
         get().log('give', `🎟️ Raffle drawn — ${plan.prizeCard.name} ($${pv.toFixed(2)}) went home with a winner (+${pop}★)`, 0)
         get().bumpGoal('help', 1)
@@ -635,7 +639,9 @@ export function advanceDaysWith(set, get, days, away) {
     if (hasStore) { leaseDue += STORE_LEASE_PER_DAY; payrollDue += empList.reduce((a, e) => a + e.wage, 0) }
     // ONLINE channel (employees raise throughput). Only if you have something listed.
     // A COUNT, not a coin flip: a famous vendor wakes up to several orders, not "maybe one".
-    const onlineRate = (dayOrderRate('online', noto, hasBargain) + followerBump) * orderMult
+    // 🔥 Hype multiplies DEMAND while the shop runs hot (≤×1.35, stale snapshot for the
+    // whole tick) — traffic and interest, never the counter's passive trade budget.
+    const onlineRate = (dayOrderRate('online', noto, hasBargain) + followerBump) * orderMult * hypeDemandMult(hype0)
     const nOnline = Math.min(MAX_ORDERS_PER_DAY, drawCount(onlineRate))
     for (let k = 0; k < nOnline && openOnline; k++) {
       if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars), channel: 'online' }); onlineCount++ }
@@ -657,7 +663,7 @@ export function advanceDaysWith(set, get, days, away) {
     // 🏪 A live promotion across town is a real hole in your own footfall — that's what
     // makes the rival worth competing with rather than reading about.
     const rivalMult = rivalDrag(s.rival)
-    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult * rivalMult
+    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult * rivalMult * hypeDemandMult(hype0)
     const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
     for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
@@ -769,7 +775,7 @@ export function advanceDaysWith(set, get, days, away) {
       const dealMult = Math.max(0.35, Math.min(2.2, avgVal / pm.price)) // good deal → more buyers
       const signage = s.upgrades?.signage ? 1.15 : 1
       // Kid channel: summer/back-to-school swells the machine crowd (seasonOf .kids).
-      const rate = (0.4 + noto / 350) * dealMult * signage * seasonOf(s.monthsElapsed).kids
+      const rate = (0.4 + noto / 350) * dealMult * signage * seasonOf(s.monthsElapsed).kids * hypeDemandMult(hype0)
       const want = Math.min(machineMaxPerDay(s.upgrades) * days, mstock.length, drawCount(rate * footWeight))
       if (want > 0) {
         const stock = [...mstock]
@@ -972,7 +978,7 @@ export function advanceDaysWith(set, get, days, away) {
   // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
   // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
   const streamBoostDays = Math.min(days, s.streamHypeDaysLeft || 0)
-  const lt = tickListings(s.listings, days, noto, streamBoostDays, s.upgrades)
+  const lt = tickListings(s.listings, days, noto, streamBoostDays, s.upgrades, hype0)
   const remainingListings = lt.listings
   soldProceeds = round2(soldProceeds + lt.soldProceeds)
   for (const sale of lt.sold) {
@@ -1003,14 +1009,14 @@ export function advanceDaysWith(set, get, days, away) {
         const packOpts = { published: !!tier.published, certified, streak }
         if (tier.channels?.online && onlineOK) {
           const q = get().packsForChannel('online').filter(p => p.tierId === tier.id)
-          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'online', false, !!s.upgrades.wrapPress, { ...packOpts, hasChase: hasChaseIn(q, tier) })) {
+          if (q.length && Math.random() < Math.min(0.75, packSaleChance(tier.price, noto, rep, 'online', false, !!s.upgrades.wrapPress, { ...packOpts, hasChase: hasChaseIn(q, tier) }) * hypeDemandMult(hype0))) {
             const r = get().sellBuiltPack(q[0].uid, { channel: 'online' })
             if (r) noteSale(`${tier.name} (repack)`, r.net)
           }
         }
         if (tier.channels?.store && hasStore && walkinOK) {
           const q = get().packsForChannel('store').filter(p => p.tierId === tier.id)
-          if (q.length && Math.random() < packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i, !!s.upgrades.wrapPress, { ...packOpts, hasChase: hasChaseIn(q, tier) })) {
+          if (q.length && Math.random() < Math.min(0.75, packSaleChance(tier.price, noto, rep, 'store', buzzDays0 > i, !!s.upgrades.wrapPress, { ...packOpts, hasChase: hasChaseIn(q, tier) }) * hypeDemandMult(hype0))) {
             const r = get().sellBuiltPack(q[0].uid, { channel: 'walkin' })
             if (r) noteSale(`${tier.name} (repack)`, r.net)
           }
@@ -1091,7 +1097,7 @@ export function advanceDaysWith(set, get, days, away) {
         // Consigned cards move faster through a famous case. Used to cap at 30%/day (noto 100);
         // now a big name keeps shifting locals' stock quicker, up to a 70% rail.
         const consignSellChance = Math.min(0.70,
-          (Math.min(0.30, 0.10 + noto / 500) + fameBeyond(noto, 100) * 0.05) * buzzMult)
+          (Math.min(0.30, 0.10 + noto / 500) + fameBeyond(noto, 100) * 0.05) * buzzMult * hypeDemandMult(hype0))
         if (walkinOK && Math.random() < consignSellChance) sold = true
         else left--
       }
@@ -1256,6 +1262,7 @@ export function advanceDaysWith(set, get, days, away) {
           get().log('shop', `📰 The ${waveNext.label} wave dropped — you sat it out, but launch hunters will still come asking.`, 0)
         }
         rushBuzz = hasStore
+        if (hasStore) get().addHype(10) // 🔥 drop day — launch-week energy hits the whole shop
         waveNext = { ...waveNext, doneDay: newAbsDay }
       }
     } else if (noto >= WAVE_NOTO_GATE && (!waveNext || newAbsDay >= (waveNext.doneDay || 0) + WAVE_COOLDOWN_DAYS)) {
@@ -1313,7 +1320,7 @@ export function advanceDaysWith(set, get, days, away) {
       auctionsLive.push({ ...a, watchers: (a.watchers || 0) + Math.round(watcherDraw(a.card, noto) * days * 0.35) })
       continue
     }
-    auctionResults.push({ a, r: settleAuction(a, noto, streamBoostDays) })
+    auctionResults.push({ a, r: settleAuction(a, noto, streamBoostDays, Math.random, hype0) })
   }
   for (const { a, r } of auctionResults) {
     if (!r.met) {
@@ -1935,7 +1942,12 @@ export function advanceDaysWith(set, get, days, away) {
     lifeEvents,
     netWorth,
     cashDelta: round2(get().cash - s.cash),
-    notoDelta: round2(get().notoriety - noto) }
+    notoDelta: round2(get().notoriety - noto),
+    hype: get().hype,
+    hypeDelta: round2((get().hype || 0) - hype0),
+    // Top rep sources of the tick, for the recap's "⭐ +3.2 (sales +2.0 · stream +1.2)" line.
+    // The tick's own gains sit in repLedger.today (yesterday's map rolled out at the top).
+    notoBySrc: Object.entries(get().repLedger?.today || {}).sort((x, y) => Math.abs(y[1]) - Math.abs(x[1])).slice(0, 3) }
 }
 
 // Combine two day-summaries into one (used when a show trip is a home "wait" stretch plus
@@ -1988,6 +2000,9 @@ export function mergeSummaries(a, b) {
     netWorth: b.netWorth != null ? b.netWorth : a.netWorth, // latest (end-of-trip) worth
     cashDelta: round2(add(a.cashDelta, b.cashDelta)),
     notoDelta: round2(add(a.notoDelta, b.notoDelta)),
+    hype: b.hype != null ? b.hype : a.hype, // latest (end-of-trip) heat
+    hypeDelta: round2(add(a.hypeDelta, b.hypeDelta)),
+    notoBySrc: (b.notoBySrc?.length ? b.notoBySrc : a.notoBySrc) || [], // latest leg's breakdown
     days: add(a.days, b.days),
   }
 }

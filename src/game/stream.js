@@ -19,11 +19,13 @@ export function isStreamHype(card) {
 // `fatigue` (1 = fresh audience, →0 = burned out from over-streaming) scales the
 // crowd down: stream every day and the room thins; space them out and it recovers.
 const VIEWER_CEILING = 9000 // soft cap so high notoriety can't balloon to absurd numbers
-export function baseViewers(notoriety, fatigue = 1, followers = 0) {
+export function baseViewers(notoriety, fatigue = 1, followers = 0, shopHype = 0) {
   // ~8 at noto 0 → ~60 at noto 40 → ~600 at noto 200, then a smooth soft cap.
   // Followers are your RETURNING audience — a reliable crowd that shows regardless of
   // fame, so building a channel over time lifts every stream's floor (~0.35 viewers each).
-  const raw = 8 + Math.pow(Math.max(0, notoriety), 1.35) * 1.6 + Math.max(0, followers) * 0.35
+  // 🔥 Going live while the shop runs hot pulls extra rubberneckers (≤+50% at 100 hype).
+  const raw = (8 + Math.pow(Math.max(0, notoriety), 1.35) * 1.6 + Math.max(0, followers) * 0.35)
+    * (1 + Math.min(0.5, Math.max(0, shopHype) / 200))
   const capped = VIEWER_CEILING * (1 - Math.exp(-raw / VIEWER_CEILING)) // asymptotes to the ceiling
   return Math.max(3, Math.round(capped * fatigue))
 }

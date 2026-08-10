@@ -13,7 +13,7 @@
 import { round2, cardValue, setIdOfCard } from '../engine'
 import { packValue, packBestItem, packOutcome, packBuyerName, cardFitsTier, tierContentsLabel,
   PACK_TIER_CAP, AUTO_BUILD_CAP, defaultPackTiers } from '../mysterypacks'
-import { ONLINE_FEE_PCT, shippingCost, processingFee, absoluteDay } from './constants'
+import { ONLINE_FEE_PCT, shippingCost, processingFee, absoluteDay, bumpHype } from './constants'
 
 let packSuffix = 0
 const nextPackUid = () => `mp${Date.now().toString(36)}${(packSuffix++).toString(36)}`
@@ -180,6 +180,8 @@ export function createPacksSlice(set, get) {
         builtPacks: s.builtPacks.filter(p => p.uid !== uid),
         packRep: Math.max(0, Math.min(100, round2((s.packRep ?? 50) + repDelta))),
         packStreak: nextStreak,
+        // 🔥 A jackpot repack story travels — folded into this write, no extra set().
+        ...(out.key === 'jackpot' ? { hype: bumpHype(s.hype, 4) } : {}),
         packStats: {
           ...s.packStats,
           sold: (s.packStats?.sold || 0) + 1,

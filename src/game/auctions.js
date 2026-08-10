@@ -17,6 +17,7 @@
 // setting a reserve thins the very room that sets your price. Protection you pay for in
 // the currency that matters.
 import { cardValue, round2 } from './engine'
+import { hypeDemandMult } from './rep'
 
 // How long you can run one for. Longer runs pull more eyes (more chances for a bidder to
 // wander in) but tie the card up — and the sim clock is days you could have been selling.
@@ -45,7 +46,7 @@ export function reserveChill(reserveMult) {
 // How many people actually turn up to bid. THE number that decides the hammer price.
 // Scales with your name (reach), how long it ran, and how desirable the card is — a $600
 // chase draws a crowd off its own merits; a $3 rare draws whoever happens to be browsing.
-export function expectedBidders(card, noto, days, reserveMult, hypeDays = 0) {
+export function expectedBidders(card, noto, days, reserveMult, hypeDays = 0, shopHype = 0) {
   const value = cardValue(card)
   // Reach: 0★ pulls ~1 bidder, a well-known dealer 4-5. Deliberately brutal at the bottom —
   // an unknown seller's auction SHOULD go for a song, and that's the lesson.
@@ -54,7 +55,8 @@ export function expectedBidders(card, noto, days, reserveMult, hypeDays = 0) {
   const draw = 1 + Math.min(1.1, Math.log10(Math.max(1, value)) / 2.4)
   const run = 0.78 + days * 0.055          // a longer run collects more wanderers
   const hype = hypeDays > 0 ? 1.25 : 1     // 🔴 post-stream afterglow packs the room
-  return Math.max(0.2, reach * draw * run * hype * reserveChill(reserveMult))
+  // 🔥 A hot shop packs the room too (≤×1.35) — demand only, the hammer curve is untouched.
+  return Math.max(0.2, reach * draw * run * hype * hypeDemandMult(shopHype) * reserveChill(reserveMult))
 }
 
 // Draw an actual bidder count from the expectation (Poisson-ish, via a small sum so the
@@ -83,9 +85,9 @@ export function hammerMultiple(bidders, rnd = Math.random) {
 
 // Run the whole auction to its close and report what happened. Deterministic given `rnd`,
 // so the day-tick can settle several at once and the UI can preview the odds.
-export function settleAuction(a, noto, hypeDays = 0, rnd = Math.random) {
+export function settleAuction(a, noto, hypeDays = 0, rnd = Math.random, shopHype = 0) {
   const market = cardValue(a.card)
-  const expected = expectedBidders(a.card, noto, a.days, a.reserve, hypeDays)
+  const expected = expectedBidders(a.card, noto, a.days, a.reserve, hypeDays, shopHype)
   const bidders = drawBidders(expected, rnd)
   const mult = hammerMultiple(bidders, rnd)
   const hammer = round2(market * mult)
