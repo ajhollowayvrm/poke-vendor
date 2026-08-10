@@ -65,9 +65,16 @@ export function DialogHost() {
 let _toastListener = null
 let _toasts = []
 let _toastSeq = 0
+// How many can be on screen at once. Milestones fire in clusters — five at a time after a good
+// rip is normal — and an uncapped column climbs the screen and covers the cards it's reporting
+// on. Past this the OLDEST starts leaving early: it has already been read, and the newest is the
+// one you're looking for.
+const MAX_TOASTS = 3
 export function toast(message, ms = 3000, action = null) {
   const id = ++_toastSeq
   _toasts = [..._toasts, { id, message, leaving: false, action }]
+  const live = _toasts.filter(t => !t.leaving)
+  for (const old of live.slice(0, Math.max(0, live.length - MAX_TOASTS))) dismissToast(old.id)
   _toastListener?.()
   setTimeout(() => dismissToast(id), ms)
 }

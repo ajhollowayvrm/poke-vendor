@@ -660,11 +660,18 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   background: var(--panel); border:1px solid var(--line); color: var(--txt); padding: 12px 20px; border-radius: 12px;
   font-weight: 700; box-shadow: 0 12px 40px #000b; max-width: 80vw; text-align:center; animation: toastin .25s ease; }
 @keyframes toastin { from{opacity:0; transform: translate(-50%, 10px)} to{opacity:1; transform: translate(-50%,0)} }
-/* Global toast stack: a fixed column at bottom-center; toasts flow in-stack (not each self-positioned). */
-.toast-stack { position: fixed; bottom: calc(28px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
-  z-index: 95; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
-.toast-stack .toast { position: static; transform: none; left: auto; bottom: auto; animation: toaststackin .25s ease; }
-@keyframes toaststackin { from{opacity:0; transform: translateY(10px)} to{opacity:1; transform: none} }
+/* Global toast stack: a fixed column in the BOTTOM-RIGHT corner.
+   It used to sit bottom-CENTER at 80vw wide, which on a phone is nearly the full width — so a
+   handful of milestones firing together (five at once after a good rip is entirely normal)
+   stacked up the middle of the screen and buried the cards you'd just pulled. A notification
+   should never cover the thing it's congratulating you about. Cornered, narrow, and left-aligned
+   so it reads as a notification rather than a dialog. */
+.toast-stack { position: fixed; bottom: calc(28px + var(--sab)); right: calc(16px + var(--sar));
+  left: auto; transform: none;
+  z-index: 95; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none; }
+.toast-stack .toast { position: static; transform: none; left: auto; bottom: auto;
+  max-width: min(320px, 76vw); text-align: left; animation: toaststackin .25s ease; }
+@keyframes toaststackin { from{opacity:0; transform: translateX(16px)} to{opacity:1; transform: none} }
 /* leaving toasts play an exit before unmount (JS flags .leaving ~260ms before removal) */
 .toast-stack .toast.leaving { animation: toastOut .26s ease forwards; }
 /* Action button inside a toast (↩︎ Undo). pointer-events re-enabled — the stack itself
@@ -674,7 +681,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   background: color-mix(in srgb, var(--accent2) 18%, transparent); color: var(--accent-light);
   font-weight: 800; font-size: 12.5px; }
 .toast-action:active { transform: scale(0.96); }
-@media (max-width: 640px) { .toast-stack { bottom: calc(84px + env(safe-area-inset-bottom)); } } /* clear the bottom nav */
+/* clear the bottom nav, and hug the edge a little tighter on a narrow screen */
+@media (max-width: 640px) {
+  .toast-stack { bottom: calc(84px + var(--sab)); right: calc(10px + var(--sar)); }
+  .toast-stack .toast { padding: 10px 14px; font-size: 13px; }
+}
 
 /* ---------- Vendor booth modal ---------- */
 .vendoritem { display:flex; flex-direction:column; gap:6px; align-items: stretch; }
