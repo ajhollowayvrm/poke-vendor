@@ -96,7 +96,7 @@ export function createSourcingSlice(set, get) {
     buyFromDistributor(distId, pokeSet, product, price, opts = {}) {
       const dist = distributorById(distId)
       if (!dist) return null
-      if (!distributorUnlocked(dist, get().notoriety, get().upgrades)) return null // account not open yet
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades, get().rank || 0)) return null // account not open yet
       // 🚢 An import channel (leadDays) never hands stock over the counter — the single-buy
       // rides the bulk path, which knows how to put an order on the water.
       if (dist.leadDays) {
@@ -136,7 +136,7 @@ export function createSourcingSlice(set, get) {
     buyFromDistributorBulk(distId, pokeSet, product, price, qty, opts = {}) {
       const dist = distributorById(distId)
       if (!dist) return null
-      if (!distributorUnlocked(dist, get().notoriety, get().upgrades)) return null // account not open yet
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades, get().rank || 0)) return null // account not open yet
       const want = Math.max(1, Math.floor(qty || 1))
       const rec = get().distributorRec(distId)
       const level = rapportLevel(rec.spend).level
@@ -218,7 +218,7 @@ export function createSourcingSlice(set, get) {
     buyDistributorVintage(distId, setId, product, price, opts = {}) {
       const pokeSet = setById(setId)
       if (!pokeSet) return null
-      if (!distributorUnlocked(distributorById(distId), get().notoriety, get().upgrades)) return null // account not open yet
+      if (!distributorUnlocked(distributorById(distId), get().notoriety, get().upgrades, get().rank || 0)) return null // account not open yet
       const week = weekIndexOf(get().currentDay, get().monthsElapsed)
       if (!opts.fromHold && vintageLeft(get(), distId, setId) < 1) return null // shelf is bare
       // Tag the copy with the vendor it came from, so "Rip another" can check THEIR shelf for
@@ -244,7 +244,7 @@ export function createSourcingSlice(set, get) {
     // in at Dave & Adam's wholesale price; requires Trusted+ rapport with them.
     supplyVendors(pokeSet, product) {
       const dist = distributorById('dna')
-      if (!distributorUnlocked(dist, get().notoriety, get().upgrades)) return false // account not open yet
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades, get().rank || 0)) return false // account not open yet
       const rec = get().distributorRec('dna')
       const level = rapportLevel(rec.spend).level
       if (!dist?.supply || level < dist.supplyMinLevel) return false

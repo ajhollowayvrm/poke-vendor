@@ -794,8 +794,13 @@ export const useGame = create(persist((set, get) => ({
       //   📒 repLedger  — ⭐-delta attribution; starts empty (history wasn't tagged)
       //   pendingRanks  — left EMPTY on purpose: no rank-up toast flood on migration
       state.hype = state.hype ?? 0
-      state.clout = state.clout ?? (rankForNotoriety(state.notoriety || 0) * 2)
-      state.rank = state.rank ?? rankForNotoriety(state.notoriety || 0)
+      // Edge case in the grandfather: Dave & Adam's used to open at ⭐75, but 75-79 only
+      // maps to rank 2 and the account is now rank-3-gated — bank rank 3 for those saves
+      // so an open wholesale account never closes. (The few days of early national-show
+      // access this over-grants is nothing next to losing a distributor.)
+      const gRank = Math.max(rankForNotoriety(state.notoriety || 0), (state.notoriety || 0) >= 75 ? 3 : 0)
+      state.clout = state.clout ?? (gRank * 2)
+      state.rank = state.rank ?? gRank
       state.pendingRanks = state.pendingRanks ?? []
       state.streamBoostNext = state.streamBoostNext ?? false
       state.repLedger = state.repLedger ?? { today: {}, days: [] }

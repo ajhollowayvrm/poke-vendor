@@ -33,7 +33,7 @@ const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
   floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor, absoluteDay,
-  SUPPLY_CASE, supplyById, SPECIAL_ORDER_DUE_DAYS, BRANCH_LEASE_PER_DAY, employeeById } from './constants'
+  SUPPLY_CASE, supplyById, SPECIAL_ORDER_DUE_DAYS, BRANCH_LEASE_PER_DAY, employeeById, RANKS } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -707,7 +707,13 @@ export function createBoothSlice(set, get) {
       if (!ev || !s.upgrades.storefront) return { error: 'No storefront to host in.' }
       if (s.storeEventPlanned) return { error: 'Tonight is already booked.' }
       if ((s.eventCooldownLeft || 0) > 0) return { error: `The room needs a breather — try again in ${s.eventCooldownLeft} day${s.eventCooldownLeft > 1 ? 's' : ''}.` }
-      if (s.notoriety < (ev.minNoto || 0)) return { error: `Nobody would come yet — you need ${ev.minNoto} notoriety.` }
+      if (ev.minRank != null
+        ? (s.rank || 0) < ev.minRank
+        : s.notoriety < (ev.minNoto || 0)) {
+        return { error: ev.minRank != null
+          ? `Sanctioning wants a name they know — become a ${RANKS[ev.minRank].emoji} ${RANKS[ev.minRank].name} first.`
+          : `Nobody would come yet — you need ${ev.minNoto} reputation.` }
+      }
       let prizeCard = null
       if (ev.needsPrize) {
         prizeCard = s.collection.find(c => c.uid === prizeUid)

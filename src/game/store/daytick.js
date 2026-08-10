@@ -567,6 +567,7 @@ export function advanceDaysWith(set, get, days, away) {
       }
       if (ev.noto) get().addNotoriety(ev.noto, false, 'events')
       if (ev.hype) get().addHype(ev.hype) // 🔥 a packed room is a story people carry out the door
+      set(st => ({ stats: { ...st.stats, eventsHosted: (st.stats?.eventsHosted || 0) + 1 } })) // 🏅 rank-deed counter
       if (plan.prizeCard) {
         // Raffle prize drawn — generosity with a box office (Charity Banner applies).
         const pv = cardValue(plan.prizeCard)
@@ -1143,7 +1144,7 @@ export function advanceDaysWith(set, get, days, away) {
     // (BUYLIST_POLICIES.chanceMult) and shifts their asks (applied inside makeBuyinOffer).
     const polMult = (BUYLIST_POLICIES[s.buylistPolicy] || BUYLIST_POLICIES.fair).chanceMult
     const adMult = s.upgrades.buyAd ? 1.4 : 1 // 📻 the radio spot pulls sellers through the door
-    for (let i = 0; i < days && buyinsNext.length < buyinCap(s.upgrades); i++) {
+    for (let i = 0; i < days && buyinsNext.length < buyinCap(s.upgrades, s.rank || 0); i++) {
       if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * polMult * adMult * buyinDayMult(startAbs + i + 1))) {
         // Some sellers are leaving the hobby: a whole-collection lot with SEALED product in it.
         const estate = Math.random() < BUYIN_ESTATE_CHANCE
@@ -1176,7 +1177,7 @@ export function advanceDaysWith(set, get, days, away) {
   // over with their progress intact. goalsDay stores the ABSOLUTE day (month-safe).
   const newAbsDay = absoluteDay(d, months)
   const goalsExpired = !s.dailyGoals.length || newAbsDay - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS
-  const periodGoals = goalsExpired ? makeWeeklyGoals(noto) : s.dailyGoals
+  const periodGoals = goalsExpired ? makeWeeklyGoals(noto, s.rank || 0) : s.dailyGoals
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
   const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days, newAbsDay), s.distributors, days, newAbsDay, get().log,
     s.upgrades.vintageScout ? 1.6 : 1) // 🕵️ the scout keeps sellers thinking of you
@@ -1281,7 +1282,7 @@ export function advanceDaysWith(set, get, days, away) {
           let best = null
           for (const dv of DISTRIBUTORS) {
             if (dv.japanese) continue // 🎌 the import channel doesn't ship English reprint waves
-            if (!distributorUnlocked(dv, noto, s.upgrades)) continue
+            if (!distributorUnlocked(dv, noto, s.upgrades, s.rank || 0)) continue
             const level = rapportLevel((s.distributors?.[dv.id]?.spend) || 0).level
             if (!best || level > best.level) best = { dist: dv, level }
           }
@@ -1449,7 +1450,7 @@ export function advanceDaysWith(set, get, days, away) {
         let bought = null
         if (set_ && product) {
           for (const dv of DISTRIBUTORS) {
-            if (!distributorUnlocked(dv, noto, s.upgrades)) continue
+            if (!distributorUnlocked(dv, noto, s.upgrades, s.rank || 0)) continue
             const level = rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level
             const unit = round2(distributorPrice(dv, product.price, level, { product, set: set_ }))
             // Never spend the shop into arrears chasing one special order.
@@ -1508,11 +1509,11 @@ export function advanceDaysWith(set, get, days, away) {
   let leadsNext = (s.showLeads || []).filter(l => (l.absDay ?? 0) >= newAbsDay)
   const newLeads = []
   {
-    const calendar = generateCalendar(noto, seed)
+    const calendar = generateCalendar(noto, seed, s.rank || 0)
     const rapportVendors = (s.showVendors || []).filter(v => vendorRapport(s.vendorSpend?.[v.id] || 0).level >= 1)
     for (const showX of calendar) {
       if (leadsNext.length >= LEAD_CAP) break
-      if (noto < SHOW_TIERS[showX.tierKey]?.minNotoriety) continue // can't attend → no DM
+      if ((s.rank || 0) < (SHOW_TIERS[showX.tierKey]?.minRank ?? 0)) continue // can't attend → no DM
       if (showX.day <= d || showX.day - d > LEAD_WINDOW) continue
       if (leadsNext.some(l => l.showId === showX.id)) continue
       const absShowDay = absoluteDay(showX.day, months)
@@ -1548,7 +1549,7 @@ export function advanceDaysWith(set, get, days, away) {
     // invisible. (INBOX_CAP is still the floor, via inboxCap().)
     // Every new order gets a stable id so clear/authenticate address it by identity, not by a
     // fragile array index (a resolve/prune reshuffles the array — see nextInboxId's note).
-    boothInbox: [...newOrders.reverse().map(o => ({ ...o, id: o.id ?? nextInboxId() })), ...st.boothInbox].slice(0, inboxCap(st.notoriety)),
+    boothInbox: [...newOrders.reverse().map(o => ({ ...o, id: o.id ?? nextInboxId() })), ...st.boothInbox].slice(0, inboxCap(st.notoriety, st.rank || 0)),
     consignments: remainingConsign,
     supplyChannel: remainingSupply,
     distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds

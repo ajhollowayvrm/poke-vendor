@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   hypeSurge } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
-import { useGame, repSourceLabel } from './game/store'
+import { useGame, repSourceLabel, RANKS, DEEDS_NEEDED, deedsDone } from './game/store'
 import { netWorthFull, vintageLeft } from './game/store/helpers'
 import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
@@ -224,6 +224,18 @@ export default function App() {
     }
     useGame.getState().clearPendingMilestones()
   }, [pendingMilestones])
+
+  // 🏅 Rank-up celebrations ride the same queue pattern as milestones: the store banks the
+  // promotion wherever it lands (day-tick, a rip's milestone sweep) and we toast it here.
+  const pendingRanks = useGame(s => s.pendingRanks)
+  useEffect(() => {
+    if (!pendingRanks?.length) return
+    for (const idx of pendingRanks) {
+      const r = RANKS[idx]
+      if (r) toast(`🏅 Rank up — you're now a ${r.emoji} ${r.name}!${r.clout ? ` +${r.clout} 🎫 clout to spend.` : ''}${r.perk ? ` New perk: ${r.perk}` : ''}`, 6000)
+    }
+    useGame.getState().clearPendingRanks()
+  }, [pendingRanks])
 
   // Buying STOCKS sealed product into your inventory (hold-first) — you rip, list, or flip
   // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses
@@ -859,6 +871,7 @@ function GameOver() {
 function Shop({ cash, onBuy, onBuyVintage }) {
   const distributors = useGame(s => s.distributors)
   const notoriety = useGame(s => s.notoriety)
+  const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — the door for rank-gated accounts
   const upgrades = useGame(s => s.upgrades) // ⛩️ Import License gates the Japan Direct account
   const lgsCredit = useGame(s => s.lgsCredit)
   const currentDay = useGame(s => s.currentDay)
@@ -908,7 +921,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   // Week index drives Greg's rotating catalog (month-safe; 30 days/month). Shared with the
   // store so the vintage shelf can't read as in-stock here and sold-out at the buy path.
   const weekIndex = weekIndexOf(currentDay, monthsElapsed)
-  const unlocked = distributorUnlocked(dist, notoriety, upgrades)
+  const unlocked = distributorUnlocked(dist, notoriety, upgrades, rank)
   const catalog = distributorCatalog(dist, SHOP_SETS, weekIndex)
   // Greg flags one set's box as a clearance lot each week — a steep, thin-stock steal.
   const clearanceSetId = dist.clearance && catalog.length ? catalog[weekIndex % catalog.length].id : null
@@ -916,7 +929,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
   return (
     <>
-      <DistributorPicker distributorState={distributors} notoriety={notoriety} upgrades={upgrades} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
+      <DistributorPicker distributorState={distributors} notoriety={notoriety} upgrades={upgrades} rank={rank} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
 
       {/* 🚢 Import orders still crossing the Pacific — visible whichever shelf you're browsing */}
       <ImportsInTransit />
@@ -932,7 +945,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       <ReorderPanel />
 
       {!unlocked ? (
-        <LockedDistributor dist={dist} notoriety={notoriety} />
+        <LockedDistributor dist={dist} notoriety={notoriety} rank={rank} />
       ) : (<>
       <RapportBanner dist={dist} rec={rec} lvl={lvl} />
 
@@ -1192,7 +1205,11 @@ function productBlurb(product) {
   return base
 }
 
-function LockedDistributor({ dist, notoriety }) {
+function LockedDistributor({ dist, notoriety, rank = 0 }) {
+  // 🏅 Rank-gated account (D&A): the door is the BANKED ladder rank — show the checklist
+  // shape (⭐ threshold + any-2-deeds), not just a number to grind.
+  const targetRank = dist.minRank != null ? RANKS[dist.minRank] : null
+  const deedsHave = useGame(s => targetRank ? deedsDone(s, dist.minRank) : 0)
   if (dist.requiresUpgrade) {
     const u = UPGRADES[dist.requiresUpgrade]
     return (
@@ -1213,15 +1230,18 @@ function LockedDistributor({ dist, notoriety }) {
       <div style={{ fontSize: 30, marginBottom: 6 }}>🔒</div>
       <div style={{ fontSize: 15, fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} isn't taking accounts your size yet</div>
       <p className="muted" style={{ fontSize: 13, margin: '8px auto 12px', maxWidth: 440 }}>
-        A hobby giant this size only opens a wholesale account with an established name. Build your
-        <b> notoriety</b> — run shows, fill wants, move product — and they'll come to the table.
+        {targetRank
+          ? <>A hobby giant this size wants a résumé, not just a number: become a <b>{targetRank.emoji} {targetRank.name}</b> — reach <b>⭐ {targetRank.min}</b> and prove yourself ({DEEDS_NEEDED} of: {targetRank.deeds.map(d => d.label.toLowerCase()).join(' · ')}) — and they'll come to the table.</>
+          : <>A hobby giant this size only opens a wholesale account with an established name. Build your
+            <b> reputation</b> — run shows, fill wants, move product — and they'll come to the table.</>}
       </p>
       <div className="distrib-bar" style={{ maxWidth: 320, margin: '0 auto' }}>
         <div style={{ width: pct + '%', background: dist.color }} />
       </div>
       <div className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
-        <b style={{ color: dist.color }}>{Math.round(notoriety || 0)}</b> / {need} notoriety
-        {' '}· {Math.max(0, need - Math.round(notoriety || 0))} to go
+        <b style={{ color: dist.color }}>{Math.round(notoriety || 0)}</b> / {need} reputation
+        {targetRank && <> · deeds <b style={{ color: dist.color }}>{Math.min(deedsHave, DEEDS_NEEDED)}</b> / {DEEDS_NEEDED}</>}
+        {rank >= (dist.minRank ?? 99) && ' · rank met!'}
       </div>
     </div>
   )
@@ -1229,29 +1249,33 @@ function LockedDistributor({ dist, notoriety }) {
 
 // Pick which distributor you're buying from. Each chip shows their icon, name, and your
 // rapport (filled stars), tinted with their brand colour.
-function DistributorPicker({ distributorState, notoriety, upgrades, selected, onSelect, vintageDists }) {
+function DistributorPicker({ distributorState, notoriety, upgrades, rank = 0, selected, onSelect, vintageDists }) {
   return (
     <div className="distrib-picker">
       {DISTRIBUTORS.map(d => {
         const rec = distributorState[d.id] || { spend: 0 }
         const level = rapportLevel(rec.spend).level
         const max = RAPPORT_LEVELS.length - 1
-        const locked = !distributorUnlocked(d, notoriety, upgrades)
+        const locked = !distributorUnlocked(d, notoriety, upgrades, rank)
         const needsUpgrade = locked && d.requiresUpgrade
+        const rankGate = locked && !needsUpgrade && d.minRank != null ? RANKS[d.minRank] : null
         const hasVintage = !locked && vintageDists?.has(d.id)
         return (
           <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''} ${locked ? 'locked' : ''}`}
             style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}
             title={needsUpgrade ? `Locked — needs the ${UPGRADES[d.requiresUpgrade]?.name || 'right'} upgrade (⚙️ → Upgrades)`
-              : locked ? `Locked — reach ${d.minNotoriety} notoriety to open an account`
+              : rankGate ? `Locked — become a ${rankGate.emoji} ${rankGate.name} (rank ${d.minRank}) to open an account`
+              : locked ? `Locked — reach ${d.minNotoriety} reputation to open an account`
               : hasVintage ? `${d.name} has vintage sealed on the shelf this week` : undefined}>
             {hasVintage && <span className="dc-vintage" title="Vintage in stock this week" aria-label="Vintage in stock">🗝️</span>}
             <span className="dc-icon">{d.icon}</span>
             <span className="dc-name">{d.name}</span>
             {needsUpgrade
               ? <span className="dc-rep" aria-label={`Locked — needs the ${UPGRADES[d.requiresUpgrade]?.name} upgrade`}>🔒 {UPGRADES[d.requiresUpgrade]?.icon || '⛩️'}</span>
+              : rankGate
+              ? <span className="dc-rep" aria-label={`Locked — ${rankGate.name} rank needed`}>🔒 {rankGate.emoji}</span>
               : locked
-              ? <span className="dc-rep" aria-label={`Locked — ${d.minNotoriety} notoriety needed`}>🔒 {d.minNotoriety}</span>
+              ? <span className="dc-rep" aria-label={`Locked — ${d.minNotoriety} reputation needed`}>🔒 {d.minNotoriety}</span>
               : <span className="dc-rep" aria-label={`${level} of ${max} rapport`}>{'★'.repeat(level)}{'☆'.repeat(max - level)}</span>}
           </button>
         )

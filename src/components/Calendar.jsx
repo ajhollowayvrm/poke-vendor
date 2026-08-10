@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
-import { useGame, dayOrderRate, monthName, yearOf } from '../game/store'
+import { useGame, dayOrderRate, monthName, yearOf, RANKS } from '../game/store'
 import { generateCalendar, SHOW_TIERS } from '../game/shows'
 import { fmtMoney } from '../game/engine'
 
 export default function Calendar({ onAttend }) {
   const notoriety = useGame(s => s.notoriety)
+  const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — the door for show tiers
   const showSeed = useGame(s => s.showSeed)
   const cash = useGame(s => s.cash)
   const currentDay = useGame(s => s.currentDay)
@@ -12,7 +13,7 @@ export default function Calendar({ onAttend }) {
   const upgrades = useGame(s => s.upgrades)
   const showLeads = useGame(s => s.showLeads)
 
-  const allShows = useMemo(() => generateCalendar(notoriety, showSeed), [notoriety, showSeed])
+  const allShows = useMemo(() => generateCalendar(notoriety, showSeed, rank), [notoriety, showSeed, rank])
   // Only shows on or after today are attendable; earlier ones have passed.
   const shows = allShows.filter(s => s.day >= currentDay)
   const missedToday = allShows.filter(s => s.day < currentDay).length
@@ -45,7 +46,7 @@ export default function Calendar({ onAttend }) {
         {Object.entries(SHOW_TIERS).map(([k, t]) => (
           <span key={k} className="legend" style={{ borderColor: t.color }}>
             <i style={{ background: t.color }} /> {t.name} <em>· {Math.max(1, t.days - (upgrades.tourVan ? 1 : 0))}d{upgrades.tourVan && t.days > 1 ? ' 🚐' : ''}</em>
-            {notoriety < t.minNotoriety && <em> · unlock @ {t.minNotoriety}</em>}
+            {rank < (t.minRank ?? 0) && <em> · needs {RANKS[t.minRank]?.emoji} {RANKS[t.minRank]?.name}</em>}
           </span>
         ))}
       </div>
@@ -95,7 +96,9 @@ export default function Calendar({ onAttend }) {
               )}
               <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {show.locked ? (
-                  <button className="btn" disabled>🔒 Notoriety {tier.minNotoriety}</button>
+                  <button className="btn" disabled title={`Unlocks at rank ${tier.minRank}: reach ⭐ ${tier.minNotoriety} and prove yourself (see the reputation panel on the Stats tab)`}>
+                    🔒 {RANKS[tier.minRank]?.emoji} {RANKS[tier.minRank]?.name}
+                  </button>
                 ) : (
                   <>
                     <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show, 'shop')}

@@ -1,6 +1,7 @@
 // Card-show system: calendar, tiers, vendor generation, procedural encounters.
 import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, AFTERMARKET_SETS, JP_CARD_SETS, JP_SHOP_SETS, JP_WORLD_RATE, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_PREMIUM, SPECIAL_ORDER_CAP } from './store/constants'
+import { rankForNotoriety } from './rep'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -14,15 +15,18 @@ import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_
 // `entryFee` = the SHOPPER ticket (walk the floor and buy). `vendorFee` = the extra cost
 // to book a BOOTH and sell your own cards (on top of entry, and only if you own the Vendor
 // Setup upgrade). A vendor table at a big expo costs real money, so it scales with the tier.
+// `minRank` gates entry since the ⭐/🔥 reputation rework: show access rides the BANKED rank
+// ladder (rep.js RANKS — threshold + deeds), not the raw number. minNotoriety is kept as the
+// matching rank's threshold for progress displays; rank thresholds equal these by design.
 export const SHOW_TIERS = {
-  meetup:   { name: 'Local Meetup',     minNotoriety: 0,   entryFee: 5,    vendorFee: 15,   days: 1, booths: 16, npcs: 12, valueBand: [0.5, 25],     traffic: 1.0, color: '#5ec98a' },
-  shop:     { name: 'Card Shop Event',  minNotoriety: 15,  entryFee: 12,   vendorFee: 40,   days: 1, booths: 22, npcs: 18, valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
-  regional: { name: 'Regional Show',    minNotoriety: 40,  entryFee: 30,   vendorFee: 120,  days: 2, booths: 32, npcs: 30, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
-  national: { name: 'National Expo',    minNotoriety: 80,  entryFee: 75,   vendorFee: 350,  days: 2, booths: 44, npcs: 48, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
+  meetup:   { name: 'Local Meetup',     minNotoriety: 0,   minRank: 0, entryFee: 5,    vendorFee: 15,   days: 1, booths: 16, npcs: 12, valueBand: [0.5, 25],     traffic: 1.0, color: '#5ec98a' },
+  shop:     { name: 'Card Shop Event',  minNotoriety: 15,  minRank: 1, entryFee: 12,   vendorFee: 40,   days: 1, booths: 22, npcs: 18, valueBand: [1, 80],       traffic: 1.4, color: '#5aa0ff' },
+  regional: { name: 'Regional Show',    minNotoriety: 40,  minRank: 2, entryFee: 30,   vendorFee: 120,  days: 2, booths: 32, npcs: 30, valueBand: [3, 250],      traffic: 2.0, color: '#ff9f43' },
+  national: { name: 'National Expo',    minNotoriety: 80,  minRank: 3, entryFee: 75,   vendorFee: 350,  days: 2, booths: 44, npcs: 48, valueBand: [10, 1200],    traffic: 3.2, color: '#ff3df0' },
   // Elite-tier value bands top out at what the REAL price data supports (the priciest
   // true PSA-10 comps run ~$49k) — a showcase slab is a card that actually sells for that.
-  invitational: { name: 'Invitational',  minNotoriety: 150, entryFee: 500,  vendorFee: 1500, days: 3, booths: 56, npcs: 64, valueBand: [200, 25000],  traffic: 4.5, color: '#7cf0ff' },
-  worlds:   { name: 'World Championship', minNotoriety: 280, entryFee: 2500, vendorFee: 6000, days: 4, booths: 72, npcs: 90, valueBand: [1000, 50000], traffic: 6.0, color: '#ffd700' },
+  invitational: { name: 'Invitational',  minNotoriety: 150, minRank: 4, entryFee: 500,  vendorFee: 1500, days: 3, booths: 56, npcs: 64, valueBand: [200, 25000],  traffic: 4.5, color: '#7cf0ff' },
+  worlds:   { name: 'World Championship', minNotoriety: 280, minRank: 5, entryFee: 2500, vendorFee: 6000, days: 4, booths: 72, npcs: 90, valueBand: [1000, 50000], traffic: 6.0, color: '#ffd700' },
 }
 
 export const CALENDAR_DAYS = 30
@@ -49,8 +53,11 @@ function shuffleR(r, arr) {
 }
 
 // Generate a stable calendar of upcoming shows for the next ~30 game-days.
-export function generateCalendar(notoriety, seed = 7) {
+// `rank` (banked ladder index) decides eligibility; callers without it fall back to the
+// rank the notoriety number alone would earn, so pure previews stay reasonable.
+export function generateCalendar(notoriety, seed = 7, rank = null) {
   const r = rng(seed)
+  const effRank = rank ?? rankForNotoriety(notoriety)
   const shows = []
   const tierKeys = Object.keys(SHOW_TIERS)
   // Draw "City Venue" names without replacement so the month never lists the same
@@ -60,8 +67,9 @@ export function generateCalendar(notoriety, seed = 7) {
   const nextVenue = () => venueOrder[vi++ % venueOrder.length]
   for (let day = 1; day <= 30; day += 1) {
     if (r() > 0.42) continue // not every day has a show
-    // choose a tier the player might qualify for; bias toward unlocked tiers
-    const eligible = tierKeys.filter(k => notoriety + 10 >= SHOW_TIERS[k].minNotoriety)
+    // choose a tier the player might qualify for: every unlocked tier, plus the next
+    // rank up as a teaser (the old `noto + 10` fuzz, expressed on the ladder)
+    const eligible = tierKeys.filter(k => effRank + 1 >= (SHOW_TIERS[k].minRank ?? 0))
     const tierKey = pickR(r, eligible.length ? eligible : ['meetup'])
     const tier = SHOW_TIERS[tierKey]
     shows.push({
@@ -70,14 +78,14 @@ export function generateCalendar(notoriety, seed = 7) {
       tierKey,
       name: nextVenue(),
       tier: tier.name,
-      locked: notoriety < tier.minNotoriety,
+      locked: effRank < (tier.minRank ?? 0),
       seed: (seed * 131 + day * 17) >>> 0,
     })
   }
   // Aspirational targets: make sure the player always sees 1–2 still-locked
   // higher tiers on the calendar as something to climb toward (otherwise a level-0
   // player only ever sees Local Meetups). We slot them onto otherwise-empty days.
-  const lockedTiers = tierKeys.filter(k => notoriety < SHOW_TIERS[k].minNotoriety)
+  const lockedTiers = tierKeys.filter(k => effRank < (SHOW_TIERS[k].minRank ?? 0))
   const aspirational = lockedTiers.slice(0, 2) // the next two tiers up
   const usedDays = new Set(shows.map(s => s.day))
   let placed = 0

@@ -88,10 +88,13 @@ export const STORAGE_PER_UNIT = 2      // $/day for each idle unit beyond the al
 export function storageFreeUnits(s) {
   return STORAGE_FREE_UNITS + (s?.upgrades?.storefront ? STORAGE_STORE_BONUS : 0)
     + (s?.upgrades?.storageUnit ? STORAGE_UNIT_BONUS : 0) // 🏗️ a rented unit down the road
+    + ((s?.rank || 0) >= 4 ? RANK_STORAGE_BONUS : 0)      // 🏛️ Hobby Fixture banked perk
 }
 // 🏗️ Storage Unit upgrade: +allowance ONLY — the heldUnits definition (what counts as an
 // idle unit, what's exempt) is pinned by sim section 5 and must never widen here.
 export const STORAGE_UNIT_BONUS = 15
+// 🏛️ Rank 4 banked perk — same rule as the Storage Unit: allowance only, never heldUnits.
+export const RANK_STORAGE_BONUS = 5
 // Loose packs RACK: 36 single-pack units fit the shelf space of one box (that's literally
 // what a box is), so billing each loose pack as a full unit would charge 36× for the crime
 // of breaking early. Backstock boosters bill by the tray, not the pack.
@@ -353,7 +356,8 @@ export const CONSIGN_MIN_NOTO = 15      // nobody trusts an unknown shop with th
 export const BUYIN_CHANCE = 0.30        // per-day chance a seller walks in (storefront + a bit of a name)
 export const BUYIN_CAP = 4              // at most this many lots waiting on an answer
 // 🪑 Appraisal Desk: a real intake setup queues more lots (and buys a third haggle round — booth.js).
-export function buyinCap(upgrades) { return upgrades?.appraisalDesk ? 6 : BUYIN_CAP }
+// 📦 Known Local (rank 2) banked perk: word gets around — one more walk-in fits the queue.
+export function buyinCap(upgrades, rank = 0) { return (upgrades?.appraisalDesk ? 6 : BUYIN_CAP) + (rank >= 2 ? 1 : 0) }
 export const BUYIN_MIN_NOTO = 10
 export const BUYIN_ESTATE_CHANCE = 0.35 // share of buy-ins that are a whole "leaving the hobby" collection (incl. sealed)
 export const STORE_CREDIT_BONUS = 0.25  // credit offer = cash ask × (1 + bonus) — they take more in credit
@@ -389,7 +393,9 @@ export const STORE_EVENTS = {
   leagueNight: { name: 'League Night', icon: '🎮', cost: 100, minNoto: 0,
     desc: 'Host the local league — snacks, sleeves and singles move all night, and a kid at the counter tonight is a regular next month.',
     buzzDays: 1, extraWalkins: 1, trust: 3, noto: 2, hype: 4, income: (noto) => 40 + noto * 0.5, formsRegular: true, suppliesBurst: true },
-  tournament: { name: 'Tournament', icon: '🏆', cost: 250, minNoto: 40,
+  // ⭐ rework: the tournament rides the BANKED rank ladder (minRank; minNoto kept for copy) —
+  // sanctioning wants a résumé (📣 Known Local), not just a number.
+  tournament: { name: 'Tournament', icon: '🏆', cost: 250, minNoto: 40, minRank: 2,
     desc: 'A sanctioned tournament: entry fees in, prize support out (covered by the fee). Serious players travel for it — a real notoriety pop and days of buzz.',
     buzzDays: 2, extraWalkins: 2, trust: 2, noto: 8, hype: 10, income: (noto) => 140 + noto * 1.2, suppliesBurst: true },
   raffle: { name: 'Raffle Night', icon: '🎟️', cost: 40, minNoto: 0, needsPrize: true,
@@ -497,12 +503,13 @@ const BUYIN_DAY_MULT  = { Mon: 0.9, Tue: 0.9,  Wed: 0.9,  Thu: 0.9,  Fri: 0.9,  
 export function walkinDayMult(absDay) { return WALKIN_DAY_MULT[weekdayOf(absDay)] }
 export function buyinDayMult(absDay) { return BUYIN_DAY_MULT[weekdayOf(absDay)] }
 
-export function makeWeeklyGoals(noto) {
+export function makeWeeklyGoals(noto, rank = 0) {
   const shuffled = [...GOAL_POOL].sort(() => Math.random() - 0.5)
   const count = 3 + (Math.random() < 0.5 ? 1 : 0) // 3–4 goals for the week
   // Reward scales with fame so a week's goals stay worth chasing as the economy grows — a
   // famous vendor's goal pays real money, not a rounding error. (Was noto/150 — far too flat.)
-  const mult = 1 + noto / 45
+  // 👑 Hobby Legend (rank 5) banked perk: sponsors chip in — cash payouts ×1.15.
+  const mult = (1 + noto / 45) * (rank >= 5 ? 1.15 : 1)
   return shuffled.slice(0, count).map(g => {
     // Scale the daily target up toward a week's worth (×~5, capped by the biggest tier
     // so a "rip 3" doesn't balloon absurdly), then pick from there.
@@ -672,8 +679,9 @@ export function binDemand({ notoriety = 0, price = 0, avgVal = 0, upgrades = nul
 // has to grow with fame, or a famous vendor's extra orders would silently evaporate — the
 // bigger your name, the more you can have waiting on you.
 //   noto 0 → 8 · 100 → 11 · 300 → 16 · 500+ → 20
-export function inboxCap(notoriety) {
-  return Math.min(20, 8 + Math.round(Math.max(0, notoriety || 0) / 37))
+export function inboxCap(notoriety, rank = 0) {
+  // +1 is the 🏷️ Weekend Flipper (rank 1) banked perk — a busier counter, forever.
+  return Math.min(20, 8 + Math.round(Math.max(0, notoriety || 0) / 37) + (rank >= 1 ? 1 : 0))
 }
 
 // Going live pumps your whole storefront for a few days after: every listing draws

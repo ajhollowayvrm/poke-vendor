@@ -11,7 +11,7 @@ import {
   UPGRADES, rentPerDay, STORE_LEASE_PER_DAY, employeeById, jobById,
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
   storageFee, heldUnits, storageFreeUnits,
-  applyNotoGain, ledgerAdd, bumpHype,
+  applyNotoGain, ledgerAdd, bumpHype, RANKS, rankEligible,
 } from './constants'
 import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
 import { SHOW_TIERS } from '../shows'
@@ -108,7 +108,27 @@ export function createEconomySlice(set, get) {
     // queues each unlock for App to announce as a toast. Returns the freshly-unlocked defs.
     // (No recursion: the notoriety reward goes through addNotoriety, which does NOT call back
     // here. A reward that crosses a reputation-tier goal is picked up on the next call.)
+    // 🏅 Rank ladder: promote when the NEXT rank's bar is met — the ⭐ threshold AND any 2
+    // of its 3 deeds (rep.js RANKS). Idempotent, at most one promotion per call (crossing
+    // two bars in a day celebrates on consecutive checks). Ranks are BANKED: nothing ever
+    // demotes, so every perk and rank-gated unlock is permanent once earned.
+    checkRankUp() {
+      const s = get()
+      const next = (s.rank || 0) + 1
+      if (next >= RANKS.length || !rankEligible(s, next)) return false
+      const r = RANKS[next]
+      set(st => ({
+        rank: next,
+        clout: (st.clout || 0) + (r.clout || 0),
+        pendingRanks: [...(st.pendingRanks || []), next],
+      }))
+      get().log('milestone', `🏅 Rank up — you're now a ${r.emoji} ${r.name}!${r.clout ? ` +${r.clout} 🎫 clout.` : ''}${r.perk ? ` New perk: ${r.perk}` : ''}`, 0)
+      return true
+    },
+    clearPendingRanks() { if ((get().pendingRanks || []).length) set({ pendingRanks: [] }) },
+
     checkMilestones() {
+      get().checkRankUp() // piggyback the rank check on every milestone sweep (rips, wants, streams, the daily catch-all)
       const s = get()
       const fresh = newlyUnlocked(s, s.milestones)
       if (!fresh.length) return []
@@ -143,7 +163,7 @@ export function createEconomySlice(set, get) {
       const s = get()
       const today = absoluteDay(s.currentDay, s.monthsElapsed)
       if (!s.dailyGoals.length || today - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS) {
-        set({ dailyGoals: makeWeeklyGoals(s.notoriety), goalsDay: today })
+        set({ dailyGoals: makeWeeklyGoals(s.notoriety, s.rank || 0), goalsDay: today })
       }
     },
     // Days until the current weekly goal set refreshes (0 = refreshes on the next day-tick).

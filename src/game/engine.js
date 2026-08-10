@@ -2696,7 +2696,8 @@ export const DISTRIBUTORS = [
     blurb: 'A hobby giant — real case pricing and bulk supply. But a distributor this size only opens a wholesale account once you are a name in the hobby: build your notoriety first, then earn rapport with them. The volume play, late-game.',
     priceMult: 0.93, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.7,
     cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
-    minNotoriety: 75, // won't open an account until you're an established name — reputation is the door; rapport is the relationship after
+    minNotoriety: 75, // kept for the unlock progress bar; the door itself is minRank below
+    minRank: 3, // 🎪 Regional Name — a distributor this size wants a résumé, not just a number (deeds + ⭐80)
   },
   {
     id: 'japan', name: 'Japan Direct', icon: '🎌', color: '#ff5e6c',
@@ -2712,8 +2713,11 @@ export function distributorById(id) { return DISTRIBUTORS.find(d => d.id === id)
 // wholesaler (Dave & Adam's) gates the whole account behind a NOTORIETY threshold, and the
 // import channel (Japan Direct) behind the ⛩️ Import License UPGRADE — the license is the
 // account. Once open, rapport builds from scratch.
-export function distributorUnlocked(dist, notoriety, upgrades) {
+export function distributorUnlocked(dist, notoriety, upgrades, rank = 0) {
   if (dist?.requiresUpgrade && !(upgrades || {})[dist.requiresUpgrade]) return false
+  // ⭐ rework: a rank-gated account opens on the BANKED ladder rank (rep.js), not the raw
+  // number — being a Regional Name is the door. minNotoriety stays for progress displays.
+  if (dist?.minRank != null) return (rank || 0) >= dist.minRank
   return !dist?.minNotoriety || (notoriety || 0) >= dist.minNotoriety
 }
 

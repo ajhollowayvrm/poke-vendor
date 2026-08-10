@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay } from '../game/store'
+  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay, RANKS } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
@@ -25,6 +25,7 @@ const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff
 export default function BoothInbox({ onRip, onSift, onPick }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
+  const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — gates the tournament night
   const upgrades = useGame(s => s.upgrades)
   const currentDay = useGame(s => s.currentDay)
   const clearItem = useGame(s => s.clearInboxItem)
@@ -543,7 +544,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 ) : (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', marginTop: 4 }}>
                     {Object.entries(STORE_EVENTS).map(([key, ev]) => {
-                      const locked = notoriety < (ev.minNoto || 0)
+                      const locked = ev.minRank != null ? rank < ev.minRank : notoriety < (ev.minNoto || 0)
+                      const lockRank = locked && ev.minRank != null ? RANKS[ev.minRank] : null
                       const cantAfford = cash < ev.cost
                       const isWeekly = weeklyEvent?.type === key
                       return (
@@ -551,13 +553,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           <h3 style={{ fontSize: 14, margin: 0 }}>{ev.icon} {ev.name}{isWeekly ? <span className="pill" style={{ marginLeft: 6, fontSize: 11 }}>📆 weekly</span> : null}</h3>
                           <div className="meta" style={{ flex: 1 }}>{ev.desc}</div>
                           <button className="btn" disabled={locked || cantAfford}
-                            title={locked ? `Needs ${ev.minNoto} notoriety` : ev.needsPrize ? 'Pick the prize card next' : undefined}
+                            title={lockRank ? `Needs the ${lockRank.emoji} ${lockRank.name} rank (see the Stats tab)` : locked ? `Needs ${ev.minNoto} reputation` : ev.needsPrize ? 'Pick the prize card next' : undefined}
                             onClick={() => {
                               if (ev.needsPrize) { setRafflePick(true); return }
                               const r = planStoreEvent(key)
                               flash(r.error || `${ev.icon} ${ev.name} is on tonight — hit Next Day to run it.`)
                             }}>
-                            {locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
+                            {lockRank ? `🔒 ${lockRank.emoji} ${lockRank.name}` : locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
                           </button>
                           {/* 🎪 Events Coordinator: flag ONE event as the standing weekly night (raffles
                               can't recur — they need a prize picked each time). */}
