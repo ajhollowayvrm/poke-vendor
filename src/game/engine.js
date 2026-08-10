@@ -1781,6 +1781,23 @@ export const GRADING = {
 // error — and it is deliberately NOT discountable: loyalty and bulk are volume perks on cheap
 // cards, and no grader hands you 45% off insuring a $20,000 card.
 export const GRADING_VALUE_RATE = 0.05
+// PSA's real ladder above the standard tiers, straight off their rate card. It is a STEP
+// function keyed on insured value, not a percentage — and the effective rate FALLS as the card
+// gets more valuable (7% at $5k, 6% at $10k, 4% at $25k, 2% at $250k), which no flat percentage
+// reproduces. Premium proper begins above $10,000: Walk-Through is the last tier that covers a
+// five-figure card, and everything past it is Premium 1 and up.
+export const PREMIUM_TIERS = [
+  { max: 5000,      fee: 349,  name: 'Super Express', days: 12 },
+  { max: 10000,     fee: 599,  name: 'Walk-Through',  days: 8 },
+  { max: 25000,     fee: 999,  name: 'Premium 1',     days: 6 },
+  { max: 50000,     fee: 1999, name: 'Premium 2',     days: 6 },
+  { max: 100000,    fee: 2999, name: 'Premium 3',     days: 6 },
+  { max: 250000,    fee: 4999, name: 'Premium 5',     days: 6 },
+  { max: Infinity,  fee: 9999, name: 'Premium 10',    days: 6 },
+]
+export function premiumTierFor(value) {
+  return PREMIUM_TIERS.find(t => (value || 0) <= t.max) || PREMIUM_TIERS[PREMIUM_TIERS.length - 1]
+}
 // The floor under everything. There is a technician's time, a sonic-sealed holder and a printed
 // label in every slab, so nobody grades a card for pocket change — real bulk rates bottom out
 // around $19-25/card and REQUIRE a 20-card submission. Loyalty and bulk here stack
@@ -1841,9 +1858,17 @@ export function slabLabel(grade) {
 }
 // Turnaround in days for a service tier at a given company (the courier upgrade still
 // applies on top, at the submission site).
-export function gradingDays(tierKey, company = DEFAULT_GRADER) {
-  const days = GRADING[tierKey]?.days
-  if (days == null) return null
+export function gradingDays(tierKey, company = DEFAULT_GRADER, cardVal = 0) {
+  const g = GRADING[tierKey]
+  if (g?.days == null) return null
+  // A card past the tier's insured ceiling isn't on that service any more — it's on the premium
+  // ladder, and the ladder sets the TURNAROUND as well as the price. This matters: without it a
+  // player could nominate Economy on a $10,000 card, pay the same $599 the ladder charges
+  // everyone, and then wait 45 days for the privilege. In reality there is no slow, cheap option
+  // for a five-figure card; every premium service comes back inside a week or so.
+  const days = (g.maxValue != null && cardVal > g.maxValue)
+    ? Math.min(g.days, premiumTierFor(cardVal).days)
+    : g.days
   return Math.max(1, Math.ceil(days * graderById(company).daysMult))
 }
 
@@ -1892,10 +1917,12 @@ export function gradingFee(tierKey, submitted, batchCount = 1, company = DEFAULT
   // multiplier could take it past 70%. Half off is the most anyone gets.
   const off = Math.min(MAX_GRADING_DISCOUNT, 1 - (1 - loyalty) * (1 - bulk))
   const sticker = Math.max(GRADING_FLOOR * feeMult, g.fee * feeMult * (1 - off))
-  // Declared-value pricing kicks in only above the tier ceiling, so bulk slabbing of ordinary
-  // cards is untouched — it's the four-figure chase that now costs what it should.
+  // Above the tier's insured ceiling you are off the standard rate card entirely and onto the
+  // premium ladder — you cannot send a $20,000 card on a bulk service at any speed, which is
+  // why this REPLACES the tier rather than scaling it. Bulk slabbing of ordinary cards is
+  // untouched; it's the four-figure chase that now costs what it really costs.
   const premium = (g.maxValue != null && cardVal > g.maxValue)
-    ? cardVal * (g.valueRate ?? GRADING_VALUE_RATE) * feeMult : 0
+    ? premiumTierFor(cardVal).fee * feeMult : 0
   return round2(Math.max(sticker, premium))
 }
 // Does this card blow past the tier's declared-value ceiling (i.e. is it being priced off its
@@ -1904,6 +1931,18 @@ export function overTierValue(tierKey, cardVal = 0) {
   const cap = GRADING[tierKey]?.maxValue
   return cap != null && cardVal > cap
 }
+// 💸 The RETURN INVOICE. A grader re-values the card on the way out: the service level you paid
+// for insured it up to a ceiling, and if the slab they just created is worth more than that,
+// they bill you the difference before it ships back. You genuinely do not know the final cost
+// of a submission when you send it — which is the point, and why sending a sleeper on the cheap
+// tier is a gamble in BOTH directions. The fee for a big hit is part of the hit.
+// Returns what's still owed once the grade is known (0 when the tier already covered it).
+export function gradeUpcharge(gradedCard, paidFee, tierKey, submitted, company = DEFAULT_GRADER) {
+  const worth = gradedValue(gradedCard)
+  const required = gradingFee(tierKey, submitted, 1, company, worth)
+  return round2(Math.max(0, required - (paidFee || 0)))
+}
+
 // 📦 Freight, both ways, per SUBMISSION — the cost every real submitter pays and the game
 // wasn't modelling at all. You mail the cards insured for what they're worth and pay return
 // postage on the slabs coming back. Charged ONCE per submission rather than per card, which is

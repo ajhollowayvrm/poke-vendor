@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
 import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
@@ -397,10 +397,13 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     return (
                       <button key={key} className="btn alt" disabled={cash < fee}
                         onClick={() => { submitGrade(card.uid, key, company); onClose() }}
-                        title={byValue ? `Above this tier's $${t.maxValue.toLocaleString()} declared-value ceiling — priced at ${Math.round(GRADING_VALUE_RATE * 100)}% of the card's $${rawValue(card).toFixed(0)} value instead of the sticker.` : undefined}>
+                        title={byValue ? `Worth more than this tier insures ($${t.maxValue.toLocaleString()}), so it goes on the ${premiumTierFor(rawValue(card)).name} service — a flat $${premiumTierFor(rawValue(card)).fee.toLocaleString()} for anything up to $${premiumTierFor(rawValue(card)).max.toLocaleString()} insured. There is no slow, cheap option for a card this valuable.` : undefined}>
                         {t.name} · ${fee.toFixed(0)}
                         {discounted && <small style={{ textDecoration:'line-through', opacity:.5, marginLeft:4 }}>${t.fee}</small>}
-                        <br/><small className="muted">{byValue ? '📈 by value' : `~${gradingDays(key, company)}d`}</small>
+                        <br/><small className="muted">
+                          {byValue ? `${premiumTierFor(rawValue(card)).name} · ~${gradingDays(key, company, rawValue(card))}d`
+                            : `~${gradingDays(key, company)}d`}
+                        </small>
                       </button>
                     )
                   })}

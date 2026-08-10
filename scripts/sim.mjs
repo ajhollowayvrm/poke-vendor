@@ -213,12 +213,22 @@ try {
       cheap: eng.gradingFee('economy', 250, 50, 'psa', 50),
       rich: eng.gradingFee('economy', 250, 50, 'psa', 10000),
       express: eng.gradingFee('express', 250, 50, 'psa', 10000),
+      ladder: [5000, 25000, 100000, 250000].map(v => eng.gradingFee('economy', 250, 50, 'psa', v)),
+      slowDays: eng.gradingDays('economy', 'psa', 10000),
+      fastDays: eng.gradingDays('express', 'psa', 10000),
+      baseSlowDays: eng.gradingDays('economy', 'psa', 50),
     }
   })
   pass(`declared value bites: $10k card costs $${vfee.rich.toFixed(0)}, not the $${vfee.cheap.toFixed(0)} bulk rate`,
     vfee.rich > vfee.cheap * 5)
-  pass(`speed still costs at the top end: express $${vfee.express.toFixed(0)} > economy $${vfee.rich.toFixed(0)}`,
-    vfee.express > vfee.rich)
+  // PSA's real premium ladder is a STEP function on insured value, and above it the service
+  // tier stops mattering — a five-figure card has no slow, cheap option at any grader. So the
+  // property to hold isn't "express costs more" (it doesn't, and shouldn't); it's that the
+  // ladder climbs with value, and that a premium card can't be parked on a 45-day service.
+  pass(`premium ladder climbs with value ($${vfee.ladder.join(' → $')})`,
+    vfee.ladder.every((v, i) => i === 0 || v > vfee.ladder[i - 1]))
+  pass(`a premium card can't be parked on the slow tier (${vfee.baseSlowDays}d normally → ${vfee.slowDays}d at $10k, vs express ${vfee.fastDays}d)`,
+    vfee.slowDays < vfee.baseSlowDays && vfee.slowDays <= vfee.fastDays * 3)
 
   // ---- 3. Repack EV through the REAL store action ---------------------------------
   console.log('\nREPACK EV (real buyMysteryPack, N=500 per tier) — want payout/price < 1.00:')

@@ -6,7 +6,7 @@
 // the SELLING slice; buying sealed lives in SOURCING.
 
 import {
-  cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, graderTier, bulkDiscount,
+  cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, gradeUpcharge, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
 } from '../engine'
@@ -461,24 +461,40 @@ export function createCollectionSlice(set, get) {
       const ready = get().pendingGrades.filter(p => day >= p.readyOnDay)
       if (!ready.length) return []
       const loupeLuck = get().upgrades.loupe ? 0.08 : 0
-      const resolved = ready.map(p => {
-        // A pricier grading tier grades a touch kinder (see GRADING[].luck), stacking with the loupe.
-        const luck = loupeLuck + (GRADING[p.tierKey]?.luck || 0)
-        const grade = rollGrade(p.card, p.tierKey, luck, p.paidFee ?? null, p.company || DEFAULT_GRADER)
-        // Append to a per-card grading history so the modal can show "this card was
-        // graded PSA X (Standard, $Y) on day Z". (One entry today, but the array is
-        // future-proof for a crack-a-slab regrade mechanic.)
-        const entry = { overall: grade.overall, tier: p.tierKey, company: grade.company, fee: grade.fee, gradedAt: grade.gradedAt }
-        const gradeHistory = [...(p.card.gradeHistory || []), entry]
-        return { ...p.card, grade, gradeHistory }
-      })
+      const resolved = [], stillHeld = [], invoices = []
+      for (const p of ready) {
+        // A grade already rolled (a slab the grader is holding over an unpaid balance) must
+        // NEVER be re-rolled — otherwise going broke would be a free reroll on a bad grade.
+        const grade = p.grade || rollGrade(p.card, p.tierKey,
+          loupeLuck + (GRADING[p.tierKey]?.luck || 0), p.paidFee ?? null, p.company || DEFAULT_GRADER)
+        const graded = { ...p.card, grade }
+        // 💸 The return invoice: the grade is known now, so the card gets re-valued against
+        // what the service level actually insured. A sleeper that gems into a five-figure slab
+        // costs more than you agreed to when you posted it.
+        const owed = gradeUpcharge(graded, p.paidFee, p.tierKey, get().gradesSubmitted, p.company)
+        if (owed > 0 && !get().spend(owed)) {
+          // Can't cover it — the grader keeps the slab until the balance is paid, exactly as a
+          // real one would. The rolled grade travels with it so it isn't graded twice.
+          stillHeld.push({ ...p, grade, owed })
+          continue
+        }
+        if (owed > 0) invoices.push({ name: p.card.name, owed })
+        const entry = { overall: grade.overall, tier: p.tierKey, company: grade.company, fee: round2((p.paidFee || 0) + owed), gradedAt: grade.gradedAt }
+        resolved.push({ ...graded, gradeHistory: [...(p.card.gradeHistory || []), entry] })
+      }
       set(s => ({
-        pendingGrades: s.pendingGrades.filter(p => day < p.readyOnDay),
+        pendingGrades: [...s.pendingGrades.filter(p => day < p.readyOnDay), ...stillHeld],
         collection: [...resolved, ...s.collection],
       }))
       for (const g of resolved) {
         const black = isBlackLabel(g.grade)
         get().log('grade-done', `${g.name} graded ${graderById(g.grade.company).name} ${g.grade.overall}${black ? ' ⬛ BLACK LABEL!' : ''}`, 0)
+      }
+      for (const inv of invoices) {
+        get().log('grade-fee', `💸 Return invoice on ${inv.name} — it graded up past what your service level insured, so the grader billed the $${inv.owed.toFixed(2)} difference`, -inv.owed)
+      }
+      for (const h of stillHeld) {
+        get().log('grade-hold', `⛔ ${h.card.name} graded ${h.grade.overall} but the grader is HOLDING it — $${h.owed.toFixed(2)} still owed on the return invoice. It ships when you can cover it.`, 0)
       }
       get().checkCompletions() // a returned slab may complete a set
       return resolved
