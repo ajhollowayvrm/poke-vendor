@@ -1211,7 +1211,11 @@ button.rip-hit-row:hover { background:#ffffff14; }
      and the rip has its own Done / Back / Rip-another controls. With the bar gone, the overlay
      reclaims its height: pad down to just the notch mask (28px + safe-area) plus a small gap. */
   .topbar.rip-hide { display: none; }
-  .rip-overlay.rip-full { padding-top: calc(36px + var(--sat)); }
+  /* Clear the notch mask by a REAL margin, not a hairline. The mask above is 28px + safe-area,
+     so a 36px + safe-area pad left just 8px of daylight — enough on paper, and not enough on an
+     actual phone, where the rip's first row (pack progress, Done / Rip-another) sat jammed under
+     the Dynamic Island and read as cut off. 76px puts a comfortable 48px gap under the mask. */
+  .rip-overlay.rip-full { padding-top: calc(76px + var(--sat)); }
   .brand { font-size: 17px; }
   .cash { font-size: 17px; } .worth { font-size: 13px; } .noto-chip { font-size: 14px; }
   /* Dissolve the right-side wrapper into the top bar's own flex row (display:contents),
