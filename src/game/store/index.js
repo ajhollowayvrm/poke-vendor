@@ -26,7 +26,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { GRADING, setMarketMults, cardValue, sealedValue } from '../engine'
 import { makeShowVendors } from '../shows'
-import { jobById, STARTER_JOB, absoluteDay, floorCapacity } from './constants'
+import { jobById, STARTER_JOB, absoluteDay, floorCapacity, rankForNotoriety } from './constants'
 import { newlyUnlocked } from '../milestones'
 import { seedOfferId, seedInboxId, nextInboxId } from './ids'
 import { initialState } from './initialState'
@@ -284,7 +284,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 59,
+  version: 60,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -781,6 +781,24 @@ export const useGame = create(persist((set, get) => ({
       state.specialOrders = state.specialOrders ?? []
       state.rival = state.rival ?? null
       state.secondLoc = state.secondLoc ?? null
+    }
+    if (version < 60) {
+      // ⭐/🔥 Reputation rework (two-speed rep): notoriety itself is untouched — it stays
+      // the permanent standing every formula reads. New alongside it:
+      //   🔥 hype       — fast meter; an old save starts cold (nothing hot happened today)
+      //   🎫 clout      — spendable favors; seeded 2 per grandfathered rank below so the
+      //                   new toy is usable on day one, matching what rank-ups would pay
+      //   🏅 rank       — BANKED tier. GRANDFATHER: every rank the standing already clears
+      //                   is granted with deeds waived — a noto-300 save keeps Worlds /
+      //                   Dave & Adam's / tournament access permanently (ranks never drop).
+      //   📒 repLedger  — ⭐-delta attribution; starts empty (history wasn't tagged)
+      //   pendingRanks  — left EMPTY on purpose: no rank-up toast flood on migration
+      state.hype = state.hype ?? 0
+      state.clout = state.clout ?? (rankForNotoriety(state.notoriety || 0) * 2)
+      state.rank = state.rank ?? rankForNotoriety(state.notoriety || 0)
+      state.pendingRanks = state.pendingRanks ?? []
+      state.streamBoostNext = state.streamBoostNext ?? false
+      state.repLedger = state.repLedger ?? { today: {}, days: [] }
     }
     return state
   },

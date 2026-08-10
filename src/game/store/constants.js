@@ -521,6 +521,16 @@ export function makeWeeklyGoals(noto) {
 // here so the store slices can keep importing their tuning from one place.
 export { fameMult, fameBeyond, FAME_KNEE, FAME_POWER } from '../engine'
 
+// ⭐/🔥 Reputation-rework math (two-speed rep: permanent standing + decaying hype,
+// rank ladder, attribution ledger) lives in rep.js — same re-export arrangement.
+export {
+  applyNotoGain, NOTO_SOFT_CAP,
+  hypeGain, decayHype, hypeDemandMult, hypePriceMult,
+  HYPE_MAX, HYPE_HALF_LIFE, HYPE_CURE_RATE, HYPE_CURE_DAILY_CAP,
+  ledgerAdd, ledgerRoll, repSourceLabel, REP_SOURCES, REP_LEDGER_DAYS,
+  RANKS, DEEDS_NEEDED, rankForNotoriety, deedsDone, rankEligible, rankOf,
+} from '../rep'
+
 // Notoriety you must earn before strangers seek YOU out with unsolicited orders. Below
 // this you're a nobody — nobody DMs you to buy. Your early-game demand is the public
 // FORUM (people posting what they want; you go find/rip it). See FORUM_* + forumPosts.

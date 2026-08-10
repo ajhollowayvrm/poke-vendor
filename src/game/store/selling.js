@@ -207,7 +207,7 @@ export function createSellingSlice(set, get) {
         stats: { ...s.stats, wantsFilled: (s.stats.wantsFilled || 0) + 1 },
       }))
       get().earn(payout)
-      get().addNotoriety(want.notoriety)
+      get().addNotoriety(want.notoriety, false, 'sales')
       get().log('want', `Filled ${want.who}'s want with ${card.name} (+${Math.round(want.premiumMult*100)}% premium)`, payout)
       get().bumpGoal('want', 1)
       get().checkMilestones() // wants-filled badges
@@ -231,7 +231,7 @@ export function createSellingSlice(set, get) {
         stats: { ...s.stats, wantsFilled: (s.stats.wantsFilled || 0) + 1 },
       }))
       get().earn(payout)
-      get().addNotoriety(post.notoriety)
+      get().addNotoriety(post.notoriety, false, 'sales')
       get().log('forum', `Filled a forum WTB (${post.who}) with ${card.name} — +${Math.round((post.premiumMult-1)*100)}% over market`, payout)
       get().bumpGoal('want', 1)
       get().checkMilestones() // wants-filled badges (forum fills count too)

@@ -48,7 +48,13 @@ export function initialState() {
     quickSellsToday: 0,
     giveawaysToday: 0,      // giveaways done today — each successive one pays less rep (anti-farm). Reset daily.
 
-    notoriety: 0,            // 0..100+, drives traffic, deals, show tiers
+    notoriety: 0,            // ⭐ Reputation (key kept for save compat): 0..100+, permanent standing — drives traffic, deals, show tiers
+    hype: 0,                 // 🔥 0..100 fast meter: big moments spike it, it halves every ~2 days; boosts same-day demand, a slice cures into ⭐
+    clout: 0,                // 🎫 spendable favors — earned on rank-ups & big moments, spent on allocation jumps / expedites / waivers
+    rank: 0,                 // 🏅 0..5 index into RANKS — BANKED: monotonic, never lost even if standing dips
+    pendingRanks: [],        // rank indexes unlocked but not yet celebrated — App drains into toasts (pendingMilestones pattern)
+    streamBoostNext: false,  // 📣 clout spend: next stream opens boosted (baseViewers ×1.5), consumed on go-live
+    repLedger: { today: {}, days: [] }, // 📒 ⭐-delta attribution: today {srcTag: delta} + 7-day ring [{d, total, srcs}]
     // 🏬 Brick-and-mortar branding: the store's identity, set once you've opened a storefront.
     // name/tagline default empty (UI falls back to "Your Store"); icon is your shop's emoji; a
     // blank accent means "use the app's default accent". Surfaces on the Store panel, the

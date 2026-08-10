@@ -11,6 +11,7 @@ import {
   UPGRADES, rentPerDay, STORE_LEASE_PER_DAY, employeeById, jobById,
   absoluteDay, GOAL_PERIOD_DAYS, makeWeeklyGoals, INCOME_WINDOW_DAYS,
   storageFee, heldUnits, storageFreeUnits,
+  applyNotoGain, ledgerAdd, hypeGain, HYPE_MAX,
 } from './constants'
 import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
 import { advanceDaysWith, mergeSummaries } from './daytick'
@@ -27,28 +28,34 @@ export function createEconomySlice(set, get) {
     // notoriety tick from ordinary sales.
     // Notoriety is the master stat (orders, walk-ins, show gates, buyer tolerance, wants,
     // credit caps), so a monotone ratchet lets any small rep faucet snowball into end-game
-    // demand. GAINS saturate above a soft cap: past NOTO_SOFT_CAP each point of rep is
-    // worth progressively less, so climbing from 200→300 takes far more than 0→100. Rep is
-    // never LOST to this (losses — dings, flops — always apply in full); it just gets
-    // harder to farm the top end. Keeps late-game demand tied to sustained real activity.
-    addNotoriety(n, generous = false) {
+    // demand. GAINS saturate above a soft cap (applyNotoGain in rep.js): past NOTO_SOFT_CAP
+    // each point of rep is worth progressively less, so climbing from 200→300 takes far
+    // more than 0→100. Rep is never LOST to this (losses — dings, flops — always apply in
+    // full); it just gets harder to farm the top end.
+    // `src` tags the gain for the 📒 rep ledger (⭐-delta attribution panel). Untagged
+    // calls fall back to generosity/dings/other so no existing call site had to change.
+    addNotoriety(n, generous = false, src = null) {
       if (!n) return
       let amt = n
       if (n > 0 && generous && get().upgrades.banner) amt = Math.round(n * 1.5)
       set(s => {
-        let next
-        if (amt <= 0) next = s.notoriety + amt // dings always land in full
-        else {
-          const cur = s.notoriety
-          const SOFT = 150 // below here, 1 rep = 1 point; above, gains taper by 1/(1+excess/150)
-          if (cur < SOFT) next = cur + amt
-          else {
-            const damp = 1 / (1 + (cur - SOFT) / 150)
-            next = cur + amt * damp
-          }
+        const next = applyNotoGain(s.notoriety, amt)
+        const tag = src || (amt < 0 ? 'dings' : generous ? 'generosity' : 'other')
+        return {
+          notoriety: next,
+          // Record the POST-taper delta so the panel sums to the real ⭐ change.
+          repLedger: ledgerAdd(s.repLedger, tag, round2(next - s.notoriety)),
         }
-        return { notoriety: Math.max(0, round2(next)) }
       })
+    },
+    // 🔥 Hype: the fast half of the two-speed rep model. Diminishing intake (hypeGain)
+    // means pumping an already-hot meter adds less; negative hits land in full. Decay and
+    // the cure-into-⭐ trickle happen once per day in the tick (rollRepDay in daytick.js).
+    addHype(n) {
+      if (!n) return
+      set(s => ({
+        hype: Math.max(0, Math.min(HYPE_MAX, round2((s.hype || 0) + (n > 0 ? hypeGain(s.hype, n) : n)))),
+      }))
     },
     buyUpgrade(key) {
       const u = UPGRADES[key]
@@ -111,7 +118,7 @@ export function createEconomySlice(set, get) {
         pendingMilestones: [...(st.pendingMilestones || []), ...fresh.map(x => x.id)],
       }))
       for (const x of fresh) {
-        if (x.noto) get().addNotoriety(x.noto)
+        if (x.noto) get().addNotoriety(x.noto, false, 'milestones')
         if (x.cash) get().earn(x.cash) // late milestones pay real money, not just notoriety
         const cashNote = x.cash ? ` (+$${x.cash.toLocaleString()})` : ''
         get().log('milestone', `🏅 Milestone: ${x.name} — ${x.desc}${x.noto ? ` (+${x.noto}★)` : ''}${cashNote}`, x.cash || 0)
@@ -164,7 +171,7 @@ export function createEconomySlice(set, get) {
       set({ dailyGoals: next })
       if (completed) {
         if (paidCash) get().earn(paidCash)
-        if (paidNoto) get().addNotoriety(paidNoto)
+        if (paidNoto) get().addNotoriety(paidNoto, false, 'goals')
         set(s => ({ stats: { ...s.stats, goalsCompleted: (s.stats.goalsCompleted || 0) + 1 } }))
         get().log('goal', `Daily goal complete: ${completed.label}${paidCash?` (+$${paidCash})`:''}${paidNoto?` (+${paidNoto}★)`:''}`, paidCash || 0)
       }
@@ -332,7 +339,7 @@ export function createEconomySlice(set, get) {
       set(s => ({ showsAttended: s.showsAttended + 1 }))
       get().bumpGoal('attend', 1) // credit today's "attend a show" goal before the day rolls
       // 📣 Sponsorship: your banner hangs over every hall you work.
-      if (get().upgrades.sponsorship) { get().addNotoriety(2); get().log('show', '📣 Your sponsor banner hung over the hall (+2 notoriety)', 0) }
+      if (get().upgrades.sponsorship) { get().addNotoriety(2, false, 'shows'); get().log('show', '📣 Your sponsor banner hung over the hall (+2 notoriety)', 0) }
       // days waiting until the show opens (home, not away) + the show's run (away)
       const wait = Math.max(0, showDay - get().currentDay)
       const waitRes = wait > 0 ? advanceDaysWith(set, get, wait, false) : null

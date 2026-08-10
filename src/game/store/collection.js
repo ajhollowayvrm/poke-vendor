@@ -11,7 +11,7 @@ import {
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
-import { absoluteDay } from './constants'
+import { absoluteDay, applyNotoGain, ledgerAdd } from './constants'
 
 // Quick-selling is the instant-but-worst exit, and now it has teeth beyond the flat rate:
 //   • DUMP PENALTY — every quick-sell you make in a single day floods the buylist, so each
@@ -107,17 +107,23 @@ export function createCollectionSlice(set, get) {
       const rewards = newly.map(set_ => ({ set: set_, r: completionReward(set_) }))
       const cash = round2(rewards.reduce((a, x) => a + x.r.cash, 0))
       const noto = rewards.reduce((a, x) => a + x.r.noto, 0)
-      set(st => ({
-        completedSets: [...st.completedSets, ...newly.map(x => x.id)],
-        cash: round2(st.cash + cash),
-        notoriety: (st.notoriety || 0) + noto,
-        stats: { ...st.stats, earned: round2((st.stats?.earned || 0) + cash) },
-        history: [
-          ...rewards.map(({ set: s_, r }) => ({ t: Date.now(), type: 'complete', amount: r.cash,
-            detail: `🏆 Completed the ${s_.name} set! Bonus +$${r.cash.toFixed(2)} & +${r.noto}★` })),
-          ...st.history,
-        ].slice(0, 200),
-      }))
+      set(st => {
+        // Still one batched write, but the rep gain now rides the same taper + ledger as
+        // every addNotoriety call (this direct write used to skip the soft cap entirely).
+        const notoNext = applyNotoGain(st.notoriety || 0, noto)
+        return {
+          completedSets: [...st.completedSets, ...newly.map(x => x.id)],
+          cash: round2(st.cash + cash),
+          notoriety: notoNext,
+          repLedger: ledgerAdd(st.repLedger, 'sets', round2(notoNext - (st.notoriety || 0))),
+          stats: { ...st.stats, earned: round2((st.stats?.earned || 0) + cash) },
+          history: [
+            ...rewards.map(({ set: s_, r }) => ({ t: Date.now(), type: 'complete', amount: r.cash,
+              detail: `🏆 Completed the ${s_.name} set! Bonus +$${r.cash.toFixed(2)} & +${r.noto}★` })),
+            ...st.history,
+          ].slice(0, 200),
+        }
+      })
     },
 
     // --- Masterset binder --------------------------------------------------------

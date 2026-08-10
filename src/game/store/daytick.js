@@ -43,6 +43,7 @@ import {
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
   supplyById, pickSupplyId, BUYLIST_POLICIES, SUB_DAILY,
   floorItemCap, floorSkuCounts, floorSkuKey, floorFreeSlots,
+  decayHype, ledgerRoll, HYPE_CURE_RATE, HYPE_CURE_DAILY_CAP,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
@@ -489,6 +490,20 @@ function applyLifeEvents(get, set, days) {
 export function advanceDaysWith(set, get, days, away) {
   const s = get()
   const noto = s.notoriety
+  // 🔥/📒 Close out the day(s) being left behind: the whole tick reads this stale hype
+  // snapshot (same discipline as `noto` above), yesterday's ⭐-attribution map rolls into
+  // the 7-day ring, and a capped slice of the hype that burned off overnight "cures" into
+  // permanent reputation — a hot streak leaves a small lasting mark, never a farmable one.
+  const hype0 = s.hype || 0
+  {
+    const hypeNext = round2(decayHype(hype0, days))
+    set(st => ({
+      hype: hypeNext,
+      repLedger: ledgerRoll(st.repLedger, st.currentDay),
+    }))
+    const cure = Math.min(HYPE_CURE_DAILY_CAP * days, round2((hype0 - hypeNext) * HYPE_CURE_RATE))
+    if (cure > 0.05) get().addNotoriety(cure, false, 'hype')
+  }
   const hasStore = !!s.upgrades.storefront
   const onlineOK = away ? !!s.upgrades.smartphone : true
   // Walk-ins are covered while away if you have the Shop Assistant upgrade OR any employee.
@@ -548,12 +563,12 @@ export function advanceDaysWith(set, get, days, away) {
       } else {
         get().log('shop', `${ev.icon} ${ev.name} — a good room; word spreads.`, 0)
       }
-      if (ev.noto) get().addNotoriety(ev.noto)
+      if (ev.noto) get().addNotoriety(ev.noto, false, 'events')
       if (plan.prizeCard) {
         // Raffle prize drawn — generosity with a box office (Charity Banner applies).
         const pv = cardValue(plan.prizeCard)
         const pop = Math.min(15, Math.round(2 + Math.sqrt(pv)))
-        get().addNotoriety(pop, true)
+        get().addNotoriety(pop, true, 'events')
         set(st => ({ generousActs: st.generousActs + 1 }))
         get().log('give', `🎟️ Raffle drawn — ${plan.prizeCard.name} ($${pv.toFixed(2)}) went home with a winner (+${pop}★)`, 0)
         get().bumpGoal('help', 1)
@@ -740,7 +755,7 @@ export function advanceDaysWith(set, get, days, away) {
       // unstocked floor never reads as "the counter just stopped working".
       get().log('shop', `🏬 The counter had nothing everyday to sell — stock the floor from the storeroom.`, 0)
     }
-    get().addNotoriety(round2(0.3 * days)) // a running local shop builds your name
+    get().addNotoriety(round2(0.3 * days), false, 'shop') // a running local shop builds your name
   }
   // 🎰 PACK MACHINE: locals feed the machine a flat price for a RANDOM sealed pack. A price
   // below the average stocked pack's value pulls a crowd; a steep markup slows sales. Each vend
@@ -764,7 +779,7 @@ export function advanceDaysWith(set, get, days, away) {
         set(st => ({ packMachine: { ...st.packMachine, stock,
           sold: (st.packMachine.sold || 0) + machineSold,
           revenue: round2((st.packMachine.revenue || 0) + machineRevenue) } }))
-        get().addNotoriety(round2(0.1 * days))
+        get().addNotoriety(round2(0.1 * days), false, 'shop')
         get().log('shop', `🎰 Pack Machine — vended ${machineSold} pack${machineSold === 1 ? '' : 's'} at $${pm.price.toFixed(2)} each (+$${machineRevenue.toFixed(2)})`, machineRevenue)
       }
     }
@@ -838,7 +853,7 @@ export function advanceDaysWith(set, get, days, away) {
         get().log('shop', `🗑️ Bulk bin — ${comeback ? `word got out the box is full again and kids cleaned out` : `kids dug out`} ${binSold} card${binSold === 1 ? '' : 's'} at $${bin.price.toFixed(2)} each${shorted > 0 ? ` (${shorted} of them wanted more than was left)` : ''} (+$${binRevenue.toFixed(2)})`, binRevenue)
       }
       if (treasure) {
-        get().addNotoriety(1)
+        get().addNotoriety(1, false, 'shop')
         get().log('shop', `🤩 A kid dug a ${treasure.name} (~$${treasure.v.toFixed(2)}) out of the quarter bin — best day of their week (+1★)`, 0)
       }
       if (binTurnedAway > 0) {
@@ -1085,7 +1100,7 @@ export function advanceDaysWith(set, get, days, away) {
         soldProceeds = round2(soldProceeds + cut)
         noteSale(`${c.card.name} (consigned)`, cut)
         get().log('shop', `Sold ${c.who}'s consigned ${c.card.name} for $${c.ask.toFixed(2)} — your ${Math.round(c.commissionPct * 100)}% cut: $${cut.toFixed(2)}`, cut)
-        get().addNotoriety(1) // moving locals' cards builds your name as THE shop to sell through
+        get().addNotoriety(1, false, 'sales') // moving locals' cards builds your name as THE shop to sell through
       } else if (left <= 0) {
         get().log('shop', `${c.who} picked their unsold ${c.card.name} back up — consignment window closed.`, 0)
       } else kept.push({ ...c, daysLeft: left })
@@ -1220,7 +1235,7 @@ export function advanceDaysWith(set, get, days, away) {
           if (rows.length) set(st => ({ sealedInventory: [...rows, ...(st.sealedInventory || [])] }))
           if (pickups > 0) {
             get().earn(pickupNet)
-            get().addNotoriety(pickups)
+            get().addNotoriety(pickups, false, 'sales')
             get().log('sell', `📦 Drop day — ${pickups} preorder pickup${pickups > 1 ? 's' : ''} of the ${waveNext.label} paid their balance (+$${pickupNet.toFixed(2)}, +${pickups}★)`, pickupNet)
             get().bumpGoal('sell', pickups); get().bumpGoal('profit', pickupNet)
           }
@@ -1317,7 +1332,7 @@ export function advanceDaysWith(set, get, days, away) {
     get().log('sell', `🔨 ${a.card.name} hammered at $${r.hammer.toFixed(2)} (${r.bidders} bidder${r.bidders === 1 ? '' : 's'}, ${vs}) — net $${net.toFixed(2)}`, net)
     get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
     // A packed room is a reputation event in its own right — people saw that sale.
-    if (r.bidders >= 5) get().addNotoriety(1)
+    if (r.bidders >= 5) get().addNotoriety(1, false, 'sales')
   }
 
   // --- 🏪 The shop across town ------------------------------------------------------
@@ -1452,7 +1467,7 @@ export function advanceDaysWith(set, get, days, away) {
         if (held) {
           const balance = Math.max(0, round2(order.price - order.deposit))
           sealedInvNext = sealedInvNext.filter(it => it.uid !== order.uid)
-          get().addNotoriety(2)
+          get().addNotoriety(2, false, 'sales')
           soldProceeds = round2(soldProceeds + balance)   // banked with the rest of the day's sales
           noteSale(order.what, balance)
           get().log('sell', `📇 Special order collected — ${order.what}, balance $${balance.toFixed(2)} paid (+2★). That's what the book is for.`, balance)
@@ -1579,7 +1594,7 @@ export function advanceDaysWith(set, get, days, away) {
     distributorSince: (isDistributor(s) && !s.distributorSince) ? newAbsDay : (s.distributorSince ?? null),
   }))
   if (promoFizzled) {
-    get().addNotoriety(-2)
+    get().addNotoriety(-2, false, 'stream')
     get().log('stream', `📣 You never went live for the stream you announced — the room you hyped up moved on. (-2★)`, 0)
   }
   if (subIncome > 0) get().log('stream', `❤️ ${subsNext} subscriber${subsNext === 1 ? '' : 's'} — +$${subIncome.toFixed(2)} sub income${subsDark ? ' (channel dark over a week — subs are drifting off)' : ''}`, subIncome)

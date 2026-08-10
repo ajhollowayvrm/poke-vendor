@@ -299,7 +299,7 @@ export function createBoothSlice(set, get) {
         stats: { ...s.stats, wantsFilled: (s.stats.wantsFilled || 0) + 1 },
       }))
       get().earn(payout)
-      get().addNotoriety(lead.notoriety || 3)
+      get().addNotoriety(lead.notoriety || 3, false, 'shows')
       get().log('want', `Met ${lead.who} at the show as arranged — sold ${card.name} at ${Math.round(lead.premiumMult * 100)}% of market`, payout)
       get().bumpGoal('want', 1)
       get().checkMilestones()
@@ -641,7 +641,7 @@ export function createBoothSlice(set, get) {
       const sealedNote = sealedRows.length ? ` + ${sealedRows.length} sealed` : ''
       const label = free ? 'FREE — they gave it away' : method === 'credit' ? `$${paid.toFixed(2)} store credit` : `$${paid.toFixed(2)} cash`
       get().log('buy', `Bought ${offer.count} cards${sealedNote} off ${offer.who} for ${label} (lot market ~$${offer.market.toFixed(2)})`, (method === 'credit' || free) ? 0 : -paid)
-      get().addNotoriety(offer.estate ? 2 : 1) // a shop that takes in whole collections gets talked about
+      get().addNotoriety(offer.estate ? 2 : 1, false, 'sales') // a shop that takes in whole collections gets talked about
       get().bumpGoal('buy', offer.count)
       // A credit deal — or a grateful giveaway — keeps them in your orbit as a regular.
       // A GENEROUS posted buylist does the same for cash sellers: the shop that pays well

@@ -166,7 +166,7 @@ export function createLivestreamSlice(set, get) {
       const baseNoto = val >= 100 ? 3 : val >= 25 ? 2 : val >= 5 ? 1 : 0
       const notoBump = Math.round(baseNoto * Math.pow(0.5, done))
       set(s => ({ collection: s.collection.filter(c => c.uid !== uid), giveawaysToday: (s.giveawaysToday || 0) + 1 }))
-      if (notoBump > 0) get().addNotoriety(notoBump, true)
+      if (notoBump > 0) get().addNotoriety(notoBump, true, 'stream')
       get().log('stream', `🎁 Gave away ${card.name} ($${val.toFixed(2)}) on stream — chat erupted (+${gained} followers coming${notoBump > 0 ? `, +${notoBump}★` : ''})`, 0)
       return { card, followers: gained }
     },
@@ -205,7 +205,7 @@ export function createLivestreamSlice(set, get) {
     cancelStreamPromo() {
       if (!get().streamPromo) return
       set({ streamPromo: null })
-      get().addNotoriety(-1)
+      get().addNotoriety(-1, false, 'stream')
       get().log('stream', `📣 Called off the announced stream — the room you hyped up moved on. (-1★)`, 0)
     },
     // The promised card just went to a viewer live on the promised night — keep your word,
@@ -215,7 +215,7 @@ export function createLivestreamSlice(set, get) {
       const promo = get().streamPromo
       if (!promo || promo.delivered || !promo.cardUid) return
       set({ streamPromo: { ...promo, delivered: true } })
-      get().addNotoriety(3, true)
+      get().addNotoriety(3, true, 'stream')
       get().log('stream', `📣 Delivered the promised ${promo.cardName} giveaway live on stream — the room got what it came for. (+3★)`, 0)
     },
 
@@ -245,12 +245,12 @@ export function createLivestreamSlice(set, get) {
       if (promo && absoluteDay(get().currentDay, get().monthsElapsed) >= promo.day) {
         set({ streamPromo: null })
         if (promo.cardUid && !promo.delivered) {
-          get().addNotoriety(-2)
+          get().addNotoriety(-2, false, 'stream')
           get().log('stream', `📣 The room came for the promised ${promo.cardName} giveaway… and never got it. (-2★)`, 0)
         }
       }
       if (tips > 0) get().earn(round2(tips))
-      if (noto) get().addNotoriety(noto) // may be negative after a flop
+      if (noto) get().addNotoriety(noto, false, 'stream') // may be negative after a flop
       // 📆 Weekly rhythm: an on-cadence stream (3–10 days since the last) grows the loyal-crowd
       // streak; going dark >10 days forfeits it; bingeing neither grows nor resets it (fatigue
       // already punishes that). lastStreamDay is stamped BEFORE the day-tick below advances time.

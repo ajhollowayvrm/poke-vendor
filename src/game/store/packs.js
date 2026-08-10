@@ -189,7 +189,7 @@ export function createPacksSlice(set, get) {
         },
       }))
       get().earn(net)
-      if (notoDelta) get().addNotoriety(notoDelta)
+      if (notoDelta) get().addNotoriety(notoDelta, false, 'packs')
       const chanIcon = channel === 'stream' ? '🔴' : channel === 'show' ? '🎪' : channel === 'walkin' ? '🏬' : '🌐'
       const best = packBestItem(pack)
       const openNote = channel === 'stream'
