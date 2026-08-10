@@ -396,6 +396,13 @@ export default function App() {
   // No money/days are spent until you confirm on the prep screen.
   function attendShow(show, mode = 'shop') {
     const tier = SHOW_TIERS[show.tierKey]
+    // 🎫 Show waiver: a locked show one tier above your rank, talked into as a SHOPPER —
+    // 3 clout + double the door price. Validated here; spent at entry (enterAsShopper).
+    if (show._waiver) {
+      if ((useGame.getState().clout || 0) < 3) return toast('Not enough clout — talking your way in costs 3 🎫.')
+      if (useGame.getState().cash < tier.entryFee * 2) return toast(`Not enough cash — the door wants double (${'$' + tier.entryFee * 2}) to look the other way.`)
+      mode = 'shop'
+    }
     if (mode === 'vendor') {
       if (!useGame.getState().upgrades.vendorSetup) return toast('You need the 🎪 Vendor Setup upgrade to run a booth. Buy it from Upgrades.')
       // 📣 Sponsorship: booth fees are on the sponsor tab — you pay entry only.
@@ -413,10 +420,13 @@ export default function App() {
   function enterAsShopper(show, payload = {}) {
     const { cardUids, sealedUids, budget, arrival = 'open' } = payload
     const tier = SHOW_TIERS[show.tierKey]
-    if (!spend(tier.entryFee)) { setPreppingShow(null); return toast('Not enough cash for the entry fee.') }
+    // 🎫 Waived entry: 3 clout + double the door price (validated back in attendShow).
+    const entryCost = show._waiver ? tier.entryFee * 2 : tier.entryFee
+    if (show._waiver && !useGame.getState().spendClout(3)) { setPreppingShow(null); return toast('Not enough clout — talking your way in costs 3 🎫.') }
+    if (!spend(entryCost)) { setPreppingShow(null); return toast('Not enough cash for the entry fee.') }
     const effDays = Math.max(1, tier.days - (useGame.getState().upgrades.tourVan ? 1 : 0)) // 🚐 the van shaves a day
     useGame.getState().bringToShow(cardUids || [], sealedUids || []) // may be empty — you're mainly here to buy
-    useGame.getState().log('show', `Attended ${show.name} as a shopper (${effDays}d, ${arrival === 'late' ? 'arrived late' : 'at open'})`, -tier.entryFee)
+    useGame.getState().log('show', `Attended ${show.name} as a shopper (${effDays}d, ${arrival === 'late' ? 'arrived late' : 'at open'})${show._waiver ? ' — 🎫 talked past the rank gate (−3 clout, double entry)' : ''}`, -entryCost)
     // Claim any pre-show leads for this show (vendor holds + buyer appointments) BEFORE
     // the days advance — the floor works off this copy (state leads expire with the calendar).
     const _leads = useGame.getState().claimShowLeads(show.id)
@@ -872,6 +882,8 @@ function Shop({ cash, onBuy, onBuyVintage }) {
   const distributors = useGame(s => s.distributors)
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — the door for rank-gated accounts
+  const clout = useGame(s => s.clout || 0) // 🎫 spendable favors (restock calls live here on the Buy tab)
+  const cloutRestock = useGame(s => s.cloutRestock)
   const upgrades = useGame(s => s.upgrades) // ⛩️ Import License gates the Japan Direct account
   const lgsCredit = useGame(s => s.lgsCredit)
   const currentDay = useGame(s => s.currentDay)
@@ -948,6 +960,16 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         <LockedDistributor dist={dist} notoriety={notoriety} rank={rank} />
       ) : (<>
       <RapportBanner dist={dist} rec={rec} lvl={lvl} />
+      {/* 🎫 Clout spend: something on this shelf sold out — a favor gets the truck there early. */}
+      {rank >= 1 && Object.values(rec.stock || {}).some(v => (v?.q ?? 1) <= 0) && (
+        <div style={{ margin: '8px 0' }}>
+          <button className="btn alt" style={{ padding: '4px 10px', fontSize: 12 }} disabled={clout < 2}
+            title={clout < 2 ? 'Needs 2 🎫 clout (rank-ups, god packs, clean-sweep goal weeks)' : `Spend 2 🎫 clout — ${dist.name} finds you a delivery and the whole shelf refills today`}
+            onClick={() => { const r = cloutRestock(distId); flash(r.error || `📦 ${dist.name} took the call — shelf's full again.`) }}>
+            📦 Call in a favor — restock {dist.name} · 2 🎫 (you have {Math.floor(clout)})
+          </button>
+        </div>
+      )}
 
       {showSupply && (
         <SupplyPanel dist={dist} lvl={lvl} supplyVendors={supplyVendors} supplyChannel={supplyChannel} cash={cash} flash={flash} />
@@ -995,6 +1017,9 @@ function ReprintWaveBanner({ cash, flash }) {
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const preorderWave = useGame(s => s.preorderWave)
+  const rank = useGame(s => s.rank || 0)
+  const clout = useGame(s => s.clout || 0)
+  const cloutJumpAllocation = useGame(s => s.cloutJumpAllocation)
   useGame(s => s.marketMults) // the announcement dip moves the strike-through retail
   const [qty, setQty] = useState(1)
   if (!wave || wave.doneDay != null) return null
@@ -1024,6 +1049,14 @@ function ReprintWaveBanner({ cash, flash }) {
           </button>
         </span>
       ) : <b style={{ marginLeft: 8 }}> Allocation fully committed.</b>}
+      {/* 🎫 Clout spend: argue your way into a bigger slice of the wave (once per wave). */}
+      {!wave.allocBonus && rank >= 2 && (
+        <button className="btn alt" style={{ marginLeft: 8, padding: '4px 10px', fontSize: 12 }} disabled={clout < 3}
+          title={clout < 3 ? 'Needs 3 🎫 clout' : `Spend 3 🎫 clout — your rep argues the rep into a bigger slice (cap ${wave.allocCap} → ${Math.ceil(wave.allocCap * 1.5)})`}
+          onClick={() => { const r = cloutJumpAllocation(); flash(r.error || `📰 Queue jumped — your cap is now ${r.allocCap}.`) }}>
+          🎫 Jump the queue · 3 🎫
+        </button>
+      )}
     </div>
   )
 }

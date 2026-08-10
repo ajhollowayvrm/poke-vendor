@@ -81,6 +81,9 @@ function orderableSealed(inventory, policy, exclude = new Set()) {
 function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const followers = useGame(s => s.followers || 0)
   const shopHype = useGame(s => s.hype || 0) // 🔥 a hot shop pulls extra rubberneckers on-air
+  const clout = useGame(s => s.clout || 0)
+  const boosted = useGame(s => !!s.streamBoostNext) // 📣 2-🎫 favor: tonight opens ×1.5
+  const buyStreamBoost = useGame(s => s.buyStreamBoost)
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   // 📣 Announced streams: promise a night ahead of time for a bigger room.
   const streamPromo = useGame(s => s.streamPromo)
@@ -194,7 +197,8 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const expected = Math.round(baseViewers(notoriety, fresh, followers, shopHype) * draw
     * (promoTonight ? promoViewerMult(streamPromo) : 1)
     * rhythmMult(rhythmNow)
-    * (bountyCard ? bountyDrawMult(cardValue(bountyCard)) : 1))
+    * (bountyCard ? bountyDrawMult(cardValue(bountyCard)) : 1)
+    * (boosted ? 1.5 : 1)) // 📣 the called-in favor
   const totalPacks = queue.reduce((a, e) => a + e.product.packs, 0)
   // Dead air: nothing queued AND nothing a viewer could possibly order. Going live on that
   // would burn a game-day watching an empty table.
@@ -469,6 +473,14 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
                 ? <>🔴 Go live — rip {queue.length} product{queue.length !== 1 ? 's' : ''} ({totalPacks} pk)</>
                 : <>🔴 Go live — take orders only</>}
             </button>
+            {/* 🎫 📣 Clout spend: call in favors so tonight opens to a bigger room (×1.5). */}
+            {boosted
+              ? <span className="pill" style={{ color: 'var(--gold)' }}>📣 Boosted — tonight opens ×1.5</span>
+              : <button className="btn alt" style={{ maxWidth: 340 }} disabled={clout < 2}
+                  title={clout < 2 ? 'Needs 2 🎫 clout (earn it from rank-ups, god packs, and clean-sweep goal weeks)' : 'Spend 2 🎫 clout — friends of the shop raid in and the algorithm smiles: tonight opens with ×1.5 viewers'}
+                  onClick={() => buyStreamBoost()}>
+                  📣 Boost tonight · 2 🎫 (you have {Math.floor(clout)})
+                </button>}
           </div>
           <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
             {deadAir
@@ -507,6 +519,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const followers = useGame(s => s.followers || 0)
   const shopHype = useGame(s => s.hype || 0) // 🔥 same rubbernecker pull as the setup estimate
+  const boosted = useGame(s => !!s.streamBoostNext) // 📣 the called-in favor rides the whole session
   const regulars = useGame(s => s.regulars)
   const collection = useGame(s => s.collection)
   const giveawayCard = useGame(s => s.giveawayCard)
@@ -545,7 +558,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers, shopHype) * draw
     * (promoLive ? promoViewerMult(promoLive) : 1)  // 📣 the announced-night crowd
     * rhythmMult(rhythmNow)                          // 📆 the loyal weekly crowd
-    * (session.bounty ? bountyDrawMult(session.bounty.value) : 1)) // 🎯 here for the chase
+    * (session.bounty ? bountyDrawMult(session.bounty.value) : 1) // 🎯 here for the chase
+    * (boosted ? 1.5 : 1))                           // 🎫 the bought boost (cleared at endStream)
 
   const [entryIdx, setEntryIdx] = useState(0)
   const [packNo, setPackNo] = useState(0)

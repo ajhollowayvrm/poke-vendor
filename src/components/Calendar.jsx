@@ -6,6 +6,7 @@ import { fmtMoney } from '../game/engine'
 export default function Calendar({ onAttend }) {
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — the door for show tiers
+  const clout = useGame(s => s.clout || 0) // 🎫 spendable favors — can talk you into the next tier up
   const showSeed = useGame(s => s.showSeed)
   const cash = useGame(s => s.cash)
   const currentDay = useGame(s => s.currentDay)
@@ -96,9 +97,21 @@ export default function Calendar({ onAttend }) {
               )}
               <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {show.locked ? (
-                  <button className="btn" disabled title={`Unlocks at rank ${tier.minRank}: reach ⭐ ${tier.minNotoriety} and prove yourself (see the reputation panel on the Stats tab)`}>
-                    🔒 {RANKS[tier.minRank]?.emoji} {RANKS[tier.minRank]?.name}
-                  </button>
+                  <>
+                    <button className="btn" disabled title={`Unlocks at rank ${tier.minRank}: reach ⭐ ${tier.minNotoriety} and prove yourself (see the reputation panel on the Stats tab)`}>
+                      🔒 {RANKS[tier.minRank]?.emoji} {RANKS[tier.minRank]?.name}
+                    </button>
+                    {/* 🎫 Waiver: exactly one tier above your rank, a favor gets you a shopper
+                        ticket — 3 clout + double the door price. No booth at a show that
+                        doesn't know you. */}
+                    {tier.minRank === rank + 1 && (
+                      <button className="btn alt" disabled={clout < 3 || cash < tier.entryFee * 2}
+                        title={clout < 3 ? 'Needs 3 🎫 clout (rank-ups, god packs, clean-sweep goal weeks)' : `Spend 3 🎫 clout and pay double entry ($${tier.entryFee * 2}) to walk a floor above your rank — shopper ticket only`}
+                        onClick={() => onAttend({ ...show, _waiver: true }, 'shop')}>
+                        🎫 Talk your way in · 3 🎫 + ${tier.entryFee * 2}
+                      </button>
+                    )}
+                  </>
                 ) : (
                   <>
                     <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show, 'shop')}

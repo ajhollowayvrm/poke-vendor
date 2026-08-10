@@ -6,6 +6,8 @@ import CardTile from './CardTile'
 export default function Bench() {
   const pending = useGame(s => s.pendingGrades)
   const submitted = useGame(s => s.gradesSubmitted)
+  const clout = useGame(s => s.clout || 0)
+  const expediteGrade = useGame(s => s.expediteGrade)
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
   // readyOnDay is a month-safe absolute day, so compare against the absolute "today".
@@ -39,7 +41,17 @@ export default function Bench() {
                   </div>
                   <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
                     {daysLeft === 0 ? 'Ready — advance a day to collect' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}
+                    {p.expedited && <span style={{ color: 'var(--gold)' }}> · ⚡ expedited</span>}
                   </div>
+                  {/* 🎫 ⚡ Clout spend: walk this one to the front — 7 days off, speed only. */}
+                  {daysLeft > 1 && !p.expedited && (
+                    <button className="btn alt" style={{ marginTop: 6, padding: '3px 9px', fontSize: 11.5 }}
+                      disabled={clout < 2 || cash < 50}
+                      title={clout < 2 ? 'Needs 2 🎫 clout' : cash < 50 ? 'Needs $50 for the rush fee' : 'Spend 2 🎫 clout + $50 — your grader contact walks it to the front (7 days off, never lands before tomorrow). Odds untouched.'}
+                      onClick={() => expediteGrade(p.card.uid)}>
+                      ⚡ Expedite · 2 🎫 + $50
+                    </button>
+                  )}
                 </div>
               </div>
             )

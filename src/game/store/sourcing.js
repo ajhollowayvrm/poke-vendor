@@ -89,6 +89,36 @@ export function createSourcingSlice(set, get) {
       return { ok: true, bought: take, cost }
     },
 
+    // 🎫 📦 Call in a favor (2 clout, rank 1+): your rep makes one call and the truck
+    // comes early — the distributor's whole shelf refills to cap. Mechanically: their
+    // consumed-stock map clears (an absent key reads as fully stocked, see stockState).
+    cloutRestock(distId) {
+      const dist = distributorById(distId)
+      if (!dist) return { error: 'No such distributor.' }
+      if ((get().rank || 0) < 1) return { error: 'Favors need a name — reach 🏷️ Weekend Flipper (rank 1) first.' }
+      if (!distributorUnlocked(dist, get().notoriety, get().upgrades, get().rank || 0)) return { error: 'No account there yet.' }
+      const rec = get().distributors[distId]
+      if (!Object.keys(rec?.stock || {}).length) return { error: 'Their shelf is already fully stocked.' }
+      if (!get().spendClout(2)) return { error: 'Not enough clout — this favor costs 2 🎫.' }
+      set(s => ({ distributors: { ...s.distributors, [distId]: { ...(s.distributors[distId] || { spend: 0 }), stock: {} } } }))
+      get().log('buy', `📦 Called in a favor at ${dist.name} — a truck hit their dock this morning; everything's back in stock. (−2 🎫)`, 0)
+      return { ok: true }
+    },
+    // 🎫 📰 Jump the allocation (3 clout, rank 2+): while a reprint wave's preorder window
+    // is open, your rep argues you into a bigger slice — allocCap ×1.5, once per wave.
+    cloutJumpAllocation() {
+      const w = get().reprintWave
+      const absNow = absoluteDay(get().currentDay, get().monthsElapsed)
+      if (!w || w.doneDay != null || absNow >= w.dropDay) return { error: 'No wave open for preorders right now.' }
+      if (w.allocBonus) return { error: 'You already jumped this queue — once per wave.' }
+      if ((get().rank || 0) < 2) return { error: 'Allocation games need a name — reach 📣 Known Local (rank 2) first.' }
+      if (!get().spendClout(3)) return { error: 'Not enough clout — this favor costs 3 🎫.' }
+      const bumped = Math.ceil((w.allocCap || 0) * 1.5)
+      set(s => ({ reprintWave: { ...s.reprintWave, allocBonus: true, allocCap: bumped } }))
+      get().log('buy', `📰 Jumped the allocation queue — your slice of the ${w.label} wave is now ${bumped} units. (−3 🎫)`, 0)
+      return { ok: true, allocCap: bumped }
+    },
+
     // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,
     // routes the actual purchase through buySealed (charge + stock the item + log), then
     // bumps your rapport with them and decrements their shelf. Returns the new inventory

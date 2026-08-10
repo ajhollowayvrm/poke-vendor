@@ -1177,6 +1177,9 @@ export function advanceDaysWith(set, get, days, away) {
   // over with their progress intact. goalsDay stores the ABSOLUTE day (month-safe).
   const newAbsDay = absoluteDay(d, months)
   const goalsExpired = !s.dailyGoals.length || newAbsDay - (s.goalsDay || 0) >= GOAL_PERIOD_DAYS
+  // 🎫 Clean sweep: every weekly goal done before the reset earns a favor (settled below,
+  // in the same pass that swaps the goal set out).
+  const goalsSwept = goalsExpired && s.dailyGoals.length > 0 && s.dailyGoals.every(g => g.done)
   const periodGoals = goalsExpired ? makeWeeklyGoals(noto, s.rank || 0) : s.dailyGoals
   // Restock the distributors, then let high-rapport ones reserve vintage for you.
   const distributorsNext = applyVintageHolds(restockDistributors(s.distributors, days, newAbsDay), s.distributors, days, newAbsDay, get().log,
@@ -1604,6 +1607,10 @@ export function advanceDaysWith(set, get, days, away) {
   if (promoFizzled) {
     get().addNotoriety(-2, false, 'stream')
     get().log('stream', `📣 You never went live for the stream you announced — the room you hyped up moved on. (-2★)`, 0)
+  }
+  if (goalsSwept) {
+    set(st => ({ clout: (st.clout || 0) + 1 }))
+    get().log('goal', '🎯 Clean sweep — every weekly goal done before the reset. People notice. (+1 🎫 clout)', 0)
   }
   if (subIncome > 0) get().log('stream', `❤️ ${subsNext} subscriber${subsNext === 1 ? '' : 's'} — +$${subIncome.toFixed(2)} sub income${subsDark ? ' (channel dark over a week — subs are drifting off)' : ''}`, subIncome)
   if (clipGain > 0) get().log('stream', `🎬 Your ${s.streamClip.label} clip is making the rounds — +${clipGain} followers`, 0)

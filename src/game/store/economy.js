@@ -56,6 +56,24 @@ export function createEconomySlice(set, get) {
       if (!n) return
       set(s => ({ hype: bumpHype(s.hype, n) }))
     },
+    // 🎫 Clout: the spendable half of your reputation — favors earned on rank-ups, god
+    // packs, heavyweight milestones, and clean-sweep goal weeks; spent on queue jumps,
+    // expedites, and doors that money alone can't open. Validate-and-deduct primitive.
+    spendClout(n) {
+      if ((get().clout || 0) < n) return false
+      set(s => ({ clout: round2((s.clout || 0) - n) }))
+      return true
+    },
+    // 📣 Boost a stream (2 🎫): call in favors around the community — the NEXT go-live
+    // opens to a bigger room (baseViewers ×1.5). Consumed when that stream ends.
+    buyStreamBoost() {
+      if (!get().upgrades.streaming) return { error: 'No streaming gear yet.' }
+      if (get().streamBoostNext) return { error: 'Your next stream is already boosted.' }
+      if (!get().spendClout(2)) return { error: 'Not enough clout — this favor costs 2 🎫.' }
+      set({ streamBoostNext: true })
+      get().log('stream', '📣 Called in favors around the community — your next stream opens to a bigger room. (−2 🎫)', 0)
+      return { ok: true }
+    },
     buyUpgrade(key) {
       const u = UPGRADES[key]
       if (!u || get().upgrades[key]) return false
@@ -132,9 +150,12 @@ export function createEconomySlice(set, get) {
       const s = get()
       const fresh = newlyUnlocked(s, s.milestones)
       if (!fresh.length) return []
+      // 🎫 The heavyweight milestones (the ones that pay real cash) also earn a favor.
+      const cloutGain = fresh.reduce((a, x) => a + ((x.cash || 0) >= 1000 ? 1 : 0), 0)
       set(st => ({
         milestones: [...(st.milestones || []), ...fresh.map(x => x.id)],
         pendingMilestones: [...(st.pendingMilestones || []), ...fresh.map(x => x.id)],
+        ...(cloutGain ? { clout: (st.clout || 0) + cloutGain } : {}),
       }))
       for (const x of fresh) {
         if (x.noto) get().addNotoriety(x.noto, false, 'milestones')

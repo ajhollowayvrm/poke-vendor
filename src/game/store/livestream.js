@@ -265,6 +265,7 @@ export function createLivestreamSlice(set, get) {
         : (get().rhythmStreak || 0)
       if (clip) get().log('stream', `🎬 Someone clipped your ${clip.label} — it'll pull new followers for ${clip.daysLeft} days.`, 0)
       set(s => ({
+        streamBoostNext: false, // 📣 a bought boost is spent by the stream it opened (no-op if none)
         streamHypeDaysLeft: noto > 0 ? STREAM_HYPE_DAYS : 0, // a flop earns no afterglow
         followers: Math.max(0, (s.followers || 0) + followers), // returning audience grows
         subs: Math.max(0, (s.subs || 0) + subs),                // ❤️ new paying members of the channel

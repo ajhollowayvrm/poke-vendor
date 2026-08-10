@@ -73,6 +73,7 @@ export function createCollectionSlice(set, get) {
           collection: [...incoming, ...s.collection],
           bySet,
           ...(hypeAdd ? { hype: bumpHype(s.hype, hypeAdd) } : {}),
+          ...(isGod ? { clout: (s.clout || 0) + 1 } : {}), // 🎫 a god pack is a story people owe you a favor for telling
           stats: {
             ...s.stats,
             packsOpened: s.stats.packsOpened + packs,
@@ -480,6 +481,25 @@ export function createCollectionSlice(set, get) {
       const after = graderTier(get().gradesSubmitted)
       if (after.key !== before.key) get().log('grade-tier', `Grader loyalty: reached ${after.name} (${Math.round(after.discount*100)}% off future fees)`, 0)
       get().bumpGoal('grade', cards.length)
+    },
+
+    // 🎫 ⚡ Expedite a submission (2 clout + $50): your grader contact walks ONE card to
+    // the front of the line — 7 days off its turnaround, never landing before tomorrow.
+    // SPEED ONLY: odds and fees are sim-pinned and untouched (same contract as the
+    // turnaround upgrades — see gradeTurnaround).
+    expediteGrade(uid) {
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      const p = get().pendingGrades.find(x => x.card?.uid === uid && day < x.readyOnDay)
+      if (!p) return { error: 'That card is not out at the grader.' }
+      if (p.expedited) return { error: 'Already walked to the front — once per submission.' }
+      const newReady = Math.max(day + 1, p.readyOnDay - 7)
+      if (newReady >= p.readyOnDay) return { error: 'It is already about to come back.' }
+      if ((get().clout || 0) < 2) return { error: 'Not enough clout — this favor costs 2 🎫.' }
+      if (get().cash < 50) return { error: 'You can’t cover the $50 rush fee.' }
+      get().spendClout(2); get().spend(50)
+      set(s => ({ pendingGrades: s.pendingGrades.map(x => x.card?.uid === uid ? { ...x, readyOnDay: newReady, expedited: true } : x) }))
+      get().log('grade', `⚡ Expedited ${p.card.name} — your contact walked it to the front; back in ${newReady - day} day${newReady - day > 1 ? 's' : ''}. (−$50, −2 🎫)`, -50)
+      return { ok: true, readyOnDay: newReady }
     },
 
     // Resolve grades whose day count has been reached.
