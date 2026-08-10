@@ -263,51 +263,69 @@ function boothSealed(r, arch, band = [1, 100]) {
   // Modern sealed: whales always lay boxes out; others reliably have SOMETHING sealed on the
   // table now (a show floor should be full of sealed product). A single modern pack tier plus
   // a good shot at a second modern item, so most booths carry a couple of options.
+  // One table, one product per line: a vendor doesn't lay out the same ETB three times as three
+  // separate offers. Keyed on (set, product) so the same box from two different sets is fine.
+  const seen = new Set()
+  const push = (entry) => {
+    const key = `${entry.set.id}|${entry.product?.type}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    out.push(entry)
+    return true
+  }
   const addModern = (boxes) => {
     const set = pickR(r, SHOP_SETS)
     const prods = setProducts(set)
     const pool = boxes ? prods.filter(p => p.packs >= 9) : prods.filter(p => p.packs <= 6)
     const base = (pool.length ? pickR(r, pool) : pickR(r, prods))
     const markup = 1.12 + r() * (boxes ? 0.33 : 0.18)
-    out.push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
+    push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
   }
   // A show floor should be wall-to-wall sealed product. Most tables lay out a modern item,
   // many carry a second, and older/vintage sealed turns up often too. (Counts bumped so no
   // vendor reads as "doesn't do sealed" — a floor guarantee below backs it up.)
-  if (isWhale || r() < 0.82) addModern(isWhale)       // nearly every table stocks modern sealed
-  if (r() < 0.45) addModern(isWhale || r() < 0.4)     // a good chunk carry a second item too
+  // A real dealer's table is STACKED — boxes behind them, ETBs down the front, packs in a tub.
+  // This used to lay out one or two items, which read as a shop that had nearly sold out. Now a
+  // table carries a proper spread (roughly 10× what it did), which is why the booth UI groups it
+  // by set and collapses: a wall of product is the point, an unreadable wall of product isn't.
+  const modernN = 8 + Math.floor(r() * 8)            // 8–15 modern lines
+  for (let i = 0; i < modernN; i++) addModern(isWhale ? r() < 0.7 : r() < 0.3)
   // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fusion Strike, Fates Collide, the
   // Zygarde / Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old
   // ETB / box / tin on the table at a collector's markup.
   // Draws from AFTERMARKET_SETS, not just the old SM/XY pool: a set that ages out of the shop's
   // in-print window lands here too, so the show floor is where recently-retired product goes to
   // be hunted rather than ordered.
-  if (AFTERMARKET_SETS.length && r() < 0.62) {
+  const afterN = AFTERMARKET_SETS.length ? 3 + Math.floor(r() * 5) : 0   // 3–7 out-of-print lines
+  for (let i = 0; i < afterN; i++) {
     const sSet = pickR(r, AFTERMARKET_SETS)
     const prods = setProducts(sSet)
     const product = prods.length ? prods[Math.floor(r() * prods.length)] : null
     if (product) {
       const markup = 1.10 + r() * 0.25
-      out.push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' })
+      push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' })
     }
   }
   // A surprise vintage sealed pack on a regular table — any booth at any show.
-  if (VINTAGE_SETS.length && r() < 0.22) {
+  // Vintage stays SCARCE by design — a wall of modern product doesn't mean a wall of '99 packs.
+  const vintN = VINTAGE_SETS.length && r() < 0.55 ? 1 + Math.floor(r() * 2) : 0
+  for (let i = 0; i < vintN; i++) {
     const vSet = pickR(r, VINTAGE_SETS)
     const product = vintageProduct(vSet)
     const markup = 1.2 + r() * 0.5
-    out.push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
+    push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
   }
   // 🎌 An import table. JP sealed on the show floor is the ONLY way to buy it without the
   // Import License — a vendor who does the legwork, and charges for it. Steeper markup than
   // aftermarket because he ate the freight and the exchange rate to get it here.
-  if (JP_SHOP_SETS.length && r() < 0.18) {
+  const jpN = JP_SHOP_SETS.length && r() < 0.45 ? 1 + Math.floor(r() * 3) : 0
+  for (let i = 0; i < jpN; i++) {
     const jSet = pickR(r, JP_SHOP_SETS)
     const prods = setProducts(jSet)
     const product = prods.length ? pickR(r, prods) : null
     if (product) {
       const markup = 1.18 + r() * 0.34
-      out.push({ set: jSet, product, _ask: round2((product.price || 0) * markup), _origin: 'import' })
+      push({ set: jSet, product, _ask: round2((product.price || 0) * markup), _origin: 'import' })
     }
   }
   // FLOOR GUARANTEE: every booth carries sealed. If the rolls above happened to produce none

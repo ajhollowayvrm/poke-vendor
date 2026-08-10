@@ -6,6 +6,7 @@ import CardTile, { rarityColor } from './CardTile'
 import CardModal from './CardModal'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
+import { Collapse } from '../ui/Collapse'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
 export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
@@ -158,6 +159,24 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     flash(`Traded ${giveN} item${giveN !== 1 ? 's' : ''} for ${getN}!`)
   }
 
+  // A dealer's table carries a real spread now, so the sealed tab groups BY SET and collapses —
+  // a flat grid of 20+ cards was a wall you had to scroll past rather than read. `_idx` keeps
+  // each entry's identity from the original array so buy/trade still act on the right one.
+  const sealedBySet = (() => {
+    const bySet = new Map()
+    sealed.forEach((entry, i) => {
+      if (entry.mystery) return
+      const id = entry.set?.id || 'other'
+      if (!bySet.has(id)) bySet.set(id, { setId: id, name: entry.set?.name || 'Other', logo: entry.set?.logo, items: [] })
+      bySet.get(id).items.push({ ...entry, _idx: i })
+    })
+    // Cheapest line first inside a set; sets ordered by their best price, so the affordable
+    // end of the table is what you see first.
+    const groups = [...bySet.values()]
+    for (const g of groups) g.items.sort((a, b) => eff(a._ask) - eff(b._ask))
+    return groups.sort((a, b) => eff(a.items[0]._ask) - eff(b.items[0]._ask))
+  })()
+
   const seeDeals = upgrades.network
   // Deal/OVER read for a sealed entry, mirroring the singles logic in renderBuy: compare the
   // (rapport-discounted) ask against the product's live market value. Vendor markups on sealed —
@@ -300,8 +319,11 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
         {tab === 'sealed' ? (
           <>
             <div className="showcase-head">📦 Sealed & mystery <span className="muted">— sealed rips on the floor or stocks to hold; mystery packs open on the spot (vendor markup applies)</span></div>
+            {/* A dealer's table now carries a proper spread rather than one or two items, so the
+                real sealed is grouped BY SET and collapsed. Mystery packs stay a small grid up
+                top: they're not set-based and there are only ever a couple. */}
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))' }}>
-              {sealed.map((entry, idx) => entry.mystery ? (
+              {sealed.filter(e => e.mystery).map((entry, idx) => (
                 <div key={idx} className={`vendoritem featured sealed-mystery ${entry._tk && starSet.has(entry._tk) ? 'starred' : ''}`}>
                   {entry._tk && <StarBtn k={entry._tk} />}
                   <div style={{ fontSize: 34, textAlign: 'center' }}>{entry.icon}</div>
@@ -314,44 +336,47 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                     {cash < entry.price ? `Need ${fmtMoney(entry.price)}` : '❓ Buy & open'}
                   </button>
                 </div>
-              ) : (
-                <div key={idx} className={`vendoritem featured ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''} ${entry._tk && starSet.has(entry._tk) ? 'starred' : ''}`}>
-                  {entry._tk && <StarBtn k={entry._tk} />}
-                  {entry._lead && (
-                    <span className="pill" style={{ alignSelf: 'center', fontSize: 10.5, background: '#ffcb0522', color: 'var(--gold)' }}
-                      title="They set this aside for you before the show — at the price they quoted.">
-                      🤝 set aside for you
-                    </span>
-                  )}
-                  {entry.set.logo && <img src={entry.set.logo} alt={entry.set.name} style={{ height: 34, objectFit:'contain', alignSelf:'center' }} />}
-                  <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>
-                    {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry._origin === 'import' ? '🎌 ' : entry.product.icon + ' '}{entry.product.type}
-                  </div>
-                  <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>
-                    {entry.set.name} · {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}
-                    {entry._origin === 'aftermarket' ? ' · 🕰️ out-of-print — not in the shop' : ''}
-                    {entry._origin === 'import' ? ' · 🎌 import — no license needed here' : ''}
-                  </div>
-                  {(() => { const { mkt, ask, deal, over } = sealedRead(entry); return (<>
-                  <div className="askrow" style={{ justifyContent:'center' }}>
-                    {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(entry._ask)}</s>}
-                    <span className="ask">{fmtMoney(ask)}</span>
-                    {seeDeals && deal && <span className="dealtag">DEAL</span>}
-                    {seeDeals && over && <span className="overtag">OVER</span>}
-                  </div>
-                  {mkt > 0 && <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>mkt {fmtMoney(mkt)}</div>}
-                  </>) })()}
-                  <div className="row" style={{ gap: 6 }}>
-                    <button className="btn gold" disabled={cash < eff(entry._ask)} onClick={() => setPendingSealed(entry)}>
-                      {cash < eff(entry._ask) ? `Need ${fmtMoney(eff(entry._ask))}` : 'Buy →'}
-                    </button>
-                    <button className="btn alt" style={{ flex: 'none', maxWidth: 84 }} disabled={!canTrade}
-                      title={canTrade ? 'Build a trade — offer your cards/sealed (± cash) for this sealed and more' : 'You have nothing to trade'}
-                      onClick={() => setTradeFor({ sealed: entry })}>🔄 Trade</button>
-                  </div>
-                </div>
               ))}
             </div>
+            {sealedBySet.map(g => (
+              <Collapse key={g.setId} id={`booth-sealed-${g.setId}`} defaultOpen={sealedBySet.length <= 3}
+                className="wants" headClass="wants-head"
+                head={<>{g.logo && <img src={g.logo} alt="" style={{ height: 20, objectFit: 'contain', verticalAlign: '-4px', marginRight: 6 }} />}{g.name}</>}
+                badge={`${g.items.length} · from ${fmtMoney(Math.min(...g.items.map(x => eff(x._ask))))}`}>
+                <div className="vsealed-list">
+                  {g.items.map((entry) => {
+                    const idx = entry._idx
+                    const { mkt, ask, deal, over } = sealedRead(entry)
+                    return (
+                      <div key={idx} className={`vsealed-row ${entry._origin === 'vintage' ? 'sealed-vintage' : ''} ${entry._origin === 'aftermarket' ? 'sealed-aftermarket' : ''}`}>
+                        <span className="vsealed-name">
+                          {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry._origin === 'import' ? '🎌 ' : (entry.product.icon || '📦') + ' '}
+                          {entry.product.type}
+                          {entry._lead && <span className="pill" style={{ marginLeft: 6, fontSize: 10, background: '#ffcb0522', color: 'var(--gold)' }} title="They set this aside for you before the show — at the price they quoted.">🤝 held</span>}
+                        </span>
+                        <span className="vsealed-meta">
+                          {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}{mkt > 0 ? ` · mkt ${fmtMoney(mkt)}` : ''}
+                        </span>
+                        <span className="vsealed-ask">
+                          {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(entry._ask)}</s>}
+                          <span className="ask">{fmtMoney(ask)}</span>
+                          {seeDeals && deal && <span className="dealtag">DEAL</span>}
+                          {seeDeals && over && <span className="overtag">OVER</span>}
+                        </span>
+                        <span className="vsealed-act">
+                          <button className="btn gold" disabled={cash < ask} onClick={() => setPendingSealed(entry)}>
+                            {cash < ask ? 'Need' : 'Buy'}
+                          </button>
+                          <button className="btn alt" disabled={!canTrade}
+                            title={canTrade ? 'Build a trade — offer your cards/sealed (± cash) for this sealed and more' : 'You have nothing to trade'}
+                            onClick={() => setTradeFor({ sealed: entry })}>🔄</button>
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </Collapse>
+            ))}
           </>
         ) : tab === 'buy' ? (
           stock.length === 0 ? <p className="muted">Sold out — you cleaned them out!</p> :

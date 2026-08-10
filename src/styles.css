@@ -2100,3 +2100,25 @@ button.rip-hit-row:hover { background:#ffffff14; }
   justify-content: center; gap: 10px; color: var(--dim); }
 .boot-splash .boot-logo { font-size: 40px; opacity: .9; }
 .boot-splash .boot-text { font-size: 13px; letter-spacing: .02em; }
+
+/* ---------- Vendor booth: sealed as a set-grouped list ----------------------------
+   A dealer's table carries a proper spread now (roughly 10x what it used to), and a grid of
+   twenty product cards is a wall you scroll past rather than read. These are dense rows inside
+   a per-set <Collapse>: name, what it is, the ask, and the two actions. */
+.vsealed-list { display: flex; flex-direction: column; gap: 4px; }
+.vsealed-row { display: grid; grid-template-columns: minmax(0,1.5fr) minmax(0,1fr) auto auto;
+  align-items: center; gap: 8px; padding: 7px 10px; border-radius: 9px;
+  background: var(--panel2); border: 1px solid var(--line); }
+.vsealed-row.sealed-vintage { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); }
+.vsealed-row.sealed-aftermarket { border-color: color-mix(in srgb, var(--accent2) 35%, var(--line)); }
+.vsealed-name { font-weight: 800; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vsealed-meta { color: var(--dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vsealed-ask { display: flex; align-items: center; gap: 4px; justify-content: flex-end; white-space: nowrap; }
+.vsealed-act { display: flex; gap: 4px; }
+.vsealed-act .btn { flex: none; max-width: none; width: auto; padding: 6px 10px; min-height: 32px; font-size: 12px; }
+/* On a phone the row folds to two lines: name + ask on top, meta + actions under it. */
+@media (max-width: 640px) {
+  .vsealed-row { grid-template-columns: minmax(0,1fr) auto; grid-template-areas: 'name ask' 'meta act'; row-gap: 4px; }
+  .vsealed-name { grid-area: name; } .vsealed-meta { grid-area: meta; }
+  .vsealed-ask { grid-area: ask; } .vsealed-act { grid-area: act; justify-content: flex-end; }
+}
