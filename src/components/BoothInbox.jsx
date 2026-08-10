@@ -518,13 +518,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               {/* Giveaway */}
               <Collapse id="store-giveaway" head="🎁 In-store giveaway"
                 badge={giveawayDaysLeft > 0 ? `🎉 buzz ${giveawayDaysLeft}d` : null}
-                hint={`— give a card to the locals: goodwill, notoriety, and a ${GIVEAWAY_BUZZ_DAYS}-day foot-traffic buzz`}>
+                hint={`— give a card to the locals: goodwill, reputation, and a ${GIVEAWAY_BUZZ_DAYS}-day foot-traffic buzz`}>
                 <div className="toolbar" style={{ marginTop: 4 }}>
                   <button className="btn gold" style={{ flex: 'none' }} disabled={!collection.length}
                     onClick={() => setGivePick(true)}>🎁 Pick a card to give away</button>
                   {giveawayDaysLeft > 0
                     ? <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🎉 Buzz live · {giveawayDaysLeft}d left</span>
-                    : <span className="muted" style={{ fontSize: 12 }}>Pricier card → bigger pop. Regulars warm up (+trust); the 🎗️ Charity Banner boosts the notoriety.</span>}
+                    : <span className="muted" style={{ fontSize: 12 }}>Pricier card → bigger pop. Regulars warm up (+trust); the 🎗️ Charity Banner boosts the reputation.</span>}
                 </div>
               </Collapse>
 
@@ -587,7 +587,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         <>
           <div className="banner" style={{ marginTop: 16 }}>
             📋 The community <b>forum</b> — collectors post cards they're hunting for. Fill a request from your
-            collection for an <b>above-market premium</b> (+ a little notoriety). The way to drum up business before
+            collection for an <b>above-market premium</b> (+ a little reputation). The way to drum up business before
             you've made a name. Go rip or buy what they want, then fulfill it here.
           </div>
           {forumCount === 0 ? (
@@ -621,17 +621,17 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           // point at the two ways to drum up demand — the Forum, or a bargain listing.
           ? (() => {
               const hasBargain = (listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
-              return <>🪧 You're an <b>unknown vendor</b> (notoriety <b>{Math.round(notoriety)}</b>) — strangers don't seek you out yet. Fill <b>Forum</b> wanted-ads to build a name{hasBargain
+              return <>🪧 You're an <b>unknown vendor</b> (⭐ <b>{Math.round(notoriety)}</b> reputation) — strangers don't seek you out yet. Fill <b>Forum</b> wanted-ads to build a name{hasBargain
                 ? <>, and your bargain listing (≤{Math.round(BARGAIN_ASK_MULT*100)}% of market) is already drawing online deal-hunters.</>
                 : <>, or list a card at <b>≤{Math.round(BARGAIN_ASK_MULT*100)}% of market</b> to pull in online deal-hunters.</>}</>
             })()
           : (listings.length === 0 && (!hasStore || (collection.length === 0 && (sealedInventory || []).length === 0)))
           // Known vendor, but nothing out for sale → no orders will come. Buyers only
           // message you about cards you've actually listed (or, with a store, stock on your floor).
-          ? <>🤫 Your shop's quiet — <b>nothing's up for sale</b>. Buyers only reach out about cards you've <b>listed online</b>{hasStore ? <> or have <b>in stock at the store</b></> : ''}. Put something out and orders start arriving (notoriety <b>{Math.round(notoriety)}</b>).</>
+          ? <>🤫 Your shop's quiet — <b>nothing's up for sale</b>. Buyers only reach out about cards you've <b>listed online</b>{hasStore ? <> or have <b>in stock at the store</b></> : ''}. Put something out and orders start arriving (⭐ <b>{Math.round(notoriety)}</b> reputation).</>
           : hasStore
-          ? <>{shopIcon(store)} <b>{shopName(store)}</b> is open — your brick-and-mortar shop <b>and</b> online counter. Your whole stock is on the floor for walk-ins (🔒 keep anything that isn't); online orders come on what you've listed. Scaled by your <b>{Math.round(notoriety)}</b> notoriety.</>
-          : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders on what you've <b>listed</b> (notoriety <b>{Math.round(notoriety)}</b>). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
+          ? <>{shopIcon(store)} <b>{shopName(store)}</b> is open — your brick-and-mortar shop <b>and</b> online counter. Your whole stock is on the floor for walk-ins (🔒 keep anything that isn't); online orders come on what you've listed. Scaled by your <b>⭐ {Math.round(notoriety)}</b> reputation.</>
+          : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders on what you've <b>listed</b> (⭐ <b>{Math.round(notoriety)}</b> reputation). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
       </div>
 
       <div className="toolbar" style={{ marginTop: 12 }}>
@@ -831,7 +831,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             <button className="modal-close" aria-label="Close" onClick={() => setGivePick(false)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎁 In-store giveaway</h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-              Pick the prize. A pricier card makes a bigger splash — more notoriety, and a
+              Pick the prize. A pricier card makes a bigger splash — more reputation, and a
               {' '}{GIVEAWAY_BUZZ_DAYS}-day walk-in buzz either way. Every regular warms up a little.
             </p>
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
@@ -910,7 +910,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             <button className="modal-close" aria-label="Close" onClick={() => setRafflePick(false)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-              A flashier prize sells more tickets worth of goodwill — bigger notoriety pop when it's drawn.
+              A flashier prize sells more tickets worth of goodwill — bigger reputation pop when it's drawn.
               Costs ${STORE_EVENTS.raffle.cost} to run; ticket money comes in when the night happens.
             </p>
             {collection.filter(c => !c.locked && !c._heldFor).length === 0 ? <div className="empty">No cards to raffle (🔒 keepsakes are excluded).</div> : (
@@ -942,7 +942,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           <div className="modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
             <button className="modal-close" aria-label="Close" onClick={() => setWantPick(null)}>✕</button>
             <h2 style={{ fontSize: 18, marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety} notoriety.</p>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety}★ reputation.</p>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
               {matches.map(c => (
                 <div key={c.uid} className="vendoritem">

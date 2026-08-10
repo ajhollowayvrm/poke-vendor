@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
-import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById } from '../game/store'
+import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById,
+  RANKS, DEEDS_NEEDED, repSourceLabel } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2, SETS, shopName, shopIcon } from '../game/engine'
 import { MILESTONES, MILESTONE_GROUPS, milestoneProgress } from '../game/milestones'
+import { Collapse, bigScreen } from '../ui/Collapse'
 import { confirmDialog } from '../ui/dialog'
 
 const SET_NAME = Object.fromEntries(SETS.map(s => [s.id, s.name]))
@@ -56,13 +58,14 @@ export default function Stats() {
 
   return (
     <>
+      <RepPanel />
       <FinanceCard />
       <div className="statgrid">
         <Stat label="Net worth" v={fmtMoney(netWorth)} c="var(--green)" />
         <Stat label="Cash" v={fmtMoney(cash)} />
         <Stat label="Collection value" v={fmtMoney(collValue)} />
         <Stat label="Realized P/L" v={`${pnl>=0?'+':''}${fmtMoney(pnl)}`} c={pnl>=0?'var(--green)':'var(--red)'} />
-        <Stat label="Notoriety" v={Math.round(notoriety)} c="var(--gold)" />
+        <Stat label="Reputation" v={Math.round(notoriety)} c="var(--gold)" />
         <Stat label="Packs opened" v={stats.packsOpened} />
         <Stat label="Cards pulled" v={stats.cardsPulled} />
         <Stat label="Hits pulled" v={stats.hits} c="var(--gold)" />
@@ -156,6 +159,93 @@ function Sparkline({ points, color = 'var(--green)', height = 46 }) {
 
 // Net-worth trend over the recent window (one sample per day-advance). Shows the sparkline
 // plus the change across the window — the "am I actually building wealth?" hook.
+// ⭐ The reputation panel — the rework's legibility layer. Current rank, the NEXT rank's
+// checklist (⭐ threshold + any-2-of-3 deeds, always visible so the climb is a to-do list
+// rather than a mystery number), the 🔥 heat meter, the 🎫 clout wallet, and a 7-day
+// source-attributed breakdown of where reputation actually came from (repLedger).
+function RepPanel() {
+  const { notoriety, hype, clout, rank, repLedger } = useGame(useShallow(s => ({
+    notoriety: s.notoriety, hype: s.hype || 0, clout: s.clout || 0, rank: s.rank || 0,
+    repLedger: s.repLedger || { today: {}, days: [] },
+  })))
+  const cur = RANKS[Math.min(rank, RANKS.length - 1)]
+  const next = RANKS[rank + 1] || null
+  // Deed progress for the next rank, selected as raw numbers (useShallow keeps it cheap).
+  const deedVals = useGame(useShallow(s => next ? next.deeds.map(d => d.value(s)) : []))
+  const deedsHave = next ? next.deeds.filter((d, i) => (deedVals[i] || 0) >= d.goal).length : 0
+  const notoPct = next ? Math.min(100, Math.round((notoriety / next.min) * 100)) : 100
+  // Roll the week's attribution together: the 7-day ring + today's live map.
+  const weekly = {}
+  for (const day of (repLedger.days || [])) for (const [tag, v] of Object.entries(day.srcs || {})) weekly[tag] = round2((weekly[tag] || 0) + v)
+  for (const [tag, v] of Object.entries(repLedger.today || {})) weekly[tag] = round2((weekly[tag] || 0) + v)
+  const weekRows = Object.entries(weekly).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 6)
+  const weekTotal = round2(Object.values(weekly).reduce((a, v) => a + v, 0))
+  const todayTotal = round2(Object.values(repLedger.today || {}).reduce((a, v) => a + v, 0))
+  const sparkPts = [...(repLedger.days || []).map(d => d.total || 0), todayTotal]
+  return (
+    <Collapse id="rep" defaultOpen={bigScreen()} className="trend-card" headClass="rep-head"
+      head={<h3 style={{ margin: 0, display: 'inline' }}>⭐ Reputation</h3>}
+      badge={`${cur.emoji} ${cur.name} · ⭐ ${Math.round(notoriety)}${hype >= 10 ? ` · 🔥 ${Math.round(hype)}` : ''}${clout >= 1 ? ` · 🎫 ${Math.floor(clout)}` : ''}`}>
+      <div className="row" style={{ gap: 14, flexWrap: 'wrap', alignItems: 'flex-start', marginTop: 8 }}>
+        <div style={{ flex: '1 1 260px', minWidth: 240 }}>
+          <div style={{ fontSize: 15, fontWeight: 800 }}>{cur.emoji} {cur.name} <span className="muted" style={{ fontWeight: 400, fontSize: 12 }}>· rank {rank}/{RANKS.length - 1}</span></div>
+          {cur.perk && <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>Perk held: {cur.perk}</div>}
+          {next ? (
+            <>
+              <div style={{ marginTop: 10, fontWeight: 700, fontSize: 13 }}>Next: {next.emoji} {next.name}</div>
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 10, overflow: 'hidden', marginTop: 6 }}>
+                <div style={{ width: notoPct + '%', height: '100%', background: 'linear-gradient(90deg,#5ec98a,var(--gold))', transition: 'width .4s' }} />
+              </div>
+              <div className="rep-deed" style={{ marginTop: 6 }}>
+                <span>{notoriety >= next.min ? '✅' : '⬜'} Reach ⭐ {next.min}</span>
+                <span className="muted">{Math.round(notoriety)} / {next.min}</span>
+              </div>
+              <div className="muted" style={{ fontSize: 12, margin: '6px 0 2px' }}>…and any {DEEDS_NEEDED} of these deeds ({deedsHave}/{DEEDS_NEEDED} done):</div>
+              {next.deeds.map((d, i) => {
+                const have = deedVals[i] || 0
+                const done = have >= d.goal
+                return (
+                  <div className="rep-deed" key={d.label}>
+                    <span>{done ? '✅' : '⬜'} {d.label}</span>
+                    <span className="muted">{Math.min(have, d.goal).toLocaleString()} / {d.goal.toLocaleString()}</span>
+                  </div>
+                )
+              })}
+              {next.perk && <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>Rank-up banks: {next.perk} · +{next.clout} 🎫</div>}
+            </>
+          ) : (
+            <div className="muted" style={{ fontSize: 13, marginTop: 10 }}>👑 Top of the ladder — the hobby knows your name.</div>
+          )}
+        </div>
+        <div style={{ flex: '1 1 240px', minWidth: 220 }}>
+          {hype > 0.5 && (
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, fontSize: 13 }}>🔥 Shop heat <span className="muted" style={{ fontWeight: 400 }}>· {Math.round(hype)}/100</span></div>
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 8, overflow: 'hidden', marginTop: 4 }}>
+                <div style={{ width: Math.min(100, hype) + '%', height: '100%', background: 'linear-gradient(90deg,#ff9f43,#ff3df0)' }} />
+              </div>
+              <div className="muted" style={{ fontSize: 11.5, marginTop: 3 }}>Big moments heat the shop — more buyers everywhere while it lasts. Fades over days; a little settles into ⭐.</div>
+            </div>
+          )}
+          <div style={{ fontWeight: 700, fontSize: 13 }}>🎫 Clout <span className="muted" style={{ fontWeight: 400 }}>· {Math.floor(clout)} favor{Math.floor(clout) === 1 ? '' : 's'}</span></div>
+          <div className="muted" style={{ fontSize: 11.5, marginTop: 3 }}>
+            Earned on rank-ups, god packs, big milestones, clean-sweep goal weeks. Spend it where it's needed:
+            📦 restock a distributor (Buy tab) · 📰 jump a reprint queue · ⚡ expedite grading (Bench) · 🎪 talk into a bigger show (Calendar) · 📣 boost a stream.
+          </div>
+          <div style={{ fontWeight: 700, fontSize: 13, marginTop: 12 }}>📒 This week <span className="muted" style={{ fontWeight: 400 }}>· {weekTotal >= 0 ? '+' : ''}{weekTotal}⭐</span></div>
+          {weekRows.length ? weekRows.map(([tag, v]) => (
+            <div className="rep-deed" key={tag}>
+              <span>{repSourceLabel(tag)}</span>
+              <b style={{ color: v >= 0 ? 'var(--gold)' : 'var(--red)' }}>{v >= 0 ? '+' : ''}{v}</b>
+            </div>
+          )) : <div className="muted" style={{ fontSize: 12 }}>Nothing yet — sell, stream, host, help.</div>}
+          {sparkPts.filter(v => v !== 0).length >= 2 && <Sparkline points={sparkPts} color="var(--gold)" height={34} />}
+        </div>
+      </div>
+    </Collapse>
+  )
+}
+
 function NetWorthTrend({ worthHistory, netWorth }) {
   const pts = (worthHistory || []).map(p => p.worth)
   const enough = pts.length >= 2
@@ -328,7 +418,7 @@ function FinanceCard() {
           const current = job?.id === j.id && !pendingJob
           return (
             <button key={j.id} className={`jobbtn ${current ? 'on' : ''}`} disabled={locked || current}
-              title={locked ? `Unlocks at ${j.minNoto} notoriety` : `$${j.wage}/day${j.start>0?` · starts in ${j.start}d`:''}`}
+              title={locked ? `Unlocks at ⭐ ${j.minNoto} reputation` : `$${j.wage}/day${j.start>0?` · starts in ${j.start}d`:''}`}
               onClick={() => takeJob(j.id)}>
               <span className="jobname">{j.title}</span>
               <span className="jobwage">${j.wage}/d{locked ? ` · 🔒${j.minNoto}` : ''}</span>

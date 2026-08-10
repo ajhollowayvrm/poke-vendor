@@ -517,6 +517,9 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .hype-chip small { display:block; text-align:right; color: var(--dim); font-size: 11px; font-weight: 600; }
 @keyframes hype-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }
 @media (prefers-reduced-motion: reduce) { .hype-chip { animation: none; } }
+/* ⭐ Reputation panel (Stats tab) */
+.rep-head { font-weight: 800; }
+.rep-deed { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 2px 0; }
 .clock-chip { font-weight: 800; font-size: 15px; color: var(--accent-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .next-day-btn { font-size: 13px; padding: 5px 12px; white-space: nowrap; flex: none; }
 

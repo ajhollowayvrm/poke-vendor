@@ -26,8 +26,8 @@ export default function Calendar({ onAttend }) {
         {/* keep the Notoriety label and its bar together as one unit so they don't
             split across rows when the toolbar wraps on a phone. */}
         <span className="noto-group">
-          <span className="pill">Notoriety {Math.round(notoriety)}</span>
-          <NotorietyBar n={notoriety} />
+          <span className="pill">⭐ {Math.round(notoriety)} · {RANKS[rank]?.emoji} {RANKS[rank]?.name}</span>
+          <NotorietyBar n={notoriety} rank={rank} />
         </span>
       </div>
 
@@ -135,18 +135,19 @@ export default function Calendar({ onAttend }) {
   )
 }
 
-export function NotorietyBar({ n }) {
-  const tiers = Object.values(SHOW_TIERS)
-  // Scale the whole bar to the highest tier requirement so every unlock marker
-  // (Invitational, Worlds) is visible and proportional — not all pinned at 100%.
-  const scale = Math.max(100, ...tiers.map(t => t.minNotoriety)) || 100
+// The rank-ladder bar: ⭐ progress with a tick per RANK threshold (which are the show-tier
+// thresholds by design). A tick lights up once the rank is actually HELD (banked), not just
+// when the number is passed — deeds matter now, so the bar tells the truth about access.
+export function NotorietyBar({ n, rank = 0 }) {
+  const scale = Math.max(100, ...RANKS.map(r => r.min)) || 100
   const pct = Math.min(100, (n / scale) * 100)
   return (
     <div style={{ flex: 1, minWidth: 90, maxWidth: 360 }}>
       <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
         <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#5ec98a,#ff9f43,#ff3df0)', transition: 'width .4s' }} />
-        {tiers.map(t => t.minNotoriety > 0 && (
-          <span key={t.name} title={t.name} style={{ position: 'absolute', top: -2, left: `${Math.min(100, (t.minNotoriety / scale) * 100)}%`, width: 2, height: 16, background: n >= t.minNotoriety ? '#fff' : '#ffffff44' }} />
+        {RANKS.map((r, i) => r.min > 0 && (
+          <span key={r.name} title={`${r.emoji} ${r.name} — ⭐ ${r.min} + deeds`}
+            style={{ position: 'absolute', top: -2, left: `${Math.min(100, (r.min / scale) * 100)}%`, width: 2, height: 16, background: rank >= i ? '#fff' : '#ffffff44' }} />
         ))}
       </div>
     </div>

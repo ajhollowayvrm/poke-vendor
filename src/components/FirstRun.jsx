@@ -74,29 +74,31 @@ export default function FirstRun() {
   )
 }
 
-// The "?" next to the notoriety star. The playtest asked for one specific thing —
-// an explanation of what notoriety actually DRIVES — because the number is on screen from
-// minute one and nothing says why you'd want it.
+// The "?" next to the reputation star. The playtest asked for one specific thing —
+// an explanation of what the number actually DRIVES — because it's on screen from
+// minute one and nothing says why you'd want it. Now covers the two-speed model.
 export function NotorietyHelp() {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <button className="noto-help" aria-label="What does notoriety do?" title="What does notoriety do?"
+      <button className="noto-help" aria-label="What does reputation do?" title="What does reputation do?"
         onClick={() => setOpen(o => !o)}>?</button>
       {open && (
         <div className="noto-pop" role="dialog" onClick={() => setOpen(false)}>
-          <b>★ Notoriety is your reputation</b>
-          <p>It's the single number the whole game reads off. It decides:</p>
-          <ul>
-            <li>how many online orders and walk-in customers you get at all</li>
-            <li>which card shows will let you through the door</li>
-            <li>how many collectors post wants, and how rich those wants are</li>
-            <li>how far over market a buyer will stretch on your listings</li>
-            <li>how big a room turns up to your 🔨 auctions — which is what sets the price</li>
-            <li>how good a deal show vendors give you, and what your daily goals pay</li>
-          </ul>
-          <p className="muted">You earn it by doing right by people: fair deals, filling wants, giving cards
-            away, and running a shop the town likes. You lose it by letting buyers down.</p>
+          <b>⭐ Reputation is your permanent standing</b>
+          <p>The whole game reads off it — how many orders and walk-ins you get, how rich the
+            collector wants are, how far buyers stretch, how big your auction rooms turn up.
+            It never fades. Earn it doing right by people; lose it letting them down.</p>
+          <p><b>🏅 Ranks</b> — reputation plus <i>deeds</i> unlock named ranks (Weekend Flipper →
+            Known Local → … → Hobby Legend). Ranks open the doors: bigger shows, big-league
+            distributors, sanctioned tournaments. Once earned, a rank is yours for good — the
+            checklist lives on the <b>Stats</b> tab.</p>
+          <p><b>🔥 Hype</b> — big moments (god packs, grail pulls, great streams, giveaways,
+            events) heat the shop up. While hot, more buyers show up <i>everywhere</i>. It fades
+            over a few days, and a little of every hot streak settles into permanent ⭐.</p>
+          <p><b>🎫 Clout</b> — rank-ups and big moments also earn spendable favors: restock a
+            distributor, jump a reprint queue, expedite grading, talk into a bigger show, boost
+            a stream.</p>
         </div>
       )}
     </>

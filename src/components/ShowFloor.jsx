@@ -390,7 +390,7 @@ export default function ShowFloor({ show, onLeave }) {
             Next show day →
           </button>
         )}
-        <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>Notoriety {Math.round(notoriety)}</span>
+        <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>⭐ {Math.round(notoriety)}{shopHype >= 10 ? ` · 🔥 ${Math.round(shopHype)}` : ''}</span>
         <span className="pill cash-pill" title="Your floor wallet — what you brought to spend here. Selling on the floor tops it back up.">
           💵 <AnimatedNumber value={cash} format={fmtMoney} /><CashFlash value={cash} />
         </span>

@@ -25,7 +25,7 @@
 import { spawn, execSync } from 'child_process'
 import { createRequire } from 'module'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const { chromium } = createRequire(path.join(ROOT, 'package.json'))('playwright')
@@ -320,6 +320,26 @@ try {
     storage.freeUnit === storage.freeBase + 15 && storage.unitAllowance === 0)
   pass(`loose packs rack ${storage.packsPerRack}/tray: 15 boxes + 180 loose → $${storage.looseRacked}/day (as boxes: $${storage.looseAsBoxes})`,
     storage.looseRacked === 5 * storage.perUnit && storage.looseAsBoxes === 180 * storage.perUnit)
+
+  // --- 6. ⭐/🔥 REPUTATION CURVES — the two-speed rep model's exploit rails ------------
+  // Pure math (rep.js is dependency-free), asserted against LIVE exports so a retune
+  // can't silently blow past the caps: hype may boost DEMAND ≤ ×1.35 and PRICES ≤ ×1.05,
+  // ⭐ gains taper above the soft cap while losses always land in full, and the rank
+  // thresholds must stay equal to the show-tier gates they replaced.
+  console.log('\n⭐ REPUTATION CURVES:')
+  {
+    const rep = await import(pathToFileURL(path.join(ROOT, 'src', 'game', 'rep.js')).href)
+    pass(`hype demand mult rails at ×${rep.hypeDemandMult(100).toFixed(2)} (want ≤ 1.35)`, rep.hypeDemandMult(100) <= 1.35 + 1e-9 && rep.hypeDemandMult(0) === 1)
+    pass(`hype price mult rails at ×${rep.hypePriceMult(100).toFixed(2)} (want ≤ 1.05)`, rep.hypePriceMult(100) <= 1.05 + 1e-9 && rep.hypePriceMult(0) === 1)
+    pass(`hype decays (half-life ${rep.HYPE_HALF_LIFE}d) and cure is capped at ${rep.HYPE_CURE_DAILY_CAP}⭐/day`,
+      rep.decayHype(100, rep.HYPE_HALF_LIFE) === 50 && rep.HYPE_CURE_DAILY_CAP <= 3)
+    const taperOk = rep.applyNotoGain(300, 10) - 300 < 10 && rep.applyNotoGain(100, 10) === 110
+    const lossOk = rep.applyNotoGain(300, -10) === 290 && rep.applyNotoGain(5, -10) === 0
+    pass('⭐ gains taper above the soft cap; losses land in full (floor 0)', taperOk && lossOk)
+    const ladderOk = [0, 15, 40, 80, 150, 280].every((m, i) => rep.RANKS[i]?.min === m)
+    pass('rank thresholds equal the historical show-tier gates (0/15/40/80/150/280)', ladderOk)
+    pass('every rank past 0 has 3 deeds and a 2-of-3 bar', rep.RANKS.slice(1).every(r => r.deeds.length === 3) && rep.DEEDS_NEEDED === 2)
+  }
 
   await browser.close()
 } catch (e) {

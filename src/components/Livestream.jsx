@@ -1567,7 +1567,8 @@ function StreamSummary({ session, onDone }) {
         <div className="stream-summary-grid">
           <div><span className="muted">Peak viewers</span><b>👁 {s.peak.toLocaleString()}</b></div>
           <div><span className="muted">Tips banked</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.tips)}</b></div>
-          <div><span className="muted">Notoriety</span><b style={{ color: s.noto >= 0 ? 'var(--gold)' : 'var(--red)' }}>{s.noto>=0?'+':''}{s.noto}★</b></div>
+          <div><span className="muted">Reputation</span><b style={{ color: s.noto >= 0 ? 'var(--gold)' : 'var(--red)' }}>{s.noto>=0?'+':''}{s.noto}★</b></div>
+          {!flopped && <div><span className="muted">Shop heat</span><b style={{ color:'#ff9f43' }}>🔥 +{Math.min(25, Math.round(Math.log10(s.peak + 1) * 6 + Math.max(0, s.noto)))}</b></div>}
           <div><span className="muted">Products ripped</span><b>📦 {s.products || 1}</b></div>
           <div><span className="muted">Your hits kept</span><b>{s.hits.length} · {fmtMoney(hitValue)}</b></div>
           {s.isBreak && <div><span className="muted">Break spots sold</span><b>{s.spotsSold}/{s.spots}</b></div>}
