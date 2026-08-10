@@ -257,7 +257,13 @@ export function haggleRound({ side, their, market, yourOffer, flex, round, archK
 //   - Any booth has a small shot at an occasional VINTAGE sealed pack — so the Vault isn't
 //     the only place to find sealed vintage.
 // `r` is the show's seeded rng so the floor stays stable as you walk it.
-function boothSealed(r, arch, band = [1, 100]) {
+// What the research says a real table looks like (tcgshowsnearme / cardshows.io /
+// thecardshopfinder vendor guides, 2025-26): SINGLES drive revenue at virtually every show;
+// sealed is a secondary counter of current boxes/ETBs — several COPIES of a handful of SKUs,
+// not one copy of twenty different things; and dealers SPECIALIZE (the sealed distributor
+// table, the vintage-only table, the everything-else singles table). `specialty` shapes all
+// of it; every line carries a `qty` (depth, not breadth).
+function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
   const out = []
   const isWhale = arch.key === 'whale'
   // Modern sealed: whales always lay boxes out; others reliably have SOMETHING sealed on the
@@ -266,49 +272,64 @@ function boothSealed(r, arch, band = [1, 100]) {
   // One table, one product per line: a vendor doesn't lay out the same ETB three times as three
   // separate offers. Keyed on (set, product) so the same box from two different sets is fine.
   const seen = new Set()
-  const push = (entry) => {
+  const push = (entry, qty = 1) => {
     const key = `${entry.set.id}|${entry.product?.type}`
     if (seen.has(key)) return false
     seen.add(key)
-    out.push(entry)
+    out.push({ ...entry, qty })
     return true
+  }
+  // How deep a stack of one SKU runs. Cheap product stacks high (a tub of packs), big-ticket
+  // items shallow (nobody brings six vintage boxes) — and the sealed table runs deepest.
+  const qtyFor = (price) => {
+    const deep = specialty === 'sealed' ? 2 : 0
+    if (price >= 400) return 1
+    if (price >= 120) return 1 + Math.floor(r() * (2 + deep))
+    return 1 + Math.floor(r() * (3 + deep)) + (price < 15 ? Math.floor(r() * 3) : 0)
   }
   const addModern = (boxes) => {
     const set = pickR(r, SHOP_SETS)
     const prods = setProducts(set)
     const pool = boxes ? prods.filter(p => p.packs >= 9) : prods.filter(p => p.packs <= 6)
     const base = (pool.length ? pickR(r, pool) : pickR(r, prods))
-    const markup = 1.12 + r() * (boxes ? 0.33 : 0.18)
-    push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' })
+    // The sealed table is a volume business — near-market on current product is WHY people
+    // walk to it. Everyone else marks sealed up like the side line it is for them.
+    const markup = specialty === 'sealed' ? 1.02 + r() * 0.12 : 1.12 + r() * (boxes ? 0.33 : 0.18)
+    push({ set, product: base, _ask: round2(base.price * markup), _origin: 'modern' }, qtyFor(base.price))
   }
   // A show floor should be wall-to-wall sealed product. Most tables lay out a modern item,
   // many carry a second, and older/vintage sealed turns up often too. (Counts bumped so no
   // vendor reads as "doesn't do sealed" — a floor guarantee below backs it up.)
-  // A real dealer's table is STACKED — boxes behind them, ETBs down the front, packs in a tub.
-  // This used to lay out one or two items, which read as a shop that had nearly sold out. Now a
-  // table carries a proper spread (roughly 10× what it did), which is why the booth UI groups it
-  // by set and collapses: a wall of product is the point, an unreadable wall of product isn't.
-  const modernN = 8 + Math.floor(r() * 8)            // 8–15 modern lines
-  for (let i = 0; i < modernN; i++) addModern(isWhale ? r() < 0.7 : r() < 0.3)
+  // Line counts by specialty. The sealed table is the wall of product; a singles table keeps
+  // a modest sealed counter beside the binders; the vintage table stocks no modern at all.
+  const modernN = specialty === 'sealed' ? 10 + Math.floor(r() * 7)   // 10–16 SKUs, stacked deep
+    : specialty === 'vintage' ? 0
+    : 2 + Math.floor(r() * 3)                                        // 2–4 SKUs on a singles table
+  for (let i = 0; i < modernN; i++) addModern(specialty === 'sealed' ? r() < 0.55 : (isWhale ? r() < 0.7 : r() < 0.3))
   // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fusion Strike, Fates Collide, the
   // Zygarde / Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old
   // ETB / box / tin on the table at a collector's markup.
   // Draws from AFTERMARKET_SETS, not just the old SM/XY pool: a set that ages out of the shop's
   // in-print window lands here too, so the show floor is where recently-retired product goes to
   // be hunted rather than ordered.
-  const afterN = AFTERMARKET_SETS.length ? 3 + Math.floor(r() * 5) : 0   // 3–7 out-of-print lines
+  const afterN = !AFTERMARKET_SETS.length ? 0
+    : specialty === 'vintage' ? 4 + Math.floor(r() * 5)                  // the retro table's bread & butter
+    : specialty === 'sealed' ? 3 + Math.floor(r() * 4)
+    : r() < 0.6 ? 1 + Math.floor(r() * 2) : 0                            // a singles table: an old ETB or two
   for (let i = 0; i < afterN; i++) {
     const sSet = pickR(r, AFTERMARKET_SETS)
     const prods = setProducts(sSet)
     const product = prods.length ? prods[Math.floor(r() * prods.length)] : null
     if (product) {
       const markup = 1.10 + r() * 0.25
-      push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' })
+      push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' }, qtyFor(product.price || 0))
     }
   }
   // A surprise vintage sealed pack on a regular table — any booth at any show.
   // Vintage stays SCARCE by design — a wall of modern product doesn't mean a wall of '99 packs.
-  const vintN = VINTAGE_SETS.length && r() < 0.55 ? 1 + Math.floor(r() * 2) : 0
+  const vintN = !VINTAGE_SETS.length ? 0
+    : specialty === 'vintage' ? 2 + Math.floor(r() * 3)                  // 2–4 — the reason this table exists
+    : r() < (specialty === 'sealed' ? 0.3 : 0.22) ? 1 : 0                // scarce everywhere else, by design
   for (let i = 0; i < vintN; i++) {
     const vSet = pickR(r, VINTAGE_SETS)
     const product = vintageProduct(vSet)
@@ -318,7 +339,9 @@ function boothSealed(r, arch, band = [1, 100]) {
   // 🎌 An import table. JP sealed on the show floor is the ONLY way to buy it without the
   // Import License — a vendor who does the legwork, and charges for it. Steeper markup than
   // aftermarket because he ate the freight and the exchange rate to get it here.
-  const jpN = JP_SHOP_SETS.length && r() < 0.45 ? 1 + Math.floor(r() * 3) : 0
+  const jpN = !JP_SHOP_SETS.length || specialty === 'vintage' ? 0
+    : specialty === 'sealed' ? 1 + Math.floor(r() * 3)
+    : r() < 0.25 ? 1 : 0
   for (let i = 0; i < jpN; i++) {
     const jSet = pickR(r, JP_SHOP_SETS)
     const prods = setProducts(jSet)
@@ -401,8 +424,19 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
     // A recurring roster vendor claims this slot (fixed character), else a procedural one.
     const rec = recPick[i] || null
     const arch = rec ? archetype(rec.archetype) : pickR(r, ARCHETYPES)
-    // Bigger booths now: a deep bin of commons/uncommons + a few hits.
-    const stockN = 14 + Math.floor(r() * 18) // 14–31 cards
+    // Dealer SPECIALTY — the floor has a map now, the way a real one does: most tables are
+    // singles-led (singles are the fastest mover at virtually every show), roughly one in six
+    // is the sealed table (a distributor moving cases near retail), and bigger shows draw the
+    // vintage-only table. High Rollers lean sealed — "deals in the big stuff" IS that table.
+    const specialty = arch.key === 'whale' ? (r() < 0.4 ? 'sealed' : 'singles')
+      : r() < 0.1 ? 'sealed'
+      : (vintageChance > 0 && r() < 0.1) ? 'vintage'
+      : 'singles'
+    // Singles depth follows the specialty: a singles table runs DEEP bins (that's the whole
+    // table), the sealed table keeps a thin courtesy binder, the vintage table sits between.
+    const stockN = specialty === 'sealed' ? 5 + Math.floor(r() * 6)      // 5–10
+      : specialty === 'vintage' ? 12 + Math.floor(r() * 9)               // 12–20
+      : 24 + Math.floor(r() * 25)                                        // 24–48
     const stock = []
     // Repeat guards for THIS table: high-band graded stock comes from a finite pool of
     // real PSA comps (dedupe by card+grade), and pricier raw singles shouldn't stack
@@ -414,7 +448,7 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       let card
       // A small slice of the bin is a loose VINTAGE single (Base Charizard etc.) at bigger
       // shows — drawn from the vintage pool instead of the shop pool.
-      if (vintageChance && r() < vintageChance) {
+      if ((vintageChance || specialty === 'vintage') && r() < (specialty === 'vintage' ? 0.5 : vintageChance)) {
         card = vintageCardInRange(lo, hi * 3, r, seenIds) || null // vintage skews pricey; widen the band
       }
       // Hit density varies by archetype — this is a REASON to pick a vendor. SHARP traders
@@ -487,7 +521,8 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       // Turns "dump everything on the High Roller" into a routing puzzle across the floor.
       till: round2(hi * (4 + r() * 6) * (TILL_ARCH[arch.key] ?? 1)),
       stock: boothStock,
-      products: boothSealed(r, arch, tier.valueBand),  // sealed + mystery packs on the table (may be empty)
+      specialty,
+      products: boothSealed(r, arch, tier.valueBand, specialty),  // sealed + mystery packs (shaped by specialty)
       // grid position assigned by the floor layout
     })
   }

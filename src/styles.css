@@ -2122,3 +2122,40 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .vsealed-name { grid-area: name; } .vsealed-meta { grid-area: meta; }
   .vsealed-ask { grid-area: ask; } .vsealed-act { grid-area: act; justify-content: flex-end; }
 }
+
+
+/* ---------- Vendor booth: singles as set-grouped binder lists ---------------------
+   A singles-led table runs a DEEP bin now (24-48 cards), and research says real tables
+   organize by set with clear prices for fast browsing. Compact rows; the showcase keeps
+   its big-art tiles above. */
+.vsingle-list { display: flex; flex-direction: column; gap: 3px; }
+.vsingle-row { display: grid; grid-template-columns: auto auto minmax(0,1.6fr) minmax(0,1fr) auto auto;
+  align-items: center; gap: 7px; padding: 5px 8px; border-radius: 8px;
+  background: var(--panel2); border: 1px solid var(--line); }
+.vsingle-row.in-stack { border-color: color-mix(in srgb, var(--gold) 55%, var(--line));
+  background: color-mix(in srgb, var(--gold) 7%, var(--panel2)); }
+.vsingle-rarity { width: 10px; height: 10px; border-radius: 3px; background: var(--rarity, var(--dim));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--rarity, transparent) 60%, transparent); flex: none; }
+.vsingle-name { font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vsingle-meta { color: var(--dim); font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vsingle-ask { display: flex; align-items: center; gap: 4px; justify-content: flex-end; white-space: nowrap; font-size: 12.5px; }
+.vsingle-ask s.retail { font-size: 10.5px; }
+.vsingle-act { display: flex; gap: 4px; }
+.vsingle-act .btn { flex: none; max-width: none; width: auto; padding: 5px 9px; min-height: 30px; font-size: 11.5px; }
+.stack-check { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel);
+  color: var(--dim); font-weight: 800; cursor: pointer; flex: none; }
+.stack-check.on { background: color-mix(in srgb, var(--gold) 25%, var(--panel)); color: var(--gold); border-color: var(--gold); }
+/* The lot-deal bar: sticky at the bottom of the booth modal while a stack is building. */
+.stack-bar { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 10px;
+  margin-top: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+  background: color-mix(in srgb, var(--gold) 10%, var(--panel)); backdrop-filter: blur(6px); font-size: 12.5px; }
+.stack-bar .btn { flex: none; max-width: 140px; }
+.pill.vsealed-qty { margin-left: 6px; font-size: 10px; background: color-mix(in srgb, var(--accent2) 22%, transparent); color: var(--accent-light); }
+/* Singles rows on a phone: fold meta under the name, actions under the ask. */
+@media (max-width: 640px) {
+  .vsingle-row { grid-template-columns: auto auto minmax(0,1fr) auto;
+    grid-template-areas: 'check rarity name ask' 'check rarity meta act'; row-gap: 3px; }
+  .stack-check { grid-area: check; } .vsingle-rarity { grid-area: rarity; }
+  .vsingle-name { grid-area: name; } .vsingle-meta { grid-area: meta; }
+  .vsingle-ask { grid-area: ask; } .vsingle-act { grid-area: act; justify-content: flex-end; }
+}

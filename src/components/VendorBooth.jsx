@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rawValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, overTierValue, DEFAULT_GRADER, setById, cardImg, isCardDeal } from '../game/engine'
+import { cardValue, rawValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, overTierValue, DEFAULT_GRADER, setById, cardImg, isCardDeal, setNameOfCard, rarityRank } from '../game/engine'
 import { vendorRapport, nextVendorRapport } from '../game/shows'
 import CardTile, { rarityColor } from './CardTile'
+// (Collapse is already imported below for the sealed tab)
 import CardModal from './CardModal'
 import Haggle from './Haggle'
 import { confirmDialog, useModalEscape } from '../ui/dialog'
@@ -102,7 +103,17 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   // lives in ShowFloor): booth stock used to reset on every close/reopen, re-serving
   // bought items at the same uid — infinite rebuy plus uid-duplication corruption.
   const [stock, setStock] = useState(() => (booth.stock || []).filter(c => !takenIds?.has(c.uid)))
-  const [sealed, setSealed] = useState(() => (booth.products || []).filter(e => !takenIds?.has(e._tk)))
+  // Sealed lines carry a qty (a stack of the same SKU). Units taken are recorded as
+  // `${_tk}#u<n>` keys in takenIds, so a close/reopen re-seeds each line at its remaining
+  // depth instead of either re-serving bought units or nuking the whole stack.
+  const [sealed, setSealed] = useState(() => (booth.products || [])
+    .map(e => {
+      const total = e.qty || 1
+      let taken = 0
+      if (takenIds) { for (let u = 1; u <= total; u++) if (takenIds.has(`${e._tk}#u${u}`)) taken++ }
+      return (takenIds?.has(e._tk) || taken >= total) ? null : { ...e, qty: total - taken, _qty0: total - taken, _taken0: taken }
+    })
+    .filter(Boolean))
   const [tab, setTab] = useState('buy')
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
   // After agreeing a buy, ask whether to list it at the show or take it home.
@@ -116,6 +127,32 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   const [pendingSealed, setPendingSealed] = useState(null) // the sealed entry
   const [mysteryResult, setMysteryResult] = useState(null) // card pulled from a mystery pack
   const [tradeFor, setTradeFor] = useState(null)           // booth card you're offering a trade on
+  // 🧺 Stack deal: multi-select singles, one checkout, a volume discount — the "gather a few
+  // cards and make one offer for the lot" that every card-show buying guide teaches. 3+ cards
+  // 8% off, 6+ 12%, 10+ 15% (inside the 10-20% real vendors concede on volume).
+  const [stackIds, setStackIds] = useState(() => new Set())
+  const stackDisc = (n) => n >= 10 ? 0.15 : n >= 6 ? 0.12 : n >= 3 ? 0.08 : 0
+  const toggleStack = (uid) => setStackIds(p => { const n = new Set(p); n.has(uid) ? n.delete(uid) : n.add(uid); return n })
+  function buyStack() {
+    const cards = stock.filter(c => stackIds.has(c.uid))
+    if (cards.length < 3) return
+    const disc = stackDisc(cards.length)
+    const total = round2(cards.reduce((a, c) => a + eff(c._ask), 0) * (1 - disc))
+    const g = useGame.getState()
+    if (g.cash < total) { flash(`Not enough cash — the stack runs ${fmtMoney(total)}.`); return }
+    let bought = 0, spent = 0
+    for (const c of cards) {
+      const each = round2(eff(c._ask) * (1 - disc))
+      if (!buyFromVendor(c, each, { vendorId: booth.vendorId })) break
+      bought++; spent = round2(spent + each)
+      onTaken?.([c.uid])
+    }
+    if (!bought) return
+    setStock(s => s.filter(c => !stackIds.has(c.uid) || !cards.slice(0, bought).some(x => x.uid === c.uid)))
+    setStackIds(new Set())
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, spent)
+    flash(`🧺 Deal done — ${bought} cards for ${fmtMoney(spent)} (${Math.round(disc * 100)}% off the stack).`)
+  }
   // Tap any card to open its page: { card, ask } for THEIR stock (read-only inspect —
   // PSA-if-graded values + cut read, the gem-hunter's tools), { card, owned:true } for yours.
   const [inspect, setInspect] = useState(null)
@@ -236,16 +273,31 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
   }
   // Picking a sealed product opens a choice: rip it on the floor now, or stock it to hold.
   // Buy a sealed product and crack it on the floor right now (same rip flow as the Vault).
+  // Consume `n` units off a sealed line: record per-unit taken keys (so a reopen re-seeds the
+  // remaining stack), decrement or drop the local line, and close the Sealed tab on the last one.
+  function consumeSealed(entry, n = 1) {
+    if (entry._tk) {
+      const start = (entry._taken0 || 0) + ((entry._qty0 ?? entry.qty) - entry.qty)
+      onTaken?.(Array.from({ length: n }, (_, i) => `${entry._tk}#u${start + i + 1}`))
+    }
+    setSealed(s => {
+      const next = s
+        .map(e => e !== entry ? e : (e.qty > n ? { ...e, qty: e.qty - n } : null))
+        .filter(Boolean)
+      if (!next.some(e => !e.mystery) && next.length === 0) setTab('buy')
+      return next
+    })
+  }
   function ripSealedNow(entry) {
     const ask = eff(entry._ask)
     setPendingSealed(null)
-    onClose()
-    // Only on a SUCCESSFUL buy: mark the entry taken + build rapport. (Rapport used to
-    // bump — and the item used to stay re-buyable — even when the purchase failed.)
+    // The booth STAYS OPEN — the floor-rip overlay paints above this modal, so when the rip's
+    // Done lands you're back at the table you bought from, stack decremented, ready to keep
+    // shopping. (It used to onClose() here, dumping you back to the directory after every rip.)
     const ok = onRipSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
     if (!ok) return
+    consumeSealed(entry, 1)
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
-    if (entry._tk) onTaken?.([entry._tk])
   }
   // Buy a sealed product and stock it in your held inventory (rip/list/flip later). Keeps
   // the booth open and removes the item from the table; the last one closes the Sealed tab.
@@ -254,10 +306,61 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     setPendingSealed(null)
     const ok = onStockSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
     if (!ok) return // buy failed (cash) — leave the item on the table
-    if (sealed.length <= 1) setTab('buy')
-    setSealed(s => s.filter(e => e !== entry))
+    consumeSealed(entry, 1)
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
-    if (entry._tk) onTaken?.([entry._tk])
+  }
+  // 🧺 Take the remaining STACK of one line at a volume discount — the "do a deal on the lot"
+  // every real vendor loves (fewer transactions, less to pack up). Stocks to inventory.
+  function takeStack(entry) {
+    const n = entry.qty || 1
+    const disc = n >= 5 ? 0.15 : n >= 3 ? 0.12 : 0.08
+    const each = round2(eff(entry._ask) * (1 - disc))
+    const total = round2(each * n)
+    const g = useGame.getState()
+    if (g.cash < total) { flash(`Not enough cash — the lot of ${n} runs ${fmtMoney(total)}.`); return }
+    let bought = 0
+    for (let i = 0; i < n; i++) {
+      if (!onStockSealed?.({ set: entry.set, product: entry.product, ask: each, vendorName: booth.name })) break
+      bought++
+    }
+    if (!bought) return
+    consumeSealed(entry, bought)
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, round2(each * bought))
+    flash(`🧺 Took the stack — ${bought}× ${entry.product.type} at ${fmtMoney(each)} each (${Math.round(disc * 100)}% off the lot).`)
+  }
+
+  // Compact list row for the set-grouped bins — rarity chip, name, ask vs market, actions.
+  // Tap the name to inspect (full card page); the checkbox feeds the 🧺 stack deal.
+  function renderRow(card) {
+    const mkt = cardValue(card)
+    const ask = eff(card._ask)
+    const deal = isCardDeal(card, ask, settings)
+    const inStack = stackIds.has(card.uid)
+    return (
+      <div key={card.uid} className={`vsingle-row ${inStack ? 'in-stack' : ''} ${starSet.has(card.uid) ? 'starred' : ''}`}>
+        <button type="button" className={`stack-check ${inStack ? 'on' : ''}`} onClick={() => toggleStack(card.uid)}
+          title="Add to a stack — 3+ cards gets a volume deal on the lot" aria-pressed={inStack}>{inStack ? '✓' : '+'}</button>
+        <span className="vsingle-rarity" style={{ '--rarity': card.foil ? card.foil.color : rarityColor(card.rarity) }}
+          title={card.rarity + (card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : '')} />
+        <span className="vsingle-name" style={{ cursor: 'zoom-in' }} title="Tap to inspect — grade upside, cut read, price history"
+          onClick={() => setInspect({ card, ask })}>
+          {card.grade ? `🔬${card.grade.overall} ` : ''}{card.name}
+          {card._mispriced && seeDeals ? ' 💎' : ''}
+        </span>
+        <span className="vsingle-meta">{card.condition && card.condition !== 'NM' ? card.condition + ' · ' : ''}mkt {fmtMoney(mkt)}</span>
+        <span className="vsingle-ask">
+          {disc > 0 && <s className="retail">{fmtMoney(card._ask)}</s>}
+          <span className="ask">{fmtMoney(ask)}</span>
+          {seeDeals && deal && <span className="dealtag">DEAL</span>}
+          {seeDeals && !deal && ask > mkt * 1.2 && <span className="overtag">OVER</span>}
+        </span>
+        <span className="vsingle-act">
+          <button className="btn" disabled={cash < ask} onClick={() => buyAt(card, ask)}>Buy</button>
+          <button className="btn alt" disabled={haggled.has(card.uid)}
+            onClick={() => setHaggle({ side: 'buy', card, market: mkt, start: ask })}>{haggled.has(card.uid) ? '—' : 'Haggle'}</button>
+        </span>
+      </div>
+    )
   }
 
   function renderBuy(card, featured) {
@@ -312,7 +415,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
 
         <div className="tabs" style={{ margin: '10px 0' }}>
           <button className={`tab ${tab==='buy'?'active':''}`} onClick={()=>setTab('buy')}>Their stock ({stock.length})</button>
-          {sealed.length > 0 && <button className={`tab ${tab==='sealed'?'active':''}`} onClick={()=>setTab('sealed')}>📦 Sealed ({sealed.length})</button>}
+          {sealed.length > 0 && <button className={`tab ${tab==='sealed'?'active':''}`} onClick={()=>setTab('sealed')}>📦 Sealed ({sealed.reduce((a, e) => a + (e.mystery ? 1 : (e.qty || 1)), 0)})</button>}
           <button className={`tab ${tab==='sell'?'active':''}`} onClick={()=>setTab('sell')}>Sell to them</button>
         </div>
 
@@ -342,7 +445,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
               <Collapse key={g.setId} id={`booth-sealed-${g.setId}`} defaultOpen={sealedBySet.length <= 3}
                 className="wants" headClass="wants-head"
                 head={<>{g.logo && <img src={g.logo} alt="" style={{ height: 20, objectFit: 'contain', verticalAlign: '-4px', marginRight: 6 }} />}{g.name}</>}
-                badge={`${g.items.length} · from ${fmtMoney(Math.min(...g.items.map(x => eff(x._ask))))}`}>
+                badge={`${g.items.reduce((a, x) => a + (x.qty || 1), 0)} · from ${fmtMoney(Math.min(...g.items.map(x => eff(x._ask))))}`}>
                 <div className="vsealed-list">
                   {g.items.map((entry) => {
                     const idx = entry._idx
@@ -352,6 +455,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                         <span className="vsealed-name">
                           {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry._origin === 'import' ? '🎌 ' : (entry.product.icon || '📦') + ' '}
                           {entry.product.type}
+                          {(entry.qty || 1) > 1 && <span className="pill vsealed-qty" title={`They brought a stack — ${entry.qty} of these on the table.`}>×{entry.qty}</span>}
                           {entry._lead && <span className="pill" style={{ marginLeft: 6, fontSize: 10, background: '#ffcb0522', color: 'var(--gold)' }} title="They set this aside for you before the show — at the price they quoted.">🤝 held</span>}
                         </span>
                         <span className="vsealed-meta">
@@ -367,6 +471,11 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                           <button className="btn gold" disabled={cash < ask} onClick={() => setPendingSealed(entry)}>
                             {cash < ask ? 'Need' : 'Buy'}
                           </button>
+                          {(entry.qty || 1) >= 2 && (
+                            <button className="btn alt" disabled={cash < ask * entry.qty * 0.85}
+                              title={`Take all ${entry.qty} at ${entry.qty >= 5 ? 15 : entry.qty >= 3 ? 12 : 8}% off the lot — straight to your inventory. Vendors love volume.`}
+                              onClick={() => takeStack(entry)}>🧺 ×{entry.qty}</button>
+                          )}
                           <button className="btn alt" disabled={!canTrade}
                             title={canTrade ? 'Build a trade — offer your cards/sealed (± cash) for this sealed and more' : 'You have nothing to trade'}
                             onClick={() => setTradeFor({ sealed: entry })}>🔄</button>
@@ -387,12 +496,59 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
                 <div className="grid showcase-grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))' }}>
                   {stock.filter(c => c._highlight).map(card => renderBuy(card, true))}
                 </div>
-                <div className="showcase-head" style={{ marginTop: 18 }}>🗃️ Bulk bin <span className="muted">— {stock.filter(c=>!c._highlight).length} cards</span></div>
               </>
             )}
-            <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(132px,1fr))' }}>
-              {stock.filter(c => !c._highlight).map(card => renderBuy(card, false))}
-            </div>
+            {/* 📒 The binders: singles grouped BY SET, rarity-sorted inside — the way a real
+                table organizes them — with the sub-$2 stuff in its own dollar bin. Compact
+                rows instead of a tile wall, so a deep bin browses fast; tap a name for the
+                full card page. The + on each row builds a 🧺 stack for a volume deal. */}
+            {(() => {
+              const rest = stock.filter(c => !c._highlight)
+              const bin = rest.filter(c => eff(c._ask) < 2)
+              const bySet = new Map()
+              for (const c of rest) {
+                if (eff(c._ask) < 2) continue
+                const sn = setNameOfCard(c) || 'Other'
+                if (!bySet.has(sn)) bySet.set(sn, [])
+                bySet.get(sn).push(c)
+              }
+              const groups = [...bySet.entries()].map(([name, cards]) => {
+                cards.sort((a, b) => rarityRank(b.rarity) - rarityRank(a.rarity) || eff(b._ask) - eff(a._ask))
+                return { name, cards, top: Math.max(...cards.map(c => eff(c._ask))) }
+              }).sort((a, b) => b.top - a.top)
+              return (
+                <>
+                  {groups.map(g => (
+                    <Collapse key={g.name} id={`booth-bin-${booth.id}-${g.name}`} defaultOpen={groups.length <= 3}
+                      className="wants" headClass="wants-head"
+                      head={<>📒 {g.name}</>} badge={`${g.cards.length} · to ${fmtMoney(g.top)}`}>
+                      <div className="vsingle-list">{g.cards.map(renderRow)}</div>
+                    </Collapse>
+                  ))}
+                  {bin.length > 0 && (
+                    <Collapse id={`booth-bin-${booth.id}-dollar`} defaultOpen={false}
+                      className="wants" headClass="wants-head"
+                      head={<>🗃️ Dollar bin</>} badge={`${bin.length} cards`}>
+                      <div className="vsingle-list">{bin.sort((a, b) => eff(b._ask) - eff(a._ask)).map(renderRow)}</div>
+                    </Collapse>
+                  )}
+                </>
+              )
+            })()}
+            {stackIds.size > 0 && (() => {
+              const cards = stock.filter(c => stackIds.has(c.uid))
+              const disc = stackDisc(cards.length)
+              const sum = round2(cards.reduce((a, c) => a + eff(c._ask), 0))
+              const total = round2(sum * (1 - disc))
+              return (
+                <div className="stack-bar">
+                  <span><b>🧺 {cards.length}</b> picked{disc > 0 ? <> · <b>{Math.round(disc * 100)}% off</b></> : <> · pick {3 - cards.length} more for a deal</>}</span>
+                  <span>{disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(sum)}</s>}<b className="ask">{fmtMoney(total)}</b></span>
+                  <button className="btn gold" disabled={cards.length < 3 || cash < total} onClick={buyStack}>Do the deal</button>
+                  <button className="btn alt" style={{ flex: 'none', maxWidth: 60 }} onClick={() => setStackIds(new Set())}>✕</button>
+                </div>
+              )
+            })()}
           </>
         ) : (
           collection.length === 0 ? <p className="muted">You have nothing to sell.</p> :

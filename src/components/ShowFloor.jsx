@@ -393,6 +393,8 @@ export default function ShowFloor({ show, onLeave }) {
                 <div className="vdir-name">
                   {booth.name}
                   <span className="pill vdir-arch">{booth.archLabel}</span>
+                  {booth.specialty === 'sealed' && <span className="pill" style={{ background: '#3b6cff22', color: 'var(--accent-light)' }} title="The sealed table — a wall of product, several copies deep, near-market on current sets.">📦 sealed wall</span>}
+                  {booth.specialty === 'vintage' && <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }} title="Vintage & retro only — no modern product on this table.">🗝️ vintage table</span>}
                   {starredHere && <span className="pill vdir-starred" title="You starred something here — come back for it">⭐ come back</span>}
                   {rap && rap.level > 0 && <span className="pill" style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{rap.disc ? ` · ${Math.round(rap.disc * 100)}% off` : ''}</span>}
                   {booth.leadNote && <span className="pill vdir-held">🗝️ set aside for you</span>}
