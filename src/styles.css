@@ -2132,7 +2132,7 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .vsingle-row { display: grid; grid-template-columns: auto auto minmax(0,1.6fr) minmax(0,1fr) auto auto;
   align-items: center; gap: 7px; padding: 5px 8px; border-radius: 8px;
   background: var(--panel2); border: 1px solid var(--line); }
-.vsingle-row.in-stack { border-color: color-mix(in srgb, var(--gold) 55%, var(--line));
+.vsingle-row.in-stack, .vsealed-row.in-stack { border-color: color-mix(in srgb, var(--gold) 55%, var(--line));
   background: color-mix(in srgb, var(--gold) 7%, var(--panel2)); }
 .vsingle-rarity { width: 10px; height: 10px; border-radius: 3px; background: var(--rarity, var(--dim));
   box-shadow: 0 0 6px color-mix(in srgb, var(--rarity, transparent) 60%, transparent); flex: none; }

@@ -227,11 +227,13 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   const selectedLines = useMemo(() => allLines.filter(l => picked.has(l.key)), [allLines, picked])
   const sel = useMemo(() => {
     const cardUids = [], sealedUids = [], rawCardUids = [], rawCards = []
-    let value = 0, count = 0
+    let value = 0, count = 0, packs = 0
     const add = (kind, it) => {
       count += 1
       value += kind === 'sealed' ? sealedValue(it) : cardValue(it)
-      if (kind === 'sealed') sealedUids.push(it.uid)
+      // Packs, not items, is what a rip selection actually costs you in time: two 15-pack
+      // collections is 30 packs, and that's the number to put in front of the button.
+      if (kind === 'sealed') { sealedUids.push(it.uid); packs += it.product?.packs || 1 }
       else { cardUids.push(it.uid); if (!it.grade) { rawCardUids.push(it.uid); rawCards.push(it) } }
     }
     if (gridMode) {
@@ -239,7 +241,7 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
     } else {
       for (const l of selectedLines) for (const it of l.items) add(l.kind, it)
     }
-    return { cardUids, sealedUids, rawCardUids, rawCards, value, count }
+    return { cardUids, sealedUids, rawCardUids, rawCards, value, count, packs }
   }, [gridMode, gridItems, pickedUids, selectedLines])
   // Sum per card — declared-value pricing means a batch with a four-figure chase in it costs
   // more than count × sticker (see gradingFeeTotal).
@@ -441,7 +443,10 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
       {/* Floating bulk-action bar — appears when lines are selected. Actions are place-aware. */}
       {selectMode && sel.count > 0 && (
         <div className="bulk-bar">
-          <div className="bulk-bar-summary"><b>{sel.count} selected</b> · {fmtMoney(sel.value)} market</div>
+          <div className="bulk-bar-summary">
+            <b>{sel.count} selected</b> · {fmtMoney(sel.value)} market
+            {sel.packs > 0 && <> · <b>{sel.packs} pack{sel.packs === 1 ? '' : 's'}</b></>}
+          </div>
           <div className="bulk-bar-actions">
             {place !== 'floor' && (
               <button className="btn" onClick={() => bulkMove('floor', '🛒 Out on the floor —')}>🛒 To floor</button>
@@ -454,8 +459,8 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
             )}
             {onSift && sel.sealedUids.length > 0 && (
               <button className="btn gold" onClick={bulkSift}
-                title="Auto-rip these sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand">
-                ⚡ Sift-rip {sel.sealedUids.length}
+                title={`Auto-rip these ${sel.sealedUids.length} sealed item${sel.sealedUids.length === 1 ? '' : 's'} — ${sel.packs} pack${sel.packs === 1 ? '' : 's'} in all. It churns pack by pack and stops on the big-hit packs so you can rip those by hand.`}>
+                ⚡ Sift-rip {sel.packs} pack{sel.packs === 1 ? '' : 's'}
               </button>
             )}
             {sel.rawCardUids.length > 0 && (

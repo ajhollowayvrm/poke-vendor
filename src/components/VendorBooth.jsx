@@ -10,9 +10,9 @@ import { confirmDialog, useModalEscape } from '../ui/dialog'
 import { Collapse } from '../ui/Collapse'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
-export default function VendorBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
+export default function VendorBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
   if (booth.special === 'kiosk') return <KioskBooth booth={booth} onClose={onClose} flash={flash} />
-  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} asVendor={asVendor} starredKeys={starredKeys} onToggleStar={onToggleStar} />
+  return <RegularBooth booth={booth} onClose={onClose} flash={flash} onRipSealed={onRipSealed} onRipSealedStack={onRipSealedStack} onStockSealed={onStockSealed} haggledIds={haggledIds} onHaggled={onHaggled} takenIds={takenIds} onTaken={onTaken} tillLeft={tillLeft} onTillSpend={onTillSpend} asVendor={asVendor} starredKeys={starredKeys} onToggleStar={onToggleStar} />
 }
 
 // On-site grading kiosk (National+ shows): submit a raw card and it comes back slabbed in
@@ -74,7 +74,7 @@ function KioskBooth({ booth, onClose, flash }) {
   )
 }
 
-function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
+function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, onStockSealed, haggledIds, onHaggled, takenIds, onTaken, tillLeft = Infinity, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
   const haggled = haggledIds || new Set()
   // "Come back to this" stars, keyed by item (card uid / sealed `_tk`). isStarred reads the
   // set ShowFloor passes for THIS booth; a tap toggles it and highlights the booth in the
@@ -288,6 +288,9 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
       return next
     })
   }
+  // The volume concession on a stack off ONE line — the same 8/12/15% whether you're taking
+  // it home sealed or tearing into all of it at the table.
+  const lotDisc = (n) => n >= 5 ? 0.15 : n >= 3 ? 0.12 : 0.08
   function ripSealedNow(entry) {
     const ask = eff(entry._ask)
     setPendingSealed(null)
@@ -309,15 +312,30 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
     consumeSealed(entry, 1)
     if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, ask)
   }
+  // Buy the whole stack off this line and rip EVERY unit right here at the table, back to
+  // back — the lot discount applies exactly as it does when you take them home sealed. The
+  // booth stays open behind the rip, so you're back at their table when the last one lands.
+  function ripStackNow(entry) {
+    const n = entry.qty || 1
+    const disc = lotDisc(n)
+    const each = round2(eff(entry._ask) * (1 - disc))
+    setPendingSealed(null)
+    const ok = onRipSealedStack?.({ set: entry.set, product: entry.product, each, n, vendorName: booth.name })
+    if (!ok) return
+    consumeSealed(entry, n)
+    if (booth.vendorId) useGame.getState().bumpVendorRapport(booth.vendorId, round2(each * n))
+    flash(`🧺 Took all ${n} at ${fmtMoney(each)} each (${Math.round(disc * 100)}% off) — ripping them here.`)
+  }
   // 🧺 Take the remaining STACK of one line at a volume discount — the "do a deal on the lot"
   // every real vendor loves (fewer transactions, less to pack up). Stocks to inventory.
   function takeStack(entry) {
     const n = entry.qty || 1
-    const disc = n >= 5 ? 0.15 : n >= 3 ? 0.12 : 0.08
+    const disc = lotDisc(n)
     const each = round2(eff(entry._ask) * (1 - disc))
     const total = round2(each * n)
     const g = useGame.getState()
     if (g.cash < total) { flash(`Not enough cash — the lot of ${n} runs ${fmtMoney(total)}.`); return }
+    setPendingSealed(null) // may have been launched from the buy dialog
     let bought = 0
     for (let i = 0; i < n; i++) {
       if (!onStockSealed?.({ set: entry.set, product: entry.product, ask: each, vendorName: booth.name })) break
@@ -626,14 +644,39 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onStockSealed, haggl
             ) : null })()}
             <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
               <button className="btn gold" disabled={cash < eff(pendingSealed._ask)} onClick={() => ripSealedNow(pendingSealed)}>
-                📦 Rip it here on the floor →
+                📦 Rip {(pendingSealed.qty || 1) > 1 ? 'one' : 'it'} here on the floor →
               </button>
+              {/* They brought a stack: buy the lot and open ALL of it at the table, one after
+                  another. Same volume discount as taking it home sealed. */}
+              {(pendingSealed.qty || 1) > 1 && (() => {
+                const n = pendingSealed.qty
+                const disc = lotDisc(n)
+                const each = round2(eff(pendingSealed._ask) * (1 - disc))
+                const total = round2(each * n)
+                return (
+                  <button className="btn gold" disabled={cash < total} onClick={() => ripStackNow(pendingSealed)}
+                    title={`Buy all ${n} at ${Math.round(disc * 100)}% off the lot and rip them back-to-back right here`}>
+                    🧺 Rip all {n} here — {fmtMoney(total)} <span style={{ opacity: 0.85, fontWeight: 600 }}>({Math.round(disc * 100)}% off)</span>
+                  </button>
+                )
+              })()}
               <button className="btn alt" disabled={cash < eff(pendingSealed._ask)} onClick={() => stockSealedNow(pendingSealed)}>
-                🗂️ Stock it in your inventory
+                🗂️ Stock {(pendingSealed.qty || 1) > 1 ? 'one' : 'it'} in your inventory
               </button>
+              {(pendingSealed.qty || 1) > 1 && (() => {
+                const n = pendingSealed.qty
+                const total = round2(eff(pendingSealed._ask) * (1 - lotDisc(n)) * n)
+                return (
+                  <button className="btn alt" disabled={cash < total} onClick={() => takeStack(pendingSealed)}
+                    title={`Take all ${n} home sealed at ${Math.round(lotDisc(n) * 100)}% off the lot`}>
+                    🧺 Take all {n} sealed — {fmtMoney(total)}
+                  </button>
+                )
+              })()}
             </div>
             <p className="muted" style={{ fontSize: 11, marginTop: 10 }}>
-              Held sealed rides the market — vintage climbs the longer you hold it.
+              Held sealed rides the market — vintage climbs the longer you hold it. Anything you
+              stock here shows up in your <b>🎒 haul</b>, so you can still rip it before you leave.
             </p>
           </div>
         </div>

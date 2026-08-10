@@ -5,6 +5,7 @@ import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SE
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
 import PackOpening from './PackOpening'
+import AutoRip from './AutoRip'
 import CardTile from './CardTile'
 import { useModalEscape } from '../ui/dialog'
 import { AnimatedNumber, CashFlash } from '../ui/AnimatedNumber'
@@ -36,12 +37,18 @@ export default function ShowFloor({ show, onLeave }) {
   // Snapshot the money/rep state the moment you walk the floor, so leaving can recap what
   // the FLOOR itself did (buying, selling, encounters) — distinct from the days-away home
   // recap that already fired at entry. stats.earned/spent only move on real cash in/out.
+  // It also snapshots what you WALKED IN WITH — every sealed/card uid you already owned. The
+  // 🎒 haul (your home base at the show) is just the diff against that, so anything that came
+  // into your hands here shows up without every buy path having to report itself: booth buys,
+  // lot deals, trades, mystery packs and cards pulled from a rip on the floor.
   const floorBaseRef = useRef(null)
   if (floorBaseRef.current === null) {
     const g = useGame.getState()
     floorBaseRef.current = {
       earned: g.stats.earned, spent: g.stats.spent, noto: g.notoriety,
       rapport: Object.values(g.vendorSpend || {}).reduce((a, v) => a + v, 0),
+      sealedUids: new Set((g.sealedInventory || []).map(it => it.uid)),
+      cardUids: new Set([...(g.collection || []).map(c => c.uid), ...(g.showInventory || []).map(c => c.uid)]),
     }
   }
   // Leave: compute the floor recap from the baseline and hand it up to be folded into the
@@ -64,9 +71,13 @@ export default function ShowFloor({ show, onLeave }) {
   const showVendors = useGame(s => s.showVendors) // recurring roster (stable identities)
   const vendorSpend = useGame(s => s.vendorSpend)
   const collection = useGame(s => s.collection)
+  const sealedInventory = useGame(s => s.sealedInventory) // what you're carrying — the haul lives here
+  const spentAll = useGame(s => s.stats.spent)    // for the haul's live running tally
+  const earnedAll = useGame(s => s.stats.earned)
   const tier = SHOW_TIERS[show.tierKey]
   const [showTable, setShowTable] = useState(false) // peek at your booth inventory
-  useModalEscape(() => setShowTable(false)) // Esc closes the table peek
+  const [haulOpen, setHaulOpen] = useState(false)   // 🎒 home base — what you've picked up here
+  const [haulSel, setHaulSel] = useState(() => new Set()) // sealed uids picked for a group rip
 
   const [showDay, setShowDay] = useState(1) // which day of the multi-day show we're on
   // Recurring roster gets injected into the floor; `show._arrival` ('open' | 'late') tunes
@@ -119,7 +130,13 @@ export default function ShowFloor({ show, onLeave }) {
   // a vendor by re-opening the haggle). Persists across booth re-opens for the whole show.
   const [haggledIds, setHaggledIds] = useState(() => new Set())
   const markHaggled = useCallback((uid) => setHaggledIds(prev => { const n = new Set(prev); n.add(uid); return n }), [])
-  const [vaultRip, setVaultRip] = useState(null) // { set, product } when ripping sealed on the floor
+  // Ripping on the floor is a QUEUE, not one product: buy three boxes off a table (or pick a
+  // few out of your 🎒 haul) and they rip back-to-back right here without a trip home.
+  // { set, product, rest[], idx, total, nonce } — nonce re-keys PackOpening for the next unit.
+  const [vaultRip, setVaultRip] = useState(null)
+  const [sifting, setSifting] = useState(null)   // sealed rows handed to the ⚡ sifter on the floor
+  // Esc backs out of the peek/haul panels (the booth and the rip own their own escape).
+  useModalEscape(() => { if (vaultRip || sifting) return; setShowTable(false); setHaulOpen(false) })
   const [encounter, setEncounter] = useState(null)
   const [toast, setToast] = useState(null)
   const [boothAlert, setBoothAlert] = useState(null)
@@ -187,7 +204,7 @@ export default function ShowFloor({ show, onLeave }) {
   // Booth walk-ups, gated by a cooldown so they don't spam. With the 🔔 Visitor Ticker
   // you get an alert you can answer whenever — without it, a buyer who walks up while
   // you're deep at another vendor's table just leaves (that's what the ticker is for).
-  const busy = !!(openBooth || encounter || vaultRip || meetPick || showTable)
+  const busy = !!(openBooth || encounter || vaultRip || sifting || meetPick || showTable || haulOpen)
   const busyRef = useRef(busy)
   useEffect(() => { busyRef.current = busy }, [busy])
   useEffect(() => {
@@ -233,6 +250,21 @@ export default function ShowFloor({ show, onLeave }) {
   }
   function pick(opt) { flash(resolveEncounter(opt.effect)); setEncounter(null) }
 
+  // Start a floor rip of one or more products, back-to-back. The first goes up now; the rest
+  // wait in `rest` and take over as each finishes (see nextRip).
+  const startRipQueue = useCallback((list) => {
+    if (!list?.length) return
+    setVaultRip({ ...list[0], rest: list.slice(1), idx: 1, total: list.length, nonce: 0 })
+  }, [])
+  // A product finished: pull the next one out of the queue, or close the overlay when it's empty.
+  const nextRip = useCallback(() => {
+    setVaultRip(v => {
+      if (!v?.rest?.length) return null
+      const [next, ...rest] = v.rest
+      return { ...next, rest, idx: v.idx + 1, total: v.total, nonce: (v.nonce || 0) + 1 }
+    })
+  }, [])
+
   // Buy + rip sealed product off a booth's table right here on the floor.
   // Returns true on success so the booth can mark the entry taken.
   const buySealed = useCallback(({ set, product, ask, vendorName }) => {
@@ -242,18 +274,95 @@ export default function ShowFloor({ show, onLeave }) {
     if (!g.spend(ask)) return false
     g.recordSetSpend(set.id, ask)
     g.log('buy', `Bought a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} (${show.name})`, -ask)
-    setVaultRip({ set, product: { ...product, price: ask } })
+    startRipQueue([{ set, product: { ...product, price: ask } }])
     return true
-  }, [show.name, flash])
+  }, [show.name, flash, startRipQueue])
+
+  // Take a whole STACK off one line and rip every unit here — one charge, one queue. This is
+  // what makes "I bought four of these, let me open them at the table" work; buying them one
+  // at a time to rip one at a time was the only way before.
+  const buySealedStack = useCallback(({ set, product, each, n, vendorName }) => {
+    if (!set || !product || !(n > 0)) return false
+    const total = round2(each * n)
+    const g = useGame.getState()
+    if (g.cash < total) { flash(`Not enough cash — ${n}× ${product.type} runs ${fmtMoney(total)}.`); return false }
+    if (!g.spend(total)) return false
+    g.recordSetSpend(set.id, total)
+    g.log('buy', `Bought ${n}× ${product.type} of ${set.name} from ${vendorName || 'a vendor'} to rip on the floor (${show.name})`, -total)
+    startRipQueue(Array.from({ length: n }, () => ({ set, product: { ...product, price: each } })))
+    return true
+  }, [show.name, flash, startRipQueue])
+
+  // Rip product you ALREADY own — bought here earlier and stocked, so there's nothing to pay.
+  // ripSealed pulls each unit out of inventory; the queue rips them one after another.
+  const ripHeld = useCallback((uids) => {
+    const list = (Array.isArray(uids) ? uids : [uids])
+      .map(uid => useGame.getState().ripSealed(uid))
+      .filter(Boolean)
+      .map(it => ({ set: setById(it.setId), product: it.product }))
+      .filter(q => q.set)
+    if (!list.length) { flash("That product isn't in your bag any more."); return }
+    startRipQueue(list)
+  }, [flash, startRipQueue])
 
   // Buy sealed off a booth and STOCK it in held inventory instead of ripping now.
   const stockSealed = useCallback(({ set, product, ask, vendorName }) => {
     if (!set || !product) return false
     const item = useGame.getState().buySealed(set, { ...product, _buyPrice: ask }, ask)
     if (!item) { flash(`Not enough cash for the ${product.name || product.type}.`); return false }
-    flash(`Stocked a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} — rip/list/flip it from 📦 Inventory.`)
+    flash(`Stocked a ${product.type} of ${set.name} from ${vendorName || 'a vendor'} — it's in your 🎒 haul: rip it here or take it home.`)
     return true
   }, [flash])
+
+  // --- 🎒 Your haul: home base at the show ---------------------------------------------
+  // Everything that's come into your hands since you walked through the door, by diffing
+  // against the snapshot in floorBaseRef. Sealed you're carrying can be ripped right here.
+  const haulSealed = useMemo(
+    () => (sealedInventory || []).filter(it => !floorBaseRef.current.sealedUids.has(it.uid)),
+    [sealedInventory])
+  const haulCards = useMemo(
+    () => [...(collection || []), ...(showInventory || [])]
+      .filter(c => !floorBaseRef.current.cardUids.has(c.uid))
+      .sort((a, b) => cardValue(b) - cardValue(a)),
+    [collection, showInventory])
+  // Identical product groups into one stack, exactly like the sealed inventory back home.
+  const haulStacks = useMemo(() => {
+    const map = new Map()
+    for (const it of haulSealed) {
+      const k = `${it.setId}|${it.product?.type}|${it.product?.name || ''}|${it.vintage ? 1 : 0}`
+      if (!map.has(k)) map.set(k, [])
+      map.get(k).push(it)
+    }
+    return [...map.values()].sort((a, b) => sealedValue(b[0]) - sealedValue(a[0]))
+  }, [haulSealed])
+  const packsOf = (items) => items.reduce((a, it) => a + (it.product?.packs || 1), 0)
+  const haulPacks = packsOf(haulSealed)
+  const selItems = haulSealed.filter(it => haulSel.has(it.uid))
+  const selPacks = packsOf(selItems)
+  const haulCount = haulSealed.length + haulCards.length
+  function toggleHaulStack(items) {
+    setHaulSel(prev => {
+      const n = new Set(prev)
+      const allIn = items.every(it => n.has(it.uid))
+      items.forEach(it => allIn ? n.delete(it.uid) : n.add(it.uid))
+      return n
+    })
+  }
+  // Rip the picked sealed by hand, one product after another, without leaving the floor.
+  function ripSelection() {
+    if (!selItems.length) return
+    const uids = selItems.map(it => it.uid)
+    setHaulSel(new Set())
+    ripHeld(uids)
+  }
+  // Or hand the pick to the ⚡ sifter — it churns and stops on the packs worth your hands.
+  // The haul panel closes for it (the sift is a full-screen takeover) and reopens after.
+  function siftSelection() {
+    if (!selItems.length) return
+    setHaulOpen(false)
+    setHaulSel(new Set())
+    setSifting(selItems)
+  }
 
   // Live crowd per booth (from the drifting shoppers) — the directory's 👥 badges.
   const boothCrowd = {}
@@ -289,6 +398,12 @@ export default function ShowFloor({ show, onLeave }) {
             🏦 {fmtMoney(showReserve)} at home
           </span>
         )}
+        {/* 🎒 Home base: everything you've picked up here, and the place to rip it. */}
+        <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0, background: haulCount ? 'color-mix(in srgb, var(--gold) 16%, transparent)' : undefined, color: haulCount ? 'var(--gold)' : undefined }}
+          title="Your haul — the sealed and cards you've picked up at this show. Rip any of it right here."
+          onClick={() => setHaulOpen(true)}>
+          🎒 Haul{haulCount ? ` (${haulCount})` : ''}{haulPacks ? ` · ${haulPacks} pk` : ''}
+        </button>
         {show._asVendor ? (
           <>
             <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
@@ -434,7 +549,7 @@ export default function ShowFloor({ show, onLeave }) {
 
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
-        onStockSealed={stockSealed} haggledIds={haggledIds} onHaggled={markHaggled}
+        onStockSealed={stockSealed} onRipSealedStack={buySealedStack} haggledIds={haggledIds} onHaggled={markHaggled}
         takenIds={takenIds} onTaken={markTaken} asVendor={show._asVendor}
         tillLeft={Math.max(0, round2((openBooth.till || 0) - (tillSpent[tillKey(openBooth)] || 0)))}
         onTillSpend={(amt) => markTillSpend(openBooth, amt)}
@@ -442,12 +557,146 @@ export default function ShowFloor({ show, onLeave }) {
         onToggleStar={(key) => toggleStar(openBooth.id, key)} />}
       {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
 
+      {/* 🎒 YOUR HAUL — the home base at a show. What you've picked up on this floor, in one
+          place, with the sealed still rippable HERE: pick a stack (or several) and tear into
+          them at the table, or hand the pile to the ⚡ sifter. Anything you leave sealed just
+          rides home with you. Rendered ABOVE the booth and BELOW the rip overlay on purpose —
+          ripping out of the haul returns you to the haul. */}
+      {haulOpen && (
+        <div className="modalbg" onClick={() => setHaulOpen(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
+            <button className="modal-close" aria-label="Close" onClick={() => setHaulOpen(false)}>✕</button>
+            <div className="row" style={{ alignItems: 'baseline' }}>
+              <h2 style={{ marginRight: 'auto' }}>🎒 Your haul</h2>
+              {haulSealed.length > 0 && (
+                <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 14%, transparent)', color: 'var(--gold)' }}>
+                  📦 {haulSealed.length} sealed · {haulPacks} pack{haulPacks === 1 ? '' : 's'}
+                </span>
+              )}
+              {haulCards.length > 0 && <span className="pill">🃏 {haulCards.length} card{haulCards.length === 1 ? '' : 's'}</span>}
+            </div>
+            <p className="muted" style={{ marginTop: 2, fontSize: 13 }}>
+              Everything you've picked up at <b>{show.name}</b> — bought off the tables and pulled here.
+              Sealed you're carrying can be <b>ripped right here on the floor</b>; whatever you leave
+              wrapped comes home with you.
+            </p>
+            <div className="banner" style={{ marginTop: 6 }}>
+              💵 Spent on the floor <b>{fmtMoney(Math.max(0, round2(spentAll - floorBaseRef.current.spent)))}</b>
+              {' · '}Taken in <b style={{ color: 'var(--green)' }}>{fmtMoney(Math.max(0, round2(earnedAll - floorBaseRef.current.earned)))}</b>
+              {haulCards.length > 0 && <> · 🃏 cards on you worth <b>{fmtMoney(haulCards.reduce((a, c) => a + cardValue(c), 0))}</b></>}
+            </div>
+
+            {haulCount === 0 ? (
+              <div className="empty" style={{ marginTop: 12 }}>
+                Nothing yet — you've not bought anything at this show. Walk the tables above.
+              </div>
+            ) : (
+              <>
+                <div className="floor-sec-h">📦 Sealed you're carrying <span className="muted">— tap a stack to pick it for a group rip</span></div>
+                {haulStacks.length === 0 ? (
+                  <div className="floor-sec-empty muted">No sealed in the bag — every product you bought here has been ripped.</div>
+                ) : (
+                  <div className="vsealed-list">
+                    {haulStacks.map(items => {
+                      const it = items[0]
+                      const set = setById(it.setId)
+                      const picked = items.every(x => haulSel.has(x.uid))
+                      const packs = packsOf(items)
+                      return (
+                        <div key={it.uid} className={`vsealed-row ${picked ? 'in-stack' : ''} ${it.vintage ? 'sealed-vintage' : ''}`}>
+                          <span className="vsealed-name">
+                            <button type="button" className={`stack-check ${picked ? 'on' : ''}`}
+                              style={{ marginRight: 6, verticalAlign: '-7px' }}
+                              aria-pressed={picked} title="Pick this stack for a group rip"
+                              onClick={() => toggleHaulStack(items)}>{picked ? '✓' : '+'}</button>
+                            {it.vintage ? '🗝️ ' : (it.product.icon || '📦') + ' '}{it.product.type}
+                            {items.length > 1 && <span className="pill vsealed-qty">×{items.length}</span>}
+                          </span>
+                          <span className="vsealed-meta">
+                            {set?.name} · {packs} pack{packs === 1 ? '' : 's'} · {fmtMoney(sealedValue(it) * items.length)}
+                          </span>
+                          <span className="vsealed-ask">
+                            <span className="ask">{fmtMoney(it.boughtPrice || 0)}{items.length > 1 ? ' ea' : ''}</span>
+                          </span>
+                          <span className="vsealed-act">
+                            <button className="btn gold" onClick={() => ripHeld(it.uid)}>
+                              📦 Rip{items.length > 1 ? ' one' : ''}
+                            </button>
+                            {items.length > 1 && (
+                              <button className="btn alt" title={`Rip all ${items.length} back-to-back, right here`}
+                                onClick={() => ripHeld(items.map(x => x.uid))}>Rip all {items.length}</button>
+                            )}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {haulCards.length > 0 && (
+                  <>
+                    <div className="floor-sec-h" style={{ marginTop: 12 }}>
+                      🃏 Cards <span className="muted">— bought at the tables & pulled from rips here</span>
+                    </div>
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(112px,1fr))', marginTop: 6 }}>
+                      {haulCards.slice(0, 18).map(c => (
+                        <div key={c.uid} className="vendoritem">
+                          <CardTile card={c} interactive={false} />
+                        </div>
+                      ))}
+                    </div>
+                    {haulCards.length > 18 && (
+                      <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+                        +{haulCards.length - 18} more in the bag (biggest {18} shown) — the rest are waiting in your collection.
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={() => setHaulOpen(false)}>Back to the floor</button>
+
+            {/* Sticky picker bar — the pack count is the number that matters: two Prismatic
+                Super-Premium Collections is 30 packs, not "2 items". */}
+            {selItems.length > 0 && (
+              <div className="bulk-bar">
+                <div className="bulk-bar-summary">
+                  <b>{selItems.length} item{selItems.length === 1 ? '' : 's'}</b> · <b>{selPacks} pack{selPacks === 1 ? '' : 's'}</b> picked
+                </div>
+                <div className="bulk-bar-actions">
+                  <button className="btn gold" onClick={ripSelection}
+                    title="Rip them here, back-to-back, with the full animation">📦 Rip {selPacks} pack{selPacks === 1 ? '' : 's'}</button>
+                  <button className="btn alt" onClick={siftSelection}
+                    title="Churn through them fast and stop on the packs worth ripping by hand">⚡ Sift {selPacks}</button>
+                  <button className="btn alt" style={{ maxWidth: 60 }} onClick={() => setHaulSel(new Set())}>✕</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {vaultRip && (
         <div className="modalbg vault-rip-bg">
           <div className="modal vault-rip-modal" style={{ maxWidth: 980 }}>
-            <div className="vault-ribbon">{vaultRip.set?.vintage ? '🗝️ VINTAGE' : '📦 SEALED'} — {vaultRip.set?.name} {vaultRip.product.name || vaultRip.product.type}</div>
-            <PackOpening set={vaultRip.set} product={vaultRip.product} singleNoReRip onExit={() => setVaultRip(null)} />
+            <div className="vault-ribbon">
+              {vaultRip.set?.vintage ? '🗝️ VINTAGE' : '📦 SEALED'} — {vaultRip.set?.name} {vaultRip.product.name || vaultRip.product.type}
+              {vaultRip.total > 1 && <> · <b>{vaultRip.idx} of {vaultRip.total}</b></>}
+            </div>
+            {/* onExit walks the queue: the next product goes straight up, and only the last
+                one closes the overlay — so "rip all of them here" really is all of them. */}
+            <PackOpening key={vaultRip.nonce || 0} set={vaultRip.set} product={vaultRip.product}
+              singleNoReRip onExit={nextRip} />
           </div>
+        </div>
+      )}
+
+      {/* ⚡ The sifter, on the floor. Full-screen takeover like it is at home; the haul panel
+          reopens underneath it when you're done. */}
+      {sifting && (
+        <div className="rip-overlay rip-full">
+          <AutoRip items={sifting} onExit={() => { setSifting(null); setHaulOpen(true) }} />
         </div>
       )}
 
