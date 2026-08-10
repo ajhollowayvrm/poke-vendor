@@ -82,6 +82,7 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
   const gradesSubmitted = useGame(s => s.gradesSubmitted)
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise centering read vs a fuzzy eyeball one
+  const upgrades = useGame(s => s.upgrades)   // freight on a grading submission
   const [toast, setToast] = useState(null)
   const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2600) }
   // Tapping a sealed line/tile opens its detail modal — the "what is this?" read the tiny
@@ -242,7 +243,7 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   }, [gridMode, gridItems, pickedUids, selectedLines])
   // Sum per card — declared-value pricing means a batch with a four-figure chase in it costs
   // more than count × sticker (see gradingFeeTotal).
-  const gradeTotal = gradingFeeTotal(sel.rawCards, gradeTier, gradesSubmitted)
+  const gradeTotal = gradingFeeTotal(sel.rawCards, gradeTier, gradesSubmitted, undefined, upgrades)
 
   // Render a set-grouped list of SKU lines. `kp` prefixes React keys so the same set can appear in
   // both the Singles and Sealed shelves (split view) without a key collision.

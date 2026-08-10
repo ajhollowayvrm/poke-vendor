@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingFeeTotal, overTierValue, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, round2, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingFeeTotal, gradingShipping, overTierValue, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, round2, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -53,6 +53,7 @@ export default function Bench() {
 // Multi-select raw cards and submit them in one batch for a per-card bulk discount.
 function BulkSubmit({ collection, submitted, cash, onSubmit }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
+  const upgrades = useGame(s => s.upgrades)   // 📦 Shipping Station cuts submission freight
   const [open, setOpen] = useState(false)
   const [tierKey, setTierKey] = useState('economy')
   const [company, setCompany] = useState('psa')   // which grader the whole batch goes to
@@ -67,7 +68,8 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
   // Per-card, then summed: declared-value pricing means the pricey cards in a batch cost more
   // than the sticker, so "feePer × count" would under-quote what the store charges.
   const pickedCards = raw.filter(c => picked.has(c.uid))
-  const total = gradingFeeTotal(pickedCards, tierKey, submitted, company)
+  const total = gradingFeeTotal(pickedCards, tierKey, submitted, company, upgrades)
+  const ship = gradingShipping(pickedCards, upgrades)
   const feePer = count ? round2(total / count) : gradingFee(tierKey, submitted, 1, company)
   const mixed = pickedCards.some(c => overTierValue(tierKey, rawValue(c)))
   const bulk = bulkDiscount(count)
@@ -143,8 +145,15 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
             {bulk > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>{Math.round(bulk*100)}% bulk discount</span>}
             <span className="muted" style={{ fontSize: 13 }}>
               {!count ? 'Pick cards to grade'
-                : mixed ? <>{count} cards, priced by value = <b>{fmtMoney(total)}</b></>
-                : <>{fmtMoney(feePer)}/card × {count} = <b>{fmtMoney(total)}</b></>}
+                : <>
+                    {mixed ? `${count} cards, priced by value` : `${fmtMoney(round2((total - ship) / count))}/card × ${count}`}
+                    {' + '}
+                    <span title="Insured postage there and back, charged once per submission — so one card pays the whole round trip and a big batch barely notices it.">
+                      {fmtMoney(ship)} freight
+                    </span>
+                    {' = '}<b>{fmtMoney(total)}</b>
+                    {count === 1 && <span className="muted"> · batching spreads the freight</span>}
+                  </>}
             </span>
             <button className="btn gold" style={{ flex: 'none', maxWidth: 220, marginLeft: 'auto' }}
               disabled={!count || cash < total} onClick={submit}>

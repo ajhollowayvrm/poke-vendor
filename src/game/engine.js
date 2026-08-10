@@ -1781,6 +1781,16 @@ export const GRADING = {
 // error — and it is deliberately NOT discountable: loyalty and bulk are volume perks on cheap
 // cards, and no grader hands you 45% off insuring a $20,000 card.
 export const GRADING_VALUE_RATE = 0.05
+// The floor under everything. There is a technician's time, a sonic-sealed holder and a printed
+// label in every slab, so nobody grades a card for pocket change — real bulk rates bottom out
+// around $19-25/card and REQUIRE a 20-card submission. Loyalty and bulk here stack
+// multiplicatively, which compounded a perfectly realistic $25 Economy fee down to $10.31 at
+// Platinum, and $6.70 once CGC's cheaper rate was applied on top. Scaled by the grader's own
+// feeMult so CGC stays genuinely the budget option without becoming free.
+export const GRADING_FLOOR = 18
+// And a ceiling on the discounts themselves. Volume earning you a better rate is real; volume
+// earning you 73% off is not. Half price is already the best deal in the hobby.
+export const MAX_GRADING_DISCOUNT = 0.5
 
 // ---- Grading COMPANIES -------------------------------------------------------------
 // Who you mail the card to, as opposed to which service tier you buy. The three real
@@ -1878,7 +1888,10 @@ export function gradingFee(tierKey, submitted, batchCount = 1, company = DEFAULT
   const feeMult = graderById(company).feeMult
   const loyalty = graderTier(submitted).discount
   const bulk = bulkDiscount(batchCount)
-  const sticker = g.fee * feeMult * (1 - loyalty) * (1 - bulk)
+  // Combined, and capped: loyalty × bulk compounded to 59% before, and the grader's own
+  // multiplier could take it past 70%. Half off is the most anyone gets.
+  const off = Math.min(MAX_GRADING_DISCOUNT, 1 - (1 - loyalty) * (1 - bulk))
+  const sticker = Math.max(GRADING_FLOOR * feeMult, g.fee * feeMult * (1 - off))
   // Declared-value pricing kicks in only above the tier ceiling, so bulk slabbing of ordinary
   // cards is untouched — it's the four-figure chase that now costs what it should.
   const premium = (g.maxValue != null && cardVal > g.maxValue)
@@ -1891,12 +1904,36 @@ export function overTierValue(tierKey, cardVal = 0) {
   const cap = GRADING[tierKey]?.maxValue
   return cap != null && cardVal > cap
 }
+// 📦 Freight, both ways, per SUBMISSION — the cost every real submitter pays and the game
+// wasn't modelling at all. You mail the cards insured for what they're worth and pay return
+// postage on the slabs coming back. Charged ONCE per submission rather than per card, which is
+// precisely why the hobby batches: one card eats the whole round trip, forty share it.
+//
+// This is the piece that made grading feel free. A single $100 card on Economy cost $25; it
+// really costs $25 plus the best part of $25 to get it there and back, and that is exactly why
+// nobody sends one card at a time.
+export const GRADE_SHIP_BASE = 22        // round-trip postage + packaging on a small parcel
+export const GRADE_SHIP_INSURED = 0.01   // insured for declared value, in both directions
+export function gradingShipping(cards, upgrades) {
+  const list = cards || []
+  if (!list.length) return 0
+  const declared = list.reduce((a, c) => a + rawValue(c), 0)
+  // 📦 The Shipping Station's thermal labels and bulk mailers cut the postage, never the
+  // insurance — the carrier doesn't care how neat your parcel is.
+  const base = GRADE_SHIP_BASE * (upgrades?.shipStation ? 0.6 : 1)
+  const parcels = 1 + Math.floor(list.length / 30) * 0.5   // a bigger, heavier box costs more
+  return round2(base * parcels + declared * GRADE_SHIP_INSURED)
+}
+
 // What a whole batch costs. Since declared-value pricing makes the per-card fee depend on the
 // CARD, a batch total is a sum, not a multiply — every quoting UI must go through this or it
 // will show a number the store then refuses to charge.
-export function gradingFeeTotal(cards, tierKey, submitted, company = DEFAULT_GRADER) {
+// `upgrades` opts the submission freight in. Omit it and you get fees only (what the per-card
+// pickers quote); pass it and you get what the submission actually costs, freight included.
+export function gradingFeeTotal(cards, tierKey, submitted, company = DEFAULT_GRADER, upgrades = null) {
   const list = cards || []
-  return round2(list.reduce((a, c) => a + gradingFee(tierKey, submitted, list.length, company, rawValue(c)), 0))
+  const fees = list.reduce((a, c) => a + gradingFee(tierKey, submitted, list.length, company, rawValue(c)), 0)
+  return round2(fees + (upgrades === null ? 0 : gradingShipping(list, upgrades)))
 }
 // Roll subgrades. Better cards (by value) get a slightly tighter distribution,
 // simulating that valuable cards are often handled carefully — but it's mostly luck.

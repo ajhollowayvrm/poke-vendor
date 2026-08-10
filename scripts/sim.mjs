@@ -185,15 +185,21 @@ try {
     // exists to catch. `blind`/`tooled` pay list; `endgame` is the platinum-loyalty + deep-bulk
     // rate a late-game player actually pays. A $100 card sits under every tier's declared-value
     // ceiling, so this measures the sticker path (the value premium is exercised separately).
-    const listFee = eng.gradingFee('standard', 0, 1)
-    const endgameFee = eng.gradingFee('standard', 250, 50)
+    // Freight counts. It's charged per SUBMISSION, so a lone card pays the whole round trip
+    // while a 50-card batch barely notices it — costing the blind case at the per-card fee
+    // alone was flattering grading by the price of a parcel.
+    const one = [mk(null)]
+    const shipOne = eng.gradingShipping(one, {})
+    const shipBatch = eng.gradingShipping(Array.from({ length: 50 }, () => mk(0.8)), {}) / 50
+    const listFee = eng.gradingFee('standard', 0, 1) + shipOne
+    const endgameFee = eng.gradingFee('standard', 250, 50) + shipBatch
     return { blind: run(0, null, listFee), tooled: run(0.13, 0.8, listFee), endgame: run(0.13, 0.8, endgameFee),
-             fees: { list: listFee, endgame: endgameFee } }
+             fees: { list: listFee, endgame: endgameFee, shipOne, shipBatch } }
   })
   // Gem odds are anchored to real modern-Pokémon PSA data (blind P10 ~18-30%), which makes
   // grading a real, profitable business (blind EV > 0) rather than a suppressed gamble. The
   // ladder still has to hold: pre-screen/tools beat blind, and endgame fee discounts beat that.
-  console.log(`  (fees read live from GRADING: list $${grade.fees.list.toFixed(2)}, endgame $${grade.fees.endgame.toFixed(2)})`)
+  console.log(`  (live from GRADING, freight included: one card $${grade.fees.list.toFixed(2)} incl $${grade.fees.shipOne.toFixed(2)} freight · endgame/card $${grade.fees.endgame.toFixed(2)} incl $${grade.fees.shipBatch.toFixed(2)})`)
   pass(`blind standard: EV $${grade.blind.ev.toFixed(2)} (want > 0 — grading is a real business), P10 ${(grade.blind.p10 * 100).toFixed(1)}% (want 18-30%, real modern data)`,
     grade.blind.ev > 0 && grade.blind.p10 >= 0.18 && grade.blind.p10 <= 0.30)
   pass(`tooled standard: EV $${grade.tooled.ev.toFixed(2)} (want > blind — pre-screen is the edge)`, grade.tooled.ev > grade.blind.ev)

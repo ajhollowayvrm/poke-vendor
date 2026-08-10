@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingDays, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
 import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
@@ -42,6 +42,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   })
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
+  const upgrades = useGame(s => s.upgrades)   // 📦 Shipping Station cuts submission freight
   // Per-set market history drives this card's price-history chart (it re-renders as the
   // market drifts each game-day). The chart needs the set's recent multiplier samples.
   const marketHistory = useGame(s => s.marketHistory)
@@ -82,6 +83,8 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   const aucQuote = auctionQuote(card, aucDays, aucReserve)
   // This card's value reprojected across the set's recent market window (raw or graded).
   const priceSeries = valueHistory(card, marketHistory?.[setIdOfCard(card)])
+  // Grading one card from here IS a submission of one, so it pays the full round-trip freight.
+  const ship = gradingShipping([card], upgrades)
 
   return (
     <div className="modalbg" onClick={onClose}>
@@ -386,7 +389,9 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 <p className="muted" style={{ fontSize: 11.5, margin: '4px 0 2px' }}>{graderById(company).blurb}</p>
                 <div className="row">
                   {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => {
-                    const fee = gradingFee(key, submitted, 1, company, rawValue(card))
+                    // Freight is charged per submission, and a single card from this modal IS a
+                    // submission of one — so it pays the whole round trip. Quote what's charged.
+                    const fee = round2(gradingFee(key, submitted, 1, company, rawValue(card)) + ship)
                     const byValue = overTierValue(key, rawValue(card))
                     const discounted = !byValue && fee < t.fee
                     return (
@@ -407,12 +412,14 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 )}
                 {/* Don't let the player burn a fee on a card worth less than grading it.
                     Compare the cheapest (economy) fee against the raw value. */}
-                {gradingFee('economy', submitted, 1, company, rawValue(card)) >= rawValue(card) && (
+                {round2(gradingFee('economy', submitted, 1, company, rawValue(card)) + ship) >= rawValue(card) && (
                   <p style={{ fontSize: 11.5, marginTop: 6, color: 'var(--red)' }}>
                     ⚠️ Grading costs more than this card is worth (${rawValue(card).toFixed(2)} raw). Even a PSA 10 likely won't clear the fee — not worth grading.
                   </p>
                 )}
                 <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>
+                  Prices include <b>{fmtMoney(ship)}</b> insured postage both ways — charged once per
+                  submission, so sending a batch from the 🔬 bench spreads it across every card.
                   A high grade can multiply value 2–4×; low grades hurt — it's a gamble.
                   {next
                     ? ` Submitted ${submitted} cards · ${next.min - submitted} more to ${next.name} (${Math.round(next.discount*100)}% off).`

@@ -22,6 +22,7 @@ export default function Collection({ onPick }) {
   const consignMany = useGame(s => s.consignMany)
   const listingQuote = useGame(s => s.listingQuote)
   const hasStore = useGame(s => !!s.upgrades.storefront)
+  const upgrades = useGame(s => s.upgrades)   // freight on a grading submission
   // Master-set protection: keep-one-of-each guard + per-card locks.
   const keepOne = useGame(s => s.settings.keepOne)
   const setSetting = useGame(s => s.setSetting)
@@ -96,7 +97,7 @@ export default function Collection({ onPick }) {
   const rawSelected = selCards.filter(c => !c.grade)
   // Summed per card — a batch holding a four-figure chase is priced off its value, not the
   // tier sticker, so a multiply here would quote a number the store won't charge.
-  const gradeTotal = gradingFeeTotal(rawSelected, gradeTier, submitted)
+  const gradeTotal = gradingFeeTotal(rawSelected, gradeTier, submitted, undefined, upgrades)
   const gradeBulk = bulkDiscount(rawSelected.length)
 
   // Live demand hint for the "List @ X%" slider — how much of the browsing pool
