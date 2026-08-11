@@ -131,38 +131,38 @@ try {
       share >= 0.03 && share <= 0.25)
   }
 
-  // ---- 1c. 🛒 Shop scarcity + the MSRP arbitrage ------------------------------------
-  // Pokémon Center sells at STICKER while everyone else sells at market, so its shelf is a
-  // real arbitrage by design — that's what makes drop day worth racing for. It has to stay
-  // RATIONED though: the edge is bounded by allocation, not by price, so what matters is the
-  // total market value you could lift off one restock wave, not the per-unit multiple.
+  // ---- 1c. 🛒 Shop scarcity + the scalper premium -----------------------------------
+  // There is deliberately NO MSRP channel (the Pokémon Center shelf was removed 2026-08-10:
+  // IRL it sells out to bots before a shop owner gets one). A fresh drop is bought at market
+  // PLUS the hype surge, everywhere — so the old below-market arbitrage must never come back,
+  // and the in-print window keeps the shop a rotating shelf rather than a warehouse.
   console.log('\n🛒 SHOP SCARCITY:')
   const shop = await page.evaluate(async () => {
     const eng = await import('/src/game/engine.js')
     const cat = id => eng.distributorCatalog(eng.distributorById(id), eng.SHOP_SETS, 3).length
-    let outlay = 0, worth = 0
-    const pc = eng.distributorById('pokecenter')
-    for (const s of eng.distributorCatalog(pc, eng.SHOP_SETS, 3)) {
-      for (const p of eng.setProducts(s)) {
-        const n = eng.stockCap(pc, p, 0)
-        outlay += eng.distributorPrice(pc, p.price, 0, { product: p, set: s }) * n
-        worth += (p.price || 0) * n
+    // Cheapest zero-rapport ask on the NEWEST set across every English seller, as a share of
+    // the market number — if any shelf sells the fresh drop below market, the printer is back.
+    const newest = eng.IN_PRINT_SETS[0]
+    let minRatio = Infinity
+    for (const id of ['lgs', 'tcgplayer', 'amazon', 'dna']) {
+      const d = eng.distributorById(id)
+      for (const p of eng.setProducts(newest)) {
+        if (!p.price) continue
+        minRatio = Math.min(minRatio, eng.distributorPrice(d, p.price, 0, { product: p, set: newest }) / p.price)
       }
     }
     return { inPrint: eng.IN_PRINT_SETS.length, outOfPrint: eng.OUT_OF_PRINT_SETS.length,
-      lgs: cat('lgs'), pc: cat('pokecenter'), amazon: cat('amazon'),
-      msrpOutlay: outlay, msrpWorth: worth }
+      lgs: cat('lgs'), tcg: cat('tcgplayer'), amazon: cat('amazon'), total: eng.SHOP_SETS.length,
+      newestName: newest.name, minRatio,
+      pcGone: !eng.DISTRIBUTORS.some(d => d.msrp || d.id === 'pokecenter') }
   })
   pass(`in-print window is a rotating shelf, not a catalogue (${shop.inPrint} in print, ${shop.outOfPrint} out)`,
     shop.inPrint >= 4 && shop.inPrint <= 10)
   pass(`the local shop is a local shop (${shop.lgs} sets on the shelf)`, shop.lgs <= 3)
-  pass(`no retailer carries everything (biggest catalogue ${Math.max(shop.lgs, shop.pc, shop.amazon)} of ${shop.inPrint + shop.outOfPrint} sets)`,
-    Math.max(shop.lgs, shop.pc, shop.amazon) < shop.inPrint + shop.outOfPrint)
-  // The whole MSRP shelf, bought out: what it costs vs what it's worth. Must be a real prize
-  // (>1×, or drop day is pointless) but rationed enough that it isn't an infinite money pump.
-  const arb = shop.msrpWorth / Math.max(1, shop.msrpOutlay)
-  pass(`MSRP shelf is a prize, not a printer: buy it all for $${shop.msrpOutlay.toFixed(0)} → $${shop.msrpWorth.toFixed(0)} market (${arb.toFixed(1)}× per wave)`,
-    arb > 1.2 && arb < 6)
+  pass(`no retailer carries everything (biggest catalogue ${Math.max(shop.lgs, shop.tcg, shop.amazon)} of ${shop.total} sets)`,
+    Math.max(shop.lgs, shop.tcg, shop.amazon) < shop.total)
+  pass(`no MSRP printer: cheapest fresh-drop ask (${shop.newestName}) is ${(shop.minRatio * 100).toFixed(0)}% of market (want ≥ 100%)`,
+    shop.pcGone && shop.minRatio >= 1 - 1e-9)
 
   // ---- 2. Grading EV --------------------------------------------------------------
   console.log('\nGRADING EV ($100 comp-less NM card, N=40k rolls):')

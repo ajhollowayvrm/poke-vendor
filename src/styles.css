@@ -1584,7 +1584,6 @@ button.rip-hit-row:hover { background:#ffffff14; }
 /* ⚡ sticker vs 🔥 scalped — the two sides of the shop economy, called out on the price. */
 .prodprice .pricetag { display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.04em;
   padding:1px 4px; border-radius:4px; margin-right:4px; vertical-align:middle; }
-.prodprice .pricetag.msrp { background:#ffcb0522; color:var(--gold); }
 .prodprice .pricetag.surge { background:#ff5e6c22; color:var(--red); }
 .prodbtn.caselot { border-color: var(--accent); background: #ffcb0510; }
 .prodbtn.caselot:hover:not(:disabled) { background: #ffcb0520; }

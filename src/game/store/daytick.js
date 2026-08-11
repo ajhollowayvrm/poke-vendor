@@ -97,40 +97,21 @@ const WAVE_REPRINT_EVENT = { kind: 'crash', pct: [-0.15, -0.08],
 const SECONDARY_IDS = new Set(SECONDARY_SETS.map(s => s.id))
 
 // Did a wave-restock "drop" land in the window (prevDay, absDay]? Drops fall on days that are
-// multiples of `waveDays`; true if the last such multiple at/below absDay is newer than the
-// window's start. Deterministic, and correct across multi-day jumps (a show trip).
-function waveDropCrossed(absDay, days, waveDays) {
-  const start = absDay - days                            // exclusive lower bound
-  const lastDrop = Math.floor(absDay / waveDays) * waveDays
-  return lastDrop > start
-}
-
 // Restock every distributor's depleted stock over `days` passed. Each stock entry is
 // { q, cap }; it climbs back toward cap at the distributor's restock rate. Entries that
 // reach the cap are dropped (an absent key means "fully stocked" — keeps the map lean).
-//
-// A WAVE-restock seller (Pokémon Center) is the exception: no daily trickle at all. Its shelf
-// only depletes as you buy, then a fresh allocation "drops" every `restockWaveDays` and refills
-// everything to full at once (clearing its stock map → all shelves read full). Between drops the
-// shelf stays exactly as you left it — that's what makes a hot new drop sell out and stay out.
+// (The wave-restock exception died with the Pokémon Center MSRP shelf, 2026-08-10 —
+// every remaining seller trickles daily.)
 function restockDistributors(distributors, days, absDay) {
   const out = {}
   for (const [id, d] of Object.entries(distributors || {})) {
     const dist = distributorById(id)
     const stock = {}
     if (dist) {
-      if (dist.restockWaveDays) {
-        // Carry the depleted shelf forward UNCHANGED unless a drop landed this window; on a
-        // drop, leave `stock` empty so every product reads fully allocated again.
-        if (!waveDropCrossed(absDay, days, dist.restockWaveDays)) {
-          for (const [key, e] of Object.entries(d.stock || {})) stock[key] = e
-        }
-      } else {
-        for (const [key, e] of Object.entries(d.stock || {})) {
-          const rate = restockRate(dist, e.cap)
-          const q = Math.min(e.cap, e.q + rate * days)
-          if (q < e.cap - 1e-6) stock[key] = { q, cap: e.cap } // still short → keep
-        }
+      for (const [key, e] of Object.entries(d.stock || {})) {
+        const rate = restockRate(dist, e.cap)
+        const q = Math.min(e.cap, e.q + rate * days)
+        if (q < e.cap - 1e-6) stock[key] = { q, cap: e.cap } // still short → keep
       }
     }
     out[id] = { ...d, stock }

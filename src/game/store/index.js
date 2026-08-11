@@ -284,7 +284,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 60,
+  version: 61,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -804,6 +804,14 @@ export const useGame = create(persist((set, get) => ({
       state.pendingRanks = state.pendingRanks ?? []
       state.streamBoostNext = state.streamBoostNext ?? false
       state.repLedger = state.repLedger ?? { today: {}, days: [] }
+    }
+    if (version < 61) {
+      // ⚡→🛒 The Pokémon Center MSRP shelf was removed (sells out to bots IRL — a shop owner
+      // buys fresh drops scalped like everyone else). A standing order pointed there re-homes
+      // to TCGplayer (the every-set-at-market marketplace) so the weekly auto-ship keeps
+      // shipping instead of silently going dead; the orphaned rapport record is dropped.
+      if (state.standingOrder?.distId === 'pokecenter') state.standingOrder = { ...state.standingOrder, distId: 'tcgplayer' }
+      if (state.distributors?.pokecenter) { const { pokecenter, ...rest } = state.distributors; state.distributors = rest }
     }
     return state
   },

@@ -1328,7 +1328,6 @@ function RapportBanner({ dist, rec, lvl }) {
   const perks = []
   if (dist.cases) perks.push(lvl.level >= dist.casesMinLevel ? '✓ case lots' : `case lots at ${levelName(dist.casesMinLevel)}`)
   if (dist.supply) perks.push(lvl.level >= dist.supplyMinLevel ? '✓ supply the channel' : `supply the channel at ${levelName(dist.supplyMinLevel)}`)
-  if (dist.firstDibs) perks.push('first dibs on new sets')
   if (dist.clearance) perks.push('weekly clearance lots')
   return (
     <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66' }}>
@@ -1426,16 +1425,12 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   const retail = product._clearance ? product._clearanceOf : product._case ? product._retail : product.price
   const showStrike = price < (retail || 0) - 0.005
   const total = round2(price * qN)
-  // ⚡ MSRP shelf vs 🔥 scalped shelf — the two halves of the same story, so say which you're
-  // looking at. The struck-through number above is already the market price; this explains WHY
-  // it's crossed out (sticker price) or why the ask is over it (fresh-drop hype).
-  const atSticker = !!dist.msrp && !product._case && !product._clearance
-  const surge = atSticker ? 1 : hypeSurge(set)
-  const priceNote = atSticker
-    ? `⚡ Sticker price — the market says ${fmtMoney(retail)}. This is why drop day matters.`
-    : surge > 1.02
-      ? `🔥 Fresh-drop markup: +${Math.round((surge - 1) * 100)}% over the ${fmtMoney(retail)} market. It's worth market the moment you own it.`
-      : null
+  // 🔥 Fresh-drop hype: the struck-through number above is the market price; this explains
+  // why the ask sits over it. (There's no MSRP shelf — a shop owner buys drops scalped.)
+  const surge = hypeSurge(set)
+  const priceNote = surge > 1.02
+    ? `🔥 Fresh-drop markup: +${Math.round((surge - 1) * 100)}% over the ${fmtMoney(retail)} market. It's worth market the moment you own it — patience is the discount.`
+    : null
 
   // 📋 Standing order (upgrade): subscribe ONE regular product line to a weekly auto-ship.
   const hasSO = useGame(s => !!s.upgrades.standingOrder)
@@ -1466,8 +1461,7 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
         {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
         <span className="prodprice">
-          {atSticker && <span className="pricetag msrp" title={priceNote}>MSRP</span>}
-          {!atSticker && surge > 1.02 && <span className="pricetag surge" title={priceNote}>🔥 +{Math.round((surge - 1) * 100)}%</span>}
+          {surge > 1.02 && <span className="pricetag surge" title={priceNote}>🔥 +{Math.round((surge - 1) * 100)}%</span>}
           {showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}
         </span>
         <StockBar qty={stockQty} cap={cap} out={out} days={days} color={dist.color} />
