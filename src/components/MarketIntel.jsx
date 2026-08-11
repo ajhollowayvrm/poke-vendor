@@ -83,20 +83,25 @@ export function HobbyWire() {
 
 export function BreakersAlmanac() {
   const owned = useGame(s => !!s.upgrades.almanac)
+  // 🎓 Mastered-set perk: completing a set means you know its print run inside out — those
+  // sets' almanac rows are unlocked forever, upgrade or not (the upgrade covers the rest).
+  const mastered = useGame(s => s.completedSets)
   const currentDay = useGame(s => s.currentDay)
   const marketMults = useGame(s => s.marketMults)
   const marketHistory = useGame(s => s.marketHistory)
   const [open, toggle] = useOpen('pv-almanac-open', bigScreen())
+  const masteredOnly = !owned && (mastered || []).length > 0
 
   // Monte-Carlo pack EV per shop set through the real openPack/cardValue path — the same
   // number the sim's RIP-EV gate computes, at a UI-friendly N. Recomputed once per game-day
   // (the market drifts on the day tick) and only while the panel is open. N=400 keeps a fat-
   // tailed mean readable as a percentage without a noticeable stall (~7k packs total).
   const rows = useMemo(() => {
-    if (!owned || !open) return []
+    if ((!owned && !masteredOnly) || !open) return []
     const N = 400
     const out = []
-    for (const s of SHOP_SETS) {
+    const pool = owned ? SHOP_SETS : SHOP_SETS.filter(s => (mastered || []).includes(s.id))
+    for (const s of pool) {
       const products = (s.products || []).filter(p => p.price > 0 && p.packs >= 1)
       const booster = products.find(p => p.packs === 1 && /booster pack/i.test(p.type || ''))
       if (!booster) continue
@@ -116,8 +121,8 @@ export function BreakersAlmanac() {
     }
     return out.sort((a, b) => b.best.pct - a.best.pct)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [owned, open, currentDay])
-  if (!owned) return null
+  }, [owned, masteredOnly, open, currentDay])
+  if (!owned && !masteredOnly) return null
 
   const cols = 'minmax(130px,1.4fr) minmax(110px,1fr) minmax(120px,1fr) minmax(70px,0.7fr) minmax(80px,0.8fr)'
   const pctCell = (pct) => (
@@ -126,7 +131,7 @@ export function BreakersAlmanac() {
   return (
     <div className="market-panel" style={{ marginTop: 12 }}>
       <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
-        📐 Breaker's Almanac <span className="muted">— rip EV by set, riding today's market</span>
+        📐 Breaker's Almanac <span className="muted">— {masteredOnly ? '🎓 your mastered sets only (you know those print runs inside out; the 📐 Almanac upgrade covers the rest)' : 'rip EV by set, riding today\'s market'}</span>
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>
       </div>
       {open && (

@@ -341,6 +341,30 @@ try {
     pass('every rank past 0 has 3 deeds and a 2-of-3 bar', rep.RANKS.slice(1).every(r => r.deeds.length === 3) && rep.DEEDS_NEEDED === 2)
   }
 
+  // --- 7. 🖼️ MASTERSET SHOWCASE — the completed-binder economy's rails ------------------
+  // The showcase is a capped DRAW (like signage), never a demand printer; the master-lot
+  // premium is a bounded prize; and the completion ⭐ must scale with set VALUE (the old
+  // card-count formula paid a $22k vintage master set like a cheap 250-carder).
+  console.log('\n🖼️ MASTERSET SHOWCASE:')
+  {
+    const ms = await page.evaluate(async () => {
+      const eng = await import('/src/game/engine.js')
+      const cards = (prefix, n, price) => Array.from({ length: n }, (_, i) => ({ id: `${prefix}${i}`, price }))
+      return {
+        walkCap: eng.showcaseMult(99), streamCap: eng.showcaseStreamMult(99),
+        lo: eng.LOT_PREMIUM_LO, hi: eng.LOT_PREMIUM_HI,
+        small: eng.completionReward({ cards: cards('x', 100, 2) }),
+        big: eng.completionReward({ cards: cards('y', 100, 80) }),
+      }
+    })
+    pass(`showcase draw rails: walk-ins ×${ms.walkCap} (want ≤ 1.16), streams ×${ms.streamCap} (want ≤ 1.10)`,
+      ms.walkCap <= 1.16 + 1e-9 && ms.streamCap <= 1.10 + 1e-9)
+    pass(`master-lot premium band ${ms.lo}–${ms.hi}× of book (a prize, not a printer)`,
+      ms.lo >= 1.1 && ms.hi <= 1.5 && ms.lo < ms.hi)
+    pass(`completion ⭐ scales with set VALUE (same length: ${ms.small.noto}★ cheap vs ${ms.big.noto}★ flagship, +${ms.big.clout} 🎫)`,
+      ms.big.noto > ms.small.noto && ms.small.clout >= 1 && ms.big.clout >= ms.small.clout)
+  }
+
   await browser.close()
 } catch (e) {
   console.error('SIM ERROR:', e.message)

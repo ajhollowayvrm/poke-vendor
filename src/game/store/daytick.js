@@ -22,6 +22,7 @@ import {
   marketMult, setIdOfCard, sealedValue, sealedCard, DISTRIBUTORS, rapportLevel, distributorDiscount,
   makeVintageHold, setById, distributorPrice, breakOptions, setProducts,
   gradePrediction, psaValueAt, gradingFee, distributorCatalog, stockState,
+  showcaseSetIds, showcaseMult, pickMasterLot, LOT_PREMIUM_LO, LOT_PREMIUM_HI,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance, packValue } from '../mysterypacks'
@@ -283,7 +284,7 @@ function driftMarket(mults, history, days, log) {
 // Returns { listings, soldProceeds, sold:[{name,net,savvy,auto?}], newOffers, staleNow:[names] }.
 // `streamBoostDays` = how many of the first `days` fall inside a live stream-hype
 // window (a recent stream pumps EVERY listing's traffic).
-function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}, shopHype = 0) {
+function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}, shopHype = 0, masteredSet = null) {
   let soldProceeds = 0
   const sold = []
   const staleNow = []
@@ -306,7 +307,9 @@ function tickListings(listings, days, noto, streamBoostDays = 0, upgrades = {}, 
       const streamed = day < streamBoostDays
       // 🔥 Shop hype pumps listing TRAFFIC (stacks with afterglow, both capped) and lets a
       // hot moment's buyers stretch a hair further (≤+5% — the exploit-dangerous dial).
-      const boost = (streamed ? STREAM_BOOST : 1) * hypeDemandMult(shopHype)
+      // 🎓 A mastered set's singles move quicker out of YOUR case — you're the known source.
+      const masteredBoost = masteredSet?.has(setIdOfCard(cur.card)) ? 1.15 : 1
+      const boost = (streamed ? STREAM_BOOST : 1) * hypeDemandMult(shopHype) * masteredBoost
       const viewers = dailyViewers(cur.card, cur.askMult, noto, Math.random, boost)
       cur.views += viewers
       for (let v = 0; v < viewers; v++) {
@@ -478,6 +481,12 @@ export function advanceDaysWith(set, get, days, away) {
   // the 7-day ring, and a capped slice of the hype that burned off overnight "cures" into
   // permanent reputation — a hot streak leaves a small lasting mark, never a farmable one.
   const hype0 = s.hype || 0
+  // 🖼️ The showcase snapshot: completed sets still fully owned draw the shop real traffic
+  // all tick (stale for the whole tick, same discipline as noto/hype0). `masteredIds` is the
+  // PERMANENT list (ever completed) — the knowledge perks survive selling the page.
+  const showcaseIds = showcaseSetIds(s)
+  const showcaseN = showcaseIds.length
+  const masteredIds = s.completedSets || []
   {
     const hypeNext = round2(decayHype(hype0, days))
     set(st => ({
@@ -626,7 +635,7 @@ export function advanceDaysWith(set, get, days, away) {
     const onlineRate = (dayOrderRate('online', noto, hasBargain) + followerBump) * orderMult * hypeDemandMult(hype0)
     const nOnline = Math.min(MAX_ORDERS_PER_DAY, drawCount(onlineRate))
     for (let k = 0; k < nOnline && openOnline; k++) {
-      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars), channel: 'online' }); onlineCount++ }
+      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars, null, { showcase: showcaseN }), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store AND cards out on the shelf). The
@@ -645,7 +654,7 @@ export function advanceDaysWith(set, get, days, away) {
     // 🏪 A live promotion across town is a real hole in your own footfall — that's what
     // makes the rival worth competing with rather than reading about.
     const rivalMult = rivalDrag(s.rival)
-    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult * rivalMult * hypeDemandMult(hype0)
+    const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult * rivalMult * hypeDemandMult(hype0) * showcaseMult(showcaseN)
     const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
     for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
@@ -655,8 +664,10 @@ export function advanceDaysWith(set, get, days, away) {
         const enc = (season.gift > 0 && Math.random() < season.gift)
           ? makeGiftBuyer(s, accepted, noto)
           : Math.random() < 0.35
-          ? makeShopRequest(s, accepted, { biasSetId: waveRushSetId })
-          : boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
+          // 🎓 Mastered-set perk: the shop known for a set gets asked for it — absent a
+          // reprint rush, ~30% of requests lean toward a set you've completed.
+          ? makeShopRequest(s, accepted, { biasSetId: waveRushSetId || (masteredIds.length && Math.random() < 0.3 ? masteredIds[Math.floor(Math.random() * masteredIds.length)] : null) })
+          : boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN })
         // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies — a
         // card sells for more across your counter than in a web listing. (fulfillRequest already
         // bakes the premium into its price, so it's intentionally NOT flagged here.)
@@ -670,7 +681,7 @@ export function advanceDaysWith(set, get, days, away) {
     // guaranteed extra walk-ups on the first day after the event.
     if (i === 0 && eventExtraWalkins > 0 && hasStore && openWalkin && walkinOK) {
       for (let e = 0; e < eventExtraWalkins; e++) {
-        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars)
+        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN })
         for (const o of (enc.options || [])) {
           if (o.effect && ['sellOwned', 'counter', 'browseSale'].includes(o.effect.type)) o.effect.inStore = true
         }
@@ -960,7 +971,7 @@ export function advanceDaysWith(set, get, days, away) {
   // and buy (at ask) or leave an offer based on their savvy vs your price. A listing
   // priced too high just keeps drawing lookers and never sells (eventually flagged stale).
   const streamBoostDays = Math.min(days, s.streamHypeDaysLeft || 0)
-  const lt = tickListings(s.listings, days, noto, streamBoostDays, s.upgrades, hype0)
+  const lt = tickListings(s.listings, days, noto, streamBoostDays, s.upgrades, hype0, masteredIds.length ? new Set(masteredIds) : null)
   const remainingListings = lt.listings
   soldProceeds = round2(soldProceeds + lt.soldProceeds)
   for (const sale of lt.sold) {
@@ -1592,6 +1603,37 @@ export function advanceDaysWith(set, get, days, away) {
   if (goalsSwept) {
     set(st => ({ clout: (st.clout || 0) + 1 }))
     get().log('goal', '🎯 Clean sweep — every weekly goal done before the reset. People notice. (+1 🎫 clout)', 0)
+  }
+  // --- 🖼️ The showcase lives: completed pages on display pull people in ------------------
+  if (showcaseN > 0 && hasStore) {
+    // Pilgrims: some days a couple of locals come in just to page through the famous binder.
+    // A small hype pop, not money — the money is the extra walk-ins the showcase already drew.
+    if (Math.random() < Math.min(0.18, (0.06 + 0.03 * showcaseN) * days)) {
+      const showSet = setById(showcaseIds[Math.floor(Math.random() * showcaseIds.length)])
+      get().addHype(4)
+      get().log('shop', `🖼️ A couple of locals came in just to page through the completed ${showSet?.name || 'master set'} binder — word travels. (+🔥)`, 0)
+    }
+  }
+  // A pending master-lot offer ages out if ignored — collectors don't wait forever.
+  if (s.binderOffer && newAbsDay >= s.binderOffer.expiresDay) {
+    get().log('shop', `🖼️ ${s.binderOffer.who} stopped waiting on the ${s.binderOffer.setName} master set — the $${s.binderOffer.price.toFixed(2)} offer is off the table.`, 0)
+    set({ binderOffer: null })
+  } else if (!s.binderOffer && showcaseN > 0 && newAbsDay - (s.binderOfferLastDay || 0) >= 10
+    && Math.random() < Math.min(0.15, 0.03 * showcaseN * days)) {
+    // 🖼️ A collector wants the INTACT page — the "complete master set sells for more than its
+    // parts" premium (LOT_PREMIUM band, sim-pinned). Selling keeps the badge/deeds/knowledge
+    // perks (completedSets never reverts); only the showcase draw leaves with the cards.
+    const offerSet = setById(showcaseIds[Math.floor(Math.random() * showcaseIds.length)])
+    const lot = offerSet ? pickMasterLot(get(), offerSet) : null
+    if (lot) {
+      const mult = LOT_PREMIUM_LO + Math.random() * (LOT_PREMIUM_HI - LOT_PREMIUM_LO)
+      const who = ['a museum-piece collector', 'an investor who wants it framed', 'a completionist flush from a bonus', 'a collector who chased this set for years'][Math.floor(Math.random() * 4)]
+      const offer = { setId: offerSet.id, setName: offerSet.name, who,
+        price: round2(lot.value * mult), mult: Math.round(mult * 100) / 100,
+        count: lot.copies.length, expiresDay: newAbsDay + 6 }
+      set({ binderOffer: offer, binderOfferLastDay: newAbsDay })
+      get().log('shop', `🖼️ Word of your completed ${offerSet.name} master set reached ${who} — offering $${offer.price.toFixed(2)} (${Math.round(offer.mult * 100)}% of book) for the intact page. ~6 days to decide (Cards → Binder).`, 0)
+    }
   }
   if (subIncome > 0) get().log('stream', `❤️ ${subsNext} subscriber${subsNext === 1 ? '' : 's'} — +$${subIncome.toFixed(2)} sub income${subsDark ? ' (channel dark over a week — subs are drifting off)' : ''}`, subIncome)
   if (clipGain > 0) get().log('stream', `🎬 Your ${s.streamClip.label} clip is making the rounds — +${clipGain} followers`, 0)

@@ -9,6 +9,7 @@ import {
   cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, gradeUpcharge, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
+  pickMasterLot,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype } from './constants'
@@ -116,6 +117,7 @@ export function createCollectionSlice(set, get) {
       const rewards = newly.map(set_ => ({ set: set_, r: completionReward(set_) }))
       const cash = round2(rewards.reduce((a, x) => a + x.r.cash, 0))
       const noto = rewards.reduce((a, x) => a + x.r.noto, 0)
+      const clout = rewards.reduce((a, x) => a + (x.r.clout || 0), 0)
       set(st => {
         // Still one batched write, but the rep gain now rides the same taper + ledger as
         // every addNotoriety call (this direct write used to skip the soft cap entirely).
@@ -126,15 +128,53 @@ export function createCollectionSlice(set, get) {
           notoriety: notoNext,
           repLedger: ledgerAdd(st.repLedger, 'sets', round2(notoNext - (st.notoriety || 0))),
           hype: bumpHype(st.hype, Math.min(15, noto)), // finishing a set is a talked-about moment
-
+          clout: (st.clout || 0) + clout,              // 🎫 a real feat earns favors
           stats: { ...st.stats, earned: round2((st.stats?.earned || 0) + cash) },
           history: [
             ...rewards.map(({ set: s_, r }) => ({ t: Date.now(), type: 'complete', amount: r.cash,
-              detail: `🏆 Completed the ${s_.name} set! Bonus +$${r.cash.toFixed(2)} & +${r.noto}★` })),
+              detail: `🏆 Completed the ${s_.name} set! +$${r.cash.toFixed(2)}, +${r.noto}★, +${r.clout} 🎫 — and it's ON DISPLAY now: an intact page draws walk-ins, whales and stream viewers.` })),
             ...st.history,
           ].slice(0, 200),
         }
       })
+    },
+
+    // 🖼️ Accept the pending master-lot offer: a collector buys ONE copy of every card in the
+    // completed set (the binder page first, then unlocked collection copies — pickMasterLot)
+    // at the offered premium over book. completedSets keeps the id — the badge, rank deeds,
+    // milestones and the 🎓 knowledge perks are yours forever; only the showcase draw leaves
+    // with the cards. The set can't be re-completed for a second bonus (checkCompletions
+    // skips ids already in completedSets), so re-assembling the page only ever re-earns the
+    // premium, never the completion reward.
+    sellMasterLot() {
+      const offer = get().binderOffer
+      if (!offer) return { error: 'No collector is waiting on a master set right now.' }
+      const set_ = SETS.find(x => x.id === offer.setId)
+      const lot = set_ ? pickMasterLot(get(), set_) : null
+      if (!lot) {
+        set({ binderOffer: null })
+        return { error: 'The page isn’t intact any more — a card is missing, locked away, or out on the market. The collector moved on.' }
+      }
+      const collUids = new Set(lot.copies.filter(x => x.from === 'collection').map(x => x.card.uid))
+      const bindUids = new Set(lot.copies.filter(x => x.from === 'binder').map(x => x.card.uid))
+      set(st => ({
+        collection: st.collection.filter(c => !collUids.has(c.uid)),
+        binder: (st.binder || []).filter(c => !bindUids.has(c.uid)),
+        binderOffer: null,
+      }))
+      get().earn(offer.price)
+      get().addNotoriety(3, false, 'sales')
+      get().addHype(8) // the sale of a famous page is a story in itself
+      get().bumpGoal('sell', 1)
+      get().log('sell', `🖼️ Sold the intact ${offer.setName} master set (${lot.copies.length} cards) to ${offer.who} — $${offer.price.toFixed(2)} at ${Math.round(offer.mult * 100)}% of book. The completion badge is yours forever; the showcase draw leaves with the page.`, offer.price)
+      get().checkMilestones()
+      return { ok: true, price: offer.price }
+    },
+    declineMasterLot() {
+      const offer = get().binderOffer
+      if (!offer) return
+      set({ binderOffer: null })
+      get().log('shop', `🖼️ You waved off ${offer.who} — the ${offer.setName} page stays on display.`, 0)
     },
 
     // --- Masterset binder --------------------------------------------------------

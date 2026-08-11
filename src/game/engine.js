@@ -3077,11 +3077,66 @@ export function bulkSellableUids(collection, candidateUids, { keepOne = false } 
   return { sell, kept }
 }
 
-// Cash + notoriety bonus for first-time completing a set. Scales with how big and
-// how valuable the set is — finishing a 300-card chase-heavy set is a real feat.
+// Cash + notoriety + clout bonus for first-time completing a set. Scales with how big and
+// how VALUABLE the set is — the ⭐ used to be card-count only, which paid a $22k chase-heavy
+// vintage master set the same as a cheap 250-carder of equal length.
 export function completionReward(set) {
   const value = set.cards.reduce((a, c) => a + (c.price ?? 0), 0)
   const cash = round2(50 + set.cards.length * 2 + value * 0.05) // size + a slice of its book value
-  const noto = Math.round(8 + set.cards.length / 12)
-  return { cash, noto }
+  const noto = Math.round(6 + Math.sqrt(Math.max(0, value)) / 4 + set.cards.length / 40)
+  const clout = 1 + (value >= 5000 ? 1 : 0) // 🎫 a real feat earns a favor — two for a flagship
+  return { cash, noto, clout }
+}
+
+// ---- 🖼️ The showcase: a completed set on display is a shop DRAW -----------------------
+// The one-time completion bonus was the whole payoff, and it was a fraction of one chase
+// card's price — mastersetting was dead capital. Now the binder is infrastructure:
+// a set counts as SHOWCASED while it's been completed (completedSets) AND you still own one
+// of every card (collection + binder). Sell the lot — or break the set up — and the draw
+// leaves with it; the badge/deeds/milestones keep reading completedSets and never revert.
+export function showcaseSetIds(state) {
+  const done = state.completedSets || []
+  if (!done.length) return []
+  const owned = ownedIdSet([...(state.collection || []), ...(state.binder || [])])
+  return done.filter(id => { const s = setById(id); return s && setCompletion(s, owned).complete })
+}
+// Foot-traffic draw: +4% walk-ins per showcased set, hard cap +16% (same altitude as the
+// 🪧 signage multiplier — a display, not a demand printer).
+export function showcaseMult(n) { return 1 + Math.min(0.16, (n || 0) * 0.04) }
+// On-air draw (people tune in to see the binder): +2%/set, hard cap +10%.
+export function showcaseStreamMult(n) { return 1 + Math.min(0.10, (n || 0) * 0.02) }
+
+// 🖼️ Completion premium: what a collector pays OVER book for the intact page — the real-world
+// "a complete master set sells for more than its parts" premium. Band pinned by the sim.
+export const LOT_PREMIUM_LO = 1.15
+export const LOT_PREMIUM_HI = 1.30
+// The copies a master-lot sale hands over: ONE copy per card id — the binder copy first
+// (that's the display being bought), else the cheapest unlocked raw collection copy, else the
+// cheapest slab. Respects every sale rail (🔒 locked and held-for-a-regular never sell);
+// returns null if any card has no sellable copy (e.g. your only copy is locked or listed).
+export function pickMasterLot(state, set) {
+  if (!set) return null
+  const byId = new Map()
+  for (const c of (state.binder || [])) {
+    if (!byId.has(c.id)) byId.set(c.id, [])
+    byId.get(c.id).push({ card: c, from: 'binder' })
+  }
+  for (const c of (state.collection || [])) {
+    if (c.locked || c._heldFor) continue
+    if (!byId.has(c.id)) byId.set(c.id, [])
+    byId.get(c.id).push({ card: c, from: 'collection' })
+  }
+  const copies = []
+  let value = 0
+  for (const cardDef of set.cards) {
+    const cands = byId.get(cardDef.id)
+    if (!cands?.length) return null // a card has no sellable copy — the page can't be sold intact
+    const pick = cands.sort((a, b) =>
+      (a.from === 'binder' ? -1 : 0) - (b.from === 'binder' ? -1 : 0)   // display copy first
+      || (a.card.grade ? 1 : 0) - (b.card.grade ? 1 : 0)                // raw before slabs
+      || cardValue(a.card) - cardValue(b.card))[0]                      // cheapest copy goes
+    copies.push(pick)
+    value += cardValue(pick.card)
+  }
+  return { copies, value: round2(value) }
 }

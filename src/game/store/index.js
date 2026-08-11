@@ -284,7 +284,7 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 61,
+  version: 62,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -812,6 +812,13 @@ export const useGame = create(persist((set, get) => ({
       // shipping instead of silently going dead; the orphaned rapport record is dropped.
       if (state.standingOrder?.distId === 'pokecenter') state.standingOrder = { ...state.standingOrder, distId: 'tcgplayer' }
       if (state.distributors?.pokecenter) { const { pokecenter, ...rest } = state.distributors; state.distributors = rest }
+    }
+    if (version < 62) {
+      // 🖼️ Masterset showcase rework: completed sets on display draw the shop real traffic,
+      // and collectors occasionally offer to buy the intact page at a premium. Nothing to
+      // grandfather — the showcase derives live from completedSets + ownership.
+      state.binderOffer = state.binderOffer ?? null
+      state.binderOfferLastDay = state.binderOfferLastDay ?? 0
     }
     return state
   },

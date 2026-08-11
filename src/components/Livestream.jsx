@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg } from '../game/engine'
+import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg, showcaseSetIds } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
@@ -84,6 +84,12 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   const clout = useGame(s => s.clout || 0)
   const boosted = useGame(s => !!s.streamBoostNext) // 📣 2-🎫 favor: tonight opens ×1.5
   const buyStreamBoost = useGame(s => s.buyStreamBoost)
+  // 🖼️ Completed master sets on display draw their own tune-ins.
+  const scCompleted = useGame(s => s.completedSets)
+  const scCollection = useGame(s => s.collection)
+  const scBinder = useGame(s => s.binder)
+  const showcaseN = useMemo(() => showcaseSetIds({ completedSets: scCompleted, collection: scCollection, binder: scBinder }).length,
+    [scCompleted, scCollection, scBinder])
   const collectBreakSpots = useGame(s => s.collectBreakSpots)
   // 📣 Announced streams: promise a night ahead of time for a bigger room.
   const streamPromo = useGame(s => s.streamPromo)
@@ -194,7 +200,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
   // The room drifts toward the biggest-draw product in the queue (a vintage box later
   // shouldn't cap the crowd at a $5 pack's draw).
   const draw = queue.length ? Math.max(...queue.map(e => streamDrawMult(setById(e.setId) || SHOP_SETS[0], e.product))) : 1
-  const expected = Math.round(baseViewers(notoriety, fresh, followers, shopHype) * draw
+  const expected = Math.round(baseViewers(notoriety, fresh, followers, shopHype, showcaseN) * draw
     * (promoTonight ? promoViewerMult(streamPromo) : 1)
     * rhythmMult(rhythmNow)
     * (bountyCard ? bountyDrawMult(cardValue(bountyCard)) : 1)
@@ -522,6 +528,11 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const boosted = useGame(s => !!s.streamBoostNext) // 📣 the called-in favor rides the whole session
   const regulars = useGame(s => s.regulars)
   const collection = useGame(s => s.collection)
+  // 🖼️ Showcase tune-ins (same draw the setup estimate showed)
+  const lsCompleted = useGame(s => s.completedSets)
+  const lsBinder = useGame(s => s.binder)
+  const showcaseN = useMemo(() => showcaseSetIds({ completedSets: lsCompleted, collection, binder: lsBinder }).length,
+    [lsCompleted, collection, lsBinder])
   const giveawayCard = useGame(s => s.giveawayCard)
   // 📣 Announced-stream payoff: if tonight is the promised night, the room shows up bigger,
   // and raffling the promised card live is the delivery moment.
@@ -555,7 +566,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
   const draw = queueRef.current.length
     ? Math.max(...queueRef.current.map(e => streamDrawMult(e.set, e.product)))
     : 1
-  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers, shopHype) * draw
+  const settled = Math.round(baseViewers(notoriety, fatigueMult(fatigue), followers, shopHype, showcaseN) * draw
     * (promoLive ? promoViewerMult(promoLive) : 1)  // 📣 the announced-night crowd
     * rhythmMult(rhythmNow)                          // 📆 the loyal weekly crowd
     * (session.bounty ? bountyDrawMult(session.bounty.value) : 1) // 🎯 here for the chase

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useGame } from '../game/store'
+import { useGame, absoluteDay } from '../game/store'
 import {
   SETS, setCompletion, completionReward, isChaseCard, fmtMoney,
   cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
@@ -29,6 +29,13 @@ export default function Binder({ onPick }) {
   const setSetting = useGame(s => s.setSetting)
   const reserveCut = useGame(s => s.settings.binderReserveCut ?? 'off')
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
+
+  // 🖼️ A collector waiting on a completed page (accept/decline banner below).
+  const binderOffer = useGame(s => s.binderOffer)
+  const sellMasterLot = useGame(s => s.sellMasterLot)
+  const declineMasterLot = useGame(s => s.declineMasterLot)
+  const currentDay = useGame(s => s.currentDay)
+  const monthsElapsed = useGame(s => s.monthsElapsed)
 
   const [setId, setSetId] = useState(SETS[0].id)
   const [missingOnly, setMissingOnly] = useState(false)
@@ -89,12 +96,33 @@ export default function Binder({ onPick }) {
 
   return (
     <>
+      {/* 🖼️ The master-lot offer: a collector wants an intact completed page at a premium
+          over book. Selling keeps the badge/deeds/knowledge perks; the showcase draw and the
+          cards leave. The offer ages out in a few days if ignored. */}
+      {binderOffer && (
+        <div className="banner" style={{ marginBottom: 10, borderColor: 'var(--gold)' }}>
+          🖼️ <b>{binderOffer.who[0].toUpperCase() + binderOffer.who.slice(1)}</b> wants your completed <b>{binderOffer.setName}</b> master set — the whole page,
+          {' '}<b style={{ color: 'var(--green)' }}>{fmtMoney(binderOffer.price)}</b> ({Math.round(binderOffer.mult * 100)}% of book, {binderOffer.count} cards).
+          {' '}<span className="muted">Expires in {Math.max(0, binderOffer.expiresDay - absoluteDay(currentDay, monthsElapsed))}d. You keep the 🏆 badge and 🎓 knowledge; the showcase draw leaves with the cards.</span>
+          <span className="row" style={{ gap: 6, marginTop: 6, display: 'inline-flex', marginLeft: 8 }}>
+            <button className="btn gold" style={{ flex: 'none', padding: '4px 12px', fontSize: 12.5 }}
+              onClick={() => { const r = sellMasterLot(); toast(r.error || `🖼️ Sold the ${binderOffer.setName} page — +${fmtMoney(r.price)}.`) }}>
+              Sell the page · {fmtMoney(binderOffer.price)}
+            </button>
+            <button className="btn alt" style={{ flex: 'none', padding: '4px 12px', fontSize: 12.5 }}
+              onClick={() => { declineMasterLot(); toast('🖼️ The page stays on display.') }}>
+              Keep it on display
+            </button>
+          </span>
+        </div>
+      )}
       <div className="binder-head">
         <select value={setId} onChange={e => { setSetId(e.target.value); setMissingOnly(false) }}>
           {SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
         <span className="muted" style={{ fontSize: 12.5 }}>{set.series}</span>
-        {everCompleted && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }} title="You've earned this set's completion bonus">🏆 Set done</span>}
+        {everCompleted && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }} title="You've earned this set's completion bonus — and its 🎓 knowledge perks (rip intel, walk-ins asking for this set, its singles selling faster) are yours forever">🏆 Set done</span>}
+        {everCompleted && comp.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }} title="The intact page is a shop DRAW: more walk-ins, whales come earlier and more often, and streams pull extra tune-ins — for every completed set you keep on display. Collectors may offer to buy the whole page at a premium.">🖼️ On display</span>}
         {ms.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="Every variant of every card is slotted">✨ Masterset!</span>}
       </div>
 
@@ -115,7 +143,7 @@ export default function Binder({ onPick }) {
             ? '✨ Full masterset — every variant slotted. Ultimate flex.'
             : <>
                 {ms.total - ms.placed} slot{ms.total - ms.placed === 1 ? '' : 's'} to go
-                {!comp.complete && <> · completing the base set pays +{fmtMoney(reward.cash)} & +{reward.noto}★</>}
+                {!comp.complete && <> · completing the base set pays +{fmtMoney(reward.cash)}, +{reward.noto}★ & +{reward.clout} 🎫 — then the page on display draws walk-ins, whales & viewers</>}
                 {placeableNow > 0 && <> · <b style={{ color: 'var(--green)' }}>{placeableNow} ready to slot</b></>}
               </>}
         </div>

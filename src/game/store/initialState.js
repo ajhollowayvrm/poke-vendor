@@ -55,6 +55,8 @@ export function initialState() {
     pendingRanks: [],        // rank indexes unlocked but not yet celebrated — App drains into toasts (pendingMilestones pattern)
     streamBoostNext: false,  // 📣 clout spend: next stream opens boosted (baseViewers ×1.5), consumed on go-live
     repLedger: { today: {}, days: [] }, // 📒 ⭐-delta attribution: today {srcTag: delta} + 7-day ring [{d, total, srcs}]
+    binderOffer: null,       // 🖼️ pending master-lot offer: { setId, setName, who, price, mult, count, expiresDay } — a collector wants the whole completed page
+    binderOfferLastDay: 0,   // absolute day the last offer arrived (spaces them out)
     // 🏬 Brick-and-mortar branding: the store's identity, set once you've opened a storefront.
     // name/tagline default empty (UI falls back to "Your Store"); icon is your shop's emoji; a
     // blank accent means "use the app's default accent". Surfaces on the Store panel, the

@@ -793,7 +793,9 @@ export function makeSealedDeal(channel, notoriety = 0) {
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
-export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null, regulars = null, showSealedPool = null) {
+// `opts.showcase` = how many completed master sets are on display at home (🖼️ the binder
+// draw) — whales come earlier and more often to the shop with the famous page.
+export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null, regulars = null, showSealedPool = null, opts = {}) {
   const roll = Math.random()
   const online = channel === 'online'
   const walkin = channel === 'walkin'
@@ -826,14 +828,17 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   // FEATURING pieces in your store's display case is the whale bait: with something featured,
   // whales come in EARLIER (lower fame gate), MORE OFTEN, and go straight for a featured piece.
   const featuredPool = walkin ? offerPool.filter(c => c._featured) : []
-  const whaleGate = featuredPool.length ? 60 : WHALE_NOTO_GATE
+  // 🖼️ A showcased master set is whale bait like a featured card: the shop with the famous
+  // page gets deep pockets through the door earlier, and a little more often (capped).
+  const showcaseN = opts.showcase || 0
+  const whaleGate = (featuredPool.length || showcaseN) ? 60 : WHALE_NOTO_GATE
   if ((online || walkin) && notoriety >= whaleGate && offerPool.length) {
     // Whale frequency used to cap at 22% (reached around noto 260) — the biggest buyers in the
     // game stopped caring how famous you got. Now a real name keeps pulling them in, up to a
     // 45% rail (a whale every other encounter is already a lot).
     const pWhale = Math.min(0.45,
       (Math.min(0.22, 0.05 + Math.max(0, notoriety - whaleGate) / 1200) + fameBeyond(notoriety, 260) * 0.05)
-      * (featuredPool.length ? 1.7 : 1))
+      * (featuredPool.length ? 1.7 : 1 + Math.min(0.5, showcaseN * 0.15)))
     if (Math.random() < pWhale) {
       const pickPool = featuredPool.length ? featuredPool : offerPool
       const target = pickPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
