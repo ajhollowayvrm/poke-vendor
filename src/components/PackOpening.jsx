@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
+import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -121,13 +121,15 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
   // Reveal card i, fire its feedback, then decide how to reach i+1: in auto mode we
   // schedule the next reveal on a timer; in manual mode we stop and wait for a tap.
-  // A chase card in auto mode gets a short suspense beat (dim the row, tease the
-  // face-down card) before it actually flips.
+  // A GRAIL card in auto mode gets a short suspense beat (dim the row, tease the
+  // face-down card) before it actually flips. The beat is pinned to the narrow bar, not the
+  // wider isChase one: Poké Ball foils land in one pack in three, and an 850ms hold that
+  // often stops reading as suspense and starts reading as lag.
   function step(cards, i) {
     if (i >= cards.length) { finish(cards); return }
     const c = cards[i]
-    const chase = isChase(c)
-    if (chase && revealMode !== 'manual' && !c._peeked) {
+    const grail = isGrail(c)
+    if (grail && revealMode !== 'manual' && !c._peeked) {
       c._peeked = true
       setSuspenseIdx(i)
       sfxTension()
@@ -139,7 +141,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
       setHits(h => [c, ...h])
-      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, chase)
+      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, grail)
     } else {
       sfxFlip()
     }
@@ -475,7 +477,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           {tab === 'cards' ? (
             <div className="rip-cards-pane">
               {/* Every card gets the star treatment: a big tile that lands with its own name +
-                  value, and opens its full card page on tap. A chase card being teased (auto
+                  value, and opens its full card page on tap. A card being teased (the grail
                   suspense beat, or the next manual tap) dims the rest of the grid to spotlight it. */}
               {phase === 'revealing' ? (
                 /* The reveal itself: you hold the pack as a stack, the current card face-up on top;

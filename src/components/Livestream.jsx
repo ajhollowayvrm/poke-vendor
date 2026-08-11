@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { SHOP_SETS, openPack, makeProductPromo, isHit, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg, showcaseSetIds } from '../game/engine'
+import { SHOP_SETS, openPack, makeProductPromo, isHit, isChase, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg, showcaseSetIds } from '../game/engine'
 import {
   baseViewers, fatigueMult, viewerReaction, tipsFor, streamNotoriety, isFlop, isStreamHype,
   chatLine, reactionKind, spotPrice, spotsFilled, followersGained, hypeTrainMult, HYPE_TRAIN_MAX, streamDrawMult,
@@ -1387,7 +1387,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
               <div className="reveal-row" style={{ marginTop: 0 }}>
                 {pulls.map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
-                  const chase = c.foil?.key === 'masterball' || rarityRank(c.rarity) >= rarityRank('Special Illustration Rare')
+                  const chase = isChase(c)
                   // this card's spot within the CURRENT entry (for the ship tag)
                   const gp = allPulled.current.find(p => p.card.uid === c.uid)
                   const spotIdx = gp ? gp.spot : null

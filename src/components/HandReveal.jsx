@@ -66,7 +66,7 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
         {/* The rest of the hand behind the current card — edges peek; a chase border shows rainbow. */}
         {upcoming.slice(0, UP_MAX).map((c, k) => {
           const depth = k + 1
-          const teased = !!c.foil || isChase(c) // rainbow/foil border — worth telegraphing
+          const teased = isChase(c) // rainbow/foil border (IR+ or a special foil) — worth telegraphing
           return (
             <div key={c.uid} className={`hand-up ${teased ? 'teased' : ''}`} aria-hidden="true"
               style={{ transform: `translate(calc(-50% + ${depth * 3}px), ${-depth * (riffle ? 17 : 10)}px) rotate(${depth * 0.8}deg)`,
