@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, isChase, cardValue, fmtMoney, rarityRank,
+import { openPack, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, fmtMoney, rarityRank,
   preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
@@ -12,13 +12,17 @@ import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxGod } from '../game/feedback'
 
 // "Big hit" thresholds — how good a card has to be for the sifter to STOP and hand you the
-// pack to rip yourself. Chase-only sets the value bar to infinity, so only a Master Ball / SIR+
-// (or a want-fill / god pack) breaks the churn.
+// pack to rip yourself. The three money bars are pure VALUE bars; "Chase" is a RARITY bar
+// instead (see bigHitIn), because the card you want in your own hands isn't always the
+// expensive one — a $6 Illustration Rare is still an alt art you'd rather pull than watch
+// blur past. Whatever the setting, a grail (Master Ball foil / SIR+), a want-fill or a god
+// pack always breaks the churn.
+const CHASE_LEVEL = Infinity   // the rarity-bar sentinel: no value ever clears it
 const STOP_LEVELS = [
   { key: 25,  label: '$25+',  blurb: 'Stop on anything $25 or up' },
   { key: 50,  label: '$50+',  blurb: 'Only bigger hits break the churn' },
   { key: 150, label: '$150+', blurb: 'Chase-money only' },
-  { key: Infinity, label: 'Chase only', blurb: 'Only a Master Ball / SIR+ stops it' },
+  { key: CHASE_LEVEL, label: 'Chase only', blurb: 'Any IR+ or special foil, at any price' },
 ]
 
 // How much faster than a normal rip the churn runs. The sift shows the REAL rip — pack tears,
@@ -85,9 +89,14 @@ export default function AutoRip({ items, onExit }) {
     cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     return cards
   }
+  // Does this pack hold something worth handing back sealed? A want-fill or a grail always
+  // does. Past that it's the chosen bar: "Chase" asks the RARITY question (any IR/UR/SIR+ or
+  // Poké/Master Ball foil, however little it's worth), the money levels ask the VALUE one.
   function bigHitIn(cards) {
     if (cards._god) return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null)
-    return cards.find(c => c._fillsWant || isChase(c) || cardValue(c) >= minRef.current) || null
+    const min = minRef.current
+    const clears = min === CHASE_LEVEL ? isChase : (c) => cardValue(c) >= min
+    return cards.find(c => c._fillsWant || isGrail(c) || clears(c)) || null
   }
   function pickBest(best, cards) { return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), best) }
   // Bank a pack to the collection AND fold it into the on-screen tally.
@@ -210,7 +219,7 @@ export default function AutoRip({ items, onExit }) {
     const special = c._isHit || c.foil || c._fillsWant
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
-      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, isChase(c))
+      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, isGrail(c))
     } else {
       sfxFlip()
     }

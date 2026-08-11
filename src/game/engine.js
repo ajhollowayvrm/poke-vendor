@@ -127,10 +127,24 @@ export const HIT_VALUE_THRESHOLD = 20
 export function isHit(card) {
   return rarityRank(card.rarity) >= HIT_THRESHOLD || cardValue(card) > HIT_VALUE_THRESHOLD
 }
-// Chase tier: a rung above a plain hit — Master Ball foils and Special Illustration Rare or
-// better. These are the cards worth a suspense beat mid-reveal (PackOpening), a rainbow edge
-// peeking out of the hand (HandReveal), and stopping a whole sift for (AutoRip).
+// Chase tier: a rung above a plain hit — every alt-art-and-up pull, plus the special foil
+// patterns. That means Illustration Rare or better (IR, Ultra Rare, SIR, Hyper, Mega Attack
+// Rare, Mega Hyper Rare, Black White Rare) and any Poké Ball / Master Ball foil. These are the
+// cards worth a rainbow edge peeking out of the hand (HandReveal) and stopping a whole sift for
+// (AutoRip) — the bar is deliberately WIDE: a $20 Illustration Rare is a card you want to turn
+// over in your own hands, not one flashed past you on the churn clock.
+//
+// Note it does NOT include Double Rare: those are the baseline ex hits (1 in 5 packs, usually
+// a dollar or two), and a "chase" that lands every fifth pack isn't a chase.
+export const CHASE_RANK = rarityRank('Illustration Rare')
 export function isChase(card) {
+  return !!card?.foil || rarityRank(card?.rarity) >= CHASE_RANK
+}
+// Grail tier: the narrow top of the chase pile — a Master Ball foil or Special Illustration
+// Rare and up. This is the bar that gets a suspense beat mid-reveal (PackOpening) and that
+// stops a sift no matter how high you set its value bar; isChase is the wide net, this is the
+// "you are never letting this one go by" one.
+export function isGrail(card) {
   return card?.foil?.key === 'masterball' || rarityRank(card?.rarity) >= rarityRank('Special Illustration Rare')
 }
 
