@@ -15,8 +15,8 @@ import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxGod } from 
 // pack to rip yourself. The three money bars are pure VALUE bars; "Chase" is a RARITY bar
 // instead (see bigHitIn), because the card you want in your own hands isn't always the
 // expensive one — a $6 Illustration Rare is still an alt art you'd rather pull than watch
-// blur past. Whatever the setting, a grail (Master Ball foil / SIR+), a want-fill or a god
-// pack always breaks the churn.
+// blur past. Whatever the setting, a grail (Master Ball foil / SIR+) or a god pack always
+// breaks the churn; a want-fill, pointedly, does not (see bigHitIn).
 const CHASE_LEVEL = Infinity   // the rarity-bar sentinel: no value ever clears it
 const STOP_LEVELS = [
   { key: 25,  label: '$25+',  blurb: 'Stop on anything $25 or up' },
@@ -89,14 +89,22 @@ export default function AutoRip({ items, onExit }) {
     cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     return cards
   }
-  // Does this pack hold something worth handing back sealed? A want-fill or a grail always
-  // does. Past that it's the chosen bar: "Chase" asks the RARITY question (any IR/UR/SIR+ or
-  // Poké/Master Ball foil, however little it's worth), the money levels ask the VALUE one.
+  // Does this pack hold something worth handing back sealed? A grail always does. Past that
+  // it's the chosen bar: "Chase" asks the RARITY question (any IR/UR/SIR+ or Poké/Master Ball
+  // foil, however little it's worth), the money levels ask the VALUE one.
+  //
+  // A want-fill deliberately does NOT stop the churn. A want is a SALE waiting to happen, not a
+  // card you're dying to see — most of them are ordinary singles someone happens to be asking
+  // for, and stopping to hand-rip a $2 common because a forum post wants one is the churn
+  // interrupting you to do paperwork. The pull still gets tagged (`_fillsWant`), still lands in
+  // the collection, and still shows its ⭐ badge in the summary; you just aren't made to tear
+  // the wrapper for it. If a want-fill is genuinely worth your hands it clears the bar you set
+  // on its own merits.
   function bigHitIn(cards) {
     if (cards._god) return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null)
     const min = minRef.current
     const clears = min === CHASE_LEVEL ? isChase : (c) => cardValue(c) >= min
-    return cards.find(c => c._fillsWant || isGrail(c) || clears(c)) || null
+    return cards.find(c => isGrail(c) || clears(c)) || null
   }
   function pickBest(best, cards) { return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), best) }
   // Bank a pack to the collection AND fold it into the on-screen tally.
