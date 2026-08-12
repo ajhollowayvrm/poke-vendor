@@ -2328,14 +2328,43 @@ function promoNameFromProduct(set, product) {
 // Normalize a card/promo name for loose matching ("Charizard EX" ≡ "Charizard ex").
 function normName(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() }
 
-// Find the in-set card that best matches a promo name (highest-value match wins — premium
-// collections feature the fancy chase art), or null if the set has no such card.
+// Rarities a sealed product's promo may NEVER be. A promo print is a stamped edition of a
+// card's BASE art — a Special Illustration Rare (or an Illustration Rare, a gold/rainbow Hyper
+// Rare, a Mega Hyper Rare) is a pack-only chase that is never boxed as a guaranteed promo.
+// A "Mega Feraligatr ex Box" ships the plain Mega Feraligatr ex, not the $170 SIR alt art.
+const PROMO_BANNED_RARITY = new Set([
+  'Illustration Rare', 'Special Illustration Rare', 'Hyper Rare',
+  'MEGA_ATTACK_RARE', 'Mega Hyper Rare', 'Black White Rare', 'ACE SPEC Rare',
+])
+// Subset-gallery numbering: Trainer Gallery (TG/GG), Shiny Vault (SV), Radiant Collection (RC).
+// Those live INSIDE their parent set's card pool (see EXTRA_SETS / alsoFetch), but they're
+// pack-only subset pulls — never a boxed promo either.
+const GALLERY_NUMBER = /^(?:TG|GG|SV|RC)\d/i
+function promoEligible(card) {
+  return !PROMO_BANNED_RARITY.has(card.rarity) && !GALLERY_NUMBER.test(String(card.number || ''))
+}
+
+// A card's collector number as a sortable integer — secret/full-art reprints are numbered ABOVE
+// the set's printed total, so the lowest number of a name's prints is its base art. Non-numeric
+// (gallery/promo) numbers sort last.
+function numOf(card) {
+  const n = parseInt(String(card.number || ''), 10)
+  return Number.isFinite(n) ? n : Infinity
+}
+
+// Find the in-set card a promo name pins to: the BASE print of that card — lowest rarity tier,
+// then lowest collector number — never one of its chase reprints. Alt arts, illustration rares
+// and gold secrets are filtered out entirely (promoEligible); null when the set has no eligible
+// print, so the caller can fall back to a real Black Star Promo or a cheap synthetic one.
 function findSetCardByName(set, name) {
   const want = normName(name)
   if (!want) return null
-  const matches = set.cards.filter(c => normName(c.name) === want)
+  const matches = set.cards.filter(c => normName(c.name) === want && promoEligible(c))
   if (!matches.length) return null
-  return matches.reduce((best, c) => (cardValue(c) > cardValue(best) ? c : best))
+  return matches.reduce((best, c) => {
+    const dr = rarityRank(c.rarity) - rarityRank(best.rarity)
+    return (dr < 0 || (dr === 0 && numOf(c) < numOf(best))) ? c : best
+  })
 }
 
 // The Black Star Promo `extra` set that pairs with a main set's era. A bare-Pokémon blister/tin
@@ -2378,15 +2407,18 @@ function synthPromoCard(set, name, seed) {
 
 // The candidate pool the deterministic ETB / Build & Battle fallbacks draw from. Real promos
 // there are foil POKÉMON in a believable ~$1–15 band — never bulk energy/Trainer chaff, never
-// a re-rolled chase. Falls back gracefully to the set's foil tiers, then anything.
+// a re-rolled chase. Alt-art/secret/gallery prints are excluded outright (promoEligible): a
+// cheap Shiny Vault or Illustration Rare is still a pack-only chase, price notwithstanding.
+// Falls back gracefully to the set's foil tiers, then anything.
 function promoCandidates(set) {
-  const pokemon = set.cards.filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
-  const src = pokemon.length ? pokemon : set.cards
+  const clean = set.cards.filter(promoEligible)
+  const pokemon = clean.filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
+  const src = pokemon.length ? pokemon : (clean.length ? clean : set.cards)
   const band = src.filter(c => { const v = cardValue(c); return v >= 1 && v <= 15 })
   if (band.length) return band
   const byR = cardsByRarity(set)
   const foils = [...(byR['Rare Holo'] || []), ...(byR['Double Rare'] || []), ...(byR['Rare'] || [])]
-    .filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
+    .filter(c => (c.supertype || 'Pokémon') === 'Pokémon' && promoEligible(c))
   return foils.length ? foils : src
 }
 
@@ -2486,9 +2518,11 @@ function resolveBasePromo(set, product, seed, rnd) {
   const name = promoNameFromProduct(set, product)
   if (name) {
     if (CHASE_SUFFIX.test(name)) {
-      const card = findSetCardByName(set, name)
-      if (card) return card // valuable headline foil → the real in-set card
-      // A chase name we can't resolve — don't fabricate a valuable card; fall through.
+      // The headline foil → the real in-set BASE print (never its alt-art/secret reprint).
+      // No eligible print (the card isn't in this set, or exists only as a chase): fall back to
+      // the era's Black Star Promo, else a cheap synthetic with the right name — the box still
+      // ships the card it names, we just never fabricate a chase to fill the slot.
+      return findSetCardByName(set, name) || findEraPromo(set, name) || synthPromoCard(set, name, seed)
     } else {
       // A bare-Pokémon promo is a real Black Star Promo — pin it from the era's promo pool if we
       // have that card, else a cheap synthetic stand-in with the right name.
