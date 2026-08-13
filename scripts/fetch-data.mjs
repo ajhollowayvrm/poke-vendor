@@ -974,10 +974,12 @@ async function main() {
 
     let products = rawProducts
 
-    // Prismatic SPC always ships the Eevee ex SIR (#167) as its guaranteed promo.
+    // Prismatic SPC always ships the Eevee ex Black Star Promo (svp-174) — its own promo print,
+    // above the in-set base ex and well below the #167 SIR alt art (which is a pack-only chase,
+    // never boxed; see promoEligible in engine.js).
     if (cfg.id === 'sv8pt5') {
       const spc = products.find(p => p.type === 'Super-Premium Collection')
-      if (spc) spc.fixedPromo = `${cfg.id}-167`
+      if (spc) spc.fixedPromo = 'svp-174'
     }
     // Stamp researched real ETB / Build & Battle promos onto this set's products.
     applyPromoMap(cfg.id, products)
