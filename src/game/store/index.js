@@ -21,6 +21,7 @@
 //   • sourcing.js     — distributors, sealed inventory, inbound deals
 //   • booth.js        — show floor, store shelf, resolveEncounter
 //   • livestream.js   — going live + box breaks
+//   • socials.js      — 📱 short-form posts + the 🃏 master set challenge (math: game/content.js)
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -37,6 +38,7 @@ import { createSourcingSlice } from './sourcing'
 import { createBoothSlice } from './booth'
 import { createLivestreamSlice } from './livestream'
 import { createPacksSlice } from './packs'
+import { createSocialsSlice } from './socials'
 import { deflateState, inflateState } from './slimsave'
 import { idbAvailable, idbGet, idbSet, idbDel } from './idb'
 import { defaultPackTiers } from '../mysterypacks'
@@ -282,9 +284,10 @@ export const useGame = create(persist((set, get) => ({
   ...createBoothSlice(set, get),
   ...createLivestreamSlice(set, get),
   ...createPacksSlice(set, get),
+  ...createSocialsSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 62,
+  version: 63,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -819,6 +822,25 @@ export const useGame = create(persist((set, get) => ({
       // grandfather — the showcase derives live from completedSets + ownership.
       state.binderOffer = state.binderOffer ?? null
       state.binderOfferLastDay = state.binderOfferLastDay ?? 0
+    }
+    if (version < 63) {
+      // 📱 The content batch (8 upgrades): building an audience without going live. Every
+      // field is additive and starts empty — an existing save simply hasn't posted anything
+      // yet, and nothing here is retroactive (no backdated followers, no free sponsor).
+      //   posts/postQueue/postStreak/lastPostDay — the short-form feed + the calendar bank
+      //   challenge  — no set declared on an old save
+      //   collab     — no guest spots yet; rapport builds from the first one
+      //   podcastDay — 0 means "no episode ever", so the first tick with the upgrade records one
+      //   sponsor    — nobody's called; the desk rolls its first offer once followers qualify
+      state.posts = state.posts ?? []
+      state.postQueue = state.postQueue ?? []
+      state.postStreak = state.postStreak ?? 0
+      state.lastPostDay = state.lastPostDay ?? null
+      state.challenge = state.challenge ?? null
+      state.collab = state.collab ?? { lastDay: 0, rapport: {} }
+      state.podcastDay = state.podcastDay ?? 0
+      state.sponsor = state.sponsor ?? null
+      state.sponsorLapsedDay = state.sponsorLapsedDay ?? 0
     }
     return state
   },

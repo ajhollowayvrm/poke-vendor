@@ -79,6 +79,25 @@ export function initialState() {
     streamClip: null,        // 🎬 circulating clip: { daysLeft, perDay, label } — recruits followers daily after a big on-stream moment
     rhythmStreak: 0,         // 📆 weekly-rhythm streak: consecutive streams ~3–10 days apart → loyal-crowd viewer mult (rhythmMult)
     lastStreamDay: null,     // absolute day of the last stream (drives rhythm gaps + sub churn)
+    // 📱 SHORT-FORM CONTENT (game/content.js) — the audience you build without going live.
+    // `posts` is the live feed: moments you already made, circulating and recruiting followers
+    // for a couple of days each (same shape/drain as streamClip, capped at MAX_LIVE_POSTS).
+    posts: [],               // [{kind, label, value, perDay, daysLeft, viral}]
+    postQueue: [],           // 🔁 Content Calendar bank — moments waiting for their daily slot
+    postStreak: 0,           // 🔁 consecutive days posted → cadenceMult on every post's reach
+    lastPostDay: null,       // absolute day something last went out
+    // 🃏 The master set challenge you announced: { setId, setName, startDay, startPlaced, total,
+    // landed, episodes, scale }. Show bins skew toward it, each card landed is content, and
+    // completing it pays the payoff-video bounty. One at a time; null = nothing declared.
+    challenge: null,
+    // 🤝 Guest appearances on other creators' channels: { lastDay, rapport: {creator: times} }.
+    collab: { lastDay: 0, rapport: {} },
+    podcastDay: 0,           // 🎙️ absolute day the last podcast episode went out (weekly cadence)
+    // 💰 The signed brand deal: { brand, icon, setId, setName, monthly, signedDay, dueDay,
+    // packsAt, lastPaidDay, featured } — a monthly check against a real feature obligation.
+    // `lapsedDay` (on a cleared deal) spaces out the next offer. null = nobody's calling.
+    sponsor: null,
+    sponsorLapsedDay: 0,
     generousActs: 0,
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance

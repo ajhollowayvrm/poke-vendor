@@ -2,6 +2,7 @@
 import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, AFTERMARKET_SETS, JP_CARD_SETS, JP_SHOP_SETS, JP_WORLD_RATE, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_PREMIUM, SPECIAL_ORDER_CAP } from './store/constants'
 import { rankForNotoriety } from './rep'
+import { CHALLENGE_BIAS, DISCORD_HOLD_SKEW } from './content'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -398,7 +399,13 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
 // NOTE: deliberately does NOT take notoriety — the floor must be a pure function of
 // (show seed, day) so it can't silently regenerate (restocking sold-out booths and
 // re-minting card uids) when the player's stats move mid-show.
-export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = []) {
+// `challengeSetId` — the set you've publicly announced you're chasing (🃏 Master Set
+// Challenge). Dealers who watch the series start pulling that set out for you, so a slice of
+// every singles bin is drawn from it. This is THEMING, not an economy change: the biased draw
+// runs through cardFromSetsInRange, which holds the card inside the same value band the bin
+// would have used anyway — exactly the rail the era-themed buy-in pools ride. You find more of
+// what you're chasing; you never find it cheaper.
+export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = [], challengeSetId = null) {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
   const [lo, hi] = tier.valueBand
@@ -427,6 +434,8 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   // raw vintage — you can't buy these sets in the shop.
   const VINTAGE_SINGLE_CHANCE = { meetup: 0, shop: 0.04, regional: 0.08, national: 0.13, invitational: 0.18, worlds: 0.25 }
   const vintageChance = VINTAGE_SINGLE_CHANCE[show.tierKey] || 0
+  // 🃏 The set you announced you're chasing (null unless a challenge is running).
+  const chaseSet = challengeSetId ? setById(challengeSetId) : null
   const booths = []
   for (let i = 0; i < n; i++) {
     // A recurring roster vendor claims this slot (fixed character), else a procedural one.
@@ -466,6 +475,15 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       // The hit band floor sits low (15% of the tier cap) so elite tiers draw from the
       // whole real-comp spread instead of exhausting the handful of top comps.
       const hitChance = arch.key === 'sharp' ? 0.38 : 0.15
+      // 🃏 A slice of the singles bin is what you're publicly chasing — the dealer heard, and
+      // dug it out of the back. Sealed and vintage tables are exempt (they don't run bins).
+      if (!card && chaseSet && specialty === 'singles' && r() < CHALLENGE_BIAS) {
+        const bandLo = r() < 0.5 ? lo : lo * (0.05 + r() * 0.25)
+        card = cardFromSetsInRange([chaseSet], bandLo, hi * (0.4 + r() * 0.6), r)
+        // cardFromSetsInRange falls back to the global pool when the set has nothing in this
+        // band — only tag it when the draw actually landed in the set you're chasing.
+        if (card && setIdOfCard(card) === chaseSet.id) card._chase = true
+      }
       if (!card) {
         if (arch.key === 'whale' || roll < hitChance) {
           card = gradedCardInRange(hi * 0.15, hi, 8 + Math.floor(r() * 3), r, seenSlabs)
@@ -1497,9 +1515,16 @@ function wpickWeighted(arr) {
 
 // Make one want. Collectors ask for a HUGE variety — a common to fill a binder page just as
 // often as a chase. `rich` (high notoriety) skews toward pricier named asks.
-export function makeWant(rich = false) {
+// `holdSetIds` — 💬 Community Discord: sets you're actually SITTING ON. Members ask the dealer
+// they know, so a majority of community wants name a set you hold. Like every other pool skew
+// in this file it changes WHICH card is asked for, never what the want pays (the premium math
+// below is untouched) — so a busier board is a routing opportunity, not free money.
+export function makeWant(rich = false, holdSetIds = null) {
   const who = wpick(COLLECTOR_NAMES)
   const daysLeft = 4 + Math.floor(Math.random() * 6) // 4–9 days to fill
+  const held = (holdSetIds && holdSetIds.length && Math.random() < DISCORD_HOLD_SKEW)
+    ? SHOP_SETS.filter(s => holdSetIds.includes(s.id))
+    : null
   // 55% named card, 45% "any <rarity> from <set>"
   if (Math.random() < 0.55) {
     // Only ever name cards the player can actually OBTAIN — i.e. non-vintage sets sold in the
@@ -1509,7 +1534,8 @@ export function makeWant(rich = false) {
     // 🎌 A collector can absolutely be chasing a Japanese card. Fulfillable for the same reason
     // it's askable: JP singles now turn up in vendor bins and online offers, and the import
     // shelf sells the sealed. Same minority rate as everywhere else.
-    const wantSets = (JP_CARD_SETS.length && Math.random() < JP_WORLD_RATE) ? JP_CARD_SETS : SHOP_SETS
+    const wantSets = (held && held.length) ? held
+      : (JP_CARD_SETS.length && Math.random() < JP_WORLD_RATE) ? JP_CARD_SETS : SHOP_SETS
     let all = wantSets.flatMap(s => s.cards.filter(c => (c.price ?? 0) >= floor))
     if (!all.length) all = SHOP_SETS.flatMap(s => s.cards)
     const card = wpick(all)
@@ -1536,7 +1562,9 @@ export function makeWant(rich = false) {
   // Restricted to the rippable shelf so the player has a way to go and find one.
   const jpCandidates = (JP_SHOP_SETS.length && Math.random() < JP_WORLD_RATE)
     ? JP_SHOP_SETS.filter(s => s.cards.some(c => c.rarity === rar)) : []
-  const set = jpCandidates.length ? wpick(jpCandidates)
+  const heldWithRarity = held ? held.filter(s => s.cards.some(c => c.rarity === rar)) : null
+  const set = (heldWithRarity && heldWithRarity.length) ? wpick(heldWithRarity)
+    : jpCandidates.length ? wpick(jpCandidates)
     : wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
   // Low-rarity asks pay a fatter multiple so a common/uncommon want is worth doing.
   const low = rarityRank(rar) < rarityRank('Double Rare')

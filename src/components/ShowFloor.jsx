@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { useGame, acceptedMethods, hypeDemandMult } from '../game/store'
+import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
@@ -57,12 +57,21 @@ export default function ShowFloor({ show, onLeave }) {
   function handleLeave() {
     const g = useGame.getState()
     const b = floorBaseRef.current
+    // 🎥 The best thing that ended up in your hands here — the vlog's headline. Same diff the
+    // 🎒 haul uses (anything whose uid wasn't in the walk-in snapshot), so a card bought off a
+    // table, won in a trade, or pulled from a rip at the floor all qualify.
+    let best = null
+    for (const c of [...(g.collection || []), ...(g.showInventory || [])]) {
+      if (b.cardUids.has(c.uid)) continue
+      if (!best || cardValue(c) > cardValue(best)) best = c
+    }
     const floor = {
       spent: round2(g.stats.spent - b.spent),
       earned: round2(g.stats.earned - b.earned),
       notoGained: round2(g.notoriety - b.noto),
       rapport: round2(Object.values(g.vendorSpend || {}).reduce((a, v) => a + v, 0) - b.rapport),
       acquired: takenIds.size,
+      bestPickup: best ? { name: best.name, value: cardValue(best) } : null,
     }
     onLeave(floor)
   }
@@ -88,7 +97,10 @@ export default function ShowFloor({ show, onLeave }) {
   // constantly at a show (sales, questions, giveaways), and every tick used to rebuild
   // the whole floor, restocking everything already bought and re-minting card uids.
   const booths = useMemo(() => {
-    const bs = generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || [])
+    // 🃏 An announced master set challenge skews a slice of every singles bin toward that set —
+    // read once here (like the roster) so the floor stays fixed for the show-day.
+    const chaseId = useGame.getState().challenge?.setId || null
+    const bs = generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || [], chaseId)
     // Stamp session-stable "taken" keys on sealed/mystery entries (cards already carry
     // uids): booth index + slot. Purchases mark these in takenIds so closing and
     // reopening a booth can never re-serve something you already bought.
@@ -222,7 +234,10 @@ export default function ShowFloor({ show, onLeave }) {
       const dealActive = inv.some(c => c._deal)
       const boothMult = (show._boothMult || 1) * (1 + Math.min(0.45, showcaseN * 0.15)) * (dealActive ? 1.25 : 1)
       const signageMult = upgrades.signage ? 1.15 : 1 // 🪧 +15% booth foot traffic at shows
-      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult)
+      // 🎥 They've seen the vlogs — people walk over because they recognize the table. Stacks
+      // with signage on purpose: one is a sign, the other is a face.
+      const vlogMult = upgrades.showVlog ? VLOG_BOOTH_MULT : 1
+      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult * vlogMult)
       if (Math.random() < chance) {
         const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
         lastEncounterRef.current = Date.now(); walkupsRef.current++

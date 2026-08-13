@@ -31,6 +31,11 @@ export default function Binder({ onPick }) {
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
 
   // 🖼️ A collector waiting on a completed page (accept/decline banner below).
+  // 🃏 Master set challenge — declared from the set you're looking at.
+  const hasChallengeKit = useGame(s => !!s.upgrades.setChallenge)
+  const challenge = useGame(s => s.challenge)
+  const declareChallenge = useGame(s => s.declareChallenge)
+
   const binderOffer = useGame(s => s.binderOffer)
   const sellMasterLot = useGame(s => s.sellMasterLot)
   const declineMasterLot = useGame(s => s.declineMasterLot)
@@ -124,6 +129,17 @@ export default function Binder({ onPick }) {
         {everCompleted && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }} title="You've earned this set's completion bonus — and its 🎓 knowledge perks (rip intel, walk-ins asking for this set, its singles selling faster) are yours forever">🏆 Set done</span>}
         {everCompleted && comp.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }} title="The intact page is a shop DRAW: more walk-ins, whales come earlier and more often, and streams pull extra tune-ins — for every completed set you keep on display. Collectors may offer to buy the whole page at a premium.">🖼️ On display</span>}
         {ms.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="Every variant of every card is slotted">✨ Masterset!</span>}
+        {/* 🃏 Declare THIS set as your on-camera chase. Lives here rather than on the Stream
+            tab because the decision is "which set", and this is where you look at sets. */}
+        {hasChallengeKit && !comp.complete && (
+          challenge?.setId === set.id
+            ? <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="You announced this chase — dealers surface its singles, every card you land is an episode, and finishing it is the payoff video">🃏 Chasing on camera</span>
+            : <button className="btn alt" style={{ flex: 'none', padding: '3px 10px', fontSize: 12.5 }}
+                title={challenge ? `You're already chasing the ${challenge.setName} — drop it on the Stream tab first` : 'Announce this set as your master set challenge'}
+                onClick={() => { const r = declareChallenge(set.id); toast(r.error || `🃏 Announced: chasing the ${set.name} master set.`) }}>
+                🃏 Declare challenge
+              </button>
+        )}
       </div>
 
       {/* Masterset progress (all variants) + plain set progress */}

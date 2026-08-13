@@ -538,6 +538,23 @@ export {
   RANKS, DEEDS_NEEDED, rankForNotoriety, deedsDone, rankEligible, rankOf,
 } from '../rep'
 
+// 📱 Content & audience math (short-form posts, the master set challenge, show vlogs,
+// collabs, the podcast, brand deals) lives in content.js — same re-export arrangement as
+// rep.js above, so slices keep importing their tuning from this one place.
+export {
+  POST_DAYS, MAX_LIVE_POSTS, POST_QUEUE_CAP, POST_KINDS, postIcon,
+  POST_MIN_VALUE, worthPosting, postDrip, makePost, pushPost, postPatch, cadenceMult,
+  VIRAL_CHANCE, VIRAL_MULT, rollViral,
+  CHALLENGE_BIAS, challengeScale, huntFollowers, HUNT_EPISODE_EVERY, challengeBounty,
+  CHALLENGE_ABANDON_DING,
+  vlogFollowers, VLOG_AFTERGLOW_DAYS, VLOG_BOOTH_MULT,
+  DISCORD_WANT_BONUS, DISCORD_WANT_CAP_BONUS, DISCORD_HOLD_SKEW, discordRegularChance,
+  COLLAB_CREATORS, COLLAB_CHANCE, COLLAB_MIN_FOLLOWERS, collabGain,
+  PODCAST_PERIOD, PODCAST_REP, podcastFollowers, PODCAST_WAVE_LEAD_DAYS,
+  SPONSOR_BRANDS, SPONSOR_MONTHLY_CAP, SPONSOR_MIN_FOLLOWERS, SPONSOR_PERIOD,
+  SPONSOR_WINDOW_DAYS, SPONSOR_FEATURE_PACKS, SPONSOR_LAPSE_DING, sponsorMonthly,
+} from '../content'
+
 // Notoriety you must earn before strangers seek YOU out with unsolicited orders. Below
 // this you're a nobody — nobody DMs you to buy. Your early-game demand is the public
 // FORUM (people posting what they want; you go find/rip it). See FORUM_* + forumPosts.
@@ -750,6 +767,17 @@ export const UPGRADES = {
   specialOrders: { name: 'Special Orders Book', cost: 1800, icon: '📇', needs: 'storefront', desc: 'A ledger by the till and an account with every distributor who\'ll take a one-off. When a walk-in asks for sealed you don\'t carry, you get a THIRD answer besides "sorry" — take a 35% deposit and order it in. They pay the balance at pickup, at retail plus a 10% convenience premium, and a customer who\'s already paid a deposit doesn\'t price-shop you. It is a promise, though: miss the date and it\'s a refund, a rep hit, and a line on the demand board. Requires a Brick-and-Mortar Store.' },
   secondLocation: { name: 'Second Location', cost: 50000, tier: 'big', icon: '🏬', needs: 'storefront', desc: 'A second shop across the county, run by a manager you hire and stock you send over. It trades on its own each day — counter business, walk-ins, its own slice of the town\'s foot traffic — at roughly 40% of the main store\'s volume, entirely hands-off. It also has its own lease and its own payroll, and it does NOT get to raid the main store\'s shelves: it sells what you allocate to it and nothing else. Run it dry and it sits there costing you money; leave it unfunded too long and it closes. The endgame move from shopkeeper to owner. Requires a Brick-and-Mortar Store.' },
   storageUnit: { name: 'Storage Unit', cost: 1500, desc: 'A rented unit two streets over: +15 idle-sealed units stored free before the daily storage fee bites. The bridge between the apartment closet and the 🏛️ Vault.', icon: '🏗️' },
+  // 📱 The content tree: building an audience without going live. Every one of these turns
+  // something you were ALREADY doing into reach (see game/content.js for the math + rails).
+  shortsChannel: { name: 'Shorts Channel', cost: 700, icon: '📱', needs: 'smartphone', desc: 'Vertical video, shot on the counter: the moments you already make become POSTS. A chase out of a kitchen-table rip, a gem 10 back from the grader, a collection dumped on your table, a master set page finally filled — each one circulates for a couple of days recruiting followers, and no broadcast day is spent. Most posts do their small honest numbers; every so often the algorithm catches one and it does absurd numbers instead. Requires a Smartphone.' },
+  setChallenge: { name: 'Master Set Challenge', cost: 1500, icon: '🃏', needs: 'shortsChannel', desc: 'Announce a set you\'re chasing and film the hunt. While a challenge runs: show dealers pull that set\'s singles out for you (their bins skew toward it — same cards, same prices, you just FIND them), every card you land is an episode that recruits followers, and finishing it on camera is the payoff video — a big one-time follower haul, 🔥 hype and 🎫 clout on top of the completion bonus. Declare a set you\'re nearly done with and it pays a fraction; that\'s not a challenge. One at a time, and walking away from one costs you a little face. Requires a Shorts Channel.' },
+  showVlog: { name: 'Show Vlog Kit', cost: 1200, icon: '🎥', needs: 'smartphone', desc: 'A gimbal, a shotgun mic, and the nerve to film in a crowded hall: every show trip becomes a "come to a card show with me" vlog. Followers scaled by the size of the hall and the best thing you came home with, a couple of days of extra listing traffic on the drive back, and people recognize you at the NEXT show — +12% booth traffic, stacking with your signage. Works whether you\'re vending or just shopping. Requires a Smartphone.' },
+  contentCalendar: { name: 'Content Calendar', cost: 2000, icon: '🔁', needs: 'shortsChannel', desc: 'An editor and a schedule: moments stop firing the day they happen and bank instead, releasing ONE post a day. A single hot rip day feeds a dry week — and posting every day builds a cadence the algorithm rewards (up to +25% on every post\'s reach). Consistency beats bingeing, same as it does on stream. Requires a Shorts Channel.' },
+  discord: { name: 'Community Discord', cost: 1600, icon: '💬', needs: 'shortsChannel', desc: 'A server for the people who watch you — and they buy cards. Collector wants post far more often and skew toward sets you ACTUALLY HOLD (members ask the dealer they know), the board carries one more live want at a time, and every so often a member stops being an audience member and becomes a regular customer. Where 🛡️ Mod Team protects the channel, this points it at the shop. Requires a Shorts Channel.' },
+  collabs: { name: 'Creator Collabs', cost: 2500, icon: '🤝', needs: 'streaming', desc: 'You start showing up on OTHER people\'s channels: guest breaker spots, joint openings, podcast drop-ins. Their audience meets you and a chunk of it follows home — bigger and far more reliable than waiting on a random raid, and it costs no broadcast day of yours because it\'s their broadcast. Work with the same creator repeatedly and they give you the better slot. Requires a Streaming Setup.' },
+  podcast: { name: 'Hobby Podcast', cost: 1800, icon: '🎙️', desc: 'A weekly episode with the same three people arguing about grading. It spikes nothing — it just means everyone in the hobby knows who you are, permanently: a steady ⭐ reputation drip week after week, plus followers. And you hear things first: a reprint wave reaches your mic about two days before it reaches the price boards, which is a window to sell into the old price while everyone else finds out.' },
+  brandDeals: { name: 'Brand Deals Desk', cost: 4000, icon: '💰', needs: 'shortsChannel', desc: 'Accessory brands start sliding into your inbox. A signed deal pays a MONTHLY check scaled by your followers and subscribers (capped — it\'s a supplement, not a salary), in exchange for a real obligation: actually feature them, by ripping a few packs of the set they\'re pushing, inside the window. Deliver and the money keeps coming; ghost them and the deal lapses with a public shrug and a rep ding. Needs a real audience before anyone calls. Requires a Shorts Channel.' },
+
   clipEditor: { name: 'Clip Editor', cost: 1100, desc: 'An editor cuts EVERY broadcast into a highlight reel: streams without an organic viral moment still put out a clip that recruits followers for a couple of days after the wrap. God-pack clips are untouched — those cut themselves. Requires a Streaming Setup.', icon: '🎬', needs: 'streaming' },
   modTeam: { name: 'Mod Team', cost: 1500, desc: 'Trusted mods keep the channel alive between broadcasts: subscriber churn while you\'re dark is HALVED, and a well-run room gets raided by other streamers ~50% more often. Requires a Streaming Setup.', icon: '🛡️', needs: 'streaming' },
   standingOrder: { name: 'Standing Order', cost: 2500, desc: 'Put one product on subscription with a distributor (tap 📋 on any product line in the Buy tab): it ships automatically every week at your rapport price, while they have stock and you have cash.', icon: '📋' },

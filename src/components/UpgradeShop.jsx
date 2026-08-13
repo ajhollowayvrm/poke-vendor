@@ -23,6 +23,9 @@ const GROUPS = [
     keys: ['loupe', 'gradescope', 'graderAccount', 'submissionRunner', 'autoBinder'] },
   { id: 'stream', name: '🔴 Stream & repacks',
     keys: ['streaming', 'ripService', 'clipEditor', 'modTeam', 'wrapPress'] },
+  { id: 'content', name: '📱 Content & audience',
+    keys: ['shortsChannel', 'contentCalendar', 'setChallenge', 'showVlog', 'discord',
+      'collabs', 'podcast', 'brandDeals'] },
   { id: 'shows', name: '🎪 Shows & community',
     keys: ['vendorSetup', 'ticker', 'tourVan', 'banner'] },
 ]

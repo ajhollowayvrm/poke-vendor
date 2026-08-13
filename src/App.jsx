@@ -26,6 +26,7 @@ import SealedInventory from './components/SealedInventory'
 import AutoRip from './components/AutoRip'
 import ShowPrep from './components/ShowPrep'
 import Livestream from './components/Livestream'
+import Socials from './components/Socials'
 import Binder from './components/Binder'
 import Regulars from './components/Regulars'
 import StoreStock from './components/StoreStock'
@@ -469,7 +470,11 @@ export default function App() {
   function leaveShow(floor) {
     const trip = activeShow?._summary
     const name = activeShow?.name
-    useGame.getState().endShow()
+    // 🎥 Hand the trip to the vlog kit: which hall, and the best thing that came home with you.
+    useGame.getState().endShow({
+      tierKey: activeShow?.tierKey, showName: name,
+      bestValue: floor?.bestPickup?.value || 0, bestName: floor?.bestPickup?.name || null,
+    })
     setActiveShow(null)
     // Always show a recap on leave (even a quiet 1-day show), now that the floor recap
     // gives it content: what you spent/earned/gained on the floor, folded in with the
@@ -575,7 +580,9 @@ export default function App() {
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
         {tab === 'myshop' && <div className="pane"><BoothInbox onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /></div>}
-        {tab === 'stream' && <div className="pane"><Livestream /></div>}
+        {/* 📱 The off-air half of the channel sits above the go-live screen — hidden while
+            you're actually broadcasting, so a live session keeps the whole view. */}
+        {tab === 'stream' && <div className="pane">{!streamLive && <Socials />}<Livestream /></div>}
         {tab === 'stats' && <div className="pane"><Stats /></div>}
 
         {tab === 'collection' && (

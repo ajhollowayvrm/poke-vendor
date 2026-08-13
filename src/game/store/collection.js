@@ -12,7 +12,7 @@ import {
   pickMasterLot,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
-import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype } from './constants'
+import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype, postPatch, challengeBounty } from './constants'
 
 // Quick-selling is the instant-but-worst exit, and now it has teeth beyond the flat rate:
 //   • DUMP PENALTY — every quick-sell you make in a single day floods the buylist, so each
@@ -70,9 +70,16 @@ export function createCollectionSlice(set, get) {
           })
         }
         if (firstSet) bySet = bumpSet(bySet, firstSet, { packsOpened: packs })
+        // 📱 The rip is content. A chase out of a kitchen-table pack is exactly the moment a
+        // vendor films, so the best card of the rip posts itself (POST_MIN_VALUE keeps a bulk
+        // pack from posting). Folded into THIS write — a rip is the hottest set() path in the
+        // game and every set() re-serializes the whole save, so no second write is allowed.
+        const best_ = cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null)
+        const postFold = postPatch(s, 'pull', `${best_?.name || 'a chase'} out of ${setName}`, topVal) || {}
         return {
           collection: [...incoming, ...s.collection],
           bySet,
+          ...postFold,
           ...(hypeAdd ? { hype: bumpHype(s.hype, hypeAdd) } : {}),
           ...(isGod ? { clout: (s.clout || 0) + 1 } : {}), // 🎫 a god pack is a story people owe you a favor for telling
           stats: {
@@ -116,8 +123,25 @@ export function createCollectionSlice(set, get) {
       // identical; they just land together.
       const rewards = newly.map(set_ => ({ set: set_, r: completionReward(set_) }))
       const cash = round2(rewards.reduce((a, x) => a + x.r.cash, 0))
-      const noto = rewards.reduce((a, x) => a + x.r.noto, 0)
-      const clout = rewards.reduce((a, x) => a + (x.r.clout || 0), 0)
+      let noto = rewards.reduce((a, x) => a + x.r.noto, 0)
+      let clout = rewards.reduce((a, x) => a + (x.r.clout || 0), 0)
+      // 🃏 THE PAYOFF VIDEO. If one of these is the set you publicly announced you were
+      // chasing, the completion is the episode the whole series was building to — a one-time
+      // follower haul, hype and clout on top of the normal completion bonus, all scaled by how
+      // much of the set was actually left when you declared (challengeScale).
+      const chal = s.challenge
+      const chalSet = chal && newly.find(x => x.id === chal.setId)
+      let bounty = null
+      if (chalSet) {
+        const setValue = chalSet.cards.reduce((a, c) => a + (c.price ?? 0), 0)
+        bounty = challengeBounty(chalSet.cards.length, setValue, chal.scale ?? 1)
+        noto += bounty.noto
+        clout += bounty.clout
+      }
+      // 📱 A finished master set is the flagship post — the one that actually travels.
+      const pageSet = chalSet || newly[0]
+      const pageValue = pageSet.cards.reduce((a, c) => a + (c.price ?? 0), 0)
+      const pageFold = postPatch(s, 'page', `the completed ${pageSet.name} master set`, pageValue) || {}
       set(st => {
         // Still one batched write, but the rep gain now rides the same taper + ledger as
         // every addNotoriety call (this direct write used to skip the soft cap entirely).
@@ -127,9 +151,15 @@ export function createCollectionSlice(set, get) {
           cash: round2(st.cash + cash),
           notoriety: notoNext,
           repLedger: ledgerAdd(st.repLedger, 'sets', round2(notoNext - (st.notoriety || 0))),
-          hype: bumpHype(st.hype, Math.min(15, noto)), // finishing a set is a talked-about moment
+          hype: bumpHype(st.hype, Math.min(15, noto) + (bounty?.hype || 0)), // finishing a set is a talked-about moment
           clout: (st.clout || 0) + clout,              // 🎫 a real feat earns favors
           stats: { ...st.stats, earned: round2((st.stats?.earned || 0) + cash) },
+          ...pageFold,
+          // 🃏 The chase is over: bank the payoff-video audience and close the challenge out.
+          ...(bounty ? {
+            followers: Math.max(0, (st.followers || 0) + bounty.followers),
+            challenge: null,
+          } : {}),
           history: [
             ...rewards.map(({ set: s_, r }) => ({ t: Date.now(), type: 'complete', amount: r.cash,
               detail: `🏆 Completed the ${s_.name} set! +$${r.cash.toFixed(2)}, +${r.noto}★, +${r.clout} 🎫 — and it's ON DISPLAY now: an intact page draws walk-ins, whales and stream viewers.` })),
@@ -137,6 +167,9 @@ export function createCollectionSlice(set, get) {
           ].slice(0, 200),
         }
       })
+      if (bounty) {
+        get().log('stream', `🃏 THE PAYOFF VIDEO — you finished the ${chalSet.name} master set on camera. The series lands: +${bounty.followers} followers, +${bounty.noto}★, +${bounty.clout} 🎫 and the room is buzzing.`, 0)
+      }
     },
 
     // 🖼️ Accept the pending master-lot offer: a collector buys ONE copy of every card in the
@@ -570,9 +603,17 @@ export function createCollectionSlice(set, get) {
         const entry = { overall: grade.overall, tier: p.tierKey, company: grade.company, fee: round2((p.paidFee || 0) + owed), gradedAt: grade.gradedAt }
         resolved.push({ ...graded, gradeHistory: [...(p.card.gradeHistory || []), entry] })
       }
+      // 📱 The mail day. A slab coming back a 10 is the single most-filmed moment in the
+      // hobby — the reveal is the content, and it costs nothing but the phone. Only the BEST
+      // return of the batch posts (one submission back = one video, not twelve).
+      const bestSlab = resolved.reduce((b, g) => (cardValue(g) > (b ? cardValue(b) : 0) ? g : b), null)
+      const gemFold = bestSlab && (bestSlab.grade?.overall >= 10 || cardValue(bestSlab) >= 200)
+        ? (postPatch(get(), 'gem', `${bestSlab.name} came back a ${graderById(bestSlab.grade.company).name} ${bestSlab.grade.overall}`, cardValue(bestSlab)) || {})
+        : {}
       set(s => ({
         pendingGrades: [...s.pendingGrades.filter(p => day < p.readyOnDay), ...stillHeld],
         collection: [...resolved, ...s.collection],
+        ...gemFold,
       }))
       for (const g of resolved) {
         const black = isBlackLabel(g.grade)

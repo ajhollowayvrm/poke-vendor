@@ -365,6 +365,53 @@ try {
       ms.big.noto > ms.small.noto && ms.small.clout >= 1 && ms.big.clout >= ms.small.clout)
   }
 
+  // --- 8. 📱 CONTENT & AUDIENCE — the short-form batch's rails --------------------------
+  // Short-form is a FLOOR under the channel, never a replacement for going live, and the
+  // audience it builds must stay bounded: a post is worth a fraction of a stream clip, the
+  // feed is capped, the challenge pays for the chase you actually filmed, and the one cash
+  // faucet (sponsorship) is hard-capped and cannot be earned without spending money to honour
+  // the feature. Nothing in the batch may introduce a demand or price multiplier — content
+  // moves FOLLOWERS, and followers are capped in their effect elsewhere.
+  console.log('\n📱 CONTENT & AUDIENCE:')
+  {
+    const ct = await page.evaluate(async () => {
+      const c = await import('/src/game/content.js')
+      const st = await import('/src/game/stream.js')
+      // Compare like for like: the same $500 moment as a post vs. as a stream clip.
+      const clip = st.clipFor(400, 500, false, 'a big pull', false)
+      return {
+        postBest: Math.max(...['pull', 'gem', 'page', 'haul', 'vlog', 'hunt'].map(k => c.postDrip(k, 1e6))),
+        post500: c.postDrip('pull', 500), clip500: clip.perDay, clipDays: clip.daysLeft,
+        postDays: c.POST_DAYS, feedCap: c.MAX_LIVE_POSTS,
+        viral: c.VIRAL_CHANCE, viralMult: c.VIRAL_MULT,
+        cadenceCap: c.cadenceMult(999),
+        scaleFull: c.challengeScale(0, 200), scaleLate: c.challengeScale(190, 200),
+        bountyFull: c.challengeBounty(200, 5000, 1), bountyLate: c.challengeBounty(200, 5000, 0.05),
+        sponsorCap: c.SPONSOR_MONTHLY_CAP, sponsorHuge: c.sponsorMonthly(1e6, 1e5),
+        sponsorFloor: c.SPONSOR_MIN_FOLLOWERS, sponsorPacks: c.SPONSOR_FEATURE_PACKS,
+        vlogCap: Math.max(...Array.from({ length: 40 }, () => c.vlogFollowers(5, 1e6))),
+        bias: c.CHALLENGE_BIAS,
+      }
+    })
+    pass(`a post is worth a fraction of a stream clip ($500 moment: ${ct.post500}/day × ${ct.postDays}d vs clip ${ct.clip500}/day × ${ct.clipDays}d)`,
+      ct.post500 * ct.postDays < ct.clip500 * ct.clipDays)
+    pass(`post drip is capped no matter the value (max ${ct.postBest}/day across every kind)`, ct.postBest <= 15)
+    pass(`the feed is capped at ${ct.feedCap} live posts (a box rip can't carpet-bomb it)`, ct.feedCap <= 5)
+    pass(`viral is a lottery, not the plan (${(ct.viral * 100).toFixed(0)}% chance, ×${ct.viralMult})`,
+      ct.viral <= 0.08 && ct.viralMult <= 8)
+    pass(`cadence bonus rails at ×${ct.cadenceCap.toFixed(2)} (want ≤ 1.25)`, ct.cadenceCap <= 1.25 + 1e-9)
+    pass(`challenge pays for the chase you filmed (declaring at 0% → ×${ct.scaleFull.toFixed(2)}, at 95% → ×${ct.scaleLate.toFixed(2)})`,
+      ct.scaleFull === 1 && ct.scaleLate <= 0.06 && ct.bountyLate.followers < ct.bountyFull.followers * 0.2)
+    pass(`payoff-video bounty is bounded (${ct.bountyFull.followers} followers max, +${ct.bountyFull.noto}★)`,
+      ct.bountyFull.followers <= 400 && ct.bountyFull.noto <= 10)
+    pass(`show-bin challenge bias is a minority of the bin (${Math.round(ct.bias * 100)}%)`, ct.bias <= 0.35)
+    pass(`vlog followers stay bounded on a monster pickup (max ${ct.vlogCap})`, ct.vlogCap <= 120)
+    pass(`sponsorship is hard-capped at $${ct.sponsorCap}/mo (a huge channel still bills $${ct.sponsorHuge})`,
+      ct.sponsorHuge <= ct.sponsorCap + 1e-9)
+    pass(`sponsorship demands an audience (${ct.sponsorFloor} followers) AND a paid-for feature (${ct.sponsorPacks} packs)`,
+      ct.sponsorFloor >= 100 && ct.sponsorPacks >= 1)
+  }
+
   await browser.close()
 } catch (e) {
   console.error('SIM ERROR:', e.message)
