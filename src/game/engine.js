@@ -147,6 +147,17 @@ export function isChase(card) {
 export function isGrail(card) {
   return card?.foil?.key === 'masterball' || rarityRank(card?.rarity) >= rarityRank('Special Illustration Rare')
 }
+// The sift's rarity bar (AutoRip's "Chase only"): every chase, PLUS the baseline ex. `Double
+// Rare` is exactly the modern ex slot — every one of them in the snapshot is a "<Pokémon> ex" —
+// and the ex is the card a pack is *about*, the one you want to turn over yourself even when it
+// books at a dollar. Deliberately a separate bar from isChase(): this one answers "hand me the
+// pack", not "paint a rainbow edge on it", and an edge that lands every fifth pack means nothing.
+// Tested by NAME of the tier rather than by rank, because ACE SPEC Rare sits between Double Rare
+// and Illustration Rare on the ladder — a rank test would drag those trainers in too (worth ~50¢,
+// and on an ACE-SPEC set like Prismatic that alone is another 15pp of stops).
+export function isChaseOrEx(card) {
+  return isChase(card) || card?.rarity === 'Double Rare'
+}
 
 // A card counts as "bulk" purely by WORTH, not rarity: any raw card whose live market value
 // is under BULK_VALUE_THRESHOLD. So a rarity chase or a foil that the market values at pennies

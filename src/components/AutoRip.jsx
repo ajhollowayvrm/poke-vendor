@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, fmtMoney, rarityRank,
+import { openPack, openProduct, makeProductPromo, isHit, isChase, isChaseOrEx, isGrail, cardValue, fmtMoney, rarityRank,
   preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
@@ -15,14 +15,18 @@ import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxGod } from 
 // pack to rip yourself. The three money bars are pure VALUE bars; "Chase" is a RARITY bar
 // instead (see bigHitIn), because the card you want in your own hands isn't always the
 // expensive one — a $6 Illustration Rare is still an alt art you'd rather pull than watch
-// blur past. Whatever the setting, a grail (Master Ball foil / SIR+), a want-fill or a god
-// pack always breaks the churn.
+// blur past, and the ex is the card the pack is *about* whatever it books at. Whatever the
+// setting, a grail (Master Ball foil / SIR+), a want-fill or a god pack always breaks the churn.
+//
+// Note the rarity bar is the SLOWEST setting on a phone-friendly set: including the ex roughly
+// doubles the stop rate (Ascended Heroes 20.5% of packs → 38.0%, Prismatic 37.4% → 48.6%), so a
+// box hands back a lot of packs. That's the setting doing what it says; the money bars sift fast.
 const CHASE_LEVEL = Infinity   // the rarity-bar sentinel: no value ever clears it
 const STOP_LEVELS = [
   { key: 25,  label: '$25+',  blurb: 'Stop on anything $25 or up' },
   { key: 50,  label: '$50+',  blurb: 'Only bigger hits break the churn' },
   { key: 150, label: '$150+', blurb: 'Chase-money only' },
-  { key: CHASE_LEVEL, label: 'Chase only', blurb: 'Any IR+ or special foil, at any price' },
+  { key: CHASE_LEVEL, label: 'Chase only', blurb: 'Any ex, IR+ or special foil, at any price' },
 ]
 
 // How much faster than a normal rip the churn runs. The sift shows the REAL rip — pack tears,
@@ -90,12 +94,12 @@ export default function AutoRip({ items, onExit }) {
     return cards
   }
   // Does this pack hold something worth handing back sealed? A want-fill or a grail always
-  // does. Past that it's the chosen bar: "Chase" asks the RARITY question (any IR/UR/SIR+ or
-  // Poké/Master Ball foil, however little it's worth), the money levels ask the VALUE one.
+  // does. Past that it's the chosen bar: "Chase" asks the RARITY question (the ex, any IR/UR/
+  // SIR+, or a Poké/Master Ball foil, however little it's worth), the money levels ask VALUE.
   function bigHitIn(cards) {
     if (cards._god) return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null)
     const min = minRef.current
-    const clears = min === CHASE_LEVEL ? isChase : (c) => cardValue(c) >= min
+    const clears = min === CHASE_LEVEL ? isChaseOrEx : (c) => cardValue(c) >= min
     return cards.find(c => c._fillsWant || isGrail(c) || clears(c)) || null
   }
   function pickBest(best, cards) { return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), best) }
