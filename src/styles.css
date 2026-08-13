@@ -701,6 +701,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .askrow { display:flex; align-items:center; gap:6px; }
 .ask { font-weight: 800; color: var(--green); font-size: 15px; }
 .dealtag { background: var(--green); color:#03301f; font-size:10px; font-weight:800; padding:1px 6px; border-radius:6px; }
+/* 🔎 Deal finder, section level: a collapsed binder/sealed group holding at least one DEAL
+   turns its set name green, so a deep table reads at a glance instead of tap-by-tap. Colour
+   only — the row's own DEAL tag is still the precise answer once the section is open. */
+.deal-set { color: var(--green); }
 .overtag { background: var(--red); color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:6px; }
 .product.owned { opacity: .7; }
 
