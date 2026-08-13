@@ -1225,6 +1225,16 @@ button.rip-hit-row:hover { background:#ffffff14; }
      box-shadows still give subtle separation; borders are dropped. */
   body { background: var(--bg); }
   .topbar { gap: 6px; padding: 4px 12px 6px; flex-wrap: wrap; background: var(--bg); border-color: transparent; }
+  /* The bar's full height must ALWAYS be reserved above the page — it's opaque, so any pixel it
+     covers is a pixel of content you can never reach.
+     It reserves that height by being a real flex row of the app shell (see below), NOT by
+     overlaying — but `top: 12px` (the desktop affordance where the bar floats 12px below the
+     window edge as the page scrolls) also shifts it 12px DOWN of its flow box, and on a phone
+     the shell never scrolls, so that shift was permanent: the bar hung 12px into the scroll
+     region and clipped the top of every routed page. Worse, .content scrolls UNDER it, so
+     anything passing through that strip was sliced (the distributor rapport chip lost its top
+     edge on the Buy tab). Pin the offset to 0 here: bar bottom == scroll-region top, exactly. */
+  .topbar { top: 0; }
   /* During an active rip the game top bar (a flat, borderless band on phones) is hidden so the
      rip is a clean full-screen takeover — reveal cards no longer clip into an invisible dark
      band as they scroll ("going under the top banner"). The bottom nav stays for navigation,
