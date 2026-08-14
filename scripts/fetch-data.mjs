@@ -33,7 +33,15 @@ const EUR_USD = 1.08
 const EN_SETS = [
   // ========================= SHOP — in-print, sold FRESH by distributors =========================
   // What a real modern card shop stocks new right now: the current Mega Evolution block + recent
-  // Scarlet & Violet, plus the evergreen reprints (151, Prismatic) that never really leave shelves.
+  // Scarlet & Violet, plus Prismatic, the evergreen reprint that never really leaves shelves.
+  // ⚠️ THIS LIST *IS* THE IN-PRINT LINEUP (minus RETIRED_IDS in engine.js). The engine no longer
+  // retires sets on an age window — everything here is orderable from every distributor, forever,
+  // until you either move it down to SECONDARY or add its id to RETIRED_IDS. Print status is
+  // curated because in real life it's set by demand and Standard rotation, not by a set's age.
+  // 151 stays listed here but is RETIRED in the engine: it rotated out (mark G) and stopped
+  // printing in April 2026, yet it is nowhere near gone — sealed still sells through Amazon and
+  // the marketplaces, and its singles are everywhere. That's the sell-through stage, not
+  // SECONDARY. Only move a set down there once the channel has actually run dry.
   // Ordered newest → oldest; SHOP_SETS is re-sorted by releaseDate in engine.js so scoped fetches
   // can't scramble the "newest" that Pokémon Center gets first dibs on.
   { id: 'me5',      name: 'Pitch Black' },

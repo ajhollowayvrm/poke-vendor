@@ -2724,6 +2724,9 @@ export function nextRapport(spend) {
 //   supply        — unlocks supplying the channel (gated at supplyMinLevel)
 //   clearance     — occasionally runs a steeply-discounted sale lot
 //   rotating      — small, weekly-rotating selection (a shop shelf, not a warehouse)
+//   deepStock     — sits on warehouse/marketplace inventory, so it keeps selling a set for
+//                   YEARS after the printer stops (see the sell-through stage below). A
+//                   `rotating` allocation shelf can't: when it's gone, it's gone.
 export const DISTRIBUTORS = [
   {
     id: 'lgs', name: 'Local Game Store', icon: '🎲', color: '#5ec98a',
@@ -2739,18 +2742,21 @@ export const DISTRIBUTORS = [
     id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
     blurb: 'The marketplace — every set at live market price, deep selection. You pay market, but it is (almost) always there.',
     priceMult: 1.04, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.7,
+    deepStock: true, // third-party sellers list out-of-print sealed indefinitely
   },
   {
     id: 'amazon', name: 'Amazon', icon: '📦', color: '#ff9f43',
     blurb: 'The everything store — pay a hair over market and it is ALWAYS in stock, however hot the set. The catch is the one thing a warehouse can never sell you: it ships. Orders land in your storeroom a couple of days later, so Amazon is what you fall back on, never what you rip tonight.',
     priceMult: 1.06, discountStep: 0.015, maxDiscount: 0.08, reliability: 1.0, guaranteed: true,
     leadDays: 2,     // 📦 always available, never immediate — availability stops being free
+    deepStock: true, // the warehouse is still shipping sets the printer finished with years ago
   },
   {
     id: 'dna', name: "Dave & Adam's", icon: '🃏', color: '#b98cff',
     blurb: 'A hobby giant — real case pricing and bulk supply. But a distributor this size only opens a wholesale account once you are a name in the hobby: build your notoriety first, then earn rapport with them. The volume play, late-game.',
     priceMult: 0.93, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.7,
     cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
+    deepStock: true, // a hobby giant's warehouse is exactly where finished print runs go to sit
     minNotoriety: 75, // kept for the unlock progress bar; the door itself is minRank below
     minRank: 3, // 🎪 Regional Name — a distributor this size wants a résumé, not just a number (deeds + ⭐80)
   },
@@ -2779,17 +2785,44 @@ export function distributorUnlocked(dist, notoriety, upgrades, rank = 0) {
 // A real local shop stocks what one weekly case order gets them — two sets, maybe three, and
 // whatever's left of last month's. Not a catalogue.
 const LGS_SHELF_SIZE = 2
-// 🕰️ THE IN-PRINT WINDOW. Sealed product does not stay orderable forever: a set runs, then the
-// print run ends and the distribution channel moves on. Only the newest N sets can be ORDERED;
-// everything older still exists and still trades, but you hunt it on the aftermarket (vendors,
-// show floors, clearance bins) instead of clicking buy. This is what keeps the shop a rotating
-// window rather than an ever-growing list of every set ever printed.
-// NOTE this deliberately does NOT narrow SHOP_SETS itself — that pool still backs wants, walk-in
-// requests and the general card draw, and an out-of-print set's SINGLES are as obtainable as ever.
-// Only the sealed ORDER channel closes.
-export const IN_PRINT_COUNT = 8
-export const IN_PRINT_SETS = SHOP_SETS.slice(0, IN_PRINT_COUNT)
-export const OUT_OF_PRINT_SETS = SHOP_SETS.slice(IN_PRINT_COUNT)
+// 🕰️ IN PRINT → SELL-THROUGH → AFTERMARKET. "Out of print" describes the PRINTER, not the shelf,
+// and the gap between those two is YEARS wide. Three stages, and the middle one is what a naive
+// in-print/out-of-print flag throws away:
+//   1. IN PRINT     — the printer is running. Every channel stocks it, at market (+ hype if fresh).
+//   2. SELL-THROUGH — the printer has stopped, but the warehouses and marketplaces are still full
+//                     of it. You can walk over to Amazon and buy sealed 151 right now; what you
+//                     CAN'T do is get your local shop to reorder it, and you pay over market
+//                     because what's left is finite and shrinking. ← RETIRED_IDS sets live here.
+//   3. AFTERMARKET  — channel stock finally exhausted; only collectors and vendors have it. That's
+//                     the `secondary` flag, and those sets leave the fresh shelf altogether.
+// Which stage a set is in tracks DEMAND and Standard ROTATION, never its age. 151 and Prismatic
+// prove it in both directions: 151 outlived half a dozen sets released after it, then stopped at
+// the April 2026 rotation (regulation mark G) rather than from age, while Prismatic (mark H)
+// survived that rotation and is under active mass reprint years on. A "newest N sets" window gets
+// both cases exactly wrong, which is why print status is CURATED here rather than computed.
+// NOTE none of this narrows SHOP_SETS itself — that pool still backs wants, walk-in requests and
+// the general card draw, so a set's SINGLES stay as obtainable as ever. Only the sealed ORDER
+// channel narrows, and even then only down to the `deepStock` retailers.
+const RETIRED_IDS = new Set([
+  // 151 — regulation mark G. Rotated out of Standard 2026-04-10 (when Perfect Order became legal)
+  // alongside sv1 / sv2 / sv3 / sv4 / sv4pt5, all already `secondary` here, and stopped printing
+  // with them. Kept OUT of `secondary` because 151 is nowhere near stage 3: it's stacked at every
+  // big-box in the country and its singles are everywhere. Sell-through, not aftermarket.
+  'sv3pt5',
+])
+// "The printer is still running" — NOT "you can still buy it" (that's distributorCatalog, which
+// keeps sell-through sets on every deepStock shelf).
+export const IN_PRINT_SETS = SHOP_SETS.filter(s => !RETIRED_IDS.has(s.id))
+export const OUT_OF_PRINT_SETS = SHOP_SETS.filter(s => RETIRED_IDS.has(s.id))
+// 💸 What a finished print run costs OVER market while it sells through. The supply is finite and
+// everyone knows it, so the ask drifts up — the exact mirror of hypeSurge on a fresh drop, and the
+// reason "buy it before it rotates" is real advice. Applied to the shop ASK only, never to
+// sealedValue: like hype, paying the premium is a knowingly worse trade than having bought early.
+const SELL_THROUGH_PREMIUM = 1.22
+export function sellThroughPremium(setOrId) {
+  const id = typeof setOrId === 'string' ? setOrId : setOrId?.id
+  return RETIRED_IDS.has(id) ? SELL_THROUGH_PREMIUM : 1
+}
 
 // Which sets a retailer carries right now. `weekIndex` rotates the LGS shelf.
 // `sets` is the in-print shop list (SHOP_SETS), newest FIRST (see the sort above). The newest
@@ -2798,10 +2831,11 @@ export const OUT_OF_PRINT_SETS = SHOP_SETS.slice(IN_PRINT_COUNT)
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
   if (dist.japanese) return JP_SHOP_SETS                   // 🎌 the import shelf — its own catalog entirely
-  // 🕰️ Clamp to what's still IN PRINT before anything else. Out-of-print sealed has left the
-  // distribution channel entirely — no retailer can reorder it, whatever their allocation.
+  // 🕰️ Drop what the printer has finished with — but ONLY from allocation shelves. A `deepStock`
+  // retailer (warehouse, marketplace, hobby giant) goes on selling a set for years after the last
+  // print run, which is why sealed 151 is a click away on Amazon and unobtainable at your LGS.
   // Done here rather than at each call site so every shelf in the game inherits it.
-  const wide = (sets || []).slice(0, IN_PRINT_COUNT)
+  const wide = dist.deepStock ? (sets || []) : (sets || []).filter(s => !RETIRED_IDS.has(s.id))
   if (dist.cases) return wide.filter(s => caseLot(s))                             // box/case-friendly sets
   if (dist.rotating) {                                                            // small weekly shelf
     const n = wide.length
@@ -2848,7 +2882,7 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   // qty roll must not silently reshuffle which set turns up this week, or at what price.
   const qty = r() < 0.25 ? 2 : 1 // they usually turn up a single pack; sometimes a pair
   // 🕰️ Some weeks the back room turns up recent OUT-OF-PRINT product instead of true vintage —
-  // the last sealed Prismatic ETB rather than a '99 pack. Same slot, same finite quantity, so
+  // the last sealed Evolving Skies booster rather than a '99 pack. Same slot, same finite qty, so
   // the whole existing shelf works unchanged. Rolled LAST, after every draw above, so adding it
   // can't reshuffle which vintage set surfaces on the weeks it doesn't fire.
   if (AFTERMARKET_SETS.length && r() < AFTERMARKET_SHARE) {
@@ -2864,18 +2898,20 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   }
   return { setId: set.id, setName: set.name, logo: set.logo, product, price, qty }
 }
-// 🕰️ AFTERMARKET FIND — the other half of the in-print window. A set that ages out of the order
+// 🕰️ AFTERMARKET FIND — the other half of the in-print line. A set that has left the order
 // channel doesn't vanish; it ends up in the back room, on a clearance shelf, in the case a
 // vendor bought off a collector. This is where you hunt it. Same weekly-deterministic shape as
-// the vintage find (stable while you shop, rotates week to week), but drawn from the modern
-// out-of-print pool plus the older aftermarket sets — and priced ABOVE market, because a shop
-// that still has sealed Prismatic knows exactly what it's sitting on.
+// the vintage find (stable while you shop, rotates week to week), but drawn from the retired
+// modern sets plus the older `secondary` pool — and priced ABOVE market, because a shop that
+// still has sealed Paldean Fates knows exactly what it's sitting on.
+// While RETIRED_IDS is empty this is just SECONDARY_SETS, which is the right answer: the older
+// aftermarket sets ARE the out-of-print product a back room turns up.
 export const AFTERMARKET_SETS = [...OUT_OF_PRINT_SETS, ...SECONDARY_SETS]
 const AFTERMARKET_SET_IDS = new Set(AFTERMARKET_SETS.map(s => s.id))
 // How often a back-room find is recent-out-of-print product rather than true vintage. Deliberately
 // routed through the SAME weekly find slot: a shop has one back room, and what's in it this week
-// is either a '99 pack or the last sealed Prismatic ETB nobody shifted. Sharing the slot means the
-// existing buy path, stock tracking and shelf UI all work unchanged.
+// is either a '99 pack or the last sealed Crown Zenith ETB nobody shifted. Sharing the slot means
+// the existing buy path, stock tracking and shelf UI all work unchanged.
 const AFTERMARKET_SHARE = 0.45
 
 // Build a vintage item a high-rapport vendor RESERVES for you (the "we'll hold it" perk). Priced
@@ -2923,7 +2959,10 @@ export function hypeSurge(setOrId) {
 // fresh-drop surge; without it this degrades to the old plain-market maths.
 export function distributorPrice(dist, retail, level, opts = {}) {
   if (!dist) return round2(retail || 0)
-  const base = (retail || 0) * hypeSurge(opts.set)  // every shelf rides the scalper surge
+  // Every shelf rides the scalper surge on the way IN and the sell-through premium on the way
+  // OUT. The two never overlap (a set can't be both the fresh drop and a finished print run),
+  // so multiplying both is safe — whichever applies, the other is 1.
+  const base = (retail || 0) * hypeSurge(opts.set) * sellThroughPremium(opts.set)
   return round2(base * dist.priceMult * (1 - distributorDiscount(dist, level)))
 }
 // Case price from a distributor: wholesale on the boxes, then the extra case bulk cut.
@@ -2936,7 +2975,7 @@ export function distributorCasePrice(dist, lot, level) {
 // multi-pack products (ETBs / bundles / premiums), one or two booster boxes, cases are
 // rare. Scaled by reliability and — as a wider allocation — by rapport, so building a
 // relationship is how you get to buy in any real quantity.
-export function stockCap(dist, product, level) {
+export function stockCap(dist, product, level, set) {
   if (!dist) return 99
   const packs = product?.packs || 1
   let base
@@ -2947,7 +2986,11 @@ export function stockCap(dist, product, level) {
   else base = 5                           // single booster / sleeved pack
   const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
   const allo = 1 + 0.25 * (level || 0)      // bigger allocation as rapport grows (up to +100%)
-  return Math.max(1, Math.round(base * rel * allo))
+  // 🕰️ A finished print run is drawn down, never replenished — what's left on a warehouse shelf
+  // is a fraction of a live allocation however deep that warehouse is. Amazon stays `guaranteed`
+  // (you can always get SOME sealed 151) but you can no longer buy it by the armful.
+  const run = RETIRED_IDS.has(set?.id) ? 0.5 : 1
+  return Math.max(1, Math.round(base * rel * allo * run))
 }
 // Units of stock a distributor regains per day (toward the cap).
 export function restockRate(dist, cap) {
@@ -2964,11 +3007,11 @@ export function stockState(dist, stock, set, product, level) {
   // A "guaranteed" retailer (Amazon) never sells out — its shelf is treated as always full,
   // so it's the reliable "need it now" option that offsets its higher price.
   if (dist?.guaranteed) {
-    const cap = stockCap(dist, product, level)
+    const cap = stockCap(dist, product, level, set)
     return { q: cap, cap, out: false }
   }
   const entry = (stock || {})[stockKey(set, product)]
-  const cap = Math.max(entry?.cap || 0, stockCap(dist, product, level))
+  const cap = Math.max(entry?.cap || 0, stockCap(dist, product, level, set))
   const q = entry ? entry.q : cap
   return { q, cap, out: q < 1 }
 }

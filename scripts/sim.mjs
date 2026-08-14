@@ -134,12 +134,13 @@ try {
   // ---- 1c. 🛒 Shop scarcity + the scalper premium -----------------------------------
   // There is deliberately NO MSRP channel (the Pokémon Center shelf was removed 2026-08-10:
   // IRL it sells out to bots before a shop owner gets one). A fresh drop is bought at market
-  // PLUS the hype surge, everywhere — so the old below-market arbitrage must never come back,
-  // and the in-print window keeps the shop a rotating shelf rather than a warehouse.
+  // PLUS the hype surge, everywhere — so the old below-market arbitrage must never come back.
+  // Scarcity lives in PRICE, reliability and lead time now, not in a truncated catalogue: the
+  // marketplace really does carry every in-print set, and the corner shop really doesn't.
   console.log('\n🛒 SHOP SCARCITY:')
   const shop = await page.evaluate(async () => {
     const eng = await import('/src/game/engine.js')
-    const cat = id => eng.distributorCatalog(eng.distributorById(id), eng.SHOP_SETS, 3).length
+    const cat = id => eng.distributorCatalog(eng.distributorById(id), eng.SHOP_SETS, 3)
     // Cheapest zero-rapport ask on the NEWEST set across every English seller, as a share of
     // the market number — if any shelf sells the fresh drop below market, the printer is back.
     const newest = eng.IN_PRINT_SETS[0]
@@ -151,16 +152,37 @@ try {
         minRatio = Math.min(minRatio, eng.distributorPrice(d, p.price, 0, { product: p, set: newest }) / p.price)
       }
     }
+    const wide = cat('tcgplayer').map(s => s.id)
+    // 🕰️ THE SELL-THROUGH STAGE. 151 (mark G) stopped printing at the April 2026 rotation, but
+    // you can still buy it sealed from a warehouse today — so it must stay on the deepStock
+    // shelves and vanish only from the LGS's allocation shelf, at a premium over market. If it
+    // disappears everywhere, we're back to conflating "the printer stopped" with "it's gone".
+    const s151 = eng.setById('sv3pt5')
+    const p151 = eng.setProducts(s151).find(p => p.price)
+    const lgsIds = []
+    for (let w = 0; w < 24; w++) for (const s of eng.distributorCatalog(eng.distributorById('lgs'), eng.SHOP_SETS, w)) lgsIds.push(s.id)
     return { inPrint: eng.IN_PRINT_SETS.length, outOfPrint: eng.OUT_OF_PRINT_SETS.length,
-      lgs: cat('lgs'), tcg: cat('tcgplayer'), amazon: cat('amazon'), total: eng.SHOP_SETS.length,
+      lgs: cat('lgs').length, tcg: wide.length, amazon: cat('amazon').length, total: eng.SHOP_SETS.length,
+      // Prismatic (mark H) is under active mass reprint — it must stay orderable however old it
+      // gets. Age is never what retires a set here.
+      prismatic: wide.includes('sv8pt5'),
+      sellThruDeep: wide.includes('sv3pt5') && cat('amazon').some(s => s.id === 'sv3pt5'),
+      sellThruLgs: lgsIds.includes('sv3pt5'),
+      sellThruAsk: eng.distributorPrice(eng.distributorById('amazon'), p151.price, 0, { product: p151, set: s151 }) / p151.price,
       newestName: newest.name, minRatio,
       pcGone: !eng.DISTRIBUTORS.some(d => d.msrp || d.id === 'pokecenter') }
   })
-  pass(`in-print window is a rotating shelf, not a catalogue (${shop.inPrint} in print, ${shop.outOfPrint} out)`,
-    shop.inPrint >= 4 && shop.inPrint <= 10)
+  pass(`in print is curated, not a rolling window (${shop.inPrint} of ${shop.total} shop sets orderable, ${shop.outOfPrint} retired)`,
+    shop.inPrint >= 4 && shop.inPrint + shop.outOfPrint === shop.total)
+  pass(`Prismatic (still reprinting) never ages off the shelf`, shop.prismatic)
+  pass(`151 stopped printing but still sells through the warehouses (Amazon + marketplace carry it)`,
+    shop.sellThruDeep)
+  pass(`...and the local shop can no longer reorder it (absent all 24 weeks of shelf rotation)`,
+    !shop.sellThruLgs)
+  pass(`...at a premium over market, because what's left is finite (${(shop.sellThruAsk * 100).toFixed(0)}% of market)`,
+    shop.sellThruAsk > 1.05)
   pass(`the local shop is a local shop (${shop.lgs} sets on the shelf)`, shop.lgs <= 3)
-  pass(`no retailer carries everything (biggest catalogue ${Math.max(shop.lgs, shop.tcg, shop.amazon)} of ${shop.total} sets)`,
-    Math.max(shop.lgs, shop.tcg, shop.amazon) < shop.total)
+  pass(`the corner shop is not the marketplace (${shop.lgs} sets vs ${shop.tcg})`, shop.lgs < shop.tcg)
   pass(`no MSRP printer: cheapest fresh-drop ask (${shop.newestName}) is ${(shop.minRatio * 100).toFixed(0)}% of market (want ≥ 100%)`,
     shop.pcGone && shop.minRatio >= 1 - 1e-9)
 
