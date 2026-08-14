@@ -110,8 +110,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     if (!committed.current) {
       committed.current = true
       addPulls(cards, set.name)
-      // fold this pack into the running rip tally (value-per-rip)
-      setRipValue(v => v + cards.reduce((a, c) => a + cardValue(c), 0))
+      // NB: the rip tally is NOT folded in here — step() adds each card's value as it lands,
+      // so by the time we get here the pack is already counted (see the note on step()).
       setPacksOpened(n => n + 1)
     }
     if (cards._god) { setBurst(true); after(() => setBurst(false), 3000); sfxGod() } // big finale
@@ -137,6 +137,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       return
     }
     setShown(i + 1)
+    // The running tally climbs a CARD at a time, not a pack at a time. Banking the whole pack in
+    // one lump made the number itself the spoiler: a $400 jump the instant the wrapper came off
+    // (or the moment the last card landed) told you what the pack held before you'd looked at it.
+    // Each index reaches this line exactly once — the grail suspense beat re-enters step() with
+    // the same i but returns above, and manual taps are gated on `awaiting` — so no double count.
+    setRipValue(v => v + cardValue(c))
     const special = c._isHit || c.foil || c._fillsWant
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
@@ -377,7 +383,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       {multi && (
         <div className="pack-progress">
           <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}</span>
-          {packsOpened > 0 && (
+          {/* Live from the very first card of the very first pack — it ticks up as cards land, so
+              there's no reason to hold it back until a pack has closed out. */}
+          {(packsOpened > 0 || shown > 0) && (
             <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}
               title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
               💰 Rip {fmtMoney(ripValue)} <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>

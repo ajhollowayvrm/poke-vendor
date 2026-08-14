@@ -103,13 +103,19 @@ export default function AutoRip({ items, onExit }) {
     return cards.find(c => c._fillsWant || isGrail(c) || clears(c)) || null
   }
   function pickBest(best, cards) { return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), best) }
-  // Bank a pack to the collection AND fold it into the on-screen tally.
+  // Bank a pack to the collection AND fold it into the on-screen tally — everything EXCEPT the
+  // money, which accrues a card at a time as each one lands (see revealCard). `best` and `hits`
+  // are safe to bank up front: neither shows until the sift-complete screen.
   function bankPack(cards, set) {
     addPulls(cards, set.name, 1)
-    const v = cards.reduce((a, c) => a + cardValue(c), 0)
     const newHits = cards.filter(c => c._isHit || c.foil)
-    setStats(s => ({ ...s, packs: s.packs + 1, value: s.value + v, best: pickBest(s.best, cards), hits: newHits.length ? [...newHits, ...s.hits] : s.hits }))
+    setStats(s => ({ ...s, packs: s.packs + 1, best: pickBest(s.best, cards), hits: newHits.length ? [...newHits, ...s.hits] : s.hits }))
   }
+  // One card just turned face-up: that — and only that — is what the "💰 pulled" tally counts.
+  // Adding a pack's whole value in one lump handed you the punchline: on the flagged pack it
+  // jumped the moment you tore the wrapper, so the tally announced the hit the sifter had just
+  // gone to the trouble of not naming. Called exactly once per card in both reveal paths.
+  function revealCard(card) { setStats(s => ({ ...s, value: s.value + cardValue(card) })) }
   function pushFeed(line, key) { setFeed(f => [{ line, key: key || `${f.length}-${line}` }, ...f].slice(0, 10)) }
 
   // The heart of the sift: advance until we hit a big-hit pack (then stop for you) or run dry.
@@ -160,8 +166,8 @@ export default function AutoRip({ items, onExit }) {
   }
 
   // Speed through one forgettable pack: the same tear + hand-reveal as a normal rip, on the
-  // churn clock. Banked only once every card has landed, so the tally never runs ahead of what
-  // you've watched go by.
+  // churn clock. Banked to the collection only once every card has landed, and the money tally
+  // climbs card by card, so neither ever runs ahead of what you've watched go by.
   function churnPack(cards, set) {
     running.current = true
     inflight.current = { cards, set }
@@ -182,6 +188,7 @@ export default function AutoRip({ items, onExit }) {
       return
     }
     setShown(i + 1)
+    revealCard(cards[i])
     // Hits under your stop bar still linger a beat longer than filler — the churn has a rhythm,
     // not a metronome. No burst or sound down here: at better than a pack a second that's a strobe.
     after(() => churnStep(cards, set, i + 1), fast((cards[i]._isHit || cards[i].foil) ? 1100 : 520))
@@ -202,7 +209,7 @@ export default function AutoRip({ items, onExit }) {
     after(() => {
       setShaking(false)
       setAwaiting(true)                                    // your tap turns the first card
-      bankPack(p.cards, p.set)                             // the rip IS the acquisition
+      bankPack(p.cards, p.set)                             // the rip IS the acquisition (money accrues per card)
       if (cur.current) cur.current.packsLeft--
       setPending(null)                                     // banked now — flush must not re-bank it
     }, ms(650))
@@ -220,6 +227,7 @@ export default function AutoRip({ items, onExit }) {
     }
     const c = cards[i]
     setShown(i + 1)
+    revealCard(c)
     const special = c._isHit || c.foil || c._fillsWant
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
