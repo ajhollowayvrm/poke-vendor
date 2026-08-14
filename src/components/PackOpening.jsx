@@ -9,6 +9,7 @@ import HoloCard from './HoloCard'
 import HandReveal from './HandReveal'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxTension, sfxGod } from '../game/feedback'
+import { AnimatedNumber } from '../ui/AnimatedNumber'
 
 // Opens sealed product with the animated rip. For a single booster this rips one
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
@@ -388,18 +389,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           {(packsOpened > 0 || shown > 0) && (
             <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}
               title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
-              💰 Rip {fmtMoney(ripValue)} <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
+              {/* Tweened, not snapped: now that it climbs a card at a time, the climb is the
+                  point — the number counting up IS the "what did that card just earn me". */}
+              💰 Rip <AnimatedNumber value={ripValue} format={fmtMoney} /> <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
             </span>
           )}
           {product?.bonus && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
-          {/* 🔦 Told only AFTER the reveal — the gut-punch is realising nothing good was ever
-              coming, which is exactly how buying a searched pack feels. */}
-          {searched && phase === 'done' && (
-            <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
-              title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
-              🔦 Searched — the hit was already gone
-            </span>
-          )}
           {(phase === 'idle' || phase === 'done') && remainingToOpen >= 2 && (
             <button className="btn alt" style={{ flex: 'none', maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
           )}
@@ -435,8 +430,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
       {(phase === 'revealing' || phase === 'done') && (
         <>
-          {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
-          {isDemigod && <div className="demigodbanner">{(pulls._specialLabel || 'DEMIGOD PACK!')} <small>Most of the pack is a hit.</small></div>}
+          {/* Held to 'done' — the same reason the tally counts a card at a time. This used to fly
+              the moment the wrapper came off, so the banner announced a god pack over a stack of
+              face-down cards and every flip after it was a formality. The finale belongs on the
+              last card, where finish() already fires the burst. (The sift does this too.) */}
+          {phase === 'done' && isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
+          {phase === 'done' && isDemigod && <div className="demigodbanner">{(pulls._specialLabel || 'DEMIGOD PACK!')} <small>Most of the pack is a hit.</small></div>}
 
           {/* TOP — pack-done controls surface here so the next-pack button is up top, not below the cards */}
           {phase === 'done' && (
@@ -531,6 +530,20 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               )}
               {phase === 'done' && (
                 <div className="rip-pack-summary" style={{ textAlign: 'center' }}>
+                  {/* 🔦 Told only AFTER the reveal — the gut-punch is realising nothing good was
+                      ever coming, which is exactly how buying a searched pack feels. It used to
+                      live in the multi-pack progress bar, where it could never appear: only a
+                      LOOSE single pack can be searched (openPackFor bails on packs !== 1), and a
+                      single pack doesn't render that bar. So the whole payoff was dead. It sits
+                      with the pack summary now, which both single and multi rips draw. */}
+                  {searched && (
+                    <div style={{ marginBottom: 8 }}>
+                      <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
+                        title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
+                        🔦 Searched — the hit was already gone
+                      </span>
+                    </div>
+                  )}
                   <div style={{ fontSize: 15, marginBottom: multi ? 4 : 8 }}>
                     Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
                     <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>

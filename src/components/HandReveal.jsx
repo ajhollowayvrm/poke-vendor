@@ -51,6 +51,14 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
     else advance()                      // quick tap → advance (the fallback)
   }
   const onCancel = () => { clearHold(); g.current.active = false; setRiffle(false); setDrag(0) }
+  // Keyboard advance. The hand is driven by pointer events, so Enter/Space did nothing here even
+  // though the sealed pack itself takes both — manual mode was a dead end without a mouse or a
+  // touchscreen. preventDefault stops the button's synthesized click from advancing twice.
+  const onKey = (e) => {
+    if (!canAdvance || (e.key !== 'Enter' && e.key !== ' ')) return
+    e.preventDefault()
+    advance()
+  }
 
   const edgeOf = (c) => c.foil ? c.foil.color : rarityColor(c.rarity)
   return (
@@ -83,6 +91,7 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
             style={{ transform: `translate(calc(-50% + ${drag}px), 0) rotate(${drag * 0.03}deg)`, zIndex: 60,
                      '--rarity': current ? edgeOf(current) : 'var(--line)', cursor: canAdvance ? 'grab' : 'default' }}
             onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}
+            onKeyDown={onKey}
             aria-label={current ? current.name : 'Reveal the first card'}>
             <span className="hand-face">
               {current ? <img src={cardImg(current)} alt={current.name} decoding="async" fetchpriority="high" />

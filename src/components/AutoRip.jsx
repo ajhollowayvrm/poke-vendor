@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, isChase, isChaseOrEx, isGrail, cardValue, fmtMoney, rarityRank,
+import { openPackFor, openProduct, makeProductPromo, isHit, isChase, isChaseOrEx, isGrail, cardValue, fmtMoney, rarityRank,
   preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
@@ -10,6 +10,7 @@ import HoloCard from './HoloCard'
 import HandReveal from './HandReveal'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxGod } from '../game/feedback'
+import { AnimatedNumber } from '../ui/AnimatedNumber'
 
 // "Big hit" thresholds — how good a card has to be for the sifter to STOP and hand you the
 // pack to rip yourself. The three money bars are pure VALUE bars; "Chase" is a RARITY bar
@@ -132,7 +133,11 @@ export default function AutoRip({ items, onExit }) {
     const c = cur.current
     if (!c.set) { cur.current = null; pump(); return }    // unknown set — skip it defensively
     if (c.packsLeft > 0) {
-      const cards = tagCards(openPack(c.set))
+      // openPackFor, not openPack: a 🔦 searched loose pack has to come out gutted here too.
+      // Sifting one used to launder it — the churn rolled it at full odds while "skip & bank the
+      // rest" (flush → openProduct) honoured the strip, so the same pack paid differently
+      // depending on how you opened it.
+      const cards = tagCards(openPackFor(c.set, c.product))
       // Look BEFORE we animate: a pack worth stopping for must never flash its cards past you
       // on the churn clock. It goes back in your hands sealed instead.
       if (bigHitIn(cards)) {
@@ -182,6 +187,8 @@ export default function AutoRip({ items, onExit }) {
     if (flushed.current) return
     if (i >= cards.length) {
       bankPack(cards, set)
+      // …and only now, once it's gone by, does it say the pack was gutted before you bought it.
+      if (cards._searched) pushFeed(`🔦 ${set.name} — that one was searched. The hit was long gone.`)
       inflight.current = null
       if (cur.current) cur.current.packsLeft--
       after(() => { running.current = false; pump() }, fast(320))
@@ -271,7 +278,7 @@ export default function AutoRip({ items, onExit }) {
     if (inflight.current) { addPulls(inflight.current.cards, inflight.current.set.name, 1); if (cur.current) cur.current.packsLeft--; inflight.current = null }
     if (pending) { addPulls(tagCards(pending.cards), pending.set.name, 1); if (cur.current) cur.current.packsLeft--; }
     if (cur.current && cur.current.set) {
-      for (let i = 0; i < cur.current.packsLeft; i++) addPulls(tagCards(openPack(cur.current.set)), cur.current.set.name, 1)
+      for (let i = 0; i < cur.current.packsLeft; i++) addPulls(tagCards(openPackFor(cur.current.set, cur.current.product)), cur.current.set.name, 1)
       if (cur.current.promo) { const p = makeProductPromo(cur.current.set, cur.current.product); if (p) { p._isHit = isHit(p); addPulls([p], '', 0) } }
     }
     cur.current = null
@@ -328,7 +335,11 @@ export default function AutoRip({ items, onExit }) {
   const tally = (
     <div className="pack-progress">
       <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 {stats.packs} sifted{remainingItems() ? ` · ${remainingItems()} item${remainingItems() === 1 ? '' : 's'} left` : ''}</span>
-      <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }} title="Everything pulled so far this sift">💰 {fmtMoney(stats.value)} pulled</span>
+      {/* Short tween + no flash during the churn: at ~15 cards a second a 450ms flash is a strobe,
+          not a cue. Your own pack (phase 'reveal') gets the flash back, one card at a time. */}
+      <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }} title="Everything pulled so far this sift">
+        💰 <AnimatedNumber value={stats.value} format={fmtMoney} duration={phase === 'reveal' ? 450 : 260} flash={phase === 'reveal'} /> pulled
+      </span>
       {stats.hitPacks > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🔥 {stats.hitPacks} big hit{stats.hitPacks === 1 ? '' : 's'}</span>}
     </div>
   )
