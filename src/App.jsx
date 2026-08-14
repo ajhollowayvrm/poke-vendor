@@ -3,7 +3,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind,
-  hypeSurge } from './game/engine'
+  hypeSurge, cardValue } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
 import { useGame, repSourceLabel, RANKS, DEEDS_NEEDED, deedsDone } from './game/store'
@@ -296,13 +296,22 @@ export default function App() {
     const animated = product.packs === 1 || oneByOne
     if (animated) {
       setRipReturn(tab)     // came from Cards/Store/Inbox → Done should return you here
-      setRipping({ set, product })
+      // cost: what you ACTUALLY paid for this unit, not what it lists at today — the 📜 rip log
+      // records a real P/L, and the sift (which reads boughtPrice directly) must agree with it.
+      setRipping({ set, product, cost: item.boughtPrice })
       setTab('shop')
       return
     }
     const all = openProduct(set, product)
     all.forEach(c => (c._isHit = isHit(c)))
     addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal
+    // 📜 The instant path skips PackOpening entirely, so it has to write its own log line —
+    // otherwise ripping a box with "one at a time" off would leave no trace in the history.
+    useGame.getState().logRip({
+      setId: set.id, name: set.name, type: product.type, packs: product.packs,
+      cost: item.boughtPrice, pulled: all.reduce((a, c) => a + cardValue(c), 0),
+      best: all.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null),
+    })
     const hits = all.filter(c => c._isHit || c.foil).length
     setTab('collection')
     toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
@@ -362,7 +371,7 @@ export default function App() {
     const held = heldMatches(useGame.getState(), set, product)[0]
     if (held) {
       useGame.getState().ripSealed(held.uid)
-      setRipping(r => ({ set, product: held.product, nonce: (r?.nonce ?? 0) + 1 }))
+      setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, nonce: (r?.nonce ?? 0) + 1 }))
       setTab('shop')
       return
     }
@@ -386,7 +395,7 @@ export default function App() {
         : `${who} are out of ${product.type} — can't rip another right now.`)
     }
     useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
-    setRipping(r => ({ set, product, nonce: (r?.nonce ?? 0) + 1 }))
+    setRipping(r => ({ set, product, cost: item.boughtPrice ?? price, nonce: (r?.nonce ?? 0) + 1 }))
     setTab('shop')
   }
 
@@ -633,6 +642,7 @@ export default function App() {
             set={ripping.set}
             product={ripping.product}
             paused={tab !== 'shop'}
+            costBasis={ripping.cost}
             onExit={exitRip}
             ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
             ripAnotherStock={ripStock}

@@ -27,6 +27,11 @@ export function initialState() {
     pendingGrades: [],       // {card, tierKey, readyOnDay, submittedAt, paidFee}
     history: [],             // {t, type, detail, amount}
     stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
+    // 📜 One entry per RIP — not per pack, and not per set: the box you opened on day 40 is a
+    // thing that happened, and the per-set ledger below averages exactly that away. Newest first,
+    // capped at RIP_LOG_MAX so a long game can't grow the save without bound.
+    // { day, setId, name, type, packs, cost, pulled, best: {name, value, rarity}, special }
+    ripLog: [],
     // Per-set ledger: { [setId]: { spent, pulledValue, packsOpened, cardsPulled, hits } }.
     // `spent` = cash put into that set's sealed product; `pulledValue` = market value of
     // everything ripped from it. Drives the per-set analytics on the Stats page.

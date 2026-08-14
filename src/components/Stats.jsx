@@ -17,7 +17,7 @@ export default function Stats() {
   // actually changes.
   const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
     listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory,
-    showSealed, shopSealed, milestones, worthHistory, binder } = useGame(useShallow(s => ({
+    showSealed, shopSealed, milestones, worthHistory, binder, ripLog } = useGame(useShallow(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
@@ -25,6 +25,7 @@ export default function Stats() {
     showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
     showSealed: s.showSealed, shopSealed: s.shopSealed,
     milestones: s.milestones || [], worthHistory: s.worthHistory || [], binder: s.binder || [],
+    ripLog: s.ripLog || [],
   })))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
     + (binder || []).reduce((a, c) => a + cardValue(c), 0)
@@ -122,6 +123,7 @@ export default function Stats() {
         </>
       )}
 
+      <RipLogPanel log={ripLog} />
       <LuckPanel bySet={bySet} />
 
       <h3 style={{ margin: '24px 0 6px' }}>Ledger</h3>
@@ -317,6 +319,49 @@ function BreakdownCol({ title, rows, color }) {
 // Achievement badges. Unlocked ones light up gold; locked ones dim to a 🔒 with a progress
 // bar toward their goal. Grouped by theme. Progress reads a live state snapshot (the panel
 // re-renders as stats change, so bars stay current).
+// 📜 The rip log — every rip you've done, newest first. The By-set table above answers "is this
+// set good to me"; this answers "how did THAT box go", which an average can't. One line per rip
+// (a 36-pack box is one line), so it reads as a history rather than a firehose.
+function RipLogPanel({ log }) {
+  const rows = log || []
+  if (!rows.length) return null
+  const wins = rows.filter(r => r.pulled >= r.cost).length
+  const net = rows.reduce((a, r) => a + (r.pulled - r.cost), 0)
+  return (
+    <Collapse id="riplog" defaultOpen={bigScreen()}
+      head={<h3 style={{ margin: 0, display: 'inline' }}>📜 Rip log</h3>}
+      badge={`${wins}/${rows.length} up`}
+      hint="Every rip, newest first — the boxes an average hides.">
+      <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
+        Last <b>{rows.length}</b> rip{rows.length === 1 ? '' : 's'}: <b>{wins}</b> came out ahead,{' '}
+        <b style={{ color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>{net >= 0 ? '+' : ''}{fmtMoney(net)}</b> across the lot.
+        {net < 0 && ' That gap is the hobby working as intended — the chase is the product.'}
+      </p>
+      <div className="setanalytics">
+        <div className="set-row set-head">
+          <span>Rip</span><span>Day</span><span>Cost</span><span>Pulled</span><span>Net</span><span>Best</span>
+        </div>
+        {rows.map((r, i) => {
+          const rnet = round2((r.pulled || 0) - (r.cost || 0))
+          return (
+            <div className="set-row" key={`${r.day}-${i}`}>
+              <span className="set-name">
+                {r.special === 'god' ? '✨ ' : r.special === 'demigod' ? '🌟 ' : ''}
+                {r.name || r.setId} <span className="muted" style={{ fontWeight: 400 }}>· {r.type}{r.packs > 1 ? ` ×${r.packs}` : ''}</span>
+              </span>
+              <span className="muted">{r.day}</span>
+              <span>{fmtMoney(r.cost || 0)}</span>
+              <span style={{ color: 'var(--green)' }}>{fmtMoney(r.pulled || 0)}</span>
+              <span style={{ color: rnet >= 0 ? 'var(--green)' : 'var(--red)' }}>{rnet >= 0 ? '+' : ''}{fmtMoney(rnet)}</span>
+              <span className="muted" title={r.best?.name || ''}>{r.best ? fmtMoney(r.best.value) : '—'}</span>
+            </div>
+          )
+        })}
+      </div>
+    </Collapse>
+  )
+}
+
 // 🎲 Luck vs the odds. The game has always shown what you PULLED; this shows what the packs
 // owed you. Expectation comes from engine.pullOdds() — the same tables openPack rolls against —
 // times the packs you've actually opened per set, so it moves with the real rates instead of a

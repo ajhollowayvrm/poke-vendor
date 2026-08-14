@@ -287,7 +287,7 @@ export const useGame = create(persist((set, get) => ({
   ...createSocialsSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 63,
+  version: 64,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -841,6 +841,13 @@ export const useGame = create(persist((set, get) => ({
       state.podcastDay = state.podcastDay ?? 0
       state.sponsor = state.sponsor ?? null
       state.sponsorLapsedDay = state.sponsorLapsedDay ?? 0
+    }
+    if (version < 64) {
+      // 📜 Rip log + 🎲 luck tracking. Neither is backfilled, deliberately. The log can't invent
+      // rips it never watched, and the luck panel counts against its own per-set `luckPacks`
+      // denominator rather than lifetime packsOpened — reusing packsOpened would open an existing
+      // save on a spectacular cold streak it never actually had.
+      state.ripLog = state.ripLog ?? []
     }
     return state
   },

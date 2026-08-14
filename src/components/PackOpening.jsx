@@ -15,7 +15,7 @@ import { AnimatedNumber } from '../ui/AnimatedNumber'
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false }) {
+export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false, costBasis = null }) {
   const totalPacks = product?.packs ?? 1
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
@@ -39,8 +39,10 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [finished, setFinished] = useState(false) // whole product done
   const [extra, setExtra] = useState([])          // promo + fast-forwarded packs (for the summary)
   const [ripValue, setRipValue] = useState(0)     // cumulative card value across the WHOLE rip
+  const [ripBest, setRipBest] = useState(null)    // best single card across the WHOLE rip (for the 📜 log)
   const [packsOpened, setPacksOpened] = useState(0) // how many packs we've fully opened this rip
   const addPulls = useGame(s => s.addPulls)
+  const logRip = useGame(s => s.logRip)
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise cut read vs a fuzzy eyeball one
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
@@ -85,6 +87,26 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     resumeRef.current = null
     go()
   }, [paused])
+  // 📜 One log line per RIP — written from an EFFECT rather than from finish(), so it reads the
+  // settled totals instead of the mid-update values a call inside the state updater would see.
+  // Two shapes reach "the whole product is done": a multi-pack product goes through
+  // addBonusAndFinish (`finished`), a single loose pack simply closes out its one pack. The ref
+  // keeps it to exactly one entry per product, and resetForNext clears it for an in-place re-rip.
+  const ripLogged = useRef(false)
+  useEffect(() => {
+    const productDone = finished || (totalPacks === 1 && phase === 'done')
+    if (!productDone || ripLogged.current) return
+    ripLogged.current = true
+    logRip({
+      setId: set.id, name: set.name, type: product?.type || 'Booster Pack',
+      // What you PAID when the caller knows it (a held unit's boughtPrice), not what the
+      // product lists at today — so a log line's net is a real P/L and the sift's lines,
+      // which read boughtPrice straight off the inventory row, mean the same thing.
+      packs: packsOpened || totalPacks, cost: costBasis ?? ripCost, pulled: ripValue, best: ripBest,
+      special: isGod ? 'god' : isDemigod ? 'demigod' : null,
+    })
+  }, [finished, phase, totalPacks])
+
   // When a pack finishes, snap the self-scrolling overlay back to the top so the pack-done
   // controls (Next pack / Rip another / Done) — which sit at the top of the stage — are always
   // in view. Without this, finishing a rip while scrolled down through the reveal grid leaves
@@ -105,6 +127,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     : 'Not enough cash to rip another.'
 
   function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
+  const better = (b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b)
 
   function rip() {
     if (phase !== 'idle') return
@@ -175,6 +198,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     // Each index reaches this line exactly once — the grail suspense beat re-enters step() with
     // the same i but returns above, and manual taps are gated on `awaiting` — so no double count.
     setRipValue(v => v + cardValue(c))
+    setRipBest(b => better(b, c))
     const special = c._isHit || c.foil || c._fillsWant
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
@@ -225,6 +249,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     const rest = cards.slice(shown)
     if (rest.length) {
       setRipValue(v => v + rest.reduce((a, c) => a + cardValue(c), 0))
+      setRipBest(b => rest.reduce(better, b))
       const restHits = rest.filter(c => c._isHit || c.foil || c._fillsWant)
       // reversed, so the Hits list keeps the same newest-first order a real reveal builds
       if (restHits.length) setHits(h => [...restHits].reverse().concat(h))
@@ -276,6 +301,15 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false)
     setAwaiting(false); setSuspenseIdx(-1); setTear(0); setTab('cards')
     setHeld(false); setAutoLeft(0)   // Hold is per-pack: it means "wait, I'm looking at THIS one"
+    ripLogged.current = false        // an in-place re-rip is a NEW rip and earns its own log line
+  }
+
+  // The fallback "Rip another" when no paid re-rip path is wired: same mount, but a genuinely
+  // NEW rip — so the running totals start over. resetForNext alone can't do this, because
+  // nextPack shares it and a box's totals must survive from pack to pack.
+  function reripInPlace() {
+    setRipValue(0); setRipBest(null); setPacksOpened(0); setHits([]); setExtra([])
+    resetForNext()
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -323,6 +357,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       addPulls([promo], `${product.type} promo · ${set.name}`, 0) // promo isn't a pack
       setExtra(e => [...e, promo])
       setRipValue(v => v + cardValue(promo)) // promo counts toward the rip's total value
+      setRipBest(b => better(b, promo))
       if (promo._isHit || promo.foil) setHits(h => [promo, ...h])
     }
     setFinished(true)
@@ -346,6 +381,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     setExtra(e => [...e, ...fast])
     // fold the fast-forwarded packs into the running rip tally
     setRipValue(v => v + fast.reduce((a, c) => a + cardValue(c), 0))
+    setRipBest(b => fast.reduce(better, b))
     setPacksOpened(n => n + remaining)
     const fastHits = fast.filter(c => c._isHit || c.foil || c._fillsWant)
     if (fastHits.length) setHits(h => [...fastHits, ...h])
@@ -548,7 +584,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                     style={{ maxWidth: 200 }}
                     disabled={onRipAnother ? !canRipAnother : false}
                     title={onRipAnother && !canRipAnother ? ripBlockedWhy : ''}
-                    onClick={onRipAnother || resetForNext}>
+                    onClick={onRipAnother || reripInPlace}>
                     Rip another ({onRipAnother && ripAnotherStock > 0
                       ? `📦 ${ripAnotherStock} held`
                       : fmtMoney(onRipAnother && ripAnotherPrice != null ? ripAnotherPrice : packPrice(set))})

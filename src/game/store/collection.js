@@ -36,8 +36,31 @@ function gradeTurnaround(tier, upgrades) {
   return upgrades?.graderAccount ? Math.max(1, Math.ceil(tier.days * 0.6)) : tier.days
 }
 
+// 📜 How many rips the log remembers. One entry per rip (a 36-pack box is ONE line), so this is
+// a long tail in practice — but the save is serialized whole on every write, so it stays bounded.
+const RIP_LOG_MAX = 60
+
 export function createCollectionSlice(set, get) {
   return {
+    // Record a finished rip. Called once when a whole product is done — by the opener when the
+    // last pack closes out, and by the sift when the session ends — never per pack, because
+    // "what did that box do" is the question the per-set averages can't answer.
+    logRip(entry) {
+      if (!entry || !entry.packs) return
+      set(s => ({
+        ripLog: [{
+          day: absoluteDay(s.currentDay, s.monthsElapsed),
+          setId: entry.setId || null,
+          name: entry.name || '',
+          type: entry.type || 'pack',
+          packs: entry.packs,
+          cost: round2(entry.cost || 0),
+          pulled: round2(entry.pulled || 0),
+          best: entry.best ? { name: entry.best.name, value: round2(cardValue(entry.best)), rarity: entry.best.rarity } : null,
+          ...(entry.special ? { special: entry.special } : {}),
+        }, ...(s.ripLog || [])].slice(0, RIP_LOG_MAX),
+      }))
+    },
     addPulls(cards, setName, packs = 1) {
       set(s => {
         // With a storefront, everything you pull is YOURS first: singles land in Personal

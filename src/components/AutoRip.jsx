@@ -53,6 +53,7 @@ export default function AutoRip({ items, onExit }) {
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const addPulls = useGame(s => s.addPulls)
+  const logRip = useGame(s => s.logRip)
   const ripSealed = useGame(s => s.ripSealed)
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
@@ -352,6 +353,23 @@ export default function AutoRip({ items, onExit }) {
   }
 
   const totalPacks = useMemo(() => items.reduce((a, it) => a + (it.product?.packs || 1), 0), [items])
+  // 📜 One log line for the whole sift session. Unlike the opener, this path has the REAL cost
+  // basis to hand — these are inventory rows, so `boughtPrice` is what you actually paid rather
+  // than what the product lists at today. Written from an effect on the done screen so it reads
+  // the settled tally, including anything "skip & bank the rest" swept in.
+  const sessionCost = useMemo(() => items.reduce((a, it) => a + (it.boughtPrice || 0), 0), [items])
+  const sessionLogged = useRef(false)
+  useEffect(() => {
+    if (phase !== 'done' || sessionLogged.current || !stats.packs) return
+    sessionLogged.current = true
+    const one = items.length === 1 ? items[0] : null
+    logRip({
+      setId: one ? one.setId : (setById(items[0]?.setId)?.id || null),
+      name: one ? (setById(one.setId)?.name || '') : `${items.length} items`,
+      type: one ? (one.product?.type || 'sealed') : '⚡ sift',
+      packs: stats.packs, cost: sessionCost, pulled: stats.value, best: stats.best,
+    })
+  }, [phase, stats.packs, stats.value])
   const remainingItems = () => queue.current.length + (cur.current ? 1 : 0)
   const modalEl = modalCard && createPortal(<CardModal card={modalCard} readOnly onClose={() => setModalCard(null)} />, document.body)
 
