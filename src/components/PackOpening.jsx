@@ -8,7 +8,7 @@ import CardModal from './CardModal'
 import HoloCard from './HoloCard'
 import HandReveal from './HandReveal'
 import Burst from './Burst'
-import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxTension, sfxGod } from '../game/feedback'
+import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
 import { AnimatedNumber } from '../ui/AnimatedNumber'
 
 // Opens sealed product with the animated rip. For a single booster this rips one
@@ -45,8 +45,13 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
   const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
+  const [autoLeft, setAutoLeft] = useState(0)     // seconds left on the auto-advance countdown
+  const [held, setHeld] = useState(false)         // you pressed Hold — this pack won't auto-advance
   const committed = useRef(false)
   const autoRipped = useRef(false)                 // did we already auto-rip the current idle pack?
+  const pausedRef = useRef(paused)                 // read inside timer callbacks, which don't re-close over props
+  const resumeRef = useRef(null)                   // the reveal step parked because you left the tab
+  const packSeq = useRef(0)                        // bumped to abandon an in-flight reveal chain
   const speed = Math.max(0.25, ripSpeed)           // guard against absurd values
   const ms = (n) => n / speed                      // scale a delay by rip speed
   // Track reveal/burst timers so they can be cancelled on unmount — exiting (Done / "Rip
@@ -60,6 +65,17 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
   // Keep the feedback module's sound/haptics gates in sync with the user's settings.
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
+  // Leaving the Buy tab has to stop the REVEAL, not just stop the next pack from auto-starting.
+  // An in-flight step() chain used to keep flipping cards — and firing hit stings — at a hidden
+  // screen, so you'd come back to a pack that had already happened without you. step() parks its
+  // continuation here instead, and coming back picks up on the exact card it stopped at.
+  useEffect(() => {
+    pausedRef.current = paused
+    if (paused || !resumeRef.current) return
+    const go = resumeRef.current
+    resumeRef.current = null
+    go()
+  }, [paused])
   // When a pack finishes, snap the self-scrolling overlay back to the top so the pack-done
   // controls (Next pack / Rip another / Done) — which sit at the top of the stage — are always
   // in view. Without this, finishing a rip while scrolled down through the reveal grid leaves
@@ -102,7 +118,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       setPhase('revealing')
       // Manual mode: land the pack as a stack of face-down cards and wait for the
       // first tap. Auto mode: start the timed reveal immediately.
-      if (revealMode === 'manual') setAwaiting(true)
+      if (revealMode === 'manual') { setAwaiting(true); teaseNext(cards, 0) }
       else step(cards, 0)
     }, ms(god ? 1500 : demigod ? 1200 : 900))
   }
@@ -126,18 +142,24 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   // face-down card) before it actually flips. The beat is pinned to the narrow bar, not the
   // wider isChase one: Poké Ball foils land in one pack in three, and an 850ms hold that
   // often stops reading as suspense and starts reading as lag.
-  function step(cards, i) {
+  function step(cards, i, seq = packSeq.current) {
+    if (seq !== packSeq.current) return   // this pack was skipped past — abandon the chain
     if (i >= cards.length) { finish(cards); return }
+    // Off the Buy tab: park here rather than reveal to a screen nobody's looking at. Sits BELOW
+    // the finish() branch on purpose — a pack that already turned its last card still commits to
+    // the collection, so pausing can never strand cards.
+    if (pausedRef.current) { resumeRef.current = () => step(cards, i, seq); return }
     const c = cards[i]
     const grail = isGrail(c)
     if (grail && revealMode !== 'manual' && !c._peeked) {
       c._peeked = true
       setSuspenseIdx(i)
       sfxTension()
-      after(() => { setSuspenseIdx(-1); step(cards, i) }, ms(850))
+      after(() => { setSuspenseIdx(-1); step(cards, i, seq) }, ms(850))
       return
     }
     setShown(i + 1)
+    setSuspenseIdx(-1)
     // The running tally climbs a CARD at a time, not a pack at a time. Banking the whole pack in
     // one lump made the number itself the spoiler: a $400 jump the instant the wrapper came off
     // (or the moment the last card landed) told you what the pack held before you'd looked at it.
@@ -148,7 +170,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
       setHits(h => [c, ...h])
-      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, grail)
+      // A want-fill has its own sound now. It used to route through sfxHit, so a $2 common that
+      // someone had asked for rang like a chase pull — and a chase that ALSO filled a want said
+      // nothing extra. Both: the hit sting first, the want chime layered behind it.
+      if (c._isHit || c.foil) { sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, grail); if (c._fillsWant) sfxWant(0.3) }
+      else sfxWant()
     } else {
       sfxFlip()
     }
@@ -157,12 +183,45 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     // player tapping through at their own speed had the payoff card snatched away to the pack
     // summary 520ms after it flipped. Now the final card waits for a tap like every other one;
     // advanceManual() then calls step() with i === length, which falls through to finish().
-    if (revealMode === 'manual') { setAwaiting(true); return }
+    if (revealMode === 'manual') { setAwaiting(true); teaseNext(cards, i + 1); return }
     // Auto mode: the last card is the one you actually want to look at, and the moment it lands
     // the whole screen changes (phase 'done' swaps in the summary and scrolls the stage to top).
     // Give it a real beat instead of the same 520ms as a card that's followed by another flip.
     const delay = isLast ? (special ? 2200 : 1600) : (special ? 1100 : 520)
-    after(() => step(cards, i + 1), ms(delay))
+    after(() => step(cards, i + 1, seq), ms(delay))
+  }
+
+  // Manual mode's suspense beat. Auto mode holds the row for 850ms before a grail flips; manual
+  // had nothing, because the tap is yours and a timed hold would just be lag. So the hold lasts
+  // exactly as long as you take: the card you're about to turn glows, the rest of the hand dims,
+  // and it stays that way until you turn it. `_peeked` is the same once-per-card flag auto uses.
+  function teaseNext(cards, i) {
+    const c = cards[i]
+    if (!c || !isGrail(c) || c._peeked) { setSuspenseIdx(-1); return }
+    c._peeked = true
+    setSuspenseIdx(i)
+    if (!pausedRef.current) sfxTension() // the glow can wait for you; a swell at a hidden screen can't
+  }
+
+  // "Show the rest of this pack": you've seen the card you stopped for and the remaining flips are
+  // a formality — land them all and close the pack out. Distinct from "Skip rest", which fast-
+  // forwards whole packs you never see at all. Bumping packSeq abandons the in-flight chain so a
+  // timer already in the air can't reveal a card into a pack that's now finished.
+  function revealRest() {
+    if (phase !== 'revealing') return
+    const cards = pulls
+    packSeq.current++
+    resumeRef.current = null
+    setSuspenseIdx(-1); setAwaiting(false)
+    const rest = cards.slice(shown)
+    if (rest.length) {
+      setRipValue(v => v + rest.reduce((a, c) => a + cardValue(c), 0))
+      const restHits = rest.filter(c => c._isHit || c.foil || c._fillsWant)
+      // reversed, so the Hits list keeps the same newest-first order a real reveal builds
+      if (restHits.length) setHits(h => [...restHits].reverse().concat(h))
+      setShown(cards.length)
+    }
+    finish(cards)
   }
 
   // Manual mode: a tap on the next face-down card flips it (and queues the wait for
@@ -203,8 +262,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function resetForNext() {
     committed.current = false
     autoRipped.current = false
+    packSeq.current++            // nothing from the last pack gets to fire into this one
+    resumeRef.current = null
     setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false)
     setAwaiting(false); setSuspenseIdx(-1); setTear(0); setTab('cards')
+    setHeld(false); setAutoLeft(0)   // Hold is per-pack: it means "wait, I'm looking at THIS one"
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -226,15 +288,22 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     // (`paused` is in the deps).
     if (paused) return
     if (phase === 'done' && !last) {
-      const t = setTimeout(() => nextPack(), ms(3000))
-      return () => clearTimeout(t)
+      // The gap used to be a bare 3s timer with nothing on screen: if you wanted a moment longer
+      // with the grid, your only option was to be quick. Now it counts down out loud and you can
+      // stop it — Hold cancels this pack's advance and hands you the Next button.
+      if (held) return
+      const total = ms(3000)
+      setAutoLeft(Math.ceil(total / 1000))
+      const tick = setInterval(() => setAutoLeft(s => (s > 0 ? s - 1 : 0)), 1000)
+      const t = setTimeout(() => nextPack(), total)
+      return () => { clearInterval(tick); clearTimeout(t); setAutoLeft(0) }
     }
     if (phase === 'idle' && !autoRipped.current) {
       autoRipped.current = true
       const t = setTimeout(() => rip(), ms(600))
       return () => clearTimeout(t)
     }
-  }, [phase, packNo, autoAdvance, last, totalPacks, speed, paused])
+  }, [phase, packNo, autoAdvance, last, totalPacks, speed, paused, held])
 
   // Mint the product's guaranteed promo (if any), add it, and finish.
   function addBonusAndFinish() {
@@ -253,6 +322,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   // If the current pack hasn't been ripped yet (idle), it counts as remaining too;
   // if it's already revealed (done), only the packs after it remain.
   function skipRest() {
+    packSeq.current++; resumeRef.current = null   // nothing in flight gets to land after this
     const remaining = totalPacks - packNo + (phase === 'idle' ? 1 : 0)
     const fast = []
     for (let i = 0; i < remaining; i++) {
@@ -381,9 +451,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     <div className="stage">
       {burst && <Burst />}
 
-      {multi && (
+      {/* A loose single pack draws this bar too, from its first card. It used to be multi-only, so
+          the one rip where the running total is the ONLY money on screen was the one without it. */}
+      {(multi || shown > 0) && (
         <div className="pack-progress">
-          <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}</span>
+          {multi && <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}</span>}
           {/* Live from the very first card of the very first pack — it ticks up as cards land, so
               there's no reason to hold it back until a pack has closed out. */}
           {(packsOpened > 0 || shown > 0) && (
@@ -441,9 +513,19 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           {phase === 'done' && (
             <div className="rip-top-actions">
               {multi ? (
-                <button className="btn gold" style={{ maxWidth: 220 }} onClick={nextPack}>
-                  {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
-                </button>
+                <>
+                  <button className="btn gold" style={{ maxWidth: 220 }} onClick={nextPack}>
+                    {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
+                  </button>
+                  {/* The auto-advance gap, out loud and stoppable. */}
+                  {autoAdvance && !last && !paused && (held ? (
+                    <p className="rip-auto-note">⏸️ Auto-advance held — take your time, then hit “Next pack”.</p>
+                  ) : autoLeft > 0 ? (
+                    <button className="btn alt" style={{ flex: 'none', maxWidth: 200 }} onClick={() => setHeld(true)}>
+                      ⏸️ Hold ({autoLeft}s) — still looking
+                    </button>
+                  ) : null)}
+                </>
               ) : singleNoReRip ? (
                 <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
               ) : (
@@ -490,8 +572,18 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                 /* The reveal itself: you hold the pack as a stack, the current card face-up on top;
                    pull it off to the side to reach the next, with upcoming border edges peeking
                    (a rainbow chase telegraphs itself). When the pack finishes it settles into the grid. */
-                <HandReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
-                  setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
+                <>
+                  <HandReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
+                    setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard}
+                    suspense={suspenseIdx === shown} />
+                  {/* An escape hatch for the flips that no longer matter. Deliberately quiet, and
+                      gone once the last card is up (that tap closes the pack anyway). */}
+                  {shown < pulls.length && (
+                    <button className="btn alt rip-reveal-rest" onClick={revealRest}>
+                      ⏭️ Show the rest of this pack ({pulls.length - shown} left)
+                    </button>
+                  )}
+                </>
               ) : (
                 /* Done: the fan settles into a readable 2-up grid — every card big, with its name
                    + value, opening its full card page on tap. */

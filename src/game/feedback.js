@@ -93,6 +93,18 @@ export function sfxHit(rank = 0, top = false) {
   vibrate(top ? [0, 40, 40, 60] : [0, 25, 35, 25])
 }
 
+// A card that fills someone's want. Deliberately NOT sfxHit: a want-fill isn't rarer, it's spoken
+// for — so it's a warm two-note "that's sold" chime rather than a rising rarity arpeggio. A $2
+// common somebody asked for used to ring exactly like a chase pull, and a chase that ALSO filled
+// a want said nothing extra. `delay` layers it after the hit sting when a card is both; the haptic
+// is skipped in that case so the hit's own pattern isn't overwritten mid-buzz.
+export function sfxWant(delay = 0) {
+  tone(587.33, { type: 'sine', dur: 0.2, gain: 0.13, when: delay })            // D5
+  tone(880,    { type: 'sine', dur: 0.34, gain: 0.12, when: delay + 0.11 })    // A5, a fifth up
+  tone(1174.66,{ type: 'sine', dur: 0.3, gain: 0.05, when: delay + 0.11 })     // D6 shimmer on top
+  if (!delay) vibrate([0, 18, 30, 18])
+}
+
 // A soft rising "something's coming" swell, played just before a chase card flips.
 export function sfxTension() {
   tone(220, { type: 'sine', dur: 0.7, gain: 0.1, slideTo: 660 })

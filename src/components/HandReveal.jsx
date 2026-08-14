@@ -11,7 +11,7 @@ import { rarityColor } from './CardTile'
 // Shared by the normal rip (PackOpening) and the sift (AutoRip) so the two genuinely ARE the same
 // UI — the sift just drives `shown` on a much faster clock, and hands you the controls (manual
 // mode) the moment it stops on a pack worth ripping yourself.
-export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
+export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect, suspense = false }) {
   const n = pulls.length
   const manual = revealMode === 'manual'
   // `shown === n` still advances: that final tap is what closes the pack out to the summary,
@@ -63,7 +63,10 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
   const edgeOf = (c) => c.foil ? c.foil.color : rarityColor(c.rarity)
   return (
     <div className="hand-wrap">
-      <div className={`hand-stage ${riffle ? 'riffle' : ''}`}>
+      {/* `suspense` = the very next card is a grail and the beat before it is running. The rest of
+          the hand dims and that card's edge glows. The caller owns the timing: auto mode holds it
+          for 850ms on a timer, manual mode holds it until you actually tap. */}
+      <div className={`hand-stage ${riffle ? 'riffle' : ''} ${suspense ? 'suspense' : ''}`}>
         {/* Set aside: the cards you've already pulled off, stacked to the side. */}
         {seenN > 0 && Array.from({ length: Math.min(seenN, SEEN_MAX) }).map((_, k) => (
           <div key={`seen${k}`} className="hand-seen" aria-hidden="true"
@@ -76,7 +79,7 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
           const depth = k + 1
           const teased = isChase(c) // rainbow/foil border (IR+ or a special foil) — worth telegraphing
           return (
-            <div key={c.uid} className={`hand-up ${teased ? 'teased' : ''}`} aria-hidden="true"
+            <div key={c.uid} className={`hand-up ${teased ? 'teased' : ''} ${suspense && k === 0 ? 'teased-now' : ''}`} aria-hidden="true"
               style={{ transform: `translate(calc(-50% + ${depth * 3}px), ${-depth * (riffle ? 17 : 10)}px) rotate(${depth * 0.8}deg)`,
                        zIndex: 40 - depth, '--rarity': edgeOf(c) }}>
               <span className="hand-face back" />
