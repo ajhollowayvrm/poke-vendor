@@ -1078,6 +1078,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rc-val { font-size:15px; font-weight:900; color:var(--green); margin-top:3px; }
 .rc-badges { display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:5px; }
 .rc-want { font-size:10.5px; font-weight:800; color:var(--gold); }
+/* 🃏/📒 a hole in a set YOU'RE building — the counterpart to ⭐ Want (somebody else's). The
+   challenge variant shouts, the binder one is a quiet note. */
+.rc-need { font-size:10.5px; font-weight:800; color:var(--accent-light);
+  background:color-mix(in srgb, var(--accent2) 16%, transparent); border-radius:6px; padding:1px 5px; }
+.rc-need.challenge { color:#0e1116; background:linear-gradient(90deg,#ffd76e,#ffb02e); }
 .rip-cell-foot:hover .rc-name { text-decoration: underline; }
 
 /* ---------- Rip reveal: the hand (riffle through the pack, pull the top card off to the side) ---------- */

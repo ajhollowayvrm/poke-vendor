@@ -2,6 +2,22 @@ import { useRef, useState } from 'react'
 import { cardValue, psaValueAt, fmtMoney, cutEstimate, cardImg, isChase, slabLabel } from '../game/engine'
 import { rarityColor } from './CardTile'
 
+// 🃏/📒 "this one's a hole in a set YOU'RE building" — the counterpart to ⭐ Want, which is
+// somebody else's. Exported so the hand caption, the reveal grid and the sift's grid all say the
+// same thing in the same words. `card._needFor` is stamped at rip time ('challenge' | 'binder').
+export function NeedBadge({ card, compact = false }) {
+  if (!card?._needFor) return null
+  const challenge = card._needFor === 'challenge'
+  return (
+    <span className={`rc-need ${challenge ? 'challenge' : ''}`}
+      title={challenge
+        ? 'Missing from the master set you declared — landing it moves the challenge and pays out on completion.'
+        : "You don't own this one yet, and you're building this set in your binder."}>
+      {challenge ? '🃏 Need it' : '📒 New one'}{compact ? '' : challenge ? ' — challenge' : ' for your binder'}
+    </span>
+  )
+}
+
 // The reveal, as a hand you riffle through: you hold the whole pack stacked, the current card
 // face-up on top, and pull it off to the side to get to the next one. The unseen cards behind it
 // peek their border edges — a rainbow-bordered chase (SIR/hyper) telegraphs itself as a rainbow
@@ -134,10 +150,11 @@ function FanCaption({ card, hasLoupe }) {
           💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
         </div>
       )}
-      {(cut || card._fillsWant) && (
+      {(cut || card._fillsWant || card._needFor) && (
         <div className="fan-cap-badges">
           {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
           {card._fillsWant && <span className="rc-want">⭐ Fills a want!</span>}
+          <NeedBadge card={card} />
         </div>
       )}
     </div>

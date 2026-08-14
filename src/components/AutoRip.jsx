@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { openPackFor, openProduct, makeProductPromo, isHit, isChase, isChaseOrEx, isGrail, cardValue, fmtMoney, rarityRank,
-  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById } from '../game/engine'
+  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById,
+  ownedIdSet, setIdOfCard, needTierFor } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import CardModal from './CardModal'
 import HoloCard from './HoloCard'
-import HandReveal from './HandReveal'
+import HandReveal, { NeedBadge } from './HandReveal'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
 import { AnimatedNumber } from '../ui/AnimatedNumber'
@@ -56,6 +57,13 @@ export default function AutoRip({ items, onExit }) {
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
   const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
+  // 🃏 Holes in a set you're building — the same read the normal rip does, so a card badges the
+  // same whether you turned it yourself or watched it go past on the churn.
+  const collection = useGame(s => s.collection)
+  const binder = useGame(s => s.binder)
+  const challengeSetId = useGame(s => s.challenge?.setId || null)
+  const ownedIds = useMemo(() => ownedIdSet([...(collection || []), ...(binder || [])]), [collection, binder])
+  const binderSets = useMemo(() => new Set((binder || []).map(c => setIdOfCard(c)).filter(Boolean)), [binder])
 
   const [phase, setPhase] = useState('intro')   // intro | sifting | hit | reveal | done
   const [minValue, setMinValue] = useState(25)
@@ -92,8 +100,9 @@ export default function AutoRip({ items, onExit }) {
   minRef.current = minValue
 
   function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
+  function needOf(card) { return needTierFor(card, ownedIds, challengeSetId, binderSets) }
   function tagCards(cards) {
-    cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
+    cards.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     return cards
   }
   // Does this pack hold something worth handing back sealed? A want-fill or a grail always
@@ -512,10 +521,11 @@ export default function AutoRip({ items, onExit }) {
                       <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                       <div className="rc-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}</div>
                       <div className="rc-val">{fmtMoney(cardValue(c))}</div>
-                      {(cut || c._fillsWant) && (
+                      {(cut || c._fillsWant || c._needFor) && (
                         <div className="rc-badges">
                           {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
                           {c._fillsWant && <span className="rc-want">⭐ Want</span>}
+                          <NeedBadge card={c} compact />
                         </div>
                       )}
                     </button>

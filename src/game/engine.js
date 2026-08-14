@@ -1111,6 +1111,24 @@ export function luckTierOf(card, packSetId) {
 // The base slots every pack fills regardless of luck — nothing to compare against odds.
 const LUCK_UNTRACKED = new Set(['Common', 'Uncommon', 'Rare', 'Rare Holo'])
 
+// Is this card a hole in a set you're building? The rip has always badged ⭐ Want — somebody
+// ELSE's want — and said nothing about your own, even though master-set completion is what pays
+// the completion reward, the challenge bounty and the showcase perks.
+//
+// Matched on card id, deliberately: that's the same "one of every card" definition setCompletion
+// uses to pay out, so the badge can't promise progress the reward won't recognise.
+//   owned          — ownedIdSet(collection + binder)
+//   challengeSetId — the declared 🃏 master set challenge, if any (explicit intent)
+//   binderSets     — set ids you've filed anything into (implicit intent)
+// Returns 'challenge' | 'binder' | null.
+export function needTierFor(card, owned, challengeSetId, binderSets) {
+  if (!card?.id || owned?.has(card.id)) return null
+  const sid = setIdOfCard(card)
+  if (challengeSetId && sid === challengeSetId) return 'challenge'
+  if (binderSets?.has(sid)) return 'binder'
+  return null
+}
+
 // Display name for a tier key.
 export function luckTierLabel(tier) {
   if (tier === 'god') return '✨ God pack'

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
+import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, ownedIdSet, setIdOfCard, needTierFor } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import CardModal from './CardModal'
 import HoloCard from './HoloCard'
-import HandReveal from './HandReveal'
+import HandReveal, { NeedBadge } from './HandReveal'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
 import { AnimatedNumber } from '../ui/AnimatedNumber'
@@ -45,6 +45,15 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
   const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
+  // 🃏 Your OWN wants: cards missing from a set you're building. Rebuilt when the collection
+  // changes — i.e. once per pack banked, not once per card — so a 36-pack box knows what pack 12
+  // put in your hands by the time pack 13 lands.
+  const collection = useGame(s => s.collection)
+  const binder = useGame(s => s.binder)
+  const challengeSetId = useGame(s => s.challenge?.setId || null)
+  const ownedIds = useMemo(() => ownedIdSet([...(collection || []), ...(binder || [])]), [collection, binder])
+  const binderSets = useMemo(() => new Set((binder || []).map(c => setIdOfCard(c)).filter(Boolean)), [binder])
+  function needOf(card) { return needTierFor(card, ownedIds, challengeSetId, binderSets) }
   const [autoLeft, setAutoLeft] = useState(0)     // seconds left on the auto-advance countdown
   const [held, setHeld] = useState(false)         // you pressed Hold — this pack won't auto-advance
   const committed = useRef(false)
@@ -103,7 +112,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     setTear(0)
     const cards = openPackFor(set, product)
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
-    cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
+    cards.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     const god = !!cards._god
     const demigod = !!cards._demigod
     setSearched(!!cards._searched)
@@ -310,6 +319,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     const promo = makeProductPromo(set, product || { bonus: null })
     if (promo) {
       promo._isHit = isHit(promo)
+      promo._needFor = needOf(promo)
       addPulls([promo], `${product.type} promo · ${set.name}`, 0) // promo isn't a pack
       setExtra(e => [...e, promo])
       setRipValue(v => v + cardValue(promo)) // promo counts toward the rip's total value
@@ -331,7 +341,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       if (pack._demigod) pack.forEach(c => { c._fromDemigod = true })
       fast.push(...pack)
     }
-    fast.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
+    fast.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     if (fast.length) addPulls(fast, set.name, remaining)
     setExtra(e => [...e, ...fast])
     // fold the fast-forwarded packs into the running rip tally
@@ -608,10 +618,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                             {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
                           </div>
                           <div className="rc-val">{fmtMoney(cardValue(c))}</div>
-                          {(cut || c._fillsWant) && (
+                          {(cut || c._fillsWant || c._needFor) && (
                             <div className="rc-badges">
                               {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
                               {c._fillsWant && <span className="rc-want">⭐ Want</span>}
+                              <NeedBadge card={c} compact />
                             </div>
                           )}
                         </button>
@@ -651,6 +662,18 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       </span>
                     </div>
                   )}
+                  {/* Ten per-card badges is the detail; THIS is the takeaway — did the pack move
+                      the set forward. Counted off the same _needFor stamp the badges read. */}
+                  {(() => {
+                    const need = pulls.filter(c => c._needFor).length
+                    const chal = pulls.filter(c => c._needFor === 'challenge').length
+                    if (!need) return null
+                    return (
+                      <div style={{ fontSize: 13.5, marginBottom: 6, color: chal ? 'var(--gold)' : 'var(--accent-light)', fontWeight: 700 }}>
+                        {chal ? `🃏 ${chal} new for your challenge set` : `📒 ${need} you didn't own yet`}
+                      </div>
+                    )
+                  })()}
                   <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>
                     Cards added to your collection. Best pull:{' '}
                     <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
