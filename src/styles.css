@@ -802,6 +802,16 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .set-head { background: var(--panel2); color: var(--dim); font-weight: 700; font-size: 12px;
   text-transform: uppercase; letter-spacing: .4px; }
 .set-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 🎲 Luck table — same skin as the set analytics, four columns instead of six. */
+.lucktable { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.luck-row { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 8px;
+  padding: 8px 12px; align-items: center; font-variant-numeric: tabular-nums; font-size: 14px; }
+.luck-row:not(.luck-head):nth-child(even) { background: #ffffff06; }
+.luck-row > span:not(.luck-tier) { text-align: right; }
+.luck-head { background: var(--panel2); color: var(--dim); font-weight: 700; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .4px; }
+.luck-tier { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .luck-row { font-size: 13px; padding: 7px 10px; } }
 @media (max-width: 640px) {
   .set-row { grid-template-columns: 1.6fr 1fr 1fr 0.7fr; font-size: 13px; padding: 8px 10px; }
   /* drop Pulled + Packs columns on narrow screens (header + cells alike) */

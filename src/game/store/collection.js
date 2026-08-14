@@ -9,7 +9,7 @@ import {
   cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, gradeUpcharge, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
-  pickMasterLot,
+  pickMasterLot, luckTierOf,
 } from '../engine'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype, postPatch, challengeBounty } from './constants'
@@ -69,7 +69,26 @@ export function createCollectionSlice(set, get) {
             pulledValue: cardValue(c), cardsPulled: 1, hits: c._isHit ? 1 : 0,
           })
         }
-        if (firstSet) bySet = bumpSet(bySet, firstSet, { packsOpened: packs })
+        // 🎲 Luck tracking: what the packs actually gave up, against what pullOdds() says they
+        // owed. Recorded on the PACK's set (not each card's) so the counts share a denominator
+        // with luckPacks — a Gallery/Shiny-Vault card comes from a different set id but the same
+        // pack. Promo adds (packs = 0) aren't pulls, and a god pack is its own line rather than a
+        // shower of tier counts no ladder ever offered.
+        if (firstSet) {
+          const tiers = {}
+          if (packs > 0 && !isGod && !isDemigod) {
+            for (const c of cards) {
+              const t = luckTierOf(c, firstSet)
+              if (t) tiers[t] = (tiers[t] || 0) + 1
+            }
+          }
+          if (packs > 0 && isGod) tiers.god = 1
+          if (packs > 0 && isDemigod) tiers.demigod = 1
+          bySet = bumpSet(bySet, firstSet, {
+            packsOpened: packs,
+            ...(packs > 0 ? { luckPacks: packs, tiers } : {}),
+          })
+        }
         // 📱 The rip is content. A chase out of a kitchen-table pack is exactly the moment a
         // vendor films, so the best card of the rip posts itself (POST_MIN_VALUE keeps a bulk
         // pack from posting). Folded into THIS write — a rip is the hottest set() path in the

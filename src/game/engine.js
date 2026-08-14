@@ -1045,6 +1045,81 @@ export function openPack(set) {
   return pulls
 }
 
+// The odds openPack() actually rolls, read back out as numbers — the input to the 🎲 luck panel
+// (what you pulled vs what the packs owed you). It walks the SAME tables and the SAME slot
+// structure as openPack above, so a rate change moves both together; there is no second copy of
+// any number here. Mirrors, in order: special packs → rare slot → chase roll → reverse slot
+// (which a subset card or an ACE SPEC pre-empts) → foils (only when the reverse didn't upgrade).
+//
+// Returns { [tier]: probability that a single pack yields one }, keyed by rarity name,
+// `foil:<key>`, `subset`, or `god`/`demigod`. Tiers a set has no cards for are omitted, exactly
+// as rollSlot skips them. Japanese and Celebrations packs have their own structures and aren't
+// modelled — they return {} and the panel leaves them out rather than guessing.
+export function pullOdds(set) {
+  if (!set || set.japanese || set.id === 'cel25') return {}
+  const byR = cardsByRarity(set)
+  const subset = SUBSET_SLOT[set.id]
+  if (subset) for (const k of Object.keys(byR)) byR[k] = byR[k].filter(c => !subset.test(c.id))
+  const rates = ratesFor(set)
+  const has = (r) => !!byR[r]?.length
+  const odds = {}
+  const add = (k, p) => { if (p > 0) odds[k] = (odds[k] || 0) + p }
+
+  // Special packs replace the whole pack rather than modifying a slot, so they're their own
+  // lines. Rolled in order with the first hit winning, so each is conditional on the earlier ones
+  // missing — which is why this accumulates `taken` instead of using v.odds directly.
+  let taken = 0
+  for (const v of (SPECIAL_PACKS[set.id] || [])) {
+    const p = v.odds * (1 - taken)
+    taken += p
+    add(v.tier === 'god' ? 'god' : 'demigod', p)
+  }
+  // RARE slot — always reached.
+  for (const h of (rates.rare || [])) if (has(h.rarity)) add(h.rarity, h.p)
+  // Top-end chase — an independent extra roll that rides alongside the reverse slot.
+  for (const h of (rates.chase || [])) if (has(h.rarity)) add(h.rarity, h.p)
+
+  // REVERSE slot. A Gallery/Shiny-Vault card takes it first, then an ACE SPEC; only what's left
+  // reaches the upgrade ladder, and only what's left of THAT can carry a special foil.
+  const pSubset = subset ? subset.odds : 0
+  if (pSubset) add('subset', pSubset)
+  const pAce = (has('ACE SPEC Rare') && rates.aceSpec) ? rates.aceSpec : 0
+  if (pAce) add('ACE SPEC Rare', (1 - pSubset) * pAce)
+  const reach = (1 - pSubset) * (1 - pAce)
+  const cfgRev = rates.reverse || []
+  const seenRev = new Set(cfgRev.map(e => e.rarity))
+  const effReverse = [...cfgRev, ...BASELINE_RATES.reverse.filter(e => !seenRev.has(e.rarity) && has(e.rarity))]
+  let upgrade = 0
+  for (const h of effReverse) {
+    if (!has(h.rarity)) continue
+    add(h.rarity, reach * h.p)
+    upgrade += h.p
+  }
+  const plain = reach * Math.max(0, 1 - upgrade)
+  for (const f of (rates.foils || [])) add(`foil:${f.key}`, plain * f.p)
+  return odds
+}
+
+// How a pulled card maps onto a pullOdds() tier. `packSetId` is the set of the pack it came out
+// of: a card whose own set differs came from the Gallery / Shiny Vault subset slot.
+export function luckTierOf(card, packSetId) {
+  if (!card) return null
+  if (packSetId && setIdOfCard(card) !== packSetId) return 'subset'
+  if (card.foil) return `foil:${card.foil.key}`
+  return LUCK_UNTRACKED.has(card.rarity) ? null : card.rarity
+}
+// The base slots every pack fills regardless of luck — nothing to compare against odds.
+const LUCK_UNTRACKED = new Set(['Common', 'Uncommon', 'Rare', 'Rare Holo'])
+
+// Display name for a tier key.
+export function luckTierLabel(tier) {
+  if (tier === 'god') return '✨ God pack'
+  if (tier === 'demigod') return '🌟 Demigod pack'
+  if (tier === 'subset') return '🖼️ Gallery / Shiny Vault'
+  if (tier?.startsWith('foil:')) return FOIL[tier.slice(5)]?.label || tier
+  return tier
+}
+
 function rollFoil(table) {
   let roll = Math.random()
   for (const f of table) { if (roll < f.p) return f; roll -= f.p }

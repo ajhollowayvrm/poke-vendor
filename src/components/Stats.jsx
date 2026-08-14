@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById,
   RANKS, DEEDS_NEEDED, repSourceLabel } from '../game/store'
-import { cardValue, sealedValue, fmtMoney, round2, SETS, shopName, shopIcon } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, round2, SETS, shopName, shopIcon,
+  pullOdds, luckTierLabel, setById } from '../game/engine'
 import { MILESTONES, MILESTONE_GROUPS, milestoneProgress } from '../game/milestones'
 import { Collapse, bigScreen } from '../ui/Collapse'
 import { confirmDialog } from '../ui/dialog'
@@ -120,6 +121,8 @@ export default function Stats() {
           </div>
         </>
       )}
+
+      <LuckPanel bySet={bySet} />
 
       <h3 style={{ margin: '24px 0 6px' }}>Ledger</h3>
       <div>
@@ -314,6 +317,82 @@ function BreakdownCol({ title, rows, color }) {
 // Achievement badges. Unlocked ones light up gold; locked ones dim to a 🔒 with a progress
 // bar toward their goal. Grouped by theme. Progress reads a live state snapshot (the panel
 // re-renders as stats change, so bars stay current).
+// 🎲 Luck vs the odds. The game has always shown what you PULLED; this shows what the packs
+// owed you. Expectation comes from engine.pullOdds() — the same tables openPack rolls against —
+// times the packs you've actually opened per set, so it moves with the real rates instead of a
+// second copy of them. Purely a readout: nothing here touches the economy.
+//
+// Two honesty rules the numbers live by. It counts from the day tracking started (`luckPacks`),
+// never from lifetime packsOpened, so an old save doesn't open on a fake cold streak. And a
+// verdict only appears once a tier expects 3+ — below that the ratio is noise wearing a colour.
+function LuckPanel({ bySet }) {
+  const luck = useMemo(() => {
+    const exp = {}, obs = {}
+    let packs = 0
+    for (const [id, d] of Object.entries(bySet || {})) {
+      const n = d.luckPacks || 0
+      if (!n) continue
+      const set = setById(id)
+      if (!set) continue
+      const odds = pullOdds(set)
+      if (!Object.keys(odds).length) continue      // JP / Celebrations run their own structure
+      packs += n
+      for (const [t, p] of Object.entries(odds)) exp[t] = (exp[t] || 0) + p * n
+      for (const [t, c] of Object.entries(d.tiers || {})) obs[t] = (obs[t] || 0) + c
+    }
+    const rows = [...new Set([...Object.keys(exp), ...Object.keys(obs)])]
+      .map(t => ({ t, exp: exp[t] || 0, obs: obs[t] || 0 }))
+      .filter(r => r.exp > 0.05 || r.obs > 0)
+      .sort((a, b) => a.exp - b.exp)               // rarest first — the interesting end
+    return { packs, rows, totExp: rows.reduce((a, r) => a + r.exp, 0), totObs: rows.reduce((a, r) => a + r.obs, 0) }
+  }, [bySet])
+
+  if (!luck.packs) return null
+  const ratio = luck.totExp > 0 ? luck.totObs / luck.totExp : null
+  const pct = ratio == null ? 0 : Math.round((ratio - 1) * 100)
+  const solid = luck.totExp >= 8      // enough expected pulls for the headline to mean anything
+
+  return (
+    <Collapse id="luck" defaultOpen={bigScreen()}
+      head={<h3 style={{ margin: 0, display: 'inline' }}>🎲 Luck vs the odds</h3>}
+      badge={solid ? (pct === 0 ? 'dead on' : `${pct > 0 ? '+' : ''}${pct}%`) : `${luck.packs} packs`}
+      hint="What you pulled against what the real pull rates owed you.">
+      <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
+        {solid
+          ? <>Across <b>{luck.packs}</b> tracked pack{luck.packs === 1 ? '' : 's'} you've pulled <b>{luck.totObs}</b> chase
+              card{luck.totObs === 1 ? '' : 's'} where the odds owed <b>{luck.totExp.toFixed(1)}</b> —{' '}
+              <b style={{ color: pct > 0 ? 'var(--green)' : pct < 0 ? 'var(--red)' : 'var(--dim)' }}>
+                {pct > 0 ? `running ${pct}% hot` : pct < 0 ? `running ${-pct}% cold` : 'dead on the odds'}</b>.
+            </>
+          : <>Only <b>{luck.packs}</b> tracked pack{luck.packs === 1 ? '' : 's'} so far — pull rates need a few hundred
+              before a hot or cold streak means anything. Keep ripping.</>}
+      </p>
+      <div className="lucktable">
+        <div className="luck-row luck-head"><span>Tier</span><span>Pulled</span><span>Owed</span><span>Run</span></div>
+        {luck.rows.map(r => {
+          const rr = r.exp > 0 ? r.obs / r.exp : null
+          const judge = r.exp >= 3 && rr != null
+          const col = !judge ? 'var(--dim)' : rr >= 1.15 ? 'var(--green)' : rr <= 0.85 ? 'var(--red)' : 'var(--fg)'
+          return (
+            <div className="luck-row" key={r.t}>
+              <span className="luck-tier">{luckTierLabel(r.t)}</span>
+              <span style={{ fontWeight: 800 }}>{r.obs}</span>
+              <span className="muted">{r.exp < 1 ? r.exp.toFixed(2) : r.exp.toFixed(1)}</span>
+              <span style={{ color: col, fontWeight: judge ? 800 : 400 }}>
+                {!judge ? '—' : `${Math.round(rr * 100)}%`}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="muted" style={{ fontSize: 11.5, marginTop: 6 }}>
+        Counted from the day this panel arrived, so packs you ripped before it aren't in here. A “—” means
+        that tier hasn't been offered enough times yet to judge.
+      </p>
+    </Collapse>
+  )
+}
+
 function MilestoneShelf({ unlocked }) {
   const have = new Set(unlocked || [])
   const snap = useGame.getState()
