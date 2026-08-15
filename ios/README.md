@@ -144,6 +144,39 @@ real device.**
 
 ---
 
+## Auto sign-in (personal build only)
+
+The phone can skip the login screen entirely:
+
+```sh
+cp .env.example .env.shell.local     # fill in your Cognito email + password
+npm run ios:device
+```
+
+**Where the password ends up, precisely.** `import.meta.env.*` is inlined by Vite **at build
+time** — it is not read at runtime and it is not secret. What keeps it out of the public site is
+the build MODE, not the runtime guard:
+
+| Command | Mode | Loads `.env.shell.local`? | Credentials in the bundle? |
+|---|---|---|---|
+| `npm run build` (→ GitHub Pages) | production | **no** | **no** |
+| `npm run ios:build` / `ios:device` | shell | yes | yes |
+
+So the credentials exist in exactly one artefact: the `.ipa` on the phone. Anyone with that build
+has the account. That is the accepted trade for a one-player personal app and **not** a pattern to
+copy anywhere with more than one user.
+
+`.env*` is gitignored (`.env.example` excepted), and this repo is **public** — verify before every
+push if you have touched any of this:
+
+```sh
+npm run build && grep -r VITE_AUTO_LOGIN dist/   # must find nothing
+```
+
+You may not need any of this. `RefreshTokenValidity` is already 3650 days and `getIdToken()`
+refreshes silently, so a plain sign-in lasts ten years per device and survives reinstalling over
+the top. Auto-login only saves the very first one.
+
 ## Testing how it feels
 
 Two loops, sharing one definition (`tools/ios/scenarios.mjs`) so a difference between their

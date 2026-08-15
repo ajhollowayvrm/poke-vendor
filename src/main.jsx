@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { startUpdateChecks } from './game/appUpdate'
+import { autoLoginIfConfigured } from './game/autoLogin'
 import { isNativeShell } from './game/native'
 import { useGame, flushSaveNow } from './game/store'
 import './styles.css'
@@ -36,6 +37,14 @@ if (typeof document !== 'undefined') {
   // need to make and cannot afford, since the bottom 34pt is the system swipe-up strip.
   if (isNativeShell) document.documentElement.classList.add('native-shell')
 }
+
+// 🔑 Personal iOS build only: sign in without being asked, so the phone never shows a login.
+// No-ops everywhere else — the web build compiles in production mode, which never loads the env
+// file the credentials live in, so there is literally nothing here to find. game/autoLogin.js
+// documents exactly where they DO end up and why that is the accepted trade.
+// Fire-and-forget: cloudSave's sync loop picks the session up whenever it lands, so no part of
+// boot waits on the network for it.
+autoLoginIfConfigured()
 
 // The save lives in IndexedDB, which is asynchronous — so on boot the store briefly holds a
 // BRAND NEW GAME before the real one arrives. Rendering through that window is not merely

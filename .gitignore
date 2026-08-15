@@ -10,6 +10,12 @@ scripts/.pokemon-api-key
 *.pokemon-api-key
 .playwright-mcp
 
+# Local env — NEVER COMMIT. .env.shell.local holds the auto-login credentials for the personal
+# iOS build (see src/game/autoLogin.js). This repo is PUBLIC, so a slip here publishes a password.
+.env
+.env.*
+!.env.example
+
 # iOS — the Xcode project is GENERATED from ios/project.yml by `npm run ios:project`.
 # Committing it means two sources of truth and a merge conflict every time either moves.
 ios/*.xcodeproj
