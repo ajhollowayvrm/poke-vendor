@@ -665,7 +665,16 @@ function classifyProduct(rawName) {
   // Poster / binder / figure / pin / sticker / pouch collections and retail "(Exclusive)"
   // bundles USED to be rejected here. They are real sealed product that rips real packs, so
   // they now fall through to the type rules below. Cases still die on the \bcase\b guard.
-  if (/code card|^code |\bcase\b|case$|display|set of \d|theme deck|\bdeck\b|\benergy\b|unnumbered/.test(raw)) return null
+  //
+  // `carton` and `token` are here because the catch-all `guessProduct` gave both a default of
+  // ONE pack, and at their real prices that is not a cosmetic mislabel:
+  //   • "Stellar Crown Sleeved Booster Master Carton" ($1,146) is bulk retail shipping — the
+  //     same thing as a case, just not spelled "case". As 1 pack it was the worst buy in the
+  //     game by an order of magnitude.
+  //   • "VSTAR Token" ($0.15) is a game token, not sealed product at all. As 1 pack it was a
+  //     money printer: buy for 15c, rip a real Brilliant Stars pack worth several dollars,
+  //     repeat. That one is an exploit, not just wrong data.
+  if (/code card|^code |\bcase\b|case$|display|set of \d|theme deck|\bdeck\b|\benergy\b|unnumbered|\bcarton\b|\btoken\b/.test(raw)) return null
   // Ultra Premium Collection — the flagship. MUST precede the plain premium-collection rule,
   // because "ultra premium collection" also ends in "premium …collection".
   if (/ultra[- ]premium collection/.test(n)) return { type: 'Ultra Premium Collection', icon: '👑', packs: 16, bonus: 'promo' }
