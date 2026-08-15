@@ -4,6 +4,8 @@
 // configureFeedback() when those settings change, and primeAudio() from the first
 // user gesture (the rip click/drag) so the AudioContext is allowed to start.
 
+import { nativeHaptic } from './native'
+
 let ctx = null
 const enabled = { sound: true, haptics: true }
 
@@ -61,8 +63,15 @@ function noise({ dur = 0.4, gain = 0.25, from = 1600, to = 220 } = {}) {
   src.start(t0); src.stop(t0 + dur)
 }
 
+// Every call below passes a navigator.vibrate pattern, which is the right shape for Android and
+// for desktop Chrome — and does NOTHING on an iPhone, because iOS Safari and WKWebView do not
+// implement navigator.vibrate at all. So on iOS this setting has never produced a single buzz.
+// Inside the native shell the pattern is translated to a UIFeedbackGenerator instead (see
+// game/native.js); everywhere else the web path is unchanged.
 function vibrate(pattern) {
-  if (!enabled.haptics || typeof navigator === 'undefined' || !navigator.vibrate) return
+  if (!enabled.haptics) return
+  if (nativeHaptic(pattern)) return
+  if (typeof navigator === 'undefined' || !navigator.vibrate) return
   try { navigator.vibrate(pattern) } catch { /* ignore */ }
 }
 
