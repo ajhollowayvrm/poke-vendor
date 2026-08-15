@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { openPackFor, openProduct, makeProductPromo, isHit, isChase, isChaseOrEx, isGrail, cardValue, fmtMoney, rarityRank,
   preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById,
-  ownedIdSet, setIdOfCard, needTierFor } from '../game/engine'
+  ownedIdSet, setIdOfCard, needTierFor, drawPackSets } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -140,27 +140,34 @@ export default function AutoRip({ items, onExit }) {
       const removed = ripSealed(it.uid)                   // consume this unit from inventory now
       if (!removed) { pump(); return }                    // already gone (sold/moved) — skip it, don't rip a phantom
       const set = setById(it.setId)
-      cur.current = { set, product: it.product, packsLeft: it.product?.packs || 1, promo: it.product?.bonus === 'promo' }
+      // A cross-set product deals a different set into every slot. Drawn from THIS unit's uid,
+      // so sifting five identical UPCs gives five different lineups.
+      cur.current = { set, product: it.product, packsLeft: it.product?.packs || 1,
+        promo: it.product?.bonus === 'promo', packSets: drawPackSets(it.product, it.uid) }
     }
     const c = cur.current
     if (!c.set) { cur.current = null; pump(); return }    // unknown set — skip it defensively
+    // Which set this particular pack came out of (the anchor set for an ordinary product).
+    const packSetOf = i => (c.packSets && setById(c.packSets[i])) || c.set
+    const from = packSetOf((c.product?.packs || 1) - c.packsLeft)
     if (c.packsLeft > 0) {
       // openPackFor, not openPack: a 🔦 searched loose pack has to come out gutted here too.
       // Sifting one used to launder it — the churn rolled it at full odds while "skip & bank the
       // rest" (flush → openProduct) honoured the strip, so the same pack paid differently
       // depending on how you opened it.
-      const cards = tagCards(openPackFor(c.set, c.product))
+      const cards = tagCards(openPackFor(from, c.product))
       // Look BEFORE we animate: a pack worth stopping for must never flash its cards past you
       // on the churn clock. It goes back in your hands sealed instead.
       if (bigHitIn(cards)) {
-        setPending({ set: c.set, product: c.product, cards })
+        // `from`, not c.set — the paused pack must hand over showing the set it really is.
+        setPending({ set: from, product: c.product, cards })
         setStack(null); setShown(0); setSettled(false); setAwaiting(false)
         setTear(0); setPhase('hit')
         setStats(s => ({ ...s, hitPacks: s.hitPacks + 1 }))
-        pushFeed(`🔥 ${c.set.name} — the sifter stopped on this one. Rip it yourself →`)
+        pushFeed(`🔥 ${from.name} — the sifter stopped on this one. Rip it yourself →`)
         return
       }
-      churnPack(cards, c.set)
+      churnPack(cards, from)
       return
     }
     if (c.promo) {
@@ -318,18 +325,26 @@ export default function AutoRip({ items, onExit }) {
     if (inflight.current) { addPulls(inflight.current.cards, inflight.current.set.name, 1); take(inflight.current.cards, 1, shown); if (cur.current) cur.current.packsLeft--; inflight.current = null }
     if (pending) { addPulls(tagCards(pending.cards), pending.set.name, 1); take(pending.cards); if (cur.current) cur.current.packsLeft--; }
     if (cur.current && cur.current.set) {
-      for (let i = 0; i < cur.current.packsLeft; i++) {
-        const cards = tagCards(openPackFor(cur.current.set, cur.current.product))
-        addPulls(cards, cur.current.set.name, 1); take(cards)
+      const cu = cur.current
+      // Sweeping the remainder must deal the SAME sets the churn would have — a bank-the-rest
+      // is a shortcut through the animation, not a different box. Start where the churn stopped.
+      const total = cu.product?.packs || 1
+      for (let i = 0; i < cu.packsLeft; i++) {
+        const from = (cu.packSets && setById(cu.packSets[total - cu.packsLeft + i])) || cu.set
+        const cards = tagCards(openPackFor(from, cu.product))
+        addPulls(cards, from.name, 1); take(cards)
       }
-      if (cur.current.promo) { const p = makeProductPromo(cur.current.set, cur.current.product); if (p) { p._isHit = isHit(p); addPulls([p], '', 0); take([p], 0) } }
+      // The promo stays pinned to the product's own set — a Charizard UPC ships a Charizard
+      // promo no matter which packs fell in.
+      if (cu.promo) { const p = makeProductPromo(cu.set, cu.product); if (p) { p._isHit = isHit(p); addPulls([p], '', 0); take([p], 0) } }
     }
     cur.current = null
     while (queue.current.length) {
       const it = queue.current.shift(); const removed = ripSealed(it.uid); if (!removed) continue
       const set = setById(it.setId); if (!set) continue
-      const all = openProduct(set, it.product); all.forEach(c => (c._isHit = isHit(c)))
-      addPulls(all, set.name, it.product?.packs || 1); take(all, it.product?.packs || 1)
+      const all = openProduct(set, it.product, { uid: it.uid }); all.forEach(c => (c._isHit = isHit(c)))
+      addPulls(all, it.product?.pool?.series ? `${it.product.pool.series} era` : set.name, it.product?.packs || 1)
+      take(all, it.product?.packs || 1)
     }
     return swept
   }

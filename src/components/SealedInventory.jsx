@@ -187,8 +187,10 @@ function SealedRow({ items, onRip, hasStore, onInspect, selecting, selected, onT
         {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
         <div style={{ flex: 1, minWidth: 0 }}>
           <b className="sealed-name">{item.product.icon || '📦'} {item.product.type}</b>
+          {/* A cross-set product names its ERA, never the packs inside it. The box is sealed —
+              you cannot see through cardboard, and it sells on potential, not on contents. */}
           <div className="muted" style={{ fontSize: 12 }}>
-            {set?.name}{item.vintage ? ' · 🏛️ vintage' : ''} · {item.product.packs} pk
+            {item.product.pool?.series ? `${item.product.pool.series} era` : set?.name}{item.vintage ? ' · 🏛️ vintage' : ''} · {item.product.packs} pk
             {item.locked ? <b style={{ color: 'var(--gold)' }}> · 🔒 kept (not for sale)</b> : ''}
           </div>
         </div>

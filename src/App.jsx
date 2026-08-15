@@ -3,7 +3,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packP
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind,
-  hypeSurge, cardValue } from './game/engine'
+  hypeSurge, cardValue, ERA_PRODUCTS, eraAnchorSet, drawPackSets } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
 import { useGame, repSourceLabel, RANKS, DEEDS_NEEDED, deedsDone } from './game/store'
@@ -60,11 +60,21 @@ function liveProductPrice(set, product) {
   return product?._buyPrice ?? product?.price ?? packPrice(set)
 }
 
-// The 📦 Inventory items that ARE this product (same set + same type — price and
+// The 📦 Inventory items that ARE this product (same set + same product — price and
 // provenance vary by where a copy came from, but it's the same thing to rip).
 // "Rip another" consumes these before it ever re-buys: you already paid for them.
 function heldMatches(state, set, product) {
-  return (state.sealedInventory || []).filter(i => i.setId === set?.id && i.product?.type === product?.type)
+  return (state.sealedInventory || []).filter(i => i.setId === set?.id && sameProduct(i.product, product))
+}
+
+// Same PRODUCT, not merely the same TYPE. The shop used to carry one product per type per set,
+// which made those the same question; now that it carries the full lineup, Prismatic alone has
+// eight different Mini Tins. Matching on type would let "rip another" hand you the Flareon tin
+// when you asked for the Umbreon one — wrong price, wrong promo. tcgId is TCGplayer's
+// per-product id; fall back to type for synthesized products (JP, vintage) that have none.
+function sameProduct(a, b) {
+  if (a?.tcgId && b?.tcgId) return a.tcgId === b.tcgId
+  return a?.type === b?.type
 }
 
 // Can you actually GET another one of these right now? "Rip another" used to ask only "can
@@ -264,23 +274,27 @@ export default function App() {
     const splitNote = (cp, xp) => xp > 0 ? ` — ${fmtMoney(cp)} cash + ${fmtMoney(xp)} credit 💳` : ''
     const n = Math.max(1, Math.floor(qty))
     const distName = distributorById(distId)?.name || 'They'
+    // What to call where this came from. A cross-set product has an ANCHOR set for bookkeeping,
+    // but naming it would be a lie — "Ultra Premium Collection of Phantasmal Flames" claims
+    // 18 Phantasmal Flames packs. Name the era instead.
+    const origin = product.pool?.series ? `the ${product.pool.series} era` : set.name
     if (n > 1) {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
       const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split })
       if (!res) return toast(`${distName} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
-      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
-      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
+      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${product.type} of ${origin} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
+      return toast(`Stocked ${res.bought}× ${product.type} of ${origin} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
     if (!item) return toast(`${distName} are out of ${product.type} — check back after it restocks.`)
     // 🚢 An import buy is on the water — nothing to rip yet, whatever the Rip-on-buy setting says.
-    if (item._inTransit) return toast(`🚢 Import order placed — ${product.type} of ${set.name} is crossing the Pacific (lands in a few days).`)
+    if (item._inTransit) return toast(`🚢 Import order placed — ${product.type} of ${origin} is crossing the Pacific (lands in a few days).`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     const cashPart = Math.min(cash, price), creditPart = round2(price - cashPart)
     const pay = onCredit ? ' on credit 💳' : split ? splitNote(cashPart, creditPart) : ''
-    toast(`Stocked ${product.type} of ${set.name}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
+    toast(`Stocked ${product.type} of ${origin}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -298,23 +312,33 @@ export default function App() {
       setRipReturn(tab)     // came from Cards/Store/Inbox → Done should return you here
       // cost: what you ACTUALLY paid for this unit, not what it lists at today — the 📜 rip log
       // records a real P/L, and the sift (which reads boughtPrice directly) must agree with it.
-      setRipping({ set, product, cost: item.boughtPrice })
+      // uid identifies the physical unit: a cross-set product derives its pack lineup from it,
+      // so two of the same UPC rip different sets. See drawPackSets in engine.js.
+      setRipping({ set, product, cost: item.boughtPrice, uid: item.uid })
       setTab('shop')
       return
     }
-    const all = openProduct(set, product)
+    // A cross-set product rips packs from several sets, so name the ERA in the log and the
+    // toast rather than pretending every card came from the anchor set.
+    const packSets = drawPackSets(product, item.uid)
+    const eraName = product.pool?.series
+    const originLabel = eraName ? `${eraName} era` : set.name
+    const all = openProduct(set, product, { uid: item.uid, packSets })
     all.forEach(c => (c._isHit = isHit(c)))
-    addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal
+    addPulls(all, `${product.type} · ${originLabel}`, product.packs) // counts packs + rip goal
     // 📜 The instant path skips PackOpening entirely, so it has to write its own log line —
     // otherwise ripping a box with "one at a time" off would leave no trace in the history.
     useGame.getState().logRip({
-      setId: set.id, name: set.name, type: product.type, packs: product.packs,
+      setId: set.id, name: originLabel, type: product.type, packs: product.packs,
+      // How many distinct sets the packs actually came from — the 📜 log shows "16 packs · 5 sets".
+      setCount: packSets ? new Set(packSets).size : undefined,
       cost: item.boughtPrice, pulled: all.reduce((a, c) => a + cardValue(c), 0),
       best: all.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null),
     })
     const hits = all.filter(c => c._isHit || c.foil).length
+    const across = packSets ? ` across ${new Set(packSets).size} sets` : ''
     setTab('collection')
-    toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+    toast(`Ripped a ${product.type} of ${originLabel}${across} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
   // ⚡ Sift-rip: hand a GROUP of sealed to the auto-ripper — it churns pack by pack, banks the
@@ -371,7 +395,9 @@ export default function App() {
     const held = heldMatches(useGame.getState(), set, product)[0]
     if (held) {
       useGame.getState().ripSealed(held.uid)
-      setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, nonce: (r?.nonce ?? 0) + 1 }))
+      // A different held unit → a different uid → a different pack lineup for a cross-set
+      // product. Ripping three UPCs in a row must not deal the same sets three times.
+      setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, uid: held.uid, nonce: (r?.nonce ?? 0) + 1 }))
       setTab('shop')
       return
     }
@@ -395,7 +421,7 @@ export default function App() {
         : `${who} are out of ${product.type} — can't rip another right now.`)
     }
     useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
-    setRipping(r => ({ set, product, cost: item.boughtPrice ?? price, nonce: (r?.nonce ?? 0) + 1 }))
+    setRipping(r => ({ set, product, cost: item.boughtPrice ?? price, uid: item.uid, nonce: (r?.nonce ?? 0) + 1 }))
     setTab('shop')
   }
 
@@ -641,6 +667,7 @@ export default function App() {
             key={ripping.nonce ?? 0}
             set={ripping.set}
             product={ripping.product}
+            uid={ripping.uid}
             paused={tab !== 'shop'}
             costBasis={ripping.cost}
             onExit={exitRip}
@@ -1010,9 +1037,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         <p className="muted" style={{ marginTop: 18 }}>{dist.name} has nothing on the shelf right now — check back next week.</p>
       ) : (
         <div className="shop-list">
-          {catalog.map(set => (
-            <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={rec.stock}
-              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={ownedCounts}
+          {groupByEra(catalog).map(era => (
+            <DistributorEraCard key={era.series} era={era} dist={dist} lvl={lvl} stock={rec.stock}
+              cash={cash} onBuy={onBuy} clearanceSetId={clearanceSetId} owned={ownedCounts}
               onCredit={onCredit} split={split} creditAvail={creditAvail} />
           ))}
         </div>
@@ -1372,6 +1399,90 @@ function RapportBanner({ dist, rec, lvl }) {
   )
 }
 
+// Group a distributor's catalog into ERAS, preserving the catalog's own set order inside each
+// one. The shelf reads Era → Set → Product, which is the shape the product line actually has:
+// an Elite Trainer Box belongs to a set, but an Ultra Premium Collection belongs to a whole
+// era, and until there was an era level there was nowhere to put one.
+function groupByEra(sets) {
+  const byEra = new Map()
+  for (const s of sets) {
+    const key = s.series || 'Other'
+    if (!byEra.has(key)) byEra.set(key, { series: key, sets: [] })
+    byEra.get(key).sets.push(s)
+  }
+  // Cross-set product hangs off the era, above its sets.
+  for (const era of byEra.values()) {
+    era.products = ERA_PRODUCTS.filter(p => p.pool?.series === era.series)
+  }
+  return [...byEra.values()]
+}
+
+// One ERA on the shelf. Collapsed by default like the set rows beneath it, so the shop still
+// opens as a short scannable list however many products the era carries.
+function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail }) {
+  const [open, setOpen] = useState(false)
+  const credit = { onCredit, split, creditAvail }
+  const nProducts = era.sets.reduce((a, s) => a + setProducts(s).length, 0) + era.products.length
+  return (
+    <div className={`product era-acc ${open ? 'open' : ''}`}>
+      <button className="set-head era-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <span className="set-head-info">
+          <span className="set-head-name">{era.series}</span>
+          <span className="meta">
+            {era.sets.length} set{era.sets.length !== 1 ? 's' : ''} · {nProducts} product{nProducts !== 1 ? 's' : ''}
+            {era.products.length ? ` · ${era.products.length} collector piece${era.products.length !== 1 ? 's' : ''}` : ''}
+          </span>
+        </span>
+        <span className="set-caret" aria-hidden="true">{open ? '▾' : '▸'}</span>
+      </button>
+      {open && (
+        <div className="era-body">
+          {/* Era-wide product first — a UPC isn't a Lost Origin product, it's a Sword & Shield one. */}
+          {era.products.length > 0 && (
+            <div className="era-products">
+              <div className="era-products-head">👑 Collector product — rips packs from across the {era.series} era</div>
+              {era.products.map(p => (
+                <EraProductRow key={p.tcgId} dist={dist} product={p} lvl={lvl} cash={cash}
+                  onBuy={onBuy} owned={owned} {...credit} />
+              ))}
+            </div>
+          )}
+          {era.sets.map(set => (
+            <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={stock}
+              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={owned}
+              onCredit={onCredit} split={split} creditAvail={creditAvail} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// One cross-set product line. Buys through the ordinary product path — it just resolves its
+// own anchor set first, since held sealed is keyed by setId.
+function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split, creditAvail }) {
+  const anchor = eraAnchorSet(product)
+  if (!anchor) return null
+  const price = distributorPrice(dist, product.price, lvl.level, { product, set: anchor })
+  const afford = cash >= price || (onCredit && creditAvail >= price) || (split && cash + creditAvail >= price)
+  return (
+    <div className="prodrow era-prodrow">
+      <span className="prod-name">
+        {product.icon} {product.name}
+        <span className="muted" style={{ fontSize: 12, display: 'block' }}>
+          {product.packs} pack{product.packs !== 1 ? 's' : ''} from across the {product.pool.series} era
+          {product.bonus === 'promo' ? ' · 🎁 promo' : ''}
+        </span>
+      </span>
+      <button className="btn" disabled={!afford}
+        title={afford ? `Buy for ${fmtMoney(price)}` : 'Not enough cash'}
+        onClick={() => onBuy(dist.id, anchor, { ...product, _buyPrice: price, _distId: dist.id }, 1, { onCredit, split })}>
+        {fmtMoney(price)}
+      </button>
+    </div>
+  )
+}
+
 // One set on a distributor's shelf: its products (priced at your rapport), plus a case
 // lot (if they sell cases and you've earned it) and a clearance lot (Greg, weekly).
 function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned, onCredit, split, creditAvail }) {
@@ -1398,7 +1509,8 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
       {open && (
         <div className="prodlist">
           {products.map(p => (
-            <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
+            /* keyed on tcgId, not type — a set carries several products per type now */
+            <StockButton key={p.tcgId || p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
           ))}
           {lot && (
             <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
@@ -1597,10 +1709,18 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
       <div className="market-head">📦 Supply other vendors <span className="muted">— buy in at {dist.name}'s wholesale, sell through the channel for passive income over a few days</span></div>
       <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
         <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); const ps = setProducts(SHOP_SETS.find(s=>s.id===id)); setType(ps.find(p=>p.packs>=10)?.type || ps[0].type) }}>
-          {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          {groupByEra(SHOP_SETS).map(era => (
+            <optgroup key={era.series} label={era.series}>
+              {era.sets.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </optgroup>
+          ))}
         </select>
+        {/* This picks a product TYPE, and a set now carries several products per type (eight
+            Prismatic mini tins). List each type once — the cheapest of that type is what
+            `product` above resolves to, matching how the wholesale price is quoted. */}
         <select value={type} onChange={e => setType(e.target.value)}>
-          {products.map(p => <option key={p.type} value={p.type}>{p.icon} {p.type}</option>)}
+          {[...new Map(products.map(p => [p.type, p])).values()]
+            .map(p => <option key={p.type} value={p.type}>{p.icon} {p.type}</option>)}
         </select>
         <span className="muted" style={{ fontSize: 12 }}>buy-in {fmtMoney(cost)}</span>
         <button className="btn gold" style={{ flex:'none', maxWidth: 200, marginLeft:'auto' }} disabled={cash < cost} onClick={place}>

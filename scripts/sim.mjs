@@ -108,6 +108,48 @@ try {
   // otherwise "pass" this section by testing nothing.
   pass(`import shelf is stocked (${jpRip.length} JP sets rippable)`, jpRip.length >= 3)
 
+  // ---- 1c. 👑 Cross-set ("era") product -------------------------------------------
+  // An Ultra Premium Collection draws its packs from a whole era at rip time rather than
+  // from one set. Three things must hold, and each has a way of silently breaking:
+  //   • still -EV. Same rule as every other sealed product.
+  //   • a box is FIXED at manufacture (same uid → same packs) but two boxes DIFFER. Lose the
+  //     first and a save reload rerolls the box; lose the second and every UPC deals the same
+  //     lineup, which is the tell that kills the illusion.
+  //   • value never tracks contents. A UPC sells on potential, so two of them must list
+  //     identically however lucky one of them happens to be.
+  console.log('\n👑 ERA PRODUCT (cross-set collections, N=400 rips each) — want < 1.00:')
+  const eraRip = await page.evaluate(async () => {
+    const eng = await import('/src/game/engine.js')
+    const out = []
+    const sample = eng.ERA_PRODUCTS.filter(p => p.packs >= 4).slice(0, 8)
+    for (const p of sample) {
+      const anchor = eng.eraAnchorSet(p)
+      if (!anchor || !p.price) continue
+      const N = 400
+      let total = 0
+      for (let i = 0; i < N; i++)
+        for (const c of eng.openProduct(anchor, p, { uid: `sim${i}` })) total += eng.cardValue(c)
+      const a1 = eng.drawPackSets(p, 'simA'), a2 = eng.drawPackSets(p, 'simA'), b = eng.drawPackSets(p, 'simB')
+      out.push({
+        name: p.name, price: p.price, ev: total / N, packs: p.packs,
+        stable: JSON.stringify(a1) === JSON.stringify(a2),
+        varies: JSON.stringify(a1) !== JSON.stringify(b),
+        spread: new Set(a1).size,
+        sameValue: eng.sealedValue({ product: p, setId: anchor.id }) === eng.sealedValue({ product: p, setId: anchor.id }),
+      })
+    }
+    return out
+  })
+  for (const r of eraRip) {
+    const ratio = r.ev / r.price
+    pass(`${r.name}: EV $${r.ev.toFixed(2)} vs $${r.price.toFixed(2)} (${(ratio * 100).toFixed(0)}%), ${r.spread} sets/box`,
+      ratio < 1.0 && r.stable && r.varies && r.sameValue)
+  }
+  pass(`era shelf is stocked (${eraRip.length} cross-set products rippable)`, eraRip.length >= 3)
+  pass('every era box is sealed at manufacture (same box → same packs)', eraRip.every(r => r.stable))
+  pass('two boxes of the same product hold different packs', eraRip.every(r => r.varies))
+  pass('a box spans several sets (a UPC is not a re-skinned booster box)', eraRip.every(r => r.spread > 1))
+
   // JP singles must actually CIRCULATE, not just sit on the import shelf. cardInValueRange is
   // the one funnel every "a card appears" path runs through (vendor bins, wants, offers,
   // encounters, shop requests), so sampling it measures the whole world at once. A refactor

@@ -15,6 +15,13 @@ import { absoluteDay, weekIndexOf } from './constants'
 import { nextSealedSuffix } from './ids'
 import { methodLabel, vintageLeft } from './helpers'
 
+// Where a product came from, for the ledger and toasts. A cross-set product (an Ultra Premium
+// Collection) is filed under an ANCHOR set so the sealed row has a setId, but naming that set
+// would claim its 18 packs are all from one expansion. Name the era instead.
+function originLabel(pokeSet, product) {
+  return product?.pool?.series ? `${product.pool.series} era` : pokeSet?.name || ''
+}
+
 export function createSourcingSlice(set, get) {
   return {
     // --- Distributors ------------------------------------------------------------
@@ -231,8 +238,9 @@ export function createSourcingSlice(set, get) {
         : (split && split.creditPart > 0 ? ` ($${split.cashPart.toFixed(2)} cash + $${split.creditPart.toFixed(2)} credit 💳)` : '')
       const cashOut = opts.onCredit ? 0 : split ? -split.cashPart : -total
       const placed = dist.japanese ? '🚢 Import order placed' : '📦 Order placed'
-      if (inTransit) get().log('buy', `${placed} — ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note} · lands in ~${dist.leadDays} days`, cashOut)
-      else get().log('buy', `Stocked ${n}× ${product.type} (${pokeSet.name}) — $${total.toFixed(2)}${note}`, cashOut)
+      const where = originLabel(pokeSet, product)
+      if (inTransit) get().log('buy', `${placed} — ${n}× ${product.type} (${where}) — $${total.toFixed(2)}${note} · lands in ~${dist.leadDays} days`, cashOut)
+      else get().log('buy', `Stocked ${n}× ${product.type} (${where}) — $${total.toFixed(2)}${note}`, cashOut)
       get().bumpGoal('buy', n)
       return { items, bought: n, spent: total, unit, inTransit, cashPart: split ? split.cashPart : (opts.onCredit ? 0 : total), creditPart: split ? split.creditPart : (opts.onCredit ? total : 0) }
     },
@@ -290,7 +298,7 @@ export function createSourcingSlice(set, get) {
       const sellThrough = round2(product.price * (1.04 + Math.random() * 0.06)) // ~104–110% of retail
       const net = round2(sellThrough * 0.95)                                    // 5% channel fee
       const daysLeft = 2 + Math.floor(Math.random() * 4)                        // 2–5 days
-      const label = `${product.type} · ${pokeSet.name}`
+      const label = `${product.type} · ${originLabel(pokeSet, product)}`
       set(s => ({ supplyChannel: [...(s.supplyChannel || []), { label, net, daysLeft }] }))
       get().log('supply', `Wholesaled ${label} into the channel — nets $${net.toFixed(2)} in ~${daysLeft}d (cost $${cost.toFixed(2)})`, -cost)
       return { cost, net, daysLeft }
@@ -329,7 +337,7 @@ export function createSourcingSlice(set, get) {
       const note = opts.onCredit ? ' — on credit 💳'
         : (split && split.creditPart > 0 ? ` — $${split.cashPart.toFixed(2)} cash + $${split.creditPart.toFixed(2)} credit 💳` : '')
       const cashOut = opts.onCredit ? 0 : split ? -split.cashPart : -cost
-      get().log('buy', `Stocked ${product.type} (${pokeSet.name})${note}`, cashOut)
+      get().log('buy', `Stocked ${product.type} (${originLabel(pokeSet, product)})${note}`, cashOut)
       get().bumpGoal('buy', 1)
       return item
     },

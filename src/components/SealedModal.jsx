@@ -103,7 +103,8 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
           <div style={{ flex: 1, minWidth: 240 }}>
             <h2>{title}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
-              📦 Sealed product{set?.name ? <> · {set.name}</> : ''}{set?.series ? <> · {set.series}</> : ''}{year ? <> · {year}</> : ''}
+              {/* An era product belongs to no single set, so don't claim one. */}
+              📦 Sealed product{p.pool?.series ? <> · {p.pool.series} era</> : <>{set?.name ? <> · {set.name}</> : ''}{set?.series ? <> · {set.series}</> : ''}</>}{year ? <> · {year}</> : ''}
             </p>
 
             <p style={{ fontSize: 15, marginBottom: 4 }}>Market value: <b style={{ color: 'var(--green)' }}>{fmtMoney(value)}</b></p>
@@ -116,6 +117,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
 
             <div className="banner" style={{ marginTop: 8 }}>
               <div>📦 <b>{p.packs}</b> booster pack{p.packs === 1 ? '' : 's'} inside{p.packs > 1 ? ` (~${fmtMoney(round2(base / p.packs))}/pack)` : ''}.</div>
+              {/* Deliberately vague about WHICH sets: the packs are already inside a sealed box,
+                  and you find out by ripping it. Two of these are worth exactly the same. */}
+              {p.pool?.series && (
+                <div style={{ marginTop: 4 }}>
+                  🎲 The packs are drawn from across the <b>{p.pool.series}</b> era — the mix varies
+                  from box to box, and you won't know what's in this one until you open it.
+                </div>
+              )}
               {gem && gem.total > 0 && (
                 <div style={{ marginTop: 4 }}>
                   💎 <b>{Math.round(gem.pct * 100)}%</b> of this set's {gem.total} hit{gem.total === 1 ? '' : 's'} clear <b>$100</b> graded PSA 10
@@ -134,7 +143,9 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
 
             {/* Drill-down: the whole set priced out, card by card — the "is this a chase set
                 or a deep one?" read. Lazy-loaded on tap (see the code-split import up top). */}
-            {set && (
+            {/* Hidden for an era product: its packs span a dozen sets, so one set's price sheet
+                would be a straight-up lie about what's in the box. */}
+            {set && !p.pool?.series && (
               <button className="btn" style={{ width: '100%', marginTop: 12 }} onClick={() => setShowPrices(true)}>
                 📋 See the full {set.name} price sheet →
               </button>

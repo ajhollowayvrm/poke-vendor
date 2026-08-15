@@ -284,15 +284,23 @@ const PROMO_MAP = {
   me5:      { etbName: 'Zarude',    bbNames: ['Miraidon','Slowbro','Dhelmise','Bastiodon'] },
 }
 // Stamp a set's products with its researched promos (in place). Safe no-op for sets not in the map.
+// Stamps every matching product, not just the first. Since the dedup was lifted a set can
+// carry several Elite Trainer Boxes, and each one really does ship the same researched promo —
+// `find` would have left all but one of them handing out a random card.
 function applyPromoMap(setId, products) {
   const m = PROMO_MAP[setId]
   if (!m) return
-  const etb = products.find(p => p.type === 'Elite Trainer Box')
-  const pcEtb = products.find(p => p.type === 'Pokémon Center Elite Trainer Box')
-  const bb = products.find(p => p.type === 'Build & Battle Box')
-  if (etb) { if (m.etb) etb.fixedPromo = m.etb; else if (m.etbName) etb.fixedPromoName = m.etbName }
-  if (pcEtb) { const id = m.pcEtb || m.etb; if (id) pcEtb.fixedPromo = id; else if (m.etbName) pcEtb.fixedPromoName = m.etbName }
-  if (bb) { if (m.bb) bb.promoPool = m.bb; else if (m.bbNames) bb.promoPool = m.bbNames }
+  const all = t => products.filter(p => p.type === t)
+  for (const etb of all('Elite Trainer Box')) {
+    if (m.etb) etb.fixedPromo = m.etb; else if (m.etbName) etb.fixedPromoName = m.etbName
+  }
+  for (const pcEtb of all('Pokémon Center Elite Trainer Box')) {
+    const id = m.pcEtb || m.etb
+    if (id) pcEtb.fixedPromo = id; else if (m.etbName) pcEtb.fixedPromoName = m.etbName
+  }
+  for (const bb of all('Build & Battle Box')) {
+    if (m.bb) bb.promoPool = m.bb; else if (m.bbNames) bb.promoPool = m.bbNames
+  }
 }
 
 // pokemontcg.io rarity → engine rarity (RARITY_ORDER in engine.js). Modern sets
@@ -491,24 +499,180 @@ const SET_GROUP = {
   base6:   1374,  // Legendary Collection
 }
 
+// --- CardText: the publisher's own contents blurb ----------------------------
+// Every sealed product on TCGCSV carries an `extendedData` field named `CardText` holding
+// the back-of-box contents ("• 18 Pokémon TCG booster packs"). 4,069 of 4,741 sealed rows
+// have one. It states the pack count outright, so it beats guessing from the product name —
+// a "Premium Collection" is 6 packs in one set and 12 in another, and only this text knows.
+//
+// It also says which EXPANSION those packs come from — but only sometimes, and that is the
+// second thing we read it for. When The Pokémon Company commits to a set the copy names it
+// ("3 Pokémon TCG: Scarlet & Violet-151 booster packs"). When the contents float from box to
+// box the copy goes vague ("16 Pokémon TCG booster packs from the Sword & Shield Series").
+// That vagueness IS the signal that the product holds a random assortment — see productEra.
+const NUM_WORD = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+  eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+  eighteen: 18, nineteen: 19, twenty: 20, twentyfour: 24, thirty: 30,
+}
+
+// Strip HTML to text WITHOUT collapsing line breaks or bullets — those boundaries are what
+// stop a count in one bullet binding to "booster packs" three bullets later.
+function plainText(html) {
+  if (!html) return ''
+  return String(html)
+    .replace(/<\s*(?:br|\/li|\/p|\/div|\/tr)[^>]*>/gi, '\n')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(Number(d)))
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/[—–]/g, '-')      // em/en dash → hyphen, so set names compare
+    .replace(/[ \t]+/g, ' ')
+}
+
+// A count bound DIRECTLY to "booster pack(s)" — "18 Pokémon TCG booster packs",
+// "3 Pokémon TCG: Scarlet & Violet-151 booster packs", "six booster packs".
+//
+// Two guards, both earned from real misreads in this data:
+//   • The ordinal lookahead. Without it "30th Celebration Elite Trainer Box" read as 30 packs.
+//   • No comma, semicolon or sentence-ending punctuation in the gap. Without that, the prose
+//     "30 reasons to honor Pikachu, as each booster pack…" read as 30 packs. A real contents
+//     line never puts a clause between the number and the thing it counts.
+// A colon stays legal — expansion names carry one ("Pokémon TCG: Scarlet & Violet-151").
+const PACK_RX = new RegExp(
+  String.raw`\b(?:(\d{1,2})(?!(?:st|nd|rd|th)\b)|(` + Object.keys(NUM_WORD).join('|') + String.raw`))\b` +
+  String.raw`[^.,;!?\n•*|]{0,60}?booster\s+packs?`,
+  'gi',
+)
+
+// Expansions the copy names outright, e.g. "Scarlet & Violet-151", "Mega Evolution-Chaos Rising".
+const SERIES_NAMES = ['Scarlet & Violet', 'Sword & Shield', 'Sun & Moon', 'Mega Evolution',
+  'Black & White', 'Diamond & Pearl', 'HeartGold & SoulSilver', 'XY']
+const NAMED_SET_RX = new RegExp(
+  `(?:${SERIES_NAMES.join('|')})\\s*[-:]\\s*([A-Z][A-Za-z0-9 &'’]{2,28}?)` +
+  `(?=\\s+(?:expansion|booster|Elite|Pok|Collection|Tin|Mini|Tech|Trainer|Binder|Poster|Series)|[.,)\\n]|$)`,
+  'g',
+)
+
+function firstPackCount(t) {
+  PACK_RX.lastIndex = 0
+  let m
+  while ((m = PACK_RX.exec(t))) {
+    const n = m[1] ? Number(m[1]) : NUM_WORD[m[2].toLowerCase()]
+    if (n >= 1 && n <= 40) return n   // 40 = above any real product, below a page number
+  }
+  return null
+}
+
+function namedExpansions(t) {
+  const out = new Set()
+  NAMED_SET_RX.lastIndex = 0
+  let m
+  while ((m = NAMED_SET_RX.exec(t))) {
+    const n = m[1].trim()
+    if (n.length > 3) out.add(n)
+  }
+  return [...out]
+}
+
+// → { packs, bonus, namedSets, text } or null when the text states no pack count.
+function parseContents(cardText) {
+  const t = plainText(cardText)
+  if (!t.trim()) return null
+  // A bulleted contents line ("• 18 Pokémon TCG booster packs") is the manifest; the prose
+  // above it is marketing and often quotes a different number. Read the manifest first.
+  const bullets = t.split('\n').filter(l => /^\s*[•*·-]/.test(l)).join('\n')
+  const packs = firstPackCount(bullets) ?? firstPackCount(t)
+  if (packs == null) return null
+  const bonus = /foil promo|promo card|full-art foil|oversize\w*[^.\n]{0,40}foil/i.test(t) ? 'promo' : null
+  return { packs, bonus, namedSets: namedExpansions(t), text: t }
+}
+
+// --- Era resolution for cross-set product ------------------------------------
+// A product whose group is not a set and whose copy names no expansion (every Ultra Premium
+// Collection) still has to rip SOMETHING. It draws from an era pool at rip time, so all we
+// need here is which era. The mechanic suffix in the product's name settles it: The Pokémon
+// Company retires a mechanic when its era ends, so "VSTAR" can only mean Sword & Shield and
+// "GX" can only mean Sun & Moon. Case matters — lowercase "ex" is Scarlet & Violet onward,
+// uppercase "EX" is the XY era.
+const ERA_OVERRIDE = {
+  // Only for names carrying no mechanic suffix at all. Keep this list short and cited.
+  'TAG TEAM': 'Sun & Moon',                    // TAG TEAM was an SM-era mechanic
+  'Alola': 'Sun & Moon',                       // Alola debuted in Sun & Moon
+  'Detective Pikachu': 'Sun & Moon',           // 2019 tie-in, SM era
+  'Eevee Evolutions Premium Collection': 'Sword & Shield',
+  'Small But Mighty Premium Collection': 'Sword & Shield',
+  'Heavy Hitters Premium Collection': 'Scarlet & Violet',
+  'Legendary Warriors Premium Collection': 'Scarlet & Violet',
+  'Combined Powers Premium Collection': 'Scarlet & Violet',
+  'Meddling Sparks Premium Collection': 'Scarlet & Violet',
+  'Masks of Ogerpon Premium Collection': 'Scarlet & Violet',
+  'Tera Team Premium Collection': 'Scarlet & Violet',
+  'Paradox Fury Premium Collection': 'Scarlet & Violet',
+  'Paradox Wisdom Premium Collection': 'Scarlet & Violet',
+  'Mythical Squishy Premium Collection': 'Scarlet & Violet',
+  'Evolving Powers Premium Collection': 'Scarlet & Violet',
+}
+
+function productEra(name, text) {
+  for (const [k, v] of Object.entries(ERA_OVERRIDE)) if (name.includes(k)) return v
+  // The copy says it outright — "booster packs from the Sword & Shield Series".
+  const m = text.match(new RegExp(`(${SERIES_NAMES.join('|')})\\s+Series`, 'i'))
+  if (m) return SERIES_NAMES.find(s => s.toLowerCase() === m[1].toLowerCase()) || null
+  if (/\bmega\b[^[]*\bex\b/i.test(name))       return 'Mega Evolution'
+  if (/\b(?:VMAX|VSTAR|V-UNION)\b/i.test(name)) return 'Sword & Shield'
+  if (/\bV\b/.test(name))                       return 'Sword & Shield'
+  if (/\bGX\b/.test(name))                      return 'Sun & Moon'
+  if (/\bex\b/.test(name))                      return 'Scarlet & Violet'   // lowercase — modern
+  if (/\bEX\b/.test(name))                      return 'XY'                 // uppercase — XY era
+  return null
+}
+
 // Classify a sealed product by name → { type, packs, bonus }.
 // packs = how many booster packs it rips into; bonus = guaranteed promo/extra.
 // Order matters: most specific first. Returns null for things we don't sell
 // (cases, code cards, singles, display cases, accessories).
-function classifyProduct(name) {
-  const n = name.toLowerCase()
+function classifyProduct(rawName) {
+  // Normalise before matching the $-anchored rules below:
+  //   • drop trailing qualifiers — "[Mega Gardevoir]", "(Retail)", "(LGS)", "(Sam's Club)",
+  //     "(Dollar General Exclusive)" — so "… Elite Trainer Box (Dollar General Exclusive)"
+  //     types as an Elite Trainer Box instead of falling through to the generic Box guess.
+  //   • accept "3 Pack Blister" as well as "3-Pack Blister".
+  // These mattered only once the shop stopped keeping one product per type: under the old dedup
+  // the plain sibling won the slot and the qualified ones never surfaced.
+  // `raw` keeps every qualifier, `n` has them stripped. EVERY reject test runs against `raw`;
+  // only the type rules read `n`. Getting this backwards silently un-rejects things —
+  // "… Collection [Set of 2]" strips to a clean product name and sails past `set of \d`.
+  const raw = String(rawName).toLowerCase()
+  let name = String(rawName)
+  for (let i = 0; i < 3; i++) name = name.replace(/\s*(?:\[[^\]]*\]|\([^)]*\))\s*$/, '').trim()
+  const n = name.toLowerCase().replace(/\b(\d) pack blister/g, '$1-pack blister')
   // Pokémon Center Elite Trainer Box — a store-exclusive ETB (same 9 packs, extra promo). Matched
   // BEFORE the hard-reject because "(Exclusive)" would otherwise drop it; still reject its case/display
   // variants via the guard so "…ETB Case (Exclusive)" stays out. The guard MUST also drop the code
   // card ("Code Card - … Pokémon Center Elite Trainer Box"): it carries "pokémon center" +
-  // "elite trainer box" so it matches here, and fetchSealed keeps the CHEAPEST match per type — so a
-  // $0.91 code card silently replaced the real ~$290 box (this rule runs before the /code card/ reject).
-  if (/pok[eé]?mon center.*elite trainer box/.test(n) && !/\bcase\b|display|code card|^code /.test(n)) return { type: 'Pokémon Center Elite Trainer Box', icon: '🎁', packs: 9, bonus: 'promo' }
-  // Hard reject: code cards, cases, displays, accessories, exclusives, multi-packs, and —
-  // for older sets — fixed THEME/THUNDER decks (no booster packs) and loose energy singles.
-  if (/code card|^code |\bcase\b|case$|display|set of \d|pouch|binder|poster|sticker|\bpin\b|pin collection|figure collection|art bundle|accessory|exclusive|theme deck|\bdeck\b|\benergy\b|unnumbered/.test(n)) return null
+  // "elite trainer box" so it matches here, and a $0.91 code card must never stand in for the
+  // real ~$290 box (this rule runs before the /code card/ reject).
+  if (/pok[eé]?mon center.*elite trainer box/.test(n) && !/\bcase\b|display|code card|^code |set of \d/.test(raw)) return { type: 'Pokémon Center Elite Trainer Box', icon: '🎁', packs: 9, bonus: 'promo' }
+  // Hard reject: code cards, cases, displays, multi-packs, and — for older sets — fixed
+  // THEME/THUNDER decks (no booster packs) and loose energy singles.
+  // Poster / binder / figure / pin / sticker / pouch collections and retail "(Exclusive)"
+  // bundles USED to be rejected here. They are real sealed product that rips real packs, so
+  // they now fall through to the type rules below. Cases still die on the \bcase\b guard.
+  if (/code card|^code |\bcase\b|case$|display|set of \d|theme deck|\bdeck\b|\benergy\b|unnumbered/.test(raw)) return null
+  // Ultra Premium Collection — the flagship. MUST precede the plain premium-collection rule,
+  // because "ultra premium collection" also ends in "premium …collection".
+  if (/ultra[- ]premium collection/.test(n)) return { type: 'Ultra Premium Collection', icon: '👑', packs: 16, bonus: 'promo' }
+  if (/poster collection/.test(n))          return { type: 'Poster Collection', icon: '🖼️', packs: 3, bonus: 'promo' }
+  if (/binder collection/.test(n))          return { type: 'Binder Collection', icon: '📒', packs: 4, bonus: 'promo' }
+  if (/tech sticker collection/.test(n))    return { type: 'Tech Sticker Collection', icon: '🏷️', packs: 4, bonus: 'promo' }
+  if (/pin collection|pin blister/.test(n)) return { type: 'Pin Collection', icon: '📍', packs: 3, bonus: 'promo' }
   if (/super-premium collection$/.test(n))  return { type: 'Super-Premium Collection', icon: '🏆', packs: 15, bonus: 'promo' }
   if (/premium .*collection$|premium figure collection$/.test(n)) return { type: 'Premium Collection', icon: '💎', packs: 7, bonus: 'promo' }
+  // Plain (non-premium) figure collection — a sculpted figure plus packs. After the premium
+  // rule so "Crown Zenith Premium Figure Collection" keeps its richer type.
+  if (/figure collection/.test(n))          return { type: 'Figure Collection', icon: '🗿', packs: 4, bonus: 'promo' }
   if (/build (&|and) battle/.test(n))       return { type: 'Build & Battle Box', icon: '⚔️', packs: 4, bonus: 'promo' }
   if (/elite trainer box$/.test(n))         return { type: 'Elite Trainer Box', icon: '📦', packs: 9, bonus: 'promo' }
   // Half Booster Box — a retail half-size box (18 packs). Must precede the full Booster Box rule
@@ -697,8 +861,13 @@ async function fetchSingles(groupId) {
   return byNumber
 }
 
-// Fetch + classify sealed products for a TCGCSV group. Returns one entry per
-// product TYPE (cheapest representative), with current market price.
+// Fetch + classify sealed products for a TCGCSV group. Returns EVERY sellable product,
+// one entry each.
+//
+// This used to return one entry per product TYPE, keeping the cheapest — so a set with six
+// real Elite Trainer Boxes shipped one, and always the worst one. That single rule discarded
+// ~633 products across the mapped groups. The shop now carries the full lineup, so dedup by
+// productId (i.e. not at all) and let the shop UI group them.
 async function fetchSealed(groupId) {
   if (!groupId) return []
   let prods, prices
@@ -714,23 +883,38 @@ async function fetchSealed(groupId) {
     const m = pr.marketPrice ?? pr.midPrice
     if (m && (priceById[pr.productId] == null)) priceById[pr.productId] = m
   }
-  const byType = {}
+  const out = []
   for (const p of prods) {
     const ext = Object.fromEntries((p.extendedData || []).map(e => [e.name, e.value]))
-    if (ext.Number) continue // single card — skip
+    if (ext.Number) continue                 // single card — skip
+    if (p.presaleInfo?.isPresale) continue   // announced but not on shelves yet
     const cls = classifyProduct(p.name)
     if (!cls) continue
     const price = priceById[p.productId]
     if (price == null) continue
-    const cur = byType[cls.type]
-    if (!cur || price < cur.price) {
-      byType[cls.type] = { type: cls.type, icon: cls.icon, packs: cls.packs, bonus: cls.bonus,
-        name: p.name, price: Math.round(price * 100) / 100, tcgId: p.productId, _guessed: cls._guessed || undefined }
-    }
+    // The publisher's own contents blurb beats the name-based guess on pack count — a
+    // "Premium Collection" is 6 packs in one set and 12 in another, and only this knows.
+    // `bonus` keeps the curated classifier value when it has one: applyPromoMap pins real
+    // researched promo cards onto those types, and the blurb can't improve on that.
+    const parsed = parseContents(ext.CardText)
+    out.push({
+      type: cls.type,
+      icon: cls.icon,
+      packs: parsed?.packs ?? cls.packs,
+      bonus: cls.bonus ?? parsed?.bonus ?? null,
+      name: p.name,
+      price: Math.round(price * 100) / 100,
+      tcgId: p.productId,
+      _guessed: cls._guessed || undefined,
+      _parsed: parsed ? true : undefined,   // build-only: did CardText give us the count?
+      _text: parsed?.text,                  // build-only: era resolution reads this
+      _named: parsed?.namedSets?.length ? parsed.namedSets : undefined, // build-only
+    })
   }
-  // Keep `_guessed` so main()'s per-set build log can flag heuristic types; main()
-  // strips it before writing sets.json (the vintage/JP paths strip it inline instead).
-  return sortProducts(Object.values(byType))
+  // Keep the build-only tags (`_guessed`, `_parsed`, `_text`, `_named`) so main()'s per-set
+  // log can flag heuristic types; main() strips every underscore key before writing
+  // sets.json (the vintage/JP paths strip it inline instead).
+  return sortProducts(out)
 }
 
 // --- TCGdex helpers (last-resort fallback only) ------------------------------
@@ -920,17 +1104,102 @@ async function fetchEnglishSet(cfg, psaMap) {
 
 // Canonical display order for product types.
 const PRODUCT_ORDER = ['Booster Pack','Sleeved Pack','Premium Checklane Blister','2-Pack Blister','3-Pack Blister','Mini Tin',
-  'Booster Bundle','ex Box','Elite Trainer Box','Pokémon Center Elite Trainer Box','Premium Collection','Super-Premium Collection','Surprise Box','Half Booster Box','Booster Box',
+  'Booster Bundle','Poster Collection','Pin Collection','Tech Sticker Collection','Binder Collection','Figure Collection',
+  'ex Box','Elite Trainer Box','Pokémon Center Elite Trainer Box','Premium Collection','Super-Premium Collection','Ultra Premium Collection','Surprise Box','Half Booster Box','Booster Box',
   'Box','Collection','Blister','Sealed Product']
+// Within a type, cheapest first — the shop reads top-down, and with the dedup lifted a type
+// can now hold a dozen rows.
 function sortProducts(arr) {
   const rank = t => { const i = PRODUCT_ORDER.indexOf(t); return i === -1 ? PRODUCT_ORDER.length : i }
-  return arr.sort((a, b) => rank(a.type) - rank(b.type))
+  return arr.sort((a, b) => rank(a.type) - rank(b.type) || a.price - b.price)
+}
+
+// --- Cross-set ("era") product ------------------------------------------------
+// TCGplayer groups that are NOT a set. Every Ultra Premium Collection lives in one, and the
+// packs inside come from a whole era rather than a single expansion — a Charizard UPC holds
+// "16 booster packs from the Sword & Shield Series", drawn from whatever The Pokémon Company
+// was packing that month. The reviewer who opened one got 3 Evolving Skies, 3 Fusion Strike,
+// 3 Astral Radiance, 3 Brilliant Stars, 2 Lost Origin, 1 Vivid Voltage and 1 Darkness Ablaze,
+// and reported that the mix varies between boxes — one box even held 17 packs, not 16.
+//
+// So these products carry no setId. They carry `pool: { series }`, and the engine draws their
+// packs at rip time. See eraPool / drawPackSets in src/game/engine.js.
+const PRODUCT_GROUPS = [
+  2374, // Miscellaneous Cards & Products — where every UPC and most premium collections live
+]
+
+// A group whose publishedOn is in the future is announced but not released (30th Celebration
+// publishes 2026-09-16). Its products already list on TCGplayer as presales, and they must
+// not reach the shop.
+async function releasedGroupIds() {
+  try {
+    const { results = [] } = await getJSON(`${TCGCSV}/groups`)
+    const now = Date.now()
+    const ok = new Set()
+    for (const g of results) {
+      if (!g.publishedOn || Date.parse(g.publishedOn) <= now) ok.add(g.groupId)
+    }
+    return ok
+  } catch (e) {
+    console.log(`  (group list fetch failed: ${e.message} — skipping era products)`)
+    return null
+  }
+}
+
+// Series (era) from our set id, for the sets pokemontcg.io hasn't tagged yet — Journey
+// Together (sv9) currently comes back with no `series` at all. The shop now groups its whole
+// shelf Era → Set, so an untagged set would sit alone in an "Other" bucket next to its own
+// siblings. Ordered longest-prefix first so `swsh` beats `sw`, `me` doesn't swallow others.
+const SERIES_BY_PREFIX = [
+  ['zsv', 'Scarlet & Violet'], ['rsv', 'Scarlet & Violet'], ['swsh', 'Sword & Shield'],
+  ['hgss', 'HeartGold & SoulSilver'], ['ecard', 'E-Card'], ['cel', 'Other'], ['col', 'Other'],
+  ['sv', 'Scarlet & Violet'], ['me', 'Mega Evolution'], ['sm', 'Sun & Moon'], ['xy', 'XY'],
+  ['bw', 'Black & White'], ['dp', 'Diamond & Pearl'], ['pl', 'Platinum'], ['neo', 'Neo'],
+  ['gym', 'Gym'], ['base', 'Base'], ['ex', 'EX'], ['pop', 'POP'],
+]
+function seriesFromId(id) {
+  const s = String(id || '').toLowerCase()
+  for (const [prefix, series] of SERIES_BY_PREFIX) if (s.startsWith(prefix)) return series
+  return null
+}
+
+// Build the cross-set product list. A product only survives if BOTH are true:
+//   1. CardText states a real pack count — otherwise we have no idea what it rips.
+//   2. We can name its era — otherwise there is no pool to draw from, and guessing an era
+//      would put Base Set packs inside a modern collection.
+async function fetchEraProducts() {
+  const released = await releasedGroupIds()
+  if (!released) return []
+  const out = []
+  let noPacks = 0, noEra = 0
+  for (const groupId of PRODUCT_GROUPS) {
+    if (!released.has(groupId)) { console.log(`  skipping unreleased group ${groupId}`); continue }
+    const prods = await fetchSealed(groupId)
+    for (const p of prods) {
+      if (!p._parsed || !p.packs) { noPacks++; continue }
+      // Copy that names its expansions outright is NOT an era product — it belongs to
+      // those sets, and a set-scoped fetch already has it.
+      if (p._named) continue
+      const series = productEra(p.name, p._text || '')
+      if (!series) { noEra++; continue }
+      out.push({ type: p.type, icon: p.icon, packs: p.packs, bonus: p.bonus,
+        name: p.name, price: p.price, tcgId: p.tcgId, pool: { series } })
+    }
+  }
+  console.log(`  era products: ${out.length} kept · ${noPacks} with no pack count · ${noEra} with no resolvable era`)
+  const byEra = {}
+  for (const p of out) byEra[p.pool.series] = (byEra[p.pool.series] || 0) + 1
+  for (const [k, v] of Object.entries(byEra).sort((a, b) => b[1] - a[1])) console.log(`    ${String(v).padStart(4)}  ${k}`)
+  return out.sort((a, b) => b.price - a.price)
 }
 
 // Choose the vintage "heavy pack" product. Prefer a real sealed Booster Pack price;
 // otherwise fall back to a market-plausible vintage pack ask.
+// Picks the CHEAPEST single pack: the dedup used to guarantee that, and without it the
+// first 1-pack row in the list could be a $3,750 outlier.
 function pickVintagePack(products) {
-  const realPack = products.find(p => p.packs === 1)
+  const singles = products.filter(p => p.packs === 1)
+  const realPack = singles.length ? singles.reduce((a, b) => (b.price < a.price ? b : a)) : null
   const price = realPack ? Math.max(realPack.price, 250) : 600
   return {
     type: 'Vintage Booster Pack', icon: '🗝️', packs: 1, bonus: null, vintage: true,
@@ -986,8 +1255,7 @@ async function main() {
     // above the in-set base ex and well below the #167 SIR alt art (which is a pack-only chase,
     // never boxed; see promoEligible in engine.js).
     if (cfg.id === 'sv8pt5') {
-      const spc = products.find(p => p.type === 'Super-Premium Collection')
-      if (spc) spc.fixedPromo = 'svp-174'
+      for (const spc of products.filter(p => p.type === 'Super-Premium Collection')) spc.fixedPromo = 'svp-174'
     }
     // Stamp researched real ETB / Build & Battle promos onto this set's products.
     applyPromoMap(cfg.id, products)
@@ -999,13 +1267,19 @@ async function main() {
       products = [vp]
       console.log(`    vintage pack: ${vp.name} @ $${vp.price}`)
     } else {
-      const label = products.map(p => p._guessed ? `${p.type}?(${p.packs}pk)` : p.type).join(', ') || 'none'
-      console.log(`    sealed: ${label}`)
+      // With the dedup lifted a set carries many products, so log a type histogram rather
+      // than one line per row.
+      const byType = {}
+      for (const p of products) byType[p.type] = (byType[p.type] || 0) + 1
+      const label = Object.entries(byType).map(([t, n]) => (n > 1 ? `${t}×${n}` : t)).join(', ') || 'none'
+      console.log(`    sealed: ${products.length} product(s) — ${label}`)
+      const fromText = products.filter(p => p._parsed).length
+      console.log(`    pack counts: ${fromText} from CardText, ${products.length - fromText} from the name`)
       const guessed = products.filter(p => p._guessed)
-      if (guessed.length) console.log(`    ⚠️  ${guessed.length} guessed product type(s): ${guessed.map(p => `"${p.name}"→${p.type}/${p.packs}pk`).join('; ')}`)
+      if (guessed.length) console.log(`    ⚠️  ${guessed.length} guessed product type(s): ${guessed.slice(0, 8).map(p => `"${p.name}"→${p.type}/${p.packs}pk`).join('; ')}${guessed.length > 8 ? ` …+${guessed.length - 8}` : ''}`)
     }
-    // Strip the build-only `_guessed` tag.
-    products = products.map(({ _guessed, ...p }) => p)
+    // Strip every build-only underscore tag (_guessed, _parsed, _text, _named).
+    products = products.map(p => Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('_'))))
 
     const priced = cards.filter(c => c.price != null).length
     const withPsa = cards.filter(c => c.psa).length
@@ -1014,7 +1288,7 @@ async function main() {
     out.push({
       id: cfg.id,
       name: cfg.name,
-      series: meta.series || (cfg.vintage ? 'Vintage' : undefined),
+      series: meta.series || seriesFromId(cfg.id) || (cfg.vintage ? 'Vintage' : undefined),
       releaseDate: meta.releaseDate,
       printedTotal: meta.printedTotal || cards.length,
       total: meta.total || cards.length,
@@ -1072,6 +1346,21 @@ async function main() {
   const finalSets = [...carried, ...validated]
   if (carried.length) console.log(`Carried ${carried.length} set(s) not in this run: ${carried.map(s => s.id).join(', ')}`)
 
+  // Cross-set product (Ultra Premium Collections and friends). Fetched once, not per set,
+  // because these belong to an ERA rather than an expansion. Carried forward from the prior
+  // snapshot on failure, exactly like a set that 404s mid-run.
+  console.log('Fetching cross-set (era) products…')
+  let eraProducts = []
+  try {
+    eraProducts = await fetchEraProducts()
+  } catch (e) {
+    console.log(`  ⚠️  era product fetch failed: ${e.message}`)
+  }
+  if (!eraProducts.length && prevMeta?.eraProducts?.length) {
+    eraProducts = prevMeta.eraProducts
+    console.log(`  ⚠️  kept ${eraProducts.length} era product(s) from the previous snapshot`)
+  }
+
   // Drop image URLs the runtime rebuilds from card id+number (engine.js cardImg) —
   // ~40% of the snapshot's raw bytes. Only exact-pattern matches are stripped;
   // idempotent for sets carried forward from an already-stripped snapshot.
@@ -1084,11 +1373,12 @@ async function main() {
     rareSlot: prevMeta?.rareSlot || RARE_SLOT,
     reverseSlot: prevMeta?.reverseSlot || REVERSE_SLOT,
     sets: finalSets,
+    eraProducts,
   }, null, 0))
   const totalCards = finalSets.reduce((a, s) => a + s.cards.length, 0)
   const totalProd = finalSets.reduce((a, s) => a + (s.products?.length || 0), 0)
   const totalPsa = finalSets.reduce((a, s) => a + s.cards.filter(c => c.psa).length, 0)
-  console.log(`Wrote src/data/sets.json — ${finalSets.length} sets, ${totalCards} cards, ${totalProd} sealed products, ${totalPsa} cards w/ PSA comps.`)
+  console.log(`Wrote src/data/sets.json — ${finalSets.length} sets, ${totalCards} cards, ${totalProd} sealed products, ${eraProducts.length} era products, ${totalPsa} cards w/ PSA comps.`)
 }
 
 main().catch(e => { console.error(e); process.exit(1) })

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, ownedIdSet, setIdOfCard, needTierFor } from '../game/engine'
+import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, ownedIdSet, setIdOfCard, needTierFor, drawPackSets, setById } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -15,14 +15,22 @@ import { AnimatedNumber } from '../ui/AnimatedNumber'
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false, costBasis = null }) {
+export default function PackOpening({ set, product, uid, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false, costBasis = null }) {
   const totalPacks = product?.packs ?? 1
+  // 📦 A cross-set product (an Ultra Premium Collection) holds packs from a whole era, so the
+  // set changes from pack to pack. Derived from the unit's uid — the same box always holds the
+  // same packs. Memoised so a re-render can never reshuffle the lineup mid-rip.
+  const packSets = useMemo(() => drawPackSets(product, uid), [product, uid])
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
   const revealMode = useGame(s => s.settings.revealMode ?? 'auto')
   const soundOn = useGame(s => s.settings.sound ?? true)
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const [packNo, setPackNo] = useState(1)        // 1-based, which pack we're on
+  // The set THIS pack came from. For an ordinary product that's the product's own set and
+  // nothing below changes; for a UPC it's whichever set the draw dealt into this slot, and it
+  // is what the wrapper, the logo and the progress pill must say.
+  const packSet = (packSets && setById(packSets[packNo - 1])) || set
   const [phase, setPhase] = useState('idle')
   const [pulls, setPulls] = useState([])
   const [shown, setShown] = useState(0)
@@ -98,7 +106,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     if (!productDone || ripLogged.current) return
     ripLogged.current = true
     logRip({
-      setId: set.id, name: set.name, type: product?.type || 'Booster Pack',
+      // A cross-set product is logged under its ERA and how many sets it actually dealt —
+      // "16 packs · 5 sets" — because no single set name would be true of the rip.
+      setId: set.id,
+      name: packSets ? `${product.pool.series} era` : set.name,
+      setCount: packSets ? new Set(packSets).size : undefined,
+      type: product?.type || 'Booster Pack',
       // What you PAID when the caller knows it (a held unit's boughtPrice), not what the
       // product lists at today — so a log line's net is a real P/L and the sift's lines,
       // which read boughtPrice straight off the inventory row, mean the same thing.
@@ -133,7 +146,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     if (phase !== 'idle') return
     primeAudio() // this click/drag is our chance to start audio under the autoplay policy
     setTear(0)
-    const cards = openPackFor(set, product)
+    const cards = openPackFor(packSet, product)
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
     cards.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     const god = !!cards._god
@@ -158,7 +171,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function finish(cards) {
     if (!committed.current) {
       committed.current = true
-      addPulls(cards, set.name)
+      addPulls(cards, packSet.name)
       // NB: the rip tally is NOT folded in here — step() adds each card's value as it lands,
       // so by the time we get here the pack is already counted (see the note on step()).
       setPacksOpened(n => n + 1)
@@ -369,15 +382,20 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function skipRest() {
     packSeq.current++; resumeRef.current = null   // nothing in flight gets to land after this
     const remaining = totalPacks - packNo + (phase === 'idle' ? 1 : 0)
+    // Where the un-ripped packs start: on 'idle' the current pack is still sealed, otherwise
+    // it's already been opened and the remainder begins after it. Skipping must deal the SAME
+    // sets the slow path would have — fast-forwarding is not a different box.
+    const startIdx = packNo - 1 + (phase === 'idle' ? 0 : 1)
     const fast = []
     for (let i = 0; i < remaining; i++) {
-      const pack = openPack(set)
+      const from = (packSets && setById(packSets[startIdx + i])) || set
+      const pack = openPack(from)
       if (pack._god) pack.forEach(c => { c._fromGod = true })
       if (pack._demigod) pack.forEach(c => { c._fromDemigod = true })
       fast.push(...pack)
     }
     fast.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
-    if (fast.length) addPulls(fast, set.name, remaining)
+    if (fast.length) addPulls(fast, packSets ? `${product.pool.series} era` : set.name, remaining)
     setExtra(e => [...e, ...fast])
     // fold the fast-forwarded packs into the running rip tally
     setRipValue(v => v + fast.reduce((a, c) => a + cardValue(c), 0))
@@ -405,10 +423,19 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     return (
       <div className="stage">
         <div style={{ textAlign: 'center', maxWidth: 520 }}>
-          <h2 style={{ marginBottom: 6 }}>✓ Opened {product?.type || 'pack'} — {set.name}</h2>
+          {/* The header names what you BOUGHT; the breakdown below names what you GOT. */}
+          <h2 style={{ marginBottom: 6 }}>✓ Opened {product?.type || 'pack'} — {packSets ? (product.name || `${product.pool.series} era`) : set.name}</h2>
           <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
             All {totalPacks} pack{totalPacks > 1 ? 's' : ''}{promo ? ' + promo' : ''} are in your collection.
           </p>
+          {packSets && (
+            <p className="muted" style={{ fontSize: 12.5, margin: '2px 0 8px' }}>
+              {[...packSets.reduce((m, id) => m.set(id, (m.get(id) || 0) + 1), new Map())]
+                .sort((a, b) => b[1] - a[1])
+                .map(([id, n]) => `${n}× ${setById(id)?.name || id}`)
+                .join(' · ')}
+            </p>
+          )}
           <p style={{ fontSize: 15, margin: '6px 0' }}>
             Total pulled <b style={{ color: 'var(--green)' }}>{fmtMoney(ripValue)}</b>{' '}
             <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
@@ -501,7 +528,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           the one rip where the running total is the ONLY money on screen was the one without it. */}
       {(multi || shown > 0) && (
         <div className="pack-progress">
-          {multi && <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}</span>}
+          {/* On a cross-set product the set name is the whole point of the pill — you need to
+              know it's a Brilliant Stars pack BEFORE you tear it, not after. */}
+          {multi && <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}{packSets ? ` · ${packSet.name}` : ''}</span>}
           {/* Live from the very first card of the very first pack — it ticks up as cards land, so
               there's no reason to hold it back until a pack has closed out. */}
           {(packsOpened > 0 || shown > 0) && (
@@ -529,7 +558,10 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               onPointerUp={onPackUp} onPointerCancel={onPackUp}>
               <div className="foil" />
               <div className="tear" aria-hidden="true" />
-              {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
+              {packSet.logo ? <img className="logo" src={packSet.logo} alt={packSet.name} /> : <b>{packSet.name}</b>}
+              {/* Out of a mixed product the wrapper alone is the reveal — name it in words too,
+                  because a logo you half-recognise isn't the same as being told. */}
+              {packSets && <span className="pack-set-name">{packSet.name}</span>}
               <span className="hint">▶ Click or drag down to rip</span>
             </div>
           </div>
@@ -541,7 +573,8 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
         <div className="pack-wrap">
           <div className="pack3d shake">
             <div className="foil" />
-            {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
+            {packSet.logo ? <img className="logo" src={packSet.logo} alt={packSet.name} /> : <b>{packSet.name}</b>}
+            {packSets && <span className="pack-set-name">{packSet.name}</span>}
           </div>
         </div>
       )}
@@ -620,7 +653,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                    (a rainbow chase telegraphs itself). When the pack finishes it settles into the grid. */
                 <>
                   <HandReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
-                    setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard}
+                    setLogo={packSet.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard}
                     suspense={suspenseIdx === shown} />
                   {/* An escape hatch for the flips that no longer matter. Deliberately quiet, and
                       gone once the last card is up (that tap closes the pack anyway). */}
@@ -644,7 +677,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                           extraStyle={{ '--rarity': edge }}
                           className={`reveal-card shown ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
                           <div className="flip">
-                            <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
+                            <div className="flip-back" aria-hidden="true">{packSet.logo && <img src={packSet.logo} alt="" />}</div>
                             <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
                           </div>
                         </HoloCard>

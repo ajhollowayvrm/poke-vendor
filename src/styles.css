@@ -215,6 +215,24 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .set-head .meta { color: var(--dim); font-size: 12px; }
 .set-caret { flex: none; color: var(--dim); font-size: 13px; margin-left: 6px; }
 .set-acc .prodlist { padding: 10px 14px 14px; margin-top: 0; }
+
+/* ---------- Era level: the shelf reads Era → Set → Product ---------- */
+.product.era-acc { padding: 0; gap: 0; }
+.era-head .set-head-name { font-size: 17px; letter-spacing: .2px; }
+.era-acc.open .era-head { border-radius: 16px 16px 0 0; border-bottom: 1px solid var(--line); }
+/* Sets nest one level in, so the hierarchy is legible without a second card border. */
+.era-body { padding: 8px 8px 10px; display: flex; flex-direction: column; gap: 8px; }
+.era-body .product.set-acc { background: #ffffff06; }
+/* Cross-set collector product sits above the era's sets — that IS where a UPC belongs. */
+.era-products { border: 1px solid var(--gold); border-radius: 12px; padding: 8px 10px 6px;
+  background: linear-gradient(180deg, #ffcb050e, transparent); }
+.era-products-head { font-size: 11.5px; font-weight: 800; color: var(--gold);
+  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.era-prodrow { display: flex; align-items: center; gap: 10px; padding: 6px 0;
+  border-top: 1px solid var(--line); }
+.era-prodrow:first-of-type { border-top: none; }
+.era-prodrow .prod-name { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700; }
+.era-prodrow .btn { flex: none; min-width: 96px; }
 .buyrow { display: flex; gap: 8px; margin-top: auto; }
 .btn { background: var(--accent2); color: #fff; border: none; border-radius: 10px; padding: 10px 12px;
   font-weight: 800; font-size: 14px; flex: 1; transition: transform .08s, filter .15s; }
@@ -340,6 +358,13 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .pack-wrap { perspective: 1200px; }
 .pack3d .logo { max-width: 80%; max-height: 60%; object-fit: contain; filter: drop-shadow(0 6px 10px #000b); }
 .pack3d .hint { position:absolute; bottom: 14px; font-size:12px; color:#ffffffcc; font-weight:700; }
+/* Cross-set product only (a UPC): name the set in words on the wrapper. Out of a mixed box the
+   logo is the ONLY clue which pack you're holding, and half-recognising a logo is not the same
+   as being told — so this sits under it, before the tear and through the shake. */
+.pack3d .pack-set-name { position:absolute; bottom: 38px; left: 10px; right: 10px; text-align:center;
+  font-size: 13px; font-weight: 800; letter-spacing: .2px; color:#fff;
+  text-shadow: 0 2px 8px #000c, 0 0 2px #000; pointer-events:none; }
+.pack3d.shake .pack-set-name { bottom: 16px; }
 .pack3d.shake { animation: shake .4s ease-in-out infinite; }
 @keyframes shake { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
 .foil { position:absolute; inset:0; border-radius:16px; background:

@@ -2359,10 +2359,101 @@ function stripSearched(cards, set) {
     : c)
 }
 
+// --- Cross-set ("era") product ------------------------------------------------
+// An Ultra Premium Collection belongs to an ERA, not an expansion. A Charizard UPC holds
+// "16 booster packs from the Sword & Shield Series" and the box never says which — because
+// the mix genuinely varies. A reviewer who opened one got 3 Evolving Skies, 3 Fusion Strike,
+// 3 Astral Radiance, 3 Brilliant Stars, 2 Lost Origin, 1 Vivid Voltage and 1 Darkness Ablaze,
+// and reported that another box held 17 packs instead of 16. So the game does not need a pack
+// LIST for these products. It needs a pool and a draw.
+//
+// These carry `pool: { series }` instead of living under a set. See fetch-data.mjs.
+export const ERA_PRODUCTS = data.eraProducts || []
+
+// The sets an era product can pull a pack from. Promo/collectible pools (`extra`) and the
+// Japanese catalog are excluded — neither is sold as a booster pack in an English collection.
+const ERA_POOL = new Map()
+export function eraPool(series) {
+  if (!series) return []
+  let pool = ERA_POOL.get(series)
+  if (!pool) {
+    pool = SETS.filter(s => s.series === series && !s.japanese && !s.extra && (s.cards?.length || 0) > 0)
+      .sort((a, b) => String(b.releaseDate || '').localeCompare(String(a.releaseDate || ''))) // newest first
+    ERA_POOL.set(series, pool)
+  }
+  return pool
+}
+
+// Weight the draw by chase density, because The Pokémon Company packs the hot sets heavily.
+// A UPC that mostly coughed up filler sets would lose the exact thing people chase it for.
+// The +1 floor keeps a quiet set in the mix — real collections do carry the odd dud pack.
+const ERA_CHASE = ['Special Illustration Rare', 'Illustration Rare', 'Hyper Rare', 'Mega Hyper Rare', 'Ultra Rare']
+const ERA_WEIGHT = new Map()
+function eraWeights(series) {
+  let w = ERA_WEIGHT.get(series)
+  if (!w) {
+    w = eraPool(series).map(s => {
+      const byR = cardsByRarity(s)
+      return 1 + ERA_CHASE.reduce((a, r) => a + (byR[r]?.length || 0), 0)
+    })
+    ERA_WEIGHT.set(series, w)
+  }
+  return w
+}
+
+// The pack list for ONE physical unit, derived — never stored.
+//
+// Seeded from the item's uid, so a given box always holds the same packs (they were sealed
+// at the factory long before you bought it) while two boxes of the same product hold
+// different ones. Deriving rather than storing buys three things: saves don't grow by 16-36
+// set ids per box (slimsave stays honest), held units stay fungible so heldMatches keeps
+// grouping them, and sealedValue has nothing to read — a sealed box CANNOT leak its contents
+// into its price, so it sells on potential like the real thing.
+export function drawPackSets(product, uid) {
+  const series = product?.pool?.series
+  const n = product?.packs || 0
+  if (!series || !n || !uid) return null
+  const pool = eraPool(series)
+  if (!pool.length) return null
+  const w = eraWeights(series)
+  const total = w.reduce((a, b) => a + b, 0)
+  let s = hashStr(`${uid}|${product.tcgId || product.name || ''}`)
+  const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
+  const out = []
+  for (let i = 0; i < n; i++) {
+    let r = rnd() * total
+    let k = 0
+    while (k < pool.length - 1 && (r -= w[k]) > 0) k++
+    out.push(pool[k].id)
+  }
+  return out
+}
+
+// The set a cross-set product anchors to once you own it. Held sealed is
+// `{ uid, setId, product }` and a lot of machinery keys off setId — marketMult, the synthetic
+// `<setId>-sealed` card id, makeProductPromo — so an era product still needs ONE home set.
+// Prefer the set that actually holds the card the product is named for, so a "Greninja ex
+// Ultra-Premium Collection" ships a real Greninja ex rather than a synthesised stand-in.
+// Otherwise the era's newest set.
+export function eraAnchorSet(product) {
+  const pool = eraPool(product?.pool?.series)
+  if (!pool.length) return null
+  const name = promoNameFromProduct(null, product)
+  if (name) {
+    const hit = pool.find(s => findSetCardByName(s, name))
+    if (hit) return hit
+  }
+  return pool[0]
+}
+
 export function openProduct(set, product, opts = {}) {
   const all = []
+  // A cross-set product resolves a set PER PACK; everything else uses the one set it belongs
+  // to. `opts.uid` identifies the physical unit being opened, so two UPCs rip differently.
+  const packSets = opts.packSets || drawPackSets(product, opts.uid)
   for (let i = 0; i < product.packs; i++) {
-    const pack = openPack(set)
+    const from = (packSets && setById(packSets[i])) || set
+    const pack = openPack(from)
     if (pack._god) pack.forEach(c => { c._fromGod = true })
     all.push(...pack)
   }
@@ -2425,7 +2516,10 @@ function promoNameFromProduct(set, product) {
   // "[Luxray Line]" → "Luxray", "[Zorua & Cramorant]" → "Zorua" (a blister ships ONE promo).
   if (br) return br[1].replace(/\s+line\b/i, '').replace(/\s*&.*$/, '').trim()
   if (set?.name && raw.toLowerCase().startsWith(set.name.toLowerCase())) raw = raw.slice(set.name.length).trim()
-  const m = raw.match(/^(.+?\b(?:ex|gx|v|vmax|vstar))\s+(?:premium\s+)?(?:collection|box|powers)\b/i)
+  // "…ex Ultra-Premium Collection" / "…ex Super-Premium Collection" count too — without the
+  // ultra/super branch a "Greninja ex Ultra-Premium Collection" matched nothing and shipped a
+  // random card from the anchor set instead of the Greninja ex on the box.
+  const m = raw.match(/^(.+?\b(?:ex|gx|v|vmax|vstar))\s+(?:(?:ultra|super)[- ])?(?:premium\s+)?(?:collection|box|powers)\b/i)
   return m ? m[1].trim() : null
 }
 
@@ -2732,6 +2826,10 @@ export function breakOptions(item) {
   const set = SET_BY_ID[item?.setId]
   const p = item?.product
   if (!set || !p) return []
+  // A cross-set product can't be broken down. Splitting converts a box into N units of ONE
+  // set's loose packs, and a UPC's packs come from a dozen different sets — the swap would
+  // quietly launder them into anchor-set packs. Rip it or sell it whole.
+  if (p.pool?.series) return []
   const n = p.packs || 1
   if (n < 2) return []
   const products = setProducts(set)
@@ -2979,6 +3077,22 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   // the whole existing shelf works unchanged. Rolled LAST, after every draw above, so adding it
   // can't reshuffle which vintage set surfaces on the weeks it doesn't fire.
   if (AFTERMARKET_SETS.length && r() < AFTERMARKET_SHARE) {
+    // 👑 A retired-era collector piece — a Sword & Shield Charizard UPC, a GX-era premium
+    // collection. These belong to an era whose sets ALL left print, so no shop shelf carries
+    // them; the back room is the only place they can turn up, which is exactly right for
+    // out-of-print product. In-print eras (Mega Evolution, Scarlet & Violet) are excluded —
+    // those sell on the era shelf in the shop, and a "find" for something still on the shelf
+    // would be nonsense.
+    const retired = retiredEraProducts()
+    if (retired.length && r() < ERA_FIND_SHARE) {
+      const ep = retired[Math.floor(r() * retired.length)]
+      const anchor = eraAnchorSet(ep)
+      if (anchor) {
+        const eprice = round2(sealedValue({ product: ep, setId: anchor.id }) * (1.12 + r() * 0.28))
+        return { setId: anchor.id, setName: `${ep.pool.series} era`, logo: anchor.logo,
+          product: ep, price: eprice, qty: 1, aftermarket: true }
+      }
+    }
     const aset = AFTERMARKET_SETS[Math.floor(r() * AFTERMARKET_SETS.length)]
     const aprods = setProducts(aset)
     if (aprods.length) {
@@ -2990,6 +3104,18 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
     }
   }
   return { setId: set.id, setName: set.name, logo: set.logo, product, price, qty }
+}
+// How often an aftermarket find is an era collector piece rather than a set's own sealed.
+const ERA_FIND_SHARE = 0.35
+// Era products whose era has NO set on the shop shelf — i.e. the whole era is out of print.
+// Cached: SHOP_SETS never changes at runtime.
+let RETIRED_ERA_PRODUCTS = null
+function retiredEraProducts() {
+  if (!RETIRED_ERA_PRODUCTS) {
+    const live = new Set(SHOP_SETS.map(s => s.series))
+    RETIRED_ERA_PRODUCTS = ERA_PRODUCTS.filter(p => !live.has(p.pool?.series) && eraPool(p.pool?.series).length)
+  }
+  return RETIRED_ERA_PRODUCTS
 }
 // 🕰️ AFTERMARKET FIND — the other half of the in-print line. A set that has left the order
 // channel doesn't vanish; it ends up in the back room, on a clearance shelf, in the case a
@@ -3091,7 +3217,12 @@ export function restockRate(dist, cap) {
   return Math.max(0.2, dist.reliability * cap * 0.18)
 }
 // Stock map key for a (set, product) pair.
-export function stockKey(set, product) { return `${set.id}|${product.type}` }
+// Keyed on the PRODUCT, not its type. Under the old one-product-per-type shop those were the
+// same key; now that a set carries its full lineup, a type key would pool the shelf across all
+// eight Prismatic mini tins — buy out the Umbreon one and the Flareon one would read sold out
+// too. tcgId is TCGplayer's per-product id; synthesized products (JP, vintage) fall back to
+// type, which is unique for them anyway. Old saves just start those keys at a full shelf.
+export function stockKey(set, product) { return `${set.id}|${product.tcgId || product.type}` }
 // Live stock state for a (set, product) at a distributor. `stock` is that distributor's
 // saved stock map ({ key: {q, cap} }); an absent key means a full shelf. The cap is the
 // LARGER of any saved cap and the current allocation — so climbing a rapport rung widens
