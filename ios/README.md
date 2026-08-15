@@ -108,6 +108,55 @@ real device.**
 
 ---
 
+## Testing how it feels
+
+Two loops, sharing one definition (`tools/ios/scenarios.mjs`) so a difference between their
+results is a difference in the **engine** and never in the setup.
+
+```sh
+npm run ios:web              # Playwright at iPhone metrics — ~30s, no Xcode
+npm run ios:sim              # the real shell on a booted simulator — the truth
+npm run ios:sim -- --keep    # skip the build, drive what is already running
+npm run ios:sim -- eval 'return document.title'
+npm run ios:sim -- shot buy
+```
+
+Per screen: horizontal overflow, controls under 44pt **measured by hit testing** (the box is what
+a control paints; the target is what the finger gets), controls a `:active` rule answers, and
+controls inside the 62pt island or the 34pt home-indicator band — reported separately, because
+the first is a layout bug and the second is a gesture conflict with the system swipe-up.
+
+**That the two disagree is the point.** Same code, same scenarios:
+
+| | `ios:web` | `ios:sim` |
+|---|---|---|
+| island band | 6 | **0** |
+| home band | 43 | **2** |
+
+The browser has no safe-area insets to report, and the bottom nav deliberately keeps its
+space-saving compromise there — only the shell takes the 34pt back. So `ios:web` reports both
+numbers and asserts on neither; `ios:sim` is where they mean something.
+
+`ios:sim` also checks what no browser can see: that the origin is `pokevendor://local`, that
+`isSecureContext` holds, that `--sat`/`--sab` report 62/34px, and that no service worker
+registered.
+
+**The test seam.** Both drivers reach game state through `window.__PV__`, which `main.jsx`
+exposes only under `VITE_TEST_SEAM`. It has to exist because the browser driver *could* import
+the store through Vite's module graph but the shell cannot — it runs a production bundle — and
+importing the store fresh hands back a **second, unhydrated store** that reports every value as
+its initial state instead of erroring. Verify it never ships:
+
+```sh
+npm run build && grep __PV__ dist/assets/*.js   # must find nothing
+```
+
+`__PV__.flush()` is not a convenience: persist writes are debounced 400ms and IndexedDB is
+async, so a driver that changes state and reloads immediately reads back the *previous* state —
+which looks exactly like the feature under test being broken.
+
+---
+
 ## The dev bridge
 
 Debug builds carry a loopback HTTP listener that runs JavaScript inside the live web view, because

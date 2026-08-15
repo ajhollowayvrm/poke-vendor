@@ -112,15 +112,24 @@ export default function ShowFloor({ show, onLeave }) {
   // stock is component state inside the booth modal, so without this a close/reopen
   // re-served every purchased item at the same uid (infinite rebuy of mispriced gems,
   // plus uid duplication: selling one copy silently destroyed both).
-  const [takenIds, setTakenIds] = useState(() => new Set())
+  // Seeded from the save so a resumed show does not re-serve everything you already bought.
+  // These two sets are the reason a mid-show resume is safe at all — see recordShowProgress.
+  const [takenIds, setTakenIds] = useState(() => new Set(useGame.getState().activeShow?.taken || []))
   const markTaken = (keys) => setTakenIds(prev => { const n = new Set(prev); for (const k of keys) n.add(k); return n })
 
   // Per-booth cash-till depletion for THIS show-day: selling to a vendor draws down their
   // finite till (booth.till), so you can't dump an unlimited amount on one whale. Keyed by
   // booth id + show-day so a fresh floor each day restocks the till.
-  const [tillSpent, setTillSpent] = useState(() => ({}))
+  const [tillSpent, setTillSpent] = useState(() => ({ ...(useGame.getState().activeShow?.till || {}) }))
   const tillKey = (booth) => `${booth.id}#${showDay}`
   const markTillSpend = (booth, amt) => setTillSpent(prev => ({ ...prev, [tillKey(booth)]: (prev[tillKey(booth)] || 0) + amt }))
+
+  // Mirror both into the save whenever they move. Cheap (two small collections) and it has to
+  // be an effect rather than part of markTaken/markTillSpend, because those are called from
+  // several places and one of them forgetting to persist is exactly the bug this prevents.
+  useEffect(() => {
+    useGame.getState().recordShowProgress({ taken: [...takenIds], till: tillSpent })
+  }, [takenIds, tillSpent])
 
   const [openBooth, setOpenBooth] = useState(null)
   // Booths you've walked up to this show — the directory greys the ones you've already

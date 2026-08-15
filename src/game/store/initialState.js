@@ -114,6 +114,16 @@ export function initialState() {
     showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
     showSealed: [],          // SEALED product you brought to the current show to sell at your booth — floor buyers can buy it; unsold comes home (to sealedInventory) when you leave
     showReserve: 0,          // cash you deliberately LEFT AT HOME when attending a show: while the show is active, `cash` holds only what you brought (your floor wallet); endShow() folds this back in. Counted in net worth so leaving money home never reads as losing it.
+    // The show you are STANDING IN, persisted so a crash or an iOS memory-kill doesn't forfeit
+    // a trip you already paid for. Entering a show spends the entry fee, moves your cards onto
+    // the table AND advances the calendar past the show days — all irreversible and all in the
+    // save — while the floor itself was React state only. So a reload used to bring your stock
+    // home and silently eject you from a show whose cost had already been taken.
+    //   { show, taken: [...boothItemKeys], till: { boothId#day: spent } }
+    // `taken` and `till` are NOT cosmetic: without them a resume re-serves every purchased item
+    // (infinite rebuy of mispriced gems, plus uid duplication) and refills every vendor's till.
+    // Cleared by endShow(). See resumeShow / recordShowProgress in booth.js.
+    activeShow: null,
     shopDisplay: [],         // LEGACY (pre-v42): cards once lived on a separate store shelf. With a storefront the whole COLLECTION is store stock now (🔒 locked = not for sale, _featured = display-case spotlight, _heldFor = behind the counter). Kept empty for save-merge compat.
     shopSealed: [],          // LEGACY (pre-v42): sealed shelf — sealedInventory IS the store's sealed stock now. Kept empty for save-merge compat.
     storeConsignRequests: [], // locals waiting on an answer: {id, who, card, ask, commissionPct, days, pendingDays} — carry their card for a cut, or pass

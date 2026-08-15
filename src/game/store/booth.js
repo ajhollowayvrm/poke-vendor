@@ -213,6 +213,30 @@ export function createBoothSlice(set, get) {
       if (parts.length) get().log('show', `Brought ${parts.join(' + ')} to sell at the show`, 0)
       return bringing.length + bringingSealed.length
     },
+    // --- Surviving a crash mid-show -------------------------------------------------------
+    // Entering a show commits real, irreversible things to the save: the entry fee is spent, the
+    // calendar advances past the show days, pre-show leads are claimed, and your stock moves onto
+    // the table. The floor itself was React state, so a reload (or iOS killing a backgrounded web
+    // view) ended the trip while keeping every cost. These three keep the trip alive instead.
+
+    /// Remember which show you are standing in, so a reload can put you back on the floor.
+    beginShow(show) { set({ activeShow: { show, taken: [], till: {} } }) },
+
+    /// The floor's consumed state, mirrored into the save as it changes.
+    ///
+    /// This is the part that makes a resume SAFE rather than merely possible. `taken` is every
+    /// item lifted off a booth table and `till` is each vendor's drawn-down cash — both exist to
+    /// stop an infinite rebuy of mispriced gems, uid duplication, and dumping unlimited stock on
+    /// one vendor. Restoring the show without them would hand back all three bugs.
+    recordShowProgress({ taken, till }) {
+      const cur = get().activeShow
+      if (!cur) return
+      set({ activeShow: { ...cur, taken: taken ?? cur.taken, till: till ?? cur.till } })
+    },
+
+    /// The show to put you back into on boot, or null. Read once by App on mount.
+    resumeShow() { return get().activeShow },
+
     // Set the FLOOR WALLET when entering a show: `budget` is the cash you chose to bring.
     // The rest is stashed in showReserve (still counted in net worth) and folded back into
     // cash on endShow — so at the show `cash` IS your spend limit, and every existing cash
@@ -232,6 +256,10 @@ export function createBoothSlice(set, get) {
     // real leave-the-floor path (the boot-time rescue calls endShow() bare, and a trip you
     // never actually walked shouldn't produce a video).
     endShow(vlog = null) {
+      // FIRST: the trip is over, so drop the resume record. If this were left until after the
+      // inventory move below and anything in there threw, boot would offer to resume a show
+      // whose stock had already come home — worse than either outcome on its own.
+      set({ activeShow: null })
       const reserve = get().showReserve || 0
       if (reserve) set(s => ({ cash: round2(s.cash + reserve), showReserve: 0 }))
       const inv = get().showInventory || []

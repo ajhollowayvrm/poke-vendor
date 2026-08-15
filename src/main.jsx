@@ -4,7 +4,7 @@ import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { startUpdateChecks } from './game/appUpdate'
 import { isNativeShell } from './game/native'
-import { useGame } from './game/store'
+import { useGame, flushSaveNow } from './game/store'
 import './styles.css'
 
 // Watch for new builds. An installed PWA resumes instead of reloading, so without this a
@@ -65,6 +65,24 @@ function Boot() {
     )
   }
   return <App />
+}
+
+// 🔬 TEST SEAM — the one way an automated driver reaches real game state.
+//
+// Gated behind VITE_TEST_SEAM so it is absent from the shipped bundle (verify with
+// `grep __PV__ dist/assets/*.js` after a normal build — it must find nothing).
+//
+// It exists because the two audit loops need ONE way in that works in BOTH engines. The
+// browser driver could `import('/src/game/store')` through Vite's module graph, but the shell
+// runs a production bundle with no module graph at all — and importing the store fresh gives
+// you a SECOND store that has not hydrated yet, so it reads every value as its initial state
+// and quietly lies. Exporting the app's own live instance is the only thing true in both.
+// `flush` is not a convenience. Persist writes are debounced 400ms and IndexedDB is async, so a
+// driver that changes state and immediately reloads races the write and reads back the PREVIOUS
+// state — which looks exactly like the feature under test being broken. Await this before any
+// reload-and-verify.
+if (import.meta.env.VITE_TEST_SEAM) {
+  window.__PV__ = { useGame, store: useGame.getState, flush: flushSaveNow }
 }
 
 createRoot(document.getElementById('root')).render(

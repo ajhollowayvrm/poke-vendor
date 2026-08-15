@@ -210,7 +210,21 @@ export default function App() {
   // Also kick off cloud auto-sync (no-ops unless the AWS backend is configured + signed in).
   useEffect(() => {
     const g = useGame.getState()
-    if ((g.showInventory || []).length || (g.showSealed || []).length || (g.showReserve || 0) > 0) g.endShow()
+    // 🎪 WALK BACK IN. If the save says you were standing in a show, go back to it rather than
+    // settling up. Entering already spent the entry fee, advanced the calendar past the show
+    // days and claimed the pre-show leads — so ending the trip here charged you in full for a
+    // show you never got to walk. Resuming is the only outcome that matches what you paid for.
+    const resume = g.resumeShow()
+    if (resume?.show) {
+      setActiveShow(resume.show)
+      toast(`🎪 Back on the floor at ${resume.show.name} — the app closed while you were there.`, 6000)
+    } else if ((g.showInventory || []).length || (g.showSealed || []).length || (g.showReserve || 0) > 0) {
+      // No resume record: a save from before this existed, or a trip whose record was cleared.
+      // Fall back to the old rescue so stock and the at-home reserve still come home — but SAY
+      // so. This used to happen in total silence, which is how "where did my cards go?" starts.
+      g.endShow()
+      toast('⚠️ Your last show ended unexpectedly — your stock and the cash you left at home are back in your inventory.', 7000)
+    }
     if (g.streamEscrow) {
       const r = g.settleAbandonedStream()
       if (r) toast(`⚠️ Your last stream cut out mid-broadcast — ${[
@@ -487,7 +501,9 @@ export default function App() {
     // rest at home so `cash` on the floor is exactly what you chose to bring.
     if (budget != null) useGame.getState().beginShowWallet(budget)
     setPreppingShow(null)
-    setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads })
+    const entered = { ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads }
+    useGame.getState().beginShow(entered) // persist it — a crash must not forfeit a paid trip
+    setActiveShow(entered)
   }
 
   // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee (+ booth-spot
@@ -511,7 +527,9 @@ export default function App() {
     const summary = useGame.getState().attendShowDays(show.day, effDays, show.tierKey)
     if (budget != null) useGame.getState().beginShowWallet(budget) // wallet last (see enterAsShopper)
     setPreppingShow(null)
-    setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads })
+    const entered = { ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads }
+    useGame.getState().beginShow(entered) // persist it — a crash must not forfeit a paid trip
+    setActiveShow(entered)
   }
 
   // Leaving the show: unsold show-inventory cards come back home, then exit the floor.

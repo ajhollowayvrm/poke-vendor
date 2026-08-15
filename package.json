@@ -14,7 +14,9 @@
     "verify-slimsave": "vite-node scripts/verify-slimsave.mjs",
     "ios:build": "npm run build && npm run ios:project",
     "ios:project": "cd ios && xcodegen generate",
-    "ios:icon": "node tools/ios/make-icon.mjs"
+    "ios:icon": "node tools/ios/make-icon.mjs",
+    "ios:web": "node tools/ios/web.mjs",
+    "ios:sim": "node tools/ios/shell.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
