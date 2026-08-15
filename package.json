@@ -16,7 +16,8 @@
     "ios:project": "cd ios && xcodegen generate",
     "ios:icon": "node tools/ios/make-icon.mjs",
     "ios:web": "node tools/ios/web.mjs",
-    "ios:sim": "node tools/ios/shell.mjs"
+    "ios:sim": "node tools/ios/shell.mjs",
+    "ios:device": "node tools/ios/device.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

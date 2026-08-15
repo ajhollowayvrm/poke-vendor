@@ -18,12 +18,48 @@ portrait, iOS 18+.
 
 ## Build and run
 
+**Onto a connected iPhone, in one command:**
+
+```sh
+npm run ios:device     # build + sign + install + launch
+```
+
+Or open it in Xcode and ⌘R:
+
 ```sh
 npm run ios:build      # vite build, THEN xcodegen generate
 open ios/PokeVendor.xcodeproj
 ```
 
-Then ⌘R. Xcode signs with your Apple ID and installs directly.
+### Two things that will bite you
+
+**`DEVELOPMENT_TEAM` is not the number in the identity's name.** The signing identity reads
+`Apple Development: you@example.com (9Z2HDDXR94)` and that parenthetical is the *identity's* id,
+not the team. Passing it gives:
+
+```
+error: No Account for Team "9Z2HDDXR94". Add a new account in Accounts settings…
+```
+
+…which reads like a missing Xcode account and is actually a wrong argument. The team is the
+certificate's **OU** field. `ios:device` reads it for you:
+
+```sh
+security find-certificate -c "Apple Development: …" -p | openssl x509 -noout -subject
+# subject=UID=…, CN=Apple Development: …, OU=2BY68WLT6R, O=…
+#                                        ^^^^^^^^^^^^^ this one
+```
+
+**A free profile allows THREE sideloaded apps per device**, across every project you own — not
+three per project. The fourth install fails with *"its integrity could not be verified"* and
+`MIInstallerErrorDomain error 13`, which sounds like a signing problem and is not one. Delete an
+app to make room — and note that removing an app deletes its **container**, and with it any save
+not backed up to a cloud account.
+
+**A free signature expires after 7 days.** The app then refuses to launch until you re-run
+`npm run ios:device`. Saves survive that, because they belong to the container and the container
+survives anything short of deleting the app. A paid account ($99/yr) removes both the 7-day
+expiry and the 3-app cap.
 
 **`npm run ios:build`, not `npm run ios:project`.** This is the one way PokéVendor differs from
 Sideline day to day. Sideline references its single `index.html` in place, so editing the game and
