@@ -16,6 +16,27 @@ import './styles.css'
 // offering something that cannot happen. Wrong, not just broken.
 if (!isNativeShell) startUpdateChecks()
 
+// The one line that makes the whole :active press layer in styles.css exist on iOS.
+//
+// WebKit applies :active on touch ONLY while a touch listener is registered somewhere up the
+// tree from the element. With no listener anywhere, every :active rule in the stylesheet is
+// silently dead on iPhone — the CSS is valid, the selector matches, and nothing happens.
+//
+// The listener body is deliberately empty; it is registered for its existence, not its effect.
+// `passive` so it can never block scrolling, and `capture` so it still counts for elements that
+// stop propagation on their own touch handlers (the pack drag-to-rip does exactly that).
+//
+// Worth stating plainly because it is a trap: EVERY DESKTOP BROWSER APPLIES :active WITHOUT
+// THIS. Removing it looks completely fine in Chrome, in the Playwright audit, and in a
+// simulator screenshot — and kills press feedback across the entire app on a real phone.
+if (typeof document !== 'undefined') {
+  document.addEventListener('touchstart', () => {}, { passive: true, capture: true })
+  // Lets the stylesheet target the shell. Used for the bottom nav's home-indicator inset, which
+  // the browser build deliberately skips to save vertical space — a trade the shell does not
+  // need to make and cannot afford, since the bottom 34pt is the system swipe-up strip.
+  if (isNativeShell) document.documentElement.classList.add('native-shell')
+}
+
 // The save lives in IndexedDB, which is asynchronous — so on boot the store briefly holds a
 // BRAND NEW GAME before the real one arrives. Rendering through that window is not merely
 // ugly: App's effects act on the state they see, and a day tick or an auto-sync push fired

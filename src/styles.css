@@ -40,6 +40,47 @@ body {
   color: var(--txt); -webkit-font-smoothing: antialiased;
 }
 button { font-family: inherit; cursor: pointer; }
+
+/* ---------- PRESS FEEDBACK ----------
+   A native control answers the FINGER, not the result. Measured before this existed: only 25 of
+   97 controls responded to a press at all, so most taps produced nothing until the screen
+   redrew — and on a rip or a buy that redraw can be hundreds of milliseconds away.
+
+   Four decisions, each of which was wrong the obvious way first:
+
+   1. The suppression and the replacement land TOGETHER. iOS paints its own grey tap highlight,
+      which is ugly but is not nothing; killing it in one commit and adding :active in the next
+      leaves the app worse than it started.
+   2. Scoped to things that are actually TAPPABLE — button, a, [role=button], and the two custom
+      row classes below. NOT to card/row classes generally: half the rows in this app are static
+      divs, and lighting those up lies to the finger about what it can press.
+   3. BRIGHTNESS, not opacity. On this near-black palette a dimmed control reads as DISABLED,
+      which is the opposite of the message. Lifting it reads as pressed on both dark and light
+      surfaces.
+   4. `transition` on the way OUT only (0ms in, 140ms out). A press must feel instant; the
+      release can relax. Equal transitions make a fast tap feel mushy.
+
+   ⚠️ This layer is INERT on iOS without the empty touchstart listener registered in main.jsx —
+   WebKit only applies :active while a touch listener exists up the tree. Every desktop browser
+   applies it regardless, so a desktop test CANNOT catch its absence. See main.jsx. */
+button, a, [role="button"], summary, .rep-head, .credit-top {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;   /* also kills the 300ms double-tap-zoom delay */
+}
+button:active, a:active, [role="button"]:active, summary:active,
+.rep-head:active, .credit-top:active {
+  filter: brightness(1.35);
+  transition: filter 0s;
+}
+button, a, [role="button"], summary, .rep-head, .credit-top { transition: filter .14s ease-out; }
+/* A disabled control must NOT answer the finger — that would promise an action that never comes. */
+button:disabled:active, [role="button"][aria-disabled="true"]:active { filter: none; }
+/* The pack is its own animation (tear/shake) and the card tilt is pointer-tracked; a brightness
+   pulse on top of either fights the effect rather than adding to it. */
+.pack3d:active, .reveal-card:active, .holo:active { filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  button, a, [role="button"], summary, .rep-head, .credit-top { transition: none; }
+}
 /* respect iPhone notch / home-bar safe areas when installed as a PWA */
 .app { max-width: 1180px; margin: 0 auto;
   /* fill at least the viewport so short pages don't leave dead space below */
@@ -480,6 +521,15 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 /* Shared UI motion: backdrop fades, modal pops, toasts leave, numbers flash on change. */
 @keyframes backdropIn { from { opacity: 0 } to { opacity: 1 } }
 @keyframes modalPop { from { opacity: 0; transform: scale(.96) translateY(6px) } to { opacity: 1; transform: none } }
+/* On a phone a sheet RISES; it does not pop from the middle. Same duration, same easing, so
+   nothing else about the modal changes — only the direction it arrives from.
+   IN-animation only, deliberately: a dozen call sites close a modal and carry straight on into a
+   re-render, so an out-animation would either be cut off mid-flight or have to gate the state
+   change behind a timer. Arriving well is most of the effect anyway. */
+@media (max-width: 640px) {
+  @keyframes modalRise { from { opacity: 0; transform: translateY(22px) } to { opacity: 1; transform: none } }
+  .modal { animation: modalRise .22s cubic-bezier(.2,.9,.3,1); }
+}
 @keyframes toastOut { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(8px) } }
 @keyframes listItemIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes numFlashUp { 0% { transform: scale(1) } 32% { transform: scale(1.13); filter: brightness(1.35) } 100% { transform: scale(1); filter: none } }
@@ -543,7 +593,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 @keyframes hype-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }
 @media (prefers-reduced-motion: reduce) { .hype-chip { animation: none; } }
 /* ⭐ Reputation panel (Stats tab) */
-.rep-head { font-weight: 800; }
+/* Also a full-width row, so height is the honest fix rather than an invisible overlay. */
+.rep-head { font-weight: 800; min-height: 44px; display: flex; align-items: center; }
 .rep-deed { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 2px 0; }
 .clock-chip { font-weight: 800; font-size: 15px; color: var(--accent-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .next-day-btn { font-size: 13px; padding: 5px 12px; white-space: nowrap; flex: none; }
@@ -1214,7 +1265,9 @@ button.rip-hit-row:hover { background:#ffffff14; }
   border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
 .credit-panel.frozen { border-color: color-mix(in srgb, var(--red) 55%, var(--line));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 22%, transparent); }
-.credit-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+/* The credit-line accordion header. Unlike the two above this is a full-width ROW, so it can just
+   be made tall enough — no pseudo-element needed, and a taller header reads better anyway. */
+.credit-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-height: 44px; }
 .credit-head { font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; }
 .credit-badge { font-size:10px; font-weight:900; letter-spacing:.5px; color:#fff;
   background: var(--red); border-radius:6px; padding:2px 6px; }
@@ -1340,15 +1393,29 @@ button.rip-hit-row:hover { background:#ffffff14; }
        drift during iOS toolbar show/hide. The content region above scrolls; this stays put.
        Tabs share the width evenly — no horizontal scrolling. */
     display: flex; gap: 2px; flex: 0 0 auto; z-index: 60;
-    /* Deliberately IGNORE the home-indicator safe area: the bar sits flush to the physical
-       bottom with only a small fixed pad, rather than reserving the iPhone's ~34px inset.
-       That was ~34px of dead height on the phone; dropping it roughly halves the footer.
-       The tradeoff (accepted): on a home-indicator device the labels sit close to / under
-       the indicator pill. */
+    /* IN THE BROWSER: deliberately IGNORE the home-indicator safe area. The bar sits flush to
+       the physical bottom with only a small fixed pad, rather than reserving the iPhone's ~34px
+       inset. That was ~34px of dead height on the phone; dropping it roughly halves the footer.
+       The tradeoff (accepted): on a home-indicator device the labels sit close to / under the
+       indicator pill.
+
+       IN THE NATIVE SHELL: take the inset back — see the `.native-shell` override below. Both
+       halves of the reasoning above stop holding there. */
     padding: 3px 4px 6px;
     background: var(--bg);
     box-shadow: 0 -6px 24px #0007;
   }
+  /* 🏠 NATIVE SHELL ONLY: give the home-indicator inset back.
+     The trade above was correct for the PWA and stops being correct inside the app, on both
+     sides of the ledger:
+       • The reason to skip it was scarce vertical space — Safari's toolbars eat ~100pt. The
+         shell is edge-to-edge and gets the whole 956pt of an iPhone 17 Pro Max, so the pressure
+         that justified it is at its weakest here.
+       • The cost got worse. The bottom 34pt is the system swipe-up gesture strip, and 7-8 tab
+         buttons per screen — the app's PRIMARY NAVIGATION — were sitting inside it. That is a
+         gesture conflict, not a cosmetic one: iOS wins the ambiguous swipes.
+     Scoped to .native-shell (set on <html> by main.jsx) so the browser keeps the compromise. */
+  .native-shell .bottomnav { padding-bottom: calc(6px + var(--sab)); }
   .bnav-btn {
     flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
     background: transparent; border: 0; color: var(--dim); padding: 3px 2px 2px; border-radius: 12px;
@@ -1484,6 +1551,12 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .consign-strip > b { color: var(--gold); font-size:13px; }
 .consign-strip .pill.expired { background:#ff5e6c22; color:#ff9aa5; }
 .linkbtn { background:none; border:none; color: var(--accent-light); font-weight:700; cursor:pointer; padding:0; font-size:12px; text-decoration:underline; }
+/* A 12px underlined link ("Dismiss ✕") reads as text and must keep reading as text, so the hit
+   box is stretched vertically only — 44pt tall, the link's own width. Horizontal padding here
+   would push whatever sits beside it. */
+.linkbtn { position: relative; }
+.linkbtn::after { content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 44px; transform: translateY(-50%); }
 
 /* ---------- Listed-on-site market panel ---------- */
 .market-panel { margin:14px 0 4px; padding:10px 14px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; }
@@ -2150,6 +2223,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
   border: 1px solid var(--line); background: var(--panel2); color: var(--dim);
   font-size: 10px; font-weight: 800; cursor: pointer; line-height: 1; vertical-align: middle; }
 .noto-help:hover { color: var(--gold); border-color: var(--gold); }
+/* 15pt painted, 44pt tappable. A 15px dot beside a number is the RIGHT look — blowing it up to
+   44px would put a huge circle next to the star — so the hit box grows past the paint instead.
+   The pseudo-element is centred on the dot and takes no layout space, so nothing moves. This is
+   the pattern for every under-44 control below: extend the TARGET, never the PAINT. */
+.noto-help { position: relative; }
+.noto-help::after { content: ''; position: absolute; left: 50%; top: 50%;
+  width: 44px; height: 44px; transform: translate(-50%, -50%); }
 .noto-pop { position: absolute; z-index: 60; top: 100%; left: 0; margin-top: 6px; width: min(340px, 88vw);
   text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   padding: 10px 12px; box-shadow: 0 10px 30px #0009; font-size: 12px; cursor: pointer; }

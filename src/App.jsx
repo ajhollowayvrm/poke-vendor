@@ -46,6 +46,8 @@ import { milestoneById } from './game/milestones'
 // screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
 // behind the gear in the top bar.
 const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
+// Device-local, deliberately NOT part of the saved game. See the useState that reads it.
+const TAB_KEY = 'pv.tab'
 const TAB_LABEL = { shop: 'Buy', myshop: 'Store', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Inventory' }
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
@@ -109,7 +111,20 @@ function ripAvailability(state, set, product) {
 }
 
 export default function App() {
-  const [tab, setTab] = useState('shop')
+  // Which tab is open is a property of this DEVICE, not of the career — so it lives in
+  // localStorage rather than in the saved game, and syncing a save between devices never drags
+  // one device's screen position onto another.
+  //
+  // It matters most in the shell: iOS jettisons a backgrounded WKWebView under memory pressure
+  // and silently reloads it on return, and coming back on Buy after ten minutes on Shows reads
+  // as "it lost my place" even though nothing was lost. The save was never at risk here (it is
+  // in IndexedDB and gated on hydration in main.jsx) — the screen position was.
+  const [tab, setTab] = useState(() => {
+    try {
+      const t = localStorage.getItem(TAB_KEY)
+      return t && TABS.includes(t) ? t : 'shop'
+    } catch { return 'shop' }
+  })
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
@@ -527,7 +542,20 @@ export default function App() {
   // abandoned stream — refunds, off-camera cracks, day spent). End it on purpose instead.
   function selectTab(t) {
     if (streamLive && t !== 'stream') { toast('🔴 You’re live — end the stream before leaving.'); return }
+    // Re-tapping the tab you are already on scrolls that tab back to the top, which is what every
+    // native tab bar on the platform does — and the fastest way out of a long Inventory or Shows
+    // list without dragging. Only for a genuine re-tap; a tab CHANGE keeps its own scroll.
+    if (t === tab) {
+      // `.content` is the real scroll container on mobile — with a bottom nav present, styles.css
+      // locks html/body to height:100%/overflow:hidden and `.content` does the scrolling
+      // (styles.css:1314). Scrolling document.scrollingElement there moves nothing at all, so it
+      // is the FALLBACK for the desktop layout rather than the first choice.
+      const pane = document.querySelector('.content') || document.scrollingElement || document.documentElement
+      pane.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     setTab(t)
+    try { localStorage.setItem(TAB_KEY, t) } catch { /* private mode / quota — not worth failing a tap over */ }
   }
 
   // Prepping for a show: the pick-your-inventory screen takes over the whole view.
