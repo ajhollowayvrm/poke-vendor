@@ -15,10 +15,34 @@ vintage English sets).
 
 To refresh the snapshot:
 ```bash
-npm run fetch-data            # no key needed
-# optional: a free pokemontcg.io key lifts rate limits
-POKEMONTCG_IO_KEY=your-key npm run fetch-data
+npm run fetch-data                       # no key needed — this is the normal way to run it
+ONLY=sv8pt5,me5 npm run fetch-data       # refresh just these sets (merge-preserving)
 ```
+
+### If the fetch reports stale sets
+A set that fails every attempt keeps its **previous** data, and the run says so at the end:
+
+```
+🔴 7 of 166 set(s) FAILED and kept their previous data — this snapshot is PARTIAL.
+```
+
+That is almost always api.pokemontcg.io being unwell, not you being throttled. It serves
+`500`/`502` during an outage and never `429`, and sends no rate-limit headers at all. Check
+with `curl -s -o /dev/null -w '%{http_code}\n' 'https://api.pokemontcg.io/v2/cards?q=set.id:base1&pageSize=1'`
+a few times — if you see 5xx, wait rather than retry harder. Then re-run slower:
+
+```bash
+FETCH_RETRIES=12 FETCH_BACKOFF_MS=3000 SET_DELAY_MS=2000 npm run fetch-data
+```
+
+The run already retries failed sets a second time before giving up, because the outages
+are bursty.
+
+> **On API keys.** `POKEMONTCG_IO_KEY` is still honoured, but **do not go looking for one** —
+> pokemontcg.io's free key tier is being retired in favour of **Scrydex**, its paid successor
+> (from $29/month, metered per request, no free tier). Unauthenticated access still works and
+> is what this project has always used. A key would only raise a daily ceiling a full run
+> (~350 requests) never reaches, and it cannot help with a `500`.
 
 ## Run it
 ```bash

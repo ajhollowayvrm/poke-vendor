@@ -1,7 +1,12 @@
 // Fetches Pokémon TCG sets + cards into src/data/sets.json.
 //
-// PRIMARY source: pokemontcg.io (https://api.pokemontcg.io/v2) — free, no key required.
-//   Optional free API key via env POKEMONTCG_IO_KEY (header X-Api-Key) to lift rate limits.
+// PRIMARY source: pokemontcg.io (https://api.pokemontcg.io/v2) — free, no key required, and
+//   no key is obtainable any more: the free key tier is being retired in favour of Scrydex,
+//   its paid successor (from $29/mo, metered, no free tier). POKEMONTCG_IO_KEY is still read
+//   if you happen to hold one, but unauthenticated access is the supported path here.
+//   ⚠️ This API periodically serves 500/502 for most requests. That is an OUTAGE, not
+//   throttling — it never returns 429 and sends no rate-limit headers. See getJSON's retry
+//   knobs and the stale-set report at the end of a run.
 //   Provides: card names, numbers, rarities, images, and USD/EUR prices for all English sets.
 //
 // SECONDARY source: TCGCSV (https://tcgcsv.com) — free, no auth needed, browser UA required.
@@ -722,6 +727,28 @@ const REVERSE_SLOT = [
   { rarity: 'Mega Hyper Rare',            p: 0.0035 }, // chase — ~1 in 285
 ]
 
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+// Retry/pacing knobs. Defaults are tuned for a HEALTHY api.pokemontcg.io. When it is having
+// a bad day (it periodically serves 500/502 for a majority of requests, unrelated to rate
+// limits — there is no 429 and no ratelimit header in sight), raise them:
+//
+//   FETCH_RETRIES=12 FETCH_BACKOFF_MS=3000 SET_DELAY_MS=2000 npm run fetch-data
+//
+// Going slower genuinely helps there: the failures are bursty, so waiting longer between
+// attempts is worth far more than hammering faster.
+const RETRIES = Number(process.env.FETCH_RETRIES || 8)
+const BACKOFF_MS = Number(process.env.FETCH_BACKOFF_MS || 1500)
+const SET_DELAY_MS = Number(process.env.SET_DELAY_MS || 200)
+
+// Exponential backoff with jitter, capped at 30s. Exponential matters when the far end is
+// DOWN rather than throttling us: the old linear ramp spent its 5 attempts inside ~18s and
+// gave a struggling server no room to recover. Jitter keeps retries from lock-stepping.
+function backoffMs(attempt) {
+  const base = Math.min(BACKOFF_MS * 2 ** (attempt - 1), 30_000)
+  return Math.round(base + Math.random() * base * 0.3)
+}
+
 // Generic JSON fetcher with retry/backoff. Sends a browser UA because tcgcsv.com
 // rejects the default Node fetch UA.
 async function getJSON(url, extraHeaders = {}) {
@@ -730,29 +757,41 @@ async function getJSON(url, extraHeaders = {}) {
     'Accept': 'application/json',
     ...extraHeaders,
   }
-  for (let attempt = 0; attempt < 5; attempt++) {
+  let lastErr = 'unknown'
+  for (let attempt = 0; attempt < RETRIES; attempt++) {
+    if (attempt) await sleep(backoffMs(attempt))
     let res
     try {
       res = await fetch(url, { headers })
     } catch (e) { // network blip (ECONNRESET, timeout) — back off and retry
-      await new Promise(r => setTimeout(r, 1200 * (attempt + 1)))
+      lastErr = e.message
       continue
     }
-    if (res.ok) return res.json()
+    if (res.ok) {
+      // A 200 is NOT proof of a good body. Cloudflare in front of pokemontcg.io answers 200
+      // with the text "error code: 502" during an outage, and res.json() then threw a
+      // SyntaxError that escaped this loop entirely — killing the whole set on the first
+      // attempt without ever retrying. Parse defensively and treat a junk body as transient.
+      const text = await res.text()
+      try { return JSON.parse(text) } catch {
+        lastErr = `HTTP 200 but the body was not JSON ("${text.slice(0, 40).trim()}")`
+        continue
+      }
+    }
+    lastErr = `HTTP ${res.status}`
     // Retry transient statuses: 429 rate-limit, 5xx gateway errors, and a 404 (pokemontcg.io
     // intermittently 404s a valid set's cards endpoint under load — a real miss survives all retries).
-    if (res.status === 429 || res.status >= 500 || res.status === 404) {
-      await new Promise(r => setTimeout(r, 1200 * (attempt + 1)))
-      continue
-    }
+    if (res.status === 429 || res.status >= 500 || res.status === 404) continue
     throw new Error(`${res.status} ${url}`)
   }
-  throw new Error('too many retries ' + url)
+  throw new Error(`gave up after ${RETRIES} attempts (last: ${lastErr}) ${url}`)
 }
 
 // --- pokemontcg.io helpers ---------------------------------------------------
 const PTCGIO = 'https://api.pokemontcg.io/v2'
-// Optional free key (env POKEMONTCG_IO_KEY) lifts the rate limit from ~1000/day to 20000/day.
+// POKEMONTCG_IO_KEY is honoured if set, but free keys are no longer issued (see the header
+// note). Unauthenticated is ~1000 requests/day, and a full run is ~350 — so the key only ever
+// mattered if you refetched several times in one day.
 let PTCGIO_HEADERS = {}
 
 // Prefer holofoil-type finishes for the headline price; fall back to normal/reverse.
@@ -1210,9 +1249,11 @@ function pickVintagePack(products) {
 }
 
 async function main() {
-  // Wire optional pokemontcg.io key from env (lifts rate limits).
+  // Wire a pokemontcg.io key from env if one is set. Free keys are no longer issued; running
+  // without one is the normal, supported path.
   const ptcgKey = process.env.POKEMONTCG_IO_KEY?.trim()
   if (ptcgKey) { PTCGIO_HEADERS = { 'X-Api-Key': ptcgKey }; console.log('Using POKEMONTCG_IO_KEY.') }
+  console.log(`Pacing: ${RETRIES} retries · ${BACKOFF_MS}ms base backoff · ${SET_DELAY_MS}ms between sets.`)
 
   // Load prior PSA comps from existing sets.json (preserved — free sources have no PSA data).
   // Primary key: card id (e.g. "me4-90"). Secondary key: "setId-number" for any card whose
@@ -1244,7 +1285,22 @@ async function main() {
   console.log(`Fetching ${setsToFetch.length} English sets from pokemontcg.io + TCGCSV…`)
 
   const out = []
-  for (const cfg of setsToFetch) {
+  const failedCfgs = []
+  // Two passes. The far end's failures are BURSTY — a set that dies during a bad minute
+  // usually succeeds a few minutes later — and a failed set silently keeps its stale copy,
+  // which is the worst possible outcome to leave unretried.
+  await fetchPass(setsToFetch, out, failedCfgs, psaMap)
+  if (failedCfgs.length) {
+    const again = failedCfgs.splice(0, failedCfgs.length)
+    console.log(`\n↻ Retry pass — ${again.length} set(s) failed the first time: ${again.map(c => c.id).join(', ')}`)
+    await sleep(5000)
+    await fetchPass(again, out, failedCfgs, psaMap)
+  }
+  await finishRun(out, failedCfgs, setsToFetch)
+}
+
+async function fetchPass(list, out, failedCfgs, psaMap) {
+  for (const cfg of list) {
    try {
     console.log(`  ${cfg.name} (${cfg.id})…`)
     const { cards, products: rawProducts, meta } = await fetchEnglishSet(cfg, psaMap)
@@ -1300,14 +1356,18 @@ async function main() {
       cards,
       products,
     })
-    await new Promise(r => setTimeout(r, 200))
+    await sleep(SET_DELAY_MS)
    } catch (e) {
     // A single set's transient API failure (a 404 under load, a schema hiccup) must NOT
     // abort the whole run. Skip it — the validation gate below carries forward the prior
     // snapshot's copy if one exists; a brand-new set that fails can be re-fetched via ONLY=.
     console.log(`  ⚠️  ${cfg.name} (${cfg.id}) failed: ${e.message} — skipping this set`)
+    failedCfgs.push(cfg)
    }
   }
+}
+
+async function finishRun(out, failedCfgs, setsToFetch) {
 
   // Fold the freshly-fetched sets into the existing snapshot. This is ALWAYS
   // merge-preserving now: sets in the prior snapshot that this run didn't fetch
@@ -1379,6 +1439,25 @@ async function main() {
   const totalProd = finalSets.reduce((a, s) => a + (s.products?.length || 0), 0)
   const totalPsa = finalSets.reduce((a, s) => a + s.cards.filter(c => c.psa).length, 0)
   console.log(`Wrote src/data/sets.json — ${finalSets.length} sets, ${totalCards} cards, ${totalProd} sealed products, ${eraProducts.length} era products, ${totalPsa} cards w/ PSA comps.`)
+
+  // 🔴 STALE-DATA REPORT. A set that failed every attempt keeps its PREVIOUS copy, so the run
+  // finishes "successfully" while quietly shipping old data. During an api.pokemontcg.io
+  // outage that can be most of the snapshot, and nothing above says so. Say it here, loudly,
+  // and exit nonzero so a scripted run can't mistake a partial refresh for a full one.
+  if (failedCfgs.length) {
+    const ids = failedCfgs.map(c => c.id)
+    console.log('')
+    console.log(`🔴 ${failedCfgs.length} of ${setsToFetch.length} set(s) FAILED and kept their previous data — this snapshot is PARTIAL.`)
+    console.log(`   stale: ${ids.join(', ')}`)
+    console.log(`   Re-run just those once the API recovers:`)
+    console.log(`     ONLY=${ids.join(',')} npm run fetch-data`)
+    console.log(`   If most sets failed, api.pokemontcg.io is probably down rather than throttling you`)
+    console.log(`   (it serves 500/502, never 429). Check, wait, and retry slower:`)
+    console.log(`     FETCH_RETRIES=12 FETCH_BACKOFF_MS=3000 SET_DELAY_MS=2000 npm run fetch-data`)
+    process.exitCode = 1
+  } else {
+    console.log(`✓ All ${setsToFetch.length} set(s) refreshed — no stale carry-over.`)
+  }
 }
 
 main().catch(e => { console.error(e); process.exit(1) })
