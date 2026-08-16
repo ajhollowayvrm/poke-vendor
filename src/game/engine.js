@@ -2,6 +2,7 @@
 import data from '../data/sets.json'
 import { SYNC_URL } from './syncConfig'
 import { getIdToken } from './auth'
+import { isNativeShell } from './native'
 // 📊 Population reports and 🖨️ misprints both change what a card is WORTH, so they are wired
 // into the pricing functions here. Both modules are pure and import nothing from the engine,
 // so there is no cycle. See population.js for the mean-1.0 invariant that keeps grading
@@ -12,6 +13,32 @@ import { sealedGradeMult } from './sealedgrading'
 
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
+
+const ART_HOSTS = new Set(['images.pokemontcg.io', 'images.scrydex.com'])
+function viaShell(url) {
+  if (!url || !isNativeShell) return url
+  // Only the known art hosts, and only absolute https — anything else is passed through so a
+  // bundled or data: URL is never mangled.
+  if (!url.startsWith('https://')) return url
+  const host = url.slice(8, url.indexOf('/', 8))
+  return ART_HOSTS.has(host) ? `pvimg://${url.slice(8)}` : url
+}
+
+// 🖼️ Set logos and symbols are art on the same two CDNs as the cards, and they are read
+// directly as `set.logo` from about twenty places. Rewriting them ONCE here, at load, routes
+// every one of those through the shell's disk cache without touching a single call site — and
+// without the "two implementations, one bug" problem that chasing call sites keeps causing.
+//
+// Safe to mutate in place precisely because a SET is never persisted: saves hold card
+// instances and sealed rows, never a set object, so no `pvimg://` URL can end up written to a
+// save and then read back outside the shell. Card art deliberately does NOT get this treatment
+// — it is rewritten at render time in cardImg() instead, for exactly that reason.
+if (isNativeShell) {
+  for (const s of SETS) {
+    if (typeof s.logo === 'string') s.logo = viaShell(s.logo)
+    if (typeof s.symbol === 'string') s.symbol = viaShell(s.symbol)
+  }
+}
 
 // A card's collector number. For 20,454 of the 23,475 cards in the snapshot the number is
 // simply the tail of the id ("sv8pt5-25" → "25"), so the data ships WITHOUT it and this
@@ -36,6 +63,17 @@ export function cardNumber(card) {
 // the pattern-breakers (cel25's cel25c paths, suffixed filenames), synthetic pseudo-cards —
 // use it verbatim. ALWAYS read card art through these, never card.img directly: card
 // instances minted after the strip don't carry the fields.
+// 🖼️ Inside the iOS shell, card art goes over the `pvimg://` scheme instead of straight to the
+// CDN. That routes the fetch through ArtSchemeHandler in Shell.swift, which caches every image to
+// disk permanently — so art you have seen once renders with no signal at all.
+//
+// This is a REWRITE, not a different source: `pvimg://images.pokemontcg.io/x.png` fetches exactly
+// `https://images.pokemontcg.io/x.png`, and the handler refuses any host that is not one of the
+// two art CDNs. Outside the shell (a dev server) the https URL is returned untouched.
+//
+// It lives here because cardImg/cardImgLarge are the single funnel every image in the game goes
+// through — the same property that made stripping the URLs out of the data snapshot possible.
+
 // A collector number printed as "132/086" (the Japanese n-of-total format) is not a URL path
 // segment — building one produced `.../jp-SV11W/132/086.png`, a 404 on every one of the 634 JP
 // cards that carry no explicit art URL. Those cards are not hosted on pokemontcg.io at all, so
@@ -44,18 +82,18 @@ function derivableNumber(num) { return num && !String(num).includes('/') }
 
 export function cardImg(card) {
   if (!card) return null
-  if (card.img) return card.img
+  if (card.img) return viaShell(card.img)
   const sid = setIdOfCard(card)
   const num = cardNumber(card)
-  return sid && derivableNumber(num) ? `https://images.pokemontcg.io/${sid}/${num}.png` : null
+  return sid && derivableNumber(num) ? viaShell(`https://images.pokemontcg.io/${sid}/${num}.png`) : null
 }
 export function cardImgLarge(card) {
   if (!card) return null
-  if (card.imgLarge) return card.imgLarge
-  if (card.img) return card.img // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
+  if (card.imgLarge) return viaShell(card.imgLarge)
+  if (card.img) return viaShell(card.img) // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
   const sid = setIdOfCard(card)
   const num = cardNumber(card)
-  return sid && derivableNumber(num) ? `https://images.pokemontcg.io/${sid}/${num}_hires.png` : null
+  return sid && derivableNumber(num) ? viaShell(`https://images.pokemontcg.io/${sid}/${num}_hires.png`) : null
 }
 
 // Card art lives on a remote CDN, so a just-pulled card can pop in slowly mid-reveal.
@@ -76,6 +114,41 @@ export function preloadCardImages(cards) {
     // in halves ("half then fills") mid-turn. decode() warms the decoded bitmap in cache.
     if (img.decode) img.decode().catch(() => {})
   }
+}
+
+// 📥 Download art ahead of time, so it is there when the signal is not.
+//
+// The shell's disk cache (ArtSchemeHandler) keeps every image you have ALREADY loaded, for
+// ever — but a set you have never scrolled past has never been fetched, and with no signal it
+// renders as nothing. This walks a list of cards and pulls each one through the same
+// `pvimg://` path a render would, which populates that cache deliberately rather than by
+// accident.
+//
+// Sequential with a small concurrency window on purpose: a few hundred images fired at once
+// is how you get a stall and a pile of timeouts on a phone. `onProgress` lets the UI show a
+// count, and the returned canceller lets the player stop a download they regret starting.
+export function warmArt(cards, { onProgress, concurrency = 4 } = {}) {
+  const urls = []
+  const seen = new Set()
+  for (const c of (cards || [])) {
+    const u = cardImg(c)
+    if (u && !seen.has(u)) { seen.add(u); urls.push(u) }
+  }
+  let done = 0, cancelled = false, i = 0
+  const total = urls.length
+  const one = (url) => new Promise(resolve => {
+    if (typeof Image === 'undefined') return resolve()
+    const img = new Image()
+    const finish = () => { done++; _imgWarmed.add(url); onProgress?.(done, total); resolve() }
+    img.onload = finish
+    img.onerror = finish          // a 404 still counts as handled; retrying it helps nobody
+    img.src = url
+  })
+  const worker = async () => {
+    while (!cancelled && i < urls.length) await one(urls[i++])
+  }
+  const all = Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, worker))
+  return { total, promise: all, cancel: () => { cancelled = true } }
 }
 
 // Sets sold in the normal shop (excludes `vintage` sets, which only appear via the

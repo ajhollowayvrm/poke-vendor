@@ -78,6 +78,23 @@ this pass did) moved the total by about 4 ms. Both facts point the same way:
 If boot ever needs to be materially faster, profile first: the remaining time is script compile,
 React mount and store hydration, not the card database.
 
+## Card art, offline
+
+Art is not in the bundle — it comes from `images.pokemontcg.io` and `images.scrydex.com`. Inside
+the shell it is cached to disk by `ArtSchemeHandler` (Shell.swift) and served from there for ever
+after, capped at 600 MB with least-recently-used trimming.
+
+**The trap this replaced:** the shell set `URLCache.shared` and its comment claimed that was the
+card-art cache. It never was. `URLCache.shared` applies to URLSession requests made by the app
+process; WKWebView fetches subresources in a *separate* networking process against WebKit's own
+cache. Setting it never touched a single card image, which is why the app looked so bad with no
+signal. Art now rides a `pvimg://` scheme so the fetch happens in-process, where a cache we
+control can actually hold it.
+
+`warmArt()` (engine.js) pulls images through the same path deliberately, which is what ⚙️ Settings
+→ Offline art uses. Deliberately scoped to the cards you own: the whole catalogue is 23,000 images
+and several gigabytes.
+
 ## Re-measuring
 
 ```bash

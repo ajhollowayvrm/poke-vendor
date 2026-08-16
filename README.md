@@ -198,6 +198,16 @@ and a doc nobody can act on is a doc that quietly goes stale. They remain in git
 **One target: a native app on an iPhone.** The web build exists to be loaded by the iOS shell
 in [`ios/`](ios/README.md), which serves `dist/` over a custom `pokevendor://` URL scheme.
 
+**Card art is cached on the device, permanently.** Images come from two remote CDNs, and inside
+the shell every one you load is written to disk by `ArtSchemeHandler` and served from there
+after — so anything you have seen renders with no signal at all. ⚙️ Settings → **Offline art**
+downloads the rest of your collection up front for the art you have not looked at yet.
+
+*(The obvious approach — `URLCache.shared` — does nothing here, and used to be what the shell
+relied on: WKWebView loads subresources in a separate networking process against WebKit's own
+cache, not this process's. Routing art through a `pvimg://` scheme moves the fetch in-process,
+where the cache is actually ours.)*
+
 There is no PWA and no web deployment. Both were removed on 2026-08-15, and the service worker
 turned out never to have run in the first place — *a service worker does not run under a custom
 scheme*, so the whole PWA layer was inert inside the only place the app actually runs

@@ -40,6 +40,11 @@ enum Shell {
     /// which orphans every save on every device that already has the app. Don't.
     static let scheme = "pokevendor"
     static let pageURL = URL(string: "\(scheme)://local/index.html")!
+    /// Card art rides its OWN scheme so the app process can cache it to disk. See ArtSchemeHandler.
+    static let artScheme = "pvimg"
+    /// The only two hosts art is ever fetched from. This handler is a card-art cache, never a
+    /// general-purpose proxy, and an allowlist is what keeps it that way.
+    static let artHosts: Set<String> = ["images.pokemontcg.io", "images.scrydex.com"]
     /// --bg from styles.css. Used for the window, the view and
     /// the web view so there is no white flash between the launch screen and the first paint.
     static let background = UIColor(red: 0x0c / 255.0, green: 0x0f / 255.0, blue: 0x1a / 255.0, alpha: 1)
@@ -126,6 +131,152 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
     }
 }
 
+/// Serves card art over `pvimg://` and keeps every byte of it on disk, for ever.
+///
+/// WHY THIS EXISTS. Card art lives on two remote CDNs. In a browser a service worker would cache
+/// it; under a custom URL scheme no service worker runs, and the PWA layer has been removed
+/// entirely. The obvious fallback — `URLCache.shared` — does nothing here either, because
+/// WKWebView fetches subresources in its own networking process against WebKit's cache rather
+/// than this process's. So with no signal the app rendered a grid of broken images.
+///
+/// Routing art through a scheme handler moves the fetch INTO this process, where the cache is
+/// ours: a hit is served from disk with no network at all, which is the whole point.
+///
+///   pvimg://images.pokemontcg.io/sv8pt5/25.png  →  https://images.pokemontcg.io/sv8pt5/25.png
+///
+/// Only the two known art hosts are honoured (Shell.artHosts). A scheme handler that will fetch
+/// any URL a page names is an open proxy, and this one is a card-art cache.
+final class ArtSchemeHandler: NSObject, WKURLSchemeHandler {
+
+    /// Disk cache. In Caches/ because it is all re-downloadable — the OS may reclaim it under
+    /// pressure, and losing it costs a re-fetch rather than data.
+    private static let dir: URL = {
+        let base = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("PokeVendorArt", isDirectory: true)
+        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        return base
+    }()
+
+    /// Roughly 3,000–6,000 cards of art. Trimmed oldest-accessed-first when it goes over, so a
+    /// long game does not quietly consume the device.
+    private static let maxBytes: Int64 = 600 * 1024 * 1024
+
+    private let session: URLSession = {
+        let c = URLSessionConfiguration.default
+        c.requestCachePolicy = .returnCacheDataElseLoad
+        c.timeoutIntervalForRequest = 20
+        return URLSession(configuration: c)
+    }()
+
+    private var stopped = Set<ObjectIdentifier>()
+    private let lock = NSLock()
+
+    /// Cache filename: a stable hash of the absolute URL, plus the real extension so the MIME
+    /// mapping below stays trivial.
+    private static func cacheURL(for remote: URL) -> URL {
+        var h: UInt64 = 0xcbf29ce484222325
+        for b in Array(remote.absoluteString.utf8) { h = (h ^ UInt64(b)) &* 0x100000001b3 }
+        let ext = remote.pathExtension.isEmpty ? "img" : remote.pathExtension.lowercased()
+        return dir.appendingPathComponent(String(format: "%016llx.%@", h, ext))
+    }
+
+    private static func mime(for ext: String) -> String {
+        switch ext.lowercased() {
+        case "png": return "image/png"
+        case "jpg", "jpeg": return "image/jpeg"
+        case "webp": return "image/webp"
+        case "gif": return "image/gif"
+        case "svg": return "image/svg+xml"
+        default: return "application/octet-stream"
+        }
+    }
+
+    /// pvimg://host/path → https://host/path, refusing anything not on the allowlist.
+    private static func remoteURL(from url: URL) -> URL? {
+        guard let host = url.host, Shell.artHosts.contains(host) else { return nil }
+        var c = URLComponents()
+        c.scheme = "https"
+        c.host = host
+        c.path = url.path
+        c.query = url.query
+        return c.url
+    }
+
+    func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
+        let id = ObjectIdentifier(task)
+        guard let src = task.request.url, let remote = Self.remoteURL(from: src) else {
+            return fail(task, id, "art host not allowed")
+        }
+        let file = Self.cacheURL(for: remote)
+
+        // HIT: straight off disk, no network touched. This is the case that makes the app work
+        // with no signal at all.
+        if let data = try? Data(contentsOf: file), !data.isEmpty {
+            try? FileManager.default.setAttributes([.modificationDate: Date()], ofItemAtPath: file.path)
+            return deliver(task, id, src, data, Self.mime(for: file.pathExtension))
+        }
+
+        // MISS: fetch once, keep it for ever.
+        session.dataTask(with: remote) { [weak self] data, response, _ in
+            guard let self else { return }
+            let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard let data, !data.isEmpty, (200..<300).contains(code) else {
+                DispatchQueue.main.async { self.fail(task, id, "art fetch failed (\(code))") }
+                return
+            }
+            try? data.write(to: file, options: .atomic)
+            self.trimIfNeeded()
+            let mime = (response?.mimeType?.isEmpty == false)
+                ? response!.mimeType! : Self.mime(for: file.pathExtension)
+            DispatchQueue.main.async { self.deliver(task, id, src, data, mime) }
+        }.resume()
+    }
+
+    func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {
+        lock.lock(); stopped.insert(ObjectIdentifier(task)); lock.unlock()
+    }
+
+    private func isStopped(_ id: ObjectIdentifier) -> Bool {
+        lock.lock(); defer { lock.unlock() }; return stopped.contains(id)
+    }
+
+    private func deliver(_ task: WKURLSchemeTask, _ id: ObjectIdentifier, _ url: URL, _ data: Data, _ mime: String) {
+        guard !isStopped(id) else { return }
+        task.didReceive(URLResponse(url: url, mimeType: mime,
+                                    expectedContentLength: data.count, textEncodingName: nil))
+        task.didReceive(data)
+        task.didFinish()
+    }
+
+    private func fail(_ task: WKURLSchemeTask, _ id: ObjectIdentifier, _ why: String) {
+        guard !isStopped(id) else { return }
+        task.didFailWithError(NSError(domain: "PokeVendorArt", code: 404,
+                                      userInfo: [NSLocalizedDescriptionKey: why]))
+    }
+
+    /// Keep the cache under the cap, dropping least-recently-used first. Cheap and only runs
+    /// after a miss, so a warm cache never pays for it.
+    private func trimIfNeeded() {
+        let fm = FileManager.default
+        guard let items = try? fm.contentsOfDirectory(at: Self.dir,
+                includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey]) else { return }
+        var total: Int64 = 0
+        var entries: [(URL, Date, Int64)] = []
+        for u in items {
+            let v = try? u.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
+            let size = Int64(v?.fileSize ?? 0)
+            total += size
+            entries.append((u, v?.contentModificationDate ?? .distantPast, size))
+        }
+        guard total > Self.maxBytes else { return }
+        for (u, _, size) in entries.sorted(by: { $0.1 < $1.1 }) {
+            try? fm.removeItem(at: u)
+            total -= size
+            if total <= Self.maxBytes * 8 / 10 { break }   // trim to 80%, not to the line
+        }
+    }
+}
+
 // MARK: - The one view controller
 
 final class ShellViewController: UIViewController {
@@ -135,7 +286,15 @@ final class ShellViewController: UIViewController {
     private var devBridge: DevBridge?
     #endif
 
-    /// The ONLY cache for remote card art.
+    /// NOT the card-art cache. Kept for any URLSession the app itself makes.
+    ///
+    /// This used to claim it replaced the service worker for card art. It cannot: `URLCache.shared`
+    /// applies to URLSession requests made by THIS process, and WKWebView loads its subresources in
+    /// a separate networking process against WebKit's own cache. Setting it here never touched a
+    /// single card image, which is why the app looked so bad with no signal. Card art is cached by
+    /// ArtSchemeHandler instead, which runs in-process precisely so that it can be.
+    ///
+    /// Original note, still true of what a URLCache would give you:
     ///
     /// The web build used to run a Workbox CacheFirst rule over images.pokemontcg.io and
     /// images.scrydex.com. That never applied here — a service worker does not run under a custom
@@ -165,6 +324,7 @@ final class ShellViewController: UIViewController {
 
         let config = WKWebViewConfiguration()
         config.setURLSchemeHandler(BundleSchemeHandler(), forURLScheme: Shell.scheme)
+        config.setURLSchemeHandler(ArtSchemeHandler(), forURLScheme: Shell.artScheme)
         config.websiteDataStore = .default()          // persistent: this is where the save lives
         // The rip animation synthesizes its audio in a Web Audio context started from the tap that
         // opens the pack (see src/game/feedback.js), so inline playback must be allowed and the
