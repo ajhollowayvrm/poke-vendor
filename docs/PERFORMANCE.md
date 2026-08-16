@@ -58,8 +58,12 @@ PWA layer — worker, precache, update prompt, Workbox card-art rule — did not
 place the app actually runs. `npm run ios:sim` asserts `sw: false` on every run and always has.
 
 So it is gone: `vite-plugin-pwa`, `src/game/appUpdate.js`, the update pill, the manifest, the
-PWA icons, and `.github/workflows/deploy.yml`. Card-art caching is done natively by the
-`URLCache` in `Shell.swift`, which was already the real mechanism.
+PWA icons, and `.github/workflows/deploy.yml`.
+
+This paragraph used to end "card-art caching is done natively by the `URLCache` in
+`Shell.swift`, which was already the real mechanism." **That was wrong**, and it went
+unquestioned because the shell's own comment said the same thing. See *Card art, offline* below
+for what was actually happening (nothing) and what does it now.
 
 ## Where the next win is *not*
 
