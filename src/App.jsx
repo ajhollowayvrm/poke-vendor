@@ -15,7 +15,7 @@ import FirstRun, { NotorietyHelp } from './components/FirstRun'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import AuctionHouse from './components/AuctionHouse'
 import LocalMarket from './components/LocalMarket'
-import { shelfProducts, shelfBlurb } from './game/shelf'
+import { shelfProducts, shelfEraProducts, shelfBlurb } from './game/shelf'
 import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -1500,7 +1500,10 @@ function groupByEra(sets) {
 function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail, weekIndex = 0 }) {
   const [open, setOpen] = useState(false)
   const credit = { onCredit, split, creditAvail }
-  const nProducts = era.sets.reduce((a, s) => a + shelfProducts(dist, setProducts(s), s, weekIndex).length, 0) + era.products.length
+  // 👑 Collector product is shelf-filtered too. A corner shop has one of these in at a time,
+  // not the whole era's back catalogue — see game/shelf.js.
+  const eraProducts = shelfEraProducts(dist, era.products, era.series, weekIndex)
+  const nProducts = era.sets.reduce((a, s) => a + shelfProducts(dist, setProducts(s), s, weekIndex).length, 0) + eraProducts.length
   return (
     <div className={`product era-acc ${open ? 'open' : ''}`}>
       <button className="set-head era-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
@@ -1508,7 +1511,7 @@ function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId
           <span className="set-head-name">{era.series}</span>
           <span className="meta">
             {era.sets.length} set{era.sets.length !== 1 ? 's' : ''} · {nProducts} product{nProducts !== 1 ? 's' : ''}
-            {era.products.length ? ` · ${era.products.length} collector piece${era.products.length !== 1 ? 's' : ''}` : ''}
+            {eraProducts.length ? ` · ${eraProducts.length} collector piece${eraProducts.length !== 1 ? 's' : ''}` : ''}
           </span>
         </span>
         <span className="set-caret" aria-hidden="true">{open ? '▾' : '▸'}</span>
@@ -1516,10 +1519,10 @@ function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId
       {open && (
         <div className="era-body">
           {/* Era-wide product first — a UPC isn't a Lost Origin product, it's a Sword & Shield one. */}
-          {era.products.length > 0 && (
+          {eraProducts.length > 0 && (
             <div className="era-products">
               <div className="era-products-head">👑 Collector product — rips packs from across the {era.series} era</div>
-              {era.products.map(p => (
+              {eraProducts.map(p => (
                 <EraProductRow key={p.tcgId} dist={dist} product={p} lvl={lvl} cash={cash}
                   onBuy={onBuy} owned={owned} {...credit} />
               ))}

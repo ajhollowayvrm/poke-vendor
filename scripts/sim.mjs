@@ -237,14 +237,28 @@ try {
   const shelf = await page.evaluate(async () => {
     const eng = await import('/src/game/engine.js')
     const sh = await import('/src/game/shelf.js')
+    // EVERY line the player sees on that shelf — a set's own lineup AND the cross-set
+    // collector product that hangs off the era. Counting only the former is exactly the
+    // mistake that let a "five line" corner shop ship showing fifteen: the era list was
+    // rendered unfiltered and the gate could not see it. Count what is on the screen.
+    const eraFor = (d, sets, w) => {
+      const bySeries = new Map()
+      for (const set of sets) {
+        const k = set.series || 'Other'
+        if (!bySeries.has(k)) bySeries.set(k, eng.ERA_PRODUCTS.filter(p => p.pool?.series === k))
+      }
+      let n = 0
+      for (const [series, prods] of bySeries) n += sh.shelfEraProducts(d, prods, series, w).length
+      return n
+    }
     const skusFor = (id, weeks = 12) => {
       const d = eng.distributorById(id)
       const counts = []
       for (let w = 0; w < weeks; w++) {
+        const sets = eng.distributorCatalog(d, eng.SHOP_SETS, w)
         let n = 0
-        for (const set of eng.distributorCatalog(d, eng.SHOP_SETS, w)) {
-          n += sh.shelfProducts(d, eng.setProducts(set), set, w).length
-        }
+        for (const set of sets) n += sh.shelfProducts(d, eng.setProducts(set), set, w).length
+        n += eraFor(d, sets, w)
         counts.push(n)
       }
       return counts
@@ -295,6 +309,19 @@ try {
       worstRaw: worst, lgsVariantMax, stable: a1 === a2, distinctWeeks: weeks.size,
       boxCap: box ? eng.stockCap(lgs, box, 0, set0) : 0,
       packCap: pack ? eng.stockCap(lgs, pack, 0, set0) : 0,
+      // The era pool for the corner shop's own era, and what each shelf does with it.
+      ...(() => {
+        const lgsD = eng.distributorById('lgs')
+        const sets0 = eng.distributorCatalog(lgsD, eng.SHOP_SETS, 0)
+        const series = sets0[0]?.series || 'Other'
+        const pool = eng.ERA_PRODUCTS.filter(p => p.pool?.series === series)
+        const counts = []
+        for (let w = 0; w < 24; w++) counts.push(sh.shelfEraProducts(lgsD, pool, series, w).length)
+        return {
+          eraPool: pool.length, eraLo: Math.min(...counts), eraHi: Math.max(...counts),
+          eraWide: sh.shelfEraProducts(eng.distributorById('tcgplayer'), pool, series, 0).length,
+        }
+      })(),
       dnaSets: eng.distributorCatalog(eng.distributorById('dna'), eng.SHOP_SETS, 0).length,
       dnaCases: eng.distributorCatalog(eng.distributorById('dna'), eng.SHOP_SETS, 0).filter(s2 => eng.caseLot(s2)).length,
     }
@@ -316,6 +343,8 @@ try {
     && !shelf.dnaArches.includes('blister') && !shelf.dnaArches.includes('tin'))
   pass(`...and cases are still its own thing (${shelf.dnaCases} of ${shelf.dnaSets} sets offer a case lot)`,
     shelf.dnaCases > 0)
+  pass(`👑 collector product is an occasional piece, not a back catalogue (LGS carries ${shelf.eraLo}-${shelf.eraHi} of the era's ${shelf.eraPool}; the marketplace carries all of them)`,
+    shelf.eraHi <= 1 && shelf.eraLo === 0 && shelf.eraWide === shelf.eraPool)
   pass(`the shelf is stable within a week but moves across them (${shelf.distinctWeeks} distinct shelves over 24 weeks)`,
     shelf.stable && shelf.distinctWeeks > 1)
   pass(`depth is a real shop's: ${shelf.boxCap} booster boxes behind the counter, ${shelf.packCap} loose packs out front`,

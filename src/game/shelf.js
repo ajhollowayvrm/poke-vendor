@@ -75,6 +75,11 @@ export const SHELF_POLICY = {
     rotators: ['blister', 'blister', 'blister', 'etb', 'etb', 'sleeved', 'tin', 'bundle', 'premium', 'prerelease'],
     rotatorChance: 0.45,   // per set, per week — so most sets are just a box and packs
     variants: 1,
+    // 👑 Cross-set collector product (Ultra Premium Collections, ex Boxes, the Mega tins).
+    // A small shop gets ONE of these in at a time, and not every month — they are the piece
+    // by the counter you either grab or watch somebody else grab. Everything wide carries the
+    // lot, because a warehouse genuinely does.
+    eraMax: 1, eraChance: 0.5,
   },
   // The marketplace: third-party sellers list everything, exclusives included. Still capped at
   // two variants per archetype, because a legible list beats a faithful one at ten mini tins.
@@ -166,6 +171,26 @@ export function shelfProducts(dist, products, set, weekIndex = 0) {
     seen.set(arch, cap)
   }
   return list.filter(p => keep.has(p))
+}
+
+// 👑 Cross-set collector product, which hangs off the ERA rather than a set — and which was
+// the actual reason a "five line" corner shop still showed fifteen. shelfProducts() only ever
+// filtered a set's own lineup; these were rendered unfiltered, for every retailer.
+//
+// A variant cap is the wrong tool here: a Charizard UPC and a Terapagos UPC are two different
+// products, where four checklane blisters are one product in four wrappers. So this caps the
+// COUNT instead, and rolls whether the shop has one in at all this week.
+export function shelfEraProducts(dist, products, series, weekIndex = 0) {
+  const list = products || []
+  const pol = shelfPolicy(dist)
+  const max = pol.eraMax ?? Infinity
+  if (!list.length || max === Infinity) return list
+  if (max <= 0) return []
+  if (hash01(dist?.id || '', series || '', 'era', weekIndex) > (pol.eraChance ?? 1)) return []
+  const offset = Math.floor(hash01(dist?.id || '', series || '', 'erapick', weekIndex) * list.length)
+  const out = []
+  for (let i = 0; i < Math.min(max, list.length); i++) out.push(list[(offset + i) % list.length])
+  return out
 }
 
 // Does this retailer carry this exact product right now? The question the overnight buyers
