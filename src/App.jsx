@@ -15,7 +15,7 @@ import FirstRun, { NotorietyHelp } from './components/FirstRun'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import AuctionHouse from './components/AuctionHouse'
 import LocalMarket from './components/LocalMarket'
-import { shelfProducts, shelfEraProducts, shelfBlurb } from './game/shelf'
+import { shelfProducts, shelfEraProducts, shelfBlurb, purchaseLimit, limitKey, limitsTakenToday } from './game/shelf'
 import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -1628,7 +1628,15 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   const spendable = onCredit ? creditAvail : split ? round2(cash + creditAvail) : cash
   const useCredit = onCredit || split // a credit mode is in play (badge/label/opts)
   const affordable = price > 0 ? Math.floor(spendable / price) : 999
-  const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable))
+  // 🚫 "1 per customer" on the collector product, relaxed for a regular. Read here so the
+  // stepper cannot even be pushed past it — a limit you discover at the till is a worse
+  // experience than a limit printed on the shelf, which is why real shops print it.
+  const rapportLvl = lvl?.level || 0
+  const perCustomer = purchaseLimit(dist, product, rapportLvl)
+  const takenToday = useGame(s => perCustomer === Infinity ? 0
+    : limitsTakenToday(s.buyLimits, absoluteDay(s.currentDay, s.monthsElapsed), limitKey(dist.id, set, product)))
+  const limitLeft = perCustomer === Infinity ? Infinity : Math.max(0, perCustomer - takenToday)
+  const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable, limitLeft))
 
   const [buyQty, setBuyQty] = useState(1)
   const qN = Math.min(Math.max(1, Math.floor(buyQty) || 1), Math.max(1, maxBuy))
@@ -1669,10 +1677,21 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
       <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''} ${useCredit && canBuy ? 'on-credit' : ''}`}
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit, split })}
-        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
+        title={out ? `Sold out — restocks in ~${days}d`
+          : limitLeft <= 0 ? `${dist.name} limits this to ${perCustomer} per customer a day, and you have had yours. Back tomorrow.`
+          : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
         <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
         {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
-        <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
+        <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}
+          {perCustomer !== Infinity && (
+            <span className={`limit-chip ${limitLeft <= 0 ? 'spent' : ''}`}
+              title={limitLeft <= 0
+                ? `You have had your ${perCustomer} today. The shelf resets tomorrow${perCustomer < 4 ? ` — and a shop that knows you lets you take more (rapport ${rapportLvl} → ${Math.min(4, perCustomer + 1)} at the next tier)` : ''}.`
+                : `${dist.name} rations this: ${perCustomer} per customer per day${rapportLvl > 0 ? ` — up from 1, because they know you` : ''}. ${limitLeft} left today.`}>
+              🚫 {limitLeft <= 0 ? 'had yours today' : `${perCustomer}/customer`}
+            </span>
+          )}
+        </span>
         <span className="prodprice">
           {surge > 1.02 && <span className="pricetag surge" title={priceNote}>🔥 +{Math.round((surge - 1) * 100)}%</span>}
           {showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}

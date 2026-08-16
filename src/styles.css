@@ -1311,6 +1311,11 @@ button.rip-hit-row:hover { background:#ffffff14; }
   padding: 2px 5px; border-radius: 5px; background: #4c1d95dd; color: #e9d5ff; font-weight: 800;
   border: 1px solid #c084fc88; }
 
+/* 🚫 "1 per customer" — the sign on an allocated collector piece */
+.limit-chip { margin-left: 6px; font-size: 10.5px; padding: 1px 5px; border-radius: 4px;
+  background: #ff9f4322; color: #ff9f43; border: 1px solid #ff9f4355; font-weight: 700; }
+.limit-chip.spent { background: #ff5e6c22; color: #ff5e6c; border-color: #ff5e6c55; }
+
 /* ===================== 📱 Local Marketplace ===================== */
 .mk-list { display: flex; flex-direction: column; gap: 8px; }
 .mk-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px;

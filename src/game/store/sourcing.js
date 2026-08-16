@@ -12,6 +12,7 @@ import {
   sealedValue, sealedCard, SEALED_FLIP_RATE, setById, breakOptions, searchable, rollSearched,
 } from '../engine'
 import { absoluteDay, weekIndexOf } from './constants'
+import { purchaseLimit, limitKey, limitsTakenToday, recordLimitBuy, LIMIT_MAX } from '../shelf'
 import { nextSealedSuffix } from './ids'
 import { methodLabel, vintageLeft } from './helpers'
 
@@ -182,6 +183,15 @@ export function createSourcingSlice(set, get) {
       const unit = round2(price ?? product._buyPrice ?? product.price ?? 0)
       // !out means at least one whole unit is buyable (mirrors the single-buy semantics).
       const inStock = st.out ? 0 : Math.max(1, Math.floor(st.q))
+      // 🚫 "1 per customer". The sign on the collector product at a small shop, relaxed for a
+      // regular (see game/shelf.js). Clamped here rather than in the UI because every buyer
+      // goes through this function — the buy screen, the 🧮 Purchasing Agent, the 📋 standing
+      // order, a 📇 special order. A limit only the buy button respects is not a limit.
+      const today = absoluteDay(get().currentDay, get().monthsElapsed)
+      const lim = purchaseLimit(dist, product, level)
+      const lkey = limitKey(distId, pokeSet, product)
+      const already = limitsTakenToday(get().buyLimits, today, lkey)
+      const limitLeft = lim === Infinity ? Infinity : Math.max(0, lim - already)
       // Affordability by pay mode: split = cash + open credit; pure credit = the line only;
       // cash = cash (+ LGS store credit topping the till, at the LGS only). LGS credit stays
       // out of the credit/split mixes to keep the split math a clean cash-then-credit draw.
@@ -189,8 +199,16 @@ export function createSourcingSlice(set, get) {
       const spendable = opts.split ? round2(get().cash + get().creditAvailable())
         : opts.onCredit ? get().creditAvailable() : (get().cash + lgs)
       const affordable = unit > 0 ? Math.floor(spendable / unit) : want
-      const n = Math.min(want, inStock, affordable)
-      if (n < 1) return null
+      const n = Math.min(want, inStock, affordable, limitLeft)
+      if (n < 1) {
+        // Distinguish "sold out" from "you have had your one" — they need different answers
+        // from the player, and a silent null reads as a bug.
+        if (limitLeft <= 0 && inStock > 0 && affordable > 0) {
+          return { limited: true, limit: lim, taken: already,
+            error: `${dist.name} limits ${product.type} to ${lim} per customer a day. Come back tomorrow${lim < LIMIT_MAX ? ', or become a regular and they will let you take more' : ''}.` }
+        }
+        return null
+      }
       const total = round2(unit * n)
       const drawn = (opts.onCredit || opts.split) ? 0 : get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
       let split = null
@@ -198,6 +216,7 @@ export function createSourcingSlice(set, get) {
       else if (opts.onCredit ? !get().chargeCredit(total) : !get().spend(total)) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       get().recordSetSpend(pokeSet.id, total)
+      if (lim !== Infinity) set(st2 => ({ buyLimits: recordLimitBuy(st2.buyLimits, today, lkey, n) }))
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
       const items = []
       for (let i = 0; i < n; i++) {

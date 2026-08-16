@@ -299,7 +299,7 @@ export const useGame = create(persist((set, get) => ({
   ...createMarketSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 66,
+  version: 67,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -901,6 +901,11 @@ export const useGame = create(persist((set, get) => ({
       const mkDay = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
       state.market = state.market ?? { listings: refillBoard([], state.notoriety || 0, mkDay), day: mkDay, meetsToday: 0, meetDay: 0 }
       state.marketStats = state.marketStats ?? { bought: 0, spent: 0, burned: 0, steals: 0 }
+    }
+    if (version < 67) {
+      // 🚫 Per-customer purchase limits. Starts empty: an existing save has not "used up"
+      // today's allowance on anything, which is the generous and obviously-correct direction.
+      state.buyLimits = state.buyLimits ?? { day: 0, counts: {} }
     }
     return state
   },

@@ -307,6 +307,24 @@ try {
       dnaArches: archesOn('dna'), lgsArches: archesOn('lgs'), amazonArches: archesOn('amazon'),
       tcgArches: archesOn('tcgplayer', 1),
       worstRaw: worst, lgsVariantMax, stable: a1 === a2, distinctWeeks: weeks.size,
+      // 🚫 Purchase limits: what is rationed, what is not, and how rapport moves it.
+      ...(() => {
+        const inf = v => (v === Infinity ? null : v)
+        const prods = eng.setProducts(set0)
+        const find = re => prods.find(p => re.test(p.type))
+        const etb = find(/^Elite Trainer Box$/i) || { type: 'Elite Trainer Box' }
+        const prem = { type: 'Premium Collection' }
+        const pk = find(/^Booster Pack$/i) || { type: 'Booster Pack' }
+        const bx = find(/^Booster Box$/i) || { type: 'Booster Box' }
+        return {
+          limEtb: inf(sh.purchaseLimit(lgs, etb, 0)),
+          limPremium: inf(sh.purchaseLimit(lgs, prem, 0)),
+          limPack: inf(sh.purchaseLimit(lgs, pk, 0)),
+          limBox: inf(sh.purchaseLimit(lgs, bx, 0)),
+          limLadder: [0, 1, 2, 3, 4].map(l => sh.purchaseLimit(lgs, etb, l)),
+          limAmazon: inf(sh.purchaseLimit(eng.distributorById('amazon'), etb, 0)),
+        }
+      })(),
       boxCap: box ? eng.stockCap(lgs, box, 0, set0) : 0,
       packCap: pack ? eng.stockCap(lgs, pack, 0, set0) : 0,
       // The era pool for the corner shop's own era, and what each shelf does with it.
@@ -347,6 +365,10 @@ try {
     shelf.eraHi <= 1 && shelf.eraLo === 0 && shelf.eraWide === shelf.eraPool)
   pass(`the shelf is stable within a week but moves across them (${shelf.distinctWeeks} distinct shelves over 24 weeks)`,
     shelf.stable && shelf.distinctWeeks > 1)
+  pass(`🚫 the corner shop rations collector product (${shelf.limEtb}/customer on an ETB, ${shelf.limPremium} on a premium collection) and nothing else (${shelf.limPack === null ? 'no limit' : shelf.limPack} on loose packs, ${shelf.limBox === null ? 'no limit' : shelf.limBox} on boxes)`,
+    shelf.limEtb === 1 && shelf.limPremium === 1 && shelf.limPack === null && shelf.limBox === null)
+  pass(`...it relaxes for a regular (${shelf.limLadder.join(' → ')} as rapport climbs) and the warehouse never rations (${shelf.limAmazon === null ? 'no limit' : shelf.limAmazon})`,
+    shelf.limLadder[0] === 1 && shelf.limLadder[shelf.limLadder.length - 1] > 1 && shelf.limAmazon === null)
   pass(`depth is a real shop's: ${shelf.boxCap} booster boxes behind the counter, ${shelf.packCap} loose packs out front`,
     shelf.boxCap >= 2 && shelf.boxCap <= 6 && shelf.packCap >= 8 && shelf.packCap <= 20)
 

@@ -80,6 +80,10 @@ export const SHELF_POLICY = {
     // by the counter you either grab or watch somebody else grab. Everything wide carries the
     // lot, because a warehouse genuinely does.
     eraMax: 1, eraChance: 0.5,
+    // 🚫 "1 per customer" — the sign on every allocated collector piece in a real shop. It
+    // exists because allocation is thin and the shop wants it spread around rather than
+    // scalped by whoever gets there first, which is exactly the position you are in.
+    limits: true,
   },
   // The marketplace: third-party sellers list everything, exclusives included. Still capped at
   // two variants per archetype, because a legible list beats a faithful one at ten mini tins.
@@ -171,6 +175,41 @@ export function shelfProducts(dist, products, set, weekIndex = 0) {
     seen.set(arch, cap)
   }
   return list.filter(p => keep.has(p))
+}
+
+// --- 🚫 Per-customer purchase limits ------------------------------------------------
+// A small shop rations the collector product and does not ration the everyday stock: nobody
+// limits you to one booster pack. So the limit rides the archetype.
+//
+// And it RELAXES WITH RAPPORT, which is the part that makes it a system rather than a wall.
+// A shop that sees you every week will let you take two — "you're in here all the time, go
+// on" — and that is the same relationship the rapport ladder already models for pricing.
+export const LIMITED_ARCHETYPES = ['premium', 'etb', 'pcetb']
+export const LIMIT_BASE = 1
+export const LIMIT_MAX = 4
+
+// How many of this line you may buy from this shop today. Infinity = no sign on it.
+export function purchaseLimit(dist, product, rapportLevel = 0) {
+  if (!shelfPolicy(dist).limits) return Infinity
+  if (!LIMITED_ARCHETYPES.includes(archetypeOf(product))) return Infinity
+  return Math.min(LIMIT_MAX, LIMIT_BASE + Math.max(0, rapportLevel || 0))
+}
+// Identity of a limited line. tcgId when the data has one (two Elite Trainer Boxes in a set
+// are different SKUs and get their own allowance); the type otherwise.
+export function limitKey(distId, set, product) {
+  return `${distId}|${set?.id || 'era'}|${product?.tcgId || product?.type || '?'}`
+}
+// Limits are per DAY, tracked lazily: a counts map stamped with the day it belongs to, so a
+// new day needs no reset pass anywhere.
+export function limitsTakenToday(buyLimits, day, key) {
+  if (!buyLimits || buyLimits.day !== day) return 0
+  return buyLimits.counts?.[key] || 0
+}
+export function recordLimitBuy(buyLimits, day, key, n = 1) {
+  const fresh = !buyLimits || buyLimits.day !== day
+  const counts = fresh ? {} : { ...(buyLimits.counts || {}) }
+  counts[key] = (counts[key] || 0) + n
+  return { day, counts }
 }
 
 // 👑 Cross-set collector product, which hangs off the ERA rather than a set — and which was
