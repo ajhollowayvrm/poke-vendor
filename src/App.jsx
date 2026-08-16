@@ -14,6 +14,7 @@ import { encounterStillValid } from './game/shows'
 import FirstRun, { NotorietyHelp } from './components/FirstRun'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import AuctionHouse from './components/AuctionHouse'
+import LocalMarket from './components/LocalMarket'
 import { shelfProducts, shelfBlurb } from './game/shelf'
 import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
@@ -1087,6 +1088,10 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
       {!unlocked ? (
         <LockedDistributor dist={dist} notoriety={notoriety} rank={rank} />
+      ) : dist.marketplace ? (
+        /* 📱 A listings channel, not a shelf: no catalog, no stock, no rapport, no credit
+           line. Individuals do not extend you net terms. */
+        <LocalMarket />
       ) : (<>
       <RapportBanner dist={dist} rec={rec} lvl={lvl} />
       {/* 🎫 Clout spend: something on this shelf sold out — a favor gets the truck there early. */}

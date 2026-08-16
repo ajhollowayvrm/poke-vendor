@@ -3084,6 +3084,14 @@ export const DISTRIBUTORS = [
   // fresh drops are bought at the scalped market number like everyone else. hypeSurge below
   // is now the whole drop-day story: the newest set costs a premium over market everywhere.)
   {
+    id: 'market', name: 'Local Marketplace', icon: '📱', color: '#4267B2',
+    blurb: 'Strangers near you selling cards out of their spare rooms. Nobody here prices to market — they price to how they feel about the thing, so the board is mostly fantasy prices and the odd genuine find. You have to message them, and you have to drive out and meet them.',
+    // A LISTINGS channel, not a shelf: no catalog, no stock, no rapport. The Buy tab renders
+    // its own board for this one (see LocalMarket.jsx).
+    marketplace: true,
+    priceMult: 1, discountStep: 0, maxDiscount: 0, reliability: 0.3,
+  },
+  {
     id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
     blurb: 'The marketplace — every set at live market price, deep selection. You pay market, but it is (almost) always there.',
     priceMult: 1.04, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.7,

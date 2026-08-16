@@ -15,6 +15,7 @@ import { makeShowVendors } from '../shows'
 import { defaultPackTiers } from '../mysterypacks'
 import { freshBooks } from '../tax'
 import { refillLots } from '../lots'
+import { refillBoard } from '../market'
 
 export function initialState() {
   return {
@@ -122,6 +123,12 @@ export function initialState() {
     // out — the day tick settles each one when its clock runs out, and how many bidders your
     // NAME pulled is what sets the hammer price (see game/auctions.js).
     auctions: [],
+    // 📱 The LOCAL MARKETPLACE — strangers near you selling cards out of their houses. Not a
+    // shelf: one-off listings priced by how the seller FEELS about the thing, which is why the
+    // board is mostly junk with the occasional genuine find buried in it. `meetsToday`/`meetDay`
+    // cap how many you can physically drive out and collect in a day. See game/market.js.
+    market: { listings: refillBoard([], 0, 1), day: 1, meetsToday: 0, meetDay: 0 },
+    marketStats: { bought: 0, spent: 0, burned: 0, steals: 0 },
     // 🔨 The BUY side of the hammer: lots the auction house is running that you can bid on.
     // Each carries a hidden `maxBid` (your proxy), the visible watcher count that sets the
     // room, and — on raw and sealed lots — the condition claim that may not be true. The day

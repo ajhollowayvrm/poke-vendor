@@ -24,6 +24,7 @@
 //   • socials.js      — 📱 short-form posts + the 🃏 master set challenge (math: game/content.js)
 //   • books.js        — 🧾 the quarterly tax bill + 🏦 the bank note (math: game/tax.js, loans.js)
 //   • auctionhouse.js — 🔨 the BUY side of the hammer: bidding (math: game/lots.js)
+//   • market.js       — 📱 the local marketplace: messaging + meets (math: game/market.js)
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -43,8 +44,10 @@ import { createPacksSlice } from './packs'
 import { createSocialsSlice } from './socials'
 import { createBooksSlice } from './books'
 import { createAuctionHouseSlice } from './auctionhouse'
+import { createMarketSlice } from './market'
 import { freshBooks } from '../tax'
 import { refillLots } from '../lots'
+import { refillBoard } from '../market'
 import { deflateState, inflateState } from './slimsave'
 import { idbAvailable, idbGet, idbSet, idbDel } from './idb'
 import { defaultPackTiers } from '../mysterypacks'
@@ -293,9 +296,10 @@ export const useGame = create(persist((set, get) => ({
   ...createSocialsSlice(set, get),
   ...createBooksSlice(set, get),
   ...createAuctionHouseSlice(set, get),
+  ...createMarketSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 65,
+  version: 66,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -889,6 +893,14 @@ export const useGame = create(persist((set, get) => ({
       state.sealedGradesSubmitted = state.sealedGradesSubmitted ?? 0
       state.popAdds = state.popAdds ?? {}
       state.stats = { cracks: 0, misprints: 0, ...(state.stats || {}) }
+    }
+    if (version < 66) {
+      // 📱 The Local Marketplace. Seeded rather than empty for the same reason the auction
+      // board is: a channel nobody can see is a channel nobody uses. The day tick churns it
+      // from here — good listings get taken, new ones go up.
+      const mkDay = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
+      state.market = state.market ?? { listings: refillBoard([], state.notoriety || 0, mkDay), day: mkDay, meetsToday: 0, meetDay: 0 }
+      state.marketStats = state.marketStats ?? { bought: 0, spent: 0, burned: 0, steals: 0 }
     }
     return state
   },

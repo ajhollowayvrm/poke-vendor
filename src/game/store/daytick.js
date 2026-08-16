@@ -61,6 +61,7 @@ import { DISTRIBUTOR_NOTO } from '../engine'
 // lives beside its own actions rather than in this file, so a system reads in one place.
 import { settleQuarter, settleLoan, settleTaxArrears } from './books'
 import { settleAuctionLots } from './auctionhouse'
+import { tickMarket } from './market'
 import { shelfCarries } from '../shelf'
 
 // A set trading at or above this multiple of its base price is "hot" — willing buyers
@@ -1539,6 +1540,12 @@ export function advanceDaysWith(set, get, days, away) {
   // a reason, and store/auctionhouse.js for the settlement itself.
   const lotResult = settleAuctionLots(set, get, newAbsDay)
 
+  // --- 📱 The local marketplace churns ---------------------------------------------
+  // Somebody else buys the good listings overnight and new ones go up. This is the whole
+  // rhythm of the channel: a bargain you scrolled past yesterday is gone today, and the
+  // fantasy prices are still there, exactly where you left them.
+  const marketTick = tickMarket(set, get, newAbsDay, days)
+
   // --- 🏪 The shop across town ------------------------------------------------------
   // They open the day you do. Heat is a tug-of-war settled every day: they gain ground for
   // free if you coast, and lose it to the things a shop does to be liked — hosting nights,
@@ -2249,6 +2256,7 @@ export function advanceDaysWith(set, get, days, away) {
     lotsLost: lotResult?.lost || 0,
     lotsSpent: round2(lotResult?.spent || 0),
     lotsBurned: lotResult?.burned || 0,
+    marketTaken: marketTick?.taken || 0,
     quarterClosed: quarter || null,
     loanPaid: round2(loanResult?.paid || 0),
     loanMissed: loanResult?.missed || 0,
@@ -2315,6 +2323,7 @@ export function mergeSummaries(a, b) {
     lotsLost: add(a.lotsLost, b.lotsLost),
     lotsSpent: round2(add(a.lotsSpent, b.lotsSpent)),
     lotsBurned: add(a.lotsBurned, b.lotsBurned),
+    marketTaken: add(a.marketTaken, b.marketTaken),
     quarterClosed: b.quarterClosed || a.quarterClosed || null, // at most one quarter ends in a trip
     loanPaid: round2(add(a.loanPaid, b.loanPaid)),
     loanMissed: add(a.loanMissed, b.loanMissed),

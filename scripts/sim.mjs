@@ -321,6 +321,65 @@ try {
   pass(`depth is a real shop's: ${shelf.boxCap} booster boxes behind the counter, ${shelf.packCap} loose packs out front`,
     shelf.boxCap >= 2 && shelf.boxCap <= 6 && shelf.packCap >= 8 && shelf.packCap <= 20)
 
+  // ---- 1e. 📱 The local marketplace -------------------------------------------------
+  // Facebook Marketplace for cardboard. The whole channel rests on one property: a cheap
+  // listing is NOT reliably a good one, because a clueless seller and a scammer price
+  // identically. If "buy everything under half market" wins, the channel is a printer and the
+  // reading is decoration. See game/market.js.
+  console.log('\n📱 LOCAL MARKETPLACE — want cheap-chasing to lose, reading to pay:')
+  const mk = await page.evaluate(async () => {
+    const m = await import('/src/game/market.js')
+    const N = 30000
+    const run = (pick) => {
+      let n = 0, paid = 0, got = 0, burned = 0, noshow = 0
+      const each = []
+      for (let i = 0; i < N; i++) {
+        const l = m.makeListing(60, 1)
+        if (!l || !l.worth) continue
+        if (!pick(l)) continue
+        n++
+        const cost = l.ask + m.travelCost(l.miles)
+        const worth = l.bad && l.badKind === 'noshow' ? 0 : m.trueValue(l)
+        paid += cost; got += worth
+        each.push(worth / cost)
+        if (l.bad) burned++
+        if (l.badKind === 'noshow') noshow++
+      }
+      const s2 = each.sort((a, b) => a - b)
+      return { n, ratio: got / paid, median: s2.length ? s2[s2.length >> 1] : 0,
+        burnRate: burned / Math.max(1, n), noshow }
+    }
+    // What share of the board is even worth looking at?
+    const sample = []
+    for (let i = 0; i < 20000; i++) { const l = m.makeListing(60, 1); if (l?.worth) sample.push(l) }
+    const overMarket = sample.filter(l => l.ask > l.worth).length / sample.length
+    const cheap = sample.filter(l => l.ask < l.worth * 0.6)
+    const cheapBad = cheap.filter(l => l.bad).length / Math.max(1, cheap.length)
+    // The tells have to actually correlate, or the reading is theatre.
+    const freshCheap = cheap.filter(l => l.daysListed <= 2 && l.account !== 'new' && l.photo !== 'stock')
+    const freshCheapBad = freshCheap.filter(l => l.bad).length / Math.max(1, freshCheap.length)
+    return {
+      everything: run(() => true),
+      cheapChaser: run(l => l.ask < l.worth * 0.6),
+      reader: run(l => l.ask < l.worth * 0.6 && l.daysListed <= 2 && l.account !== 'new' && l.photo !== 'stock'),
+      overMarket, cheapBad, freshCheapBad,
+      cheapShare: cheap.length / sample.length,
+      meets: m.MEETS_PER_DAY,
+      takenSteal: m.takenChance({ askMult: 0.3 }), takenFantasy: m.takenChance({ askMult: 2.5 }),
+    }
+  })
+  pass(`most of the board is priced with feeling (${Math.round(mk.overMarket * 100)}% of listings are OVER market)`,
+    mk.overMarket > 0.3)
+  pass(`buying the whole board is a disaster (returns $${mk.everything.median.toFixed(2)} per $1 on a typical buy)`,
+    mk.everything.median < 1)
+  pass(`cheap is NOT a strategy: ${Math.round(mk.cheapBad * 100)}% of sub-60% listings are not what they say`,
+    mk.cheapBad > 0.2 && mk.cheapChaser.median < 1.6)
+  pass(`...but reading the tells is (${Math.round(mk.freshCheapBad * 100)}% bad once you filter, $${mk.reader.median.toFixed(2)} per $1)`,
+    mk.freshCheapBad < mk.cheapBad * 0.75 && mk.reader.median > mk.cheapChaser.median)
+  pass(`a steal does not wait (${Math.round(mk.takenSteal * 100)}% gone by tomorrow vs ${Math.round(mk.takenFantasy * 100)}% for a fantasy price)`,
+    mk.takenSteal > 0.5 && mk.takenFantasy < 0.1)
+  pass(`and you can only be in so many places (${mk.meets} meets a day)`, mk.meets <= 4)
+
   // ---- 2. Grading EV --------------------------------------------------------------
   console.log('\nGRADING EV ($100 comp-less NM card, N=40k rolls):')
   const grade = await page.evaluate(async () => {

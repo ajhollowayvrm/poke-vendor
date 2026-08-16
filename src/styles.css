@@ -1311,6 +1311,39 @@ button.rip-hit-row:hover { background:#ffffff14; }
   padding: 2px 5px; border-radius: 5px; background: #4c1d95dd; color: #e9d5ff; font-weight: 800;
   border: 1px solid #c084fc88; }
 
+/* ===================== 📱 Local Marketplace ===================== */
+.mk-list { display: flex; flex-direction: column; gap: 8px; }
+.mk-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px;
+  background: var(--panel2, #1a1f2e); border: 1px solid var(--line, #2a3145); }
+.mk-row.flagged { border-color: #ff9f43; }
+.mk-row.dead { opacity: .55; }
+.mk-art { width: 44px; border-radius: 6px; flex: none; }
+.mk-main { flex: 1 1 auto; min-width: 0; }
+.mk-title { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; font-size: 13.5px; }
+.mk-ask { font-weight: 800; font-size: 15px; color: var(--gold); flex: none; }
+.mk-line { font-size: 12.5px; color: var(--dim); font-style: italic; margin-top: 3px; }
+.mk-tells { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.mk-tell { font-size: 11px; padding: 2px 6px; border-radius: 5px; background: var(--bg, #0c0f1a);
+  border: 1px solid var(--line, #2a3145); color: var(--dim); }
+.mk-tell.warn { color: #ff9f43; border-color: #ff9f4355; }
+.mk-value { font-size: 12px; color: var(--dim); margin-top: 6px; }
+.mk-read.good { color: var(--green); font-weight: 700; }
+.mk-read.warn { color: #ff9f43; }
+.mk-read.bad { color: var(--red); }
+.mk-warn { margin-top: 6px; font-size: 12px; color: #ff9f43; }
+.mk-reply { margin-top: 6px; font-size: 12px; color: var(--green); }
+.mk-reply.bad { color: #ff9f43; }
+.mk-act { display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto; align-items: stretch; }
+.mk-offer { display: flex; gap: 4px; }
+.mk-input { width: 74px; padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line, #2a3145);
+  background: var(--panel, #121722); color: inherit; font-size: 13px; }
+@media (max-width: 640px) {
+  .mk-row { flex-wrap: wrap; }
+  .mk-act { flex-direction: row; width: 100%; flex-wrap: wrap; }
+  .mk-offer { flex: 1 1 auto; }
+  .mk-input { flex: 1 1 auto; width: auto; }
+}
+
 /* ===================== 🧾🏦 The books ===================== */
 .books-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
 .books-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
