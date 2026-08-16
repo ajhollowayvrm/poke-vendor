@@ -36,12 +36,18 @@ export function cardNumber(card) {
 // the pattern-breakers (cel25's cel25c paths, suffixed filenames), synthetic pseudo-cards —
 // use it verbatim. ALWAYS read card art through these, never card.img directly: card
 // instances minted after the strip don't carry the fields.
+// A collector number printed as "132/086" (the Japanese n-of-total format) is not a URL path
+// segment — building one produced `.../jp-SV11W/132/086.png`, a 404 on every one of the 634 JP
+// cards that carry no explicit art URL. Those cards are not hosted on pokemontcg.io at all, so
+// the honest answer is "no art", which lets the UI fall back instead of requesting nonsense.
+function derivableNumber(num) { return num && !String(num).includes('/') }
+
 export function cardImg(card) {
   if (!card) return null
   if (card.img) return card.img
   const sid = setIdOfCard(card)
   const num = cardNumber(card)
-  return sid && num ? `https://images.pokemontcg.io/${sid}/${num}.png` : null
+  return sid && derivableNumber(num) ? `https://images.pokemontcg.io/${sid}/${num}.png` : null
 }
 export function cardImgLarge(card) {
   if (!card) return null
@@ -49,7 +55,7 @@ export function cardImgLarge(card) {
   if (card.img) return card.img // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
   const sid = setIdOfCard(card)
   const num = cardNumber(card)
-  return sid && num ? `https://images.pokemontcg.io/${sid}/${num}_hires.png` : null
+  return sid && derivableNumber(num) ? `https://images.pokemontcg.io/${sid}/${num}_hires.png` : null
 }
 
 // Card art lives on a remote CDN, so a just-pulled card can pop in slowly mid-reveal.

@@ -15,7 +15,7 @@ import FirstRun, { NotorietyHelp } from './components/FirstRun'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import AuctionHouse from './components/AuctionHouse'
 import LocalMarket from './components/LocalMarket'
-import { shelfProducts, shelfEraProducts, shelfBlurb, purchaseLimit, limitKey, limitsTakenToday } from './game/shelf'
+import { shelfProducts, shelfEraProducts, shelfBlurb } from './game/shelf'
 import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -320,12 +320,20 @@ export default function App() {
     const origin = product.pool?.series ? `the ${product.pool.series} era` : set.name
     if (n > 1) {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
+      const limB = useGame.getState().purchaseLimitFor(distId, set, product)
+      if (limB.left <= 0) return toast(`${distName} limit ${product.type} to ${limB.limit} per customer a day — you've had yours. Back tomorrow.`)
       const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split })
       if (!res) return toast(`${distName} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
       if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${product.type} of ${origin} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
       return toast(`Stocked ${res.bought}× ${product.type} of ${origin} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
+    }
+    // 🚫 Check the ration BEFORE blaming the shelf — "sold out" and "you have had your one"
+    // need different answers from the player.
+    const lim = useGame.getState().purchaseLimitFor(distId, set, product)
+    if (lim.left <= 0) {
+      return toast(`${distName} limit ${product.type} to ${lim.limit} per customer a day — you've had yours. Back tomorrow${lim.limit < 4 ? ', or keep spending here and they\u2019ll let you take more' : ''}.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
     if (!item) return toast(`${distName} are out of ${product.type} — check back after it restocks.`)
@@ -1543,20 +1551,33 @@ function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId
 // own anchor set first, since held sealed is keyed by setId.
 function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split, creditAvail }) {
   const anchor = eraAnchorSet(product)
+  // 🚫 Collector product is exactly what a shop rations, so the sign belongs here most of all.
+  // Read through the same store check the shelf rows and both buy paths use.
+  const lim = useGame(s => (anchor ? s.purchaseLimitFor(dist.id, anchor, product) : { limit: Infinity, left: Infinity }))
   if (!anchor) return null
   const price = distributorPrice(dist, product.price, lvl.level, { product, set: anchor })
   const afford = cash >= price || (onCredit && creditAvail >= price) || (split && cash + creditAvail >= price)
+  const spent = lim.left <= 0
   return (
     <div className="prodrow era-prodrow">
       <span className="prod-name">
         {product.icon} {product.name}
+        {lim.limit !== Infinity && (
+          <span className={`limit-chip ${spent ? 'spent' : ''}`}
+            title={spent
+              ? `You have had your ${lim.limit} today. The shelf resets tomorrow${lim.limit < 4 ? ' — and a shop that knows you lets you take more' : ''}.`
+              : `${dist.name} rations this: ${lim.limit} per customer per day${lim.level > 0 ? ' — up from 1, because they know you' : ''}. ${lim.left} left today.`}>
+            🚫 {spent ? 'had yours today' : `${lim.limit}/customer`}
+          </span>
+        )}
         <span className="muted" style={{ fontSize: 12, display: 'block' }}>
           {product.packs} pack{product.packs !== 1 ? 's' : ''} from across the {product.pool.series} era
           {product.bonus === 'promo' ? ' · 🎁 promo' : ''}
         </span>
       </span>
-      <button className="btn" disabled={!afford}
-        title={afford ? `Buy for ${fmtMoney(price)}` : 'Not enough cash'}
+      <button className="btn" disabled={!afford || spent}
+        title={spent ? `${dist.name} limits this to ${lim.limit} per customer a day, and you have had yours. Back tomorrow.`
+          : afford ? `Buy for ${fmtMoney(price)}` : 'Not enough cash'}
         onClick={() => onBuy(dist.id, anchor, { ...product, _buyPrice: price, _distId: dist.id }, 1, { onCredit, split })}>
         {fmtMoney(price)}
       </button>
@@ -1632,10 +1653,9 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   // stepper cannot even be pushed past it — a limit you discover at the till is a worse
   // experience than a limit printed on the shelf, which is why real shops print it.
   const rapportLvl = lvl?.level || 0
-  const perCustomer = purchaseLimit(dist, product, rapportLvl)
-  const takenToday = useGame(s => perCustomer === Infinity ? 0
-    : limitsTakenToday(s.buyLimits, absoluteDay(s.currentDay, s.monthsElapsed), limitKey(dist.id, set, product)))
-  const limitLeft = perCustomer === Infinity ? Infinity : Math.max(0, perCustomer - takenToday)
+  const lim = useGame(s => s.purchaseLimitFor(dist.id, set, product))
+  const perCustomer = lim.limit
+  const limitLeft = lim.left
   const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable, limitLeft))
 
   const [buyQty, setBuyQty] = useState(1)

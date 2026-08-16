@@ -130,6 +130,31 @@ export function createSourcingSlice(set, get) {
     // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,
     // routes the actual purchase through buySealed (charge + stock the item + log), then
     // bumps your rapport with them and decrements their shelf. Returns the new inventory
+    // 🚫 THE one place the per-customer limit is computed. Both buy paths and both buy-screen
+    // components read it here, because the last version of this lived only in the bulk path —
+    // so a qty-of-1 buy (which is every collector-product buy, and most others) skipped it
+    // entirely. A rule with two implementations has one implementation and one bug.
+    purchaseLimitFor(distId, pokeSet, product) {
+      const dist = distributorById(distId)
+      if (!dist) return { limit: Infinity, taken: 0, left: Infinity }
+      const level = rapportLevel(get().distributorRec(distId).spend).level
+      const limit = purchaseLimit(dist, product, level)
+      if (limit === Infinity) return { limit: Infinity, taken: 0, left: Infinity, name: dist.name }
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      const taken = limitsTakenToday(get().buyLimits, day, limitKey(distId, pokeSet, product))
+      return { limit, taken, left: Math.max(0, limit - taken), name: dist.name, level }
+    },
+    // Record `n` bought against today's allowance. No-op for unlimited lines.
+    _recordLimit(distId, pokeSet, product, n) {
+      const dist = distributorById(distId)
+      if (!dist) return
+      const level = rapportLevel(get().distributorRec(distId).spend).level
+      if (purchaseLimit(dist, product, level) === Infinity) return
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      const key = limitKey(distId, pokeSet, product)
+      set(st => ({ buyLimits: recordLimitBuy(st.buyLimits, day, key, n) }))
+    },
+
     // item, or null if out of stock / unaffordable.
     buyFromDistributor(distId, pokeSet, product, price, opts = {}) {
       const dist = distributorById(distId)
@@ -145,6 +170,9 @@ export function createSourcingSlice(set, get) {
       const level = rapportLevel(rec.spend).level
       const key = stockKey(pokeSet, product)
       if (stockState(dist, rec.stock, pokeSet, product, level).out) return null // sold out
+      // 🚫 "1 per customer" applies here too — this is the path a qty-of-1 buy takes, which
+      // is every collector-product buy on the shelf.
+      if (get().purchaseLimitFor(distId, pokeSet, product).left <= 0) return null
       const paid = price ?? product._buyPrice ?? product.price ?? 0
       // On credit (pure or split), the line carries it — don't also draw down held LGS store
       // credit (it stays simple: LGS credit only tops up a straight cash buy).
@@ -152,6 +180,7 @@ export function createSourcingSlice(set, get) {
       const item = get().buySealed(pokeSet, product, price, opts) // spends/credits, stocks, logs; null if broke
       if (!item) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
+      get()._recordLimit(distId, pokeSet, product, 1)
       set(s => {
         const cur = s.distributors[distId] || { spend: 0, stock: {} }
         const st = stockState(dist, cur.stock, pokeSet, product, level) // fresh; cap ratchets up with rapport
@@ -187,11 +216,7 @@ export function createSourcingSlice(set, get) {
       // regular (see game/shelf.js). Clamped here rather than in the UI because every buyer
       // goes through this function — the buy screen, the 🧮 Purchasing Agent, the 📋 standing
       // order, a 📇 special order. A limit only the buy button respects is not a limit.
-      const today = absoluteDay(get().currentDay, get().monthsElapsed)
-      const lim = purchaseLimit(dist, product, level)
-      const lkey = limitKey(distId, pokeSet, product)
-      const already = limitsTakenToday(get().buyLimits, today, lkey)
-      const limitLeft = lim === Infinity ? Infinity : Math.max(0, lim - already)
+      const limitLeft = get().purchaseLimitFor(distId, pokeSet, product).left
       // Affordability by pay mode: split = cash + open credit; pure credit = the line only;
       // cash = cash (+ LGS store credit topping the till, at the LGS only). LGS credit stays
       // out of the credit/split mixes to keep the split math a clean cash-then-credit draw.
@@ -199,16 +224,13 @@ export function createSourcingSlice(set, get) {
       const spendable = opts.split ? round2(get().cash + get().creditAvailable())
         : opts.onCredit ? get().creditAvailable() : (get().cash + lgs)
       const affordable = unit > 0 ? Math.floor(spendable / unit) : want
+      // NULL on any refusal, including the limit. Every caller of this treats a truthy return
+      // as a completed purchase and reads `.bought` off it — an earlier version returned a
+      // descriptive object here and gave the Purchasing Agent a NaN and the standing order an
+      // "undefined× Elite Trainer Box". The buy screen explains the limit BEFORE you tap
+      // (purchaseLimitFor), which is where that explanation belongs anyway.
       const n = Math.min(want, inStock, affordable, limitLeft)
-      if (n < 1) {
-        // Distinguish "sold out" from "you have had your one" — they need different answers
-        // from the player, and a silent null reads as a bug.
-        if (limitLeft <= 0 && inStock > 0 && affordable > 0) {
-          return { limited: true, limit: lim, taken: already,
-            error: `${dist.name} limits ${product.type} to ${lim} per customer a day. Come back tomorrow${lim < LIMIT_MAX ? ', or become a regular and they will let you take more' : ''}.` }
-        }
-        return null
-      }
+      if (n < 1) return null
       const total = round2(unit * n)
       const drawn = (opts.onCredit || opts.split) ? 0 : get()._drawLgsCredit(distId, total) // gift-card the till from LGS credit first
       let split = null
@@ -216,7 +238,7 @@ export function createSourcingSlice(set, get) {
       else if (opts.onCredit ? !get().chargeCredit(total) : !get().spend(total)) { get()._refundLgsCredit(drawn); return null }
       if (drawn > 0) get().log('buy', `💳 Applied ${round2(drawn).toFixed(2)} LGS store credit`, 0)
       get().recordSetSpend(pokeSet.id, total)
-      if (lim !== Infinity) set(st2 => ({ buyLimits: recordLimitBuy(st2.buyLimits, today, lkey, n) }))
+      get()._recordLimit(distId, pokeSet, product, n)
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
       const items = []
       for (let i = 0; i < n; i++) {
