@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
-import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingFeeTotal, gradingShipping, overTierValue, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, round2, fmtMoney, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingFeeTotal, gradingShipping, overTierValue, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, round2, fmtMoney, cutEstimate, cardImg, setNameOfCard, setById } from '../game/engine'
+import { sealedGraderById } from '../game/sealedgrading'
 import CardTile from './CardTile'
 
 export default function Bench() {
@@ -21,6 +22,10 @@ export default function Bench() {
       <GraderRelationship submitted={submitted} />
 
       <BulkSubmit collection={collection} submitted={submitted} cash={cash} onSubmit={submitGradesBulk} />
+
+      {/* 📦🔟 Sealed product out at a sealed grader. Its own queue and its own clock, shown
+          here because from the player's side there is one question: what is away being graded. */}
+      <SealedBench today={today} />
 
       {pending.length === 0 ? (
         <div className="empty">No cards at the grader. Submit cards above, or from a card's detail view. 🔬</div>
@@ -59,6 +64,49 @@ export default function Bench() {
         </div>
       )}
     </>
+  )
+}
+
+// 📦🔟 The sealed queue. Renders nothing when empty, so the grader tab is unchanged for a
+// player who has never sent a box — the whole system stays out of the way until it is used.
+function SealedBench({ today }) {
+  const pending = useGame(s => s.pendingSealed || [])
+  if (!pending.length) return null
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div className="muted" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '.5px', fontWeight: 700, marginBottom: 6 }}>
+        📦 At the sealed grader
+      </div>
+      <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
+        {pending.map(p => {
+          const total = Math.max(1, p.readyOnDay - p.submittedAt)
+          const daysLeft = Math.max(0, p.readyOnDay - today)
+          const pct = Math.min(100, 100 * (total - daysLeft) / total)
+          const set = setById(p.item.setId)
+          const g = sealedGraderById(p.company)
+          return (
+            <div className="product" key={p.item.uid} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              {set?.logo
+                ? <img src={set.logo} alt={set.name} style={{ width: 70, borderRadius: 8 }} />
+                : <span style={{ fontSize: 34 }}>{p.item.product?.icon || '📦'}</span>}
+              <div style={{ flex: 1 }}>
+                <b>{p.item.product?.name || `${set?.name || ''} ${p.item.product?.type || 'Sealed'}`.trim()}</b>
+                <div className="muted" style={{ fontSize: 12 }}>
+                  <span style={{ color: g.color, fontWeight: 700 }}>{g.icon} {g.name}</span>
+                  {p.item.vintage ? ' · 🗝️ vintage' : ''} · {fmtMoney(p.paidFee)} fee
+                </div>
+                <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
+                  <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#a78bfa,var(--green))', transition: 'width .25s' }} />
+                </div>
+                <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
+                  {daysLeft === 0 ? 'Ready — advance a day to collect' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 

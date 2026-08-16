@@ -57,6 +57,10 @@ import {
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
+// 🧾 tax + 🏦 loan settlement and 🔨 the buy-side auction board. The per-day work for each
+// lives beside its own actions rather than in this file, so a system reads in one place.
+import { settleQuarter, settleLoan, settleTaxArrears } from './books'
+import { settleAuctionLots } from './auctionhouse'
 
 // A set trading at or above this multiple of its base price is "hot" — willing buyers
 // on a hot card pay a premium above market, so LISTING a card whose set is spiking can
@@ -1527,6 +1531,13 @@ export function advanceDaysWith(set, get, days, away) {
     if (r.bidders >= 5) get().addNotoriety(1, false, 'sales')
   }
 
+  // --- 🔨 The auction house: lots you were BIDDING on ------------------------------
+  // The other side of the hammer. Every lot whose clock ran out settles against the room it
+  // drew, you pay one increment over the runner-up if you won, and the board refills. A lot
+  // you never bid on simply closes. See game/lots.js for why a quiet lot is usually quiet for
+  // a reason, and store/auctionhouse.js for the settlement itself.
+  const lotResult = settleAuctionLots(set, get, newAbsDay)
+
   // --- 🏪 The shop across town ------------------------------------------------------
   // They open the day you do. Heat is a tug-of-war settled every day: they gain ground for
   // free if you coast, and lose it to the things a shop does to be liked — hosting nights,
@@ -1892,6 +1903,15 @@ export function advanceDaysWith(set, get, days, away) {
   // carried balance and auto-pay the monthly minimum from cash (short pay → freeze + rep ding).
   const monthsRolled = months - s.monthsElapsed
   if (monthsRolled > 0 && (s.credit?.balance || 0) > 0) settleCredit(set, get, monthsRolled)
+  // 🏦 The bank note. The instalment comes out every day whether or not the shop had a good
+  // one — that is what makes borrowing a commitment rather than free capital. Settled AFTER
+  // the day's takings are in, so a shop that traded well pays without noticing.
+  const loanResult = settleLoan(set, get, days)
+  // 🧾 The books. Interest first on anything already outstanding, then close the quarter if
+  // this window crossed its end. Ordering matters: closing first would immediately charge a
+  // day of arrears on a bill the player has not yet had a chance to see, let alone pay.
+  settleTaxArrears(set, get, days)
+  const quarter = settleQuarter(set, get, newAbsDay)
   set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
   // Life events: something may have happened while these days passed (expense, ding, theft,
   // a buyer walking, a windfall). Applied after settlement so the recap's cashDelta captures it.
@@ -2201,6 +2221,18 @@ export function advanceDaysWith(set, get, days, away) {
     regularCalls: regTick.requested.length, regularsWon: regTick.fulfilled.length,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
     lifeEvents,
+    // 🔨 Lots that closed while the days passed, 🧾 a quarter that ended, 🏦 the note's
+    // instalments. All three are things that happen TO you on a clock, so the recap is the
+    // only place a player reliably sees them.
+    lotsWon: lotResult?.won || 0,
+    lotsLost: lotResult?.lost || 0,
+    lotsSpent: round2(lotResult?.spent || 0),
+    lotsBurned: lotResult?.burned || 0,
+    quarterClosed: quarter || null,
+    loanPaid: round2(loanResult?.paid || 0),
+    loanMissed: loanResult?.missed || 0,
+    loanCleared: !!loanResult?.cleared,
+    loanDefaulted: !!loanResult?.defaulted,
     netWorth,
     cashDelta: round2(get().cash - s.cash),
     notoDelta: round2(get().notoriety - noto),
@@ -2258,6 +2290,15 @@ export function mergeSummaries(a, b) {
     regularsWon: add(a.regularsWon, b.regularsWon),
     marketMovers: [...(a.marketMovers || []), ...(b.marketMovers || [])],
     lifeEvents: [...(a.lifeEvents || []), ...(b.lifeEvents || [])],
+    lotsWon: add(a.lotsWon, b.lotsWon),
+    lotsLost: add(a.lotsLost, b.lotsLost),
+    lotsSpent: round2(add(a.lotsSpent, b.lotsSpent)),
+    lotsBurned: add(a.lotsBurned, b.lotsBurned),
+    quarterClosed: b.quarterClosed || a.quarterClosed || null, // at most one quarter ends in a trip
+    loanPaid: round2(add(a.loanPaid, b.loanPaid)),
+    loanMissed: add(a.loanMissed, b.loanMissed),
+    loanCleared: !!(a.loanCleared || b.loanCleared),
+    loanDefaulted: !!(a.loanDefaulted || b.loanDefaulted),
     netWorth: b.netWorth != null ? b.netWorth : a.netWorth, // latest (end-of-trip) worth
     cashDelta: round2(add(a.cashDelta, b.cashDelta)),
     notoDelta: round2(add(a.notoDelta, b.notoDelta)),
@@ -2376,14 +2417,16 @@ function settleRent(set, get, rentDue, days, storageDue = 0) {
   // rentDue is the combined overhead (base rent + inventory storage); break it out for the log.
   const baseRent = round2(rentDue - storageDue)
   const storageNote = storageDue > 0 ? ` + storage $${storageDue.toFixed(2)}` : ''
+  // 🧾 Your rent is where you LIVE. It is not a business cost and it does not come off the
+  // taxable line — the storage the shop pays for does, and that rides its own spend() call.
   if (s.cash >= rentDue) {
-    get().spend(rentDue)
+    get().spend(rentDue, { personal: true })
     get().log('rent', `Rent $${baseRent.toFixed(2)}${storageNote} paid (-$${rentDue.toFixed(2)})`, -rentDue)
     if (s.rentArrears) set({ rentArrears: 0 })
     return
   }
   // can't fully cover rent → pay what we can, fall behind.
-  if (s.cash > 0) { get().spend(round2(s.cash)) }
+  if (s.cash > 0) { get().spend(round2(s.cash), { personal: true }) }
   const arrears = (s.rentArrears || 0) + days
   const assets = realizableAssets(get())
   if (arrears > RENT_GRACE_DAYS && assets < rentDue) {

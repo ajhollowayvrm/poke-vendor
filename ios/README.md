@@ -99,21 +99,24 @@ Four things, and only the first is what people usually expect:
 ## What changes inside the shell
 
 The web layer knows about the shell only through `window.__POKEVENDOR_NATIVE__`, injected at
-document start. Everything is guarded, so the same build still runs as a PWA and from a dev server.
+document start. Everything is guarded, so the same build still runs from a dev server.
 
-| | Web | Shell |
+| | Dev server | Shell |
 |---|---|---|
 | Haptics | `navigator.vibrate` (dead on iOS) | `UIFeedbackGenerator` bridge |
 | Save-backup export | `a.download` (inert here) | share sheet bridge |
-| Update prompt | service worker | **off** — a native app ships new code as a binary |
-| Card-image cache | Workbox `CacheFirst` | `URLCache`, 512 MB on disk |
+| Card-image cache | browser HTTP cache | `URLCache`, 512 MB on disk |
 
-**The service worker does not run under a custom scheme.** Confirmed on device:
-`navigator.serviceWorker` is `false`. That is fine for updates but it kills the app's card-art
-cache, which is why `Shell.swift` installs a large `URLCache`. That is *not* an equivalent — it
-obeys the CDN's headers rather than the worker's explicit 1000-entry / 14-day policy — so **watch
-the app's storage figure in Settings**. `vite.config.js` records that ~6000 cached images ran
-470–880 MB.
+**There is no service worker any more, anywhere.** There never was one *here* — a service
+worker does not run under a custom URL scheme, and `ios:sim` asserts `sw: false` on every run —
+so the PWA layer was doing nothing for the app it shipped inside. It has been removed from the
+build entirely (2026-08-15), along with the GitHub Pages deployment: this bundle exists to be
+loaded by this shell and nothing else.
+
+The one thing the worker did on the web was cache card art, and `Shell.swift` installs a large
+`URLCache` for that instead. It is not an equivalent — it obeys the CDN's headers rather than an
+explicit entry/age policy — so **watch the app's storage figure in Settings**. Roughly 6000
+cached images measured 470–880 MB.
 
 ---
 
@@ -172,7 +175,7 @@ numbers and asserts on neither; `ios:sim` is where they mean something.
 
 `ios:sim` also checks what no browser can see: that the origin is `pokevendor://local`, that
 `isSecureContext` holds, that `--sat`/`--sab` report 62/34px, and that no service worker
-registered.
+registered (which is now a statement about the build, not just the scheme).
 
 **The test seam.** Both drivers reach game state through `window.__PV__`, which `main.jsx`
 exposes only under `VITE_TEST_SEAM`. It has to exist because the browser driver *could* import

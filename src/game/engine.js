@@ -2,9 +2,33 @@
 import data from '../data/sets.json'
 import { SYNC_URL } from './syncConfig'
 import { getIdToken } from './auth'
+// 📊 Population reports and 🖨️ misprints both change what a card is WORTH, so they are wired
+// into the pricing functions here. Both modules are pure and import nothing from the engine,
+// so there is no cycle. See population.js for the mean-1.0 invariant that keeps grading
+// balance intact, and misprints.js for why the error premium is split raw vs graded.
+import { popMult, popCount, popLine } from './population'
+import { misprintValue, rollMisprint, pickMisprintIndex } from './misprints'
+import { sealedGradeMult } from './sealedgrading'
 
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
+
+// A card's collector number. For 20,454 of the 23,475 cards in the snapshot the number is
+// simply the tail of the id ("sv8pt5-25" → "25"), so the data ships WITHOUT it and this
+// rebuilds it — 288 KB raw and 48 KB gzipped off the payload, the single biggest download
+// win available (see docs/PERFORMANCE.md). The exceptions keep an explicit `number`
+// and are returned verbatim: Japanese cards print theirs as "094/165" while their id ends in
+// a variant suffix ("jp-SV2a-094MB"), so the two genuinely differ.
+//
+// ALWAYS read a collector number through this, never `card.number` directly.
+export function cardNumber(card) {
+  if (!card) return ''
+  if (card.number != null) return card.number
+  const id = card.id
+  if (typeof id !== 'string') return ''
+  const i = id.lastIndexOf('-')
+  return i > 0 ? id.slice(i + 1) : ''
+}
 
 // Card art URL resolution. pokemontcg.io art follows a fixed pattern derived from the
 // card's id + number, so the data snapshot omits those URLs (~40% of its raw bytes) and
@@ -16,14 +40,16 @@ export function cardImg(card) {
   if (!card) return null
   if (card.img) return card.img
   const sid = setIdOfCard(card)
-  return sid && card.number ? `https://images.pokemontcg.io/${sid}/${card.number}.png` : null
+  const num = cardNumber(card)
+  return sid && num ? `https://images.pokemontcg.io/${sid}/${num}.png` : null
 }
 export function cardImgLarge(card) {
   if (!card) return null
   if (card.imgLarge) return card.imgLarge
   if (card.img) return card.img // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
   const sid = setIdOfCard(card)
-  return sid && card.number ? `https://images.pokemontcg.io/${sid}/${card.number}_hires.png` : null
+  const num = cardNumber(card)
+  return sid && num ? `https://images.pokemontcg.io/${sid}/${num}_hires.png` : null
 }
 
 // Card art lives on a remote CDN, so a just-pulled card can pop in slowly mid-reveal.
@@ -950,7 +976,16 @@ export function jpPackEV(set) {
   return ev
 }
 
+// One pack. Every pack path in the game funnels through here, which is why the 🖨️ misprint
+// roll lives in this wrapper rather than in each builder: a new pack structure cannot forget
+// to include it. GOD PACKS are the deliberate exception — a pack where all ten cards are
+// chases does not also need a press fault, and stacking the two would spike pack EV.
 export function openPack(set) {
+  const pulls = openPackInner(set)
+  if (pulls && !pulls._specialKey) applyPackMisprint(pulls)
+  return pulls
+}
+function openPackInner(set) {
   if (set.japanese) return openJapanesePack(set)     // 🎌 5-card JP structure, own hit ladder
   if (set.id === 'cel25') return openCelebrationsPack(set) // bespoke 4-card structure
   const byR = cardsByRarity(set)
@@ -1043,6 +1078,21 @@ export function openPack(set) {
   // sort so the best card is revealed last (foils rank above plain reverse)
   pulls.sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity) + foilWeight(a) - foilWeight(b))
   return pulls
+}
+
+// Roll one error across a finished pack and stamp it onto a single card. The card is chosen
+// UNIFORMLY: a press does not know what rarity it is printing, and because a pack is mostly
+// commons the fault usually lands on one. That is what keeps the whole category's
+// contribution to pack EV under a tenth of a percent, which sim section 1 depends on.
+export function applyPackMisprint(pulls, rnd = Math.random) {
+  if (!pulls?.length) return null
+  const m = rollMisprint(rnd)
+  if (!m) return null
+  const card = pulls[pickMisprintIndex(pulls.length, rnd)]
+  if (!card || card.misprint) return null
+  card.misprint = m
+  card._isMisprint = true
+  return card
 }
 
 // The odds openPack() actually rolls, read back out as numbers — the input to the 🎲 luck panel
@@ -1459,6 +1509,10 @@ export function rawValue(card, multOverride) {
   else if (card.reverse) base *= reverseMult(card.rarity) // reverse holo: small on commons, larger on rares
   // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
   if (!card.grade && card.condition && CONDITIONS[card.condition]) base *= CONDITIONS[card.condition].mult
+  // 🖨️ A press fault is worth money on its own terms, and it sets a dollar floor the card
+  // underneath cannot explain. Raw, it only realises part of that — the market discounts a
+  // claim nobody has authenticated. See misprints.js.
+  if (card.misprint) base = misprintValue(base, card.misprint, false)
   return Math.max(0.02, round2(base))
 }
 
@@ -1648,7 +1702,47 @@ export function gradedValue(card, multOverride) {
   // Re-price it for the holder this card is actually IN before the floors apply, so a
   // strong slab still can't fall under the raw card no matter who graded it.
   value *= slabMultiplier(card.grade)
+  // 📊 The population report. A PSA 10 with 40 copies in the census is not the same asset as
+  // a PSA 10 with 9,000, and this is where that difference reaches the price. The multiplier
+  // averages EXACTLY 1.0 across the catalog (see population.js), so the grading business is
+  // no more or less profitable than it was — only the choice of WHICH card to send changes.
+  value *= cardPopMult(card, g)
+  // 🖨️ A grader's label is what the error market pays for. Raw, the premium is discounted;
+  // authenticated, it is realised in full.
+  if (card.misprint) value = misprintValue(value, card.misprint, true)
   return round2(gradedFloor(card, g, value, multOverride))
+}
+
+// 📊 What the PLAYER's own submissions have added to the census, as { 'cardId|grade': n }.
+// Held in module state and pushed in by the store, exactly like the living-market multipliers
+// above — for the same reason. A census entry is a fact about the CARD, not about one copy of
+// it, so the moment you slab another Umbreon every Umbreon slab you already own re-prices.
+// Stamping the count onto each card instead would freeze each copy at the census it was born
+// into, and the whole point of the mechanic is that over-slabbing devalues the stack you hold.
+// The store re-pushes this on rehydrate (see onRehydrateStorage).
+let POP_ADDS = {}
+export function setPopAdds(map) { POP_ADDS = map || {} }
+export function popAddsFor(cardId, grade) { return POP_ADDS[`${cardId}|${grade}`] || 0 }
+
+// The population multiplier for a card at a grade, guarded so it only ever applies to a REAL
+// catalog card. Synthetic cards (the sim's test card, any future fixture) have no census and
+// must price exactly as they did before this system existed.
+function cardPopMult(card, grade) {
+  if (!card?.id || !CARD_BY_ID.has(card.id)) return 1
+  const vintage = !!SET_BY_ID[setIdOfCard(card)]?.vintage
+  return popMult(card, grade, { vintage, adds: popAddsFor(card.id, grade) })
+}
+// Public read of a card's census, for the Grading Scope panel and the card modal.
+export function cardPopulation(card, grade) {
+  if (!card?.id || !CARD_BY_ID.has(card.id)) return null
+  const vintage = !!SET_BY_ID[setIdOfCard(card)]?.vintage
+  const adds = popAddsFor(card.id, grade)
+  return {
+    count: popCount(card, grade, { vintage, adds }),
+    mult: popMult(card, grade, { vintage, adds }),
+    line: popLine(card, grade, { vintage, adds }),
+    mine: adds,
+  }
 }
 
 // Floors: a STRONG slab (PSA 9/10) is never worth less than the raw card, and a higher
@@ -1838,6 +1932,10 @@ export function psaValueAt(card, grade) {
     // heuristic-only: don't let it overshoot a real higher-grade comp (see gradedValue).
     value = Math.min(value, gradedCeiling(card, grade))
   }
+  // 📊 The same census the real slab would be priced against — otherwise the "if it gemmed"
+  // teaser would quote a number the returned slab could never sell for.
+  value *= cardPopMult(card, grade)
+  if (card.misprint) value = misprintValue(value, card.misprint, true)
   return round2(gradedFloor(card, grade, value))
 }
 // Hypothetical PSA-10 value — the headline "if it gemmed" number. Thin wrapper kept for
@@ -2145,6 +2243,47 @@ export function rollGrade(card, tier, luck = 0, paidFee = null, company = DEFAUL
   // WHICH grader's holder it came back in — that's what slabMultiplier prices off.
   return { overall, centering, corners, edges, surface, fee: paidFee ?? GRADING[tier].fee, tier,
     company, gradedAt: Date.now() }
+}
+
+// ---- 🔨 Cracking a slab -------------------------------------------------------------
+// Breaking a card out of its holder to send it again is a real and common play: you buy an
+// under-graded slab cheap, crack it, resubmit, and hope the second opinion is kinder.
+//
+// The design problem is obvious. If cracking simply re-rolled the same distribution, the
+// correct strategy would be to crack every 9 forever until it gemmed, and grading would stop
+// being a decision. THE FIX IS THE HONEST ONE: a grade is EVIDENCE about the physical card.
+//
+// So each grade a card receives refines its hidden cut quality toward what that grade implies,
+// and the refinement gets heavier with every observation. A card that grades 8 twice ends up
+// with a genuinely poor recorded cut, its regrade odds get worse, and the reroll dries up. A
+// card that graded 9 once still has real upside, because one observation is weak evidence —
+// which is exactly the case where a real dealer cracks.
+const CUT_IMPLIED = { 10: 0.88, 9: 0.62, 8: 0.42, 7: 0.28, 6: 0.18 }
+export function refineCut(card, grade) {
+  const cut = card._cut ?? 0.5
+  const implied = CUT_IMPLIED[grade?.overall] ?? 0.12
+  // How many opinions this card has now had. Each one makes the estimate firmer.
+  const n = Math.max(1, (card.gradeHistory?.length || 0))
+  const weight = 1 - 1 / (1 + n * 0.8)   // 1 grade → 0.44, 2 → 0.62, 3 → 0.71 …
+  return Math.max(0, Math.min(1, cut * (1 - weight) + implied * weight))
+}
+
+// The physical risk of cracking. Most cracks are clean; a slip nicks a corner and drops the
+// card a condition tier, which also caps every grade it can earn from then on. This is the
+// cost that stops cracking being a free option even when the odds look good.
+export const CRACK_DAMAGE_CHANCE = 0.05
+export function crackSlab(card, rnd = Math.random) {
+  const refined = refineCut(card, card.grade)
+  const damaged = rnd() < CRACK_DAMAGE_CHANCE
+  const worse = { NM: 'LP', LP: 'MP', MP: 'DMG', DMG: 'DMG' }
+  const out = {
+    ...card,
+    grade: null,
+    _cut: refined,
+    _cracked: (card._cracked || 0) + 1,
+    condition: damaged ? (worse[card.condition || 'NM'] || 'LP') : (card.condition || 'NM'),
+  }
+  return { card: out, damaged }
 }
 
 // Predicted grade RANGE for a still-raw card (the Grading Scope upgrade). Monte-Carlos the
@@ -2539,14 +2678,14 @@ const PROMO_BANNED_RARITY = new Set([
 // pack-only subset pulls — never a boxed promo either.
 const GALLERY_NUMBER = /^(?:TG|GG|SV|RC)\d/i
 function promoEligible(card) {
-  return !PROMO_BANNED_RARITY.has(card.rarity) && !GALLERY_NUMBER.test(String(card.number || ''))
+  return !PROMO_BANNED_RARITY.has(card.rarity) && !GALLERY_NUMBER.test(String(cardNumber(card) || ''))
 }
 
 // A card's collector number as a sortable integer — secret/full-art reprints are numbered ABOVE
 // the set's printed total, so the lowest number of a name's prints is its base art. Non-numeric
 // (gallery/promo) numbers sort last.
 function numOf(card) {
-  const n = parseInt(String(card.number || ''), 10)
+  const n = parseInt(String(cardNumber(card) || ''), 10)
   return Number.isFinite(n) ? n : Infinity
 }
 
@@ -2648,7 +2787,7 @@ function pokemonCenterStamp(base, set, seed) {
   const basePrice = base.price ?? CANONICAL_PRICE[base.id] ?? estimateByRarity(base.rarity)
   const premium = 1.7 + (hashStr(`${seed}|pc`) % 90) / 100 // 1.70–2.59×, stable per product
   const baseSet = setIdOfCard(base) || set.id
-  const num = String(base.number || normName(base.name).replace(/\s+/g, '') || 'promo')
+  const num = String(cardNumber(base) || normName(base.name).replace(/\s+/g, '') || 'promo')
   const card = {
     ...base,
     id: `${baseSet}-pcstamp${num}`,           // one hyphen → market drift still tracks the base set
@@ -2761,7 +2900,22 @@ export const DISTRIBUTOR_NOTO = 250        // Household Name
 export const DISTRIBUTOR_WORTH = 1_000_000 // Millionaire
 export function sealedValue(item) {
   if (!item?.product) return 0
-  return round2(sealedBase(item.product) * marketMult(item.setId))
+  let base = sealedBase(item.product) * marketMult(item.setId)
+  // 🔨 A resealed box. Distinct from a `_searched` loose pack (which keeps its shape and only
+  // loses its hit): this is a whole product that has been opened, gone through and shut again,
+  // and the market prices it as the empty box it now is. It only ever arrives from an auction
+  // lot nobody checked — see game/lots.js.
+  if (item.resealed) base *= 0.15
+  // 📦🔟 A graded wrapper. The ladder is steep for genuine vintage and almost flat for
+  // anything still in print — see sealedgrading.js for why that asymmetry is the whole point.
+  if (item.grade) return round2(base * sealedGradeMult(sealedEra(item), item.grade))
+  return round2(base)
+}
+// Normalize a sealed row into the era flags the grading premium is scaled by. `vintage` is
+// already stamped on the row when it is bought; whether the set has stopped printing is a
+// catalog fact, so it is resolved here rather than persisted onto every item.
+export function sealedEra(item) {
+  return { ...item, aftermarket: AFTERMARKET_SET_IDS.has(item?.setId) }
 }
 // The market price of ONE unit of a sealed product, before the set's market drift.
 //

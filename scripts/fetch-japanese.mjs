@@ -187,7 +187,10 @@ async function fetchSet(pair) {
       rarity: mapRarity(jc.rarity),
       price,
       img, imgLarge: img,
-      foil: null, reverse: false, condition: null, grade: null,
+      // NOTE: no condition/grade/reverse/foil here. Those describe a COPY somebody owns, not
+      // a catalog row — engine.instance() fills them in when a card is actually minted. This
+      // used to write four empty fields onto every JP card, which was 170 KB of the shipped
+      // snapshot encoding "nothing at all". See scripts/strip-derivable-fields.mjs.
     }
   })
 

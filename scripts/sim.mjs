@@ -476,6 +476,303 @@ try {
       ct.sponsorFloor >= 100 && ct.sponsorPacks >= 1)
   }
 
+  // ---- 9. 📊 Population reports ---------------------------------------------------
+  // The load-bearing invariant of the whole system: the scarcity multiplier averages 1.0
+  // across the catalog. Without that, adding population reports would silently re-tune the
+  // grading EV that section 2 pins — this is what makes it a spread rather than a nerf.
+  console.log('\n📊 POPULATION REPORTS:')
+  {
+    const pop = await page.evaluate(async () => {
+      const eng = await import('/src/game/engine.js')
+      const p = await import('/src/game/population.js')
+      // Every real card in the catalog, at the two grades that carry a premium.
+      const cards = eng.SHOP_SETS.flatMap(s => s.cards).slice(0, 4000)
+      const mean = (g) => cards.reduce((a, c) => a + p.popMult(c, g, {}), 0) / cards.length
+      // A thin card vs a deep one, and what YOUR OWN ten submissions do to each.
+      const thin = cards.reduce((b, c) => (p.popCount(c, 10, { vintage: true }) < p.popCount(b, 10, { vintage: true }) ? c : b), cards[0])
+      const deep = cards.reduce((b, c) => (p.popCount(c, 10, {}) > p.popCount(b, 10, {}) ? c : b), cards[0])
+      return {
+        mean10: mean(10), mean9: mean(9),
+        mean8: mean(8),                       // grades below 9 carry no premium at all
+        spread10: [Math.min(...cards.map(c => p.popMult(c, 10, {}))), Math.max(...cards.map(c => p.popMult(c, 10, {})))],
+        thinBefore: p.popMult(thin, 10, { vintage: true }), thinAfter: p.popMult(thin, 10, { vintage: true, adds: 10 }),
+        thinPop: p.popCount(thin, 10, { vintage: true }),
+        deepBefore: p.popMult(deep, 10, {}), deepAfter: p.popMult(deep, 10, { adds: 10 }),
+        deepPop: p.popCount(deep, 10, {}),
+        // A card with no catalog row must price EXACTLY as it did before this system existed.
+        // Checked through the engine, because that is where the catalog guard lives — the
+        // population module itself will happily hash any id you hand it.
+        syntheticPop: eng.cardPopulation({ uid: 't', id: 'none-1', name: 'T', rarity: 'Rare Holo', price: 100 }, 10),
+        // Two synthetic cards with DIFFERENT ids must value identically. If a census were
+        // being applied to them, their hashes would differ and so would their prices.
+        syntheticValues: ['none-1', 'none-2', 'zzz-99'].map(id =>
+          eng.gradedValue({ uid: 't', id, name: 'T', rarity: 'Rare Holo', price: 100, condition: 'NM', grade: { overall: 10 } })),
+      }
+    })
+    pass(`the census multiplier averages 1.0 across the catalog (PSA 10 mean ×${pop.mean10.toFixed(4)}, PSA 9 ×${pop.mean9.toFixed(4)}) — grading EV is untouched`,
+      Math.abs(pop.mean10 - 1) < 0.01 && Math.abs(pop.mean9 - 1) < 0.01)
+    pass(`only strong slabs carry a population premium (PSA 8 mean ×${pop.mean8.toFixed(2)})`, pop.mean8 === 1)
+    pass(`scarcity is a real spread, not noise (PSA 10 ranges ×${pop.spread10[0].toFixed(2)}–×${pop.spread10[1].toFixed(2)})`,
+      pop.spread10[0] < 0.8 && pop.spread10[1] > 1.2)
+    pass(`your own submissions flood a THIN card (pop ${pop.thinPop}: ×${pop.thinBefore.toFixed(2)} → ×${pop.thinAfter.toFixed(2)} after 10 slabs)`,
+      pop.thinAfter < pop.thinBefore - 0.05)
+    pass(`...and barely dent a DEEP one (pop ${pop.deepPop.toLocaleString()}: ×${pop.deepBefore.toFixed(3)} → ×${pop.deepAfter.toFixed(3)})`,
+      Math.abs(pop.deepAfter - pop.deepBefore) < 0.02)
+    pass(`a card with no catalog row has no census (report ${pop.syntheticPop === null ? 'null' : 'PRESENT'}; three ids all price at $${pop.syntheticValues[0].toFixed(2)}) — the section-2 fixture is untouched`,
+      pop.syntheticPop === null && new Set(pop.syntheticValues.map(v => v.toFixed(2))).size === 1)
+  }
+
+  // ---- 10. 🖨️ Misprints -----------------------------------------------------------
+  // Errors add value to a pack, and section 1 requires every set to stay -EV to rip. The
+  // category therefore has to be a rounding error on pack EV, which is what this measures.
+  console.log('\n🖨️ ERRORS & MISPRINTS:')
+  {
+    const mp = await page.evaluate(async () => {
+      const eng = await import('/src/game/engine.js')
+      const m = await import('/src/game/misprints.js')
+      const set = eng.SHOP_SETS[0]
+      // Measure the contribution ANALYTICALLY through real pack composition rather than by
+      // waiting for a 1-in-125,000 wrong-back to turn up in a sample: run real packs, and for
+      // each one price what an error WOULD add if it landed on a uniformly chosen card of
+      // that pack (which is exactly what pickMisprintIndex does). Expected added value per
+      // pack is then the rate times that mean. Sampling the tail directly would need millions
+      // of packs to stop swinging, and a gate that swings is a gate nobody trusts.
+      const PACKS = 3000
+      let packEV = 0, meanErrorAdd = 0
+      const weights = m.MISPRINTS.reduce((a, x) => a + x.weight, 0)
+      for (let i = 0; i < PACKS; i++) {
+        const pack = eng.openPack(set)
+        for (const c of pack) packEV += eng.cardValue(c)
+        // What the average error on this pack would be worth, over the kind ladder AND over
+        // which card in the pack it lands on.
+        let add = 0
+        for (const kind of m.MISPRINTS) {
+          for (const c of pack) {
+            const base = eng.rawValue({ ...c, misprint: null })
+            add += (kind.weight / weights) * (1 / pack.length) * (m.misprintValue(base, { kind: kind.key }, false) - base)
+          }
+        }
+        meanErrorAdd += add
+      }
+      packEV /= PACKS
+      meanErrorAdd /= PACKS
+      // The observed rate, over enough rolls to pin the headline number (not the tail).
+      let hits = 0
+      const N = 400000
+      for (let i = 0; i < N; i++) if (m.rollMisprint()) hits++
+      return {
+        rate: hits / N, declared: m.MISPRINT_RATE,
+        perPack: meanErrorAdd * m.MISPRINT_RATE, packEV,
+        rawVsGraded: [m.misprintValue(100, { kind: 'wrongback' }, false), m.misprintValue(100, { kind: 'wrongback' }, true)],
+        floorWorks: m.misprintValue(0.1, { kind: 'miscut' }, true), // a miscut common is not worth 3.2 × 10¢
+      }
+    })
+    pass(`errors are rare (${(mp.rate * 100).toFixed(3)}% of packs, declared ${(mp.declared * 100).toFixed(3)}%)`,
+      Math.abs(mp.rate - mp.declared) < mp.declared * 0.15)
+    pass(`the whole category is a rounding error on pack EV (+$${mp.perPack.toFixed(4)}/pack against $${mp.packEV.toFixed(2)} = ${(mp.perPack / mp.packEV * 100).toFixed(2)}%) — rip EV is untouched`,
+      mp.perPack < mp.packEV * 0.01)
+    pass(`an error is worth less raw than authenticated ($${mp.rawVsGraded[0].toFixed(0)} vs $${mp.rawVsGraded[1].toFixed(0)} on a $100 card)`,
+      mp.rawVsGraded[0] < mp.rawVsGraded[1])
+    pass(`an error sets its own floor (a miscut 10¢ common is worth $${mp.floorWorks.toFixed(2)}, not 32¢)`, mp.floorWorks >= 10)
+  }
+
+  // ---- 11. 🔨 The auction house (buy side) ----------------------------------------
+  // The channel must not be free money. A naive bidder who enters market value on everything
+  // should end up paying about market once the house's premium and the misdescribed lots are
+  // counted; the edge belongs to whoever reads the room and checks the description.
+  console.log('\n🔨 AUCTION HOUSE (buy side) — want blind bidding to lose, discipline to pay:')
+  {
+    const auc = await page.evaluate(async () => {
+      const L = await import('/src/game/lots.js')
+      // Large N on purpose: the selective strategies below only bid on a slice of the board,
+      // so a small sample leaves them with a few dozen wins and a ratio that swings run to run.
+      const N = 20000
+      // Lot values are fat-tailed (a $4 common and an $800 slab are on the same board), so the
+      // aggregate value-per-dollar is dominated by whichever big lot happened to land and
+      // swings run to run. The MEDIAN per-lot outcome is the stable statistic, and it is also
+      // the better question: on a TYPICAL win, did you do well?
+      const median = (xs) => {
+        if (!xs.length) return 0
+        const s = [...xs].sort((a, b) => a - b)
+        const m = s.length >> 1
+        return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
+      }
+      const run = (strategy) => {
+        let won = 0, paid = 0, got = 0, burned = 0
+        const each = []
+        for (let i = 0; i < N; i++) {
+          const lot = L.makeLot(60, 1)
+          if (!lot) continue
+          const market = L.lotMarket(lot)
+          if (!market) continue
+          const max = strategy(lot, market)
+          if (max <= 0) continue
+          const r = L.settleLot({ ...lot, maxBid: max })
+          if (!r.won) continue
+          won++
+          paid += r.total
+          got += L.lotTrueValue(lot)
+          each.push(L.lotTrueValue(lot) / r.total)
+          if (lot._misdescribed || lot._resealed) burned++
+        }
+        return { won, ratio: got / paid, median: median(each), burnRate: burned / Math.max(1, won) }
+      }
+      return {
+        // Bids market on everything, checks nothing.
+        naive: run((lot, market) => market),
+        // The disciplined line: only quiet rooms, and only at a real discount to market.
+        // This is what the channel is built to reward.
+        disciplined: run((lot, market) => (lot.watchers <= 3 ? market * 0.65 : 0)),
+        // Bids market but only on graded lots, where there is nothing to misdescribe — the
+        // safe, boring line, and the control for the description-risk check below.
+        slabsOnly: run((lot, market) => (lot.kind === 'slab' ? market : 0)),
+        premium: L.HOUSE_PREMIUM, ship: L.LOT_SHIP_FLAT,
+      }
+    })
+    pass(`the house takes ${Math.round(auc.premium * 100)}% on every win`, auc.premium >= 0.1)
+    pass(`a naive bidder does NOT print money (typical win returns $${auc.naive.median.toFixed(2)} of value per $1 paid, ${Math.round(auc.naive.burnRate * 100)}% of wins misdescribed)`,
+      auc.naive.median < 1.1)
+    pass(`discipline is what pays — quiet rooms at 35% under market return $${auc.disciplined.median.toFixed(2)} on a typical win`,
+      auc.disciplined.median > 1 && auc.disciplined.median > auc.naive.median)
+    pass(`...and it is SLOW, not a printer (${auc.disciplined.won} wins against the naive bidder's ${auc.naive.won})`,
+      auc.disciplined.won < auc.naive.won * 0.3)
+    pass(`a quiet lot is quiet for a reason (${Math.round(auc.disciplined.burnRate * 100)}% of quiet-room wins are misdescribed vs ${Math.round(auc.slabsOnly.burnRate * 100)}% on slabs — checking is part of the discipline)`,
+      auc.disciplined.burnRate > auc.slabsOnly.burnRate)
+  }
+
+  // ---- 12. 🔨 Cracking a slab -----------------------------------------------------
+  // Cracking must not be a free reroll. Two separate properties do that work, and they are
+  // different from each other:
+  //
+  //   • The grade a card earned is EVIDENCE about the card, so each crack refines its hidden
+  //     cut toward what that grade implied — and the refinement CONVERGES. A card cannot be
+  //     cracked its way to a better and better prediction; after a few opinions the estimate
+  //     stops moving and the card is simply what it is.
+  //   • The economics bite immediately. A strong slab is worth more than the raw card inside
+  //     it, so cracking costs you real money before the new fee is even paid.
+  console.log('\n🔨 CRACK & REGRADE — want convergence, not a printing press:')
+  {
+    const crack = await page.evaluate(async () => {
+      const eng = await import('/src/game/engine.js')
+      const mk = () => ({ uid: 'x', id: 'none-1', name: 'T', rarity: 'Rare Holo', price: 100, condition: 'NM', _cut: 0.5 })
+      // Crack the same card over and over, always getting the same opinion back. The recorded
+      // cut must settle rather than drift further every time.
+      const walk = (grade) => {
+        const cuts = []
+        let card = mk()
+        for (let i = 0; i < 5; i++) {
+          card.gradeHistory = Array.from({ length: i + 1 }, () => ({ overall: grade }))
+          card.grade = { overall: grade }
+          card = eng.crackSlab(card, () => 1).card // rnd()=1 → never damaged, isolating the cut effect
+          cuts.push(card._cut)
+        }
+        return cuts
+      }
+      const eights = walk(8), nines = walk(9)
+      // Damage risk actually fires.
+      let damaged = 0
+      for (let i = 0; i < 4000; i++) { const c = mk(); c.grade = { overall: 9 }; if (eng.crackSlab(c).damaged) damaged++ }
+      // The economics. A PSA 9 in the holder vs the raw card the moment you crack it, and
+      // what a resubmission then costs on top.
+      const slab9 = { ...mk(), grade: { overall: 9 } }
+      const raw = eng.crackSlab(slab9, () => 1).card
+      const fee = eng.gradingFee('standard', 0, 1) + eng.gradingShipping([raw], {})
+      return {
+        eights, nines,
+        eightDeltas: eights.map((c, i) => Math.abs(c - (i ? eights[i - 1] : 0.5))),
+        nineDeltas: nines.map((c, i) => Math.abs(c - (i ? nines[i - 1] : 0.5))),
+        damageRate: damaged / 4000, declared: eng.CRACK_DAMAGE_CHANCE,
+        slabWorth: eng.cardValue(slab9), rawWorth: eng.cardValue(raw), fee,
+      }
+    })
+    pass(`a poor grade revises the card DOWN, a strong one UP (8s → ${crack.eights[4].toFixed(2)}, 9s → ${crack.nines[4].toFixed(2)}, from 0.50)`,
+      crack.eights[4] < 0.5 && crack.nines[4] > 0.5)
+    pass(`...and both CONVERGE — the estimate stops moving (8s: ${crack.eightDeltas.map(d => d.toFixed(3)).join(' → ')})`,
+      crack.eightDeltas[4] < crack.eightDeltas[0] / 4 && crack.nineDeltas[4] < crack.nineDeltas[0] / 4)
+    pass(`cracking a strong slab costs real money up front ($${crack.slabWorth.toFixed(0)} slab → $${crack.rawWorth.toFixed(0)} raw, then $${crack.fee.toFixed(0)} to send it again)`,
+      crack.rawWorth < crack.slabWorth && crack.fee > 0)
+    pass(`cracking risks the card (${(crack.damageRate * 100).toFixed(1)}% damaged, declared ${(crack.declared * 100).toFixed(0)}%)`,
+      Math.abs(crack.damageRate - crack.declared) < 0.02)
+  }
+
+  // ---- 13. 🧾 Tax and 🏦 the bank --------------------------------------------------
+  console.log('\n🧾 THE BOOKS & 🏦 THE BANK:')
+  {
+    const fin = await page.evaluate(async () => {
+      const t = await import('/src/game/tax.js')
+      const l = await import('/src/game/loans.js')
+      const books = (revenue, expenses) => ({ ...t.freshBooks(0), revenue, expenses })
+      const offer = l.LOAN_OFFERS[0]
+      const totals = l.loanTotals(offer)
+      const loan = l.makeLoan(offer, 0)
+      // Halfway through the term, what does clearing it early cost against the balance left?
+      const half = { ...loan, balance: loan.balance / 2 }
+      return {
+        floorFree: t.quarterBill(books(900, 0), {}),
+        smallBill: t.quarterBill(books(5000, 0), {}),
+        bigBill: t.quarterBill(books(60000, 0), {}),
+        restocked: t.quarterBill(books(60000, 30000), {}),
+        accountant: t.quarterBill(books(60000, 30000), { accountant: true }),
+        progressive: [t.taxOn(5000) / 5000, t.taxOn(60000) / 60000],
+        cashOnly: t.cashProfile({}, true),
+        allRails: t.cashProfile({ payPaypal: true, payCard: true, payTap: true }, true),
+        riskCash: t.auditChance(books(50000, 0), {}, true),
+        riskRails: t.auditChance(books(50000, 0), { payPaypal: true, payCard: true, payTap: true, accountant: true }, true),
+        loanTotal: totals.total, loanPrincipal: offer.principal, loanInterest: totals.interest,
+        payoffHalf: l.payoffAmount(half), balanceHalf: half.balance,
+      }
+    })
+    pass(`a small quarter files nothing ($${fin.floorFree.toFixed(0)} on $900 of profit)`, fin.floorFree === 0)
+    pass(`the bill is progressive (${(fin.progressive[0] * 100).toFixed(0)}% at $5k, ${(fin.progressive[1] * 100).toFixed(0)}% at $60k)`,
+      fin.progressive[1] > fin.progressive[0])
+    pass(`restocking before the quarter closes lowers it ($${fin.bigBill.toFixed(0)} → $${fin.restocked.toFixed(0)} after $30k of stock)`,
+      fin.restocked < fin.bigBill * 0.6)
+    pass(`🧮 the accountant finds more ($${fin.restocked.toFixed(0)} → $${fin.accountant.toFixed(0)})`, fin.accountant < fin.restocked)
+    pass(`a cash-only counter reads as ${Math.round(fin.cashOnly * 100)}% cash vs ${Math.round(fin.allRails * 100)}% with every rail`,
+      fin.cashOnly > fin.allRails)
+    pass(`...and that is the audit exposure (${(fin.riskCash * 100).toFixed(0)}% cash-only vs ${(fin.riskRails * 100).toFixed(0)}% with rails + accountant)`,
+      fin.riskCash > fin.riskRails * 2)
+    pass(`🏦 a note costs real interest ($${fin.loanPrincipal} borrowed, $${fin.loanTotal.toFixed(0)} repaid, $${fin.loanInterest.toFixed(0)} of it interest)`,
+      fin.loanTotal > fin.loanPrincipal && fin.loanInterest > 0)
+    pass(`...and clearing it early saves the interest you never reached ($${fin.payoffHalf.toFixed(0)} to settle a $${fin.balanceHalf.toFixed(0)} balance)`,
+      fin.payoffHalf < fin.balanceHalf)
+  }
+
+  // ---- 14. 📦🔟 Sealed grading ------------------------------------------------------
+  // The premium is a VINTAGE premium. Slabbing in-print product has to be a mistake, or the
+  // system becomes a free multiplier on every box in the storeroom.
+  console.log('\n📦🔟 SEALED GRADING — want vintage only:')
+  {
+    const sg = await page.evaluate(async () => {
+      const s = await import('/src/game/sealedgrading.js')
+      const g10 = { overall: 10, company: 'wata' }
+      const vintage = { vintage: true }, modern = {}, after = { aftermarket: true }
+      // Grade distribution for a 25-year-old wrapper vs a pallet-fresh box.
+      const roll = (item, n = 20000) => {
+        let tens = 0, sum = 0
+        for (let i = 0; i < n; i++) { const r = s.rollSealedGrade(item); if (r.overall === 10) tens++; sum += r.overall }
+        return { p10: tens / n, mean: sum / n }
+      }
+      return {
+        vintMult: s.sealedGradeMult(vintage, g10),
+        afterMult: s.sealedGradeMult(after, g10),
+        modernMult: s.sealedGradeMult(modern, g10),
+        vintRoll: roll(vintage), modernRoll: roll(modern),
+        advice: s.worthGrading(modern, 500),
+        cheap: s.worthGrading(vintage, 80),
+        fee: s.sealedGradingFee(1000),
+        days: s.sealedGradingDays('wata'),
+      }
+    })
+    pass(`a vintage 10 is a real premium (×${sg.vintMult.toFixed(2)}), retired product half of it (×${sg.afterMult.toFixed(2)}), in-print almost nothing (×${sg.modernMult.toFixed(2)})`,
+      sg.vintMult > 2.5 && sg.afterMult < sg.vintMult && sg.modernMult < 1.4)
+    pass(`an old wrapper rarely gems (vintage ${(sg.vintRoll.p10 * 100).toFixed(1)}% vs modern ${(sg.modernRoll.p10 * 100).toFixed(1)}%)`,
+      sg.vintRoll.p10 < sg.modernRoll.p10 && sg.vintRoll.mean < sg.modernRoll.mean)
+    pass(`the game warns you off grading in-print product`, !sg.advice.ok)
+    pass(`...and off grading something the fee would eat ($${sg.fee.toFixed(0)} on a $1,000 box, ${sg.days} days)`,
+      !sg.cheap.ok && sg.fee > 0)
+  }
+
   await browser.close()
 } catch (e) {
   console.error('SIM ERROR:', e.message)

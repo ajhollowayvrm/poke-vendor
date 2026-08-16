@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { SETS, rawValue, fmtMoney, rarityRank, marketMult, cardImg } from '../game/engine'
+import { SETS, rawValue, fmtMoney, rarityRank, marketMult, cardImg, cardNumber } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 
@@ -28,7 +28,7 @@ export default function PriceGuide() {
       if (sort === 'value') return rawValue(b) - rawValue(a)
       if (sort === 'rarity') return rarityRank(b.rarity) - rarityRank(a.rarity)
       if (sort === 'name') return a.name.localeCompare(b.name)
-      return numOf(a.number) - numOf(b.number) // number (default)
+      return numOf(cardNumber(a)) - numOf(cardNumber(b)) // number (default)
     })
     return list
     // mult in deps so re-sorting by value tracks the live market
@@ -87,7 +87,7 @@ export default function PriceGuide() {
             <img src={cardImg(c)} alt={c.name} loading="lazy" decoding="async" />
             <div className="pname" title={c.name}>{c.name}</div>
             <div className="prow">
-              <span className="ptag" style={{ color: rarityColor(c.rarity) }}>#{c.number}</span>
+              <span className="ptag" style={{ color: rarityColor(c.rarity) }}>#{cardNumber(c)}</span>
               <span className="pval">{c.price != null || c.rarity ? fmtMoney(rawValue(c)) : '—'}</span>
             </div>
           </div>

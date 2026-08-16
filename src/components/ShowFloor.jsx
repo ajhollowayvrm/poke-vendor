@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
-import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
+import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
+  pickSnipe, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
@@ -222,6 +223,38 @@ export default function ShowFloor({ show, onLeave }) {
     }, 4000)
     return () => clearInterval(id)
   }, [npcs, booths, addNotoriety])
+
+  // 🏃 THE OTHER DEALERS. Every so often a rival works the floor and lifts the best genuinely
+  // under-market card left in a bin. The grace period means you always get a real look around
+  // first, and only true deals are ever taken — so what you lose is exactly what you should
+  // have been quicker about. See game/shows.js (pickSnipe) for the selection rule.
+  const [sniped, setSniped] = useState(null)     // the "somebody just bought that" banner
+  // Read through refs so the interval sees current state without being torn down and rebuilt
+  // every time you buy something — which would restart the clock and mean nothing was ever
+  // taken while you were actively shopping.
+  const takenIdsRef = useRef(takenIds)
+  useEffect(() => { takenIdsRef.current = takenIds }, [takenIds])
+  const openBoothRef = useRef(openBooth)
+  useEffect(() => { openBoothRef.current = openBooth }, [openBooth])
+  const floorEntryRef = useRef(Date.now())
+  useEffect(() => { floorEntryRef.current = Date.now(); setSniped(null) }, [showDay])
+  useEffect(() => {
+    const rate = SNIPE_RATE[show.tierKey] ?? 0.15
+    const id = setInterval(() => {
+      if (Date.now() - floorEntryRef.current < SNIPE_GRACE_MS) return
+      if (openBoothRef.current) return  // not while you are standing at a table reading it
+      if (Math.random() >= rate) return
+      const hit = pickSnipe(booths, takenIdsRef.current)
+      if (!hit) return
+      markTaken([hit.card.uid])
+      setSniped({
+        who: hit.who, card: hit.card, at: hit.booth.name,
+        ask: hit.ask, worth: hit.worth, id: Date.now(),
+      })
+      setTimeout(() => setSniped(x => (x && x.id ? null : x)), 6000)
+    }, SNIPE_INTERVAL_MS)
+    return () => clearInterval(id)
+  }, [booths, show.tierKey])
 
   // Booth walk-ups, gated by a cooldown so they don't spam. With the 🔔 Visitor Ticker
   // you get an alert you can answer whenever — without it, a buyer who walks up while
@@ -567,6 +600,22 @@ export default function ShowFloor({ show, onLeave }) {
               {announce.mine
                 ? <>🔥 <b>Bought it from your booth</b> — your rep is buzzing · {fmtMoney(announce.value)}</>
                 : <>The whole hall turns to look · {fmtMoney(announce.value)}</>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🏃 Somebody else got there first. The banner names the card, the table and what it
+          was under market for, because the lesson is only useful if you can see the number. */}
+      {sniped && (
+        <div className="hall-announce sniped">
+          {cardImg(sniped.card) && <img src={cardImg(sniped.card)} alt="" />}
+          <div>
+            <div className="ha-line">🏃 {sniped.who} just bought <b>{sniped.card.name}</b>
+              {sniped.at ? <span className="muted"> off {sniped.at}</span> : ''}.</div>
+            <div className="ha-sub">
+              {fmtMoney(sniped.ask)} for {fmtMoney(sniped.worth)} of card — <b>{fmtMoney(sniped.worth - sniped.ask)} under market</b>.
+              You are not the only dealer working this floor.
             </div>
           </div>
         </div>

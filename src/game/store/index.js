@@ -22,10 +22,12 @@
 //   • booth.js        — show floor, store shelf, resolveEncounter
 //   • livestream.js   — going live + box breaks
 //   • socials.js      — 📱 short-form posts + the 🃏 master set challenge (math: game/content.js)
+//   • books.js        — 🧾 the quarterly tax bill + 🏦 the bank note (math: game/tax.js, loans.js)
+//   • auctionhouse.js — 🔨 the BUY side of the hammer: bidding (math: game/lots.js)
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GRADING, setMarketMults, cardValue, sealedValue } from '../engine'
+import { GRADING, setMarketMults, setPopAdds, cardValue, sealedValue } from '../engine'
 import { makeShowVendors } from '../shows'
 import { jobById, STARTER_JOB, absoluteDay, floorCapacity, rankForNotoriety } from './constants'
 import { newlyUnlocked } from '../milestones'
@@ -39,6 +41,10 @@ import { createBoothSlice } from './booth'
 import { createLivestreamSlice } from './livestream'
 import { createPacksSlice } from './packs'
 import { createSocialsSlice } from './socials'
+import { createBooksSlice } from './books'
+import { createAuctionHouseSlice } from './auctionhouse'
+import { freshBooks } from '../tax'
+import { refillLots } from '../lots'
 import { deflateState, inflateState } from './slimsave'
 import { idbAvailable, idbGet, idbSet, idbDel } from './idb'
 import { defaultPackTiers } from '../mysterypacks'
@@ -285,9 +291,11 @@ export const useGame = create(persist((set, get) => ({
   ...createLivestreamSlice(set, get),
   ...createPacksSlice(set, get),
   ...createSocialsSlice(set, get),
+  ...createBooksSlice(set, get),
+  ...createAuctionHouseSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 64,
+  version: 65,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -318,6 +326,9 @@ export const useGame = create(persist((set, get) => ({
     // 🔨 A card at auction is out of the collection and under a promise to the bidders —
     // register it first so a stray duplicate never survives at the auctioned copy's expense.
     for (const a of (state.auctions || [])) if (a?.card?.uid) seen.add(a.card.uid)
+    // 📦🔟 Sealed product out at a sealed grader is money already spent on a fee, so it wins
+    // over a stray duplicate for exactly the same reason pendingGrades does.
+    for (const p of (state.pendingSealed || [])) if (p?.item?.uid) seen.add(p.item.uid)
     // Bulk Bin stock is cards pulled out of the collection — same rule as the machine.
     for (const c of (state.bulkBin?.stock || [])) if (c?.uid) seen.add(c.uid)
     // 🏬 Stock allocated to the second location lives out there, not on your shelves.
@@ -358,7 +369,8 @@ export const useGame = create(persist((set, get) => ({
     // and boots the player into a FRESH GAME while their real save sits unreadable in
     // localStorage. merge()'s dedupe runs after migrate, so it can't catch this first.
     for (const k of ['collection', 'binder', 'showInventory', 'sealedInventory', 'showSealed',
-      'shopDisplay', 'shopSealed', 'pendingGrades', 'listings', 'consignments', 'builtPacks', 'imports']) {
+      'shopDisplay', 'shopSealed', 'pendingGrades', 'pendingSealed', 'listings', 'consignments',
+      'builtPacks', 'imports', 'auctionLots']) {
       if (state[k] !== undefined && Array.isArray(state[k])) {
         state[k] = state[k].filter(x => x && typeof x === 'object')
       }
@@ -849,6 +861,35 @@ export const useGame = create(persist((set, get) => ({
       // save on a spectacular cold streak it never actually had.
       state.ripLog = state.ripLog ?? []
     }
+    if (version < 65) {
+      // Seven systems land together (one bump per batch, house style). Every field is
+      // additive and every one starts empty, because none of them can be honestly backdated:
+      //   🔨 auctionLots  — the buy-side board. The day tick fills it tomorrow.
+      //   🧾 books        — THE QUARTER STARTS TODAY. Deliberately not backdated: billing an
+      //                     existing save for a quarter it played under no tax rules would be
+      //                     charging for the past. The first bill lands 90 days from now.
+      //   🏦 loan         — nobody is carrying a note, and nobody has defaulted.
+      //   📦🔟 pendingSealed — no sealed product is out at a grader.
+      //   📊 popAdds      — the census counts YOUR submissions, and an old save's slabs were
+      //                     minted before the census existed. Starting at zero means those
+      //                     slabs keep exactly the value they had; only new ones report in.
+      //   🖨️ misprints    — errors come out of packs, so they arrive with the next rip. No
+      //                     card already in a collection is retroactively a misprint.
+      //   🎯 stats.cracks / stats.misprints — new counters, from zero.
+      // Seeded rather than left empty, for the same reason a fresh game seeds it: an existing
+      // save should find the board already running, not a blank panel that fills tomorrow.
+      const lotDay = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
+      state.auctionLots = state.auctionLots ?? refillLots([], state.notoriety || 0, lotDay)
+      state.auctionLotsDay = state.auctionLotsDay ?? lotDay
+      state.auctionStats = state.auctionStats ?? { won: 0, lost: 0, spent: 0, burned: 0 }
+      state.books = state.books ?? freshBooks(absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0))
+      state.loan = state.loan ?? null
+      state.loanDefaultedUntil = state.loanDefaultedUntil ?? 0
+      state.pendingSealed = state.pendingSealed ?? []
+      state.sealedGradesSubmitted = state.sealedGradesSubmitted ?? 0
+      state.popAdds = state.popAdds ?? {}
+      state.stats = { cracks: 0, misprints: 0, ...(state.stats || {}) }
+    }
     return state
   },
   // The pricing engine holds the live market multipliers in module state, which is empty
@@ -858,6 +899,11 @@ export const useGame = create(persist((set, get) => ({
     return (state) => {
       if (!state) return
       setMarketMults(state.marketMults || {})
+      // 📊 The census of your own submissions lives in engine module state for the same
+      // reason the market multipliers do: pricing is synchronous and cannot reach the store.
+      // Re-push it or every slab you have ever sent back would price as though the census
+      // were untouched.
+      setPopAdds(state.popAdds || {})
       // Re-seed the module-level offer-id counter past the highest persisted offer id.
       // The counter resets to 0 on every page load but offers persist inside listings, so
       // without this the first post-reload offer would reuse id 1 — colliding with a

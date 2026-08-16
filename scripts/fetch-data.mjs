@@ -28,6 +28,7 @@ import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { stripDerivableImages } from './strip-derivable-images.mjs'
+import { stripDerivableFields } from './strip-derivable-fields.mjs'
 
 // EUR→USD conversion for Cardmarket prices (approximate; used as fallback only).
 const EUR_USD = 1.08
@@ -1434,7 +1435,17 @@ async function finishRun(out, failedCfgs, setsToFetch) {
   // ~40% of the snapshot's raw bytes. Only exact-pattern matches are stripped;
   // idempotent for sets carried forward from an already-stripped snapshot.
   const imgStats = stripDerivableImages(finalSets)
+  // Then drop everything else the runtime rebuilds or already defaults (collector
+  // numbers, the majority supertype, stray instance fields) — ~830 KB raw / 58 KB gzip.
+  // MUST run AFTER the image strip: that one derives its URLs from `number`, which this
+  // one then removes.
+  const fieldStats = stripDerivableFields(finalSets)
   console.log(`Stripped derivable art URLs from ${imgStats.stripped}/${imgStats.total} cards (${imgStats.keptExplicit} keep explicit URLs).`)
+  console.log(`Stripped ${fieldStats.numberStripped} derivable collector numbers, ${fieldStats.supertypeStripped} default supertypes, ${fieldStats.instanceStripped} stray instance fields.`)
+  if (fieldStats.refused.length) {
+    console.warn(`⚠️  ${fieldStats.refused.length} catalog card(s) carry REAL per-copy state — left alone, but that is a data bug:`,
+      fieldStats.refused.slice(0, 5))
+  }
 
   await mkdir('src/data', { recursive: true })
   await writeFile('src/data/sets.json', JSON.stringify({

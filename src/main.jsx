@@ -2,19 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
-import { startUpdateChecks } from './game/appUpdate'
 import { isNativeShell } from './game/native'
 import { useGame, flushSaveNow } from './game/store'
 import './styles.css'
-
-// Watch for new builds. An installed PWA resumes instead of reloading, so without this a
-// shipped change can sit live on the server while the home-screen app renders last week's.
-//
-// Skipped inside the iOS shell, and not merely because it would fail. A service worker does not
-// run under a custom URL scheme at all, so there is no worker to update FROM — and a native app
-// ships new code as a new binary, which means an in-app "Update ready, reload?" prompt would be
-// offering something that cannot happen. Wrong, not just broken.
-if (!isNativeShell) startUpdateChecks()
 
 // The one line that makes the whole :active press layer in styles.css exist on iOS.
 //

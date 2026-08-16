@@ -11,33 +11,13 @@ import { netWorthFull, vintageLeft } from './game/store/helpers'
 import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
-import PackOpening from './components/PackOpening'
-import Collection from './components/Collection'
-import CardModal from './components/CardModal'
-import Bench from './components/Bench'
-import Stats from './components/Stats'
-import Calendar from './components/Calendar'
-import ShowFloor from './components/ShowFloor'
-import UpgradeShop from './components/UpgradeShop'
-import BoothInbox from './components/BoothInbox'
-import Settings from './components/Settings'
-import PriceGuide from './components/PriceGuide'
-import SealedInventory from './components/SealedInventory'
-import AutoRip from './components/AutoRip'
-import ShowPrep from './components/ShowPrep'
-import Livestream from './components/Livestream'
-import Socials from './components/Socials'
-import Binder from './components/Binder'
-import Regulars from './components/Regulars'
-import StoreStock from './components/StoreStock'
-import GradeReveal from './components/GradeReveal'
 import FirstRun, { NotorietyHelp } from './components/FirstRun'
-import { onUpdateReady, applyAppUpdate } from './game/appUpdate'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
+import AuctionHouse from './components/AuctionHouse'
+import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
 import { AnimatedNumber, CashFlash } from './ui/AnimatedNumber'
-import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 import { milestoneById } from './game/milestones'
 
@@ -45,6 +25,31 @@ import { milestoneById } from './game/milestones'
 // shop, so Stats gets a top slot and Upgrades moves behind the ⚙️ gear). Reference/meta
 // screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
 // behind the gear in the top bar.
+// Tab-gated screens, split out of the boot chunk. None of these paint on the first render
+// (the Buy tab), and together they were ~500 KB of source that WebKit had to parse before it
+// could show anything. lazyChunk() carries the stale-chunk guard — see src/ui/lazyChunk.jsx.
+const PackOpening = lazyChunk(() => import('./components/PackOpening'))
+const Collection = lazyChunk(() => import('./components/Collection'))
+const CardModal = lazyChunk(() => import('./components/CardModal'))
+const Bench = lazyChunk(() => import('./components/Bench'))
+const Stats = lazyChunk(() => import('./components/Stats'))
+const Books = lazyChunk(() => import('./components/Books'))
+const Calendar = lazyChunk(() => import('./components/Calendar'))
+const ShowFloor = lazyChunk(() => import('./components/ShowFloor'))
+const UpgradeShop = lazyChunk(() => import('./components/UpgradeShop'))
+const BoothInbox = lazyChunk(() => import('./components/BoothInbox'))
+const Settings = lazyChunk(() => import('./components/Settings'))
+const PriceGuide = lazyChunk(() => import('./components/PriceGuide'))
+const SealedInventory = lazyChunk(() => import('./components/SealedInventory'))
+const AutoRip = lazyChunk(() => import('./components/AutoRip'))
+const ShowPrep = lazyChunk(() => import('./components/ShowPrep'))
+const Livestream = lazyChunk(() => import('./components/Livestream'))
+const Socials = lazyChunk(() => import('./components/Socials'))
+const Binder = lazyChunk(() => import('./components/Binder'))
+const Regulars = lazyChunk(() => import('./components/Regulars'))
+const StoreStock = lazyChunk(() => import('./components/StoreStock'))
+const GradeReveal = lazyChunk(() => import('./components/GradeReveal'))
+
 const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
 // Device-local, deliberately NOT part of the saved game. See the useState that reads it.
 const TAB_KEY = 'pv.tab'
@@ -127,6 +132,7 @@ export default function App() {
   })
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
+  const [statsPane, setStatsPane] = useState('stats')           // Stats sub-pane: stats | books
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [sifting, setSifting] = useState(null)   // array of sealed items being auto-ripped ("sift")
   // Where to land when a rip finishes. A rip you START from your collection/store/inbox
@@ -155,8 +161,11 @@ export default function App() {
   const ripSoldOut = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).soldOut : false)
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
-  const pendingCount = useGame(s => s.pendingGrades.length)
+  // Cards at the card grader plus product at the sealed grader — one badge, because from the
+  // player's side it is one queue: things that are away being graded.
+  const pendingCount = useGame(s => s.pendingGrades.length + (s.pendingSealed || []).length)
   const sealedCount = useGame(s => s.sealedInventory.length)
+  const taxOwed = useGame(s => s.books?.owed || 0)
   const regularsCount = useGame(s => (s.regulars || []).filter(r => !r.flags?.burned).length)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   // With a storefront your stock splits into Shop Floor / Storeroom (on the 🏬 Store tab) and
@@ -580,10 +589,12 @@ export default function App() {
   if (preppingShow) {
     return (
       <div className="app">
-        <ShowPrep show={preppingShow} mode={prepMode}
-          onConfirm={(payload) => (prepMode === 'vendor' ? enterShow : enterAsShopper)(preppingShow, payload)}
-          onCancel={() => setPreppingShow(null)} />
-        {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        <Chunk label="Packing for the show…">
+          <ShowPrep show={preppingShow} mode={prepMode}
+            onConfirm={(payload) => (prepMode === 'vendor' ? enterShow : enterAsShopper)(preppingShow, payload)}
+            onCancel={() => setPreppingShow(null)} />
+          {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        </Chunk>
         <DialogHost />
       <ToastHost />
       </div>
@@ -594,8 +605,10 @@ export default function App() {
   if (activeShow) {
     return (
       <div className="app">
-        <ShowFloor show={activeShow} onLeave={leaveShow} />
-        {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        <Chunk label="Walking into the hall…">
+          <ShowFloor show={activeShow} onLeave={leaveShow} />
+          {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        </Chunk>
         <DialogHost />
       <ToastHost />
       </div>
@@ -634,11 +647,13 @@ export default function App() {
       </div>
 
       {gradeReveal && (
-        <GradeReveal cards={gradeReveal.cards} onDone={() => {
-          const s = gradeReveal.summary
-          setGradeReveal(null)
-          if (s) setDaySummary(s)
-        }} />
+        <Chunk label="Opening the return package…">
+          <GradeReveal cards={gradeReveal.cards} onDone={() => {
+            const s = gradeReveal.summary
+            setGradeReveal(null)
+            if (s) setDaySummary(s)
+          }} />
+        </Chunk>
       )}
       {daySummary && <DaySummary summary={daySummary} onClose={() => setDaySummary(null)} />}
       <GameOver />
@@ -653,8 +668,10 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
-        <UpdatePill />
         <FirstRun />
+        {/* ONE Suspense for the whole tab area: every screen inside is a lazy chunk, and a
+            per-tab boundary would just mean the same fallback written fourteen times. */}
+        <Chunk>
         {tab === 'shop' && (
           <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
         )}
@@ -664,7 +681,22 @@ export default function App() {
         {/* 📱 The off-air half of the channel sits above the go-live screen — hidden while
             you're actually broadcasting, so a live session keeps the whole view. */}
         {tab === 'stream' && <div className="pane">{!streamLive && <Socials />}<Livestream /></div>}
-        {tab === 'stats' && <div className="pane"><Stats /></div>}
+        {tab === 'stats' && (
+          <>
+            <div className="subtabs">
+              <button className={`subtab ${statsPane === 'stats' ? 'active' : ''}`} onClick={() => setStatsPane('stats')}>📊 Stats</button>
+              {/* 🧾 The books sit beside the stats because they read the same way: what the
+                  business did, rather than what you can do next. The tax due chip is on the
+                  tab itself so a bill can never quietly go unpaid. */}
+              <button className={`subtab ${statsPane === 'books' ? 'active' : ''}`} onClick={() => setStatsPane('books')}>
+                🧾 Books{taxOwed > 0 ? ` (${fmtMoney(taxOwed)})` : ''}
+              </button>
+            </div>
+            <div className="pane" key={statsPane}>
+              {statsPane === 'stats' ? <Stats /> : <Books />}
+            </div>
+          </>
+        )}
 
         {tab === 'collection' && (
           <>
@@ -702,6 +734,7 @@ export default function App() {
             </div>
           </>
         )}
+        </Chunk>
       </main>
 
       {/* In-progress rip overlay. Mounted whenever a rip is active so its state survives
@@ -709,6 +742,7 @@ export default function App() {
           returning resumes the same rip rather than discarding it. */}
       {ripping && (
         <div className={`rip-overlay rip-full ${tab === 'shop' ? '' : 'hidden'}`}>
+          <Chunk label="Tearing the wrapper…">
           <PackOpening
             key={ripping.nonce ?? 0}
             set={ripping.set}
@@ -723,6 +757,7 @@ export default function App() {
             ripAnotherSoldOut={ripSoldOut}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
+          </Chunk>
         </div>
       )}
 
@@ -730,11 +765,11 @@ export default function App() {
           whatever tab you launched it from (it owns the whole flow, so no tab gating). */}
       {sifting && (
         <div className="rip-overlay rip-full">
-          <AutoRip items={sifting} onExit={exitSift} />
+          <Chunk label="Opening the box…"><AutoRip items={sifting} onExit={exitSift} /></Chunk>
         </div>
       )}
 
-      {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+      {picked && <Chunk><CardModal card={picked} onClose={() => setPicked(null)} /></Chunk>}
       <DialogHost />
       <ToastHost />
 
@@ -1036,6 +1071,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       {/* 🚢 Import orders still crossing the Pacific — visible whichever shelf you're browsing */}
       <ImportsInTransit />
 
+      {/* 🔨 The auction house: the buy side of the hammer, alongside the wholesale shelves */}
+      <AuctionHouse />
+
       {/* 📰 Reprint wave: industry news — shows whichever storefront is selected */}
       <ReprintWaveBanner cash={cash} flash={flash} />
 
@@ -1299,18 +1337,6 @@ function ImportsInTransit() {
 // A new build is downloaded and waiting. Shown rather than applied: yanking the page out
 // from under a pack rip to install a copy change is worse than being a build behind. One
 // tap flushes the save and reloads onto the new version.
-function UpdatePill() {
-  const [ready, setReady] = useState(false)
-  useEffect(() => onUpdateReady(setReady), [])
-  if (!ready) return null
-  return (
-    <button type="button" className="update-pill" onClick={applyAppUpdate}
-      title="A newer version of the game has already downloaded — tap to switch to it. Your save is written first.">
-      🔄 <b>Update ready</b> — tap to reload into the new version
-    </button>
-  )
-}
-
 function productBlurb(product) {
   const t = String(product?.type || '')
   const packs = product?.packs || 1

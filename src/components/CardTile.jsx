@@ -1,4 +1,5 @@
 import { cardValue, isHit, fmtMoney, CONDITIONS, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { misprintDef } from '../game/misprints'
 import { useGame } from '../game/store'
 import HoloCard from './HoloCard'
 
@@ -71,6 +72,14 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
             {card.condition && card.condition !== 'NM' && (
               <span className="chip condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
             )}
+          </span>
+        )}
+        {/* 🖨️ A press fault. Badged on the tile because an error is the one thing about a
+            card you cannot read off its art, and a miscut common in a bulk sweep is exactly
+            the card you do not want to lose by accident. */}
+        {card.misprint && (
+          <span className="misprint-badge" title={`${misprintDef(card.misprint)?.name} — a printing error. Worth more than the card, and worth more again once a grader authenticates it.`}>
+            {misprintDef(card.misprint)?.icon} ERROR
           </span>
         )}
         <img src={cardImg(card)} alt={card.name} loading="lazy" decoding="async" />

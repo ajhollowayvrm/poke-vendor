@@ -605,6 +605,57 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
 // Names floating above NPC shoppers for flavor.
 export const NPC_EMOJI = ['🧑','👩','👨','🧓','👵','🧔','👱','👲','🧑‍🦱','👩‍🦰','🧑‍🦰','👨‍🦱','🧑‍🦳','👩‍🦳']
 
+// --- 🏃 The other dealers ---------------------------------------------------------
+// You are not the only person on this floor who knows what things are worth.
+//
+// Until now a mispriced gem in a newbie's bin sat there for as long as you liked. You could
+// walk the whole hall, price everything, and come back for the bargains — which is not a
+// show, it is a shopping list. Real floors do not work that way: the people who make money
+// at them are through the door at opening and the good stuff is gone in the first hour.
+//
+// So a rival dealer works the floor alongside you, and they go for the money — the biggest
+// under-market card they can find. Two things make that fair rather than annoying:
+//
+//   • A GRACE PERIOD. Nothing is taken for the first stretch after you arrive, so you always
+//     get a real look around before anyone competes with you.
+//   • THEY ONLY TAKE GENUINE DEALS. A fairly priced card is never sniped. What you lose is
+//     exactly what you should have been quick about, which is what makes the 🤝 Dealer
+//     Network — the upgrade that flags a deal on sight — worth its price.
+//
+// Bigger halls are sharper. A local meetup has almost nobody doing this; a World
+// Championship floor is full of people who do it for a living.
+export const SNIPE_GRACE_MS = 45000        // you always get a first look around
+export const SNIPE_INTERVAL_MS = 21000     // how often a rival considers a purchase
+export const SNIPE_RATE = {                // per-check chance, by hall
+  meetup: 0.10, shop: 0.16, regional: 0.24, national: 0.34, invitational: 0.44, worlds: 0.55,
+}
+export const RIVAL_DEALERS = ['Marcus', 'Dee', 'Sal', 'Priya', 'Kenji', 'Roman', 'Tess', 'Vic',
+  'Nadia', 'Older guy in a Charizard hoodie', 'A dealer from two tables down', 'The woman with the loupe']
+
+// What a rival would take off the floor right now. `taken` is the set of keys already gone
+// (bought by you or sniped earlier). Returns null when there is nothing genuinely underpriced
+// left — a rival never takes a fairly priced card, because that is not what a rival is.
+export function pickSnipe(booths, taken, rnd = Math.random) {
+  const deals = []
+  for (const booth of (booths || [])) {
+    for (const card of (booth.stock || [])) {
+      if (!card?.uid || taken?.has(card.uid)) continue
+      const worth = cardValue(card)
+      const ask = card._ask ?? worth
+      // The bar is the same one the game already calls a deal, and it is worth grabbing.
+      if (ask >= worth * 0.8 || worth < 5) continue
+      deals.push({ booth, card, worth, ask, edge: worth - ask })
+    }
+  }
+  if (!deals.length) return null
+  // They go for the money. A little noise on top so it is not perfectly predictable — a real
+  // rival misses things too.
+  deals.sort((a, b) => b.edge - a.edge)
+  const pool = deals.slice(0, Math.max(1, Math.ceil(deals.length * 0.3)))
+  const hit = pool[Math.floor(rnd() * pool.length)]
+  return { ...hit, who: RIVAL_DEALERS[Math.floor(rnd() * RIVAL_DEALERS.length)] }
+}
+
 // --- Procedural encounters ---------------------------------------------------
 // Encounters are assembled from templates + (sometimes) a real card.
 // Each option has: text, effect fn name + payload resolved by the showStore.

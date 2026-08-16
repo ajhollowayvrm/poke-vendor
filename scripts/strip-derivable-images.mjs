@@ -8,6 +8,8 @@
 // (`node scripts/strip-derivable-images.mjs`) to strip src/data/sets.json in place.
 
 // Mirror of engine.js setIdOfCard — keep in lockstep.
+import { pathToFileURL } from 'node:url'
+
 function setIdOfCard(card) {
   const id = card?.id
   if (!id) return null
@@ -38,7 +40,11 @@ export function stripDerivableImages(sets) {
 }
 
 // Run directly: transform the committed snapshot in place and report.
-if (import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
+// Direct-run guard. Uses pathToFileURL rather than hand-building a file:// URL — the
+// hand-built version collapsed a relative argv[1] to `file:///scripts/…` and never matched
+// on macOS or Linux, so running this file directly silently did nothing.
+const runDirect = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (runDirect) {
   const { readFile, writeFile } = await import('node:fs/promises')
   const path = 'src/data/sets.json'
   const before = await readFile(path, 'utf8')

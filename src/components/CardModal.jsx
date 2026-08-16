@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2 } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2, cardPopulation, CRACK_DAMAGE_CHANCE, cardNumber } from '../game/engine'
+import { popTier } from '../game/population'
+import { misprintDef } from '../game/misprints'
 import HiResImg from './HiResImg'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
@@ -8,6 +10,56 @@ import { rarityColor, gradeLabel } from './CardTile'
 import { AskPicker } from '../ui/AskPicker'
 import HoloCard from './HoloCard'
 import PriceChart from './PriceChart'
+
+// 📊 The population report, on any real catalog card. Without the 🔭 Grading Scope you get
+// the shape of the census but not the number — the same deal the Scope already offers on the
+// grade prediction, so one upgrade buys the whole grading desk rather than two halves.
+function PopulationLine({ card, grade, hasScope }) {
+  const pop = cardPopulation(card, grade)
+  if (!pop) return null
+  const t = popTier(pop.count)
+  const pct = Math.round((pop.mult - 1) * 100)
+  return (
+    <p style={{ fontSize: 13, margin: '6px 0 0' }}>
+      <span className="pill" style={{ background: t.color + '22', color: t.color, fontWeight: 700 }}>
+        {t.icon} PSA {grade} pop: {hasScope ? pop.count.toLocaleString() : t.label}
+      </span>
+      {hasScope && pct !== 0 && (
+        <span className="muted" style={{ fontSize: 12, marginLeft: 7 }}>
+          {pct > 0 ? '+' : ''}{pct}% on the comp — {t.blurb}
+        </span>
+      )}
+      {hasScope && pop.mine > 0 && (
+        <span className="muted" style={{ fontSize: 11.5, marginLeft: 7 }}>
+          ({pop.mine} of them yours)
+        </span>
+      )}
+      {!hasScope && (
+        <span className="muted" style={{ fontSize: 11, marginLeft: 7 }}>
+          🔭 Grading Scope prints the real census figure
+        </span>
+      )}
+    </p>
+  )
+}
+
+// 🖨️ A press fault, called out wherever the card is. Raw it realises part of the premium;
+// a grader's label realises the rest, which is what the note explains.
+function MisprintLine({ card }) {
+  const d = misprintDef(card?.misprint)
+  if (!d) return null
+  return (
+    <div className="misprint-box">
+      <div className="misprint-head">{d.icon} {d.name}</div>
+      <div className="muted" style={{ fontSize: 12 }}>{d.desc}</div>
+      <div className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>
+        {card.grade
+          ? 'The label authenticates the error, so it is worth full error money.'
+          : 'Raw, the market discounts an error nobody has authenticated. Grading it unlocks the rest.'}
+      </div>
+    </div>
+  )
+}
 
 // The card page. Owned cards get the full action set (everything the bulk-select bar
 // offers). `inspect` renders it read-only for a card you DON'T own — a vendor's booth
@@ -21,6 +73,8 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   const hasScope = useGame(s => !!s.upgrades.gradescope)
   const quickSell = useGame(s => s.quickSell)
   const quickSellRate = useGame(s => s.quickSellRate)
+  const crackSlab = useGame(s => s.crackSlab)
+  const [crackMsg, setCrackMsg] = useState(null)
   const consign = useGame(s => s.consignCard)
   const listOnSite = useGame(s => s.listOnSite)
   const listingQuote = useGame(s => s.listingQuote)
@@ -111,7 +165,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
             <h2>{card.name}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
               <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{card.rarity}</span>
-              {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{card.number}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}
+              {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{cardNumber(card)}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}
               {!g && card.condition && CONDITIONS[card.condition] && (
                 <> · <span style={{ color: CONDITIONS[card.condition].color, fontWeight: 800 }}>{CONDITIONS[card.condition].label}</span></>
               )}
@@ -136,6 +190,10 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 )}
                 <p style={{fontSize:15}}>Graded value: <b style={{color:'var(--green)'}}>${cardValue(card).toFixed(2)}</b>
                   <span className="muted"> (raw ${rawValue(card).toFixed(2)})</span></p>
+                {/* 📊 The population report. What the census says about this exact card at this
+                    exact grade, and what that scarcity is doing to the price. A slab is not one
+                    asset — a low-pop 10 and a flooded 10 are different things entirely. */}
+                <PopulationLine card={card} grade={g.overall} hasScope={hasScope} />
                 {card.gradeHistory?.length > 0 && (
                   <div className="grade-history">
                     <div className="muted" style={{ fontSize: 11, textTransform:'uppercase', letterSpacing:'.5px', fontWeight:700 }}>Grading history</div>
@@ -179,6 +237,10 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     </div>
                   )
                 })()}
+                {/* 📊 What the census looks like at the grade this card is chasing. Reading it
+                    BEFORE you submit is the point: a flooded PSA 10 is a worse submission than
+                    the raw price alone suggests. */}
+                <PopulationLine card={card} grade={10} hasScope={hasScope} />
                 {(() => {
                   const est = cutEstimate(card, hasLoupe)
                   return (
@@ -197,6 +259,10 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 })()}
               </>
             )}
+
+            {/* 🖨️ A press fault on this copy — shown for raw and graded alike, because what
+                it is worth depends on which of the two it currently is. */}
+            <MisprintLine card={card} />
 
             {/* Price history — this card's value across the recent living-market window.
                 Shown for raw and graded cards alike (both ride the set's market). */}
@@ -258,6 +324,27 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                   <b>Consign ↗</b>
                   <small>Hands-off: a service tries to sell it in a few days for ~0.85–0.95× market (18% fee). Usually moves it, but ~1 in 7 come back unsold.</small>
                 </button>
+                {/* 🔨 CRACK IT OUT. Only for a slab, and only worth doing when you think the
+                    grader was harsh. The warning below is the honest one: the grade this card
+                    already earned is evidence about the card, so each crack makes the next
+                    submission a little less likely to do better. */}
+                {g && (
+                  <button className="btn alt sellopt" onClick={() => {
+                    const r = crackSlab(card.uid)
+                    if (r?.error) { setCrackMsg(r.error); return }
+                    onClose()
+                  }}>
+                    <b>🔨 Crack it out of the holder</b>
+                    <small>
+                      Back to a raw card, free to send again — {fmtMoney(cardValue(card))} of slab becomes {fmtMoney(rawValue({ ...card, grade: null }))} of card.
+                      {card.gradeHistory?.length > 1
+                        ? ' This card has been graded before, and every opinion makes the next one more predictable — the upside is thin now.'
+                        : ' A second opinion can be kinder, but the grade it already earned says something about the card.'}
+                      {' '}Roughly {Math.round(CRACK_DAMAGE_CHANCE * 100)}% of cracks nick the card.
+                    </small>
+                  </button>
+                )}
+                {crackMsg && <div className="lot-warn">⚠️ {crackMsg}</div>}
                 <button className="btn alt sellopt" onClick={() => toggleLock(card.uid)}>
                   <b>{locked ? '🔓 Unlock' : `🔒 ${hasStore ? 'Keep this card' : 'Lock this card'}`}</b>
                   <small>{locked

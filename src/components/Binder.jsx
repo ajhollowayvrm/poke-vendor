@@ -3,7 +3,7 @@ import { useGame, absoluteDay } from '../game/store'
 import {
   SETS, setCompletion, completionReward, isChaseCard, fmtMoney,
   cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
-  CUT_ORDER,
+  CUT_ORDER, cardNumber,
 } from '../game/engine'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
@@ -79,7 +79,7 @@ export default function Binder({ onPick }) {
       const variants = cardMastersetVariants(set, c)
       const missing = variants.some(v => !placed.has(`${c.id}:${v}`))
       return { c, variants, missing }
-    }).sort((a, b) => numOf(a.c.number) - numOf(b.c.number))
+    }).sort((a, b) => numOf(cardNumber(a.c)) - numOf(cardNumber(b.c)))
     return missingOnly ? withState.filter(x => x.missing) : withState
   }, [set, placed, missingOnly])
 
@@ -224,7 +224,7 @@ export default function Binder({ onPick }) {
               <div key={c.id} className={`binder-slot masterset ${ownsAny ? 'owned' : 'missing'} ${chase ? 'chase' : ''}`}>
                 <div className="binder-slot-art" onClick={() => anyOwned && onPick?.(anyOwned)} title={anyOwned ? c.name : `${c.name} · ${c.rarity}`}>
                   {art ? <img src={art} alt={c.name} loading="lazy" decoding="async" style={ownsAny ? null : { opacity: 0.22, filter: 'grayscale(1)' }} /> : <span className="binder-slot-name">{c.name}</span>}
-                  <span className="binder-num">#{c.number}</span>
+                  <span className="binder-num">#{cardNumber(c)}</span>
                   {chase && <span className="binder-slot-chase">💎</span>}
                 </div>
                 <div className="variant-chips">

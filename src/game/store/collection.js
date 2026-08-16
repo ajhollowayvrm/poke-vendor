@@ -9,8 +9,12 @@ import {
   cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, gradeUpcharge, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
-  pickMasterLot, luckTierOf,
+  pickMasterLot, luckTierOf, crackSlab as crackSlabCard, slabLabel, setPopAdds, sealedValue, cardPopulation,
 } from '../engine'
+import {
+  rollSealedGrade, sealedGradingFee, sealedGradingDays, sealedSlabLabel, sealedGraderById,
+  DEFAULT_SEALED_GRADER,
+} from '../sealedgrading'
 import { setIdOf, bumpSet } from './helpers'
 import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype, postPatch, challengeBounty } from './constants'
 
@@ -70,6 +74,9 @@ export function createCollectionSlice(set, get) {
         const hasStore = !!s.upgrades?.storefront
         const incoming = hasStore ? cards.map(c => ({ ...c, locked: true, loc: 'storeroom' })) : cards
         const hits = cards.filter(c => c._isHit).length
+        // 🖨️ Press faults are rare enough to be worth a lifetime tally of their own — a
+        // wrong-back lands about once in 125,000 packs, and that is a thing you remember.
+        const misprints = cards.filter(c => c.misprint).length
         const best = cards.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestPull)
         // track best foil pulled (by value) for the stats page
         const foils = cards.filter(c => c.foil)
@@ -129,6 +136,7 @@ export function createCollectionSlice(set, get) {
             packsOpened: s.stats.packsOpened + packs,
             cardsPulled: s.stats.cardsPulled + cards.length,
             hits: s.stats.hits + hits,
+            misprints: (s.stats.misprints || 0) + misprints,
             bestPull: best,
             bestFoil: bestFoil ?? s.stats.bestFoil,
             godPacks,
@@ -598,6 +606,60 @@ export function createCollectionSlice(set, get) {
       get().bumpGoal('grade', cards.length)
     },
 
+    // 🔨 CRACK A SLAB. Break the card out of its holder and get the raw card back, free to
+    // send again — the play a dealer makes on an under-graded slab bought cheap.
+    //
+    // It is not a free reroll, and the reason is in engine.refineCut: the grade this card
+    // already earned is EVIDENCE about the physical card, so cracking it revises its hidden
+    // cut toward what that grade implied, and each further opinion revises it harder. A card
+    // that grades 8 twice ends up with a genuinely poor recorded cut and its odds get worse.
+    // Crack a 9 once and there is real upside; crack the same card four times and there is not.
+    //
+    // On top of that, the crack itself can nick the card (CRACK_DAMAGE_CHANCE), which drops a
+    // condition tier and caps every grade it can earn from then on.
+    crackSlab(uid) {
+      const card = get().collection.find(c => c.uid === uid)
+      if (!card) return { error: 'That card is not in your collection.' }
+      if (!card.grade) return { error: 'That card is not in a holder.' }
+      if (card.locked) return { error: '🔒 That is a personal keepsake. Unlock it first.' }
+      const wasWorth = cardValue(card)
+      const label = slabLabel(card.grade)
+      const { card: out, damaged } = crackSlabCard(card)
+      set(s => ({
+        collection: s.collection.map(c => (c.uid === uid ? out : c)),
+        stats: { ...s.stats, cracks: (s.stats.cracks || 0) + 1 },
+      }))
+      const nowWorth = cardValue(out)
+      if (damaged) {
+        get().log('crack', `🔨 Cracked ${card.name} out of its ${label} holder — and nicked it doing so. It is ${out.condition} now, which caps what it can ever grade. ${fmtMoney(wasWorth)} of slab is ${fmtMoney(nowWorth)} of raw card.`, 0)
+      } else {
+        get().log('crack', `🔨 Cracked ${card.name} out of its ${label} holder. Clean break — it is a raw card again, worth ${fmtMoney(nowWorth)} until you send it back.`, 0)
+      }
+      return { ok: true, damaged, card: out, wasWorth, nowWorth }
+    },
+
+    // 📦🔟 Send a SEALED product to a sealed grader. Same clock and the same resolver as card
+    // grading; a separate queue because the item is a sealed row, not a card.
+    submitSealedGrade(uid, company = DEFAULT_SEALED_GRADER) {
+      const item = get().sealedInventory.find(x => x.uid === uid)
+      if (!item) return { error: 'That product is not in your inventory.' }
+      if (item.grade) return { error: 'That product is already in a holder.' }
+      if (item._heldFor) return { error: 'That is being held for a regular.' }
+      const value = sealedValue(item)
+      const fee = sealedGradingFee(value, company)
+      if (get().cash < fee) return { error: `You need ${fmtMoney(fee)} to send that.` }
+      if (!get().spend(fee)) return { error: 'You cannot cover the fee.' }
+      const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
+      const readyOnDay = submittedAt + sealedGradingDays(company, get().upgrades)
+      set(s => ({
+        sealedInventory: s.sealedInventory.filter(x => x.uid !== uid),
+        pendingSealed: [...(s.pendingSealed || []), { item, company, readyOnDay, submittedAt, paidFee: fee }],
+        sealedGradesSubmitted: (s.sealedGradesSubmitted || 0) + 1,
+      }))
+      const g = sealedGraderById(company)
+      get().log('grade-submit', `📦 Sent ${item.product?.type || 'sealed product'} (${setById(item.setId)?.name || 'set'}) to ${g.name} — ${fmtMoney(fee)}, back in ${readyOnDay - submittedAt} days.`, -fee)
+      return { ok: true, fee, days: readyOnDay - submittedAt }
+    },
     // 🎫 ⚡ Expedite a submission (2 clout + $50): your grader contact walks ONE card to
     // the front of the line — 7 days off its turnaround, never landing before tomorrow.
     // SPEED ONLY: odds and fees are sim-pinned and untouched (same contract as the
@@ -617,10 +679,32 @@ export function createCollectionSlice(set, get) {
       return { ok: true, readyOnDay: newReady }
     },
 
+    // 📦🔟 Resolve sealed submissions whose clock has run out. Its own queue but the same
+    // day stamp, so one resolver call settles both and the two can never drift apart.
+    resolveSealedGrades() {
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      const pending = get().pendingSealed || []
+      const ready = pending.filter(p => day >= p.readyOnDay)
+      if (!ready.length) return []
+      const back = ready.map(p => {
+        const grade = rollSealedGrade(p.item, p.company, p.paidFee)
+        return { ...p.item, grade, loc: p.item.loc || 'storeroom' }
+      })
+      set(s => ({
+        pendingSealed: (s.pendingSealed || []).filter(p => day < p.readyOnDay),
+        sealedInventory: [...back, ...s.sealedInventory],
+      }))
+      for (const it of back) {
+        get().log('grade-done', `📦 ${it.product?.type || 'Sealed product'} (${setById(it.setId)?.name || 'set'}) came back ${sealedSlabLabel(it.grade)} — now worth ${fmtMoney(sealedValue(it))}.`, 0)
+      }
+      return back
+    },
+
     // Resolve grades whose day count has been reached.
     resolveGrades() {
       // Compare against the same month-safe absolute day grades are stamped with (see submitGrade).
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      get().resolveSealedGrades()
       const ready = get().pendingGrades.filter(p => day >= p.readyOnDay)
       if (!ready.length) return []
       const loupeLuck = get().upgrades.loupe ? 0.08 : 0
@@ -645,6 +729,16 @@ export function createCollectionSlice(set, get) {
         const entry = { overall: grade.overall, tier: p.tierKey, company: grade.company, fee: round2((p.paidFee || 0) + owed), gradedAt: grade.gradedAt }
         resolved.push({ ...graded, gradeHistory: [...(p.card.gradeHistory || []), entry] })
       }
+      // 📊 THE CENSUS. Every slab that comes back is one more copy of that card at that grade
+      // in the population report — including yours. Written BEFORE the values below are read,
+      // because it changes them: slabbing your fourth copy of a thin vintage card lowers what
+      // all four are worth. This is the cost that makes "grade everything" the wrong answer.
+      const popAdds = { ...(get().popAdds || {}) }
+      for (const g of resolved) {
+        const key = `${g.id}|${g.grade.overall}`
+        popAdds[key] = (popAdds[key] || 0) + 1
+      }
+      setPopAdds(popAdds)
       // 📱 The mail day. A slab coming back a 10 is the single most-filmed moment in the
       // hobby — the reveal is the content, and it costs nothing but the phone. Only the BEST
       // return of the batch posts (one submission back = one video, not twelve).
@@ -655,6 +749,7 @@ export function createCollectionSlice(set, get) {
       set(s => ({
         pendingGrades: [...s.pendingGrades.filter(p => day < p.readyOnDay), ...stillHeld],
         collection: [...resolved, ...s.collection],
+        popAdds,
         ...gemFold,
       }))
       for (const g of resolved) {

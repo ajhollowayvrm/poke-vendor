@@ -17,11 +17,9 @@
     <link rel="dns-prefetch" href="https://images.pokemontcg.io" />
     <link rel="preconnect" href="https://images.scrydex.com" />
     <link rel="dns-prefetch" href="https://images.scrydex.com" />
-    <!-- iOS home-screen app -->
-    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="PokéVendor" />
+    <!-- No home-screen / PWA meta here on purpose: this bundle is served inside the native
+         iOS shell over a custom URL scheme (ios/Sources/Shell.swift), which supplies the app
+         icon, title and status-bar style itself. -->
   </head>
   <body>
     <div id="root"></div>

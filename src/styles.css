@@ -1302,6 +1302,60 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .hall-announce.mine { border-color: var(--green); box-shadow: 0 0 0 1px #36d39966, 0 16px 50px #36d39922; }
 .hall-announce.mine .ha-sub b { color: var(--green); }
 
+/* 🖨️ misprint callout on a card page */
+.misprint-box { margin-top: 10px; padding: 8px 10px; border-radius: 9px;
+  border: 1px solid #c084fc66; background: #c084fc12; }
+.misprint-head { font-weight: 800; font-size: 13px; color: #d8b4fe; }
+/* 🖨️ the badge on a card tile */
+.misprint-badge { position: absolute; left: 4px; bottom: 4px; z-index: 3; font-size: 11px; line-height: 1;
+  padding: 2px 5px; border-radius: 5px; background: #4c1d95dd; color: #e9d5ff; font-weight: 800;
+  border: 1px solid #c084fc88; }
+
+/* ===================== 🧾🏦 The books ===================== */
+.books-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
+.books-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.books-grid .muted { font-size: 11.5px; }
+.books-bar { height: 5px; border-radius: 3px; background: var(--line, #2a3145); overflow: hidden; margin: 4px 0 2px; }
+.books-bar-fill { height: 100%; border-radius: 3px; transition: width .3s ease; }
+.books-note { font-size: 12px; margin-top: 8px; line-height: 1.45; }
+.books-due { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  padding: 8px 10px; margin-top: 8px; border-radius: 9px; border: 1px solid #ff9f4366; background: #ff9f430f; }
+.books-risk { margin-top: 10px; padding: 8px 10px; border-radius: 9px; background: var(--panel2, #1a1f2e); font-size: 12.5px; }
+.books-history { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.books-hrow { display: flex; gap: 10px; justify-content: space-between; font-size: 12px; padding: 4px 0;
+  border-top: 1px solid var(--line, #2a3145); }
+.loan-offer { margin-top: 10px; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line, #2a3145);
+  background: var(--panel2, #1a1f2e); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.loan-offer.locked { opacity: .62; }
+.loan-head { display: flex; justify-content: space-between; width: 100%; font-size: 13.5px; }
+.loan-terms { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ===================== 🔨 Auction house (buy side) ===================== */
+.lot-list { display: flex; flex-direction: column; gap: 8px; }
+.lot-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px;
+  background: var(--panel2, #1a1f2e); border: 1px solid var(--line, #2a3145); }
+.lot-row.bidding { border-color: var(--gold); box-shadow: 0 0 0 1px #ffcb0533; }
+.lot-row.flagged { border-color: #ff9f43; }
+.lot-art { width: 42px; border-radius: 6px; flex: none; }
+.lot-main { flex: 1 1 auto; min-width: 0; }
+.lot-title { font-size: 13.5px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.lot-sub { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+.lot-warn { margin-top: 6px; font-size: 12px; color: #ff9f43; }
+.lot-committed { margin-top: 6px; font-size: 12px; color: var(--dim); }
+.lot-bid { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; align-items: stretch; }
+.lot-input { width: 92px; padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line, #2a3145);
+  background: var(--panel, #12172294); color: inherit; font-size: 13px; }
+@media (max-width: 640px) {
+  .lot-row { flex-wrap: wrap; }
+  .lot-bid { flex-direction: row; width: 100%; }
+  .lot-input { flex: 1 1 auto; width: auto; }
+}
+
+/* 🏃 a rival dealer got to a deal before you did — the one banner that is bad news */
+.hall-announce.sniped { border-color: #ff9f43; box-shadow: 0 0 0 1px #ff9f4366, 0 16px 50px #ff9f4322; }
+.hall-announce.sniped .ha-line b { color: #ff9f43; }
+.hall-announce.sniped .ha-sub b { color: #ff9f43; }
+
 /* ===================== Mobile + touch optimization ===================== */
 @media (max-width: 640px) {
   /* Trim the top cushion on phones: --sat already clears the Dynamic Island, so the

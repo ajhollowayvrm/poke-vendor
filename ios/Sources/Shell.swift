@@ -1,6 +1,6 @@
 //  Shell.swift — the whole iOS app.
 //
-//  PokéVendor is a Vite/React PWA. This file is the native shell around its built `dist/` tree and
+//  PokéVendor is a Vite/React app. This file is the native shell around its built `dist/` tree and
 //  nothing more: it hosts a WKWebView, serves the bundle over a custom URL scheme, and does the
 //  things a web page cannot do for itself on iOS. There is deliberately no framework here (no
 //  Capacitor, no CocoaPods) — the app needs a handful of native capabilities, not a platform.
@@ -26,8 +26,8 @@
 //  5. FILE SAVE. POKEVENDOR: also a bug fix. src/components/ErrorBoundary.jsx exports a save
 //     backup with URL.createObjectURL + a.download, which is INERT in a WKWebView. That is the
 //     crash-recovery escape hatch, so it fails silently at the worst possible moment.
-//  6. IMAGE CACHE. POKEVENDOR: no Sideline equivalent. A service worker does not run under a
-//     custom scheme, which kills the app's CacheFirst rule for remote card art. See makeConfig().
+//  6. IMAGE CACHE. POKEVENDOR: no Sideline equivalent. Remote card art needs caching and there
+//     is no service worker to do it — see makeURLCache().
 
 import UIKit
 import WebKit
@@ -40,7 +40,7 @@ enum Shell {
     /// which orphans every save on every device that already has the app. Don't.
     static let scheme = "pokevendor"
     static let pageURL = URL(string: "\(scheme)://local/index.html")!
-    /// --bg from styles.css, matching the manifest's theme_color. Used for the window, the view and
+    /// --bg from styles.css. Used for the window, the view and
     /// the web view so there is no white flash between the launch screen and the first paint.
     static let background = UIColor(red: 0x0c / 255.0, green: 0x0f / 255.0, blue: 0x1a / 255.0, alpha: 1)
 }
@@ -50,7 +50,7 @@ enum Shell {
 /// Serves the built Vite app over `pokevendor://`.
 ///
 /// POKEVENDOR: unlike Sideline — one self-contained index.html — this answers a real tree:
-/// index.html, assets/*.js, assets/*.css, the PWA icons and manifest. Sideline's handler was
+/// index.html, assets/*.js, assets/*.css and the favicon. Sideline's handler was
 /// already written directory-capable, which is why this port is small: it resolves any bundled
 /// path, refuses anything escaping the bundle, and maps MIME by extension.
 final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
@@ -135,20 +135,20 @@ final class ShellViewController: UIViewController {
     private var devBridge: DevBridge?
     #endif
 
-    /// POKEVENDOR: replaces the dead service worker for remote card art.
+    /// The ONLY cache for remote card art.
     ///
-    /// The web build runs a Workbox CacheFirst rule over images.pokemontcg.io and
-    /// images.scrydex.com (1000 entries / 14 days). A service worker does NOT run under a custom
-    /// scheme, so inside the shell that rule simply does not exist and every card image would come
-    /// off the CDN again on each launch. That lands hardest on HiResImg.jsx, which paints small art
-    /// first and swaps in a 0.5–1MB hi-res after decode() — its own comment assumes the small one is
-    /// "usually already in the SW cache", which is false here.
+    /// The web build used to run a Workbox CacheFirst rule over images.pokemontcg.io and
+    /// images.scrydex.com. That never applied here — a service worker does not run under a custom
+    /// scheme — and the PWA has since been removed entirely, so this is not a fallback for it any
+    /// more, it is the whole mechanism. Without it every card image comes off the CDN again on
+    /// each launch, which lands hardest on HiResImg.jsx: it paints small art first and swaps in a
+    /// 0.5–1MB hi-res after decode().
     ///
-    /// A URLCache is not an equivalent: it obeys the CDN's cache headers rather than an explicit
-    /// policy, so the 14-day/1000-entry tuning is gone. What it does buy is that art stops
-    /// re-downloading every session, which is the part that actually hurts. 512MB on disk is
-    /// deliberately generous; vite.config.js records that ~6000 cached images ran 470–880MB, so
-    /// WATCH the app's storage figure in Settings rather than assuming this cap is safe.
+    /// A URLCache obeys the CDN's cache headers rather than an explicit policy, so there is no
+    /// entry/age tuning to speak of. What it buys is that art stops re-downloading every session,
+    /// which is the part that actually hurts. 512MB on disk is deliberately generous; ~6000 cached
+    /// images measured 470–880MB, so WATCH the app's storage figure in Settings rather than
+    /// assuming this cap is safe.
     private static func makeURLCache() -> URLCache {
         URLCache(memoryCapacity: 32 * 1024 * 1024,
                  diskCapacity: 512 * 1024 * 1024,

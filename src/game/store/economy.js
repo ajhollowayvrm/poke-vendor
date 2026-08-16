@@ -14,6 +14,7 @@ import {
   applyNotoGain, ledgerAdd, bumpHype, RANKS, rankEligible,
 } from './constants'
 import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
+import { bookRevenue, bookExpense } from '../tax'
 import { SHOW_TIERS } from '../shows'
 import { advanceDaysWith, mergeSummaries } from './daytick'
 import { initialState } from './initialState'
@@ -94,23 +95,35 @@ export function createEconomySlice(set, get) {
       set(s => ({ history: [{ t: Date.now(), type, detail, amount }, ...s.history].slice(0, 200) }))
     },
 
-    spend(amount) {
+    // 🧾 THE BOOKS run on cash basis, so every dollar that moves is a line in them, and both
+    // sides accrue right here rather than at a hundred call sites. `opts.personal` marks money
+    // that is not a business cost (your rent, the tax bill itself); everything else a dealer
+    // spends — inventory, fees, freight, grading, wages, the lease — is deductible, which is
+    // exactly why restocking before a quarter closes lowers what you owe. See game/tax.js.
+    spend(amount, opts) {
       // Invariant guard: `cash < NaN` is false, so without this check a single malformed
       // price (undefined/NaN upstream) would write NaN into cash and PERSIST it — bricking
       // the save. A negative amount would silently ADD money. Refuse both.
       if (!Number.isFinite(amount) || amount < 0) return false
       if (get().cash < amount) return false
-      set(s => ({ cash: round2(s.cash - amount), stats: { ...s.stats, spent: round2(s.stats.spent + amount) } }))
+      set(s => ({
+        cash: round2(s.cash - amount),
+        stats: { ...s.stats, spent: round2(s.stats.spent + amount) },
+        ...(opts?.personal ? {} : { books: bookExpense(s.books, amount) }),
+      }))
       return true
     },
     // earn money. By default it counts as CARD income (sales, payouts, wants) for the
     // full-time sustainability readout; pass {wage:true} for paycheck income so it's excluded.
+    // A wage is not business revenue either — it is already taxed at source — so it stays out
+    // of the books for the same reason.
     earn(amount, opts) {
       if (!Number.isFinite(amount) || amount < 0) return // same NaN-poisoning guard as spend()
       set(s => ({
         cash: round2(s.cash + amount),
         stats: { ...s.stats, earned: round2(s.stats.earned + amount) },
         _cardAccrual: round2((s._cardAccrual || 0) + (opts?.wage ? 0 : amount)),
+        ...(opts?.wage ? {} : { books: bookRevenue(s.books, amount) }),
       }))
     },
     // Attribute a sealed-product purchase to its set for the per-set ledger.
