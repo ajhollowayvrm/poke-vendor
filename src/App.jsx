@@ -14,6 +14,7 @@ import { encounterStillValid } from './game/shows'
 import FirstRun, { NotorietyHelp } from './components/FirstRun'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
 import AuctionHouse from './components/AuctionHouse'
+import { shelfProducts, shelfBlurb } from './game/shelf'
 import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
@@ -1124,7 +1125,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
           {groupByEra(catalog).map(era => (
             <DistributorEraCard key={era.series} era={era} dist={dist} lvl={lvl} stock={rec.stock}
               cash={cash} onBuy={onBuy} clearanceSetId={clearanceSetId} owned={ownedCounts}
-              onCredit={onCredit} split={split} creditAvail={creditAvail} />
+              onCredit={onCredit} split={split} creditAvail={creditAvail} weekIndex={weekIndex} />
           ))}
         </div>
       )}
@@ -1491,10 +1492,10 @@ function groupByEra(sets) {
 
 // One ERA on the shelf. Collapsed by default like the set rows beneath it, so the shop still
 // opens as a short scannable list however many products the era carries.
-function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail }) {
+function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail, weekIndex = 0 }) {
   const [open, setOpen] = useState(false)
   const credit = { onCredit, split, creditAvail }
-  const nProducts = era.sets.reduce((a, s) => a + setProducts(s).length, 0) + era.products.length
+  const nProducts = era.sets.reduce((a, s) => a + shelfProducts(dist, setProducts(s), s, weekIndex).length, 0) + era.products.length
   return (
     <div className={`product era-acc ${open ? 'open' : ''}`}>
       <button className="set-head era-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
@@ -1522,7 +1523,7 @@ function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId
           {era.sets.map(set => (
             <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={stock}
               cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={owned}
-              onCredit={onCredit} split={split} creditAvail={creditAvail} />
+              onCredit={onCredit} split={split} creditAvail={creditAvail} weekIndex={weekIndex} />
           ))}
         </div>
       )}
@@ -1557,8 +1558,11 @@ function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split
 
 // One set on a distributor's shelf: its products (priced at your rapport), plus a case
 // lot (if they sell cases and you've earned it) and a clearance lot (Greg, weekly).
-function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned, onCredit, split, creditAvail }) {
-  const products = setProducts(set)
+function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned, onCredit, split, creditAvail, weekIndex = 0 }) {
+  // 🛒 What THIS retailer stocks, not the full manufacturer lineup — a small shop carries
+  // boxes, packs and one impulse line, not four artwork variants of the same blister. See
+  // game/shelf.js; the shelf is deterministic per (set, week), never per render.
+  const products = shelfProducts(dist, setProducts(set), set, weekIndex)
   const showCases = dist.cases && lvl.level >= dist.casesMinLevel
   const lot = showCases ? caseLot(set) : null
   const box = [...products].sort((a, b) => b.packs - a.packs)[0]

@@ -61,6 +61,7 @@ import { DISTRIBUTOR_NOTO } from '../engine'
 // lives beside its own actions rather than in this file, so a system reads in one place.
 import { settleQuarter, settleLoan, settleTaxArrears } from './books'
 import { settleAuctionLots } from './auctionhouse'
+import { shelfCarries } from '../shelf'
 
 // A set trading at or above this multiple of its base price is "hot" — willing buyers
 // on a hot card pay a premium above market, so LISTING a card whose set is spiking can
@@ -1644,10 +1645,25 @@ export function advanceDaysWith(set, get, days, away) {
         const product = set_ && (set_.products || []).find(p => p.type === order.productType)
         let bought = null
         if (set_ && product) {
-          for (const dv of DISTRIBUTORS) {
-            if (!distributorUnlocked(dv, noto, s.upgrades, s.rank || 0)) continue
-            const level = rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level
-            const unit = round2(distributorPrice(dv, product.price, level, { product, set: set_ }))
+          // Ring around the distributors who actually CARRY this line, cheapest first.
+          //
+          // Two fixes in this list. It now obeys the same shelf the buy screen does
+          // (game/shelf.js), so the book cannot conjure a line no distributor stocks — and a
+          // Pokémon Center exclusive correctly sources from the marketplace, at marketplace
+          // money, because that is the only channel that has one. And it is now genuinely
+          // CHEAPEST-first, which is what the upgrade has always claimed; it used to take the
+          // first unlocked distributor in array order.
+          // Same week index the Buy tab shops with (the Purchasing Agent below derives its
+          // own copy the same way) — a shelf is a function of the week, so the book has to ask
+          // about the week it is actually ringing around in.
+          const soWeek = Math.floor(newAbsDay / 7)
+          const candidates = DISTRIBUTORS
+            .filter(dv => distributorUnlocked(dv, noto, s.upgrades, s.rank || 0))
+            .filter(dv => shelfCarries(dv, product, set_, soWeek))
+            .map(dv => ({ dv, level: rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level }))
+            .map(x => ({ ...x, unit: round2(distributorPrice(x.dv, product.price, x.level, { product, set: set_ })) }))
+            .sort((a, b) => a.unit - b.unit)
+          for (const { dv, unit } of candidates) {
             // Never spend the shop into arrears chasing one special order.
             if (get().cash < unit + STORE_LEASE_PER_DAY) continue
             if (!get().spend(unit)) continue
@@ -2069,7 +2085,12 @@ export function advanceDaysWith(set, get, days, away) {
         let need = min - (have.get(`${setId}|${p.type}`) || 0)
         if (need <= 0) continue
         // cheapest in-stock seller first; fall through to the next if a buy comes up short
+        // 🛒 A seller only counts if this product is actually ON THAT SHELF. Without this the
+        // agent could order a mini tin from a wholesaler that does not carry tins, or a
+        // Pokémon Center exclusive from the corner shop — the buy screen filters by retailer
+        // (game/shelf.js) and the overnight buyer has to obey the same shelf.
         const opts = offers
+          .filter(x => shelfCarries(x.dv, p, st, week))
           .map(x => ({ ...x, price: distributorPrice(x.dv, p.price, x.level, { product: p, set: st }),
             avail: !stockState(x.dv, (get().distributors[x.dv.id]?.stock) || {}, st, p, x.level).out }))
           .filter(x => x.avail && x.price > 0)

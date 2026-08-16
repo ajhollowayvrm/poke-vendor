@@ -29,6 +29,15 @@ function hash32(str) {
     h ^= str.charCodeAt(i)
     h = Math.imul(h, 0x01000193) >>> 0
   }
+  // AVALANCHE — not optional. Plain FNV-1a leaves inputs that differ only in their LAST
+  // character sitting in a narrow band, drifting by a constant rather than scattering: a
+  // ramp, not a hash. Here the last character is the GRADE, so without this a card's PSA 10
+  // and PSA 9 percentiles would be near-neighbours instead of independent draws. Found while
+  // debugging the same flaw in game/shelf.js, where it stopped a shelf rotating at all.
+  // (murmur3 fmix32.)
+  h ^= h >>> 16; h = Math.imul(h, 0x7feb352d) >>> 0
+  h ^= h >>> 15; h = Math.imul(h, 0x846ca68b) >>> 0
+  h ^= h >>> 16
   return h >>> 0
 }
 // Where this card sits against its peer group, 0 (the scarcest) to 1 (the most common).

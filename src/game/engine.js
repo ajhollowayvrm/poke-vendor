@@ -3129,7 +3129,11 @@ export function distributorUnlocked(dist, notoriety, upgrades, rank = 0) {
 
 // A real local shop stocks what one weekly case order gets them — two sets, maybe three, and
 // whatever's left of last month's. Not a catalogue.
-const LGS_SHELF_SIZE = 2
+// How many SETS the corner shop keeps on the shelf. Three, because that is what a real small
+// shop carries: boxes of the two or three current sets and nothing older. What made the shelf
+// feel like a warehouse was never this number — it was showing all ~20 manufacturer SKUs of
+// each set, which game/shelf.js now filters down to what a shop actually orders.
+const LGS_SHELF_SIZE = 3
 // 🕰️ IN PRINT → SELL-THROUGH → AFTERMARKET. "Out of print" describes the PRINTER, not the shelf,
 // and the gap between those two is YEARS wide. Three stages, and the middle one is what a naive
 // in-print/out-of-print flag throws away:
@@ -3351,12 +3355,16 @@ export function distributorCasePrice(dist, lot, level) {
 export function stockCap(dist, product, level, set) {
   if (!dist) return 99
   const packs = product?.packs || 1
+  // Depth is "limited but real", which is what a shop actually looks like: a stack of boxes
+  // behind the counter and a tub of loose packs broken out of them. The old numbers were thin
+  // in the wrong place — one booster box and five loose packs is a shop that has just been
+  // cleaned out, not one that is open for business.
   let base
   if (product?._case) base = 1
-  else if (packs >= 21) base = 1          // booster box — a shop gets a couple a week, not a pallet
+  else if (packs >= 21) base = 3          // booster boxes — a few behind the counter
   else if (packs >= 9) base = 2           // ETB / super-premium collection
-  else if (packs >= 2) base = 3           // booster bundle / premium / tin / blister
-  else base = 5                           // single booster / sleeved pack
+  else if (packs >= 2) base = 4           // booster bundle / premium / tin / blister
+  else base = 14                          // loose packs — a shop breaks boxes and sells them singly
   const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
   const allo = 1 + 0.25 * (level || 0)      // bigger allocation as rapport grows (up to +100%)
   // 🕰️ A finished print run is drawn down, never replenished — what's left on a warehouse shelf

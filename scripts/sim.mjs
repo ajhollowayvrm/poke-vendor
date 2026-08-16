@@ -228,6 +228,99 @@ try {
   pass(`no MSRP printer: cheapest fresh-drop ask (${shop.newestName}) is ${(shop.minRatio * 100).toFixed(0)}% of market (want ≥ 100%)`,
     shop.pcGone && shop.minRatio >= 1 - 1e-9)
 
+  // ---- 1d. 🛒 What is ON the shelf, not just which sets ----------------------------
+  // The set count above was always right and always insufficient: 2 sets of ~20 manufacturer
+  // SKUs each is still 40 sealed lines in a corner shop. A real small shop carries boxes of
+  // the current sets, loose packs broken out of them, and one impulse line — so the thing to
+  // pin is SKUs per shelf, not sets per shelf. See game/shelf.js.
+  console.log('\n🛒 SHELF REALISM (what a retailer actually stocks):')
+  const shelf = await page.evaluate(async () => {
+    const eng = await import('/src/game/engine.js')
+    const sh = await import('/src/game/shelf.js')
+    const skusFor = (id, weeks = 12) => {
+      const d = eng.distributorById(id)
+      const counts = []
+      for (let w = 0; w < weeks; w++) {
+        let n = 0
+        for (const set of eng.distributorCatalog(d, eng.SHOP_SETS, w)) {
+          n += sh.shelfProducts(d, eng.setProducts(set), set, w).length
+        }
+        counts.push(n)
+      }
+      return counts
+    }
+    // Every archetype an allocation shelf ever shows, across a season of weeks.
+    const archesOn = (id, weeks = 24) => {
+      const d = eng.distributorById(id)
+      const out = new Set()
+      for (let w = 0; w < weeks; w++)
+        for (const set of eng.distributorCatalog(d, eng.SHOP_SETS, w))
+          for (const p of sh.shelfProducts(d, eng.setProducts(set), set, w)) out.add(sh.archetypeOf(p))
+      return [...out]
+    }
+    // The worst variant pile-up in the raw data, and what the shelves do with it.
+    const worst = eng.SHOP_SETS.map(set => {
+      const c = {}
+      for (const p of eng.setProducts(set)) { const a = sh.archetypeOf(p); c[a] = (c[a] || 0) + 1 }
+      return { set: set.name, max: Math.max(...Object.values(c)) }
+    }).sort((a, b) => b.max - a.max)[0]
+    const lgsVariantMax = (() => {
+      const d = eng.distributorById('lgs')
+      let max = 0
+      for (let w = 0; w < 24; w++)
+        for (const set of eng.distributorCatalog(d, eng.SHOP_SETS, w)) {
+          const c = {}
+          for (const p of sh.shelfProducts(d, eng.setProducts(set), set, w)) {
+            const a = sh.archetypeOf(p); c[a] = (c[a] || 0) + 1
+          }
+          max = Math.max(max, ...Object.values(c), 0)
+        }
+      return max
+    })()
+    const lgs = eng.distributorById('lgs')
+    // The shelf must be STABLE for a week — the buy screen re-renders constantly.
+    const set0 = eng.distributorCatalog(lgs, eng.SHOP_SETS, 3)[0]
+    const a1 = sh.shelfProducts(lgs, eng.setProducts(set0), set0, 3).map(p => p.type).join('|')
+    const a2 = sh.shelfProducts(lgs, eng.setProducts(set0), set0, 3).map(p => p.type).join('|')
+    // ...and it must MOVE across weeks, or it is a static list pretending to rotate.
+    const weeks = new Set()
+    for (let w = 0; w < 24; w++) weeks.add(sh.shelfProducts(lgs, eng.setProducts(set0), set0, w).map(p => p.type).join('|'))
+    // Depth: what a shop keeps behind the counter.
+    const box = eng.setProducts(set0).find(p => (p.packs || 0) >= 21)
+    const pack = eng.setProducts(set0).find(p => p.type === 'Booster Pack')
+    return {
+      lgsSkus: skusFor('lgs'), tcgSkus: skusFor('tcgplayer', 1), amazonSkus: skusFor('amazon', 1),
+      dnaArches: archesOn('dna'), lgsArches: archesOn('lgs'), amazonArches: archesOn('amazon'),
+      tcgArches: archesOn('tcgplayer', 1),
+      worstRaw: worst, lgsVariantMax, stable: a1 === a2, distinctWeeks: weeks.size,
+      boxCap: box ? eng.stockCap(lgs, box, 0, set0) : 0,
+      packCap: pack ? eng.stockCap(lgs, pack, 0, set0) : 0,
+      dnaSets: eng.distributorCatalog(eng.distributorById('dna'), eng.SHOP_SETS, 0).length,
+      dnaCases: eng.distributorCatalog(eng.distributorById('dna'), eng.SHOP_SETS, 0).filter(s2 => eng.caseLot(s2)).length,
+    }
+  })
+  const lgsLo = Math.min(...shelf.lgsSkus), lgsHi = Math.max(...shelf.lgsSkus)
+  pass(`the corner shop is a corner shop: ${lgsLo}-${lgsHi} sealed lines across 12 weeks (want ≤ 12)`,
+    lgsHi <= 12 && lgsLo >= 3)
+  pass(`...against ${shelf.tcgSkus[0]} at the marketplace and ${shelf.amazonSkus[0]} at the warehouse`,
+    shelf.tcgSkus[0] > lgsHi * 4 && shelf.amazonSkus[0] > lgsHi * 2)
+  pass(`no shelf shows a pile of one thing (raw data peaks at ${shelf.worstRaw.max}× in ${shelf.worstRaw.set}; the LGS never shows more than ${shelf.lgsVariantMax})`,
+    shelf.lgsVariantMax <= 1)
+  pass(`Pokémon Center exclusives reach you through the MARKETPLACE only (lgs: ${shelf.lgsArches.join('/')})`,
+    !shelf.lgsArches.includes('pcetb') && !shelf.amazonArches.includes('pcetb')
+    && !shelf.dnaArches.includes('pcetb') && shelf.tcgArches.includes('pcetb'))
+  // NB: case LOTS are built by caseLot() and added by the buy screen separately, so they never
+  // appear in setProducts() and cannot show up here. What this pins is the retail mix.
+  pass(`the wholesaler sells wholesale units, not checklane impulse buys (${shelf.dnaArches.join('/')})`,
+    shelf.dnaArches.includes('box') && shelf.dnaArches.includes('etb')
+    && !shelf.dnaArches.includes('blister') && !shelf.dnaArches.includes('tin'))
+  pass(`...and cases are still its own thing (${shelf.dnaCases} of ${shelf.dnaSets} sets offer a case lot)`,
+    shelf.dnaCases > 0)
+  pass(`the shelf is stable within a week but moves across them (${shelf.distinctWeeks} distinct shelves over 24 weeks)`,
+    shelf.stable && shelf.distinctWeeks > 1)
+  pass(`depth is a real shop's: ${shelf.boxCap} booster boxes behind the counter, ${shelf.packCap} loose packs out front`,
+    shelf.boxCap >= 2 && shelf.boxCap <= 6 && shelf.packCap >= 8 && shelf.packCap <= 20)
+
   // ---- 2. Grading EV --------------------------------------------------------------
   console.log('\nGRADING EV ($100 comp-less NM card, N=40k rolls):')
   const grade = await page.evaluate(async () => {
