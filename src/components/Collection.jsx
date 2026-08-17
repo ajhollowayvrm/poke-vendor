@@ -143,15 +143,19 @@ export default function Collection({ onPick }) {
             in your own quarter bin (retails at ~5× the LGS rate, paid as it drains); the LGS
             turn-in stays as the smaller instant-credit path. No store → LGS only, as ever. */}
         {!selectMode && bulk.length > 0 && hasStore && (
-          <button className="btn gold" style={{ flex: 'none', marginLeft: 'auto' }}
+          <button className="btn alt" style={{ flex: 'none' }}
             title={`Toss every raw card worth under a dollar into your store's bulk bin — kids dig them out at your bin price as foot traffic passes (manage it on the Shop floor tab)${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
               const { tossed, kept } = stockBinBulk()
               if (tossed) notify(`🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in the quarter bin.${kept ? ` ${kept} protected.` : ''}`, 6000)
             }}>🗑️ Toss {bulk.length} bulk in the bin</button>
         )}
+        {/* Neutral, and in the flow. As `gold` + `marginLeft:auto` this was a full-width
+            right-aligned bar on its own toolbar row — the loudest control on the Inventory
+            screen — to turn 19 commons into 95 cents. Gold is the primary action; disposing
+            of bulk is a utility. */}
         {!selectMode && bulk.length > 0 && (
-          <button className={`btn ${hasStore ? 'alt' : 'gold'}`} style={{ flex: 'none', ...(hasStore ? {} : { marginLeft: 'auto' }) }}
+          <button className="btn alt" style={{ flex: 'none' }}
             title={`Turn in every raw card worth under a dollar at the Local Game Store for in-store credit — a flat 5¢ a card, spent automatically on your next LGS order${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
               const { credit, sold } = turnInBulk()

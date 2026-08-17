@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useGame } from '../game/store'
-import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE, breakOptions } from '../game/engine'
+import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE, breakOptions, productTypeLabel } from '../game/engine'
 import { toast } from '../ui/dialog'
 import { AskPicker } from '../ui/AskPicker'
 import SealedModal from './SealedModal'
@@ -186,7 +186,7 @@ function SealedRow({ items, onRip, hasStore, onInspect, selecting, selected, onT
         {selecting && <span className="sift-check" aria-hidden="true">{selected ? '✅' : '⬜'}</span>}
         {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <b className="sealed-name">{item.product.icon || '📦'} {item.product.type}</b>
+          <b className="sealed-name">{item.product.icon || '📦'} {productTypeLabel(item.product)}</b>
           {/* A cross-set product names its ERA, never the packs inside it. The box is sealed —
               you cannot see through cardboard, and it sells on potential, not on contents. */}
           <div className="muted" style={{ fontSize: 12 }}>

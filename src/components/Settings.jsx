@@ -156,7 +156,7 @@ export default function Settings() {
               : 'Off — the whole box rips instantly into your collection (faster).'}
           </div>
         </div>
-        <button className={`btn ${openSealedOneByOne ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${openSealedOneByOne ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={openSealedOneByOne}
           onClick={() => setSetting('openSealedOneByOne', !openSealedOneByOne)}>
           {openSealedOneByOne ? 'On' : 'Off'}
@@ -200,7 +200,7 @@ export default function Settings() {
               : 'Off — you click to start each reveal yourself.'}
           </div>
         </div>
-        <button className={`btn ${autoAdvance ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${autoAdvance ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={autoAdvance}
           onClick={() => setSetting('autoAdvance', !autoAdvance)}>
           {autoAdvance ? 'On' : 'Off'}
@@ -216,7 +216,7 @@ export default function Settings() {
               : 'Off — the rip is silent.'}
           </div>
         </div>
-        <button className={`btn ${sound ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${sound ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={sound}
           onClick={() => setSetting('sound', !sound)}>
           {sound ? 'On' : 'Off'}
@@ -232,7 +232,7 @@ export default function Settings() {
               : 'Off — no vibration.'}
           </div>
         </div>
-        <button className={`btn ${haptics ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${haptics ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={haptics}
           onClick={() => setSetting('haptics', !haptics)}>
           {haptics ? 'On' : 'Off'}
@@ -248,7 +248,7 @@ export default function Settings() {
               : 'Off — buying sealed stocks it into your 📦 Inventory to rip, list, or flip later.'}
           </div>
         </div>
-        <button className={`btn ${ripOnBuy ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${ripOnBuy ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={ripOnBuy}
           onClick={() => setSetting('ripOnBuy', !ripOnBuy)}>
           {ripOnBuy ? 'On' : 'Off'}
@@ -265,7 +265,7 @@ export default function Settings() {
                 : 'Paused — the runner submits nothing until you switch them back on.'}
             </div>
           </div>
-          <button className={`btn ${runnerOn ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          <button className={`btn ${runnerOn ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
             role="switch" aria-checked={runnerOn}
             onClick={() => setSetting('submissionRunner', !runnerOn)}>
             {runnerOn ? 'On' : 'Paused'}
@@ -327,7 +327,7 @@ export default function Settings() {
             {dealUngradedOnly ? 'On — only RAW cards flag as deals (graded slabs are skipped).' : 'Off — graded slabs can flag as deals too.'}
           </div>
         </div>
-        <button className={`btn ${dealUngradedOnly ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${dealUngradedOnly ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={dealUngradedOnly}
           onClick={() => setSetting('dealUngradedOnly', !dealUngradedOnly)}>
           {dealUngradedOnly ? 'On' : 'Off'}

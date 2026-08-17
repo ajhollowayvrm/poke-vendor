@@ -123,9 +123,12 @@ export default function MysteryPacks() {
                   <br />
                   <span className="muted" style={{ fontSize: 11.5 }}>Takes: {tierContentsLabel(tier)}</span>
                   <br />
+                  {/* Name the channels. This was four bare emoji crammed together with no gaps
+                      and their meaning only in `title` — which does not exist on a touch
+                      device, i.e. on the platform this ships to. */}
                   {chans.length
-                    ? <>On: {chans.map(c => <span key={c.key} title={c.hint}>{c.icon} </span>)}
-                        {chans.some(c => c.key === 'store') && !hasStore && <span className="muted">(store needs a storefront)</span>}</>
+                    ? <>On: {chans.map((c, i) => <span key={c.key} title={c.hint}>{i ? ' · ' : ''}{c.icon} {c.label}</span>)}
+                        {chans.some(c => c.key === 'store') && !hasStore && <span className="muted"> (store needs a storefront)</span>}</>
                     : <span style={{ color: 'var(--red)' }}>No channels enabled — it can't sell</span>}
                   {bestChance > 0 && stock.length > 0 && <><br /><span className="muted" style={{ fontSize: 11.5 }}>≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame{tier.published ? ' (published)' : ''}</span></>}
                   {/* 📋 The public odds board — what buyers see across this line's sealed stock. */}

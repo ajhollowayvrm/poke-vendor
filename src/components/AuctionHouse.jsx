@@ -30,8 +30,12 @@ function RoomBar({ watchers }) {
     : heat > 0.33 ? 'a normal room' : 'quiet — where the deals are, and the traps'
   return (
     <span className="pill" title={`${watchers} watching. The room is what sets the closing price: a packed lot ends over market, a quiet one well under it.`}>
+      {/* The "·" is a real character, not a margin. The count and the descriptor are adjacent
+          inline nodes, so with spacing alone the accessible name came out as "6a normal room"
+          / "12packed — it will close over market" — two values run together for anyone reading
+          by ear, and optically cramped for everyone else. */}
       👥 <b style={{ color }}>{watchers}</b>
-      <span className="muted" style={{ marginLeft: 5, fontSize: 11 }}>{label}</span>
+      <span className="muted" style={{ marginLeft: 5, fontSize: 11 }}>· {label}</span>
     </span>
   )
 }

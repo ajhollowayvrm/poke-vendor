@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
+import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind,
-  hypeSurge, cardValue, ERA_PRODUCTS, eraAnchorSet, drawPackSets } from './game/engine'
+  hypeSurge, cardValue, ERA_PRODUCTS, eraAnchorSet, drawPackSets, productTypeLabel } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
 import { useGame, repSourceLabel, RANKS, DEEDS_NEEDED, deedsDone } from './game/store'
@@ -59,19 +59,9 @@ const TAB_LABEL = { shop: 'Buy', myshop: 'Store', stream: 'Stream', shows: 'Show
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
 
-// The price to re-acquire a product RIGHT NOW (for "Rip another"). Vintage sealed
-// appreciates, so it must charge current market via sealedValue — not the price frozen
-// at the original buy (`_buyPrice`), which would let you keep buying fresh vintage at a
-// stale, cheaper price after the market climbed. Modern product reuses its genuine
-// retail/wholesale/case price.
-function liveProductPrice(set, product) {
-  if (product?.vintage) return sealedValue({ product, setId: set.id })
-  return product?._buyPrice ?? product?.price ?? packPrice(set)
-}
-
 // The 📦 Inventory items that ARE this product (same set + same product — price and
 // provenance vary by where a copy came from, but it's the same thing to rip).
-// "Rip another" consumes these before it ever re-buys: you already paid for them.
+// This is the ONLY source "Rip another" draws from — see ripAnother().
 function heldMatches(state, set, product) {
   return (state.sealedInventory || []).filter(i => i.setId === set?.id && sameProduct(i.product, product))
 }
@@ -84,37 +74,6 @@ function heldMatches(state, set, product) {
 function sameProduct(a, b) {
   if (a?.tcgId && b?.tcgId) return a.tcgId === b.tcgId
   return a?.type === b?.type
-}
-
-// Can you actually GET another one of these right now? "Rip another" used to ask only "can
-// you afford it?", so it stayed lit when your own stock was empty AND nobody had one left to
-// sell — the click then bounced off an error toast. This answers the real question, and the
-// button now mirrors it exactly:
-//   • hold one → yes, and it's free (you already paid for it).
-//   • a distributor's product (`_distId`) → only while THEY still have one on the shelf.
-//   • vintage → only from that vendor's live weekly find, and only while it's still the same
-//     set. Vintage picked up anywhere else (a show, a trade, a DM deal) has no shelf to go
-//     back to — it's out of print, so when your stock is gone, it's gone.
-//   • anything else with no shop behind it → nowhere to buy a replacement, so no re-rip.
-// Returns { held, price, ok, soldOut, broke } — `soldOut` and `broke` drive the button's
-// explanation, so a dead button always says WHY it's dead.
-function ripAvailability(state, set, product) {
-  const held = heldMatches(state, set, product).length
-  const price = liveProductPrice(set, product)
-  if (held > 0) return { held, price, ok: true, soldOut: false, broke: false }
-
-  let inStock
-  if (product?.vintage) {
-    inStock = vintageLeft(state, product._distId, set?.id) > 0
-  } else if (product?._distId) {
-    const dist = distributorById(product._distId)
-    const rec = state.distributors?.[product._distId] || { spend: 0, stock: {} }
-    inStock = !stockState(dist, rec.stock, set, product, rapportLevel(rec.spend).level).out
-  } else {
-    inStock = false // no vendor attached — nothing to re-buy from
-  }
-  const broke = state.cash < price
-  return { held, price, ok: inStock && !broke, soldOut: !inStock, broke }
 }
 
 export default function App() {
@@ -153,14 +112,11 @@ export default function App() {
   // income/spend moves it. Recomputed on any state change; returns a number so it only
   // re-renders the header when the figure actually changes.
   const worth = useGame(s => netWorthFull(s))
-  // Whether another copy of the in-progress rip's product can be had at all — from your own
-  // 📦 Inventory (free) or, failing that, off the shelf of the vendor it came from. Drives the
-  // "Rip another" label AND its gate, so the button is only ever lit when the click will work.
-  // Subscribed as separate primitives: a fresh object each render would re-render the app on
-  // every unrelated store change.
+  // How many more of the in-progress rip's product you HOLD. This is the whole gate for
+  // "Rip another" — the button exists only while you have another one already paid for, and
+  // disappears when you don't. Subscribed as a plain number: a fresh object each render would
+  // re-render the app on every unrelated store change.
   const ripStock = useGame(s => ripping ? heldMatches(s, ripping.set, ripping.product).length : 0)
-  const ripCanGet = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).ok : false)
-  const ripSoldOut = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).soldOut : false)
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
   // Cards at the card grader plus product at the sealed grader — one badge, because from the
@@ -304,12 +260,12 @@ export default function App() {
       const avail = useGame.getState().creditAvailable()
       if (cash + 1e-9 < price) { // cash alone won't cover it — the rest must ride the line
         if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
-        if (cash + avail + 1e-9 < price) return toast(`Not enough cash + credit for ${product.type}. Pay down your balance or bring more cash.`)
+        if (cash + avail + 1e-9 < price) return toast(`Not enough cash + credit for ${productTypeLabel(product)}. Pay down your balance or bring more cash.`)
       }
     } else if (onCredit) {
       if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
-      if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${product.type}. Pay down your balance or buy with cash.`)
-    } else if (cash < price) return toast(`Not enough cash for ${product.type}.`)
+      if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${productTypeLabel(product)}. Pay down your balance or buy with cash.`)
+    } else if (cash < price) return toast(`Not enough cash for ${productTypeLabel(product)}.`)
     // How the charge broke down, for the toast: cash-first, credit covers any shortfall.
     const splitNote = (cp, xp) => xp > 0 ? ` — ${fmtMoney(cp)} cash + ${fmtMoney(xp)} credit 💳` : ''
     const n = Math.max(1, Math.floor(qty))
@@ -321,28 +277,28 @@ export default function App() {
     if (n > 1) {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
       const limB = useGame.getState().purchaseLimitFor(distId, set, product)
-      if (limB.left <= 0) return toast(`${distName} limit ${product.type} to ${limB.limit} per customer a day — you've had yours. Back tomorrow.`)
+      if (limB.left <= 0) return toast(`${distName} limit ${productTypeLabel(product)} to ${limB.limit} per customer a day — you've had yours. Back tomorrow.`)
       const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split })
       if (!res) return toast(`${distName} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
-      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${product.type} of ${origin} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
-      return toast(`Stocked ${res.bought}× ${product.type} of ${origin} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
+      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${productTypeLabel(product)} of ${origin} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
+      return toast(`Stocked ${res.bought}× ${productTypeLabel(product)} of ${origin} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
     }
     // 🚫 Check the ration BEFORE blaming the shelf — "sold out" and "you have had your one"
     // need different answers from the player.
     const lim = useGame.getState().purchaseLimitFor(distId, set, product)
     if (lim.left <= 0) {
-      return toast(`${distName} limit ${product.type} to ${lim.limit} per customer a day — you've had yours. Back tomorrow${lim.limit < 4 ? ', or keep spending here and they\u2019ll let you take more' : ''}.`)
+      return toast(`${distName} limit ${productTypeLabel(product)} to ${lim.limit} per customer a day — you've had yours. Back tomorrow${lim.limit < 4 ? ', or keep spending here and they\u2019ll let you take more' : ''}.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
-    if (!item) return toast(`${distName} are out of ${product.type} — check back after it restocks.`)
+    if (!item) return toast(`${distName} are out of ${productTypeLabel(product)} — check back after it restocks.`)
     // 🚢 An import buy is on the water — nothing to rip yet, whatever the Rip-on-buy setting says.
-    if (item._inTransit) return toast(`🚢 Import order placed — ${product.type} of ${origin} is crossing the Pacific (lands in a few days).`)
+    if (item._inTransit) return toast(`🚢 Import order placed — ${productTypeLabel(product)} of ${origin} is crossing the Pacific (lands in a few days).`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     const cashPart = Math.min(cash, price), creditPart = round2(price - cashPart)
     const pay = onCredit ? ' on credit 💳' : split ? splitNote(cashPart, creditPart) : ''
-    toast(`Stocked ${product.type} of ${origin}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
+    toast(`Stocked ${productTypeLabel(product)} of ${origin}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -373,7 +329,7 @@ export default function App() {
     const originLabel = eraName ? `${eraName} era` : set.name
     const all = openProduct(set, product, { uid: item.uid, packSets })
     all.forEach(c => (c._isHit = isHit(c)))
-    addPulls(all, `${product.type} · ${originLabel}`, product.packs) // counts packs + rip goal
+    addPulls(all, `${productTypeLabel(product)} · ${originLabel}`, product.packs) // counts packs + rip goal
     // 📜 The instant path skips PackOpening entirely, so it has to write its own log line —
     // otherwise ripping a box with "one at a time" off would leave no trace in the history.
     useGame.getState().logRip({
@@ -386,7 +342,7 @@ export default function App() {
     const hits = all.filter(c => c._isHit || c.foil).length
     const across = packSets ? ` across ${new Set(packSets).size} sets` : ''
     setTab('collection')
-    toast(`Ripped a ${product.type} of ${originLabel}${across} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+    toast(`Ripped a ${productTypeLabel(product)} of ${originLabel}${across} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
   // ⚡ Sift-rip: hand a GROUP of sealed to the auto-ripper — it churns pack by pack, banks the
@@ -429,47 +385,21 @@ export default function App() {
     toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${pay}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Inventory → 📦 Sealed.`)
   }
 
-  // "Rip another" from the end-of-rip summary: keep chasing without going back to the
-  // shop. It reconciles with 📦 Inventory first — holding more of the SAME product
-  // means the next rip comes from YOUR stock (already paid; no charge). Only when
-  // you're out does it re-buy, and a re-buy must come from a REAL shelf: a distributor
-  // product (`_distId`) re-buys through that distributor so its STOCK and your RAPPORT
-  // stay honest, and vintage re-buys off that vendor's finite weekly find. Both are
-  // stocked then immediately pulled back out to rip (no double-charge). A product with
-  // no vendor behind it can't be re-bought at all — there's nowhere to buy it from.
-  // ripAvailability() gates the button on exactly these rules, so the toasts here are
-  // the backstop for a click that raced a state change, not the everyday path.
+  // "Rip another" from the end-of-rip summary: keep going straight into the next one you
+  // ALREADY OWN. It draws only from 📦 Inventory and never spends money — no re-buy, no
+  // restock, no credit. When your stock of this product runs out the button is gone, and
+  // buying more is a deliberate trip back to the Buy tab.
+  //
+  // It used to re-buy off the vendor's shelf once your own stock was empty, which put a
+  // one-tap purchase inside the moment you are least inclined to stop and count. Spending
+  // money should never be the path of least resistance out of a rip.
   function ripAnother(set, product) {
     const held = heldMatches(useGame.getState(), set, product)[0]
-    if (held) {
-      useGame.getState().ripSealed(held.uid)
-      // A different held unit → a different uid → a different pack lineup for a cross-set
-      // product. Ripping three UPCs in a row must not deal the same sets three times.
-      setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, uid: held.uid, nonce: (r?.nonce ?? 0) + 1 }))
-      setTab('shop')
-      return
-    }
-    const price = liveProductPrice(set, product)
-    if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
-
-    // Pull one more off a shelf, then rip it. Returns the freshly stocked item, or null if
-    // that shelf is bare — vintage and modern differ only in WHICH shelf they come from.
-    const restock = () => product.vintage
-      ? useGame.getState().buyDistributorVintage(product._distId, set.id, product, price)
-      : useGame.getState().buyFromDistributor(product._distId, set, product, price)
-
-    if (!product._distId) {
-      return toast(`No shop stocks that ${product?.type || 'pack'} — you'd have to find another one out in the wild.`)
-    }
-    const who = distributorById(product._distId)?.name || 'They'
-    const item = restock()
-    if (!item) {
-      return toast(product.vintage
-        ? `${who} have no more sealed ${set.name} — it's out of print. A fresh find turns up next week.`
-        : `${who} are out of ${product.type} — can't rip another right now.`)
-    }
-    useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
-    setRipping(r => ({ set, product, cost: item.boughtPrice ?? price, uid: item.uid, nonce: (r?.nonce ?? 0) + 1 }))
+    if (!held) return // out of stock — the button is not rendered in this state anyway
+    useGame.getState().ripSealed(held.uid)
+    // A different held unit → a different uid → a different pack lineup for a cross-set
+    // product. Ripping three UPCs in a row must not deal the same sets three times.
+    setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, uid: held.uid, nonce: (r?.nonce ?? 0) + 1 }))
     setTab('shop')
   }
 
@@ -678,7 +608,12 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
-        <FirstRun />
+        {/* Buy tab ONLY. Sitting outside the tab switch, this checklist painted on all six
+            screens at once — ~230px of a 676px phone viewport (34%) repeated on Store, Stream,
+            Shows, Stats and Inventory, where none of its steps live. Buy is where you land by
+            default and where step one ("buy some sealed") happens, so it's the one screen the
+            onboarding belongs on; it still dismisses globally. */}
+        {tab === 'shop' && <FirstRun />}
         {/* ONE Suspense for the whole tab area: every screen inside is a lazy chunk, and a
             per-tab boundary would just mean the same fallback written fourteen times. */}
         <Chunk>
@@ -761,10 +696,7 @@ export default function App() {
             paused={tab !== 'shop'}
             costBasis={ripping.cost}
             onExit={exitRip}
-            ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
             ripAnotherStock={ripStock}
-            canRipAnother={ripCanGet}
-            ripAnotherSoldOut={ripSoldOut}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
           </Chunk>
@@ -833,7 +765,10 @@ function DaySummary({ summary, onClose }) {
   const movers = marketMovers || []
   const sold = soldNames || []
   const events = lifeEvents || []
-  const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
+  // !! matters: this is an || chain over NUMBERS, so a floor where you bought and sold nothing
+  // evaluates to the last operand — the number 0, not false — and `{floorActive && …}` below
+  // rendered a bare "0" into the recap.
+  const floorActive = !!(floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport))
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderReserved || wantsBrokered
     || offersAccepted || keeperStocked || wages || rent || lease
     || payroll || storage || saleProceeds || notoDelta || missed || binTurnedAway || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
@@ -951,7 +886,7 @@ function DaySummary({ summary, onClose }) {
               <div className="recap-sec">
                 <div className="recap-sec-h">📆 While time passed</div>
                 {events.map((e, i) => (
-                  <div className="recap-line" key={i}>
+                  <div className="recap-line recap-event" key={i}>
                     <span style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--txt)' }}>{e.line}</span>
                     {e.cashDelta ? <b style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--red)' }}>{e.cashDelta > 0 ? '+' : ''}{fmtMoney(e.cashDelta)}</b> : null}
                   </div>
@@ -1636,7 +1571,7 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
 // A quantity stepper lets you buy several at once (type "10" → ten ETBs in one purchase),
 // capped to what's in stock and what you can afford.
 function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCredit = false, split = false, creditAvail = 0 }) {
-  const ownedN = owned?.get(`${set.id}|${product.type}`) || 0 // sealed copies of this exact line you already hold
+  const ownedN = owned?.get(`${set.id}|${productTypeLabel(product)}`) || 0 // sealed copies of this exact line you already hold
   let price
   if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
   else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level, { product, set }) * 0.65)
@@ -1669,7 +1604,12 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   // 🔥 Fresh-drop hype: the struck-through number above is the market price; this explains
   // why the ask sits over it. (There's no MSRP shelf — a shop owner buys drops scalped.)
   const surge = hypeSurge(set)
-  const priceNote = surge > 1.02
+  // …but never claim a MARKUP on a row that is already showing a DISCOUNT. A clearance box
+  // struck through $373.91, asked $247.42, and still wore a "🔥 +45%" badge — two opposite
+  // claims about one price, with the tooltip citing the struck-through figure as "the market"
+  // it was 45% above. The surge note only means anything when the ask sits ABOVE that figure,
+  // which is exactly when showStrike is false (clearance and case lots both sit below it).
+  const priceNote = surge > 1.02 && !showStrike
     ? `🔥 Fresh-drop markup: +${Math.round((surge - 1) * 100)}% over the ${fmtMoney(retail)} market. It's worth market the moment you own it — patience is the discount.`
     : null
 
@@ -1691,7 +1631,7 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
       {soEligible && (
         <button type="button" className={`qty-step so-btn ${soHere ? 'active' : ''}`}
           title={soHere ? `📋 Standing order active — ${so.qty}× weekly at your rapport price. Tap to cancel.`
-            : `📋 Standing order: auto-buy ${qN}× ${product.type} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
+            : `📋 Standing order: auto-buy ${qN}× ${productTypeLabel(product)} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
           onClick={() => setSO(soHere ? null : { distId: dist.id, setId: set.id, type: product.type, qty: qN })}>📋</button>
       )}
       <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''} ${useCredit && canBuy ? 'on-credit' : ''}`}
@@ -1700,8 +1640,8 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
         title={out ? `Sold out — restocks in ~${days}d`
           : limitLeft <= 0 ? `${dist.name} limits this to ${perCustomer} per customer a day, and you have had yours. Back tomorrow.`
           : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
-        <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
-        {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
+        <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {productTypeLabel(product)}</span>
+        {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${productTypeLabel(product)} of ${set.name}`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}
           {perCustomer !== Infinity && (
             <span className={`limit-chip ${limitLeft <= 0 ? 'spent' : ''}`}
@@ -1776,7 +1716,7 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
         {f.logo && <img className="logo" src={f.logo} alt={f.setName} />}
         <h3>{f.setName}</h3>
         <div className="meta">
-          {held ? '🗝️ Reserved for you' : f.aftermarket ? '🕰️ Out-of-print find' : '🗝️ Vintage find'} · sealed {f.product.type}
+          {held ? '🗝️ Reserved for you' : f.aftermarket ? '🕰️ Out-of-print find' : '🗝️ Vintage find'} · sealed {productTypeLabel(f.product)}
           {!held && (out
             ? <> · <b style={{ color: 'var(--red)' }}>cleaned out</b></>
             : <> · <b>{n} left</b></>)}
@@ -1786,8 +1726,8 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
             onClick={() => onBuyVintage(dist.id, f, { fromHold: held, onCredit, split })}
             title={out
               ? `${dist.name} has no more sealed ${f.setName} — it's out of print, so there's no reordering it. A new find turns up next week.`
-              : `${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
-            <span className="prodname">{useCredit ? '💳 ' : ''}{f.product.icon || '📦'} {f.product.type}</span>
+              : `${productTypeLabel(f.product)} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
+            <span className="prodname">{useCredit ? '💳 ' : ''}{f.product.icon || '📦'} {productTypeLabel(f.product)}</span>
             <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
             <span className="prodprice">{out ? '—' : fmtMoney(f.price)}</span>
           </button>
@@ -1825,7 +1765,7 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
   function place() {
     if (cash < cost) return flash('Not enough cash to buy in.')
     const r = supplyVendors(set, product)
-    if (r) flash(`Wholesaled ${product.type} of ${set.name} — nets ${fmtMoney(r.net)} in ~${r.daysLeft}d.`)
+    if (r) flash(`Wholesaled ${productTypeLabel(product)} of ${set.name} — nets ${fmtMoney(r.net)} in ~${r.daysLeft}d.`)
   }
   return (
     <div className="market-panel" style={{ marginTop: 14 }}>

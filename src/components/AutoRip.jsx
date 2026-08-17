@@ -513,7 +513,7 @@ export default function AutoRip({ items, onExit }) {
             <div className="foil" />
             <div className="tear" aria-hidden="true" />
             {pending?.set?.logo ? <img className="logo" src={pending.set.logo} alt={pending.set.name} /> : <b>{pending?.set?.name}</b>}
-            <span className="hint">▶ Click or drag down to rip</span>
+            <span className="hint">▶ Tap or drag down to rip</span>
           </div>
         </div>
         <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip &amp; bank the rest</button>

@@ -4,6 +4,7 @@ import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCa
 import { popTier } from '../game/population'
 import { misprintDef } from '../game/misprints'
 import HiResImg from './HiResImg'
+import { Collapse, bigScreen } from '../ui/Collapse'
 import { useGame } from '../game/store'
 import { STORE_SALE_PREMIUM } from '../game/shows'
 import { rarityColor, gradeLabel } from './CardTile'
@@ -443,14 +444,16 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
               </div>
             ))}
 
+            {/* Grading is a SECOND job for this modal — a whole submission flow (grader choice,
+                service tier, fee and postage explainer) stacked under the card's own details
+                and its six sell/keep actions. Most opens of this modal are "what is this and
+                what do I do with it", not "let me mail it away for six weeks", so it now sits
+                behind a disclosure: the card and its actions lead, grading is one tap away. */}
             {!inspect && !readOnly && !inBinder && !g && (
-              <>
-                <div style={{ display:'flex', alignItems:'center', gap: 8, margin: '18px 0 6px' }}>
-                  <span className="muted" style={{ fontSize: 13 }}>Submit for PSA-style grading</span>
-                  <span className="pill" style={{ color: tier.color, borderColor: tier.color, border: '1px solid' }}>
-                    🤝 {tier.name}{tier.discount > 0 ? ` · ${Math.round(tier.discount*100)}% off` : ''}
-                  </span>
-                </div>
+              <Collapse id="gradesubmit" defaultOpen={bigScreen()}
+                head={<span style={{ fontWeight: 800 }}>🔬 Submit for grading</span>}
+                badge={`🤝 ${tier.name}${tier.discount > 0 ? ` · ${Math.round(tier.discount*100)}% off` : ''}`}
+                hint="Mail it to a grader — a high grade can multiply the value, a low one hurts.">
                 {hasScope && prediction && (
                   <div className="grade-predict" title="Predicted from this card's cut, condition, and your loupe — a range, not a guarantee.">
                     <span className="gp-icon">🔭</span>
@@ -515,7 +518,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     ? ` Submitted ${submitted} cards · ${next.min - submitted} more to ${next.name} (${Math.round(next.discount*100)}% off).`
                     : ` You're a ${tier.name} client — top grading loyalty.`}
                 </p>
-              </>
+              </Collapse>
             )}
           </div>
         </div>

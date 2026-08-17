@@ -88,7 +88,7 @@ export default function UpgradeShop() {
                     <div className="meta" style={{ flex: 1 }}>{u.desc}</div>
                     {have ? <button className="btn" disabled>✓ Owned</button>
                       : needsUnmet ? <button className="btn" disabled>🔒 Needs {UPGRADES[u.needs].name}</button>
-                      : <button className="btn gold" disabled={cash < u.cost} onClick={() => purchase(key, u)}>Buy · ${u.cost}</button>}
+                      : <button className="btn gold" disabled={cash < u.cost} onClick={() => purchase(key, u)}>Buy · {fmtMoney(u.cost)}</button>}
                   </div>
                 )
               })}

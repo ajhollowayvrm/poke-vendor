@@ -159,9 +159,12 @@ export function makeShowLead(show, kind, opts = {}) {
 // `flex` = how far (fraction toward fair market) a vendor will haggle from their
 // opening price before walking. Fair dealers bend a lot; lowballers barely move.
 const ARCHETYPES = [
-  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — fair both ways' },
+  // The vibe describes CHARACTER and STOCK only. Every place that prints it appends the exact
+  // "· pays N% for yours" right after, so a vibe that also claimed a pay rate said the same
+  // thing twice in one breath — "pays TOP dollar for yours · pays 90% for yours".
+  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — bends on price, and expects you to' },
   { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, flex: 0.45, vibe: 'shrewd — but stocks the deepest high-end & graded bins' },
-  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — and pays TOP dollar for yours' },
+  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — the deepest pockets in the room' },
   { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, flex: 0.65, vibe: 'eager but green — sells under market, sometimes misprices a gem' },
   { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  flex: 0.20, vibe: 'a shark — gouges on everything, but now and then fumbles a price' },
 ]

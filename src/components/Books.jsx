@@ -84,7 +84,9 @@ function TaxPanel() {
       )}
 
       <div className="books-risk">
-        <span className="muted">Audit exposure</span>
+        {/* Label and value are adjacent inline nodes — without the separator the accessible
+            name read "Audit exposure0% — low" and the two ran together on screen too. */}
+        <span className="muted">Audit exposure</span>{' '}
         <b style={{ color: riskColor }}>{(auditRisk * 100).toFixed(0)}% — {riskLabel}</b>
         <div className="muted" style={{ fontSize: 11.5, marginTop: 3 }}>
           {Math.round(cashProfile * 100)}% of your trade reads as cash.

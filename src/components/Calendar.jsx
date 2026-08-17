@@ -70,6 +70,14 @@ export default function Calendar({ onAttend }) {
           // high fame (where several orders a day can arrive) instead of capping out at 1/day.
           const expOnline = dayOrderRate('online', notoriety) * tripDays
           const onlineCovered = !!upgrades.smartphone
+          // At ⭐0 this expectation is a rounding error, and the line rendered as
+          // "⚠️ ~0.0 online order may arrive home" — a warning about nothing, with a spurious
+          // decimal and a singular noun (the old plural test was `>= 1.5`, so 0.0 read as one
+          // order). Below a twentieth of an order there is nothing at stake, so say nothing;
+          // above it, show a figure and pluralise off what is actually PRINTED.
+          const ordersShown = expOnline < 1 ? expOnline.toFixed(1) : String(Math.round(expOnline))
+          const ordersNoun = ordersShown === '1' ? 'order' : 'orders'
+          const ordersWorthMentioning = expOnline >= 0.05
           return (
             <div key={show.id} className={`calcard ${show.locked ? 'locked' : ''} ${show.day === currentDay ? 'today' : ''} ${leads.length ? 'has-leads' : ''}`} style={{ borderLeftColor: tier.color }}>
               <div className="calday">
@@ -88,11 +96,11 @@ export default function Calendar({ onAttend }) {
                     : <>🤝 <b>{l.who}</b> wants {l.desc} · pays {Math.round(l.premiumMult * 100)}%</>}
                 </div>
               ))}
-              {!show.locked && (
+              {!show.locked && ordersWorthMentioning && (
                 <div className="muted" style={{ fontSize: 11.5, color: onlineCovered ? 'var(--green)' : '#ff9f43' }}>
                   {onlineCovered
-                    ? `📱 ~${expOnline.toFixed(expOnline < 1 ? 1 : 0)} online order${expOnline >= 1.5 ? 's' : ''} handled while away`
-                    : `⚠️ ~${expOnline.toFixed(expOnline < 1 ? 1 : 0)} online order${expOnline >= 1.5 ? 's' : ''} may arrive home — missed without a 📱 Smartphone`}
+                    ? `📱 ~${ordersShown} online ${ordersNoun} handled while away`
+                    : `⚠️ ~${ordersShown} online ${ordersNoun} may arrive home — missed without a 📱 Smartphone`}
                 </div>
               )}
               <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -143,8 +151,12 @@ export function NotorietyBar({ n, rank = 0 }) {
   const pct = Math.min(100, (n / scale) * 100)
   return (
     <div style={{ flex: 1, minWidth: 90, maxWidth: 360 }}>
-      <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#5ec98a,#ff9f43,#ff3df0)', transition: 'width .4s' }} />
+      {/* The track was var(--bg) — the page's own near-black — so an early-game bar (⭐4 of a
+          280 scale = 1.4%) was a bare outline with five faint ticks and read as an unloaded
+          widget rather than "you are at the start". A lighter groove makes an EMPTY meter still
+          look like a meter, and any non-zero progress gets a visible minimum sliver. */}
+      <div style={{ background: '#ffffff14', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ width: pct > 0 ? `max(3px, ${pct}%)` : 0, height: '100%', background: 'linear-gradient(90deg,#5ec98a,#ff9f43,#ff3df0)', transition: 'width .4s' }} />
         {RANKS.map((r, i) => r.min > 0 && (
           <span key={r.name} title={`${r.emoji} ${r.name} — ⭐ ${r.min} + deeds`}
             style={{ position: 'absolute', top: -2, left: `${Math.min(100, (r.min / scale) * 100)}%`, width: 2, height: 16, background: rank >= i ? '#fff' : '#ffffff44' }} />

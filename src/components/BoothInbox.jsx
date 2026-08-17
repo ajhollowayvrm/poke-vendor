@@ -676,18 +676,18 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           // until you actually have a physical store.
           .filter(([k]) => k !== 'cash' || hasStore)
           .map(([k, m]) => (
-          <span key={k} className="pill" style={{ opacity: accepted.has(k) ? 1 : 0.35 }}>
+          <span key={k} className={`pill ${accepted.has(k) ? '' : 'off'}`}>
             {m.icon} {m.short}{accepted.has(k) ? '' : ' 🔒'}
           </span>
         ))}
-        {!(accepted.has('paypal') && accepted.has('card')) && <span className="muted" style={{ fontSize: 12 }}>· buyers who can't use what you accept walk away</span>}
+        {!(accepted.has('paypal') && accepted.has('card')) && <span className="muted rownote" style={{ fontSize: 12 }}>Buyers who can't use what you accept walk away.</span>}
       </div>
 
       {/* remote-management status */}
       <div className="toolbar" style={{ marginTop: 4 }}>
         <span className="muted" style={{ fontSize: 13 }}>While at a show:</span>
-        <span className="pill" style={{ opacity: upgrades.smartphone ? 1 : 0.35 }}>📱 Online {upgrades.smartphone ? 'covered' : 'missed 🔒'}</span>
-        <span className="pill" style={{ opacity: upgrades.staff ? 1 : 0.35 }}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
+        <span className={`pill ${upgrades.smartphone ? '' : 'off'}`}>📱 Online {upgrades.smartphone ? 'covered' : 'missed 🔒'}</span>
+        <span className={`pill ${upgrades.staff ? '' : 'off'}`}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
       </div>
 
       {/* The shop floor (stock, holds, consignments, giveaways) lives in its own

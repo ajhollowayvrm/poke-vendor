@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, ownedIdSet, setIdOfCard, needTierFor, drawPackSets, setById } from '../game/engine'
+import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, ownedIdSet, setIdOfCard, needTierFor, drawPackSets, setById, productTypeLabel } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
@@ -15,7 +15,11 @@ import { AnimatedNumber } from '../ui/AnimatedNumber'
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, uid, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false, costBasis = null }) {
+// `ripAnotherStock` is the single gate for "Rip another": it rips from 📦 Inventory only and
+// never buys, so holding none means there is no action to offer. The old price/sold-out/
+// can-afford props existed only to describe a re-BUY that no longer happens.
+export default function PackOpening({ set, product, uid, onExit, singleNoReRip = false, onRipAnother, ripAnotherStock = 0, paused = false, costBasis = null }) {
+  const canRipAnother = !!onRipAnother && ripAnotherStock > 0
   const totalPacks = product?.packs ?? 1
   // 📦 A cross-set product (an Ultra Premium Collection) holds packs from a whole era, so the
   // set changes from pack to pack. Derived from the unit's uid — the same box always holds the
@@ -131,13 +135,6 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
   }, [phase])
 
   const last = packNo >= totalPacks
-
-  // Why "Rip another" is dead, when it is. It's gated on whether you can actually GET one —
-  // from your own 📦 stock or off a shelf that still has it — so an empty shelf and an empty
-  // wallet are different problems and get different words. Both buttons below share this.
-  const ripBlockedWhy = ripAnotherSoldOut
-    ? `You're out of ${product?.type || 'packs'} and no shop has one left to sell.`
-    : 'Not enough cash to rip another.'
 
   function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
   const better = (b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b)
@@ -317,14 +314,6 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
     ripLogged.current = false        // an in-place re-rip is a NEW rip and earns its own log line
   }
 
-  // The fallback "Rip another" when no paid re-rip path is wired: same mount, but a genuinely
-  // NEW rip — so the running totals start over. resetForNext alone can't do this, because
-  // nextPack shares it and a box's totals must survive from pack to pack.
-  function reripInPlace() {
-    setRipValue(0); setRipBest(null); setPacksOpened(0); setHits([]); setExtra([])
-    resetForNext()
-  }
-
   // Move to the next pack (or finish if that was the last one).
   function nextPack() {
     if (last) { addBonusAndFinish(); return }
@@ -490,22 +479,16 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
           </div>
           {modalEl}
           <div className="row" style={{ justifyContent: 'center', marginTop: 12 }}>
-            {onRipAnother && (
-              <button
-                className="btn gold"
-                style={{ maxWidth: 220 }}
-                disabled={!canRipAnother}
-                title={canRipAnother ? '' : ripBlockedWhy}
-                onClick={onRipAnother}>
-                {/* Held stock rips free (already paid) — only an empty 📦 shows a price */}
-                Rip another{ripAnotherStock > 0 ? ` (📦 ${ripAnotherStock} held)` : ripAnotherPrice != null ? ` (${fmtMoney(ripAnotherPrice)})` : ''} ↻
+            {/* Only rendered while you HOLD another one. It rips from 📦 Inventory and never
+                buys, so with nothing held there is no action left to offer — the button is
+                absent rather than present-but-dead. */}
+            {canRipAnother && (
+              <button className="btn gold" style={{ maxWidth: 220 }} onClick={onRipAnother}>
+                Rip another (📦 {ripAnotherStock} held) ↻
               </button>
             )}
-            <button className={`btn ${onRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
+            <button className={`btn ${canRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
           </div>
-          {onRipAnother && !canRipAnother && (
-            <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>{ripBlockedWhy}</p>
-          )}
         </div>
       </div>
     )
@@ -562,7 +545,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
               {/* Out of a mixed product the wrapper alone is the reveal — name it in words too,
                   because a logo you half-recognise isn't the same as being told. */}
               {packSets && <span className="pack-set-name">{packSet.name}</span>}
-              <span className="hint">▶ Click or drag down to rip</span>
+              <span className="hint">▶ Tap or drag down to rip</span>
             </div>
           </div>
           {!multi && <button className="btn alt" style={{ maxWidth: 160 }} onClick={onExit}>← Back to shop</button>}
@@ -609,26 +592,25 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                 <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
               ) : (
                 <>
-                  {/* Re-rip a single pack. When a paid re-rip path is wired (the shop/Buy
-                      flow), route through it so another pack is CHARGED + opened fresh.
-                      Without it, fall back to the in-place reset. */}
-                  <button
-                    className="btn gold"
-                    style={{ maxWidth: 200 }}
-                    disabled={onRipAnother ? !canRipAnother : false}
-                    title={onRipAnother && !canRipAnother ? ripBlockedWhy : ''}
-                    onClick={onRipAnother || reripInPlace}>
-                    Rip another ({onRipAnother && ripAnotherStock > 0
-                      ? `📦 ${ripAnotherStock} held`
-                      : fmtMoney(onRipAnother && ripAnotherPrice != null ? ripAnotherPrice : packPrice(set))})
-                  </button>
-                  <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onExit}>Done →</button>
+                  {/* Straight into the next one you already OWN — it comes out of 📦 Inventory
+                      and costs nothing. With none held there is nothing to offer, so the
+                      button goes away and "Done" becomes the primary action. */}
+                  {canRipAnother && (
+                    <button className="btn gold" style={{ maxWidth: 200 }} onClick={onRipAnother}>
+                      Rip another (📦 {ripAnotherStock} held)
+                    </button>
+                  )}
+                  <button className={`btn ${canRipAnother ? 'alt' : 'gold'}`}
+                    style={{ flex: 'none', maxWidth: canRipAnother ? 140 : 180 }} onClick={onExit}>Done →</button>
                 </>
               )}
-              {/* A dead "Rip another" always says why — an empty shelf reads very differently
-                  from an empty wallet, and silently greying the button explains neither. */}
+              {/* Out of this product: say so plainly, and point at the one place that sells it.
+                  This used to be a dead greyed button with an explanation underneath; buying
+                  more is now a deliberate trip to the Buy tab, not a tap inside the rip. */}
               {onRipAnother && !multi && !singleNoReRip && !canRipAnother && (
-                <p className="muted" style={{ fontSize: 12, margin: '6px 0 0', width: '100%', textAlign: 'center' }}>{ripBlockedWhy}</p>
+                <p className="muted" style={{ fontSize: 12, margin: '6px 0 0', width: '100%', textAlign: 'center' }}>
+                  That was your last {product ? productTypeLabel(product) : 'pack'} — pick up more on the 🛒 Buy tab.
+                </p>
               )}
             </div>
           )}

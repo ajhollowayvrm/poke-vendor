@@ -62,24 +62,38 @@ export default function Stats() {
     <>
       <RepPanel />
       <FinanceCard />
+      {/* Seventeen tiles used to sit in one flat grid with six different value colours and no
+          rule behind them — 0 Reputation was gold, 0 God packs was magenta, Best foil's "—"
+          placeholder rendered as a lone purple dash that read as a broken value. Nothing was
+          learnable from a colour.
+          Two changes: group by the question each answers, and let colour mean ONE thing —
+          money valence (green up / red down). The chase counters keep their rarity hue only
+          once they are non-zero, because a magenta zero is just noise. */}
+      <div className="stat-group-h">Money</div>
       <div className="statgrid">
         <Stat label="Net worth" v={fmtMoney(netWorth)} c="var(--green)" />
         <Stat label="Cash" v={fmtMoney(cash)} />
         <Stat label="Collection value" v={fmtMoney(collValue)} />
         <Stat label="Realized P/L" v={`${pnl>=0?'+':''}${fmtMoney(pnl)}`} c={pnl>=0?'var(--green)':'var(--red)'} />
-        <Stat label="Reputation" v={Math.round(notoriety)} c="var(--gold)" />
+      </div>
+      <div className="stat-group-h">Ripping</div>
+      <div className="statgrid">
         <Stat label="Packs opened" v={stats.packsOpened} />
         <Stat label="Cards pulled" v={stats.cardsPulled} />
-        <Stat label="Hits pulled" v={stats.hits} c="var(--gold)" />
+        <Stat label="Hits pulled" v={stats.hits} c={stats.hits ? 'var(--gold)' : undefined} />
         <Stat label="Best pull" v={stats.bestPull ? fmtMoney(cardValue(stats.bestPull)) : '—'} />
-        <Stat label="Best foil" v={stats.bestFoil ? fmtMoney(cardValue(stats.bestFoil)) : '—'} c="#a06bff" />
-        <Stat label="God packs hit" v={stats.godPacks || 0} c="#ff3df0" />
-        <Stat label="Demigod packs" v={stats.demigodPacks || 0} c="#7dd3fc" />
+        <Stat label="Best foil" v={stats.bestFoil ? fmtMoney(cardValue(stats.bestFoil)) : '—'} c={stats.bestFoil ? '#a06bff' : undefined} />
+        <Stat label="God packs hit" v={stats.godPacks || 0} c={stats.godPacks ? '#ff3df0' : undefined} />
+        <Stat label="Demigod packs" v={stats.demigodPacks || 0} c={stats.demigodPacks ? '#7dd3fc' : undefined} />
+      </div>
+      <div className="stat-group-h">The business</div>
+      <div className="statgrid">
+        <Stat label="Reputation" v={Math.round(notoriety)} c={notoriety ? 'var(--gold)' : undefined} />
+        <Stat label="Cards owned" v={collection.length} />
         <Stat label="Cards graded" v={gradesSubmitted} />
         <Stat label="Shows attended" v={showsAttended} />
         <Stat label="Wants filled" v={stats.wantsFilled || 0} />
         <Stat label="Goals completed" v={stats.goalsCompleted || 0} />
-        <Stat label="Cards owned" v={collection.length} />
       </div>
       {stats.bestPull && (
         <p className="muted" style={{ fontSize: 13, marginTop: 10 }}>
@@ -133,7 +147,10 @@ export default function Stats() {
           <div className="hist" key={i}>
             <span className="muted">{new Date(h.t).toLocaleTimeString()}</span>
             <span>{h.detail}</span>
-            {h.amount !== 0 && <span className={`amt ${h.amount > 0 ? 'pos' : 'neg'}`}>{h.amount > 0 ? '+' : ''}${h.amount.toFixed(2)}</span>}
+            {/* fmtMoney, not a raw `$${n.toFixed(2)}` — that put the minus INSIDE the symbol
+                ("$-40.00") for every debit in the ledger, and skipped the k/M abbreviation a
+                late-game figure needs. Same slip as the Upgrades buy button had. */}
+            {h.amount !== 0 && <span className={`amt ${h.amount > 0 ? 'pos' : 'neg'}`}>{h.amount > 0 ? '+' : ''}{fmtMoney(h.amount)}</span>}
           </div>
         ))}
       </div>
@@ -400,7 +417,7 @@ function LuckPanel({ bySet }) {
   return (
     <Collapse id="luck" defaultOpen={bigScreen()}
       head={<h3 style={{ margin: 0, display: 'inline' }}>🎲 Luck vs the odds</h3>}
-      badge={solid ? (pct === 0 ? 'dead on' : `${pct > 0 ? '+' : ''}${pct}%`) : `${luck.packs} packs`}
+      badge={solid ? (pct === 0 ? 'dead on' : `${pct > 0 ? '+' : ''}${pct}%`) : `${luck.packs} pack${luck.packs === 1 ? '' : 's'}`}
       hint="What you pulled against what the real pull rates owed you.">
       <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
         {solid
@@ -441,11 +458,17 @@ function LuckPanel({ bySet }) {
 function MilestoneShelf({ unlocked }) {
   const have = new Set(unlocked || [])
   const snap = useGame.getState()
+  // Collapsed by default on a phone. This is a 38-tile trophy case across 12 groups — roughly
+  // 2.5 screens of mostly-locked tiles — and it sat expanded in the middle of the Stats page,
+  // between the cash-flow summary and the by-set table. It pushed everything after it out of
+  // reach and made the page 6.4 screens of continuous scroll. Reputation and Luck on this same
+  // page are already Collapse sections, so this just follows the page's own idiom rather than
+  // inventing a sub-tab. Desktop keeps it open (bigScreen), where the height is free.
   return (
-    <>
-      <h3 style={{ margin: '24px 0 6px' }}>
-        Milestones <span className="muted" style={{ fontSize: 13, fontWeight: 'normal' }}>· {have.size}/{MILESTONES.length}</span>
-      </h3>
+    <Collapse id="milestones" defaultOpen={bigScreen()}
+      head={<h3 style={{ margin: 0, display: 'inline' }}>🏅 Milestones</h3>}
+      badge={`${have.size}/${MILESTONES.length}`}
+      hint="Long-run goals — ripping, hits, wealth, grading, the circuit and more.">
       {MILESTONE_GROUPS.map(group => (
         <div key={group} style={{ marginBottom: 12 }}>
           <div className="muted" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 5 }}>{group}</div>
@@ -476,7 +499,7 @@ function MilestoneShelf({ unlocked }) {
           </div>
         </div>
       ))}
-    </>
+    </Collapse>
   )
 }
 

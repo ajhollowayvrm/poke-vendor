@@ -2489,12 +2489,39 @@ export function round2(n) { return Math.round(n * 100) / 100 }
 
 // Compact money formatting so high-roller grails ($1,000,000) fit nicely.
 // < $1k → exact cents; ≥ $1k → $12.3k / $1.2M style.
+// Format the MAGNITUDE, then put the sign OUTSIDE the currency symbol.
+// Every threshold below is a `>=` test, so a negative used to fall straight through to the
+// last line. That cost us twice: a loss read "$-228.63" (sign inside the symbol), and — worse
+// — it never got the k/M abbreviation its positive twin gets, so fmtMoney(-1_500_000) came out
+// "$-1500000.00" where +1.5M is "$1.5M". A stat tile sized for the positive case overflowed.
+// The −0.005 cut-off is the 2-decimal display threshold: a value that rounds to 0.00 must not
+// render as "-$0.00".
 export function fmtMoney(n) {
   const v = n ?? 0
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(v >= 10_000_000 ? 0 : 2).replace(/\.0+$/, '')}M`
-  if (v >= 10_000) return `$${(v / 1000).toFixed(v >= 100_000 ? 0 : 1).replace(/\.0$/, '')}k`
-  if (v >= 1000) return `$${v.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-  return `$${v.toFixed(2)}`
+  const sign = v <= -0.005 ? '-' : ''
+  const a = Math.abs(v)
+  if (a >= 1_000_000) return `${sign}$${(a / 1_000_000).toFixed(a >= 10_000_000 ? 0 : 2).replace(/\.0+$/, '')}M`
+  if (a >= 10_000) return `${sign}$${(a / 1000).toFixed(a >= 100_000 ? 0 : 1).replace(/\.0$/, '')}k`
+  if (a >= 1000) return `${sign}$${a.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+  return `${sign}$${a.toFixed(2)}`
+}
+
+// What to CALL a sealed product on screen.
+// A few products carry TCGplayer's own top-level category, "Sealed Product", in their `type`
+// field — that is the bucket the scraper found them in, not a description of the thing. On
+// screen it reads as placeholder text: the vintage shelf showed "🕰️ Out-of-print find · sealed
+// Sealed Product" above a "🎴 Sealed Product" button. Fall back to whatever actually identifies
+// it: its real product name if the data has one, else a label derived from the pack count.
+// Display-only (not baked into setProducts) so the hot path keeps returning the source array
+// without allocating a mapped copy on every call.
+const GENERIC_PRODUCT_TYPES = new Set(['Sealed Product', 'Sealed', 'Product'])
+export function productTypeLabel(product) {
+  const t = (product?.type || '').trim()
+  if (t && !GENERIC_PRODUCT_TYPES.has(t)) return t
+  const n = (product?.name || '').trim()
+  if (n) return n
+  const packs = product?.packs || 0
+  return packs >= 12 ? 'Booster Box' : packs > 1 ? `${packs}-Pack Bundle` : 'Booster Pack'
 }
 
 // --- Sealed products (real TCGplayer market prices via TCGCSV) -------------
