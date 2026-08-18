@@ -1949,8 +1949,8 @@ export function advanceDaysWith(set, get, days, away) {
   // a slab fresh back from grading is always the "best copy", and auto-filing it made
   // returned slabs vanish from the collection the same night the player revealed them.
   // (addAllToBinder returns { moved, reserved } — reserved is slots left open because the only
-  // copy you own is being held back for grading; the recap surfaces it so an empty slot never
-  // looks like a bug.)
+  // copy you own is held back by your binder reserve: too sharp a cut, or too valuable, to bury
+  // in a slot. The recap surfaces it so an empty slot never looks like a bug.)
   const binderSweep = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true, skipLocked: true }) : { moved: 0, reserved: 0 }
   const binderFiled = binderSweep.moved
   const binderReserved = binderSweep.reserved

@@ -8,7 +8,7 @@
 import {
   cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, gradeUpcharge, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
-  setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
+  setById, cardVariant, cardMastersetVariants, fileableInBinder, binderReserveFromSettings, BULK_CREDIT_PER_CARD, fmtMoney,
   pickMasterLot, luckTierOf, crackSlab as crackSlabCard, slabLabel, setPopAdds, sealedValue, cardPopulation,
 } from '../engine'
 import {
@@ -290,16 +290,19 @@ export function createCollectionSlice(set, get) {
     // isn't whisked out of the sellable pool the same night it comes back from grading.
     //
     // BINDER RESERVE: a masterset is where DUPLICATE / display copies live — the genuinely
-    // sharp copies are worth more graded and sold than buried in a slot. So `settings.binderReserveCut`
-    // is a CEILING: a RAW copy whose cut is at/above it is reserved (held out, free to grade
-    // & sell), and only lesser copies get filed. If a slot's ONLY copy is reserved, the slot
-    // stays empty — never bury a grade-worthy card. Applies to BOTH the nightly Curator sweep
-    // and the manual "fill every slot" button (it's a statement about what your binder is, not
-    // which button you pressed). Slabs are exempt. Unset ('off') = file everything.
+    // sharp (or genuinely expensive) copies are worth more graded and sold than buried in a
+    // slot. So the reserve settings are CEILINGS: a RAW copy at/above the cut tier
+    // (`binderReserveCut`) or at/above the raw dollar ceiling (`binderReserveRawValue`) is
+    // reserved (held out, free to grade & sell), as is a SLAB at/above the graded dollar
+    // ceiling (`binderReserveGradedValue`) — only lesser copies get filed. If a slot's ONLY
+    // copy is reserved, the slot stays empty — never bury a grade-worthy or expensive card.
+    // Applies to BOTH the nightly Curator sweep and the manual "fill every slot" button (it's
+    // a statement about what your binder is, not which button you pressed). All unset = file
+    // everything.
     addAllToBinder(setId = null, { skipGraded = false, skipLocked = false } = {}) {
       const sets = setId ? [setById(setId)].filter(Boolean) : SETS
       if (!sets.length) return 0
-      const reserveCut = (get().settings || {}).binderReserveCut || 'off'
+      const reserve = binderReserveFromSettings(get().settings)
       const binder = get().binder || []
       const placed = new Set(binder.map(b => `${setIdOf(b)}:${b.id}:${cardVariant(b)}`))
       const chosen = new Map()   // slotKey → the copy we'll file (best FILEABLE copy wins)
@@ -322,7 +325,7 @@ export function createCollectionSlice(set, get) {
         if (placed.has(slotKey) || chosen.has(slotKey)) continue
         // Slot is open and unfilled. A fileable copy claims it; a reserved copy is noted but
         // left out (a lesser copy seen later can still claim the slot, clearing the note).
-        if (fileableInBinder(c, reserveCut)) { chosen.set(slotKey, c); reservedSlots.delete(slotKey) }
+        if (fileableInBinder(c, reserve)) { chosen.set(slotKey, c); reservedSlots.delete(slotKey) }
         else reservedSlots.add(slotKey)
       }
       const reserved = reservedSlots.size
@@ -334,7 +337,7 @@ export function createCollectionSlice(set, get) {
         binder: [...(s.binder || []), ...moving],
       }))
       const label = setId ? `for ${setById(setId)?.name || 'the set'}` : 'across your collection'
-      const note = reserved ? ` · ${reserved} ${reserved === 1 ? 'slot' : 'slots'} left open (reserved for grading)` : ''
+      const note = reserved ? ` · ${reserved} ${reserved === 1 ? 'slot' : 'slots'} left open (reserved to grade or sell)` : ''
       get().log('binder', `📒 Filled ${moving.length} binder slot${moving.length > 1 ? 's' : ''} ${label}${note}`, 0)
       return { moved: moving.length, reserved }
     },
