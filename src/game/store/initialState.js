@@ -256,11 +256,14 @@ export function initialState() {
     // sound/haptics: synthesized rip SFX + phone vibration (see game/feedback.js).
     // keepOne ("Protect set singles"): bulk sells skip your last copy of each card so a
     // sweep only dumps duplicates — the master-set safety net (see engine.bulkSellableUids).
-    // binderReserveCut: a CEILING — a raw copy whose cut is at/above this tier is held OUT of the
-    // masterset (by hand or by the overnight Curator), free to grade & sell; only lesser copies get
-    // filed. 'off' by default = file everything, which is how the binder behaved before it existed.
+    // Binder reserve — three CEILINGS, any of which holds a copy OUT of the masterset (by hand
+    // or by the overnight Curator), free to grade & sell; only lesser copies get filed.
+    //   binderReserveCut:         a raw copy whose cut is at/above this tier stays out
+    //   binderReserveRawValue:    a raw copy worth $this or more stays out (0 = off)
+    //   binderReserveGradedValue: a slab worth $this or more stays out (0 = off)
+    // All off by default = file everything, which is how the binder behaved before they existed.
     settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false,
-      binderReserveCut: 'off',
+      binderReserveCut: 'off', binderReserveRawValue: 0, binderReserveGradedValue: 0,
       // 🗑️ Keep the quarter box full: sweep the storeroom's sub-$1 raw bulk into the bin
       // every night (same keep-singles / locked / held protections as the manual toss).
       // Off by default — stocking the box is a decision until you decide it shouldn't be.

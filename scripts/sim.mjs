@@ -630,6 +630,42 @@ try {
       ms.lo >= 1.1 && ms.hi <= 1.5 && ms.lo < ms.hi)
     pass(`completion ⭐ scales with set VALUE (same length: ${ms.small.noto}★ cheap vs ${ms.big.noto}★ flagship, +${ms.big.clout} 🎫)`,
       ms.big.noto > ms.small.noto && ms.small.clout >= 1 && ms.big.clout >= ms.small.clout)
+
+    // 🎚️ BINDER RESERVE — the ceilings that keep a grade-worthy or expensive copy OUT of the
+    // binder (auto-fill and the nightly 📒 Curator alike). Off must mean "file everything", the
+    // way the binder behaved before the reserve existed; each ceiling must hold out only what
+    // it's about (cut/raw dollars read RAW copies, graded dollars read SLABS).
+    const res = await page.evaluate(async () => {
+      const eng = await import('/src/game/engine.js')
+      const raw = (price, cut) => ({ id: 'r', rarity: 'Rare', condition: 'NM', _cut: cut, price })
+      const slab = (price, psa10) => ({ id: 'r', rarity: 'Rare', condition: 'NM', _cut: 0.9, price, grade: { overall: 10 }, psa: { '10': psa10 } })
+      const cheap = raw(3, 0.5), pricy = raw(400, 0.5), sharp = raw(3, 0.9)
+      const cheapSlab = slab(4, 12), grail = slab(2000, 9000)
+      const cfg = o => eng.binderReserveFromSettings(o)
+      const files = (card, o) => eng.fileableInBinder(card, cfg(o))
+      return {
+        off: [cheap, pricy, sharp, grail].every(c => files(c, {})),
+        offInactive: eng.binderReserveActive(cfg({})),
+        cutHolds: !files(sharp, { binderReserveCut: 'Sharp' }) && files(cheap, { binderReserveCut: 'Sharp' }),
+        cutSparesSlabs: files(grail, { binderReserveCut: 'Sharp' }),
+        rawCap: !files(pricy, { binderReserveRawValue: 100 }) && files(cheap, { binderReserveRawValue: 100 }),
+        rawCapSparesSlabs: files(grail, { binderReserveRawValue: 100 }),
+        rawCapAtBar: !files(raw(100, 0.5), { binderReserveRawValue: 100 }) && files(raw(99.99, 0.5), { binderReserveRawValue: 100 }),
+        gradedCap: !files(grail, { binderReserveGradedValue: 250 }) && files(cheapSlab, { binderReserveGradedValue: 250 }),
+        gradedCapSparesRaw: files(pricy, { binderReserveGradedValue: 250 }),
+        grailValue: eng.cardValue(grail),
+        legacy: !eng.fileableInBinder(sharp, 'Sharp') && eng.fileableInBinder(cheap, 'Sharp'),
+      }
+    })
+    pass('🎚️ reserve OFF files everything (the pre-reserve binder, unchanged)', res.off && !res.offInactive)
+    pass('🎚️ cut ceiling holds a Sharp raw copy out, files a Clean one — and never reads a slab',
+      res.cutHolds && res.cutSparesSlabs)
+    pass('🎚️ raw $ ceiling holds a $400 raw copy out at $100, files a $3 one — and never reads a slab',
+      res.rawCap && res.rawCapSparesSlabs)
+    pass('🎚️ a $ ceiling is "at or above" (a card exactly at the bar stays out, a cent under files)', res.rawCapAtBar)
+    pass(`🎚️ graded $ ceiling holds a $${Math.round(res.grailValue)} slab out at $250, files a cheap one — and never reads a raw card`,
+      res.gradedCap && res.gradedCapSparesRaw)
+    pass('🎚️ a bare cut tier still works as a reserve (old call sites keep their meaning)', res.legacy)
   }
 
   // --- 8. 📱 CONTENT & AUDIENCE — the short-form batch's rails --------------------------

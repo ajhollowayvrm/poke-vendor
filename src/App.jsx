@@ -868,7 +868,7 @@ function DaySummary({ summary, onClose }) {
                 {keeperStocked > 0 && <div className="recap-line"><span className="muted">🪓 Bin Keeper stocked {keeperStocked} pack{keeperStocked === 1 ? '' : 's'}{keeperBroke > 0 ? ` (broke ${keeperBroke} product${keeperBroke === 1 ? '' : 's'} down)` : ' from backstock'}</span></div>}
                 {/* Say WHY a slot stayed empty — otherwise the reserve reads as the Curator
                     quietly not doing its job. */}
-                {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — top copy reserved to grade & sell</span></div>}
+                {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — only copy reserved to grade & sell</span></div>}
                 {notoDelta > 0 && (
                   <div className="recap-line">
                     <span className="muted">⭐ Reputation{(notoBySrc || []).length > 0 && (

@@ -2429,16 +2429,23 @@ const FUZZY_SHORT = {
   'Pristine':   'nice?',
 }
 // --- Binder reserve ---------------------------------------------------------
-// A masterset is where DUPLICATE / display copies live — the genuinely sharp copies are
-// worth more graded and sold than buried in a slot. So the binder "reserve" is a CEILING,
-// not a floor: a raw copy whose cut is AT OR ABOVE the reserve tier is held OUT of the
-// auto-fill and the nightly Curator, left free to grade & sell. Everything BELOW the tier
-// is binder-grade and gets filed. Tiers are ordered worst → best, so "at or above X" is a
-// simple index comparison.
+// A masterset is where DUPLICATE / display copies live — the genuinely sharp (or genuinely
+// expensive) copies are worth more graded and sold than buried in a slot. So the binder
+// "reserve" is a set of CEILINGS, not floors. A copy that hits ANY ceiling is held OUT of
+// the auto-fill and the nightly Curator, left free to grade & sell:
 //
-// Graded slabs are exempt (always eligible to file): a slab is no longer a "card to grade",
-// so whether to sell it or slot it is a per-card decision you make by hand — the reserve,
-// which is about NOT burying grade-worthy RAW cards, doesn't apply to it.
+//   • cut          — a RAW copy whose cut is AT OR ABOVE this tier. Tiers are ordered
+//                    worst → best, so "at or above X" is a simple index comparison.
+//   • rawValue     — a RAW copy worth AT OR ABOVE this many dollars. The grail you pulled
+//                    shouldn't disappear into a slot just because the slot was open.
+//   • gradedValue  — a GRADED slab worth AT OR ABOVE this many dollars.
+//
+// Everything below every ceiling is binder-grade and gets filed. The cut ceiling reads a
+// card's TRUE hidden cut, so the curator measures precisely even without the loupe.
+//
+// Graded slabs are exempt from the CUT ceiling (a slab is no longer a "card to grade", so
+// whether to sell it or slot it is a per-card decision), but the gradedValue ceiling still
+// applies to them — a five-figure slab is exactly the thing you don't want auto-filed.
 export const CONDITION_ORDER = ['DMG', 'MP', 'LP', 'NM']   // worst → best
 export const CUT_ORDER = ['Rough', 'Off-center', 'Clean', 'Sharp', 'Pristine']
 
@@ -2459,16 +2466,44 @@ export function reserveRank(reserveCut) {
   const i = CUT_ORDER.indexOf(reserveCut)
   return i === -1 ? null : i
 }
-// Is this card eligible to be FILED into the masterset (i.e. NOT reserved for grading)?
-// Slabs always qualify (see above). A raw card qualifies only if its cut is BELOW the
-// reserve tier; a cut at/above it is your grade-and-sell copy and stays out. With no
+// The three reserve ceilings, as stored in `settings`, normalized into one config object.
+// Every reserve-aware call site reads its config through here so the rules live in one place.
+export const DEFAULT_BINDER_RESERVE = { cut: 'off', rawValue: 0, gradedValue: 0 }
+export function binderReserveFromSettings(settings) {
+  const s = settings || {}
+  return {
+    cut: s.binderReserveCut || 'off',
+    rawValue: Number(s.binderReserveRawValue) || 0,
+    gradedValue: Number(s.binderReserveGradedValue) || 0,
+  }
+}
+// Accept either a full reserve config or the bare cut tier (the shape the reserve had when
+// it was cut-only), so a caller with just a tier string keeps working.
+function asReserve(reserve) {
+  if (!reserve) return DEFAULT_BINDER_RESERVE
+  if (typeof reserve === 'string') return { ...DEFAULT_BINDER_RESERVE, cut: reserve }
+  return { ...DEFAULT_BINDER_RESERVE, ...reserve }
+}
+// The dollar ceilings the UI offers (0 = off). Ordered, so a select can render them directly.
+export const BINDER_VALUE_CAPS = [0, 25, 50, 100, 250, 500, 1000, 5000]
+
+// Is this card eligible to be FILED into the masterset (i.e. NOT held back by the reserve)?
+// A raw card qualifies only if its cut is BELOW the cut ceiling AND its value is below the
+// raw-value ceiling; a slab qualifies unless it's at/above the graded-value ceiling. With no
 // reserve set, everything qualifies — exactly the behaviour before the reserve existed.
-export function fileableInBinder(card, reserveCut) {
+export function fileableInBinder(card, reserve) {
   if (!card) return false
-  if (card.grade) return true
-  const bar = reserveRank(reserveCut)
+  const r = asReserve(reserve)
+  if (card.grade) return !(r.gradedValue > 0 && cardValue(card) >= r.gradedValue)
+  if (r.rawValue > 0 && cardValue(card) >= r.rawValue) return false
+  const bar = reserveRank(r.cut)
   if (bar == null) return true
   return cutRank(card) < bar
+}
+// Is any ceiling actually set? (UI copy + "nothing is being held back" states.)
+export function binderReserveActive(reserve) {
+  const r = asReserve(reserve)
+  return r.cut !== 'off' || r.rawValue > 0 || r.gradedValue > 0
 }
 
 export function cutEstimate(card, precise) {
@@ -3623,14 +3658,14 @@ export function cardMastersetVariants(set, card) {
 // own. `binderCards` are the copies physically slotted into the binder; `ownedCards` is any
 // other bucket (collection) whose variants count as "available to place". Returns per-slot
 // totals so the UI can render progress + a fill button.
-// `reserveCut` = your binder reserve tier (see fileableInBinder). A copy at/above it isn't
-// "placeable", so the fill button's count matches what the button will actually do. `reserved`
-// reports the slots where the ONLY copy you own is being held out for grading, so the UI can
-// explain an empty slot instead of leaving it looking like a bug.
-export function mastersetStats(set, binderCards, ownedCards = [], reserveCut = null) {
+// `reserve` = your binder reserve config (see fileableInBinder) — a cut tier string is also
+// accepted. A copy that hits a ceiling isn't "placeable", so the fill button's count matches
+// what the button will actually do. `reserved` reports the slots where the ONLY copy you own
+// is being held out, so the UI can explain an empty slot instead of leaving it looking like a bug.
+export function mastersetStats(set, binderCards, ownedCards = [], reserve = null) {
   const binderKeys = new Set(binderCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
   const mine = ownedCards.filter(c => setIdOfCard(c) === set.id)
-  const looseKeys = new Set(mine.filter(c => fileableInBinder(c, reserveCut)).map(c => `${c.id}:${cardVariant(c)}`))
+  const looseKeys = new Set(mine.filter(c => fileableInBinder(c, reserve)).map(c => `${c.id}:${cardVariant(c)}`))
   const anyKeys = new Set(mine.map(c => `${c.id}:${cardVariant(c)}`))
   let total = 0, placed = 0, placeable = 0, reserved = 0
   for (const card of set.cards) {
@@ -3639,7 +3674,7 @@ export function mastersetStats(set, binderCards, ownedCards = [], reserveCut = n
       const key = `${card.id}:${v}`
       if (binderKeys.has(key)) placed++
       else if (looseKeys.has(key)) placeable++
-      else if (anyKeys.has(key)) reserved++ // you own a copy, but it's reserved for grading
+      else if (anyKeys.has(key)) reserved++ // you own a copy, but the reserve is holding it out
     }
   }
   return { total, placed, placeable, reserved, pct: total ? Math.round((placed / total) * 100) : 0,
