@@ -33,7 +33,7 @@
 // are all still written), but lose the fields that came from the catalog. The same
 // assumption already underpins cardById() lookups for product promos and CANONICAL_PRICE
 // healing; this doesn't add a new constraint, it raises the stakes on the existing one.
-import { cardById } from '../engine'
+import { cardById, cardNumber } from '../engine'
 
 // `_cut` is a hidden 0..1 cut-quality score, minted from three Math.random() samples — so
 // it serializes as ~19 characters of float noise per card, which after the catalog strip is
@@ -69,6 +69,12 @@ function deflateCard(card, base) {
     const v = card[k]
     if (v === undefined || typeof v === 'function') continue
     if (k in base && same(base[k], v)) continue
+    // `number` is now DERIVED from the id for most cards, so the catalog row no longer
+    // carries it and the `k in base` test above stops matching. Without this, every card
+    // saved before the strip would start writing its collector number back out — the exact
+    // save bloat this module exists to prevent. Drop it whenever it matches what
+    // engine.cardNumber() rebuilds; a JP card whose number genuinely differs still writes.
+    if (k === 'number' && !(k in base) && String(v) === cardNumber({ id: card.id })) continue
     out[k] = k === '_cut' && typeof v === 'number' ? Math.round(v * CUT_PRECISION) / CUT_PRECISION : v
   }
   deflated.set(card, out)

@@ -1,6 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
 import { useGame, flushSaveWrite } from '../game/store'
 import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE } from '../game/engine'
+import { SEALED_GRADERS, sealedGraderById, sealedGradingFee, sealedGradingDays, sealedSlabLabel, worthGrading } from '../game/sealedgrading'
 
 // Code-split: the set price sheet (every card + PSA estimates) is only pulled when the
 // player taps to open it, so its chunk + a set's worth of card art stay off the rip path.
@@ -20,6 +21,56 @@ function StalePriceSheet() {
           onClick={() => { try { flushSaveWrite() } catch { /* best effort */ } location.reload() }}>
           🔄 Reload the game
         </button>
+      </div>
+    </div>
+  )
+}
+
+// 📦🔟 The sealed-grading option, with both graders quoted and an honest warning attached.
+//
+// The warning is the important half. Slabbing a vintage pack is a real play; slabbing this
+// month's Elite Trainer Box is money set on fire, because the premium a holder adds is a
+// VINTAGE premium (see game/sealedgrading.js). The button stays visible either way and simply
+// tells you which one you are looking at.
+function SealedGradeOption({ item, value, onDone }) {
+  const submitSealedGrade = useGame(s => s.submitSealedGrade)
+  const upgrades = useGame(s => s.upgrades)
+  const [open, setOpen] = useState(false)
+  const advice = worthGrading(item, value)
+
+  if (!open) {
+    return (
+      <button className="btn alt sellopt" onClick={() => setOpen(true)}>
+        <b>📦🔟 Send it to a sealed grader</b>
+        <small>{advice.ok
+          ? `A graded wrapper is how vintage sealed is held and sold. A ${sealedGraderById('wata').name} 9.5 on this would be worth about ${fmtMoney(value * 2.3)}.`
+          : advice.why}</small>
+      </button>
+    )
+  }
+
+  return (
+    <div className="list-picker" style={{ marginTop: 4 }}>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <b>📦🔟 Sealed grading</b>
+        <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(value)}</span>
+      </div>
+      {!advice.ok && <div className="lot-warn" style={{ marginTop: 6 }}>⚠️ {advice.why}</div>}
+      <div className="sell-options" style={{ marginTop: 8 }}>
+        {Object.values(SEALED_GRADERS).map(g => {
+          const fee = sealedGradingFee(value, g.key)
+          const days = sealedGradingDays(g.key, upgrades)
+          return (
+            <button key={g.key} className="btn alt sellopt" onClick={() => {
+              const r = submitSealedGrade(item.uid, g.key)
+              onDone(r?.error ? `⚠️ ${r.error}` : `📦 Sent to ${g.name} — back in ${r.days} days.`)
+            }}>
+              <b>{g.icon} {g.name} · {fmtMoney(fee)}</b>
+              <small>{days} days · {g.blurb}</small>
+            </button>
+          )
+        })}
+        <button className="btn alt sellopt" onClick={() => setOpen(false)}><b>← Never mind</b></button>
       </div>
     </div>
   )
@@ -97,13 +148,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
             {set?.logo
               ? <img src={set.logo} alt={set.name} decoding="async" />
               : <span className="sealed-modal-ico">{p.icon || '📦'}</span>}
-            <div className="sealed-modal-badge">{p.icon || '📦'} {p.packs} pack{p.packs === 1 ? '' : 's'}{item.vintage ? ' · 🗝️ vintage' : ''}</div>
+            <div className="sealed-modal-badge">{p.icon || '📦'} {p.packs} pack{p.packs === 1 ? '' : 's'}{item.vintage ? ' · 🗝️ vintage' : ''}{item.grade ? ` · 🔟 ${sealedSlabLabel(item.grade)}` : ''}</div>
           </div>
 
           <div style={{ flex: 1, minWidth: 240 }}>
             <h2>{title}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
-              📦 Sealed product{set?.name ? <> · {set.name}</> : ''}{set?.series ? <> · {set.series}</> : ''}{year ? <> · {year}</> : ''}
+              {/* An era product belongs to no single set, so don't claim one. */}
+              📦 Sealed product{p.pool?.series ? <> · {p.pool.series} era</> : <>{set?.name ? <> · {set.name}</> : ''}{set?.series ? <> · {set.series}</> : ''}</>}{year ? <> · {year}</> : ''}
             </p>
 
             <p style={{ fontSize: 15, marginBottom: 4 }}>Market value: <b style={{ color: 'var(--green)' }}>{fmtMoney(value)}</b></p>
@@ -116,6 +168,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
 
             <div className="banner" style={{ marginTop: 8 }}>
               <div>📦 <b>{p.packs}</b> booster pack{p.packs === 1 ? '' : 's'} inside{p.packs > 1 ? ` (~${fmtMoney(round2(base / p.packs))}/pack)` : ''}.</div>
+              {/* Deliberately vague about WHICH sets: the packs are already inside a sealed box,
+                  and you find out by ripping it. Two of these are worth exactly the same. */}
+              {p.pool?.series && (
+                <div style={{ marginTop: 4 }}>
+                  🎲 The packs are drawn from across the <b>{p.pool.series}</b> era — the mix varies
+                  from box to box, and you won't know what's in this one until you open it.
+                </div>
+              )}
               {gem && gem.total > 0 && (
                 <div style={{ marginTop: 4 }}>
                   💎 <b>{Math.round(gem.pct * 100)}%</b> of this set's {gem.total} hit{gem.total === 1 ? '' : 's'} clear <b>$100</b> graded PSA 10
@@ -134,7 +194,9 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
 
             {/* Drill-down: the whole set priced out, card by card — the "is this a chase set
                 or a deep one?" read. Lazy-loaded on tap (see the code-split import up top). */}
-            {set && (
+            {/* Hidden for an era product: its packs span a dozen sets, so one set's price sheet
+                would be a straight-up lie about what's in the box. */}
+            {set && !p.pool?.series && (
               <button className="btn" style={{ width: '100%', marginTop: 12 }} onClick={() => setShowPrices(true)}>
                 📋 See the full {set.name} price sheet →
               </button>
@@ -157,8 +219,14 @@ export default function SealedModal({ item, place, onClose, onRip, flash }) {
             <div className="sell-options" style={{ marginTop: 14 }}>
               <button className="btn alt sellopt" onClick={() => { onClose(); onRip && onRip(item.uid) }}>
                 <b>🎬 Rip it now</b>
-                <small>Crack it open and price out everything inside</small>
+                <small>{item.grade
+                  ? `Cracking the holder destroys the ${sealedSlabLabel(item.grade)} premium — this is worth ${fmtMoney(value)} sealed and graded.`
+                  : 'Crack it open and price out everything inside'}</small>
               </button>
+              {/* 📦🔟 Sealed grading. Offered on every product so the WARNING is visible on the
+                  ones it would be a mistake on — grading modern sealed is the most common way
+                  to lose money on this system, and hiding the button would hide the lesson. */}
+              {!item.grade && <SealedGradeOption item={item} value={value} onDone={fin} /> }
               {breaks.length > 0 && (
                 <button className="btn alt sellopt" onClick={doBreak}>
                   <b>🔨 Break down · {breaks[0].count}× {breaks[0].product.type}</b>

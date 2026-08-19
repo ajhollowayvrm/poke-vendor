@@ -8,11 +8,15 @@
 import {
   cardValue, rawValue, isBulkCard, round2, GRADING, gradingFee, gradingShipping, gradeUpcharge, graderTier, bulkDiscount,
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
-  setById, cardVariant, cardMastersetVariants, fileableInBinder, BULK_CREDIT_PER_CARD, fmtMoney,
-  pickMasterLot,
+  setById, cardVariant, cardMastersetVariants, fileableInBinder, binderReserveFromSettings, BULK_CREDIT_PER_CARD, fmtMoney,
+  pickMasterLot, luckTierOf, crackSlab as crackSlabCard, slabLabel, setPopAdds, sealedValue, cardPopulation,
 } from '../engine'
+import {
+  rollSealedGrade, sealedGradingFee, sealedGradingDays, sealedSlabLabel, sealedGraderById,
+  DEFAULT_SEALED_GRADER,
+} from '../sealedgrading'
 import { setIdOf, bumpSet } from './helpers'
-import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype } from './constants'
+import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype, postPatch, challengeBounty } from './constants'
 
 // Quick-selling is the instant-but-worst exit, and now it has teeth beyond the flat rate:
 //   • DUMP PENALTY — every quick-sell you make in a single day floods the buylist, so each
@@ -36,8 +40,31 @@ function gradeTurnaround(tier, upgrades) {
   return upgrades?.graderAccount ? Math.max(1, Math.ceil(tier.days * 0.6)) : tier.days
 }
 
+// 📜 How many rips the log remembers. One entry per rip (a 36-pack box is ONE line), so this is
+// a long tail in practice — but the save is serialized whole on every write, so it stays bounded.
+const RIP_LOG_MAX = 60
+
 export function createCollectionSlice(set, get) {
   return {
+    // Record a finished rip. Called once when a whole product is done — by the opener when the
+    // last pack closes out, and by the sift when the session ends — never per pack, because
+    // "what did that box do" is the question the per-set averages can't answer.
+    logRip(entry) {
+      if (!entry || !entry.packs) return
+      set(s => ({
+        ripLog: [{
+          day: absoluteDay(s.currentDay, s.monthsElapsed),
+          setId: entry.setId || null,
+          name: entry.name || '',
+          type: entry.type || 'pack',
+          packs: entry.packs,
+          cost: round2(entry.cost || 0),
+          pulled: round2(entry.pulled || 0),
+          best: entry.best ? { name: entry.best.name, value: round2(cardValue(entry.best)), rarity: entry.best.rarity } : null,
+          ...(entry.special ? { special: entry.special } : {}),
+        }, ...(s.ripLog || [])].slice(0, RIP_LOG_MAX),
+      }))
+    },
     addPulls(cards, setName, packs = 1) {
       set(s => {
         // With a storefront, everything you pull is YOURS first: singles land in Personal
@@ -47,6 +74,9 @@ export function createCollectionSlice(set, get) {
         const hasStore = !!s.upgrades?.storefront
         const incoming = hasStore ? cards.map(c => ({ ...c, locked: true, loc: 'storeroom' })) : cards
         const hits = cards.filter(c => c._isHit).length
+        // 🖨️ Press faults are rare enough to be worth a lifetime tally of their own — a
+        // wrong-back lands about once in 125,000 packs, and that is a thing you remember.
+        const misprints = cards.filter(c => c.misprint).length
         const best = cards.reduce((b, c) => (cardValue(c) > (b?cardValue(b):0) ? c : b), s.stats.bestPull)
         // track best foil pulled (by value) for the stats page
         const foils = cards.filter(c => c.foil)
@@ -69,10 +99,36 @@ export function createCollectionSlice(set, get) {
             pulledValue: cardValue(c), cardsPulled: 1, hits: c._isHit ? 1 : 0,
           })
         }
-        if (firstSet) bySet = bumpSet(bySet, firstSet, { packsOpened: packs })
+        // 🎲 Luck tracking: what the packs actually gave up, against what pullOdds() says they
+        // owed. Recorded on the PACK's set (not each card's) so the counts share a denominator
+        // with luckPacks — a Gallery/Shiny-Vault card comes from a different set id but the same
+        // pack. Promo adds (packs = 0) aren't pulls, and a god pack is its own line rather than a
+        // shower of tier counts no ladder ever offered.
+        if (firstSet) {
+          const tiers = {}
+          if (packs > 0 && !isGod && !isDemigod) {
+            for (const c of cards) {
+              const t = luckTierOf(c, firstSet)
+              if (t) tiers[t] = (tiers[t] || 0) + 1
+            }
+          }
+          if (packs > 0 && isGod) tiers.god = 1
+          if (packs > 0 && isDemigod) tiers.demigod = 1
+          bySet = bumpSet(bySet, firstSet, {
+            packsOpened: packs,
+            ...(packs > 0 ? { luckPacks: packs, tiers } : {}),
+          })
+        }
+        // 📱 The rip is content. A chase out of a kitchen-table pack is exactly the moment a
+        // vendor films, so the best card of the rip posts itself (POST_MIN_VALUE keeps a bulk
+        // pack from posting). Folded into THIS write — a rip is the hottest set() path in the
+        // game and every set() re-serializes the whole save, so no second write is allowed.
+        const best_ = cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null)
+        const postFold = postPatch(s, 'pull', `${best_?.name || 'a chase'} out of ${setName}`, topVal) || {}
         return {
           collection: [...incoming, ...s.collection],
           bySet,
+          ...postFold,
           ...(hypeAdd ? { hype: bumpHype(s.hype, hypeAdd) } : {}),
           ...(isGod ? { clout: (s.clout || 0) + 1 } : {}), // 🎫 a god pack is a story people owe you a favor for telling
           stats: {
@@ -80,6 +136,7 @@ export function createCollectionSlice(set, get) {
             packsOpened: s.stats.packsOpened + packs,
             cardsPulled: s.stats.cardsPulled + cards.length,
             hits: s.stats.hits + hits,
+            misprints: (s.stats.misprints || 0) + misprints,
             bestPull: best,
             bestFoil: bestFoil ?? s.stats.bestFoil,
             godPacks,
@@ -116,8 +173,25 @@ export function createCollectionSlice(set, get) {
       // identical; they just land together.
       const rewards = newly.map(set_ => ({ set: set_, r: completionReward(set_) }))
       const cash = round2(rewards.reduce((a, x) => a + x.r.cash, 0))
-      const noto = rewards.reduce((a, x) => a + x.r.noto, 0)
-      const clout = rewards.reduce((a, x) => a + (x.r.clout || 0), 0)
+      let noto = rewards.reduce((a, x) => a + x.r.noto, 0)
+      let clout = rewards.reduce((a, x) => a + (x.r.clout || 0), 0)
+      // 🃏 THE PAYOFF VIDEO. If one of these is the set you publicly announced you were
+      // chasing, the completion is the episode the whole series was building to — a one-time
+      // follower haul, hype and clout on top of the normal completion bonus, all scaled by how
+      // much of the set was actually left when you declared (challengeScale).
+      const chal = s.challenge
+      const chalSet = chal && newly.find(x => x.id === chal.setId)
+      let bounty = null
+      if (chalSet) {
+        const setValue = chalSet.cards.reduce((a, c) => a + (c.price ?? 0), 0)
+        bounty = challengeBounty(chalSet.cards.length, setValue, chal.scale ?? 1)
+        noto += bounty.noto
+        clout += bounty.clout
+      }
+      // 📱 A finished master set is the flagship post — the one that actually travels.
+      const pageSet = chalSet || newly[0]
+      const pageValue = pageSet.cards.reduce((a, c) => a + (c.price ?? 0), 0)
+      const pageFold = postPatch(s, 'page', `the completed ${pageSet.name} master set`, pageValue) || {}
       set(st => {
         // Still one batched write, but the rep gain now rides the same taper + ledger as
         // every addNotoriety call (this direct write used to skip the soft cap entirely).
@@ -127,9 +201,15 @@ export function createCollectionSlice(set, get) {
           cash: round2(st.cash + cash),
           notoriety: notoNext,
           repLedger: ledgerAdd(st.repLedger, 'sets', round2(notoNext - (st.notoriety || 0))),
-          hype: bumpHype(st.hype, Math.min(15, noto)), // finishing a set is a talked-about moment
+          hype: bumpHype(st.hype, Math.min(15, noto) + (bounty?.hype || 0)), // finishing a set is a talked-about moment
           clout: (st.clout || 0) + clout,              // 🎫 a real feat earns favors
           stats: { ...st.stats, earned: round2((st.stats?.earned || 0) + cash) },
+          ...pageFold,
+          // 🃏 The chase is over: bank the payoff-video audience and close the challenge out.
+          ...(bounty ? {
+            followers: Math.max(0, (st.followers || 0) + bounty.followers),
+            challenge: null,
+          } : {}),
           history: [
             ...rewards.map(({ set: s_, r }) => ({ t: Date.now(), type: 'complete', amount: r.cash,
               detail: `🏆 Completed the ${s_.name} set! +$${r.cash.toFixed(2)}, +${r.noto}★, +${r.clout} 🎫 — and it's ON DISPLAY now: an intact page draws walk-ins, whales and stream viewers.` })),
@@ -137,6 +217,9 @@ export function createCollectionSlice(set, get) {
           ].slice(0, 200),
         }
       })
+      if (bounty) {
+        get().log('stream', `🃏 THE PAYOFF VIDEO — you finished the ${chalSet.name} master set on camera. The series lands: +${bounty.followers} followers, +${bounty.noto}★, +${bounty.clout} 🎫 and the room is buzzing.`, 0)
+      }
     },
 
     // 🖼️ Accept the pending master-lot offer: a collector buys ONE copy of every card in the
@@ -207,16 +290,19 @@ export function createCollectionSlice(set, get) {
     // isn't whisked out of the sellable pool the same night it comes back from grading.
     //
     // BINDER RESERVE: a masterset is where DUPLICATE / display copies live — the genuinely
-    // sharp copies are worth more graded and sold than buried in a slot. So `settings.binderReserveCut`
-    // is a CEILING: a RAW copy whose cut is at/above it is reserved (held out, free to grade
-    // & sell), and only lesser copies get filed. If a slot's ONLY copy is reserved, the slot
-    // stays empty — never bury a grade-worthy card. Applies to BOTH the nightly Curator sweep
-    // and the manual "fill every slot" button (it's a statement about what your binder is, not
-    // which button you pressed). Slabs are exempt. Unset ('off') = file everything.
+    // sharp (or genuinely expensive) copies are worth more graded and sold than buried in a
+    // slot. So the reserve settings are CEILINGS: a RAW copy at/above the cut tier
+    // (`binderReserveCut`) or at/above the raw dollar ceiling (`binderReserveRawValue`) is
+    // reserved (held out, free to grade & sell), as is a SLAB at/above the graded dollar
+    // ceiling (`binderReserveGradedValue`) — only lesser copies get filed. If a slot's ONLY
+    // copy is reserved, the slot stays empty — never bury a grade-worthy or expensive card.
+    // Applies to BOTH the nightly Curator sweep and the manual "fill every slot" button (it's
+    // a statement about what your binder is, not which button you pressed). All unset = file
+    // everything.
     addAllToBinder(setId = null, { skipGraded = false, skipLocked = false } = {}) {
       const sets = setId ? [setById(setId)].filter(Boolean) : SETS
       if (!sets.length) return 0
-      const reserveCut = (get().settings || {}).binderReserveCut || 'off'
+      const reserve = binderReserveFromSettings(get().settings)
       const binder = get().binder || []
       const placed = new Set(binder.map(b => `${setIdOf(b)}:${b.id}:${cardVariant(b)}`))
       const chosen = new Map()   // slotKey → the copy we'll file (best FILEABLE copy wins)
@@ -239,7 +325,7 @@ export function createCollectionSlice(set, get) {
         if (placed.has(slotKey) || chosen.has(slotKey)) continue
         // Slot is open and unfilled. A fileable copy claims it; a reserved copy is noted but
         // left out (a lesser copy seen later can still claim the slot, clearing the note).
-        if (fileableInBinder(c, reserveCut)) { chosen.set(slotKey, c); reservedSlots.delete(slotKey) }
+        if (fileableInBinder(c, reserve)) { chosen.set(slotKey, c); reservedSlots.delete(slotKey) }
         else reservedSlots.add(slotKey)
       }
       const reserved = reservedSlots.size
@@ -251,7 +337,7 @@ export function createCollectionSlice(set, get) {
         binder: [...(s.binder || []), ...moving],
       }))
       const label = setId ? `for ${setById(setId)?.name || 'the set'}` : 'across your collection'
-      const note = reserved ? ` · ${reserved} ${reserved === 1 ? 'slot' : 'slots'} left open (reserved for grading)` : ''
+      const note = reserved ? ` · ${reserved} ${reserved === 1 ? 'slot' : 'slots'} left open (reserved to grade or sell)` : ''
       get().log('binder', `📒 Filled ${moving.length} binder slot${moving.length > 1 ? 's' : ''} ${label}${note}`, 0)
       return { moved: moving.length, reserved }
     },
@@ -523,6 +609,60 @@ export function createCollectionSlice(set, get) {
       get().bumpGoal('grade', cards.length)
     },
 
+    // 🔨 CRACK A SLAB. Break the card out of its holder and get the raw card back, free to
+    // send again — the play a dealer makes on an under-graded slab bought cheap.
+    //
+    // It is not a free reroll, and the reason is in engine.refineCut: the grade this card
+    // already earned is EVIDENCE about the physical card, so cracking it revises its hidden
+    // cut toward what that grade implied, and each further opinion revises it harder. A card
+    // that grades 8 twice ends up with a genuinely poor recorded cut and its odds get worse.
+    // Crack a 9 once and there is real upside; crack the same card four times and there is not.
+    //
+    // On top of that, the crack itself can nick the card (CRACK_DAMAGE_CHANCE), which drops a
+    // condition tier and caps every grade it can earn from then on.
+    crackSlab(uid) {
+      const card = get().collection.find(c => c.uid === uid)
+      if (!card) return { error: 'That card is not in your collection.' }
+      if (!card.grade) return { error: 'That card is not in a holder.' }
+      if (card.locked) return { error: '🔒 That is a personal keepsake. Unlock it first.' }
+      const wasWorth = cardValue(card)
+      const label = slabLabel(card.grade)
+      const { card: out, damaged } = crackSlabCard(card)
+      set(s => ({
+        collection: s.collection.map(c => (c.uid === uid ? out : c)),
+        stats: { ...s.stats, cracks: (s.stats.cracks || 0) + 1 },
+      }))
+      const nowWorth = cardValue(out)
+      if (damaged) {
+        get().log('crack', `🔨 Cracked ${card.name} out of its ${label} holder — and nicked it doing so. It is ${out.condition} now, which caps what it can ever grade. ${fmtMoney(wasWorth)} of slab is ${fmtMoney(nowWorth)} of raw card.`, 0)
+      } else {
+        get().log('crack', `🔨 Cracked ${card.name} out of its ${label} holder. Clean break — it is a raw card again, worth ${fmtMoney(nowWorth)} until you send it back.`, 0)
+      }
+      return { ok: true, damaged, card: out, wasWorth, nowWorth }
+    },
+
+    // 📦🔟 Send a SEALED product to a sealed grader. Same clock and the same resolver as card
+    // grading; a separate queue because the item is a sealed row, not a card.
+    submitSealedGrade(uid, company = DEFAULT_SEALED_GRADER) {
+      const item = get().sealedInventory.find(x => x.uid === uid)
+      if (!item) return { error: 'That product is not in your inventory.' }
+      if (item.grade) return { error: 'That product is already in a holder.' }
+      if (item._heldFor) return { error: 'That is being held for a regular.' }
+      const value = sealedValue(item)
+      const fee = sealedGradingFee(value, company)
+      if (get().cash < fee) return { error: `You need ${fmtMoney(fee)} to send that.` }
+      if (!get().spend(fee)) return { error: 'You cannot cover the fee.' }
+      const submittedAt = absoluteDay(get().currentDay, get().monthsElapsed)
+      const readyOnDay = submittedAt + sealedGradingDays(company, get().upgrades)
+      set(s => ({
+        sealedInventory: s.sealedInventory.filter(x => x.uid !== uid),
+        pendingSealed: [...(s.pendingSealed || []), { item, company, readyOnDay, submittedAt, paidFee: fee }],
+        sealedGradesSubmitted: (s.sealedGradesSubmitted || 0) + 1,
+      }))
+      const g = sealedGraderById(company)
+      get().log('grade-submit', `📦 Sent ${item.product?.type || 'sealed product'} (${setById(item.setId)?.name || 'set'}) to ${g.name} — ${fmtMoney(fee)}, back in ${readyOnDay - submittedAt} days.`, -fee)
+      return { ok: true, fee, days: readyOnDay - submittedAt }
+    },
     // 🎫 ⚡ Expedite a submission (2 clout + $50): your grader contact walks ONE card to
     // the front of the line — 7 days off its turnaround, never landing before tomorrow.
     // SPEED ONLY: odds and fees are sim-pinned and untouched (same contract as the
@@ -542,10 +682,32 @@ export function createCollectionSlice(set, get) {
       return { ok: true, readyOnDay: newReady }
     },
 
+    // 📦🔟 Resolve sealed submissions whose clock has run out. Its own queue but the same
+    // day stamp, so one resolver call settles both and the two can never drift apart.
+    resolveSealedGrades() {
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      const pending = get().pendingSealed || []
+      const ready = pending.filter(p => day >= p.readyOnDay)
+      if (!ready.length) return []
+      const back = ready.map(p => {
+        const grade = rollSealedGrade(p.item, p.company, p.paidFee)
+        return { ...p.item, grade, loc: p.item.loc || 'storeroom' }
+      })
+      set(s => ({
+        pendingSealed: (s.pendingSealed || []).filter(p => day < p.readyOnDay),
+        sealedInventory: [...back, ...s.sealedInventory],
+      }))
+      for (const it of back) {
+        get().log('grade-done', `📦 ${it.product?.type || 'Sealed product'} (${setById(it.setId)?.name || 'set'}) came back ${sealedSlabLabel(it.grade)} — now worth ${fmtMoney(sealedValue(it))}.`, 0)
+      }
+      return back
+    },
+
     // Resolve grades whose day count has been reached.
     resolveGrades() {
       // Compare against the same month-safe absolute day grades are stamped with (see submitGrade).
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      get().resolveSealedGrades()
       const ready = get().pendingGrades.filter(p => day >= p.readyOnDay)
       if (!ready.length) return []
       const loupeLuck = get().upgrades.loupe ? 0.08 : 0
@@ -570,9 +732,28 @@ export function createCollectionSlice(set, get) {
         const entry = { overall: grade.overall, tier: p.tierKey, company: grade.company, fee: round2((p.paidFee || 0) + owed), gradedAt: grade.gradedAt }
         resolved.push({ ...graded, gradeHistory: [...(p.card.gradeHistory || []), entry] })
       }
+      // 📊 THE CENSUS. Every slab that comes back is one more copy of that card at that grade
+      // in the population report — including yours. Written BEFORE the values below are read,
+      // because it changes them: slabbing your fourth copy of a thin vintage card lowers what
+      // all four are worth. This is the cost that makes "grade everything" the wrong answer.
+      const popAdds = { ...(get().popAdds || {}) }
+      for (const g of resolved) {
+        const key = `${g.id}|${g.grade.overall}`
+        popAdds[key] = (popAdds[key] || 0) + 1
+      }
+      setPopAdds(popAdds)
+      // 📱 The mail day. A slab coming back a 10 is the single most-filmed moment in the
+      // hobby — the reveal is the content, and it costs nothing but the phone. Only the BEST
+      // return of the batch posts (one submission back = one video, not twelve).
+      const bestSlab = resolved.reduce((b, g) => (cardValue(g) > (b ? cardValue(b) : 0) ? g : b), null)
+      const gemFold = bestSlab && (bestSlab.grade?.overall >= 10 || cardValue(bestSlab) >= 200)
+        ? (postPatch(get(), 'gem', `${bestSlab.name} came back a ${graderById(bestSlab.grade.company).name} ${bestSlab.grade.overall}`, cardValue(bestSlab)) || {})
+        : {}
       set(s => ({
         pendingGrades: [...s.pendingGrades.filter(p => day < p.readyOnDay), ...stillHeld],
         collection: [...resolved, ...s.collection],
+        popAdds,
+        ...gemFold,
       }))
       for (const g of resolved) {
         const black = isBlackLabel(g.grade)

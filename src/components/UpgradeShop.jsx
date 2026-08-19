@@ -23,6 +23,9 @@ const GROUPS = [
     keys: ['loupe', 'gradescope', 'graderAccount', 'submissionRunner', 'autoBinder'] },
   { id: 'stream', name: '🔴 Stream & repacks',
     keys: ['streaming', 'ripService', 'clipEditor', 'modTeam', 'wrapPress'] },
+  { id: 'content', name: '📱 Content & audience',
+    keys: ['shortsChannel', 'contentCalendar', 'setChallenge', 'showVlog', 'discord',
+      'collabs', 'podcast', 'brandDeals'] },
   { id: 'shows', name: '🎪 Shows & community',
     keys: ['vendorSetup', 'ticker', 'tourVan', 'banner'] },
 ]
@@ -85,7 +88,7 @@ export default function UpgradeShop() {
                     <div className="meta" style={{ flex: 1 }}>{u.desc}</div>
                     {have ? <button className="btn" disabled>✓ Owned</button>
                       : needsUnmet ? <button className="btn" disabled>🔒 Needs {UPGRADES[u.needs].name}</button>
-                      : <button className="btn gold" disabled={cash < u.cost} onClick={() => purchase(key, u)}>Buy · ${u.cost}</button>}
+                      : <button className="btn gold" disabled={cash < u.cost} onClick={() => purchase(key, u)}>Buy · {fmtMoney(u.cost)}</button>}
                   </div>
                 )
               })}

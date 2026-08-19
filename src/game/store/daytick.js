@@ -23,6 +23,7 @@ import {
   makeVintageHold, setById, distributorPrice, breakOptions, setProducts,
   gradePrediction, psaValueAt, gradingFee, distributorCatalog, stockState,
   showcaseSetIds, showcaseMult, pickMasterLot, LOT_PREMIUM_LO, LOT_PREMIUM_HI,
+  ownedIdSet, setCompletion,
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance, packValue } from '../mysterypacks'
@@ -45,9 +46,23 @@ import {
   supplyById, pickSupplyId, BUYLIST_POLICIES, SUB_DAILY,
   floorItemCap, floorSkuCounts, floorSkuKey, floorFreeSlots,
   decayHype, ledgerRoll, HYPE_CURE_RATE, HYPE_CURE_DAILY_CAP, hypeDemandMult, hypePriceMult,
+  // 📱 content system (game/content.js)
+  makePost, pushPost, postPatch, cadenceMult, rollViral, POST_KINDS,
+  huntFollowers, HUNT_EPISODE_EVERY, challengeScale,
+  DISCORD_WANT_BONUS, DISCORD_WANT_CAP_BONUS, discordRegularChance,
+  COLLAB_CREATORS, COLLAB_CHANCE, COLLAB_MIN_FOLLOWERS, collabGain,
+  PODCAST_PERIOD, PODCAST_REP, podcastFollowers, PODCAST_WAVE_LEAD_DAYS,
+  SPONSOR_BRANDS, SPONSOR_MIN_FOLLOWERS, SPONSOR_PERIOD, SPONSOR_WINDOW_DAYS,
+  SPONSOR_FEATURE_PACKS, SPONSOR_LAPSE_DING, sponsorMonthly,
 } from './constants'
 import { realizableAssets, netWorthFull, isDistributor } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
+// 🧾 tax + 🏦 loan settlement and 🔨 the buy-side auction board. The per-day work for each
+// lives beside its own actions rather than in this file, so a system reads in one place.
+import { settleQuarter, settleLoan, settleTaxArrears } from './books'
+import { settleAuctionLots } from './auctionhouse'
+import { tickMarket } from './market'
+import { shelfCarries } from '../shelf'
 
 // A set trading at or above this multiple of its base price is "hot" — willing buyers
 // on a hot card pay a premium above market, so LISTING a card whose set is spiking can
@@ -1153,10 +1168,17 @@ export function advanceDaysWith(set, get, days, away) {
   // age out want-lists, then maybe post new collector wants (scaled by notoriety)
   let wants = s.wantList.map(w => ({ ...w, daysLeft: w.daysLeft - days })).filter(w => w.daysLeft > 0)
   const wantsAfterAging = wants.length
-  const maxWants = 2 + Math.floor(noto / 80) // more fame → more collectors seek you out
-  const wantChancePerDay = 0.25 + noto / 300
+  // 💬 The Discord: a room full of people who watch you and buy cards. More asks, one more
+  // live at a time, and most of them name a set you're actually SITTING ON — members ask the
+  // dealer they know. The skew changes WHICH set gets asked for, never what the want pays.
+  const hasDiscord = !!s.upgrades.discord
+  const holdSetIds = hasDiscord
+    ? [...new Set((s.collection || []).map(c => setIdOfCard(c)).filter(Boolean))]
+    : null
+  const maxWants = 2 + Math.floor(noto / 80) + (hasDiscord ? DISCORD_WANT_CAP_BONUS : 0)
+  const wantChancePerDay = 0.25 + noto / 300 + (hasDiscord ? DISCORD_WANT_BONUS : 0)
   for (let i = 0; i < days && wants.length < maxWants; i++) {
-    if (Math.random() < wantChancePerDay) wants = [makeWant(noto >= 120), ...wants]
+    if (Math.random() < wantChancePerDay) wants = [makeWant(noto >= 120, holdSetIds), ...wants]
   }
   const newWants = Math.max(0, wants.length - wantsAfterAging) // fresh collectors who sought you out
   // Forum: the public WTB board refills over the days passed (your early-game demand).
@@ -1200,11 +1222,176 @@ export function advanceDaysWith(set, get, days, away) {
     clipGain = Math.round((clipNext.perDay || 0) * Math.min(days, clipNext.daysLeft || 0))
     clipNext = (clipNext.daysLeft || 0) - days > 0 ? { ...clipNext, daysLeft: clipNext.daysLeft - days } : null
   }
+  // --- 📱 SHORT-FORM: the feed drains, the calendar releases, the hunt pays --------------
+  // The audience half that doesn't cost a broadcast day. Everything here is bounded by the
+  // rails in game/content.js: small per-post drips, a capped feed, and no new demand or price
+  // multiplier anywhere — content builds FOLLOWERS, and followers are already capped at a
+  // +15% order bump (see followerBump above).
+  let postsNext = s.posts || []
+  let queueNext = s.postQueue || []
+  let postStreakNext = s.postStreak || 0
+  let lastPostDayNext = s.lastPostDay ?? null
+  let postGain = 0
+  let viralPost = null
+  {
+    // 🔁 The Content Calendar's cadence bonus rides on the streak you came INTO the day with,
+    // so today's release can't pay itself a bonus for existing.
+    const cadence = cadenceMult(postStreakNext)
+    const aged = []
+    for (const p of postsNext) {
+      const live = Math.min(days, p.daysLeft || 0)
+      postGain += (p.perDay || 0) * live * cadence
+      const left = (p.daysLeft || 0) - days
+      if (left > 0) aged.push({ ...p, daysLeft: left })
+    }
+    postGain = Math.round(postGain)
+    postsNext = aged
+    // 🔁 Release from the bank: one banked moment goes out per day passed. They start earning
+    // on the NEXT tick — a post published tonight hasn't been up for today.
+    if (s.upgrades.contentCalendar) {
+      const releases = Math.min(days, queueNext.length)
+      for (let i = 0; i < releases; i++) {
+        const m = queueNext[0]
+        queueNext = queueNext.slice(1)
+        const post = makePost(m.kind, m.label, m.value, rollViral())
+        postsNext = pushPost(postsNext, post)
+        if (post.viral) viralPost = post
+      }
+      // Cadence: post every day of the window and the streak extends; run the bank dry at any
+      // point and it resets to whatever you managed. That's "consistency beats bingeing".
+      if (releases >= days) postStreakNext = Math.min(30, postStreakNext + days)
+      else postStreakNext = releases                    // a dry day snapped it
+      if (releases > 0) lastPostDayNext = newAbsDay
+    }
+  }
+
+  // --- 🃏 The master set challenge: the hunt is the series -------------------------------
+  // Progress is measured ONCE a day here rather than hooked into every path a card can arrive
+  // by (booth buy, rip, trade, buy-in, want, lot). One pass, one funnel, and it can't miss.
+  let challengeNext = s.challenge || null
+  let huntGain = 0, huntEpisodes = 0, huntLanded = 0
+  if (challengeNext) {
+    const cset = setById(challengeNext.setId)
+    if (!cset) challengeNext = null
+    else {
+      const owned = ownedIdSet([...(s.collection || []), ...(s.binder || [])])
+      const comp = setCompletion(cset, owned)
+      const before = challengeNext.placed ?? challengeNext.startPlaced ?? 0
+      huntLanded = Math.max(0, comp.owned - before)
+      if (huntLanded > 0) {
+        // Per-card audience for the grind, valued on the set's average card (the individual
+        // chase that landed already posted itself through the rip/haul feeders). Capped per
+        // day so dumping a 200-card lot in can't mint an audience outright.
+        const avg = cset.cards.length
+          ? cset.cards.reduce((a, c) => a + (c.price ?? 0), 0) / cset.cards.length : 0
+        const scale = challengeScale(challengeNext.startPlaced ?? 0, challengeNext.total || comp.total)
+        huntGain = Math.min(40 * days, huntFollowers(avg, scale) * huntLanded)
+        // Every few cards is an episode. Posting on every single card would be noise (and the
+        // feed cap would eat them), so the series updates in chunks.
+        const landedTotal = (challengeNext.landed || 0) + huntLanded
+        huntEpisodes = Math.floor(landedTotal / HUNT_EPISODE_EVERY) - Math.floor((challengeNext.landed || 0) / HUNT_EPISODE_EVERY)
+        for (let i = 0; i < Math.min(2, huntEpisodes); i++) {
+          const fold = postPatch({ ...s, posts: postsNext, postQueue: queueNext },
+            'hunt', `${comp.owned}/${comp.total} on the ${cset.name} master set`, avg * HUNT_EPISODE_EVERY)
+          if (fold?.posts) postsNext = fold.posts
+          if (fold?.postQueue) queueNext = fold.postQueue
+        }
+        challengeNext = { ...challengeNext, placed: comp.owned, landed: landedTotal,
+          episodes: (challengeNext.episodes || 0) + huntEpisodes }
+      } else if (comp.owned !== before) {
+        // You broke the set up (sold into it). Re-baseline so re-buying pays once, not twice.
+        challengeNext = { ...challengeNext, placed: comp.owned }
+      }
+    }
+  }
+
+  // --- 🤝 Creator collabs: their broadcast, your audience --------------------------------
+  let collabNext = s.collab || { lastDay: 0, rapport: {} }
+  let collabEvent = null
+  if (s.upgrades.collabs && (s.followers || 0) >= COLLAB_MIN_FOLLOWERS) {
+    let hit = false
+    for (let i = 0; i < days && !hit; i++) hit = Math.random() < COLLAB_CHANCE
+    if (hit) {
+      const who = COLLAB_CREATORS[Math.floor(Math.random() * COLLAB_CREATORS.length)]
+      const rapport = collabNext.rapport?.[who] || 0
+      const gain = collabGain(noto, s.followers || 0, rapport)
+      collabEvent = { who, ...gain }
+      collabNext = { lastDay: newAbsDay, rapport: { ...(collabNext.rapport || {}), [who]: rapport + 1 } }
+    }
+  }
+
+  // --- 🎙️ The podcast: slow, permanent, and it hears things -----------------------------
+  // The only content system that pays ⭐ instead of 🔥 — a weekly episode isn't heat, it's
+  // everyone in the hobby knowing who you are.
+  let podcastDayNext = s.podcastDay || 0
+  let podcastEpisode = null
+  if (s.upgrades.podcast && newAbsDay - podcastDayNext >= PODCAST_PERIOD) {
+    podcastEpisode = { followers: podcastFollowers(noto) }
+    podcastDayNext = newAbsDay
+  }
+
+  // --- 💰 Brand deals: the audience becomes an income line -------------------------------
+  // The only cash faucet in the content batch, and it's fenced three ways: a hard monthly cap
+  // (sponsorMonthly), a real obligation you have to spend money to honour (rip their packs),
+  // and a follower floor nobody clears by accident.
+  let sponsorNext = s.sponsor || null
+  let sponsorLapsedNext = s.sponsorLapsedDay || 0
+  let sponsorPaid = 0, sponsorEvent = null
+  if (s.upgrades.brandDeals) {
+    if (!sponsorNext && (s.followers || 0) >= SPONSOR_MIN_FOLLOWERS && newAbsDay - sponsorLapsedNext >= 10
+      && Math.random() < Math.min(0.5, 0.12 * days)) {
+      const brand = SPONSOR_BRANDS[Math.floor(Math.random() * SPONSOR_BRANDS.length)]
+      const pushSet = SHOP_SETS[Math.floor(Math.random() * SHOP_SETS.length)]
+      if (pushSet) {
+        sponsorNext = {
+          brand: brand.name, icon: brand.icon, setId: pushSet.id, setName: pushSet.name,
+          monthly: sponsorMonthly(s.followers || 0, s.subs || 0),
+          signedDay: newAbsDay, dueDay: newAbsDay + SPONSOR_WINDOW_DAYS,
+          packsAt: s.bySet?.[pushSet.id]?.packsOpened || 0, lastPaidDay: newAbsDay, featured: false,
+        }
+        sponsorEvent = 'signed'
+      }
+    } else if (sponsorNext) {
+      const openedSince = (s.bySet?.[sponsorNext.setId]?.packsOpened || 0) - (sponsorNext.packsAt || 0)
+      if (!sponsorNext.featured && openedSince >= SPONSOR_FEATURE_PACKS) {
+        sponsorNext = { ...sponsorNext, featured: true }
+        sponsorEvent = 'featured'
+      } else if (!sponsorNext.featured && newAbsDay > sponsorNext.dueDay) {
+        sponsorEvent = 'lapsed'
+        sponsorLapsedNext = newAbsDay
+      } else if (sponsorNext.featured && newAbsDay - sponsorNext.lastPaidDay >= SPONSOR_PERIOD) {
+        // The check clears, and the next month's obligation opens on the same beat.
+        sponsorPaid = sponsorNext.monthly
+        sponsorNext = {
+          ...sponsorNext, lastPaidDay: newAbsDay, featured: false,
+          monthly: sponsorMonthly(s.followers || 0, s.subs || 0), // re-priced to today's reach
+          packsAt: s.bySet?.[sponsorNext.setId]?.packsOpened || 0,
+          dueDay: newAbsDay + SPONSOR_WINDOW_DAYS,
+        }
+        sponsorEvent = 'paid'
+      }
+    }
+    if (sponsorEvent === 'lapsed') sponsorNext = null
+  }
+
   // --- 📰 Reprint-wave lifecycle: announce → window (deposits) → drop (stock + rush) ----
   let waveNext = s.reprintWave || null
   let rushBuzz = false
   {
     const active = waveNext && waveNext.doneDay == null
+    // 🎙️ Podcast intel: the announcement reached your mic before it reached the price boards,
+    // so the reprint's market softening was HELD BACK when the wave was announced. It lands
+    // now — and the days in between were your window to sell into the old price.
+    if (waveNext && waveNext.softenDay != null && newAbsDay >= waveNext.softenDay) {
+      const wset = setById(waveNext.setId)
+      if (wset) {
+        const rr = applyMarketEvent(market.marketMults[wset.id] ?? 1, WAVE_REPRINT_EVENT)
+        market.marketMults[wset.id] = rr.mult
+        setMarketMults(market.marketMults)
+        market.events.push({ setId: wset.id, setName: wset.name, kind: 'crash', pct: rr.pct, line: rr.line.replace('{set}', wset.name) })
+      }
+      waveNext = { ...waveNext, softenDay: null }
+    }
     if (active) {
       // Preorder window: locals put deposits down at your counter (storefront, minded).
       const openDays = Math.max(0, Math.min(days, waveNext.dropDay - (newAbsDay - days)))
@@ -1284,12 +1471,19 @@ export function advanceDaysWith(set, get, days, away) {
           if (best) {
             const unit = round2(distributorPrice(best.dist, product.price, best.level, { product, set: waveSet }) * 0.97)
             const dropDay = newAbsDay + 5 + Math.floor(Math.random() * 4)
-            // Reprint news softens the set's market — the other edge of cheap supply.
-            const rr = applyMarketEvent(market.marketMults[waveSet.id] ?? 1, WAVE_REPRINT_EVENT)
-            market.marketMults[waveSet.id] = rr.mult
-            setMarketMults(market.marketMults)
-            market.events.push({ setId: waveSet.id, setName: waveSet.name, kind: 'crash', pct: rr.pct, line: rr.line.replace('{set}', waveSet.name) })
+            // Reprint news softens the set's market — the other edge of cheap supply. 🎙️ With a
+            // podcast you heard it first: the softening is deferred by PODCAST_WAVE_LEAD_DAYS
+            // (settled at the top of this block), and those days are your window to sell the
+            // set at the old price. Without one, it lands the moment the news does.
+            const heardEarly = !!s.upgrades.podcast
+            if (!heardEarly) {
+              const rr = applyMarketEvent(market.marketMults[waveSet.id] ?? 1, WAVE_REPRINT_EVENT)
+              market.marketMults[waveSet.id] = rr.mult
+              setMarketMults(market.marketMults)
+              market.events.push({ setId: waveSet.id, setName: waveSet.name, kind: 'crash', pct: rr.pct, line: rr.line.replace('{set}', waveSet.name) })
+            }
             waveNext = {
+              softenDay: heardEarly ? newAbsDay + PODCAST_WAVE_LEAD_DAYS : null,
               setId: waveSet.id, productType: product.type, label: `${product.type} of ${waveSet.name}`,
               announceDay: newAbsDay, dropDay, allocCap: 4 + 3 * best.level, unit,
               distId: best.dist.id, distName: best.dist.name,
@@ -1297,6 +1491,7 @@ export function advanceDaysWith(set, get, days, away) {
               depositEach: round2(product.price * WAVE_DEPOSIT_FRAC), doneDay: null,
             }
             get().log('shop', `📰 Reprint wave announced — ${waveNext.label} restocks in ${dropDay - newAbsDay} days. Your allocation: up to ${waveNext.allocCap} at $${unit.toFixed(2)} via ${best.dist.name}. Preorder on the Buy tab.`, 0)
+            if (heardEarly) get().log('shop', `🎙️ You had it on the podcast first — the boards haven't moved on ${waveSet.name} yet. About ${PODCAST_WAVE_LEAD_DAYS} days before the reprint news softens the price. Sell now if you're holding.`, 0)
           }
         }
       }
@@ -1337,6 +1532,19 @@ export function advanceDaysWith(set, get, days, away) {
     // A packed room is a reputation event in its own right — people saw that sale.
     if (r.bidders >= 5) get().addNotoriety(1, false, 'sales')
   }
+
+  // --- 🔨 The auction house: lots you were BIDDING on ------------------------------
+  // The other side of the hammer. Every lot whose clock ran out settles against the room it
+  // drew, you pay one increment over the runner-up if you won, and the board refills. A lot
+  // you never bid on simply closes. See game/lots.js for why a quiet lot is usually quiet for
+  // a reason, and store/auctionhouse.js for the settlement itself.
+  const lotResult = settleAuctionLots(set, get, newAbsDay)
+
+  // --- 📱 The local marketplace churns ---------------------------------------------
+  // Somebody else buys the good listings overnight and new ones go up. This is the whole
+  // rhythm of the channel: a bargain you scrolled past yesterday is gone today, and the
+  // fantasy prices are still there, exactly where you left them.
+  const marketTick = tickMarket(set, get, newAbsDay, days)
 
   // --- 🏪 The shop across town ------------------------------------------------------
   // They open the day you do. Heat is a tug-of-war settled every day: they gain ground for
@@ -1444,10 +1652,25 @@ export function advanceDaysWith(set, get, days, away) {
         const product = set_ && (set_.products || []).find(p => p.type === order.productType)
         let bought = null
         if (set_ && product) {
-          for (const dv of DISTRIBUTORS) {
-            if (!distributorUnlocked(dv, noto, s.upgrades, s.rank || 0)) continue
-            const level = rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level
-            const unit = round2(distributorPrice(dv, product.price, level, { product, set: set_ }))
+          // Ring around the distributors who actually CARRY this line, cheapest first.
+          //
+          // Two fixes in this list. It now obeys the same shelf the buy screen does
+          // (game/shelf.js), so the book cannot conjure a line no distributor stocks — and a
+          // Pokémon Center exclusive correctly sources from the marketplace, at marketplace
+          // money, because that is the only channel that has one. And it is now genuinely
+          // CHEAPEST-first, which is what the upgrade has always claimed; it used to take the
+          // first unlocked distributor in array order.
+          // Same week index the Buy tab shops with (the Purchasing Agent below derives its
+          // own copy the same way) — a shelf is a function of the week, so the book has to ask
+          // about the week it is actually ringing around in.
+          const soWeek = Math.floor(newAbsDay / 7)
+          const candidates = DISTRIBUTORS
+            .filter(dv => distributorUnlocked(dv, noto, s.upgrades, s.rank || 0))
+            .filter(dv => shelfCarries(dv, product, set_, soWeek))
+            .map(dv => ({ dv, level: rapportLevel((get().distributors?.[dv.id]?.spend) || 0).level }))
+            .map(x => ({ ...x, unit: round2(distributorPrice(x.dv, product.price, x.level, { product, set: set_ })) }))
+            .sort((a, b) => a.unit - b.unit)
+          for (const { dv, unit } of candidates) {
             // Never spend the shop into arrears chasing one special order.
             if (get().cash < unit + STORE_LEASE_PER_DAY) continue
             if (!get().spend(unit)) continue
@@ -1553,10 +1776,6 @@ export function advanceDaysWith(set, get, days, away) {
     specialOrders: specialOrdersNext,       // 📇 promises still open (sourced or not); filled/failed ones are off the book
     rival: rivalNext,                       // 🏪 the shop across town: heat re-settled, promo run down/started
     ...(branchNext !== s.secondLoc ? { secondLoc: branchNext } : {}), // 🏬 branch traded (or closed) this window
-    auctions: auctionsLive,                 // 🔨 still running; the closed ones paid out (or came home) above
-    specialOrders: specialOrdersNext,       // 📇 promises still open (sourced or not); filled/failed ones are off the book
-    rival: rivalNext,                       // 🏪 the shop across town: heat re-settled, promo run down/started
-    ...(branchNext !== s.secondLoc ? { secondLoc: branchNext } : {}), // 🏬 branch traded (or closed) this window
     wantList: wants,
     showLeads: leadsNext,
     // Holds picked up / lapsed on the one store inventory. Only written with a store —
@@ -1585,9 +1804,21 @@ export function advanceDaysWith(set, get, days, away) {
     pendingJob,
     streamHypeDaysLeft: Math.max(0, (st.streamHypeDaysLeft || 0) - days), // stream afterglow ages out
     streamPromo: promoNext,                 // 📣 an announced stream survives the day unless its night passed
-    subs: subsNext,                         // ❤️ paying members (bled down if the channel's gone dark)
+    subs: subsNext + (collabEvent?.subs || 0), // ❤️ paying members (bled down if the channel's gone dark)
     streamClip: clipNext,                   // 🎬 the circulating clip ages out
-    followers: Math.max(0, (st.followers || 0) + clipGain), // clip keeps recruiting while it circulates
+    // Every audience source lands in ONE place: the clip, the short-form feed, the hunt, the
+    // guest spot, the podcast. Followers are capped in their effect (followerBump), not here.
+    followers: Math.max(0, (st.followers || 0) + clipGain + postGain + huntGain
+      + (collabEvent?.followers || 0) + (podcastEpisode?.followers || 0)),
+    posts: postsNext,                       // 📱 the feed: circulating shorts, aged down
+    postQueue: queueNext,                   // 🔁 the calendar's bank of unreleased moments
+    postStreak: postStreakNext,
+    lastPostDay: lastPostDayNext,
+    challenge: challengeNext,               // 🃏 the announced chase (re-baselined each day)
+    collab: collabNext,                     // 🤝 guest-spot history + per-creator rapport
+    podcastDay: podcastDayNext,             // 🎙️ when the last episode went out
+    sponsor: sponsorNext,                   // 💰 the live brand deal (or null if none/lapsed)
+    sponsorLapsedDay: sponsorLapsedNext,
     streamFatigue: Math.max(0, (st.streamFatigue || 0) - days),           // audience freshness recovers with rest
     regulars: regTick.regulars, // cooled + neglect-penalized + call-ins rolled (see tickRegulars)
     quickSellsToday: 0,                                                    // fresh day → the dump penalty resets
@@ -1637,6 +1868,39 @@ export function advanceDaysWith(set, get, days, away) {
   }
   if (subIncome > 0) get().log('stream', `❤️ ${subsNext} subscriber${subsNext === 1 ? '' : 's'} — +$${subIncome.toFixed(2)} sub income${subsDark ? ' (channel dark over a week — subs are drifting off)' : ''}`, subIncome)
   if (clipGain > 0) get().log('stream', `🎬 Your ${s.streamClip.label} clip is making the rounds — +${clipGain} followers`, 0)
+  // --- 📱 What the content systems did overnight ----------------------------------------
+  if (postGain > 0) {
+    const n = (s.posts || []).length
+    get().log('stream', `📱 ${n} post${n === 1 ? '' : 's'} circulating — +${postGain} followers${postStreakNext >= 3 ? ` (🔁 ${postStreakNext}-day posting streak, ×${cadenceMult(postStreakNext).toFixed(2)} reach)` : ''}`, 0)
+  }
+  if (viralPost) get().log('stream', `🚀 "${viralPost.label}" POPPED — the algorithm picked it up and it's everywhere (≈${viralPost.perDay}/day followers for ${viralPost.daysLeft} days)`, 0)
+  if (huntGain > 0) {
+    get().log('stream', `🃏 ${huntLanded} more card${huntLanded === 1 ? '' : 's'} toward the ${challengeNext?.setName} master set on camera — +${huntGain} followers${huntEpisodes > 0 ? `, and the series got a new episode` : ''}`, 0)
+  }
+  if (collabEvent) {
+    get().addHype(collabEvent.hype)
+    get().log('stream', `🤝 You guested on ${collabEvent.who}'s stream — their room met you: +${collabEvent.followers} followers${collabEvent.subs ? `, +${collabEvent.subs} ❤️ subs` : ''}, +🔥`, 0)
+  }
+  if (podcastEpisode) {
+    get().addNotoriety(PODCAST_REP, false, 'content')
+    get().log('stream', `🎙️ Another episode is up — the hobby knows your name a little better. +${PODCAST_REP}★, +${podcastEpisode.followers} followers`, 0)
+  }
+  if (sponsorEvent === 'signed' && sponsorNext) {
+    get().log('stream', `💰 ${sponsorNext.icon} ${sponsorNext.brand} wants to sponsor the channel — $${sponsorNext.monthly.toFixed(2)}/month. Their ask: feature ${sponsorNext.setName} by ripping ${SPONSOR_FEATURE_PACKS} packs of it on camera within ${SPONSOR_WINDOW_DAYS} days.`, 0)
+  } else if (sponsorEvent === 'featured' && sponsorNext) {
+    get().addHype(4)
+    get().log('stream', `💰 ${sponsorNext.icon} ${sponsorNext.brand} got their feature — ${sponsorNext.setName} ripped on camera. The check clears on the monthly beat.`, 0)
+  } else if (sponsorEvent === 'paid' && sponsorNext) {
+    get().earn(sponsorPaid)
+    get().log('stream', `💰 ${sponsorNext.icon} ${sponsorNext.brand} paid the monthly — +$${sponsorPaid.toFixed(2)}. Next feature window is open: ${SPONSOR_FEATURE_PACKS} packs of ${sponsorNext.setName} within ${SPONSOR_WINDOW_DAYS} days.`, sponsorPaid)
+  } else if (sponsorEvent === 'lapsed') {
+    get().addNotoriety(-SPONSOR_LAPSE_DING, false, 'dings')
+    get().log('stream', `💰 You never gave ${s.sponsor?.brand || 'your sponsor'} their feature — the deal lapsed, and people noticed you took the deal and ghosted. (−${SPONSOR_LAPSE_DING}★)`, 0)
+  }
+  // 💬 A member of the community stops being an audience member and becomes a customer.
+  if (s.upgrades.discord && holdSetIds?.length && Math.random() < discordRegularChance(s.followers || 0, days)) {
+    get().formRegular({ setId: holdSetIds[Math.floor(Math.random() * holdSetIds.length)], channel: 'online', generous: false })
+  }
   // One-time fanfare the first day you become a distributor yourself.
   if (isDistributor(s) && !s.distributorSince) {
     get().log('milestone', `🏆 You're a distributor now — a Household Name AND a millionaire. Other shops will start ordering wholesale from you.`, 0)
@@ -1662,6 +1926,15 @@ export function advanceDaysWith(set, get, days, away) {
   // carried balance and auto-pay the monthly minimum from cash (short pay → freeze + rep ding).
   const monthsRolled = months - s.monthsElapsed
   if (monthsRolled > 0 && (s.credit?.balance || 0) > 0) settleCredit(set, get, monthsRolled)
+  // 🏦 The bank note. The instalment comes out every day whether or not the shop had a good
+  // one — that is what makes borrowing a commitment rather than free capital. Settled AFTER
+  // the day's takings are in, so a shop that traded well pays without noticing.
+  const loanResult = settleLoan(set, get, days)
+  // 🧾 The books. Interest first on anything already outstanding, then close the quarter if
+  // this window crossed its end. Ordering matters: closing first would immediately charge a
+  // day of arrears on a bill the player has not yet had a chance to see, let alone pay.
+  settleTaxArrears(set, get, days)
+  const quarter = settleQuarter(set, get, newAbsDay)
   set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
   // Life events: something may have happened while these days passed (expense, ding, theft,
   // a buyer walking, a windfall). Applied after settlement so the recap's cashDelta captures it.
@@ -1676,8 +1949,8 @@ export function advanceDaysWith(set, get, days, away) {
   // a slab fresh back from grading is always the "best copy", and auto-filing it made
   // returned slabs vanish from the collection the same night the player revealed them.
   // (addAllToBinder returns { moved, reserved } — reserved is slots left open because the only
-  // copy you own is being held back for grading; the recap surfaces it so an empty slot never
-  // looks like a bug.)
+  // copy you own is held back by your binder reserve: too sharp a cut, or too valuable, to bury
+  // in a slot. The recap surfaces it so an empty slot never looks like a bug.)
   const binderSweep = s.upgrades.autoBinder ? get().addAllToBinder(null, { skipGraded: true, skipLocked: true }) : { moved: 0, reserved: 0 }
   const binderFiled = binderSweep.moved
   const binderReserved = binderSweep.reserved
@@ -1819,7 +2092,12 @@ export function advanceDaysWith(set, get, days, away) {
         let need = min - (have.get(`${setId}|${p.type}`) || 0)
         if (need <= 0) continue
         // cheapest in-stock seller first; fall through to the next if a buy comes up short
+        // 🛒 A seller only counts if this product is actually ON THAT SHELF. Without this the
+        // agent could order a mini tin from a wholesaler that does not carry tins, or a
+        // Pokémon Center exclusive from the corner shop — the buy screen filters by retailer
+        // (game/shelf.js) and the overnight buyer has to obey the same shelf.
         const opts = offers
+          .filter(x => shelfCarries(x.dv, p, st, week))
           .map(x => ({ ...x, price: distributorPrice(x.dv, p.price, x.level, { product: p, set: st }),
             avail: !stockState(x.dv, (get().distributors[x.dv.id]?.stock) || {}, st, p, x.level).out }))
           .filter(x => x.avail && x.price > 0)
@@ -1971,6 +2249,19 @@ export function advanceDaysWith(set, get, days, away) {
     regularCalls: regTick.requested.length, regularsWon: regTick.fulfilled.length,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
     lifeEvents,
+    // 🔨 Lots that closed while the days passed, 🧾 a quarter that ended, 🏦 the note's
+    // instalments. All three are things that happen TO you on a clock, so the recap is the
+    // only place a player reliably sees them.
+    lotsWon: lotResult?.won || 0,
+    lotsLost: lotResult?.lost || 0,
+    lotsSpent: round2(lotResult?.spent || 0),
+    lotsBurned: lotResult?.burned || 0,
+    marketTaken: marketTick?.taken || 0,
+    quarterClosed: quarter || null,
+    loanPaid: round2(loanResult?.paid || 0),
+    loanMissed: loanResult?.missed || 0,
+    loanCleared: !!loanResult?.cleared,
+    loanDefaulted: !!loanResult?.defaulted,
     netWorth,
     cashDelta: round2(get().cash - s.cash),
     notoDelta: round2(get().notoriety - noto),
@@ -2028,6 +2319,16 @@ export function mergeSummaries(a, b) {
     regularsWon: add(a.regularsWon, b.regularsWon),
     marketMovers: [...(a.marketMovers || []), ...(b.marketMovers || [])],
     lifeEvents: [...(a.lifeEvents || []), ...(b.lifeEvents || [])],
+    lotsWon: add(a.lotsWon, b.lotsWon),
+    lotsLost: add(a.lotsLost, b.lotsLost),
+    lotsSpent: round2(add(a.lotsSpent, b.lotsSpent)),
+    lotsBurned: add(a.lotsBurned, b.lotsBurned),
+    marketTaken: add(a.marketTaken, b.marketTaken),
+    quarterClosed: b.quarterClosed || a.quarterClosed || null, // at most one quarter ends in a trip
+    loanPaid: round2(add(a.loanPaid, b.loanPaid)),
+    loanMissed: add(a.loanMissed, b.loanMissed),
+    loanCleared: !!(a.loanCleared || b.loanCleared),
+    loanDefaulted: !!(a.loanDefaulted || b.loanDefaulted),
     netWorth: b.netWorth != null ? b.netWorth : a.netWorth, // latest (end-of-trip) worth
     cashDelta: round2(add(a.cashDelta, b.cashDelta)),
     notoDelta: round2(add(a.notoDelta, b.notoDelta)),
@@ -2146,14 +2447,16 @@ function settleRent(set, get, rentDue, days, storageDue = 0) {
   // rentDue is the combined overhead (base rent + inventory storage); break it out for the log.
   const baseRent = round2(rentDue - storageDue)
   const storageNote = storageDue > 0 ? ` + storage $${storageDue.toFixed(2)}` : ''
+  // 🧾 Your rent is where you LIVE. It is not a business cost and it does not come off the
+  // taxable line — the storage the shop pays for does, and that rides its own spend() call.
   if (s.cash >= rentDue) {
-    get().spend(rentDue)
+    get().spend(rentDue, { personal: true })
     get().log('rent', `Rent $${baseRent.toFixed(2)}${storageNote} paid (-$${rentDue.toFixed(2)})`, -rentDue)
     if (s.rentArrears) set({ rentArrears: 0 })
     return
   }
   // can't fully cover rent → pay what we can, fall behind.
-  if (s.cash > 0) { get().spend(round2(s.cash)) }
+  if (s.cash > 0) { get().spend(round2(s.cash), { personal: true }) }
   const arrears = (s.rentArrears || 0) + days
   const assets = realizableAssets(get())
   if (arrears > RENT_GRACE_DAYS && assets < rentDue) {

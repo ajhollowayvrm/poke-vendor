@@ -40,6 +40,47 @@ body {
   color: var(--txt); -webkit-font-smoothing: antialiased;
 }
 button { font-family: inherit; cursor: pointer; }
+
+/* ---------- PRESS FEEDBACK ----------
+   A native control answers the FINGER, not the result. Measured before this existed: only 25 of
+   97 controls responded to a press at all, so most taps produced nothing until the screen
+   redrew — and on a rip or a buy that redraw can be hundreds of milliseconds away.
+
+   Four decisions, each of which was wrong the obvious way first:
+
+   1. The suppression and the replacement land TOGETHER. iOS paints its own grey tap highlight,
+      which is ugly but is not nothing; killing it in one commit and adding :active in the next
+      leaves the app worse than it started.
+   2. Scoped to things that are actually TAPPABLE — button, a, [role=button], and the two custom
+      row classes below. NOT to card/row classes generally: half the rows in this app are static
+      divs, and lighting those up lies to the finger about what it can press.
+   3. BRIGHTNESS, not opacity. On this near-black palette a dimmed control reads as DISABLED,
+      which is the opposite of the message. Lifting it reads as pressed on both dark and light
+      surfaces.
+   4. `transition` on the way OUT only (0ms in, 140ms out). A press must feel instant; the
+      release can relax. Equal transitions make a fast tap feel mushy.
+
+   ⚠️ This layer is INERT on iOS without the empty touchstart listener registered in main.jsx —
+   WebKit only applies :active while a touch listener exists up the tree. Every desktop browser
+   applies it regardless, so a desktop test CANNOT catch its absence. See main.jsx. */
+button, a, [role="button"], summary, .rep-head, .credit-top {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;   /* also kills the 300ms double-tap-zoom delay */
+}
+button:active, a:active, [role="button"]:active, summary:active,
+.rep-head:active, .credit-top:active {
+  filter: brightness(1.35);
+  transition: filter 0s;
+}
+button, a, [role="button"], summary, .rep-head, .credit-top { transition: filter .14s ease-out; }
+/* A disabled control must NOT answer the finger — that would promise an action that never comes. */
+button:disabled:active, [role="button"][aria-disabled="true"]:active { filter: none; }
+/* The pack is its own animation (tear/shake) and the card tilt is pointer-tracked; a brightness
+   pulse on top of either fights the effect rather than adding to it. */
+.pack3d:active, .reveal-card:active, .holo:active { filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  button, a, [role="button"], summary, .rep-head, .credit-top { transition: none; }
+}
 /* respect iPhone notch / home-bar safe areas when installed as a PWA */
 .app { max-width: 1180px; margin: 0 auto;
   /* fill at least the viewport so short pages don't leave dead space below */
@@ -186,6 +227,14 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 /* Mobile bottom nav — hidden on desktop, shown fixed at <=640px (see media query). */
 .bottomnav { display: none; }
 .pill { background:#ffffff14; color:var(--dim); border-radius:999px; padding:3px 9px; font-size:12px; font-weight:700;}
+/* A capability you have NOT unlocked yet. These are read-only status, but dimming a filled
+   pill to 35% made them look exactly like disabled BUTTONS — "PayPal 🔒" read as a control you
+   were being refused rather than a rail you have not bought. An outline reads as an empty slot
+   waiting to be filled, which is what it is. */
+.pill.off { background: transparent; border: 1px dashed var(--line); color: var(--dim); opacity: .75; }
+/* Trailing note after a wrapped chip row — starts its own line instead of continuing the row
+   mid-sentence ("📲 Tap 🔒 · buyers who can't use what you accept walk away"). */
+.toolbar > .rownote { flex: 1 0 100%; }
 
 /* Cards grid */
 .grid { display: grid; gap: 14px; margin-top: 18px; }
@@ -215,13 +264,47 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .set-head .meta { color: var(--dim); font-size: 12px; }
 .set-caret { flex: none; color: var(--dim); font-size: 13px; margin-left: 6px; }
 .set-acc .prodlist { padding: 10px 14px 14px; margin-top: 0; }
+
+/* ---------- Era level: the shelf reads Era → Set → Product ---------- */
+.product.era-acc { padding: 0; gap: 0; }
+.era-head .set-head-name { font-size: 17px; letter-spacing: .2px; }
+.era-acc.open .era-head { border-radius: 16px 16px 0 0; border-bottom: 1px solid var(--line); }
+/* Sets nest one level in, so the hierarchy is legible without a second card border. */
+.era-body { padding: 8px 8px 10px; display: flex; flex-direction: column; gap: 8px; }
+.era-body .product.set-acc { background: #ffffff06; }
+/* Cross-set collector product sits above the era's sets — that IS where a UPC belongs. */
+.era-products { border: 1px solid var(--gold); border-radius: 12px; padding: 8px 10px 6px;
+  background: linear-gradient(180deg, #ffcb050e, transparent); }
+.era-products-head { font-size: 11.5px; font-weight: 800; color: var(--gold);
+  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.era-prodrow { display: flex; align-items: center; gap: 10px; padding: 6px 0;
+  border-top: 1px solid var(--line); }
+.era-prodrow:first-of-type { border-top: none; }
+.era-prodrow .prod-name { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700; }
+.era-prodrow .btn { flex: none; min-width: 96px; }
 .buyrow { display: flex; gap: 8px; margin-top: auto; }
 .btn { background: var(--accent2); color: #fff; border: none; border-radius: 10px; padding: 10px 12px;
   font-weight: 800; font-size: 14px; flex: 1; transition: transform .08s, filter .15s; }
 .btn:hover { filter: brightness(1.1); } .btn:active { transform: translateY(1px); }
 .btn.alt { background: #ffffff16; color: var(--txt); }
+/* GOLD ON A CONTROL MEANS EXACTLY ONE THING: this is the primary action.
+   It used to mean three conflicting things at once — primary action, "on"/selected state, and
+   (because the gradient outranked the disabled opacity) some disabled controls too. The worst
+   case was Store → Packs, where a DISABLED "Auto-build — nothing fits" bar was the loudest
+   element on the card while the real action sat under it in neutral grey.
+   State now lives on .btn.on (green, below) and disabled strips the gradient entirely. */
 .btn.gold { background: linear-gradient(135deg,#ffd84d,#ffb000); color:#3a2b00; }
-.btn:disabled { opacity: .4; cursor: not-allowed; }
+/* ON/OFF state for role="switch" controls — green reads as "on"; gold would claim it's the
+   thing to press next, which a settings toggle never is. */
+.btn.on { background: color-mix(in srgb, var(--green) 22%, transparent); color: var(--green);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 45%, transparent); }
+/* A disabled control must never wear an ACTION colour. At .4 opacity a filled gold or blue bar
+   still out-shouts every live neutral control near it — on Shows, every un-attendable show
+   spent two full-width blue blocks, so a calendar of eleven locked shows read as a wall of
+   buttons with nothing to press. Disabled now falls back to a flat ghost surface, so the eye
+   goes to what you CAN do. */
+.btn:disabled { opacity: .55; cursor: not-allowed; background: #ffffff10; color: var(--dim);
+  box-shadow: none; }
 
 /* Card tile */
 .cardtile { position: relative; border-radius: 12px; overflow: hidden; background: #0c0f1a;
@@ -237,9 +320,21 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .qty-ctl .so-btn.active, .prodrow .so-btn.active { color: var(--gold); border-color: var(--gold); background: #ffcb0522; }
 
 /* Which set the card is from — on every tile, so a card is never contextless. */
-.cardtile .settag { position: absolute; top: 6px; right: 6px; z-index: 4; font-size: 9px; font-weight: 700;
-  color: var(--dim); padding: 2px 6px; border-radius: 6px; background: #000a; backdrop-filter: blur(4px);
-  max-width: 58%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Caption strip: the card's name over its set, bottom-left, on a scrim that keeps both legible
+   against any art. Sits clear of the price chip in the bottom-right corner. */
+.cardtile .cardcap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+  display: flex; flex-direction: column; gap: 1px; padding: 14px 6px 5px;
+  background: linear-gradient(180deg, transparent, #000c 42%, #000e); pointer-events: none; }
+/* The price moves to the TOP-right on raw tiles — the corner the set chip just vacated. In a
+   3-up grid a tile is ~113px, so leaving the price in the bottom-right cost the caption half
+   its width and names still truncated ("Beedril…", "AZ's Tr…"). Nothing shares the top-right
+   now, so the whole bottom strip belongs to the name. Slabs keep the price where it was; their
+   label already occupies the top. */
+.cardtile:not(.slab) .price { top: 6px; right: 6px; bottom: auto; }
+.cardtile .cardcap-name { font-size: 11px; font-weight: 800; line-height: 1.15; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardtile .settag { font-size: 9px; font-weight: 700; color: var(--dim); line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @keyframes sheen { 0%{background-position:0% 0%} 100%{background-position:-200% -200%} }
 
 /* ---------- Graded SLAB (PSA-style plastic case) ---------- */
@@ -340,6 +435,13 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .pack-wrap { perspective: 1200px; }
 .pack3d .logo { max-width: 80%; max-height: 60%; object-fit: contain; filter: drop-shadow(0 6px 10px #000b); }
 .pack3d .hint { position:absolute; bottom: 14px; font-size:12px; color:#ffffffcc; font-weight:700; }
+/* Cross-set product only (a UPC): name the set in words on the wrapper. Out of a mixed box the
+   logo is the ONLY clue which pack you're holding, and half-recognising a logo is not the same
+   as being told — so this sits under it, before the tear and through the shake. */
+.pack3d .pack-set-name { position:absolute; bottom: 38px; left: 10px; right: 10px; text-align:center;
+  font-size: 13px; font-weight: 800; letter-spacing: .2px; color:#fff;
+  text-shadow: 0 2px 8px #000c, 0 0 2px #000; pointer-events:none; }
+.pack3d.shake .pack-set-name { bottom: 16px; }
 .pack3d.shake { animation: shake .4s ease-in-out infinite; }
 @keyframes shake { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
 .foil { position:absolute; inset:0; border-radius:16px; background:
@@ -455,6 +557,15 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 /* Shared UI motion: backdrop fades, modal pops, toasts leave, numbers flash on change. */
 @keyframes backdropIn { from { opacity: 0 } to { opacity: 1 } }
 @keyframes modalPop { from { opacity: 0; transform: scale(.96) translateY(6px) } to { opacity: 1; transform: none } }
+/* On a phone a sheet RISES; it does not pop from the middle. Same duration, same easing, so
+   nothing else about the modal changes — only the direction it arrives from.
+   IN-animation only, deliberately: a dozen call sites close a modal and carry straight on into a
+   re-render, so an out-animation would either be cut off mid-flight or have to gate the state
+   change behind a timer. Arriving well is most of the effect anyway. */
+@media (max-width: 640px) {
+  @keyframes modalRise { from { opacity: 0; transform: translateY(22px) } to { opacity: 1; transform: none } }
+  .modal { animation: modalRise .22s cubic-bezier(.2,.9,.3,1); }
+}
 @keyframes toastOut { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(8px) } }
 @keyframes listItemIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes numFlashUp { 0% { transform: scale(1) } 32% { transform: scale(1.13); filter: brightness(1.35) } 100% { transform: scale(1); filter: none } }
@@ -493,20 +604,47 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .row { display:flex; gap:10px; flex-wrap:wrap; }
 .muted { color: var(--dim); }
 .statgrid { display:grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
+/* Group label for the stat tiles — money / ripping / the business. A column heading, so
+   uppercase IS right here (unlike a set name). */
+.stat-group-h { font-size: 11px; font-weight: 800; color: var(--dim); text-transform: uppercase;
+  letter-spacing: .5px; margin: 18px 0 8px; }
+.stat-group-h:first-of-type { margin-top: 10px; }
 .stat { background: var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
 .stat b { font-size:24px; display:block; } .stat span { color:var(--dim); font-size:12px; }
 .hist { font-size:13px; border-bottom:1px solid var(--line); padding:8px 2px; display:flex; gap:10px; }
 .hist .amt.pos { color: var(--green); margin-left:auto; font-weight:800; }
 .hist .amt.neg { color: var(--red); margin-left:auto; font-weight:800; }
 .empty { color: var(--dim); text-align:center; padding: 60px 20px;
-  /* fill the content area and center, so an empty page isn't a thin strip up top.
-     column direction keeps multi-node prose (text + <b>) flowing as one paragraph
-     instead of fragmenting each inline child into its own flex column. */
-  flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  /* MUST stay a block. These messages are prose: a text node plus inline <b> runs. A flex
+     container promotes every one of those into its own flex LINE — including the bare ","
+     sitting between two <b> links — so "…land here to rip, list for sale, or quick-flip
+     whenever you want." rendered as nine lines with a lone comma on two of them. It read as
+     broken markup on every empty and locked screen in the game.
+     It is also deliberately TOP-ANCHORED rather than vertically centred. Centring can't be
+     done consistently here anyway — several call sites pass an inline `marginTop`, which beats
+     any `margin-block:auto` from this rule, so half the empty states would centre and half
+     would not. Top-anchoring is the conventional mobile layout and matches the note on the
+     routed panes further down: floating short content into the middle of the column reads as a
+     broken gap, not a deliberate spread. The 60px padding gives it its breathing room. */
+  display: block;
   max-width: 520px; margin-inline: auto; line-height: 1.5; }
 .toolbar { display:flex; gap:10px; align-items:center; margin: 16px 0; flex-wrap:wrap; }
 select { background: var(--panel2); color: var(--txt); border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-weight:700; }
-.banner { background: color-mix(in srgb, var(--gold) 9%, transparent); border:1px solid color-mix(in srgb, var(--gold) 25%, transparent); color: var(--gold-muted); border-radius:12px; padding:10px 14px; font-size:13px; }
+/* The explainer panel — the app's most-reused block (~20 sites). Deliberately NEUTRAL now.
+   It used to be gold-tinted, which put ordinary prose in the same visual bucket as a genuine
+   warning AND as the gold primary-action button. On the Buy tab alone three of them stacked
+   up (shop description, collector callout, vintage shelf) and read as three warnings.
+   Rule: gold means "act on this". An explainer just sits there and is read. */
+.banner { background: #ffffff08; border:1px solid var(--line); color: var(--dim);
+  border-radius:12px; padding:10px 14px; font-size:13px; }
+.banner b, .banner strong { color: var(--txt); }
+/* Opt-in variants for the two cases that genuinely are louder than prose. */
+.banner.warn { background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 25%, transparent); color: var(--gold-muted); }
+.banner.warn b, .banner.warn strong { color: var(--gold); }
+.banner.danger { background: color-mix(in srgb, var(--red) 10%, transparent);
+  border-color: color-mix(in srgb, var(--red) 30%, transparent); color: var(--red-muted); }
+.banner.danger b, .banner.danger strong { color: var(--red); }
 
 /* ---------- Notoriety chip ---------- */
 .noto-chip { font-weight: 800; font-size: 18px; color: var(--gold); font-variant-numeric: tabular-nums; }
@@ -518,7 +656,8 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 @keyframes hype-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }
 @media (prefers-reduced-motion: reduce) { .hype-chip { animation: none; } }
 /* ⭐ Reputation panel (Stats tab) */
-.rep-head { font-weight: 800; }
+/* Also a full-width row, so height is the honest fix rather than an invisible overlay. */
+.rep-head { font-weight: 800; min-height: 44px; display: flex; align-items: center; }
 .rep-deed { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 2px 0; }
 .clock-chip { font-weight: 800; font-size: 15px; color: var(--accent-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .next-day-btn { font-size: 13px; padding: 5px 12px; white-space: nowrap; flex: none; }
@@ -692,8 +831,19 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .toast-action:active { transform: scale(0.96); }
 /* clear the bottom nav, and hug the edge a little tighter on a narrow screen */
 @media (max-width: 640px) {
-  .toast-stack { bottom: calc(84px + var(--sab)); right: calc(10px + var(--sar)); }
+  .toast-stack { right: calc(10px + var(--sar)); bottom: calc(20px + var(--sab)); }
+  /* The 84px lift is ONLY correct where there IS a bottom nav to clear. The full-screen
+     takeovers (show prep / show floor) don't render one, so an unconditional lift parked the
+     toast 84px up the screen, on top of a vendor row, instead of tucked into the corner.
+     Same trap the .bulk-bar offset fell into — gate it on the nav actually existing. */
+  .app:has(> .bottomnav) .toast-stack { bottom: calc(84px + var(--sab)); }
   .toast-stack .toast { padding: 10px 14px; font-size: 13px; }
+
+  /* The show-floor HUD wrapped to FOUR rows (~170px) before the first vendor: a Leave button
+     plus six chips at desktop sizing. Tighten it to pack into two. */
+  .floorhud { gap: 6px; }
+  .floorhud .pill { font-size: 11px; padding: 3px 7px; }
+  .floorhud .btn { padding: 7px 10px; font-size: 13px; }
 }
 
 /* ---------- Vendor booth modal ---------- */
@@ -701,6 +851,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .askrow { display:flex; align-items:center; gap:6px; }
 .ask { font-weight: 800; color: var(--green); font-size: 15px; }
 .dealtag { background: var(--green); color:#03301f; font-size:10px; font-weight:800; padding:1px 6px; border-radius:6px; }
+/* 🔎 Deal finder, section level: a collapsed binder/sealed group holding at least one DEAL
+   turns its set name green, so a deep table reads at a glance instead of tap-by-tap. Colour
+   only — the row's own DEAL tag is still the precise answer once the section is open. */
+.deal-set { color: var(--green); }
 .overtag { background: var(--red); color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:6px; }
 .product.owned { opacity: .7; }
 
@@ -724,7 +878,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   font-size: 13px; cursor:pointer; border-left:1px solid var(--line); }
 .seg .segbtn:first-child { border-left:none; }
 .seg .segbtn:hover { background: var(--hover); }
-.seg .segbtn.on { background: linear-gradient(135deg,#ffd84d,#ffb000); color:#3a2b00; }
+/* SELECTED, not "press me". A segmented control's chosen option is state — it wore the same
+   gold gradient as the primary-action button, so on the credit panel "💵 Cash" looked like the
+   thing to tap next rather than the mode already in force. Blue is what the rest of the app
+   already uses for an active tab, so selection now reads consistently everywhere. */
+.seg .segbtn.on { background: var(--accent2); color:#fff; }
 
 /* ---------- Storefront / payments / channels ---------- */
 .chanbadge { align-self: flex-start; font-size: 10px; font-weight: 800; border: 1px solid; border-radius: 999px;
@@ -795,9 +953,25 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   padding: 9px 12px; align-items: center; font-variant-numeric: tabular-nums; font-size: 14px; }
 .set-row:not(.set-head):nth-child(even) { background: #ffffff06; }
 .set-row > span:not(.set-name) { text-align: right; }
-.set-head { background: var(--panel2); color: var(--dim); font-weight: 700; font-size: 12px;
+/* SCOPED to `.set-row.set-head` on purpose. `.set-head` is ALSO the Buy tab's era/set accordion
+   button (App.jsx:1520,1609), and because this block sits later in the file it was winning the
+   cascade over that component and dressing it as a table header: set NAMES rendered dim, 12px
+   and ALL-CAPS ("PITCH BLACK", "MEGA EVOLUTION · 3 PRODUCTS · FROM $8.90"). Uppercase belongs
+   on a column label, never on a proper noun. Two components, one class name — scope, don't
+   rename, so neither consumer has to change. */
+.set-row.set-head { background: var(--panel2); color: var(--dim); font-weight: 700; font-size: 12px;
   text-transform: uppercase; letter-spacing: .4px; }
 .set-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 🎲 Luck table — same skin as the set analytics, four columns instead of six. */
+.lucktable { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.luck-row { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 8px;
+  padding: 8px 12px; align-items: center; font-variant-numeric: tabular-nums; font-size: 14px; }
+.luck-row:not(.luck-head):nth-child(even) { background: #ffffff06; }
+.luck-row > span:not(.luck-tier) { text-align: right; }
+.luck-head { background: var(--panel2); color: var(--dim); font-weight: 700; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .4px; }
+.luck-tier { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .luck-row { font-size: 13px; padding: 7px 10px; } }
 @media (max-width: 640px) {
   .set-row { grid-template-columns: 1.6fr 1fr 1fr 0.7fr; font-size: 13px; padding: 8px 10px; }
   /* drop Pulled + Packs columns on narrow screens (header + cells alike) */
@@ -910,9 +1084,18 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .bulk-grade-group select { flex: 0 0 auto; max-width: 150px; }
 
 @media (max-width: 640px) {
-  /* keep the bar clear of the floating bottom nav */
-  .bulk-bar { position: fixed; left: 10px; right: 10px; bottom: calc(80px + env(safe-area-inset-bottom));
-    margin-top: 0; }
+  /* Deliberately STAYS sticky here (it used to switch to position:fixed).
+     Fixed took the bar out of flow, so it reserved no space and simply landed on top of
+     whatever happened to be at that scroll position — on the show-prep screen it covered 32 of
+     the 44px of "⭐ Pick the good stuff" and swallowed its taps, because hit-testing goes to
+     the bar. Its `bottom: calc(80px + safe-area)` also hard-coded the bottom nav's height,
+     which the full-screen takeovers (show prep / show floor) don't even render, so there the
+     bar floated 80px above nothing.
+     Sticky fixes both at once: it reserves its space in normal flow (it can never cover a
+     sibling), it still stays pinned while a long list scrolls, and it sticks to the bottom of
+     its own scroll container — .content on the tab screens, which already sits above the nav,
+     and the viewport on the takeovers. No height constant to keep in sync. */
+  .bulk-bar { bottom: calc(14px + env(safe-area-inset-bottom)); }
   .bulk-bar-actions { margin-left: 0; width: 100%; }
   .bulk-bar-actions .btn { flex: 1 1 auto; }
 }
@@ -1064,6 +1247,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .rc-val { font-size:15px; font-weight:900; color:var(--green); margin-top:3px; }
 .rc-badges { display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:5px; }
 .rc-want { font-size:10.5px; font-weight:800; color:var(--gold); }
+/* 🃏/📒 a hole in a set YOU'RE building — the counterpart to ⭐ Want (somebody else's). The
+   challenge variant shouts, the binder one is a quiet note. */
+.rc-need { font-size:10.5px; font-weight:800; color:var(--accent-light);
+  background:color-mix(in srgb, var(--accent2) 16%, transparent); border-radius:6px; padding:1px 5px; }
+.rc-need.challenge { color:#0e1116; background:linear-gradient(90deg,#ffd76e,#ffb02e); }
 .rip-cell-foot:hover .rc-name { text-decoration: underline; }
 
 /* ---------- Rip reveal: the hand (riffle through the pack, pull the top card off to the side) ---------- */
@@ -1100,6 +1288,21 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .hand-up.teased .hand-face::before { height:22px;
   background: linear-gradient(90deg,#ff5d5d,#ffb347,#ffe74d,#5dff8f,#5dc8ff,#b45dff,#ff5db0); }
 .hand-up.teased .hand-face.back { border-color:#ffffff66; box-shadow:0 8px 20px #0009, 0 0 16px #ffffff44; }
+/* The suspense beat, made visible. The code set a suspenseIdx and played the swell, but nothing
+   ever read it — the "dim the row, tease the card" the comment promised was never drawn. Now the
+   rest of the hand falls back and the card you're about to turn breathes. */
+.hand-stage.suspense .hand-current, .hand-stage.suspense .hand-seen {
+  opacity:.3; filter:saturate(.5); transition:opacity .3s ease, filter .3s ease; }
+.hand-up.teased-now .hand-face.back { border-color:#fffc; animation: teaseGlow 1.05s ease-in-out infinite; }
+@keyframes teaseGlow {
+  0%, 100% { box-shadow:0 8px 20px #0009, 0 0 14px #ffffff55; }
+  50%      { box-shadow:0 8px 26px #0009, 0 0 34px 6px #ffffffcc; } }
+@media (prefers-reduced-motion: reduce) {
+  .hand-up.teased-now .hand-face.back { animation:none; box-shadow:0 8px 20px #0009, 0 0 24px #ffffff99; } }
+/* "Show the rest of this pack" — deliberately quiet. It's an escape hatch for a pack whose payoff
+   you've already seen, not a headline action competing with the cards. */
+.rip-reveal-rest { max-width:260px; margin:2px auto 0; font-size:12.5px; opacity:.8; }
+.rip-auto-note { font-size:12px; color:var(--dim); margin:6px 0 0; width:100%; text-align:center; }
 /* the set-aside pile: cards you've already pulled off, tucked to the lower-left */
 .hand-seen .hand-face { box-shadow:0 6px 14px #0009; }
 .hand-seen .hand-face.back img { width:60%; height:auto; object-fit:contain; opacity:.4;
@@ -1155,7 +1358,9 @@ button.rip-hit-row:hover { background:#ffffff14; }
   border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
 .credit-panel.frozen { border-color: color-mix(in srgb, var(--red) 55%, var(--line));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 22%, transparent); }
-.credit-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+/* The credit-line accordion header. Unlike the two above this is a full-width ROW, so it can just
+   be made tall enough — no pseudo-element needed, and a taller header reads better anyway. */
+.credit-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-height: 44px; }
 .credit-head { font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px; }
 .credit-badge { font-size:10px; font-weight:900; letter-spacing:.5px; color:#fff;
   background: var(--red); border-radius:6px; padding:2px 6px; }
@@ -1189,6 +1394,98 @@ button.rip-hit-row:hover { background:#ffffff14; }
 /* hall announcement for a pull from YOUR booth */
 .hall-announce.mine { border-color: var(--green); box-shadow: 0 0 0 1px #36d39966, 0 16px 50px #36d39922; }
 .hall-announce.mine .ha-sub b { color: var(--green); }
+
+/* 🖨️ misprint callout on a card page */
+.misprint-box { margin-top: 10px; padding: 8px 10px; border-radius: 9px;
+  border: 1px solid #c084fc66; background: #c084fc12; }
+.misprint-head { font-weight: 800; font-size: 13px; color: #d8b4fe; }
+/* 🖨️ the badge on a card tile */
+.misprint-badge { position: absolute; left: 4px; bottom: 4px; z-index: 3; font-size: 11px; line-height: 1;
+  padding: 2px 5px; border-radius: 5px; background: #4c1d95dd; color: #e9d5ff; font-weight: 800;
+  border: 1px solid #c084fc88; }
+
+/* 🚫 "1 per customer" — the sign on an allocated collector piece */
+.limit-chip { margin-left: 6px; font-size: 10.5px; padding: 1px 5px; border-radius: 4px;
+  background: #ff9f4322; color: #ff9f43; border: 1px solid #ff9f4355; font-weight: 700; }
+.limit-chip.spent { background: #ff5e6c22; color: #ff5e6c; border-color: #ff5e6c55; }
+
+/* ===================== 📱 Local Marketplace ===================== */
+.mk-list { display: flex; flex-direction: column; gap: 8px; }
+.mk-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px;
+  background: var(--panel2, #1a1f2e); border: 1px solid var(--line, #2a3145); }
+.mk-row.flagged { border-color: #ff9f43; }
+.mk-row.dead { opacity: .55; }
+.mk-art { width: 44px; border-radius: 6px; flex: none; }
+.mk-main { flex: 1 1 auto; min-width: 0; }
+.mk-title { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; font-size: 13.5px; }
+.mk-ask { font-weight: 800; font-size: 15px; color: var(--gold); flex: none; }
+.mk-line { font-size: 12.5px; color: var(--dim); font-style: italic; margin-top: 3px; }
+.mk-tells { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.mk-tell { font-size: 11px; padding: 2px 6px; border-radius: 5px; background: var(--bg, #0c0f1a);
+  border: 1px solid var(--line, #2a3145); color: var(--dim); }
+.mk-tell.warn { color: #ff9f43; border-color: #ff9f4355; }
+.mk-value { font-size: 12px; color: var(--dim); margin-top: 6px; }
+.mk-read.good { color: var(--green); font-weight: 700; }
+.mk-read.warn { color: #ff9f43; }
+.mk-read.bad { color: var(--red); }
+.mk-warn { margin-top: 6px; font-size: 12px; color: #ff9f43; }
+.mk-reply { margin-top: 6px; font-size: 12px; color: var(--green); }
+.mk-reply.bad { color: #ff9f43; }
+.mk-act { display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto; align-items: stretch; }
+.mk-offer { display: flex; gap: 4px; }
+.mk-input { width: 74px; padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line, #2a3145);
+  background: var(--panel, #121722); color: inherit; font-size: 13px; }
+@media (max-width: 640px) {
+  .mk-row { flex-wrap: wrap; }
+  .mk-act { flex-direction: row; width: 100%; flex-wrap: wrap; }
+  .mk-offer { flex: 1 1 auto; }
+  .mk-input { flex: 1 1 auto; width: auto; }
+}
+
+/* ===================== 🧾🏦 The books ===================== */
+.books-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 10px 0; }
+.books-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.books-grid .muted { font-size: 11.5px; }
+.books-bar { height: 5px; border-radius: 3px; background: var(--line, #2a3145); overflow: hidden; margin: 4px 0 2px; }
+.books-bar-fill { height: 100%; border-radius: 3px; transition: width .3s ease; }
+.books-note { font-size: 12px; margin-top: 8px; line-height: 1.45; }
+.books-due { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  padding: 8px 10px; margin-top: 8px; border-radius: 9px; border: 1px solid #ff9f4366; background: #ff9f430f; }
+.books-risk { margin-top: 10px; padding: 8px 10px; border-radius: 9px; background: var(--panel2, #1a1f2e); font-size: 12.5px; }
+.books-history { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.books-hrow { display: flex; gap: 10px; justify-content: space-between; font-size: 12px; padding: 4px 0;
+  border-top: 1px solid var(--line, #2a3145); }
+.loan-offer { margin-top: 10px; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line, #2a3145);
+  background: var(--panel2, #1a1f2e); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.loan-offer.locked { opacity: .62; }
+.loan-head { display: flex; justify-content: space-between; width: 100%; font-size: 13.5px; }
+.loan-terms { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ===================== 🔨 Auction house (buy side) ===================== */
+.lot-list { display: flex; flex-direction: column; gap: 8px; }
+.lot-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px;
+  background: var(--panel2, #1a1f2e); border: 1px solid var(--line, #2a3145); }
+.lot-row.bidding { border-color: var(--gold); box-shadow: 0 0 0 1px #ffcb0533; }
+.lot-row.flagged { border-color: #ff9f43; }
+.lot-art { width: 42px; border-radius: 6px; flex: none; }
+.lot-main { flex: 1 1 auto; min-width: 0; }
+.lot-title { font-size: 13.5px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.lot-sub { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+.lot-warn { margin-top: 6px; font-size: 12px; color: #ff9f43; }
+.lot-committed { margin-top: 6px; font-size: 12px; color: var(--dim); }
+.lot-bid { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; align-items: stretch; }
+.lot-input { width: 92px; padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line, #2a3145);
+  background: var(--panel, #12172294); color: inherit; font-size: 13px; }
+@media (max-width: 640px) {
+  .lot-row { flex-wrap: wrap; }
+  .lot-bid { flex-direction: row; width: 100%; }
+  .lot-input { flex: 1 1 auto; width: auto; }
+}
+
+/* 🏃 a rival dealer got to a deal before you did — the one banner that is bad news */
+.hall-announce.sniped { border-color: #ff9f43; box-shadow: 0 0 0 1px #ff9f4366, 0 16px 50px #ff9f4322; }
+.hall-announce.sniped .ha-line b { color: #ff9f43; }
+.hall-announce.sniped .ha-sub b { color: #ff9f43; }
 
 /* ===================== Mobile + touch optimization ===================== */
 @media (max-width: 640px) {
@@ -1225,6 +1522,16 @@ button.rip-hit-row:hover { background:#ffffff14; }
      box-shadows still give subtle separation; borders are dropped. */
   body { background: var(--bg); }
   .topbar { gap: 6px; padding: 4px 12px 6px; flex-wrap: wrap; background: var(--bg); border-color: transparent; }
+  /* The bar's full height must ALWAYS be reserved above the page — it's opaque, so any pixel it
+     covers is a pixel of content you can never reach.
+     It reserves that height by being a real flex row of the app shell (see below), NOT by
+     overlaying — but `top: 12px` (the desktop affordance where the bar floats 12px below the
+     window edge as the page scrolls) also shifts it 12px DOWN of its flow box, and on a phone
+     the shell never scrolls, so that shift was permanent: the bar hung 12px into the scroll
+     region and clipped the top of every routed page. Worse, .content scrolls UNDER it, so
+     anything passing through that strip was sliced (the distributor rapport chip lost its top
+     edge on the Buy tab). Pin the offset to 0 here: bar bottom == scroll-region top, exactly. */
+  .topbar { top: 0; }
   /* During an active rip the game top bar (a flat, borderless band on phones) is hidden so the
      rip is a clean full-screen takeover — reveal cards no longer clip into an invisible dark
      band as they scroll ("going under the top banner"). The bottom nav stays for navigation,
@@ -1255,11 +1562,23 @@ button.rip-hit-row:hover { background:#ffffff14; }
      controls otherwise crush the description into a ~73px column. */
   .setting-card { flex-direction: column; align-items: stretch; gap: 10px; }
   .setting-card .seg { align-self: flex-start; }
-  /* the tier legend is reference metadata — scroll it horizontally as a chip row
-     instead of stacking 6 full-width rows above the actual show cards. */
-  .tierlegend { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px; scrollbar-width: thin; }
-  .tierlegend .legend { flex: 0 0 auto; font-size: 11px; }
+  /* ONE-LINE CHIP/TAB ROWS.
+     Three rows here had the same two problems: the Store and Inventory sub-tabs WRAPPED to a
+     second line (pushing the actual content down by a full row), and the tier legend and the
+     vendor-modal tabs scrolled but stopped dead mid-word at the screen edge — "Sell to the",
+     "Card Shop Event · 1d · needs" — which reads as broken text, not as "there is more".
+     Single row + scroll + a soft right edge fixes both. The fade costs nothing when the chips
+     don't reach the edge (it lands on empty space), so it appears exactly when it's scrollable. */
+  .tierlegend, .subtabs, .modal .tabs {
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding-bottom: 4px;
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 20px), transparent 100%);
+            mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 20px), transparent 100%);
+  }
+  .tierlegend::-webkit-scrollbar, .subtabs::-webkit-scrollbar,
+  .modal .tabs::-webkit-scrollbar { display: none; }
+  .tierlegend > *, .subtabs > *, .modal .tabs > * { flex: 0 0 auto; }
+  .tierlegend .legend { font-size: 11px; }
   /* the in-bar tab strip is replaced by the floating bottom nav on phones */
   .topbar .tabs { display: none; }
   /* the ⚙️ gear is redundant on phones (bottom nav has a "More" entry) and
@@ -1271,15 +1590,29 @@ button.rip-hit-row:hover { background:#ffffff14; }
        drift during iOS toolbar show/hide. The content region above scrolls; this stays put.
        Tabs share the width evenly — no horizontal scrolling. */
     display: flex; gap: 2px; flex: 0 0 auto; z-index: 60;
-    /* Deliberately IGNORE the home-indicator safe area: the bar sits flush to the physical
-       bottom with only a small fixed pad, rather than reserving the iPhone's ~34px inset.
-       That was ~34px of dead height on the phone; dropping it roughly halves the footer.
-       The tradeoff (accepted): on a home-indicator device the labels sit close to / under
-       the indicator pill. */
+    /* IN THE BROWSER: deliberately IGNORE the home-indicator safe area. The bar sits flush to
+       the physical bottom with only a small fixed pad, rather than reserving the iPhone's ~34px
+       inset. That was ~34px of dead height on the phone; dropping it roughly halves the footer.
+       The tradeoff (accepted): on a home-indicator device the labels sit close to / under the
+       indicator pill.
+
+       IN THE NATIVE SHELL: take the inset back — see the `.native-shell` override below. Both
+       halves of the reasoning above stop holding there. */
     padding: 3px 4px 6px;
     background: var(--bg);
     box-shadow: 0 -6px 24px #0007;
   }
+  /* 🏠 NATIVE SHELL ONLY: give the home-indicator inset back.
+     The trade above was correct for the PWA and stops being correct inside the app, on both
+     sides of the ledger:
+       • The reason to skip it was scarce vertical space — Safari's toolbars eat ~100pt. The
+         shell is edge-to-edge and gets the whole 956pt of an iPhone 17 Pro Max, so the pressure
+         that justified it is at its weakest here.
+       • The cost got worse. The bottom 34pt is the system swipe-up gesture strip, and 7-8 tab
+         buttons per screen — the app's PRIMARY NAVIGATION — were sitting inside it. That is a
+         gesture conflict, not a cosmetic one: iOS wins the ambiguous swipes.
+     Scoped to .native-shell (set on <html> by main.jsx) so the browser keeps the compromise. */
+  .native-shell .bottomnav { padding-bottom: calc(6px + var(--sab)); }
   .bnav-btn {
     flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
     background: transparent; border: 0; color: var(--dim); padding: 3px 2px 2px; border-radius: 12px;
@@ -1291,9 +1624,18 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .bnav-btn:active { transform: scale(.95); }
   .bnav-icon { position: relative; font-size: 20px; line-height: 1;
     padding: 3px 12px; border-radius: 999px; }
-  /* labels shrink to fit the narrower per-tab width; truncate rather than wrap */
-  .bnav-label { font-size: 11px; line-height: 1; max-width: 100%; overflow: hidden;
-    text-overflow: ellipsis; white-space: nowrap; }
+  /* labels shrink to fit the narrower per-tab width; truncate rather than wrap.
+     7 tabs on a 390px screen leaves ~49px of label per cell, and "Inventory" needed ~55px at
+     11px — so the app's own tab was permanently labelled "Invent…". Ellipsising the PRIMARY
+     navigation is the one place truncation is never acceptable: it's the label you learn the
+     app by. 10px + slightly tightened tracking fits the longest label at 375px too. */
+  .bnav-label { font-size: 10px; letter-spacing: -.3px; line-height: 1; max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* the icon pill and the cell padding were both eating room the label needed. "Inventory" is
+     the longest label and the binding constraint — give it a few px of slack rather than
+     landing exactly on the boundary, so a slightly wider system font doesn't re-truncate it. */
+  .bnav-icon { padding: 3px 10px; }
+  .bnav-btn { padding-left: 1px; padding-right: 1px; }
   .bnav-badge {
     position: absolute; top: -5px; right: -10px; min-width: 15px; height: 15px; padding: 0 3px;
     border-radius: 999px; background: var(--red, #ff5e6c); color: #fff; font-size: 9.5px; font-weight: 900;
@@ -1322,6 +1664,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
      make it a proper 44pt target. */
   .modal-close { position: fixed; top: calc(20px + var(--sat)); right: 22px; z-index: 90;
     width: var(--tap); height: var(--tap); font-size: 17px; }
+  /* …but pinning it to the viewport at z-index 90 means it now floats OVER the modal's own
+     header row, which runs the full width. On the vendor booth that put the ✕ on top of the
+     standing pill: it clipped to "Stra…" and, because hit-testing goes to the topmost element,
+     the pill lost its tooltip to the button. Reserve the button's lane in the header — the
+     first .row of a modal is the header by construction, which is exactly the strip the fixed
+     ✕ covers. */
+  .modal > .row:first-of-type { padding-right: calc(var(--tap) + 14px); }
   /* The card detail is too tall to ever fit, so centering it at the 92vh cap just
      leaves a dead band below that floats the content upward. Make it a full-height
      sheet instead: edge-to-edge, top-anchored, safe-area aware, content scrolls. */
@@ -1343,6 +1692,15 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .encbtn { padding: 14px 16px; }
   /* the −/+ steppers were 26px wide — widen them; they're the fiddliest control in the game */
   .qty-step { min-width: var(--tap); font-size: 18px; }
+  /* …but widening them took the room out of the PRODUCT NAME, which is the one thing the row
+     has to say. .prodname is `flex:1` with `overflow:hidden`, and overflow:hidden drops a flex
+     item's automatic minimum size to ZERO — while every sibling (.prodmeta/.prodprice/
+     .prodowned) is flex:none and never yields. So the name absorbed the entire deficit: at
+     390px "Booster Box" rendered 2px wide of the 94px it needs, "Clearance Booster Box" 36px
+     of 163px. The row could not wrap out of it either, because the name shrank away before the
+     line ever overflowed. Give the name its own full-width line; the meta/price/stock chips
+     wrap underneath it. */
+  .prodbtn .prodname { flex: 1 0 100%; }
   /* checkboxes render ~13px natively; scale them up so they're actually pressable */
   input[type="checkbox"], input[type="radio"] { min-width: 20px; min-height: 20px; }
   .tweet-toggle { min-height: var(--tap); }
@@ -1408,6 +1766,10 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .recap-line { display:flex; justify-content:space-between; gap:10px; align-items:baseline;
   font-size:13.5px; margin:3px 0; font-variant-numeric:tabular-nums; }
 .recap-line > span:first-child { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* An event line is a SENTENCE, not a label in a label/value pair — it must wrap, not ellipsis.
+   Truncating cut the theft notice at "🕵️ Mandibuzz went missing (was ~$0.08) — lock c…",
+   losing exactly the half that tells you what to do about it. */
+.recap-line.recap-event > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
 
 /* ---------- Consignment strip ---------- */
 .consign-strip { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:14px 0 4px;
@@ -1415,6 +1777,12 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .consign-strip > b { color: var(--gold); font-size:13px; }
 .consign-strip .pill.expired { background:#ff5e6c22; color:#ff9aa5; }
 .linkbtn { background:none; border:none; color: var(--accent-light); font-weight:700; cursor:pointer; padding:0; font-size:12px; text-decoration:underline; }
+/* A 12px underlined link ("Dismiss ✕") reads as text and must keep reading as text, so the hit
+   box is stretched vertically only — 44pt tall, the link's own width. Horizontal padding here
+   would push whatever sits beside it. */
+.linkbtn { position: relative; }
+.linkbtn::after { content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 44px; transform: translateY(-50%); }
 
 /* ---------- Listed-on-site market panel ---------- */
 .market-panel { margin:14px 0 4px; padding:10px 14px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; }
@@ -1455,7 +1823,18 @@ button.rip-hit-row:hover { background:#ffffff14; }
 
 /* ---------- Want list ---------- */
 .wants { margin-top: 16px; }
-.wants-head { font-weight: 800; font-size: 15px; margin-bottom: 8px; }
+/* A header row: title, an explainer that takes the slack, and an optional trailing button.
+   As `display:block` the button's `margin-left:auto` did nothing, so on Store → Packs the
+   "＋ New pack line" button simply abutted the wrapped explainer with a ZERO-pixel gutter —
+   the text ended at x=233 and the button started at x=233. Flex + gap guarantees the gutter,
+   makes margin-left:auto actually right-align the button, and drops it to its own line
+   cleanly when the row runs out of width. */
+.wants-head { font-weight: 800; font-size: 15px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
+/* 260px basis, not 200: at 200 the explainer squeezed into the ~200px left beside the title
+   and set as a cramped 3-line column. Wanting 260 makes it wrap to its own full line on a
+   phone and still sit inline on a desktop row. */
+.wants-head > .muted { flex: 1 1 260px; min-width: 0; }
 .product.want.fillable { border-color: var(--gold); box-shadow: 0 0 0 1px #ffcb0533; }
 
 /* ---------- Daily goals ---------- */
@@ -1465,8 +1844,15 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .goal { flex: 1 1 180px; background: var(--panel2); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
 .goal.done { border-color: var(--green); box-shadow: 0 0 0 1px #36d39944; }
 .goal-label { font-size:13px; font-weight:700; }
-.goal-bar { background:#0c0f1a; border:1px solid var(--line); border-radius:999px; height:7px; overflow:hidden; margin:6px 0 4px; }
+/* The track was var(--bg) — the same near-black as the page — so at 0% the whole control was a
+   1px hairline indistinguishable from a divider rule. All four weekly goals start at 0, so the
+   panel read as "title / rule / meta" four times with no sense of progress anywhere.
+   A visible groove means an EMPTY meter still reads as a meter. */
+.goal-bar { background:#ffffff14; border:1px solid var(--line); border-radius:999px; height:8px; overflow:hidden; margin:6px 0 4px; }
 .goal-bar > div { height:100%; background:linear-gradient(90deg,var(--accent2),var(--green)); transition:width .3s; }
+/* Any non-zero progress must be visible — 1/500 is 0.2% of an ~170px bar, i.e. a third of a
+   pixel, which rounds away to an empty bar and reads as "I have done nothing". */
+.goal-bar > div:not([style*="width: 0%"]) { min-width: 4px; }
 .goal-reward { font-size:11px; color:var(--dim); font-weight:700; }
 .goal.done .goal-reward { color: var(--green); }
 
@@ -2035,7 +2421,9 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .binder-standard { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:12px;
   background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
   border-radius:12px; padding:10px 14px; }
-.binder-standard .bs-head { font-weight:800; font-size:13.5px; }
+/* The head owns its own line: with three reserve fields (cut · raw $ · graded $) plus the
+   readback note, a shared row wrapped mid-controls. */
+.binder-standard .bs-head { font-weight:800; font-size:13.5px; flex:1 1 100%; }
 .binder-standard .bs-head .muted { font-weight:600; font-size:12px; }
 .binder-standard .bs-field { display:flex; align-items:center; gap:6px; font-size:12.5px; }
 .binder-standard .bs-field select { font-size:13px; padding:5px 8px; }
@@ -2081,6 +2469,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
   border: 1px solid var(--line); background: var(--panel2); color: var(--dim);
   font-size: 10px; font-weight: 800; cursor: pointer; line-height: 1; vertical-align: middle; }
 .noto-help:hover { color: var(--gold); border-color: var(--gold); }
+/* 15pt painted, 44pt tappable. A 15px dot beside a number is the RIGHT look — blowing it up to
+   44px would put a huge circle next to the star — so the hit box grows past the paint instead.
+   The pseudo-element is centred on the dot and takes no layout space, so nothing moves. This is
+   the pattern for every under-44 control below: extend the TARGET, never the PAINT. */
+.noto-help { position: relative; }
+.noto-help::after { content: ''; position: absolute; left: 50%; top: 50%;
+  width: 44px; height: 44px; transform: translate(-50%, -50%); }
 .noto-pop { position: absolute; z-index: 60; top: 100%; left: 0; margin-top: 6px; width: min(340px, 88vw);
   text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   padding: 10px 12px; box-shadow: 0 10px 30px #0009; font-size: 12px; cursor: pointer; }

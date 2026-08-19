@@ -2,6 +2,22 @@ import { useRef, useState } from 'react'
 import { cardValue, psaValueAt, fmtMoney, cutEstimate, cardImg, isChase, slabLabel } from '../game/engine'
 import { rarityColor } from './CardTile'
 
+// 🃏/📒 "this one's a hole in a set YOU'RE building" — the counterpart to ⭐ Want, which is
+// somebody else's. Exported so the hand caption, the reveal grid and the sift's grid all say the
+// same thing in the same words. `card._needFor` is stamped at rip time ('challenge' | 'binder').
+export function NeedBadge({ card, compact = false }) {
+  if (!card?._needFor) return null
+  const challenge = card._needFor === 'challenge'
+  return (
+    <span className={`rc-need ${challenge ? 'challenge' : ''}`}
+      title={challenge
+        ? 'Missing from the master set you declared — landing it moves the challenge and pays out on completion.'
+        : "You don't own this one yet, and you're building this set in your binder."}>
+      {challenge ? '🃏 Need it' : '📒 New one'}{compact ? '' : challenge ? ' — challenge' : ' for your binder'}
+    </span>
+  )
+}
+
 // The reveal, as a hand you riffle through: you hold the whole pack stacked, the current card
 // face-up on top, and pull it off to the side to get to the next one. The unseen cards behind it
 // peek their border edges — a rainbow-bordered chase (SIR/hyper) telegraphs itself as a rainbow
@@ -11,7 +27,7 @@ import { rarityColor } from './CardTile'
 // Shared by the normal rip (PackOpening) and the sift (AutoRip) so the two genuinely ARE the same
 // UI — the sift just drives `shown` on a much faster clock, and hands you the controls (manual
 // mode) the moment it stops on a pack worth ripping yourself.
-export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect }) {
+export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo, hasLoupe, onTapNext, onInspect, suspense = false }) {
   const n = pulls.length
   const manual = revealMode === 'manual'
   // `shown === n` still advances: that final tap is what closes the pack out to the summary,
@@ -51,11 +67,22 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
     else advance()                      // quick tap → advance (the fallback)
   }
   const onCancel = () => { clearHold(); g.current.active = false; setRiffle(false); setDrag(0) }
+  // Keyboard advance. The hand is driven by pointer events, so Enter/Space did nothing here even
+  // though the sealed pack itself takes both — manual mode was a dead end without a mouse or a
+  // touchscreen. preventDefault stops the button's synthesized click from advancing twice.
+  const onKey = (e) => {
+    if (!canAdvance || (e.key !== 'Enter' && e.key !== ' ')) return
+    e.preventDefault()
+    advance()
+  }
 
   const edgeOf = (c) => c.foil ? c.foil.color : rarityColor(c.rarity)
   return (
     <div className="hand-wrap">
-      <div className={`hand-stage ${riffle ? 'riffle' : ''}`}>
+      {/* `suspense` = the very next card is a grail and the beat before it is running. The rest of
+          the hand dims and that card's edge glows. The caller owns the timing: auto mode holds it
+          for 850ms on a timer, manual mode holds it until you actually tap. */}
+      <div className={`hand-stage ${riffle ? 'riffle' : ''} ${suspense ? 'suspense' : ''}`}>
         {/* Set aside: the cards you've already pulled off, stacked to the side. */}
         {seenN > 0 && Array.from({ length: Math.min(seenN, SEEN_MAX) }).map((_, k) => (
           <div key={`seen${k}`} className="hand-seen" aria-hidden="true"
@@ -68,7 +95,7 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
           const depth = k + 1
           const teased = isChase(c) // rainbow/foil border (IR+ or a special foil) — worth telegraphing
           return (
-            <div key={c.uid} className={`hand-up ${teased ? 'teased' : ''}`} aria-hidden="true"
+            <div key={c.uid} className={`hand-up ${teased ? 'teased' : ''} ${suspense && k === 0 ? 'teased-now' : ''}`} aria-hidden="true"
               style={{ transform: `translate(calc(-50% + ${depth * 3}px), ${-depth * (riffle ? 17 : 10)}px) rotate(${depth * 0.8}deg)`,
                        zIndex: 40 - depth, '--rarity': edgeOf(c) }}>
               <span className="hand-face back" />
@@ -83,6 +110,7 @@ export default function HandReveal({ pulls, shown, awaiting, revealMode, setLogo
             style={{ transform: `translate(calc(-50% + ${drag}px), 0) rotate(${drag * 0.03}deg)`, zIndex: 60,
                      '--rarity': current ? edgeOf(current) : 'var(--line)', cursor: canAdvance ? 'grab' : 'default' }}
             onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}
+            onKeyDown={onKey}
             aria-label={current ? current.name : 'Reveal the first card'}>
             <span className="hand-face">
               {current ? <img src={cardImg(current)} alt={current.name} decoding="async" fetchpriority="high" />
@@ -122,10 +150,11 @@ function FanCaption({ card, hasLoupe }) {
           💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
         </div>
       )}
-      {(cut || card._fillsWant) && (
+      {(cut || card._fillsWant || card._needFor) && (
         <div className="fan-cap-badges">
           {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
           {card._fillsWant && <span className="rc-want">⭐ Fills a want!</span>}
+          <NeedBadge card={card} />
         </div>
       )}
     </div>

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney, packPrice,
+import { SHOP_SETS, FETCHED_AT, setProducts, openProduct, isHit, fmtMoney,
   DISTRIBUTORS, RAPPORT_LEVELS, distributorById, distributorCatalog, distributorPrice, distributorCasePrice,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, warmPricesOnBoot, distributorVintageFind,
-  hypeSurge } from './game/engine'
+  hypeSurge, cardValue, ERA_PRODUCTS, eraAnchorSet, drawPackSets, productTypeLabel } from './game/engine'
 import { Modal } from './ui/Modal'
 import { Collapse, useOpen, bigScreen } from './ui/Collapse'
 import { useGame, repSourceLabel, RANKS, DEEDS_NEEDED, deedsDone } from './game/store'
@@ -11,32 +11,15 @@ import { netWorthFull, vintageLeft } from './game/store/helpers'
 import { weekIndexOf, weekdayOf, absoluteDay, monthName, yearOf, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from './game/store/constants'
 import { startAutoSync } from './game/cloudSave'
 import { encounterStillValid } from './game/shows'
-import PackOpening from './components/PackOpening'
-import Collection from './components/Collection'
-import CardModal from './components/CardModal'
-import Bench from './components/Bench'
-import Stats from './components/Stats'
-import Calendar from './components/Calendar'
-import ShowFloor from './components/ShowFloor'
-import UpgradeShop from './components/UpgradeShop'
-import BoothInbox from './components/BoothInbox'
-import Settings from './components/Settings'
-import PriceGuide from './components/PriceGuide'
-import SealedInventory from './components/SealedInventory'
-import AutoRip from './components/AutoRip'
-import ShowPrep from './components/ShowPrep'
-import Livestream from './components/Livestream'
-import Binder from './components/Binder'
-import Regulars from './components/Regulars'
-import StoreStock from './components/StoreStock'
-import GradeReveal from './components/GradeReveal'
 import FirstRun, { NotorietyHelp } from './components/FirstRun'
-import { onUpdateReady, applyAppUpdate } from './game/appUpdate'
 import { HobbyWire, BreakersAlmanac } from './components/MarketIntel'
+import AuctionHouse from './components/AuctionHouse'
+import LocalMarket from './components/LocalMarket'
+import { shelfProducts, shelfEraProducts, shelfBlurb } from './game/shelf'
+import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
 import { AnimatedNumber, CashFlash } from './ui/AnimatedNumber'
-import { NotorietyBar } from './components/Calendar'
 import { SHOW_TIERS } from './game/shows'
 import { milestoneById } from './game/milestones'
 
@@ -44,63 +27,73 @@ import { milestoneById } from './game/milestones'
 // shop, so Stats gets a top slot and Upgrades moves behind the ⚙️ gear). Reference/meta
 // screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
 // behind the gear in the top bar.
+// Tab-gated screens, split out of the boot chunk. None of these paint on the first render
+// (the Buy tab), and together they were ~500 KB of source that WebKit had to parse before it
+// could show anything. lazyChunk() carries the stale-chunk guard — see src/ui/lazyChunk.jsx.
+const PackOpening = lazyChunk(() => import('./components/PackOpening'))
+const Collection = lazyChunk(() => import('./components/Collection'))
+const CardModal = lazyChunk(() => import('./components/CardModal'))
+const Bench = lazyChunk(() => import('./components/Bench'))
+const Stats = lazyChunk(() => import('./components/Stats'))
+const Books = lazyChunk(() => import('./components/Books'))
+const Calendar = lazyChunk(() => import('./components/Calendar'))
+const ShowFloor = lazyChunk(() => import('./components/ShowFloor'))
+const UpgradeShop = lazyChunk(() => import('./components/UpgradeShop'))
+const BoothInbox = lazyChunk(() => import('./components/BoothInbox'))
+const Settings = lazyChunk(() => import('./components/Settings'))
+const PriceGuide = lazyChunk(() => import('./components/PriceGuide'))
+const SealedInventory = lazyChunk(() => import('./components/SealedInventory'))
+const AutoRip = lazyChunk(() => import('./components/AutoRip'))
+const ShowPrep = lazyChunk(() => import('./components/ShowPrep'))
+const Livestream = lazyChunk(() => import('./components/Livestream'))
+const Socials = lazyChunk(() => import('./components/Socials'))
+const Binder = lazyChunk(() => import('./components/Binder'))
+const Regulars = lazyChunk(() => import('./components/Regulars'))
+const StoreStock = lazyChunk(() => import('./components/StoreStock'))
+const GradeReveal = lazyChunk(() => import('./components/GradeReveal'))
+
 const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
+// Device-local, deliberately NOT part of the saved game. See the useState that reads it.
+const TAB_KEY = 'pv.tab'
 const TAB_LABEL = { shop: 'Buy', myshop: 'Store', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Inventory' }
 // Icons for the mobile bottom nav (label is shown small underneath).
 const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
 
-// The price to re-acquire a product RIGHT NOW (for "Rip another"). Vintage sealed
-// appreciates, so it must charge current market via sealedValue — not the price frozen
-// at the original buy (`_buyPrice`), which would let you keep buying fresh vintage at a
-// stale, cheaper price after the market climbed. Modern product reuses its genuine
-// retail/wholesale/case price.
-function liveProductPrice(set, product) {
-  if (product?.vintage) return sealedValue({ product, setId: set.id })
-  return product?._buyPrice ?? product?.price ?? packPrice(set)
-}
-
-// The 📦 Inventory items that ARE this product (same set + same type — price and
+// The 📦 Inventory items that ARE this product (same set + same product — price and
 // provenance vary by where a copy came from, but it's the same thing to rip).
-// "Rip another" consumes these before it ever re-buys: you already paid for them.
+// This is the ONLY source "Rip another" draws from — see ripAnother().
 function heldMatches(state, set, product) {
-  return (state.sealedInventory || []).filter(i => i.setId === set?.id && i.product?.type === product?.type)
+  return (state.sealedInventory || []).filter(i => i.setId === set?.id && sameProduct(i.product, product))
 }
 
-// Can you actually GET another one of these right now? "Rip another" used to ask only "can
-// you afford it?", so it stayed lit when your own stock was empty AND nobody had one left to
-// sell — the click then bounced off an error toast. This answers the real question, and the
-// button now mirrors it exactly:
-//   • hold one → yes, and it's free (you already paid for it).
-//   • a distributor's product (`_distId`) → only while THEY still have one on the shelf.
-//   • vintage → only from that vendor's live weekly find, and only while it's still the same
-//     set. Vintage picked up anywhere else (a show, a trade, a DM deal) has no shelf to go
-//     back to — it's out of print, so when your stock is gone, it's gone.
-//   • anything else with no shop behind it → nowhere to buy a replacement, so no re-rip.
-// Returns { held, price, ok, soldOut, broke } — `soldOut` and `broke` drive the button's
-// explanation, so a dead button always says WHY it's dead.
-function ripAvailability(state, set, product) {
-  const held = heldMatches(state, set, product).length
-  const price = liveProductPrice(set, product)
-  if (held > 0) return { held, price, ok: true, soldOut: false, broke: false }
-
-  let inStock
-  if (product?.vintage) {
-    inStock = vintageLeft(state, product._distId, set?.id) > 0
-  } else if (product?._distId) {
-    const dist = distributorById(product._distId)
-    const rec = state.distributors?.[product._distId] || { spend: 0, stock: {} }
-    inStock = !stockState(dist, rec.stock, set, product, rapportLevel(rec.spend).level).out
-  } else {
-    inStock = false // no vendor attached — nothing to re-buy from
-  }
-  const broke = state.cash < price
-  return { held, price, ok: inStock && !broke, soldOut: !inStock, broke }
+// Same PRODUCT, not merely the same TYPE. The shop used to carry one product per type per set,
+// which made those the same question; now that it carries the full lineup, Prismatic alone has
+// eight different Mini Tins. Matching on type would let "rip another" hand you the Flareon tin
+// when you asked for the Umbreon one — wrong price, wrong promo. tcgId is TCGplayer's
+// per-product id; fall back to type for synthesized products (JP, vintage) that have none.
+function sameProduct(a, b) {
+  if (a?.tcgId && b?.tcgId) return a.tcgId === b.tcgId
+  return a?.type === b?.type
 }
 
 export default function App() {
-  const [tab, setTab] = useState('shop')
+  // Which tab is open is a property of this DEVICE, not of the career — so it lives in
+  // localStorage rather than in the saved game, and syncing a save between devices never drags
+  // one device's screen position onto another.
+  //
+  // It matters most in the shell: iOS jettisons a backgrounded WKWebView under memory pressure
+  // and silently reloads it on return, and coming back on Buy after ten minutes on Shows reads
+  // as "it lost my place" even though nothing was lost. The save was never at risk here (it is
+  // in IndexedDB and gated on hydration in main.jsx) — the screen position was.
+  const [tab, setTab] = useState(() => {
+    try {
+      const t = localStorage.getItem(TAB_KEY)
+      return t && TABS.includes(t) ? t : 'shop'
+    } catch { return 'shop' }
+  })
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
+  const [statsPane, setStatsPane] = useState('stats')           // Stats sub-pane: stats | books
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [sifting, setSifting] = useState(null)   // array of sealed items being auto-ripped ("sift")
   // Where to land when a rip finishes. A rip you START from your collection/store/inbox
@@ -119,18 +112,18 @@ export default function App() {
   // income/spend moves it. Recomputed on any state change; returns a number so it only
   // re-renders the header when the figure actually changes.
   const worth = useGame(s => netWorthFull(s))
-  // Whether another copy of the in-progress rip's product can be had at all — from your own
-  // 📦 Inventory (free) or, failing that, off the shelf of the vendor it came from. Drives the
-  // "Rip another" label AND its gate, so the button is only ever lit when the click will work.
-  // Subscribed as separate primitives: a fresh object each render would re-render the app on
-  // every unrelated store change.
+  // How many more of the in-progress rip's product you HOLD. This is the whole gate for
+  // "Rip another" — the button exists only while you have another one already paid for, and
+  // disappears when you don't. Subscribed as a plain number: a fresh object each render would
+  // re-render the app on every unrelated store change.
   const ripStock = useGame(s => ripping ? heldMatches(s, ripping.set, ripping.product).length : 0)
-  const ripCanGet = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).ok : false)
-  const ripSoldOut = useGame(s => ripping ? ripAvailability(s, ripping.set, ripping.product).soldOut : false)
   const spend = useGame(s => s.spend)
   const addPulls = useGame(s => s.addPulls)
-  const pendingCount = useGame(s => s.pendingGrades.length)
+  // Cards at the card grader plus product at the sealed grader — one badge, because from the
+  // player's side it is one queue: things that are away being graded.
+  const pendingCount = useGame(s => s.pendingGrades.length + (s.pendingSealed || []).length)
   const sealedCount = useGame(s => s.sealedInventory.length)
+  const taxOwed = useGame(s => s.books?.owed || 0)
   const regularsCount = useGame(s => (s.regulars || []).filter(r => !r.flags?.burned).length)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   // With a storefront your stock splits into Shop Floor / Storeroom (on the 🏬 Store tab) and
@@ -184,7 +177,21 @@ export default function App() {
   // Also kick off cloud auto-sync (no-ops unless the AWS backend is configured + signed in).
   useEffect(() => {
     const g = useGame.getState()
-    if ((g.showInventory || []).length || (g.showSealed || []).length || (g.showReserve || 0) > 0) g.endShow()
+    // 🎪 WALK BACK IN. If the save says you were standing in a show, go back to it rather than
+    // settling up. Entering already spent the entry fee, advanced the calendar past the show
+    // days and claimed the pre-show leads — so ending the trip here charged you in full for a
+    // show you never got to walk. Resuming is the only outcome that matches what you paid for.
+    const resume = g.resumeShow()
+    if (resume?.show) {
+      setActiveShow(resume.show)
+      toast(`🎪 Back on the floor at ${resume.show.name} — the app closed while you were there.`, 6000)
+    } else if ((g.showInventory || []).length || (g.showSealed || []).length || (g.showReserve || 0) > 0) {
+      // No resume record: a save from before this existed, or a trip whose record was cleared.
+      // Fall back to the old rescue so stock and the at-home reserve still come home — but SAY
+      // so. This used to happen in total silence, which is how "where did my cards go?" starts.
+      g.endShow()
+      toast('⚠️ Your last show ended unexpectedly — your stock and the cash you left at home are back in your inventory.', 7000)
+    }
     if (g.streamEscrow) {
       const r = g.settleAbandonedStream()
       if (r) toast(`⚠️ Your last stream cut out mid-broadcast — ${[
@@ -253,33 +260,45 @@ export default function App() {
       const avail = useGame.getState().creditAvailable()
       if (cash + 1e-9 < price) { // cash alone won't cover it — the rest must ride the line
         if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
-        if (cash + avail + 1e-9 < price) return toast(`Not enough cash + credit for ${product.type}. Pay down your balance or bring more cash.`)
+        if (cash + avail + 1e-9 < price) return toast(`Not enough cash + credit for ${productTypeLabel(product)}. Pay down your balance or bring more cash.`)
       }
     } else if (onCredit) {
       if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
-      if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${product.type}. Pay down your balance or buy with cash.`)
-    } else if (cash < price) return toast(`Not enough cash for ${product.type}.`)
+      if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${productTypeLabel(product)}. Pay down your balance or buy with cash.`)
+    } else if (cash < price) return toast(`Not enough cash for ${productTypeLabel(product)}.`)
     // How the charge broke down, for the toast: cash-first, credit covers any shortfall.
     const splitNote = (cp, xp) => xp > 0 ? ` — ${fmtMoney(cp)} cash + ${fmtMoney(xp)} credit 💳` : ''
     const n = Math.max(1, Math.floor(qty))
     const distName = distributorById(distId)?.name || 'They'
+    // What to call where this came from. A cross-set product has an ANCHOR set for bookkeeping,
+    // but naming it would be a lie — "Ultra Premium Collection of Phantasmal Flames" claims
+    // 18 Phantasmal Flames packs. Name the era instead.
+    const origin = product.pool?.series ? `the ${product.pool.series} era` : set.name
     if (n > 1) {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
+      const limB = useGame.getState().purchaseLimitFor(distId, set, product)
+      if (limB.left <= 0) return toast(`${distName} limit ${productTypeLabel(product)} to ${limB.limit} per customer a day — you've had yours. Back tomorrow.`)
       const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split })
       if (!res) return toast(`${distName} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
-      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
-      return toast(`Stocked ${res.bought}× ${product.type} of ${set.name} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
+      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${productTypeLabel(product)} of ${origin} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
+      return toast(`Stocked ${res.bought}× ${productTypeLabel(product)} of ${origin} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
+    }
+    // 🚫 Check the ration BEFORE blaming the shelf — "sold out" and "you have had your one"
+    // need different answers from the player.
+    const lim = useGame.getState().purchaseLimitFor(distId, set, product)
+    if (lim.left <= 0) {
+      return toast(`${distName} limit ${productTypeLabel(product)} to ${lim.limit} per customer a day — you've had yours. Back tomorrow${lim.limit < 4 ? ', or keep spending here and they\u2019ll let you take more' : ''}.`)
     }
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
-    if (!item) return toast(`${distName} are out of ${product.type} — check back after it restocks.`)
+    if (!item) return toast(`${distName} are out of ${productTypeLabel(product)} — check back after it restocks.`)
     // 🚢 An import buy is on the water — nothing to rip yet, whatever the Rip-on-buy setting says.
-    if (item._inTransit) return toast(`🚢 Import order placed — ${product.type} of ${set.name} is crossing the Pacific (lands in a few days).`)
+    if (item._inTransit) return toast(`🚢 Import order placed — ${productTypeLabel(product)} of ${origin} is crossing the Pacific (lands in a few days).`)
     if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
     const cashPart = Math.min(cash, price), creditPart = round2(price - cashPart)
     const pay = onCredit ? ' on credit 💳' : split ? splitNote(cashPart, creditPart) : ''
-    toast(`Stocked ${product.type} of ${set.name}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
+    toast(`Stocked ${productTypeLabel(product)} of ${origin}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -295,16 +314,35 @@ export default function App() {
     const animated = product.packs === 1 || oneByOne
     if (animated) {
       setRipReturn(tab)     // came from Cards/Store/Inbox → Done should return you here
-      setRipping({ set, product })
+      // cost: what you ACTUALLY paid for this unit, not what it lists at today — the 📜 rip log
+      // records a real P/L, and the sift (which reads boughtPrice directly) must agree with it.
+      // uid identifies the physical unit: a cross-set product derives its pack lineup from it,
+      // so two of the same UPC rip different sets. See drawPackSets in engine.js.
+      setRipping({ set, product, cost: item.boughtPrice, uid: item.uid })
       setTab('shop')
       return
     }
-    const all = openProduct(set, product)
+    // A cross-set product rips packs from several sets, so name the ERA in the log and the
+    // toast rather than pretending every card came from the anchor set.
+    const packSets = drawPackSets(product, item.uid)
+    const eraName = product.pool?.series
+    const originLabel = eraName ? `${eraName} era` : set.name
+    const all = openProduct(set, product, { uid: item.uid, packSets })
     all.forEach(c => (c._isHit = isHit(c)))
-    addPulls(all, `${product.type} · ${set.name}`, product.packs) // counts packs + rip goal
+    addPulls(all, `${productTypeLabel(product)} · ${originLabel}`, product.packs) // counts packs + rip goal
+    // 📜 The instant path skips PackOpening entirely, so it has to write its own log line —
+    // otherwise ripping a box with "one at a time" off would leave no trace in the history.
+    useGame.getState().logRip({
+      setId: set.id, name: originLabel, type: product.type, packs: product.packs,
+      // How many distinct sets the packs actually came from — the 📜 log shows "16 packs · 5 sets".
+      setCount: packSets ? new Set(packSets).size : undefined,
+      cost: item.boughtPrice, pulled: all.reduce((a, c) => a + cardValue(c), 0),
+      best: all.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), null),
+    })
     const hits = all.filter(c => c._isHit || c.foil).length
+    const across = packSets ? ` across ${new Set(packSets).size} sets` : ''
     setTab('collection')
-    toast(`Ripped a ${product.type} of ${set.name} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
+    toast(`Ripped a ${productTypeLabel(product)} of ${originLabel}${across} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
   // ⚡ Sift-rip: hand a GROUP of sealed to the auto-ripper — it churns pack by pack, banks the
@@ -347,45 +385,21 @@ export default function App() {
     toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${pay}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Inventory → 📦 Sealed.`)
   }
 
-  // "Rip another" from the end-of-rip summary: keep chasing without going back to the
-  // shop. It reconciles with 📦 Inventory first — holding more of the SAME product
-  // means the next rip comes from YOUR stock (already paid; no charge). Only when
-  // you're out does it re-buy, and a re-buy must come from a REAL shelf: a distributor
-  // product (`_distId`) re-buys through that distributor so its STOCK and your RAPPORT
-  // stay honest, and vintage re-buys off that vendor's finite weekly find. Both are
-  // stocked then immediately pulled back out to rip (no double-charge). A product with
-  // no vendor behind it can't be re-bought at all — there's nowhere to buy it from.
-  // ripAvailability() gates the button on exactly these rules, so the toasts here are
-  // the backstop for a click that raced a state change, not the everyday path.
+  // "Rip another" from the end-of-rip summary: keep going straight into the next one you
+  // ALREADY OWN. It draws only from 📦 Inventory and never spends money — no re-buy, no
+  // restock, no credit. When your stock of this product runs out the button is gone, and
+  // buying more is a deliberate trip back to the Buy tab.
+  //
+  // It used to re-buy off the vendor's shelf once your own stock was empty, which put a
+  // one-tap purchase inside the moment you are least inclined to stop and count. Spending
+  // money should never be the path of least resistance out of a rip.
   function ripAnother(set, product) {
     const held = heldMatches(useGame.getState(), set, product)[0]
-    if (held) {
-      useGame.getState().ripSealed(held.uid)
-      setRipping(r => ({ set, product: held.product, nonce: (r?.nonce ?? 0) + 1 }))
-      setTab('shop')
-      return
-    }
-    const price = liveProductPrice(set, product)
-    if (cash < price) return toast(`Not enough cash to rip another ${product?.type || 'pack'}.`)
-
-    // Pull one more off a shelf, then rip it. Returns the freshly stocked item, or null if
-    // that shelf is bare — vintage and modern differ only in WHICH shelf they come from.
-    const restock = () => product.vintage
-      ? useGame.getState().buyDistributorVintage(product._distId, set.id, product, price)
-      : useGame.getState().buyFromDistributor(product._distId, set, product, price)
-
-    if (!product._distId) {
-      return toast(`No shop stocks that ${product?.type || 'pack'} — you'd have to find another one out in the wild.`)
-    }
-    const who = distributorById(product._distId)?.name || 'They'
-    const item = restock()
-    if (!item) {
-      return toast(product.vintage
-        ? `${who} have no more sealed ${set.name} — it's out of print. A fresh find turns up next week.`
-        : `${who} are out of ${product.type} — can't rip another right now.`)
-    }
-    useGame.getState().ripSealed(item.uid) // pull it straight back out to rip; already paid
-    setRipping(r => ({ set, product, nonce: (r?.nonce ?? 0) + 1 }))
+    if (!held) return // out of stock — the button is not rendered in this state anyway
+    useGame.getState().ripSealed(held.uid)
+    // A different held unit → a different uid → a different pack lineup for a cross-set
+    // product. Ripping three UPCs in a row must not deal the same sets three times.
+    setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, uid: held.uid, nonce: (r?.nonce ?? 0) + 1 }))
     setTab('shop')
   }
 
@@ -436,7 +450,9 @@ export default function App() {
     // rest at home so `cash` on the floor is exactly what you chose to bring.
     if (budget != null) useGame.getState().beginShowWallet(budget)
     setPreppingShow(null)
-    setActiveShow({ ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads })
+    const entered = { ...show, _asVendor: false, _arrival: arrival, _summary: summary, _leads }
+    useGame.getState().beginShow(entered) // persist it — a crash must not forfeit a paid trip
+    setActiveShow(entered)
   }
 
   // Confirmed from the prep screen (VENDOR mode): charge entry + vendor fee (+ booth-spot
@@ -460,7 +476,9 @@ export default function App() {
     const summary = useGame.getState().attendShowDays(show.day, effDays, show.tierKey)
     if (budget != null) useGame.getState().beginShowWallet(budget) // wallet last (see enterAsShopper)
     setPreppingShow(null)
-    setActiveShow({ ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads })
+    const entered = { ...show, _asVendor: true, _boothMult: opts.spotMult || 1, _spotLabel: opts.spotLabel || 'Standard table', _arrival: opts.arrival || 'open', _summary: summary, _leads }
+    useGame.getState().beginShow(entered) // persist it — a crash must not forfeit a paid trip
+    setActiveShow(entered)
   }
 
   // Leaving the show: unsold show-inventory cards come back home, then exit the floor.
@@ -469,7 +487,11 @@ export default function App() {
   function leaveShow(floor) {
     const trip = activeShow?._summary
     const name = activeShow?.name
-    useGame.getState().endShow()
+    // 🎥 Hand the trip to the vlog kit: which hall, and the best thing that came home with you.
+    useGame.getState().endShow({
+      tierKey: activeShow?.tierKey, showName: name,
+      bestValue: floor?.bestPickup?.value || 0, bestName: floor?.bestPickup?.name || null,
+    })
     setActiveShow(null)
     // Always show a recap on leave (even a quiet 1-day show), now that the floor recap
     // gives it content: what you spent/earned/gained on the floor, folded in with the
@@ -487,17 +509,32 @@ export default function App() {
   // abandoned stream — refunds, off-camera cracks, day spent). End it on purpose instead.
   function selectTab(t) {
     if (streamLive && t !== 'stream') { toast('🔴 You’re live — end the stream before leaving.'); return }
+    // Re-tapping the tab you are already on scrolls that tab back to the top, which is what every
+    // native tab bar on the platform does — and the fastest way out of a long Inventory or Shows
+    // list without dragging. Only for a genuine re-tap; a tab CHANGE keeps its own scroll.
+    if (t === tab) {
+      // `.content` is the real scroll container on mobile — with a bottom nav present, styles.css
+      // locks html/body to height:100%/overflow:hidden and `.content` does the scrolling
+      // (styles.css:1314). Scrolling document.scrollingElement there moves nothing at all, so it
+      // is the FALLBACK for the desktop layout rather than the first choice.
+      const pane = document.querySelector('.content') || document.scrollingElement || document.documentElement
+      pane.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     setTab(t)
+    try { localStorage.setItem(TAB_KEY, t) } catch { /* private mode / quota — not worth failing a tap over */ }
   }
 
   // Prepping for a show: the pick-your-inventory screen takes over the whole view.
   if (preppingShow) {
     return (
       <div className="app">
-        <ShowPrep show={preppingShow} mode={prepMode}
-          onConfirm={(payload) => (prepMode === 'vendor' ? enterShow : enterAsShopper)(preppingShow, payload)}
-          onCancel={() => setPreppingShow(null)} />
-        {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        <Chunk label="Packing for the show…">
+          <ShowPrep show={preppingShow} mode={prepMode}
+            onConfirm={(payload) => (prepMode === 'vendor' ? enterShow : enterAsShopper)(preppingShow, payload)}
+            onCancel={() => setPreppingShow(null)} />
+          {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        </Chunk>
         <DialogHost />
       <ToastHost />
       </div>
@@ -508,8 +545,10 @@ export default function App() {
   if (activeShow) {
     return (
       <div className="app">
-        <ShowFloor show={activeShow} onLeave={leaveShow} />
-        {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        <Chunk label="Walking into the hall…">
+          <ShowFloor show={activeShow} onLeave={leaveShow} />
+          {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+        </Chunk>
         <DialogHost />
       <ToastHost />
       </div>
@@ -548,11 +587,13 @@ export default function App() {
       </div>
 
       {gradeReveal && (
-        <GradeReveal cards={gradeReveal.cards} onDone={() => {
-          const s = gradeReveal.summary
-          setGradeReveal(null)
-          if (s) setDaySummary(s)
-        }} />
+        <Chunk label="Opening the return package…">
+          <GradeReveal cards={gradeReveal.cards} onDone={() => {
+            const s = gradeReveal.summary
+            setGradeReveal(null)
+            if (s) setDaySummary(s)
+          }} />
+        </Chunk>
       )}
       {daySummary && <DaySummary summary={daySummary} onClose={() => setDaySummary(null)} />}
       <GameOver />
@@ -567,16 +608,40 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
-        <UpdatePill />
-        <FirstRun />
+        {/* Buy tab ONLY. Sitting outside the tab switch, this checklist painted on all six
+            screens at once — ~230px of a 676px phone viewport (34%) repeated on Store, Stream,
+            Shows, Stats and Inventory, where none of its steps live. Buy is where you land by
+            default and where step one ("buy some sealed") happens, so it's the one screen the
+            onboarding belongs on; it still dismisses globally. */}
+        {tab === 'shop' && <FirstRun />}
+        {/* ONE Suspense for the whole tab area: every screen inside is a lazy chunk, and a
+            per-tab boundary would just mean the same fallback written fourteen times. */}
+        <Chunk>
         {tab === 'shop' && (
           <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
         {tab === 'myshop' && <div className="pane"><BoothInbox onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /></div>}
-        {tab === 'stream' && <div className="pane"><Livestream /></div>}
-        {tab === 'stats' && <div className="pane"><Stats /></div>}
+        {/* 📱 The off-air half of the channel sits above the go-live screen — hidden while
+            you're actually broadcasting, so a live session keeps the whole view. */}
+        {tab === 'stream' && <div className="pane">{!streamLive && <Socials />}<Livestream /></div>}
+        {tab === 'stats' && (
+          <>
+            <div className="subtabs">
+              <button className={`subtab ${statsPane === 'stats' ? 'active' : ''}`} onClick={() => setStatsPane('stats')}>📊 Stats</button>
+              {/* 🧾 The books sit beside the stats because they read the same way: what the
+                  business did, rather than what you can do next. The tax due chip is on the
+                  tab itself so a bill can never quietly go unpaid. */}
+              <button className={`subtab ${statsPane === 'books' ? 'active' : ''}`} onClick={() => setStatsPane('books')}>
+                🧾 Books{taxOwed > 0 ? ` (${fmtMoney(taxOwed)})` : ''}
+              </button>
+            </div>
+            <div className="pane" key={statsPane}>
+              {statsPane === 'stats' ? <Stats /> : <Books />}
+            </div>
+          </>
+        )}
 
         {tab === 'collection' && (
           <>
@@ -614,6 +679,7 @@ export default function App() {
             </div>
           </>
         )}
+        </Chunk>
       </main>
 
       {/* In-progress rip overlay. Mounted whenever a rip is active so its state survives
@@ -621,18 +687,19 @@ export default function App() {
           returning resumes the same rip rather than discarding it. */}
       {ripping && (
         <div className={`rip-overlay rip-full ${tab === 'shop' ? '' : 'hidden'}`}>
+          <Chunk label="Tearing the wrapper…">
           <PackOpening
             key={ripping.nonce ?? 0}
             set={ripping.set}
             product={ripping.product}
+            uid={ripping.uid}
             paused={tab !== 'shop'}
+            costBasis={ripping.cost}
             onExit={exitRip}
-            ripAnotherPrice={liveProductPrice(ripping.set, ripping.product)}
             ripAnotherStock={ripStock}
-            canRipAnother={ripCanGet}
-            ripAnotherSoldOut={ripSoldOut}
             onRipAnother={() => ripAnother(ripping.set, ripping.product)}
           />
+          </Chunk>
         </div>
       )}
 
@@ -640,11 +707,11 @@ export default function App() {
           whatever tab you launched it from (it owns the whole flow, so no tab gating). */}
       {sifting && (
         <div className="rip-overlay rip-full">
-          <AutoRip items={sifting} onExit={exitSift} />
+          <Chunk label="Opening the box…"><AutoRip items={sifting} onExit={exitSift} /></Chunk>
         </div>
       )}
 
-      {picked && <CardModal card={picked} onClose={() => setPicked(null)} />}
+      {picked && <Chunk><CardModal card={picked} onClose={() => setPicked(null)} /></Chunk>}
       <DialogHost />
       <ToastHost />
 
@@ -698,7 +765,10 @@ function DaySummary({ summary, onClose }) {
   const movers = marketMovers || []
   const sold = soldNames || []
   const events = lifeEvents || []
-  const floorActive = floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport)
+  // !! matters: this is an || chain over NUMBERS, so a floor where you bought and sold nothing
+  // evaluates to the last operand — the number 0, not false — and `{floorActive && …}` below
+  // rendered a bare "0" into the recap.
+  const floorActive = !!(floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport))
   const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderReserved || wantsBrokered
     || offersAccepted || keeperStocked || wages || rent || lease
     || payroll || storage || saleProceeds || notoDelta || missed || binTurnedAway || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
@@ -798,7 +868,7 @@ function DaySummary({ summary, onClose }) {
                 {keeperStocked > 0 && <div className="recap-line"><span className="muted">🪓 Bin Keeper stocked {keeperStocked} pack{keeperStocked === 1 ? '' : 's'}{keeperBroke > 0 ? ` (broke ${keeperBroke} product${keeperBroke === 1 ? '' : 's'} down)` : ' from backstock'}</span></div>}
                 {/* Say WHY a slot stayed empty — otherwise the reserve reads as the Curator
                     quietly not doing its job. */}
-                {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — top copy reserved to grade & sell</span></div>}
+                {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — only copy reserved to grade & sell</span></div>}
                 {notoDelta > 0 && (
                   <div className="recap-line">
                     <span className="muted">⭐ Reputation{(notoBySrc || []).length > 0 && (
@@ -816,7 +886,7 @@ function DaySummary({ summary, onClose }) {
               <div className="recap-sec">
                 <div className="recap-sec-h">📆 While time passed</div>
                 {events.map((e, i) => (
-                  <div className="recap-line" key={i}>
+                  <div className="recap-line recap-event" key={i}>
                     <span style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--txt)' }}>{e.line}</span>
                     {e.cashDelta ? <b style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--red)' }}>{e.cashDelta > 0 ? '+' : ''}{fmtMoney(e.cashDelta)}</b> : null}
                   </div>
@@ -946,6 +1016,9 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       {/* 🚢 Import orders still crossing the Pacific — visible whichever shelf you're browsing */}
       <ImportsInTransit />
 
+      {/* 🔨 The auction house: the buy side of the hammer, alongside the wholesale shelves */}
+      <AuctionHouse />
+
       {/* 📰 Reprint wave: industry news — shows whichever storefront is selected */}
       <ReprintWaveBanner cash={cash} flash={flash} />
 
@@ -958,6 +1031,10 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
       {!unlocked ? (
         <LockedDistributor dist={dist} notoriety={notoriety} rank={rank} />
+      ) : dist.marketplace ? (
+        /* 📱 A listings channel, not a shelf: no catalog, no stock, no rapport, no credit
+           line. Individuals do not extend you net terms. */
+        <LocalMarket />
       ) : (<>
       <RapportBanner dist={dist} rec={rec} lvl={lvl} />
       {/* 🎫 Clout spend: something on this shelf sold out — a favor gets the truck there early. */}
@@ -993,10 +1070,10 @@ function Shop({ cash, onBuy, onBuyVintage }) {
         <p className="muted" style={{ marginTop: 18 }}>{dist.name} has nothing on the shelf right now — check back next week.</p>
       ) : (
         <div className="shop-list">
-          {catalog.map(set => (
-            <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={rec.stock}
-              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={ownedCounts}
-              onCredit={onCredit} split={split} creditAvail={creditAvail} />
+          {groupByEra(catalog).map(era => (
+            <DistributorEraCard key={era.series} era={era} dist={dist} lvl={lvl} stock={rec.stock}
+              cash={cash} onBuy={onBuy} clearanceSetId={clearanceSetId} owned={ownedCounts}
+              onCredit={onCredit} split={split} creditAvail={creditAvail} weekIndex={weekIndex} />
           ))}
         </div>
       )}
@@ -1209,18 +1286,6 @@ function ImportsInTransit() {
 // A new build is downloaded and waiting. Shown rather than applied: yanking the page out
 // from under a pack rip to install a copy change is worse than being a build behind. One
 // tap flushes the save and reloads onto the new version.
-function UpdatePill() {
-  const [ready, setReady] = useState(false)
-  useEffect(() => onUpdateReady(setReady), [])
-  if (!ready) return null
-  return (
-    <button type="button" className="update-pill" onClick={applyAppUpdate}
-      title="A newer version of the game has already downloaded — tap to switch to it. Your save is written first.">
-      🔄 <b>Update ready</b> — tap to reload into the new version
-    </button>
-  )
-}
-
 function productBlurb(product) {
   const t = String(product?.type || '')
   const packs = product?.packs || 1
@@ -1355,10 +1420,113 @@ function RapportBanner({ dist, rec, lvl }) {
   )
 }
 
+// Group a distributor's catalog into ERAS, preserving the catalog's own set order inside each
+// one. The shelf reads Era → Set → Product, which is the shape the product line actually has:
+// an Elite Trainer Box belongs to a set, but an Ultra Premium Collection belongs to a whole
+// era, and until there was an era level there was nowhere to put one.
+function groupByEra(sets) {
+  const byEra = new Map()
+  for (const s of sets) {
+    const key = s.series || 'Other'
+    if (!byEra.has(key)) byEra.set(key, { series: key, sets: [] })
+    byEra.get(key).sets.push(s)
+  }
+  // Cross-set product hangs off the era, above its sets.
+  for (const era of byEra.values()) {
+    era.products = ERA_PRODUCTS.filter(p => p.pool?.series === era.series)
+  }
+  return [...byEra.values()]
+}
+
+// One ERA on the shelf. Collapsed by default like the set rows beneath it, so the shop still
+// opens as a short scannable list however many products the era carries.
+function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail, weekIndex = 0 }) {
+  const [open, setOpen] = useState(false)
+  const credit = { onCredit, split, creditAvail }
+  // 👑 Collector product is shelf-filtered too. A corner shop has one of these in at a time,
+  // not the whole era's back catalogue — see game/shelf.js.
+  const eraProducts = shelfEraProducts(dist, era.products, era.series, weekIndex)
+  const nProducts = era.sets.reduce((a, s) => a + shelfProducts(dist, setProducts(s), s, weekIndex).length, 0) + eraProducts.length
+  return (
+    <div className={`product era-acc ${open ? 'open' : ''}`}>
+      <button className="set-head era-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <span className="set-head-info">
+          <span className="set-head-name">{era.series}</span>
+          <span className="meta">
+            {era.sets.length} set{era.sets.length !== 1 ? 's' : ''} · {nProducts} product{nProducts !== 1 ? 's' : ''}
+            {eraProducts.length ? ` · ${eraProducts.length} collector piece${eraProducts.length !== 1 ? 's' : ''}` : ''}
+          </span>
+        </span>
+        <span className="set-caret" aria-hidden="true">{open ? '▾' : '▸'}</span>
+      </button>
+      {open && (
+        <div className="era-body">
+          {/* Era-wide product first — a UPC isn't a Lost Origin product, it's a Sword & Shield one. */}
+          {eraProducts.length > 0 && (
+            <div className="era-products">
+              <div className="era-products-head">👑 Collector product — rips packs from across the {era.series} era</div>
+              {eraProducts.map(p => (
+                <EraProductRow key={p.tcgId} dist={dist} product={p} lvl={lvl} cash={cash}
+                  onBuy={onBuy} owned={owned} {...credit} />
+              ))}
+            </div>
+          )}
+          {era.sets.map(set => (
+            <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={stock}
+              cash={cash} onBuy={onBuy} clearance={set.id === clearanceSetId} owned={owned}
+              onCredit={onCredit} split={split} creditAvail={creditAvail} weekIndex={weekIndex} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// One cross-set product line. Buys through the ordinary product path — it just resolves its
+// own anchor set first, since held sealed is keyed by setId.
+function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split, creditAvail }) {
+  const anchor = eraAnchorSet(product)
+  // 🚫 Collector product is exactly what a shop rations, so the sign belongs here most of all.
+  // Read through the same store check the shelf rows and both buy paths use.
+  const lim = useGame(s => (anchor ? s.purchaseLimitFor(dist.id, anchor, product) : { limit: Infinity, left: Infinity }))
+  if (!anchor) return null
+  const price = distributorPrice(dist, product.price, lvl.level, { product, set: anchor })
+  const afford = cash >= price || (onCredit && creditAvail >= price) || (split && cash + creditAvail >= price)
+  const spent = lim.left <= 0
+  return (
+    <div className="prodrow era-prodrow">
+      <span className="prod-name">
+        {product.icon} {product.name}
+        {lim.limit !== Infinity && (
+          <span className={`limit-chip ${spent ? 'spent' : ''}`}
+            title={spent
+              ? `You have had your ${lim.limit} today. The shelf resets tomorrow${lim.limit < 4 ? ' — and a shop that knows you lets you take more' : ''}.`
+              : `${dist.name} rations this: ${lim.limit} per customer per day${lim.level > 0 ? ' — up from 1, because they know you' : ''}. ${lim.left} left today.`}>
+            🚫 {spent ? 'had yours today' : `${lim.limit}/customer`}
+          </span>
+        )}
+        <span className="muted" style={{ fontSize: 12, display: 'block' }}>
+          {product.packs} pack{product.packs !== 1 ? 's' : ''} from across the {product.pool.series} era
+          {product.bonus === 'promo' ? ' · 🎁 promo' : ''}
+        </span>
+      </span>
+      <button className="btn" disabled={!afford || spent}
+        title={spent ? `${dist.name} limits this to ${lim.limit} per customer a day, and you have had yours. Back tomorrow.`
+          : afford ? `Buy for ${fmtMoney(price)}` : 'Not enough cash'}
+        onClick={() => onBuy(dist.id, anchor, { ...product, _buyPrice: price, _distId: dist.id }, 1, { onCredit, split })}>
+        {fmtMoney(price)}
+      </button>
+    </div>
+  )
+}
+
 // One set on a distributor's shelf: its products (priced at your rapport), plus a case
 // lot (if they sell cases and you've earned it) and a clearance lot (Greg, weekly).
-function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned, onCredit, split, creditAvail }) {
-  const products = setProducts(set)
+function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, owned, onCredit, split, creditAvail, weekIndex = 0 }) {
+  // 🛒 What THIS retailer stocks, not the full manufacturer lineup — a small shop carries
+  // boxes, packs and one impulse line, not four artwork variants of the same blister. See
+  // game/shelf.js; the shelf is deterministic per (set, week), never per render.
+  const products = shelfProducts(dist, setProducts(set), set, weekIndex)
   const showCases = dist.cases && lvl.level >= dist.casesMinLevel
   const lot = showCases ? caseLot(set) : null
   const box = [...products].sort((a, b) => b.packs - a.packs)[0]
@@ -1381,7 +1549,8 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
       {open && (
         <div className="prodlist">
           {products.map(p => (
-            <StockButton key={p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
+            /* keyed on tcgId, not type — a set carries several products per type now */
+            <StockButton key={p.tcgId || p.type} dist={dist} set={set} product={p} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} owned={owned} {...credit} />
           ))}
           {lot && (
             <StockButton dist={dist} set={set} lvl={lvl} stock={stock} cash={cash} onBuy={onBuy} {...credit}
@@ -1402,7 +1571,7 @@ function DistributorSetCard({ dist, set, lvl, stock, cash, onBuy, clearance, own
 // A quantity stepper lets you buy several at once (type "10" → ten ETBs in one purchase),
 // capped to what's in stock and what you can afford.
 function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCredit = false, split = false, creditAvail = 0 }) {
-  const ownedN = owned?.get(`${set.id}|${product.type}`) || 0 // sealed copies of this exact line you already hold
+  const ownedN = owned?.get(`${set.id}|${productTypeLabel(product)}`) || 0 // sealed copies of this exact line you already hold
   let price
   if (product._case) price = distributorCasePrice(dist, { retail: product._retail }, lvl.level)
   else if (product._clearance) price = round2(distributorPrice(dist, product._clearanceOf, lvl.level, { product, set }) * 0.65)
@@ -1415,7 +1584,14 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   const spendable = onCredit ? creditAvail : split ? round2(cash + creditAvail) : cash
   const useCredit = onCredit || split // a credit mode is in play (badge/label/opts)
   const affordable = price > 0 ? Math.floor(spendable / price) : 999
-  const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable))
+  // 🚫 "1 per customer" on the collector product, relaxed for a regular. Read here so the
+  // stepper cannot even be pushed past it — a limit you discover at the till is a worse
+  // experience than a limit printed on the shelf, which is why real shops print it.
+  const rapportLvl = lvl?.level || 0
+  const lim = useGame(s => s.purchaseLimitFor(dist.id, set, product))
+  const perCustomer = lim.limit
+  const limitLeft = lim.left
+  const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable, limitLeft))
 
   const [buyQty, setBuyQty] = useState(1)
   const qN = Math.min(Math.max(1, Math.floor(buyQty) || 1), Math.max(1, maxBuy))
@@ -1428,7 +1604,12 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   // 🔥 Fresh-drop hype: the struck-through number above is the market price; this explains
   // why the ask sits over it. (There's no MSRP shelf — a shop owner buys drops scalped.)
   const surge = hypeSurge(set)
-  const priceNote = surge > 1.02
+  // …but never claim a MARKUP on a row that is already showing a DISCOUNT. A clearance box
+  // struck through $373.91, asked $247.42, and still wore a "🔥 +45%" badge — two opposite
+  // claims about one price, with the tooltip citing the struck-through figure as "the market"
+  // it was 45% above. The surge note only means anything when the ask sits ABOVE that figure,
+  // which is exactly when showStrike is false (clearance and case lots both sit below it).
+  const priceNote = surge > 1.02 && !showStrike
     ? `🔥 Fresh-drop markup: +${Math.round((surge - 1) * 100)}% over the ${fmtMoney(retail)} market. It's worth market the moment you own it — patience is the discount.`
     : null
 
@@ -1450,16 +1631,27 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
       {soEligible && (
         <button type="button" className={`qty-step so-btn ${soHere ? 'active' : ''}`}
           title={soHere ? `📋 Standing order active — ${so.qty}× weekly at your rapport price. Tap to cancel.`
-            : `📋 Standing order: auto-buy ${qN}× ${product.type} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
+            : `📋 Standing order: auto-buy ${qN}× ${productTypeLabel(product)} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
           onClick={() => setSO(soHere ? null : { distId: dist.id, setId: set.id, type: product.type, qty: qN })}>📋</button>
       )}
       <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''} ${useCredit && canBuy ? 'on-credit' : ''}`}
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit, split })}
-        title={out ? `Sold out — restocks in ~${days}d` : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
-        <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {product.type}</span>
-        {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${product.type} of ${set.name}`}>📦 {ownedN}</span>}
-        <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}</span>
+        title={out ? `Sold out — restocks in ~${days}d`
+          : limitLeft <= 0 ? `${dist.name} limits this to ${perCustomer} per customer a day, and you have had yours. Back tomorrow.`
+          : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
+        <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {productTypeLabel(product)}</span>
+        {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${productTypeLabel(product)} of ${set.name}`}>📦 {ownedN}</span>}
+        <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}
+          {perCustomer !== Infinity && (
+            <span className={`limit-chip ${limitLeft <= 0 ? 'spent' : ''}`}
+              title={limitLeft <= 0
+                ? `You have had your ${perCustomer} today. The shelf resets tomorrow${perCustomer < 4 ? ` — and a shop that knows you lets you take more (rapport ${rapportLvl} → ${Math.min(4, perCustomer + 1)} at the next tier)` : ''}.`
+                : `${dist.name} rations this: ${perCustomer} per customer per day${rapportLvl > 0 ? ` — up from 1, because they know you` : ''}. ${limitLeft} left today.`}>
+              🚫 {limitLeft <= 0 ? 'had yours today' : `${perCustomer}/customer`}
+            </span>
+          )}
+        </span>
         <span className="prodprice">
           {surge > 1.02 && <span className="pricetag surge" title={priceNote}>🔥 +{Math.round((surge - 1) * 100)}%</span>}
           {showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}
@@ -1524,7 +1716,7 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
         {f.logo && <img className="logo" src={f.logo} alt={f.setName} />}
         <h3>{f.setName}</h3>
         <div className="meta">
-          {held ? '🗝️ Reserved for you' : f.aftermarket ? '🕰️ Out-of-print find' : '🗝️ Vintage find'} · sealed {f.product.type}
+          {held ? '🗝️ Reserved for you' : f.aftermarket ? '🕰️ Out-of-print find' : '🗝️ Vintage find'} · sealed {productTypeLabel(f.product)}
           {!held && (out
             ? <> · <b style={{ color: 'var(--red)' }}>cleaned out</b></>
             : <> · <b>{n} left</b></>)}
@@ -1534,8 +1726,8 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
             onClick={() => onBuyVintage(dist.id, f, { fromHold: held, onCredit, split })}
             title={out
               ? `${dist.name} has no more sealed ${f.setName} — it's out of print, so there's no reordering it. A new find turns up next week.`
-              : `${f.product.type} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
-            <span className="prodname">{useCredit ? '💳 ' : ''}{f.product.icon || '📦'} {f.product.type}</span>
+              : `${productTypeLabel(f.product)} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
+            <span className="prodname">{useCredit ? '💳 ' : ''}{f.product.icon || '📦'} {productTypeLabel(f.product)}</span>
             <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
             <span className="prodprice">{out ? '—' : fmtMoney(f.price)}</span>
           </button>
@@ -1573,17 +1765,25 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
   function place() {
     if (cash < cost) return flash('Not enough cash to buy in.')
     const r = supplyVendors(set, product)
-    if (r) flash(`Wholesaled ${product.type} of ${set.name} — nets ${fmtMoney(r.net)} in ~${r.daysLeft}d.`)
+    if (r) flash(`Wholesaled ${productTypeLabel(product)} of ${set.name} — nets ${fmtMoney(r.net)} in ~${r.daysLeft}d.`)
   }
   return (
     <div className="market-panel" style={{ marginTop: 14 }}>
       <div className="market-head">📦 Supply other vendors <span className="muted">— buy in at {dist.name}'s wholesale, sell through the channel for passive income over a few days</span></div>
       <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
         <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); const ps = setProducts(SHOP_SETS.find(s=>s.id===id)); setType(ps.find(p=>p.packs>=10)?.type || ps[0].type) }}>
-          {SHOP_SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          {groupByEra(SHOP_SETS).map(era => (
+            <optgroup key={era.series} label={era.series}>
+              {era.sets.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </optgroup>
+          ))}
         </select>
+        {/* This picks a product TYPE, and a set now carries several products per type (eight
+            Prismatic mini tins). List each type once — the cheapest of that type is what
+            `product` above resolves to, matching how the wholesale price is quoted. */}
         <select value={type} onChange={e => setType(e.target.value)}>
-          {products.map(p => <option key={p.type} value={p.type}>{p.icon} {p.type}</option>)}
+          {[...new Map(products.map(p => [p.type, p])).values()]
+            .map(p => <option key={p.type} value={p.type}>{p.icon} {p.type}</option>)}
         </select>
         <span className="muted" style={{ fontSize: 12 }}>buy-in {fmtMoney(cost)}</span>
         <button className="btn gold" style={{ flex:'none', maxWidth: 200, marginLeft:'auto' }} disabled={cash < cost} onClick={place}>

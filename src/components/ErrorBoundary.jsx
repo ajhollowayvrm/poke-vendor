@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { flushSaveWrite, currentSaveBlob } from '../game/store'
+import { nativeSaveFile } from '../game/native'
 
 // Last line of defense: a render/effect crash anywhere in the tree used to white-screen
 // the PWA with no way back. The saved game is almost always fine — the crash is in code,
@@ -21,10 +22,15 @@ export default class ErrorBoundary extends Component {
     // if anything FRESHER than what's on disk.
     const blob = currentSaveBlob()
     if (!blob) return
+    const name = `poke-vendor-save-backup-${new Date().toISOString().slice(0, 10)}.json`
+    // `a.download` with a blob URL is INERT in a WKWebView — the click lands, nothing happens, and
+    // there is no error to notice. That is bad anywhere and worst here, because this button is the
+    // escape hatch on the crash screen. In the shell it goes to the system share sheet instead.
+    if (nativeSaveFile(name, blob)) return
     const url = URL.createObjectURL(new Blob([blob], { type: 'application/json' }))
     const a = document.createElement('a')
     a.href = url
-    a.download = `poke-vendor-save-backup-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = name
     a.click()
     URL.revokeObjectURL(url)
   }

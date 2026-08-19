@@ -11,7 +11,7 @@
 
 import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
   SHOP_SETS, SECONDARY_SETS, setProducts, marketMult, isBulkCard, bulkSellableUids } from '../engine'
-import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin } from '../shows'
+import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin, SHOW_TIERS } from '../shows'
 
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
 // repack could plausibly hide. Returns { set, product } or null when nothing fits the band.
@@ -33,7 +33,8 @@ const DEAL_OF_SHOW_MARKDOWN = 0.12
 import { acceptedMethods, PAYMENT_METHODS, processingFee, omniShelfCards, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_CREDIT_BONUS, creditIssueCap, STORE_EVENTS, floorCapacity, floorCount, floorFreeSlots,
   floorItemCap, floorSkuKey, floorSkuCounts, isVintageFloorItem, onFloor, absoluteDay,
-  SUPPLY_CASE, supplyById, SPECIAL_ORDER_DUE_DAYS, BRANCH_LEASE_PER_DAY, employeeById, RANKS } from './constants'
+  SUPPLY_CASE, supplyById, SPECIAL_ORDER_DUE_DAYS, BRANCH_LEASE_PER_DAY, employeeById, RANKS,
+  postPatch, vlogFollowers, VLOG_AFTERGLOW_DAYS } from './constants'
 import { methodLabel, feeNote, appendFeeMsg } from './helpers'
 
 // A card you own may be in your collection, out on the market (listed/tweeted), in your
@@ -212,6 +213,30 @@ export function createBoothSlice(set, get) {
       if (parts.length) get().log('show', `Brought ${parts.join(' + ')} to sell at the show`, 0)
       return bringing.length + bringingSealed.length
     },
+    // --- Surviving a crash mid-show -------------------------------------------------------
+    // Entering a show commits real, irreversible things to the save: the entry fee is spent, the
+    // calendar advances past the show days, pre-show leads are claimed, and your stock moves onto
+    // the table. The floor itself was React state, so a reload (or iOS killing a backgrounded web
+    // view) ended the trip while keeping every cost. These three keep the trip alive instead.
+
+    /// Remember which show you are standing in, so a reload can put you back on the floor.
+    beginShow(show) { set({ activeShow: { show, taken: [], till: {} } }) },
+
+    /// The floor's consumed state, mirrored into the save as it changes.
+    ///
+    /// This is the part that makes a resume SAFE rather than merely possible. `taken` is every
+    /// item lifted off a booth table and `till` is each vendor's drawn-down cash — both exist to
+    /// stop an infinite rebuy of mispriced gems, uid duplication, and dumping unlimited stock on
+    /// one vendor. Restoring the show without them would hand back all three bugs.
+    recordShowProgress({ taken, till }) {
+      const cur = get().activeShow
+      if (!cur) return
+      set({ activeShow: { ...cur, taken: taken ?? cur.taken, till: till ?? cur.till } })
+    },
+
+    /// The show to put you back into on boot, or null. Read once by App on mount.
+    resumeShow() { return get().activeShow },
+
     // Set the FLOOR WALLET when entering a show: `budget` is the cash you chose to bring.
     // The rest is stashed in showReserve (still counted in net worth) and folded back into
     // cash on endShow — so at the show `cash` IS your spend limit, and every existing cash
@@ -226,7 +251,15 @@ export function createBoothSlice(set, get) {
     // sealed returns to your held inventory. Strip the transient booth flags (showcase /
     // deal-of-show) — they only matter at the show. Also fold the at-home reserve back into
     // cash (the money you didn't bring), so leaving reunites your wallet with your savings.
-    endShow() {
+    // `vlog` ({ tierKey, showName, bestValue, bestName }) is what the floor recap saw: the hall
+    // you worked and the best thing that ended up in your hands there. Passed only from the
+    // real leave-the-floor path (the boot-time rescue calls endShow() bare, and a trip you
+    // never actually walked shouldn't produce a video).
+    endShow(vlog = null) {
+      // FIRST: the trip is over, so drop the resume record. If this were left until after the
+      // inventory move below and anything in there threw, boot would offer to resume a show
+      // whose stock had already come home — worse than either outcome on its own.
+      set({ activeShow: null })
       const reserve = get().showReserve || 0
       if (reserve) set(s => ({ cash: round2(s.cash + reserve), showReserve: 0 }))
       const inv = get().showInventory || []
@@ -248,6 +281,22 @@ export function createBoothSlice(set, get) {
         get().log('show', `Brought ${parts.join(' + ')} unsold back home from the show`, 0)
       } else {
         set({ showInventory: [], showSealed: [] })
+      }
+      // 🎥 "Come to a card show with me." The trip you just took IS the video — a bigger hall
+      // and a better pickup both make it travel further. It also buys a couple of days of extra
+      // listing traffic on the drive home (the same afterglow window a broadcast opens, shorter).
+      if (vlog && get().upgrades.showVlog) {
+        const tierIdx = Math.max(0, Object.keys(SHOW_TIERS).indexOf(vlog.tierKey))
+        const gained = vlogFollowers(tierIdx, vlog.bestValue || 0)
+        const label = `${vlog.showName || 'the show'} walkthrough${vlog.bestName ? ` — the ${vlog.bestName} pickup` : ''}`
+        const fold = postPatch(get(), 'vlog', label, vlog.bestValue || 0) || {}
+        set(s => ({
+          followers: Math.max(0, (s.followers || 0) + gained),
+          streamHypeDaysLeft: Math.max(s.streamHypeDaysLeft || 0, VLOG_AFTERGLOW_DAYS),
+          ...fold,
+        }))
+        get().addNotoriety(1, false, 'content')
+        get().log('stream', `🎥 You cut a vlog from ${vlog.showName || 'the show'} — +${gained} followers, +1★, and the people who watched it are browsing your listings for a couple of days.`, 0)
       }
     },
     // --- Active booth: showcase + deal of the show ------------------------------
@@ -633,10 +682,14 @@ export function createBoothSlice(set, get) {
       // Mint any sealed product in the lot into your storeroom backstock (no extra charge — it
       // came with the collection). Cards go straight into your collection as before.
       const sealedRows = (offer.sealed || []).map(s => get().mintSealedRow(setById(s.setId), s.product, 0, 'vendor')).filter(Boolean)
+      // 📱 The haul video: a whole collection dumped on your counter is the other thing every
+      // vendor films. Valued on the LOT's market worth, so a genuine estate find posts like one.
+      const haulFold = postPatch(get(), 'haul', `${offer.count} cards${(offer.sealed || []).length ? ' and sealed' : ''} off ${offer.who}`, offer.market) || {}
       set(s => ({
         collection: [...offer.cards, ...s.collection],
         sealedInventory: sealedRows.length ? [...sealedRows, ...(s.sealedInventory || [])] : s.sealedInventory,
         buyinOffers: s.buyinOffers.filter(o => o.id !== id),
+        ...haulFold,
       }))
       const sealedNote = sealedRows.length ? ` + ${sealedRows.length} sealed` : ''
       const label = free ? 'FREE — they gave it away' : method === 'credit' ? `$${paid.toFixed(2)} store credit` : `$${paid.toFixed(2)} cash`

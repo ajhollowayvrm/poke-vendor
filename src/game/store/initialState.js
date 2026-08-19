@@ -13,6 +13,9 @@
 import { STARTING_CASH, STARTER_JOB } from './constants'
 import { makeShowVendors } from '../shows'
 import { defaultPackTiers } from '../mysterypacks'
+import { freshBooks } from '../tax'
+import { refillLots } from '../lots'
+import { refillBoard } from '../market'
 
 export function initialState() {
   return {
@@ -25,8 +28,22 @@ export function initialState() {
     binder: [],              // cards physically slotted into your masterset binder — moved OUT of the collection (protected from bulk actions); one per {set,card,variant} slot
 
     pendingGrades: [],       // {card, tierKey, readyOnDay, submittedAt, paidFee}
+    // 📦🔟 Sealed product out at a sealed grader (WATA / CGC). Same day-stamped shape as
+    // pendingGrades and settled by the same resolver — one grading clock, two queues.
+    pendingSealed: [],       // {item, company, readyOnDay, submittedAt, paidFee}
+    sealedGradesSubmitted: 0,
+    // 📊 What YOUR submissions have added to each card's PSA census: { 'cardId|grade': n }.
+    // Every slab that comes back raises the count for that card, which lowers the scarcity
+    // premium on every copy you hold — the reason slabbing ten of one thin vintage card is a
+    // real, self-inflicted loss rather than ten times the profit. See game/population.js.
+    popAdds: {},
     history: [],             // {t, type, detail, amount}
-    stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null },
+    stats: { packsOpened: 0, cardsPulled: 0, hits: 0, spent: 0, earned: 0, bestPull: null, cracks: 0, misprints: 0 },
+    // 📜 One entry per RIP — not per pack, and not per set: the box you opened on day 40 is a
+    // thing that happened, and the per-set ledger below averages exactly that away. Newest first,
+    // capped at RIP_LOG_MAX so a long game can't grow the save without bound.
+    // { day, setId, name, type, packs, cost, pulled, best: {name, value, rarity}, special }
+    ripLog: [],
     // Per-set ledger: { [setId]: { spent, pulledValue, packsOpened, cardsPulled, hits } }.
     // `spent` = cash put into that set's sealed product; `pulledValue` = market value of
     // everything ripped from it. Drives the per-set analytics on the Stats page.
@@ -79,6 +96,25 @@ export function initialState() {
     streamClip: null,        // 🎬 circulating clip: { daysLeft, perDay, label } — recruits followers daily after a big on-stream moment
     rhythmStreak: 0,         // 📆 weekly-rhythm streak: consecutive streams ~3–10 days apart → loyal-crowd viewer mult (rhythmMult)
     lastStreamDay: null,     // absolute day of the last stream (drives rhythm gaps + sub churn)
+    // 📱 SHORT-FORM CONTENT (game/content.js) — the audience you build without going live.
+    // `posts` is the live feed: moments you already made, circulating and recruiting followers
+    // for a couple of days each (same shape/drain as streamClip, capped at MAX_LIVE_POSTS).
+    posts: [],               // [{kind, label, value, perDay, daysLeft, viral}]
+    postQueue: [],           // 🔁 Content Calendar bank — moments waiting for their daily slot
+    postStreak: 0,           // 🔁 consecutive days posted → cadenceMult on every post's reach
+    lastPostDay: null,       // absolute day something last went out
+    // 🃏 The master set challenge you announced: { setId, setName, startDay, startPlaced, total,
+    // landed, episodes, scale }. Show bins skew toward it, each card landed is content, and
+    // completing it pays the payoff-video bounty. One at a time; null = nothing declared.
+    challenge: null,
+    // 🤝 Guest appearances on other creators' channels: { lastDay, rapport: {creator: times} }.
+    collab: { lastDay: 0, rapport: {} },
+    podcastDay: 0,           // 🎙️ absolute day the last podcast episode went out (weekly cadence)
+    // 💰 The signed brand deal: { brand, icon, setId, setName, monthly, signedDay, dueDay,
+    // packsAt, lastPaidDay, featured } — a monthly check against a real feature obligation.
+    // `lapsedDay` (on a cleared deal) spaces out the next offer. null = nobody's calling.
+    sponsor: null,
+    sponsorLapsedDay: 0,
     generousActs: 0,
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
@@ -87,9 +123,38 @@ export function initialState() {
     // out — the day tick settles each one when its clock runs out, and how many bidders your
     // NAME pulled is what sets the hammer price (see game/auctions.js).
     auctions: [],
+    // 📱 The LOCAL MARKETPLACE — strangers near you selling cards out of their houses. Not a
+    // shelf: one-off listings priced by how the seller FEELS about the thing, which is why the
+    // board is mostly junk with the occasional genuine find buried in it. `meetsToday`/`meetDay`
+    // cap how many you can physically drive out and collect in a day. See game/market.js.
+    market: { listings: refillBoard([], 0, 1), day: 1, meetsToday: 0, meetDay: 0 },
+    marketStats: { bought: 0, spent: 0, burned: 0, steals: 0 },
+    // 🚫 "1 per customer": what you have already taken of each limited line today, stamped
+    // with the day it belongs to so a new day needs no reset pass. See game/shelf.js.
+    buyLimits: { day: 0, counts: {} },
+    // 🔨 The BUY side of the hammer: lots the auction house is running that you can bid on.
+    // Each carries a hidden `maxBid` (your proxy), the visible watcher count that sets the
+    // room, and — on raw and sealed lots — the condition claim that may not be true. The day
+    // tick settles every lot whose clock runs out and refills the board. See game/lots.js.
+    // SEEDED, not empty: the board has to exist on day one or the panel is invisible until
+    // the player happens to advance a day, and a system nobody can see is a system nobody
+    // uses. The day tick refills it from here on.
+    auctionLots: refillLots([], 0, 1),
+    auctionLotsDay: 1,       // absolute day the board was last refilled
+    auctionStats: { won: 0, lost: 0, spent: 0, burned: 0 }, // lifetime: lots won/lost, paid, and lost to bad descriptions
     showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
     showSealed: [],          // SEALED product you brought to the current show to sell at your booth — floor buyers can buy it; unsold comes home (to sealedInventory) when you leave
     showReserve: 0,          // cash you deliberately LEFT AT HOME when attending a show: while the show is active, `cash` holds only what you brought (your floor wallet); endShow() folds this back in. Counted in net worth so leaving money home never reads as losing it.
+    // The show you are STANDING IN, persisted so a crash or an iOS memory-kill doesn't forfeit
+    // a trip you already paid for. Entering a show spends the entry fee, moves your cards onto
+    // the table AND advances the calendar past the show days — all irreversible and all in the
+    // save — while the floor itself was React state only. So a reload used to bring your stock
+    // home and silently eject you from a show whose cost had already been taken.
+    //   { show, taken: [...boothItemKeys], till: { boothId#day: spent } }
+    // `taken` and `till` are NOT cosmetic: without them a resume re-serves every purchased item
+    // (infinite rebuy of mispriced gems, plus uid duplication) and refills every vendor's till.
+    // Cleared by endShow(). See resumeShow / recordShowProgress in booth.js.
+    activeShow: null,
     shopDisplay: [],         // LEGACY (pre-v42): cards once lived on a separate store shelf. With a storefront the whole COLLECTION is store stock now (🔒 locked = not for sale, _featured = display-case spotlight, _heldFor = behind the counter). Kept empty for save-merge compat.
     shopSealed: [],          // LEGACY (pre-v42): sealed shelf — sealedInventory IS the store's sealed stock now. Kept empty for save-merge compat.
     storeConsignRequests: [], // locals waiting on an answer: {id, who, card, ask, commissionPct, days, pendingDays} — carry their card for a cut, or pass
@@ -115,6 +180,21 @@ export function initialState() {
     // balance = what you owe (principal + accrued interest); frozen = line suspended after a
     // missed monthly minimum (cash-only until you catch up). Limit scales with net worth.
     credit: { balance: 0, frozen: false },
+    // 🧾 THE BOOKS. Cash-basis revenue and deductible spending for the current quarter, plus
+    // what share of the takings arrived on an untraceable rail (which is what drives audit
+    // exposure). The day tick closes each quarter, bills the tax, and opens the next one.
+    // A quarter that nets under the filing floor bills nothing, so the early game never meets
+    // this system at all. See game/tax.js.
+    books: freshBooks(0),
+    // 🏦 The bank note: a fixed-term amortised loan, paid down daily whatever the shop did.
+    // Null until you sign one; one at a time. `loanDefaultedUntil` is the absolute day the
+    // bank will talk to you again after a default. See game/loans.js.
+    loan: null,
+    loanDefaultedUntil: 0,
+    // Which system froze the distributor line. A tax lien and a missed distributor minimum can
+    // both freeze it, and clearing the tax bill must only thaw a line the TAX froze — otherwise
+    // paying your tax would quietly cure a distributor default too.
+    _creditFrozenByTax: false,
     distributorSince: null,  // absolute day you first became a distributor (Household Name + millionaire); null until then. Gates the passive wholesale income + the one-time unlock notice.
     storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
     eventCooldownLeft: 0,    // days before you can host another event
@@ -176,11 +256,14 @@ export function initialState() {
     // sound/haptics: synthesized rip SFX + phone vibration (see game/feedback.js).
     // keepOne ("Protect set singles"): bulk sells skip your last copy of each card so a
     // sweep only dumps duplicates — the master-set safety net (see engine.bulkSellableUids).
-    // binderReserveCut: a CEILING — a raw copy whose cut is at/above this tier is held OUT of the
-    // masterset (by hand or by the overnight Curator), free to grade & sell; only lesser copies get
-    // filed. 'off' by default = file everything, which is how the binder behaved before it existed.
+    // Binder reserve — three CEILINGS, any of which holds a copy OUT of the masterset (by hand
+    // or by the overnight Curator), free to grade & sell; only lesser copies get filed.
+    //   binderReserveCut:         a raw copy whose cut is at/above this tier stays out
+    //   binderReserveRawValue:    a raw copy worth $this or more stays out (0 = off)
+    //   binderReserveGradedValue: a slab worth $this or more stays out (0 = off)
+    // All off by default = file everything, which is how the binder behaved before they existed.
     settings: { openSealedOneByOne: false, ripSpeed: 1, autoAdvance: false, ripOnBuy: false, revealMode: 'auto', sound: true, haptics: true, keepOne: false,
-      binderReserveCut: 'off',
+      binderReserveCut: 'off', binderReserveRawValue: 0, binderReserveGradedValue: 0,
       // 🗑️ Keep the quarter box full: sweep the storeroom's sub-$1 raw bulk into the bin
       // every night (same keep-singles / locked / held protections as the manual toss).
       // Off by default — stocking the box is a decision until you decide it shouldn't be.

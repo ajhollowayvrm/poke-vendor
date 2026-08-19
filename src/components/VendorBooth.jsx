@@ -226,6 +226,19 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
     return { mkt, ask, deal: mkt > 0 && ask <= mkt * (settings?.dealMaxMult ?? 0.85), over: mkt > 0 && ask > mkt * 1.2 }
   }
 
+  // 🔎 Deal finder, at the binder level. The DEAL tags only exist once a section is OPEN, so a
+  // table with a dozen collapsed sets hid every underpriced card behind a tap-and-look sweep —
+  // the finder telling you nothing until you'd already done the searching by hand. A section
+  // holding at least one deal now says so on its closed header: the set's NAME goes green.
+  // Same test the row tags use, so the header can't disagree with what's inside it.
+  const dealsIn = (cards) => cards.filter(c => isCardDeal(c, eff(c._ask), settings)).length
+  // Green only with the finder unlocked — without it you're meant to do your own appraising.
+  const dealName = (n, node) => (
+    seeDeals && n > 0
+      ? <span className="deal-set" title={`🔎 ${n} deal${n > 1 ? 's' : ''} spotted in here — priced at or under your bar`}>{node}</span>
+      : node
+  )
+
   // A buy is agreed (at ask or via haggle) → ask where it goes before committing.
   function buyAt(card, price) {
     committingRef.current = false // arm a fresh commit for this new purchase
@@ -462,7 +475,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
             {sealedBySet.map(g => (
               <Collapse key={g.setId} id={`booth-sealed-${g.setId}`} defaultOpen={sealedBySet.length <= 3}
                 className="wants" headClass="wants-head"
-                head={<>{g.logo && <img src={g.logo} alt="" style={{ height: 20, objectFit: 'contain', verticalAlign: '-4px', marginRight: 6 }} />}{g.name}</>}
+                head={<>{g.logo && <img src={g.logo} alt="" style={{ height: 20, objectFit: 'contain', verticalAlign: '-4px', marginRight: 6 }} />}
+                  {dealName(g.items.filter(x => sealedRead(x).deal).length, g.name)}</>}
                 badge={`${g.items.reduce((a, x) => a + (x.qty || 1), 0)} · from ${fmtMoney(Math.min(...g.items.map(x => eff(x._ask))))}`}>
                 <div className="vsealed-list">
                   {g.items.map((entry) => {
@@ -532,21 +546,22 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
               }
               const groups = [...bySet.entries()].map(([name, cards]) => {
                 cards.sort((a, b) => rarityRank(b.rarity) - rarityRank(a.rarity) || eff(b._ask) - eff(a._ask))
-                return { name, cards, top: Math.max(...cards.map(c => eff(c._ask))) }
+                return { name, cards, top: Math.max(...cards.map(c => eff(c._ask))), deals: dealsIn(cards) }
               }).sort((a, b) => b.top - a.top)
+              const binDeals = dealsIn(bin)
               return (
                 <>
                   {groups.map(g => (
                     <Collapse key={g.name} id={`booth-bin-${booth.id}-${g.name}`} defaultOpen={groups.length <= 3}
                       className="wants" headClass="wants-head"
-                      head={<>📒 {g.name}</>} badge={`${g.cards.length} · to ${fmtMoney(g.top)}`}>
+                      head={<>📒 {dealName(g.deals, g.name)}</>} badge={`${g.cards.length} · to ${fmtMoney(g.top)}`}>
                       <div className="vsingle-list">{g.cards.map(renderRow)}</div>
                     </Collapse>
                   ))}
                   {bin.length > 0 && (
                     <Collapse id={`booth-bin-${booth.id}-dollar`} defaultOpen={false}
                       className="wants" headClass="wants-head"
-                      head={<>🗃️ Dollar bin</>} badge={`${bin.length} cards`}>
+                      head={<>🗃️ {dealName(binDeals, 'Dollar bin')}</>} badge={`${bin.length} cards`}>
                       <div className="vsingle-list">{bin.sort((a, b) => eff(b._ask) - eff(a._ask)).map(renderRow)}</div>
                     </Collapse>
                   )}

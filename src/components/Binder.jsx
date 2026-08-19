@@ -3,7 +3,7 @@ import { useGame, absoluteDay } from '../game/store'
 import {
   SETS, setCompletion, completionReward, isChaseCard, fmtMoney,
   cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
-  CUT_ORDER,
+  CUT_ORDER, cardNumber, BINDER_VALUE_CAPS, binderReserveActive,
 } from '../game/engine'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
@@ -22,15 +22,35 @@ export default function Binder({ onPick }) {
   const addToBinder = useGame(s => s.addToBinder)
   const addAllToBinder = useGame(s => s.addAllToBinder)
   const removeFromBinder = useGame(s => s.removeFromBinder)
-  // Your binder RESERVE — a ceiling, not a floor. A raw copy whose cut is at/above this tier is
-  // held OUT of the masterset (free to grade & sell); only lesser copies get filed. Applies to the
-  // "Add everything possible" sweep AND the 📒 Curator's nightly one — it's a statement about what
-  // your masterset is, not which button you pressed. Graded slabs are exempt.
+  // Your binder RESERVE — ceilings, not floors. A copy that hits ANY of them is held OUT of the
+  // masterset (free to grade & sell); only lesser copies get filed. A raw copy is held by its CUT
+  // tier or by its dollar value; a slab by its dollar value, so a five-figure grail never gets
+  // buried in a slot just because the slot was open. Applies to the "Add everything possible"
+  // sweep AND the 📒 Curator's nightly one — it's a statement about what your masterset is, not
+  // which button you pressed.
   const setSetting = useGame(s => s.setSetting)
   const reserveCut = useGame(s => s.settings.binderReserveCut ?? 'off')
+  const reserveRawValue = useGame(s => s.settings.binderReserveRawValue ?? 0)
+  const reserveGradedValue = useGame(s => s.settings.binderReserveGradedValue ?? 0)
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
+  const reserve = useMemo(() => ({ cut: reserveCut, rawValue: reserveRawValue, gradedValue: reserveGradedValue }),
+    [reserveCut, reserveRawValue, reserveGradedValue])
+  const reserveActive = binderReserveActive(reserve)
+  // Plain-English readback of every ceiling that's on, so the panel says exactly what it does.
+  const reserveSummary = useMemo(() => {
+    const parts = []
+    if (reserveCut !== 'off') parts.push(`raw copies at ${reserveCut} cut or better`)
+    if (reserveRawValue > 0) parts.push(`raw copies worth ${capLabel(reserveRawValue)}+`)
+    if (reserveGradedValue > 0) parts.push(`slabs worth ${capLabel(reserveGradedValue)}+`)
+    return parts.join(' · ')
+  }, [reserveCut, reserveRawValue, reserveGradedValue])
 
   // 🖼️ A collector waiting on a completed page (accept/decline banner below).
+  // 🃏 Master set challenge — declared from the set you're looking at.
+  const hasChallengeKit = useGame(s => !!s.upgrades.setChallenge)
+  const challenge = useGame(s => s.challenge)
+  const declareChallenge = useGame(s => s.declareChallenge)
+
   const binderOffer = useGame(s => s.binderOffer)
   const sellMasterLot = useGame(s => s.sellMasterLot)
   const declineMasterLot = useGame(s => s.declineMasterLot)
@@ -54,7 +74,7 @@ export default function Binder({ onPick }) {
     return { placed, loose }
   }, [binder, collection, set.id])
 
-  const ms = useMemo(() => mastersetStats(set, binder, collection, reserveCut), [set, binder, collection, reserveCut])
+  const ms = useMemo(() => mastersetStats(set, binder, collection, reserve), [set, binder, collection, reserve])
   // Plain set-completion (one of every card, any variant) drives the one-time bonus badge.
   const ownedIds = useMemo(() => {
     const s = new Set()
@@ -74,17 +94,17 @@ export default function Binder({ onPick }) {
       const variants = cardMastersetVariants(set, c)
       const missing = variants.some(v => !placed.has(`${c.id}:${v}`))
       return { c, variants, missing }
-    }).sort((a, b) => numOf(a.c.number) - numOf(b.c.number))
+    }).sort((a, b) => numOf(cardNumber(a.c)) - numOf(cardNumber(b.c)))
     return missingOnly ? withState.filter(x => x.missing) : withState
   }, [set, placed, missingOnly])
 
   function fillAll() {
     const { moved, reserved } = addAllToBinder(set.id)
-    const held = reserved ? ` ${reserved} slot${reserved === 1 ? '' : 's'} left open — top copy reserved to grade & sell.` : ''
+    const held = reserved ? ` ${reserved} slot${reserved === 1 ? '' : 's'} left open — only copy reserved to grade & sell.` : ''
     toast(moved
       ? `📒 Slotted ${moved} card${moved > 1 ? 's' : ''} into the ${set.name} binder.${held}`
       : reserved
-        ? `No slots filled — your only cop${reserved === 1 ? 'y is' : 'ies are'} being reserved to grade & sell. Raise the reserve tier to file them, or find lesser copies.`
+        ? `No slots filled — your only cop${reserved === 1 ? 'y is' : 'ies are'} being reserved to grade & sell. Loosen the reserve to file them, or find lesser copies.`
         : 'No open slots you own a copy for — rip or buy more first.')
   }
   function slotClick(card, variant) {
@@ -124,6 +144,17 @@ export default function Binder({ onPick }) {
         {everCompleted && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }} title="You've earned this set's completion bonus — and its 🎓 knowledge perks (rip intel, walk-ins asking for this set, its singles selling faster) are yours forever">🏆 Set done</span>}
         {everCompleted && comp.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }} title="The intact page is a shop DRAW: more walk-ins, whales come earlier and more often, and streams pull extra tune-ins — for every completed set you keep on display. Collectors may offer to buy the whole page at a premium.">🖼️ On display</span>}
         {ms.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="Every variant of every card is slotted">✨ Masterset!</span>}
+        {/* 🃏 Declare THIS set as your on-camera chase. Lives here rather than on the Stream
+            tab because the decision is "which set", and this is where you look at sets. */}
+        {hasChallengeKit && !comp.complete && (
+          challenge?.setId === set.id
+            ? <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="You announced this chase — dealers surface its singles, every card you land is an episode, and finishing it is the payoff video">🃏 Chasing on camera</span>
+            : <button className="btn alt" style={{ flex: 'none', padding: '3px 10px', fontSize: 12.5 }}
+                title={challenge ? `You're already chasing the ${challenge.setName} — drop it on the Stream tab first` : 'Announce this set as your master set challenge'}
+                onClick={() => { const r = declareChallenge(set.id); toast(r.error || `🃏 Announced: chasing the ${set.name} master set.`) }}>
+                🃏 Declare challenge
+              </button>
+        )}
       </div>
 
       {/* Masterset progress (all variants) + plain set progress */}
@@ -158,27 +189,48 @@ export default function Binder({ onPick }) {
         ))}
       </div>
 
-      {/* BINDER RESERVE — a CEILING, not a floor. Your sharpest copies are worth more graded
-          and sold than buried in a slot, so a raw copy whose cut is at/above this tier is held
-          OUT of the fill (by hand or by the overnight Curator), free to grade & sell. Only lesser
+      {/* BINDER RESERVE — CEILINGS, not floors. Your sharpest and your priciest copies are worth
+          more graded and sold than buried in a slot, so a copy that hits any ceiling is held OUT
+          of the fill (by hand or by the overnight Curator), free to grade & sell. Only lesser
           copies get filed; if a slot's only copy is reserved, it stays open. */}
       <div className="binder-standard">
-        <span className="bs-head">🎚️ Binder reserve <span className="muted">— keep your best cut out to grade &amp; sell</span></span>
+        <span className="bs-head">🎚️ Binder reserve <span className="muted">— keep your best cuts and priciest cards out to grade &amp; sell</span></span>
         <label className="bs-field">
           <span className="muted">Reserve cut</span>
           <select value={reserveCut} onChange={e => setSetting('binderReserveCut', e.target.value)}>
-            <option value="off">Off — file everything</option>
+            <option value="off">Off — any cut</option>
             {CUT_ORDER.slice(1).map(k => (
               <option key={k} value={k}>{k} &amp; up — keep out</option>
             ))}
           </select>
         </label>
+        {/* Value ceilings: the grail you just pulled shouldn't vanish into a slot simply because
+            the slot was open. Raw and slab prices live on different scales, so they get their own
+            ceiling each. */}
+        <label className="bs-field">
+          <span className="muted">Raw value</span>
+          <select value={reserveRawValue} onChange={e => setSetting('binderReserveRawValue', Number(e.target.value))}>
+            <option value={0}>Off — any value</option>
+            {BINDER_VALUE_CAPS.filter(Boolean).map(v => (
+              <option key={v} value={v}>{capLabel(v)} &amp; up — keep out</option>
+            ))}
+          </select>
+        </label>
+        <label className="bs-field">
+          <span className="muted">Graded value</span>
+          <select value={reserveGradedValue} onChange={e => setSetting('binderReserveGradedValue', Number(e.target.value))}>
+            <option value={0}>Off — any value</option>
+            {BINDER_VALUE_CAPS.filter(Boolean).map(v => (
+              <option key={v} value={v}>{capLabel(v)} &amp; up — keep out</option>
+            ))}
+          </select>
+        </label>
         <span className="muted bs-note">
           {ms.reserved > 0
-            ? <><b style={{ color: 'var(--gold)' }}>{ms.reserved}</b> open slot{ms.reserved === 1 ? '' : 's'} {ms.reserved === 1 ? 'has' : 'have'} only a reserved copy — {ms.reserved === 1 ? 'it stays' : 'they stay'} out for grading.</>
-            : reserveCut !== 'off'
-              ? <>Copies at <b>{reserveCut}</b> cut or better stay out to grade &amp; sell; graded slabs are always eligible.</>
-              : <>Every copy you own is eligible to file. Set a reserve to keep your sharpest cuts out for grading.</>}
+            ? <><b style={{ color: 'var(--gold)' }}>{ms.reserved}</b> open slot{ms.reserved === 1 ? '' : 's'} {ms.reserved === 1 ? 'has' : 'have'} only a reserved copy — {ms.reserved === 1 ? 'it stays' : 'they stay'} out to grade &amp; sell.</>
+            : reserveActive
+              ? <>Held out of the binder: {reserveSummary}.{reserveGradedValue > 0 ? '' : ' Graded slabs are always eligible.'}</>
+              : <>Every copy you own is eligible to file. Set a reserve to keep your sharpest cuts — or your priciest cards — out of the binder.</>}
           {!hasLoupe && reserveCut !== 'off' && <><br />🔍 Without the Jeweler's Loupe your own cut read is fuzzy, but your curator measures precisely.</>}
         </span>
       </div>
@@ -208,7 +260,7 @@ export default function Binder({ onPick }) {
               <div key={c.id} className={`binder-slot masterset ${ownsAny ? 'owned' : 'missing'} ${chase ? 'chase' : ''}`}>
                 <div className="binder-slot-art" onClick={() => anyOwned && onPick?.(anyOwned)} title={anyOwned ? c.name : `${c.name} · ${c.rarity}`}>
                   {art ? <img src={art} alt={c.name} loading="lazy" decoding="async" style={ownsAny ? null : { opacity: 0.22, filter: 'grayscale(1)' }} /> : <span className="binder-slot-name">{c.name}</span>}
-                  <span className="binder-num">#{c.number}</span>
+                  <span className="binder-num">#{cardNumber(c)}</span>
                   {chase && <span className="binder-slot-chase">💎</span>}
                 </div>
                 <div className="variant-chips">
@@ -241,3 +293,6 @@ export default function Binder({ onPick }) {
 }
 
 function numOf(n) { const m = String(n).match(/\d+/); return m ? parseInt(m[0], 10) : 0 }
+// A dollar ceiling as a menu label — whole dollars, grouped ($25, $1,000). fmtMoney's cents
+// are noise on a round threshold.
+function capLabel(v) { return v >= 1000 ? fmtMoney(v) : `$${v}` }

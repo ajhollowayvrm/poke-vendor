@@ -9,3 +9,15 @@ dist
 scripts/.pokemon-api-key
 *.pokemon-api-key
 .playwright-mcp
+
+# Local env — NEVER COMMIT. This repo is PUBLIC, and Vite INLINES import.meta.env.* into the
+# built bundle, so anything here would ship in the JavaScript rather than stay server-side.
+.env
+.env.*
+!.env.example
+
+# iOS — the Xcode project is GENERATED from ios/project.yml by `npm run ios:project`.
+# Committing it means two sources of truth and a merge conflict every time either moves.
+ios/*.xcodeproj
+ios/build
+ios/DerivedData

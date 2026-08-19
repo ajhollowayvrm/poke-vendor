@@ -2,6 +2,7 @@
 import { cardInValueRange, cardFromSetsInRange, gradedCardInRange, vintageCardInRange, rawValue, cardValue, sealedValue, sealedBase, round2, SHOP_SETS, rarityRank, VINTAGE_SETS, SECONDARY_SETS, AFTERMARKET_SETS, JP_CARD_SETS, JP_SHOP_SETS, JP_WORLD_RATE, vintageProduct, setProducts, setIdOfCard, setNameOfCard, setById, cardImg, fameMult, fameBeyond } from './engine'
 import { omniShelfCards, BUYLIST_POLICIES, SPECIAL_ORDER_DEPOSIT, SPECIAL_ORDER_PREMIUM, SPECIAL_ORDER_CAP } from './store/constants'
 import { rankForNotoriety } from './rep'
+import { CHALLENGE_BIAS, DISCORD_HOLD_SKEW } from './content'
 
 // --- Show tiers --------------------------------------------------------------
 // Each tier gates by notoriety and defines the value band of stock floating
@@ -158,9 +159,12 @@ export function makeShowLead(show, kind, opts = {}) {
 // `flex` = how far (fraction toward fair market) a vendor will haggle from their
 // opening price before walking. Fair dealers bend a lot; lowballers barely move.
 const ARCHETYPES = [
-  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — fair both ways' },
+  // The vibe describes CHARACTER and STOCK only. Every place that prints it appends the exact
+  // "· pays N% for yours" right after, so a vibe that also claimed a pay rate said the same
+  // thing twice in one breath — "pays TOP dollar for yours · pays 90% for yours".
+  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — bends on price, and expects you to' },
   { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, flex: 0.45, vibe: 'shrewd — but stocks the deepest high-end & graded bins' },
-  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — and pays TOP dollar for yours' },
+  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — the deepest pockets in the room' },
   { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, flex: 0.65, vibe: 'eager but green — sells under market, sometimes misprices a gem' },
   { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  flex: 0.20, vibe: 'a shark — gouges on everything, but now and then fumbles a price' },
 ]
@@ -398,7 +402,13 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
 // NOTE: deliberately does NOT take notoriety — the floor must be a pure function of
 // (show seed, day) so it can't silently regenerate (restocking sold-out booths and
 // re-minting card uids) when the player's stats move mid-show.
-export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = []) {
+// `challengeSetId` — the set you've publicly announced you're chasing (🃏 Master Set
+// Challenge). Dealers who watch the series start pulling that set out for you, so a slice of
+// every singles bin is drawn from it. This is THEMING, not an economy change: the biased draw
+// runs through cardFromSetsInRange, which holds the card inside the same value band the bin
+// would have used anyway — exactly the rail the era-themed buy-in pools ride. You find more of
+// what you're chasing; you never find it cheaper.
+export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = [], challengeSetId = null) {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
   const [lo, hi] = tier.valueBand
@@ -427,6 +437,8 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   // raw vintage — you can't buy these sets in the shop.
   const VINTAGE_SINGLE_CHANCE = { meetup: 0, shop: 0.04, regional: 0.08, national: 0.13, invitational: 0.18, worlds: 0.25 }
   const vintageChance = VINTAGE_SINGLE_CHANCE[show.tierKey] || 0
+  // 🃏 The set you announced you're chasing (null unless a challenge is running).
+  const chaseSet = challengeSetId ? setById(challengeSetId) : null
   const booths = []
   for (let i = 0; i < n; i++) {
     // A recurring roster vendor claims this slot (fixed character), else a procedural one.
@@ -466,6 +478,15 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       // The hit band floor sits low (15% of the tier cap) so elite tiers draw from the
       // whole real-comp spread instead of exhausting the handful of top comps.
       const hitChance = arch.key === 'sharp' ? 0.38 : 0.15
+      // 🃏 A slice of the singles bin is what you're publicly chasing — the dealer heard, and
+      // dug it out of the back. Sealed and vintage tables are exempt (they don't run bins).
+      if (!card && chaseSet && specialty === 'singles' && r() < CHALLENGE_BIAS) {
+        const bandLo = r() < 0.5 ? lo : lo * (0.05 + r() * 0.25)
+        card = cardFromSetsInRange([chaseSet], bandLo, hi * (0.4 + r() * 0.6), r)
+        // cardFromSetsInRange falls back to the global pool when the set has nothing in this
+        // band — only tag it when the draw actually landed in the set you're chasing.
+        if (card && setIdOfCard(card) === chaseSet.id) card._chase = true
+      }
       if (!card) {
         if (arch.key === 'whale' || roll < hitChance) {
           card = gradedCardInRange(hi * 0.15, hi, 8 + Math.floor(r() * 3), r, seenSlabs)
@@ -586,6 +607,57 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
 
 // Names floating above NPC shoppers for flavor.
 export const NPC_EMOJI = ['🧑','👩','👨','🧓','👵','🧔','👱','👲','🧑‍🦱','👩‍🦰','🧑‍🦰','👨‍🦱','🧑‍🦳','👩‍🦳']
+
+// --- 🏃 The other dealers ---------------------------------------------------------
+// You are not the only person on this floor who knows what things are worth.
+//
+// Until now a mispriced gem in a newbie's bin sat there for as long as you liked. You could
+// walk the whole hall, price everything, and come back for the bargains — which is not a
+// show, it is a shopping list. Real floors do not work that way: the people who make money
+// at them are through the door at opening and the good stuff is gone in the first hour.
+//
+// So a rival dealer works the floor alongside you, and they go for the money — the biggest
+// under-market card they can find. Two things make that fair rather than annoying:
+//
+//   • A GRACE PERIOD. Nothing is taken for the first stretch after you arrive, so you always
+//     get a real look around before anyone competes with you.
+//   • THEY ONLY TAKE GENUINE DEALS. A fairly priced card is never sniped. What you lose is
+//     exactly what you should have been quick about, which is what makes the 🤝 Dealer
+//     Network — the upgrade that flags a deal on sight — worth its price.
+//
+// Bigger halls are sharper. A local meetup has almost nobody doing this; a World
+// Championship floor is full of people who do it for a living.
+export const SNIPE_GRACE_MS = 45000        // you always get a first look around
+export const SNIPE_INTERVAL_MS = 21000     // how often a rival considers a purchase
+export const SNIPE_RATE = {                // per-check chance, by hall
+  meetup: 0.10, shop: 0.16, regional: 0.24, national: 0.34, invitational: 0.44, worlds: 0.55,
+}
+export const RIVAL_DEALERS = ['Marcus', 'Dee', 'Sal', 'Priya', 'Kenji', 'Roman', 'Tess', 'Vic',
+  'Nadia', 'Older guy in a Charizard hoodie', 'A dealer from two tables down', 'The woman with the loupe']
+
+// What a rival would take off the floor right now. `taken` is the set of keys already gone
+// (bought by you or sniped earlier). Returns null when there is nothing genuinely underpriced
+// left — a rival never takes a fairly priced card, because that is not what a rival is.
+export function pickSnipe(booths, taken, rnd = Math.random) {
+  const deals = []
+  for (const booth of (booths || [])) {
+    for (const card of (booth.stock || [])) {
+      if (!card?.uid || taken?.has(card.uid)) continue
+      const worth = cardValue(card)
+      const ask = card._ask ?? worth
+      // The bar is the same one the game already calls a deal, and it is worth grabbing.
+      if (ask >= worth * 0.8 || worth < 5) continue
+      deals.push({ booth, card, worth, ask, edge: worth - ask })
+    }
+  }
+  if (!deals.length) return null
+  // They go for the money. A little noise on top so it is not perfectly predictable — a real
+  // rival misses things too.
+  deals.sort((a, b) => b.edge - a.edge)
+  const pool = deals.slice(0, Math.max(1, Math.ceil(deals.length * 0.3)))
+  const hit = pool[Math.floor(rnd() * pool.length)]
+  return { ...hit, who: RIVAL_DEALERS[Math.floor(rnd() * RIVAL_DEALERS.length)] }
+}
 
 // --- Procedural encounters ---------------------------------------------------
 // Encounters are assembled from templates + (sometimes) a real card.
@@ -1497,9 +1569,16 @@ function wpickWeighted(arr) {
 
 // Make one want. Collectors ask for a HUGE variety — a common to fill a binder page just as
 // often as a chase. `rich` (high notoriety) skews toward pricier named asks.
-export function makeWant(rich = false) {
+// `holdSetIds` — 💬 Community Discord: sets you're actually SITTING ON. Members ask the dealer
+// they know, so a majority of community wants name a set you hold. Like every other pool skew
+// in this file it changes WHICH card is asked for, never what the want pays (the premium math
+// below is untouched) — so a busier board is a routing opportunity, not free money.
+export function makeWant(rich = false, holdSetIds = null) {
   const who = wpick(COLLECTOR_NAMES)
   const daysLeft = 4 + Math.floor(Math.random() * 6) // 4–9 days to fill
+  const held = (holdSetIds && holdSetIds.length && Math.random() < DISCORD_HOLD_SKEW)
+    ? SHOP_SETS.filter(s => holdSetIds.includes(s.id))
+    : null
   // 55% named card, 45% "any <rarity> from <set>"
   if (Math.random() < 0.55) {
     // Only ever name cards the player can actually OBTAIN — i.e. non-vintage sets sold in the
@@ -1509,7 +1588,8 @@ export function makeWant(rich = false) {
     // 🎌 A collector can absolutely be chasing a Japanese card. Fulfillable for the same reason
     // it's askable: JP singles now turn up in vendor bins and online offers, and the import
     // shelf sells the sealed. Same minority rate as everywhere else.
-    const wantSets = (JP_CARD_SETS.length && Math.random() < JP_WORLD_RATE) ? JP_CARD_SETS : SHOP_SETS
+    const wantSets = (held && held.length) ? held
+      : (JP_CARD_SETS.length && Math.random() < JP_WORLD_RATE) ? JP_CARD_SETS : SHOP_SETS
     let all = wantSets.flatMap(s => s.cards.filter(c => (c.price ?? 0) >= floor))
     if (!all.length) all = SHOP_SETS.flatMap(s => s.cards)
     const card = wpick(all)
@@ -1536,7 +1616,9 @@ export function makeWant(rich = false) {
   // Restricted to the rippable shelf so the player has a way to go and find one.
   const jpCandidates = (JP_SHOP_SETS.length && Math.random() < JP_WORLD_RATE)
     ? JP_SHOP_SETS.filter(s => s.cards.some(c => c.rarity === rar)) : []
-  const set = jpCandidates.length ? wpick(jpCandidates)
+  const heldWithRarity = held ? held.filter(s => s.cards.some(c => c.rarity === rar)) : null
+  const set = (heldWithRarity && heldWithRarity.length) ? wpick(heldWithRarity)
+    : jpCandidates.length ? wpick(jpCandidates)
     : wpick(SHOP_SETS) // non-vintage only — wants must be fulfillable (see above)
   // Low-rarity asks pay a fatter multiple so a common/uncommon want is worth doing.
   const low = rarityRank(rar) < rarityRank('Double Rare')

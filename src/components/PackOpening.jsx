@@ -1,27 +1,40 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel } from '../game/engine'
+import { openPack, openPackFor, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, psa10Value, psaValueAt, packPrice, fmtMoney, rarityRank, preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, ownedIdSet, setIdOfCard, needTierFor, drawPackSets, setById, productTypeLabel } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import CardModal from './CardModal'
 import HoloCard from './HoloCard'
-import HandReveal from './HandReveal'
+import HandReveal, { NeedBadge } from './HandReveal'
 import Burst from './Burst'
-import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxTension, sfxGod } from '../game/feedback'
+import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
+import { AnimatedNumber } from '../ui/AnimatedNumber'
 
 // Opens sealed product with the animated rip. For a single booster this rips one
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
 // pack in sequence — "Pack 3 of 9" — and you can fast-forward the rest anytime.
 // Phases: idle -> shaking -> revealing -> done (per pack) -> finished (whole product)
-export default function PackOpening({ set, product, onExit, singleNoReRip = false, onRipAnother, canRipAnother = false, ripAnotherSoldOut = false, ripAnotherPrice, ripAnotherStock = 0, paused = false }) {
+// `ripAnotherStock` is the single gate for "Rip another": it rips from 📦 Inventory only and
+// never buys, so holding none means there is no action to offer. The old price/sold-out/
+// can-afford props existed only to describe a re-BUY that no longer happens.
+export default function PackOpening({ set, product, uid, onExit, singleNoReRip = false, onRipAnother, ripAnotherStock = 0, paused = false, costBasis = null }) {
+  const canRipAnother = !!onRipAnother && ripAnotherStock > 0
   const totalPacks = product?.packs ?? 1
+  // 📦 A cross-set product (an Ultra Premium Collection) holds packs from a whole era, so the
+  // set changes from pack to pack. Derived from the unit's uid — the same box always holds the
+  // same packs. Memoised so a re-render can never reshuffle the lineup mid-rip.
+  const packSets = useMemo(() => drawPackSets(product, uid), [product, uid])
   const ripSpeed = useGame(s => s.settings.ripSpeed ?? 1)
   const autoAdvance = useGame(s => s.settings.autoAdvance ?? false)
   const revealMode = useGame(s => s.settings.revealMode ?? 'auto')
   const soundOn = useGame(s => s.settings.sound ?? true)
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const [packNo, setPackNo] = useState(1)        // 1-based, which pack we're on
+  // The set THIS pack came from. For an ordinary product that's the product's own set and
+  // nothing below changes; for a UPC it's whichever set the draw dealt into this slot, and it
+  // is what the wrapper, the logo and the progress pill must say.
+  const packSet = (packSets && setById(packSets[packNo - 1])) || set
   const [phase, setPhase] = useState('idle')
   const [pulls, setPulls] = useState([])
   const [shown, setShown] = useState(0)
@@ -38,14 +51,30 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   const [finished, setFinished] = useState(false) // whole product done
   const [extra, setExtra] = useState([])          // promo + fast-forwarded packs (for the summary)
   const [ripValue, setRipValue] = useState(0)     // cumulative card value across the WHOLE rip
+  const [ripBest, setRipBest] = useState(null)    // best single card across the WHOLE rip (for the 📜 log)
   const [packsOpened, setPacksOpened] = useState(0) // how many packs we've fully opened this rip
   const addPulls = useGame(s => s.addPulls)
+  const logRip = useGame(s => s.logRip)
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise cut read vs a fuzzy eyeball one
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
   const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
+  // 🃏 Your OWN wants: cards missing from a set you're building. Rebuilt when the collection
+  // changes — i.e. once per pack banked, not once per card — so a 36-pack box knows what pack 12
+  // put in your hands by the time pack 13 lands.
+  const collection = useGame(s => s.collection)
+  const binder = useGame(s => s.binder)
+  const challengeSetId = useGame(s => s.challenge?.setId || null)
+  const ownedIds = useMemo(() => ownedIdSet([...(collection || []), ...(binder || [])]), [collection, binder])
+  const binderSets = useMemo(() => new Set((binder || []).map(c => setIdOfCard(c)).filter(Boolean)), [binder])
+  function needOf(card) { return needTierFor(card, ownedIds, challengeSetId, binderSets) }
+  const [autoLeft, setAutoLeft] = useState(0)     // seconds left on the auto-advance countdown
+  const [held, setHeld] = useState(false)         // you pressed Hold — this pack won't auto-advance
   const committed = useRef(false)
   const autoRipped = useRef(false)                 // did we already auto-rip the current idle pack?
+  const pausedRef = useRef(paused)                 // read inside timer callbacks, which don't re-close over props
+  const resumeRef = useRef(null)                   // the reveal step parked because you left the tab
+  const packSeq = useRef(0)                        // bumped to abandon an in-flight reveal chain
   const speed = Math.max(0.25, ripSpeed)           // guard against absurd values
   const ms = (n) => n / speed                      // scale a delay by rip speed
   // Track reveal/burst timers so they can be cancelled on unmount — exiting (Done / "Rip
@@ -59,6 +88,42 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   useEffect(() => () => { timersRef.current.forEach(clearTimeout); timersRef.current = [] }, [])
   // Keep the feedback module's sound/haptics gates in sync with the user's settings.
   useEffect(() => { configureFeedback({ sound: soundOn, haptics: hapticsOn }) }, [soundOn, hapticsOn])
+  // Leaving the Buy tab has to stop the REVEAL, not just stop the next pack from auto-starting.
+  // An in-flight step() chain used to keep flipping cards — and firing hit stings — at a hidden
+  // screen, so you'd come back to a pack that had already happened without you. step() parks its
+  // continuation here instead, and coming back picks up on the exact card it stopped at.
+  useEffect(() => {
+    pausedRef.current = paused
+    if (paused || !resumeRef.current) return
+    const go = resumeRef.current
+    resumeRef.current = null
+    go()
+  }, [paused])
+  // 📜 One log line per RIP — written from an EFFECT rather than from finish(), so it reads the
+  // settled totals instead of the mid-update values a call inside the state updater would see.
+  // Two shapes reach "the whole product is done": a multi-pack product goes through
+  // addBonusAndFinish (`finished`), a single loose pack simply closes out its one pack. The ref
+  // keeps it to exactly one entry per product, and resetForNext clears it for an in-place re-rip.
+  const ripLogged = useRef(false)
+  useEffect(() => {
+    const productDone = finished || (totalPacks === 1 && phase === 'done')
+    if (!productDone || ripLogged.current) return
+    ripLogged.current = true
+    logRip({
+      // A cross-set product is logged under its ERA and how many sets it actually dealt —
+      // "16 packs · 5 sets" — because no single set name would be true of the rip.
+      setId: set.id,
+      name: packSets ? `${product.pool.series} era` : set.name,
+      setCount: packSets ? new Set(packSets).size : undefined,
+      type: product?.type || 'Booster Pack',
+      // What you PAID when the caller knows it (a held unit's boughtPrice), not what the
+      // product lists at today — so a log line's net is a real P/L and the sift's lines,
+      // which read boughtPrice straight off the inventory row, mean the same thing.
+      packs: packsOpened || totalPacks, cost: costBasis ?? ripCost, pulled: ripValue, best: ripBest,
+      special: isGod ? 'god' : isDemigod ? 'demigod' : null,
+    })
+  }, [finished, phase, totalPacks])
+
   // When a pack finishes, snap the self-scrolling overlay back to the top so the pack-done
   // controls (Next pack / Rip another / Done) — which sit at the top of the stage — are always
   // in view. Without this, finishing a rip while scrolled down through the reveal grid leaves
@@ -71,22 +136,16 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
 
   const last = packNo >= totalPacks
 
-  // Why "Rip another" is dead, when it is. It's gated on whether you can actually GET one —
-  // from your own 📦 stock or off a shelf that still has it — so an empty shelf and an empty
-  // wallet are different problems and get different words. Both buttons below share this.
-  const ripBlockedWhy = ripAnotherSoldOut
-    ? `You're out of ${product?.type || 'packs'} and no shop has one left to sell.`
-    : 'Not enough cash to rip another.'
-
   function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
+  const better = (b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b)
 
   function rip() {
     if (phase !== 'idle') return
     primeAudio() // this click/drag is our chance to start audio under the autoplay policy
     setTear(0)
-    const cards = openPackFor(set, product)
+    const cards = openPackFor(packSet, product)
     preloadCardImages(cards) // warm the CDN cache so cards don't pop in slowly mid-reveal
-    cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
+    cards.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     const god = !!cards._god
     const demigod = !!cards._demigod
     setSearched(!!cards._searched)
@@ -101,7 +160,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
       setPhase('revealing')
       // Manual mode: land the pack as a stack of face-down cards and wait for the
       // first tap. Auto mode: start the timed reveal immediately.
-      if (revealMode === 'manual') setAwaiting(true)
+      if (revealMode === 'manual') { setAwaiting(true); teaseNext(cards, 0) }
       else step(cards, 0)
     }, ms(god ? 1500 : demigod ? 1200 : 900))
   }
@@ -109,9 +168,9 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function finish(cards) {
     if (!committed.current) {
       committed.current = true
-      addPulls(cards, set.name)
-      // fold this pack into the running rip tally (value-per-rip)
-      setRipValue(v => v + cards.reduce((a, c) => a + cardValue(c), 0))
+      addPulls(cards, packSet.name)
+      // NB: the rip tally is NOT folded in here — step() adds each card's value as it lands,
+      // so by the time we get here the pack is already counted (see the note on step()).
       setPacksOpened(n => n + 1)
     }
     if (cards._god) { setBurst(true); after(() => setBurst(false), 3000); sfxGod() } // big finale
@@ -125,23 +184,40 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   // face-down card) before it actually flips. The beat is pinned to the narrow bar, not the
   // wider isChase one: Poké Ball foils land in one pack in three, and an 850ms hold that
   // often stops reading as suspense and starts reading as lag.
-  function step(cards, i) {
+  function step(cards, i, seq = packSeq.current) {
+    if (seq !== packSeq.current) return   // this pack was skipped past — abandon the chain
     if (i >= cards.length) { finish(cards); return }
+    // Off the Buy tab: park here rather than reveal to a screen nobody's looking at. Sits BELOW
+    // the finish() branch on purpose — a pack that already turned its last card still commits to
+    // the collection, so pausing can never strand cards.
+    if (pausedRef.current) { resumeRef.current = () => step(cards, i, seq); return }
     const c = cards[i]
     const grail = isGrail(c)
     if (grail && revealMode !== 'manual' && !c._peeked) {
       c._peeked = true
       setSuspenseIdx(i)
       sfxTension()
-      after(() => { setSuspenseIdx(-1); step(cards, i) }, ms(850))
+      after(() => { setSuspenseIdx(-1); step(cards, i, seq) }, ms(850))
       return
     }
     setShown(i + 1)
+    setSuspenseIdx(-1)
+    // The running tally climbs a CARD at a time, not a pack at a time. Banking the whole pack in
+    // one lump made the number itself the spoiler: a $400 jump the instant the wrapper came off
+    // (or the moment the last card landed) told you what the pack held before you'd looked at it.
+    // Each index reaches this line exactly once — the grail suspense beat re-enters step() with
+    // the same i but returns above, and manual taps are gated on `awaiting` — so no double count.
+    setRipValue(v => v + cardValue(c))
+    setRipBest(b => better(b, c))
     const special = c._isHit || c.foil || c._fillsWant
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
       setHits(h => [c, ...h])
-      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, grail)
+      // A want-fill has its own sound now. It used to route through sfxHit, so a $2 common that
+      // someone had asked for rang like a chase pull — and a chase that ALSO filled a want said
+      // nothing extra. Both: the hit sting first, the want chime layered behind it.
+      if (c._isHit || c.foil) { sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, grail); if (c._fillsWant) sfxWant(0.3) }
+      else sfxWant()
     } else {
       sfxFlip()
     }
@@ -150,12 +226,46 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     // player tapping through at their own speed had the payoff card snatched away to the pack
     // summary 520ms after it flipped. Now the final card waits for a tap like every other one;
     // advanceManual() then calls step() with i === length, which falls through to finish().
-    if (revealMode === 'manual') { setAwaiting(true); return }
+    if (revealMode === 'manual') { setAwaiting(true); teaseNext(cards, i + 1); return }
     // Auto mode: the last card is the one you actually want to look at, and the moment it lands
     // the whole screen changes (phase 'done' swaps in the summary and scrolls the stage to top).
     // Give it a real beat instead of the same 520ms as a card that's followed by another flip.
     const delay = isLast ? (special ? 2200 : 1600) : (special ? 1100 : 520)
-    after(() => step(cards, i + 1), ms(delay))
+    after(() => step(cards, i + 1, seq), ms(delay))
+  }
+
+  // Manual mode's suspense beat. Auto mode holds the row for 850ms before a grail flips; manual
+  // had nothing, because the tap is yours and a timed hold would just be lag. So the hold lasts
+  // exactly as long as you take: the card you're about to turn glows, the rest of the hand dims,
+  // and it stays that way until you turn it. `_peeked` is the same once-per-card flag auto uses.
+  function teaseNext(cards, i) {
+    const c = cards[i]
+    if (!c || !isGrail(c) || c._peeked) { setSuspenseIdx(-1); return }
+    c._peeked = true
+    setSuspenseIdx(i)
+    if (!pausedRef.current) sfxTension() // the glow can wait for you; a swell at a hidden screen can't
+  }
+
+  // "Show the rest of this pack": you've seen the card you stopped for and the remaining flips are
+  // a formality — land them all and close the pack out. Distinct from "Skip rest", which fast-
+  // forwards whole packs you never see at all. Bumping packSeq abandons the in-flight chain so a
+  // timer already in the air can't reveal a card into a pack that's now finished.
+  function revealRest() {
+    if (phase !== 'revealing') return
+    const cards = pulls
+    packSeq.current++
+    resumeRef.current = null
+    setSuspenseIdx(-1); setAwaiting(false)
+    const rest = cards.slice(shown)
+    if (rest.length) {
+      setRipValue(v => v + rest.reduce((a, c) => a + cardValue(c), 0))
+      setRipBest(b => rest.reduce(better, b))
+      const restHits = rest.filter(c => c._isHit || c.foil || c._fillsWant)
+      // reversed, so the Hits list keeps the same newest-first order a real reveal builds
+      if (restHits.length) setHits(h => [...restHits].reverse().concat(h))
+      setShown(cards.length)
+    }
+    finish(cards)
   }
 
   // Manual mode: a tap on the next face-down card flips it (and queues the wait for
@@ -196,8 +306,12 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   function resetForNext() {
     committed.current = false
     autoRipped.current = false
+    packSeq.current++            // nothing from the last pack gets to fire into this one
+    resumeRef.current = null
     setPhase('idle'); setShown(0); setPulls([]); setIsGod(false); setIsDemigod(false)
     setAwaiting(false); setSuspenseIdx(-1); setTear(0); setTab('cards')
+    setHeld(false); setAutoLeft(0)   // Hold is per-pack: it means "wait, I'm looking at THIS one"
+    ripLogged.current = false        // an in-place re-rip is a NEW rip and earns its own log line
   }
 
   // Move to the next pack (or finish if that was the last one).
@@ -219,24 +333,33 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     // (`paused` is in the deps).
     if (paused) return
     if (phase === 'done' && !last) {
-      const t = setTimeout(() => nextPack(), ms(3000))
-      return () => clearTimeout(t)
+      // The gap used to be a bare 3s timer with nothing on screen: if you wanted a moment longer
+      // with the grid, your only option was to be quick. Now it counts down out loud and you can
+      // stop it — Hold cancels this pack's advance and hands you the Next button.
+      if (held) return
+      const total = ms(3000)
+      setAutoLeft(Math.ceil(total / 1000))
+      const tick = setInterval(() => setAutoLeft(s => (s > 0 ? s - 1 : 0)), 1000)
+      const t = setTimeout(() => nextPack(), total)
+      return () => { clearInterval(tick); clearTimeout(t); setAutoLeft(0) }
     }
     if (phase === 'idle' && !autoRipped.current) {
       autoRipped.current = true
       const t = setTimeout(() => rip(), ms(600))
       return () => clearTimeout(t)
     }
-  }, [phase, packNo, autoAdvance, last, totalPacks, speed, paused])
+  }, [phase, packNo, autoAdvance, last, totalPacks, speed, paused, held])
 
   // Mint the product's guaranteed promo (if any), add it, and finish.
   function addBonusAndFinish() {
     const promo = makeProductPromo(set, product || { bonus: null })
     if (promo) {
       promo._isHit = isHit(promo)
+      promo._needFor = needOf(promo)
       addPulls([promo], `${product.type} promo · ${set.name}`, 0) // promo isn't a pack
       setExtra(e => [...e, promo])
       setRipValue(v => v + cardValue(promo)) // promo counts toward the rip's total value
+      setRipBest(b => better(b, promo))
       if (promo._isHit || promo.foil) setHits(h => [promo, ...h])
     }
     setFinished(true)
@@ -246,19 +369,26 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
   // If the current pack hasn't been ripped yet (idle), it counts as remaining too;
   // if it's already revealed (done), only the packs after it remain.
   function skipRest() {
+    packSeq.current++; resumeRef.current = null   // nothing in flight gets to land after this
     const remaining = totalPacks - packNo + (phase === 'idle' ? 1 : 0)
+    // Where the un-ripped packs start: on 'idle' the current pack is still sealed, otherwise
+    // it's already been opened and the remainder begins after it. Skipping must deal the SAME
+    // sets the slow path would have — fast-forwarding is not a different box.
+    const startIdx = packNo - 1 + (phase === 'idle' ? 0 : 1)
     const fast = []
     for (let i = 0; i < remaining; i++) {
-      const pack = openPack(set)
+      const from = (packSets && setById(packSets[startIdx + i])) || set
+      const pack = openPack(from)
       if (pack._god) pack.forEach(c => { c._fromGod = true })
       if (pack._demigod) pack.forEach(c => { c._fromDemigod = true })
       fast.push(...pack)
     }
-    fast.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
-    if (fast.length) addPulls(fast, set.name, remaining)
+    fast.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
+    if (fast.length) addPulls(fast, packSets ? `${product.pool.series} era` : set.name, remaining)
     setExtra(e => [...e, ...fast])
     // fold the fast-forwarded packs into the running rip tally
     setRipValue(v => v + fast.reduce((a, c) => a + cardValue(c), 0))
+    setRipBest(b => fast.reduce(better, b))
     setPacksOpened(n => n + remaining)
     const fastHits = fast.filter(c => c._isHit || c.foil || c._fillsWant)
     if (fastHits.length) setHits(h => [...fastHits, ...h])
@@ -282,10 +412,19 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     return (
       <div className="stage">
         <div style={{ textAlign: 'center', maxWidth: 520 }}>
-          <h2 style={{ marginBottom: 6 }}>✓ Opened {product?.type || 'pack'} — {set.name}</h2>
+          {/* The header names what you BOUGHT; the breakdown below names what you GOT. */}
+          <h2 style={{ marginBottom: 6 }}>✓ Opened {product?.type || 'pack'} — {packSets ? (product.name || `${product.pool.series} era`) : set.name}</h2>
           <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
             All {totalPacks} pack{totalPacks > 1 ? 's' : ''}{promo ? ' + promo' : ''} are in your collection.
           </p>
+          {packSets && (
+            <p className="muted" style={{ fontSize: 12.5, margin: '2px 0 8px' }}>
+              {[...packSets.reduce((m, id) => m.set(id, (m.get(id) || 0) + 1), new Map())]
+                .sort((a, b) => b[1] - a[1])
+                .map(([id, n]) => `${n}× ${setById(id)?.name || id}`)
+                .join(' · ')}
+            </p>
+          )}
           <p style={{ fontSize: 15, margin: '6px 0' }}>
             Total pulled <b style={{ color: 'var(--green)' }}>{fmtMoney(ripValue)}</b>{' '}
             <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
@@ -340,22 +479,16 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
           </div>
           {modalEl}
           <div className="row" style={{ justifyContent: 'center', marginTop: 12 }}>
-            {onRipAnother && (
-              <button
-                className="btn gold"
-                style={{ maxWidth: 220 }}
-                disabled={!canRipAnother}
-                title={canRipAnother ? '' : ripBlockedWhy}
-                onClick={onRipAnother}>
-                {/* Held stock rips free (already paid) — only an empty 📦 shows a price */}
-                Rip another{ripAnotherStock > 0 ? ` (📦 ${ripAnotherStock} held)` : ripAnotherPrice != null ? ` (${fmtMoney(ripAnotherPrice)})` : ''} ↻
+            {/* Only rendered while you HOLD another one. It rips from 📦 Inventory and never
+                buys, so with nothing held there is no action left to offer — the button is
+                absent rather than present-but-dead. */}
+            {canRipAnother && (
+              <button className="btn gold" style={{ maxWidth: 220 }} onClick={onRipAnother}>
+                Rip another (📦 {ripAnotherStock} held) ↻
               </button>
             )}
-            <button className={`btn ${onRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
+            <button className={`btn ${canRipAnother ? 'alt' : 'gold'}`} style={{ maxWidth: 200 }} onClick={onExit}>Done →</button>
           </div>
-          {onRipAnother && !canRipAnother && (
-            <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>{ripBlockedWhy}</p>
-          )}
         </div>
       </div>
     )
@@ -374,24 +507,24 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
     <div className="stage">
       {burst && <Burst />}
 
-      {multi && (
+      {/* A loose single pack draws this bar too, from its first card. It used to be multi-only, so
+          the one rip where the running total is the ONLY money on screen was the one without it. */}
+      {(multi || shown > 0) && (
         <div className="pack-progress">
-          <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}</span>
-          {packsOpened > 0 && (
+          {/* On a cross-set product the set name is the whole point of the pill — you need to
+              know it's a Brilliant Stars pack BEFORE you tear it, not after. */}
+          {multi && <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 Pack {packNo} of {totalPacks}{packSets ? ` · ${packSet.name}` : ''}</span>}
+          {/* Live from the very first card of the very first pack — it ticks up as cards land, so
+              there's no reason to hold it back until a pack has closed out. */}
+          {(packsOpened > 0 || shown > 0) && (
             <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}
               title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
-              💰 Rip {fmtMoney(ripValue)} <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
+              {/* Tweened, not snapped: now that it climbs a card at a time, the climb is the
+                  point — the number counting up IS the "what did that card just earn me". */}
+              💰 Rip <AnimatedNumber value={ripValue} format={fmtMoney} /> <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
             </span>
           )}
           {product?.bonus && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
-          {/* 🔦 Told only AFTER the reveal — the gut-punch is realising nothing good was ever
-              coming, which is exactly how buying a searched pack feels. */}
-          {searched && phase === 'done' && (
-            <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
-              title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
-              🔦 Searched — the hit was already gone
-            </span>
-          )}
           {(phase === 'idle' || phase === 'done') && remainingToOpen >= 2 && (
             <button className="btn alt" style={{ flex: 'none', maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
           )}
@@ -408,8 +541,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               onPointerUp={onPackUp} onPointerCancel={onPackUp}>
               <div className="foil" />
               <div className="tear" aria-hidden="true" />
-              {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
-              <span className="hint">▶ Click or drag down to rip</span>
+              {packSet.logo ? <img className="logo" src={packSet.logo} alt={packSet.name} /> : <b>{packSet.name}</b>}
+              {/* Out of a mixed product the wrapper alone is the reveal — name it in words too,
+                  because a logo you half-recognise isn't the same as being told. */}
+              {packSets && <span className="pack-set-name">{packSet.name}</span>}
+              <span className="hint">▶ Tap or drag down to rip</span>
             </div>
           </div>
           {!multi && <button className="btn alt" style={{ maxWidth: 160 }} onClick={onExit}>← Back to shop</button>}
@@ -420,47 +556,61 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
         <div className="pack-wrap">
           <div className="pack3d shake">
             <div className="foil" />
-            {set.logo ? <img className="logo" src={set.logo} alt={set.name} /> : <b>{set.name}</b>}
+            {packSet.logo ? <img className="logo" src={packSet.logo} alt={packSet.name} /> : <b>{packSet.name}</b>}
+            {packSets && <span className="pack-set-name">{packSet.name}</span>}
           </div>
         </div>
       )}
 
       {(phase === 'revealing' || phase === 'done') && (
         <>
-          {isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
-          {isDemigod && <div className="demigodbanner">{(pulls._specialLabel || 'DEMIGOD PACK!')} <small>Most of the pack is a hit.</small></div>}
+          {/* Held to 'done' — the same reason the tally counts a card at a time. This used to fly
+              the moment the wrapper came off, so the banner announced a god pack over a stack of
+              face-down cards and every flip after it was a formality. The finale belongs on the
+              last card, where finish() already fires the burst. (The sift does this too.) */}
+          {phase === 'done' && isGod && <div className="godbanner">✨🎉 GOD PACK!! 🎉✨<small>Every card is a hit — one in thousands.</small></div>}
+          {phase === 'done' && isDemigod && <div className="demigodbanner">{(pulls._specialLabel || 'DEMIGOD PACK!')} <small>Most of the pack is a hit.</small></div>}
 
           {/* TOP — pack-done controls surface here so the next-pack button is up top, not below the cards */}
           {phase === 'done' && (
             <div className="rip-top-actions">
               {multi ? (
-                <button className="btn gold" style={{ maxWidth: 220 }} onClick={nextPack}>
-                  {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
-                </button>
+                <>
+                  <button className="btn gold" style={{ maxWidth: 220 }} onClick={nextPack}>
+                    {last ? (product?.bonus ? 'Open promo & finish →' : 'Finish →') : `Next pack (${packNo + 1}/${totalPacks}) →`}
+                  </button>
+                  {/* The auto-advance gap, out loud and stoppable. */}
+                  {autoAdvance && !last && !paused && (held ? (
+                    <p className="rip-auto-note">⏸️ Auto-advance held — take your time, then hit “Next pack”.</p>
+                  ) : autoLeft > 0 ? (
+                    <button className="btn alt" style={{ flex: 'none', maxWidth: 200 }} onClick={() => setHeld(true)}>
+                      ⏸️ Hold ({autoLeft}s) — still looking
+                    </button>
+                  ) : null)}
+                </>
               ) : singleNoReRip ? (
                 <button className="btn gold" style={{ maxWidth: 180 }} onClick={onExit}>Done →</button>
               ) : (
                 <>
-                  {/* Re-rip a single pack. When a paid re-rip path is wired (the shop/Buy
-                      flow), route through it so another pack is CHARGED + opened fresh.
-                      Without it, fall back to the in-place reset. */}
-                  <button
-                    className="btn gold"
-                    style={{ maxWidth: 200 }}
-                    disabled={onRipAnother ? !canRipAnother : false}
-                    title={onRipAnother && !canRipAnother ? ripBlockedWhy : ''}
-                    onClick={onRipAnother || resetForNext}>
-                    Rip another ({onRipAnother && ripAnotherStock > 0
-                      ? `📦 ${ripAnotherStock} held`
-                      : fmtMoney(onRipAnother && ripAnotherPrice != null ? ripAnotherPrice : packPrice(set))})
-                  </button>
-                  <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={onExit}>Done →</button>
+                  {/* Straight into the next one you already OWN — it comes out of 📦 Inventory
+                      and costs nothing. With none held there is nothing to offer, so the
+                      button goes away and "Done" becomes the primary action. */}
+                  {canRipAnother && (
+                    <button className="btn gold" style={{ maxWidth: 200 }} onClick={onRipAnother}>
+                      Rip another (📦 {ripAnotherStock} held)
+                    </button>
+                  )}
+                  <button className={`btn ${canRipAnother ? 'alt' : 'gold'}`}
+                    style={{ flex: 'none', maxWidth: canRipAnother ? 140 : 180 }} onClick={onExit}>Done →</button>
                 </>
               )}
-              {/* A dead "Rip another" always says why — an empty shelf reads very differently
-                  from an empty wallet, and silently greying the button explains neither. */}
+              {/* Out of this product: say so plainly, and point at the one place that sells it.
+                  This used to be a dead greyed button with an explanation underneath; buying
+                  more is now a deliberate trip to the Buy tab, not a tap inside the rip. */}
               {onRipAnother && !multi && !singleNoReRip && !canRipAnother && (
-                <p className="muted" style={{ fontSize: 12, margin: '6px 0 0', width: '100%', textAlign: 'center' }}>{ripBlockedWhy}</p>
+                <p className="muted" style={{ fontSize: 12, margin: '6px 0 0', width: '100%', textAlign: 'center' }}>
+                  That was your last {product ? productTypeLabel(product) : 'pack'} — pick up more on the 🛒 Buy tab.
+                </p>
               )}
             </div>
           )}
@@ -483,8 +633,18 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                 /* The reveal itself: you hold the pack as a stack, the current card face-up on top;
                    pull it off to the side to reach the next, with upcoming border edges peeking
                    (a rainbow chase telegraphs itself). When the pack finishes it settles into the grid. */
-                <HandReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
-                  setLogo={set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
+                <>
+                  <HandReveal pulls={pulls} shown={shown} awaiting={awaiting} revealMode={revealMode}
+                    setLogo={packSet.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard}
+                    suspense={suspenseIdx === shown} />
+                  {/* An escape hatch for the flips that no longer matter. Deliberately quiet, and
+                      gone once the last card is up (that tap closes the pack anyway). */}
+                  {shown < pulls.length && (
+                    <button className="btn alt rip-reveal-rest" onClick={revealRest}>
+                      ⏭️ Show the rest of this pack ({pulls.length - shown} left)
+                    </button>
+                  )}
+                </>
               ) : (
                 /* Done: the fan settles into a readable 2-up grid — every card big, with its name
                    + value, opening its full card page on tap. */
@@ -499,7 +659,7 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                           extraStyle={{ '--rarity': edge }}
                           className={`reveal-card shown ${(c._isHit||c.foil) ? 'hit' : ''} ${chase ? 'chase' : ''}`}>
                           <div className="flip">
-                            <div className="flip-back" aria-hidden="true">{set.logo && <img src={set.logo} alt="" />}</div>
+                            <div className="flip-back" aria-hidden="true">{packSet.logo && <img src={packSet.logo} alt="" />}</div>
                             <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
                           </div>
                         </HoloCard>
@@ -509,10 +669,11 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                             {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
                           </div>
                           <div className="rc-val">{fmtMoney(cardValue(c))}</div>
-                          {(cut || c._fillsWant) && (
+                          {(cut || c._fillsWant || c._needFor) && (
                             <div className="rc-badges">
                               {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
                               {c._fillsWant && <span className="rc-want">⭐ Want</span>}
+                              <NeedBadge card={c} compact />
                             </div>
                           )}
                         </button>
@@ -523,6 +684,20 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
               )}
               {phase === 'done' && (
                 <div className="rip-pack-summary" style={{ textAlign: 'center' }}>
+                  {/* 🔦 Told only AFTER the reveal — the gut-punch is realising nothing good was
+                      ever coming, which is exactly how buying a searched pack feels. It used to
+                      live in the multi-pack progress bar, where it could never appear: only a
+                      LOOSE single pack can be searched (openPackFor bails on packs !== 1), and a
+                      single pack doesn't render that bar. So the whole payoff was dead. It sits
+                      with the pack summary now, which both single and multi rips draw. */}
+                  {searched && (
+                    <div style={{ marginBottom: 8 }}>
+                      <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
+                        title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
+                        🔦 Searched — the hit was already gone
+                      </span>
+                    </div>
+                  )}
                   <div style={{ fontSize: 15, marginBottom: multi ? 4 : 8 }}>
                     Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
                     <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>
@@ -538,6 +713,18 @@ export default function PackOpening({ set, product, onExit, singleNoReRip = fals
                       </span>
                     </div>
                   )}
+                  {/* Ten per-card badges is the detail; THIS is the takeaway — did the pack move
+                      the set forward. Counted off the same _needFor stamp the badges read. */}
+                  {(() => {
+                    const need = pulls.filter(c => c._needFor).length
+                    const chal = pulls.filter(c => c._needFor === 'challenge').length
+                    if (!need) return null
+                    return (
+                      <div style={{ fontSize: 13.5, marginBottom: 6, color: chal ? 'var(--gold)' : 'var(--accent-light)', fontWeight: 700 }}>
+                        {chal ? `🃏 ${chal} new for your challenge set` : `📒 ${need} you didn't own yet`}
+                      </div>
+                    )
+                  })()}
                   <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>
                     Cards added to your collection. Best pull:{' '}
                     <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}

@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { refreshPrices, FETCHED_AT, SETS } from '../game/engine'
+import { useState, useMemo } from 'react'
+import { refreshPrices, FETCHED_AT, SETS, warmArt } from '../game/engine'
+import { isNativeShell } from '../game/native'
 import { useGame } from '../game/store'
 import { cloudConfigured, disownLocalSave, pushLocalChange } from '../game/cloudSave'
 import { currentUser } from '../game/auth'
@@ -9,6 +10,48 @@ import Account from './Account'
 const RIP_SPEEDS = [
   { v: 0.5, label: 'Slow' }, { v: 1, label: 'Normal' }, { v: 2, label: 'Fast' }, { v: 4, label: 'Turbo' },
 ]
+
+// 📥 Offline art. Card images live on remote CDNs, and inside the iOS shell every one you load
+// is kept on disk for ever (ArtSchemeHandler). What that cannot do is fetch art you have never
+// looked at — so with no signal, a set you have not scrolled past renders as nothing. This
+// downloads it deliberately, ahead of time.
+//
+// Scoped to what you OWN by default because that is both the thing you actually look at offline
+// and a bounded number: the whole catalogue is 23,000 cards and several gigabytes, which is not
+// a button anybody should be offered.
+function OfflineArt() {
+  const collection = useGame(s => s.collection)
+  const binder = useGame(s => s.binder)
+  const [job, setJob] = useState(null)   // { done, total, cancel } while running
+  const [msg, setMsg] = useState(null)
+
+  const mine = useMemo(() => [...(collection || []), ...(binder || [])], [collection, binder])
+
+  const start = () => {
+    if (job) { job.cancel(); setJob(null); setMsg('Stopped.'); return }
+    setMsg(null)
+    const j = warmArt(mine, { onProgress: (done, total) => setJob(cur => cur && { ...cur, done, total }) })
+    if (!j.total) { setMsg('Nothing to download — your collection is empty.'); return }
+    const state = { done: 0, total: j.total, cancel: j.cancel }
+    setJob(state)
+    j.promise.then(() => { setJob(null); setMsg(`✓ ${j.total} card image${j.total === 1 ? '' : 's'} are now available offline.`) })
+  }
+
+  return (
+    <>
+      <h3 style={{ margin: '18px 0 4px' }}>Offline art</h3>
+      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        Card images come from the internet. {isNativeShell
+          ? 'Everything you have already looked at is kept on this device permanently — this downloads the rest of your collection up front, so it is all there with no signal.'
+          : 'In the iPhone app, everything you look at is kept on the device permanently. In a browser that is up to the browser cache.'}
+      </p>
+      <button className="btn alt" style={{ maxWidth: 280 }} onClick={start} disabled={!mine.length && !job}>
+        {job ? `Stop — ${job.done}/${job.total}` : `📥 Download art for my ${mine.length} card${mine.length === 1 ? '' : 's'}`}
+      </button>
+      {msg && <div style={{ fontSize: 12, marginTop: 6, color: 'var(--green)' }}>{msg}</div>}
+    </>
+  )
+}
 
 export default function Settings() {
   const reset = useGame(s => s.reset)
@@ -113,7 +156,7 @@ export default function Settings() {
               : 'Off — the whole box rips instantly into your collection (faster).'}
           </div>
         </div>
-        <button className={`btn ${openSealedOneByOne ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${openSealedOneByOne ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={openSealedOneByOne}
           onClick={() => setSetting('openSealedOneByOne', !openSealedOneByOne)}>
           {openSealedOneByOne ? 'On' : 'Off'}
@@ -157,7 +200,7 @@ export default function Settings() {
               : 'Off — you click to start each reveal yourself.'}
           </div>
         </div>
-        <button className={`btn ${autoAdvance ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${autoAdvance ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={autoAdvance}
           onClick={() => setSetting('autoAdvance', !autoAdvance)}>
           {autoAdvance ? 'On' : 'Off'}
@@ -173,7 +216,7 @@ export default function Settings() {
               : 'Off — the rip is silent.'}
           </div>
         </div>
-        <button className={`btn ${sound ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${sound ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={sound}
           onClick={() => setSetting('sound', !sound)}>
           {sound ? 'On' : 'Off'}
@@ -189,7 +232,7 @@ export default function Settings() {
               : 'Off — no vibration.'}
           </div>
         </div>
-        <button className={`btn ${haptics ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${haptics ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={haptics}
           onClick={() => setSetting('haptics', !haptics)}>
           {haptics ? 'On' : 'Off'}
@@ -205,7 +248,7 @@ export default function Settings() {
               : 'Off — buying sealed stocks it into your 📦 Inventory to rip, list, or flip later.'}
           </div>
         </div>
-        <button className={`btn ${ripOnBuy ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${ripOnBuy ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={ripOnBuy}
           onClick={() => setSetting('ripOnBuy', !ripOnBuy)}>
           {ripOnBuy ? 'On' : 'Off'}
@@ -222,7 +265,7 @@ export default function Settings() {
                 : 'Paused — the runner submits nothing until you switch them back on.'}
             </div>
           </div>
-          <button className={`btn ${runnerOn ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+          <button className={`btn ${runnerOn ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
             role="switch" aria-checked={runnerOn}
             onClick={() => setSetting('submissionRunner', !runnerOn)}>
             {runnerOn ? 'On' : 'Paused'}
@@ -284,7 +327,7 @@ export default function Settings() {
             {dealUngradedOnly ? 'On — only RAW cards flag as deals (graded slabs are skipped).' : 'Off — graded slabs can flag as deals too.'}
           </div>
         </div>
-        <button className={`btn ${dealUngradedOnly ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
+        <button className={`btn ${dealUngradedOnly ? 'on' : 'alt'}`} style={{ flex: 'none', maxWidth: 110 }}
           role="switch" aria-checked={dealUngradedOnly}
           onClick={() => setSetting('dealUngradedOnly', !dealUngradedOnly)}>
           {dealUngradedOnly ? 'On' : 'Off'}
@@ -338,6 +381,8 @@ export default function Settings() {
           {status === 'running' ? 'Refreshing…' : '↻ Refresh prices'}
         </button>
       </div>
+
+      <OfflineArt />
 
       <h3 style={{ margin: '18px 0 4px' }}>Save</h3>
       <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>

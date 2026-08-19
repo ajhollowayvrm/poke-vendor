@@ -2,9 +2,60 @@
 import data from '../data/sets.json'
 import { SYNC_URL } from './syncConfig'
 import { getIdToken } from './auth'
+import { isNativeShell } from './native'
+// 📊 Population reports and 🖨️ misprints both change what a card is WORTH, so they are wired
+// into the pricing functions here. Both modules are pure and import nothing from the engine,
+// so there is no cycle. See population.js for the mean-1.0 invariant that keeps grading
+// balance intact, and misprints.js for why the error premium is split raw vs graded.
+import { popMult, popCount, popLine } from './population'
+import { misprintValue, rollMisprint, pickMisprintIndex } from './misprints'
+import { sealedGradeMult } from './sealedgrading'
 
 export const SETS = data.sets
 export const FETCHED_AT = data.fetchedAt
+
+const ART_HOSTS = new Set(['images.pokemontcg.io', 'images.scrydex.com'])
+function viaShell(url) {
+  if (!url || !isNativeShell) return url
+  // Only the known art hosts, and only absolute https — anything else is passed through so a
+  // bundled or data: URL is never mangled.
+  if (!url.startsWith('https://')) return url
+  const host = url.slice(8, url.indexOf('/', 8))
+  return ART_HOSTS.has(host) ? `pvimg://${url.slice(8)}` : url
+}
+
+// 🖼️ Set logos and symbols are art on the same two CDNs as the cards, and they are read
+// directly as `set.logo` from about twenty places. Rewriting them ONCE here, at load, routes
+// every one of those through the shell's disk cache without touching a single call site — and
+// without the "two implementations, one bug" problem that chasing call sites keeps causing.
+//
+// Safe to mutate in place precisely because a SET is never persisted: saves hold card
+// instances and sealed rows, never a set object, so no `pvimg://` URL can end up written to a
+// save and then read back outside the shell. Card art deliberately does NOT get this treatment
+// — it is rewritten at render time in cardImg() instead, for exactly that reason.
+if (isNativeShell) {
+  for (const s of SETS) {
+    if (typeof s.logo === 'string') s.logo = viaShell(s.logo)
+    if (typeof s.symbol === 'string') s.symbol = viaShell(s.symbol)
+  }
+}
+
+// A card's collector number. For 20,454 of the 23,475 cards in the snapshot the number is
+// simply the tail of the id ("sv8pt5-25" → "25"), so the data ships WITHOUT it and this
+// rebuilds it — 288 KB raw and 48 KB gzipped off the payload, the single biggest download
+// win available (see docs/PERFORMANCE.md). The exceptions keep an explicit `number`
+// and are returned verbatim: Japanese cards print theirs as "094/165" while their id ends in
+// a variant suffix ("jp-SV2a-094MB"), so the two genuinely differ.
+//
+// ALWAYS read a collector number through this, never `card.number` directly.
+export function cardNumber(card) {
+  if (!card) return ''
+  if (card.number != null) return card.number
+  const id = card.id
+  if (typeof id !== 'string') return ''
+  const i = id.lastIndexOf('-')
+  return i > 0 ? id.slice(i + 1) : ''
+}
 
 // Card art URL resolution. pokemontcg.io art follows a fixed pattern derived from the
 // card's id + number, so the data snapshot omits those URLs (~40% of its raw bytes) and
@@ -12,18 +63,37 @@ export const FETCHED_AT = data.fetchedAt
 // the pattern-breakers (cel25's cel25c paths, suffixed filenames), synthetic pseudo-cards —
 // use it verbatim. ALWAYS read card art through these, never card.img directly: card
 // instances minted after the strip don't carry the fields.
+// 🖼️ Inside the iOS shell, card art goes over the `pvimg://` scheme instead of straight to the
+// CDN. That routes the fetch through ArtSchemeHandler in Shell.swift, which caches every image to
+// disk permanently — so art you have seen once renders with no signal at all.
+//
+// This is a REWRITE, not a different source: `pvimg://images.pokemontcg.io/x.png` fetches exactly
+// `https://images.pokemontcg.io/x.png`, and the handler refuses any host that is not one of the
+// two art CDNs. Outside the shell (a dev server) the https URL is returned untouched.
+//
+// It lives here because cardImg/cardImgLarge are the single funnel every image in the game goes
+// through — the same property that made stripping the URLs out of the data snapshot possible.
+
+// A collector number printed as "132/086" (the Japanese n-of-total format) is not a URL path
+// segment — building one produced `.../jp-SV11W/132/086.png`, a 404 on every one of the 634 JP
+// cards that carry no explicit art URL. Those cards are not hosted on pokemontcg.io at all, so
+// the honest answer is "no art", which lets the UI fall back instead of requesting nonsense.
+function derivableNumber(num) { return num && !String(num).includes('/') }
+
 export function cardImg(card) {
   if (!card) return null
-  if (card.img) return card.img
+  if (card.img) return viaShell(card.img)
   const sid = setIdOfCard(card)
-  return sid && card.number ? `https://images.pokemontcg.io/${sid}/${card.number}.png` : null
+  const num = cardNumber(card)
+  return sid && derivableNumber(num) ? viaShell(`https://images.pokemontcg.io/${sid}/${num}.png`) : null
 }
 export function cardImgLarge(card) {
   if (!card) return null
-  if (card.imgLarge) return card.imgLarge
-  if (card.img) return card.img // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
+  if (card.imgLarge) return viaShell(card.imgLarge)
+  if (card.img) return viaShell(card.img) // pseudo-cards (sealed art, leads) carry one explicit URL for both sizes
   const sid = setIdOfCard(card)
-  return sid && card.number ? `https://images.pokemontcg.io/${sid}/${card.number}_hires.png` : null
+  const num = cardNumber(card)
+  return sid && derivableNumber(num) ? viaShell(`https://images.pokemontcg.io/${sid}/${num}_hires.png`) : null
 }
 
 // Card art lives on a remote CDN, so a just-pulled card can pop in slowly mid-reveal.
@@ -44,6 +114,41 @@ export function preloadCardImages(cards) {
     // in halves ("half then fills") mid-turn. decode() warms the decoded bitmap in cache.
     if (img.decode) img.decode().catch(() => {})
   }
+}
+
+// 📥 Download art ahead of time, so it is there when the signal is not.
+//
+// The shell's disk cache (ArtSchemeHandler) keeps every image you have ALREADY loaded, for
+// ever — but a set you have never scrolled past has never been fetched, and with no signal it
+// renders as nothing. This walks a list of cards and pulls each one through the same
+// `pvimg://` path a render would, which populates that cache deliberately rather than by
+// accident.
+//
+// Sequential with a small concurrency window on purpose: a few hundred images fired at once
+// is how you get a stall and a pile of timeouts on a phone. `onProgress` lets the UI show a
+// count, and the returned canceller lets the player stop a download they regret starting.
+export function warmArt(cards, { onProgress, concurrency = 4 } = {}) {
+  const urls = []
+  const seen = new Set()
+  for (const c of (cards || [])) {
+    const u = cardImg(c)
+    if (u && !seen.has(u)) { seen.add(u); urls.push(u) }
+  }
+  let done = 0, cancelled = false, i = 0
+  const total = urls.length
+  const one = (url) => new Promise(resolve => {
+    if (typeof Image === 'undefined') return resolve()
+    const img = new Image()
+    const finish = () => { done++; _imgWarmed.add(url); onProgress?.(done, total); resolve() }
+    img.onload = finish
+    img.onerror = finish          // a 404 still counts as handled; retrying it helps nobody
+    img.src = url
+  })
+  const worker = async () => {
+    while (!cancelled && i < urls.length) await one(urls[i++])
+  }
+  const all = Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, worker))
+  return { total, promise: all, cancel: () => { cancelled = true } }
 }
 
 // Sets sold in the normal shop (excludes `vintage` sets, which only appear via the
@@ -146,6 +251,17 @@ export function isChase(card) {
 // "you are never letting this one go by" one.
 export function isGrail(card) {
   return card?.foil?.key === 'masterball' || rarityRank(card?.rarity) >= rarityRank('Special Illustration Rare')
+}
+// The sift's rarity bar (AutoRip's "Chase only"): every chase, PLUS the baseline ex. `Double
+// Rare` is exactly the modern ex slot — every one of them in the snapshot is a "<Pokémon> ex" —
+// and the ex is the card a pack is *about*, the one you want to turn over yourself even when it
+// books at a dollar. Deliberately a separate bar from isChase(): this one answers "hand me the
+// pack", not "paint a rainbow edge on it", and an edge that lands every fifth pack means nothing.
+// Tested by NAME of the tier rather than by rank, because ACE SPEC Rare sits between Double Rare
+// and Illustration Rare on the ladder — a rank test would drag those trainers in too (worth ~50¢,
+// and on an ACE-SPEC set like Prismatic that alone is another 15pp of stops).
+export function isChaseOrEx(card) {
+  return isChase(card) || card?.rarity === 'Double Rare'
 }
 
 // A card counts as "bulk" purely by WORTH, not rarity: any raw card whose live market value
@@ -939,7 +1055,16 @@ export function jpPackEV(set) {
   return ev
 }
 
+// One pack. Every pack path in the game funnels through here, which is why the 🖨️ misprint
+// roll lives in this wrapper rather than in each builder: a new pack structure cannot forget
+// to include it. GOD PACKS are the deliberate exception — a pack where all ten cards are
+// chases does not also need a press fault, and stacking the two would spike pack EV.
 export function openPack(set) {
+  const pulls = openPackInner(set)
+  if (pulls && !pulls._specialKey) applyPackMisprint(pulls)
+  return pulls
+}
+function openPackInner(set) {
   if (set.japanese) return openJapanesePack(set)     // 🎌 5-card JP structure, own hit ladder
   if (set.id === 'cel25') return openCelebrationsPack(set) // bespoke 4-card structure
   const byR = cardsByRarity(set)
@@ -1032,6 +1157,114 @@ export function openPack(set) {
   // sort so the best card is revealed last (foils rank above plain reverse)
   pulls.sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity) + foilWeight(a) - foilWeight(b))
   return pulls
+}
+
+// Roll one error across a finished pack and stamp it onto a single card. The card is chosen
+// UNIFORMLY: a press does not know what rarity it is printing, and because a pack is mostly
+// commons the fault usually lands on one. That is what keeps the whole category's
+// contribution to pack EV under a tenth of a percent, which sim section 1 depends on.
+export function applyPackMisprint(pulls, rnd = Math.random) {
+  if (!pulls?.length) return null
+  const m = rollMisprint(rnd)
+  if (!m) return null
+  const card = pulls[pickMisprintIndex(pulls.length, rnd)]
+  if (!card || card.misprint) return null
+  card.misprint = m
+  card._isMisprint = true
+  return card
+}
+
+// The odds openPack() actually rolls, read back out as numbers — the input to the 🎲 luck panel
+// (what you pulled vs what the packs owed you). It walks the SAME tables and the SAME slot
+// structure as openPack above, so a rate change moves both together; there is no second copy of
+// any number here. Mirrors, in order: special packs → rare slot → chase roll → reverse slot
+// (which a subset card or an ACE SPEC pre-empts) → foils (only when the reverse didn't upgrade).
+//
+// Returns { [tier]: probability that a single pack yields one }, keyed by rarity name,
+// `foil:<key>`, `subset`, or `god`/`demigod`. Tiers a set has no cards for are omitted, exactly
+// as rollSlot skips them. Japanese and Celebrations packs have their own structures and aren't
+// modelled — they return {} and the panel leaves them out rather than guessing.
+export function pullOdds(set) {
+  if (!set || set.japanese || set.id === 'cel25') return {}
+  const byR = cardsByRarity(set)
+  const subset = SUBSET_SLOT[set.id]
+  if (subset) for (const k of Object.keys(byR)) byR[k] = byR[k].filter(c => !subset.test(c.id))
+  const rates = ratesFor(set)
+  const has = (r) => !!byR[r]?.length
+  const odds = {}
+  const add = (k, p) => { if (p > 0) odds[k] = (odds[k] || 0) + p }
+
+  // Special packs replace the whole pack rather than modifying a slot, so they're their own
+  // lines. Rolled in order with the first hit winning, so each is conditional on the earlier ones
+  // missing — which is why this accumulates `taken` instead of using v.odds directly.
+  let taken = 0
+  for (const v of (SPECIAL_PACKS[set.id] || [])) {
+    const p = v.odds * (1 - taken)
+    taken += p
+    add(v.tier === 'god' ? 'god' : 'demigod', p)
+  }
+  // RARE slot — always reached.
+  for (const h of (rates.rare || [])) if (has(h.rarity)) add(h.rarity, h.p)
+  // Top-end chase — an independent extra roll that rides alongside the reverse slot.
+  for (const h of (rates.chase || [])) if (has(h.rarity)) add(h.rarity, h.p)
+
+  // REVERSE slot. A Gallery/Shiny-Vault card takes it first, then an ACE SPEC; only what's left
+  // reaches the upgrade ladder, and only what's left of THAT can carry a special foil.
+  const pSubset = subset ? subset.odds : 0
+  if (pSubset) add('subset', pSubset)
+  const pAce = (has('ACE SPEC Rare') && rates.aceSpec) ? rates.aceSpec : 0
+  if (pAce) add('ACE SPEC Rare', (1 - pSubset) * pAce)
+  const reach = (1 - pSubset) * (1 - pAce)
+  const cfgRev = rates.reverse || []
+  const seenRev = new Set(cfgRev.map(e => e.rarity))
+  const effReverse = [...cfgRev, ...BASELINE_RATES.reverse.filter(e => !seenRev.has(e.rarity) && has(e.rarity))]
+  let upgrade = 0
+  for (const h of effReverse) {
+    if (!has(h.rarity)) continue
+    add(h.rarity, reach * h.p)
+    upgrade += h.p
+  }
+  const plain = reach * Math.max(0, 1 - upgrade)
+  for (const f of (rates.foils || [])) add(`foil:${f.key}`, plain * f.p)
+  return odds
+}
+
+// How a pulled card maps onto a pullOdds() tier. `packSetId` is the set of the pack it came out
+// of: a card whose own set differs came from the Gallery / Shiny Vault subset slot.
+export function luckTierOf(card, packSetId) {
+  if (!card) return null
+  if (packSetId && setIdOfCard(card) !== packSetId) return 'subset'
+  if (card.foil) return `foil:${card.foil.key}`
+  return LUCK_UNTRACKED.has(card.rarity) ? null : card.rarity
+}
+// The base slots every pack fills regardless of luck — nothing to compare against odds.
+const LUCK_UNTRACKED = new Set(['Common', 'Uncommon', 'Rare', 'Rare Holo'])
+
+// Is this card a hole in a set you're building? The rip has always badged ⭐ Want — somebody
+// ELSE's want — and said nothing about your own, even though master-set completion is what pays
+// the completion reward, the challenge bounty and the showcase perks.
+//
+// Matched on card id, deliberately: that's the same "one of every card" definition setCompletion
+// uses to pay out, so the badge can't promise progress the reward won't recognise.
+//   owned          — ownedIdSet(collection + binder)
+//   challengeSetId — the declared 🃏 master set challenge, if any (explicit intent)
+//   binderSets     — set ids you've filed anything into (implicit intent)
+// Returns 'challenge' | 'binder' | null.
+export function needTierFor(card, owned, challengeSetId, binderSets) {
+  if (!card?.id || owned?.has(card.id)) return null
+  const sid = setIdOfCard(card)
+  if (challengeSetId && sid === challengeSetId) return 'challenge'
+  if (binderSets?.has(sid)) return 'binder'
+  return null
+}
+
+// Display name for a tier key.
+export function luckTierLabel(tier) {
+  if (tier === 'god') return '✨ God pack'
+  if (tier === 'demigod') return '🌟 Demigod pack'
+  if (tier === 'subset') return '🖼️ Gallery / Shiny Vault'
+  if (tier?.startsWith('foil:')) return FOIL[tier.slice(5)]?.label || tier
+  return tier
 }
 
 function rollFoil(table) {
@@ -1355,6 +1588,10 @@ export function rawValue(card, multOverride) {
   else if (card.reverse) base *= reverseMult(card.rarity) // reverse holo: small on commons, larger on rares
   // raw (ungraded) cards are discounted by condition; a graded slab is priced by its grade
   if (!card.grade && card.condition && CONDITIONS[card.condition]) base *= CONDITIONS[card.condition].mult
+  // 🖨️ A press fault is worth money on its own terms, and it sets a dollar floor the card
+  // underneath cannot explain. Raw, it only realises part of that — the market discounts a
+  // claim nobody has authenticated. See misprints.js.
+  if (card.misprint) base = misprintValue(base, card.misprint, false)
   return Math.max(0.02, round2(base))
 }
 
@@ -1544,7 +1781,47 @@ export function gradedValue(card, multOverride) {
   // Re-price it for the holder this card is actually IN before the floors apply, so a
   // strong slab still can't fall under the raw card no matter who graded it.
   value *= slabMultiplier(card.grade)
+  // 📊 The population report. A PSA 10 with 40 copies in the census is not the same asset as
+  // a PSA 10 with 9,000, and this is where that difference reaches the price. The multiplier
+  // averages EXACTLY 1.0 across the catalog (see population.js), so the grading business is
+  // no more or less profitable than it was — only the choice of WHICH card to send changes.
+  value *= cardPopMult(card, g)
+  // 🖨️ A grader's label is what the error market pays for. Raw, the premium is discounted;
+  // authenticated, it is realised in full.
+  if (card.misprint) value = misprintValue(value, card.misprint, true)
   return round2(gradedFloor(card, g, value, multOverride))
+}
+
+// 📊 What the PLAYER's own submissions have added to the census, as { 'cardId|grade': n }.
+// Held in module state and pushed in by the store, exactly like the living-market multipliers
+// above — for the same reason. A census entry is a fact about the CARD, not about one copy of
+// it, so the moment you slab another Umbreon every Umbreon slab you already own re-prices.
+// Stamping the count onto each card instead would freeze each copy at the census it was born
+// into, and the whole point of the mechanic is that over-slabbing devalues the stack you hold.
+// The store re-pushes this on rehydrate (see onRehydrateStorage).
+let POP_ADDS = {}
+export function setPopAdds(map) { POP_ADDS = map || {} }
+export function popAddsFor(cardId, grade) { return POP_ADDS[`${cardId}|${grade}`] || 0 }
+
+// The population multiplier for a card at a grade, guarded so it only ever applies to a REAL
+// catalog card. Synthetic cards (the sim's test card, any future fixture) have no census and
+// must price exactly as they did before this system existed.
+function cardPopMult(card, grade) {
+  if (!card?.id || !CARD_BY_ID.has(card.id)) return 1
+  const vintage = !!SET_BY_ID[setIdOfCard(card)]?.vintage
+  return popMult(card, grade, { vintage, adds: popAddsFor(card.id, grade) })
+}
+// Public read of a card's census, for the Grading Scope panel and the card modal.
+export function cardPopulation(card, grade) {
+  if (!card?.id || !CARD_BY_ID.has(card.id)) return null
+  const vintage = !!SET_BY_ID[setIdOfCard(card)]?.vintage
+  const adds = popAddsFor(card.id, grade)
+  return {
+    count: popCount(card, grade, { vintage, adds }),
+    mult: popMult(card, grade, { vintage, adds }),
+    line: popLine(card, grade, { vintage, adds }),
+    mine: adds,
+  }
 }
 
 // Floors: a STRONG slab (PSA 9/10) is never worth less than the raw card, and a higher
@@ -1734,6 +2011,10 @@ export function psaValueAt(card, grade) {
     // heuristic-only: don't let it overshoot a real higher-grade comp (see gradedValue).
     value = Math.min(value, gradedCeiling(card, grade))
   }
+  // 📊 The same census the real slab would be priced against — otherwise the "if it gemmed"
+  // teaser would quote a number the returned slab could never sell for.
+  value *= cardPopMult(card, grade)
+  if (card.misprint) value = misprintValue(value, card.misprint, true)
   return round2(gradedFloor(card, grade, value))
 }
 // Hypothetical PSA-10 value — the headline "if it gemmed" number. Thin wrapper kept for
@@ -2043,6 +2324,47 @@ export function rollGrade(card, tier, luck = 0, paidFee = null, company = DEFAUL
     company, gradedAt: Date.now() }
 }
 
+// ---- 🔨 Cracking a slab -------------------------------------------------------------
+// Breaking a card out of its holder to send it again is a real and common play: you buy an
+// under-graded slab cheap, crack it, resubmit, and hope the second opinion is kinder.
+//
+// The design problem is obvious. If cracking simply re-rolled the same distribution, the
+// correct strategy would be to crack every 9 forever until it gemmed, and grading would stop
+// being a decision. THE FIX IS THE HONEST ONE: a grade is EVIDENCE about the physical card.
+//
+// So each grade a card receives refines its hidden cut quality toward what that grade implies,
+// and the refinement gets heavier with every observation. A card that grades 8 twice ends up
+// with a genuinely poor recorded cut, its regrade odds get worse, and the reroll dries up. A
+// card that graded 9 once still has real upside, because one observation is weak evidence —
+// which is exactly the case where a real dealer cracks.
+const CUT_IMPLIED = { 10: 0.88, 9: 0.62, 8: 0.42, 7: 0.28, 6: 0.18 }
+export function refineCut(card, grade) {
+  const cut = card._cut ?? 0.5
+  const implied = CUT_IMPLIED[grade?.overall] ?? 0.12
+  // How many opinions this card has now had. Each one makes the estimate firmer.
+  const n = Math.max(1, (card.gradeHistory?.length || 0))
+  const weight = 1 - 1 / (1 + n * 0.8)   // 1 grade → 0.44, 2 → 0.62, 3 → 0.71 …
+  return Math.max(0, Math.min(1, cut * (1 - weight) + implied * weight))
+}
+
+// The physical risk of cracking. Most cracks are clean; a slip nicks a corner and drops the
+// card a condition tier, which also caps every grade it can earn from then on. This is the
+// cost that stops cracking being a free option even when the odds look good.
+export const CRACK_DAMAGE_CHANCE = 0.05
+export function crackSlab(card, rnd = Math.random) {
+  const refined = refineCut(card, card.grade)
+  const damaged = rnd() < CRACK_DAMAGE_CHANCE
+  const worse = { NM: 'LP', LP: 'MP', MP: 'DMG', DMG: 'DMG' }
+  const out = {
+    ...card,
+    grade: null,
+    _cut: refined,
+    _cracked: (card._cracked || 0) + 1,
+    condition: damaged ? (worse[card.condition || 'NM'] || 'LP') : (card.condition || 'NM'),
+  }
+  return { card: out, damaged }
+}
+
 // Predicted grade RANGE for a still-raw card (the Grading Scope upgrade). Monte-Carlos the
 // SAME rollGrade path the real submission uses — so it honours the card's hidden cut, its
 // condition cap, and the player's loupe luck — then summarises the outcome: the likeliest
@@ -2107,16 +2429,23 @@ const FUZZY_SHORT = {
   'Pristine':   'nice?',
 }
 // --- Binder reserve ---------------------------------------------------------
-// A masterset is where DUPLICATE / display copies live — the genuinely sharp copies are
-// worth more graded and sold than buried in a slot. So the binder "reserve" is a CEILING,
-// not a floor: a raw copy whose cut is AT OR ABOVE the reserve tier is held OUT of the
-// auto-fill and the nightly Curator, left free to grade & sell. Everything BELOW the tier
-// is binder-grade and gets filed. Tiers are ordered worst → best, so "at or above X" is a
-// simple index comparison.
+// A masterset is where DUPLICATE / display copies live — the genuinely sharp (or genuinely
+// expensive) copies are worth more graded and sold than buried in a slot. So the binder
+// "reserve" is a set of CEILINGS, not floors. A copy that hits ANY ceiling is held OUT of
+// the auto-fill and the nightly Curator, left free to grade & sell:
 //
-// Graded slabs are exempt (always eligible to file): a slab is no longer a "card to grade",
-// so whether to sell it or slot it is a per-card decision you make by hand — the reserve,
-// which is about NOT burying grade-worthy RAW cards, doesn't apply to it.
+//   • cut          — a RAW copy whose cut is AT OR ABOVE this tier. Tiers are ordered
+//                    worst → best, so "at or above X" is a simple index comparison.
+//   • rawValue     — a RAW copy worth AT OR ABOVE this many dollars. The grail you pulled
+//                    shouldn't disappear into a slot just because the slot was open.
+//   • gradedValue  — a GRADED slab worth AT OR ABOVE this many dollars.
+//
+// Everything below every ceiling is binder-grade and gets filed. The cut ceiling reads a
+// card's TRUE hidden cut, so the curator measures precisely even without the loupe.
+//
+// Graded slabs are exempt from the CUT ceiling (a slab is no longer a "card to grade", so
+// whether to sell it or slot it is a per-card decision), but the gradedValue ceiling still
+// applies to them — a five-figure slab is exactly the thing you don't want auto-filed.
 export const CONDITION_ORDER = ['DMG', 'MP', 'LP', 'NM']   // worst → best
 export const CUT_ORDER = ['Rough', 'Off-center', 'Clean', 'Sharp', 'Pristine']
 
@@ -2137,16 +2466,44 @@ export function reserveRank(reserveCut) {
   const i = CUT_ORDER.indexOf(reserveCut)
   return i === -1 ? null : i
 }
-// Is this card eligible to be FILED into the masterset (i.e. NOT reserved for grading)?
-// Slabs always qualify (see above). A raw card qualifies only if its cut is BELOW the
-// reserve tier; a cut at/above it is your grade-and-sell copy and stays out. With no
+// The three reserve ceilings, as stored in `settings`, normalized into one config object.
+// Every reserve-aware call site reads its config through here so the rules live in one place.
+export const DEFAULT_BINDER_RESERVE = { cut: 'off', rawValue: 0, gradedValue: 0 }
+export function binderReserveFromSettings(settings) {
+  const s = settings || {}
+  return {
+    cut: s.binderReserveCut || 'off',
+    rawValue: Number(s.binderReserveRawValue) || 0,
+    gradedValue: Number(s.binderReserveGradedValue) || 0,
+  }
+}
+// Accept either a full reserve config or the bare cut tier (the shape the reserve had when
+// it was cut-only), so a caller with just a tier string keeps working.
+function asReserve(reserve) {
+  if (!reserve) return DEFAULT_BINDER_RESERVE
+  if (typeof reserve === 'string') return { ...DEFAULT_BINDER_RESERVE, cut: reserve }
+  return { ...DEFAULT_BINDER_RESERVE, ...reserve }
+}
+// The dollar ceilings the UI offers (0 = off). Ordered, so a select can render them directly.
+export const BINDER_VALUE_CAPS = [0, 25, 50, 100, 250, 500, 1000, 5000]
+
+// Is this card eligible to be FILED into the masterset (i.e. NOT held back by the reserve)?
+// A raw card qualifies only if its cut is BELOW the cut ceiling AND its value is below the
+// raw-value ceiling; a slab qualifies unless it's at/above the graded-value ceiling. With no
 // reserve set, everything qualifies — exactly the behaviour before the reserve existed.
-export function fileableInBinder(card, reserveCut) {
+export function fileableInBinder(card, reserve) {
   if (!card) return false
-  if (card.grade) return true
-  const bar = reserveRank(reserveCut)
+  const r = asReserve(reserve)
+  if (card.grade) return !(r.gradedValue > 0 && cardValue(card) >= r.gradedValue)
+  if (r.rawValue > 0 && cardValue(card) >= r.rawValue) return false
+  const bar = reserveRank(r.cut)
   if (bar == null) return true
   return cutRank(card) < bar
+}
+// Is any ceiling actually set? (UI copy + "nothing is being held back" states.)
+export function binderReserveActive(reserve) {
+  const r = asReserve(reserve)
+  return r.cut !== 'off' || r.rawValue > 0 || r.gradedValue > 0
 }
 
 export function cutEstimate(card, precise) {
@@ -2167,12 +2524,39 @@ export function round2(n) { return Math.round(n * 100) / 100 }
 
 // Compact money formatting so high-roller grails ($1,000,000) fit nicely.
 // < $1k → exact cents; ≥ $1k → $12.3k / $1.2M style.
+// Format the MAGNITUDE, then put the sign OUTSIDE the currency symbol.
+// Every threshold below is a `>=` test, so a negative used to fall straight through to the
+// last line. That cost us twice: a loss read "$-228.63" (sign inside the symbol), and — worse
+// — it never got the k/M abbreviation its positive twin gets, so fmtMoney(-1_500_000) came out
+// "$-1500000.00" where +1.5M is "$1.5M". A stat tile sized for the positive case overflowed.
+// The −0.005 cut-off is the 2-decimal display threshold: a value that rounds to 0.00 must not
+// render as "-$0.00".
 export function fmtMoney(n) {
   const v = n ?? 0
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(v >= 10_000_000 ? 0 : 2).replace(/\.0+$/, '')}M`
-  if (v >= 10_000) return `$${(v / 1000).toFixed(v >= 100_000 ? 0 : 1).replace(/\.0$/, '')}k`
-  if (v >= 1000) return `$${v.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-  return `$${v.toFixed(2)}`
+  const sign = v <= -0.005 ? '-' : ''
+  const a = Math.abs(v)
+  if (a >= 1_000_000) return `${sign}$${(a / 1_000_000).toFixed(a >= 10_000_000 ? 0 : 2).replace(/\.0+$/, '')}M`
+  if (a >= 10_000) return `${sign}$${(a / 1000).toFixed(a >= 100_000 ? 0 : 1).replace(/\.0$/, '')}k`
+  if (a >= 1000) return `${sign}$${a.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+  return `${sign}$${a.toFixed(2)}`
+}
+
+// What to CALL a sealed product on screen.
+// A few products carry TCGplayer's own top-level category, "Sealed Product", in their `type`
+// field — that is the bucket the scraper found them in, not a description of the thing. On
+// screen it reads as placeholder text: the vintage shelf showed "🕰️ Out-of-print find · sealed
+// Sealed Product" above a "🎴 Sealed Product" button. Fall back to whatever actually identifies
+// it: its real product name if the data has one, else a label derived from the pack count.
+// Display-only (not baked into setProducts) so the hot path keeps returning the source array
+// without allocating a mapped copy on every call.
+const GENERIC_PRODUCT_TYPES = new Set(['Sealed Product', 'Sealed', 'Product'])
+export function productTypeLabel(product) {
+  const t = (product?.type || '').trim()
+  if (t && !GENERIC_PRODUCT_TYPES.has(t)) return t
+  const n = (product?.name || '').trim()
+  if (n) return n
+  const packs = product?.packs || 0
+  return packs >= 12 ? 'Booster Box' : packs > 1 ? `${packs}-Pack Bundle` : 'Booster Pack'
 }
 
 // --- Sealed products (real TCGplayer market prices via TCGCSV) -------------
@@ -2255,10 +2639,101 @@ function stripSearched(cards, set) {
     : c)
 }
 
+// --- Cross-set ("era") product ------------------------------------------------
+// An Ultra Premium Collection belongs to an ERA, not an expansion. A Charizard UPC holds
+// "16 booster packs from the Sword & Shield Series" and the box never says which — because
+// the mix genuinely varies. A reviewer who opened one got 3 Evolving Skies, 3 Fusion Strike,
+// 3 Astral Radiance, 3 Brilliant Stars, 2 Lost Origin, 1 Vivid Voltage and 1 Darkness Ablaze,
+// and reported that another box held 17 packs instead of 16. So the game does not need a pack
+// LIST for these products. It needs a pool and a draw.
+//
+// These carry `pool: { series }` instead of living under a set. See fetch-data.mjs.
+export const ERA_PRODUCTS = data.eraProducts || []
+
+// The sets an era product can pull a pack from. Promo/collectible pools (`extra`) and the
+// Japanese catalog are excluded — neither is sold as a booster pack in an English collection.
+const ERA_POOL = new Map()
+export function eraPool(series) {
+  if (!series) return []
+  let pool = ERA_POOL.get(series)
+  if (!pool) {
+    pool = SETS.filter(s => s.series === series && !s.japanese && !s.extra && (s.cards?.length || 0) > 0)
+      .sort((a, b) => String(b.releaseDate || '').localeCompare(String(a.releaseDate || ''))) // newest first
+    ERA_POOL.set(series, pool)
+  }
+  return pool
+}
+
+// Weight the draw by chase density, because The Pokémon Company packs the hot sets heavily.
+// A UPC that mostly coughed up filler sets would lose the exact thing people chase it for.
+// The +1 floor keeps a quiet set in the mix — real collections do carry the odd dud pack.
+const ERA_CHASE = ['Special Illustration Rare', 'Illustration Rare', 'Hyper Rare', 'Mega Hyper Rare', 'Ultra Rare']
+const ERA_WEIGHT = new Map()
+function eraWeights(series) {
+  let w = ERA_WEIGHT.get(series)
+  if (!w) {
+    w = eraPool(series).map(s => {
+      const byR = cardsByRarity(s)
+      return 1 + ERA_CHASE.reduce((a, r) => a + (byR[r]?.length || 0), 0)
+    })
+    ERA_WEIGHT.set(series, w)
+  }
+  return w
+}
+
+// The pack list for ONE physical unit, derived — never stored.
+//
+// Seeded from the item's uid, so a given box always holds the same packs (they were sealed
+// at the factory long before you bought it) while two boxes of the same product hold
+// different ones. Deriving rather than storing buys three things: saves don't grow by 16-36
+// set ids per box (slimsave stays honest), held units stay fungible so heldMatches keeps
+// grouping them, and sealedValue has nothing to read — a sealed box CANNOT leak its contents
+// into its price, so it sells on potential like the real thing.
+export function drawPackSets(product, uid) {
+  const series = product?.pool?.series
+  const n = product?.packs || 0
+  if (!series || !n || !uid) return null
+  const pool = eraPool(series)
+  if (!pool.length) return null
+  const w = eraWeights(series)
+  const total = w.reduce((a, b) => a + b, 0)
+  let s = hashStr(`${uid}|${product.tcgId || product.name || ''}`)
+  const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
+  const out = []
+  for (let i = 0; i < n; i++) {
+    let r = rnd() * total
+    let k = 0
+    while (k < pool.length - 1 && (r -= w[k]) > 0) k++
+    out.push(pool[k].id)
+  }
+  return out
+}
+
+// The set a cross-set product anchors to once you own it. Held sealed is
+// `{ uid, setId, product }` and a lot of machinery keys off setId — marketMult, the synthetic
+// `<setId>-sealed` card id, makeProductPromo — so an era product still needs ONE home set.
+// Prefer the set that actually holds the card the product is named for, so a "Greninja ex
+// Ultra-Premium Collection" ships a real Greninja ex rather than a synthesised stand-in.
+// Otherwise the era's newest set.
+export function eraAnchorSet(product) {
+  const pool = eraPool(product?.pool?.series)
+  if (!pool.length) return null
+  const name = promoNameFromProduct(null, product)
+  if (name) {
+    const hit = pool.find(s => findSetCardByName(s, name))
+    if (hit) return hit
+  }
+  return pool[0]
+}
+
 export function openProduct(set, product, opts = {}) {
   const all = []
+  // A cross-set product resolves a set PER PACK; everything else uses the one set it belongs
+  // to. `opts.uid` identifies the physical unit being opened, so two UPCs rip differently.
+  const packSets = opts.packSets || drawPackSets(product, opts.uid)
   for (let i = 0; i < product.packs; i++) {
-    const pack = openPack(set)
+    const from = (packSets && setById(packSets[i])) || set
+    const pack = openPack(from)
     if (pack._god) pack.forEach(c => { c._fromGod = true })
     all.push(...pack)
   }
@@ -2321,21 +2796,53 @@ function promoNameFromProduct(set, product) {
   // "[Luxray Line]" → "Luxray", "[Zorua & Cramorant]" → "Zorua" (a blister ships ONE promo).
   if (br) return br[1].replace(/\s+line\b/i, '').replace(/\s*&.*$/, '').trim()
   if (set?.name && raw.toLowerCase().startsWith(set.name.toLowerCase())) raw = raw.slice(set.name.length).trim()
-  const m = raw.match(/^(.+?\b(?:ex|gx|v|vmax|vstar))\s+(?:premium\s+)?(?:collection|box|powers)\b/i)
+  // "…ex Ultra-Premium Collection" / "…ex Super-Premium Collection" count too — without the
+  // ultra/super branch a "Greninja ex Ultra-Premium Collection" matched nothing and shipped a
+  // random card from the anchor set instead of the Greninja ex on the box.
+  const m = raw.match(/^(.+?\b(?:ex|gx|v|vmax|vstar))\s+(?:(?:ultra|super)[- ])?(?:premium\s+)?(?:collection|box|powers)\b/i)
   return m ? m[1].trim() : null
 }
 
 // Normalize a card/promo name for loose matching ("Charizard EX" ≡ "Charizard ex").
 function normName(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() }
 
-// Find the in-set card that best matches a promo name (highest-value match wins — premium
-// collections feature the fancy chase art), or null if the set has no such card.
+// Rarities a sealed product's promo may NEVER be. A promo print is a stamped edition of a
+// card's BASE art — a Special Illustration Rare (or an Illustration Rare, a gold/rainbow Hyper
+// Rare, a Mega Hyper Rare) is a pack-only chase that is never boxed as a guaranteed promo.
+// A "Mega Feraligatr ex Box" ships the plain Mega Feraligatr ex, not the $170 SIR alt art.
+const PROMO_BANNED_RARITY = new Set([
+  'Illustration Rare', 'Special Illustration Rare', 'Hyper Rare',
+  'MEGA_ATTACK_RARE', 'Mega Hyper Rare', 'Black White Rare', 'ACE SPEC Rare',
+])
+// Subset-gallery numbering: Trainer Gallery (TG/GG), Shiny Vault (SV), Radiant Collection (RC).
+// Those live INSIDE their parent set's card pool (see EXTRA_SETS / alsoFetch), but they're
+// pack-only subset pulls — never a boxed promo either.
+const GALLERY_NUMBER = /^(?:TG|GG|SV|RC)\d/i
+function promoEligible(card) {
+  return !PROMO_BANNED_RARITY.has(card.rarity) && !GALLERY_NUMBER.test(String(cardNumber(card) || ''))
+}
+
+// A card's collector number as a sortable integer — secret/full-art reprints are numbered ABOVE
+// the set's printed total, so the lowest number of a name's prints is its base art. Non-numeric
+// (gallery/promo) numbers sort last.
+function numOf(card) {
+  const n = parseInt(String(cardNumber(card) || ''), 10)
+  return Number.isFinite(n) ? n : Infinity
+}
+
+// Find the in-set card a promo name pins to: the BASE print of that card — lowest rarity tier,
+// then lowest collector number — never one of its chase reprints. Alt arts, illustration rares
+// and gold secrets are filtered out entirely (promoEligible); null when the set has no eligible
+// print, so the caller can fall back to a real Black Star Promo or a cheap synthetic one.
 function findSetCardByName(set, name) {
   const want = normName(name)
   if (!want) return null
-  const matches = set.cards.filter(c => normName(c.name) === want)
+  const matches = set.cards.filter(c => normName(c.name) === want && promoEligible(c))
   if (!matches.length) return null
-  return matches.reduce((best, c) => (cardValue(c) > cardValue(best) ? c : best))
+  return matches.reduce((best, c) => {
+    const dr = rarityRank(c.rarity) - rarityRank(best.rarity)
+    return (dr < 0 || (dr === 0 && numOf(c) < numOf(best))) ? c : best
+  })
 }
 
 // The Black Star Promo `extra` set that pairs with a main set's era. A bare-Pokémon blister/tin
@@ -2378,15 +2885,18 @@ function synthPromoCard(set, name, seed) {
 
 // The candidate pool the deterministic ETB / Build & Battle fallbacks draw from. Real promos
 // there are foil POKÉMON in a believable ~$1–15 band — never bulk energy/Trainer chaff, never
-// a re-rolled chase. Falls back gracefully to the set's foil tiers, then anything.
+// a re-rolled chase. Alt-art/secret/gallery prints are excluded outright (promoEligible): a
+// cheap Shiny Vault or Illustration Rare is still a pack-only chase, price notwithstanding.
+// Falls back gracefully to the set's foil tiers, then anything.
 function promoCandidates(set) {
-  const pokemon = set.cards.filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
-  const src = pokemon.length ? pokemon : set.cards
+  const clean = set.cards.filter(promoEligible)
+  const pokemon = clean.filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
+  const src = pokemon.length ? pokemon : (clean.length ? clean : set.cards)
   const band = src.filter(c => { const v = cardValue(c); return v >= 1 && v <= 15 })
   if (band.length) return band
   const byR = cardsByRarity(set)
   const foils = [...(byR['Rare Holo'] || []), ...(byR['Double Rare'] || []), ...(byR['Rare'] || [])]
-    .filter(c => (c.supertype || 'Pokémon') === 'Pokémon')
+    .filter(c => (c.supertype || 'Pokémon') === 'Pokémon' && promoEligible(c))
   return foils.length ? foils : src
 }
 
@@ -2418,7 +2928,7 @@ function pokemonCenterStamp(base, set, seed) {
   const basePrice = base.price ?? CANONICAL_PRICE[base.id] ?? estimateByRarity(base.rarity)
   const premium = 1.7 + (hashStr(`${seed}|pc`) % 90) / 100 // 1.70–2.59×, stable per product
   const baseSet = setIdOfCard(base) || set.id
-  const num = String(base.number || normName(base.name).replace(/\s+/g, '') || 'promo')
+  const num = String(cardNumber(base) || normName(base.name).replace(/\s+/g, '') || 'promo')
   const card = {
     ...base,
     id: `${baseSet}-pcstamp${num}`,           // one hyphen → market drift still tracks the base set
@@ -2486,9 +2996,11 @@ function resolveBasePromo(set, product, seed, rnd) {
   const name = promoNameFromProduct(set, product)
   if (name) {
     if (CHASE_SUFFIX.test(name)) {
-      const card = findSetCardByName(set, name)
-      if (card) return card // valuable headline foil → the real in-set card
-      // A chase name we can't resolve — don't fabricate a valuable card; fall through.
+      // The headline foil → the real in-set BASE print (never its alt-art/secret reprint).
+      // No eligible print (the card isn't in this set, or exists only as a chase): fall back to
+      // the era's Black Star Promo, else a cheap synthetic with the right name — the box still
+      // ships the card it names, we just never fabricate a chase to fill the slot.
+      return findSetCardByName(set, name) || findEraPromo(set, name) || synthPromoCard(set, name, seed)
     } else {
       // A bare-Pokémon promo is a real Black Star Promo — pin it from the era's promo pool if we
       // have that card, else a cheap synthetic stand-in with the right name.
@@ -2529,7 +3041,22 @@ export const DISTRIBUTOR_NOTO = 250        // Household Name
 export const DISTRIBUTOR_WORTH = 1_000_000 // Millionaire
 export function sealedValue(item) {
   if (!item?.product) return 0
-  return round2(sealedBase(item.product) * marketMult(item.setId))
+  let base = sealedBase(item.product) * marketMult(item.setId)
+  // 🔨 A resealed box. Distinct from a `_searched` loose pack (which keeps its shape and only
+  // loses its hit): this is a whole product that has been opened, gone through and shut again,
+  // and the market prices it as the empty box it now is. It only ever arrives from an auction
+  // lot nobody checked — see game/lots.js.
+  if (item.resealed) base *= 0.15
+  // 📦🔟 A graded wrapper. The ladder is steep for genuine vintage and almost flat for
+  // anything still in print — see sealedgrading.js for why that asymmetry is the whole point.
+  if (item.grade) return round2(base * sealedGradeMult(sealedEra(item), item.grade))
+  return round2(base)
+}
+// Normalize a sealed row into the era flags the grading premium is scaled by. `vintage` is
+// already stamped on the row when it is bought; whether the set has stopped printing is a
+// catalog fact, so it is resolved here rather than persisted onto every item.
+export function sealedEra(item) {
+  return { ...item, aftermarket: AFTERMARKET_SET_IDS.has(item?.setId) }
 }
 // The market price of ONE unit of a sealed product, before the set's market drift.
 //
@@ -2594,6 +3121,10 @@ export function breakOptions(item) {
   const set = SET_BY_ID[item?.setId]
   const p = item?.product
   if (!set || !p) return []
+  // A cross-set product can't be broken down. Splitting converts a box into N units of ONE
+  // set's loose packs, and a UPC's packs come from a dozen different sets — the swap would
+  // quietly launder them into anchor-set packs. Rip it or sell it whole.
+  if (p.pool?.series) return []
   const n = p.packs || 1
   if (n < 2) return []
   const products = setProducts(set)
@@ -2679,6 +3210,9 @@ export function nextRapport(spend) {
 //   supply        — unlocks supplying the channel (gated at supplyMinLevel)
 //   clearance     — occasionally runs a steeply-discounted sale lot
 //   rotating      — small, weekly-rotating selection (a shop shelf, not a warehouse)
+//   deepStock     — sits on warehouse/marketplace inventory, so it keeps selling a set for
+//                   YEARS after the printer stops (see the sell-through stage below). A
+//                   `rotating` allocation shelf can't: when it's gone, it's gone.
 export const DISTRIBUTORS = [
   {
     id: 'lgs', name: 'Local Game Store', icon: '🎲', color: '#5ec98a',
@@ -2691,21 +3225,32 @@ export const DISTRIBUTORS = [
   // fresh drops are bought at the scalped market number like everyone else. hypeSurge below
   // is now the whole drop-day story: the newest set costs a premium over market everywhere.)
   {
+    id: 'market', name: 'Local Marketplace', icon: '📱', color: '#4267B2',
+    blurb: 'Strangers near you selling cards out of their spare rooms. Nobody here prices to market — they price to how they feel about the thing, so the board is mostly fantasy prices and the odd genuine find. You have to message them, and you have to drive out and meet them.',
+    // A LISTINGS channel, not a shelf: no catalog, no stock, no rapport. The Buy tab renders
+    // its own board for this one (see LocalMarket.jsx).
+    marketplace: true,
+    priceMult: 1, discountStep: 0, maxDiscount: 0, reliability: 0.3,
+  },
+  {
     id: 'tcgplayer', name: 'TCGplayer', icon: '🛒', color: '#5aa0ff',
     blurb: 'The marketplace — every set at live market price, deep selection. You pay market, but it is (almost) always there.',
     priceMult: 1.04, discountStep: 0.02, maxDiscount: 0.10, reliability: 0.7,
+    deepStock: true, // third-party sellers list out-of-print sealed indefinitely
   },
   {
     id: 'amazon', name: 'Amazon', icon: '📦', color: '#ff9f43',
     blurb: 'The everything store — pay a hair over market and it is ALWAYS in stock, however hot the set. The catch is the one thing a warehouse can never sell you: it ships. Orders land in your storeroom a couple of days later, so Amazon is what you fall back on, never what you rip tonight.',
     priceMult: 1.06, discountStep: 0.015, maxDiscount: 0.08, reliability: 1.0, guaranteed: true,
     leadDays: 2,     // 📦 always available, never immediate — availability stops being free
+    deepStock: true, // the warehouse is still shipping sets the printer finished with years ago
   },
   {
     id: 'dna', name: "Dave & Adam's", icon: '🃏', color: '#b98cff',
     blurb: 'A hobby giant — real case pricing and bulk supply. But a distributor this size only opens a wholesale account once you are a name in the hobby: build your notoriety first, then earn rapport with them. The volume play, late-game.',
     priceMult: 0.93, discountStep: 0.035, maxDiscount: 0.24, reliability: 0.7,
     cases: true, casesMinLevel: 2, supply: true, supplyMinLevel: 3,
+    deepStock: true, // a hobby giant's warehouse is exactly where finished print runs go to sit
     minNotoriety: 75, // kept for the unlock progress bar; the door itself is minRank below
     minRank: 3, // 🎪 Regional Name — a distributor this size wants a résumé, not just a number (deeds + ⭐80)
   },
@@ -2733,18 +3278,49 @@ export function distributorUnlocked(dist, notoriety, upgrades, rank = 0) {
 
 // A real local shop stocks what one weekly case order gets them — two sets, maybe three, and
 // whatever's left of last month's. Not a catalogue.
-const LGS_SHELF_SIZE = 2
-// 🕰️ THE IN-PRINT WINDOW. Sealed product does not stay orderable forever: a set runs, then the
-// print run ends and the distribution channel moves on. Only the newest N sets can be ORDERED;
-// everything older still exists and still trades, but you hunt it on the aftermarket (vendors,
-// show floors, clearance bins) instead of clicking buy. This is what keeps the shop a rotating
-// window rather than an ever-growing list of every set ever printed.
-// NOTE this deliberately does NOT narrow SHOP_SETS itself — that pool still backs wants, walk-in
-// requests and the general card draw, and an out-of-print set's SINGLES are as obtainable as ever.
-// Only the sealed ORDER channel closes.
-export const IN_PRINT_COUNT = 8
-export const IN_PRINT_SETS = SHOP_SETS.slice(0, IN_PRINT_COUNT)
-export const OUT_OF_PRINT_SETS = SHOP_SETS.slice(IN_PRINT_COUNT)
+// How many SETS the corner shop keeps on the shelf. Three, because that is what a real small
+// shop carries: boxes of the two or three current sets and nothing older. What made the shelf
+// feel like a warehouse was never this number — it was showing all ~20 manufacturer SKUs of
+// each set, which game/shelf.js now filters down to what a shop actually orders.
+const LGS_SHELF_SIZE = 3
+// 🕰️ IN PRINT → SELL-THROUGH → AFTERMARKET. "Out of print" describes the PRINTER, not the shelf,
+// and the gap between those two is YEARS wide. Three stages, and the middle one is what a naive
+// in-print/out-of-print flag throws away:
+//   1. IN PRINT     — the printer is running. Every channel stocks it, at market (+ hype if fresh).
+//   2. SELL-THROUGH — the printer has stopped, but the warehouses and marketplaces are still full
+//                     of it. You can walk over to Amazon and buy sealed 151 right now; what you
+//                     CAN'T do is get your local shop to reorder it, and you pay over market
+//                     because what's left is finite and shrinking. ← RETIRED_IDS sets live here.
+//   3. AFTERMARKET  — channel stock finally exhausted; only collectors and vendors have it. That's
+//                     the `secondary` flag, and those sets leave the fresh shelf altogether.
+// Which stage a set is in tracks DEMAND and Standard ROTATION, never its age. 151 and Prismatic
+// prove it in both directions: 151 outlived half a dozen sets released after it, then stopped at
+// the April 2026 rotation (regulation mark G) rather than from age, while Prismatic (mark H)
+// survived that rotation and is under active mass reprint years on. A "newest N sets" window gets
+// both cases exactly wrong, which is why print status is CURATED here rather than computed.
+// NOTE none of this narrows SHOP_SETS itself — that pool still backs wants, walk-in requests and
+// the general card draw, so a set's SINGLES stay as obtainable as ever. Only the sealed ORDER
+// channel narrows, and even then only down to the `deepStock` retailers.
+const RETIRED_IDS = new Set([
+  // 151 — regulation mark G. Rotated out of Standard 2026-04-10 (when Perfect Order became legal)
+  // alongside sv1 / sv2 / sv3 / sv4 / sv4pt5, all already `secondary` here, and stopped printing
+  // with them. Kept OUT of `secondary` because 151 is nowhere near stage 3: it's stacked at every
+  // big-box in the country and its singles are everywhere. Sell-through, not aftermarket.
+  'sv3pt5',
+])
+// "The printer is still running" — NOT "you can still buy it" (that's distributorCatalog, which
+// keeps sell-through sets on every deepStock shelf).
+export const IN_PRINT_SETS = SHOP_SETS.filter(s => !RETIRED_IDS.has(s.id))
+export const OUT_OF_PRINT_SETS = SHOP_SETS.filter(s => RETIRED_IDS.has(s.id))
+// 💸 What a finished print run costs OVER market while it sells through. The supply is finite and
+// everyone knows it, so the ask drifts up — the exact mirror of hypeSurge on a fresh drop, and the
+// reason "buy it before it rotates" is real advice. Applied to the shop ASK only, never to
+// sealedValue: like hype, paying the premium is a knowingly worse trade than having bought early.
+const SELL_THROUGH_PREMIUM = 1.22
+export function sellThroughPremium(setOrId) {
+  const id = typeof setOrId === 'string' ? setOrId : setOrId?.id
+  return RETIRED_IDS.has(id) ? SELL_THROUGH_PREMIUM : 1
+}
 
 // Which sets a retailer carries right now. `weekIndex` rotates the LGS shelf.
 // `sets` is the in-print shop list (SHOP_SETS), newest FIRST (see the sort above). The newest
@@ -2753,10 +3329,11 @@ export const OUT_OF_PRINT_SETS = SHOP_SETS.slice(IN_PRINT_COUNT)
 export function distributorCatalog(dist, sets, weekIndex = 0) {
   if (!dist) return sets
   if (dist.japanese) return JP_SHOP_SETS                   // 🎌 the import shelf — its own catalog entirely
-  // 🕰️ Clamp to what's still IN PRINT before anything else. Out-of-print sealed has left the
-  // distribution channel entirely — no retailer can reorder it, whatever their allocation.
+  // 🕰️ Drop what the printer has finished with — but ONLY from allocation shelves. A `deepStock`
+  // retailer (warehouse, marketplace, hobby giant) goes on selling a set for years after the last
+  // print run, which is why sealed 151 is a click away on Amazon and unobtainable at your LGS.
   // Done here rather than at each call site so every shelf in the game inherits it.
-  const wide = (sets || []).slice(0, IN_PRINT_COUNT)
+  const wide = dist.deepStock ? (sets || []) : (sets || []).filter(s => !RETIRED_IDS.has(s.id))
   if (dist.cases) return wide.filter(s => caseLot(s))                             // box/case-friendly sets
   if (dist.rotating) {                                                            // small weekly shelf
     const n = wide.length
@@ -2803,10 +3380,26 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   // qty roll must not silently reshuffle which set turns up this week, or at what price.
   const qty = r() < 0.25 ? 2 : 1 // they usually turn up a single pack; sometimes a pair
   // 🕰️ Some weeks the back room turns up recent OUT-OF-PRINT product instead of true vintage —
-  // the last sealed Prismatic ETB rather than a '99 pack. Same slot, same finite quantity, so
+  // the last sealed Evolving Skies booster rather than a '99 pack. Same slot, same finite qty, so
   // the whole existing shelf works unchanged. Rolled LAST, after every draw above, so adding it
   // can't reshuffle which vintage set surfaces on the weeks it doesn't fire.
   if (AFTERMARKET_SETS.length && r() < AFTERMARKET_SHARE) {
+    // 👑 A retired-era collector piece — a Sword & Shield Charizard UPC, a GX-era premium
+    // collection. These belong to an era whose sets ALL left print, so no shop shelf carries
+    // them; the back room is the only place they can turn up, which is exactly right for
+    // out-of-print product. In-print eras (Mega Evolution, Scarlet & Violet) are excluded —
+    // those sell on the era shelf in the shop, and a "find" for something still on the shelf
+    // would be nonsense.
+    const retired = retiredEraProducts()
+    if (retired.length && r() < ERA_FIND_SHARE) {
+      const ep = retired[Math.floor(r() * retired.length)]
+      const anchor = eraAnchorSet(ep)
+      if (anchor) {
+        const eprice = round2(sealedValue({ product: ep, setId: anchor.id }) * (1.12 + r() * 0.28))
+        return { setId: anchor.id, setName: `${ep.pool.series} era`, logo: anchor.logo,
+          product: ep, price: eprice, qty: 1, aftermarket: true }
+      }
+    }
     const aset = AFTERMARKET_SETS[Math.floor(r() * AFTERMARKET_SETS.length)]
     const aprods = setProducts(aset)
     if (aprods.length) {
@@ -2819,18 +3412,32 @@ export function distributorVintageFind(dist, weekIndex = 0, boost = 1) {
   }
   return { setId: set.id, setName: set.name, logo: set.logo, product, price, qty }
 }
-// 🕰️ AFTERMARKET FIND — the other half of the in-print window. A set that ages out of the order
+// How often an aftermarket find is an era collector piece rather than a set's own sealed.
+const ERA_FIND_SHARE = 0.35
+// Era products whose era has NO set on the shop shelf — i.e. the whole era is out of print.
+// Cached: SHOP_SETS never changes at runtime.
+let RETIRED_ERA_PRODUCTS = null
+function retiredEraProducts() {
+  if (!RETIRED_ERA_PRODUCTS) {
+    const live = new Set(SHOP_SETS.map(s => s.series))
+    RETIRED_ERA_PRODUCTS = ERA_PRODUCTS.filter(p => !live.has(p.pool?.series) && eraPool(p.pool?.series).length)
+  }
+  return RETIRED_ERA_PRODUCTS
+}
+// 🕰️ AFTERMARKET FIND — the other half of the in-print line. A set that has left the order
 // channel doesn't vanish; it ends up in the back room, on a clearance shelf, in the case a
 // vendor bought off a collector. This is where you hunt it. Same weekly-deterministic shape as
-// the vintage find (stable while you shop, rotates week to week), but drawn from the modern
-// out-of-print pool plus the older aftermarket sets — and priced ABOVE market, because a shop
-// that still has sealed Prismatic knows exactly what it's sitting on.
+// the vintage find (stable while you shop, rotates week to week), but drawn from the retired
+// modern sets plus the older `secondary` pool — and priced ABOVE market, because a shop that
+// still has sealed Paldean Fates knows exactly what it's sitting on.
+// While RETIRED_IDS is empty this is just SECONDARY_SETS, which is the right answer: the older
+// aftermarket sets ARE the out-of-print product a back room turns up.
 export const AFTERMARKET_SETS = [...OUT_OF_PRINT_SETS, ...SECONDARY_SETS]
 const AFTERMARKET_SET_IDS = new Set(AFTERMARKET_SETS.map(s => s.id))
 // How often a back-room find is recent-out-of-print product rather than true vintage. Deliberately
 // routed through the SAME weekly find slot: a shop has one back room, and what's in it this week
-// is either a '99 pack or the last sealed Prismatic ETB nobody shifted. Sharing the slot means the
-// existing buy path, stock tracking and shelf UI all work unchanged.
+// is either a '99 pack or the last sealed Crown Zenith ETB nobody shifted. Sharing the slot means
+// the existing buy path, stock tracking and shelf UI all work unchanged.
 const AFTERMARKET_SHARE = 0.45
 
 // Build a vintage item a high-rapport vendor RESERVES for you (the "we'll hold it" perk). Priced
@@ -2878,7 +3485,10 @@ export function hypeSurge(setOrId) {
 // fresh-drop surge; without it this degrades to the old plain-market maths.
 export function distributorPrice(dist, retail, level, opts = {}) {
   if (!dist) return round2(retail || 0)
-  const base = (retail || 0) * hypeSurge(opts.set)  // every shelf rides the scalper surge
+  // Every shelf rides the scalper surge on the way IN and the sell-through premium on the way
+  // OUT. The two never overlap (a set can't be both the fresh drop and a finished print run),
+  // so multiplying both is safe — whichever applies, the other is 1.
+  const base = (retail || 0) * hypeSurge(opts.set) * sellThroughPremium(opts.set)
   return round2(base * dist.priceMult * (1 - distributorDiscount(dist, level)))
 }
 // Case price from a distributor: wholesale on the boxes, then the extra case bulk cut.
@@ -2891,18 +3501,26 @@ export function distributorCasePrice(dist, lot, level) {
 // multi-pack products (ETBs / bundles / premiums), one or two booster boxes, cases are
 // rare. Scaled by reliability and — as a wider allocation — by rapport, so building a
 // relationship is how you get to buy in any real quantity.
-export function stockCap(dist, product, level) {
+export function stockCap(dist, product, level, set) {
   if (!dist) return 99
   const packs = product?.packs || 1
+  // Depth is "limited but real", which is what a shop actually looks like: a stack of boxes
+  // behind the counter and a tub of loose packs broken out of them. The old numbers were thin
+  // in the wrong place — one booster box and five loose packs is a shop that has just been
+  // cleaned out, not one that is open for business.
   let base
   if (product?._case) base = 1
-  else if (packs >= 21) base = 1          // booster box — a shop gets a couple a week, not a pallet
+  else if (packs >= 21) base = 3          // booster boxes — a few behind the counter
   else if (packs >= 9) base = 2           // ETB / super-premium collection
-  else if (packs >= 2) base = 3           // booster bundle / premium / tin / blister
-  else base = 5                           // single booster / sleeved pack
+  else if (packs >= 2) base = 4           // booster bundle / premium / tin / blister
+  else base = 14                          // loose packs — a shop breaks boxes and sells them singly
   const rel = 0.5 + dist.reliability        // 0.9 .. 1.5
   const allo = 1 + 0.25 * (level || 0)      // bigger allocation as rapport grows (up to +100%)
-  return Math.max(1, Math.round(base * rel * allo))
+  // 🕰️ A finished print run is drawn down, never replenished — what's left on a warehouse shelf
+  // is a fraction of a live allocation however deep that warehouse is. Amazon stays `guaranteed`
+  // (you can always get SOME sealed 151) but you can no longer buy it by the armful.
+  const run = RETIRED_IDS.has(set?.id) ? 0.5 : 1
+  return Math.max(1, Math.round(base * rel * allo * run))
 }
 // Units of stock a distributor regains per day (toward the cap).
 export function restockRate(dist, cap) {
@@ -2910,7 +3528,12 @@ export function restockRate(dist, cap) {
   return Math.max(0.2, dist.reliability * cap * 0.18)
 }
 // Stock map key for a (set, product) pair.
-export function stockKey(set, product) { return `${set.id}|${product.type}` }
+// Keyed on the PRODUCT, not its type. Under the old one-product-per-type shop those were the
+// same key; now that a set carries its full lineup, a type key would pool the shelf across all
+// eight Prismatic mini tins — buy out the Umbreon one and the Flareon one would read sold out
+// too. tcgId is TCGplayer's per-product id; synthesized products (JP, vintage) fall back to
+// type, which is unique for them anyway. Old saves just start those keys at a full shelf.
+export function stockKey(set, product) { return `${set.id}|${product.tcgId || product.type}` }
 // Live stock state for a (set, product) at a distributor. `stock` is that distributor's
 // saved stock map ({ key: {q, cap} }); an absent key means a full shelf. The cap is the
 // LARGER of any saved cap and the current allocation — so climbing a rapport rung widens
@@ -2919,11 +3542,11 @@ export function stockState(dist, stock, set, product, level) {
   // A "guaranteed" retailer (Amazon) never sells out — its shelf is treated as always full,
   // so it's the reliable "need it now" option that offsets its higher price.
   if (dist?.guaranteed) {
-    const cap = stockCap(dist, product, level)
+    const cap = stockCap(dist, product, level, set)
     return { q: cap, cap, out: false }
   }
   const entry = (stock || {})[stockKey(set, product)]
-  const cap = Math.max(entry?.cap || 0, stockCap(dist, product, level))
+  const cap = Math.max(entry?.cap || 0, stockCap(dist, product, level, set))
   const q = entry ? entry.q : cap
   return { q, cap, out: q < 1 }
 }
@@ -3035,14 +3658,14 @@ export function cardMastersetVariants(set, card) {
 // own. `binderCards` are the copies physically slotted into the binder; `ownedCards` is any
 // other bucket (collection) whose variants count as "available to place". Returns per-slot
 // totals so the UI can render progress + a fill button.
-// `reserveCut` = your binder reserve tier (see fileableInBinder). A copy at/above it isn't
-// "placeable", so the fill button's count matches what the button will actually do. `reserved`
-// reports the slots where the ONLY copy you own is being held out for grading, so the UI can
-// explain an empty slot instead of leaving it looking like a bug.
-export function mastersetStats(set, binderCards, ownedCards = [], reserveCut = null) {
+// `reserve` = your binder reserve config (see fileableInBinder) — a cut tier string is also
+// accepted. A copy that hits a ceiling isn't "placeable", so the fill button's count matches
+// what the button will actually do. `reserved` reports the slots where the ONLY copy you own
+// is being held out, so the UI can explain an empty slot instead of leaving it looking like a bug.
+export function mastersetStats(set, binderCards, ownedCards = [], reserve = null) {
   const binderKeys = new Set(binderCards.filter(c => setIdOfCard(c) === set.id).map(c => `${c.id}:${cardVariant(c)}`))
   const mine = ownedCards.filter(c => setIdOfCard(c) === set.id)
-  const looseKeys = new Set(mine.filter(c => fileableInBinder(c, reserveCut)).map(c => `${c.id}:${cardVariant(c)}`))
+  const looseKeys = new Set(mine.filter(c => fileableInBinder(c, reserve)).map(c => `${c.id}:${cardVariant(c)}`))
   const anyKeys = new Set(mine.map(c => `${c.id}:${cardVariant(c)}`))
   let total = 0, placed = 0, placeable = 0, reserved = 0
   for (const card of set.cards) {
@@ -3051,7 +3674,7 @@ export function mastersetStats(set, binderCards, ownedCards = [], reserveCut = n
       const key = `${card.id}:${v}`
       if (binderKeys.has(key)) placed++
       else if (looseKeys.has(key)) placeable++
-      else if (anyKeys.has(key)) reserved++ // you own a copy, but it's reserved for grading
+      else if (anyKeys.has(key)) reserved++ // you own a copy, but the reserve is holding it out
     }
   }
   return { total, placed, placeable, reserved, pct: total ? Math.round((placed / total) * 100) : 0,

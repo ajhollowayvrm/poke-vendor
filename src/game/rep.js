@@ -57,6 +57,7 @@ export const REP_SOURCES = {
   sales:      { icon: '💵', label: 'Sales & service' },
   generosity: { icon: '🎗️', label: 'Generosity' },
   stream:     { icon: '🔴', label: 'Streaming' },
+  content:    { icon: '📱', label: 'Content & socials' },
   shows:      { icon: '🎪', label: 'Shows' },
   events:     { icon: '🎉', label: 'Store events' },
   shop:       { icon: '🏬', label: 'Shop presence' },

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { setById, rawValue, psaValueAt, fmtMoney, rarityRank, cardImg } from '../game/engine'
+import { setById, rawValue, psaValueAt, fmtMoney, rarityRank, cardImg, cardNumber } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 
@@ -19,11 +19,11 @@ export default function SetPriceList({ setId }) {
     if (!set) return []
     const needle = q.trim().toLowerCase()
     let list = needle
-      ? set.cards.filter(c => c.name.toLowerCase().includes(needle) || String(c.number).toLowerCase().includes(needle))
+      ? set.cards.filter(c => c.name.toLowerCase().includes(needle) || String(cardNumber(c)).toLowerCase().includes(needle))
       : set.cards
     return [...list].sort((a, b) => {
       if (sort === 'rarity') return rarityRank(b.rarity) - rarityRank(a.rarity) || rawValue(b) - rawValue(a)
-      if (sort === 'number') return numOf(a.number) - numOf(b.number)
+      if (sort === 'number') return numOf(cardNumber(a)) - numOf(cardNumber(b))
       if (sort === 'name') return a.name.localeCompare(b.name)
       return rawValue(b) - rawValue(a) // value (default) — chase first
     })
@@ -56,7 +56,7 @@ export default function SetPriceList({ setId }) {
             <img src={cardImg(c)} alt={c.name} loading="lazy" decoding="async" />
             <div className="spc-body">
               <div className="spc-name" title={c.name}>{c.name}</div>
-              <div className="spc-rarity" style={{ color: rarityColor(c.rarity) }}>{c.rarity} · #{c.number}</div>
+              <div className="spc-rarity" style={{ color: rarityColor(c.rarity) }}>{c.rarity} · #{cardNumber(c)}</div>
               <div className="spc-prices">
                 <span><small>Raw</small><b>{fmtMoney(rawValue(c))}</b></span>
                 <span><small>PSA 10</small><b className="spc-gem">{fmtMoney(psaValueAt(c, 10))}</b></span>

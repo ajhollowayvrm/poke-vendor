@@ -1,28 +1,34 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { openPack, openProduct, makeProductPromo, isHit, isChase, isGrail, cardValue, fmtMoney, rarityRank,
-  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById } from '../game/engine'
+import { openPackFor, openProduct, makeProductPromo, isHit, isChase, isChaseOrEx, isGrail, cardValue, fmtMoney, rarityRank,
+  preloadCardImages, cutEstimate, HIT_THRESHOLD, cardImg, slabLabel, setById,
+  ownedIdSet, setIdOfCard, needTierFor, drawPackSets } from '../game/engine'
 import { cardMatchesWant } from '../game/shows'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import CardModal from './CardModal'
 import HoloCard from './HoloCard'
-import HandReveal from './HandReveal'
+import HandReveal, { NeedBadge } from './HandReveal'
 import Burst from './Burst'
-import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxGod } from '../game/feedback'
+import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
+import { AnimatedNumber } from '../ui/AnimatedNumber'
 
 // "Big hit" thresholds — how good a card has to be for the sifter to STOP and hand you the
 // pack to rip yourself. The three money bars are pure VALUE bars; "Chase" is a RARITY bar
 // instead (see bigHitIn), because the card you want in your own hands isn't always the
 // expensive one — a $6 Illustration Rare is still an alt art you'd rather pull than watch
-// blur past. Whatever the setting, a grail (Master Ball foil / SIR+) or a god pack always
-// breaks the churn; a want-fill, pointedly, does not (see bigHitIn).
+// blur past, and the ex is the card the pack is *about* whatever it books at. Whatever the
+// setting, a grail (Master Ball foil / SIR+), a want-fill or a god pack always breaks the churn.
+//
+// Note the rarity bar is the SLOWEST setting on a phone-friendly set: including the ex roughly
+// doubles the stop rate (Ascended Heroes 20.5% of packs → 38.0%, Prismatic 37.4% → 48.6%), so a
+// box hands back a lot of packs. That's the setting doing what it says; the money bars sift fast.
 const CHASE_LEVEL = Infinity   // the rarity-bar sentinel: no value ever clears it
 const STOP_LEVELS = [
   { key: 25,  label: '$25+',  blurb: 'Stop on anything $25 or up' },
   { key: 50,  label: '$50+',  blurb: 'Only bigger hits break the churn' },
   { key: 150, label: '$150+', blurb: 'Chase-money only' },
-  { key: CHASE_LEVEL, label: 'Chase only', blurb: 'Any IR+ or special foil, at any price' },
+  { key: CHASE_LEVEL, label: 'Chase only', blurb: 'Any ex, IR+ or special foil, at any price' },
 ]
 
 // How much faster than a normal rip the churn runs. The sift shows the REAL rip — pack tears,
@@ -47,10 +53,18 @@ export default function AutoRip({ items, onExit }) {
   const hapticsOn = useGame(s => s.settings.haptics ?? true)
   const hasLoupe = useGame(s => !!s.upgrades.loupe)
   const addPulls = useGame(s => s.addPulls)
+  const logRip = useGame(s => s.logRip)
   const ripSealed = useGame(s => s.ripSealed)
   const wantList = useGame(s => s.wantList)
   const forumPosts = useGame(s => s.forumPosts)
   const activeWants = useMemo(() => [...(wantList || []), ...(forumPosts || [])], [wantList, forumPosts])
+  // 🃏 Holes in a set you're building — the same read the normal rip does, so a card badges the
+  // same whether you turned it yourself or watched it go past on the churn.
+  const collection = useGame(s => s.collection)
+  const binder = useGame(s => s.binder)
+  const challengeSetId = useGame(s => s.challenge?.setId || null)
+  const ownedIds = useMemo(() => ownedIdSet([...(collection || []), ...(binder || [])]), [collection, binder])
+  const binderSets = useMemo(() => new Set((binder || []).map(c => setIdOfCard(c)).filter(Boolean)), [binder])
 
   const [phase, setPhase] = useState('intro')   // intro | sifting | hit | reveal | done
   const [minValue, setMinValue] = useState(25)
@@ -64,6 +78,8 @@ export default function AutoRip({ items, onExit }) {
   const [shaking, setShaking] = useState(false)  // the tear beat before cards start landing
   const [awaiting, setAwaiting] = useState(false)// manual rip: waiting for your tap
   const [settled, setSettled] = useState(false)  // manual rip: last card seen → the grid
+  const [suspense, setSuspense] = useState(false)// the next card is a grail — hold the beat
+  const [swept, setSwept] = useState(0)          // packs banked unwatched by "skip & bank the rest"
   const [tear, setTear] = useState(0)
   const [burst, setBurst] = useState(false)
   const [modalCard, setModalCard] = useState(null)
@@ -85,8 +101,9 @@ export default function AutoRip({ items, onExit }) {
   minRef.current = minValue
 
   function wantFor(card) { return activeWants.find(w => cardMatchesWant(card, w)) }
+  function needOf(card) { return needTierFor(card, ownedIds, challengeSetId, binderSets) }
   function tagCards(cards) {
-    cards.forEach(c => { c._isHit = isHit(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
+    cards.forEach(c => { c._isHit = isHit(c); c._needFor = needOf(c); const w = wantFor(c); if (w) { c._fillsWant = true; c._wantWho = w.who; c._wantForum = !!w.forum; c._wantPremium = w.premiumMult } })
     return cards
   }
   // Does this pack hold something worth handing back sealed? A grail always does. Past that
@@ -107,13 +124,19 @@ export default function AutoRip({ items, onExit }) {
     return cards.find(c => isGrail(c) || clears(c)) || null
   }
   function pickBest(best, cards) { return cards.reduce((b, c) => (cardValue(c) > (b ? cardValue(b) : 0) ? c : b), best) }
-  // Bank a pack to the collection AND fold it into the on-screen tally.
+  // Bank a pack to the collection AND fold it into the on-screen tally — everything EXCEPT the
+  // money, which accrues a card at a time as each one lands (see revealCard). `best` and `hits`
+  // are safe to bank up front: neither shows until the sift-complete screen.
   function bankPack(cards, set) {
     addPulls(cards, set.name, 1)
-    const v = cards.reduce((a, c) => a + cardValue(c), 0)
     const newHits = cards.filter(c => c._isHit || c.foil)
-    setStats(s => ({ ...s, packs: s.packs + 1, value: s.value + v, best: pickBest(s.best, cards), hits: newHits.length ? [...newHits, ...s.hits] : s.hits }))
+    setStats(s => ({ ...s, packs: s.packs + 1, best: pickBest(s.best, cards), hits: newHits.length ? [...newHits, ...s.hits] : s.hits }))
   }
+  // One card just turned face-up: that — and only that — is what the "💰 pulled" tally counts.
+  // Adding a pack's whole value in one lump handed you the punchline: on the flagged pack it
+  // jumped the moment you tore the wrapper, so the tally announced the hit the sifter had just
+  // gone to the trouble of not naming. Called exactly once per card in both reveal paths.
+  function revealCard(card) { setStats(s => ({ ...s, value: s.value + cardValue(card) })) }
   function pushFeed(line, key) { setFeed(f => [{ line, key: key || `${f.length}-${line}` }, ...f].slice(0, 10)) }
 
   // The heart of the sift: advance until we hit a big-hit pack (then stop for you) or run dry.
@@ -125,23 +148,34 @@ export default function AutoRip({ items, onExit }) {
       const removed = ripSealed(it.uid)                   // consume this unit from inventory now
       if (!removed) { pump(); return }                    // already gone (sold/moved) — skip it, don't rip a phantom
       const set = setById(it.setId)
-      cur.current = { set, product: it.product, packsLeft: it.product?.packs || 1, promo: it.product?.bonus === 'promo' }
+      // A cross-set product deals a different set into every slot. Drawn from THIS unit's uid,
+      // so sifting five identical UPCs gives five different lineups.
+      cur.current = { set, product: it.product, packsLeft: it.product?.packs || 1,
+        promo: it.product?.bonus === 'promo', packSets: drawPackSets(it.product, it.uid) }
     }
     const c = cur.current
     if (!c.set) { cur.current = null; pump(); return }    // unknown set — skip it defensively
+    // Which set this particular pack came out of (the anchor set for an ordinary product).
+    const packSetOf = i => (c.packSets && setById(c.packSets[i])) || c.set
+    const from = packSetOf((c.product?.packs || 1) - c.packsLeft)
     if (c.packsLeft > 0) {
-      const cards = tagCards(openPack(c.set))
+      // openPackFor, not openPack: a 🔦 searched loose pack has to come out gutted here too.
+      // Sifting one used to launder it — the churn rolled it at full odds while "skip & bank the
+      // rest" (flush → openProduct) honoured the strip, so the same pack paid differently
+      // depending on how you opened it.
+      const cards = tagCards(openPackFor(from, c.product))
       // Look BEFORE we animate: a pack worth stopping for must never flash its cards past you
       // on the churn clock. It goes back in your hands sealed instead.
       if (bigHitIn(cards)) {
-        setPending({ set: c.set, product: c.product, cards })
+        // `from`, not c.set — the paused pack must hand over showing the set it really is.
+        setPending({ set: from, product: c.product, cards })
         setStack(null); setShown(0); setSettled(false); setAwaiting(false)
         setTear(0); setPhase('hit')
         setStats(s => ({ ...s, hitPacks: s.hitPacks + 1 }))
-        pushFeed(`🔥 ${c.set.name} — the sifter stopped on this one. Rip it yourself →`)
+        pushFeed(`🔥 ${from.name} — the sifter stopped on this one. Rip it yourself →`)
         return
       }
-      churnPack(cards, c.set)
+      churnPack(cards, from)
       return
     }
     if (c.promo) {
@@ -164,8 +198,8 @@ export default function AutoRip({ items, onExit }) {
   }
 
   // Speed through one forgettable pack: the same tear + hand-reveal as a normal rip, on the
-  // churn clock. Banked only once every card has landed, so the tally never runs ahead of what
-  // you've watched go by.
+  // churn clock. Banked to the collection only once every card has landed, and the money tally
+  // climbs card by card, so neither ever runs ahead of what you've watched go by.
   function churnPack(cards, set) {
     running.current = true
     inflight.current = { cards, set }
@@ -180,12 +214,15 @@ export default function AutoRip({ items, onExit }) {
     if (flushed.current) return
     if (i >= cards.length) {
       bankPack(cards, set)
+      // …and only now, once it's gone by, does it say the pack was gutted before you bought it.
+      if (cards._searched) pushFeed(`🔦 ${set.name} — that one was searched. The hit was long gone.`)
       inflight.current = null
       if (cur.current) cur.current.packsLeft--
       after(() => { running.current = false; pump() }, fast(320))
       return
     }
     setShown(i + 1)
+    revealCard(cards[i])
     // Hits under your stop bar still linger a beat longer than filler — the churn has a rhythm,
     // not a metronome. No burst or sound down here: at better than a pack a second that's a strobe.
     after(() => churnStep(cards, set, i + 1), fast((cards[i]._isHit || cards[i].foil) ? 1100 : 520))
@@ -206,7 +243,8 @@ export default function AutoRip({ items, onExit }) {
     after(() => {
       setShaking(false)
       setAwaiting(true)                                    // your tap turns the first card
-      bankPack(p.cards, p.set)                             // the rip IS the acquisition
+      teaseNext(p.cards, 0)                                // …and if card one is a grail, it says so
+      bankPack(p.cards, p.set)                             // the rip IS the acquisition (money accrues per card)
       if (cur.current) cur.current.packsLeft--
       setPending(null)                                     // banked now — flush must not re-bank it
     }, ms(650))
@@ -224,17 +262,32 @@ export default function AutoRip({ items, onExit }) {
     }
     const c = cards[i]
     setShown(i + 1)
+    setSuspense(false)
+    revealCard(c)
     const special = c._isHit || c.foil || c._fillsWant
     if (special) {
       setBurst(true); after(() => setBurst(false), ms(1200))
-      sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, isGrail(c))
+      // Same split as the normal rip: a want-fill is spoken for, not rarer, so it gets its own
+      // chime — layered behind the hit sting when the card happens to be both.
+      if (c._isHit || c.foil) { sfxHit(rarityRank(c.rarity) - HIT_THRESHOLD, isGrail(c)); if (c._fillsWant) sfxWant(0.3) }
+      else sfxWant()
     } else {
       sfxFlip()
     }
+    teaseNext(cards, i + 1)
     // The last card waits for your tap too, exactly like every card before it. A timer here
     // used to settle the pack 700ms after the final flip, and settling swaps the hand out for
     // the grid — so the one card you stopped the whole sift to see got yanked off screen.
     setAwaiting(true)
+  }
+  // The suspense beat for the pack the sifter handed you — it's a manual rip, so the hold lasts as
+  // long as you take: the next card glows, the rest of the hand dims, until you turn it.
+  function teaseNext(cards, i) {
+    const c = cards[i]
+    if (!c || !isGrail(c) || c._peeked) { setSuspense(false); return }
+    c._peeked = true
+    setSuspense(true)
+    sfxTension()
   }
   function advanceManual() {
     if (phase !== 'reveal' || !awaiting || !stack) return
@@ -244,7 +297,7 @@ export default function AutoRip({ items, onExit }) {
   }
 
   function continueSift() {
-    setPending(null); setStack(null); setShown(0); setSettled(false); setAwaiting(false)
+    setPending(null); setStack(null); setShown(0); setSettled(false); setAwaiting(false); setSuspense(false)
     setPhase('sifting'); after(() => pump(), ms(150))
   }
 
@@ -259,32 +312,87 @@ export default function AutoRip({ items, onExit }) {
   // backing out (or navigating away) never strands product you already pulled from inventory.
   const flush = useRef(() => {})
   const flushed = useRef(false)
+  // Returns what it swept — { packs, value, best, hits } — so a MOUNTED caller (finishRest) can
+  // fold it into the tally. The done screen used to read "Sifted 12 packs · pulled $88" after
+  // sweeping thirty more: flush banked them to the collection but told the tally nothing, so the
+  // headline number quietly excluded most of what you'd just opened. Unmount ignores the return.
   flush.current = () => {
-    if (flushed.current) return                          // idempotent — never bank the remainder twice
+    if (flushed.current) return null                     // idempotent — never bank the remainder twice
     flushed.current = true
+    const swept = { packs: 0, value: 0, best: null, hits: [] }
+    // `from` skips cards already counted card-by-card by revealCard, so the pack caught
+    // mid-animation contributes only the part you never saw.
+    const take = (cards, packs = 1, from = 0) => {
+      swept.packs += packs
+      swept.value += cards.slice(from).reduce((a, c) => a + cardValue(c), 0)
+      swept.best = pickBest(swept.best, cards)
+      swept.hits.push(...cards.filter(c => c._isHit || c.foil))
+    }
     // A pack caught mid-animation is already OUT of the wrapper — bank the exact cards that were
     // on screen rather than re-rolling a fresh pack for it.
-    if (inflight.current) { addPulls(inflight.current.cards, inflight.current.set.name, 1); if (cur.current) cur.current.packsLeft--; inflight.current = null }
-    if (pending) { addPulls(tagCards(pending.cards), pending.set.name, 1); if (cur.current) cur.current.packsLeft--; }
+    if (inflight.current) { addPulls(inflight.current.cards, inflight.current.set.name, 1); take(inflight.current.cards, 1, shown); if (cur.current) cur.current.packsLeft--; inflight.current = null }
+    if (pending) { addPulls(tagCards(pending.cards), pending.set.name, 1); take(pending.cards); if (cur.current) cur.current.packsLeft--; }
     if (cur.current && cur.current.set) {
-      for (let i = 0; i < cur.current.packsLeft; i++) addPulls(tagCards(openPack(cur.current.set)), cur.current.set.name, 1)
-      if (cur.current.promo) { const p = makeProductPromo(cur.current.set, cur.current.product); if (p) { p._isHit = isHit(p); addPulls([p], '', 0) } }
+      const cu = cur.current
+      // Sweeping the remainder must deal the SAME sets the churn would have — a bank-the-rest
+      // is a shortcut through the animation, not a different box. Start where the churn stopped.
+      const total = cu.product?.packs || 1
+      for (let i = 0; i < cu.packsLeft; i++) {
+        const from = (cu.packSets && setById(cu.packSets[total - cu.packsLeft + i])) || cu.set
+        const cards = tagCards(openPackFor(from, cu.product))
+        addPulls(cards, from.name, 1); take(cards)
+      }
+      // The promo stays pinned to the product's own set — a Charizard UPC ships a Charizard
+      // promo no matter which packs fell in.
+      if (cu.promo) { const p = makeProductPromo(cu.set, cu.product); if (p) { p._isHit = isHit(p); addPulls([p], '', 0); take([p], 0) } }
     }
     cur.current = null
     while (queue.current.length) {
       const it = queue.current.shift(); const removed = ripSealed(it.uid); if (!removed) continue
       const set = setById(it.setId); if (!set) continue
-      const all = openProduct(set, it.product); all.forEach(c => (c._isHit = isHit(c))); addPulls(all, set.name, it.product?.packs || 1)
+      const all = openProduct(set, it.product, { uid: it.uid }); all.forEach(c => (c._isHit = isHit(c)))
+      addPulls(all, it.product?.pool?.series ? `${it.product.pool.series} era` : set.name, it.product?.packs || 1)
+      take(all, it.product?.packs || 1)
     }
+    return swept
   }
   useEffect(() => () => { cancelTimers(); flush.current() }, [])
 
   // "Skip & bank the rest": stop sifting, sweep everything left straight into the collection.
   // Kill the in-flight reveal timers FIRST — flush banks the pack that's mid-animation, so a
   // surviving churn timer would land the same ten cards in your collection twice.
-  function finishRest() { cancelTimers(); running.current = false; flush.current(); setPhase('done') }
+  function finishRest() {
+    cancelTimers(); running.current = false
+    const swept = flush.current()
+    if (swept && (swept.packs || swept.value)) {
+      setStats(s => ({ ...s,
+        packs: s.packs + swept.packs,
+        value: s.value + swept.value,
+        best: swept.best ? pickBest(s.best, [swept.best]) : s.best,
+        hits: swept.hits.length ? [...swept.hits, ...s.hits] : s.hits }))
+      setSwept(swept.packs)
+    }
+    setPhase('done')
+  }
 
   const totalPacks = useMemo(() => items.reduce((a, it) => a + (it.product?.packs || 1), 0), [items])
+  // 📜 One log line for the whole sift session. Unlike the opener, this path has the REAL cost
+  // basis to hand — these are inventory rows, so `boughtPrice` is what you actually paid rather
+  // than what the product lists at today. Written from an effect on the done screen so it reads
+  // the settled tally, including anything "skip & bank the rest" swept in.
+  const sessionCost = useMemo(() => items.reduce((a, it) => a + (it.boughtPrice || 0), 0), [items])
+  const sessionLogged = useRef(false)
+  useEffect(() => {
+    if (phase !== 'done' || sessionLogged.current || !stats.packs) return
+    sessionLogged.current = true
+    const one = items.length === 1 ? items[0] : null
+    logRip({
+      setId: one ? one.setId : (setById(items[0]?.setId)?.id || null),
+      name: one ? (setById(one.setId)?.name || '') : `${items.length} items`,
+      type: one ? (one.product?.type || 'sealed') : '⚡ sift',
+      packs: stats.packs, cost: sessionCost, pulled: stats.value, best: stats.best,
+    })
+  }, [phase, stats.packs, stats.value])
   const remainingItems = () => queue.current.length + (cur.current ? 1 : 0)
   const modalEl = modalCard && createPortal(<CardModal card={modalCard} readOnly onClose={() => setModalCard(null)} />, document.body)
 
@@ -324,7 +432,11 @@ export default function AutoRip({ items, onExit }) {
   const tally = (
     <div className="pack-progress">
       <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 {stats.packs} sifted{remainingItems() ? ` · ${remainingItems()} item${remainingItems() === 1 ? '' : 's'} left` : ''}</span>
-      <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }} title="Everything pulled so far this sift">💰 {fmtMoney(stats.value)} pulled</span>
+      {/* Short tween + no flash during the churn: at ~15 cards a second a 450ms flash is a strobe,
+          not a cue. Your own pack (phase 'reveal') gets the flash back, one card at a time. */}
+      <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }} title="Everything pulled so far this sift">
+        💰 <AnimatedNumber value={stats.value} format={fmtMoney} duration={phase === 'reveal' ? 450 : 260} flash={phase === 'reveal'} /> pulled
+      </span>
       {stats.hitPacks > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🔥 {stats.hitPacks} big hit{stats.hitPacks === 1 ? '' : 's'}</span>}
     </div>
   )
@@ -354,6 +466,13 @@ export default function AutoRip({ items, onExit }) {
             Sifted <b>{stats.packs}</b> pack{stats.packs === 1 ? '' : 's'} · pulled <b style={{ color: 'var(--green)' }}>{fmtMoney(stats.value)}</b>
             {stats.hitPacks > 0 && <> · <b style={{ color: 'var(--gold)' }}>{stats.hitPacks}</b> big hit{stats.hitPacks === 1 ? '' : 's'}</>}
           </p>
+          {/* The number now includes what you skipped, so say so — otherwise it reads as if you
+              watched thirty packs go by. */}
+          {swept > 0 && (
+            <p className="muted" style={{ fontSize: 12.5, margin: '2px 0 6px' }}>
+              ⏭️ {swept} of those went straight to the collection unwatched.
+            </p>
+          )}
           {stats.best && <p className="muted" style={{ fontSize: 13 }}>Best pull: <b style={{ color: rarityColor(stats.best.rarity) }}>{stats.best.name}</b> · {fmtMoney(cardValue(stats.best))}</p>}
           {stats.hits.length > 0 && (
             <div className="rip-summary-hits" style={{ marginTop: 10 }}>
@@ -402,7 +521,7 @@ export default function AutoRip({ items, onExit }) {
             <div className="foil" />
             <div className="tear" aria-hidden="true" />
             {pending?.set?.logo ? <img className="logo" src={pending.set.logo} alt={pending.set.name} /> : <b>{pending?.set?.name}</b>}
-            <span className="hint">▶ Click or drag down to rip</span>
+            <span className="hint">▶ Tap or drag down to rip</span>
           </div>
         </div>
         <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip &amp; bank the rest</button>
@@ -443,10 +562,11 @@ export default function AutoRip({ items, onExit }) {
                       <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                       <div className="rc-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}</div>
                       <div className="rc-val">{fmtMoney(cardValue(c))}</div>
-                      {(cut || c._fillsWant) && (
+                      {(cut || c._fillsWant || c._needFor) && (
                         <div className="rc-badges">
                           {cut && <span className="rip-cut-pill" style={{ color: cut.color, background: cut.color + '22' }}>👁️ {cut.short}</span>}
                           {c._fillsWant && <span className="rc-want">⭐ Want</span>}
+                          <NeedBadge card={c} compact />
                         </div>
                       )}
                     </button>
@@ -457,7 +577,8 @@ export default function AutoRip({ items, onExit }) {
           </>
         ) : (
           <HandReveal pulls={stack.cards} shown={shown} awaiting={awaiting} revealMode="manual"
-            setLogo={stack.set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard} />
+            setLogo={stack.set.logo} hasLoupe={hasLoupe} onTapNext={advanceManual} onInspect={setModalCard}
+            suspense={suspense} />
         )}
         {modalEl}
       </div>

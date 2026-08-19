@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useGame, JOBS, RENT_PER_DAY, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS, EMPLOYEES, employeeById,
   RANKS, DEEDS_NEEDED, repSourceLabel } from '../game/store'
-import { cardValue, sealedValue, fmtMoney, round2, SETS, shopName, shopIcon } from '../game/engine'
+import { cardValue, sealedValue, fmtMoney, round2, SETS, shopName, shopIcon,
+  pullOdds, luckTierLabel, setById } from '../game/engine'
 import { MILESTONES, MILESTONE_GROUPS, milestoneProgress } from '../game/milestones'
 import { Collapse, bigScreen } from '../ui/Collapse'
 import { confirmDialog } from '../ui/dialog'
@@ -16,7 +17,7 @@ export default function Stats() {
   // actually changes.
   const { stats, history, collection, cash, notoriety, showsAttended, gradesSubmitted, bySet,
     listings, consignments, shopDisplay, showInventory, pendingGrades, sealedInventory,
-    showSealed, shopSealed, milestones, worthHistory, binder } = useGame(useShallow(s => ({
+    showSealed, shopSealed, milestones, worthHistory, binder, ripLog } = useGame(useShallow(s => ({
     stats: s.stats, history: s.history, collection: s.collection, cash: s.cash,
     notoriety: s.notoriety, showsAttended: s.showsAttended, gradesSubmitted: s.gradesSubmitted,
     bySet: s.bySet || {},
@@ -24,6 +25,7 @@ export default function Stats() {
     showInventory: s.showInventory, pendingGrades: s.pendingGrades, sealedInventory: s.sealedInventory,
     showSealed: s.showSealed, shopSealed: s.shopSealed,
     milestones: s.milestones || [], worthHistory: s.worthHistory || [], binder: s.binder || [],
+    ripLog: s.ripLog || [],
   })))
   const collValue = collection.reduce((a, c) => a + cardValue(c), 0)
     + (binder || []).reduce((a, c) => a + cardValue(c), 0)
@@ -60,24 +62,38 @@ export default function Stats() {
     <>
       <RepPanel />
       <FinanceCard />
+      {/* Seventeen tiles used to sit in one flat grid with six different value colours and no
+          rule behind them — 0 Reputation was gold, 0 God packs was magenta, Best foil's "—"
+          placeholder rendered as a lone purple dash that read as a broken value. Nothing was
+          learnable from a colour.
+          Two changes: group by the question each answers, and let colour mean ONE thing —
+          money valence (green up / red down). The chase counters keep their rarity hue only
+          once they are non-zero, because a magenta zero is just noise. */}
+      <div className="stat-group-h">Money</div>
       <div className="statgrid">
         <Stat label="Net worth" v={fmtMoney(netWorth)} c="var(--green)" />
         <Stat label="Cash" v={fmtMoney(cash)} />
         <Stat label="Collection value" v={fmtMoney(collValue)} />
         <Stat label="Realized P/L" v={`${pnl>=0?'+':''}${fmtMoney(pnl)}`} c={pnl>=0?'var(--green)':'var(--red)'} />
-        <Stat label="Reputation" v={Math.round(notoriety)} c="var(--gold)" />
+      </div>
+      <div className="stat-group-h">Ripping</div>
+      <div className="statgrid">
         <Stat label="Packs opened" v={stats.packsOpened} />
         <Stat label="Cards pulled" v={stats.cardsPulled} />
-        <Stat label="Hits pulled" v={stats.hits} c="var(--gold)" />
+        <Stat label="Hits pulled" v={stats.hits} c={stats.hits ? 'var(--gold)' : undefined} />
         <Stat label="Best pull" v={stats.bestPull ? fmtMoney(cardValue(stats.bestPull)) : '—'} />
-        <Stat label="Best foil" v={stats.bestFoil ? fmtMoney(cardValue(stats.bestFoil)) : '—'} c="#a06bff" />
-        <Stat label="God packs hit" v={stats.godPacks || 0} c="#ff3df0" />
-        <Stat label="Demigod packs" v={stats.demigodPacks || 0} c="#7dd3fc" />
+        <Stat label="Best foil" v={stats.bestFoil ? fmtMoney(cardValue(stats.bestFoil)) : '—'} c={stats.bestFoil ? '#a06bff' : undefined} />
+        <Stat label="God packs hit" v={stats.godPacks || 0} c={stats.godPacks ? '#ff3df0' : undefined} />
+        <Stat label="Demigod packs" v={stats.demigodPacks || 0} c={stats.demigodPacks ? '#7dd3fc' : undefined} />
+      </div>
+      <div className="stat-group-h">The business</div>
+      <div className="statgrid">
+        <Stat label="Reputation" v={Math.round(notoriety)} c={notoriety ? 'var(--gold)' : undefined} />
+        <Stat label="Cards owned" v={collection.length} />
         <Stat label="Cards graded" v={gradesSubmitted} />
         <Stat label="Shows attended" v={showsAttended} />
         <Stat label="Wants filled" v={stats.wantsFilled || 0} />
         <Stat label="Goals completed" v={stats.goalsCompleted || 0} />
-        <Stat label="Cards owned" v={collection.length} />
       </div>
       {stats.bestPull && (
         <p className="muted" style={{ fontSize: 13, marginTop: 10 }}>
@@ -121,6 +137,9 @@ export default function Stats() {
         </>
       )}
 
+      <RipLogPanel log={ripLog} />
+      <LuckPanel bySet={bySet} />
+
       <h3 style={{ margin: '24px 0 6px' }}>Ledger</h3>
       <div>
         {history.length === 0 && <p className="muted">No activity yet.</p>}
@@ -128,7 +147,10 @@ export default function Stats() {
           <div className="hist" key={i}>
             <span className="muted">{new Date(h.t).toLocaleTimeString()}</span>
             <span>{h.detail}</span>
-            {h.amount !== 0 && <span className={`amt ${h.amount > 0 ? 'pos' : 'neg'}`}>{h.amount > 0 ? '+' : ''}${h.amount.toFixed(2)}</span>}
+            {/* fmtMoney, not a raw `$${n.toFixed(2)}` — that put the minus INSIDE the symbol
+                ("$-40.00") for every debit in the ledger, and skipped the k/M abbreviation a
+                late-game figure needs. Same slip as the Upgrades buy button had. */}
+            {h.amount !== 0 && <span className={`amt ${h.amount > 0 ? 'pos' : 'neg'}`}>{h.amount > 0 ? '+' : ''}{fmtMoney(h.amount)}</span>}
           </div>
         ))}
       </div>
@@ -314,14 +336,139 @@ function BreakdownCol({ title, rows, color }) {
 // Achievement badges. Unlocked ones light up gold; locked ones dim to a 🔒 with a progress
 // bar toward their goal. Grouped by theme. Progress reads a live state snapshot (the panel
 // re-renders as stats change, so bars stay current).
+// 📜 The rip log — every rip you've done, newest first. The By-set table above answers "is this
+// set good to me"; this answers "how did THAT box go", which an average can't. One line per rip
+// (a 36-pack box is one line), so it reads as a history rather than a firehose.
+function RipLogPanel({ log }) {
+  const rows = log || []
+  if (!rows.length) return null
+  const wins = rows.filter(r => r.pulled >= r.cost).length
+  const net = rows.reduce((a, r) => a + (r.pulled - r.cost), 0)
+  return (
+    <Collapse id="riplog" defaultOpen={bigScreen()}
+      head={<h3 style={{ margin: 0, display: 'inline' }}>📜 Rip log</h3>}
+      badge={`${wins}/${rows.length} up`}
+      hint="Every rip, newest first — the boxes an average hides.">
+      <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
+        Last <b>{rows.length}</b> rip{rows.length === 1 ? '' : 's'}: <b>{wins}</b> came out ahead,{' '}
+        <b style={{ color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>{net >= 0 ? '+' : ''}{fmtMoney(net)}</b> across the lot.
+        {net < 0 && ' That gap is the hobby working as intended — the chase is the product.'}
+      </p>
+      <div className="setanalytics">
+        <div className="set-row set-head">
+          <span>Rip</span><span>Day</span><span>Cost</span><span>Pulled</span><span>Net</span><span>Best</span>
+        </div>
+        {rows.map((r, i) => {
+          const rnet = round2((r.pulled || 0) - (r.cost || 0))
+          return (
+            <div className="set-row" key={`${r.day}-${i}`}>
+              <span className="set-name">
+                {r.special === 'god' ? '✨ ' : r.special === 'demigod' ? '🌟 ' : ''}
+                {r.name || r.setId} <span className="muted" style={{ fontWeight: 400 }}>· {r.type}{r.packs > 1 ? ` ×${r.packs}` : ''}</span>
+              </span>
+              <span className="muted">{r.day}</span>
+              <span>{fmtMoney(r.cost || 0)}</span>
+              <span style={{ color: 'var(--green)' }}>{fmtMoney(r.pulled || 0)}</span>
+              <span style={{ color: rnet >= 0 ? 'var(--green)' : 'var(--red)' }}>{rnet >= 0 ? '+' : ''}{fmtMoney(rnet)}</span>
+              <span className="muted" title={r.best?.name || ''}>{r.best ? fmtMoney(r.best.value) : '—'}</span>
+            </div>
+          )
+        })}
+      </div>
+    </Collapse>
+  )
+}
+
+// 🎲 Luck vs the odds. The game has always shown what you PULLED; this shows what the packs
+// owed you. Expectation comes from engine.pullOdds() — the same tables openPack rolls against —
+// times the packs you've actually opened per set, so it moves with the real rates instead of a
+// second copy of them. Purely a readout: nothing here touches the economy.
+//
+// Two honesty rules the numbers live by. It counts from the day tracking started (`luckPacks`),
+// never from lifetime packsOpened, so an old save doesn't open on a fake cold streak. And a
+// verdict only appears once a tier expects 3+ — below that the ratio is noise wearing a colour.
+function LuckPanel({ bySet }) {
+  const luck = useMemo(() => {
+    const exp = {}, obs = {}
+    let packs = 0
+    for (const [id, d] of Object.entries(bySet || {})) {
+      const n = d.luckPacks || 0
+      if (!n) continue
+      const set = setById(id)
+      if (!set) continue
+      const odds = pullOdds(set)
+      if (!Object.keys(odds).length) continue      // JP / Celebrations run their own structure
+      packs += n
+      for (const [t, p] of Object.entries(odds)) exp[t] = (exp[t] || 0) + p * n
+      for (const [t, c] of Object.entries(d.tiers || {})) obs[t] = (obs[t] || 0) + c
+    }
+    const rows = [...new Set([...Object.keys(exp), ...Object.keys(obs)])]
+      .map(t => ({ t, exp: exp[t] || 0, obs: obs[t] || 0 }))
+      .filter(r => r.exp > 0.05 || r.obs > 0)
+      .sort((a, b) => a.exp - b.exp)               // rarest first — the interesting end
+    return { packs, rows, totExp: rows.reduce((a, r) => a + r.exp, 0), totObs: rows.reduce((a, r) => a + r.obs, 0) }
+  }, [bySet])
+
+  if (!luck.packs) return null
+  const ratio = luck.totExp > 0 ? luck.totObs / luck.totExp : null
+  const pct = ratio == null ? 0 : Math.round((ratio - 1) * 100)
+  const solid = luck.totExp >= 8      // enough expected pulls for the headline to mean anything
+
+  return (
+    <Collapse id="luck" defaultOpen={bigScreen()}
+      head={<h3 style={{ margin: 0, display: 'inline' }}>🎲 Luck vs the odds</h3>}
+      badge={solid ? (pct === 0 ? 'dead on' : `${pct > 0 ? '+' : ''}${pct}%`) : `${luck.packs} pack${luck.packs === 1 ? '' : 's'}`}
+      hint="What you pulled against what the real pull rates owed you.">
+      <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
+        {solid
+          ? <>Across <b>{luck.packs}</b> tracked pack{luck.packs === 1 ? '' : 's'} you've pulled <b>{luck.totObs}</b> chase
+              card{luck.totObs === 1 ? '' : 's'} where the odds owed <b>{luck.totExp.toFixed(1)}</b> —{' '}
+              <b style={{ color: pct > 0 ? 'var(--green)' : pct < 0 ? 'var(--red)' : 'var(--dim)' }}>
+                {pct > 0 ? `running ${pct}% hot` : pct < 0 ? `running ${-pct}% cold` : 'dead on the odds'}</b>.
+            </>
+          : <>Only <b>{luck.packs}</b> tracked pack{luck.packs === 1 ? '' : 's'} so far — pull rates need a few hundred
+              before a hot or cold streak means anything. Keep ripping.</>}
+      </p>
+      <div className="lucktable">
+        <div className="luck-row luck-head"><span>Tier</span><span>Pulled</span><span>Owed</span><span>Run</span></div>
+        {luck.rows.map(r => {
+          const rr = r.exp > 0 ? r.obs / r.exp : null
+          const judge = r.exp >= 3 && rr != null
+          const col = !judge ? 'var(--dim)' : rr >= 1.15 ? 'var(--green)' : rr <= 0.85 ? 'var(--red)' : 'var(--fg)'
+          return (
+            <div className="luck-row" key={r.t}>
+              <span className="luck-tier">{luckTierLabel(r.t)}</span>
+              <span style={{ fontWeight: 800 }}>{r.obs}</span>
+              <span className="muted">{r.exp < 1 ? r.exp.toFixed(2) : r.exp.toFixed(1)}</span>
+              <span style={{ color: col, fontWeight: judge ? 800 : 400 }}>
+                {!judge ? '—' : `${Math.round(rr * 100)}%`}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="muted" style={{ fontSize: 11.5, marginTop: 6 }}>
+        Counted from the day this panel arrived, so packs you ripped before it aren't in here. A “—” means
+        that tier hasn't been offered enough times yet to judge.
+      </p>
+    </Collapse>
+  )
+}
+
 function MilestoneShelf({ unlocked }) {
   const have = new Set(unlocked || [])
   const snap = useGame.getState()
+  // Collapsed by default on a phone. This is a 38-tile trophy case across 12 groups — roughly
+  // 2.5 screens of mostly-locked tiles — and it sat expanded in the middle of the Stats page,
+  // between the cash-flow summary and the by-set table. It pushed everything after it out of
+  // reach and made the page 6.4 screens of continuous scroll. Reputation and Luck on this same
+  // page are already Collapse sections, so this just follows the page's own idiom rather than
+  // inventing a sub-tab. Desktop keeps it open (bigScreen), where the height is free.
   return (
-    <>
-      <h3 style={{ margin: '24px 0 6px' }}>
-        Milestones <span className="muted" style={{ fontSize: 13, fontWeight: 'normal' }}>· {have.size}/{MILESTONES.length}</span>
-      </h3>
+    <Collapse id="milestones" defaultOpen={bigScreen()}
+      head={<h3 style={{ margin: 0, display: 'inline' }}>🏅 Milestones</h3>}
+      badge={`${have.size}/${MILESTONES.length}`}
+      hint="Long-run goals — ripping, hits, wealth, grading, the circuit and more.">
       {MILESTONE_GROUPS.map(group => (
         <div key={group} style={{ marginBottom: 12 }}>
           <div className="muted" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 5 }}>{group}</div>
@@ -352,7 +499,7 @@ function MilestoneShelf({ unlocked }) {
           </div>
         </div>
       ))}
-    </>
+    </Collapse>
   )
 }
 

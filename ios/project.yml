@@ -1,0 +1,80 @@
+# XcodeGen spec — the Xcode project is GENERATED from this file, never committed.
+#
+# Ported from /Users/ajholloway/personal/Sideline/ios/project.yml. Everything the app is: one
+# Swift file, one asset catalog, and the Vite build output bundled as a folder.
+#
+#   npm run ios:build     → vite build, then regenerate ios/PokeVendor.xcodeproj
+#   npm run ios:project   → regenerate the project only (dist must already exist)
+#
+# THE ONE DIFFERENCE FROM SIDELINE. Sideline references its single index.html in place, so
+# editing the game and rebuilding is the whole dev loop. PokéVendor is a Vite app, so the shell
+# bundles `dist/` and `npm run build` MUST run first. That is why ios:build exists and why you
+# should use it rather than ⌘R on a cold checkout: Xcode will happily archive a stale or absent
+# dist without complaining.
+
+name: PokeVendor
+
+options:
+  bundleIdPrefix: com.ajholloway
+  deploymentTarget:
+    # 18.0, not Sideline's 15.0. This app targets an iPhone 17 Pro Max, so there is nothing to
+    # gain from supporting systems that force workarounds — see Shell.swift, where 18.0 lets
+    # `isInspectable` and the DevBridge's header parsing both use the modern API directly.
+    iOS: "18.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # iPhone only. The game is a mobile-first column; add "2" here for iPad if you want it.
+    TARGETED_DEVICE_FAMILY: "1"
+    # Deliberately NOT setting code-signing here, so opening the project on a Mac behaves like
+    # any normal Xcode project: Signing & Capabilities → Automatically manage signing → your
+    # Personal Team.
+
+targets:
+  PokeVendor:
+    type: application
+    platform: iOS
+
+    sources:
+      - path: Sources
+      - path: Resources
+      # The built web app, bundled as a FOLDER so its internal structure (assets/*.js, the
+      # hashed filenames Vite emits) survives into the bundle exactly as the HTML references it.
+      # `buildPhase: resources` with a folder reference copies the tree, not a flattened list —
+      # which matters because index.html asks for "./assets/index-<hash>.js" by path.
+      - path: ../dist
+        type: folder
+        buildPhase: resources
+
+    settings:
+      base:
+        # Apple requires globally unique bundle IDs even under free provisioning. This also
+        # identifies the app's CONTAINER: changing it after the first install strands every save
+        # in the old one. Set it once, before installing.
+        PRODUCT_BUNDLE_IDENTIFIER: com.ajholloway.pokevendor
+        PRODUCT_NAME: PokeVendor
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+    info:
+      path: PokeVendor-Info.plist
+      properties:
+        CFBundleDisplayName: PokéVendor
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # A storyboard-free launch screen that is just the app's own background colour, so there
+        # is no white flash between launch and the page's first paint.
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        # Dark-only, so the keyboard, share sheet and system alerts match the app palette.
+        UIUserInterfaceStyle: Dark
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: true
+        UIRequiresFullScreen: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        # Nothing here uses non-exempt encryption; declaring it keeps upload tooling quiet.
+        ITSAppUsesNonExemptEncryption: false

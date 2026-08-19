@@ -22,12 +22,20 @@ export function setIdOf(card) {
 export function bumpSet(bySet, setId, delta) {
   if (!setId) return bySet
   const cur = bySet[setId] || { spent: 0, pulledValue: 0, packsOpened: 0, cardsPulled: 0, hits: 0 }
+  // 🎲 `tiers` + `luckPacks` feed the luck panel (observed vs the engine's real odds). They are
+  // deliberately NOT derived from packsOpened: that counter predates the tracking, so a save from
+  // before it would read as a catastrophic run of bad luck. luckPacks only counts packs whose
+  // tiers were actually recorded, which makes the ratio honest from the day it starts.
+  const tiers = delta.tiers ? { ...(cur.tiers || {}) } : cur.tiers
+  if (delta.tiers) for (const [k, n] of Object.entries(delta.tiers)) tiers[k] = (tiers[k] || 0) + n
   return { ...bySet, [setId]: {
     spent: round2(cur.spent + (delta.spent || 0)),
     pulledValue: round2(cur.pulledValue + (delta.pulledValue || 0)),
     packsOpened: cur.packsOpened + (delta.packsOpened || 0),
     cardsPulled: cur.cardsPulled + (delta.cardsPulled || 0),
     hits: cur.hits + (delta.hits || 0),
+    ...(cur.luckPacks || delta.luckPacks ? { luckPacks: (cur.luckPacks || 0) + (delta.luckPacks || 0) } : {}),
+    ...(tiers ? { tiers } : {}),
   } }
 }
 

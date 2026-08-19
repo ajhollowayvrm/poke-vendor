@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { useGame, acceptedMethods, hypeDemandMult } from '../game/store'
-import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant } from '../game/shows'
+import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
+import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
+  pickSnipe, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
@@ -57,12 +58,21 @@ export default function ShowFloor({ show, onLeave }) {
   function handleLeave() {
     const g = useGame.getState()
     const b = floorBaseRef.current
+    // 🎥 The best thing that ended up in your hands here — the vlog's headline. Same diff the
+    // 🎒 haul uses (anything whose uid wasn't in the walk-in snapshot), so a card bought off a
+    // table, won in a trade, or pulled from a rip at the floor all qualify.
+    let best = null
+    for (const c of [...(g.collection || []), ...(g.showInventory || [])]) {
+      if (b.cardUids.has(c.uid)) continue
+      if (!best || cardValue(c) > cardValue(best)) best = c
+    }
     const floor = {
       spent: round2(g.stats.spent - b.spent),
       earned: round2(g.stats.earned - b.earned),
       notoGained: round2(g.notoriety - b.noto),
       rapport: round2(Object.values(g.vendorSpend || {}).reduce((a, v) => a + v, 0) - b.rapport),
       acquired: takenIds.size,
+      bestPickup: best ? { name: best.name, value: cardValue(best) } : null,
     }
     onLeave(floor)
   }
@@ -88,7 +98,10 @@ export default function ShowFloor({ show, onLeave }) {
   // constantly at a show (sales, questions, giveaways), and every tick used to rebuild
   // the whole floor, restocking everything already bought and re-minting card uids.
   const booths = useMemo(() => {
-    const bs = generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || [])
+    // 🃏 An announced master set challenge skews a slice of every singles bin toward that set —
+    // read once here (like the roster) so the floor stays fixed for the show-day.
+    const chaseId = useGame.getState().challenge?.setId || null
+    const bs = generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || [], chaseId)
     // Stamp session-stable "taken" keys on sealed/mystery entries (cards already carry
     // uids): booth index + slot. Purchases mark these in takenIds so closing and
     // reopening a booth can never re-serve something you already bought.
@@ -100,15 +113,24 @@ export default function ShowFloor({ show, onLeave }) {
   // stock is component state inside the booth modal, so without this a close/reopen
   // re-served every purchased item at the same uid (infinite rebuy of mispriced gems,
   // plus uid duplication: selling one copy silently destroyed both).
-  const [takenIds, setTakenIds] = useState(() => new Set())
+  // Seeded from the save so a resumed show does not re-serve everything you already bought.
+  // These two sets are the reason a mid-show resume is safe at all — see recordShowProgress.
+  const [takenIds, setTakenIds] = useState(() => new Set(useGame.getState().activeShow?.taken || []))
   const markTaken = (keys) => setTakenIds(prev => { const n = new Set(prev); for (const k of keys) n.add(k); return n })
 
   // Per-booth cash-till depletion for THIS show-day: selling to a vendor draws down their
   // finite till (booth.till), so you can't dump an unlimited amount on one whale. Keyed by
   // booth id + show-day so a fresh floor each day restocks the till.
-  const [tillSpent, setTillSpent] = useState(() => ({}))
+  const [tillSpent, setTillSpent] = useState(() => ({ ...(useGame.getState().activeShow?.till || {}) }))
   const tillKey = (booth) => `${booth.id}#${showDay}`
   const markTillSpend = (booth, amt) => setTillSpent(prev => ({ ...prev, [tillKey(booth)]: (prev[tillKey(booth)] || 0) + amt }))
+
+  // Mirror both into the save whenever they move. Cheap (two small collections) and it has to
+  // be an effect rather than part of markTaken/markTillSpend, because those are called from
+  // several places and one of them forgetting to persist is exactly the bug this prevents.
+  useEffect(() => {
+    useGame.getState().recordShowProgress({ taken: [...takenIds], till: tillSpent })
+  }, [takenIds, tillSpent])
 
   const [openBooth, setOpenBooth] = useState(null)
   // Booths you've walked up to this show — the directory greys the ones you've already
@@ -202,6 +224,38 @@ export default function ShowFloor({ show, onLeave }) {
     return () => clearInterval(id)
   }, [npcs, booths, addNotoriety])
 
+  // 🏃 THE OTHER DEALERS. Every so often a rival works the floor and lifts the best genuinely
+  // under-market card left in a bin. The grace period means you always get a real look around
+  // first, and only true deals are ever taken — so what you lose is exactly what you should
+  // have been quicker about. See game/shows.js (pickSnipe) for the selection rule.
+  const [sniped, setSniped] = useState(null)     // the "somebody just bought that" banner
+  // Read through refs so the interval sees current state without being torn down and rebuilt
+  // every time you buy something — which would restart the clock and mean nothing was ever
+  // taken while you were actively shopping.
+  const takenIdsRef = useRef(takenIds)
+  useEffect(() => { takenIdsRef.current = takenIds }, [takenIds])
+  const openBoothRef = useRef(openBooth)
+  useEffect(() => { openBoothRef.current = openBooth }, [openBooth])
+  const floorEntryRef = useRef(Date.now())
+  useEffect(() => { floorEntryRef.current = Date.now(); setSniped(null) }, [showDay])
+  useEffect(() => {
+    const rate = SNIPE_RATE[show.tierKey] ?? 0.15
+    const id = setInterval(() => {
+      if (Date.now() - floorEntryRef.current < SNIPE_GRACE_MS) return
+      if (openBoothRef.current) return  // not while you are standing at a table reading it
+      if (Math.random() >= rate) return
+      const hit = pickSnipe(booths, takenIdsRef.current)
+      if (!hit) return
+      markTaken([hit.card.uid])
+      setSniped({
+        who: hit.who, card: hit.card, at: hit.booth.name,
+        ask: hit.ask, worth: hit.worth, id: Date.now(),
+      })
+      setTimeout(() => setSniped(x => (x && x.id ? null : x)), 6000)
+    }, SNIPE_INTERVAL_MS)
+    return () => clearInterval(id)
+  }, [booths, show.tierKey])
+
   // Booth walk-ups, gated by a cooldown so they don't spam. With the 🔔 Visitor Ticker
   // you get an alert you can answer whenever — without it, a buyer who walks up while
   // you're deep at another vendor's table just leaves (that's what the ticker is for).
@@ -222,7 +276,10 @@ export default function ShowFloor({ show, onLeave }) {
       const dealActive = inv.some(c => c._deal)
       const boothMult = (show._boothMult || 1) * (1 + Math.min(0.45, showcaseN * 0.15)) * (dealActive ? 1.25 : 1)
       const signageMult = upgrades.signage ? 1.15 : 1 // 🪧 +15% booth foot traffic at shows
-      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult)
+      // 🎥 They've seen the vlogs — people walk over because they recognize the table. Stacks
+      // with signage on purpose: one is a sign, the other is a face.
+      const vlogMult = upgrades.showVlog ? VLOG_BOOTH_MULT : 1
+      const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult * vlogMult)
       if (Math.random() < chance) {
         const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
         lastEncounterRef.current = Date.now(); walkupsRef.current++
@@ -543,6 +600,22 @@ export default function ShowFloor({ show, onLeave }) {
               {announce.mine
                 ? <>🔥 <b>Bought it from your booth</b> — your rep is buzzing · {fmtMoney(announce.value)}</>
                 : <>The whole hall turns to look · {fmtMoney(announce.value)}</>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🏃 Somebody else got there first. The banner names the card, the table and what it
+          was under market for, because the lesson is only useful if you can see the number. */}
+      {sniped && (
+        <div className="hall-announce sniped">
+          {cardImg(sniped.card) && <img src={cardImg(sniped.card)} alt="" />}
+          <div>
+            <div className="ha-line">🏃 {sniped.who} just bought <b>{sniped.card.name}</b>
+              {sniped.at ? <span className="muted"> off {sniped.at}</span> : ''}.</div>
+            <div className="ha-sub">
+              {fmtMoney(sniped.ask)} for {fmtMoney(sniped.worth)} of card — <b>{fmtMoney(sniped.worth - sniped.ask)} under market</b>.
+              You are not the only dealer working this floor.
             </div>
           </div>
         </div>

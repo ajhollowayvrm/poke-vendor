@@ -9,9 +9,17 @@
     "build": "vite build",
     "preview": "vite preview",
     "sim": "node scripts/sim.mjs",
+    "profile": "node scripts/profile-boot.mjs",
+    "strip-data": "node scripts/strip-derivable-fields.mjs",
     "audit-pulls": "vite-node scripts/audit-pulls.mjs",
     "verify-prices": "node scripts/verify-prices.mjs",
-    "verify-slimsave": "vite-node scripts/verify-slimsave.mjs"
+    "verify-slimsave": "vite-node scripts/verify-slimsave.mjs",
+    "ios:build": "npm run build && npm run ios:project",
+    "ios:project": "cd ios && xcodegen generate",
+    "ios:icon": "node tools/ios/make-icon.mjs",
+    "ios:web": "node tools/ios/web.mjs",
+    "ios:sim": "node tools/ios/shell.mjs",
+    "ios:device": "node tools/ios/device.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -22,6 +30,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "playwright": "^1.60.0",
     "vite": "^5.4.11",
-    "vite-plugin-pwa": "^1.3.0"
+    "vite-node": "^1.6.0"
   }
 }
