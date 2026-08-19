@@ -316,6 +316,12 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   padding: 2px 7px; border-radius: 8px; background: var(--green); color: #03301f; }
 .cardtile .gradechip { position:absolute; top:6px; right:6px; background:#fff; color:#111; font-weight:900; z-index: 4;
   font-size:11px; padding:2px 6px; border-radius:6px; }
+/* Clean-art tiles (Collection, ShowPrep) drop the rarity border, so the tag + price chips
+   float straight on whatever the art happens to look like there — sometimes sky, sometimes
+   the card's own printed name. A top scrim (mirrors the bottom cardcap gradient) gives them
+   one consistent, legible backdrop instead of fighting the art underneath. */
+.cardtile.no-edge::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 34px;
+  z-index: 2; pointer-events: none; background: linear-gradient(180deg, #000a, transparent); }
 /* 📋 standing-order toggle on a distributor product line */
 .qty-ctl .so-btn.active, .prodrow .so-btn.active { color: var(--gold); border-color: var(--gold); background: #ffcb0522; }
 
@@ -1042,8 +1048,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
 
 /* Per-card lock: a small toggle in the corner of each collection tile. Subtle until
-   locked, so an unlocked grid stays clean. */
-.coll-lock { position: absolute; top: 6px; left: 6px; z-index: 6; width: 24px; height: 24px;
+   locked, so an unlocked grid stays clean. Sits BELOW the rarity tag (not on top of it) —
+   they used to share the same top:6/left:6 corner, so the lock dot sat directly on the
+   rarity badge and half-hid it on every tile. */
+.coll-lock { position: absolute; top: 30px; left: 6px; z-index: 6; width: 24px; height: 24px;
   border: none; border-radius: 999px; cursor: pointer; font-size: 13px; line-height: 1;
   display:flex; align-items:center; justify-content:center; padding: 0;
   background: #0008; opacity: .38; transition: opacity .12s, background .12s; }
@@ -2331,7 +2339,7 @@ button.rip-hit-row:hover { background:#ffffff14; }
 
   /* The 🔓 lock on a card tile was a 24px dot — a genuine thumb-missing target sat right on
      top of the card art, so a miss opens the card instead of locking it. */
-  .coll-lock { width: 34px; height: 34px; top: 4px; left: 4px; font-size: 15px; }
+  .coll-lock { width: 34px; height: 34px; top: 28px; left: 4px; font-size: 15px; }
 
   /* The five vendors wrapped into a 2-wide, 3-row block that ate ~180px — a fifth of the
      screen — before you could see a single product. Same treatment the tier legend already
