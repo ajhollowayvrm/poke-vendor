@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
 import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
-  pickSnipe, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
+  pickSnipe, boothItemKey, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
@@ -90,7 +90,10 @@ export default function ShowFloor({ show, onLeave }) {
   const [haulOpen, setHaulOpen] = useState(false)   // 🎒 home base — what you've picked up here
   const [haulSel, setHaulSel] = useState(() => new Set()) // sealed uids picked for a group rip
 
-  const [showDay, setShowDay] = useState(1) // which day of the multi-day show we're on
+  // Which day of the multi-day show we're on. Restored from the save, because the floor is
+  // rebuilt per day (generateBooths' dayOffset) and `takenIds` is scoped to ONE day's floor —
+  // resuming a day-2 show on day 1 would serve day 1's stock against day 2's taken list.
+  const [showDay, setShowDay] = useState(() => useGame.getState().activeShow?.showDay || 1)
   // Recurring roster gets injected into the floor; `show._arrival` ('open' | 'late') tunes
   // how picked-over the booths are; `show._leads` makes a vendor who DM'd you actually be
   // here with the promised item on the table.
@@ -102,10 +105,14 @@ export default function ShowFloor({ show, onLeave }) {
     // read once here (like the roster) so the floor stays fixed for the show-day.
     const chaseId = useGame.getState().challenge?.setId || null
     const bs = generateBooths(show, showDay - 1, showVendors, show._arrival || 'open', show._leads || [], chaseId)
-    // Stamp session-stable "taken" keys on sealed/mystery entries (cards already carry
-    // uids): booth index + slot. Purchases mark these in takenIds so closing and
-    // reopening a booth can never re-serve something you already bought.
-    bs.forEach((b, bi) => { (b.products || []).forEach((p, pi) => { p._tk = `${bi}#s${pi}` }) })
+    // Stamp a RELOAD-STABLE "taken" key on every item on every table: booth index + slot.
+    // Purchases mark these in takenIds so closing and reopening a booth — or the whole app —
+    // can never re-serve something you already bought. It has to be the position rather than
+    // the card's uid, which is re-minted on every rebuild; see boothItemKey in game/shows.js.
+    bs.forEach((b, bi) => {
+      (b.stock || []).forEach((c, ci) => { c._tk = `${bi}#c${ci}` })
+      ;(b.products || []).forEach((p, pi) => { p._tk = `${bi}#s${pi}` })
+    })
     return bs
   }, [show, showDay, showVendors])
 
@@ -125,12 +132,12 @@ export default function ShowFloor({ show, onLeave }) {
   const tillKey = (booth) => `${booth.id}#${showDay}`
   const markTillSpend = (booth, amt) => setTillSpent(prev => ({ ...prev, [tillKey(booth)]: (prev[tillKey(booth)] || 0) + amt }))
 
-  // Mirror both into the save whenever they move. Cheap (two small collections) and it has to
-  // be an effect rather than part of markTaken/markTillSpend, because those are called from
-  // several places and one of them forgetting to persist is exactly the bug this prevents.
+  // Mirror all three into the save whenever they move. Cheap (two small collections) and it
+  // has to be an effect rather than part of markTaken/markTillSpend, because those are called
+  // from several places and one of them forgetting to persist is exactly the bug this prevents.
   useEffect(() => {
-    useGame.getState().recordShowProgress({ taken: [...takenIds], till: tillSpent })
-  }, [takenIds, tillSpent])
+    useGame.getState().recordShowProgress({ taken: [...takenIds], till: tillSpent, showDay })
+  }, [takenIds, tillSpent, showDay])
 
   const [openBooth, setOpenBooth] = useState(null)
   // Booths you've walked up to this show — the directory greys the ones you've already
@@ -246,7 +253,7 @@ export default function ShowFloor({ show, onLeave }) {
       if (Math.random() >= rate) return
       const hit = pickSnipe(booths, takenIdsRef.current)
       if (!hit) return
-      markTaken([hit.card.uid])
+      markTaken([boothItemKey(hit.card)])
       setSniped({
         who: hit.who, card: hit.card, at: hit.booth.name,
         ask: hit.ask, worth: hit.worth, id: Date.now(),
@@ -441,9 +448,13 @@ export default function ShowFloor({ show, onLeave }) {
         <button className="btn alt" style={{ flex:'none' }} onClick={handleLeave}>← Leave show</button>
         <span className="pill" style={{ background: tier.color+'33', color: tier.color }}>{show.name} · {tier.name}</span>
         {tier.days > 1 && <span className="pill">Show day {showDay} / {tier.days}</span>}
+        {/* A new show day is a WHOLE NEW FLOOR (generateBooths reseeds on dayOffset), so the
+            taken keys must be dropped with it — they are booth+slot positions, and yesterday's
+            positions hold tomorrow's stock. Left in place they blanked whatever happened to sit
+            where you bought. The till is keyed by day instead and refills on its own. */}
         {tier.days > 1 && showDay < tier.days && (
           <button className="btn" style={{ flex:'none', maxWidth: 170, marginLeft:'auto' }}
-            onClick={() => { setShowDay(d => d + 1); flash(`Day ${showDay + 1} of the show — fresh vendors set up.`) }}>
+            onClick={() => { setShowDay(d => d + 1); setTakenIds(new Set()); flash(`Day ${showDay + 1} of the show — fresh vendors set up.`) }}>
             Next show day →
           </button>
         )}

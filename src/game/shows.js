@@ -605,6 +605,22 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   return booths
 }
 
+// --- What a floor item is REMEMBERED by once it leaves the table ------------------
+// ShowFloor keeps a `takenIds` set of everything lifted off a booth this show-day, and
+// mirrors it into the save (activeShow.taken) so a reload puts you back on the floor you
+// left. That only works if the key survives the reload, and a card's uid does NOT:
+// engine.instance() mints it from Date.now() plus an in-memory counter, so it is brand new
+// on every generateBooths() call — while the booths themselves are seeded from show.seed and
+// rebuild IDENTICALLY. So closing the app mid-show and coming back restored a `taken` list
+// that matched nothing, and every single you had already bought was back on the table at the
+// same price. Repeat the restart, repeat the purchase: an unlimited rebuy of the same
+// mispriced gems, minting a fresh copy each time.
+//
+// The POSITION is the one thing about a booth card that a reload reproduces, so that is the
+// key: `_tk`, stamped by ShowFloor as booth index + slot (sealed lines have always used it).
+// The uid fallback only ever covers an item from a floor built before the stamp.
+export function boothItemKey(item) { return item?._tk || item?.uid }
+
 // Names floating above NPC shoppers for flavor.
 export const NPC_EMOJI = ['🧑','👩','👨','🧓','👵','🧔','👱','👲','🧑‍🦱','👩‍🦰','🧑‍🦰','👨‍🦱','🧑‍🦳','👩‍🦳']
 
@@ -642,7 +658,7 @@ export function pickSnipe(booths, taken, rnd = Math.random) {
   const deals = []
   for (const booth of (booths || [])) {
     for (const card of (booth.stock || [])) {
-      if (!card?.uid || taken?.has(card.uid)) continue
+      if (!card?.uid || taken?.has(boothItemKey(card))) continue
       const worth = cardValue(card)
       const ask = card._ask ?? worth
       // The bar is the same one the game already calls a deal, and it is worth grabbing.

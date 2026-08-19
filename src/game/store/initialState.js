@@ -150,10 +150,13 @@ export function initialState() {
     // the table AND advances the calendar past the show days — all irreversible and all in the
     // save — while the floor itself was React state only. So a reload used to bring your stock
     // home and silently eject you from a show whose cost had already been taken.
-    //   { show, taken: [...boothItemKeys], till: { boothId#day: spent } }
-    // `taken` and `till` are NOT cosmetic: without them a resume re-serves every purchased item
-    // (infinite rebuy of mispriced gems, plus uid duplication) and refills every vendor's till.
-    // Cleared by endShow(). See resumeShow / recordShowProgress in booth.js.
+    //   { show, taken: [...boothItemKeys], till: { boothId#day: spent }, showDay }
+    // `taken`, `till` and `showDay` are NOT cosmetic: without them a resume re-serves every
+    // purchased item (infinite rebuy of mispriced gems, plus uid duplication) and refills every
+    // vendor's till. `taken` holds booth POSITIONS rather than card uids — a uid is re-minted
+    // every time the floor is generated, so it identified nothing after a restart — and
+    // `showDay` says which day's floor those positions belong to.
+    // Cleared by endShow(). See resumeShow / recordShowProgress in booth.js, boothItemKey in shows.js.
     activeShow: null,
     shopDisplay: [],         // LEGACY (pre-v42): cards once lived on a separate store shelf. With a storefront the whole COLLECTION is store stock now (🔒 locked = not for sale, _featured = display-case spotlight, _heldFor = behind the counter). Kept empty for save-merge compat.
     shopSealed: [],          // LEGACY (pre-v42): sealed shelf — sealedInventory IS the store's sealed stock now. Kept empty for save-merge compat.

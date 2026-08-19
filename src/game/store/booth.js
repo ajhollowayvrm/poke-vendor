@@ -73,7 +73,7 @@ export function createBoothSlice(set, get) {
     // home to your collection. (Off the floor it always goes to the collection.)
     buyFromVendor(card, price, opts = {}) {
       if (!get().spend(price)) return false
-      const bought = { ...card, _ask: undefined, _mispriced: undefined, _highlight: undefined }
+      const bought = { ...card, _ask: undefined, _mispriced: undefined, _highlight: undefined, _tk: undefined }
       if (opts.toShowInventory) {
         set(s => ({ showInventory: [bought, ...(s.showInventory || [])] }))
         get().log('buy', `Bought ${card.name} from a vendor — listed at your booth`, -price)
@@ -131,7 +131,7 @@ export function createBoothSlice(set, get) {
       if (!mine) return { error: 'You no longer have that card to trade.' }
       const delta = round2(cashDelta)
       if (delta > 0 && get().cash < delta) return { error: `You can't cover the $${delta.toFixed(2)} on your side.` }
-      const got = { ...boothCard, _ask: undefined, _mispriced: undefined, _highlight: undefined }
+      const got = { ...boothCard, _ask: undefined, _mispriced: undefined, _highlight: undefined, _tk: undefined }
       set(s => ({ collection: [got, ...s.collection.filter(c => c.uid !== yourUid)] }))
       if (delta > 0) get().spend(delta)
       else if (delta < 0) get().earn(-delta)
@@ -162,7 +162,7 @@ export function createBoothSlice(set, get) {
       const delta = round2(cashDelta)
       if (delta > 0 && get().cash < delta) return { error: `You can't cover the $${delta.toFixed(2)} on your side.` }
       // Received items land in the right buckets. Sealed lands in held inventory (rip/list/flip later).
-      const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined }))
+      const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined, _tk: undefined }))
       const gotSealed = getSealed.map(entry => get().mintSealedRow(entry.set, entry.product, entry.ask ?? entry.product?.price ?? 0, 'vendor'))
       set(s => ({
         collection: [...gotCards, ...s.collection.filter(c => !cardIds.has(c.uid))],
@@ -220,18 +220,29 @@ export function createBoothSlice(set, get) {
     // view) ended the trip while keeping every cost. These three keep the trip alive instead.
 
     /// Remember which show you are standing in, so a reload can put you back on the floor.
-    beginShow(show) { set({ activeShow: { show, taken: [], till: {} } }) },
+    beginShow(show) { set({ activeShow: { show, taken: [], till: {}, showDay: 1 } }) },
 
     /// The floor's consumed state, mirrored into the save as it changes.
     ///
     /// This is the part that makes a resume SAFE rather than merely possible. `taken` is every
-    /// item lifted off a booth table and `till` is each vendor's drawn-down cash — both exist to
-    /// stop an infinite rebuy of mispriced gems, uid duplication, and dumping unlimited stock on
-    /// one vendor. Restoring the show without them would hand back all three bugs.
-    recordShowProgress({ taken, till }) {
+    /// item lifted off a booth table, `till` is each vendor's drawn-down cash, and `showDay` is
+    /// which day's floor those two describe — they exist to stop an infinite rebuy of mispriced
+    /// gems, uid duplication, and dumping unlimited stock on one vendor. Restoring the show
+    /// without them would hand back all three bugs.
+    ///
+    /// `taken` holds POSITIONS (booth + slot), not card uids, because a uid is re-minted every
+    /// time the floor is generated — see boothItemKey in game/shows.js. That is also why
+    /// `showDay` has to ride along: the positions only mean anything against the day's floor
+    /// they were recorded on.
+    recordShowProgress({ taken, till, showDay }) {
       const cur = get().activeShow
       if (!cur) return
-      set({ activeShow: { ...cur, taken: taken ?? cur.taken, till: till ?? cur.till } })
+      set({ activeShow: {
+        ...cur,
+        taken: taken ?? cur.taken,
+        till: till ?? cur.till,
+        showDay: showDay ?? cur.showDay ?? 1,
+      } })
     },
 
     /// The show to put you back into on boot, or null. Read once by App on mount.
@@ -983,7 +994,7 @@ export function createBoothSlice(set, get) {
               showSealed: (st.showSealed || []).filter(it => !ids.has(it.uid)),
             }))
           }
-          const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined }))
+          const gotCards = getCards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined, _tk: undefined }))
           const gotSealed = getSealed.map(e => get().mintSealedRow(e.set || setById(e.setId), e.product, e.ask ?? e.product?.price ?? 0, 'vendor'))
           set(st => ({ collection: [...gotCards, ...st.collection], sealedInventory: [...gotSealed, ...(st.sealedInventory || [])] }))
           if (adj > 0) s.earn(adj)

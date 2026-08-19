@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, rawValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, overTierValue, DEFAULT_GRADER, setById, cardImg, isCardDeal, setNameOfCard, rarityRank } from '../game/engine'
-import { vendorRapport, nextVendorRapport } from '../game/shows'
+import { vendorRapport, nextVendorRapport, boothItemKey } from '../game/shows'
+import { seedSealedLines, consumeLine, sameLine } from '../game/boothstock'
 import CardTile, { rarityColor } from './CardTile'
 // (Collapse is already imported below for the sealed tab)
 import CardModal from './CardModal'
@@ -102,18 +103,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // Local working copies, seeded MINUS everything already taken this show (takenIds
   // lives in ShowFloor): booth stock used to reset on every close/reopen, re-serving
   // bought items at the same uid — infinite rebuy plus uid-duplication corruption.
-  const [stock, setStock] = useState(() => (booth.stock || []).filter(c => !takenIds?.has(c.uid)))
+  // Keyed by boothItemKey, NOT the uid: the uid is re-minted whenever the floor rebuilds,
+  // so a uid key survived a reopened booth but not a reopened APP. See game/shows.js.
+  const [stock, setStock] = useState(() => (booth.stock || []).filter(c => !takenIds?.has(boothItemKey(c))))
   // Sealed lines carry a qty (a stack of the same SKU). Units taken are recorded as
   // `${_tk}#u<n>` keys in takenIds, so a close/reopen re-seeds each line at its remaining
-  // depth instead of either re-serving bought units or nuking the whole stack.
-  const [sealed, setSealed] = useState(() => (booth.products || [])
-    .map(e => {
-      const total = e.qty || 1
-      let taken = 0
-      if (takenIds) { for (let u = 1; u <= total; u++) if (takenIds.has(`${e._tk}#u${u}`)) taken++ }
-      return (takenIds?.has(e._tk) || taken >= total) ? null : { ...e, qty: total - taken, _qty0: total - taken, _taken0: taken }
-    })
-    .filter(Boolean))
+  // depth instead of either re-serving bought units or nuking the whole stack. The depth
+  // rules live in game/boothstock.js — see there for why they are not inlined here.
+  const [sealed, setSealed] = useState(() => seedSealedLines(booth.products, takenIds))
   const [tab, setTab] = useState('buy')
   const [haggle, setHaggle] = useState(null) // { side, card, market, start }
   // After agreeing a buy, ask whether to list it at the show or take it home.
@@ -145,7 +142,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
       const each = round2(eff(c._ask) * (1 - disc))
       if (!buyFromVendor(c, each, { vendorId: booth.vendorId })) break
       bought++; spent = round2(spent + each)
-      onTaken?.([c.uid])
+      onTaken?.([boothItemKey(c)])
     }
     if (!bought) return
     setStock(s => s.filter(c => !stackIds.has(c.uid) || !cards.slice(0, bought).some(x => x.uid === c.uid)))
@@ -185,12 +182,15 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
       cashDelta: payload.cashDelta, vendorId: booth.vendorId,
     })
     if (res.error) { flash(res.error); return }
-    const sealedKeys = payload.takenSealedIdx.map(i => sealed[i]?._tk).filter(Boolean)
-    onTaken?.([...payload.takenCardUids, ...sealedKeys])
+    // The cards leave the table under their reload-stable keys; takenCardUids stays a uid
+    // list because it only filters THIS booth's local copy, which never outlives the mount.
+    onTaken?.(payload.getCards.map(boothItemKey))
     setStock(s => s.filter(c => !payload.takenCardUids.includes(c.uid)))
-    setSealed(s => s.filter((_, i) => !payload.takenSealedIdx.includes(i)))
+    // A trade takes ONE unit off each sealed line (the picker offers one per SKU), so consume
+    // it the same way a purchase does. This used to drop the whole line — trade for one box
+    // off a stack of four and the other three vanished off the table with it.
+    for (const i of payload.takenSealedIdx) { if (sealed[i]) consumeSealed(sealed[i], 1) }
     setTradeFor(null)
-    if (payload.takenSealedIdx.length && payload.takenSealedIdx.length >= sealed.length) setTab('buy')
     const giveN = payload.giveCardUids.length + payload.giveSealedUids.length
     const getN = payload.getCards.length + payload.getSealed.length
     flash(`Traded ${giveN} item${giveN !== 1 ? 's' : ''} for ${getN}!`)
@@ -254,7 +254,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
     setPendingBuy(null)
     const list = toShowInventory && asVendor
     if (buyFromVendor(card, price, { toShowInventory: list, vendorId: booth.vendorId })) {
-      onTaken?.([card.uid]) // off the table for good — reopening the booth can't re-serve it
+      onTaken?.([boothItemKey(card)]) // off the table for good — reopening the booth OR the app can't re-serve it
       setStock(s => s.filter(c => c.uid !== card.uid))
       const deal = isCardDeal(card, price, settings) ? ' — great deal!' : ''
       flash(`Bought ${card.name} for ${fmtMoney(price)}${deal}${list ? ' · listed at your booth' : ' · added to your collection'}`)
@@ -284,27 +284,31 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
       ? `Sold ${n} of ${g.items.length} × ${g.first.name} for ${fmtMoney(gross)} — ${booth.name}'s till is empty now.`
       : `Sold ${n} × ${g.first.name} to ${booth.name} for ${fmtMoney(gross)}`)
   }
+  // --- The vendor's sealed stack is FINITE ------------------------------------------------
+  // The live line behind a (possibly stale) clicked copy — the authority on how many are
+  // actually left. The rows a player clicks are COPIES: sealedBySet groups the table by set
+  // and spreads each entry to stamp `_idx`, so a copy is never reference-equal to the line it
+  // came from. Every buy path resolves through this before charging anyone.
+  const liveLine = (entry) => sealed.find(e => sameLine(e, entry)) || null
+
   // Picking a sealed product opens a choice: rip it on the floor now, or stock it to hold.
   // Buy a sealed product and crack it on the floor right now (same rip flow as the Vault).
   // Consume `n` units off a sealed line: record per-unit taken keys (so a reopen re-seeds the
   // remaining stack), decrement or drop the local line, and close the Sealed tab on the last one.
   function consumeSealed(entry, n = 1) {
-    if (entry._tk) {
-      const start = (entry._taken0 || 0) + ((entry._qty0 ?? entry.qty) - entry.qty)
-      onTaken?.(Array.from({ length: n }, (_, i) => `${entry._tk}#u${start + i + 1}`))
-    }
+    const { keys } = consumeLine(sealed, entry, n)
+    if (keys.length) onTaken?.(keys)
     setSealed(s => {
-      const next = s
-        .map(e => e !== entry ? e : (e.qty > n ? { ...e, qty: e.qty - n } : null))
-        .filter(Boolean)
-      if (!next.some(e => !e.mystery) && next.length === 0) setTab('buy')
-      return next
+      const { lines } = consumeLine(s, entry, n)
+      if (!lines.length) setTab('buy')
+      return lines
     })
   }
   // The volume concession on a stack off ONE line — the same 8/12/15% whether you're taking
   // it home sealed or tearing into all of it at the table.
   const lotDisc = (n) => n >= 5 ? 0.15 : n >= 3 ? 0.12 : 0.08
   function ripSealedNow(entry) {
+    if (!liveLine(entry)) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
     const ask = eff(entry._ask)
     setPendingSealed(null)
     // The booth STAYS OPEN — the floor-rip overlay paints above this modal, so when the rip's
@@ -318,6 +322,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // Buy a sealed product and stock it in your held inventory (rip/list/flip later). Keeps
   // the booth open and removes the item from the table; the last one closes the Sealed tab.
   function stockSealedNow(entry) {
+    if (!liveLine(entry)) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
     const ask = eff(entry._ask)
     setPendingSealed(null)
     const ok = onStockSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
@@ -329,7 +334,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // back — the lot discount applies exactly as it does when you take them home sealed. The
   // booth stays open behind the rip, so you're back at their table when the last one lands.
   function ripStackNow(entry) {
-    const n = entry.qty || 1
+    // Size the lot off the LIVE line, not the clicked copy: the copy's qty is whatever the row
+    // said when it rendered, and charging for a stack deeper than the vendor still has is how
+    // you pay for four boxes and take home product they never brought.
+    const cur = liveLine(entry)
+    if (!cur) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
+    const n = cur.qty || 1
     const disc = lotDisc(n)
     const each = round2(eff(entry._ask) * (1 - disc))
     setPendingSealed(null)
@@ -342,7 +352,9 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // 🧺 Take the remaining STACK of one line at a volume discount — the "do a deal on the lot"
   // every real vendor loves (fewer transactions, less to pack up). Stocks to inventory.
   function takeStack(entry) {
-    const n = entry.qty || 1
+    const cur = liveLine(entry)               // the lot is what's left on the table, not what the row said
+    if (!cur) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
+    const n = cur.qty || 1
     const disc = lotDisc(n)
     const each = round2(eff(entry._ask) * (1 - disc))
     const total = round2(each * n)
@@ -472,6 +484,9 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                 </div>
               ))}
             </div>
+            {sealedBySet.length === 0 && sealed.some(e => e.mystery) && (
+              <p className="muted">Their sealed is gone — you cleared the table. Only the mystery packs are left.</p>
+            )}
             {sealedBySet.map(g => (
               <Collapse key={g.setId} id={`booth-sealed-${g.setId}`} defaultOpen={sealedBySet.length <= 3}
                 className="wants" headClass="wants-head"
