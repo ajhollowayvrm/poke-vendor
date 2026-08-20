@@ -61,6 +61,30 @@ not backed up to a cloud account.
 survives anything short of deleting the app. A paid account ($99/yr) removes both the 7-day
 expiry and the 3-app cap.
 
+**The 7 days run from when Apple issues the profile, not from when you install.** Xcode reuses a
+cached profile while it is still valid, so a reinstall on day 5 inherits the 2 days that remain —
+you cannot top the window up by installing again. `ios:device` handles this: when the signature has
+less than 6 days left it moves the cached profile aside, which makes Xcode ask Apple for a new one,
+and a new one is a full 7 days. The script prints the real expiry date when it finishes. If the
+refresh fails it restores the cached profile and installs on the time that remains, rather than
+leaving you with no profile at all.
+
+**The refresh needs an Apple ID in Xcode → Settings → Accounts.** Without one the re-sign fails:
+
+```
+error: No Accounts: Add a new account in Accounts settings.
+error: No profiles for 'com.ajholloway.pokevendor' were found
+```
+
+The signing certificate in your keychain is not enough — it lasts a year, but it cannot mint a
+profile on its own. An empty account list is silent until the cached profile expires, and then the
+app is dead on the phone with no command-line way back. Check it with:
+
+```sh
+defaults read com.apple.dt.Xcode DVTDeveloperAccountManagerAppleIDLists
+# "IDE.Identifiers.Prod" = ( ) ← empty means no account is signed in
+```
+
 **`npm run ios:build`, not `npm run ios:project`.** This is the one way PokéVendor differs from
 Sideline day to day. Sideline references its single `index.html` in place, so editing the game and
 rebuilding is the whole loop. PokéVendor is a Vite app: the shell bundles `dist/`, so **`npm run

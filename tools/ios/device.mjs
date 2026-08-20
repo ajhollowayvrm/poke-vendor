@@ -3,7 +3,7 @@
 // You need this more often than you would think: a FREE Apple developer signature expires after
 // 7 days, and the app then refuses to launch until it is re-signed. This is that, in one command.
 //
-// Two things here were not obvious and cost real time to work out, so they are automated rather
+// Three things here were not obvious and cost real time to work out, so they are automated rather
 // than written down as instructions to follow by hand:
 //
 //  1. DEVELOPMENT_TEAM is NOT the number in the signing identity's name. The identity reads
@@ -14,9 +14,26 @@
 //     fourth install fails with "its integrity could not be verified" and MIInstallerErrorDomain
 //     error 13 — which sounds like a signing problem and is not one. The fix is to delete an app
 //     (which deletes its container, and therefore its local saves) or to pay for an account.
+//  3. Reinstalling does NOT reset the 7-day clock by itself. The clock starts when Apple ISSUES
+//     the profile, not when you install it, and Xcode reuses a cached profile while it is still
+//     valid. So an install on day 5 inherits the 2 days that remain. Moving the cached profile
+//     aside makes Xcode ask Apple for a new one, and a new one is a full 7 days. Measured: a
+//     re-issue moved the expiry from 22 Aug to 26 Aug on an install that would otherwise have
+//     kept 22 Aug.
 import { execFileSync } from 'node:child_process'
+import { existsSync, readdirSync, renameSync, rmSync } from 'node:fs'
+import { join, basename } from 'node:path'
+import { tmpdir } from 'node:os'
 
 const BUNDLE = 'com.ajholloway.pokevendor'
+const PROFILES = join(process.env.HOME, 'Library/Developer/Xcode/UserData/Provisioning Profiles')
+const APP = 'ios/build/dev/Build/Products/Release-iphoneos/PokeVendor.app'
+
+// Refresh the signature when it has less than this left. A fresh profile is 7 days, so 6 means a
+// tight edit-install loop asks Apple at most once a day, while any install after a day away comes
+// back with a full week. The app is therefore always good for at least 6 days from your last push.
+const REFRESH_UNDER_DAYS = 6
+
 const sh = (cmd, args, opts = {}) => execFileSync(cmd, args, { encoding: 'utf8', ...opts })
 const run = (cmd, args) => execFileSync(cmd, args, { stdio: 'inherit' })
 
@@ -32,7 +49,8 @@ function teamId() {
   return { team: ou, identity: name }
 }
 
-/// The first connected, paired iPhone.
+/// The first connected, paired iPhone. devicectl reaches a wirelessly paired phone too, so this
+/// works over wifi — the transport has no bearing on signing or on the 7-day clock.
 function device() {
   const out = sh('xcrun', ['devicectl', 'list', 'devices'])
   const line = out.split('\n').find(l => /iPhone/.test(l) && /available/.test(l))
@@ -42,6 +60,46 @@ function device() {
   return { udid, name: line.split(/\s{2,}/)[0].trim() }
 }
 
+/// The expiry date inside a .mobileprovision, or null if it will not decode.
+function expiryOf(path) {
+  try {
+    const xml = sh('security', ['cms', '-D', '-i', path])
+    const date = xml.match(/<key>ExpirationDate<\/key>\s*<date>([^<]+)<\/date>/)?.[1]
+    return date ? new Date(date) : null
+  } catch { return null }
+}
+
+/// The cached profile for this bundle id, if there is one.
+function cachedProfile() {
+  if (!existsSync(PROFILES)) return null
+  for (const f of readdirSync(PROFILES).filter(f => f.endsWith('.mobileprovision'))) {
+    const path = join(PROFILES, f)
+    try {
+      if (!sh('security', ['cms', '-D', '-i', path]).includes(BUNDLE)) continue
+    } catch { continue }
+    const expires = expiryOf(path)
+    if (expires) return { path, expires }
+  }
+  return null
+}
+
+/// Move the cached profile aside so that xcodebuild has to fetch a new one. Returns the stash so
+/// that a failed build can put it back — without that, a refresh attempt with no network or no
+/// Xcode account leaves you with no profile at all and nothing to fall back to.
+function stashProfile() {
+  const p = cachedProfile()
+  if (!p) return null
+  const daysLeft = (p.expires - Date.now()) / 86400000
+  if (daysLeft > REFRESH_UNDER_DAYS) {
+    console.log(`signature good until ${p.expires.toDateString()} (${daysLeft.toFixed(1)} days) — keeping it`)
+    return null
+  }
+  const stash = join(tmpdir(), basename(p.path))
+  renameSync(p.path, stash)
+  console.log(`signature expires ${p.expires.toDateString()} — asking Apple for a new one`)
+  return { original: p.path, stash }
+}
+
 const { team, identity } = teamId()
 const { udid, name } = device()
 console.log(`signing as ${identity}\n   team   ${team}\n   device ${name} (${udid})\n`)
@@ -49,16 +107,31 @@ console.log(`signing as ${identity}\n   team   ${team}\n   device ${name} (${udi
 console.log('building the web app (production — no test seam)…')
 run('npm', ['run', 'ios:build'])
 
-console.log('\nbuilding + signing for the device…')
-run('xcodebuild', ['-project', 'ios/PokeVendor.xcodeproj', '-scheme', 'PokeVendor',
+const XCODEBUILD = ['-project', 'ios/PokeVendor.xcodeproj', '-scheme', 'PokeVendor',
   '-sdk', 'iphoneos', '-destination', 'generic/platform=iOS', '-configuration', 'Release',
   '-derivedDataPath', 'ios/build/dev', '-allowProvisioningUpdates',
-  `DEVELOPMENT_TEAM=${team}`, 'CODE_SIGN_STYLE=Automatic', 'build'])
+  `DEVELOPMENT_TEAM=${team}`, 'CODE_SIGN_STYLE=Automatic', 'build']
+
+console.log('\nbuilding + signing for the device…')
+const stashed = stashProfile()
+try {
+  run('xcodebuild', XCODEBUILD)
+  if (stashed) rmSync(stashed.stash, { force: true })
+} catch (e) {
+  if (!stashed) throw e
+  // Apple could not issue a new profile. Put the old one back and build with it, because an
+  // install on the time that remains beats no install at all.
+  renameSync(stashed.stash, stashed.original)
+  console.error('\n⚠️  could not refresh the signature — restored the cached one and retrying.')
+  console.error('   "No Accounts: Add a new account in Accounts settings" means Xcode has no Apple')
+  console.error('   ID signed in. Open Xcode → Settings → Accounts and add yours, or this app will')
+  console.error('   stop launching when the cached signature expires and will not re-sign.')
+  run('xcodebuild', XCODEBUILD)
+}
 
 console.log('\ninstalling…')
 try {
-  run('xcrun', ['devicectl', 'device', 'install', 'app', '--device', udid,
-    'ios/build/dev/Build/Products/Release-iphoneos/PokeVendor.app'])
+  run('xcrun', ['devicectl', 'device', 'install', 'app', '--device', udid, APP])
 } catch {
   console.error('\n❌ install failed.')
   console.error('   If it mentioned "maximum number of installed apps using a free developer profile":')
@@ -69,5 +142,9 @@ try {
 }
 
 run('xcrun', ['devicectl', 'device', 'process', 'launch', '--device', udid, BUNDLE])
+
+const expires = expiryOf(join(APP, 'embedded.mobileprovision'))
 console.log('\n✅ installed and launched.')
-console.log('   A free signature expires after 7 days; re-run this when the app stops launching.')
+console.log(expires
+  ? `   The signature lasts until ${expires.toDateString()}. Re-run this before then.`
+  : '   A free signature expires after 7 days; re-run this when the app stops launching.')
