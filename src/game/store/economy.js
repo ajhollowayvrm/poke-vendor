@@ -214,7 +214,7 @@ export function createEconomySlice(set, get) {
       let paidCash = 0, paidNoto = 0, completed = null
       const next = goals.map(g => {
         if (g.key !== key || g.done) return g
-        const progress = g.progress + amount
+        const progress = round2(g.progress + amount)
         if (progress >= g.target) {
           paidCash += g.cash; paidNoto += g.noto; completed = g
           return { ...g, progress: g.target, done: true }

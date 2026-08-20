@@ -660,7 +660,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               <div key={i} className={`goal ${g.done ? 'done' : ''}`}>
                 <div className="goal-label">{g.done ? '✓ ' : ''}{g.label}</div>
                 <div className="goal-bar"><div style={{ width: `${Math.min(100, 100*g.progress/g.target)}%` }} /></div>
-                <div className="goal-reward">{g.progress}/{g.target} · {g.cash ? fmtMoney(g.cash) : ''}{g.cash && g.noto ? ' + ' : ''}{g.noto ? `${g.noto}★` : ''}</div>
+                <div className="goal-reward">{g.key === 'profit' ? `${fmtMoney(g.progress)}/${fmtMoney(g.target)}` : `${g.progress}/${g.target}`} · {g.cash ? fmtMoney(g.cash) : ''}{g.cash && g.noto ? ' + ' : ''}{g.noto ? `${g.noto}★` : ''}</div>
               </div>
             ))}
           </div>
