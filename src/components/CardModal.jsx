@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
-import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2, cardPopulation, CRACK_DAMAGE_CHANCE, cardNumber } from '../game/engine'
+import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2, cardPopulation, CRACK_DAMAGE_CHANCE, cardNumber, rarityLabel } from '../game/engine'
 import { popTier } from '../game/population'
 import { misprintDef } from '../game/misprints'
 import HiResImg from './HiResImg'
@@ -165,7 +165,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
           <div style={{ flex: 1, minWidth: 240 }}>
             <h2>{card.name}</h2>
             <p className="muted" style={{ margin: '2px 0 10px' }}>
-              <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{card.rarity}</span>
+              <span style={{ color: rarityColor(card.rarity), fontWeight: 800 }}>{rarityLabel(card.rarity)}</span>
               {card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : ''} · #{cardNumber(card)}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}
               {!g && card.condition && CONDITIONS[card.condition] && (
                 <> · <span style={{ color: CONDITIONS[card.condition].color, fontWeight: 800 }}>{CONDITIONS[card.condition].label}</span></>

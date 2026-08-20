@@ -42,6 +42,7 @@ const UpgradeShop = lazyChunk(() => import('./components/UpgradeShop'))
 const BoothInbox = lazyChunk(() => import('./components/BoothInbox'))
 const Settings = lazyChunk(() => import('./components/Settings'))
 const PriceGuide = lazyChunk(() => import('./components/PriceGuide'))
+const Marketplace = lazyChunk(() => import('./components/Marketplace'))
 const SealedInventory = lazyChunk(() => import('./components/SealedInventory'))
 const AutoRip = lazyChunk(() => import('./components/AutoRip'))
 const ShowPrep = lazyChunk(() => import('./components/ShowPrep'))
@@ -92,6 +93,7 @@ export default function App() {
     } catch { return 'shop' }
   })
   const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
+  const [shopTab, setShopTab] = useState('sealed') // Buy sub-tab: sealed | market
   const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
   const [statsPane, setStatsPane] = useState('stats')           // Stats sub-pane: stats | books
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
@@ -618,7 +620,14 @@ export default function App() {
             per-tab boundary would just mean the same fallback written fourteen times. */}
         <Chunk>
         {tab === 'shop' && (
-          <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
+          <div className="pane">
+            <div className="subtabs">
+              <button className={`subtab ${shopTab === 'sealed' ? 'active' : ''}`} onClick={() => setShopTab('sealed')}>📦 Sealed</button>
+              <button className={`subtab ${shopTab === 'market' ? 'active' : ''}`} onClick={() => setShopTab('market')}>🛍️ Marketplace</button>
+            </div>
+            {shopTab === 'sealed' && <Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} />}
+            {shopTab === 'market' && <Marketplace />}
+          </div>
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
