@@ -1009,7 +1009,11 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .coll-cell.picked { box-shadow: 0 0 0 2px var(--green); background: #36d39914; }
 /* swallow tile clicks in select mode so toggling never opens the modal */
 .coll-cell.selectable :where(.cardtile, img) { pointer-events: none; }
-.coll-check { position: absolute; top: 8px; right: 8px; z-index: 5; width: 24px; height: 24px; border-radius: 999px;
+/* Floats just outside the tile's own top-right corner rather than on it — that corner is
+   .price's on a raw tile (top:6/right:6), and this opaque, higher z-index circle would
+   otherwise sit right on top of it and hide the price whenever a card is selected. The 14px
+   grid gap (.grid) leaves room for the small overhang. */
+.coll-check { position: absolute; top: -6px; right: -6px; z-index: 5; width: 24px; height: 24px; border-radius: 999px;
   background: var(--green); color: #07140c; font-weight: 900; font-size: 14px; display:flex;
   align-items:center; justify-content:center; box-shadow: 0 1px 5px rgba(0,0,0,.5); }
 
@@ -1058,9 +1062,19 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .coll-lock:hover { opacity: 1; }
 .coll-lock.on { opacity: 1; background: var(--gold); box-shadow: 0 1px 5px rgba(0,0,0,.5); }
 .coll-cell.locked { box-shadow: 0 0 0 2px var(--gold); border-radius: 12px; }
-/* Lock badge shown on the tile itself (visible in select mode / other views). */
-.lockchip { position: absolute; top: 6px; left: 6px; z-index: 5; font-size: 12px; line-height: 1;
+/* Lock badge shown on the tile itself (visible in select mode / other views). Same top-left
+   corner .tag (the rarity chip) already owns, so it used to sit exactly on top of it — opaque
+   and higher z-index, it fully hid the rarity letter on every locked card. Dropped below .tag
+   instead (same 30px convention .coll-lock uses to clear the same chip). */
+.lockchip { position: absolute; top: 30px; left: 6px; z-index: 5; font-size: 12px; line-height: 1;
   background: var(--gold); border-radius: 999px; padding: 3px 4px; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+/* On a graded slab there's no .tag to clear — instead the WHOLE top strip is the PSA label,
+   so any top-corner badge lands on its brand/grade text regardless of offset. The slab-window
+   (the card image below the label) has an empty bottom-left corner instead — .price already
+   claims bottom-right there, so bottom-left is free. z-index bumped past .slab-window (5) and
+   .slab-shine (6, the gloss overlay) — both paint later in the DOM at the base z:5, so without
+   this the window's own card image (also z:5) painted over the badge and hid it completely. */
+.cardtile.slab .lockchip { top: auto; bottom: 6px; left: 6px; z-index: 7; }
 
 .bulk-bar { position: sticky; bottom: 14px; z-index: 40; margin-top: 16px;
   background: linear-gradient(180deg, var(--panel), var(--panel2)); border: 1px solid var(--line);
