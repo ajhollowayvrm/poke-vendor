@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2 } from '../game/engine'
-import { quoteRound } from '../game/shows'
+import { quoteRound, pickCreditBundle, creditCovers, CREDIT_COVER } from '../game/shows'
 import { useModalEscape } from '../ui/dialog'
 import { TradeItem } from './Encounter'
 
@@ -37,31 +37,30 @@ export default function QuoteCounter({ req, onDone }) {
     (showInventory || []).reduce((a, c) => a + cardValue(c), 0)
     + (showSealed || []).reduce((a, it) => a + sealedValue(it), 0),
   [showInventory, showSealed])
-  const creditOk = tableVal >= quoteCash * 0.6 // thin table → credit isn't a real offer
+  const creditOk = tableVal >= quoteCash * CREDIT_COVER // thin table → credit isn't a real offer
 
   // Apportion the total you paid across their items by value share — the sealed rows carry
   // their slice as cost basis when they're minted into your inventory.
   const sealedRows = (total) => sealedItems.map(x => ({ ...x.item, paid: round2(total * (x.val / market)) }))
 
-  // Greedy closest-fit bundle off your table for a credit deal: big pieces first, stop near
-  // the credit value (≤5% overshoot). The small remainder settles in cash either way.
-  function pickBundle(credit) {
-    const pool = [
-      ...(showInventory || []).map(c => ({ kind: 'card', uid: c.uid, item: c, val: round2(cardValue(c)) })),
-      ...(showSealed || []).map(it => ({ kind: 'sealed', uid: it.uid, item: it, val: round2(sealedValue(it)) })),
-    ].filter(x => x.val > 0).sort((a, b) => b.val - a.val)
-    const take = []
-    let total = 0
-    for (const x of pool) {
-      if (total + x.val <= credit * 1.05) { take.push(x); total = round2(total + x.val) }
-      if (total >= credit * 0.95) break
-    }
-    return { take, total }
-  }
-  // Total table value passing the 60% bar doesn't mean anything on it actually FITS this
-  // credit amount (a single big slab can clear the bar while nothing nearest-fits within the
-  // ±5% band pickBundle wants) — check that a real bundle exists, not just enough value.
-  const creditFeasible = pickBundle(quoteCash).take.length > 0
+  // What a credit deal can shop from. The picking rule itself lives in game/shows.js next to
+  // quoteRound, so it can be tested — see scripts/verify-quotes.mjs.
+  const pool = useMemo(() => [
+    ...(showInventory || []).map(c => ({ kind: 'card', uid: c.uid, item: c, val: round2(cardValue(c)) })),
+    ...(showSealed || []).map(it => ({ kind: 'sealed', uid: it.uid, item: it, val: round2(sealedValue(it)) })),
+  ], [showInventory, showSealed])
+  const pickBundle = (credit) => pickCreditBundle(pool, credit)
+  // Total table value passing the bar doesn't mean anything on it actually FITS this credit
+  // amount (a single big slab can clear the bar while nothing nearest-fits within the ±5% band
+  // pickBundle wants) — check that a real bundle exists, not just enough value.
+  //
+  // ⚠️ AND that the bundle actually COVERS most of the credit. A non-empty bundle was not enough:
+  // pickBundle skips anything over credit×1.05, so a table holding one $600 slab and one $5 card
+  // returned a single $5 item against a $500 quote. That passed as "feasible", the deal closed at
+  // the CREDIT floor — 10-15 points under the cash floor (shows.js makeQuoteRequest) — and then
+  // settled $495 of it in cash. A credit price for a cash deal. The bundle must be a real bundle.
+  const creditProbe = pickBundle(quoteCash)
+  const creditFeasible = creditCovers(creditProbe, quoteCash)
   const creditUsable = creditOk && creditFeasible
   const canAfford = method === 'credit' ? creditUsable : cash >= quoteCash
 
@@ -71,6 +70,25 @@ export default function QuoteCounter({ req, onDone }) {
   useEffect(() => {
     if (method === 'credit' && !creditUsable) setMethod('cash')
   }, [method, creditUsable])
+
+  // 💥 Their counter belongs to the METHOD it was named in. The credit floor sits 10-15 points
+  // under the cash floor (shows.js makeQuoteRequest), so a credit counter is a number they would
+  // never say in cash. Nothing used to clear it: quote in credit, get countered at 62%, tap
+  // 💵 Cash, and "Take their 62%" was still live — takeCounter() reads the CURRENT method and
+  // called closeCash(0.62) against a lot whose cash floor was 0.78. The auto-fallback above
+  // fires the same path without the player even trying it.
+  //
+  // `round` deliberately survives. Patience belongs to the person, not to the method — resetting
+  // it here would let you farm unlimited counters by toggling cash/credit between each one.
+  const prevMethodRef = useRef(method)
+  useEffect(() => {
+    if (prevMethodRef.current === method) return
+    const wasCredit = prevMethodRef.current === 'credit'
+    prevMethodRef.current = method
+    if (counter == null) return
+    setCounter(null)
+    setLog(l => [...l, `${req.who}: "That number was for ${wasCredit ? 'table credit' : 'cash'} — quote me again."`])
+  }, [method, counter, req.who])
 
   function closeCash(atPct) {
     const price = round2(market * atPct)
@@ -85,7 +103,12 @@ export default function QuoteCounter({ req, onDone }) {
   function closeCredit(atPct) {
     const credit = round2(market * atPct)
     const picked = pickBundle(credit)
-    if (!picked.take.length) { onDone("Your table has nothing they'd take — the deal fizzles."); return }
+    // Re-checked here, not just at creditFeasible: taking a counter closes at a DIFFERENT pct
+    // than the one the button was enabled for, so the bundle is re-picked against a bigger
+    // credit value and can fall under the coverage bar that made credit legitimate.
+    if (!creditCovers(picked, credit)) {
+      onDone("Your table can't cover that in credit — the deal fizzles."); return
+    }
     setBundle({ ...picked, credit, pct: atPct })
     setLog(l => [...l, `${req.who}: "Deal — lemme see what you've got out."`])
   }
@@ -137,11 +160,11 @@ export default function QuoteCounter({ req, onDone }) {
       <div className="modalbg" onClick={close}>
         <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
           <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
-          <h2 style={{ fontSize: 19 }}>They shop your table</h2>
-          <p className="muted" style={{ fontSize: 13, marginTop: 2 }}>
+          <h2 className="t-xl">They shop your table</h2>
+          <p className="cap t-sm mt-1">
             {req.who} settles on <b>{fmtMoney(bundle.total)}</b> of your stock against the {fmtMoney(bundle.credit)} credit
-            {adj > 0 ? <> — you top up the last <b style={{ color: 'var(--red)' }}>{fmtMoney(adj)}</b> in cash</>
-              : adj < 0 ? <> — and hands you <b style={{ color: 'var(--green)' }}>{fmtMoney(-adj)}</b> to square it</>
+            {adj > 0 ? <> — you top up the last <b className="neg">{fmtMoney(adj)}</b> in cash</>
+              : adj < 0 ? <> — and hands you <b className="pos">{fmtMoney(-adj)}</b> to square it</>
               : ' — dead even'}.
           </p>
           <div className="trade-items" style={{ margin: '10px 0' }}>
@@ -149,11 +172,11 @@ export default function QuoteCounter({ req, onDone }) {
               ? <TradeItem key={x.uid} card={x.item} />
               : <TradeItem key={x.uid} sealed={x.item} />)}
           </div>
-          <div className="row" style={{ marginTop: 10 }}>
+          <div className="row mt-5">
             <button className="btn gold" disabled={adj > 0 && cash < adj} onClick={confirmBundle}>
               {adj > 0 && cash < adj ? `Need ${fmtMoney(adj)}` : '🤝 Do the deal'}
             </button>
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 130 }}
+            <button className="btn alt btn-fixed" style={{ maxWidth: 130 }}
               onClick={() => { onDone('You wave it off at the last second. They leave, a little annoyed.') }}>Back out</button>
           </div>
         </div>
@@ -165,8 +188,8 @@ export default function QuoteCounter({ req, onDone }) {
     <div className="modalbg" onClick={close}>
       <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
         <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
-        <h2 style={{ fontSize: 19 }}>🗣️ {req.who} wants a quote</h2>
-        <p className="muted" style={{ fontSize: 13, marginTop: 2 }}>
+        <h2 className="t-xl">🗣️ {req.who} wants a quote</h2>
+        <p className="cap t-sm mt-1">
           They lay {req.items.length === 1 ? 'an item' : `${req.items.length} items`} on your table —
           market <b>{fmtMoney(market)}</b> · {req.hint}.
         </p>
@@ -196,23 +219,23 @@ export default function QuoteCounter({ req, onDone }) {
           </button>
         </div>
 
-        <div className="quote-pct" style={{ marginTop: 10 }}>
+        <div className="quote-pct mt-5">
           <div className="row" style={{ gap: 6, flexWrap: 'wrap' }}>
             {PRESETS.map(p => (
               <button key={p} className={`btn ${pct === p ? 'gold' : 'alt'} quote-chip`} onClick={() => setPct(p)}>{p}%</button>
             ))}
           </div>
           <div className="row" style={{ alignItems: 'center', gap: 8, marginTop: 8 }}>
-            <button className="btn alt" style={{ flex: 'none', minWidth: 44 }} onClick={() => setPct(p => Math.max(10, p - 1))}>−</button>
+            <button className="btn alt btn-fixed" style={{ minWidth: 44 }} onClick={() => setPct(p => Math.max(10, p - 1))}>−</button>
             <span className="haggle-amt">{pct}% · {fmtMoney(quoteCash)}</span>
-            <button className="btn alt" style={{ flex: 'none', minWidth: 44 }} onClick={() => setPct(p => Math.min(99, p + 1))}>+</button>
-            <span className="muted" style={{ fontSize: 11, marginLeft: 'auto' }}>
+            <button className="btn alt btn-fixed" style={{ minWidth: 44 }} onClick={() => setPct(p => Math.min(99, p + 1))}>+</button>
+            <span className="cap" style={{ marginLeft: 'auto' }}>
               patience {'●'.repeat(Math.max(0, MAX_ROUNDS - round))}{'○'.repeat(Math.min(round, MAX_ROUNDS))}
             </span>
           </div>
         </div>
 
-        <div className="row" style={{ marginTop: 12 }}>
+        <div className="row mt-5">
           {!outOfRounds && (
             <button className="btn gold" disabled={!canAfford} onClick={offer}>
               {canAfford ? `Quote ${pct}%` : `Need ${fmtMoney(quoteCash)}`}
@@ -223,11 +246,11 @@ export default function QuoteCounter({ req, onDone }) {
               Take their {Math.round(counter * 100)}%
             </button>
           )}
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 110 }}
+          <button className="btn alt btn-fixed" style={{ maxWidth: 110 }}
             onClick={() => onDone('You pass — they pack it back up.')}>Pass</button>
         </div>
         {outOfRounds && counter != null && (
-          <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>They're done going back and forth — take their number or pass.</p>
+          <p className="cap mt-4">They're done going back and forth — take their number or pass.</p>
         )}
       </div>
     </div>

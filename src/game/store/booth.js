@@ -1108,6 +1108,9 @@ export function createBoothSlice(set, get) {
           s.addNotoriety(effect.notoriety || 0)
           const n = gotCards.length + gotSealed.length
           s.log('buy', `Quoted ${Math.round((effect.pct || 0) * 100)}% on a walk-up lot — bought ${n} item${n !== 1 ? 's' : ''} for $${price.toFixed(2)}`, -price)
+          // Say so. Every FAILURE path here flashes a line and this success path did not, so a
+          // deal that worked closed the modal in silence — which reads as a bug, not a purchase.
+          msg = `🤝 Bought ${n} item${n !== 1 ? 's' : ''} at ${Math.round((effect.pct || 0) * 100)}% — $${price.toFixed(2)}.`
           get().checkCompletions()
           break
         }
@@ -1140,6 +1143,9 @@ export function createBoothSlice(set, get) {
           s.addNotoriety(effect.notoriety || 0)
           const inN = gotCards.length + gotSealed.length, outN = cards.length + sealed.length
           s.log('trade', `Quoted ${Math.round((effect.pct || 0) * 100)}% in table credit — took ${inN} item${inN !== 1 ? 's' : ''}, they left with ${outN} of yours${adj > 0 ? ` + $${adj.toFixed(2)}` : adj < 0 ? ` (+$${(-adj).toFixed(2)} to you)` : ''}`, -adj)
+          // Same as quoteBuy above: the success path was the only one that said nothing.
+          msg = `🤝 Took ${inN} item${inN !== 1 ? 's' : ''} at ${Math.round((effect.pct || 0) * 100)}% in table credit`
+            + `${adj > 0 ? ` + $${adj.toFixed(2)} cash` : adj < 0 ? ` — they squared up $${(-adj).toFixed(2)}` : ''}.`
           get().checkCompletions()
           break
         }
