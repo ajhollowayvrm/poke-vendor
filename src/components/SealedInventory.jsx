@@ -1,22 +1,24 @@
 import { useState, useMemo } from 'react'
 import { useGame } from '../game/store'
-import { sealedValue, fmtMoney, setById, SEALED_FLIP_RATE, breakOptions, productTypeLabel } from '../game/engine'
+import { sealedValue, fmtMoney, setById, productTypeLabel } from '../game/engine'
 import { toast } from '../ui/dialog'
-import { AskPicker } from '../ui/AskPicker'
+import { Collapse } from '../ui/Collapse'
 import SealedModal from './SealedModal'
 
 // Your SEALED product on hand — bought but not yet ripped. Identical products (same set +
-// type) STACK into one row with a quantity; each can be ripped (launches the normal rip,
-// no re-charge), listed on your site, or quick-flipped for instant cash, one unit at a
-// time. Held value tracks the set's market multiplier, so vintage appreciates while it sits.
+// type) STACK into one compact row, and rows group BY SET the same way a booth table reads,
+// so a deep sealed position is a few collapsible lines instead of a wall of tiles. Loose
+// single packs pool into one cross-set 🃏 bin — that's trade fodder, not shelf furniture.
+// Rip acts on ONE unit right from the row; every other move (list, keep, break, flip,
+// grade) lives in the product modal behind ⋯ / a row tap.
 export default function SealedInventory({ onRip, onSift }) {
   const inventory = useGame(s => s.sealedInventory)
   const hasStore = useGame(s => !!s.upgrades.storefront)
   const listSealedMany = useGame(s => s.listSealedMany)
   // subscribe to the market so values re-render after a day-tick / drift event
   useGame(s => s.marketMults)
-  // Tapping a stack's header opens its detail modal — the same product read (chase density,
-  // price sheet, break-down) the store's StoreStock gives, so a no-store player isn't shorted it.
+  // A row tap (or its ⋯) opens the stack's detail modal — value, chase density, price sheet,
+  // and the full action set. `sealedView` holds the whole stack so the modal can act on N.
   const [sealedView, setSealedView] = useState(null)
   // ⚡ Sift-rip selection: pick a GROUP of sealed to auto-rip (stops on big-hit packs).
   const [selecting, setSelecting] = useState(false)
@@ -34,6 +36,41 @@ export default function SealedInventory({ onRip, onSift }) {
     }
     return [...map.values()]
   }, [inventory])
+
+  // Sections: multi-pack product by set (era product by its series), single loose packs
+  // pooled cross-set. Sections sort by total value desc; kept stacks sink inside each.
+  const sections = useMemo(() => {
+    const bySet = new Map()
+    const loose = []
+    for (const items of groups) {
+      const it = items[0]
+      if ((it.product?.packs || 1) === 1) { loose.push(items); continue }
+      const key = it.product?.pool?.series ? `era:${it.product.pool.series}` : String(it.setId)
+      if (!bySet.has(key)) bySet.set(key, [])
+      bySet.get(key).push(items)
+    }
+    const stackValue = items => sealedValue(items[0]) * items.length
+    const sortStacks = gs => gs.sort((a, b) =>
+      ((a[0].locked ? 1 : 0) - (b[0].locked ? 1 : 0)) || (stackValue(b) - stackValue(a)))
+    const secs = [...bySet.entries()].map(([key, gs]) => {
+      const set = key.startsWith('era:') ? null : setById(key)
+      return {
+        key, logo: set?.logo, name: set?.name || `👑 ${key.slice(4)} era`, showSet: !set,
+        groups: sortStacks(gs),
+        units: gs.reduce((a, g) => a + g.length, 0),
+        value: gs.reduce((a, g) => a + stackValue(g), 0),
+      }
+    }).sort((a, b) => b.value - a.value)
+    if (loose.length) {
+      secs.push({
+        key: 'loose', logo: null, name: '🃏 Loose packs', showSet: true, loose: true,
+        groups: sortStacks(loose),
+        units: loose.reduce((a, g) => a + g.length, 0),
+        value: loose.reduce((a, g) => a + stackValue(g), 0),
+      })
+    }
+    return secs
+  }, [groups])
 
   if (!inventory.length) {
     return (
@@ -86,7 +123,7 @@ export default function SealedInventory({ onRip, onSift }) {
       <div className="toolbar" style={{ marginTop: 10 }}>
         {selecting ? (
           <>
-            <span className="muted" style={{ fontSize: 12 }}>Tap stacks to sift-rip:</span>
+            <span className="muted" style={{ fontSize: 12 }}>Tap rows to sift-rip:</span>
             <button className="btn alt" style={{ flex: 'none' }} onClick={selectAll}>{selected.size === inventory.length ? 'Deselect all' : 'Select all'}</button>
             <button className="btn alt" style={{ flex: 'none' }} onClick={() => { setSelecting(false); setSelected(new Set()) }}>Cancel</button>
           </>
@@ -99,179 +136,84 @@ export default function SealedInventory({ onRip, onSift }) {
           </>
         )}
       </div>
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', marginTop: 12 }}>
-        {groups.map(items => <SealedRow key={items[0].uid} items={items} onRip={onRip} hasStore={hasStore} onInspect={setSealedView}
-          selecting={selecting} selected={items.every(it => selected.has(it.uid)) && items.length > 0} onToggleSelect={() => toggleStack(items)} />)}
+      <div style={{ marginTop: 12 }}>
+        {sections.map(sec => (
+          <Collapse key={sec.key} id={`inv-sealed-${sec.key}`} defaultOpen={sections.length <= 3}
+            className="wants" headClass="wants-head"
+            head={<>{sec.logo && <img src={sec.logo} alt="" style={{ height: 20, objectFit: 'contain', verticalAlign: '-4px', marginRight: 6 }} />}
+              {sec.name}</>}
+            hint={sec.loose ? 'single packs from every set — rip fuel and trade fodder' : null}
+            badge={`${sec.units} · ${fmtMoney(sec.value)}`}>
+            <div className="vsealed-list">
+              {sec.groups.map(items => (
+                <InvSealedRow key={items[0].uid} items={items} showSet={sec.showSet} onRip={onRip}
+                  onOpen={() => setSealedView(items)}
+                  selecting={selecting}
+                  selected={items.every(it => selected.has(it.uid))}
+                  onToggleSelect={() => toggleStack(items)} />
+              ))}
+            </div>
+          </Collapse>
+        ))}
       </div>
       {/* Sticky launch bar while picking a sift group. */}
       {selecting && (
         <div className="bulk-bar">
           <div className="bulk-bar-summary">
-            {selItems.length ? <><b>{selItems.length} item{selItems.length === 1 ? '' : 's'}</b> · {selPacks} pack{selPacks === 1 ? '' : 's'} to sift</> : 'Tap the sealed stacks you want to sift-rip'}
+            {selItems.length ? <><b>{selItems.length} item{selItems.length === 1 ? '' : 's'}</b> · {selPacks} pack{selPacks === 1 ? '' : 's'} to sift</> : 'Tap the sealed rows you want to sift-rip'}
           </div>
           <div className="bulk-bar-actions">
             <button className="btn gold" disabled={!selItems.length} onClick={startSift}>⚡ Sift-rip {selPacks || ''} {selPacks ? 'packs' : ''} →</button>
           </div>
         </div>
       )}
-      {sealedView && <SealedModal item={sealedView} place="inventory" onClose={() => setSealedView(null)} onRip={onRip} flash={toast} />}
+      {sealedView && <SealedModal item={sealedView[0]} stack={sealedView} place="inventory"
+        onClose={() => setSealedView(null)} onRip={onRip} flash={toast} />}
     </>
   )
 }
 
-// One stacked row for a group of identical sealed products. Actions act on ONE unit at a
-// time (the stack decrements); with qty > 1 the row just stays and shows the new count.
-function SealedRow({ items, onRip, hasStore, onInspect, selecting, selected, onToggleSelect }) {
-  const listSealed = useGame(s => s.listSealed)
-  const listSealedMany = useGame(s => s.listSealedMany)
-  const toggleLockSealed = useGame(s => s.toggleLockSealed)
-  const quickFlipSealed = useGame(s => s.quickFlipSealed)
-  const breakSealed = useGame(s => s.breakSealed)
-  useGame(s => s.marketMults) // break values are market-priced — re-read them as the market drifts
-  const [listing, setListing] = useState(false)
-  const [breaking, setBreaking] = useState(false)
-  const [mult, setMult] = useState(1.0)
-  const [qtySel, setQtySel] = useState(1)   // how many units of the stack an action applies to
-
-  const item = items[0]           // the unit a single action operates on
+// One compact row per stack — the same dense .vsealed-row the booth tables use. Rip takes
+// ONE unit (the stack decrements); everything else is behind ⋯ / the row tap, which opens
+// the product modal with the full action set.
+function InvSealedRow({ items, showSet, onRip, onOpen, selecting, selected, onToggleSelect }) {
+  useGame(s => s.marketMults) // unit value is market-priced — re-read as the market drifts
+  const item = items[0]
   const qty = items.length
-  const n = Math.max(1, Math.min(qty, qtySel)) // clamp the selected quantity to the stack size
   const set = setById(item.setId)
-  const unit = sealedValue(item)  // per-unit market value (same across the stack)
-  const value = unit * qty        // whole-stack value
-  const cost = items.reduce((a, it) => a + (it.boughtPrice || 0), 0) // total paid across the stack
+  const unit = sealedValue(item)
+  const value = unit * qty
+  const cost = items.reduce((a, it) => a + (it.boughtPrice || 0), 0)
   const delta = value - cost
   const pct = cost ? Math.round((delta / cost) * 100) : 0
   const up = delta >= 0
-  const flip = unit * SEALED_FLIP_RATE
-  // What one unit of this stack can be split into (empty for a single pack — already atomic).
-  const breaks = useMemo(() => breakOptions(item), [item])
-  const pickUids = (k) => items.slice(0, k).map(i => i.uid) // the first k units of the stack
-
-  function doList() {
-    const uids = pickUids(n)
-    const listed = listSealedMany(uids, mult)
-    if (listed) toast(`Listed ${listed}× ${item.product.type} at ${Math.round(mult*100)}% — track them on the Sell tab.`)
-    setListing(false); setQtySel(1)
-  }
-  // Flip KEEP on the selected units (kept units group into their own stack on re-render).
-  function doKeep() {
-    for (const uid of pickUids(n)) toggleLockSealed(uid)
-    toast(item.locked
-      ? `🔓 ${n}× ${item.product.type} back up for sale in the store.`
-      : `🔒 Keeping ${n}× ${item.product.type} — walk-ins can't buy it (you can still rip, stream, or repack it).`)
-    setQtySel(1)
-  }
-  function doFlip() {
-    const net = quickFlipSealed(item.uid)
-    if (net != null) toast(`Quick-flipped a ${item.product.type} for ${fmtMoney(net)}.`)
-  }
-  // Break ONE unit of the stack (breaking the whole stack at once would be a very expensive
-  // mis-tap: a case is thousands of dollars of product and there's no undo).
-  function doBreak(opt) {
-    const r = breakSealed(item.uid, opt.product.type)
-    if (r?.error) return toast(r.error)
-    toast(`🔨 Broke a ${item.product.type} into ${r.count}× ${r.type} — ${fmtMoney(r.value)} of product.`)
-    setBreaking(false)
-  }
-
-  const headClick = selecting ? onToggleSelect : () => onInspect && onInspect(item)
+  const rowClick = selecting ? onToggleSelect : onOpen
   return (
-    <div className="product sealed-item" style={selecting && selected ? { outline: '2px solid var(--gold)', borderRadius: 12 } : undefined}>
-      <div className="sealed-head" role="button" tabIndex={0}
-        title={selecting ? 'Tap to add/remove this stack from the sift' : 'Tap for product details — value, chase density & the full set price sheet'}
-        style={{ cursor: 'pointer' }}
-        onClick={headClick}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); headClick() } }}>
+    <div className={`vsealed-row inv-sealed-row ${item.vintage ? 'sealed-vintage' : ''} ${selecting && selected ? 'in-stack' : ''}`}
+      role="button" tabIndex={0}
+      title={selecting ? 'Tap to add/remove this stack from the sift' : 'Tap for details & all actions — list, keep, break, flip, grade'}
+      onClick={rowClick}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rowClick() } }}>
+      <span className="vsealed-name">
         {selecting && <span className="sift-check" aria-hidden="true">{selected ? '✅' : '⬜'}</span>}
-        {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <b className="sealed-name">{item.product.icon || '📦'} {productTypeLabel(item.product)}</b>
-          {/* A cross-set product names its ERA, never the packs inside it. The box is sealed —
-              you cannot see through cardboard, and it sells on potential, not on contents. */}
-          <div className="muted" style={{ fontSize: 12 }}>
-            {item.product.pool?.series ? `${item.product.pool.series} era` : set?.name}{item.vintage ? ' · 🏛️ vintage' : ''} · {item.product.packs} pk
-            {item.locked ? <b style={{ color: 'var(--gold)' }}> · 🔒 kept (not for sale)</b> : ''}
-          </div>
-        </div>
-        {qty > 1 && <span className="sealed-qty" title={`${qty} in stock`}>×{qty}</span>}
-      </div>
-
-      <div className="sealed-value">
-        <span className="sealed-now">{fmtMoney(value)}</span>
-        <span className="muted" style={{ fontSize: 11 }}>&nbsp;{qty > 1 ? `value (${fmtMoney(unit)} ea)` : 'value'}</span>
-        <span className="pill sealed-delta" style={{ marginLeft: 'auto', background: up ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: up ? 'var(--green)' : 'var(--red)' }}>
-          {up ? '▲' : '▼'} {up ? '+' : ''}{pct}% ({up ? '+' : ''}{fmtMoney(delta)})
+        {item.product.icon || '📦'} {productTypeLabel(item.product)}
+        {qty > 1 && <span className="pill vsealed-qty" title={`${qty} in stock`}>×{qty}</span>}
+        {item.locked && <span className="pill inv-kept" title="Kept — walk-ins can't buy it (rips, streams & repacks still can use it)">🔒</span>}
+      </span>
+      <span className="vsealed-meta">
+        {showSet ? `${item.product.pool?.series ? `${item.product.pool.series} era` : (set?.name || '')} · ` : ''}
+        {item.product.packs} pk{item.vintage ? ' · 🗝️' : ''}{qty > 1 ? ` · ${fmtMoney(unit)} ea` : ''} · paid {fmtMoney(cost)}
+      </span>
+      <span className="vsealed-ask">
+        <span className="ask">{fmtMoney(value)}</span>
+        <span className="pill sealed-delta" style={{ background: up ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: up ? 'var(--green)' : 'var(--red)' }}>
+          {up ? '▲' : '▼'} {up ? '+' : ''}{pct}%
         </span>
-      </div>
-      <div className="muted" style={{ fontSize: 11, marginTop: 2 }}>paid {fmtMoney(cost)}{qty > 1 ? ' total' : ''}</div>
-
-      {qty > 1 && (
-        <div className="sealed-qty-ctl">
-          <span className="muted" style={{ fontSize: 12 }}>Quantity</span>
-          <button className="qstep" onClick={() => setQtySel(q => Math.max(1, Math.min(qty, q) - 1))} disabled={n <= 1} aria-label="Fewer">−</button>
-          <b className="qval">{n}</b>
-          <button className="qstep" onClick={() => setQtySel(q => Math.min(qty, Math.max(1, q) + 1))} disabled={n >= qty} aria-label="More">+</button>
-          <button className="qstep qmax" onClick={() => setQtySel(qty)} disabled={n >= qty}>All {qty}</button>
-          <span className="muted" style={{ fontSize: 11, marginLeft: 'auto' }}>applies to List / Keep</span>
-        </div>
-      )}
-
-      <div className="sealed-actions">
+      </span>
+      <span className="vsealed-act" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
         <button className="btn gold" onClick={() => onRip(item.uid)}>📦 Rip{qty > 1 ? ' one' : ''}</button>
-        <button className="btn alt" onClick={() => setListing(v => !v)}>{listing ? 'Cancel' : `🌐 List${qty > 1 ? ` ${n}` : ''}`}</button>
-        {hasStore && (
-          <button className={`btn ${item.locked ? 'gold' : 'alt'}`} onClick={doKeep}
-            title={item.locked ? 'Kept — not for sale in your store. Tap to put it back on the floor.' : 'Keep it — walk-ins can\'t buy it (rips, streams & repacks still can use it)'}>
-            {item.locked ? '🔓 Unkeep' : '🔒 Keep'}{qty > 1 ? ` ${n}` : ''}
-          </button>
-        )}
-        {breaks.length > 0 && (
-          <button className={`btn ${breaking ? 'gold' : 'alt'}`} onClick={() => setBreaking(v => !v)}
-            title={`Split it up — a case into boxes, a box into loose packs`}>
-            {breaking ? 'Cancel' : '🔨 Break'}
-          </button>
-        )}
-        <button className="btn" onClick={doFlip} title={`Instant cash at ${Math.round(SEALED_FLIP_RATE * 100)}% of value`}>⚡ Flip {fmtMoney(flip)}</button>
-      </div>
-
-      {/* BREAK IT DOWN. Every option shows what the resulting pile is worth against what the
-          sealed unit is worth now, because that delta IS the decision: splitting a case into
-          boxes is ~free money over what you paid, while cracking boxes into singles gives up
-          the sealed premium in exchange for product that actually moves. */}
-      {breaking && (
-        <div className="sealed-list-ctl">
-          <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-            Break <b>one</b> {item.product.type} ({fmtMoney(unit)}) into:
-          </div>
-          {breaks.map(o => {
-            const gain = o.delta >= 0
-            return (
-              <button key={o.product.type} className="btn alt sealed-break-opt" onClick={() => doBreak(o)}>
-                <span>{o.product.icon || '📦'} <b>{o.count}× {o.product.type}</b> <span className="muted">({fmtMoney(o.unit)} ea)</span></span>
-                <span style={{ marginLeft: 'auto', fontWeight: 800 }}>{fmtMoney(o.total)}</span>
-                <span className="pill" style={{ background: gain ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: gain ? 'var(--green)' : 'var(--red)' }}>
-                  {/* fmtMoney of a negative renders "$-1298.76" — sign it properly instead */}
-                  {gain ? '+' : '−'}{fmtMoney(Math.abs(o.delta))}
-                </span>
-              </button>
-            )
-          })}
-          <div className="muted" style={{ fontSize: 11, marginTop: 6 }}>
-            Sealed product carries a premium the bigger the unit — breaking down to singles trades
-            value for <b>liquidity</b> (loose packs sell, stream and repack far faster than a case).
-          </div>
-        </div>
-      )}
-
-      {listing && (
-        <div className="sealed-list-ctl">
-          <AskPicker pct={Math.round(mult * 100)} onChange={p => setMult((p || 0) / 100)} custom={false} label={null}>
-            <span className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>ask <b>{fmtMoney(unit * mult)}</b>{n > 1 ? ` ea · ${fmtMoney(unit * mult * n)} total` : ''}</span>
-          </AskPicker>
-          <button className="btn gold" style={{ marginTop: 8, maxWidth: 220 }} onClick={doList}>List {n > 1 ? `${n} units` : 'for sale'}</button>
-        </div>
-      )}
+        <button className="btn alt" onClick={onOpen} title="All actions — list, keep, break, flip, grade">⋯</button>
+      </span>
     </div>
   )
 }

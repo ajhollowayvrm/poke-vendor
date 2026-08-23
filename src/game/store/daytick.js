@@ -1723,7 +1723,25 @@ export function advanceDaysWith(set, get, days, away) {
   // then maybe generate fresh ones for unlocked shows 1–4 days out: a recurring
   // vendor you have rapport with sets aside vintage at a held price, or a collector
   // arranges to meet you there to buy a specific card at an appointment premium.
-  const LEAD_WINDOW = 4, LEAD_CAP = 3
+  const LEAD_WINDOW = 4, LEAD_CAP = 4
+  // 💳 Will-call first: a pre-show PURCHASE (paid over DM — see prepayFromVendor) whose
+  // show day has passed ships home to the storeroom, attended or not. Money already spent
+  // can never be stranded. Everything else just expires when its show passes unattended.
+  {
+    const shipped = (s.showLeads || []).filter(l => l.kind === 'purchase' && l.paid && (l.absDay ?? 0) < newAbsDay)
+    const mailRows = []
+    for (const l of shipped) {
+      const set_ = setById(l.setId)
+      if (!set_ || !l.product) continue
+      const row = get().mintSealedRow(set_, l.product, l.price || 0, 'vendor')
+      if (row) mailRows.push({ ...row, loc: 'storeroom' }) // mintSealedRow stamps vintage off the set itself
+      get().log('lead', `📦 ${l.vendorName} mailed home the ${l.productType} of ${l.setName} you paid for — it's in the storeroom.`, 0)
+    }
+    if (mailRows.length) {
+      sealedInvNext = [...mailRows, ...sealedInvNext]
+      set(st => ({ sealedInventory: [...mailRows, ...(st.sealedInventory || [])] }))
+    }
+  }
   let leadsNext = (s.showLeads || []).filter(l => (l.absDay ?? 0) >= newAbsDay)
   const newLeads = []
   {

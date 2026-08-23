@@ -6,7 +6,8 @@ import HiResImg from './HiResImg'
 const TONE_ICON = { kind: '💛', fair: '🤝', cold: '🥶' }
 
 // One item thumbnail in a trade bundle — a card, or a sealed-product chip.
-function TradeItem({ card, sealed }) {
+// Exported for the quote walk-up (QuoteCounter), whose item strip is the same idiom.
+export function TradeItem({ card, sealed }) {
   if (sealed) {
     const set = setById(sealed.setId)
     return (

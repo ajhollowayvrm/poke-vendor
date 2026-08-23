@@ -1,9 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useGame, dayOrderRate, monthName, yearOf, RANKS } from '../game/store'
 import { generateCalendar, SHOW_TIERS } from '../game/shows'
 import { fmtMoney } from '../game/engine'
+import ShowDMs from './ShowDMs'
+
+// How close a show must be before the pre-show DM circuit lights up (mirrors the
+// daytick lead window — dealers finalize their tables a few days out).
+const DM_WINDOW = 4
 
 export default function Calendar({ onAttend }) {
+  const [dmShow, setDmShow] = useState(null) // the show whose dealer DMs are open
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — the door for show tiers
   const clout = useGame(s => s.clout || 0) // 🎫 spendable favors — can talk you into the next tier up
@@ -93,9 +99,19 @@ export default function Calendar({ onAttend }) {
                 <div key={l.id} className="cal-lead" title={l.text}>
                   {l.kind === 'vendor'
                     ? <>🗝️ <b>{l.vendorName}</b> is holding a {l.productType} of {l.setName} for you · {fmtMoney(l.price)}</>
+                    : l.kind === 'purchase'
+                    ? <>💳 <b>Paid</b> — {l.vendorName}'s {l.productType} of {l.setName} ships home after the show</>
                     : <>🤝 <b>{l.who}</b> wants {l.desc} · pays {Math.round(l.premiumMult * 100)}%</>}
                 </div>
               ))}
+              {/* 💬 The pre-show circuit: for a close-enough show, see which dealers you know
+                  are going, catch the crowd gossip, and deal with them before doors. */}
+              {!show.locked && show.day - currentDay <= DM_WINDOW && (
+                <button className="btn alt" style={{ marginTop: 6 }} onClick={() => setDmShow(show)}
+                  title="Which dealers you know are setting up, what they're hauling, and what the crowd's looking like — deal with them before doors open.">
+                  💬 Who's going?
+                </button>
+              )}
               {!show.locked && ordersWorthMentioning && (
                 <div className="muted" style={{ fontSize: 11.5, color: onlineCovered ? 'var(--green)' : '#ff9f43' }}>
                   {onlineCovered
@@ -139,6 +155,8 @@ export default function Calendar({ onAttend }) {
           )
         })}
       </div>
+
+      {dmShow && <ShowDMs show={dmShow} onClose={() => setDmShow(null)} />}
     </>
   )
 }

@@ -299,7 +299,7 @@ export const useGame = create(persist((set, get) => ({
   ...createMarketSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 67,
+  version: 68,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -906,6 +906,30 @@ export const useGame = create(persist((set, get) => ({
       // 🚫 Per-customer purchase limits. Starts empty: an existing save has not "used up"
       // today's allowance on anything, which is the generous and obviously-correct direction.
       state.buyLimits = state.buyLimits ?? { day: 0, counts: {} }
+    }
+    if (version < 68) {
+      // 🎪 The show-floor generators changed shape this version (deeper bins, more sealed,
+      // trade rails, whale packages, crowd quality). activeShow.taken stores POSITIONAL
+      // keys valid only against the code that generated them — under the new generators a
+      // mid-show save would re-map its slots and re-serve items already bought (the exact
+      // bug the keys exist to prevent). End the trip in place, the way the boot rescue
+      // does — migrate can't call endShow(), so its writes are replicated: reserve folds
+      // back into cash, table stock comes home to the storeroom.
+      if (state.activeShow) {
+        state.activeShow = null
+        if (state.showReserve) {
+          state.cash = Math.round(((state.cash || 0) + state.showReserve) * 100) / 100
+          state.showReserve = 0
+        }
+        const inv = state.showInventory || []
+        const sealed = state.showSealed || []
+        if (inv.length) state.collection = [...inv.map(({ _showcase, _deal, ...c }) => ({ ...c, loc: 'storeroom' })), ...(state.collection || [])]
+        if (sealed.length) state.sealedInventory = [...sealed.map(({ _showcase, _deal, ...it }) => ({ ...it, loc: 'storeroom' })), ...(state.sealedInventory || [])]
+        state.showInventory = []
+        state.showSealed = []
+      }
+      // Pre-show DM purchases/reserves ride showLeads (kind:'purchase' is additive).
+      state.showLeads = state.showLeads ?? []
     }
     return state
   },

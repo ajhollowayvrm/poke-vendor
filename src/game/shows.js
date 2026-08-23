@@ -108,6 +108,83 @@ export function generateCalendar(notoriety, seed = 7, rank = null) {
   return shows.sort((a, b) => a.day - b.day)
 }
 
+// --- Crowd quality: "it's not the size of the show, it's who's going" -----------
+// Every show instance rolls a hidden crowd read off its own seed: a meetup can be STACKED
+// (serious collectors in the room — better cards, sharper dealers) and a National can be a
+// dud. Deterministic and derived (never persisted): generateBooths applies it and the
+// pre-show DM rumors reveal it, and both recompute the identical answer from show.seed.
+// Side-stream generator for values DERIVED from a show seed. One raw LCG step barely
+// separates nearby seeds (calendar seeds sit ~17–131 apart, so first draws cluster in one
+// narrow band — a month of all-quiet shows); a multiply-mix plus a short warm-up spreads
+// them. Every derived roll below uses this, never bare rng().
+function rngDerived(seed) {
+  const r = rng((Math.imul(seed >>> 0, 2654435761) ^ 0x9e3779b9) >>> 0)
+  r(); r(); r()
+  return r
+}
+
+export function crowdFor(show) {
+  const roll = rngDerived((show.seed ?? 0) ^ 0x517cc1b7)()
+  return roll < 0.15 ? 'stacked' : roll < 0.30 ? 'quiet' : 'normal'
+}
+
+// Which recurring roster vendors are seated at THIS show — a seeded 2–4 of them, on the
+// show's own side-stream so the Calendar / pre-show DMs can name the exact dealers the
+// floor will seat, days ahead, without replaying floor generation.
+export function rosterForShow(show, roster = []) {
+  if (!roster.length) return []
+  const r = rngDerived((show.seed ?? 0) ^ 0x51ab)
+  const count = Math.min(roster.length, 2 + Math.floor(r() * 3))
+  return shuffleR(r, roster).slice(0, count)
+}
+
+// What a roster dealer teases over DM before a show: 2–4 sealed pieces off their load-in
+// list, at their archetype's kind of markup. Seeded on (show, vendor) so the DM reads the
+// same every time you open it. Deliberately NOT the literal floor table (that shifts with
+// arrival and day) — an item you buy or reserve is planted on their table through the
+// lead-injection block, which IS exact.
+export function vendorPreview(show, vendor) {
+  let h = 0
+  for (const ch of String(vendor.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0
+  const r = rngDerived((show.seed ?? 0) ^ h ^ 0x7f4a7c15)
+  const n = 2 + Math.floor(r() * 3)
+  const out = []
+  const seen = new Set()
+  for (let i = 0; i < n; i++) {
+    const roll = r()
+    let set, product, origin
+    if (roll < 0.35 && VINTAGE_SETS.length) {
+      set = pickR(r, VINTAGE_SETS); product = vintageProduct(set); origin = 'vintage'
+    } else if (roll < 0.7 && AFTERMARKET_SETS.length) {
+      set = pickR(r, AFTERMARKET_SETS)
+      const ps = setProducts(set); product = ps.length ? pickR(r, ps) : null; origin = 'aftermarket'
+    } else {
+      set = pickR(r, SHOP_SETS)
+      const ps = setProducts(set); product = ps.length ? pickR(r, ps) : null; origin = 'modern'
+    }
+    if (!set || !product || !(product.price > 0)) continue
+    const key = `${set.id}|${product.type}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    const markup = origin === 'vintage' ? 1.2 + r() * 0.4 : origin === 'aftermarket' ? 1.10 + r() * 0.25 : 1.05 + r() * 0.2
+    out.push({ set, product: { ...product }, ask: round2(product.price * markup), origin })
+  }
+  return out
+}
+
+// Whether (and how early) a rapport dealer tips you the crowd read for a show — the
+// relationship IS the intel: Familiar dealers gossip sometimes, Trusted ones always.
+// Seeded per (show, vendor) so the tip doesn't flicker between renders.
+export function crowdTipFrom(show, vendor, rapportLevel) {
+  if ((rapportLevel || 0) < 1) return null
+  let h = 0
+  for (const ch of String(vendor.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0
+  const r = rngDerived((show.seed ?? 0) ^ h ^ 0x2545f491)
+  const pTip = [0, 0.4, 0.7, 1.0][Math.min(3, rapportLevel)] ?? 0
+  if (r() >= pTip) return null
+  return crowdFor(show)
+}
+
 // --- Pre-show leads -----------------------------------------------------------
 // A few days before a show, people you matter to reach out — a reason to make THAT
 // trip. Two kinds:
@@ -162,11 +239,15 @@ const ARCHETYPES = [
   // The vibe describes CHARACTER and STOCK only. Every place that prints it appends the exact
   // "· pays N% for yours" right after, so a vibe that also claimed a pay rate said the same
   // thing twice in one breath — "pays TOP dollar for yours · pays 90% for yours".
-  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — bends on price, and expects you to' },
-  { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, sellMult: 1.35, flex: 0.45, vibe: 'shrewd — but stocks the deepest high-end & graded bins' },
-  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — the deepest pockets in the room' },
-  { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, sellMult: 0.95, flex: 0.65, vibe: 'eager but green — sells under market, sometimes misprices a gem' },
-  { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, sellMult: 1.8,  flex: 0.20, vibe: 'a shark — gouges on everything, but now and then fumbles a price' },
+  // `tradeMult` = what they pay for yours IN TRADE CREDIT against their table — always above
+  // buyMult (a swap costs them no real money and moves their own stock in the same breath)
+  // and below sellMult (credit spends at their asks, so at/above sellMult you could launder
+  // their own markup back at them).
+  { key: 'fair',    label: 'Fair Dealer',    buyMult: 0.85, tradeMult: 0.95, sellMult: 1.05, flex: 0.80, vibe: 'friendly and reasonable — bends on price, and expects you to' },
+  { key: 'sharp',   label: 'Sharp Trader',   buyMult: 0.60, tradeMult: 0.80, sellMult: 1.35, flex: 0.45, vibe: 'shrewd — but stocks the deepest high-end & graded bins' },
+  { key: 'whale',   label: 'High Roller',    buyMult: 0.90, tradeMult: 1.00, sellMult: 1.6,  flex: 0.55, vibe: 'deals in the big stuff — the deepest pockets in the room' },
+  { key: 'newbie',  label: 'Newer Vendor',   buyMult: 0.75, tradeMult: 0.85, sellMult: 0.95, flex: 0.65, vibe: 'eager but green — sells under market, sometimes misprices a gem' },
+  { key: 'fleecer', label: 'Lowballer',      buyMult: 0.35, tradeMult: 0.55, sellMult: 1.8,  flex: 0.20, vibe: 'a shark — gouges on everything, but now and then fumbles a price' },
 ]
 const ARCH_BY_KEY = Object.fromEntries(ARCHETYPES.map(a => [a.key, a]))
 export function archetype(key) { return ARCH_BY_KEY[key] || ARCHETYPES[0] }
@@ -275,9 +356,12 @@ export function haggleRound({ side, their, market, yourOffer, flex, round, archK
 // not one copy of twenty different things; and dealers SPECIALIZE (the sealed distributor
 // table, the vintage-only table, the everything-else singles table). `specialty` shapes all
 // of it; every line carries a `qty` (depth, not breadth).
-function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
+function boothSealed(r, arch, band = [1, 100], specialty = 'singles', tierKey = null) {
   const out = []
   const isWhale = arch.key === 'whale'
+  // National+ floors are where distributors show up with PALLETS — the sealed tables run
+  // wider (more SKUs) and deeper (taller stacks) than a local hall's.
+  const bigShow = ['national', 'invitational', 'worlds'].includes(tierKey)
   // Modern sealed: whales always lay boxes out; others reliably have SOMETHING sealed on the
   // table now (a show floor should be full of sealed product). A single modern pack tier plus
   // a good shot at a second modern item, so most booths carry a couple of options.
@@ -294,7 +378,7 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
   // How deep a stack of one SKU runs. Cheap product stacks high (a tub of packs), big-ticket
   // items shallow (nobody brings six vintage boxes) — and the sealed table runs deepest.
   const qtyFor = (price) => {
-    const deep = specialty === 'sealed' ? 2 : 0
+    const deep = specialty === 'sealed' ? (bigShow ? 3 : 2) : 0
     if (price >= 400) return 1
     if (price >= 120) return 1 + Math.floor(r() * (2 + deep))
     return 1 + Math.floor(r() * (3 + deep)) + (price < 15 ? Math.floor(r() * 3) : 0)
@@ -314,9 +398,9 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
   // vendor reads as "doesn't do sealed" — a floor guarantee below backs it up.)
   // Line counts by specialty. The sealed table is the wall of product; a singles table keeps
   // a modest sealed counter beside the binders; the vintage table stocks no modern at all.
-  const modernN = specialty === 'sealed' ? 10 + Math.floor(r() * 7)   // 10–16 SKUs, stacked deep
+  const modernN = specialty === 'sealed' ? 10 + Math.floor(r() * 7) + (bigShow ? 2 : 0) // 10–16 SKUs (12–18 at national+), stacked deep
     : specialty === 'vintage' ? 0
-    : 2 + Math.floor(r() * 3)                                        // 2–4 SKUs on a singles table
+    : 3 + Math.floor(r() * 4)                                        // 3–6 SKUs on a singles table
   for (let i = 0; i < modernN; i++) addModern(specialty === 'sealed' ? r() < 0.55 : (isWhale ? r() < 0.7 : r() < 0.3))
   // Aftermarket FINDS: older sealed (Team Up, Evolutions, Fusion Strike, Fates Collide, the
   // Zygarde / Mega Gyarados boxes…) you "can still kinda find" — a vendor often has an old
@@ -327,7 +411,7 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
   const afterN = !AFTERMARKET_SETS.length ? 0
     : specialty === 'vintage' ? 4 + Math.floor(r() * 5)                  // the retro table's bread & butter
     : specialty === 'sealed' ? 3 + Math.floor(r() * 4)
-    : r() < 0.6 ? 1 + Math.floor(r() * 2) : 0                            // a singles table: an old ETB or two
+    : r() < 0.75 ? 1 + Math.floor(r() * 2) : 0                           // a singles table: an old ETB or two
   for (let i = 0; i < afterN; i++) {
     const sSet = pickR(r, AFTERMARKET_SETS)
     const prods = setProducts(sSet)
@@ -335,6 +419,19 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
     if (product) {
       const markup = 1.10 + r() * 0.25
       push({ set: sSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' }, qtyFor(product.price || 0))
+    }
+  }
+  // 🃏 LOOSE-PACK TUB: the "6 Sun & Moon packs off a guy" table. Half the singles/vintage
+  // tables keep a tub of loose out-of-print packs from a retired era — sold by the pack,
+  // stacked 4–9 deep, at a modest flip markup. Cheap enough to buy a handful, negotiate,
+  // and turn straight into trade fodder — which is exactly how the real floor uses them.
+  if (specialty !== 'sealed' && SECONDARY_SETS.length && r() < 0.5) {
+    const pSet = pickR(r, SECONDARY_SETS)
+    const packs = setProducts(pSet).filter(p => (p.packs || 1) === 1)
+    const product = packs.length ? pickR(r, packs) : null
+    if (product) {
+      const markup = 1.05 + r() * 0.20
+      push({ set: pSet, product, _ask: round2((product.price || 0) * markup), _origin: 'aftermarket' }, 4 + Math.floor(r() * 6))
     }
   }
   // A surprise vintage sealed pack on a regular table — any booth at any show.
@@ -346,7 +443,10 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
     const vSet = pickR(r, VINTAGE_SETS)
     const product = vintageProduct(vSet)
     const markup = 1.2 + r() * 0.5
-    push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' })
+    // A vintage BOX is a one-of; affordable vintage packs come in small handfuls — the
+    // real tables sell WOTC/e-Card packs off a short stack, not from under glass.
+    push({ set: vSet, product, _ask: round2(product.price * markup), _origin: 'vintage' },
+      (product.price || 0) < 200 ? 1 + Math.floor(r() * 3) : 1)
   }
   // 🎌 An import table. JP sealed on the show floor is the ONLY way to buy it without the
   // Import License — a vendor who does the legwork, and charges for it. Steeper markup than
@@ -395,6 +495,35 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
   return out
 }
 
+// 🐋 A High Roller's PRIVATE PACKAGE at the elite shows — the "$20k deals happening around
+// you" made playable. 1–3 real graded slabs (top of the tier's band) plus sometimes a big
+// vintage sealed piece, offered as ONE take-it-or-leave-it number at 0.92–1.05× combined
+// market. No haggling — this is how whales deal with each other: a fair-ish number, right
+// now, done. Seeded like everything else; `_tk` keys it for the taken-set so a reload
+// can't re-serve a closed deal. Returns null when the draw can't assemble a real package.
+function makeBigDeal(r, band, tkBase) {
+  const [, hi] = band
+  const target = 5000 + r() * 35000                      // $5k–$40k package
+  const n = 1 + Math.floor(r() * 3)                      // 1–3 slabs
+  const seen = new Set()
+  const cards = []
+  for (let i = 0; i < n; i++) {
+    const c = gradedCardInRange(Math.min(hi * 0.4, target * 0.25), Math.min(hi, target), 9 + Math.floor(r() * 2), r, seen)
+    if (c) { cards.push(c); if (c.grade) seen.add(`${c.id}|${c.grade.overall}`) }
+  }
+  let sealed = null
+  if (VINTAGE_SETS.length && r() < 0.4) {
+    const vSet = pickR(r, VINTAGE_SETS)
+    const product = vintageProduct(vSet)
+    if (product && (product.price || 0) >= 500) sealed = { set: vSet, product }
+  }
+  const market = round2(cards.reduce((a, c) => a + cardValue(c), 0)
+    + (sealed ? sealedValue({ product: sealed.product, setId: sealed.set.id }) : 0))
+  if (market < 5000 || !cards.length) return null
+  const price = round2(market * (0.92 + r() * 0.13))
+  return { cards, sealed, market, price, _tk: `${tkBase}#bigdeal` }
+}
+
 // `dayOffset` re-rolls the floor for each day of a multi-day show — different
 // vendors/stock show up day to day. `roster` is the recurring show-vendor list (their
 // identities get injected into some booths so you see familiar faces). `arrival` is when
@@ -411,12 +540,23 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles') {
 export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = [], challengeSetId = null) {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
-  const [lo, hi] = tier.valueBand
+  // 👥 Who's actually in the room shifts the whole hall (crowdFor): a STACKED crowd lifts
+  // the value ceiling (clamped at the next tier's — a stacked meetup punches up, it doesn't
+  // become Worlds) and pulls vintage; a QUIET one sags both. Same tier, different day.
+  const crowd = crowdFor(show)
+  const tierVals = Object.values(SHOW_TIERS)
+  const tierKeysAll = Object.keys(SHOW_TIERS)
+  const nextHi = (tierVals[Math.min(tierKeysAll.indexOf(show.tierKey) + 1, tierVals.length - 1)] || tier).valueBand[1]
+  const lo = tier.valueBand[0]
+  const hi = crowd === 'stacked' ? Math.min(tier.valueBand[1] * 1.6, Math.max(tier.valueBand[1], nextHi))
+    : crowd === 'quiet' ? tier.valueBand[1] * 0.75
+    : tier.valueBand[1]
+  const crowdBand = [lo, hi]
   const n = tier.booths
-  // Which recurring roster vendors are at THIS show (a seeded 2–4 of them), and in which
-  // booth slots. Their identity + fixed archetype override the procedural pick for that slot.
-  const recCount = roster.length ? Math.min(roster.length, n, 2 + Math.floor(r() * 3)) : 0
-  const recPick = recCount ? shuffleR(r, roster).slice(0, recCount) : []
+  // Which recurring roster vendors are at THIS show (a seeded 2–4 of them via rosterForShow —
+  // its own seed stream, so the pre-show DMs name the same dealers the floor seats), and in
+  // which booth slots. Their identity + fixed archetype override the procedural pick.
+  const recPick = rosterForShow(show, roster).slice(0, Math.min(n, 4))
   // A vendor who DM'd you a pre-show hold is guaranteed to actually be here —
   // swap them into the recurring slots if the seeded draw left them out.
   for (const l of (leads || []).filter(x => x.kind === 'vendor')) {
@@ -436,27 +576,43 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   // draw serious collectors). 0 at meetups → meaningful at Worlds. This is where you hunt
   // raw vintage — you can't buy these sets in the shop.
   const VINTAGE_SINGLE_CHANCE = { meetup: 0, shop: 0.04, regional: 0.08, national: 0.13, invitational: 0.18, worlds: 0.25 }
-  const vintageChance = VINTAGE_SINGLE_CHANCE[show.tierKey] || 0
+  // A stacked crowd brings the binders out of the attics; a quiet one leaves them home.
+  const vintageChance = Math.max(0, (VINTAGE_SINGLE_CHANCE[show.tierKey] || 0)
+    + (crowd === 'stacked' ? 0.05 : crowd === 'quiet' ? -0.04 : 0))
+  // Bigger venues, bigger binders: the singles walls at a National run visibly deeper than a
+  // meetup's, and the graded share of every bin climbs with the tier (the elite floors are
+  // where the slab-heavy dealers set up). tierIdx: meetup 0 … worlds 5.
+  const SINGLES_DEPTH = { meetup: 0, shop: 4, regional: 8, national: 12, invitational: 16, worlds: 24 }
+  const depthBonus = SINGLES_DEPTH[show.tierKey] || 0
+  const tierIdx = Math.max(0, Object.keys(SHOW_TIERS).indexOf(show.tierKey))
+  // Ask HEAT: elite-floor dealers price knowing what walks those halls — asks run a notch
+  // hotter at National+. Applied to the archetype base only; the newbie-misprice and
+  // fleecer-fumble paths below OVERWRITE the ask, so real deals still exist at every tier.
+  const ASK_HEAT = { national: 0.05, invitational: 0.10, worlds: 0.15 }
+  const askHeat = 1 + (ASK_HEAT[show.tierKey] || 0)
   // 🃏 The set you announced you're chasing (null unless a challenge is running).
   const chaseSet = challengeSetId ? setById(challengeSetId) : null
   const booths = []
   for (let i = 0; i < n; i++) {
     // A recurring roster vendor claims this slot (fixed character), else a procedural one.
+    // A stacked room seats more of the serious operators (sharp traders, High Rollers).
     const rec = recPick[i] || null
-    const arch = rec ? archetype(rec.archetype) : pickR(r, ARCHETYPES)
+    let arch = rec ? archetype(rec.archetype) : pickR(r, ARCHETYPES)
+    if (!rec && crowd === 'stacked' && r() < 0.25) arch = archetype(r() < 0.5 ? 'sharp' : 'whale')
     // Dealer SPECIALTY — the floor has a map now, the way a real one does: most tables are
     // singles-led (singles are the fastest mover at virtually every show), roughly one in six
     // is the sealed table (a distributor moving cases near retail), and bigger shows draw the
     // vintage-only table. High Rollers lean sealed — "deals in the big stuff" IS that table.
-    const specialty = arch.key === 'whale' ? (r() < 0.4 ? 'sealed' : 'singles')
-      : r() < 0.1 ? 'sealed'
+    const specialty = arch.key === 'whale' ? (r() < 0.5 ? 'sealed' : 'singles')
+      : r() < 0.16 ? 'sealed'
       : (vintageChance > 0 && r() < 0.1) ? 'vintage'
       : 'singles'
     // Singles depth follows the specialty: a singles table runs DEEP bins (that's the whole
     // table), the sealed table keeps a thin courtesy binder, the vintage table sits between.
+    // Bigger shows stack the walls higher (depthBonus) — Worlds bins run 48–72.
     const stockN = specialty === 'sealed' ? 5 + Math.floor(r() * 6)      // 5–10
       : specialty === 'vintage' ? 12 + Math.floor(r() * 9)               // 12–20
-      : 24 + Math.floor(r() * 25)                                        // 24–48
+      : 24 + Math.floor(r() * 25) + depthBonus                           // 24–48 + tier
     const stock = []
     // Repeat guards for THIS table: high-band graded stock comes from a finite pool of
     // real PSA comps (dedupe by card+grade), and pricier raw singles shouldn't stack
@@ -477,7 +633,7 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       // ARE). Whales always deal big; everyone else runs a normal ~15% hit rate.
       // The hit band floor sits low (15% of the tier cap) so elite tiers draw from the
       // whole real-comp spread instead of exhausting the handful of top comps.
-      const hitChance = arch.key === 'sharp' ? 0.38 : 0.15
+      const hitChance = arch.key === 'sharp' ? Math.min(0.48, 0.38 + tierIdx * 0.02) : 0.15 + tierIdx * 0.03
       // 🃏 A slice of the singles bin is what you're publicly chasing — the dealer heard, and
       // dug it out of the back. Sealed and vintage tables are exempt (they don't run bins).
       if (!card && chaseSet && specialty === 'singles' && r() < CHALLENGE_BIAS) {
@@ -504,7 +660,7 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       // Price against the card's TRUE value (grade-aware) — a slabbed gem is
       // worth its graded value, not its raw value, so the ask tracks that.
       const worth = cardValue(card)
-      let ask = worth * arch.sellMult
+      let ask = worth * arch.sellMult * askHeat
       if (arch.key === 'newbie' && r() > 0.7) ask = worth * 0.5 // mispriced gem!
       // FLEECER steal: a greedy lowballer overprices everything — but every so often fumbles a
       // price and tags a real piece dirt cheap (they misjudged it). It's the ONE reason to dig
@@ -536,6 +692,24 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       c._highlight = true
       featNames.add(c.name)
     }
+    // Trade credit runs HOTTER than cash — a swap costs the dealer no real money and moves
+    // their own stock in the same breath. Per-booth variance so every table quotes its own
+    // pair ("80% trade on this table, 90% two rows down"); the HOT rate kicks in when most
+    // of what you take is their sealed/aftermarket product (stock they want moved). Seeded
+    // like everything else, clamped inside (buyMult, 1.0] so credit never beats market —
+    // and never above the archetype's own sell markup (railCap), or converting stock via a
+    // trade would beat what the dealer charges cash for the same stock (newbie sells at 0.95×
+    // market, so hot credit topping out at 0.99× used to let a trade undercut their own price).
+    const railCap = Math.min(1.0, round2(arch.sellMult - 0.02))
+    const tradeMult = round2(Math.min(railCap, Math.max(arch.buyMult + 0.05,
+      (arch.tradeMult ?? arch.buyMult + 0.10) + (r() - 0.5) * 0.08)))
+    const tradeMultHot = round2(Math.min(railCap, tradeMult + 0.05 + r() * 0.05))
+    const elite = show.tierKey === 'invitational' || show.tierKey === 'worlds'
+    // A High Roller at the elite shows carries real money (a $20k slab can actually sell to
+    // the floor) and sometimes a private package deal (see makeBigDeal).
+    const tillArch = arch.key === 'whale' && elite ? 3.5 : (TILL_ARCH[arch.key] ?? 1)
+    const bigDeal = arch.key === 'whale' && elite && r() < (show.tierKey === 'worlds' ? 0.6 : 0.3)
+      ? makeBigDeal(r, crowdBand, `${show.id}-b${i}`) : null
     booths.push({
       id: `${show.id}-b${i}`,
       name: rec ? rec.name : vendorName(i),
@@ -544,14 +718,17 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       archetype: arch.key,
       archLabel: arch.label,
       vibe: arch.vibe,
-      buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
+      buyMult: arch.buyMult,   // how much they'll pay for YOUR cards (cash)
+      tradeMult,               // ...and in trade credit against their table
+      tradeMultHot,            // the sweetened rate when you're taking their sealed off their hands
       // Cash on hand for BUYING your cards — finite, seeded, scaled to the show's value
       // band and archetype (whales carry the deepest till; lowballers the shallowest).
       // Turns "dump everything on the High Roller" into a routing puzzle across the floor.
-      till: round2(hi * (4 + r() * 6) * (TILL_ARCH[arch.key] ?? 1)),
+      till: round2(hi * (4 + r() * 6) * tillArch),
       stock: boothStock,
       specialty,
-      products: boothSealed(r, arch, tier.valueBand, specialty),  // sealed + mystery packs (shaped by specialty)
+      bigDeal,                 // 🐋 elite-show High Roller package (null for everyone else)
+      products: boothSealed(r, arch, crowdBand, specialty, show.tierKey),  // sealed + mystery packs (shaped by specialty + crowd)
       // grid position assigned by the floor layout
     })
   }
@@ -582,9 +759,11 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   for (const l of (leads || []).filter(x => x.kind === 'vendor')) {
     const booth = booths.find(b => b.vendorId === l.vendorId)
     const set = setById(l.setId)
-    const product = set ? vintageProduct(set) : null
+    // A reserve made from the pre-show DMs carries the exact product it was made on;
+    // the classic daytick vendor-hold (vintage only) reconstructs it from the set.
+    const product = l.product ? { ...l.product } : (set ? vintageProduct(set) : null)
     if (!booth || !set || !product) continue
-    booth.products = [{ set, product, _ask: l.price, _origin: 'vintage', _lead: true }, ...(booth.products || [])]
+    booth.products = [{ set, product, _ask: l.price, _origin: l.origin || 'vintage', _lead: true }, ...(booth.products || [])]
     booth.leadNote = `holding a ${product.type} of ${set.name} for you — $${(l.price ?? 0).toFixed(2)}`
   }
 
@@ -732,6 +911,42 @@ const WHALE_NAMES = ['a deep-pocketed whale', 'a serious collector with a fat wa
   'a hedge-fund hobbyist', 'a well-known set completist', 'a flush returning client']
 
 function pickAny(r, arr) { return arr[Math.floor((r ?? Math.random)() * arr.length)] }
+
+// Build a no-haggle whale offer on the best piece in `pool` — shared by the home channels
+// (online DMs / store walk-ins, via boothEncounter) and the elite-show floor walk-up (the
+// ShowFloor whale timer). `multBand` is the offer as a multiple of market: home runs
+// 1.15–1.60× (stretching to 1.75× with fame), the invitational/worlds floor 1.20–1.80×.
+// Returns null when nothing in the pool is worth a whale's time.
+export function makeWhaleOffer(pool, channel, multBand = [1.15, 1.60], accepted = null) {
+  if (!pool?.length) return null
+  const target = pool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
+  const market = cardValue(target)
+  if (market < WHALE_MIN_VALUE) return null
+  const [mLo, mHi] = multBand
+  const offer = round2(market * (mLo + Math.random() * Math.max(0, mHi - mLo)))
+  const pay = pickPayMethod(channel, accepted)
+  const m = PAY_LABEL(pay)
+  const who = pickAny(null, WHALE_NAMES)
+  const online = channel === 'online'
+  const atShow = channel === 'show'
+  return {
+    kind: 'offer',
+    ownedUid: target.uid,
+    title: online ? `${cap(who)} slides into your DMs`
+      : atShow ? `${cap(who)} stops dead at your table`
+      : `${cap(who)} makes a beeline for your case`,
+    body: `"I hear you're the one to see. ${target._featured ? 'That featured' : 'That'} ${target.name} — I want it and I don't haggle. `
+      + `$${offer.toFixed(2)}, ${m}, right now." (Market: $${market.toFixed(2)})`,
+    card: target,
+    options: [
+      { text: `Accept $${offer.toFixed(2)} (${m})`, tone: 'fair',
+        effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: 2,
+          formSeed: mkSeed(target, channel), msg: 'The whale is thrilled — and whales talk to other whales.' } },
+      { text: 'Hold out for more', tone: 'fair',
+        effect: { type: 'none', notoriety: 0, msg: 'You let a paying whale walk away. Bold move.' } },
+    ],
+  }
+}
 // Some ONLINE buyers won't budge on how they pay — a share insist on their preferred rail
 // (PayPal / a card), and if you can't take it the sale is LOST. That's exactly what the
 // PayPal / Credit-Card upgrades capture: more rails you accept → fewer online buyers walk.
@@ -929,29 +1144,11 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
       * (featuredPool.length ? 1.7 : 1 + Math.min(0.5, showcaseN * 0.15)))
     if (Math.random() < pWhale) {
       const pickPool = featuredPool.length ? featuredPool : offerPool
-      const target = pickPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
-      if (cardValue(target) >= WHALE_MIN_VALUE) {
-        const market = cardValue(target)
-        const offer = round2(market * (1.15 + Math.random() * 0.45)) // 1.15–1.60× — they pay up
-        const pay = pickPayMethod(channel, accepted)
-        const m = PAY_LABEL(pay)
-        const who = pickAny(null, WHALE_NAMES)
-        return {
-          kind: 'offer',
-          ownedUid: target.uid,
-          title: online ? `${cap(who)} slides into your DMs` : `${cap(who)} makes a beeline for your case`,
-          body: `"I hear you're the one to see. ${target._featured ? 'That featured' : 'That'} ${target.name} — I want it and I don't haggle. `
-            + `$${offer.toFixed(2)}, ${m}, right now." (Market: $${market.toFixed(2)})`,
-          card: target,
-          options: [
-            { text: `Accept $${offer.toFixed(2)} (${m})`, tone: 'fair',
-              effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: 2,
-                formSeed: mkSeed(target, channel), msg: 'The whale is thrilled — and whales talk to other whales.' } },
-            { text: 'Hold out for more', tone: 'fair',
-              effect: { type: 'none', notoriety: 0, msg: 'You let a paying whale walk away. Bold move.' } },
-          ],
-        }
-      }
+      // The home rail extends with fame past the Worlds gate: a truly famous shop's whales
+      // stretch from the 1.60× base up to a hard 1.75× ceiling.
+      const hiMult = Math.min(1.75, 1.60 + fameBeyond(notoriety, 280) * 0.15)
+      const enc = makeWhaleOffer(pickPool, channel, [1.15, hiMult], accepted)
+      if (enc) return enc
     }
   }
 
@@ -963,6 +1160,15 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   if ((online || walkin) && Math.random() < scamChance) {
     const deal = makeSealedDeal(channel, notoriety)
     if (deal) return deal
+  }
+
+  // 0c) "WHAT'LL YOU GIVE ME FOR THESE?" — someone walks up SELLING and asks you to name
+  // the number (see makeQuoteRequest). Show floor only — boothEncounter runs on the show
+  // channel only while you're vending, so they're standing at your table. Its own roll so
+  // the offer/trade/question bands below stay put.
+  if (channel === 'show' && Math.random() < 0.12) {
+    const q = makeQuoteRequest(notoriety, opts.tierKey)
+    if (q) return q
   }
 
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
@@ -1528,6 +1734,62 @@ export function haggleBuyin(offer, yourOffer) {
   const walkChance = Math.min(0.9, walkBase + shortfall * 1.6 + (offer.haggleRounds || 0) * 0.15)
   if (Math.random() < walkChance) return { walk: true }
   const counter = Math.max(floor, round2(ask - (ask - yourOffer) * 0.5))
+  return { counter }
+}
+
+// --- "What'll you give me for these?" — the QUOTE walk-up ---------------------
+// The signature show-floor interaction from the seller's side of the table: someone lays
+// 1–3 items on YOUR booth and asks you to name the number. You quote a PERCENTAGE of
+// market, in cash or in table credit — credit is worth more to them than cash never is
+// (they leave with your stock, you part with no money), so their hidden credit floor sits
+// 10–15 points UNDER their cash floor. Two pre-rolled floors, exactly the `_floorCash`
+// idiom the buy-in lots use: the tell is the seller's hint, never the number.
+export function makeQuoteRequest(notoriety, tierKey = 'meetup') {
+  const tier = SHOW_TIERS[tierKey] || SHOW_TIERS.meetup
+  const [lo, hi] = tier.valueBand
+  const who = pickAny(null, VISITOR_NAMES.show)
+  const n = 1 + (Math.random() < 0.45 ? 1 : 0) + (Math.random() < 0.2 ? 1 : 0)
+  const items = []
+  for (let i = 0; i < n; i++) {
+    // ~25% of the time the first item is sealed — a pack or box they're flipping through you.
+    if (i === 0 && Math.random() < 0.25) {
+      const s = sealedFromPool([])
+      if (s && sealedValue(s) > 0) { items.push({ kind: 'sealed', item: s, val: round2(sealedValue(s)) }); continue }
+    }
+    const bandLo = Math.max(0.5, lo * (0.3 + Math.random()))
+    const c = cardInValueRange(bandLo, Math.max(bandLo + 1, hi * (0.2 + Math.random() * 0.5)))
+    if (c) items.push({ kind: 'card', item: c, val: round2(cardValue(c)) })
+  }
+  const market = round2(items.reduce((a, x) => a + x.val, 0))
+  if (!items.length || !(market > 0)) return null
+  // Seller temperament shapes the hidden floors: a flipper checked comps and runs tight;
+  // a kid or a casual mostly wants it gone today.
+  const tight = Math.random() < 0.4
+  const _floorCashPct = round2(tight ? 0.75 + Math.random() * 0.10 : 0.55 + Math.random() * 0.15)
+  const _floorCreditPct = round2(Math.max(0.35, _floorCashPct - (0.10 + Math.random() * 0.05)))
+  return {
+    kind: 'quote', who: cap(who), items, market,
+    tone: tight ? 'tight' : 'soft',
+    hint: tight ? 'seems to know exactly what the comps are' : 'mostly wants it gone today',
+    _floorCashPct, _floorCreditPct,
+  }
+}
+
+// Resolve one round of your quote. `offerPct` is a fraction of market; `method` is 'cash'
+// or 'credit' (each has its own hidden floor — switching to credit is how a shaved number
+// still lands). Mirrors haggleBuyin, not haggleRound: there is no standing ask to hang a
+// floor off — the seller's floor IS the negotiation. At/above the floor they take it; below
+// it they walk (odds ramp with the shortfall and each extra round of shaving) or counter a
+// touch above their true floor.
+export function quoteRound(req, offerPct, method, round = 0) {
+  const floor = method === 'credit' ? (req._floorCreditPct ?? 0.6) : (req._floorCashPct ?? 0.7)
+  if (offerPct >= floor) return { accept: true, pct: Math.min(offerPct, 1) }
+  const shortfall = (floor - offerPct) / Math.max(0.05, floor)
+  const walkBase = req.tone === 'tight' ? 0.40 : 0.16
+  const walkChance = Math.min(0.9, walkBase + shortfall * 1.5 + round * 0.15)
+  if (Math.random() < walkChance) return { walk: true, hardLowball: shortfall > 0.3 }
+  // They counter a hair over their floor — taking the counter always closes the deal.
+  const counter = round2(Math.min(method === 'credit' ? 0.95 : 0.92, floor + 0.02 + Math.random() * 0.04))
   return { counter }
 }
 

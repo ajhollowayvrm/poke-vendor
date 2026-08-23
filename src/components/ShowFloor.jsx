@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
-import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
+import { generateBooths, boothEncounter, makeWhaleOffer, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
   pickSnipe, boothItemKey, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
+import QuoteCounter from './QuoteCounter'
 import PackOpening from './PackOpening'
 import AutoRip from './AutoRip'
 import CardTile from './CardTile'
@@ -160,6 +161,11 @@ export default function ShowFloor({ show, onLeave }) {
   // a vendor by re-opening the haggle). Persists across booth re-opens for the whole show.
   const [haggledIds, setHaggledIds] = useState(() => new Set())
   const markHaggled = useCallback((uid) => setHaggledIds(prev => { const n = new Set(prev); n.add(uid); return n }), [])
+  // Haggled-down sealed prices, keyed by the line's reload-stable `_tk`. Lives here (not in the
+  // booth) so it survives a close/reopen the same way haggledIds does — a sealed haggle used to
+  // vanish the moment you closed the modal, leaving the Haggle button dead but the full ask back.
+  const [agreedPrices, setAgreedPrices] = useState(() => new Map())
+  const markAgreedPrice = useCallback((tk, price) => setAgreedPrices(prev => { const n = new Map(prev); n.set(tk, price); return n }), [])
   // Ripping on the floor is a QUEUE, not one product: buy three boxes off a table (or pick a
   // few out of your 🎒 haul) and they rip back-to-back right here without a trip home.
   // { set, product, rest[], idx, total, nonce } — nonce re-keys PackOpening for the next unit.
@@ -263,6 +269,54 @@ export default function ShowFloor({ show, onLeave }) {
     return () => clearInterval(id)
   }, [booths, show.tierKey])
 
+  // 🐋 FLOOR WHALES (invitational/worlds, vending only). Where the real money walks the
+  // aisles, a whale sometimes stops at YOUR table for its best piece — the same no-haggle
+  // offer shape as the home channels, at a hotter 1.20–1.80× band. Needs a piece worth a
+  // whale's time (≥20% of the tier cap) and a real name (noto 150+); capped at 2 a day so
+  // it stays an event, not a faucet.
+  const whaleCountRef = useRef(0)
+  useEffect(() => { whaleCountRef.current = 0 }, [showDay])
+  // 💸 Ambient scale: at the elite shows, five-figure deals close around you — pure flavor
+  // lines on the announce banner, zero economy.
+  const [bigSale, setBigSale] = useState(null)
+  useEffect(() => {
+    const pWhale = { invitational: 0.08, worlds: 0.12 }[show.tierKey]
+    if (!pWhale) return
+    const id = setInterval(() => {
+      // Flavor line first — it fires for shoppers and vendors alike.
+      if (Math.random() < 0.15) {
+        const amt = round2(tier.valueBand[1] * (0.3 + Math.random() * 0.8))
+        const line = [
+          `Two tables down, a PSA 10 just changed hands for ${fmtMoney(amt)}.`,
+          `A ${fmtMoney(amt)} package deal just closed at the High Roller row.`,
+          `Someone counted out ${fmtMoney(amt)} in hundreds a few booths over.`,
+          `A slab just left the hall in a bank bag — ${fmtMoney(amt)}.`,
+        ][Math.floor(Math.random() * 4)]
+        setBigSale({ line, id: Date.now() })
+        setTimeout(() => setBigSale(x => (x && x.id ? null : x)), 6000)
+      }
+      if (!show._asVendor) return
+      // A whale offer is a no-haggle encounter same as a walk-up — it must not clobber one
+      // already waiting to be answered, or it silently burns a whale slot on nothing.
+      if (encounter || boothAlert) return
+      if (Date.now() - floorEntryRef.current < SNIPE_GRACE_MS) return
+      if (whaleCountRef.current >= 2) return
+      if (notoriety < 150) return
+      if (Math.random() >= pWhale) return
+      const inv = useGame.getState().showInventory || []
+      const pool = inv.filter(c => cardValue(c) >= tier.valueBand[1] * 0.2)
+      if (!pool.length) return
+      const enc = makeWhaleOffer(pool, 'show', [1.20, 1.80], accepted)
+      if (!enc) return
+      whaleCountRef.current++
+      if (upgrades.ticker) setBoothAlert(enc)
+      else if (busyRef.current) {
+        useGame.getState().log('missed', 'A whale stopped at your booth while you were elsewhere — they moved on. (A 🔔 Visitor Ticker would have alerted you.)', 0)
+      } else setEncounter({ enc, atBooth: true })
+    }, 30000)
+    return () => clearInterval(id)
+  }, [show.tierKey, show._asVendor, notoriety, accepted, upgrades.ticker, encounter, boothAlert])
+
   // Booth walk-ups, gated by a cooldown so they don't spam. With the 🔔 Visitor Ticker
   // you get an alert you can answer whenever — without it, a buyer who walks up while
   // you're deep at another vendor's table just leaves (that's what the ticker is for).
@@ -288,7 +342,7 @@ export default function ShowFloor({ show, onLeave }) {
       const vlogMult = upgrades.showVlog ? VLOG_BOOTH_MULT : 1
       const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult * vlogMult)
       if (Math.random() < chance) {
-        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
+        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed, { tierKey: show.tierKey })
         lastEncounterRef.current = Date.now(); walkupsRef.current++
         if (upgrades.ticker) { setBoothAlert(enc) }
         else if (busyRef.current) {
@@ -309,7 +363,7 @@ export default function ShowFloor({ show, onLeave }) {
     // booth's had its visitors for the day, tending just finds a quiet table. That budget now
     // grows with your name (maxWalkupsPerDay), so a famous vendor's table stays busy longer.
     if (walkupsRef.current >= maxWalkupsPerDay(notoriety, shopHype)) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
-    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
+    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed, { tierKey: show.tierKey })
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now(); walkupsRef.current++
   }
@@ -579,6 +633,7 @@ export default function ShowFloor({ show, onLeave }) {
                   <span className="pill vdir-arch">{booth.archLabel}</span>
                   {booth.specialty === 'sealed' && <span className="pill" style={{ background: '#3b6cff22', color: 'var(--accent-light)' }} title="The sealed table — a wall of product, several copies deep, near-market on current sets.">📦 sealed wall</span>}
                   {booth.specialty === 'vintage' && <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }} title="Vintage & retro only — no modern product on this table.">🗝️ vintage table</span>}
+                  {booth.bigDeal && !takenIds.has(booth.bigDeal._tk) && <span className="pill" style={{ background: '#7cf0ff22', color: '#7cf0ff' }} title={`A private package deal is on this table — ${fmtMoney(booth.bigDeal.price)}, one number, no haggling.`}>🐋 private package</span>}
                   {starredHere && <span className="pill vdir-starred" title="You starred something here — come back for it">⭐ come back</span>}
                   {rap && rap.level > 0 && <span className="pill" style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{rap.disc ? ` · ${Math.round(rap.disc * 100)}% off` : ''}</span>}
                   {booth.leadNote && <span className="pill vdir-held">🗝️ set aside for you</span>}
@@ -586,7 +641,7 @@ export default function ShowFloor({ show, onLeave }) {
                   {visited && <span className="pill vdir-visited" title="You've already walked up to this table">✓ visited</span>}
                 </div>
                 <div className="vdir-sub muted">
-                  {cap(booth.vibe)} · pays {Math.round(booth.buyMult * 100)}% for yours
+                  {cap(booth.vibe)} · pays {Math.round(booth.buyMult * 100)}% cash{booth.tradeMult ? ` · ${Math.round(booth.tradeMult * 100)}% trade` : ''} for yours
                 </div>
                 <div className="vdir-sub">
                   🃏 {booth.stock.length} singles
@@ -616,6 +671,16 @@ export default function ShowFloor({ show, onLeave }) {
         </div>
       )}
 
+      {/* 💸 Elite-hall ambience: the money moving around you. Flavor only — no economy. */}
+      {bigSale && (
+        <div className="hall-announce">
+          <div>
+            <div className="ha-line">💸 {bigSale.line}</div>
+            <div className="ha-sub">This is the room where the money moves.</div>
+          </div>
+        </div>
+      )}
+
       {/* 🏃 Somebody else got there first. The banner names the card, the table and what it
           was under market for, because the lesson is only useful if you can see the number. */}
       {sniped && (
@@ -635,12 +700,17 @@ export default function ShowFloor({ show, onLeave }) {
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
         onStockSealed={stockSealed} onRipSealedStack={buySealedStack} haggledIds={haggledIds} onHaggled={markHaggled}
+        agreedPrices={agreedPrices} onAgreedPrice={markAgreedPrice}
         takenIds={takenIds} onTaken={markTaken} asVendor={show._asVendor}
         tillLeft={Math.max(0, round2((openBooth.till || 0) - (tillSpent[tillKey(openBooth)] || 0)))}
         onTillSpend={(amt) => markTillSpend(openBooth, amt)}
         starredKeys={new Set([...starred].filter(s => s.startsWith(openBooth.id + '|')).map(s => s.slice(openBooth.id.length + 1)))}
         onToggleStar={(key) => toggleStar(openBooth.id, key)} />}
-      {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
+      {/* A quote walk-up ("what'll you give me for these?") runs its own negotiation modal;
+          everything else is the standard pick-an-option encounter. */}
+      {encounter && (encounter.enc.kind === 'quote'
+        ? <QuoteCounter req={encounter.enc} onDone={(msg) => { if (msg) flash(msg); setEncounter(null) }} />
+        : <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />)}
 
       {/* 🎒 YOUR HAUL — the home base at a show. What you've picked up on this floor, in one
           place, with the sealed still rippable HERE: pick a stack (or several) and tear into
