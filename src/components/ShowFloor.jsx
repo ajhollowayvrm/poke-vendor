@@ -5,6 +5,7 @@ import { generateBooths, boothEncounter, SHOW_TIERS, NPC_EMOJI, vendorRapport, c
 import { openPack, rarityRank, cardValue, sealedValue, fmtMoney, round2, SHOP_SETS as SETS, cardImg, setNameOfCard, setById, fameMult, fameBeyond, isCardDeal, shopName, shopIcon, shopAccent, slabLabel } from '../game/engine'
 import VendorBooth from './VendorBooth'
 import Encounter from './Encounter'
+import QuoteCounter from './QuoteCounter'
 import PackOpening from './PackOpening'
 import AutoRip from './AutoRip'
 import CardTile from './CardTile'
@@ -288,7 +289,7 @@ export default function ShowFloor({ show, onLeave }) {
       const vlogMult = upgrades.showVlog ? VLOG_BOOTH_MULT : 1
       const chance = Math.min(0.9, 0.12 * tier.traffic * (1 + notoBonus) * boothMult * signageMult * vlogMult)
       if (Math.random() < chance) {
-        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
+        const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed, { tierKey: show.tierKey })
         lastEncounterRef.current = Date.now(); walkupsRef.current++
         if (upgrades.ticker) { setBoothAlert(enc) }
         else if (busyRef.current) {
@@ -309,7 +310,7 @@ export default function ShowFloor({ show, onLeave }) {
     // booth's had its visitors for the day, tending just finds a quiet table. That budget now
     // grows with your name (maxWalkupsPerDay), so a famous vendor's table stays busy longer.
     if (walkupsRef.current >= maxWalkupsPerDay(notoriety, shopHype)) { flash('Your table’s had its rush for today — it’s quiet now.'); return }
-    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed)
+    const enc = boothEncounter(notoriety, useGame.getState().showInventory, 'show', accepted, null, null, null, useGame.getState().showSealed, { tierKey: show.tierKey })
     setEncounter({ enc, atBooth: true })
     lastEncounterRef.current = Date.now(); walkupsRef.current++
   }
@@ -640,7 +641,11 @@ export default function ShowFloor({ show, onLeave }) {
         onTillSpend={(amt) => markTillSpend(openBooth, amt)}
         starredKeys={new Set([...starred].filter(s => s.startsWith(openBooth.id + '|')).map(s => s.slice(openBooth.id.length + 1)))}
         onToggleStar={(key) => toggleStar(openBooth.id, key)} />}
-      {encounter && <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />}
+      {/* A quote walk-up ("what'll you give me for these?") runs its own negotiation modal;
+          everything else is the standard pick-an-option encounter. */}
+      {encounter && (encounter.enc.kind === 'quote'
+        ? <QuoteCounter req={encounter.enc} onDone={(msg) => { if (msg) flash(msg); setEncounter(null) }} />
+        : <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />)}
 
       {/* 🎒 YOUR HAUL — the home base at a show. What you've picked up on this floor, in one
           place, with the sealed still rippable HERE: pick a stack (or several) and tear into

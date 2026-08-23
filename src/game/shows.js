@@ -1010,6 +1010,15 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
     if (deal) return deal
   }
 
+  // 0c) "WHAT'LL YOU GIVE ME FOR THESE?" — someone walks up SELLING and asks you to name
+  // the number (see makeQuoteRequest). Show floor only — boothEncounter runs on the show
+  // channel only while you're vending, so they're standing at your table. Its own roll so
+  // the offer/trade/question bands below stay put.
+  if (channel === 'show' && Math.random() < 0.12) {
+    const q = makeQuoteRequest(notoriety, opts.tierKey)
+    if (q) return q
+  }
+
   // 1) Someone got fleeced — make their day (online: got scammed in a trade)
   const fleecePool = offerPool.filter(c => { const v = cardValue(c); return v >= 2 && v <= 20 })
   if (roll < 0.22 && fleecePool.length) {
@@ -1573,6 +1582,62 @@ export function haggleBuyin(offer, yourOffer) {
   const walkChance = Math.min(0.9, walkBase + shortfall * 1.6 + (offer.haggleRounds || 0) * 0.15)
   if (Math.random() < walkChance) return { walk: true }
   const counter = Math.max(floor, round2(ask - (ask - yourOffer) * 0.5))
+  return { counter }
+}
+
+// --- "What'll you give me for these?" — the QUOTE walk-up ---------------------
+// The signature show-floor interaction from the seller's side of the table: someone lays
+// 1–3 items on YOUR booth and asks you to name the number. You quote a PERCENTAGE of
+// market, in cash or in table credit — credit is worth more to them than cash never is
+// (they leave with your stock, you part with no money), so their hidden credit floor sits
+// 10–15 points UNDER their cash floor. Two pre-rolled floors, exactly the `_floorCash`
+// idiom the buy-in lots use: the tell is the seller's hint, never the number.
+export function makeQuoteRequest(notoriety, tierKey = 'meetup') {
+  const tier = SHOW_TIERS[tierKey] || SHOW_TIERS.meetup
+  const [lo, hi] = tier.valueBand
+  const who = pickAny(null, VISITOR_NAMES.show)
+  const n = 1 + (Math.random() < 0.45 ? 1 : 0) + (Math.random() < 0.2 ? 1 : 0)
+  const items = []
+  for (let i = 0; i < n; i++) {
+    // ~25% of the time the first item is sealed — a pack or box they're flipping through you.
+    if (i === 0 && Math.random() < 0.25) {
+      const s = sealedFromPool([])
+      if (s && sealedValue(s) > 0) { items.push({ kind: 'sealed', item: s, val: round2(sealedValue(s)) }); continue }
+    }
+    const bandLo = Math.max(0.5, lo * (0.3 + Math.random()))
+    const c = cardInValueRange(bandLo, Math.max(bandLo + 1, hi * (0.2 + Math.random() * 0.5)))
+    if (c) items.push({ kind: 'card', item: c, val: round2(cardValue(c)) })
+  }
+  const market = round2(items.reduce((a, x) => a + x.val, 0))
+  if (!items.length || !(market > 0)) return null
+  // Seller temperament shapes the hidden floors: a flipper checked comps and runs tight;
+  // a kid or a casual mostly wants it gone today.
+  const tight = Math.random() < 0.4
+  const _floorCashPct = round2(tight ? 0.75 + Math.random() * 0.10 : 0.55 + Math.random() * 0.15)
+  const _floorCreditPct = round2(Math.max(0.35, _floorCashPct - (0.10 + Math.random() * 0.05)))
+  return {
+    kind: 'quote', who: cap(who), items, market,
+    tone: tight ? 'tight' : 'soft',
+    hint: tight ? 'seems to know exactly what the comps are' : 'mostly wants it gone today',
+    _floorCashPct, _floorCreditPct,
+  }
+}
+
+// Resolve one round of your quote. `offerPct` is a fraction of market; `method` is 'cash'
+// or 'credit' (each has its own hidden floor — switching to credit is how a shaved number
+// still lands). Mirrors haggleBuyin, not haggleRound: there is no standing ask to hang a
+// floor off — the seller's floor IS the negotiation. At/above the floor they take it; below
+// it they walk (odds ramp with the shortfall and each extra round of shaving) or counter a
+// touch above their true floor.
+export function quoteRound(req, offerPct, method, round = 0) {
+  const floor = method === 'credit' ? (req._floorCreditPct ?? 0.6) : (req._floorCashPct ?? 0.7)
+  if (offerPct >= floor) return { accept: true, pct: Math.min(offerPct, 1) }
+  const shortfall = (floor - offerPct) / Math.max(0.05, floor)
+  const walkBase = req.tone === 'tight' ? 0.40 : 0.16
+  const walkChance = Math.min(0.9, walkBase + shortfall * 1.5 + round * 0.15)
+  if (Math.random() < walkChance) return { walk: true, hardLowball: shortfall > 0.3 }
+  // They counter a hair over their floor — taking the counter always closes the deal.
+  const counter = round2(Math.min(method === 'credit' ? 0.95 : 0.92, floor + 0.02 + Math.random() * 0.04))
   return { counter }
 }
 

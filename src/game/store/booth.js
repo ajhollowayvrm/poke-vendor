@@ -1005,6 +1005,59 @@ export function createBoothSlice(set, get) {
           get().checkCompletions() // a card/sealed you traded for may finish a set
           break
         }
+        case 'quoteBuy': {
+          // "What'll you give me for these?" — you quoted CASH and they took it. Pay out,
+          // take the goods: cards to the collection, sealed minted into held inventory with
+          // its cost basis apportioned by value share (effect.sealed rows carry `paid`).
+          const price = round2(effect.price || 0)
+          if (get().cash < price) { msg = "You can't actually cover what you quoted — the seller walks off annoyed."; break }
+          if (price > 0) s.spend(price)
+          const gotCards = (effect.cards || []).map(c => ({ ...c }))
+          const gotSealed = (effect.sealed || [])
+            .map(e => get().mintSealedRow(setById(e.setId), e.product, e.paid ?? 0, 'floor')).filter(Boolean)
+          set(st => ({
+            collection: [...gotCards, ...st.collection],
+            sealedInventory: [...gotSealed, ...(st.sealedInventory || [])],
+            stats: { ...st.stats, quotesGiven: (st.stats.quotesGiven || 0) + 1 },
+          }))
+          s.addNotoriety(effect.notoriety || 0)
+          const n = gotCards.length + gotSealed.length
+          s.log('buy', `Quoted ${Math.round((effect.pct || 0) * 100)}% on a walk-up lot — bought ${n} item${n !== 1 ? 's' : ''} for $${price.toFixed(2)}`, -price)
+          get().checkCompletions()
+          break
+        }
+        case 'quoteCredit': {
+          // They took TABLE CREDIT: their items come to you, and they shop your table for a
+          // bundle near the credit value. cashAdj > 0 → you top up the difference in cash;
+          // < 0 → the bundle ran over and they add cash to you. Bail gracefully if any of
+          // the picked stock just left your table.
+          const adj = round2(effect.cashAdj || 0)
+          if (adj > 0 && get().cash < adj) { msg = "You can't cover the cash top-up — the deal falls through."; break }
+          const cardIds = new Set(effect.takeCardUids || [])
+          const sealIds = new Set(effect.takeSealedUids || [])
+          const cards = (get().showInventory || []).filter(c => cardIds.has(c.uid))
+          const sealed = (get().showSealed || []).filter(it => sealIds.has(it.uid))
+          if (cards.length !== cardIds.size || sealed.length !== sealIds.size) {
+            msg = 'Some of that stock just left your table — the deal falls through.'; break
+          }
+          const gotCards = (effect.cards || []).map(c => ({ ...c }))
+          const gotSealed = (effect.sealed || [])
+            .map(e => get().mintSealedRow(setById(e.setId), e.product, e.paid ?? 0, 'floor')).filter(Boolean)
+          set(st => ({
+            showInventory: (st.showInventory || []).filter(c => !cardIds.has(c.uid)),
+            showSealed: (st.showSealed || []).filter(it => !sealIds.has(it.uid)),
+            sealedInventory: [...gotSealed, ...(st.sealedInventory || []).filter(it => !sealIds.has(it.uid))],
+            collection: [...gotCards, ...st.collection],
+            stats: { ...st.stats, quotesGiven: (st.stats.quotesGiven || 0) + 1 },
+          }))
+          if (adj > 0) s.spend(adj)
+          else if (adj < 0) s.earn(-adj)
+          s.addNotoriety(effect.notoriety || 0)
+          const inN = gotCards.length + gotSealed.length, outN = cards.length + sealed.length
+          s.log('trade', `Quoted ${Math.round((effect.pct || 0) * 100)}% in table credit — took ${inN} item${inN !== 1 ? 's' : ''}, they left with ${outN} of yours${adj > 0 ? ` + $${adj.toFixed(2)}` : adj < 0 ? ` (+$${(-adj).toFixed(2)} to you)` : ''}`, -adj)
+          get().checkCompletions()
+          break
+        }
         case 'fulfillRequest': {
           // A walk-in asked for a specific item and you produced it (off the shelf or from the
           // back). `price` already includes the in-store + request premium. Sell it and remove

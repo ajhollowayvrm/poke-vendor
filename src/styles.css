@@ -2575,6 +2575,8 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .inv-sealed-row:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
 .inv-sealed-row .pill.inv-kept { margin-left: 6px; font-size: 10px; background: #ffcb0522; color: var(--gold); }
 .inv-sealed-row .sift-check { margin-right: 4px; }
+/* 🗣️ Quote walk-up: the preset percentage chips read as one row of quick answers. */
+.quote-chip { flex: none; min-width: 54px; padding: 7px 10px; font-variant-numeric: tabular-nums; }
 
 
 /* ---------- Vendor booth: singles as set-grouped binder lists ---------------------
