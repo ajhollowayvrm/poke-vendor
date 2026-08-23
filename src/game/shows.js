@@ -108,6 +108,83 @@ export function generateCalendar(notoriety, seed = 7, rank = null) {
   return shows.sort((a, b) => a.day - b.day)
 }
 
+// --- Crowd quality: "it's not the size of the show, it's who's going" -----------
+// Every show instance rolls a hidden crowd read off its own seed: a meetup can be STACKED
+// (serious collectors in the room — better cards, sharper dealers) and a National can be a
+// dud. Deterministic and derived (never persisted): generateBooths applies it and the
+// pre-show DM rumors reveal it, and both recompute the identical answer from show.seed.
+// Side-stream generator for values DERIVED from a show seed. One raw LCG step barely
+// separates nearby seeds (calendar seeds sit ~17–131 apart, so first draws cluster in one
+// narrow band — a month of all-quiet shows); a multiply-mix plus a short warm-up spreads
+// them. Every derived roll below uses this, never bare rng().
+function rngDerived(seed) {
+  const r = rng((Math.imul(seed >>> 0, 2654435761) ^ 0x9e3779b9) >>> 0)
+  r(); r(); r()
+  return r
+}
+
+export function crowdFor(show) {
+  const roll = rngDerived((show.seed ?? 0) ^ 0x517cc1b7)()
+  return roll < 0.15 ? 'stacked' : roll < 0.30 ? 'quiet' : 'normal'
+}
+
+// Which recurring roster vendors are seated at THIS show — a seeded 2–4 of them, on the
+// show's own side-stream so the Calendar / pre-show DMs can name the exact dealers the
+// floor will seat, days ahead, without replaying floor generation.
+export function rosterForShow(show, roster = []) {
+  if (!roster.length) return []
+  const r = rngDerived((show.seed ?? 0) ^ 0x51ab)
+  const count = Math.min(roster.length, 2 + Math.floor(r() * 3))
+  return shuffleR(r, roster).slice(0, count)
+}
+
+// What a roster dealer teases over DM before a show: 2–4 sealed pieces off their load-in
+// list, at their archetype's kind of markup. Seeded on (show, vendor) so the DM reads the
+// same every time you open it. Deliberately NOT the literal floor table (that shifts with
+// arrival and day) — an item you buy or reserve is planted on their table through the
+// lead-injection block, which IS exact.
+export function vendorPreview(show, vendor) {
+  let h = 0
+  for (const ch of String(vendor.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0
+  const r = rngDerived((show.seed ?? 0) ^ h ^ 0x7f4a7c15)
+  const n = 2 + Math.floor(r() * 3)
+  const out = []
+  const seen = new Set()
+  for (let i = 0; i < n; i++) {
+    const roll = r()
+    let set, product, origin
+    if (roll < 0.35 && VINTAGE_SETS.length) {
+      set = pickR(r, VINTAGE_SETS); product = vintageProduct(set); origin = 'vintage'
+    } else if (roll < 0.7 && AFTERMARKET_SETS.length) {
+      set = pickR(r, AFTERMARKET_SETS)
+      const ps = setProducts(set); product = ps.length ? pickR(r, ps) : null; origin = 'aftermarket'
+    } else {
+      set = pickR(r, SHOP_SETS)
+      const ps = setProducts(set); product = ps.length ? pickR(r, ps) : null; origin = 'modern'
+    }
+    if (!set || !product || !(product.price > 0)) continue
+    const key = `${set.id}|${product.type}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    const markup = origin === 'vintage' ? 1.2 + r() * 0.4 : origin === 'aftermarket' ? 1.10 + r() * 0.25 : 1.05 + r() * 0.2
+    out.push({ set, product: { ...product }, ask: round2(product.price * markup), origin })
+  }
+  return out
+}
+
+// Whether (and how early) a rapport dealer tips you the crowd read for a show — the
+// relationship IS the intel: Familiar dealers gossip sometimes, Trusted ones always.
+// Seeded per (show, vendor) so the tip doesn't flicker between renders.
+export function crowdTipFrom(show, vendor, rapportLevel) {
+  if ((rapportLevel || 0) < 1) return null
+  let h = 0
+  for (const ch of String(vendor.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0
+  const r = rngDerived((show.seed ?? 0) ^ h ^ 0x2545f491)
+  const pTip = [0, 0.4, 0.7, 1.0][Math.min(3, rapportLevel)] ?? 0
+  if (r() >= pTip) return null
+  return crowdFor(show)
+}
+
 // --- Pre-show leads -----------------------------------------------------------
 // A few days before a show, people you matter to reach out — a reason to make THAT
 // trip. Two kinds:
@@ -463,12 +540,23 @@ function makeBigDeal(r, band, tkBase) {
 export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open', leads = [], challengeSetId = null) {
   const r = rng((show.seed + dayOffset * 2654435761) >>> 0)
   const tier = SHOW_TIERS[show.tierKey]
-  const [lo, hi] = tier.valueBand
+  // 👥 Who's actually in the room shifts the whole hall (crowdFor): a STACKED crowd lifts
+  // the value ceiling (clamped at the next tier's — a stacked meetup punches up, it doesn't
+  // become Worlds) and pulls vintage; a QUIET one sags both. Same tier, different day.
+  const crowd = crowdFor(show)
+  const tierVals = Object.values(SHOW_TIERS)
+  const tierKeysAll = Object.keys(SHOW_TIERS)
+  const nextHi = (tierVals[Math.min(tierKeysAll.indexOf(show.tierKey) + 1, tierVals.length - 1)] || tier).valueBand[1]
+  const lo = tier.valueBand[0]
+  const hi = crowd === 'stacked' ? Math.min(tier.valueBand[1] * 1.6, Math.max(tier.valueBand[1], nextHi))
+    : crowd === 'quiet' ? tier.valueBand[1] * 0.75
+    : tier.valueBand[1]
+  const crowdBand = [lo, hi]
   const n = tier.booths
-  // Which recurring roster vendors are at THIS show (a seeded 2–4 of them), and in which
-  // booth slots. Their identity + fixed archetype override the procedural pick for that slot.
-  const recCount = roster.length ? Math.min(roster.length, n, 2 + Math.floor(r() * 3)) : 0
-  const recPick = recCount ? shuffleR(r, roster).slice(0, recCount) : []
+  // Which recurring roster vendors are at THIS show (a seeded 2–4 of them via rosterForShow —
+  // its own seed stream, so the pre-show DMs name the same dealers the floor seats), and in
+  // which booth slots. Their identity + fixed archetype override the procedural pick.
+  const recPick = rosterForShow(show, roster).slice(0, Math.min(n, 4))
   // A vendor who DM'd you a pre-show hold is guaranteed to actually be here —
   // swap them into the recurring slots if the seeded draw left them out.
   for (const l of (leads || []).filter(x => x.kind === 'vendor')) {
@@ -488,7 +576,9 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   // draw serious collectors). 0 at meetups → meaningful at Worlds. This is where you hunt
   // raw vintage — you can't buy these sets in the shop.
   const VINTAGE_SINGLE_CHANCE = { meetup: 0, shop: 0.04, regional: 0.08, national: 0.13, invitational: 0.18, worlds: 0.25 }
-  const vintageChance = VINTAGE_SINGLE_CHANCE[show.tierKey] || 0
+  // A stacked crowd brings the binders out of the attics; a quiet one leaves them home.
+  const vintageChance = Math.max(0, (VINTAGE_SINGLE_CHANCE[show.tierKey] || 0)
+    + (crowd === 'stacked' ? 0.05 : crowd === 'quiet' ? -0.04 : 0))
   // Bigger venues, bigger binders: the singles walls at a National run visibly deeper than a
   // meetup's, and the graded share of every bin climbs with the tier (the elite floors are
   // where the slab-heavy dealers set up). tierIdx: meetup 0 … worlds 5.
@@ -505,8 +595,10 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   const booths = []
   for (let i = 0; i < n; i++) {
     // A recurring roster vendor claims this slot (fixed character), else a procedural one.
+    // A stacked room seats more of the serious operators (sharp traders, High Rollers).
     const rec = recPick[i] || null
-    const arch = rec ? archetype(rec.archetype) : pickR(r, ARCHETYPES)
+    let arch = rec ? archetype(rec.archetype) : pickR(r, ARCHETYPES)
+    if (!rec && crowd === 'stacked' && r() < 0.25) arch = archetype(r() < 0.5 ? 'sharp' : 'whale')
     // Dealer SPECIALTY — the floor has a map now, the way a real one does: most tables are
     // singles-led (singles are the fastest mover at virtually every show), roughly one in six
     // is the sealed table (a distributor moving cases near retail), and bigger shows draw the
@@ -613,7 +705,7 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
     // the floor) and sometimes a private package deal (see makeBigDeal).
     const tillArch = arch.key === 'whale' && elite ? 3.5 : (TILL_ARCH[arch.key] ?? 1)
     const bigDeal = arch.key === 'whale' && elite && r() < (show.tierKey === 'worlds' ? 0.6 : 0.3)
-      ? makeBigDeal(r, tier.valueBand, `${show.id}-b${i}`) : null
+      ? makeBigDeal(r, crowdBand, `${show.id}-b${i}`) : null
     booths.push({
       id: `${show.id}-b${i}`,
       name: rec ? rec.name : vendorName(i),
@@ -632,7 +724,7 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       stock: boothStock,
       specialty,
       bigDeal,                 // 🐋 elite-show High Roller package (null for everyone else)
-      products: boothSealed(r, arch, tier.valueBand, specialty, show.tierKey),  // sealed + mystery packs (shaped by specialty)
+      products: boothSealed(r, arch, crowdBand, specialty, show.tierKey),  // sealed + mystery packs (shaped by specialty + crowd)
       // grid position assigned by the floor layout
     })
   }
@@ -663,9 +755,11 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
   for (const l of (leads || []).filter(x => x.kind === 'vendor')) {
     const booth = booths.find(b => b.vendorId === l.vendorId)
     const set = setById(l.setId)
-    const product = set ? vintageProduct(set) : null
+    // A reserve made from the pre-show DMs carries the exact product it was made on;
+    // the classic daytick vendor-hold (vintage only) reconstructs it from the set.
+    const product = l.product ? { ...l.product } : (set ? vintageProduct(set) : null)
     if (!booth || !set || !product) continue
-    booth.products = [{ set, product, _ask: l.price, _origin: 'vintage', _lead: true }, ...(booth.products || [])]
+    booth.products = [{ set, product, _ask: l.price, _origin: l.origin || 'vintage', _lead: true }, ...(booth.products || [])]
     booth.leadNote = `holding a ${product.type} of ${set.name} for you — $${(l.price ?? 0).toFixed(2)}`
   }
 

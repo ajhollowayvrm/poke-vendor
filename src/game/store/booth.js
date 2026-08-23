@@ -11,7 +11,7 @@
 
 import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
   SHOP_SETS, SECONDARY_SETS, setProducts, marketMult, isBulkCard, bulkSellableUids } from '../engine'
-import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin, SHOW_TIERS } from '../shows'
+import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin, SHOW_TIERS, vendorRapport } from '../shows'
 
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
 // repack could plausibly hide. Returns { set, product } or null when nothing fits the band.
@@ -368,9 +368,67 @@ export function createBoothSlice(set, get) {
     // state would just get them expired mid-show by the next tick).
     claimShowLeads(showId) {
       const all = get().showLeads || []
-      const mine = all.filter(l => l.showId === showId)
-      if (mine.length) set(s => ({ showLeads: (s.showLeads || []).filter(l => l.showId !== showId) }))
+      // Paid pre-show PURCHASES are deliberately NOT claimed: they're will-call orders that
+      // ship home on the daytick after the show either way (attended or skipped), so money
+      // already spent can never be stranded on a table you forgot to walk back to.
+      const mine = all.filter(l => l.showId === showId && l.kind !== 'purchase')
+      if (mine.length) set(s => ({ showLeads: (s.showLeads || []).filter(l => l.showId !== showId || l.kind === 'purchase') }))
       return mine
+    },
+
+    // --- Pre-show DMs: buy or reserve from a dealer BEFORE the show -----------------
+    // The relationship play from real circuits: you know who's going, so you deal with
+    // them online days ahead. Both build vendor rapport — dealing before the show IS the
+    // relationship. One purchase + one reserve per vendor per show, so the DMs are a
+    // head start on the floor, not a way to strip a table from your couch.
+    //
+    // 💳 Buy now: pay today at the rapport-discounted ask. The item is a will-call order
+    // (kind:'purchase') that ships to your storeroom on the first daytick after the show.
+    prepayFromVendor({ show, vendor, item, absDay }) {
+      if (!show || !vendor || !item) return { error: 'That deal is no longer on the table.' }
+      const already = (get().showLeads || []).some(l => l.showId === show.id && l.vendorId === vendor.id && l.kind === 'purchase')
+      if (already) return { error: `You've already bought your one pre-show pick from ${vendor.name} for this show.` }
+      const disc = vendorRapport(get().vendorSpend?.[vendor.id] || 0).disc
+      const price = round2(item.ask * (1 - disc))
+      if (get().cash < price) return { error: `Not enough cash — that runs $${price.toFixed(2)}.` }
+      get().spend(price)
+      const lead = {
+        id: `lead-${show.id}-p${vendor.id}`, kind: 'purchase',
+        showId: show.id, showDay: show.day, showName: show.name, tierKey: show.tierKey,
+        absDay: absDay ?? show.day, paid: true,
+        vendorId: vendor.id, vendorName: vendor.name,
+        setId: item.set.id, setName: item.set.name,
+        product: { ...item.product }, productType: item.product.type,
+        origin: item.origin, price,
+        text: `You paid ${vendor.name} $${price.toFixed(2)} for a ${item.product.type} of ${item.set.name} — it ships home after ${show.name}.`,
+      }
+      set(s => ({ showLeads: [...(s.showLeads || []), lead] }))
+      get().bumpVendorRapport(vendor.id, price)
+      get().log('lead', `💳 Bought a ${item.product.type} of ${item.set.name} from ${vendor.name} ahead of ${show.name} — $${price.toFixed(2)}, ships home after the show.`, -price)
+      return { ok: true, price }
+    },
+    // 🤝 Reserve: no money down — they hold it on their table at the price quoted in the
+    // DM (rapport discount locked in). Same shape as the classic vendor-hold lead, so the
+    // floor's lead-injection puts it on their table flagged "held".
+    reserveFromVendor({ show, vendor, item, absDay }) {
+      if (!show || !vendor || !item) return { error: 'That deal is no longer on the table.' }
+      const already = (get().showLeads || []).some(l => l.showId === show.id && l.vendorId === vendor.id && l.kind === 'vendor')
+      if (already) return { error: `${vendor.name} is already holding something for you at this show.` }
+      const disc = vendorRapport(get().vendorSpend?.[vendor.id] || 0).disc
+      const price = round2(item.ask * (1 - disc))
+      const lead = {
+        id: `lead-${show.id}-v${vendor.id}`, kind: 'vendor',
+        showId: show.id, showDay: show.day, showName: show.name, tierKey: show.tierKey,
+        absDay: absDay ?? show.day,
+        vendorId: vendor.id, vendorName: vendor.name,
+        setId: item.set.id, setName: item.set.name,
+        product: { ...item.product }, productType: item.product.type,
+        origin: item.origin, price,
+        text: `${vendor.name} messaged: "The ${item.product.type} of ${item.set.name} is set aside with your name on it — $${price.toFixed(2)} at ${show.name} (day ${show.day})."`,
+      }
+      set(s => ({ showLeads: [...(s.showLeads || []), lead] }))
+      get().log('lead', `🤝 ${vendor.name} is holding a ${item.product.type} of ${item.set.name} for you at ${show.name} — $${price.toFixed(2)}.`, 0)
+      return { ok: true, price }
     },
     // Meet a buyer-lead at the show and sell them a matching card (from your collection
     // or your booth's show inventory) at the appointment premium. Returns { payout } or false.
