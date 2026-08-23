@@ -1027,14 +1027,15 @@ try {
       const show = { id: 'sim', seed: 12345, tierKey: 'regional', name: 'Sim Show' }
       const booths = sh.generateBooths(show).filter(b => !b.special && b.buyMult != null)
       const bad = booths.filter(b => !(b.tradeMult > b.buyMult && b.tradeMult <= 1.0
-        && b.tradeMultHot >= b.tradeMult && b.tradeMultHot <= 1.0)).length
+        && b.tradeMultHot >= b.tradeMult && b.tradeMultHot <= 1.0
+        && b.tradeMultHot < sh.archetype(b.archetype).sellMult)).length
       return { arch, n: booths.length, bad }
     })
     for (const a of rails.arch) {
       pass(`${a.k}: cash ${Math.round(a.buy * 100)}% < trade ${Math.round(a.trade * 100)}% < ask ${Math.round(a.sell * 100)}%`,
         a.trade > a.buy && a.trade < a.sell)
     }
-    pass(`every seeded booth quotes inside the rails, credit capped at 100% of market (${rails.n} booths)`,
+    pass(`every seeded booth quotes inside the rails, credit capped at 100% of market and under their own sell markup (${rails.n} booths)`,
       rails.n > 0 && rails.bad === 0)
   }
 

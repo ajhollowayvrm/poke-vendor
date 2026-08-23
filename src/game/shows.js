@@ -696,10 +696,14 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
     // their own stock in the same breath. Per-booth variance so every table quotes its own
     // pair ("80% trade on this table, 90% two rows down"); the HOT rate kicks in when most
     // of what you take is their sealed/aftermarket product (stock they want moved). Seeded
-    // like everything else, clamped inside (buyMult, 1.0] so credit never beats market.
-    const tradeMult = round2(Math.min(1.0, Math.max(arch.buyMult + 0.05,
+    // like everything else, clamped inside (buyMult, 1.0] so credit never beats market —
+    // and never above the archetype's own sell markup (railCap), or converting stock via a
+    // trade would beat what the dealer charges cash for the same stock (newbie sells at 0.95×
+    // market, so hot credit topping out at 0.99× used to let a trade undercut their own price).
+    const railCap = Math.min(1.0, round2(arch.sellMult - 0.02))
+    const tradeMult = round2(Math.min(railCap, Math.max(arch.buyMult + 0.05,
       (arch.tradeMult ?? arch.buyMult + 0.10) + (r() - 0.5) * 0.08)))
-    const tradeMultHot = round2(Math.min(1.0, tradeMult + 0.05 + r() * 0.05))
+    const tradeMultHot = round2(Math.min(railCap, tradeMult + 0.05 + r() * 0.05))
     const elite = show.tierKey === 'invitational' || show.tierKey === 'worlds'
     // A High Roller at the elite shows carries real money (a $20k slab can actually sell to
     // the floor) and sometimes a private package deal (see makeBigDeal).

@@ -161,6 +161,11 @@ export default function ShowFloor({ show, onLeave }) {
   // a vendor by re-opening the haggle). Persists across booth re-opens for the whole show.
   const [haggledIds, setHaggledIds] = useState(() => new Set())
   const markHaggled = useCallback((uid) => setHaggledIds(prev => { const n = new Set(prev); n.add(uid); return n }), [])
+  // Haggled-down sealed prices, keyed by the line's reload-stable `_tk`. Lives here (not in the
+  // booth) so it survives a close/reopen the same way haggledIds does — a sealed haggle used to
+  // vanish the moment you closed the modal, leaving the Haggle button dead but the full ask back.
+  const [agreedPrices, setAgreedPrices] = useState(() => new Map())
+  const markAgreedPrice = useCallback((tk, price) => setAgreedPrices(prev => { const n = new Map(prev); n.set(tk, price); return n }), [])
   // Ripping on the floor is a QUEUE, not one product: buy three boxes off a table (or pick a
   // few out of your 🎒 haul) and they rip back-to-back right here without a trip home.
   // { set, product, rest[], idx, total, nonce } — nonce re-keys PackOpening for the next unit.
@@ -291,6 +296,9 @@ export default function ShowFloor({ show, onLeave }) {
         setTimeout(() => setBigSale(x => (x && x.id ? null : x)), 6000)
       }
       if (!show._asVendor) return
+      // A whale offer is a no-haggle encounter same as a walk-up — it must not clobber one
+      // already waiting to be answered, or it silently burns a whale slot on nothing.
+      if (encounter || boothAlert) return
       if (Date.now() - floorEntryRef.current < SNIPE_GRACE_MS) return
       if (whaleCountRef.current >= 2) return
       if (notoriety < 150) return
@@ -307,7 +315,7 @@ export default function ShowFloor({ show, onLeave }) {
       } else setEncounter({ enc, atBooth: true })
     }, 30000)
     return () => clearInterval(id)
-  }, [show.tierKey, show._asVendor, notoriety, accepted, upgrades.ticker])
+  }, [show.tierKey, show._asVendor, notoriety, accepted, upgrades.ticker, encounter, boothAlert])
 
   // Booth walk-ups, gated by a cooldown so they don't spam. With the 🔔 Visitor Ticker
   // you get an alert you can answer whenever — without it, a buyer who walks up while
@@ -692,6 +700,7 @@ export default function ShowFloor({ show, onLeave }) {
       {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
         onStockSealed={stockSealed} onRipSealedStack={buySealedStack} haggledIds={haggledIds} onHaggled={markHaggled}
+        agreedPrices={agreedPrices} onAgreedPrice={markAgreedPrice}
         takenIds={takenIds} onTaken={markTaken} asVendor={show._asVendor}
         tillLeft={Math.max(0, round2((openBooth.till || 0) - (tillSpent[tillKey(openBooth)] || 0)))}
         onTillSpend={(amt) => markTillSpend(openBooth, amt)}

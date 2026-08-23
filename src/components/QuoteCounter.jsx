@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2 } from '../game/engine'
 import { quoteRound } from '../game/shows'
@@ -38,7 +38,6 @@ export default function QuoteCounter({ req, onDone }) {
     + (showSealed || []).reduce((a, it) => a + sealedValue(it), 0),
   [showInventory, showSealed])
   const creditOk = tableVal >= quoteCash * 0.6 // thin table → credit isn't a real offer
-  const canAfford = method === 'credit' || cash >= quoteCash
 
   // Apportion the total you paid across their items by value share — the sealed rows carry
   // their slice as cost basis when they're minted into your inventory.
@@ -59,6 +58,19 @@ export default function QuoteCounter({ req, onDone }) {
     }
     return { take, total }
   }
+  // Total table value passing the 60% bar doesn't mean anything on it actually FITS this
+  // credit amount (a single big slab can clear the bar while nothing nearest-fits within the
+  // ±5% band pickBundle wants) — check that a real bundle exists, not just enough value.
+  const creditFeasible = pickBundle(quoteCash).take.length > 0
+  const creditUsable = creditOk && creditFeasible
+  const canAfford = method === 'credit' ? creditUsable : cash >= quoteCash
+
+  // A pct change (preset, ± step, or a counter) can make a previously-fine credit quote stop
+  // fitting the table — fall back to cash rather than leaving offer() able to reach an
+  // accepted-but-unfulfillable deal.
+  useEffect(() => {
+    if (method === 'credit' && !creditUsable) setMethod('cash')
+  }, [method, creditUsable])
 
   function closeCash(atPct) {
     const price = round2(market * atPct)
@@ -175,8 +187,10 @@ export default function QuoteCounter({ req, onDone }) {
           <button className={`btn ${method === 'cash' ? 'gold' : 'alt'}`} onClick={() => setMethod('cash')}>
             💵 Cash · {fmtMoney(quoteCash)}
           </button>
-          <button className={`btn ${method === 'credit' ? 'gold' : 'alt'}`} disabled={!creditOk}
-            title={creditOk ? 'They spend it on your table — sellers take a lower % in credit than in cash' : "Your table doesn't have enough out to back a credit offer"}
+          <button className={`btn ${method === 'credit' ? 'gold' : 'alt'}`} disabled={!creditUsable}
+            title={creditUsable ? 'They spend it on your table — sellers take a lower % in credit than in cash'
+              : !creditOk ? "Your table doesn't have enough out to back a credit offer"
+              : "Nothing on your table fits this credit amount — they'd walk with nothing"}
             onClick={() => setMethod('credit')}>
             🎟️ Table credit · {fmtMoney(quoteCash)}
           </button>
