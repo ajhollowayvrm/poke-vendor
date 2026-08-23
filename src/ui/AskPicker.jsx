@@ -6,7 +6,7 @@
 export function AskPicker({ pct, onChange, presets = [80, 90, 100, 110], custom = true, label = 'Ask', children }) {
   return (
     <div className="list-pct-row">
-      {label && <span className="muted" style={{ fontSize: 12 }}>{label}</span>}
+      {label && <span className="cap">{label}</span>}
       {presets.map(p => (
         <button key={p} className={`pctbtn ${Math.round(pct) === p ? 'on' : ''}`}
           onClick={e => { e.stopPropagation(); onChange(p) }}>{p}%</button>

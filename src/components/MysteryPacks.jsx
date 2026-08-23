@@ -72,7 +72,7 @@ export default function MysteryPacks() {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         ❓ <b>Your mystery packs.</b> Seal cards & sealed product from your own stock into repacks and sell them
         sight-unseen at YOUR price, on the channels YOU pick. What buyers find inside moves your
         <b> pack reputation</b> — fair packs (and the occasional seeded banger) sell faster and build your name;
@@ -94,7 +94,7 @@ export default function MysteryPacks() {
       <div className="wants">
         <div className="wants-head">🏷️ Your pack lines <span className="muted">— price, advertised value band & channels are all yours to set</span>
           {(packTiers || []).length < PACK_TIER_CAP && (
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 150, marginLeft: 'auto', padding: '4px 10px' }}
+            <button className="btn alt btn-fixed" style={{ maxWidth: 150, marginLeft: 'auto', padding: '4px 10px' }}
               onClick={() => setEditing('new')}>＋ New pack line</button>
           )}
         </div>
@@ -111,17 +111,17 @@ export default function MysteryPacks() {
               .map(c => packSaleChance(tier.price, notoriety, packRep, c.key === 'online' ? 'online' : 'store', false, wrapPress, packOpts)))
             return (
               <div key={tier.id} className="product">
-                <h3 style={{ fontSize: 15, margin: 0 }}>
+                <h3 className="t-lg" style={{ margin: 0 }}>
                   {tier.icon} {tier.name}
-                  {tier.published && <span className="pill" style={{ marginLeft: 6, fontSize: 10.5, background: '#3e63dd22', color: '#8aa6ff' }}
+                  {tier.published && <span className="pill t-xs" style={{ marginLeft: 6, background: '#3e63dd22', color: '#8aa6ff' }}
                     title={certified ? 'Odds board is public & certified — buyers trust it and bite more' : 'Odds board is public — draws gamblers; honest thin packs sting less'}>
                     📋 {certified ? 'Certified' : 'Published'}</span>}
                 </h3>
                 <div className="meta" style={{ flex: 1 }}>
-                  Sells at <b style={{ color: 'var(--green)' }}>{fmtMoney(tier.price)}</b> · advertised
+                  Sells at <b className="pos">{fmtMoney(tier.price)}</b> · advertised
                   {' '}<b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside
                   <br />
-                  <span className="muted" style={{ fontSize: 11.5 }}>Takes: {tierContentsLabel(tier)}</span>
+                  <span className="cap">Takes: {tierContentsLabel(tier)}</span>
                   <br />
                   {/* Name the channels. This was four bare emoji crammed together with no gaps
                       and their meaning only in `title` — which does not exist on a touch
@@ -129,11 +129,11 @@ export default function MysteryPacks() {
                   {chans.length
                     ? <>On: {chans.map((c, i) => <span key={c.key} title={c.hint}>{i ? ' · ' : ''}{c.icon} {c.label}</span>)}
                         {chans.some(c => c.key === 'store') && !hasStore && <span className="muted"> (store needs a storefront)</span>}</>
-                    : <span style={{ color: 'var(--red)' }}>No channels enabled — it can't sell</span>}
-                  {bestChance > 0 && stock.length > 0 && <><br /><span className="muted" style={{ fontSize: 11.5 }}>≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame{tier.published ? ' (published)' : ''}</span></>}
+                    : <span className="neg">No channels enabled — it can't sell</span>}
+                  {bestChance > 0 && stock.length > 0 && <><br /><span className="cap">≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame{tier.published ? ' (published)' : ''}</span></>}
                   {/* 📋 The public odds board — what buyers see across this line's sealed stock. */}
                   {tier.published && board.count > 0 && (
-                    <><br /><span className="muted" style={{ fontSize: 11.5 }} title="The pool buyers can see — the notable cards currently sealed across this line's packs">
+                    <><br /><span className="cap" title="The pool buyers can see — the notable cards currently sealed across this line's packs">
                       📋 Board: {board.count} card{board.count === 1 ? '' : 's'} across {stock.length} pack{stock.length === 1 ? '' : 's'}
                       {board.top.length ? <> · top: {board.top.map(t => `${t.name} (${fmtMoney(t.value)})`).join(', ')}</> : null}
                     </span></>
@@ -141,7 +141,7 @@ export default function MysteryPacks() {
                 </div>
                 {/* 🪄 Auto-build: seal every loose card that fits this line into its own pack,
                     in one click. The count IS the pitch — "18 fit" tells you the work is there. */}
-                <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12, marginBottom: 5 }}
+                <button className="btn gold t-xs" style={{ padding: '6px 8px', marginBottom: 5 }}
                   disabled={!eligible}
                   title={eligible
                     ? `Seal ${Math.min(eligible, AUTO_BUILD_CAP)} pack${eligible === 1 ? '' : 's'} — one card each, every loose ${tierContentsLabel(tier)} worth ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)}`
@@ -150,11 +150,11 @@ export default function MysteryPacks() {
                   🪄 Auto-build{eligible ? ` ${eligible} pack${eligible === 1 ? '' : 's'}` : ' — nothing fits'}
                 </button>
                 <div className="row" style={{ gap: 5 }}>
-                  <button className="btn alt" style={{ padding: '6px 8px', fontSize: 12 }}
+                  <button className="btn alt t-xs" style={{ padding: '6px 8px' }}
                     disabled={!collection.length && !(sealedInventory || []).length}
                     onClick={() => setBuilding(tier)}>🛠️ Build one</button>
                   <span className="pill" style={{ alignSelf: 'center' }} title="Sealed and ready to sell">{stock.length} in stock</span>
-                  <button className="btn alt" style={{ flex: 'none', maxWidth: 60, padding: '6px 8px', fontSize: 12 }}
+                  <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 60, padding: '6px 8px' }}
                     onClick={() => setEditing(tier)}>Edit</button>
                 </div>
               </div>
@@ -167,7 +167,7 @@ export default function MysteryPacks() {
       <div className="wants">
         <div className="wants-head">📦 Sealed & ready <span className="muted">— {(builtPacks || []).length} pack{(builtPacks || []).length === 1 ? '' : 's'} waiting for buyers (you know what's inside; they don't)</span></div>
         {(builtPacks || []).length === 0 ? (
-          <div className="empty" style={{ marginTop: 4 }}>No packs built yet. Hit <b>🛠️ Build one</b> on a line above and pick exactly what goes in. 🎁</div>
+          <div className="empty mt-2">No packs built yet. Hit <b>🛠️ Build one</b> on a line above and pick exactly what goes in. 🎁</div>
         ) : (
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', marginTop: 4 }}>
             {(builtPacks || []).map(p => {
@@ -182,15 +182,15 @@ export default function MysteryPacks() {
               const belowBand = tier && v < tier.bandLo
               return (
                 <div key={p.uid} className="product">
-                  <h3 style={{ fontSize: 14, margin: 0 }}>{tier?.icon || '❓'} {tier?.name || 'Mystery Pack'}</h3>
+                  <h3 className="t-md" style={{ margin: 0 }}>{tier?.icon || '❓'} {tier?.name || 'Mystery Pack'}</h3>
                   <div className="meta" style={{ flex: 1 }}>
                     {(p.cards || []).length} card{(p.cards || []).length === 1 ? '' : 's'}{(p.sealed || []).length ? ` + ${(p.sealed || []).length} sealed` : ''} inside
                     {' '}· worth <b>{fmtMoney(v)}</b> vs {fmtMoney(tier?.price || 0)} price
                     <br /><span style={{ color: read.c }}>{read.t}</span>
-                    {belowBand && <span style={{ color: 'var(--red)' }}> · under the advertised floor!</span>}
-                    {best && <><br /><span className="muted" style={{ fontSize: 11.5 }}>best inside: {best.name} ({fmtMoney(best.value)})</span></>}
+                    {belowBand && <span className="neg"> · under the advertised floor!</span>}
+                    {best && <><br /><span className="cap">best inside: {best.name} ({fmtMoney(best.value)})</span></>}
                   </div>
-                  <button className="btn alt" style={{ padding: '5px 8px', fontSize: 12 }}
+                  <button className="btn alt t-xs" style={{ padding: '5px 8px' }}
                     onClick={() => { unbuildPack(p.uid); flash('Tore it open — contents are back in your stock.') }}>↩ Unbuild</button>
                 </div>
               )
@@ -246,17 +246,17 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
     <div className="modalbg" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
         <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <h2 style={{ fontSize: 18, marginBottom: 2 }}>{tier ? 'Edit pack line' : 'New pack line'}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        <h2 className="t-xl" style={{ marginBottom: 2 }}>{tier ? 'Edit pack line' : 'New pack line'}</h2>
+        <p className="cap t-sm mt-0">
           The band is what you <b>advertise</b> is inside — the game won't stop you mislabeling,
           but a pack that opens under its advertised floor is false advertising, and buyers talk.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <label className="muted" style={{ fontSize: 12.5 }}>Name
+          <label className="cap">Name
             <input value={name} maxLength={40} onChange={e => setName(e.target.value)} style={{ width: '100%', marginTop: 3 }} />
           </label>
           <div>
-            <span className="muted" style={{ fontSize: 12.5 }}>Icon</span>
+            <span className="cap">Icon</span>
             <div className="row" style={{ gap: 4, marginTop: 3, flexWrap: 'wrap' }}>
               {PACK_ICONS.map(ic => (
                 <button key={ic} className={`pctbtn ${icon === ic ? 'on' : ''}`} style={{ fontSize: 16 }} onClick={() => setIcon(ic)}>{ic}</button>
@@ -264,43 +264,43 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
             </div>
           </div>
           <div className="row" style={{ gap: 8 }}>
-            <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Price $
+            <label className="cap" style={{ flex: 1 }}>Price $
               <input type="number" min="1" max="2000" value={price} onChange={e => setPrice(e.target.value)} style={{ width: '100%', marginTop: 3 }} />
             </label>
-            <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Advertised low $
+            <label className="cap" style={{ flex: 1 }}>Advertised low $
               <input type="number" min="0.25" value={bandLo} onChange={e => setBandLo(e.target.value)} style={{ width: '100%', marginTop: 3 }} />
             </label>
-            <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Advertised high $
+            <label className="cap" style={{ flex: 1 }}>Advertised high $
               <input type="number" min="1" value={bandHi} onChange={e => setBandHi(e.target.value)} style={{ width: '100%', marginTop: 3 }} />
             </label>
           </div>
           {/* What the line is MADE of. Together with the band above, this is what 🪄 Auto-build
               sweeps up — "PSA 10 slabs, $1–$10" is a product definition, not just a filter. */}
           <div className="row" style={{ gap: 8 }}>
-            <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Contents
+            <label className="cap" style={{ flex: 1 }}>Contents
               <select value={only} onChange={e => setOnly(e.target.value)} style={{ width: '100%', marginTop: 3 }}>
                 {PACK_ONLY_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
             </label>
             {only === 'slab' && (
-              <label className="muted" style={{ fontSize: 12.5, flex: 1 }}>Minimum grade
+              <label className="cap" style={{ flex: 1 }}>Minimum grade
                 <select value={minGrade} onChange={e => setMinGrade(+e.target.value)} style={{ width: '100%', marginTop: 3 }}>
                   {PACK_GRADE_OPTS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                 </select>
               </label>
             )}
           </div>
-          <div className="banner" style={{ fontSize: 12.5, margin: 0 }}>
+          <div className="banner t-xs" style={{ margin: 0 }}>
             🪄 With these settings, <b>{wouldFit}</b> loose card{wouldFit === 1 ? '' : 's'} in your collection
             {wouldFit === 1 ? ' fits' : ' fit'} this line ({tierContentsLabel({ only, minGrade: +minGrade })},
             {' '}{fmtMoney(+bandLo || 0)}–{fmtMoney(+bandHi || 0)}) — Auto-build would seal
             {' '}<b>{Math.min(wouldFit, AUTO_BUILD_CAP)}</b> pack{Math.min(wouldFit, AUTO_BUILD_CAP) === 1 ? '' : 's'}, one card each.
           </div>
           <div>
-            <span className="muted" style={{ fontSize: 12.5 }}>Sells at</span>
+            <span className="cap">Sells at</span>
             <div className="row" style={{ gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
               {CHANNEL_DEFS.map(c => (
-                <label key={c.key} className="tweet-toggle" style={{ fontSize: 13 }} title={c.hint}>
+                <label key={c.key} className="tweet-toggle t-sm"  title={c.hint}>
                   <input type="checkbox" checked={!!channels[c.key]}
                     onChange={e => setChannels(ch => ({ ...ch, [c.key]: e.target.checked }))} />
                   {c.icon} {c.label}
@@ -310,12 +310,12 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
           </div>
           {/* 📋 Publish the odds board — the headline transparency choice. */}
           <div style={{ borderTop: '1px solid var(--line)', paddingTop: 10 }}>
-            <label className="tweet-toggle" style={{ fontSize: 13.5, fontWeight: 700 }}
+            <label className="tweet-toggle t-sm" style={{ fontWeight: 700 }}
               title="Post the pull odds for this line publicly">
               <input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} />
               📋 Publish the odds board{certified && published ? ' — certified ✔' : ''}
             </label>
-            <p className="muted" style={{ fontSize: 12, margin: '4px 0 0' }}>
+            <p className="cap" style={{ margin: '4px 0 0' }}>
               Post the pull odds for buyers to see. Gamblers <b>bite more often</b>, and an honest thin
               pack <b>barely dings your rep</b> — they knew the odds going in. But it's a public promise:
               a pack that opens <b>under your advertised floor</b> ({fmtMoney(+bandLo || 0)}) burns
@@ -329,13 +329,13 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
         <div className="row" style={{ marginTop: 14, gap: 8 }}>
           <button className="btn gold" onClick={save}>{tier ? 'Save changes' : 'Create line'}</button>
           {tier && (
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 110 }} disabled={stockCount > 0}
+            <button className="btn alt btn-fixed" style={{ maxWidth: 110 }} disabled={stockCount> 0}
               title={stockCount > 0 ? 'Unbuild its packs first' : 'Retire this product line'}
               onClick={() => { deletePackTier(tier.id); flash(`${tier.icon} ${tier.name} retired.`); onClose() }}>
               🗑️ Delete
             </button>
           )}
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 100 }} onClick={onClose}>Cancel</button>
+          <button className="btn alt btn-fixed" style={{ maxWidth: 100 }} onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>
@@ -389,8 +389,8 @@ function PackBuilder({ tier, onClose, flash }) {
     <div className="modalbg" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 760 }} onClick={e => e.stopPropagation()}>
         <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <h2 style={{ fontSize: 18, marginBottom: 2 }}>🛠️ Build a {tier.icon} {tier.name}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        <h2 className="t-xl" style={{ marginBottom: 2 }}>🛠️ Build a {tier.icon} {tier.name}</h2>
+        <p className="cap t-sm mt-0">
           Sells at <b>{fmtMoney(tier.price)}</b>, advertising <b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside
           {' '}· takes <b>{tierContentsLabel(tier)}</b>.
           Tap items to seal them in — the buyer gets <b>everything</b> in the pack.
@@ -402,7 +402,7 @@ function PackBuilder({ tier, onClose, flash }) {
           {read && <span className="pill" style={{ background: `${read.c === 'var(--gold)' ? '#ffcb05' : ''}22`, color: read.c }}>{read.t}</span>}
           {/* Bulk-select every card that fits — into THIS pack. (For one-card-per-pack, use
               🪄 Auto-build on the line itself.) */}
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 190, padding: '4px 10px', fontSize: 12, marginLeft: 'auto' }}
+          <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 190, padding: '4px 10px', marginLeft: 'auto' }}
             disabled={!fitting.length}
             title={fitting.length
               ? `Seal all ${fitting.length} loose ${tierContentsLabel(tier)} worth ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)} into this ONE pack`
@@ -411,17 +411,17 @@ function PackBuilder({ tier, onClose, flash }) {
             ＋ Add all {fitting.length} that fit
           </button>
           {n > 0 && (
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 80, padding: '4px 10px', fontSize: 12 }}
+            <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 80, padding: '4px 10px' }}
               onClick={() => { setCardIds(new Set()); setSealIds(new Set()) }}>Clear</button>
           )}
         </div>
         {offRule.length > 0 && (
-          <div className="banner" style={{ fontSize: 12.5, marginTop: 8, color: 'var(--red)' }}>
+          <div className="banner t-xs" style={{ marginTop: 8, color: 'var(--red)' }}>
             ⚠️ {offRule.length} card{offRule.length === 1 ? '' : 's'} in here {offRule.length === 1 ? "doesn't" : "don't"} match
             {' '}this line's promise of <b>{tierContentsLabel(tier)}</b>. You can still seal it — but that's what the line advertises.
           </div>
         )}
-        <div className="subtabs" style={{ marginTop: 8 }}>
+        <div className="subtabs mt-4">
           <button className={`subtab ${pane === 'cards' ? 'active' : ''}`} onClick={() => setPane('cards')}>🗂️ Cards ({collection.length})</button>
           <button className={`subtab ${pane === 'sealed' ? 'active' : ''}`} onClick={() => setPane('sealed')}>📦 Sealed ({(sealedInventory || []).length})</button>
         </div>
@@ -432,11 +432,11 @@ function PackBuilder({ tier, onClose, flash }) {
                 {[...collection].sort((a, b) => cardValue(b) - cardValue(a)).map(c => {
                   const on = cardIds.has(c.uid)
                   return (
-                    <div key={c.uid} className="vendoritem" style={on ? { outline: '2px solid var(--gold)', borderRadius: 10 } : undefined}
+                    <div key={c.uid} className="vendoritem" style={on ? { boxShadow: '0 0 0 2px var(--gold)', borderRadius: 10 } : undefined}
                       onClick={() => toggle(setCardIds)(c.uid)} role="button" tabIndex={0}
                       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(setCardIds)(c.uid) } }}>
                       <CardTile card={c} interactive={false} />
-                      <span className="pill" style={{ alignSelf: 'center', fontSize: 10.5, background: on ? '#ffcb0522' : undefined, color: on ? 'var(--gold)' : undefined }}>
+                      <span className="pill t-xs" style={{ alignSelf: 'center', background: on ? '#ffcb0522' : undefined, color: on ? 'var(--gold)' : undefined }}>
                         {on ? '✓ sealed in' : fmtMoney(cardValue(c))}
                       </span>
                     </div>
@@ -451,14 +451,14 @@ function PackBuilder({ tier, onClose, flash }) {
                   const set = setById(it.setId)
                   const on = sealIds.has(it.uid)
                   return (
-                    <div key={it.uid} className="vendoritem" style={on ? { outline: '2px solid var(--gold)', borderRadius: 10 } : undefined}
+                    <div key={it.uid} className="vendoritem" style={on ? { boxShadow: '0 0 0 2px var(--gold)', borderRadius: 10 } : undefined}
                       onClick={() => toggle(setSealIds)(it.uid)} role="button" tabIndex={0}
                       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(setSealIds)(it.uid) } }}>
                       <div className="shelf-sealed">
                         {set?.logo ? <img src={set.logo} alt={set?.name || ''} decoding="async" /> : <span className="shelf-sealed-icon">{it.product.icon || '📦'}</span>}
                         <div className="shelf-sealed-label">{it.product.icon || '📦'} {it.product.type}</div>
                       </div>
-                      <span className="pill" style={{ alignSelf: 'center', fontSize: 10.5, background: on ? '#ffcb0522' : undefined, color: on ? 'var(--gold)' : undefined }}>
+                      <span className="pill t-xs" style={{ alignSelf: 'center', background: on ? '#ffcb0522' : undefined, color: on ? 'var(--gold)' : undefined }}>
                         {on ? '✓ sealed in' : fmtMoney(sealedValue(it))}
                       </span>
                     </div>
@@ -470,7 +470,7 @@ function PackBuilder({ tier, onClose, flash }) {
         </div>
         <div className="row" style={{ marginTop: 14, gap: 8 }}>
           <button className="btn gold" disabled={n === 0} onClick={seal}>🎁 Seal it — {n || 'no'} item{n === 1 ? '' : 's'}, {fmtMoney(total)} inside</button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 100 }} onClick={onClose}>Cancel</button>
+          <button className="btn alt btn-fixed" style={{ maxWidth: 100 }} onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>

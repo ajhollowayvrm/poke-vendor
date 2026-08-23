@@ -81,42 +81,42 @@ export default function BulkBin() {
             : dryDays > 0
             ? <>😠 <b>Kids keep coming for an empty box.</b> {dryDays} day{dryDays === 1 ? '' : 's'} running{(bin.missed || 0) > 0 ? ` · ${bin.missed} turned away all-time` : ''} — every one of them costs you a little of your name{bulkOnHand > 0 ? ', and there\'s bulk sitting in your storeroom right now' : ''}.</>
             : <>🗑️ <b>The box is empty and your diggers are coming.</b>{bulkOnHand > 0 ? ' There\'s bulk in the storeroom.' : ''}</>}
-          {refilledPerDay > 0 && <div style={{ marginTop: 4 }}>Fill it and they'll clear <b>≈{Math.round(refilledPerDay)}</b> card{Math.round(refilledPerDay) === 1 ? '' : 's'} a day at {fmtMoney(price)}.</div>}
+          {refilledPerDay > 0 && <div className="mt-2">Fill it and they'll clear <b>≈{Math.round(refilledPerDay)}</b> card{Math.round(refilledPerDay) === 1 ? '' : 's'} a day at {fmtMoney(price)}.</div>}
         </div>
       )}
       <div className="toolbar" style={{ marginTop: 6, gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
         <span className="muted">$</span>
         <input type="number" min="0" step="0.05" value={priceInput} onChange={e => setPriceInput(e.target.value)}
           onFocus={e => e.target.select()} style={{ width: 80 }} aria-label="bin price per card" />
-        <button className="btn" style={{ flex: 'none', padding: '6px 10px', fontSize: 12 }} onClick={applyPrice}>Set price</button>
+        <button className="btn t-xs btn-fixed" style={{ padding: '6px 10px' }} onClick={applyPrice}>Set price</button>
         {bulkOnHand > 0 && (
-          <button className="btn gold" style={{ flex: 'none', padding: '6px 10px', fontSize: 12 }}
+          <button className="btn gold t-xs btn-fixed" style={{ padding: '6px 10px' }}
             title={`Toss every raw card worth under $1 into the bin${keepOne ? ' (keep-singles protection applies)' : ''} — locked and held cards always stay out.`}
             onClick={() => {
               const { tossed, kept } = stockBinBulk()
-              flash(tossed ? `🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in.${kept ? ` ${kept} protected.` : ''}` : 'Nothing toss-able right now.')
+              flash(tossed ? `🗑️ Tossed ${tossed} bulk card${tossed> 1 ? 's' : ''} in.${kept ? ` ${kept} protected.` : ''}` : 'Nothing toss-able right now.')
             }}>🗑️ Toss {bulkOnHand} bulk in</button>
         )}
       </div>
       {/* Keeping the box full is now a daily job, so make it one you can hand off. Storeroom
           bulk only — the display floor is never swept out from under you. */}
       {hasStore && (
-        <label className="muted" style={{ fontSize: 12, marginTop: 6, display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer' }}
+        <label className="cap" style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer' }}
           title="Every morning, sweep the storeroom's sub-$1 raw bulk into the box before the doors open. Locked, held and keep-singles cards stay out, and cards already on your sales floor are left alone.">
           <input type="checkbox" checked={autoFill} onChange={e => setSetting('autoFillBin', e.target.checked)} />
           Keep the box full — top it up from storeroom bulk each morning
         </label>
       )}
-      <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+      <div className="cap mt-3">
         In the bin: <b>{stock.length}</b> card{stock.length === 1 ? '' : 's'}
         {stock.length > 0 && <> · avg value <b>{fmtMoney(avgVal)}</b> vs your {fmtMoney(price)} price</>}
-        {(bin.sold || 0) > 0 && <> · lifetime: <b>{bin.sold}</b> dug out for <b style={{ color: 'var(--green)' }}>{fmtMoney(bin.revenue || 0)}</b></>}
-        {(bin.missed || 0) > 0 && <> · <span style={{ color: 'var(--red)' }}>{bin.missed} left empty-handed</span></>}
+        {(bin.sold || 0) > 0 && <> · lifetime: <b>{bin.sold}</b> dug out for <b className="pos">{fmtMoney(bin.revenue || 0)}</b></>}
+        {(bin.missed || 0) > 0 && <> · <span className="neg">{bin.missed} left empty-handed</span></>}
       </div>
       {/* The demand read: what the box will move at this price, and how long your stock lasts.
           Cheaper price → more diggers AND deeper handfuls, so this moves as you retune it. */}
       {perDay > 0 && stock.length > 0 && (
-        <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+        <div className="cap mt-2">
           📈 At {fmtMoney(price)} a card the diggers will clear <b>≈{Math.round(perDay)}</b> card{Math.round(perDay) === 1 ? '' : 's'} a day
           {' · '}that's <b style={{ color: runway < 2 ? 'var(--red)' : runway < 5 ? 'var(--gold)' : undefined }}>
             {runway < 1 ? 'under a day' : `~${Math.round(runway)} day${Math.round(runway) === 1 ? '' : 's'}`}</b> of stock
@@ -124,12 +124,12 @@ export default function BulkBin() {
         </div>
       )}
       {price <= 0 && (
-        <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+        <div className="cap mt-2">
           The box is off the counter at $0 — nothing sells, and nobody comes looking for it. Set a price to put it out.
         </div>
       )}
       {treasures.length > 0 && (
-        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+        <div className="cap mt-3">
           🤿 Buried in there: {treasures.map(c => (
             <button key={c.uid} className="pill" style={{ marginRight: 4, cursor: 'pointer', background: '#ffd45e22', color: 'var(--gold, #ffd45e)' }}
               title={`Worth ${fmtMoney(cardValue(c))} — tap to fish it back out before a kid does`}
@@ -140,19 +140,19 @@ export default function BulkBin() {
         </div>
       )}
       {stock.length > 0 && (
-        <div style={{ marginTop: 6 }}>
-          <button className="btn alt" style={{ padding: '4px 10px', fontSize: 12, maxWidth: 200 }}
+        <div className="mt-3">
+          <button className="btn alt t-xs" style={{ padding: '4px 10px', maxWidth: 200 }}
             onClick={() => setShowStock(v => !v)}>{showStock ? 'Hide contents' : `Dig through it (${stock.length})`}</button>
           {showStock && (
             <div className="row" style={{ flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
               {[...stock].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 80).map(c => (
-                <button key={c.uid} className="pill" style={{ cursor: 'pointer', fontSize: 11.5 }}
+                <button key={c.uid} className="pill t-xs" style={{ cursor: 'pointer' }}
                   title={`${fmtMoney(cardValue(c))} — tap to pull it back out`}
                   onClick={() => { if (unstockBin(c.uid)) flash(`Pulled ${c.name} back out.`) }}>
                   {c.name} ↩
                 </button>
               ))}
-              {stock.length > 80 && <span className="muted" style={{ fontSize: 11.5 }}>…and {stock.length - 80} more</span>}
+              {stock.length > 80 && <span className="cap">…and {stock.length - 80} more</span>}
             </div>
           )}
         </div>

@@ -122,14 +122,14 @@ export default function Binder({ onPick }) {
       {binderOffer && (
         <div className="banner" style={{ marginBottom: 10, borderColor: 'var(--gold)' }}>
           🖼️ <b>{binderOffer.who[0].toUpperCase() + binderOffer.who.slice(1)}</b> wants your completed <b>{binderOffer.setName}</b> master set — the whole page,
-          {' '}<b style={{ color: 'var(--green)' }}>{fmtMoney(binderOffer.price)}</b> ({Math.round(binderOffer.mult * 100)}% of book, {binderOffer.count} cards).
+          {' '}<b className="pos">{fmtMoney(binderOffer.price)}</b> ({Math.round(binderOffer.mult * 100)}% of book, {binderOffer.count} cards).
           {' '}<span className="muted">Expires in {Math.max(0, binderOffer.expiresDay - absoluteDay(currentDay, monthsElapsed))}d. You keep the 🏆 badge and 🎓 knowledge; the showcase draw leaves with the cards.</span>
           <span className="row" style={{ gap: 6, marginTop: 6, display: 'inline-flex', marginLeft: 8 }}>
-            <button className="btn gold" style={{ flex: 'none', padding: '4px 12px', fontSize: 12.5 }}
+            <button className="btn gold t-xs btn-fixed" style={{ padding: '4px 12px' }}
               onClick={() => { const r = sellMasterLot(); toast(r.error || `🖼️ Sold the ${binderOffer.setName} page — +${fmtMoney(r.price)}.`) }}>
               Sell the page · {fmtMoney(binderOffer.price)}
             </button>
-            <button className="btn alt" style={{ flex: 'none', padding: '4px 12px', fontSize: 12.5 }}
+            <button className="btn alt t-xs btn-fixed" style={{ padding: '4px 12px' }}
               onClick={() => { declineMasterLot(); toast('🖼️ The page stays on display.') }}>
               Keep it on display
             </button>
@@ -140,7 +140,7 @@ export default function Binder({ onPick }) {
         <select value={setId} onChange={e => { setSetId(e.target.value); setMissingOnly(false) }}>
           {SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
-        <span className="muted" style={{ fontSize: 12.5 }}>{set.series}</span>
+        <span className="cap">{set.series}</span>
         {everCompleted && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }} title="You've earned this set's completion bonus — and its 🎓 knowledge perks (rip intel, walk-ins asking for this set, its singles selling faster) are yours forever">🏆 Set done</span>}
         {everCompleted && comp.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }} title="The intact page is a shop DRAW: more walk-ins, whales come earlier and more often, and streams pull extra tune-ins — for every completed set you keep on display. Collectors may offer to buy the whole page at a premium.">🖼️ On display</span>}
         {ms.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="Every variant of every card is slotted">✨ Masterset!</span>}
@@ -149,7 +149,7 @@ export default function Binder({ onPick }) {
         {hasChallengeKit && !comp.complete && (
           challenge?.setId === set.id
             ? <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }} title="You announced this chase — dealers surface its singles, every card you land is an episode, and finishing it is the payoff video">🃏 Chasing on camera</span>
-            : <button className="btn alt" style={{ flex: 'none', padding: '3px 10px', fontSize: 12.5 }}
+            : <button className="btn alt t-xs btn-fixed" style={{ padding: '3px 10px' }}
                 title={challenge ? `You're already chasing the ${challenge.setName} — drop it on the Stream tab first` : 'Announce this set as your master set challenge'}
                 onClick={() => { const r = declareChallenge(set.id); toast(r.error || `🃏 Announced: chasing the ${set.name} master set.`) }}>
                 🃏 Declare challenge
@@ -169,13 +169,13 @@ export default function Binder({ onPick }) {
           </span>
         </div>
         <div className="binder-bar"><div style={{ width: ms.pct + '%' }} /></div>
-        <div className="muted" style={{ fontSize: 12 }}>
+        <div className="cap">
           {ms.complete
             ? '✨ Full masterset — every variant slotted. Ultimate flex.'
             : <>
                 {ms.total - ms.placed} slot{ms.total - ms.placed === 1 ? '' : 's'} to go
                 {!comp.complete && <> · completing the base set pays +{fmtMoney(reward.cash)}, +{reward.noto}★ & +{reward.clout} 🎫 — then the page on display draws walk-ins, whales & viewers</>}
-                {placeableNow > 0 && <> · <b style={{ color: 'var(--green)' }}>{placeableNow} ready to slot</b></>}
+                {placeableNow > 0 && <> · <b className="pos">{placeableNow} ready to slot</b></>}
               </>}
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function Binder({ onPick }) {
         </label>
         <span className="muted bs-note">
           {ms.reserved > 0
-            ? <><b style={{ color: 'var(--gold)' }}>{ms.reserved}</b> open slot{ms.reserved === 1 ? '' : 's'} {ms.reserved === 1 ? 'has' : 'have'} only a reserved copy — {ms.reserved === 1 ? 'it stays' : 'they stay'} out to grade &amp; sell.</>
+            ? <><b className="warn">{ms.reserved}</b> open slot{ms.reserved === 1 ? '' : 's'} {ms.reserved === 1 ? 'has' : 'have'} only a reserved copy — {ms.reserved === 1 ? 'it stays' : 'they stay'} out to grade &amp; sell.</>
             : reserveActive
               ? <>Held out of the binder: {reserveSummary}.{reserveGradedValue > 0 ? '' : ' Graded slabs are always eligible.'}</>
               : <>Every copy you own is eligible to file. Set a reserve to keep your sharpest cuts — or your priciest cards — out of the binder.</>}
@@ -235,7 +235,7 @@ export default function Binder({ onPick }) {
         </span>
       </div>
 
-      <div className="toolbar" style={{ marginTop: 12 }}>
+      <div className="toolbar mt-5">
         <button className="btn gold" style={{ flex:'none' }} disabled={placeableNow === 0} onClick={fillAll}
           title={placeableNow ? `Move ${placeableNow} owned card${placeableNow>1?'s':''} out of your collection into their binder slots` : 'You own no cards for an open slot yet'}>
           📒 Add everything possible{placeableNow ? ` (${placeableNow})` : ''}
@@ -243,7 +243,7 @@ export default function Binder({ onPick }) {
         <button className={`btn ${missingOnly ? 'gold' : 'alt'}`} style={{ flex:'none' }} onClick={() => setMissingOnly(v => !v)}>
           {missingOnly ? '✓ Incomplete only' : 'Show incomplete only'}
         </button>
-        <span className="muted" style={{ fontSize: 12 }}>{cards.length} card{cards.length === 1 ? '' : 's'}</span>
+        <span className="cap">{cards.length} card{cards.length === 1 ? '' : 's'}</span>
       </div>
 
       {cards.length === 0 ? (

@@ -109,7 +109,7 @@ function Listing({ listing, meetsLeft }) {
             </button>
           </>
         )}
-        {listing.dead && <span className="muted" style={{ fontSize: 12 }}>They stopped replying.</span>}
+        {listing.dead && <span className="cap">They stopped replying.</span>}
       </div>
     </div>
   )
@@ -131,7 +131,7 @@ export default function LocalMarket() {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 14 }}>
+      <div className="banner mt-6">
         📱 <b style={{ color: '#4267B2' }}>Local Marketplace</b> — strangers near you, selling out of
         their spare rooms. <b>Nobody here prices to market.</b> They price to how they feel about the
         thing, so most of this board is fantasy and the rest goes fast. Message them to haggle (free),
@@ -139,7 +139,7 @@ export default function LocalMarket() {
         {stats?.burned > 0 && (
           <> You have been caught out <b>{stats.burned}</b> time{stats.burned === 1 ? '' : 's'} out here.</>
         )}
-        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+        <div className="cap mt-3">
           A price well under market means one of two things and never says which: somebody who does
           not know what they have, or somebody who is lying. Read how long it has sat, how old the
           account is, and what the photos look like.
@@ -147,7 +147,7 @@ export default function LocalMarket() {
       </div>
 
       <div className="row" style={{ gap: 6, margin: '10px 0', flexWrap: 'wrap' }}>
-        <span className="muted" style={{ fontSize: 12.5 }}>Sort:</span>
+        <span className="cap">Sort:</span>
         {[['new', 'Newest'], ['cheap', 'Best price vs market'], ['price', 'Cheapest']].map(([k, label]) => (
           <button key={k} className={`btn small ${sort === k ? '' : 'ghost'}`} onClick={() => setSort(k)}>{label}</button>
         ))}

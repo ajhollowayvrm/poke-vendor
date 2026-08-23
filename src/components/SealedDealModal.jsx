@@ -50,28 +50,26 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
     <div className="modalbg" onClick={() => { if (!outcome) onCancel?.() }}>
       <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
         {!outcome && onCancel && <button className="modal-close" aria-label="Close" onClick={onCancel}>✕</button>}
-        <h2 style={{ fontSize: 19 }}>{enc.title}</h2>
+        <h2 className="t-xl">{enc.title}</h2>
         {enc.card && (
           <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
             <HoloCard card={enc.card} maxTilt={16} className="enc-card"><img src={cardImg(enc.card)} alt="" decoding="async" /></HoloCard>
           </div>
         )}
-        <p style={{ fontSize: 15, lineHeight: 1.45 }}>{enc.body}</p>
+        <p className="t-lg" style={{ lineHeight: 1.45 }}>{enc.body}</p>
 
         {/* payment-rail recourse note — the rail you were pushed onto is itself a tell */}
-        <div className="banner" style={{ marginTop: 0, fontSize: 13 }}>
+        <div className="banner t-sm mt-0">
           {deal.reversible
             ? <>💳 They take <b>{rail}</b> — if it's fake you could <b>file a chargeback</b> to claw money back.</>
             : <>⚠️ <b>{rail === 'cash' ? 'Cash, no receipt' : `${rail} F&F`}</b> — irreversible. If it's fake, <b>there's no recourse</b>.</>}
         </div>
 
         {authRead && (
-          <div className="banner result-in" style={{ marginTop: 8, fontSize: 13,
-            background: authRead.looksFake ? 'color-mix(in srgb, var(--red) 13%, transparent)' : 'color-mix(in srgb, var(--green) 13%, transparent)',
-            borderColor: authRead.looksFake ? 'color-mix(in srgb, var(--red) 33%, transparent)' : 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
+          <div className="banner result-in t-sm" style={{ marginTop: 8, background: authRead.looksFake ? 'color-mix(in srgb, var(--red) 13%, transparent)' : 'color-mix(in srgb, var(--green) 13%, transparent)', borderColor: authRead.looksFake ? 'color-mix(in srgb, var(--red) 33%, transparent)' : 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
             🔍 <b>Authentication:</b> {authRead.looksFake
-              ? <>looks <b style={{ color: 'var(--red)' }}>FAKE</b> — wrapper/weight is off.</>
-              : <>looks <b style={{ color: 'var(--green)' }}>GENUINE</b> — checks out, but a clean reseal can still pass.</>}
+              ? <>looks <b className="neg">FAKE</b> — wrapper/weight is off.</>
+              : <>looks <b className="pos">GENUINE</b> — checks out, but a clean reseal can still pass.</>}
             {' '}<span className="muted">(kit is ~{authRead.confidence}% reliable{deal.origin === 'vintage' ? ' · vintage reseals are trickiest' : ''})</span>
           </div>
         )}
@@ -84,7 +82,7 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
               </button>
             )}
             {!hasAuthKit && (
-              <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              <div className="cap" style={{ marginBottom: 6 }}>
                 🔒 An <b>Authentication Kit</b> would let you authenticate before buying.
               </div>
             )}
@@ -134,7 +132,7 @@ function Outcome({ outcome, charge, deal, onCharge, onFinish }) {
           </>
         ) : (
           <>
-            <p className="muted" style={{ fontSize: 13 }}>You paid by {RAIL_LABEL[deal.payMethod]} — you can dispute it (~60% to recover most of it).</p>
+            <p className="cap t-sm">You paid by {RAIL_LABEL[deal.payMethod]} — you can dispute it (~60% to recover most of it).</p>
             <div className="row" style={{ justifyContent: 'center', gap: 8, marginTop: 4 }}>
               <button className="btn gold" style={{ maxWidth: 200 }} onClick={onCharge}>💳 File a chargeback</button>
               <button className="btn alt" style={{ maxWidth: 140 }} onClick={onFinish}>Eat the loss</button>
@@ -143,7 +141,7 @@ function Outcome({ outcome, charge, deal, onCharge, onFinish }) {
         )
       ) : (
         <>
-          <p className="muted" style={{ fontSize: 13 }}>{RAIL_LABEL[deal.payMethod] === 'cash' ? 'Cash, no receipt' : `${RAIL_LABEL[deal.payMethod]} F&F`} — nothing to dispute. Lesson learned.</p>
+          <p className="cap t-sm">{RAIL_LABEL[deal.payMethod] === 'cash' ? 'Cash, no receipt' : `${RAIL_LABEL[deal.payMethod]} F&F`} — nothing to dispute. Lesson learned.</p>
           <button className="btn gold" style={{ maxWidth: 200, marginTop: 8 }} onClick={onFinish}>Done</button>
         </>
       )}

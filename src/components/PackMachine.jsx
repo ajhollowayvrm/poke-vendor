@@ -48,34 +48,34 @@ export default function PackMachine() {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         🎰 <b>Pack Machine</b> — load it with real booster packs and set <b>one flat price</b>. Walk-ins pay that
         price for a <b>random</b> pack (a sealed-pack mystery box). A price below the average pack's value pulls a
         crowd; a markup earns more but sells slower. Break boxes into single packs first.
       </div>
 
       {/* Price + status */}
-      <div className="wants" style={{ marginTop: 12 }}>
+      <div className="wants mt-5">
         <div className="wants-head">🎟️ Flat price <span className="muted">— what a customer pays for any random pack</span></div>
         <div className="toolbar" style={{ marginTop: 6, gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <span className="muted">$</span>
           <input type="number" min="0" step="0.5" value={priceInput} onChange={e => setPriceInput(e.target.value)}
             onFocus={e => e.target.select()} style={{ width: 90 }} aria-label="pack price" />
-          <button className="btn gold" style={{ flex: 'none', padding: '6px 12px' }} onClick={applyPrice}>Set price</button>
-          <span className="muted" style={{ fontSize: 12.5, color: dealRead.color }}>{dealRead.txt}</span>
+          <button className="btn gold btn-fixed" style={{ padding: '6px 12px' }} onClick={applyPrice}>Set price</button>
+          <span className="cap" style={{ color: dealRead.color }}>{dealRead.txt}</span>
         </div>
-        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+        <div className="cap mt-3">
           Loaded: <b>{stock.length}</b> pack{stock.length === 1 ? '' : 's'} · value <b>{fmtMoney(totalVal)}</b>
           {stock.length > 0 && <> · avg <b>{fmtMoney(avgVal)}</b>/pack</>}
-          {(machine.sold || 0) > 0 && <> · lifetime: sold <b>{machine.sold}</b> for <b style={{ color: 'var(--green)' }}>{fmtMoney(machine.revenue || 0)}</b></>}
+          {(machine.sold || 0) > 0 && <> · lifetime: sold <b>{machine.sold}</b> for <b className="pos">{fmtMoney(machine.revenue || 0)}</b></>}
         </div>
       </div>
 
       {/* What's loaded */}
-      <div className="wants" style={{ marginTop: 10 }}>
+      <div className="wants mt-5">
         <div className="wants-head">📥 In the machine <span className="muted">— {stock.length} pack{stock.length === 1 ? '' : 's'} ready to vend</span></div>
         {stockLines.length === 0 ? (
-          <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>Empty — load single packs from your inventory below.</div>
+          <div className="cap" style={{ margin: '6px 2px' }}>Empty — load single packs from your inventory below.</div>
         ) : (
           <div className="stock-lines">
             {stockLines.map(line => (
@@ -94,10 +94,10 @@ export default function PackMachine() {
       </div>
 
       {/* Load packs from inventory */}
-      <div className="wants" style={{ marginTop: 10 }}>
+      <div className="wants mt-5">
         <div className="wants-head">🎴 Load packs <span className="muted">— single booster packs from your inventory (break boxes first)</span></div>
         {availLines.length === 0 ? (
-          <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>No single packs on hand. Buy packs, or break a box down in the Storeroom.</div>
+          <div className="cap" style={{ margin: '6px 2px' }}>No single packs on hand. Buy packs, or break a box down in the Storeroom.</div>
         ) : (
           <div className="stock-lines">
             {availLines.map(line => (

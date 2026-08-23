@@ -94,8 +94,8 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
     <div className="modalbg" onClick={close}>
       <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
         <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
-        <h2 style={{ fontSize: 19, marginBottom: 2 }}>Haggle · {vendorName}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        <h2 className="t-xl" style={{ marginBottom: 2 }}>Haggle · {vendorName}</h2>
+        <p className="cap t-sm mt-0">
           {card?.name} · market {fmtMoney(market)} · {arch.label} ({side === 'buy' ? 'selling to you' : 'buying from you'})
         </p>
 
@@ -128,17 +128,17 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
             </div>
             <div className="haggle-current">
               Their price: <b>{fmtMoney(their)}</b>
-              <span className="muted" style={{ fontSize: 12 }}> · round {Math.min(round + 1, MAX_ROUNDS)}/{MAX_ROUNDS}</span>
+              <span className="cap"> · round {Math.min(round + 1, MAX_ROUNDS)}/{MAX_ROUNDS}</span>
             </div>
             <div className="haggle-offer">
-              <span className="muted" style={{ fontSize: 13 }}>Your offer</span>
+              <span className="cap t-sm">Your offer</span>
               <div className="row" style={{ alignItems: 'center', gap: 8 }}>
-                <button className="btn alt" style={{ flex:'none', minWidth:44 }} onClick={() => bump(-1)}>−</button>
+                <button className="btn alt btn-fixed" style={{ minWidth:44 }} onClick={() => bump(-1)}>−</button>
                 <span className="haggle-amt">{fmtMoney(offer)}</span>
-                <button className="btn alt" style={{ flex:'none', minWidth:44 }} onClick={() => bump(1)}>+</button>
+                <button className="btn alt btn-fixed" style={{ minWidth:44 }} onClick={() => bump(1)}>+</button>
               </div>
             </div>
-            <div className="row" style={{ marginTop: 12 }}>
+            <div className="row mt-5">
               {/* Disable when your offer isn't an improvement on their standing
                   price (same rule for buy and sell — `better` already encodes the
                   correct direction per side). Take-their-price is always available. */}
@@ -147,7 +147,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
               <button className="btn" onClick={() => onDeal(their)}>Take {fmtMoney(their)}</button>
               <button className="btn alt" onClick={() => onClose(true)}>Walk away</button>
             </div>
-            {outOfRounds && <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>They're out of patience — take their price or walk.</p>}
+            {outOfRounds && <p className="cap mt-4">They're out of patience — take their price or walk.</p>}
           </>
         )}
       </div>

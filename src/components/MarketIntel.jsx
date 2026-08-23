@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SHOP_SETS, openPack, cardValue, fmtMoney, hitGemRate, marketMult, round2 } from '../game/engine'
 import { useGame } from '../game/store'
-import { useOpen, bigScreen } from '../ui/Collapse'
+import { useOpen } from '../ui/Collapse'
 
 // Buy-tab intel panels, each gated behind its upgrade (they render null unowned):
 //   📈 Hobby Wire (upgrades.hobbyWire) — demand: what walk-ins asked for and you couldn't
@@ -23,7 +23,9 @@ export function HobbyWire() {
   const demandLog = useGame(s => s.demandLog)
   const marketMults = useGame(s => s.marketMults)
   const marketHistory = useGame(s => s.marketHistory)
-  const [open, toggle] = useOpen('pv-wire-open', bigScreen())
+  // Closed by default — intel is reference material and it sat above the Buy tab's shelf.
+  // New key: a changed default cannot reach a player who already toggled the old one.
+  const [open, toggle] = useOpen('pv-wire-open2', false)
   if (!owned) return null
 
   // Tally the fortnight's missed walk-in asks by item — the same aggregation as the Store
@@ -42,7 +44,7 @@ export function HobbyWire() {
   const soft = [...movers].sort((a, b) => a.mult - b.mult).slice(0, 2).filter(m => m.mult <= 0.97)
 
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
+    <div className="market-panel mt-5">
       <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
         📈 Hobby Wire <span className="muted">— demand at your counter · market movers</span>
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>
@@ -50,9 +52,9 @@ export function HobbyWire() {
       {open && (
         <>
           <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span className="muted" style={{ fontSize: 12.5 }}>🗣️ Asked for &amp; missed:</span>
+            <span className="cap">🗣️ Asked for &amp; missed:</span>
             {asks.length === 0
-              ? <span className="muted" style={{ fontSize: 12.5 }}>
+              ? <span className="cap">
                   {hasStore ? 'nothing this fortnight — the floor had what the town wanted.' : 'no counter yet — walk-in demand starts with a Brick-and-Mortar Store.'}
                 </span>
               : asks.map(([what, n]) => (
@@ -62,10 +64,10 @@ export function HobbyWire() {
                 ))}
           </div>
           <div className="row" style={{ gap: 6, marginTop: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span className="muted" style={{ fontSize: 12.5 }}>📊 Movers:</span>
-            {hot.length === 0 && soft.length === 0 && <span className="muted" style={{ fontSize: 12.5 }}>market's flat — no set far off ×1.00.</span>}
+            <span className="cap">📊 Movers:</span>
+            {hot.length === 0 && soft.length === 0 && <span className="cap">market's flat — no set far off ×1.00.</span>}
             {hot.map(({ s, mult, pct }) => (
-              <span key={s.id} className="pill" style={{ color: 'var(--gold)' }} title="Running hot — sealed you hold here is worth more, and rips pay out closer to the pack price.">
+              <span key={s.id} className="pill warn"  title="Running hot — sealed you hold here is worth more, and rips pay out closer to the pack price.">
                 🔥 {s.name} ×{mult.toFixed(2)} <TrendTag pct={pct} />
               </span>
             ))}
@@ -89,7 +91,8 @@ export function BreakersAlmanac() {
   const currentDay = useGame(s => s.currentDay)
   const marketMults = useGame(s => s.marketMults)
   const marketHistory = useGame(s => s.marketHistory)
-  const [open, toggle] = useOpen('pv-almanac-open', bigScreen())
+  // Closed by default, and a new key — same reasoning as the wire above.
+  const [open, toggle] = useOpen('pv-almanac-open2', false)
   const masteredOnly = !owned && (mastered || []).length > 0
 
   // Monte-Carlo pack EV per shop set through the real openPack/cardValue path — the same
@@ -129,7 +132,7 @@ export function BreakersAlmanac() {
     <b style={{ color: pct >= 1 ? 'var(--gold)' : pct >= 0.75 ? 'var(--green)' : 'inherit' }}>{(pct * 100).toFixed(0)}%</b>
   )
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
+    <div className="market-panel mt-5">
       <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
         📐 Breaker's Almanac <span className="muted">— {masteredOnly ? '🎓 your mastered sets only (you know those print runs inside out; the 📐 Almanac upgrade covers the rest)' : 'rip EV by set, riding today\'s market'}</span>
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>
@@ -138,11 +141,11 @@ export function BreakersAlmanac() {
         <>
           <div style={{ overflowX: 'auto', marginTop: 8 }}>
             <div style={{ minWidth: 560 }}>
-              <div className="muted" style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, fontSize: 11.5, padding: '2px 4px' }}>
+              <div className="cap" style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '2px 4px' }}>
                 <span>Set</span><span>EV / pack</span><span>Best rip</span><span title="Of the set's hit lineup, the share worth $100+ as a PSA 10 — how stacked the chase is.">🎯 Chase</span><span>Market</span>
               </div>
               {rows.map(r => (
-                <div key={r.s.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, fontSize: 12.5, padding: '5px 4px', borderTop: '1px solid #ffffff14', alignItems: 'baseline' }}>
+                <div className="t-xs" key={r.s.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '5px 4px', borderTop: '1px solid #ffffff14', alignItems: 'baseline' }}>
                   <span style={{ fontWeight: 700 }}>{r.s.name}</span>
                   <span>{fmtMoney(r.evPack)} <span className="muted">/ {fmtMoney(r.booster.price)}</span> · {pctCell(r.packPct)}</span>
                   <span><span className="muted">{r.best.p.type}</span> · {pctCell(r.best.pct)}</span>
@@ -152,7 +155,7 @@ export function BreakersAlmanac() {
               ))}
             </div>
           </div>
-          <p className="muted" style={{ fontSize: 11.5, margin: '8px 4px 2px' }}>
+          <p className="cap" style={{ margin: '8px 4px 2px' }}>
             Monte-Carlo, {`N=400`} packs/set through the real pack odds, at today's market. Ripping is designed to
             trail the pack price on average — the chase is the point — so shop the <b>spread</b>: which set wastes
             least, and when a 🔥 market pushes a box toward (or past) break-even.

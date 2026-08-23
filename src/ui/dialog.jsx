@@ -47,10 +47,10 @@ export function DialogHost() {
         role="alertdialog" aria-modal="true" aria-label={d.title}>
         <h2 style={{ marginBottom: 6 }}>{d.title}</h2>
         {d.body && <p className="muted" style={{ marginTop: 0, whiteSpace: 'pre-line' }}>{d.body}</p>}
-        <div className="row" style={{ marginTop: 14 }}>
+        <div className="row mt-6">
           <button className={`btn ${d.danger ? '' : 'gold'}`} style={d.danger ? { background: 'var(--red)', color: '#fff' } : null}
             autoFocus onClick={() => finish(true)}>{d.confirmText}</button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={() => finish(false)}>{d.cancelText}</button>
+          <button className="btn alt btn-fixed" style={{ maxWidth: 140 }} onClick={() => finish(false)}>{d.cancelText}</button>
         </div>
       </div>
     </div>

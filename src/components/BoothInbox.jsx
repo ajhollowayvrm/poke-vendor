@@ -194,7 +194,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             <>
               {/* 🗝️ Saved for regulars — a hold sits here until they come pick it up */}
               {heldItems.length > 0 && (
-                <div className="wants" style={{ marginTop: 14 }}>
+                <div className="wants mt-6">
                   <div className="wants-head">🗝️ Saved for regulars <span className="muted">— held off the floor; they come in within a few days and pay a premium</span></div>
                   <div className="stock-lines">
                     {heldItems.map(({ kind, it }) => (
@@ -238,19 +238,19 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           const featuredSealed = (sealedInventory || []).filter(it => it._featured)
           return (
             <>
-              <div className="banner" style={{ marginTop: 16 }}>
+              <div className="banner mt-6">
                 🏬 <b>Only your Shop Floor sells to walk-ins</b> (+12% in person, no fees) — stock it from the
                 📦 <b>Storeroom</b> and restock as it sells. <b>⭐ Feature</b> your best floor pieces — that's what
                 whales come in for. Buy collections off locals, hold pieces for regulars, carry consignments,
                 host events, and run a 🎁 giveaway when the room needs a jolt.
-                {giveawayDaysLeft > 0 && <> <b style={{ color: 'var(--gold)' }}> 🎉 Buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
+                {giveawayDaysLeft > 0 && <> <b className="warn"> 🎉 Buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
                 {(storeCredit || 0) > 0 && <> <span className="pill" title="Outstanding store credit you've issued — locals spend it down at your counter over the coming days; a little never gets redeemed at all." style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>💳 {fmtMoney(storeCredit)} credit outstanding</span></>}
               </div>
 
               {/* 🛍️ The sign on the counter: posted buylist rate — always visible, it's the
                   shop's standing posture (volume vs margin on walk-in collections). */}
               <div className="toolbar" style={{ marginTop: 10, gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-                <span className="muted" style={{ fontSize: 12.5 }}>🛍️ Buylist sign:</span>
+                <span className="cap">🛍️ Buylist sign:</span>
                 {Object.entries(BUYLIST_POLICIES).map(([k, p]) => (
                   <button key={k} className={`btn ${buylistPolicy === k ? 'gold' : 'alt'}`}
                     style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
@@ -278,7 +278,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           <div className="listing-main">
                             <div className="listing-info">
                               <div className="listing-name">{so.what}</div>
-                              <div className="muted" style={{ fontSize: 12 }}>
+                              <div className="cap">
                                 {fmtMoney(so.deposit)} deposit down · {fmtMoney(balance)} due at pickup
                               </div>
                               <div className="row" style={{ gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
@@ -295,7 +295,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                       )
                     })}
                   </div>
-                  <p className="muted" style={{ fontSize: 11.5, marginTop: 6 }}>
+                  <p className="cap mt-3">
                     Sourcing buys from the cheapest distributor that has it, and never spends the till below a day's lease.
                     A promise you can't fill costs the deposit back, 3★, and a line on the demand board.
                   </p>
@@ -314,49 +314,49 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                       const stuff = o.sealedCount ? 'of cards & sealed' : 'of cards'
                       return (
                         <div key={o.id} className={`product ${o.estate ? 'estate-lot' : ''} ${o.jewel ? 'jewel-lot' : ''}`}>
-                          <h3 style={{ fontSize: 14, margin: 0 }}>{o.jewel ? '🗝️ ' : o.estate ? '📦 ' : ''}{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
+                          <h3 className="t-md" style={{ margin: 0 }}>{o.jewel ? '🗝️ ' : o.estate ? '📦 ' : ''}{o.who.charAt(0).toUpperCase() + o.who.slice(1)}</h3>
                           <div className="meta" style={{ flex: 1 }}>
                             A lot of <b>{o.count} cards</b>{o.sealedCount ? <> + <b>{o.sealedCount} sealed</b></> : ''} — {o.hint}.<br />
                             {o.jewel && <><b style={{ color: 'var(--gold, #ffd45e)' }}>🗝️ A sealed vintage pack is in this lot</b> — worth more unopened than the rip, and it climbs while you hold it.<br /></>}
                             Your read: <b title={upgrades.loupe ? 'Loupe appraisal — tight (±8%)' : 'Eyeball estimate (±25%) — the 🔍 Jeweler\'s Loupe reads lots much tighter'}>
                               ~{fmtMoney(est)} {stuff} {upgrades.loupe ? '🔍' : '👁️'}</b>
                             <br />{o.free
-                              ? <b style={{ color: 'var(--green)' }}>Free — they just want it gone</b>
+                              ? <b className="pos">Free — they just want it gone</b>
                               : <>Asking <b>{fmtMoney(o.askCash)}</b> cash</>} · they'll wait {o.pendingDays}d
                           </div>
                           <div className="row" style={{ gap: 5 }}>
-                            <button className="btn gold" style={{ padding: '6px 8px', fontSize: 12 }} disabled={!o.free && cash < o.askCash}
+                            <button className="btn gold t-xs" style={{ padding: '6px 8px' }} disabled={!o.free && cash < o.askCash}
                               title={o.free ? 'Take the whole collection — they\'re giving it away' : 'Pay their ask in cash — done and dusted'}
                               onClick={() => { const r = acceptBuyin(o.id, 'cash'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
                               {o.free ? '🎁 Take it — FREE' : `💵 ${fmtMoney(o.askCash)}`}
                             </button>
                             {!o.free && (
-                              <button className="btn" style={{ padding: '6px 8px', fontSize: 12 }}
+                              <button className="btn t-xs" style={{ padding: '6px 8px' }}
                                 title={`No cash down — issue ${fmtMoney(credit)} store credit instead. They spend it back at your counter over time (and some never gets redeemed). Credit sellers tend to become regulars.`}
                                 onClick={() => { const r = acceptBuyin(o.id, 'credit'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
                                 💳 {fmtMoney(credit)}
                               </button>
                             )}
-                            <button className="btn alt" style={{ flex: 'none', maxWidth: 70, padding: '6px 8px', fontSize: 12 }}
+                            <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 70, padding: '6px 8px' }}
                               onClick={() => { declineBuyin(o.id); flash('Passed on the lot.') }}>Pass</button>
                           </div>
                           {/* 🤝 Haggle the ask: their hidden floor was rolled when they walked in — the
                               hint line is your tell. Push too hard and the whole lot walks. */}
                           {!o.free && !o.haggled && (o.haggleRounds || 0) < 2 && (haggleId === o.id ? (
                             <div className="row" style={{ gap: 5, marginTop: 4, alignItems: 'center' }}>
-                              <input type="number" min="1" step="1" value={haggleVal} onChange={e => setHaggleVal(e.target.value)}
-                                style={{ width: 84, padding: '5px 6px', fontSize: 12 }} aria-label="Your counter-offer" />
-                              <button className="btn" style={{ flex: 'none', padding: '6px 10px', fontSize: 12 }} onClick={() => {
+                              <input className="t-xs" type="number" min="1" step="1" value={haggleVal} onChange={e => setHaggleVal(e.target.value)}
+                                style={{ width: 84, padding: '5px 6px' }} aria-label="Your counter-offer" />
+                              <button className="btn t-xs btn-fixed" style={{ padding: '6px 10px' }} onClick={() => {
                                 const r = counterBuyin(o.id, Number(haggleVal))
                                 if (r.error) flash(r.error)
                                 else if (r.walked) { flash('They took the lowball badly — packed it all up and walked.'); setHaggleId(null) }
                                 else if (r.accepted) { flash(`🤝 Deal — they'll take ${fmtMoney(r.price)}. Pay to close it.`); setHaggleId(null) }
-                                else flash(`They countered at ${fmtMoney(r.counter)}${(o.haggleRounds || 0) >= 1 ? " — that's their final round" : ''}.`)
+                                else flash(`They countered at ${fmtMoney(r.counter)}${(o.haggleRounds || 0)>= 1 ? " — that's their final round" : ''}.`)
                               }}>Offer</button>
-                              <span className="muted" style={{ fontSize: 11 }}>{2 - (o.haggleRounds || 0)} round{2 - (o.haggleRounds || 0) > 1 ? 's' : ''} left · walk risk rises the lower you go</span>
+                              <span className="cap">{2 - (o.haggleRounds || 0)} round{2 - (o.haggleRounds || 0) > 1 ? 's' : ''} left · walk risk rises the lower you go</span>
                             </div>
                           ) : (
-                            <button className="btn alt" style={{ padding: '4px 8px', fontSize: 12, marginTop: 4, alignSelf: 'flex-start' }}
+                            <button className="btn alt t-xs" style={{ padding: '4px 8px', marginTop: 4, alignSelf: 'flex-start' }}
                               title="Counter their ask. Estate sellers usually have room ('just wants it gone'); comp-checkers barely budge — and pushing too hard loses the whole lot."
                               onClick={() => { setHaggleId(o.id); setHaggleVal(String(Math.max(1, Math.round(o.askCash * 0.85)))) }}>
                               🤝 Haggle
@@ -394,11 +394,11 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                     const caseCost = it.cost * SUPPLY_CASE
                     return (
                       <div key={it.id} className="product">
-                        <h3 style={{ fontSize: 13, margin: 0 }}>{it.icon} {it.name}</h3>
+                        <h3 className="t-sm" style={{ margin: 0 }}>{it.icon} {it.name}</h3>
                         <div className="meta" style={{ flex: 1 }}>
                           In stock: <b style={{ color: qty ? 'var(--green)' : 'var(--red)' }}>{qty}</b> · retails at <b>{fmtMoney(it.retail)}</b>
                         </div>
-                        <button className="btn" style={{ padding: '6px 8px', fontSize: 12 }} disabled={cash < caseCost}
+                        <button className="btn t-xs" style={{ padding: '6px 8px' }} disabled={cash < caseCost}
                           title={`Wholesale a case of ${SUPPLY_CASE} at ${fmtMoney(it.cost)}/unit — sells through at ${fmtMoney(it.retail)}`}
                           onClick={() => { if (buySupplies(it.id, 1)) flash(`🧢 Stocked ${SUPPLY_CASE}× ${it.name}.`) }}>
                           Case of {SUPPLY_CASE} · {fmtMoney(caseCost)}
@@ -408,8 +408,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                   })}
                 </div>
                 {(suppliesStats?.sold || 0) > 0 && (
-                  <div className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
-                    Lifetime: <b>{suppliesStats.sold}</b> sold · <b style={{ color: 'var(--green)' }}>{fmtMoney(suppliesStats.revenue)}</b> rung up
+                  <div className="cap" style={{ margin: '6px 2px 0' }}>
+                    Lifetime: <b>{suppliesStats.sold}</b> sold · <b className="pos">{fmtMoney(suppliesStats.revenue)}</b> rung up
                   </div>
                 )}
               </Collapse>
@@ -426,15 +426,15 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                     {storeConsignRequests.map(r => (
                       <div key={r.id} className="product">
                         {cardImg(r.card) && <img src={cardImg(r.card)} alt="" style={{ width: 56, borderRadius: 8, alignSelf: 'center' }} />}
-                        <h3 style={{ fontSize: 14, margin: 0 }}>{r.who} brings a {r.card.name}</h3>
-                        {setNameOfCard(r.card) && <div className="muted" style={{ fontSize: 11 }}>{setNameOfCard(r.card)}</div>}
+                        <h3 className="t-md" style={{ margin: 0 }}>{r.who} brings a {r.card.name}</h3>
+                        {setNameOfCard(r.card) && <div className="cap">{setNameOfCard(r.card)}</div>}
                         <div className="meta" style={{ flex: 1 }}>
-                          Their ask <b>{fmtMoney(r.ask)}</b> · your cut <b style={{ color: 'var(--green)' }}>{Math.round(r.commissionPct * 100)}% ({fmtMoney(r.ask * r.commissionPct)})</b>
+                          Their ask <b>{fmtMoney(r.ask)}</b> · your cut <b className="pos">{Math.round(r.commissionPct * 100)}% ({fmtMoney(r.ask * r.commissionPct)})</b>
                           <br />Carry it ~{r.days}d · they'll wait {r.pendingDays}d for an answer
                         </div>
                         <div className="row" style={{ gap: 6 }}>
                           <button className="btn gold" onClick={() => { acceptConsignRequest(r.id); flash(`${r.card.name} is in your case — ${Math.round(r.commissionPct * 100)}% is yours when it sells.`) }}>Take it in</button>
-                          <button className="btn alt" style={{ flex: 'none', maxWidth: 80 }} onClick={() => { declineConsignRequest(r.id); flash('Passed — they took it elsewhere.') }}>Pass</button>
+                          <button className="btn alt btn-fixed" style={{ maxWidth: 80 }} onClick={() => { declineConsignRequest(r.id); flash('Passed — they took it elsewhere.') }}>Pass</button>
                         </div>
                       </div>
                     ))}
@@ -447,13 +447,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 badge={`${featured.length + featuredSealed.length}/${FEATURED_MAX}`}
                 hint={`— feature up to ${FEATURED_MAX} pieces (singles or sealed); featured pieces are what deep-pocketed whales come in for (they show up earlier and pay 1.15–1.6×)`}>
                 {featured.length + featuredSealed.length === 0 ? (
-                  <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>Nothing featured yet — hit <b>⭐</b> on a stock line below to spotlight your best pieces.</div>
+                  <div className="cap" style={{ margin: '6px 2px' }}>Nothing featured yet — hit <b>⭐</b> on a stock line below to spotlight your best pieces.</div>
                 ) : (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', marginTop: 4 }}>
                     {featured.map(c => (
                       <div key={c.uid} className="vendoritem featured">
                         <CardTile card={c} interactive={false} />
-                        <button className="btn alt" style={{ padding: '4px 8px', fontSize: 12 }}
+                        <button className="btn alt t-xs" style={{ padding: '4px 8px' }}
                           onClick={() => toggleFeatureCard(c.uid)}>☆ Unfeature</button>
                       </div>
                     ))}
@@ -470,7 +470,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                             <div className="sealed-sub muted">{it.product.packs} pk{it.vintage ? ' · 🗝️ vintage' : ''}</div>
                             <span className="price">{fmtMoney(sealedValue(it))}</span>
                           </div>
-                          <button className="btn alt" style={{ padding: '4px 8px', fontSize: 12 }}
+                          <button className="btn alt t-xs" style={{ padding: '4px 8px' }}
                             onClick={() => toggleFeatureSealed(it.uid)}>☆ Unfeature</button>
                         </div>
                       )
@@ -484,13 +484,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               <StoreStock place="floor" split onRip={onRip} onSift={onSift} onPick={onPick}
                 onHold={activeRegulars.length ? (kind, uid, label) => setHoldPick({ kind, uid, label }) : undefined} />
               {omni.length > 0 && (
-                <div className="toolbar" style={{ marginTop: 8 }}>
-                  <span className="muted" style={{ fontSize: 12 }}>🌐 {omni.length} listed-everywhere card{omni.length > 1 ? 's' : ''} also in the case:</span>
+                <div className="toolbar mt-4">
+                  <span className="cap">🌐 {omni.length} listed-everywhere card{omni.length > 1 ? 's' : ''} also in the case:</span>
                   {omni.sort((a, b) => cardValue(b.l.card) - cardValue(a.l.card)).map(({ l, idx }) => (
                     <span key={l.card.uid} className="pill" style={{ background: '#5aa0ff22', color: '#5aa0ff' }}
                       title="Listed everywhere — also up on your site. Whichever channel sells it first takes it. Tap to make it online-only.">
                       {l.card.name} · {fmtMoney(l.ask)}
-                      <button className="btn alt" style={{ marginLeft: 6, padding: '1px 6px', fontSize: 11 }}
+                      <button className="btn alt t-xs" style={{ marginLeft: 6, padding: '1px 6px' }}
                         onClick={() => { setListingEverywhere(idx, false); flash(`${l.card.name} is online-only now.`) }}>↩</button>
                     </span>
                   ))}
@@ -506,8 +506,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                     {storeConsignments.map(c => (
                       <div key={c.id} className="vendoritem">
                         <CardTile card={c.card} interactive={false} />
-                        <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>
-                          {c.who} · ask {fmtMoney(c.ask)}<br />your cut <b style={{ color: 'var(--green)' }}>{fmtMoney(c.ask * c.commissionPct)}</b> · {c.daysLeft}d left
+                        <div className="cap" style={{ textAlign: 'center' }}>
+                          {c.who} · ask {fmtMoney(c.ask)}<br />your cut <b className="pos">{fmtMoney(c.ask * c.commissionPct)}</b> · {c.daysLeft}d left
                         </div>
                       </div>
                     ))}
@@ -519,12 +519,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               <Collapse id="store-giveaway" head="🎁 In-store giveaway"
                 badge={giveawayDaysLeft > 0 ? `🎉 buzz ${giveawayDaysLeft}d` : null}
                 hint={`— give a card to the locals: goodwill, reputation, and a ${GIVEAWAY_BUZZ_DAYS}-day foot-traffic buzz`}>
-                <div className="toolbar" style={{ marginTop: 4 }}>
-                  <button className="btn gold" style={{ flex: 'none' }} disabled={!collection.length}
+                <div className="toolbar mt-2">
+                  <button className="btn gold btn-fixed"  disabled={!collection.length}
                     onClick={() => setGivePick(true)}>🎁 Pick a card to give away</button>
                   {giveawayDaysLeft > 0
                     ? <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🎉 Buzz live · {giveawayDaysLeft}d left</span>
-                    : <span className="muted" style={{ fontSize: 12 }}>Pricier card → bigger pop. Regulars warm up (+trust); the 🎗️ Charity Banner boosts the reputation.</span>}
+                    : <span className="cap">Pricier card → bigger pop. Regulars warm up (+trust); the 🎗️ Charity Banner boosts the reputation.</span>}
                 </div>
               </Collapse>
 
@@ -533,14 +533,14 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 badge={storeEventPlanned ? `tonight: ${STORE_EVENTS[storeEventPlanned.type]?.icon || '🎪'}` : weeklyEvent ? '📆 weekly set' : eventCooldownLeft > 0 ? `resting ${eventCooldownLeft}d` : null}
                 hint="— recurring nights are what real shops run on: traffic, community, and money at the door">
                 {storeEventPlanned ? (
-                  <div className="banner" style={{ marginTop: 4 }}>
+                  <div className="banner mt-2">
                     {STORE_EVENTS[storeEventPlanned.type]?.icon} <b>Tonight: {STORE_EVENTS[storeEventPlanned.type]?.name}</b>
                     {storeEventPlanned.prizeCard ? <> · prize: <b>{storeEventPlanned.prizeCard.name}</b></> : ''} — it happens when you hit <b>Next Day</b>.
-                    <button className="btn alt" style={{ flex: 'none', maxWidth: 120, marginLeft: 10, padding: '4px 10px' }}
+                    <button className="btn alt btn-fixed" style={{ maxWidth: 120, marginLeft: 10, padding: '4px 10px' }}
                       onClick={() => { cancelStoreEvent(); flash('Called it off — refunded.') }}>Call it off</button>
                   </div>
                 ) : eventCooldownLeft > 0 ? (
-                  <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>😮‍💨 The room needs a breather — you can host again in <b>{eventCooldownLeft} day{eventCooldownLeft > 1 ? 's' : ''}</b>.</div>
+                  <div className="cap" style={{ margin: '6px 2px' }}>😮‍💨 The room needs a breather — you can host again in <b>{eventCooldownLeft} day{eventCooldownLeft > 1 ? 's' : ''}</b>.</div>
                 ) : (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', marginTop: 4 }}>
                     {Object.entries(STORE_EVENTS).map(([key, ev]) => {
@@ -550,7 +550,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                       const isWeekly = weeklyEvent?.type === key
                       return (
                         <div key={key} className="product">
-                          <h3 style={{ fontSize: 14, margin: 0 }}>{ev.icon} {ev.name}{isWeekly ? <span className="pill" style={{ marginLeft: 6, fontSize: 11 }}>📆 weekly</span> : null}</h3>
+                          <h3 className="t-md" style={{ margin: 0 }}>{ev.icon} {ev.name}{isWeekly ? <span className="pill t-xs" style={{ marginLeft: 6 }}>📆 weekly</span> : null}</h3>
                           <div className="meta" style={{ flex: 1 }}>{ev.desc}</div>
                           <button className="btn" disabled={locked || cantAfford}
                             title={lockRank ? `Needs the ${lockRank.emoji} ${lockRank.name} rank (see the Stats tab)` : locked ? `Needs ${ev.minNoto} reputation` : ev.needsPrize ? 'Pick the prize card next' : undefined}
@@ -564,7 +564,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           {/* 🎪 Events Coordinator: flag ONE event as the standing weekly night (raffles
                               can't recur — they need a prize picked each time). */}
                           {upgrades.eventsCoordinator && !ev.needsPrize && !locked && (
-                            <button className="btn alt" style={{ marginTop: 6, padding: '4px 10px', fontSize: 12 }}
+                            <button className="btn alt t-xs" style={{ marginTop: 6, padding: '4px 10px' }}
                               onClick={() => {
                                 const r = setWeeklyEvent(isWeekly ? null : key)
                                 flash(r.error || (isWeekly ? '📆 Standing night cleared.' : `📆 ${ev.name} runs weekly now — the coordinator books it and pays from the till.`))
@@ -585,13 +585,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         // The public WTB board: anyone-can-fill wanted ads. Your early-game demand engine
         // before strangers start DMing you directly (see INBOUND_NOTORIETY_GATE).
         <>
-          <div className="banner" style={{ marginTop: 16 }}>
+          <div className="banner mt-6">
             📋 The community <b>forum</b> — collectors post cards they're hunting for. Fill a request from your
             collection for an <b>above-market premium</b> (+ a little reputation). The way to drum up business before
             you've made a name. Go rip or buy what they want, then fulfill it here.
           </div>
           {forumCount === 0 ? (
-            <div className="empty" style={{ marginTop: 14 }}>The board's quiet right now — let a day pass for new posts. 📭</div>
+            <div className="empty mt-6">The board's quiet right now — let a day pass for new posts. 📭</div>
           ) : (
             <div className="grid stagger-grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', marginTop: 14 }}>
               {forumPosts.map(p => {
@@ -599,10 +599,10 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 return (
                   <div key={p.id} className={`product want ${matches.length ? 'fillable' : ''}`}>
                     {p.img && <img src={p.img} alt="" style={{ width: 56, borderRadius: 8, alignSelf:'center' }} />}
-                    <h3 style={{ fontSize: 14, margin: 0 }}>📋 WTB: {p.desc.replace(/^.*? wants /, '')}</h3>
+                    <h3 className="t-md" style={{ margin: 0 }}>📋 WTB: {p.desc.replace(/^.*? wants /, '')}</h3>
                     <div className="meta" style={{ flex:1 }}>
                       <span className="muted">— {p.who}</span><br/>
-                      Pays <b style={{ color:'var(--green)' }}>+{Math.round((p.premiumMult-1)*100)}%</b> over market · +{p.notoriety}★ · expires in {p.daysLeft}d
+                      Pays <b className="pos">+{Math.round((p.premiumMult-1)*100)}%</b> over market · +{p.notoriety}★ · expires in {p.daysLeft}d
                     </div>
                     {matches.length
                       ? <button className="btn gold" onClick={() => setWantPick({ kind: 'forum', item: p })}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
@@ -615,7 +615,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         </>
       ) : (
       <>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         {notoriety < INBOUND_NOTORIETY_GATE
           // Unknown vendor: no unsolicited orders from reputation yet. Tell the truth and
           // point at the two ways to drum up demand — the Forum, or a bargain listing.
@@ -634,7 +634,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders on what you've <b>listed</b> (⭐ <b>{Math.round(notoriety)}</b> reputation). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
       </div>
 
-      <div className="toolbar" style={{ marginTop: 12 }}>
+      <div className="toolbar mt-5">
         <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>📅 Day {currentDay}</span>
         {/* Inbox fill indicator — the inbox holds INBOX_CAP orders; once full, the
             oldest unanswered orders drop off, so flag when it's getting close. */}
@@ -643,7 +643,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           : { background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>
           📨 Inbox {inbox.length}/{INBOX_CAP}{inbox.length >= INBOX_CAP ? ' · full!' : inbox.length >= INBOX_CAP - 1 ? ' · nearly full' : ''}
         </span>
-        <span className="muted" style={{ fontSize: 12 }}>Orders arrive as days pass — attend a show to bring in several at once.</span>
+        <span className="cap">Orders arrive as days pass — attend a show to bring in several at once.</span>
       </div>
 
       {dailyGoals.length > 0 && (() => {
@@ -651,7 +651,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         return (
         <div className="goals">
           <div className="goals-head">🎯 This week's goals
-            <span className="muted" style={{ fontWeight: 400, fontSize: 12, marginLeft: 8 }}>
+            <span className="cap" style={{ fontWeight: 400, marginLeft: 8 }}>
               {resetIn <= 0 ? 'refreshes next day' : `refreshes in ${resetIn} day${resetIn === 1 ? '' : 's'}`}
             </span>
           </div>
@@ -668,8 +668,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         )
       })()}
 
-      <div className="toolbar" style={{ marginTop: 4 }}>
-        <span className="muted" style={{ fontSize: 13 }}>You accept:</span>
+      <div className="toolbar mt-2">
+        <span className="cap t-sm">You accept:</span>
         {Object.entries(PAYMENT_METHODS)
           // Cash is an in-person-only method (unlocked by the storefront). Online
           // buyers never hand you cash, so don't show it as a locked rail here
@@ -680,12 +680,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             {m.icon} {m.short}{accepted.has(k) ? '' : ' 🔒'}
           </span>
         ))}
-        {!(accepted.has('paypal') && accepted.has('card')) && <span className="muted rownote" style={{ fontSize: 12 }}>Buyers who can't use what you accept walk away.</span>}
+        {!(accepted.has('paypal') && accepted.has('card')) && <span className="muted rownote t-xs">Buyers who can't use what you accept walk away.</span>}
       </div>
 
       {/* remote-management status */}
-      <div className="toolbar" style={{ marginTop: 4 }}>
-        <span className="muted" style={{ fontSize: 13 }}>While at a show:</span>
+      <div className="toolbar mt-2">
+        <span className="cap t-sm">While at a show:</span>
         <span className={`pill ${upgrades.smartphone ? '' : 'off'}`}>📱 Online {upgrades.smartphone ? 'covered' : 'missed 🔒'}</span>
         <span className={`pill ${upgrades.staff ? '' : 'off'}`}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
       </div>
@@ -693,12 +693,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
       {/* The shop floor (stock, holds, consignments, giveaways) lives in its own
           🏬 sub-tab now — Orders stays focused on people to answer. */}
       {hasStore && (collection.length + (sealedInventory || []).length + (storeConsignRequests || []).length) > 0 && (
-        <div className="toolbar" style={{ marginTop: 4 }}>
-          <span className="muted" style={{ fontSize: 12 }}>
+        <div className="toolbar mt-2">
+          <span className="cap">
             🏬 Your store stock, holds, consignments & giveaways live on the <b>Shop floor</b> tab
             {(storeConsignRequests || []).length ? <b> — {storeConsignRequests.length} consignment ask{storeConsignRequests.length > 1 ? 's' : ''} waiting</b> : ''}.
           </span>
-          <button className="btn alt" style={{ flex: 'none', padding: '4px 10px' }} onClick={() => setSellTab('store')}>Open →</button>
+          <button className="btn alt btn-fixed" style={{ padding: '4px 10px' }} onClick={() => setSellTab('store')}>Open →</button>
         </div>
       )}
 
@@ -711,9 +711,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               return (
                 <div key={w.id} className={`product want ${matches.length ? 'fillable' : ''}`}>
                   {w.img && <img src={w.img} alt="" style={{ width: 56, borderRadius: 8, alignSelf:'center' }} />}
-                  <h3 style={{ fontSize: 14, margin: 0 }}>{w.desc}</h3>
+                  <h3 className="t-md" style={{ margin: 0 }}>{w.desc}</h3>
                   <div className="meta" style={{ flex:1 }}>
-                    Pays <b style={{ color:'var(--green)' }}>+{Math.round((w.premiumMult-1)*100)}%</b> over market · +{w.notoriety}★ · expires in {w.daysLeft}d
+                    Pays <b className="pos">+{Math.round((w.premiumMult-1)*100)}%</b> over market · +{w.notoriety}★ · expires in {w.daysLeft}d
                   </div>
                   {matches.length
                     ? <button className="btn gold" onClick={() => setWantPick({ kind: 'want', item: w })}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
@@ -742,7 +742,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           items.forEach(x => used.add(x.i))
           if (!items.length) return null
           return (
-            <div key={sec.key} style={{ marginTop: 14 }}>
+            <div className="mt-6" key={sec.key}>
               <div className="wants-head">{sec.title} <span className="muted">({items.length}) — {sec.hint}</span></div>
               <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', marginTop: 8 }}>
                 {items.map(({ enc, i }) => {
@@ -754,8 +754,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                     <div key={key} className="product" style={{ cursor: 'pointer' }} onClick={() => setActive({ enc, id: enc.id })}>
                       <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
                       {enc.card && <img src={cardImg(enc.card)} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
-                      {enc.card && setNameOfCard(enc.card) && <div className="muted" style={{ fontSize: 10.5, textAlign: 'center' }}>{setNameOfCard(enc.card)}</div>}
-                      <h3 style={{ fontSize: 15, margin: 0 }}>{enc.title}</h3>
+                      {enc.card && setNameOfCard(enc.card) && <div className="cap" style={{ textAlign: 'center' }}>{setNameOfCard(enc.card)}</div>}
+                      <h3 className="t-lg" style={{ margin: 0 }}>{enc.title}</h3>
                       <div className="meta" style={{ flex: 1 }}>{enc.body.slice(0, 90)}…</div>
                       <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →' : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
                     </div>
@@ -798,8 +798,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           <div className="modalbg" onClick={() => setHoldPick(null)}>
             <div className="modal" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
               <button className="modal-close" aria-label="Close" onClick={() => setHoldPick(null)}>✕</button>
-              <h2 style={{ fontSize: 18, marginBottom: 2 }}>🔒 Save {holdPick.label} for…</h2>
-              <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+              <h2 className="t-xl" style={{ marginBottom: 2 }}>🔒 Save {holdPick.label} for…</h2>
+              <p className="cap t-sm mt-0">
                 It goes to the storeroom's "saved for regulars" shelf (off the sellable floor) for
                 ~{HOLD_DAYS_STORE} days. The more they trust you, the sooner they come in — and they
                 pay a small premium for the favor.
@@ -829,8 +829,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         <div className="modalbg" onClick={() => setGivePick(false)}>
           <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
             <button className="modal-close" aria-label="Close" onClick={() => setGivePick(false)}>✕</button>
-            <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎁 In-store giveaway</h2>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+            <h2 className="t-xl" style={{ marginBottom: 2 }}>🎁 In-store giveaway</h2>
+            <p className="cap t-sm mt-0">
               Pick the prize. A pricier card makes a bigger splash — more reputation, and a
               {' '}{GIVEAWAY_BUZZ_DAYS}-day walk-in buzz either way. Every regular warms up a little.
             </p>
@@ -840,7 +840,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 return (
                   <div key={c.uid} className="vendoritem">
                     <CardTile card={c} interactive={false} />
-                    <button className="btn gold" style={{ padding: '4px 8px', fontSize: 12 }} onClick={() => {
+                    <button className="btn gold t-xs" style={{ padding: '4px 8px' }} onClick={() => {
                       const r = runGiveaway(c.uid)
                       if (r) flash(`🎁 Gave away ${c.name} — the room went nuts! (+${r.noto}★, ${GIVEAWAY_BUZZ_DAYS}-day buzz)`)
                       setGivePick(false)
@@ -862,30 +862,30 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 the only way out was a button buried at the bottom of the scroll, or a backdrop
                 tap on the sliver of screen the modal didn't cover. */}
             <button className="modal-close" aria-label="Close" onClick={() => setBuyinReveal(null)}>✕</button>
-            <h2 style={{ fontSize: 18, marginBottom: 2 }}>
+            <h2 className="t-xl" style={{ marginBottom: 2 }}>
               {buyinReveal.market >= buyinReveal.paid * 1.3 ? '🤑' : buyinReveal.market >= buyinReveal.paid ? '🙂' : '😬'} The lot, flipped through
             </h2>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+            <p className="cap t-sm mt-0">
               {buyinReveal.free
-                ? <><b style={{ color: 'var(--green)' }}>Free</b> — the whole collection, no charge · </>
+                ? <><b className="pos">Free</b> — the whole collection, no charge · </>
                 : <>Paid <b>{buyinReveal.method === 'credit' ? `${fmtMoney(buyinReveal.paid)} store credit` : `${fmtMoney(buyinReveal.paid)} cash`}</b> · </>}
               market value <b style={{ color: buyinReveal.market >= buyinReveal.paid ? 'var(--green)' : 'var(--red)' }}>{fmtMoney(buyinReveal.market)}</b>
               {buyinReveal.method === 'credit' && !buyinReveal.free ? ' · no cash left the till — they\'ll spend the credit back at your counter.' : ''} All {buyinReveal.cards.length} cards are in your collection{buyinReveal.sealed?.length ? `; ${buyinReveal.sealed.length} sealed went to your 📦 storeroom` : ''}.
             </p>
             {buyinReveal.sealed?.length > 0 && (
-              <div className="wants" style={{ marginTop: 4 }}>
-                <div className="wants-head" style={{ fontSize: 13 }}>📦 Sealed in the lot <span className="muted">— now in your storeroom to rip, list, flip, or hold</span></div>
+              <div className="wants mt-2">
+                <div className="wants-head t-sm">📦 Sealed in the lot <span className="muted">— now in your storeroom to rip, list, flip, or hold</span></div>
                 <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
                   {buyinReveal.sealed.map(it => (
                     <span key={it.uid} className="pill" style={it.vintage
                       ? { background: '#ffd45e22', color: '#ffd45e', fontSize: 12, boxShadow: '0 0 0 1px #ffd45e55 inset' }
                       : { background: '#5aa0ff22', color: '#9dc3ff', fontSize: 12 }}>
-                      {it.vintage ? '🗝️' : (it.product.icon || '📦')} {it.product.type}{setById(it.setId)?.name ? ` · ${setById(it.setId).name}` : ''} · <b style={{ color: 'var(--green)' }}>{fmtMoney(sealedValue(it))}</b>
+                      {it.vintage ? '🗝️' : (it.product.icon || '📦')} {it.product.type}{setById(it.setId)?.name ? ` · ${setById(it.setId).name}` : ''} · <b className="pos">{fmtMoney(sealedValue(it))}</b>
                     </span>
                   ))}
                 </div>
                 {buyinReveal.sealed.some(it => it.vintage) && (
-                  <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
+                  <p className="cap" style={{ margin: '6px 2px 0' }}>
                     🗝️ That vintage pack is worth <b>more sealed than the rip</b> — and vintage sealed <b>appreciates</b> while it sits. Cracking it is the gamble; holding (or flipping) is the sure thing. Your call in the storeroom.
                   </p>
                 )}
@@ -908,8 +908,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         <div className="modalbg" onClick={() => setRafflePick(false)}>
           <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
             <button className="modal-close" aria-label="Close" onClick={() => setRafflePick(false)}>✕</button>
-            <h2 style={{ fontSize: 18, marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+            <h2 className="t-xl" style={{ marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
+            <p className="cap t-sm mt-0">
               A flashier prize sells more tickets worth of goodwill — bigger reputation pop when it's drawn.
               Costs ${STORE_EVENTS.raffle.cost} to run; ticket money comes in when the night happens.
             </p>
@@ -918,7 +918,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 {collection.filter(c => !c.locked && !c._heldFor).sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => (
                   <div key={c.uid} className="vendoritem">
                     <CardTile card={c} interactive={false} />
-                    <button className="btn gold" style={{ padding: '4px 8px', fontSize: 12 }} onClick={() => {
+                    <button className="btn gold t-xs" style={{ padding: '4px 8px' }} onClick={() => {
                       const r = planStoreEvent('raffle', c.uid)
                       flash(r.error || `🎟️ Raffle Night is on — ${c.name} is the prize. Hit Next Day to run it.`)
                       setRafflePick(false)
@@ -941,8 +941,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         <div className="modalbg" onClick={() => setWantPick(null)}>
           <div className="modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
             <button className="modal-close" aria-label="Close" onClick={() => setWantPick(null)}>✕</button>
-            <h2 style={{ fontSize: 18, marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety}★ reputation.</p>
+            <h2 className="t-xl" style={{ marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
+            <p className="cap t-sm mt-0">Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety}★ reputation.</p>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
               {matches.map(c => (
                 <div key={c.uid} className="vendoritem">

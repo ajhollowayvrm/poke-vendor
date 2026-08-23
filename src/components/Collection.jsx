@@ -117,24 +117,24 @@ export default function Collection({ onPick }) {
 
   return (
     <>
-      <div className="toolbar" style={{ marginTop: 8 }}>
+      <div className="toolbar mt-4">
         <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>{collection.length} card{collection.length === 1 ? '' : 's'}</span>
         <select value={sort} onChange={e => setSort(e.target.value)}>
           <option value="value">Sort: Value</option><option value="psa10">Sort: PSA 10 price</option>
           <option value="rarity">Sort: Rarity</option>
           <option value="name">Sort: Name</option>
         </select>
-        <button className={`btn ${selectMode ? 'gold' : 'alt'}`} style={{ flex: 'none' }}
+        <button className={`btn ${selectMode ? 'gold' : 'alt'}`} style={{  flex: 'none' }}
           onClick={() => selectMode ? exitSelect() : setSelectMode(true)}>
           {selectMode ? '✕ Cancel select' : '☑️ Select'}
         </button>
         {selectMode && (
-          <button className="btn alt" style={{ flex: 'none' }} onClick={selectAllInView}>
+          <button className="btn alt btn-fixed"  onClick={selectAllInView}>
             {picked.size === view.length && view.length ? 'Deselect all' : `Select all (${view.length})`}
           </button>
         )}
         {/* Master-set safety net: when on, no bulk sell ever dumps your last copy of a card. */}
-        <button className={`btn ${keepOne ? 'gold' : 'alt'}`} style={{ flex: 'none' }}
+        <button className={`btn ${keepOne ? 'gold' : 'alt'}`} style={{  flex: 'none' }}
           title="Protect set singles: bulk sells skip your last copy of each card, so a sweep only dumps duplicates. Locked cards (🔒) are always kept."
           onClick={() => setSetting('keepOne', !keepOne)}>
           {keepOne ? '🔒 Keeping singles' : '🔓 Keep singles'}
@@ -143,11 +143,11 @@ export default function Collection({ onPick }) {
             in your own quarter bin (retails at ~5× the LGS rate, paid as it drains); the LGS
             turn-in stays as the smaller instant-credit path. No store → LGS only, as ever. */}
         {!selectMode && bulk.length > 0 && hasStore && (
-          <button className="btn alt" style={{ flex: 'none' }}
+          <button className="btn alt btn-fixed" 
             title={`Toss every raw card worth under a dollar into your store's bulk bin — kids dig them out at your bin price as foot traffic passes (manage it on the Shop floor tab)${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
               const { tossed, kept } = stockBinBulk()
-              if (tossed) notify(`🗑️ Tossed ${tossed} bulk card${tossed > 1 ? 's' : ''} in the quarter bin.${kept ? ` ${kept} protected.` : ''}`, 6000)
+              if (tossed) notify(`🗑️ Tossed ${tossed} bulk card${tossed> 1 ? 's' : ''} in the quarter bin.${kept ? ` ${kept} protected.` : ''}`, 6000)
             }}>🗑️ Toss {bulk.length} bulk in the bin</button>
         )}
         {/* Neutral, and in the flow. As `gold` + `marginLeft:auto` this was a full-width
@@ -155,21 +155,21 @@ export default function Collection({ onPick }) {
             screen — to turn 19 commons into 95 cents. Gold is the primary action; disposing
             of bulk is a utility. */}
         {!selectMode && bulk.length > 0 && (
-          <button className="btn alt" style={{ flex: 'none' }}
+          <button className="btn alt btn-fixed" 
             title={`Turn in every raw card worth under a dollar at the Local Game Store for in-store credit — a flat 5¢ a card, spent automatically on your next LGS order${bulkKept ? ` · ${bulkKept} protected card${bulkKept>1?'s':''} held back` : ''}`}
             onClick={() => {
               const { credit, sold } = turnInBulk()
-              if (sold) notify(`📦 Turned in ${sold} bulk card${sold > 1 ? 's' : ''} for ${fmtMoney(credit)} LGS credit.`, 6000, undoAction)
+              if (sold) notify(`📦 Turned in ${sold} bulk card${sold> 1 ? 's' : ''} for ${fmtMoney(credit)} LGS credit.`, 6000, undoAction)
             }}>📦 {hasStore ? 'LGS credit' : `Turn in ${bulk.length} bulk → ${fmtMoney(creditVal)} credit`}</button>
         )}
       </div>
       {!selectMode && (lgsCredit || 0) > 0 && (
-        <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
-          💳 <b style={{ color: 'var(--green)' }}>{fmtMoney(lgsCredit)}</b> Local Game Store credit — applied automatically when you buy from the LGS.
+        <p className="cap" style={{ margin: '6px 2px 0' }}>
+          💳 <b className="pos">{fmtMoney(lgsCredit)}</b> Local Game Store credit — applied automatically when you buy from the LGS.
         </p>
       )}
       {!selectMode && bulkKept > 0 && (
-        <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>
+        <p className="cap" style={{ margin: '6px 2px 0' }}>
           🔒 {bulkKept} card{bulkKept>1?'s':''} protected from the bulk sweep — {keepOne ? 'set singles + locked' : 'locked'}.
         </p>
       )}
@@ -229,10 +229,10 @@ export default function Collection({ onPick }) {
             )}
             <div className="bulk-list-group">
               <AskPicker pct={listPct} onChange={setListPct}>
-                <span className="muted" style={{ fontSize: 12 }}>%</span>
+                <span className="cap">%</span>
               </AskPicker>
               {hasStore && (
-                <button className={`btn ${listEverywhere ? 'gold' : 'alt'}`} style={{ flex: 'none' }}
+                <button className={`btn ${listEverywhere ? 'gold' : 'alt'}`} style={{  flex: 'none' }}
                   title={listEverywhere
                     ? 'Everywhere: also out in your store case — walk-ins buy fee-free at the +12% in-person premium; whichever channel sells first takes it. Tap for online-only.'
                     : 'Online only: web listing, pays the 5% fee + shipping per sale. Tap to also put them in your store case.'}

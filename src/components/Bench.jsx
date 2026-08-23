@@ -40,17 +40,17 @@ export default function Bench() {
                 <img src={cardImg(p.card)} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>
-                  <div className="muted" style={{ fontSize: 12 }}>{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}<span style={{ color: graderById(p.company).color, fontWeight: 700 }}>{graderById(p.company).icon} {graderById(p.company).name}</span> · {GRADING[p.tierKey].name}</div>
+                  <div className="cap">{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}<span style={{ color: graderById(p.company).color, fontWeight: 700 }}>{graderById(p.company).icon} {graderById(p.company).name}</span> · {GRADING[p.tierKey].name}</div>
                   <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                     <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,var(--accent2),var(--green))', transition: 'width .25s' }} />
                   </div>
-                  <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
+                  <div className="cap mt-2">
                     {daysLeft === 0 ? 'Ready — advance a day to collect' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}
-                    {p.expedited && <span style={{ color: 'var(--gold)' }}> · ⚡ expedited</span>}
+                    {p.expedited && <span className="warn"> · ⚡ expedited</span>}
                   </div>
                   {/* 🎫 ⚡ Clout spend: walk this one to the front — 7 days off, speed only. */}
                   {daysLeft > 1 && !p.expedited && (
-                    <button className="btn alt" style={{ marginTop: 6, padding: '3px 9px', fontSize: 11.5 }}
+                    <button className="btn alt t-xs" style={{ marginTop: 6, padding: '3px 9px' }}
                       disabled={clout < 2 || cash < 50}
                       title={clout < 2 ? 'Needs 2 🎫 clout' : cash < 50 ? 'Needs $50 for the rush fee' : 'Spend 2 🎫 clout + $50 — your grader contact walks it to the front (7 days off, never lands before tomorrow). Odds untouched.'}
                       onClick={() => expediteGrade(p.card.uid)}>
@@ -74,7 +74,7 @@ function SealedBench({ today }) {
   if (!pending.length) return null
   return (
     <div style={{ marginBottom: 14 }}>
-      <div className="muted" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '.5px', fontWeight: 700, marginBottom: 6 }}>
+      <div className="cap" style={{ textTransform: 'uppercase', letterSpacing: '.5px', fontWeight: 700, marginBottom: 6 }}>
         📦 At the sealed grader
       </div>
       <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))' }}>
@@ -91,14 +91,14 @@ function SealedBench({ today }) {
                 : <span style={{ fontSize: 34 }}>{p.item.product?.icon || '📦'}</span>}
               <div style={{ flex: 1 }}>
                 <b>{p.item.product?.name || `${set?.name || ''} ${p.item.product?.type || 'Sealed'}`.trim()}</b>
-                <div className="muted" style={{ fontSize: 12 }}>
+                <div className="cap">
                   <span style={{ color: g.color, fontWeight: 700 }}>{g.icon} {g.name}</span>
                   {p.item.vintage ? ' · 🗝️ vintage' : ''} · {fmtMoney(p.paidFee)} fee
                 </div>
                 <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                   <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,#a78bfa,var(--green))', transition: 'width .25s' }} />
                 </div>
-                <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
+                <div className="cap mt-2">
                   {daysLeft === 0 ? 'Ready — advance a day to collect' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}
                 </div>
               </div>
@@ -149,11 +149,11 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
       <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <b>📦 Bulk submit</b>
-          <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>
+          <span className="cap" style={{ marginLeft: 8 }}>
             Send several at once for a per-card discount: {BULK_TIERS.slice().reverse().map((t, i) => `${t.min}+ → ${Math.round(t.discount*100)}% off`).join(' · ')}
           </span>
         </div>
-        <button className="btn alt" style={{ flex: 'none', maxWidth: 170 }} onClick={() => setOpen(o => !o)}>
+        <button className="btn alt btn-fixed" style={{ maxWidth: 170 }} onClick={() => setOpen(o => !o)}>
           {open ? 'Hide' : 'Bulk submit cards'}
         </button>
       </div>
@@ -162,7 +162,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
         <>
           {/* A batch goes to ONE grader — that's how a real bulk submission works, and it's
               the whole decision: red-label resale, a black-label lottery, or cheap and fast. */}
-          <div className="grader-pick" style={{ marginTop: 10 }}>
+          <div className="grader-pick mt-5">
             {Object.values(GRADERS).map(g => (
               <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
                 style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)} title={g.blurb}>
@@ -171,9 +171,9 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
               </button>
             ))}
           </div>
-          <p className="muted" style={{ fontSize: 11.5, margin: '4px 0 0' }}>{graderById(company).blurb}</p>
+          <p className="cap" style={{ margin: '4px 0 0' }}>{graderById(company).blurb}</p>
           <div className="row" style={{ margin: '10px 0', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span className="muted" style={{ fontSize: 13 }}>Service:</span>
+            <span className="cap t-sm">Service:</span>
             {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => (
               <button key={key} className={`tab ${tierKey === key ? 'active' : ''}`} onClick={() => setTierKey(key)}>
                 {t.name} · ~{gradingDays(key, company)}d
@@ -187,9 +187,9 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
               return (
               <div key={c.uid} className={`bulk-card ${picked.has(c.uid) ? 'picked' : ''}`} onClick={() => toggle(c.uid)}>
                 <CardTile card={c} interactive={false} />
-                <div className="muted" style={{ fontSize: 10.5, textAlign: 'center' }}>raw {fmtMoney(rawValue(c))}</div>
+                <div className="cap" style={{ textAlign: 'center' }}>raw {fmtMoney(rawValue(c))}</div>
                 <div style={{ textAlign: 'center', marginTop: 2 }}>
-                  <span style={{ fontSize: 9.5, fontWeight: 700, color: est.color, background: est.color + '22', borderRadius: 4, padding: '1px 5px' }}
+                  <span className="t-xs" style={{ fontWeight: 700, color: est.color, background: est.color + '22', borderRadius: 4, padding: '1px 5px' }}
                     title={est.label}>
                     👁️ {est.short}
                   </span>
@@ -203,7 +203,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
           <div className="row" style={{ marginTop: 12, alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span className="pill">{count} selected</span>
             {bulk > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>{Math.round(bulk*100)}% bulk discount</span>}
-            <span className="muted" style={{ fontSize: 13 }}>
+            <span className="cap t-sm">
               {!count ? 'Pick cards to grade'
                 : <>
                     {mixed ? `${count} cards, priced by value` : `${fmtMoney(round2((total - ship) / count))}/card × ${count}`}
@@ -215,7 +215,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
                     {count === 1 && <span className="muted"> · batching spreads the freight</span>}
                   </>}
             </span>
-            <button className="btn gold" style={{ flex: 'none', maxWidth: 220, marginLeft: 'auto' }}
+            <button className="btn gold btn-fixed" style={{ maxWidth: 220, marginLeft: 'auto' }}
               disabled={!count || cash < total} onClick={submit}>
               Submit {count || ''} {count === 1 ? 'card' : 'cards'} · {fmtMoney(total)}
             </button>
@@ -237,12 +237,12 @@ function GraderRelationship({ submitted }) {
     <div className="grader-rel">
       <div className="grader-rel-head">
         <div>
-          <div style={{ fontSize: 12, color: 'var(--dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px' }}>Grader relationship</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: tier.color }}>🤝 {tier.name}{tier.discount > 0 ? ` · ${Math.round(tier.discount * 100)}% off` : ''}</div>
+          <div className="t-xs" style={{ color: 'var(--dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px' }}>Grader relationship</div>
+          <div className="t-xl" style={{ fontWeight: 800, color: tier.color }}>🤝 {tier.name}{tier.discount > 0 ? ` · ${Math.round(tier.discount * 100)}% off` : ''}</div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div className="muted" style={{ fontSize: 12 }}>Cards submitted</div>
-          <div style={{ fontSize: 20, fontWeight: 800 }}>{submitted}</div>
+          <div className="cap">Cards submitted</div>
+          <div className="t-xl" style={{ fontWeight: 800 }}>{submitted}</div>
         </div>
       </div>
 
@@ -259,7 +259,7 @@ function GraderRelationship({ submitted }) {
       <div style={{ background: 'var(--bg)', borderRadius: 999, height: 8, overflow: 'hidden', border: '1px solid var(--line)', margin: '4px 0 6px' }}>
         <div style={{ width: pct + '%', height: '100%', background: `linear-gradient(90deg, ${tier.color}, ${next?.color || tier.color})`, transition: 'width .4s' }} />
       </div>
-      <div className="muted" style={{ fontSize: 12 }}>
+      <div className="cap">
         {next
           ? <>Send <b>{next.min - submitted}</b> more card{next.min - submitted === 1 ? '' : 's'} to reach <b style={{ color: next.color }}>{next.name}</b> ({Math.round(next.discount * 100)}% off).</>
           : <>Top tier reached — the grader treats you like family.</>}

@@ -16,6 +16,7 @@
     "verify-slimsave": "vite-node scripts/verify-slimsave.mjs",
     "verify-showresume": "vite-node scripts/verify-showresume.mjs",
     "verify-boothstock": "vite-node scripts/verify-boothstock.mjs",
+    "verify-ui": "node scripts/verify-ui.mjs",
     "ios:build": "npm run build && npm run ios:project",
     "ios:project": "cd ios && xcodegen generate",
     "ios:icon": "node tools/ios/make-icon.mjs",

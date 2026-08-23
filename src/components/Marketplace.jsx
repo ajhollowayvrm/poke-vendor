@@ -59,7 +59,7 @@ export default function Marketplace() {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         🛍️ The <b>marketplace</b> — buy any single instead of gambling on packs. The markup
         <b> scales with value</b>: cheap to grab filler for a set, but chases cost a steep premium —
         ripping and hunting shows is still the smart way to land the big ones. Near Mint raw,

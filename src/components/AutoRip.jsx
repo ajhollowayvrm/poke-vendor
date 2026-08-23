@@ -402,7 +402,7 @@ export default function AutoRip({ items, onExit }) {
       <div className="stage">
         <div style={{ textAlign: 'center', maxWidth: 520 }}>
           <h2 style={{ marginBottom: 4 }}>⚡ Sift-rip</h2>
-          <p className="muted" style={{ marginTop: 0, fontSize: 13.5 }}>
+          <p className="cap t-sm mt-0">
             Rips <b>{items.length} item{items.length === 1 ? '' : 's'}</b> — <b>{totalPacks} pack{totalPacks === 1 ? '' : 's'}</b>, speeding
             through the rip pack after pack and <b>stopping on any pack with something big</b>, which it hands you sealed to open
             a card at a time. It won't say what's in there.
@@ -420,7 +420,7 @@ export default function AutoRip({ items, onExit }) {
           </div>
           <div className="row" style={{ justifyContent: 'center', marginTop: 18, gap: 10 }}>
             <button className="btn gold" style={{ maxWidth: 240 }} onClick={start}>⚡ Start sifting {totalPacks} packs →</button>
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} onClick={onExit}>Cancel</button>
+            <button className="btn alt btn-fixed" style={{ maxWidth: 120 }} onClick={onExit}>Cancel</button>
           </div>
         </div>
       </div>
@@ -462,20 +462,20 @@ export default function AutoRip({ items, onExit }) {
       <div className="stage">
         <div style={{ textAlign: 'center', maxWidth: 560 }}>
           <h2 style={{ marginBottom: 6 }}>✓ Sift complete</h2>
-          <p style={{ fontSize: 15, margin: '4px 0' }}>
-            Sifted <b>{stats.packs}</b> pack{stats.packs === 1 ? '' : 's'} · pulled <b style={{ color: 'var(--green)' }}>{fmtMoney(stats.value)}</b>
-            {stats.hitPacks > 0 && <> · <b style={{ color: 'var(--gold)' }}>{stats.hitPacks}</b> big hit{stats.hitPacks === 1 ? '' : 's'}</>}
+          <p className="t-lg" style={{ margin: '4px 0' }}>
+            Sifted <b>{stats.packs}</b> pack{stats.packs === 1 ? '' : 's'} · pulled <b className="pos">{fmtMoney(stats.value)}</b>
+            {stats.hitPacks > 0 && <> · <b className="warn">{stats.hitPacks}</b> big hit{stats.hitPacks === 1 ? '' : 's'}</>}
           </p>
           {/* The number now includes what you skipped, so say so — otherwise it reads as if you
               watched thirty packs go by. */}
           {swept > 0 && (
-            <p className="muted" style={{ fontSize: 12.5, margin: '2px 0 6px' }}>
+            <p className="cap" style={{ margin: '2px 0 6px' }}>
               ⏭️ {swept} of those went straight to the collection unwatched.
             </p>
           )}
-          {stats.best && <p className="muted" style={{ fontSize: 13 }}>Best pull: <b style={{ color: rarityColor(stats.best.rarity) }}>{stats.best.name}</b> · {fmtMoney(cardValue(stats.best))}</p>}
+          {stats.best && <p className="cap t-sm">Best pull: <b style={{ color: rarityColor(stats.best.rarity) }}>{stats.best.name}</b> · {fmtMoney(cardValue(stats.best))}</p>}
           {stats.hits.length > 0 && (
-            <div className="rip-summary-hits" style={{ marginTop: 10 }}>
+            <div className="rip-summary-hits mt-5">
               <div className="rip-side-head" style={{ textAlign: 'center' }}>Hits ({stats.hits.filter(c => c._isHit || c.foil).length})</div>
               <div className="rip-summary-hits-grid">
                 {[...stats.hits].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 24).map((c, i) => {
@@ -593,7 +593,7 @@ export default function AutoRip({ items, onExit }) {
         <HandReveal pulls={stack.cards} shown={shown} awaiting={false} revealMode="auto"
           setLogo={stack.set.logo} hasLoupe={hasLoupe} onTapNext={() => {}} onInspect={() => {}} />
       )}
-      <div className="muted" style={{ fontSize: 12.5, textAlign: 'center' }}>
+      <div className="cap" style={{ textAlign: 'center' }}>
         ⚡ Sifting — it'll stop on its own when a pack is worth your hands.
       </div>
       <button className="btn alt" style={{ maxWidth: 220 }} onClick={finishRest}>⏭️ Skip &amp; bank the rest</button>

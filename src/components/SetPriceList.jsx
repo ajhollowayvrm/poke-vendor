@@ -38,7 +38,7 @@ export default function SetPriceList({ setId }) {
         {set.logo && <img src={set.logo} alt={set.name} className="setprice-logo" decoding="async" />}
         <div style={{ minWidth: 0 }}>
           <b>{set.name}</b>
-          <div className="muted" style={{ fontSize: 12 }}>{set.cards.length} cards · live market</div>
+          <div className="cap">{set.cards.length} cards · live market</div>
         </div>
         <select value={sort} onChange={e => setSort(e.target.value)} style={{ marginLeft: 'auto' }}>
           <option value="value">Sort: Value</option>
@@ -66,7 +66,7 @@ export default function SetPriceList({ setId }) {
           </div>
         ))}
       </div>
-      {cards.length === 0 && <div className="empty" style={{ marginTop: 12 }}>No cards match “{q}”.</div>}
+      {cards.length === 0 && <div className="empty mt-5">No cards match “{q}”.</div>}
     </>
   )
 }

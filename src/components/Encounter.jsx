@@ -26,7 +26,7 @@ export function TradeItem({ card, sealed }) {
         <HiResImg card={card} alt={card.name} decoding="async" />
       </HoloCard>
       <div className="trade-name">{card.name}</div>
-      {setNameOfCard(card) && <div className="muted" style={{ fontSize: 10 }}>{setNameOfCard(card)}</div>}
+      {setNameOfCard(card) && <div className="cap">{setNameOfCard(card)}</div>}
       <div className="trade-val">{fmtMoney(cardValue(card))}</div>
     </div>
   )
@@ -55,7 +55,7 @@ export default function Encounter({ data, onPick, onClose }) {
             </span>
           </div>
         )}
-        <h2 style={{ fontSize: 19 }}>{data.title}</h2>
+        <h2 className="t-xl">{data.title}</h2>
 
         {isTrade ? (
           // Two-sided bundle trade: what you give up ↔ what you get, with the cash delta.
@@ -83,11 +83,11 @@ export default function Encounter({ data, onPick, onClose }) {
         ) : data.card && (
           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap: 4, margin:'8px 0' }}>
             <HoloCard card={data.card} maxTilt={16} className="enc-card"><HiResImg card={data.card} alt={data.card.name} decoding="async" fetchpriority="high" /></HoloCard>
-            {setNameOfCard(data.card) && <div className="muted" style={{ fontSize: 11 }}>{setNameOfCard(data.card)}</div>}
+            {setNameOfCard(data.card) && <div className="cap">{setNameOfCard(data.card)}</div>}
           </div>
         )}
 
-        <p style={{ fontSize: 15, lineHeight: 1.45 }}>{data.body}</p>
+        <p className="t-lg" style={{ lineHeight: 1.45 }}>{data.body}</p>
         <div className="encopts">
           {data.options.map((o, i) => (
             <button key={i} className={`encbtn tone-${o.tone}`} onClick={() => onPick(o)}>

@@ -37,13 +37,13 @@ export default function Calendar({ onAttend }) {
         </span>
       </div>
 
-      <div className="banner" style={{ marginTop: 10 }}>
+      <div className="banner mt-5">
         🗓️ Attending a show costs <b>time</b>: it runs for its full length and the calendar jumps past it.
         Any shows on those days are <b>missed</b> — a 4-day Worlds skips everything in that window. Pick wisely.
       </div>
 
       {(showLeads || []).length > 0 && (
-        <div className="banner lead-banner" style={{ marginTop: 8 }}>
+        <div className="banner lead-banner mt-4">
           📬 <b>{showLeads.length} appointment{showLeads.length > 1 ? 's' : ''} lined up</b> — people reached out ahead of
           upcoming shows (marked below). A held item or a premium buyer is waiting if you make the trip; skip the show and it's gone.
         </div>
@@ -91,8 +91,8 @@ export default function Calendar({ onAttend }) {
                 {tripDays > 1 && <span className="dur"> · {tripDays} days (thru {endsDay})</span>}
               </div>
               <h4>{show.name}</h4>
-              <div className="muted" style={{ fontSize: 12 }}>{show.tier} · {tier.booths} booths</div>
-              <div className="muted" style={{ fontSize: 12 }}>
+              <div className="cap">{show.tier} · {tier.booths} booths</div>
+              <div className="cap">
                 Cards ~{fmtMoney(tier.valueBand[0])}–{fmtMoney(tier.valueBand[1])} · {Math.round(tier.traffic * 100)}% traffic
               </div>
               {leads.map(l => (
@@ -107,13 +107,13 @@ export default function Calendar({ onAttend }) {
               {/* 💬 The pre-show circuit: for a close-enough show, see which dealers you know
                   are going, catch the crowd gossip, and deal with them before doors. */}
               {!show.locked && show.day - currentDay <= DM_WINDOW && (
-                <button className="btn alt" style={{ marginTop: 6 }} onClick={() => setDmShow(show)}
+                <button className="btn alt mt-3"  onClick={() => setDmShow(show)}
                   title="Which dealers you know are setting up, what they're hauling, and what the crowd's looking like — deal with them before doors open.">
                   💬 Who's going?
                 </button>
               )}
               {!show.locked && ordersWorthMentioning && (
-                <div className="muted" style={{ fontSize: 11.5, color: onlineCovered ? 'var(--green)' : '#ff9f43' }}>
+                <div className="cap" style={{ color: onlineCovered ? 'var(--green)' : '#ff9f43' }}>
                   {onlineCovered
                     ? `📱 ~${ordersShown} online ${ordersNoun} handled while away`
                     : `⚠️ ~${ordersShown} online ${ordersNoun} may arrive home — missed without a 📱 Smartphone`}

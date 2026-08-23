@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { cardValue, sealedValue, fmtMoney, cardImg, setById, slabLabel, round2 } from '../game/engine'
 import { useGame } from '../game/store'
-import { useOpen, bigScreen } from '../ui/Collapse'
+import { useOpen } from '../ui/Collapse'
 import {
   lotMarket, lotTotalCost, lotWarning, roomHeat, WATCHERS_MAX, HOUSE_PREMIUM, lotAppeal,
 } from '../game/lots'
@@ -35,7 +35,7 @@ function RoomBar({ watchers }) {
           / "12packed — it will close over market" — two values run together for anyone reading
           by ear, and optically cramped for everyone else. */}
       👥 <b style={{ color }}>{watchers}</b>
-      <span className="muted" style={{ marginLeft: 5, fontSize: 11 }}>· {label}</span>
+      <span className="cap" style={{ marginLeft: 5 }}>· {label}</span>
     </span>
   )
 }
@@ -114,7 +114,12 @@ export default function AuctionHouse() {
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const committed = useGame(s => s.lotsCommitted())
   const stats = useGame(s => s.auctionStats)
-  const [open, toggle] = useOpen('pv-lots-open', bigScreen())
+  // Closed by default, desktop included. Expanded, this panel ran ~350px and sat between the
+  // vendor picker and the sealed shelf on the Buy tab — the shelf rendered twelfth. The lot count
+  // in the header still says whether anything is running, which is the only part you need at a
+  // glance. New key (`2`): useOpen persists a player's choice permanently, so a changed default
+  // never reaches anyone who already toggled the old one.
+  const [open, toggle] = useOpen('pv-lots-open2', false)
 
   const day = absoluteDay(currentDay, monthsElapsed)
   // Sort by appeal: a quiet room on a valuable lot floats to the top, because that is the
@@ -126,7 +131,7 @@ export default function AuctionHouse() {
   if (!sorted.length) return null
 
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
+    <div className="market-panel mt-5">
       <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
         🔨 Auction house <span className="muted">— {sorted.length} lots running</span>
         {committed > 0 && <span className="pill" style={{ marginLeft: 8 }}>{fmtMoney(committed)} committed</span>}
@@ -134,7 +139,7 @@ export default function AuctionHouse() {
       </div>
       {open && (
         <>
-          <div className="muted" style={{ fontSize: 12.5, margin: '8px 0 10px' }}>
+          <div className="cap" style={{ margin: '8px 0 10px' }}>
             Leave the most you would genuinely pay and walk away. You pay one increment over
             the runner-up, never your maximum — so a high bid costs nothing when the room is
             quiet. The house adds {Math.round(HOUSE_PREMIUM * 100)}% on every win, plus postage.

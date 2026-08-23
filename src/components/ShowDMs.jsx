@@ -51,8 +51,8 @@ export default function ShowDMs({ show, onClose }) {
     <div className="modalbg" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
         <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <h2 style={{ fontSize: 19, marginBottom: 2 }}>💬 Who's going — {show.name}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        <h2 className="t-xl" style={{ marginBottom: 2 }}>💬 Who's going — {show.name}</h2>
+        <p className="cap t-sm mt-0">
           Day {show.day} · {show.tier}. The size of the hall isn't what matters — it's who books a table.
         </p>
 
@@ -84,13 +84,13 @@ export default function ShowDMs({ show, onClose }) {
                 <span className="pill" style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{rap.disc ? ` · ${Math.round(rap.disc * 100)}% off` : ''}</span>
               </div>
               {rap.level < 1 ? (
-                <p className="muted" style={{ fontSize: 12.5, margin: '6px 0 2px' }}>
+                <p className="cap" style={{ margin: '6px 0 2px' }}>
                   They're setting up, but you don't know them well enough to deal over DM — buy from their table at a show first.
                 </p>
               ) : items.length === 0 ? (
-                <p className="muted" style={{ fontSize: 12.5, margin: '6px 0 2px' }}>"Still packing the van — come see the table."</p>
+                <p className="cap" style={{ margin: '6px 0 2px' }}>"Still packing the van — come see the table."</p>
               ) : (
-                <div className="vsealed-list" style={{ marginTop: 6 }}>
+                <div className="vsealed-list mt-3">
                   {items.map((item, idx) => {
                     const mkt = sealedValue({ product: item.product, setId: item.set.id })
                     const price = round2(item.ask * (1 - rap.disc))
@@ -124,7 +124,7 @@ export default function ShowDMs({ show, onClose }) {
           )
         })}
 
-        <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>
+        <p className="cap mt-4">
           One 💳 buy and one 🤝 hold per dealer per show. Buying over DM builds the same rapport as dealing at their table.
         </p>
         <button className="btn alt" style={{ marginTop: 8, maxWidth: 140 }} onClick={onClose}>Done</button>

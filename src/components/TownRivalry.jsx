@@ -26,7 +26,7 @@ function RivalPanel({ rival }) {
   const state = heat >= RIVAL_PROMO_GATE ? 'beating you in town'
     : heat >= 45 ? 'holding their own' : 'losing ground to you'
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
+    <div className="market-panel mt-5">
       <div className="market-head">
         🏪 {rival.name} <span className="muted">— the shop across town, {state}</span>
       </div>
@@ -35,16 +35,16 @@ function RivalPanel({ rival }) {
           <div style={{ width: `${heat}%`, height: '100%', background: tone, transition: 'width .3s' }} />
         </div>
         <div className="row" style={{ justifyContent: 'space-between', marginTop: 4 }}>
-          <span className="muted" style={{ fontSize: 11.5 }}>their share of the town: <b style={{ color: tone }}>{heat}%</b></span>
-          <span className="muted" style={{ fontSize: 11.5 }}>promotions start at {RIVAL_PROMO_GATE}%</span>
+          <span className="cap">their share of the town: <b style={{ color: tone }}>{heat}%</b></span>
+          <span className="cap">promotions start at {RIVAL_PROMO_GATE}%</span>
         </div>
         {rival.promo ? (
           <div className="banner" style={{ marginTop: 8, borderColor: 'var(--red)' }}>
-            📣 They're running <b>{rival.promo.label}</b> — <b style={{ color: 'var(--red)' }}>−{Math.round((rival.promo.drag || 0) * 100)}% walk-ins</b> for
+            📣 They're running <b>{rival.promo.label}</b> — <b className="neg">−{Math.round((rival.promo.drag || 0) * 100)}% walk-ins</b> for
             you, {rival.promo.daysLeft} more day{rival.promo.daysLeft === 1 ? '' : 's'}. Host a night, run a giveaway, or just be the better-stocked shop.
           </div>
         ) : (
-          <p className="muted" style={{ fontSize: 11.5, marginTop: 8, marginBottom: 2 }}>
+          <p className="cap" style={{ marginTop: 8, marginBottom: 2 }}>
             They gain ground every day you coast. It comes back down when you host events, give cards away,
             post a generous buylist, keep a full shop floor, and build a name — and it climbs when the town
             keeps asking you for things you don't have.
@@ -77,27 +77,27 @@ function BranchPanel() {
   if (!branch?.open) {
     const wage = employeeById(mgr)?.wage || 0
     return (
-      <div className="market-panel" style={{ marginTop: 12 }}>
+      <div className="market-panel mt-5">
         <div className="market-head">🏬 Second location <span className="muted">— closed</span></div>
-        <p className="muted" style={{ fontSize: 12.5, margin: '4px 2px 8px' }}>
+        <p className="cap" style={{ margin: '4px 2px 8px' }}>
           A satellite shop run by a manager, trading at about {Math.round(BRANCH_SALE_SHARE * 100)}% of this store's
           daily volume out of stock you send over. It costs <b>{fmtMoney(BRANCH_LEASE_PER_DAY)}/day</b> in lease plus
           the manager's wage <b>whether or not you keep it stocked</b> — an empty branch is just a hole in the floor.
         </p>
         <div className="row" style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span className="muted" style={{ fontSize: 12 }}>Who runs it:</span>
+          <span className="cap">Who runs it:</span>
           {EMPLOYEES.map(e => (
             <button key={e.id} className={`btn ${mgr === e.id ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
               title={e.desc} onClick={() => setMgr(e.id)}>{e.title} · ${e.wage}/d</button>
           ))}
         </div>
-        <div className="row" style={{ marginTop: 10 }}>
+        <div className="row mt-5">
           <button className="btn gold" style={{ maxWidth: 280 }} onClick={() => {
             const r = openBranch(mgr)
             setNote(r?.error || `Branch open — overhead ${fmtMoney(BRANCH_LEASE_PER_DAY + wage)}/day. Send it stock.`)
           }}>🏬 Open the second location</button>
         </div>
-        {note && <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>{note}</p>}
+        {note && <p className="cap mt-3">{note}</p>}
       </div>
     )
   }
@@ -108,7 +108,7 @@ function BranchPanel() {
   const wage = employeeById(branch.managerId)?.wage || 0
   const overhead = BRANCH_LEASE_PER_DAY + wage
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
+    <div className="market-panel mt-5">
       <div className="market-head">
         🏬 Second location <span className="muted">— {employeeById(branch.managerId)?.title || 'manager'} running it, {fmtMoney(overhead)}/day overhead</span>
       </div>
@@ -117,7 +117,7 @@ function BranchPanel() {
         <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>
           💰 {fmtMoney(branch.revenue || 0)} lifetime · {branch.sold || 0} sold
         </span>
-        {(branch.arrears || 0) > 0 && <span className="pill" style={{ color: 'var(--red)' }}>⚠️ {branch.arrears}d behind on overhead</span>}
+        {(branch.arrears || 0) > 0 && <span className="pill neg">⚠️ {branch.arrears}d behind on overhead</span>}
       </div>
       {!stockN && (
         <div className="banner" style={{ borderColor: 'var(--red)', marginBottom: 8 }}>
@@ -125,24 +125,24 @@ function BranchPanel() {
         </div>
       )}
       <div className="row" style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span className="muted" style={{ fontSize: 12 }}>Send the storeroom's best:</span>
+        <span className="cap">Send the storeroom's best:</span>
         {[5, 10, 25].map(n => (
           <button key={n} className={`btn ${batch === n ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
             onClick={() => setBatch(n)}>{n}</button>
         ))}
-        <button className="btn alt" style={{ flex: 'none', maxWidth: 170 }}
+        <button className="btn alt btn-fixed" style={{ maxWidth: 170 }}
           disabled={!eligible.length}
           title={eligible.length ? 'Sends your highest-value storeroom stock — floor stock, keepsakes and holds stay put' : 'Nothing in the storeroom to send'}
           onClick={() => {
             const r = sendToBranch(eligible.slice(0, batch).map(x => x.uid))
             setNote(r?.error || `Sent ${r.sent} item${r.sent === 1 ? '' : 's'} over.`)
           }}>🚚 Send {Math.min(batch, eligible.length)} over</button>
-        <button className="btn alt" style={{ flex: 'none', maxWidth: 150 }} disabled={!stockN}
+        <button className="btn alt btn-fixed" style={{ maxWidth: 150 }} disabled={!stockN}
           onClick={() => { const r = recallFromBranch(); setNote(r?.error || `Recalled ${r.recalled} item${r.recalled === 1 ? '' : 's'}.`) }}>
           ↩︎ Recall all stock
         </button>
       </div>
-      {note && <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>{note}</p>}
+      {note && <p className="cap mt-3">{note}</p>}
     </div>
   )
 }

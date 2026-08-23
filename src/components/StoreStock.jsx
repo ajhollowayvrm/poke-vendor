@@ -4,6 +4,7 @@ import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg
 import { groupCardLines, groupLines, sealedSku } from './sku'
 import CardTile from './CardTile'
 import SealedModal from './SealedModal'
+import { clickable } from '../ui/clickable'
 
 // The grouped-by-SET inventory view shared by all three stock places:
 //   place='floor'     — what's out on the sales floor (walk-ins & the counter buy this)
@@ -253,13 +254,13 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
     const cid = `${kp}${g.setId}` // shelf-prefixed in split view so Singles/Sealed fold independently
     const isCollapsed = collapsed.has(cid)
     return (
-      <div key={cid} className="wants" style={{ marginTop: 10 }}>
+      <div key={cid} className="wants mt-5">
         <div className="wants-head" role="button" tabIndex={0} aria-expanded={!isCollapsed}
           title={isCollapsed ? 'Show this set' : 'Hide this set'}
           style={{ cursor: 'pointer', userSelect: 'none' }}
           onClick={() => toggleCollapse(cid)}
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(cid) } }}>
-          <span aria-hidden style={{ display: 'inline-block', width: 12, fontSize: 10, opacity: 0.7, transition: 'transform .15s', transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}>▼</span>
+          <span className="t-xs" aria-hidden style={{ display: 'inline-block', width: 12, opacity: 0.7, transition: 'transform .15s', transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}>▼</span>
           {' '}{g.name} <span className="muted">— {g.count} item{g.count === 1 ? '' : 's'} · {fmtMoney(g.value)}</span>
         </div>
         {!isCollapsed && (
@@ -334,7 +335,7 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
           {place !== 'personal' && collapseIds.length > 1 && (() => {
             const allFolded = collapseIds.every(id => collapsed.has(id))
             return (
-              <button className="btn alt" style={{ flex: 'none', padding: '5px 12px' }}
+              <button className="btn alt btn-fixed" style={{ padding: '5px 12px' }}
                 title={allFolded ? 'Open every set section' : 'Fold every set down to its header'}
                 onClick={() => setAllCollapsed(!allFolded)}>
                 {allFolded ? '▸ Expand all' : '▾ Collapse all'}
@@ -348,12 +349,12 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
             </button>
           )}
           {selectMode && selectableCount > 0 && (
-            <button className="btn alt" style={{ flex: 'none', padding: '5px 12px' }} onClick={selectAll}>
+            <button className="btn alt btn-fixed" style={{ padding: '5px 12px' }} onClick={selectAll}>
               {allPicked ? 'Deselect all' : `Select all (${selectableCount})`}
             </button>
           )}
           {!selectMode && place !== 'personal' && (
-            <button className="btn" style={{ flex: 'none', padding: '5px 12px' }}
+            <button className="btn btn-fixed" style={{ padding: '5px 12px' }}
               title={`Fill each line up to ${skuCap} out front — ${packCap} for loose packs (vintage unlimited), best product first`}
               onClick={() => { const n = restockFloor(); flash(n ? `Put ${n} item${n === 1 ? '' : 's'} out on the floor.` : 'Nothing to stock (storeroom empty or every line already out).') }}>
               🛒 Stock the floor
@@ -362,19 +363,19 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
         </span>
       </div>
       {selectMode && (
-        <p className="muted" style={{ fontSize: 12, margin: '2px 2px 6px' }}>Tap {gridMode ? 'cards' : 'lines'} to select, then choose a bulk action below.</p>
+        <p className="cap" style={{ margin: '2px 2px 6px' }}>Tap {gridMode ? 'cards' : 'lines'} to select, then choose a bulk action below.</p>
       )}
 
       {place === 'floor' && (
-        <p className="muted" style={{ fontSize: 12, margin: '2px 2px 6px' }}>
+        <p className="cap" style={{ margin: '2px 2px 6px' }}>
           Only floor stock sells to walk-ins & the counter. <b>🔒 Keep</b> takes a line home (Personal); <b>📦</b> sends it to the back.
         </p>
       )}
 
       {groups.length === 0 ? (
-        <div className="empty" style={{ marginTop: 12 }}>{emptyMsg}</div>
+        <div className="empty mt-5">{emptyMsg}</div>
       ) : gridMode ? (
-        <div className="grid coll-grid" style={{ marginTop: 12 }}>
+        <div className="grid coll-grid mt-5">
           {gridItems.map(({ kind, it }) => {
             // Centering read sits under the art next to the on-tile condition chip — together
             // they're the "is this worth grading?" call. Fuzzy without the 🔍 loupe.
@@ -550,8 +551,12 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
   }
 
   return (
+    // KEYBOARD: this row carries THREE click handlers that all do the same thing (thumb, icon,
+    // info block), so making each one a tab stop would put three identical stops on one row.
+    // Exactly one stop per row instead — the outer row while selecting, .tl-info otherwise. The
+    // thumb keeps its click as a redundant mouse affordance and stays out of the tab order.
     <div className={`trade-line stock-line ${selectMode ? 'selectable' : ''} ${selected ? 'picked' : ''}`}
-      onClick={selectMode ? onToggle : undefined} style={selectMode ? { cursor: 'pointer' } : undefined}>
+      {...(selectMode ? clickable(onToggle, { style: { cursor: 'pointer' }, 'aria-pressed': !!selected }) : {})}>
       {selectMode && <span className={`stock-check ${selected ? 'on' : ''}`}>{selected ? '✓' : ''}</span>}
       {kind === 'card'
         ? <img className="tl-thumb" src={cardImg(first)} alt="" loading="lazy" decoding="async"
@@ -563,8 +568,9 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
             : <span className="tl-icon" title="Tap for details"
                 onClick={selectMode ? undefined : () => onInspect && onInspect(first)} style={!selectMode && onInspect ? { cursor: 'pointer' } : undefined}>{first.product.icon || '📦'}</span>)}
       <div className="tl-info"
-        onClick={selectMode ? undefined : () => (kind === 'card' ? (onPick && onPick(first)) : (onInspect && onInspect(first)))}
-        style={!selectMode && (kind === 'card' ? onPick : onInspect) ? { cursor: 'pointer' } : undefined}>
+        {...(!selectMode && (kind === 'card' ? onPick : onInspect)
+          ? clickable(() => (kind === 'card' ? onPick(first) : onInspect(first)), { style: { cursor: 'pointer' } })
+          : {})}>
         <div className="tl-name">{(featuredCopy || featuredSealed) ? '⭐ ' : ''}{label}</div>
         {/* Card rows sit under their set's header, so the sub line spends its (mobile-tight)
             width on the grading read instead of repeating the set: condition + centering

@@ -143,7 +143,7 @@ function FanCaption({ card, hasLoupe }) {
         <span style={{ color: edge, fontWeight: 800 }}>
           {card.foil ? card.foil.label : card.grade ? slabLabel(card.grade) : `${card.reverse ? 'Reverse · ' : ''}${card.rarity}`}
         </span>
-        {' · '}<b style={{ color: 'var(--green)' }}>{fmtMoney(cardValue(card))}</b>
+        {' · '}<b className="pos">{fmtMoney(cardValue(card))}</b>
       </div>
       {!card.grade && (
         <div className="fan-cap-psa" title="What this raw card would be worth if it graded">

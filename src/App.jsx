@@ -20,6 +20,7 @@ import { Chunk, lazyChunk } from './ui/lazyChunk'
 import { DialogHost, ToastHost, toast } from './ui/dialog'
 import { configureFeedback } from './game/feedback'
 import { AnimatedNumber, CashFlash } from './ui/AnimatedNumber'
+import { Explain } from './ui/Explain'
 import { SHOW_TIERS } from './game/shows'
 import { milestoneById } from './game/milestones'
 
@@ -559,8 +560,8 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className={`topbar ${ripping && tab === 'shop' ? 'rip-hide' : ''}`} ref={topbarRef}>
-        <div className="brand">Poké<b>Vendor</b></div>
+      <header className={`topbar ${ripping && tab === 'shop' ? 'rip-hide' : ''}`} ref={topbarRef}>
+        <h1 className="brand">Poké<b>Vendor</b></h1>
         <div className="tabs">
           {TABS.map(t => (
             <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
@@ -586,7 +587,7 @@ export default function App() {
           <div className="worth" title="Net worth — cash + market value of everything you own (collection, listings, sealed, cards at the grader). Moving value around (grading, buying, listing) doesn't change it; only real income or spending does."><AnimatedNumber value={worth} format={fmtMoney} /><small>net worth</small></div>
           <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
-      </div>
+      </header>
 
       {gradeReveal && (
         <Chunk label="Opening the return package…">
@@ -610,6 +611,10 @@ export default function App() {
       {/* the active view fills the space between the top bar and the bottom nav,
           so short pages (empty collection, settings) don't leave dead space */}
       <main className="content">
+        {/* Names the current screen for assistive tech. The tab strip is the visible title, so
+            repeating it on the page would be noise for a sighted player — but without this the
+            document has one h1 and nothing between it and the panel h3s. */}
+        <h2 className="sr-only">{TAB_LABEL[tab] || 'Settings'}</h2>
         {/* Buy tab ONLY. Sitting outside the tab switch, this checklist painted on all six
             screens at once — ~230px of a 676px phone viewport (34%) repeated on Store, Stream,
             Shows, Stats and Inventory, where none of its steps live. Buy is where you land by
@@ -789,7 +794,7 @@ function DaySummary({ summary, onClose }) {
       <>
       {/* recap body */}
         <h2 style={{ marginBottom: 2, textAlign: 'center' }}>{showName ? `🎪 Back from ${showName}` : `📅 ${weekdayOf(absoluteDay(currentDay, monthsElapsed))} · Day ${currentDay} · ${monthName(monthsElapsed)}`}</h2>
-        {multiDay && <div className="muted" style={{ fontSize: 13, marginBottom: 6, textAlign: 'center' }}>{days} days passed</div>}
+        {multiDay && <div className="cap t-sm" style={{ marginBottom: 6, textAlign: 'center' }}>{days} days passed</div>}
 
         {/* Headline: net cash for the day + current net worth */}
         {cashDelta != null && (
@@ -803,7 +808,7 @@ function DaySummary({ summary, onClose }) {
             {netWorth != null && (
               <div style={{ textAlign: 'right' }}>
                 <div className="recap-h-label">Net worth</div>
-                <div className="recap-h-val" style={{ fontSize: 20 }}>{fmtMoney(netWorth)}</div>
+                <div className="recap-h-val t-xl">{fmtMoney(netWorth)}</div>
               </div>
             )}
           </div>
@@ -819,14 +824,14 @@ function DaySummary({ summary, onClose }) {
               <div className="recap-sec">
                 <div className="recap-sec-h">🎪 On the floor</div>
                 {floor.acquired > 0 && <div className="recap-line"><span className="muted">Items picked up</span><b>{floor.acquired}</b></div>}
-                {floor.spent > 0 && <div className="recap-line"><span className="muted">Spent buying</span><span style={{ color: 'var(--red)' }}>−{fmtMoney(floor.spent)}</span></div>}
-                {floor.earned > 0 && <div className="recap-line"><span className="muted">Earned selling</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(floor.earned)}</b></div>}
+                {floor.spent > 0 && <div className="recap-line"><span className="muted">Spent buying</span><span className="neg">−{fmtMoney(floor.spent)}</span></div>}
+                {floor.earned > 0 && <div className="recap-line"><span className="muted">Earned selling</span><b className="pos">+{fmtMoney(floor.earned)}</b></div>}
                 {(floor.earned > 0 || floor.spent > 0) && (
                   <div className="recap-line"><span>Floor net</span>
                     <b style={{ color: floor.earned - floor.spent >= 0 ? 'var(--green)' : 'var(--red)' }}>
                       {floor.earned - floor.spent >= 0 ? '+' : ''}{fmtMoney(round2(floor.earned - floor.spent))}</b></div>
                 )}
-                {floor.notoGained > 0 && <div className="recap-line"><span className="muted">Notoriety gained</span><b style={{ color: 'var(--gold)' }}>+{floor.notoGained}★</b></div>}
+                {floor.notoGained > 0 && <div className="recap-line"><span className="muted">Notoriety gained</span><b className="warn">+{floor.notoGained}★</b></div>}
                 {floor.rapport > 0 && <div className="recap-line"><span className="muted">🤝 Dealt with vendors</span><span className="muted">{fmtMoney(floor.rapport)}</span></div>}
               </div>
             )}
@@ -834,18 +839,18 @@ function DaySummary({ summary, onClose }) {
             {(saleProceeds > 0 || sold.length > 0 || wantsBrokered > 0 || offersAccepted > 0) && (
               <div className="recap-sec">
                 <div className="recap-sec-h">🧾 Sold</div>
-                {wantsBrokered > 0 && <div className="recap-line"><span className="muted">💼 Broker filled {wantsBrokered} want{wantsBrokered === 1 ? '' : 's'}</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(brokerProceeds)}</b></div>}
+                {wantsBrokered > 0 && <div className="recap-line"><span className="muted">💼 Broker filled {wantsBrokered} want{wantsBrokered === 1 ? '' : 's'}</span><b className="pos">+{fmtMoney(brokerProceeds)}</b></div>}
                 {offersAccepted > 0 && <div className="recap-line"><span className="muted">📨 Offer desk closed {offersAccepted} deal{offersAccepted === 1 ? '' : 's'}</span></div>}
-                {bigSale && <div className="recap-line"><span>Biggest: <b>{bigSale.name}</b></span><b style={{ color: 'var(--green)' }}>+{fmtMoney(bigSale.net)}</b></div>}
+                {bigSale && <div className="recap-line"><span>Biggest: <b>{bigSale.name}</b></span><b className="pos">+{fmtMoney(bigSale.net)}</b></div>}
                 {sold.filter(s => !bigSale || s.name !== bigSale.name || s.net !== bigSale.net).slice(0, 3).map((s, i) => (
                   <div className="recap-line" key={i}><span className="muted">{s.name}</span><span className="muted">+{fmtMoney(s.net)}</span></div>
                 ))}
-                {counterIncome > 0 && <div className="recap-line"><span className="muted">🏬 Storefront counter (singles & bulk)</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(counterIncome)}</b></div>}
-                {suppliesIncome > 0 && <div className="recap-line"><span className="muted">🧢 Supplies & accessories ({suppliesSold} unit{suppliesSold === 1 ? '' : 's'})</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(suppliesIncome)}</b></div>}
-                {machineIncome > 0 && <div className="recap-line"><span className="muted">🎰 Pack Machine ({machineSold} pack{machineSold === 1 ? '' : 's'})</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(machineIncome)}</b></div>}
-                {binIncome > 0 && <div className="recap-line"><span className="muted">🗑️ Bulk bin ({binSold} card{binSold === 1 ? '' : 's'})</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(binIncome)}</b></div>}
-                {wholesaleIncome > 0 && <div className="recap-line"><span className="muted">📦 Wholesale to other shops (your distribution margin)</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(wholesaleIncome)}</b></div>}
-                {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(saleProceeds)}</b></div>}
+                {counterIncome > 0 && <div className="recap-line"><span className="muted">🏬 Storefront counter (singles & bulk)</span><b className="pos">+{fmtMoney(counterIncome)}</b></div>}
+                {suppliesIncome > 0 && <div className="recap-line"><span className="muted">🧢 Supplies & accessories ({suppliesSold} unit{suppliesSold === 1 ? '' : 's'})</span><b className="pos">+{fmtMoney(suppliesIncome)}</b></div>}
+                {machineIncome > 0 && <div className="recap-line"><span className="muted">🎰 Pack Machine ({machineSold} pack{machineSold === 1 ? '' : 's'})</span><b className="pos">+{fmtMoney(machineIncome)}</b></div>}
+                {binIncome > 0 && <div className="recap-line"><span className="muted">🗑️ Bulk bin ({binSold} card{binSold === 1 ? '' : 's'})</span><b className="pos">+{fmtMoney(binIncome)}</b></div>}
+                {wholesaleIncome > 0 && <div className="recap-line"><span className="muted">📦 Wholesale to other shops (your distribution margin)</span><b className="pos">+{fmtMoney(wholesaleIncome)}</b></div>}
+                {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b className="pos">+{fmtMoney(saleProceeds)}</b></div>}
               </div>
             )}
 
@@ -868,8 +873,8 @@ function DaySummary({ summary, onClose }) {
                 <div className="recap-sec-h">📬 New</div>
                 {newWants > 0 && <div className="recap-line"><span>🐋 {newWants} collector want{newWants === 1 ? '' : 's'} found you</span><span className="muted">Sell tab</span></div>}
                 {regularCalls > 0 && <div className="recap-line"><span>📞 {regularCalls} regular{regularCalls === 1 ? '' : 's'} asked you to stock their lane</span><span className="muted">🤝 Regulars</span></div>}
-                {regularsWon > 0 && <div className="recap-line"><span style={{ color: 'var(--green)' }}>🤝 You came through for {regularsWon} regular{regularsWon === 1 ? '' : 's'}</span></div>}
-                {premiumOffers > 0 && <div className="recap-line"><span style={{ color: 'var(--green)' }}>📈 {premiumOffers} over-market offer{premiumOffers === 1 ? '' : 's'} (hot set)</span></div>}
+                {regularsWon > 0 && <div className="recap-line"><span className="pos">🤝 You came through for {regularsWon} regular{regularsWon === 1 ? '' : 's'}</span></div>}
+                {premiumOffers > 0 && <div className="recap-line"><span className="pos">📈 {premiumOffers} over-market offer{premiumOffers === 1 ? '' : 's'} (hot set)</span></div>}
                 {added > 0 && <div className="recap-line"><span className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</span></div>}
                 {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}
                 {resolvedGrades > 0 && <div className="recap-line"><span className="muted">{resolvedGrades} slab{resolvedGrades === 1 ? '' : 's'} back from grading</span></div>}
@@ -881,9 +886,9 @@ function DaySummary({ summary, onClose }) {
                 {notoDelta > 0 && (
                   <div className="recap-line">
                     <span className="muted">⭐ Reputation{(notoBySrc || []).length > 0 && (
-                      <span className="muted" style={{ fontSize: 12 }}> ({notoBySrc.map(([tag, d]) => `${repSourceLabel(tag).split(' ')[0]} ${d > 0 ? '+' : ''}${d}`).join(' · ')})</span>
+                      <span className="cap"> ({notoBySrc.map(([tag, d]) => `${repSourceLabel(tag).split(' ')[0]} ${d > 0 ? '+' : ''}${d}`).join(' · ')})</span>
                     )}</span>
-                    <b style={{ color: 'var(--gold)' }}>+{Math.round(notoDelta * 10) / 10}★</b>
+                    <b className="warn">+{Math.round(notoDelta * 10) / 10}★</b>
                   </div>
                 )}
                 {hype >= 10 && <div className="recap-line"><span className="muted">🔥 Shop heat</span><b style={{ color: 'var(--orange, #ff9f43)' }}>{Math.round(hype)}{hypeDelta > 0 ? ` (+${Math.round(hypeDelta)})` : ' (fading)'}</b></div>}
@@ -907,7 +912,7 @@ function DaySummary({ summary, onClose }) {
             {(wages > 0 || rent > 0 || storage > 0 || lease > 0 || payroll > 0) && (
               <div className="recap-sec">
                 <div className="recap-sec-h">💸 Overhead</div>
-                {wages > 0 && <div className="recap-line"><span className="muted">Wages earned</span><b style={{ color: 'var(--green)' }}>+{fmtMoney(wages)}</b></div>}
+                {wages > 0 && <div className="recap-line"><span className="muted">Wages earned</span><b className="pos">+{fmtMoney(wages)}</b></div>}
                 {rent > 0 && <div className="recap-line"><span className="muted">Rent</span><span>-{fmtMoney(rent)}</span></div>}
                 {storage > 0 && <div className="recap-line"><span className="muted">Inventory storage</span><span>-{fmtMoney(storage)}</span></div>}
                 {lease > 0 && <div className="recap-line"><span className="muted">Store lease</span><span>-{fmtMoney(lease)}</span></div>}
@@ -947,7 +952,7 @@ function GameOver() {
     <Modal dismissable={false} maxWidth={420} zIndex={50} label="Game over"
       style={{ textAlign: 'center' }}>
       <h2 style={{ marginBottom: 6 }}>💸 Game Over</h2>
-      <p className="muted" style={{ marginTop: 0 }}>
+      <p className="muted mt-0">
         You couldn't make rent and had nothing left to sell. The dream's over… for now.
       </p>
       <button className="btn gold" style={{ maxWidth: 200, margin: '8px auto 0' }} onClick={reset}>
@@ -1020,11 +1025,87 @@ function Shop({ cash, onBuy, onBuyVintage }) {
 
   return (
     <>
+      {/* ORDER ON THIS TAB IS THE POINT, so read before rearranging.
+          The shelf used to render TWELFTH: picker, imports, auction house, reprint wave, two
+          intel panels, reorder ledger, rapport bar, clout button, supply panel, distributor
+          blurb, credit panel — and only then the thing the player opened the tab to do. Roughly
+          a thousand pixels of reference material in front of the one primary action.
+          Now: pick a vendor → choose how you're paying → BUY. Everything that reports rather
+          than acts sits below the shelf, and the panels that used to be open by default are
+          collapsed (see AuctionHouse / MarketIntel / CreditPanel).
+          The intel panels stay OUTSIDE the unlocked/marketplace branch, exactly as before, so
+          they still show on the 📱 marketplace and locked-account views. */}
       <DistributorPicker distributorState={distributors} notoriety={notoriety} upgrades={upgrades} rank={rank} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
 
       {/* 🚢 Import orders still crossing the Pacific — visible whichever shelf you're browsing */}
       <ImportsInTransit />
 
+      {!unlocked ? (
+        <LockedDistributor dist={dist} notoriety={notoriety} rank={rank} />
+      ) : dist.marketplace ? (
+        /* 📱 A listings channel, not a shelf: no catalog, no stock, no rapport, no credit
+           line. Individuals do not extend you net terms. */
+        <LocalMarket />
+      ) : (<>
+      {/* 💳 Above the shelf on purpose: the pay mode decides what every buy button below
+          charges. Its balance detail is collapsed; the mode toggle itself never hides. */}
+      <CreditPanel balance={creditBalance} limit={creditLimitV} avail={creditAvail} min={creditMin}
+        frozen={creditFrozen} cash={cash} payMode={payMode} setPayMode={setPayMode}
+        onPay={(amt) => { const paid = payCredit(amt); if (paid > 0) flash(`Paid ${fmtMoney(paid)} toward your credit line.`) }} />
+
+      {/* 🛒 THE SHELF — the primary action on this tab. Nothing goes above it that is not
+          "which vendor" or "how am I paying". */}
+      {catalog.length === 0 ? (
+        <p className="muted mt-6">{dist.name} has nothing on the shelf right now — check back next week.</p>
+      ) : (
+        <div className="shop-list">
+          {groupByEra(catalog).map((era, i) => (
+            <DistributorEraCard key={era.series} era={era} dist={dist} lvl={lvl} stock={rec.stock}
+              cash={cash} onBuy={onBuy} clearanceSetId={clearanceSetId} owned={ownedCounts}
+              onCredit={onCredit} split={split} creditAvail={creditAvail} weekIndex={weekIndex}
+              defaultOpen={i === 0} />
+          ))}
+        </div>
+      )}
+
+      <VintageShelf dist={dist} rec={rec} weekIndex={weekIndex} cash={cash} onBuyVintage={onBuyVintage} onCredit={onCredit} split={split} creditAvail={creditAvail} />
+
+      <RapportBanner dist={dist} rec={rec} lvl={lvl} />
+      {/* 🎫 Clout spend: something on this shelf sold out — a favor gets the truck there early. */}
+      {rank >= 1 && Object.values(rec.stock || {}).some(v => (v?.q ?? 1) <= 0) && (
+        <div style={{ margin: '8px 0' }}>
+          <button className="btn alt t-xs" style={{ padding: '4px 10px' }} disabled={clout < 2}
+            title={clout < 2 ? 'Needs 2 🎫 clout (rank-ups, god packs, clean-sweep goal weeks)' : `Spend 2 🎫 clout — ${dist.name} finds you a delivery and the whole shelf refills today`}
+            onClick={() => { const r = cloutRestock(distId); flash(r.error || `📦 ${dist.name} took the call — shelf's full again.`) }}>
+            📦 Call in a favor — restock {dist.name} · 2 🎫 (you have {Math.floor(clout)})
+          </button>
+        </div>
+      )}
+
+      {showSupply && (
+        <SupplyPanel dist={dist} lvl={lvl} supplyVendors={supplyVendors} supplyChannel={supplyChannel} cash={cash} flash={flash} />
+      )}
+
+      {/* One line visible, the rest behind the ?. The blurb plus the pricing provenance ran to
+          about forty words and printed on every visit to every vendor, at the same weight as the
+          shelf above it. Where the prices come from is worth reading once, not forty times. */}
+      <div className="banner mt-6">
+        {dist.icon} <b style={{ color: dist.color }}>{dist.name}</b> — {dist.blurb}
+        {' '}
+        <Explain label={`How ${dist.name} prices its stock`}>
+          {dist.japanese
+            ? <>Sealed priced off the <b>real JP singles market</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); JP boosters rip 5 cards on their own hit ladder. 🚢 Orders land in ~{dist.leadDays} days.</>
+            : <>Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.</>}
+        </Explain>
+        {dist.id === 'lgs' && (lgsCredit || 0) > 0 && (
+          <> {' '}<span className="pill" title="In-store credit from turning in bulk (5¢/card). Applied automatically at checkout here." style={{ background: '#5ec98a22', color: 'var(--green)' }}>💳 {fmtMoney(lgsCredit)} store credit — spent automatically here</span></>
+        )}
+      </div>
+
+      </>)}
+
+      {/* Below the fold on purpose — these REPORT, they don't act. They stay outside the
+          unlocked/marketplace branch above so the 📱 marketplace and locked views keep them. */}
       {/* 🔨 The auction house: the buy side of the hammer, alongside the wholesale shelves */}
       <AuctionHouse />
 
@@ -1038,57 +1119,6 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       {/* 🧮 Purchasing Agent's reorder-points ledger (self-gates on the upgrade) */}
       <ReorderPanel />
 
-      {!unlocked ? (
-        <LockedDistributor dist={dist} notoriety={notoriety} rank={rank} />
-      ) : dist.marketplace ? (
-        /* 📱 A listings channel, not a shelf: no catalog, no stock, no rapport, no credit
-           line. Individuals do not extend you net terms. */
-        <LocalMarket />
-      ) : (<>
-      <RapportBanner dist={dist} rec={rec} lvl={lvl} />
-      {/* 🎫 Clout spend: something on this shelf sold out — a favor gets the truck there early. */}
-      {rank >= 1 && Object.values(rec.stock || {}).some(v => (v?.q ?? 1) <= 0) && (
-        <div style={{ margin: '8px 0' }}>
-          <button className="btn alt" style={{ padding: '4px 10px', fontSize: 12 }} disabled={clout < 2}
-            title={clout < 2 ? 'Needs 2 🎫 clout (rank-ups, god packs, clean-sweep goal weeks)' : `Spend 2 🎫 clout — ${dist.name} finds you a delivery and the whole shelf refills today`}
-            onClick={() => { const r = cloutRestock(distId); flash(r.error || `📦 ${dist.name} took the call — shelf's full again.`) }}>
-            📦 Call in a favor — restock {dist.name} · 2 🎫 (you have {Math.floor(clout)})
-          </button>
-        </div>
-      )}
-
-      {showSupply && (
-        <SupplyPanel dist={dist} lvl={lvl} supplyVendors={supplyVendors} supplyChannel={supplyChannel} cash={cash} flash={flash} />
-      )}
-
-      <div className="banner" style={{ marginTop: 14 }}>
-        {dist.icon} <b style={{ color: dist.color }}>{dist.name}</b> — {dist.blurb}
-        {dist.japanese
-          ? <>{' '}Sealed priced off the <b>real JP singles market</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); JP boosters rip 5 cards on their own hit ladder. 🚢 Orders land in ~{dist.leadDays} days.</>
-          : <>{' '}Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.</>}
-        {dist.id === 'lgs' && (lgsCredit || 0) > 0 && (
-          <> {' '}<span className="pill" title="In-store credit from turning in bulk (5¢/card). Applied automatically at checkout here." style={{ background: '#5ec98a22', color: 'var(--green)' }}>💳 {fmtMoney(lgsCredit)} store credit — spent automatically here</span></>
-        )}
-      </div>
-
-      <CreditPanel balance={creditBalance} limit={creditLimitV} avail={creditAvail} min={creditMin}
-        frozen={creditFrozen} cash={cash} payMode={payMode} setPayMode={setPayMode}
-        onPay={(amt) => { const paid = payCredit(amt); if (paid > 0) flash(`Paid ${fmtMoney(paid)} toward your credit line.`) }} />
-
-      {catalog.length === 0 ? (
-        <p className="muted" style={{ marginTop: 18 }}>{dist.name} has nothing on the shelf right now — check back next week.</p>
-      ) : (
-        <div className="shop-list">
-          {groupByEra(catalog).map(era => (
-            <DistributorEraCard key={era.series} era={era} dist={dist} lvl={lvl} stock={rec.stock}
-              cash={cash} onBuy={onBuy} clearanceSetId={clearanceSetId} owned={ownedCounts}
-              onCredit={onCredit} split={split} creditAvail={creditAvail} weekIndex={weekIndex} />
-          ))}
-        </div>
-      )}
-
-      <VintageShelf dist={dist} rec={rec} weekIndex={weekIndex} cash={cash} onBuyVintage={onBuyVintage} onCredit={onCredit} split={split} creditAvail={creditAvail} />
-      </>)}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )
@@ -1126,10 +1156,10 @@ function ReprintWaveBanner({ cash, flash }) {
         🧾 {wave.custPreorders} local deposit{wave.custPreorders > 1 ? 's' : ''} riding on it</span></>}
       {room > 0 ? (
         <span className="row" style={{ gap: 6, marginTop: 6, alignItems: 'center', display: 'inline-flex', marginLeft: 8 }}>
-          <button className="btn alt" style={{ flex: 'none', padding: '2px 9px' }} onClick={() => setQty(v => Math.max(1, v - 1))}>−</button>
+          <button className="btn alt btn-fixed" style={{ padding: '2px 9px' }} onClick={() => setQty(v => Math.max(1, v - 1))}>−</button>
           <b>{q}</b>
-          <button className="btn alt" style={{ flex: 'none', padding: '2px 9px' }} onClick={() => setQty(v => Math.min(room, v + 1))}>+</button>
-          <button className="btn gold" style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }} disabled={cash < cost}
+          <button className="btn alt btn-fixed" style={{ padding: '2px 9px' }} onClick={() => setQty(v => Math.min(room, v + 1))}>+</button>
+          <button className="btn gold t-xs btn-fixed" style={{ padding: '4px 10px' }} disabled={cash < cost}
             onClick={() => { const r = preorderWave(q); flash(r.error || `📰 Preordered ${r.bought} — lands on drop day.`); if (!r.error) setQty(1) }}>
             Preorder {q} · {fmtMoney(cost)}
           </button>
@@ -1137,7 +1167,7 @@ function ReprintWaveBanner({ cash, flash }) {
       ) : <b style={{ marginLeft: 8 }}> Allocation fully committed.</b>}
       {/* 🎫 Clout spend: argue your way into a bigger slice of the wave (once per wave). */}
       {!wave.allocBonus && rank >= 2 && (
-        <button className="btn alt" style={{ marginLeft: 8, padding: '4px 10px', fontSize: 12 }} disabled={clout < 3}
+        <button className="btn alt t-xs" style={{ marginLeft: 8, padding: '4px 10px' }} disabled={clout < 3}
           title={clout < 3 ? 'Needs 3 🎫 clout' : `Spend 3 🎫 clout — your rep argues the rep into a bigger slice (cap ${wave.allocCap} → ${Math.ceil(wave.allocCap * 1.5)})`}
           onClick={() => { const r = cloutJumpAllocation(); flash(r.error || `📰 Queue jumped — your cap is now ${r.allocCap}.`) }}>
           🎫 Jump the queue · 3 🎫
@@ -1162,25 +1192,33 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
   const creditTitle = frozen ? 'Frozen — pay your balance down to buy on credit again'
     : avail <= 0 ? 'No credit available yet — your line grows with your net worth (and frees up as you pay down the balance)'
     : `up to ${fmtMoney(avail)} available`
-  // Collapsible (mobile declutter): the header always shows the load-bearing numbers —
-  // balance owed + open credit + the active pay mode — so closed still informs; the mode
-  // toggle and pay-down buttons live in the body. Sticky open state, desktop-open default.
-  const [openPanel, togglePanel] = useOpen('pv-col-credit', bigScreen())
+  // Collapsible: the header always shows the load-bearing numbers — balance owed + open credit —
+  // so closed still informs; the stats and pay-down buttons live in the body.
+  //
+  // Closed by DEFAULT now, on desktop too. This panel sat expanded above the shelf and was one of
+  // four reference panels the player scrolled past to reach the thing they came to buy — the
+  // sealed shelf rendered TWELFTH on this tab. Reference material collapses; the shelf does not.
+  //
+  // The key is `pv-col-credit2`, not `pv-col-credit`. useOpen persists the player's choice
+  // forever, so changing the default alone would have reached nobody who had ever toggled the old
+  // panel — including every existing save. A new key is the only way a changed default lands.
+  const [openPanel, togglePanel] = useOpen('pv-col-credit2', false)
   return (
     <div className={`credit-panel ${frozen ? 'frozen' : ''}`}>
       <div className="credit-top" role="button" tabIndex={0} aria-expanded={openPanel}
         style={{ cursor: 'pointer', userSelect: 'none' }} onClick={togglePanel}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePanel() } }}>
         <div className="credit-head">💳 Credit line{frozen && <span className="credit-badge">FROZEN</span>}</div>
-        <span className="muted" style={{ fontSize: 12.5 }}>
+        <span className="cap">
           {hasBalance ? <><b className="credit-owe">{fmtMoney(balance)}</b> owed · </> : null}
           <b className="credit-avail">{fmtMoney(avail)}</b> open
-          {active !== 'cash' && <> · paying {active === 'split' ? '🔀 cash+credit' : '💳 credit'}</>}
         </span>
         <span className="muted" style={{ marginLeft: 'auto' }}>{openPanel ? '▾' : '▸'}</span>
       </div>
-      {openPanel && (<>
-      <div className="credit-toggle" role="group" aria-label="Pay with" style={{ marginTop: 8 }}>
+      {/* The pay-with toggle stays OUTSIDE the collapse. It is not reference material: it decides
+          what every buy button on the shelf below charges, so hiding it behind a closed panel
+          would hide the price the player is about to pay. Only the balance detail collapses. */}
+      <div className="credit-toggle mt-4" role="group" aria-label="Pay with">
         <button className={`btn ${active === 'cash' ? 'gold' : 'alt'}`} onClick={() => setPayMode('cash')}
           title="Pay with cash on hand">💵 Cash</button>
         <button className={`btn ${active === 'split' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
@@ -1190,6 +1228,7 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
           title={canUseCredit ? `Charge buys to your credit line (${creditTitle})` : creditTitle}
           onClick={() => setPayMode('credit')}>💳 Credit</button>
       </div>
+      {openPanel && (<>
       <div className="credit-stats">
         <span>Balance <b className={hasBalance ? 'credit-owe' : ''}>{fmtMoney(balance)}</b></span>
         <span>Limit <b>{fmtMoney(limit)}</b></span>
@@ -1237,9 +1276,9 @@ function ReorderPanel() {
   const points = pointsRaw || {}
   const nActive = Object.values(points).filter(v => v > 0).length
   return (
-    <Collapse id="reorder" className="market-panel" headClass="market-head" style={{ marginTop: 12 }}
+    <Collapse id="reorder" className="market-panel mt-5" headClass="market-head" 
       head="🧮 Reorder points" defaultOpen={bigScreen()}
-      badge={nActive > 0 ? `${nActive} active` : 'off'}
+      badge={nActive> 0 ? `${nActive} active` : 'off'}
       hint="— the Purchasing Agent restocks every set to these minimums overnight: cheapest unlocked distributor first at your rapport price, counting stock on hand, at shows, and 🚢 in transit.">
       <div className="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
         {types.map(([type, info]) => {
@@ -1247,10 +1286,10 @@ function ReorderPanel() {
           return (
             <span key={type} className="pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, opacity: q > 0 ? 1 : 0.65 }}>
               {info.icon} {type} <small className="muted">· {info.sets} set{info.sets > 1 ? 's' : ''}</small>
-              <button className="btn alt" style={{ flex: 'none', padding: '0 8px' }} disabled={q <= 0}
+              <button className="btn alt btn-fixed" style={{ padding: '0 8px' }} disabled={q <= 0}
                 onClick={() => setReorderPoint(type, q - 1)} aria-label={`Lower ${type} minimum`}>−</button>
               <b style={{ minWidth: 14, textAlign: 'center' }}>{q}</b>
-              <button className="btn alt" style={{ flex: 'none', padding: '0 8px' }} disabled={q >= 9}
+              <button className="btn alt btn-fixed" style={{ padding: '0 8px' }} disabled={q>= 9}
                 onClick={() => setReorderPoint(type, q + 1)} aria-label={`Raise ${type} minimum`}>+</button>
             </span>
           )
@@ -1322,8 +1361,8 @@ function LockedDistributor({ dist, notoriety, rank = 0 }) {
     return (
       <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66', textAlign: 'center' }}>
         <div style={{ fontSize: 30, marginBottom: 6 }}>{u?.icon || '🔒'}</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} needs the {u?.name || 'right paperwork'}</div>
-        <p className="muted" style={{ fontSize: 13, margin: '8px auto 0', maxWidth: 440 }}>
+        <div className="t-lg" style={{ fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} needs the {u?.name || 'right paperwork'}</div>
+        <p className="cap t-sm" style={{ margin: '8px auto 0', maxWidth: 440 }}>
           Importing means customs, freight, and a wholesale account overseas — buy the
           <b> {u?.icon} {u?.name}</b> {u ? <>({fmtMoney(u.cost)}) </> : ''}in <b>⚙️ → Upgrades</b> and this shelf opens for good.
         </p>
@@ -1335,8 +1374,8 @@ function LockedDistributor({ dist, notoriety, rank = 0 }) {
   return (
     <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66', textAlign: 'center' }}>
       <div style={{ fontSize: 30, marginBottom: 6 }}>🔒</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} isn't taking accounts your size yet</div>
-      <p className="muted" style={{ fontSize: 13, margin: '8px auto 12px', maxWidth: 440 }}>
+      <div className="t-lg" style={{ fontWeight: 700, color: dist.color }}>{dist.icon} {dist.name} isn't taking accounts your size yet</div>
+      <p className="cap t-sm" style={{ margin: '8px auto 12px', maxWidth: 440 }}>
         {targetRank
           ? <>A hobby giant this size wants a résumé, not just a number: become a <b>{targetRank.emoji} {targetRank.name}</b> — reach <b>⭐ {targetRank.min}</b> and prove yourself ({DEEDS_NEEDED} of: {targetRank.deeds.map(d => d.label.toLowerCase()).join(' · ')}) — and they'll come to the table.</>
           : <>A hobby giant this size only opens a wholesale account with an established name. Build your
@@ -1345,7 +1384,7 @@ function LockedDistributor({ dist, notoriety, rank = 0 }) {
       <div className="distrib-bar" style={{ maxWidth: 320, margin: '0 auto' }}>
         <div style={{ width: pct + '%', background: dist.color }} />
       </div>
-      <div className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
+      <div className="cap mt-3">
         <b style={{ color: dist.color }}>{Math.round(notoriety || 0)}</b> / {need} reputation
         {targetRank && <> · deeds <b style={{ color: dist.color }}>{Math.min(deedsHave, DEEDS_NEEDED)}</b> / {DEEDS_NEEDED}</>}
         {rank >= (dist.minRank ?? 99) && ' · rank met!'}
@@ -1406,17 +1445,17 @@ function RapportBanner({ dist, rec, lvl }) {
   return (
     <div className="distrib-banner" style={{ marginTop: 14, borderColor: dist.color + '66' }}>
       <div className="row" style={{ alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-        <span className="pill" style={{ background: lvl.color + '22', color: lvl.color, fontSize: 13 }}>🤝 {lvl.name}</span>
-        <span className="muted" style={{ fontSize: 12.5 }}>
-          {disc > 0 ? <><b style={{ color: 'var(--green)' }}>{Math.round(disc * 100)}% off</b> their prices</> : 'building rapport unlocks discounts'}
+        <span className="pill t-sm" style={{ background: lvl.color + '22', color: lvl.color }}>🤝 {lvl.name}</span>
+        <span className="cap">
+          {disc > 0 ? <><b className="pos">{Math.round(disc * 100)}% off</b> their prices</> : 'building rapport unlocks discounts'}
           {perks.length ? ' · ' + perks.join(' · ') : ''}
         </span>
-        <span className="muted" style={{ marginLeft: 'auto', fontSize: 12.5 }}>Spent with them {fmtMoney(rec.spend)}</span>
+        <span className="cap" style={{ marginLeft: 'auto' }}>Spent with them {fmtMoney(rec.spend)}</span>
       </div>
       {next && (
         <>
           <div className="distrib-bar"><div style={{ width: pct + '%', background: dist.color }} /></div>
-          <div className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>
+          <div className="cap mt-2">
             {fmtMoney(next.min - rec.spend)} more spend → <b style={{ color: next.color }}>{next.name}</b>
             {nextDisc > disc ? ` (${Math.round(nextDisc * 100)}% off` : ' ('}
             {dist.cases && next.level >= dist.casesMinLevel && lvl.level < dist.casesMinLevel ? ', case lots' : ''}
@@ -1447,10 +1486,17 @@ function groupByEra(sets) {
   return [...byEra.values()]
 }
 
-// One ERA on the shelf. Collapsed by default like the set rows beneath it, so the shop still
-// opens as a short scannable list however many products the era carries.
-function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail, weekIndex = 0 }) {
-  const [open, setOpen] = useState(false)
+// One ERA on the shelf. The FIRST era opens by default; the rest stay collapsed, so the shop is
+// still a short scannable list however many eras a vendor carries.
+//
+// This used to collapse every era, and the reasoning ("the shop opens as a short scannable list")
+// was sound when the shelf rendered twelfth on the tab — a short list was a mercy after a
+// thousand pixels of panels. The shelf is now the top of the page, and a shop whose every shelf
+// is shut shows the player no product at all: they arrive at the Buy tab and have to guess that
+// the grey bar is where the boxes live. One era open means the tab always answers "what can I
+// buy" without a click.
+function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId, owned, onCredit, split, creditAvail, weekIndex = 0, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen)
   const credit = { onCredit, split, creditAvail }
   // 👑 Collector product is shelf-filtered too. A corner shop has one of these in at a time,
   // not the whole era's back catalogue — see game/shelf.js.
@@ -1514,7 +1560,7 @@ function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split
             🚫 {spent ? 'had yours today' : `${lim.limit}/customer`}
           </span>
         )}
-        <span className="muted" style={{ fontSize: 12, display: 'block' }}>
+        <span className="cap" style={{ display: 'block' }}>
           {product.packs} pack{product.packs !== 1 ? 's' : ''} from across the {product.pool.series} era
           {product.bonus === 'promo' ? ' · 🎁 promo' : ''}
         </span>
@@ -1705,7 +1751,15 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
   if (!hold && !find) {
     return (
       <div className="market-panel vintage-vault" style={{ marginTop: 18, opacity: 0.8 }}>
-        <div className="market-head">🗝️ Back room <span className="muted">— nothing old on {dist.name}'s shelf this week. Vintage and out-of-print sealed turn up here at random (check back), and always at shows. Build rapport and they'll hold pieces for you.</span></div>
+        {/* The empty state says the one thing that matters — nothing here this week — and puts
+            the "how the back room works" copy behind the ?. */}
+        <div className="market-head">🗝️ Back room <span className="muted">— nothing old on {dist.name}'s shelf this week.</span>
+          {' '}
+          <Explain label="How the back room works">
+            Vintage and out-of-print sealed turn up here at random (check back), and always at
+            shows. Build rapport and they'll hold pieces for you.
+          </Explain>
+        </div>
       </div>
     )
   }
@@ -1727,7 +1781,7 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
         <div className="meta">
           {held ? '🗝️ Reserved for you' : f.aftermarket ? '🕰️ Out-of-print find' : '🗝️ Vintage find'} · sealed {productTypeLabel(f.product)}
           {!held && (out
-            ? <> · <b style={{ color: 'var(--red)' }}>cleaned out</b></>
+            ? <> · <b className="neg">cleaned out</b></>
             : <> · <b>{n} left</b></>)}
         </div>
         <div className="prodlist">
@@ -1745,14 +1799,14 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
     )
   }
   return (
-    <div className="market-panel vintage-vault" style={{ marginTop: 18 }}>
+    <div className="market-panel vintage-vault mt-6">
       <div className="market-head">🗝️ Vintage on {dist.name}'s shelf <span className="muted">— old sealed, buy &amp; hold (vintage appreciates) or rip it. It's out of print: what they turn up is all there is, and it rotates weekly. Rapport gets pieces reserved for you.</span></div>
-      <div className="grid shop-grid" style={{ marginTop: 10 }}>
+      <div className="grid shop-grid mt-5">
         {hold && <Card f={hold} held n={1} />}
         {find && <Card f={find} n={left} />}
       </div>
       {cleanedOut && (
-        <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+        <p className="cap mt-4">
           You've cleared {dist.name} out of {find.setName}. Vintage is out of print — check back next week for a fresh find, or hunt the show floor.
         </p>
       )}
@@ -1777,7 +1831,7 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
     if (r) flash(`Wholesaled ${productTypeLabel(product)} of ${set.name} — nets ${fmtMoney(r.net)} in ~${r.daysLeft}d.`)
   }
   return (
-    <div className="market-panel" style={{ marginTop: 14 }}>
+    <div className="market-panel mt-6">
       <div className="market-head">📦 Supply other vendors <span className="muted">— buy in at {dist.name}'s wholesale, sell through the channel for passive income over a few days</span></div>
       <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
         <select value={setId} onChange={e => { const id = e.target.value; setSetId(id); const ps = setProducts(SHOP_SETS.find(s=>s.id===id)); setType(ps.find(p=>p.packs>=10)?.type || ps[0].type) }}>
@@ -1794,18 +1848,18 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
           {[...new Map(products.map(p => [p.type, p])).values()]
             .map(p => <option key={p.type} value={p.type}>{p.icon} {p.type}</option>)}
         </select>
-        <span className="muted" style={{ fontSize: 12 }}>buy-in {fmtMoney(cost)}</span>
-        <button className="btn gold" style={{ flex:'none', maxWidth: 200, marginLeft:'auto' }} disabled={cash < cost} onClick={place}>
+        <span className="cap">buy-in {fmtMoney(cost)}</span>
+        <button className="btn gold btn-fixed" style={{ maxWidth: 200, marginLeft:'auto' }} disabled={cash < cost} onClick={place}>
           Wholesale it → channel
         </button>
       </div>
       {supplyChannel.length > 0 && (
-        <div className="consign-strip" style={{ marginTop: 10 }}>
+        <div className="consign-strip mt-5">
           <b>📦 In the channel ({supplyChannel.length})</b>
           {supplyChannel.map((w, i) => (
             <span key={i} className="pill" title={`Pays ${fmtMoney(w.net)} when it sells through`}>{w.label} · {fmtMoney(w.net)} · {w.daysLeft}d</span>
           ))}
-          <span className="muted" style={{ fontSize: 12 }}>— {fmtMoney(pending)} incoming</span>
+          <span className="cap">— {fmtMoney(pending)} incoming</span>
         </div>
       )}
     </div>

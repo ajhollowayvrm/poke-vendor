@@ -96,8 +96,8 @@ export default function Stats() {
         <Stat label="Goals completed" v={stats.goalsCompleted || 0} />
       </div>
       {stats.bestPull && (
-        <p className="muted" style={{ fontSize: 13, marginTop: 10 }}>
-          🏆 Best pull ever: <b style={{ color: 'var(--gold)' }}>{stats.bestPull.name}</b> · {fmtMoney(cardValue(stats.bestPull))}
+        <p className="cap t-sm mt-5">
+          🏆 Best pull ever: <b className="warn">{stats.bestPull.name}</b> · {fmtMoney(cardValue(stats.bestPull))}
           {stats.bestFoil && <> · ✨ Best foil: <b style={{ color:'#a06bff' }}>{stats.bestFoil.name}</b> ({stats.bestFoil.foil?.label})</>}
         </p>
       )}
@@ -113,9 +113,9 @@ export default function Stats() {
       ) : (
         <>
           {best && best.net !== 0 && (
-            <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
+            <p className="cap t-sm mt-0">
               {best.net > 0
-                ? <>🏆 Most lucrative: <b style={{ color: 'var(--green)' }}>{best.name}</b> — {fmtMoney(best.net)} net{best.roi != null ? ` (${Math.round(best.roi*100)}% ROI)` : ''}</>
+                ? <>🏆 Most lucrative: <b className="pos">{best.name}</b> — {fmtMoney(best.net)} net{best.roi != null ? ` (${Math.round(best.roi*100)}% ROI)` : ''}</>
                 : <>📉 Every set's underwater so far — that's the chase. Best of the bunch: <b>{best.name}</b> ({fmtMoney(best.net)}).</>}
             </p>
           )}
@@ -127,7 +127,7 @@ export default function Stats() {
               <div className="set-row" key={r.id}>
                 <span className="set-name">{r.name}</span>
                 <span>{fmtMoney(r.spent)}</span>
-                <span style={{ color: 'var(--green)' }}>{fmtMoney(r.pulled)}</span>
+                <span className="pos">{fmtMoney(r.pulled)}</span>
                 <span style={{ color: r.net >= 0 ? 'var(--green)' : 'var(--red)' }}>{r.net >= 0 ? '+' : ''}{fmtMoney(r.net)}</span>
                 <span style={{ color: r.roi == null ? 'var(--dim)' : r.roi >= 1 ? 'var(--green)' : 'var(--red)' }}>{r.roi == null ? '—' : `${Math.round(r.roi*100)}%`}</span>
                 <span className="muted">{r.packs}{r.hits ? ` · ${r.hits}🌟` : ''}</span>
@@ -206,23 +206,23 @@ function RepPanel() {
   const sparkPts = [...(repLedger.days || []).map(d => d.total || 0), todayTotal]
   return (
     <Collapse id="rep" defaultOpen={bigScreen()} className="trend-card" headClass="rep-head"
-      head={<h3 style={{ margin: 0, display: 'inline' }}>⭐ Reputation</h3>}
+      head="⭐ Reputation"
       badge={`${cur.emoji} ${cur.name} · ⭐ ${Math.round(notoriety)}${hype >= 10 ? ` · 🔥 ${Math.round(hype)}` : ''}${clout >= 1 ? ` · 🎫 ${Math.floor(clout)}` : ''}`}>
       <div className="row" style={{ gap: 14, flexWrap: 'wrap', alignItems: 'flex-start', marginTop: 8 }}>
         <div style={{ flex: '1 1 260px', minWidth: 240 }}>
-          <div style={{ fontSize: 15, fontWeight: 800 }}>{cur.emoji} {cur.name} <span className="muted" style={{ fontWeight: 400, fontSize: 12 }}>· rank {rank}/{RANKS.length - 1}</span></div>
-          {cur.perk && <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>Perk held: {cur.perk}</div>}
+          <div className="t-lg" style={{ fontWeight: 800 }}>{cur.emoji} {cur.name} <span className="cap" style={{ fontWeight: 400 }}>· rank {rank}/{RANKS.length - 1}</span></div>
+          {cur.perk && <div className="cap mt-1">Perk held: {cur.perk}</div>}
           {next ? (
             <>
-              <div style={{ marginTop: 10, fontWeight: 700, fontSize: 13 }}>Next: {next.emoji} {next.name}</div>
+              <div className="t-sm" style={{ marginTop: 10, fontWeight: 700 }}>Next: {next.emoji} {next.name}</div>
               <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 10, overflow: 'hidden', marginTop: 6 }}>
                 <div style={{ width: notoPct + '%', height: '100%', background: 'linear-gradient(90deg,#5ec98a,var(--gold))', transition: 'width .4s' }} />
               </div>
-              <div className="rep-deed" style={{ marginTop: 6 }}>
+              <div className="rep-deed mt-3">
                 <span>{notoriety >= next.min ? '✅' : '⬜'} Reach ⭐ {next.min}</span>
                 <span className="muted">{Math.round(notoriety)} / {next.min}</span>
               </div>
-              <div className="muted" style={{ fontSize: 12, margin: '6px 0 2px' }}>…and any {DEEDS_NEEDED} of these deeds ({deedsHave}/{DEEDS_NEEDED} done):</div>
+              <div className="cap" style={{ margin: '6px 0 2px' }}>…and any {DEEDS_NEEDED} of these deeds ({deedsHave}/{DEEDS_NEEDED} done):</div>
               {next.deeds.map((d, i) => {
                 const have = deedVals[i] || 0
                 const done = have >= d.goal
@@ -233,34 +233,34 @@ function RepPanel() {
                   </div>
                 )
               })}
-              {next.perk && <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>Rank-up banks: {next.perk} · +{next.clout} 🎫</div>}
+              {next.perk && <div className="cap mt-3">Rank-up banks: {next.perk} · +{next.clout} 🎫</div>}
             </>
           ) : (
-            <div className="muted" style={{ fontSize: 13, marginTop: 10 }}>👑 Top of the ladder — the hobby knows your name.</div>
+            <div className="cap t-sm mt-5">👑 Top of the ladder — the hobby knows your name.</div>
           )}
         </div>
         <div style={{ flex: '1 1 240px', minWidth: 220 }}>
           {hype > 0.5 && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontWeight: 700, fontSize: 13 }}>🔥 Shop heat <span className="muted" style={{ fontWeight: 400 }}>· {Math.round(hype)}/100</span></div>
+              <div className="t-sm" style={{ fontWeight: 700 }}>🔥 Shop heat <span className="muted" style={{ fontWeight: 400 }}>· {Math.round(hype)}/100</span></div>
               <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 999, height: 8, overflow: 'hidden', marginTop: 4 }}>
                 <div style={{ width: Math.min(100, hype) + '%', height: '100%', background: 'linear-gradient(90deg,#ff9f43,#ff3df0)' }} />
               </div>
-              <div className="muted" style={{ fontSize: 11.5, marginTop: 3 }}>Big moments heat the shop — more buyers everywhere while it lasts. Fades over days; a little settles into ⭐.</div>
+              <div className="cap mt-2">Big moments heat the shop — more buyers everywhere while it lasts. Fades over days; a little settles into ⭐.</div>
             </div>
           )}
-          <div style={{ fontWeight: 700, fontSize: 13 }}>🎫 Clout <span className="muted" style={{ fontWeight: 400 }}>· {Math.floor(clout)} favor{Math.floor(clout) === 1 ? '' : 's'}</span></div>
-          <div className="muted" style={{ fontSize: 11.5, marginTop: 3 }}>
+          <div className="t-sm" style={{ fontWeight: 700 }}>🎫 Clout <span className="muted" style={{ fontWeight: 400 }}>· {Math.floor(clout)} favor{Math.floor(clout) === 1 ? '' : 's'}</span></div>
+          <div className="cap mt-2">
             Earned on rank-ups, god packs, big milestones, clean-sweep goal weeks. Spend it where it's needed:
             📦 restock a distributor (Buy tab) · 📰 jump a reprint queue · ⚡ expedite grading (Bench) · 🎪 talk into a bigger show (Calendar) · 📣 boost a stream.
           </div>
-          <div style={{ fontWeight: 700, fontSize: 13, marginTop: 12 }}>📒 This week <span className="muted" style={{ fontWeight: 400 }}>· {weekTotal >= 0 ? '+' : ''}{weekTotal}⭐</span></div>
+          <div className="t-sm" style={{ fontWeight: 700, marginTop: 12 }}>📒 This week <span className="muted" style={{ fontWeight: 400 }}>· {weekTotal >= 0 ? '+' : ''}{weekTotal}⭐</span></div>
           {weekRows.length ? weekRows.map(([tag, v]) => (
             <div className="rep-deed" key={tag}>
               <span>{repSourceLabel(tag)}</span>
               <b style={{ color: v >= 0 ? 'var(--gold)' : 'var(--red)' }}>{v >= 0 ? '+' : ''}{v}</b>
             </div>
-          )) : <div className="muted" style={{ fontSize: 12 }}>Nothing yet — sell, stream, host, help.</div>}
+          )) : <div className="cap">Nothing yet — sell, stream, host, help.</div>}
           {sparkPts.filter(v => v !== 0).length >= 2 && <Sparkline points={sparkPts} color="var(--gold)" height={34} />}
         </div>
       </div>
@@ -281,11 +281,11 @@ function NetWorthTrend({ worthHistory, netWorth }) {
           ? <span className="pill" style={{ background: (up ? 'var(--green)' : 'var(--red)') + '22', color: up ? 'var(--green)' : 'var(--red)' }}>
               {up ? '▲' : '▼'} {fmtMoney(Math.abs(delta))} over {pts.length}d
             </span>
-          : <span className="muted" style={{ fontSize: 12 }}>Advance a few days to chart your trend.</span>}
+          : <span className="cap">Advance a few days to chart your trend.</span>}
       </div>
       {enough
         ? <Sparkline points={pts} color={up ? 'var(--green)' : 'var(--red)'} />
-        : <p className="muted" style={{ fontSize: 12, margin: 0 }}>Currently {fmtMoney(netWorth)}.</p>}
+        : <p className="cap" style={{ margin: 0 }}>Currently {fmtMoney(netWorth)}.</p>}
     </div>
   )
 }
@@ -308,7 +308,7 @@ function IncomeBreakdown({ history }) {
   if (!inRows.length && !exRows.length) return null
   return (
     <>
-      <h3 style={{ margin: '24px 0 6px' }}>Cash flow <span className="muted" style={{ fontSize: 13, fontWeight: 'normal' }}>· recent activity</span></h3>
+      <h3 style={{ margin: '24px 0 6px' }}>Cash flow <span className="cap t-sm" style={{ fontWeight: 'normal' }}>· recent activity</span></h3>
       <div className="cashflow">
         <BreakdownCol title="💰 Income" rows={inRows} color="var(--green)" />
         <BreakdownCol title="💸 Expenses" rows={exRows} color="var(--red)" />
@@ -322,7 +322,7 @@ function BreakdownCol({ title, rows, color }) {
   return (
     <div className="cashflow-col">
       <div className="cashflow-head" style={{ color }}>{title}<span className="muted" style={{ float: 'right' }}>{fmtMoney(total)}</span></div>
-      {rows.length === 0 ? <p className="muted" style={{ fontSize: 12 }}>Nothing yet.</p> : rows.map(([label, v]) => (
+      {rows.length === 0 ? <p className="cap">Nothing yet.</p> : rows.map(([label, v]) => (
         <div className="cashflow-row" key={label}>
           <span className="cashflow-label">{label}</span>
           <div className="cashflow-bar"><div style={{ width: `${Math.round((v / max) * 100)}%`, background: color }} /></div>
@@ -346,10 +346,10 @@ function RipLogPanel({ log }) {
   const net = rows.reduce((a, r) => a + (r.pulled - r.cost), 0)
   return (
     <Collapse id="riplog" defaultOpen={bigScreen()}
-      head={<h3 style={{ margin: 0, display: 'inline' }}>📜 Rip log</h3>}
+      head="📜 Rip log"
       badge={`${wins}/${rows.length} up`}
       hint="Every rip, newest first — the boxes an average hides.">
-      <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
+      <p className="cap" style={{ margin: '4px 0 8px' }}>
         Last <b>{rows.length}</b> rip{rows.length === 1 ? '' : 's'}: <b>{wins}</b> came out ahead,{' '}
         <b style={{ color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>{net >= 0 ? '+' : ''}{fmtMoney(net)}</b> across the lot.
         {net < 0 && ' That gap is the hobby working as intended — the chase is the product.'}
@@ -368,7 +368,7 @@ function RipLogPanel({ log }) {
               </span>
               <span className="muted">{r.day}</span>
               <span>{fmtMoney(r.cost || 0)}</span>
-              <span style={{ color: 'var(--green)' }}>{fmtMoney(r.pulled || 0)}</span>
+              <span className="pos">{fmtMoney(r.pulled || 0)}</span>
               <span style={{ color: rnet >= 0 ? 'var(--green)' : 'var(--red)' }}>{rnet >= 0 ? '+' : ''}{fmtMoney(rnet)}</span>
               <span className="muted" title={r.best?.name || ''}>{r.best ? fmtMoney(r.best.value) : '—'}</span>
             </div>
@@ -416,10 +416,10 @@ function LuckPanel({ bySet }) {
 
   return (
     <Collapse id="luck" defaultOpen={bigScreen()}
-      head={<h3 style={{ margin: 0, display: 'inline' }}>🎲 Luck vs the odds</h3>}
+      head="🎲 Luck vs the odds"
       badge={solid ? (pct === 0 ? 'dead on' : `${pct > 0 ? '+' : ''}${pct}%`) : `${luck.packs} pack${luck.packs === 1 ? '' : 's'}`}
       hint="What you pulled against what the real pull rates owed you.">
-      <p className="muted" style={{ fontSize: 12.5, margin: '4px 0 8px' }}>
+      <p className="cap" style={{ margin: '4px 0 8px' }}>
         {solid
           ? <>Across <b>{luck.packs}</b> tracked pack{luck.packs === 1 ? '' : 's'} you've pulled <b>{luck.totObs}</b> chase
               card{luck.totObs === 1 ? '' : 's'} where the odds owed <b>{luck.totExp.toFixed(1)}</b> —{' '}
@@ -447,7 +447,7 @@ function LuckPanel({ bySet }) {
           )
         })}
       </div>
-      <p className="muted" style={{ fontSize: 11.5, marginTop: 6 }}>
+      <p className="cap mt-3">
         Counted from the day this panel arrived, so packs you ripped before it aren't in here. A “—” means
         that tier hasn't been offered enough times yet to judge.
       </p>
@@ -466,12 +466,12 @@ function MilestoneShelf({ unlocked }) {
   // inventing a sub-tab. Desktop keeps it open (bigScreen), where the height is free.
   return (
     <Collapse id="milestones" defaultOpen={bigScreen()}
-      head={<h3 style={{ margin: 0, display: 'inline' }}>🏅 Milestones</h3>}
+      head="🏅 Milestones"
       badge={`${have.size}/${MILESTONES.length}`}
       hint="Long-run goals — ripping, hits, wealth, grading, the circuit and more.">
       {MILESTONE_GROUPS.map(group => (
         <div key={group} style={{ marginBottom: 12 }}>
-          <div className="muted" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 5 }}>{group}</div>
+          <div className="cap" style={{ textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 5 }}>{group}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {MILESTONES.filter(m => m.group === group).map(m => {
               const done = have.has(m.id)
@@ -485,9 +485,9 @@ function MilestoneShelf({ unlocked }) {
                     background: done ? 'rgba(255,190,60,0.10)' : 'rgba(255,255,255,0.03)',
                     opacity: done ? 1 : 0.62,
                   }}>
-                  <div style={{ fontSize: 17, lineHeight: 1.2 }}>{done ? m.icon : '🔒'}</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: done ? 'var(--gold)' : 'var(--txt)' }}>{m.name}</div>
-                  <div className="muted" style={{ fontSize: 11 }}>{m.desc}</div>
+                  <div className="t-lg" style={{ lineHeight: 1.2 }}>{done ? m.icon : '🔒'}</div>
+                  <div className="t-xs" style={{ fontWeight: 600, color: done ? 'var(--gold)' : 'var(--txt)' }}>{m.name}</div>
+                  <div className="cap">{m.desc}</div>
                   {!done && (
                     <div style={{ height: 3, background: 'rgba(255,255,255,0.10)', borderRadius: 2, marginTop: 5, overflow: 'hidden' }}>
                       <div style={{ width: `${Math.round(pct * 100)}%`, height: '100%', background: 'var(--gold)' }} />
@@ -531,7 +531,7 @@ function FinanceCard() {
       <div className="finance-head">
         <div>
           <div className="finance-title">💼 {pendingJob ? `${pendingJob.job.title} (starts day ${pendingJob.startsOnDay})` : (job ? job.title : '🃏 Full-time vendor')}</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {job ? `Wage +$${wage}/day` : 'No paycheck'} · Cards ≈ +{fmtMoney(cardPerDay)}/day · Burn −{fmtMoney(burn)}/day
           </div>
         </div>
@@ -548,7 +548,7 @@ function FinanceCard() {
         </div>
       )}
       {/* Full-time sustainability readout (Phase 3) */}
-      <div className="muted" style={{ fontSize: 12, margin: '6px 0' }}>
+      <div className="cap" style={{ margin: '6px 0' }}>
         {job
           ? (sustainable
               ? `📈 Your cards alone (~${fmtMoney(cardPerDay)}/day) already cover your ${fmtMoney(burn)}/day burn — you could quit and make it.`
@@ -602,7 +602,7 @@ function StorePanel() {
 
   if (!hasStore) {
     return (
-      <div className="store-panel muted" style={{ fontSize: 12 }}>
+      <div className="store-panel muted t-xs">
         🏬 No storefront yet. Open one from the <b>Upgrades</b> tab to unlock walk-in customers,
         Cash payments, and employees — it adds a daily lease (${STORE_LEASE_PER_DAY}/day) you must keep funded.
       </div>
@@ -614,23 +614,23 @@ function StorePanel() {
     <div className="store-panel">
       <StoreBranding />
       <div className="store-head">
-        <StoreSign /> <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>
+        <StoreSign /> <span className="cap" style={{ fontWeight: 600 }}>
         — lease ${STORE_LEASE_PER_DAY}/day{payroll ? ` + payroll $${payroll}/day` : ''}</span></div>
       {storeArrears > 0 && (
         <div className="finance-warn">⚠️ Behind on store overhead ({storeArrears}/{STORE_GRACE_DAYS} days). Cover it or you'll lose the shop.</div>
       )}
-      <div className="muted" style={{ fontSize: 12, margin: '4px 0 6px' }}>
+      <div className="cap" style={{ margin: '4px 0 6px' }}>
         Employees boost order throughput (and mind the shop while you're at shows) — but each is daily payroll. Balance it.
       </div>
       <div className="emp-grid">
         {EMPLOYEES.map(e => (
           <div className="emp-row" key={e.id}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: 13 }}>{e.title} {counts[e.id] ? <span className="emp-count">×{counts[e.id]}</span> : null}</div>
-              <div className="muted" style={{ fontSize: 11 }}>${e.wage}/day · +{Math.round(e.throughput*100)}% orders</div>
+              <div className="t-sm" style={{ fontWeight: 700 }}>{e.title} {counts[e.id] ? <span className="emp-count">×{counts[e.id]}</span> : null}</div>
+              <div className="cap">${e.wage}/day · +{Math.round(e.throughput*100)}% orders</div>
             </div>
-            {counts[e.id] ? <button className="btn alt" style={{ flex:'none', maxWidth: 64 }} onClick={() => fire(e.id)}>Fire</button> : null}
-            <button className="btn" style={{ flex:'none', maxWidth: 64 }} onClick={() => hire(e.id)}>Hire</button>
+            {counts[e.id] ? <button className="btn alt btn-fixed" style={{ maxWidth: 64 }} onClick={() => fire(e.id)}>Fire</button> : null}
+            <button className="btn btn-fixed" style={{ maxWidth: 64 }} onClick={() => hire(e.id)}>Hire</button>
           </div>
         ))}
       </div>
@@ -650,9 +650,9 @@ function StoreSign() {
   const accent = (store?.accent || '').trim()
   return (
     <>
-      <span style={{ fontSize: 18 }}>{shopIcon(store)}</span>{' '}
+      <span className="t-xl">{shopIcon(store)}</span>{' '}
       <b style={accent ? { color: accent } : undefined}>{shopName(store)}</b>
-      {store?.tagline?.trim() ? <span className="muted" style={{ fontSize: 12, fontWeight: 600, fontStyle: 'italic' }}> — “{store.tagline.trim()}”</span> : null}
+      {store?.tagline?.trim() ? <span className="cap" style={{ fontWeight: 600, fontStyle: 'italic' }}> — “{store.tagline.trim()}”</span> : null}
     </>
   )
 }
@@ -694,7 +694,7 @@ function StoreBranding() {
             <span>Accent</span>
             <div className="store-branding-swatches">
               <button className={`store-accent-chip ${!accent ? 'active' : ''}`} onClick={() => setStoreIdentity({ accent: '' })}
-                title="Default accent" style={{ fontSize: 10 }}>Default</button>
+                title="Default accent" style={{ fontSize: 'var(--fs-xs)' }}>Default</button>
               {SHOP_ACCENTS.map(col => (
                 <button key={col} className={`store-accent-chip ${accent === col ? 'active' : ''}`}
                   onClick={() => setStoreIdentity({ accent: col })} title={col}

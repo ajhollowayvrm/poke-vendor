@@ -39,7 +39,7 @@ export default function PriceGuide() {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         💲 Price guide — live TCGplayer market values, with the living market moving each set day to day. Refresh the base snapshot from the ⚙️ menu.
       </div>
 
