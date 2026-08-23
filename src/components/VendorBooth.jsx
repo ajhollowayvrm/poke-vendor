@@ -122,6 +122,11 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   const committingRef = useRef(false)
   // After choosing a sealed product: rip it on the floor now or stock it to hold.
   const [pendingSealed, setPendingSealed] = useState(null) // the sealed entry
+  // Haggled-down sealed prices, keyed by the line's reload-stable `_tk`. Sealed haggling is
+  // one-per-line (same haggledIds set the singles use — `_tk` strings can't collide with card
+  // uids), and the agreed unit price flows through every buy path via askOf().
+  const [agreedPrices, setAgreedPrices] = useState(() => new Map())
+  const askOf = (entry) => (entry._tk != null && agreedPrices.has(entry._tk)) ? agreedPrices.get(entry._tk) : eff(entry._ask)
   const [mysteryResult, setMysteryResult] = useState(null) // card pulled from a mystery pack
   const [tradeFor, setTradeFor] = useState(null)           // booth card you're offering a trade on
   // 🧺 Stack deal: multi-select singles, one checkout, a volume discount — the "gather a few
@@ -221,7 +226,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // no OVER flag, so nothing stopped you paying $1,500 for a $700 pack. { mkt, ask, deal, over }.
   const sealedRead = (entry) => {
     const mkt = sealedValue({ product: entry.product, setId: entry.set?.id })
-    const ask = eff(entry._ask)
+    const ask = askOf(entry) // rapport-discounted ask, or the haggled-down price once agreed
     // Sealed has no condition/grade, so only the price ceiling of your deal config applies here.
     return { mkt, ask, deal: mkt > 0 && ask <= mkt * (settings?.dealMaxMult ?? 0.85), over: mkt > 0 && ask > mkt * 1.2 }
   }
@@ -307,9 +312,21 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // The volume concession on a stack off ONE line — the same 8/12/15% whether you're taking
   // it home sealed or tearing into all of it at the table.
   const lotDisc = (n) => n >= 5 ? 0.15 : n >= 3 ? 0.12 : 0.08
+  // One quote for "the whole stack off this line": the volume discount on the (possibly
+  // haggled) unit price. On a HAGGLED line the lot price floors at 93% of market — the two
+  // concessions don't stack into below-market boxes, which would quietly make ripping +EV.
+  function lotQuote(entry, n) {
+    const disc = lotDisc(n)
+    let each = round2(askOf(entry) * (1 - disc))
+    if (entry._tk != null && agreedPrices.has(entry._tk)) {
+      const mkt = sealedValue({ product: entry.product, setId: entry.set?.id })
+      if (mkt > 0) each = Math.max(each, round2(mkt * 0.93))
+    }
+    return { disc, each, total: round2(each * n) }
+  }
   function ripSealedNow(entry) {
     if (!liveLine(entry)) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
-    const ask = eff(entry._ask)
+    const ask = askOf(entry)
     setPendingSealed(null)
     // The booth STAYS OPEN — the floor-rip overlay paints above this modal, so when the rip's
     // Done lands you're back at the table you bought from, stack decremented, ready to keep
@@ -323,7 +340,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // the booth open and removes the item from the table; the last one closes the Sealed tab.
   function stockSealedNow(entry) {
     if (!liveLine(entry)) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
-    const ask = eff(entry._ask)
+    const ask = askOf(entry)
     setPendingSealed(null)
     const ok = onStockSealed?.({ set: entry.set, product: entry.product, ask, vendorName: booth.name })
     if (!ok) return // buy failed (cash) — leave the item on the table
@@ -340,8 +357,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
     const cur = liveLine(entry)
     if (!cur) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
     const n = cur.qty || 1
-    const disc = lotDisc(n)
-    const each = round2(eff(entry._ask) * (1 - disc))
+    const { disc, each } = lotQuote(entry, n)
     setPendingSealed(null)
     const ok = onRipSealedStack?.({ set: entry.set, product: entry.product, each, n, vendorName: booth.name })
     if (!ok) return
@@ -355,9 +371,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
     const cur = liveLine(entry)               // the lot is what's left on the table, not what the row said
     if (!cur) { setPendingSealed(null); return flash(`${booth.name} has none of those left.`) }
     const n = cur.qty || 1
-    const disc = lotDisc(n)
-    const each = round2(eff(entry._ask) * (1 - disc))
-    const total = round2(each * n)
+    const { disc, each, total } = lotQuote(entry, n)
     const g = useGame.getState()
     if (g.cash < total) { flash(`Not enough cash — the lot of ${n} runs ${fmtMoney(total)}.`); return }
     setPendingSealed(null) // may have been launched from the buy dialog
@@ -509,7 +523,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                           {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}{mkt > 0 ? ` · mkt ${fmtMoney(mkt)}` : ''}
                         </span>
                         <span className="vsealed-ask">
-                          {disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(entry._ask)}</s>}
+                          {ask < entry._ask && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(entry._ask)}</s>}
                           <span className="ask">{fmtMoney(ask)}</span>
                           {seeDeals && deal && <span className="dealtag">DEAL</span>}
                           {seeDeals && over && <span className="overtag">OVER</span>}
@@ -517,6 +531,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                         <span className="vsealed-act">
                           <button className="btn gold" disabled={cash < ask} onClick={() => setPendingSealed(entry)}>
                             {cash < ask ? 'Need' : 'Buy'}
+                          </button>
+                          {/* 🗣️ Sealed haggles too — "I bought 6 Sun & Moon packs off a guy and
+                              negotiated the price." Same one-haggle-per-line rule as singles,
+                              keyed by the line's _tk; the agreed price feeds every buy path. */}
+                          <button className="btn alt" disabled={!entry._tk || haggled.has(entry._tk) || mkt <= 0}
+                            title={haggled.has(entry._tk) ? 'Already haggled this line — buy it or move on' : 'Haggle on the price'}
+                            onClick={() => setHaggle({ side: 'buy', card: { name: `${entry.set?.name || ''} ${entry.product.type}`.trim() }, market: mkt, start: ask, sealedEntry: entry })}>
+                            {haggled.has(entry._tk) ? '—' : '🗣️'}
                           </button>
                           {(entry.qty || 1) >= 2 && (
                             <button className="btn alt" disabled={cash < ask * entry.qty * 0.85}
@@ -645,8 +667,18 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
         <Haggle
           side={haggle.side} card={haggle.card} market={haggle.market} start={haggle.start}
           archKey={booth.archetype} vendorName={booth.name}
-          onClose={(engaged) => { if (engaged) onHaggled?.(haggle.card.uid); setHaggle(null) }}
+          onClose={(engaged) => { if (engaged) onHaggled?.(haggle.sealedEntry ? haggle.sealedEntry._tk : haggle.card.uid); setHaggle(null) }}
           onDeal={(price) => {
+            // A sealed haggle doesn't buy anything yet — it locks the agreed unit price on the
+            // line (askOf reads it) and opens the usual rip/stock choice at that price.
+            if (haggle.sealedEntry) {
+              const e = haggle.sealedEntry
+              if (e._tk != null) setAgreedPrices(m => { const next = new Map(m); next.set(e._tk, round2(price)); return next })
+              onHaggled?.(e._tk)
+              setHaggle(null)
+              setPendingSealed(e)
+              return
+            }
             if (haggle.side === 'buy') buyAt(haggle.card, price)
             else sellAt(haggle.card, price)
             onHaggled?.(haggle.card.uid)
@@ -663,7 +695,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
               {pendingSealed._origin === 'vintage' ? '🗝️ ' : (pendingSealed.product.icon || '📦') + ' '}{pendingSealed.product.type}
             </h3>
             <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-              {pendingSealed.set.name} · {fmtMoney(eff(pendingSealed._ask))} <span style={{ opacity: 0.8 }}>({disc > 0 ? 'after your rapport discount' : 'vendor markup'})</span>.
+              {pendingSealed.set.name} · {fmtMoney(sealedRead(pendingSealed).ask)} <span style={{ opacity: 0.8 }}>({agreedPrices.has(pendingSealed._tk) ? 'the price you haggled' : disc > 0 ? 'after your rapport discount' : 'vendor markup'})</span>.
               {(() => { const { mkt } = sealedRead(pendingSealed); return mkt > 0 ? <> Market is <b>{fmtMoney(mkt)}</b>.</> : null })()}
               {pendingSealed._origin === 'vintage' ? ' A sealed vintage gamble.' : ''} Rip it now, or stock it to rip/list/flip later?
             </p>
@@ -673,16 +705,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
               </p>
             ) : null })()}
             <div className="row" style={{ flexDirection: 'column', gap: 8 }}>
-              <button className="btn gold" disabled={cash < eff(pendingSealed._ask)} onClick={() => ripSealedNow(pendingSealed)}>
+              <button className="btn gold" disabled={cash < sealedRead(pendingSealed).ask} onClick={() => ripSealedNow(pendingSealed)}>
                 📦 Rip {(pendingSealed.qty || 1) > 1 ? 'one' : 'it'} here on the floor →
               </button>
               {/* They brought a stack: buy the lot and open ALL of it at the table, one after
                   another. Same volume discount as taking it home sealed. */}
               {(pendingSealed.qty || 1) > 1 && (() => {
                 const n = pendingSealed.qty
-                const disc = lotDisc(n)
-                const each = round2(eff(pendingSealed._ask) * (1 - disc))
-                const total = round2(each * n)
+                const { disc, total } = lotQuote(pendingSealed, n)
                 return (
                   <button className="btn gold" disabled={cash < total} onClick={() => ripStackNow(pendingSealed)}
                     title={`Buy all ${n} at ${Math.round(disc * 100)}% off the lot and rip them back-to-back right here`}>
@@ -690,15 +720,15 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                   </button>
                 )
               })()}
-              <button className="btn alt" disabled={cash < eff(pendingSealed._ask)} onClick={() => stockSealedNow(pendingSealed)}>
+              <button className="btn alt" disabled={cash < sealedRead(pendingSealed).ask} onClick={() => stockSealedNow(pendingSealed)}>
                 🗂️ Stock {(pendingSealed.qty || 1) > 1 ? 'one' : 'it'} in your inventory
               </button>
               {(pendingSealed.qty || 1) > 1 && (() => {
                 const n = pendingSealed.qty
-                const total = round2(eff(pendingSealed._ask) * (1 - lotDisc(n)) * n)
+                const { disc: ldisc, total } = lotQuote(pendingSealed, n)
                 return (
                   <button className="btn alt" disabled={cash < total} onClick={() => takeStack(pendingSealed)}
-                    title={`Take all ${n} home sealed at ${Math.round(lotDisc(n) * 100)}% off the lot`}>
+                    title={`Take all ${n} home sealed at ${Math.round(ldisc * 100)}% off the lot`}>
                     🧺 Take all {n} sealed — {fmtMoney(total)}
                   </button>
                 )
