@@ -466,7 +466,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
           <span className="pill">{booth.archLabel}</span>
         </div>
         <p className="muted" style={{ marginTop: 2 }}>
-          This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> of market for cards. Try to <b>haggle</b> — but push too hard and they'll walk.
+          This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> cash{booth.tradeMult ? <> · <b style={{ color: 'var(--gold)' }}>{Math.round(booth.tradeMult*100)}%</b> in trade</> : null} for yours. Try to <b>haggle</b> — but push too hard and they'll walk.
           {booth.recurring && <> <span style={{ color: rap?.color }}>A regular on the circuit — keep dealing with them to grow your discount{nextRap ? ` (${fmtMoney(nextRap.min - vendorSpend)} more of business → ${nextRap.name}, ${Math.round(nextRap.disc*100)}% off)` : ' — you\'re fully Trusted here'}.</span></>}
         </p>
 
@@ -896,9 +896,23 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
 
   const total = (lines, qmap) => lines.reduce((a, g) => a + g.unit * (qmap[g.key] || 0), 0)
   const countOf = (qmap) => Object.values(qmap).reduce((a, n) => a + n, 0)
-  const yourVal = round2((total(mineCardLines, giveQty) + total(mineSealedLines, giveSealQty)) * buyMult)
+  // --- The trade-vs-cash split ------------------------------------------------------------
+  // Your side earns the TRADE rate only against what you're actually taking; any overflow
+  // comes back as cash at the (lower) buy rate. Without the split, loading your side and
+  // taking one cheap card would launder your whole collection to cash at the trade rate.
+  // The HOT trade rate applies when most (by value) of what you take is their sealed —
+  // dealers sweeten swaps that move their own product.
+  const tradeMult = Math.max(buyMult, booth.tradeMult || buyMult)
+  const tradeMultHot = Math.max(tradeMult, booth.tradeMultHot || tradeMult)
+  const yourMarket = total(mineCardLines, giveQty) + total(mineSealedLines, giveSealQty)
   const theirVal = round2(total(theirCardLines, getQty) + total(theirSealedLines, getSealQty))
-  const cashDelta = round2(theirVal - yourVal) // >0 you add cash; <0 they add cash
+  const theirSealedVal = total(theirSealedLines, getSealQty)
+  const hot = theirVal > 0 && theirSealedVal / theirVal >= 0.5
+  const effTrade = hot ? tradeMultHot : tradeMult
+  const credit = round2(Math.min(theirVal, yourMarket * effTrade))
+  const cashBack = round2(Math.max(0, (yourMarket - credit / effTrade) * buyMult))
+  const yourVal = round2(credit + cashBack) // what your side nets in this deal (credit + cash)
+  const cashDelta = round2(theirVal - credit - cashBack) // >0 you add cash; <0 they add cash
   const nGive = countOf(giveQty) + countOf(giveSealQty)
   const nGet = countOf(getQty) + countOf(getSealQty)
   const canDo = nGet > 0 && (nGive > 0 || cashDelta > 0) && (cashDelta <= 0 || cash >= cashDelta)
@@ -925,8 +939,9 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
         <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         <h3 style={{ marginTop: 0 }}>🔁 Build a trade with {booth.name}</h3>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
-          One line per SKU — duplicates stack, tap a line (or +) to add copies. They value your
-          side at their buy rate ({Math.round(buyMult * 100)}% of market); cash covers the gap.
+          One line per SKU — duplicates stack, tap a line (or +) to add copies. They credit your side
+          at <b>{Math.round(effTrade * 100)}% of market in trade</b>{hot ? ' (sweetened — you\'re taking their sealed off their hands)' : ''} up
+          to what you take; anything beyond comes back as cash at their {Math.round(buyMult * 100)}% buy rate.
         </p>
 
         <div className="trade-summary">
@@ -934,7 +949,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
             <div style={{ textAlign: 'center' }}>
               <div className="muted" style={{ fontSize: 11 }}>You give ({nGive})</div>
               <b>{fmtMoney(yourVal)}</b>
-              <div className="muted" style={{ fontSize: 11 }}>trade-in value</div>
+              <div className="muted" style={{ fontSize: 11 }}>at {Math.round(effTrade * 100)}% in trade{cashBack > 0 ? ` (${fmtMoney(cashBack)} of it cash-out at ${Math.round(buyMult * 100)}%)` : ''}</div>
             </div>
             <div style={{ fontSize: 22 }}>⇄</div>
             <div style={{ textAlign: 'center' }}>
@@ -959,7 +974,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
                 <QtyLine key={g.key}
                   thumb={<span className="tl-icon">{g.first.product?.icon || '📦'}</span>}
                   name={`${g.first.product?.type || 'Sealed'} — ${setById(g.first.setId)?.name || 'sealed'}`}
-                  sub={`${fmtMoney(round2(g.unit * buyMult))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
+                  sub={`${fmtMoney(round2(g.unit * effTrade))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
                   count={g.count} qty={giveSealQty[g.key] || 0}
                   onAdd={() => bump(setGiveSealQty, g.key, +1, g.count)}
                   onSub={() => bump(setGiveSealQty, g.key, -1, g.count)} />
@@ -968,7 +983,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
                 <QtyLine key={g.key}
                   thumb={<img className="tl-thumb" src={cardImg(g.first)} alt="" loading="lazy" />}
                   name={`${g.first.foil ? `${g.first.foil.badge} ` : g.first.reverse ? '✨ ' : ''}${g.first.name}`}
-                  sub={`${skuBadge(g.first)} · ${fmtMoney(round2(g.unit * buyMult))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
+                  sub={`${skuBadge(g.first)} · ${fmtMoney(round2(g.unit * effTrade))} trade-in each${g.count > 1 ? ` · have ${g.count}` : ''}`}
                   count={g.count} qty={giveQty[g.key] || 0}
                   onAdd={() => bump(setGiveQty, g.key, +1, g.count)}
                   onSub={() => bump(setGiveQty, g.key, -1, g.count)} />

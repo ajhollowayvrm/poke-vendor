@@ -1012,6 +1012,32 @@ try {
       !sg.cheap.ok && sg.fee > 0)
   }
 
+  // ---- 15. 🔁 SHOW TRADE RAILS ----------------------------------------------------
+  // Vendors quote a trade-credit rate ABOVE their cash rate (a swap costs them no real
+  // money) but BELOW their sell markup (credit spends at their asks — at/above sellMult
+  // you could launder their own markup back at them). Both the archetype table and every
+  // seeded booth's per-deal variance must stay inside those rails.
+  console.log('\n🔁 SHOW TRADE RAILS — credit above cash, below their asks:')
+  {
+    const rails = await page.evaluate(async () => {
+      const sh = await import('/src/game/shows.js')
+      const keys = ['fair', 'sharp', 'whale', 'newbie', 'fleecer']
+      const arch = keys.map(k => { const a = sh.archetype(k); return { k, buy: a.buyMult, trade: a.tradeMult, sell: a.sellMult } })
+      // A seeded floor: every booth's quoted pair stays inside the rails after per-booth variance.
+      const show = { id: 'sim', seed: 12345, tierKey: 'regional', name: 'Sim Show' }
+      const booths = sh.generateBooths(show).filter(b => !b.special && b.buyMult != null)
+      const bad = booths.filter(b => !(b.tradeMult > b.buyMult && b.tradeMult <= 1.0
+        && b.tradeMultHot >= b.tradeMult && b.tradeMultHot <= 1.0)).length
+      return { arch, n: booths.length, bad }
+    })
+    for (const a of rails.arch) {
+      pass(`${a.k}: cash ${Math.round(a.buy * 100)}% < trade ${Math.round(a.trade * 100)}% < ask ${Math.round(a.sell * 100)}%`,
+        a.trade > a.buy && a.trade < a.sell)
+    }
+    pass(`every seeded booth quotes inside the rails, credit capped at 100% of market (${rails.n} booths)`,
+      rails.n > 0 && rails.bad === 0)
+  }
+
   await browser.close()
 } catch (e) {
   console.error('SIM ERROR:', e.message)

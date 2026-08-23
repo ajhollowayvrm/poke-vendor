@@ -571,6 +571,14 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       c._highlight = true
       featNames.add(c.name)
     }
+    // Trade credit runs HOTTER than cash — a swap costs the dealer no real money and moves
+    // their own stock in the same breath. Per-booth variance so every table quotes its own
+    // pair ("80% trade on this table, 90% two rows down"); the HOT rate kicks in when most
+    // of what you take is their sealed/aftermarket product (stock they want moved). Seeded
+    // like everything else, clamped inside (buyMult, 1.0] so credit never beats market.
+    const tradeMult = round2(Math.min(1.0, Math.max(arch.buyMult + 0.05,
+      (arch.tradeMult ?? arch.buyMult + 0.10) + (r() - 0.5) * 0.08)))
+    const tradeMultHot = round2(Math.min(1.0, tradeMult + 0.05 + r() * 0.05))
     booths.push({
       id: `${show.id}-b${i}`,
       name: rec ? rec.name : vendorName(i),
@@ -579,7 +587,9 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       archetype: arch.key,
       archLabel: arch.label,
       vibe: arch.vibe,
-      buyMult: arch.buyMult,   // how much they'll pay for YOUR cards
+      buyMult: arch.buyMult,   // how much they'll pay for YOUR cards (cash)
+      tradeMult,               // ...and in trade credit against their table
+      tradeMultHot,            // the sweetened rate when you're taking their sealed off their hands
       // Cash on hand for BUYING your cards — finite, seeded, scaled to the show's value
       // band and archetype (whales carry the deepest till; lowballers the shallowest).
       // Turns "dump everything on the High Roller" into a routing puzzle across the floor.
