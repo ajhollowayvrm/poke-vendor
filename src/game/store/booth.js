@@ -182,6 +182,33 @@ export function createBoothSlice(set, get) {
       return { ok: true }
     },
 
+    // 🐋 Close a High Roller's private package (see shows.js makeBigDeal): one price, the
+    // whole bundle — slabs to your collection, the sealed piece minted into held inventory
+    // with its share of the price as cost basis. +3★: closing five figures on the floor is
+    // exactly the kind of thing that gets talked about.
+    buyBigDeal({ cards = [], sealed = null, price = 0, market = 0, vendorId } = {}) {
+      const total = round2(price)
+      if (get().cash < total) return { error: `You can't cover the $${total.toFixed(2)} package.` }
+      if (!get().spend(total)) return { error: 'The payment fell through.' }
+      const gotCards = cards.map(c => ({ ...c, _ask: undefined, _mispriced: undefined, _highlight: undefined, _tk: undefined }))
+      const share = (v) => market > 0 ? round2(total * (v / market)) : 0
+      const gotSealed = sealed
+        ? [get().mintSealedRow(sealed.set, sealed.product, share(sealedValue({ product: sealed.product, setId: sealed.set?.id })), 'vendor')].filter(Boolean)
+        : []
+      set(s => ({
+        collection: [...gotCards, ...s.collection],
+        sealedInventory: [...gotSealed, ...(s.sealedInventory || [])],
+        stats: { ...s.stats, whaleDeals: (s.stats.whaleDeals || 0) + 1 },
+      }))
+      if (vendorId) get().bumpVendorRapport(vendorId, total)
+      get().addNotoriety(3)
+      const n = gotCards.length + gotSealed.length
+      get().log('buy', `🐋 Closed a private package — ${n} piece${n !== 1 ? 's' : ''} for $${total.toFixed(2)}`, -total)
+      get().checkCompletions()
+      get().checkMilestones()
+      return { ok: true }
+    },
+
     // Build rapport with a recurring show vendor by dealing with them (buying or selling).
     // Rapport = lifetime $ dealt; it earns a standing discount at their table (see vendorRapport).
     bumpVendorRapport(vendorId, amount) {

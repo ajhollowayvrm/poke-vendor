@@ -129,6 +129,18 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   const askOf = (entry) => (entry._tk != null && agreedPrices.has(entry._tk)) ? agreedPrices.get(entry._tk) : eff(entry._ask)
   const [mysteryResult, setMysteryResult] = useState(null) // card pulled from a mystery pack
   const [tradeFor, setTradeFor] = useState(null)           // booth card you're offering a trade on
+  // 🐋 The High Roller's private package (elite shows). One number, no haggling; the taken
+  // key survives reloads so a closed deal can't be re-served.
+  const [bigDealClosed, setBigDealClosed] = useState(false)
+  const bigDeal = booth.bigDeal && !bigDealClosed && !takenIds?.has(booth.bigDeal._tk) ? booth.bigDeal : null
+  function closeBigDeal() {
+    const bd = booth.bigDeal
+    const res = useGame.getState().buyBigDeal({ cards: bd.cards, sealed: bd.sealed, price: bd.price, market: bd.market, vendorId: booth.vendorId })
+    if (res.error) { flash(res.error); return }
+    onTaken?.([bd._tk])
+    setBigDealClosed(true)
+    flash(`🐋 Package closed — ${bd.cards.length + (bd.sealed ? 1 : 0)} piece${bd.cards.length + (bd.sealed ? 1 : 0) !== 1 ? 's' : ''} for ${fmtMoney(bd.price)}. Word travels.`)
+  }
   // 🧺 Stack deal: multi-select singles, one checkout, a volume discount — the "gather a few
   // cards and make one offer for the lot" that every card-show buying guide teaches. 3+ cards
   // 8% off, 6+ 12%, 10+ 15% (inside the 10-20% real vendors concede on volume).
@@ -557,8 +569,26 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
             ))}
           </>
         ) : tab === 'buy' ? (
-          stock.length === 0 ? <p className="muted">Sold out — you cleaned them out!</p> :
+          stock.length === 0 && !bigDeal ? <p className="muted">Sold out — you cleaned them out!</p> :
           <>
+            {/* 🐋 The private package: slabs (sometimes + a vintage sealed piece) at one
+                near-market number, take it or leave it — how whales deal with each other. */}
+            {bigDeal && (
+              <div className="banner jewel-call" style={{ marginBottom: 10 }}>
+                <div style={{ fontWeight: 800 }}>🐋 Private package <span className="muted" style={{ fontWeight: 400 }}>— one number, no haggling</span></div>
+                <div style={{ fontSize: 12.5, margin: '4px 0' }}>
+                  {bigDeal.cards.map(c => `🔬${c.grade?.overall ?? ''} ${c.name} (${fmtMoney(cardValue(c))})`).join(' · ')}
+                  {bigDeal.sealed ? ` · 🗝️ sealed ${bigDeal.sealed.product.type} of ${bigDeal.sealed.set.name}` : ''}
+                </div>
+                <div className="row" style={{ alignItems: 'center', gap: 10 }}>
+                  <b style={{ fontSize: 16 }}>{fmtMoney(bigDeal.price)}</b>
+                  <span className="muted" style={{ fontSize: 12 }}>combined market {fmtMoney(bigDeal.market)}</span>
+                  <button className="btn gold" style={{ marginLeft: 'auto', flex: 'none' }} disabled={cash < bigDeal.price} onClick={closeBigDeal}>
+                    {cash < bigDeal.price ? `Need ${fmtMoney(bigDeal.price)}` : '🤝 Close the deal'}
+                  </button>
+                </div>
+              </div>
+            )}
             {stock.some(c => c._highlight) && (
               <>
                 <div className="showcase-head">⭐ Showcase case <span className="muted">— this vendor's featured pieces</span></div>

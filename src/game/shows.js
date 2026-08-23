@@ -418,6 +418,35 @@ function boothSealed(r, arch, band = [1, 100], specialty = 'singles', tierKey = 
   return out
 }
 
+// 🐋 A High Roller's PRIVATE PACKAGE at the elite shows — the "$20k deals happening around
+// you" made playable. 1–3 real graded slabs (top of the tier's band) plus sometimes a big
+// vintage sealed piece, offered as ONE take-it-or-leave-it number at 0.92–1.05× combined
+// market. No haggling — this is how whales deal with each other: a fair-ish number, right
+// now, done. Seeded like everything else; `_tk` keys it for the taken-set so a reload
+// can't re-serve a closed deal. Returns null when the draw can't assemble a real package.
+function makeBigDeal(r, band, tkBase) {
+  const [, hi] = band
+  const target = 5000 + r() * 35000                      // $5k–$40k package
+  const n = 1 + Math.floor(r() * 3)                      // 1–3 slabs
+  const seen = new Set()
+  const cards = []
+  for (let i = 0; i < n; i++) {
+    const c = gradedCardInRange(Math.min(hi * 0.4, target * 0.25), Math.min(hi, target), 9 + Math.floor(r() * 2), r, seen)
+    if (c) { cards.push(c); if (c.grade) seen.add(`${c.id}|${c.grade.overall}`) }
+  }
+  let sealed = null
+  if (VINTAGE_SETS.length && r() < 0.4) {
+    const vSet = pickR(r, VINTAGE_SETS)
+    const product = vintageProduct(vSet)
+    if (product && (product.price || 0) >= 500) sealed = { set: vSet, product }
+  }
+  const market = round2(cards.reduce((a, c) => a + cardValue(c), 0)
+    + (sealed ? sealedValue({ product: sealed.product, setId: sealed.set.id }) : 0))
+  if (market < 5000 || !cards.length) return null
+  const price = round2(market * (0.92 + r() * 0.13))
+  return { cards, sealed, market, price, _tk: `${tkBase}#bigdeal` }
+}
+
 // `dayOffset` re-rolls the floor for each day of a multi-day show — different
 // vendors/stock show up day to day. `roster` is the recurring show-vendor list (their
 // identities get injected into some booths so you see familiar faces). `arrival` is when
@@ -579,6 +608,12 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
     const tradeMult = round2(Math.min(1.0, Math.max(arch.buyMult + 0.05,
       (arch.tradeMult ?? arch.buyMult + 0.10) + (r() - 0.5) * 0.08)))
     const tradeMultHot = round2(Math.min(1.0, tradeMult + 0.05 + r() * 0.05))
+    const elite = show.tierKey === 'invitational' || show.tierKey === 'worlds'
+    // A High Roller at the elite shows carries real money (a $20k slab can actually sell to
+    // the floor) and sometimes a private package deal (see makeBigDeal).
+    const tillArch = arch.key === 'whale' && elite ? 3.5 : (TILL_ARCH[arch.key] ?? 1)
+    const bigDeal = arch.key === 'whale' && elite && r() < (show.tierKey === 'worlds' ? 0.6 : 0.3)
+      ? makeBigDeal(r, tier.valueBand, `${show.id}-b${i}`) : null
     booths.push({
       id: `${show.id}-b${i}`,
       name: rec ? rec.name : vendorName(i),
@@ -593,9 +628,10 @@ export function generateBooths(show, dayOffset = 0, roster = [], arrival = 'open
       // Cash on hand for BUYING your cards — finite, seeded, scaled to the show's value
       // band and archetype (whales carry the deepest till; lowballers the shallowest).
       // Turns "dump everything on the High Roller" into a routing puzzle across the floor.
-      till: round2(hi * (4 + r() * 6) * (TILL_ARCH[arch.key] ?? 1)),
+      till: round2(hi * (4 + r() * 6) * tillArch),
       stock: boothStock,
       specialty,
+      bigDeal,                 // 🐋 elite-show High Roller package (null for everyone else)
       products: boothSealed(r, arch, tier.valueBand, specialty, show.tierKey),  // sealed + mystery packs (shaped by specialty)
       // grid position assigned by the floor layout
     })
@@ -777,6 +813,42 @@ const WHALE_NAMES = ['a deep-pocketed whale', 'a serious collector with a fat wa
   'a hedge-fund hobbyist', 'a well-known set completist', 'a flush returning client']
 
 function pickAny(r, arr) { return arr[Math.floor((r ?? Math.random)() * arr.length)] }
+
+// Build a no-haggle whale offer on the best piece in `pool` — shared by the home channels
+// (online DMs / store walk-ins, via boothEncounter) and the elite-show floor walk-up (the
+// ShowFloor whale timer). `multBand` is the offer as a multiple of market: home runs
+// 1.15–1.60× (stretching to 1.75× with fame), the invitational/worlds floor 1.20–1.80×.
+// Returns null when nothing in the pool is worth a whale's time.
+export function makeWhaleOffer(pool, channel, multBand = [1.15, 1.60], accepted = null) {
+  if (!pool?.length) return null
+  const target = pool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
+  const market = cardValue(target)
+  if (market < WHALE_MIN_VALUE) return null
+  const [mLo, mHi] = multBand
+  const offer = round2(market * (mLo + Math.random() * Math.max(0, mHi - mLo)))
+  const pay = pickPayMethod(channel, accepted)
+  const m = PAY_LABEL(pay)
+  const who = pickAny(null, WHALE_NAMES)
+  const online = channel === 'online'
+  const atShow = channel === 'show'
+  return {
+    kind: 'offer',
+    ownedUid: target.uid,
+    title: online ? `${cap(who)} slides into your DMs`
+      : atShow ? `${cap(who)} stops dead at your table`
+      : `${cap(who)} makes a beeline for your case`,
+    body: `"I hear you're the one to see. ${target._featured ? 'That featured' : 'That'} ${target.name} — I want it and I don't haggle. `
+      + `$${offer.toFixed(2)}, ${m}, right now." (Market: $${market.toFixed(2)})`,
+    card: target,
+    options: [
+      { text: `Accept $${offer.toFixed(2)} (${m})`, tone: 'fair',
+        effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: 2,
+          formSeed: mkSeed(target, channel), msg: 'The whale is thrilled — and whales talk to other whales.' } },
+      { text: 'Hold out for more', tone: 'fair',
+        effect: { type: 'none', notoriety: 0, msg: 'You let a paying whale walk away. Bold move.' } },
+    ],
+  }
+}
 // Some ONLINE buyers won't budge on how they pay — a share insist on their preferred rail
 // (PayPal / a card), and if you can't take it the sale is LOST. That's exactly what the
 // PayPal / Credit-Card upgrades capture: more rails you accept → fewer online buyers walk.
@@ -974,29 +1046,11 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
       * (featuredPool.length ? 1.7 : 1 + Math.min(0.5, showcaseN * 0.15)))
     if (Math.random() < pWhale) {
       const pickPool = featuredPool.length ? featuredPool : offerPool
-      const target = pickPool.reduce((a, b) => (cardValue(b) > cardValue(a) ? b : a))
-      if (cardValue(target) >= WHALE_MIN_VALUE) {
-        const market = cardValue(target)
-        const offer = round2(market * (1.15 + Math.random() * 0.45)) // 1.15–1.60× — they pay up
-        const pay = pickPayMethod(channel, accepted)
-        const m = PAY_LABEL(pay)
-        const who = pickAny(null, WHALE_NAMES)
-        return {
-          kind: 'offer',
-          ownedUid: target.uid,
-          title: online ? `${cap(who)} slides into your DMs` : `${cap(who)} makes a beeline for your case`,
-          body: `"I hear you're the one to see. ${target._featured ? 'That featured' : 'That'} ${target.name} — I want it and I don't haggle. `
-            + `$${offer.toFixed(2)}, ${m}, right now." (Market: $${market.toFixed(2)})`,
-          card: target,
-          options: [
-            { text: `Accept $${offer.toFixed(2)} (${m})`, tone: 'fair',
-              effect: { type: 'sellOwned', uid: target.uid, price: offer, payMethod: pay, notoriety: 2,
-                formSeed: mkSeed(target, channel), msg: 'The whale is thrilled — and whales talk to other whales.' } },
-            { text: 'Hold out for more', tone: 'fair',
-              effect: { type: 'none', notoriety: 0, msg: 'You let a paying whale walk away. Bold move.' } },
-          ],
-        }
-      }
+      // The home rail extends with fame past the Worlds gate: a truly famous shop's whales
+      // stretch from the 1.60× base up to a hard 1.75× ceiling.
+      const hiMult = Math.min(1.75, 1.60 + fameBeyond(notoriety, 280) * 0.15)
+      const enc = makeWhaleOffer(pickPool, channel, [1.15, hiMult], accepted)
+      if (enc) return enc
     }
   }
 
