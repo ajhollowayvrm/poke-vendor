@@ -409,25 +409,25 @@ export const SURFACES = [
 
   // ---- Store (BoothInbox) --------------------------------------------------------------------
   T('store-orders-fresh', 'Store › Orders (no storefront)', 'fresh', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '📨 Orders' }]),
+    [{ bnav: 'Sell' }, { subtab: '📨 Orders' }]),
   T('store-orders', 'Store › Orders', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '📨 Orders' }]),
+    [{ bnav: 'Sell' }, { subtab: '📨 Orders' }]),
   T('store-floor', 'Store › Floor', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '🛒 Floor' }]),
+    [{ bnav: 'Sell' }, { subtab: '🛒 Floor' }]),
   T('store-storeroom', 'Store › Storeroom', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '📦 Storeroom' }]),
+    [{ bnav: 'Sell' }, { subtab: '📦 Storeroom' }]),
   T('store-regulars', 'Store › Regulars', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '🤝 Regulars' }]),
+    [{ bnav: 'Sell' }, { subtab: '🤝 Regulars' }]),
   T('store-packs', 'Store › Mystery packs', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '❓ Packs' }]),
+    [{ bnav: 'Sell' }, { subtab: '❓ Packs' }]),
   T('store-packbuilder', 'Store › Pack builder', 'loaded', '.modal, .subtabs',
-    [{ bnav: 'Store' }, { subtab: '❓ Packs' }, { tapText: ['button', 'Build'] }]),
+    [{ bnav: 'Sell' }, { subtab: '❓ Packs' }, { tapText: ['button', 'Build'] }]),
   T('store-machine', 'Store › Pack machine', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '🎰 Machine' }]),
+    [{ bnav: 'Sell' }, { subtab: '🎰 Machine' }]),
   T('store-forum', 'Store › Forum', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '📋 Forum' }]),
+    [{ bnav: 'Sell' }, { subtab: '📋 Forum' }]),
   T('store-market', 'Store › On the market', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '🌐 On the market' }]),
+    [{ bnav: 'Sell' }, { subtab: '🌐 On the market' }]),
   // 🗣️ The store quote walk-up. Seeded rather than waited for: it is a share of walk-in footfall,
   // so waiting on the dice would make the sweep flaky. venue:'store' is the whole point of the
   // surface — it decides the wording and where a credit deal shops from.
@@ -438,11 +438,11 @@ export const SURFACES = [
         const q = mod.makeQuoteRequest(90, null, { band: [1, 40], venue: 'store' })
         useGame.setState({ boothInbox: [{ ...q, id: 9001, channel: 'walkin' }] })
       ` },
-     { bnav: 'Store' }, { subtab: '📨 Orders' }, { tapText: ['.product', 'wants a price'] }]),
+     { bnav: 'Sell' }, { subtab: '📨 Orders' }, { tapText: ['.product', 'wants a price'] }]),
   T('store-bulkbin', 'Store › Floor › Bulk bin', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'Bulk'] }]),
+    [{ bnav: 'Sell' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'Bulk'] }]),
   T('store-rivalry', 'Store › Floor › Town rivalry', 'loaded', '.subtabs',
-    [{ bnav: 'Store' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'ival'] }]),
+    [{ bnav: 'Sell' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'ival'] }]),
 
   // ---- Stream ---------------------------------------------------------------------------------
   T('stream-locked', 'Stream › Locked (no streaming upgrade)', 'fresh', '.empty, .pane',

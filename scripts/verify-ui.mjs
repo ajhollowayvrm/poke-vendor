@@ -39,7 +39,7 @@ const CHECKS = {
 }
 
 // The six primary tabs, by their visible label in the top bar / bottom nav.
-const TABS = ['Buy', 'Store', 'Stream', 'Shows', 'Stats', 'Inventory']
+const TABS = ['Buy', 'Inventory', 'Sell', 'Shows', 'Stream', 'Stats']
 const VIEWPORTS = [
   { name: 'desktop', width: 1440, height: 900, coarse: false },
   { name: 'tablet',  width: 1024, height: 768, coarse: false },
