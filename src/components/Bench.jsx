@@ -3,6 +3,8 @@ import { useGame, absoluteDay } from '../game/store'
 import { GRADING, GRADERS, GRADER_TIERS, graderTier, nextGraderTier, gradingFee, gradingFeeTotal, gradingShipping, overTierValue, gradingDays, graderById, bulkDiscount, BULK_TIERS, rawValue, round2, fmtMoney, cutEstimate, cardImg, setNameOfCard, setById } from '../game/engine'
 import { sealedGraderById } from '../game/sealedgrading'
 import CardTile from './CardTile'
+import { toast } from '../ui/dialog'
+import { Explain } from '../ui/Explain'
 
 export default function Bench() {
   const pending = useGame(s => s.pendingGrades)
@@ -51,9 +53,12 @@ export default function Bench() {
                   {/* 🎫 ⚡ Clout spend: walk this one to the front — 7 days off, speed only. */}
                   {daysLeft > 1 && !p.expedited && (
                     <button className="btn alt t-xs" style={{ marginTop: 6, padding: '3px 9px' }}
-                      disabled={clout < 2 || cash < 50}
-                      title={clout < 2 ? 'Needs 2 🎫 clout' : cash < 50 ? 'Needs $50 for the rush fee' : 'Spend 2 🎫 clout + $50 — your grader contact walks it to the front (7 days off, never lands before tomorrow). Odds untouched.'}
-                      onClick={() => expediteGrade(p.card.uid)}>
+                      aria-disabled={clout < 2 || cash < 50}
+                      onClick={() => {
+                        if (clout < 2) { toast('Needs 2 🎫 clout'); return }
+                        if (cash < 50) { toast('Needs $50 for the rush fee'); return }
+                        expediteGrade(p.card.uid)
+                      }}>
                       ⚡ Expedite · 2 🎫 + $50
                     </button>
                   )}
@@ -165,7 +170,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
           <div className="grader-pick mt-5">
             {Object.values(GRADERS).map(g => (
               <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
-                style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)} title={g.blurb}>
+                style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
                 <b style={{ color: g.color }}>{g.icon} {g.name}</b>
                 <small>{g.slabMult === 1 ? 'benchmark resale' : `${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
               </button>
@@ -189,10 +194,10 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
                 <CardTile card={c} interactive={false} />
                 <div className="cap" style={{ textAlign: 'center' }}>raw {fmtMoney(rawValue(c))}</div>
                 <div style={{ textAlign: 'center', marginTop: 2 }}>
-                  <span className="t-xs" style={{ fontWeight: 700, color: est.color, background: est.color + '22', borderRadius: 4, padding: '1px 5px' }}
-                    title={est.label}>
+                  <span className="t-xs" style={{ fontWeight: 700, color: est.color, background: est.color + '22', borderRadius: 4, padding: '1px 5px' }}>
                     👁️ {est.short}
                   </span>
+                  {est.label !== est.short && <div className="cap" style={{ fontSize: 'var(--fs-xs)', marginTop: 1 }}>{est.label}</div>}
                 </div>
                 {picked.has(c.uid) && <span className="bulk-check">✓</span>}
               </div>
@@ -208,9 +213,9 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
                 : <>
                     {mixed ? `${count} cards, priced by value` : `${fmtMoney(round2((total - ship) / count))}/card × ${count}`}
                     {' + '}
-                    <span title="Insured postage there and back, charged once per submission — so one card pays the whole round trip and a big batch barely notices it.">
-                      {fmtMoney(ship)} freight
-                    </span>
+                    <Explain label="How grading freight works" trigger={<span>{fmtMoney(ship)} freight</span>}>
+                      Insured postage there and back, charged once per submission — so one card pays the whole round trip and a big batch barely notices it.
+                    </Explain>
                     {' = '}<b>{fmtMoney(total)}</b>
                     {count === 1 && <span className="muted"> · batching spreads the freight</span>}
                   </>}

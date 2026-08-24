@@ -7,6 +7,7 @@ import {
 } from '../game/lots'
 import { absoluteDay } from '../game/store/constants'
 import { clickable } from '../ui/clickable'
+import { Explain } from '../ui/Explain'
 
 // 🔨 The auction house, on the Buy tab — the BUY side of the hammer.
 //
@@ -30,14 +31,19 @@ function RoomBar({ watchers }) {
   const label = heat > 0.66 ? 'packed — it will close over market'
     : heat > 0.33 ? 'a normal room' : 'quiet — where the deals are, and the traps'
   return (
-    <span className="pill" title={`${watchers} watching. The room is what sets the closing price: a packed lot ends over market, a quiet one well under it.`}>
-      {/* The "·" is a real character, not a margin. The count and the descriptor are adjacent
-          inline nodes, so with spacing alone the accessible name came out as "6a normal room"
-          / "12packed — it will close over market" — two values run together for anyone reading
-          by ear, and optically cramped for everyone else. */}
-      👥 <b style={{ color }}>{watchers}</b>
-      <span className="cap" style={{ marginLeft: 5 }}>· {label}</span>
-    </span>
+    <Explain label="What does the room mean?" trigger={
+      // The "·" is a real character, not a margin. The count and the descriptor are adjacent
+      // inline nodes, so with spacing alone the accessible name came out as "6a normal room"
+      // / "12packed — it will close over market" — two values run together for anyone reading
+      // by ear, and optically cramped for everyone else.
+      <span className="pill">
+        👥 <b style={{ color }}>{watchers}</b>
+        <span className="cap" style={{ marginLeft: 5 }}>· {label}</span>
+      </span>
+    }>
+      The room is what sets the closing price: a packed lot ends over market, a quiet one well
+      under it — but a quiet lot is also disproportionately where a bad listing hides.
+    </Explain>
   )
 }
 
@@ -68,16 +74,19 @@ function Lot({ lot, day }) {
         <div className="lot-title">
           <b>{lot.title}</b>
           {lot.kind === 'raw' && lot.claimedCondition && (
-            <span className="pill" title="What the listing CLAIMS the condition is. Claims are not always true, and the quieter the lot the less often they are.">
-              {lot.claimedCondition}
-            </span>
+            <Explain label="What does the claimed condition mean?" trigger={
+              <span className="pill">{lot.claimedCondition}</span>
+            }>
+              What the listing CLAIMS the condition is. Claims are not always true, and the
+              quieter the lot the less often they are.
+            </Explain>
           )}
           {lot.kind === 'slab' && lot.card?.grade && <span className="pill">{slabLabel(lot.card.grade)}</span>}
         </div>
         <div className="lot-sub">
           <RoomBar watchers={lot.watchers} />
-          <span className="pill" title="What this lot is worth if the description is accurate.">
-            worth <b>{fmtMoney(market)}</b>
+          <span className="pill">
+            mkt <b>{fmtMoney(market)}</b>
           </span>
           <span className="pill">{daysLeft <= 0 ? 'closing now' : `${daysLeft}d left`}</span>
         </div>
@@ -98,6 +107,17 @@ function Lot({ lot, day }) {
           className="lot-input" type="number" min="0" step="1" placeholder="max"
           value={draft} onChange={e => setDraft(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && draft) place(Number(draft)) }} />
+        {/* The all-in read while the number is still in your hand: hammer + 13% + postage,
+            against the comp — the whole buy decision on one line, before the bid lands. */}
+        {Number(draft) > 0 && (() => {
+          const allIn = lotTotalCost(Number(draft)).total
+          const over = market > 0 ? Math.round((allIn / market - 1) * 100) : 0
+          return (
+            <span className="cap t-xs" style={{ color: allIn <= market ? 'var(--green)' : 'var(--red)' }}>
+              all-in {fmtMoney(allIn)} · {over > 0 ? `${over}% over` : `${-over}% under`} mkt
+            </span>
+          )
+        })()}
         <button className="btn small" disabled={!draft || Number(draft) <= 0} onClick={() => place(Number(draft))}>
           Leave bid
         </button>

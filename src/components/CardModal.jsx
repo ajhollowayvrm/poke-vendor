@@ -363,7 +363,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 <div className="row" style={{ marginTop: 6, gap: 6, flexWrap: 'wrap' }}>
                   {AUCTION_RESERVES.map(r => (
                     <button key={r.label} className={`chip-btn ${aucReserve === r.mult ? 'active' : ''}`} style={{ flex: '1 1 0' }}
-                      onClick={() => setAucReserve(r.mult)} title={r.blurb}><b>{r.label}</b></button>
+                      onClick={() => setAucReserve(r.mult)}><b>{r.label}</b></button>
                   ))}
                 </div>
                 <p className="cap" style={{ margin: '6px 2px 0' }}>
@@ -400,13 +400,14 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                   <span className="cap">market {fmtMoney(market)}</span>
                 </div>
                 {hasStore && (
-                  <div className="row" style={{ marginTop: 8, gap: 6 }}>
-                    <button className={`btn ${everywhere ? 'gold' : 'alt'}`} style={{ fontSize: 12, padding: '6px 10px' }}
-                      title="One card, two channels: it's up on your site AND out in your store case. Whichever finds a buyer first takes it — and an in-person sale skips the fee + shipping and earns the walk-in premium."
+                  <div className="row" style={{ marginTop: 8, gap: 6, alignItems: 'center' }}>
+                    <button className={`btn ${everywhere ? 'gold' : 'alt'}`} style={{ fontSize: 'var(--fs-xs)', padding: '6px 10px' }}
                       onClick={() => setEverywhere(true)}>🏬+🌐 Everywhere</button>
-                    <button className={`btn ${everywhere ? 'alt' : 'gold'}`} style={{ fontSize: 12, padding: '6px 10px' }}
-                      title="Web listing only — walk-ins won't see it."
+                    <button className={`btn ${everywhere ? 'alt' : 'gold'}`} style={{ fontSize: 'var(--fs-xs)', padding: '6px 10px' }}
                       onClick={() => setEverywhere(false)}>🌐 Online only</button>
+                    <Explain label="Everywhere vs Online only">
+                      Everywhere lists it on your site AND out in your store case — whichever finds a buyer first takes it, and an in-person sale skips the fee + shipping and earns the walk-in premium. Online only is a web listing — walk-ins won't see it.
+                    </Explain>
                   </div>
                 )}
                 <AskPicker pct={askPct} onChange={setAskPct}>
@@ -447,23 +448,33 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 head={<span style={{ fontWeight: 800 }}>🔬 Submit for grading</span>}
                 badge={`🤝 ${tier.name}${tier.discount > 0 ? ` · ${Math.round(tier.discount*100)}% off` : ''}`}
                 hint="Mail it to a grader — a high grade can multiply the value, a low one hurts.">
+                {/* The decision pair, before anything else: what it fetches raw today vs what
+                    the slab would comp at. Fees sit on the tier buttons right below. */}
+                <p className="cap t-sm" style={{ margin: '2px 0 6px' }}>
+                  Sell raw now: <b>{fmtMoney(rawValue(card))}</b>
+                  {prediction && <> · at likely PSA {prediction.likely}: <b className="pos">{fmtMoney(psaValueAt(card, prediction.likely))}</b></>}
+                  {' '}· at PSA 10: <b style={{ color: 'var(--gold)' }}>{fmtMoney(psaValueAt(card, 10))}</b>
+                </p>
                 {hasScope && prediction && (
-                  <div className="grade-predict" title="Predicted from this card's cut, condition, and your loupe — a range, not a guarantee.">
-                    <span className="gp-icon">🔭</span>
-                    <span className="gp-range">Likely <b>PSA {prediction.lo === prediction.hi ? prediction.lo : `${prediction.lo}–${prediction.hi}`}</b></span>
-                    <span className="gp-likely">best odds <b>PSA {prediction.likely}</b></span>
-                    <span className="gp-gem" style={{ color: prediction.gemChance >= 0.15 ? 'var(--gold)' : 'var(--dim)' }}>
-                      💎 10: <b>{Math.round(prediction.gemChance * 100)}%</b>
-                    </span>
-                    <span className="cap">· 9+: {Math.round(prediction.highChance * 100)}%</span>
-                  </div>
+                  <Explain label="How this prediction is made" trigger={
+                    <div className="grade-predict">
+                      <span className="gp-icon">🔭</span>
+                      <span className="gp-range">Likely <b>PSA {prediction.lo === prediction.hi ? prediction.lo : `${prediction.lo}–${prediction.hi}`}</b></span>
+                      <span className="gp-likely">best odds <b>PSA {prediction.likely}</b></span>
+                      <span className="gp-gem" style={{ color: prediction.gemChance >= 0.15 ? 'var(--gold)' : 'var(--dim)' }}>
+                        💎 10: <b>{Math.round(prediction.gemChance * 100)}%</b>
+                      </span>
+                      <span className="cap">· 9+: {Math.round(prediction.highChance * 100)}%</span>
+                    </div>}>
+                    Predicted from this card's cut, condition, and your loupe — a range, not a guarantee.
+                  </Explain>
                 )}
                 {/* WHO grades it, then which service. The company changes the fee, the wait,
                     and what the returned slab sells for — never the odds (see GRADERS). */}
                 <div className="grader-pick">
                   {Object.values(GRADERS).map(g => (
                     <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
-                      style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)} title={g.blurb}>
+                      style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
                       <b style={{ color: g.color }}>{g.icon} {g.name}</b>
                       <small>{g.slabMult === 1 ? 'benchmark resale' : `${g.slabMult > 1 ? '+' : ''}${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
                     </button>
@@ -479,14 +490,14 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     const discounted = !byValue && fee < t.fee
                     return (
                       <button key={key} className="btn alt" disabled={cash < fee}
-                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}
-                        title={byValue ? `Worth more than this tier insures ($${t.maxValue.toLocaleString()}), so it goes on the ${premiumTierFor(rawValue(card)).name} service — a flat $${premiumTierFor(rawValue(card)).fee.toLocaleString()} for anything up to $${premiumTierFor(rawValue(card)).max.toLocaleString()} insured. There is no slow, cheap option for a card this valuable.` : undefined}>
+                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}>
                         {t.name} · ${fee.toFixed(0)}
                         {discounted && <small style={{ textDecoration:'line-through', opacity:.5, marginLeft:4 }}>${t.fee}</small>}
                         <br/><small className="muted">
                           {byValue ? `${premiumTierFor(rawValue(card)).name} · ~${gradingDays(key, company, rawValue(card))}d`
                             : `~${gradingDays(key, company)}d`}
                         </small>
+                        {byValue && <small className="muted">insured to ${t.maxValue.toLocaleString()} · over that, flat fee</small>}
                       </button>
                     )
                   })}

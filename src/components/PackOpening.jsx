@@ -10,6 +10,7 @@ import HandReveal, { NeedBadge } from './HandReveal'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
 import { AnimatedNumber } from '../ui/AnimatedNumber'
+import { Explain } from '../ui/Explain'
 
 // Opens sealed product with the animated rip. For a single booster this rips one
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
@@ -453,7 +454,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                   const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
                   return (
                     <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}
-                      onClick={() => setModalCard(c)} title="Tap for the full card details">
+                      onClick={() => setModalCard(c)}>
                       <img src={cardImg(c)} alt="" />
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -468,7 +469,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                       </div>
                       <div className="rip-hit-val">
                         {fmtMoney(cardValue(c))}
-                        {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10 / PSA 9">💎 10 {fmtMoney(psaValueAt(c, 10))} · 9 {fmtMoney(psaValueAt(c, 9))}</div>}
+                        {!c.grade && <div className="rip-hit-psa10">💎 10 {fmtMoney(psaValueAt(c, 10))} · 9 {fmtMoney(psaValueAt(c, 9))}</div>}
                         {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                       </div>
                     </button>
@@ -517,8 +518,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
           {/* Live from the very first card of the very first pack — it ticks up as cards land, so
               there's no reason to hold it back until a pack has closed out. */}
           {(packsOpened > 0 || shown > 0) && (
-            <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}
-              title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
+            <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>
               {/* Tweened, not snapped: now that it climbs a card at a time, the climb is the
                   point — the number counting up IS the "what did that card just earn me". */}
               💰 Rip <AnimatedNumber value={ripValue} format={fmtMoney} /> <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
@@ -663,7 +663,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                             <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
                           </div>
                         </HoloCard>
-                        <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
+                        <button className="rip-cell-foot" onClick={() => setModalCard(c)}>
                           <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                           <div className="rc-meta" style={{ color: edge }}>
                             {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
@@ -692,10 +692,15 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                       with the pack summary now, which both single and multi rips draw. */}
                   {searched && (
                     <div style={{ marginBottom: 8 }}>
-                      <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
-                        title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
-                        🔦 Searched — the hit was already gone
-                      </span>
+                      <Explain label="What does searched mean?" trigger={
+                        <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}>
+                          🔦 Searched — the hit was already gone
+                        </span>
+                      }>
+                        Someone weighed or candled this pack and pulled the hit before resealing it. Loose
+                        out-of-print packs carry that risk — worst on a show floor, least from a shop, and
+                        never from a box you broke yourself.
+                      </Explain>
                     </div>
                   )}
                   <div className="t-lg" style={{ marginBottom: multi ? 4 : 8 }}>
@@ -761,7 +766,7 @@ function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
             const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
             return (
               <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}
-                onClick={() => onInspect(c)} title="Tap for the full card details">
+                onClick={() => onInspect(c)}>
                 <img src={cardImg(c)} alt="" />
                 <div className="rip-hit-info">
                   <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -776,7 +781,7 @@ function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
                 </div>
                 <div className="rip-hit-val">
                   {fmtMoney(cardValue(c))}
-                  {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                  {!c.grade && <div className="rip-hit-psa10">💎 {fmtMoney(psa10Value(c))}</div>}
                   {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                 </div>
               </button>

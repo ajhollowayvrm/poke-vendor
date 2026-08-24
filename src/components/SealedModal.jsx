@@ -2,7 +2,7 @@ import { useEffect, useState, lazy, Suspense } from 'react'
 import { Modal } from '../ui/Modal'
 import { StaleChunk } from '../ui/lazyChunk'
 import { useGame } from '../game/store'
-import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE } from '../game/engine'
+import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE, sealedCard } from '../game/engine'
 import { SEALED_GRADERS, sealedGraderById, sealedGradingFee, sealedGradingDays, sealedSlabLabel, worthGrading } from '../game/sealedgrading'
 import { AskPicker } from '../ui/AskPicker'
 
@@ -291,7 +291,12 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
                     listing ? (
                       <div className="list-picker mt-2">
                         <AskPicker pct={Math.round(mult * 100)} onChange={pc => setMult((pc || 0) / 100)} custom={false} label={null}>
-                          <span className="cap" style={{ marginLeft: 'auto' }}>ask <b>{fmtMoney(value * mult)}</b>{n > 1 ? ` ea · ${fmtMoney(value * mult * n)} total` : ''}</span>
+                          {/* A sealed listing rides the same engine as a card — 5% fee +
+                              shipping out. Quote what it BANKS, not just what it asks. */}
+                          {(() => {
+                            const q = useGame.getState().listingQuote(sealedCard(item), mult)
+                            return <span className="cap" style={{ marginLeft: 'auto' }}>ask <b>{fmtMoney(q.ask)}</b>{n > 1 ? ' ea' : ''} · nets <b>{fmtMoney(q.net)}</b>{n > 1 ? ` ea · ${fmtMoney(round2(q.net * n))} total` : ''}</span>
+                          })()}
                         </AskPicker>
                         <div className="row" style={{ gap: 8, marginTop: 8 }}>
                           <button className="btn gold" style={{ maxWidth: 220 }} onClick={doList}>List {n > 1 ? `${n} units` : 'for sale'}</button>

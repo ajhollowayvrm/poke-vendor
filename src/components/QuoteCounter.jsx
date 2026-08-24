@@ -223,12 +223,14 @@ export default function QuoteCounter({ req, onDone }) {
             💵 Cash · {fmtMoney(quoteCash)}
           </button>
           <button className={`btn ${method === 'credit' ? 'gold' : 'alt'}`} disabled={!creditUsable}
-            title={creditUsable ? `They spend it on your ${placeWord} — sellers take a lower % in credit than in cash`
-              : !creditOk ? `Your ${placeWord} doesn't have enough out to back a credit offer`
-              : `Nothing on your ${placeWord} fits this credit amount — they'd walk with nothing`}
             onClick={() => setMethod('credit')}>
             🎟️ {atStore ? 'Store' : 'Table'} credit · {fmtMoney(quoteCash)}
           </button>
+        </div>
+        <div className="cap t-xs mt-1">
+          {creditUsable ? `They spend it on your ${placeWord} — sellers take a lower % in credit than in cash.`
+            : !creditOk ? `Your ${placeWord} doesn't have enough out to back a credit offer.`
+            : `Nothing on your ${placeWord} fits this credit amount — they'd walk with nothing.`}
         </div>
 
         <div className="quote-pct mt-5">

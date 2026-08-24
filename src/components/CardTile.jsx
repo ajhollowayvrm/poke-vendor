@@ -41,7 +41,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
     return (
       <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
         <div className={`cardtile slab grade-${g} ${gemmint ? 'slab-gem' : ''}`} {...tap}>
-          {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
+          {card.locked && <span className="lockchip" aria-label="Locked — protected from bulk sells">🔒</span>}
           <div className="slab-shine" aria-hidden="true" />
           <div className="slab-label">
             <div className="slab-brand">PSA</div>
@@ -68,12 +68,12 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
       <div className={`cardtile ${noBorder ? 'no-edge' : 'rarity-edge'} ${hit ? 'r-hit' : ''} ${card._grail ? 'r-grail' : ''} ${foil ? 'foil-'+foil.key : ''}`}
         {...tap} style={{ '--rarity': edge }}>
         <span className="tag" style={{ color: edge }}>
-          <span title={card.reverse && !foil ? 'Reverse Holo — the same card with a foil-patterned background, printed in the reverse slot of most packs. Worth a premium over the plain print (bigger on rarer cards).' : undefined}>{foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}</span>
+          <span>{foil ? foil.badge : card._grail ? '👑 GRAIL' : `${card.reverse ? 'RH · ' : ''}${shortRarity(card.rarity)}`}</span>
         </span>
-        {card.locked && <span className="lockchip" title="Locked — protected from bulk sells">🔒</span>}
+        {card.locked && <span className="lockchip" aria-label="Locked — protected from bulk sells">🔒</span>}
         {!card.grade && (cut || (card.condition && card.condition !== 'NM')) && (
           <span className="tile-chips">
-            {cut && <span className="chip cutchip" style={{ color: cut.color }} title={`Centering: ${cut.label}`}>{cut.abbr}</span>}
+            {cut && <span className="chip cutchip" style={{ color: cut.color }}>{cut.abbr}</span>}
             {card.condition && card.condition !== 'NM' && (
               <span className="chip condchip" style={{ color: CONDITIONS[card.condition].color }}>{card.condition}</span>
             )}
@@ -83,7 +83,7 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
             card you cannot read off its art, and a miscut common in a bulk sweep is exactly
             the card you do not want to lose by accident. */}
         {card.misprint && (
-          <span className="misprint-badge" title={`${misprintDef(card.misprint)?.name} — a printing error. Worth more than the card, and worth more again once a grader authenticates it.`}>
+          <span className="misprint-badge">
             {misprintDef(card.misprint)?.icon} ERROR
           </span>
         )}
@@ -95,8 +95,8 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
             "Chaos …" on every tile AND sat on the art. A caption strip carries both, keyed to
             the same scrim as the price. */}
         <span className="cardcap">
-          <span className="cardcap-name" title={card.name}>{card.name}</span>
-          {setName && <span className="settag" title={setName}>{setName}</span>}
+          <span className="cardcap-name">{card.name}</span>
+          {setName && <span className="settag">{setName}</span>}
         </span>
         <span className="price">{fmtMoney(cardValue(card))}</span>
       </div>

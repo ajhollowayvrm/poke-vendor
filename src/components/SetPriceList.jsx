@@ -55,7 +55,7 @@ export default function SetPriceList({ setId }) {
           <div key={c.id} className="setprice-cell">
             <img src={cardImg(c)} alt={c.name} loading="lazy" decoding="async" />
             <div className="spc-body">
-              <div className="spc-name" title={c.name}>{c.name}</div>
+              <div className="spc-name">{c.name}</div>
               <div className="spc-rarity" style={{ color: rarityColor(c.rarity) }}>{c.rarity} · #{cardNumber(c)}</div>
               <div className="spc-prices">
                 <span><small>Raw</small><b>{fmtMoney(rawValue(c))}</b></span>

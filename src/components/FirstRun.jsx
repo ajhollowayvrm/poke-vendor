@@ -51,7 +51,7 @@ export default function FirstRun() {
     <div className="firstrun">
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
         <b>🎓 Getting started</b>
-        <button className="linkbtn t-xs"  title="Hide this for good"
+        <button className="linkbtn t-xs"
           onClick={() => { try { localStorage.setItem(DISMISS_KEY, '1') } catch { /* private mode */ }; setHidden(true) }}>
           Dismiss ✕
         </button>

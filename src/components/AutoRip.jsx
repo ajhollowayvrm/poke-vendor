@@ -412,7 +412,7 @@ export default function AutoRip({ items, onExit }) {
             <div className="row" style={{ gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginTop: 6 }}>
               {STOP_LEVELS.map(l => (
                 <button key={l.label} className={`chip-btn ${minValue === l.key ? 'active' : ''}`} style={{ flex: '0 0 auto' }}
-                  onClick={() => setMinValue(l.key)} title={l.blurb}>
+                  onClick={() => setMinValue(l.key)}>
                   <b>{l.label}</b><small>{l.blurb}</small>
                 </button>
               ))}
@@ -434,7 +434,7 @@ export default function AutoRip({ items, onExit }) {
       <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>📦 {stats.packs} sifted{remainingItems() ? ` · ${remainingItems()} item${remainingItems() === 1 ? '' : 's'} left` : ''}</span>
       {/* Short tween + no flash during the churn: at ~15 cards a second a 450ms flash is a strobe,
           not a cue. Your own pack (phase 'reveal') gets the flash back, one card at a time. */}
-      <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }} title="Everything pulled so far this sift">
+      <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>
         💰 <AnimatedNumber value={stats.value} format={fmtMoney} duration={phase === 'reveal' ? 450 : 260} flash={phase === 'reveal'} /> pulled
       </span>
       {stats.hitPacks > 0 && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🔥 {stats.hitPacks} big hit{stats.hitPacks === 1 ? '' : 's'}</span>}
@@ -481,7 +481,7 @@ export default function AutoRip({ items, onExit }) {
                 {[...stats.hits].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 24).map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   return (
-                    <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }} onClick={() => setModalCard(c)} title="Tap for the full card details">
+                    <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }} onClick={() => setModalCard(c)}>
                       <img src={cardImg(c)} alt="" />
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -558,7 +558,7 @@ export default function AutoRip({ items, onExit }) {
                         <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
                       </div>
                     </HoloCard>
-                    <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
+                    <button className="rip-cell-foot" onClick={() => setModalCard(c)}>
                       <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                       <div className="rc-meta" style={{ color: edge }}>{c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}</div>
                       <div className="rc-val">{fmtMoney(cardValue(c))}</div>

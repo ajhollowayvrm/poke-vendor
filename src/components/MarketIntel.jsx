@@ -3,6 +3,7 @@ import { SHOP_SETS, openPack, cardValue, fmtMoney, hitGemRate, marketMult, round
 import { useGame } from '../game/store'
 import { useOpen } from '../ui/Collapse'
 import { clickable } from '../ui/clickable'
+import { Explain } from '../ui/Explain'
 
 // Buy-tab intel panels, each gated behind its upgrade (they render null unowned):
 //   📈 Hobby Wire (upgrades.hobbyWire) — demand: what walk-ins asked for and you couldn't
@@ -58,25 +59,38 @@ export function HobbyWire() {
               ? <span className="cap">
                   {hasStore ? 'nothing this fortnight — the floor had what the town wanted.' : 'no counter yet — walk-in demand starts with a Brick-and-Mortar Store.'}
                 </span>
-              : asks.map(([what, n]) => (
-                  <span key={what} className="pill" title="Walk-ins asked for this and left empty-handed (last 14 days). Stock it and they stop leaving.">
-                    {what}{n > 1 ? <b> ×{n}</b> : null}
-                  </span>
-                ))}
+              : <>
+                  {asks.map(([what, n]) => (
+                    <span key={what} className="pill">
+                      {what}{n > 1 ? <b> ×{n}</b> : null}
+                    </span>
+                  ))}
+                  <Explain label="What this list means">
+                    Walk-ins asked for these and left empty-handed (last 14 days). Stock one
+                    and it stops costing you.
+                  </Explain>
+                </>}
           </div>
           <div className="row" style={{ gap: 6, marginTop: 6, flexWrap: 'wrap', alignItems: 'center' }}>
             <span className="cap">📊 Movers:</span>
             {hot.length === 0 && soft.length === 0 && <span className="cap">market's flat — no set far off ×1.00.</span>}
             {hot.map(({ s, mult, pct }) => (
-              <span key={s.id} className="pill warn"  title="Running hot — sealed you hold here is worth more, and rips pay out closer to the pack price.">
+              <span key={s.id} className="pill warn">
                 🔥 {s.name} ×{mult.toFixed(2)} <TrendTag pct={pct} />
               </span>
             ))}
             {soft.map(({ s, mult, pct }) => (
-              <span key={s.id} className="pill" title="Running soft — weak sell prices, but the cheap moment to buy sealed you believe in.">
+              <span key={s.id} className="pill">
                 🧊 {s.name} ×{mult.toFixed(2)} <TrendTag pct={pct} />
               </span>
             ))}
+            {(hot.length > 0 || soft.length > 0) && (
+              <Explain label="What hot/soft mean">
+                🔥 Running hot — sealed you hold here is worth more, and rips pay out closer to
+                the pack price. 🧊 Running soft — weak sell prices, but the cheap moment to buy
+                sealed you believe in.
+              </Explain>
+            )}
           </div>
         </>
       )}
@@ -143,7 +157,12 @@ export function BreakersAlmanac() {
           <div style={{ overflowX: 'auto', marginTop: 8 }}>
             <div style={{ minWidth: 560 }}>
               <div className="cap" style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '2px 4px' }}>
-                <span>Set</span><span>EV / pack</span><span>Best rip</span><span title="Of the set's hit lineup, the share worth $100+ as a PSA 10 — how stacked the chase is.">🎯 Chase</span><span>Market</span>
+                <span>Set</span><span>EV / pack</span><span>Best rip</span>
+                <span>🎯 Chase <Explain label="What Chase means">
+                  Of the set's hit lineup, the share worth $100+ as a PSA 10 — how stacked the
+                  chase is.
+                </Explain></span>
+                <span>Market</span>
               </div>
               {rows.map(r => (
                 <div className="t-xs" key={r.s.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: 8, padding: '5px 4px', borderTop: '1px solid #ffffff14', alignItems: 'baseline' }}>

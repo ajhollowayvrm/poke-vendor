@@ -9,10 +9,7 @@ export function NeedBadge({ card, compact = false }) {
   if (!card?._needFor) return null
   const challenge = card._needFor === 'challenge'
   return (
-    <span className={`rc-need ${challenge ? 'challenge' : ''}`}
-      title={challenge
-        ? 'Missing from the master set you declared — landing it moves the challenge and pays out on completion.'
-        : "You don't own this one yet, and you're building this set in your binder."}>
+    <span className={`rc-need ${challenge ? 'challenge' : ''}`}>
       {challenge ? '🃏 Need it' : '📒 New one'}{compact ? '' : challenge ? ' — challenge' : ' for your binder'}
     </span>
   )
@@ -146,7 +143,7 @@ function FanCaption({ card, hasLoupe }) {
         {' · '}<b className="pos">{fmtMoney(cardValue(card))}</b>
       </div>
       {!card.grade && (
-        <div className="fan-cap-psa" title="What this raw card would be worth if it graded">
+        <div className="fan-cap-psa">
           💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
         </div>
       )}

@@ -1059,6 +1059,9 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   border:1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
 /* segmented control (e.g. rip speed) */
 .seg { display:inline-flex; border:1px solid var(--line); border-radius: 10px; overflow:hidden; }
+/* The Sell screen's in-pane view toggles (Floor/Storeroom, Packs/Machine, Market/Forum). */
+.sell-seg { display:flex; }
+.sell-seg .segbtn { flex:1; }
 .seg .segbtn { background: #ffffff10; color: var(--txt); border:none; padding: 8px 12px; font-weight:700;
   font-size: var(--fs-sm); cursor:pointer; border-left:1px solid var(--line); }
 .seg .segbtn:first-child { border-left:none; }

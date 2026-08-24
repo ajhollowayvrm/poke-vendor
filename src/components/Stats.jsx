@@ -370,7 +370,7 @@ function RipLogPanel({ log }) {
               <span>{fmtMoney(r.cost || 0)}</span>
               <span className="pos">{fmtMoney(r.pulled || 0)}</span>
               <span style={{ color: rnet >= 0 ? 'var(--green)' : 'var(--red)' }}>{rnet >= 0 ? '+' : ''}{fmtMoney(rnet)}</span>
-              <span className="muted" title={r.best?.name || ''}>{r.best ? fmtMoney(r.best.value) : '—'}</span>
+              <span className="muted">{r.best ? fmtMoney(r.best.value) : '—'}</span>
             </div>
           )
         })}
@@ -478,7 +478,6 @@ function MilestoneShelf({ unlocked }) {
               const pct = done ? 1 : milestoneProgress(snap, m)
               return (
                 <div key={m.id}
-                  title={done ? `${m.name} — ${m.desc} ✓` : `${m.desc} · ${Math.round(pct * 100)}%`}
                   style={{
                     width: 132, padding: '7px 9px', borderRadius: 8,
                     border: `1px solid ${done ? 'var(--gold)' : 'rgba(255,255,255,0.10)'}`,
@@ -565,10 +564,9 @@ function FinanceCard() {
           const current = job?.id === j.id && !pendingJob
           return (
             <button key={j.id} className={`jobbtn ${current ? 'on' : ''}`} disabled={locked || current}
-              title={locked ? `Unlocks at ⭐ ${j.minNoto} reputation` : `$${j.wage}/day${j.start>0?` · starts in ${j.start}d`:''}`}
               onClick={() => takeJob(j.id)}>
               <span className="jobname">{j.title}</span>
-              <span className="jobwage">${j.wage}/d{locked ? ` · 🔒${j.minNoto}` : ''}</span>
+              <span className="jobwage">${j.wage}/d{locked ? ` · 🔒${j.minNoto}` : j.start > 0 ? ` · starts in ${j.start}d` : ''}</span>
             </button>
           )
         })}
@@ -686,7 +684,7 @@ function StoreBranding() {
             <div className="store-branding-swatches">
               {SHOP_ICONS.map(ic => (
                 <button key={ic} className={`store-icon-chip ${shopIcon(store) === ic ? 'active' : ''}`}
-                  onClick={() => setStoreIdentity({ icon: ic })} title="Set shop icon">{ic}</button>
+                  onClick={() => setStoreIdentity({ icon: ic })} aria-label={`Use ${ic} as shop icon`}>{ic}</button>
               ))}
             </div>
           </div>
@@ -694,10 +692,10 @@ function StoreBranding() {
             <span>Accent</span>
             <div className="store-branding-swatches">
               <button className={`store-accent-chip ${!accent ? 'active' : ''}`} onClick={() => setStoreIdentity({ accent: '' })}
-                title="Default accent" style={{ fontSize: 'var(--fs-xs)' }}>Default</button>
+                style={{ fontSize: 'var(--fs-xs)' }}>Default</button>
               {SHOP_ACCENTS.map(col => (
                 <button key={col} className={`store-accent-chip ${accent === col ? 'active' : ''}`}
-                  onClick={() => setStoreIdentity({ accent: col })} title={col}
+                  onClick={() => setStoreIdentity({ accent: col })} aria-label={`Accent ${col}`}
                   style={{ background: col }} />
               ))}
             </div>

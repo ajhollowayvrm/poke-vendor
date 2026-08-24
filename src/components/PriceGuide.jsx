@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { SETS, rawValue, fmtMoney, rarityRank, marketMult, cardImg, cardNumber } from '../game/engine'
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
+import { Explain } from '../ui/Explain'
 
 // A reference price guide: pick a set, browse every card with LIVE market prices
 // (the living-market multiplier rides through rawValue, so values move day to day).
@@ -67,10 +68,12 @@ export default function PriceGuide() {
           drift with the daily market, so they get a vendor-only note instead. */}
       <div className="toolbar" style={{ marginTop: -4 }}>
         {set.vintage ? (
-          <span className="pill" style={{ color: '#ffd700', borderColor: '#ffd70066', display: 'inline-flex', gap: 6, alignItems: 'center' }}
-            title="You can't buy this set from the regular shop catalog. Sealed vintage turns up randomly on vendor shelves (check weekly) and always at shows; loose singles show up in booth bins at bigger shows. Build vendor rapport and they'll hold pieces for you.">
-            🗝️ Vintage · find it on vendor shelves & at shows
-          </span>
+          <Explain label="Where to find vintage" trigger={
+            <span className="pill" style={{ color: '#ffd700', borderColor: '#ffd70066', display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+              🗝️ Vintage · find it on vendor shelves & at shows
+            </span>}>
+            You can't buy this set from the regular shop catalog. Sealed vintage turns up randomly on vendor shelves (check weekly) and always at shows; loose singles show up in booth bins at bigger shows. Build vendor rapport and they'll hold pieces for you.
+          </Explain>
         ) : (
           <>
             <TrendChip mult={mult} />
@@ -85,7 +88,7 @@ export default function PriceGuide() {
         {cards.map(c => (
           <div key={c.id} className="priceitem">
             <img src={cardImg(c)} alt={c.name} loading="lazy" decoding="async" />
-            <div className="pname" title={c.name}>{c.name}</div>
+            <div className="pname">{c.name}</div>
             <div className="prow">
               <span className="ptag" style={{ color: rarityColor(c.rarity) }}>#{cardNumber(c)}</span>
               <span className="pval">{c.price != null || c.rarity ? fmtMoney(rawValue(c)) : '—'}</span>
@@ -108,9 +111,12 @@ function TrendChip({ mult }) {
   const arrow = steady ? '→' : up ? '▲' : '▼'
   const label = steady ? 'Market steady' : `${up ? '+' : ''}${pct}% vs base`
   return (
-    <span className="pill" style={{ color, borderColor: color, display: 'inline-flex', gap: 6, alignItems: 'center' }} title="The living market drifts each game-day. A live price refresh resets it to base.">
-      {arrow} {label} · {mult.toFixed(2)}×
-    </span>
+    <Explain label="How the market multiplier works" trigger={
+      <span className="pill" style={{ color, borderColor: color, display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+        {arrow} {label} · {mult.toFixed(2)}×
+      </span>}>
+      The living market drifts each game-day. A live price refresh resets it to base.
+    </Explain>
   )
 }
 

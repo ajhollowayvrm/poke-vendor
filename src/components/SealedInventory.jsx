@@ -3,6 +3,7 @@ import { useGame } from '../game/store'
 import { sealedValue, fmtMoney, setById, productTypeLabel } from '../game/engine'
 import { toast } from '../ui/dialog'
 import { Collapse } from '../ui/Collapse'
+import { Explain } from '../ui/Explain'
 import SealedModal from './SealedModal'
 
 // Your SEALED product on hand — bought but not yet ripped. Identical products (same set +
@@ -131,8 +132,14 @@ export default function SealedInventory({ onRip, onSift }) {
           <>
             <span className="cap">Move it all at once:</span>
             <button className="btn alt btn-fixed"  onClick={listAll}>🌐 List all online</button>
-            {onSift && <button className="btn alt btn-fixed"  onClick={() => setSelecting(true)}
-              title="Auto-rip a group of sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand">⚡ Sift-rip…</button>}
+            {onSift && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                <button className="btn alt btn-fixed" onClick={() => setSelecting(true)}>⚡ Sift-rip…</button>
+                <Explain label="How Sift-rip works">
+                  Auto-rips a group of sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand.
+                </Explain>
+              </span>
+            )}
           </>
         )}
       </div>
@@ -191,14 +198,13 @@ function InvSealedRow({ items, showSet, onRip, onOpen, selecting, selected, onTo
   return (
     <div className={`vsealed-row inv-sealed-row ${item.vintage ? 'sealed-vintage' : ''} ${selecting && selected ? 'in-stack' : ''}`}
       role="button" tabIndex={0}
-      title={selecting ? 'Tap to add/remove this stack from the sift' : 'Tap for details & all actions — list, keep, break, flip, grade'}
       onClick={rowClick}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rowClick() } }}>
       <span className="vsealed-name">
         {selecting && <span className="sift-check" aria-hidden="true">{selected ? '✅' : '⬜'}</span>}
         {item.product.icon || '📦'} {productTypeLabel(item.product)}
-        {qty > 1 && <span className="pill vsealed-qty" title={`${qty} in stock`}>×{qty}</span>}
-        {item.locked && <span className="pill inv-kept" title="Kept — walk-ins can't buy it (rips, streams & repacks still can use it)">🔒</span>}
+        {qty > 1 && <span className="pill vsealed-qty">×{qty}</span>}
+        {item.locked && <span className="pill inv-kept" aria-label="Kept — walk-ins can't buy it (rips, streams & repacks still can use it)">🔒</span>}
       </span>
       <span className="vsealed-meta">
         {showSet ? `${item.product.pool?.series ? `${item.product.pool.series} era` : (set?.name || '')} · ` : ''}
@@ -212,7 +218,7 @@ function InvSealedRow({ items, showSet, onRip, onOpen, selecting, selected, onTo
       </span>
       <span className="vsealed-act" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
         <button className="btn gold" onClick={() => onRip(item.uid)}>📦 Rip{qty > 1 ? ' one' : ''}</button>
-        <button className="btn alt" onClick={onOpen} title="All actions — list, keep, break, flip, grade">⋯</button>
+        <button className="btn alt" onClick={onOpen} aria-label="All actions — list, keep, break, flip, grade">⋯</button>
       </span>
     </div>
   )

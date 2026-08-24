@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { haggleRound, archetype } from '../game/shows'
 import { fmtMoney } from '../game/engine'
 import { Modal } from '../ui/Modal'
+import { Explain } from '../ui/Explain'
 
 const MAX_ROUNDS = 3
 
@@ -104,7 +105,9 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
           <>
             <div className="haggle-viz">
               <div className="haggle-patience">
-                <span className="hp-label">Patience <span className="hp-mood" title="How they feel about your current offer">{mood}</span></span>
+                <span className="hp-label">Patience <Explain label="What does the mood face mean?" trigger={<span className="hp-mood">{mood}</span>}>
+                  How they feel about your current offer — a read on whether they'll bite, without giving away their exact floor.
+                </Explain></span>
                 <div className="hp-track">
                   <div className="hp-fill" style={{ width: `${Math.round(patienceFrac * 100)}%`,
                     background: patienceFrac > 0.6 ? 'var(--green)' : patienceFrac > 0.3 ? 'var(--gold)' : 'var(--red)' }} />
@@ -112,9 +115,9 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
               </div>
               <div className="haggle-scale">
                 <div className="hs-track">
-                  <span className="hs-pin market" style={{ left: `${at(market)}%` }} title={`Market ${fmtMoney(market)}`} />
-                  <span className="hs-pin their" style={{ left: `${at(their)}%` }} title={`Their price ${fmtMoney(their)}`} />
-                  <span className={`hs-pin you ${better ? 'good' : 'bad'}`} style={{ left: `${at(offer)}%` }} title={`Your offer ${fmtMoney(offer)}`} />
+                  <span className="hs-pin market" style={{ left: `${at(market)}%` }} />
+                  <span className="hs-pin their" style={{ left: `${at(their)}%` }} />
+                  <span className={`hs-pin you ${better ? 'good' : 'bad'}`} style={{ left: `${at(offer)}%` }} />
                 </div>
                 <div className="hs-legend">
                   <span><i className="hs-dot market" /> Market</span>
@@ -125,6 +128,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
             </div>
             <div className="haggle-current">
               Their price: <b>{fmtMoney(their)}</b>
+              {market > 0 && <span className="cap"> ({Math.round((their / market) * 100)}% of mkt)</span>}
               <span className="cap"> · round {Math.min(round + 1, MAX_ROUNDS)}/{MAX_ROUNDS}</span>
             </div>
             <div className="haggle-offer">

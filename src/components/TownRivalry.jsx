@@ -87,7 +87,7 @@ function BranchPanel() {
         <div className="row" style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
           <span className="cap">Who runs it:</span>
           {EMPLOYEES.map(e => (
-            <button key={e.id} className={`btn ${mgr === e.id ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
+            <button key={e.id} className={`btn ${mgr === e.id ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 'var(--fs-xs)' }}
               onClick={() => setMgr(e.id)}>{e.title} · ${e.wage}/d</button>
           ))}
         </div>
@@ -128,7 +128,7 @@ function BranchPanel() {
       <div className="row" style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
         <span className="cap">Send the storeroom's best:</span>
         {[5, 10, 25].map(n => (
-          <button key={n} className={`btn ${batch === n ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
+          <button key={n} className={`btn ${batch === n ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 'var(--fs-xs)' }}
             onClick={() => setBatch(n)}>{n}</button>
         ))}
         <button className="btn alt btn-fixed" style={{ maxWidth: 170 }}

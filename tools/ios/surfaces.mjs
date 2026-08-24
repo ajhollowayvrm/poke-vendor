@@ -413,21 +413,21 @@ export const SURFACES = [
   T('store-orders', 'Store › Orders', 'loaded', '.subtabs',
     [{ bnav: 'Sell' }, { subtab: '📨 Orders' }]),
   T('store-floor', 'Store › Floor', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '🛒 Floor' }]),
+    [{ bnav: 'Sell' }, { subtab: '🏪 Shop' }]),
   T('store-storeroom', 'Store › Storeroom', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '📦 Storeroom' }]),
+    [{ bnav: 'Sell' }, { subtab: '🏪 Shop' }, { tapText: ['.segbtn', 'Storeroom'] }]),
   T('store-regulars', 'Store › Regulars', 'loaded', '.subtabs',
     [{ bnav: 'Sell' }, { subtab: '🤝 Regulars' }]),
   T('store-packs', 'Store › Mystery packs', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '❓ Packs' }]),
+    [{ bnav: 'Sell' }, { subtab: '🎁 Products' }]),
   T('store-packbuilder', 'Store › Pack builder', 'loaded', '.modal, .subtabs',
-    [{ bnav: 'Sell' }, { subtab: '❓ Packs' }, { tapText: ['button', 'Build'] }]),
+    [{ bnav: 'Sell' }, { subtab: '🎁 Products' }, { tapText: ['button', 'Build'] }]),
   T('store-machine', 'Store › Pack machine', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '🎰 Machine' }]),
+    [{ bnav: 'Sell' }, { subtab: '🎁 Products' }, { tapText: ['.segbtn', 'Machine'] }]),
   T('store-forum', 'Store › Forum', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '📋 Forum' }]),
+    [{ bnav: 'Sell' }, { subtab: '🌐 Online' }, { tapText: ['.segbtn', 'Forum'] }]),
   T('store-market', 'Store › On the market', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '🌐 On the market' }]),
+    [{ bnav: 'Sell' }, { subtab: '🌐 Online' }]),
   // 🗣️ The store quote walk-up. Seeded rather than waited for: it is a share of walk-in footfall,
   // so waiting on the dice would make the sweep flaky. venue:'store' is the whole point of the
   // surface — it decides the wording and where a credit deal shops from.
@@ -440,9 +440,9 @@ export const SURFACES = [
       ` },
      { bnav: 'Sell' }, { subtab: '📨 Orders' }, { tapText: ['.product', 'wants a price'] }]),
   T('store-bulkbin', 'Store › Floor › Bulk bin', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'Bulk'] }]),
+    [{ bnav: 'Sell' }, { subtab: '🏪 Shop' }, { tapText: ['.collapse-btn', 'Bulk'] }]),
   T('store-rivalry', 'Store › Floor › Town rivalry', 'loaded', '.subtabs',
-    [{ bnav: 'Sell' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'ival'] }]),
+    [{ bnav: 'Sell' }, { subtab: '🏪 Shop' }, { tapText: ['.collapse-btn', 'ival'] }]),
 
   // ---- Stream ---------------------------------------------------------------------------------
   T('stream-locked', 'Stream › Locked (no streaming upgrade)', 'fresh', '.empty, .pane',
@@ -521,7 +521,7 @@ export const SURFACES = [
   // With a storefront owned, Inventory renders StoreStock rather than Collection, so the row is a
   // .stock-line and the thing that opens the detail is .tl-info (StoreStock.jsx:569) — not a card
   // grid cell. The rip and floor buttons are .stock-act and their labels are bare emoji, so they
-  // have to be matched on title= rather than on text.
+  // have to be matched on aria-label rather than on text.
   T('modal-card', 'Card detail modal', 'stocked', '.modal',
     [{ bnav: 'Inventory' }, { subtab: '🗂️' }, { tap: '.tl-info' }]),
   T('modal-sealed', 'Sealed detail modal', 'stocked', '.modal',
@@ -530,9 +530,9 @@ export const SURFACES = [
   // same band the home indicator owns, and it paints OVER the rows underneath it. Triggered by a
   // real action rather than forced, so the stack sits exactly where a player would see it.
   T('modal-toast', 'Toast stack', 'stocked', '.toast',
-    [{ bnav: 'Inventory' }, { subtab: '📦 Sealed' }, { tap: '.stock-act[title*="sales floor"]' }]),
+    [{ bnav: 'Inventory' }, { subtab: '📦 Sealed' }, { tap: '.stock-act[aria-label*="sales floor"]' }]),
   T('overlay-rip', 'Pack rip overlay', 'stocked', '.rip-overlay',
-    [{ bnav: 'Inventory' }, { subtab: '📦 Sealed' }, { tap: '.stock-act[title*="Rip"]' }, { wait: 3000 }]),
+    [{ bnav: 'Inventory' }, { subtab: '📦 Sealed' }, { tap: '.stock-act[aria-label*="Rip"]' }, { wait: 3000 }]),
   // Sift is a three-step flow in StoreStock (StoreStock.jsx:461): enter select mode, pick sealed,
   // then the gold Sift-rip button appears with a pack count.
   T('overlay-sift', 'Sift / AutoRip overlay', 'stocked', '.rip-overlay, .modal',

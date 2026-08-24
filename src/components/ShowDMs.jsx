@@ -107,10 +107,8 @@ export default function ShowDMs({ show, onClose }) {
                         </span>
                         <span className="vsealed-act">
                           <button className="btn gold" disabled={bought || cash < price}
-                            title={bought ? 'One pre-show buy per dealer per show' : 'Pay now — it ships to your storeroom after the show, go or not'}
                             onClick={() => doBuy(v, item)}>{bought ? '✓' : '💳 Buy'}</button>
                           <button className="btn alt" disabled={held}
-                            title={held ? "They're already holding something for you" : 'No money down — held on their table at this price, pay when you get there'}
                             onClick={() => doReserve(v, item)}>{held ? '✓' : '🤝 Hold'}</button>
                         </span>
                       </div>

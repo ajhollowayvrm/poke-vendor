@@ -17,6 +17,7 @@ import StoreStock from './StoreStock'
 import Regulars from './Regulars'
 import { Modal } from '../ui/Modal'
 import { Collapse } from '../ui/Collapse'
+import { Explain } from '../ui/Explain'
 import { clickable } from '../ui/clickable'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
@@ -98,10 +99,26 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
-  // Sell splits into sub-tabs: day-to-day Orders, your Shop floor (case, holds,
-  // consignment intake, giveaways), your Mystery pack line, the public Forum board,
-  // and On the market.
-  const [sellTab, setSellTab] = useState('orders') // 'orders' | 'store' (floor) | 'storeroom' | 'regulars' | 'packs' | 'forum' | 'market'
+  // Sell groups five ways — Orders, Shop (floor + storeroom), Products (mystery packs +
+  // machine), Online (site listings + forum), Regulars. Eight leaf panes stay as they were;
+  // the bar shows the five groups so it fits a 440px screen in one row. The leaf is the
+  // switch key; the group is derived. Both remember device-locally (like pv.tab).
+  const LEAVES = ['orders', 'store', 'storeroom', 'regulars', 'packs', 'machine', 'forum', 'market']
+  const GROUP_OF = { orders: 'orders', store: 'shop', storeroom: 'shop', packs: 'products', machine: 'products', market: 'online', forum: 'online', regulars: 'regulars' }
+  const GROUP_DEFAULT = { orders: 'orders', shop: 'store', products: 'packs', online: 'market', regulars: 'regulars' }
+  const [sellTab, setSellTabRaw] = useState(() => {
+    try { const t = localStorage.getItem('pv.selltab'); return LEAVES.includes(t) ? t : 'orders' } catch { return 'orders' }
+  })
+  const setSellTab = (t) => {
+    setSellTabRaw(t)
+    try { localStorage.setItem('pv.selltab', t); localStorage.setItem('pv.sell.' + GROUP_OF[t], t) } catch { /* private mode */ }
+  }
+  const openGroup = (g) => {
+    let leaf = GROUP_DEFAULT[g]
+    try { const t = localStorage.getItem('pv.sell.' + g); if (LEAVES.includes(t) && GROUP_OF[t] === g) leaf = t } catch { /* private mode */ }
+    setSellTab(leaf)
+  }
+  const sellGroup = GROUP_OF[sellTab] || 'orders'
   const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
   const marketCount = listings.length + consignments.length
   const forumCount = (forumPosts || []).length
@@ -110,6 +127,11 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const machineStock = useGame(s => (s.packMachine?.stock || []).length)
 
   const hasStore = !!upgrades.storefront
+  // A remembered leaf can outlive its gate — device localStorage survives a fresh save,
+  // and four leaves need the storefront. Snap back to Orders instead of a blank pane.
+  useEffect(() => {
+    if (!hasStore && ['store', 'storeroom', 'machine', 'regulars'].includes(sellTab)) setSellTabRaw('orders')
+  }, [hasStore, sellTab])
   const accepted = acceptedMethods(upgrades)
   const flash = useCallback(m => toast(m, 3000), [])
 
@@ -125,43 +147,50 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   return (
     <>
       <div className="subtabs">
-        <button className={`subtab ${sellTab === 'orders' ? 'active' : ''}`} onClick={() => setSellTab('orders')}
-          title="People who want to deal with you — online buyers messaging in, and (with a store) walk-ins at the counter. They arrive as game-days pass, so hit Next Day to bring more in. The number is how many are waiting on an answer; ignored ones eventually give up and drop off.">
+        <button className={`subtab ${sellGroup === 'orders' ? 'active' : ''}`} onClick={() => openGroup('orders')}>
           📨 Orders{validInbox.length ? ` (${validInbox.length})` : ''}
         </button>
         {hasStore && (() => {
           const waiting = (storeConsignRequests || []).length + (buyinOffers || []).length
           return (
-            <button className={`subtab ${sellTab === 'store' ? 'active' : ''}`} onClick={() => setSellTab('store')}>
-              🛒 Floor{waiting ? ` (${waiting})` : ''}
+            <button className={`subtab ${sellGroup === 'shop' ? 'active' : ''}`} onClick={() => openGroup('shop')}>
+              🏪 Shop{waiting ? ` (${waiting})` : ''}
             </button>
           )
         })()}
+        <button className={`subtab ${sellGroup === 'products' ? 'active' : ''}`} onClick={() => openGroup('products')}>
+          🎁 Products{(builtPackCount + machineStock) ? ` (${builtPackCount + machineStock})` : ''}
+        </button>
+        <button className={`subtab ${sellGroup === 'online' ? 'active' : ''}`} onClick={() => openGroup('online')}>
+          🌐 Online{(marketCount + forumCount) ? ` (${marketCount + forumCount}${listingOfferCount ? ` · ${listingOfferCount} to review` : ''})` : ''}
+        </button>
         {hasStore && (
-          <button className={`subtab ${sellTab === 'storeroom' ? 'active' : ''}`} onClick={() => setSellTab('storeroom')}>
-            📦 Storeroom
-          </button>
-        )}
-        {hasStore && (
-          <button className={`subtab ${sellTab === 'regulars' ? 'active' : ''}`} onClick={() => setSellTab('regulars')}>
+          <button className={`subtab ${sellGroup === 'regulars' ? 'active' : ''}`} onClick={() => openGroup('regulars')}>
             🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}
           </button>
         )}
-        <button className={`subtab ${sellTab === 'packs' ? 'active' : ''}`} onClick={() => setSellTab('packs')}>
-          ❓ Packs{builtPackCount ? ` (${builtPackCount})` : ''}
-        </button>
-        {hasStore && (
-          <button className={`subtab ${sellTab === 'machine' ? 'active' : ''}`} onClick={() => setSellTab('machine')}>
-            🎰 Machine{machineStock ? ` (${machineStock})` : ''}
-          </button>
-        )}
-        <button className={`subtab ${sellTab === 'forum' ? 'active' : ''}`} onClick={() => setSellTab('forum')}>
-          📋 Forum{forumCount ? ` (${forumCount})` : ''}
-        </button>
-        <button className={`subtab ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>
-          🌐 On the market{marketCount ? ` (${marketCount}${listingOfferCount ? ` · ${listingOfferCount} to review` : ''})` : ''}
-        </button>
       </div>
+
+      {/* Inside a grouped pane, a segmented toggle picks the leaf. Machine needs the
+          storefront; without one Products is just the pack line and the toggle hides. */}
+      {sellGroup === 'shop' && hasStore && (
+        <div className="seg sell-seg mt-4" role="group" aria-label="Shop view">
+          <button className={`segbtn ${sellTab === 'store' ? 'active' : ''}`} onClick={() => setSellTab('store')}>🛒 Floor</button>
+          <button className={`segbtn ${sellTab === 'storeroom' ? 'active' : ''}`} onClick={() => setSellTab('storeroom')}>📦 Storeroom</button>
+        </div>
+      )}
+      {sellGroup === 'products' && hasStore && (
+        <div className="seg sell-seg mt-4" role="group" aria-label="Products view">
+          <button className={`segbtn ${sellTab === 'packs' ? 'active' : ''}`} onClick={() => setSellTab('packs')}>❓ Packs{builtPackCount ? ` (${builtPackCount})` : ''}</button>
+          <button className={`segbtn ${sellTab === 'machine' ? 'active' : ''}`} onClick={() => setSellTab('machine')}>🎰 Machine{machineStock ? ` (${machineStock})` : ''}</button>
+        </div>
+      )}
+      {sellGroup === 'online' && (
+        <div className="seg sell-seg mt-4" role="group" aria-label="Online view">
+          <button className={`segbtn ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>🌐 On the market{marketCount ? ` (${marketCount})` : ''}</button>
+          <button className={`segbtn ${sellTab === 'forum' ? 'active' : ''}`} onClick={() => setSellTab('forum')}>📋 Forum{forumCount ? ` (${forumCount})` : ''}</button>
+        </div>
+      )}
 
       {sellTab === 'market' ? (
         // Cards you've put up for sale: listed on your own site / consigned. Moved to
@@ -202,7 +231,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           <div className="tl-sub muted">held for {it._heldFor.emoji} {it._heldFor.name} · {it._heldFor.daysLeft}d left</div>
                         </div>
                         <span className="tl-unit">{fmtMoney(kind === 'card' ? cardValue(it) : sealedValue(it))}</span>
-                        <button className="stock-act" title="Drop the hold — it becomes ordinary backstock" onClick={() => { releaseHold(kind, it.uid); flash('Hold dropped — back in the storeroom.') }}>↩ Release</button>
+                        <button className="stock-act" onClick={() => { releaseHold(kind, it.uid); flash('Hold dropped — back in the storeroom.') }}>↩ Release</button>
                       </div>
                     ))}
                   </div>
@@ -239,7 +268,11 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 whales come in for. Buy collections off locals, hold pieces for regulars, carry consignments,
                 host events, and run a 🎁 giveaway when the room needs a jolt.
                 {giveawayDaysLeft > 0 && <> <b className="warn"> 🎉 Buzz live — foot traffic boosted for {giveawayDaysLeft} more day{giveawayDaysLeft > 1 ? 's' : ''}.</b></>}
-                {(storeCredit || 0) > 0 && <> <span className="pill" title="Outstanding store credit you've issued — locals spend it down at your counter over the coming days; a little never gets redeemed at all." style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>💳 {fmtMoney(storeCredit)} credit outstanding</span></>}
+                {(storeCredit || 0) > 0 && <> <Explain label="What happens to store credit" trigger={
+                  <span className="pill" style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>💳 {fmtMoney(storeCredit)} credit outstanding</span>}>
+                  Locals spend it down at your counter over the coming days. A little never gets
+                  redeemed at all.
+                </Explain></>}
               </div>
 
               {/* 🛍️ The sign on the counter: posted buylist rate — always visible, it's the
@@ -248,12 +281,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 <span className="cap">🛍️ Buylist sign:</span>
                 {Object.entries(BUYLIST_POLICIES).map(([k, p]) => (
                   <button key={k} className={`btn ${buylistPolicy === k ? 'gold' : 'alt'}`}
-                    style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
-                    title={p.blurb} onClick={() => { setBuylistPolicy(k); flash(`Sign changed — "${p.label} on collections."`) }}>
+                    style={{ flex: 'none', padding: '4px 10px', fontSize: 'var(--fs-xs)' }}
+                    onClick={() => { setBuylistPolicy(k); flash(`Sign changed — "${p.label} on collections."`) }}>
                     {p.label}
                   </button>
                 ))}
               </div>
+              <p className="cap mt-1">{BUYLIST_POLICIES[buylistPolicy]?.blurb}</p>
 
               {/* 🏪 Who else the town can shop at, and 🏬 the branch you run yourself. */}
               <TownRivalry />
@@ -313,21 +347,19 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           <div className="meta" style={{ flex: 1 }}>
                             A lot of <b>{o.count} cards</b>{o.sealedCount ? <> + <b>{o.sealedCount} sealed</b></> : ''} — {o.hint}.<br />
                             {o.jewel && <><b style={{ color: 'var(--gold, #ffd45e)' }}>🗝️ A sealed vintage pack is in this lot</b> — worth more unopened than the rip, and it climbs while you hold it.<br /></>}
-                            Your read: <b title={upgrades.loupe ? 'Loupe appraisal — tight (±8%)' : 'Eyeball estimate (±25%) — the 🔍 Jeweler\'s Loupe reads lots much tighter'}>
-                              ~{fmtMoney(est)} {stuff} {upgrades.loupe ? '🔍' : '👁️'}</b>
+                            Your read: <b>~{fmtMoney(est)} {stuff} {upgrades.loupe ? '🔍' : '👁️'}</b>
+                            <span className="cap"> {upgrades.loupe ? '(±8% — loupe-tight)' : "(±25% — a 🔍 Jeweler's Loupe reads lots tighter)"}</span>
                             <br />{o.free
                               ? <b className="pos">Free — they just want it gone</b>
                               : <>Asking <b>{fmtMoney(o.askCash)}</b> cash</>} · they'll wait {o.pendingDays}d
                           </div>
                           <div className="row" style={{ gap: 5 }}>
                             <button className="btn gold t-xs" style={{ padding: '6px 8px' }} disabled={!o.free && cash < o.askCash}
-                              title={o.free ? 'Take the whole collection — they\'re giving it away' : 'Pay their ask in cash — done and dusted'}
                               onClick={() => { const r = acceptBuyin(o.id, 'cash'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
                               {o.free ? '🎁 Take it — FREE' : `💵 ${fmtMoney(o.askCash)}`}
                             </button>
                             {!o.free && (
                               <button className="btn t-xs" style={{ padding: '6px 8px' }}
-                                title={`No cash down — issue ${fmtMoney(credit)} store credit instead. They spend it back at your counter over time (and some never gets redeemed). Credit sellers tend to become regulars.`}
                                 onClick={() => { const r = acceptBuyin(o.id, 'credit'); if (r.error) flash(r.error); else setBuyinReveal(r) }}>
                                 💳 {fmtMoney(credit)}
                               </button>
@@ -335,6 +367,10 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                             <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 70, padding: '6px 8px' }}
                               onClick={() => { declineBuyin(o.id); flash('Passed on the lot.') }}>Pass</button>
                           </div>
+                          {!o.free && <p className="cap" style={{ margin: '4px 0 0' }}>
+                            💳 credit: no cash down, they spend it back at your counter over time (some never gets
+                            redeemed) — credit sellers tend to become regulars.
+                          </p>}
                           {/* 🤝 Haggle the ask: their hidden floor was rolled when they walked in — the
                               hint line is your tell. Push too hard and the whole lot walks. */}
                           {!o.free && !o.haggled && (o.haggleRounds || 0) < 2 && (haggleId === o.id ? (
@@ -351,11 +387,17 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                               <span className="cap">{2 - (o.haggleRounds || 0)} round{2 - (o.haggleRounds || 0) > 1 ? 's' : ''} left · walk risk rises the lower you go</span>
                             </div>
                           ) : (
-                            <button className="btn alt t-xs" style={{ padding: '4px 8px', marginTop: 4, alignSelf: 'flex-start' }}
-                              title="Counter their ask. Estate sellers usually have room ('just wants it gone'); comp-checkers barely budge — and pushing too hard loses the whole lot."
-                              onClick={() => { setHaggleId(o.id); setHaggleVal(String(Math.max(1, Math.round(o.askCash * 0.85)))) }}>
-                              🤝 Haggle
-                            </button>
+                            <div className="row" style={{ gap: 4, marginTop: 4, alignItems: 'center' }}>
+                              <button className="btn alt t-xs" style={{ padding: '4px 8px', alignSelf: 'flex-start' }}
+                                onClick={() => { setHaggleId(o.id); setHaggleVal(String(Math.max(1, Math.round(o.askCash * 0.85)))) }}>
+                                🤝 Haggle
+                              </button>
+                              <Explain label="Haggle risk">
+                                Estate sellers usually have room — they just want it gone.
+                                Comp-checkers barely budge, and pushing too hard loses the
+                                whole lot.
+                              </Explain>
+                            </div>
                           ))}
                         </div>
                       )
@@ -394,7 +436,6 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           In stock: <b style={{ color: qty ? 'var(--green)' : 'var(--red)' }}>{qty}</b> · retails at <b>{fmtMoney(it.retail)}</b>
                         </div>
                         <button className="btn t-xs" style={{ padding: '6px 8px' }} disabled={cash < caseCost}
-                          title={`Wholesale a case of ${SUPPLY_CASE} at ${fmtMoney(it.cost)}/unit — sells through at ${fmtMoney(it.retail)}`}
                           onClick={() => { if (buySupplies(it.id, 1)) flash(`🧢 Stocked ${SUPPLY_CASE}× ${it.name}.`) }}>
                           Case of {SUPPLY_CASE} · {fmtMoney(caseCost)}
                         </button>
@@ -461,7 +502,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                               ? <img className="sealed-tile-logo" src={fset.logo} alt={fset.name} loading="lazy" decoding="async" />
                               : <span className="sealed-ico">{it.product.icon || '📦'}</span>}
                             <div className="sealed-name">{it.product.icon || '📦'} {it.product.type}</div>
-                            {fset && <div className="sealed-set" title={fset.name}>{fset.name}</div>}
+                            {fset && <div className="sealed-set">{fset.name}</div>}
                             <div className="sealed-sub muted">{it.product.packs} pk{it.vintage ? ' · 🗝️ vintage' : ''}</div>
                             <span className="price">{fmtMoney(sealedValue(it))}</span>
                           </div>
@@ -482,8 +523,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 <div className="toolbar mt-4">
                   <span className="cap">🌐 {omni.length} listed-everywhere card{omni.length > 1 ? 's' : ''} also in the case:</span>
                   {omni.sort((a, b) => cardValue(b.l.card) - cardValue(a.l.card)).map(({ l, idx }) => (
-                    <span key={l.card.uid} className="pill" style={{ background: '#5aa0ff22', color: '#5aa0ff' }}
-                      title="Listed everywhere — also up on your site. Whichever channel sells it first takes it. Tap to make it online-only.">
+                    <span key={l.card.uid} className="pill" style={{ background: '#5aa0ff22', color: '#5aa0ff' }}>
                       {l.card.name} · {fmtMoney(l.ask)}
                       <button className="btn alt t-xs" style={{ marginLeft: 6, padding: '1px 6px' }}
                         onClick={() => { setListingEverywhere(idx, false); flash(`${l.card.name} is online-only now.`) }}>↩</button>
@@ -548,7 +588,6 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           <h3 className="t-md" style={{ margin: 0 }}>{ev.icon} {ev.name}{isWeekly ? <span className="pill t-xs" style={{ marginLeft: 6 }}>📆 weekly</span> : null}</h3>
                           <div className="meta" style={{ flex: 1 }}>{ev.desc}</div>
                           <button className="btn" disabled={locked || cantAfford}
-                            title={lockRank ? `Needs the ${lockRank.emoji} ${lockRank.name} rank (see the Stats tab)` : locked ? `Needs ${ev.minNoto} reputation` : ev.needsPrize ? 'Pick the prize card next' : undefined}
                             onClick={() => {
                               if (ev.needsPrize) { setRafflePick(true); return }
                               const r = planStoreEvent(key)
@@ -638,6 +677,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           : { background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>
           📨 Inbox {inbox.length}/{INBOX_CAP}{inbox.length >= INBOX_CAP ? ' · full!' : inbox.length >= INBOX_CAP - 1 ? ' · nearly full' : ''}
         </span>
+        <Explain label="Who lands in your inbox">
+          People who want to deal with you — online buyers messaging in, and (with a store)
+          walk-ins at the counter. They arrive as game-days pass, so hit Next Day to bring more
+          in. The number is how many are waiting on an answer; ignored ones eventually give up
+          and drop off.
+        </Explain>
         <span className="cap">Orders arrive as days pass — attend a show to bring in several at once.</span>
       </div>
 
@@ -878,8 +923,8 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
                   {buyinReveal.sealed.map(it => (
                     <span key={it.uid} className="pill" style={it.vintage
-                      ? { background: '#ffd45e22', color: '#ffd45e', fontSize: 12, boxShadow: '0 0 0 1px #ffd45e55 inset' }
-                      : { background: '#5aa0ff22', color: '#9dc3ff', fontSize: 12 }}>
+                      ? { background: '#ffd45e22', color: '#ffd45e', fontSize: 'var(--fs-xs)', boxShadow: '0 0 0 1px #ffd45e55 inset' }
+                      : { background: '#5aa0ff22', color: '#9dc3ff', fontSize: 'var(--fs-xs)' }}>
                       {it.vintage ? '🗝️' : (it.product.icon || '📦')} {it.product.type}{setById(it.setId)?.name ? ` · ${setById(it.setId).name}` : ''} · <b className="pos">{fmtMoney(sealedValue(it))}</b>
                     </span>
                   ))}

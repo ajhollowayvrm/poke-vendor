@@ -36,6 +36,7 @@ const CHECKS = {
   noClipping:   true,  // step 2 — raising the type floor must not clip text out of its box
   noConsoleErr: true,  // any step — React DOM-nesting/prop warnings must not appear
   utilsWin:     true,  // step 8 — a utility class must actually beat the component class
+  hoverOnly:    true,  // phase 2 of the overhaul — no long title= without a tap-reachable equivalent
 }
 
 // The six primary tabs, by their visible label in the top bar / bottom nav.
@@ -77,6 +78,20 @@ const waitForServer = async (tries = 60) => {
 }
 
 // ---------- the in-page audits ----------
+// A title= tooltip does not exist on a phone. Anything longer than a label (40 chars) is
+// prose the player can never read — it belongs inline, in an Explain popover, or nowhere.
+function auditHoverOnly() {
+  const bad = []
+  for (const e of document.querySelectorAll('[title]')) {
+    const t = e.getAttribute('title') || ''
+    if (t.length <= 40) continue
+    const r = e.getBoundingClientRect()
+    if (!r.width || !r.height) continue
+    bad.push({ cls: e.className?.baseVal ?? String(e.className || e.tagName), len: t.length, txt: t.slice(0, 40) })
+  }
+  return bad
+}
+
 // These run inside the browser. Each returns a plain array of offenders so the Node side can
 // format them; none of them assert, so one failing check never hides the others.
 
@@ -259,6 +274,13 @@ try {
         check('text is not clipped by its box', bad.length === 0,
           `${where}: ${bad.length} clipped` + (bad.length ? ` e.g. "${bad[0].txt}" by ${bad[0].over}px` : ''))
         if (VERBOSE && bad.length) bad.forEach(b => console.log(`        +${b.over}px  ${b.cls}  "${b.txt}"`))
+      }
+
+      if (CHECKS.hoverOnly) {
+        const bad = await page.evaluate(auditHoverOnly)
+        check('no hover-only title= prose', bad.length === 0,
+          `${where}: ${bad.length} title(s) over 40 chars` + (bad.length ? ` e.g. "${bad[0].txt}…" (${bad[0].len})` : ''))
+        if (VERBOSE && bad.length) bad.forEach(b => console.log(`        ${b.len}ch  ${b.cls}  "${b.txt}"`))
       }
 
       if (CHECKS.utilsWin) {
