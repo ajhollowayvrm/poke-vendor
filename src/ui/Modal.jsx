@@ -37,10 +37,12 @@ export function Modal({ children, onClose, dismissable = true, label, labelledBy
     restoreRef.current = document.activeElement
     const token = {}
     pushLayer(token)
-    // Move focus into the dialog (first focusable, else the panel itself).
+    // Move focus onto the PANEL (tabIndex=-1), not the first control. Focusing a control
+    // paints a focus ring the moment the dialog opens — on the card page that ringed the
+    // artwork itself. The panel is a valid initial target (ARIA dialog pattern); the first
+    // Tab lands on the first control and the trap below takes it from there.
     const panel = panelRef.current
-    const focusable = panel?.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
-    ;(focusable || panel)?.focus?.()
+    panel?.focus?.()
     function onKey(e) {
       if (!isTopLayer(token)) return // a modal/confirm is stacked above this one — its turn
       if (e.key === 'Escape' && dismissable) { e.stopPropagation(); onClose?.() }

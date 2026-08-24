@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useModalEscape } from './dialog'
 
 // A "?" that reveals an explanation, for prose that is worth reading ONCE.
@@ -24,6 +24,21 @@ import { useModalEscape } from './dialog'
 // button (the wrapper IS the button).
 export function Explain({ label = 'More about this', trigger = null, triggerClass = '', align = 'left', children }) {
   const [open, setOpen] = useState(false)
+  const popRef = useRef(null)
+  // Clamp the open popover inside the viewport. `align` picks the anchor edge, but a chip in
+  // the middle of a wrapped header can push either alignment off-screen on a 440px display —
+  // measure once on open and nudge it back inside.
+  useEffect(() => {
+    if (!open) return
+    const el = popRef.current
+    if (!el) return
+    el.style.transform = ''
+    const r = el.getBoundingClientRect()
+    let dx = 0
+    if (r.left < 8) dx = 8 - r.left
+    else if (r.right > window.innerWidth - 8) dx = (window.innerWidth - 8) - r.right
+    if (dx) el.style.transform = `translateX(${dx}px)`
+  }, [open])
   // Escape closes it. Without this the ONLY way out is a mouse click on the popover itself — the
   // pattern this generalises (NotorietyHelp) has that gap, and copying a gap into a shared
   // component multiplies it by every future call site.
@@ -36,7 +51,7 @@ export function Explain({ label = 'More about this', trigger = null, triggerClas
         : <button className="noto-help" aria-label={label} aria-expanded={open}
             onClick={() => setOpen(o => !o)}>?</button>}
       {open && (
-        <span className="noto-pop" role="dialog" aria-label={label} onClick={() => setOpen(false)}>
+        <span ref={popRef} className="noto-pop" role="dialog" aria-label={label} onClick={() => setOpen(false)}>
           {children}
         </span>
       )}
