@@ -1,5 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
-import { useGame, flushSaveWrite } from '../game/store'
+import { Modal } from '../ui/Modal'
+import { StaleChunk } from '../ui/lazyChunk'
+import { useGame } from '../game/store'
 import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE } from '../game/engine'
 import { SEALED_GRADERS, sealedGraderById, sealedGradingFee, sealedGradingDays, sealedSlabLabel, worthGrading } from '../game/sealedgrading'
 import { AskPicker } from '../ui/AskPicker'
@@ -10,22 +12,7 @@ import { AskPicker } from '../ui/AskPicker'
 // deploy asks the server for the OLD hashed chunk — which is gone (404) — and an unguarded
 // lazy() would throw all the way to the crash screen. A missing chunk means "the game
 // updated under you", so say that and offer a reload instead.
-const SetPriceList = lazy(() => import('./SetPriceList').catch(() => ({ default: StalePriceSheet })))
-
-function StalePriceSheet() {
-  return (
-    <div className="empty mt-5">
-      📵 The game <b>updated since you opened it</b>, so this view couldn't load.
-      Your save is safe — reload to pick up the new version.
-      <div className="mt-5">
-        <button className="btn gold" style={{ maxWidth: 200, margin: '0 auto' }}
-          onClick={() => { try { flushSaveWrite() } catch { /* best effort */ } location.reload() }}>
-          🔄 Reload the game
-        </button>
-      </div>
-    </div>
-  )
-}
+const SetPriceList = lazy(() => import('./SetPriceList').catch(() => ({ default: StaleChunk })))
 
 // 📦🔟 The sealed-grading option, with both graders quoted and an honest warning attached.
 //
@@ -101,13 +88,6 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
   const [mult, setMult] = useState(1.0)               // listing ask, as a share of market
   const [qtySel, setQtySel] = useState(1)             // how many units List / Keep act on
 
-  // close on Escape — clicking the backdrop already closes; this adds keyboard parity.
-  // From the price sheet, Escape steps back to the detail first (one layer at a time).
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') showPrices ? setShowPrices(false) : onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose, showPrices])
   if (!item?.product) return null
 
   const p = item.product
@@ -152,22 +132,17 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
   // Price-sheet sub-view: full-width, replaces the detail. A ← Back returns to the detail.
   if (showPrices) {
     return (
-      <div className="modalbg" onClick={onClose}>
-        <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
-          <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+      <Modal onClose={() => setShowPrices(false)} className="modal-detail" maxWidth={760} label="Set price sheet">
           <button className="btn alt" style={{ padding: '5px 12px', marginBottom: 12 }} onClick={() => setShowPrices(false)}>← Back to {p.type}</button>
           <Suspense fallback={<div className="empty mt-5">Loading price sheet…</div>}>
             <SetPriceList setId={item.setId} />
           </Suspense>
-        </div>
-      </div>
+      </Modal>
     )
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} className="modal-detail" maxWidth={760} label="Sealed product detail">
         <div className="detailflex">
           {/* Product panel — the set's logo (or the product's icon) big enough to actually read */}
           <div className="sealed-modal-art">
@@ -344,7 +319,6 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

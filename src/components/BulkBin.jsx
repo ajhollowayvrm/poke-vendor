@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame, binDemand, BIN_GIVEUP_DAYS, BIN_FORGOTTEN_DAYS } from '../game/store'
 import { cardValue, fmtMoney, round2 } from '../game/engine'
 import { Collapse } from '../ui/Collapse'
+import { Explain } from '../ui/Explain'
 
 // 🗑️ The Bulk Bin — the quarter box kids dig through. Toss raw cheap cards in (they leave
 // the collection, like Pack Machine stock), set ONE flat price, and it drains daily with
@@ -28,8 +30,7 @@ export default function BulkBin() {
   const setSetting = useGame(s => s.setSetting)
   const [priceInput, setPriceInput] = useState(bin.price ? String(bin.price) : '')
   const [showStock, setShowStock] = useState(false)
-  const [toast, setToast] = useState(null)
-  const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2400) }
+  const flash = (m) => toast(m, 2400)
 
   const stock = bin.stock || []
   const totalVal = useMemo(() => stock.reduce((a, c) => a + cardValue(c), 0), [stock])
@@ -91,21 +92,29 @@ export default function BulkBin() {
         <button className="btn t-xs btn-fixed" style={{ padding: '6px 10px' }} onClick={applyPrice}>Set price</button>
         {bulkOnHand > 0 && (
           <button className="btn gold t-xs btn-fixed" style={{ padding: '6px 10px' }}
-            title={`Toss every raw card worth under $1 into the bin${keepOne ? ' (keep-singles protection applies)' : ''} — locked and held cards always stay out.`}
             onClick={() => {
               const { tossed, kept } = stockBinBulk()
               flash(tossed ? `🗑️ Tossed ${tossed} bulk card${tossed> 1 ? 's' : ''} in.${kept ? ` ${kept} protected.` : ''}` : 'Nothing toss-able right now.')
             }}>🗑️ Toss {bulkOnHand} bulk in</button>
         )}
       </div>
+      {bulkOnHand > 0 && (
+        <div className="cap mt-2">Locked and held cards always stay out{keepOne ? ' · keep-singles protection applies' : ''}.</div>
+      )}
       {/* Keeping the box full is now a daily job, so make it one you can hand off. Storeroom
           bulk only — the display floor is never swept out from under you. */}
       {hasStore && (
-        <label className="cap" style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer' }}
-          title="Every morning, sweep the storeroom's sub-$1 raw bulk into the box before the doors open. Locked, held and keep-singles cards stay out, and cards already on your sales floor are left alone.">
-          <input type="checkbox" checked={autoFill} onChange={e => setSetting('autoFillBin', e.target.checked)} />
-          Keep the box full — top it up from storeroom bulk each morning
-        </label>
+        <div className="cap" style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
+          <label style={{ display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer' }}>
+            <input type="checkbox" checked={autoFill} onChange={e => setSetting('autoFillBin', e.target.checked)} />
+            Keep the box full — top it up from storeroom bulk each morning
+          </label>
+          <Explain label="What auto-fill sweeps">
+            Every morning, this sweeps the storeroom's sub-$1 raw bulk into the box before the
+            doors open. Locked, held and keep-singles cards stay out, and cards already on your
+            sales floor are left alone.
+          </Explain>
+        </div>
       )}
       <div className="cap mt-3">
         In the bin: <b>{stock.length}</b> card{stock.length === 1 ? '' : 's'}
@@ -132,7 +141,6 @@ export default function BulkBin() {
         <div className="cap mt-3">
           🤿 Buried in there: {treasures.map(c => (
             <button key={c.uid} className="pill" style={{ marginRight: 4, cursor: 'pointer', background: '#ffd45e22', color: 'var(--gold, #ffd45e)' }}
-              title={`Worth ${fmtMoney(cardValue(c))} — tap to fish it back out before a kid does`}
               onClick={() => { if (unstockBin(c.uid)) flash(`Fished the ${c.name} back out — to the storeroom.`) }}>
               {c.name} {fmtMoney(cardValue(c))} ↩
             </button>
@@ -147,7 +155,6 @@ export default function BulkBin() {
             <div className="row" style={{ flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
               {[...stock].sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 80).map(c => (
                 <button key={c.uid} className="pill t-xs" style={{ cursor: 'pointer' }}
-                  title={`${fmtMoney(cardValue(c))} — tap to pull it back out`}
                   onClick={() => { if (unstockBin(c.uid)) flash(`Pulled ${c.name} back out.`) }}>
                   {c.name} ↩
                 </button>
@@ -157,7 +164,6 @@ export default function BulkBin() {
           )}
         </div>
       )}
-      {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
     </Collapse>
   )
 }

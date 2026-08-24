@@ -81,7 +81,7 @@ export function NotorietyHelp() {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <button className="noto-help" aria-label="What does reputation do?" title="What does reputation do?"
+      <button className="noto-help" aria-label="What does reputation do?"
         onClick={() => setOpen(o => !o)}>?</button>
       {open && (
         <div className="noto-pop" role="dialog" onClick={() => setOpen(false)}>

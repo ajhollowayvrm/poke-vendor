@@ -37,7 +37,6 @@ export default function Collection({ onPick }) {
   // walk-ins buy fee-free at a premium; online pays the marketplace fee + shipping.
   const [listEverywhere, setListEverywhere] = useState(true)
   const [gradeTier, setGradeTier] = useState('economy') // service tier for bulk grading
-  const [toast, setToast] = useState(null)
   const listMult = (parseFloat(listPct) || 0) / 100
 
   // One unified list of EVERYTHING — raw cards and graded slabs mixed together
@@ -74,7 +73,7 @@ export default function Collection({ onPick }) {
     }
   }, [collection, keepOne])
 
-  function flash(m) { setToast(m); setTimeout(() => setToast(null), 2800) }
+  function flash(m) { notify(m, 2800) }
   // Appended to a bulk-action toast when the protection net held cards back.
   function keptNote(kept) { return kept ? ` 🔒 Kept ${kept} you need.` : '' }
   function clearSel() { setPicked(new Set()) }
@@ -270,7 +269,6 @@ export default function Collection({ onPick }) {
         </div>
       )}
 
-      {toast && <div className="toast">{toast}</div>}
     </>
   )
 }

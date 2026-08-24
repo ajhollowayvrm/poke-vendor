@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGame } from '../game/store'
 import { cardValue, sealedValue, fmtMoney, round2 } from '../game/engine'
 import { quoteRound, pickCreditBundle, creditCovers, CREDIT_COVER } from '../game/shows'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 import { TradeItem } from './Encounter'
 
 const MAX_ROUNDS = 2      // counters they'll bother with before it's take-it-or-leave
@@ -40,7 +40,6 @@ export default function QuoteCounter({ req, onDone }) {
   const [log, setLog] = useState([`${req.who}: "What'll you give me for these?"`])
   const [bundle, setBundle] = useState(null)   // credit accepted → the picked bundle awaiting confirm
   const close = () => onDone(null)
-  useModalEscape(close)
 
   const market = req.market
   const cardItems = req.items.filter(x => x.kind === 'card')
@@ -175,9 +174,7 @@ export default function QuoteCounter({ req, onDone }) {
   if (bundle) {
     const adj = round2(bundle.credit - bundle.total)
     return (
-      <div className="modalbg" onClick={close}>
-        <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
-          <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
+      <Modal onClose={close} className="encounter" maxWidth={560} label="They shop your stock">
           <h2 className="t-xl">They shop your {placeWord}</h2>
           <p className="cap t-sm mt-1">
             {req.who} settles on <b>{fmtMoney(bundle.total)}</b> of your stock against the {fmtMoney(bundle.credit)} credit
@@ -197,15 +194,12 @@ export default function QuoteCounter({ req, onDone }) {
             <button className="btn alt btn-fixed" style={{ maxWidth: 130 }}
               onClick={() => { onDone('You wave it off at the last second. They leave, a little annoyed.') }}>Back out</button>
           </div>
-        </div>
-      </div>
+      </Modal>
     )
   }
 
   return (
-    <div className="modalbg" onClick={close}>
-      <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
-        <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
+    <Modal onClose={close} className="encounter" maxWidth={560} label="Quote request">
         <h2 className="t-xl">🗣️ {req.who} wants a quote</h2>
         <p className="cap t-sm mt-1">
           They lay {req.items.length === 1 ? 'an item' : `${req.items.length} items`} on your {placeWord} —
@@ -270,7 +264,6 @@ export default function QuoteCounter({ req, onDone }) {
         {outOfRounds && counter != null && (
           <p className="cap mt-4">They're done going back and forth — take their number or pass.</p>
         )}
-      </div>
-    </div>
+    </Modal>
   )
 }

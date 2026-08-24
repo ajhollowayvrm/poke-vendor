@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame } from '../game/store'
 import { sealedValue, setById, fmtMoney, round2 } from '../game/engine'
 import { groupLines, sealedSku } from './sku'
@@ -16,8 +17,7 @@ export default function PackMachine() {
   const stockMachine = useGame(s => s.stockMachine)
   const unstockMachine = useGame(s => s.unstockMachine)
   const [priceInput, setPriceInput] = useState(machine.price ? String(machine.price) : '')
-  const [toast, setToast] = useState(null)
-  const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2400) }
+  const flash = (m) => toast(m, 2400)
 
   const stock = machine.stock || []
   const totalVal = useMemo(() => stock.reduce((a, it) => a + sealedValue(it), 0), [stock])
@@ -85,8 +85,8 @@ export default function PackMachine() {
                   <div className="tl-name">{line.first.product.type} · {setById(line.first.setId)?.name || 'sealed'}</div>
                   <div className="tl-sub muted">{fmtMoney(line.unit)} value each{line.first.vintage ? ' · 🗝️ vintage' : ''}</div>
                 </div>
-                <span className="tl-count" title={`${line.count} loaded`}>×{line.count}</span>
-                <button className="stock-act" title="Pull one back to the storeroom" onClick={() => pullOne(line)}>↩</button>
+                <span className="tl-count">×{line.count}</span>
+                <button className="stock-act" aria-label="Pull one back to the storeroom" onClick={() => pullOne(line)}>↩</button>
               </div>
             ))}
           </div>
@@ -107,15 +107,14 @@ export default function PackMachine() {
                   <div className="tl-name">{line.first.product.type} · {setById(line.first.setId)?.name || 'sealed'}</div>
                   <div className="tl-sub muted">{fmtMoney(line.unit)} value each{line.first.vintage ? ' · 🗝️ vintage' : ''}</div>
                 </div>
-                <span className="tl-count" title={`${line.count} on hand`}>×{line.count}</span>
-                <button className="stock-act" title="Load one into the machine" onClick={() => loadOne(line)}>➕</button>
-                <button className="stock-act" title="Load all of this pack" onClick={() => loadAll(line)}>⏩</button>
+                <span className="tl-count">×{line.count}</span>
+                <button className="stock-act" aria-label="Load one into the machine" onClick={() => loadOne(line)}>➕</button>
+                <button className="stock-act" aria-label="Load all of this pack" onClick={() => loadAll(line)}>⏩</button>
               </div>
             ))}
           </div>
         )}
       </div>
-      {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
     </>
   )
 }

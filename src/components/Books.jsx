@@ -171,7 +171,7 @@ function LoanPanel() {
             <span className="pill">{fmtMoney(daily)}/day</span>
             <span className="pill">{offer.termDays} days</span>
             <span className="pill">{(offer.apr * 100).toFixed(0)}% APR</span>
-            <span className="pill" title="What you hand back in total, and how much of it is interest.">
+            <span className="pill">
               pay back <b>{fmtMoney(total)}</b> ({fmtMoney(interest)} interest)
             </span>
           </div>

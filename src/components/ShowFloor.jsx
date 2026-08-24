@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
 import { generateBooths, boothEncounter, makeWhaleOffer, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
   pickSnipe, boothItemKey, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
@@ -9,7 +10,7 @@ import QuoteCounter from './QuoteCounter'
 import PackOpening from './PackOpening'
 import AutoRip from './AutoRip'
 import CardTile from './CardTile'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 import { clickable } from '../ui/clickable'
 import { AnimatedNumber, CashFlash } from '../ui/AnimatedNumber'
 
@@ -173,9 +174,7 @@ export default function ShowFloor({ show, onLeave }) {
   const [vaultRip, setVaultRip] = useState(null)
   const [sifting, setSifting] = useState(null)   // sealed rows handed to the ⚡ sifter on the floor
   // Esc backs out of the peek/haul panels (the booth and the rip own their own escape).
-  useModalEscape(() => { if (vaultRip || sifting) return; setShowTable(false); setHaulOpen(false) })
   const [encounter, setEncounter] = useState(null)
-  const [toast, setToast] = useState(null)
   const [boothAlert, setBoothAlert] = useState(null)
   // Buyer appointments from pre-show leads — met (or ignored) during this show.
   const [meets, setMeets] = useState(() => (show._leads || []).filter(l => l.kind === 'buyer'))
@@ -189,7 +188,7 @@ export default function ShowFloor({ show, onLeave }) {
   useEffect(() => { walkupsRef.current = 0; lastEncounterRef.current = Date.now() }, [showDay])
   const accepted = useMemo(() => acceptedMethods(upgrades), [upgrades])
 
-  const flash = useCallback((m) => { setToast(m); setTimeout(() => setToast(null), 2600) }, [])
+  const flash = useCallback((m) => toast(m, 2600), [])
 
   // --- The living hall ---------------------------------------------------------
   // Shoppers drift from table to table (weighted by each booth's draw), linger a few
@@ -711,7 +710,6 @@ export default function ShowFloor({ show, onLeave }) {
         </div>
       )}
 
-      {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
         onStockSealed={stockSealed} onRipSealedStack={buySealedStack} haggledIds={haggledIds} onHaggled={markHaggled}
         agreedPrices={agreedPrices} onAgreedPrice={markAgreedPrice}
@@ -732,9 +730,7 @@ export default function ShowFloor({ show, onLeave }) {
           rides home with you. Rendered ABOVE the booth and BELOW the rip overlay on purpose —
           ripping out of the haul returns you to the haul. */}
       {haulOpen && (
-        <div className="modalbg" onClick={() => setHaulOpen(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
-            <button className="modal-close" aria-label="Close" onClick={() => setHaulOpen(false)}>✕</button>
+        <Modal onClose={() => setHaulOpen(false)} maxWidth={760} label="Your haul">
             <div className="row" style={{ alignItems: 'baseline' }}>
               <h2 style={{ marginRight: 'auto' }}>🎒 Your haul</h2>
               {haulSealed.length > 0 && (
@@ -842,13 +838,11 @@ export default function ShowFloor({ show, onLeave }) {
                 </div>
               </div>
             )}
-          </div>
-        </div>
+        </Modal>
       )}
 
       {vaultRip && (
-        <div className="modalbg vault-rip-bg">
-          <div className="modal vault-rip-modal" style={{ maxWidth: 980 }}>
+        <Modal dismissable={false} className="vault-rip-modal" bgClassName="vault-rip-bg" maxWidth={980} label="Vault rip">
             <div className="vault-ribbon">
               {vaultRip.set?.vintage ? '🗝️ VINTAGE' : '📦 SEALED'} — {vaultRip.set?.name} {vaultRip.product.name || vaultRip.product.type}
               {vaultRip.total > 1 && <> · <b>{vaultRip.idx} of {vaultRip.total}</b></>}
@@ -857,8 +851,7 @@ export default function ShowFloor({ show, onLeave }) {
                 one closes the overlay — so "rip all of them here" really is all of them. */}
             <PackOpening key={vaultRip.nonce || 0} set={vaultRip.set} product={vaultRip.product}
               singleNoReRip onExit={nextRip} />
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* ⚡ The sifter, on the floor. Full-screen takeover like it is at home; the haul panel
@@ -873,9 +866,7 @@ export default function ShowFloor({ show, onLeave }) {
       {meetPick && (() => {
         const matches = [...collection, ...(showInventory || [])].filter(c => cardMatchesWant(c, meetPick.want))
         return (
-          <div className="modalbg" style={{ zIndex: 25 }} onClick={() => setMeetPick(null)}>
-            <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
-              <button className="modal-close" aria-label="Close" onClick={() => setMeetPick(null)}>✕</button>
+          <Modal onClose={() => setMeetPick(null)} maxWidth={640} zIndex={25} label="Meetup pick">
               <h2 className="t-xl" style={{ marginBottom: 2 }}>🤝 Meet {meetPick.who}</h2>
               <p className="cap t-sm mt-0">
                 As arranged — they're buying <b>{meetPick.desc}</b> at <b>{Math.round(meetPick.premiumMult * 100)}% of market</b>, cash on the spot (+{meetPick.notoriety}★).
@@ -900,15 +891,12 @@ export default function ShowFloor({ show, onLeave }) {
                 </div>
               )}
               <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setMeetPick(null)}>Not now</button>
-            </div>
-          </div>
+          </Modal>
         )
       })()}
 
       {showTable && (
-        <div className="modalbg" onClick={() => setShowTable(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
-            <button className="modal-close" aria-label="Close" onClick={() => setShowTable(false)}>✕</button>
+        <Modal onClose={() => setShowTable(false)} maxWidth={720} label="Your table">
             <div className="row" style={{ alignItems: 'baseline' }}>
               <h2 style={{ marginRight: 'auto' }}>
                 <span style={shopAccent(store) ? { color: shopAccent(store) } : undefined}>{shopIcon(store)} {shopName(store)}</span>
@@ -990,8 +978,7 @@ export default function ShowFloor({ show, onLeave }) {
               </>
             )}
             <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={() => setShowTable(false)}>Close</button>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

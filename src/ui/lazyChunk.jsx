@@ -14,7 +14,7 @@ import { flushSaveWrite } from '../game/store'
 // game updated under you", so say that and offer a reload. SealedModal has carried a
 // one-off version of this since the price sheet was split out; this is that pattern, shared.
 
-function StaleChunk() {
+export function StaleChunk() {
   return (
     <div className="empty mt-5">
       📵 The game <b>updated since you opened it</b>, so this screen couldn't load.

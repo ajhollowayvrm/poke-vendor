@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { Modal } from '../ui/Modal'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
 import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2, cardPopulation, CRACK_DAMAGE_CHANCE, cardNumber, rarityLabel } from '../game/engine'
 import { popTier } from '../game/population'
@@ -11,6 +12,7 @@ import { rarityColor, gradeLabel } from './CardTile'
 import { AskPicker } from '../ui/AskPicker'
 import HoloCard from './HoloCard'
 import PriceChart from './PriceChart'
+import { Explain } from '../ui/Explain'
 
 // 📊 The population report, on any real catalog card. Without the 🔭 Grading Scope you get
 // the shape of the census but not the number — the same deal the Scope already offers on the
@@ -114,12 +116,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   // in-person sales skip the fees + shipping and earn the walk-in premium.
   const [everywhere, setEverywhere] = useState(true)
   const askMult = (parseFloat(askPct) || 0) / 100
-  // close on Escape — clicking the backdrop already closes; this adds keyboard parity
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
   // Grading Scope prediction: Monte-Carlo the real grade roll (honours cut/condition/loupe)
   // to show a likely grade range before you pay. Only computed for raw cards when owned.
   // MUST stay above the `!card` early return — it's a hook, and a hook that only runs on
@@ -142,9 +138,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   const ship = gradingShipping([card], upgrades)
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} className="modal-detail" maxWidth={760} label="Card detail">
         <div className="detailflex">
           <HoloCard card={card} maxTilt={18} className="modal-holo"
             extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
@@ -304,7 +298,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
             {!inspect && !readOnly && !inBinder && ((!listing && !auctioning) ? (
               <div className="sell-options mt-6">
                 <button className="btn alt sellopt" disabled={slotTaken}
-                  title={slotTaken ? 'Your binder already has this variant slotted' : undefined}
                   onClick={() => { if (addToBinder(card.uid)) onClose() }}>
                   <b>📒 Add to masterset binder</b>
                   <small>{slotTaken ? 'This variant slot is already filled' : `Slot the ${MASTERSET_VARIANTS[cardVariant(card)]?.label || 'card'} — moves it out of the sellable pool, safe from bulk actions`}</small>
@@ -364,7 +357,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 <div className="row" style={{ marginTop: 8, gap: 6, flexWrap: 'wrap' }}>
                   {AUCTION_LENGTHS.map(l => (
                     <button key={l.days} className={`chip-btn ${aucDays === l.days ? 'active' : ''}`} style={{ flex: '1 1 0' }}
-                      onClick={() => setAucDays(l.days)} title={l.blurb}><b>{l.label}</b><small>{l.blurb}</small></button>
+                      onClick={() => setAucDays(l.days)}><b>{l.label}</b><small>{l.blurb}</small></button>
                   ))}
                 </div>
                 <div className="row" style={{ marginTop: 6, gap: 6, flexWrap: 'wrap' }}>
@@ -522,7 +515,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

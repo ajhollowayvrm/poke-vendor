@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useGame } from '../game/store'
 import { fmtMoney, cardImg } from '../game/engine'
 import HoloCard from './HoloCard'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 
 const RAIL_LABEL = { venmo: 'Venmo', cash: 'cash', paypal: 'PayPal', card: 'card' }
 
@@ -23,7 +23,6 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
   const [outcome, setOutcome] = useState(null)  // result of buyDeal
   const [charge, setCharge] = useState(null)     // result of chargebackDeal
   // You can bail before buying; once bought it's resolved, so Esc/backdrop are inert then.
-  useModalEscape(() => { if (!outcome) onCancel?.() })
 
   const fee = Math.max(10, Math.round(deal.ask * 0.05 * 100) / 100)
   const rail = RAIL_LABEL[deal.payMethod] || 'cash'
@@ -47,9 +46,7 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
   }
 
   return (
-    <div className="modalbg" onClick={() => { if (!outcome) onCancel?.() }}>
-      <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
-        {!outcome && onCancel && <button className="modal-close" aria-label="Close" onClick={onCancel}>✕</button>}
+    <Modal onClose={() => { if (!outcome) onCancel?.() }} dismissable={!outcome && !!onCancel} className="encounter" maxWidth={520} label="Sealed deal">
         <h2 className="t-xl">{enc.title}</h2>
         {enc.card && (
           <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
@@ -96,8 +93,7 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
         ) : (
           <Outcome outcome={outcome} charge={charge} deal={deal} onCharge={doCharge} onFinish={onDone} />
         )}
-      </div>
-    </div>
+    </Modal>
   )
 }
 

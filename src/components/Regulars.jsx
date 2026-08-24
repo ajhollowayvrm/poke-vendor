@@ -71,8 +71,8 @@ export default function Regulars() {
               <div className="reg-focus-line">🎯 {r.focus?.label || 'hunting good deals'}</div>
 
               <div className="reg-stats">
-                <span title="Cards of theirs you've sold them, lifetime">🛒 {fmtMoney(r.spentTotal || 0)} spent</span>
-                <span title="Times they've come by">👋 {r.visits || 0} visit{r.visits === 1 ? '' : 's'}</span>
+                <span>🛒 {fmtMoney(r.spentTotal || 0)} spent</span>
+                <span>👋 {r.visits || 0} visit{r.visits === 1 ? '' : 's'}</span>
               </div>
 
               {!r.flags?.burned && r.request && !matches.length && (

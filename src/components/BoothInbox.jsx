@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
   STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay, RANKS } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
@@ -14,7 +15,7 @@ import PackMachine from './PackMachine'
 import BulkBin from './BulkBin'
 import StoreStock from './StoreStock'
 import Regulars from './Regulars'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 import { Collapse } from '../ui/Collapse'
 import { clickable } from '../ui/clickable'
 
@@ -97,14 +98,6 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
-  const [toast, setToast] = useState(null)
-  useModalEscape(() => { // close the top-most picker on Esc
-    if (buyinReveal) setBuyinReveal(null)
-    else if (rafflePick) setRafflePick(false)
-    else if (givePick) setGivePick(false)
-    else if (holdPick) setHoldPick(null)
-    else if (wantPick) setWantPick(null)
-  })
   // Sell splits into sub-tabs: day-to-day Orders, your Shop floor (case, holds,
   // consignment intake, giveaways), your Mystery pack line, the public Forum board,
   // and On the market.
@@ -118,7 +111,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
 
   const hasStore = !!upgrades.storefront
   const accepted = acceptedMethods(upgrades)
-  const flash = useCallback(m => { setToast(m); setTimeout(()=>setToast(null), 3000) }, [])
+  const flash = useCallback(m => toast(m, 3000), [])
 
   function pick(opt) {
     const msg = resolveEncounter(opt.effect)
@@ -782,7 +775,6 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
       </>
       )}
 
-      {toast && <div className="toast">{toast}</div>}
       {active && (active.enc.kind === 'sealedDeal' && active.enc.deal
         ? <SealedDealModal enc={active.enc} id={active.id} flash={flash}
             onDone={() => setActive(null)} onCancel={() => setActive(null)} />
@@ -814,9 +806,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         }
         const candidates = (regulars || []).filter(r => !r.flags?.burned && wants(r))
         return (
-          <div className="modalbg" onClick={() => setHoldPick(null)}>
-            <div className="modal" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
-              <button className="modal-close" aria-label="Close" onClick={() => setHoldPick(null)}>✕</button>
+          <Modal onClose={() => setHoldPick(null)} maxWidth={480} label="Hold for regular">
               <h2 className="t-xl" style={{ marginBottom: 2 }}>🔒 Save {holdPick.label} for…</h2>
               <p className="cap t-sm mt-0">
                 It goes to the storeroom's "saved for regulars" shelf (off the sellable floor) for
@@ -838,16 +828,13 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 </div>
               )}
               <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setHoldPick(null)}>Cancel</button>
-            </div>
-          </div>
+          </Modal>
         )
       })()}
 
       {/* Giveaway picker: choose the card to give away — value drives the pop. */}
       {givePick && (
-        <div className="modalbg" onClick={() => setGivePick(false)}>
-          <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
-            <button className="modal-close" aria-label="Close" onClick={() => setGivePick(false)}>✕</button>
+        <Modal onClose={() => setGivePick(false)} maxWidth={680} label="Giveaway pick">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>🎁 In-store giveaway</h2>
             <p className="cap t-sm mt-0">
               Pick the prize. A pricier card makes a bigger splash — more reputation, and a
@@ -869,18 +856,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               })}
             </div>
             <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setGivePick(false)}>Cancel</button>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* Buy-in reveal: the lot you just bought — was your appraisal right? */}
       {buyinReveal && (
-        <div className="modalbg" onClick={() => setBuyinReveal(null)}>
-          <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
-            {/* A bulk lot can be 40+ cards — far taller than a phone screen. Without a pinned ✕
-                the only way out was a button buried at the bottom of the scroll, or a backdrop
-                tap on the sliver of screen the modal didn't cover. */}
-            <button className="modal-close" aria-label="Close" onClick={() => setBuyinReveal(null)}>✕</button>
+        <Modal onClose={() => setBuyinReveal(null)} maxWidth={680} label="Buy-in reveal">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>
               {buyinReveal.market >= buyinReveal.paid * 1.3 ? '🤑' : buyinReveal.market >= buyinReveal.paid ? '🙂' : '😬'} The lot, flipped through
             </h2>
@@ -918,15 +899,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               ))}
             </div>
             <button className="btn gold" style={{ marginTop: 14, maxWidth: 160 }} onClick={() => setBuyinReveal(null)}>Nice →</button>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* Raffle prize picker: the card that goes home with a winner tonight. */}
       {rafflePick && (
-        <div className="modalbg" onClick={() => setRafflePick(false)}>
-          <div className="modal" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
-            <button className="modal-close" aria-label="Close" onClick={() => setRafflePick(false)}>✕</button>
+        <Modal onClose={() => setRafflePick(false)} maxWidth={680} label="Raffle prize">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
             <p className="cap t-sm mt-0">
               A flashier prize sells more tickets worth of goodwill — bigger reputation pop when it's drawn.
@@ -947,8 +925,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               </div>
             )}
             <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setRafflePick(false)}>Cancel</button>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {wantPick && (() => {
@@ -957,9 +934,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         const isForum = wantPick.kind === 'forum'
         const matches = isForum ? cardsForForumPost(item) : cardsForWant(item)
         return (
-        <div className="modalbg" onClick={() => setWantPick(null)}>
-          <div className="modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
-            <button className="modal-close" aria-label="Close" onClick={() => setWantPick(null)}>✕</button>
+        <Modal onClose={() => setWantPick(null)} maxWidth={640} label="Pick a card">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
             <p className="cap t-sm mt-0">Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety}★ reputation.</p>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
@@ -975,8 +950,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               ))}
             </div>
             <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setWantPick(null)}>Cancel</button>
-          </div>
-        </div>
+        </Modal>
         )
       })()}
     </>

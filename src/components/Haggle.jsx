@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { haggleRound, archetype } from '../game/shows'
 import { fmtMoney } from '../game/engine'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 
 const MAX_ROUNDS = 3
 
@@ -37,7 +37,6 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   // A stray backdrop click before engaging doesn't burn the card's one haggle.
   const [engaged, setEngaged] = useState(false)
   const close = () => onClose(engaged)
-  useModalEscape(close)
 
   // suggested counter: nudge toward your favor from their current price
   const step = Math.max(0.25, Math.round(their * 0.12 * 100) / 100)
@@ -91,9 +90,7 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   const outOfRounds = round >= MAX_ROUNDS
 
   return (
-    <div className="modalbg" onClick={close}>
-      <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
+    <Modal onClose={close} maxWidth={460} label="Haggle">
         <h2 className="t-xl" style={{ marginBottom: 2 }}>Haggle · {vendorName}</h2>
         <p className="cap t-sm mt-0">
           {card?.name} · market {fmtMoney(market)} · {arch.label} ({side === 'buy' ? 'selling to you' : 'buying from you'})
@@ -150,7 +147,6 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
             {outOfRounds && <p className="cap mt-4">They're out of patience — take their price or walk.</p>}
           </>
         )}
-      </div>
-    </div>
+    </Modal>
   )
 }

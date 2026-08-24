@@ -165,8 +165,7 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
             <div className="prep-choice-label">📍 Booth spot</div>
             <div className="prep-choice-row">
               {SPOTS.map(s => (
-                <button key={s.key} className={`chip-btn ${spot === s.key ? 'active' : ''}`} onClick={() => setSpot(s.key)}
-                  title={s.blurb}>
+                <button key={s.key} className={`chip-btn ${spot === s.key ? 'active' : ''}`} onClick={() => setSpot(s.key)}>
                   <b>{s.label}</b>
                   <small>{s.feeMult ? (sponsored ? 'sponsored 📣' : `+${fmtMoney(Math.round((tier.vendorFee||0)*s.feeMult))}`) : 'included'} · {s.blurb}</small>
                 </button>
@@ -178,8 +177,7 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
           <div className="prep-choice-label">🕘 When you arrive</div>
           <div className="prep-choice-row">
             {ARRIVALS.map(a => (
-              <button key={a.key} className={`chip-btn ${arrival === a.key ? 'active' : ''}`} onClick={() => setArrival(a.key)}
-                title={a.blurb}>
+              <button key={a.key} className={`chip-btn ${arrival === a.key ? 'active' : ''}`} onClick={() => setArrival(a.key)}>
                 <b>{a.label}</b><small>{a.blurb}</small>
               </button>
             ))}
@@ -207,8 +205,7 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
             <button className="btn alt btn-fixed"  onClick={selectAll}>
               {picked.size === view.length && view.length ? 'Deselect all' : `Select all (${view.length})`}
             </button>
-            <button className="btn alt btn-fixed"  onClick={pickValuable}
-              title="Select every hit, slab, and special foil">⭐ Pick the good stuff</button>
+            <button className="btn alt btn-fixed"  onClick={pickValuable}>⭐ Pick the good stuff</button>
           </div>
 
           <div className="grid coll-grid" style={{ marginTop: 14, paddingBottom: 110 }}>

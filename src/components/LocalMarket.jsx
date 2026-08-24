@@ -102,11 +102,12 @@ function Listing({ listing, meetsLeft }) {
                 onKeyDown={e => { if (e.key === 'Enter' && draft) send() }} />
               <button className="btn small ghost" disabled={!draft} onClick={send}>Message</button>
             </div>
-            <button className="btn small" disabled={meetsLeft <= 0 || cash < total} onClick={collect}
-              title={meetsLeft <= 0 ? 'No time left today — the day only holds so many trips'
-                : cash < total ? `You need ${fmtMoney(total)} including travel` : `Drive out and collect it`}>
+            <button className="btn small" disabled={meetsLeft <= 0 || cash < total} onClick={collect}>
               Go get it · {fmtMoney(total)}
             </button>
+            {meetsLeft <= 0
+              ? <span className="cap">No time left today</span>
+              : cash < total && <span className="cap">Need {fmtMoney(total)} including travel</span>}
           </>
         )}
         {listing.dead && <span className="cap">They stopped replying.</span>}

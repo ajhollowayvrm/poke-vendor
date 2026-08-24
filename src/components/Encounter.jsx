@@ -1,5 +1,5 @@
 import HoloCard from './HoloCard'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 import { cardValue, sealedValue, fmtMoney, setById, setNameOfCard } from '../game/engine'
 import HiResImg from './HiResImg'
 
@@ -36,7 +36,6 @@ export function TradeItem({ card, sealed }) {
 // dismisses without choosing — backdrop click, Esc, or the × button. When no
 // onClose is given the modal is non-dismissable (caller wants a forced choice).
 export default function Encounter({ data, onPick, onClose }) {
-  useModalEscape(() => onClose?.())
   // Normalize the trade bundles (arrays) with a fallback to the legacy single-card shape.
   const giveCards = data.giveCards || (data.yourCard ? [data.yourCard] : [])
   const giveSealed = data.giveSealed || []
@@ -44,9 +43,7 @@ export default function Encounter({ data, onPick, onClose }) {
   const getSealed = data.theirsSealed || []
   const isTrade = data.kind === 'trade' && (giveCards.length || giveSealed.length) && (getCards.length || getSealed.length)
   return (
-    <div className="modalbg" onClick={() => onClose?.()}>
-      <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
-        {onClose && <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>}
+    <Modal onClose={() => onClose?.()} dismissable={!!onClose} className="encounter" maxWidth={560} label="Customer encounter">
         {data.regular && (
           <div className="regular-banner">
             <span className="reg-avatar" aria-hidden>{data.regular.emoji}</span>
@@ -95,7 +92,6 @@ export default function Encounter({ data, onPick, onClose }) {
             </button>
           ))}
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
+import { toast } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
+import { Explain } from '../ui/Explain'
 import { useGame } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, round2 } from '../game/engine'
 import { packValue, packBestItem, packRepLabel, packSaleChance, cardFitsTier, cardMatchesContents,
   tierContentsLabel, PACK_ICONS, PACK_TIER_CAP, PACK_ONLY_OPTS, PACK_GRADE_OPTS, AUTO_BUILD_CAP } from '../game/mysterypacks'
 import CardTile from './CardTile'
-import { useModalEscape } from '../ui/dialog'
+
 
 const CHANNEL_DEFS = [
   { key: 'show',   icon: '🎪', label: 'Shows',  hint: 'sells off your booth table when you vend at a show' },
@@ -44,9 +47,7 @@ export default function MysteryPacks() {
 
   const [editing, setEditing] = useState(null)  // tier being edited, or 'new'
   const [building, setBuilding] = useState(null) // tier a pack is being built for
-  const [toast, setToast] = useState(null)
-  const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 3000) }
-  useModalEscape(() => { if (building) setBuilding(null); else if (editing) setEditing(null) })
+  const flash = (m) => toast(m, 3000)
   const autoBuildPacks = useGame(s => s.autoBuildPacks)
 
   const rep = packRepLabel(packRep)
@@ -77,15 +78,23 @@ export default function MysteryPacks() {
         sight-unseen at YOUR price, on the channels YOU pick. What buyers find inside moves your
         <b> pack reputation</b> — fair packs (and the occasional seeded banger) sell faster and build your name;
         junk at a premium torches both.
-        <span className="pill" style={{ marginLeft: 8, background: `${rep.color}22`, color: rep.color }}
-          title={`Pack reputation ${Math.round(packRep)}/100 — moved by what buyers find vs what they paid. Drives how fast packs sell.`}>
-          {rep.icon} {rep.label} · {Math.round(packRep)}/100
-        </span>
+        <Explain label="How pack reputation works" trigger={
+          <span className="pill" style={{ marginLeft: 8, background: `${rep.color}22`, color: rep.color }}>
+            {rep.icon} {rep.label} · {Math.round(packRep)}/100
+          </span>}>
+          Pack reputation is moved by what buyers find vs what they paid. It drives how fast
+          packs sell — fair packs (and the occasional seeded banger) build it up; junk at a
+          premium tears it down.
+        </Explain>
         {packStreak > 0 && (
-          <span className="pill" style={{ marginLeft: 8, background: '#ff6b0022', color: '#ff9f43' }}
-            title={`Word-of-mouth streak: a run of ${packStreak} happy openings is pulling extra buyers (about +${Math.round(Math.min(0.3, packStreak * 0.03) * 100)}% demand). One burned buyer snaps it back to zero.`}>
-            🔥 Packs trending · {packStreak}
-          </span>
+          <Explain label="What the streak does" trigger={
+            <span className="pill" style={{ marginLeft: 8, background: '#ff6b0022', color: '#ff9f43' }}>
+              🔥 Packs trending · {packStreak}
+            </span>}>
+            A run of {packStreak} happy openings is pulling extra buyers — about
+            +{Math.round(Math.min(0.3, packStreak * 0.03) * 100)}% demand. One burned buyer
+            snaps it back to zero.
+          </Explain>
         )}
         {packStats?.sold ? <span className="muted"> · {packStats.sold} sold · {fmtMoney(packStats.revenue || 0)} lifetime{packStats.burned ? ` · ${packStats.burned} burned buyer${packStats.burned > 1 ? 's' : ''}` : ''}</span> : null}
       </div>
@@ -113,9 +122,15 @@ export default function MysteryPacks() {
               <div key={tier.id} className="product">
                 <h3 className="t-lg" style={{ margin: 0 }}>
                   {tier.icon} {tier.name}
-                  {tier.published && <span className="pill t-xs" style={{ marginLeft: 6, background: '#3e63dd22', color: '#8aa6ff' }}
-                    title={certified ? 'Odds board is public & certified — buyers trust it and bite more' : 'Odds board is public — draws gamblers; honest thin packs sting less'}>
-                    📋 {certified ? 'Certified' : 'Published'}</span>}
+                  {tier.published && (
+                    <Explain label="What Published/Certified means" trigger={
+                      <span className="pill t-xs" style={{ marginLeft: 6, background: '#3e63dd22', color: '#8aa6ff' }}>
+                        📋 {certified ? 'Certified' : 'Published'}</span>}>
+                      {certified
+                        ? 'The odds board is public and audited — buyers trust it and bite more.'
+                        : 'The odds board is public — it draws gamblers, and an honest thin pack stings less because they knew the odds going in.'}
+                    </Explain>
+                  )}
                 </h3>
                 <div className="meta" style={{ flex: 1 }}>
                   Sells at <b className="pos">{fmtMoney(tier.price)}</b> · advertised
@@ -123,17 +138,20 @@ export default function MysteryPacks() {
                   <br />
                   <span className="cap">Takes: {tierContentsLabel(tier)}</span>
                   <br />
-                  {/* Name the channels. This was four bare emoji crammed together with no gaps
-                      and their meaning only in `title` — which does not exist on a touch
-                      device, i.e. on the platform this ships to. */}
+                  {/* Name the channels — visible label + icon per chip, plus one Explain for
+                      what each channel does (each chip used to carry its own `title`, which
+                      does not exist on a touch device, i.e. on the platform this ships to). */}
                   {chans.length
-                    ? <>On: {chans.map((c, i) => <span key={c.key} title={c.hint}>{i ? ' · ' : ''}{c.icon} {c.label}</span>)}
+                    ? <>On: {chans.map((c, i) => <span key={c.key}>{i ? ' · ' : ''}{c.icon} {c.label}</span>)}
+                        <Explain label="What each channel does">
+                          {CHANNEL_DEFS.map(c => <div key={c.key}>{c.icon} <b>{c.label}</b> — {c.hint}</div>)}
+                        </Explain>
                         {chans.some(c => c.key === 'store') && !hasStore && <span className="muted"> (store needs a storefront)</span>}</>
                     : <span className="neg">No channels enabled — it can't sell</span>}
                   {bestChance > 0 && stock.length > 0 && <><br /><span className="cap">≈{Math.round(bestChance * 100)}%/day it moves at your current rep & fame{tier.published ? ' (published)' : ''}</span></>}
                   {/* 📋 The public odds board — what buyers see across this line's sealed stock. */}
                   {tier.published && board.count > 0 && (
-                    <><br /><span className="cap" title="The pool buyers can see — the notable cards currently sealed across this line's packs">
+                    <><br /><span className="cap">
                       📋 Board: {board.count} card{board.count === 1 ? '' : 's'} across {stock.length} pack{stock.length === 1 ? '' : 's'}
                       {board.top.length ? <> · top: {board.top.map(t => `${t.name} (${fmtMoney(t.value)})`).join(', ')}</> : null}
                     </span></>
@@ -143,9 +161,6 @@ export default function MysteryPacks() {
                     in one click. The count IS the pitch — "18 fit" tells you the work is there. */}
                 <button className="btn gold t-xs" style={{ padding: '6px 8px', marginBottom: 5 }}
                   disabled={!eligible}
-                  title={eligible
-                    ? `Seal ${Math.min(eligible, AUTO_BUILD_CAP)} pack${eligible === 1 ? '' : 's'} — one card each, every loose ${tierContentsLabel(tier)} worth ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)}`
-                    : `No loose cards fit this line right now (${tierContentsLabel(tier)}, ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)})`}
                   onClick={() => autoBuild(tier)}>
                   🪄 Auto-build{eligible ? ` ${eligible} pack${eligible === 1 ? '' : 's'}` : ' — nothing fits'}
                 </button>
@@ -153,7 +168,7 @@ export default function MysteryPacks() {
                   <button className="btn alt t-xs" style={{ padding: '6px 8px' }}
                     disabled={!collection.length && !(sealedInventory || []).length}
                     onClick={() => setBuilding(tier)}>🛠️ Build one</button>
-                  <span className="pill" style={{ alignSelf: 'center' }} title="Sealed and ready to sell">{stock.length} in stock</span>
+                  <span className="pill" style={{ alignSelf: 'center' }}>{stock.length} in stock</span>
                   <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 60, padding: '6px 8px' }}
                     onClick={() => setEditing(tier)}>Edit</button>
                 </div>
@@ -199,7 +214,6 @@ export default function MysteryPacks() {
         )}
       </div>
 
-      {toast && <div className="toast">{toast}</div>}
       {editing && <TierEditor tier={editing === 'new' ? null : editing}
         stockCount={editing === 'new' ? 0 : (stockByTier[editing.id] || []).length}
         onClose={() => setEditing(null)} flash={flash} />}
@@ -243,9 +257,7 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={460} label="Pack line">
         <h2 className="t-xl" style={{ marginBottom: 2 }}>{tier ? 'Edit pack line' : 'New pack line'}</h2>
         <p className="cap t-sm mt-0">
           The band is what you <b>advertise</b> is inside — the game won't stop you mislabeling,
@@ -298,9 +310,12 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
           </div>
           <div>
             <span className="cap">Sells at</span>
+            <Explain label="What each channel does">
+              {CHANNEL_DEFS.map(c => <div key={c.key}>{c.icon} <b>{c.label}</b> — {c.hint}</div>)}
+            </Explain>
             <div className="row" style={{ gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
               {CHANNEL_DEFS.map(c => (
-                <label key={c.key} className="tweet-toggle t-sm"  title={c.hint}>
+                <label key={c.key} className="tweet-toggle t-sm">
                   <input type="checkbox" checked={!!channels[c.key]}
                     onChange={e => setChannels(ch => ({ ...ch, [c.key]: e.target.checked }))} />
                   {c.icon} {c.label}
@@ -310,8 +325,7 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
           </div>
           {/* 📋 Publish the odds board — the headline transparency choice. */}
           <div style={{ borderTop: '1px solid var(--line)', paddingTop: 10 }}>
-            <label className="tweet-toggle t-sm" style={{ fontWeight: 700 }}
-              title="Post the pull odds for this line publicly">
+            <label className="tweet-toggle t-sm" style={{ fontWeight: 700 }}>
               <input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} />
               📋 Publish the odds board{certified && published ? ' — certified ✔' : ''}
             </label>
@@ -329,16 +343,17 @@ function TierEditor({ tier, stockCount, onClose, flash }) {
         <div className="row" style={{ marginTop: 14, gap: 8 }}>
           <button className="btn gold" onClick={save}>{tier ? 'Save changes' : 'Create line'}</button>
           {tier && (
-            <button className="btn alt btn-fixed" style={{ maxWidth: 110 }} disabled={stockCount> 0}
-              title={stockCount > 0 ? 'Unbuild its packs first' : 'Retire this product line'}
-              onClick={() => { deletePackTier(tier.id); flash(`${tier.icon} ${tier.name} retired.`); onClose() }}>
+            <button className="btn alt btn-fixed" style={{ maxWidth: 110 }} aria-disabled={stockCount > 0}
+              onClick={() => {
+                if (stockCount > 0) { toast('Unbuild its packs first'); return }
+                deletePackTier(tier.id); flash(`${tier.icon} ${tier.name} retired.`); onClose()
+              }}>
               🗑️ Delete
             </button>
           )}
           <button className="btn alt btn-fixed" style={{ maxWidth: 100 }} onClick={onClose}>Cancel</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -386,9 +401,7 @@ function PackBuilder({ tier, onClose, flash }) {
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: 760 }} onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={760} label="Build a pack">
         <h2 className="t-xl" style={{ marginBottom: 2 }}>🛠️ Build a {tier.icon} {tier.name}</h2>
         <p className="cap t-sm mt-0">
           Sells at <b>{fmtMoney(tier.price)}</b>, advertising <b>{fmtMoney(tier.bandLo)}–{fmtMoney(tier.bandHi)}</b> inside
@@ -404,9 +417,6 @@ function PackBuilder({ tier, onClose, flash }) {
               🪄 Auto-build on the line itself.) */}
           <button className="btn alt t-xs btn-fixed" style={{ maxWidth: 190, padding: '4px 10px', marginLeft: 'auto' }}
             disabled={!fitting.length}
-            title={fitting.length
-              ? `Seal all ${fitting.length} loose ${tierContentsLabel(tier)} worth ${fmtMoney(tier.bandLo)}–${fmtMoney(tier.bandHi)} into this ONE pack`
-              : 'No loose cards fit this line right now'}
             onClick={() => setCardIds(new Set(fitting.map(c => c.uid)))}>
             ＋ Add all {fitting.length} that fit
           </button>
@@ -472,7 +482,6 @@ function PackBuilder({ tier, onClose, flash }) {
           <button className="btn gold" disabled={n === 0} onClick={seal}>🎁 Seal it — {n || 'no'} item{n === 1 ? '' : 's'}, {fmtMoney(total)} inside</button>
           <button className="btn alt btn-fixed" style={{ maxWidth: 100 }} onClick={onClose}>Cancel</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

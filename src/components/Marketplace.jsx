@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { toast } from '../ui/dialog'
 import { SETS, MARKETPLACE_CARDS, marketVariants, rawValue, fmtMoney, rarityRank,
   rarityLabel, setNameOfCard, setIdOfCard } from '../game/engine'
 import { useGame } from '../game/store'
@@ -21,8 +22,7 @@ export default function Marketplace() {
   const [setId, setSetId] = useState('all')
   const [rarity, setRarity] = useState('all')
   const [sort, setSort] = useState('value')
-  const [toastMsg, setToastMsg] = useState(null)
-  const flash = (m) => { setToastMsg(m); setTimeout(() => setToastMsg(null), 2400) }
+  const flash = (m) => toast(m, 2400)
 
   const shopSets = SETS.filter(s => !s.vintage)
   const vintageSets = SETS.filter(s => s.vintage)
@@ -103,7 +103,7 @@ export default function Marketplace() {
             <div key={c.id} className="market-card">
               <img src={c.img} alt={c.name} loading="lazy" decoding="async" />
               <div className="market-meta">
-                <div className="market-name" title={c.name}>{c.name}</div>
+                <div className="market-name">{c.name}</div>
                 <div className="market-sub">
                   <span style={{ color: rarityColor(c.rarity) }}>{rarityLabel(c.rarity)}</span>
                   <span className="muted"> · {setNameOfCard(c) || '—'} · #{c.number}</span>
@@ -112,7 +112,7 @@ export default function Marketplace() {
               <div className="market-variants">
                 {variants.map(v => (
                   <button key={v.id} className="market-buy" disabled={cash < v.ask}
-                    onClick={() => buy(v)} title={`Buy ${c.name} — ${v.label}`}>
+                    onClick={() => buy(v)}>
                     <span className="mv-label">
                       {v.kind === 'foil' ? `✨ ${v.label}` : v.kind === 'graded' ? `🏆 ${v.label}` : v.label}
                     </span>
@@ -125,7 +125,6 @@ export default function Marketplace() {
         })}
       </div>
       {total === 0 && <div className="empty">No cards match {q ? `“${q}”` : 'those filters'}.</div>}
-      {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )
 }

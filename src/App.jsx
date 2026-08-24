@@ -53,6 +53,8 @@ const Binder = lazyChunk(() => import('./components/Binder'))
 const Regulars = lazyChunk(() => import('./components/Regulars'))
 const StoreStock = lazyChunk(() => import('./components/StoreStock'))
 const GradeReveal = lazyChunk(() => import('./components/GradeReveal'))
+const DaySummary = lazyChunk(() => import('./components/DaySummary'))
+import TabBar from './components/TabBar'
 
 const TABS = ['shop', 'myshop', 'stream', 'shows', 'stats', 'collection']
 // Device-local, deliberately NOT part of the saved game. See the useState that reads it.
@@ -558,34 +560,57 @@ export default function App() {
     )
   }
 
+  // One list drives BOTH tab strips (top bar + bottom nav); badges are computed once here.
+  const navItems = [
+    ...TABS.map(t => ({
+      id: t, label: TAB_LABEL[t], icon: TAB_ICON[t],
+      badge: t === 'myshop' ? inboxCount + offerCount : t === 'collection' ? pendingCount : 0,
+    })),
+    // The phone nav has no gear button (the top bar's is display:none ≤640px) — "More" stands in.
+    { id: 'settings', label: 'Settings', bottomLabel: 'More', icon: '⚙️', badge: 0, bottomOnly: true },
+  ]
+
   return (
     <div className="app">
       <header className={`topbar ${ripping && tab === 'shop' ? 'rip-hide' : ''}`} ref={topbarRef}>
         <h1 className="brand">Poké<b>Vendor</b></h1>
-        <div className="tabs">
-          {TABS.map(t => (
-            <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
-              {TAB_LABEL[t]}
-              {t === 'myshop' && (inboxCount + offerCount) ? ` (${inboxCount + offerCount})` : ''}
-              {t === 'collection' && pendingCount ? ` (${pendingCount})` : ''}
-            </button>
-          ))}
-        </div>
+        <TabBar items={navItems} active={tab} onSelect={selectTab} variant="top" />
         <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
           <GameClock />
-          <button className="btn next-day-btn" disabled={!!activeShow || streamLive}
-            title={activeShow ? 'Cannot advance while attending a show' : streamLive ? 'You’re live — end the stream first (it consumes the day itself)' : 'Advance one day'} onClick={handleNextDay}>
+          <button className="btn next-day-btn" aria-disabled={!!activeShow || streamLive}
+            onClick={() => {
+              if (activeShow) return toast('🎪 You\u2019re at a show — leave the floor to advance the day.')
+              if (streamLive) return toast('🔴 You\u2019re live — end the stream first (it consumes the day itself).')
+              handleNextDay()
+            }}>
             Next Day →
           </button>
           <span className="noto-chip">⭐ <AnimatedNumber value={notoriety} format={(n) => Math.round(n)} /><small>reputation</small><NotorietyHelp /></span>
           {hype >= 10 && (
-            <span className="hype-chip" title={`🔥 Shop heat ${Math.round(hype)}/100 — big moments (god packs, grails, streams, giveaways, events) heat the shop up. While hot, more buyers come through everywhere; it fades over a few days and a little settles into permanent reputation.`}>
-              🔥 <AnimatedNumber value={hype} format={(n) => Math.round(n)} /><small>hype</small>
-            </span>
+            <Explain label="What is hype?" align="right" trigger={
+              <span className="hype-chip">🔥 <AnimatedNumber value={hype} format={(n) => Math.round(n)} /><small>hype</small></span>
+            }>
+              <b>🔥 Shop heat {Math.round(hype)}/100</b>
+              <p>Big moments — god packs, grails, streams, giveaways, events — heat the shop up.
+                While hot, more buyers come through everywhere. It fades over a few days, and a
+                little settles into permanent ⭐ reputation.</p>
+            </Explain>
           )}
-          <div className="cash" title="Cash on hand — spendable money right now"><AnimatedNumber value={cash} format={fmtMoney} /><small>cash on hand</small><CashFlash value={cash} /></div>
-          <div className="worth" title="Net worth — cash + market value of everything you own (collection, listings, sealed, cards at the grader). Moving value around (grading, buying, listing) doesn't change it; only real income or spending does."><AnimatedNumber value={worth} format={fmtMoney} /><small>net worth</small></div>
-          <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" title="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
+          <Explain label="What counts as cash?" align="right" trigger={
+            <div className="cash"><AnimatedNumber value={cash} format={fmtMoney} /><small>cash on hand</small><CashFlash value={cash} /></div>
+          }>
+            <b>💵 Cash on hand</b>
+            <p>Spendable money right now. Buying, fees, rent and payroll come out of this.</p>
+          </Explain>
+          <Explain label="What is net worth?" align="right" trigger={
+            <div className="worth"><AnimatedNumber value={worth} format={fmtMoney} /><small>net worth</small></div>
+          }>
+            <b>📊 Net worth</b>
+            <p>Cash + market value of everything you own — collection, listings, sealed, cards
+              at the grader. Moving value around (grading, buying, listing) doesn't change it;
+              only real income or spending does.</p>
+          </Explain>
+          <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
         </div>
       </header>
 
@@ -598,7 +623,7 @@ export default function App() {
           }} />
         </Chunk>
       )}
-      {daySummary && <DaySummary summary={daySummary} onClose={() => setDaySummary(null)} />}
+      {daySummary && <Chunk label="Closing the register…"><DaySummary summary={daySummary} onClose={() => setDaySummary(null)} /></Chunk>}
       <GameOver />
 
       {/* A rip is mid-flight but you've stepped away to another tab — a tap brings you back. */}
@@ -731,21 +756,7 @@ export default function App() {
 
       {/* Mobile-only floating bottom nav (top tab strip is hidden at <=640px).
           Icon + small label; the 5 core tabs + a gear for Settings/Stats. */}
-      <nav className="bottomnav" aria-label="Primary">
-        {TABS.map(t => {
-          const badge = t === 'myshop' ? inboxCount + offerCount : t === 'collection' ? pendingCount : 0
-          return (
-            <button key={t} className={`bnav-btn ${tab === t ? 'active' : ''}`} onClick={() => selectTab(t)}>
-              <span className="bnav-icon">{TAB_ICON[t]}{badge ? <span className="bnav-badge">{badge}</span> : null}</span>
-              <span className="bnav-label">{TAB_LABEL[t]}</span>
-            </button>
-          )
-        })}
-        <button className={`bnav-btn ${tab === 'settings' ? 'active' : ''}`} onClick={() => selectTab('settings')}>
-          <span className="bnav-icon">⚙️</span>
-          <span className="bnav-label">More</span>
-        </button>
-      </nav>
+      <TabBar items={navItems} active={tab} onSelect={selectTab} variant="bottom" />
     </div>
   )
 }
@@ -768,188 +779,12 @@ function GameClock() {
 // Per-day summary — shown after clicking "Next Day". A satisfying end-of-day recap: the
 // headline net-cash + net-worth, what actually SOLD (with the biggest sale called out),
 // how the market moved, new collectors who found you, and the overhead that hit.
-function DaySummary({ summary, onClose }) {
-  const { cashDelta, added, listingsSold, listingOffers, premiumOffers, wages, rent, lease, payroll, storage,
-    resolvedGrades, binderFiled, binderReserved, wantsBrokered, brokerProceeds, offersAccepted, keeperStocked, keeperBroke, saleProceeds, notoDelta,
-    missedOnline, missedWalkin, days, showName,
-    soldNames, bigSale, newWants, regularCalls, regularsWon, marketMovers, netWorth, lifeEvents, counterIncome, suppliesIncome, suppliesSold, machineIncome, machineSold, binIncome, binSold, binTurnedAway, wholesaleIncome, floor, hype, hypeDelta, notoBySrc } = summary
-  const currentDay = useGame(s => s.currentDay)
-  const monthsElapsed = useGame(s => s.monthsElapsed)
-  const missed = (missedOnline || 0) + (missedWalkin || 0)
-  const movers = marketMovers || []
-  const sold = soldNames || []
-  const events = lifeEvents || []
-  // !! matters: this is an || chain over NUMBERS, so a floor where you bought and sold nothing
-  // evaluates to the last operand — the number 0, not false — and `{floorActive && …}` below
-  // rendered a bare "0" into the recap.
-  const floorActive = !!(floor && (floor.spent || floor.earned || floor.notoGained || floor.acquired || floor.rapport))
-  const hasActivity = added || listingsSold || listingOffers || resolvedGrades || binderFiled || binderReserved || wantsBrokered
-    || offersAccepted || keeperStocked || wages || rent || lease
-    || payroll || storage || saleProceeds || notoDelta || missed || binTurnedAway || movers.length || newWants || regularCalls || regularsWon || events.length || floorActive
-  // A show trip recaps the whole time away ("Back from … · N days"); a single Next Day is
-  // just the day you entered.
-  const multiDay = days > 1
-  return (
-    <Modal onClose={onClose} className="recap" maxWidth={430} label="Day summary">
-      <>
-      {/* recap body */}
-        <h2 style={{ marginBottom: 2, textAlign: 'center' }}>{showName ? `🎪 Back from ${showName}` : `📅 ${weekdayOf(absoluteDay(currentDay, monthsElapsed))} · Day ${currentDay} · ${monthName(monthsElapsed)}`}</h2>
-        {multiDay && <div className="cap t-sm" style={{ marginBottom: 6, textAlign: 'center' }}>{days} days passed</div>}
-
-        {/* Headline: net cash for the day + current net worth */}
-        {cashDelta != null && (
-          <div className="recap-headline">
-            <div>
-              <div className="recap-h-label">Net cash</div>
-              <div className="recap-h-val" style={{ color: cashDelta >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                {cashDelta >= 0 ? '+' : ''}{fmtMoney(cashDelta)}
-              </div>
-            </div>
-            {netWorth != null && (
-              <div style={{ textAlign: 'right' }}>
-                <div className="recap-h-label">Net worth</div>
-                <div className="recap-h-val t-xl">{fmtMoney(netWorth)}</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {!hasActivity ? (
-          <p className="muted" style={{ marginTop: 4, textAlign: 'center' }}>{multiDay ? 'Nothing stirred while you were away.' : 'A quiet day. Nothing moved.'}</p>
-        ) : (
-          <div className="recap-body">
-            {/* On the floor — what the show itself did (buying, selling, rep), distinct
-                from the days-away home activity below. */}
-            {floorActive && (
-              <div className="recap-sec">
-                <div className="recap-sec-h">🎪 On the floor</div>
-                {floor.acquired > 0 && <div className="recap-line"><span className="muted">Items picked up</span><b>{floor.acquired}</b></div>}
-                {floor.spent > 0 && <div className="recap-line"><span className="muted">Spent buying</span><span className="neg">−{fmtMoney(floor.spent)}</span></div>}
-                {floor.earned > 0 && <div className="recap-line"><span className="muted">Earned selling</span><b className="pos">+{fmtMoney(floor.earned)}</b></div>}
-                {(floor.earned > 0 || floor.spent > 0) && (
-                  <div className="recap-line"><span>Floor net</span>
-                    <b style={{ color: floor.earned - floor.spent >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                      {floor.earned - floor.spent >= 0 ? '+' : ''}{fmtMoney(round2(floor.earned - floor.spent))}</b></div>
-                )}
-                {floor.notoGained > 0 && <div className="recap-line"><span className="muted">Notoriety gained</span><b className="warn">+{floor.notoGained}★</b></div>}
-                {floor.rapport > 0 && <div className="recap-line"><span className="muted">🤝 Dealt with vendors</span><span className="muted">{fmtMoney(floor.rapport)}</span></div>}
-              </div>
-            )}
-            {/* What sold */}
-            {(saleProceeds > 0 || sold.length > 0 || wantsBrokered > 0 || offersAccepted > 0) && (
-              <div className="recap-sec">
-                <div className="recap-sec-h">🧾 Sold</div>
-                {wantsBrokered > 0 && <div className="recap-line"><span className="muted">💼 Broker filled {wantsBrokered} want{wantsBrokered === 1 ? '' : 's'}</span><b className="pos">+{fmtMoney(brokerProceeds)}</b></div>}
-                {offersAccepted > 0 && <div className="recap-line"><span className="muted">📨 Offer desk closed {offersAccepted} deal{offersAccepted === 1 ? '' : 's'}</span></div>}
-                {bigSale && <div className="recap-line"><span>Biggest: <b>{bigSale.name}</b></span><b className="pos">+{fmtMoney(bigSale.net)}</b></div>}
-                {sold.filter(s => !bigSale || s.name !== bigSale.name || s.net !== bigSale.net).slice(0, 3).map((s, i) => (
-                  <div className="recap-line" key={i}><span className="muted">{s.name}</span><span className="muted">+{fmtMoney(s.net)}</span></div>
-                ))}
-                {counterIncome > 0 && <div className="recap-line"><span className="muted">🏬 Storefront counter (singles & bulk)</span><b className="pos">+{fmtMoney(counterIncome)}</b></div>}
-                {suppliesIncome > 0 && <div className="recap-line"><span className="muted">🧢 Supplies & accessories ({suppliesSold} unit{suppliesSold === 1 ? '' : 's'})</span><b className="pos">+{fmtMoney(suppliesIncome)}</b></div>}
-                {machineIncome > 0 && <div className="recap-line"><span className="muted">🎰 Pack Machine ({machineSold} pack{machineSold === 1 ? '' : 's'})</span><b className="pos">+{fmtMoney(machineIncome)}</b></div>}
-                {binIncome > 0 && <div className="recap-line"><span className="muted">🗑️ Bulk bin ({binSold} card{binSold === 1 ? '' : 's'})</span><b className="pos">+{fmtMoney(binIncome)}</b></div>}
-                {wholesaleIncome > 0 && <div className="recap-line"><span className="muted">📦 Wholesale to other shops (your distribution margin)</span><b className="pos">+{fmtMoney(wholesaleIncome)}</b></div>}
-                {saleProceeds > 0 && <div className="recap-line"><span className="muted">Total sales income</span><b className="pos">+{fmtMoney(saleProceeds)}</b></div>}
-              </div>
-            )}
-
-            {/* Market movers */}
-            {movers.length > 0 && (
-              <div className="recap-sec">
-                <div className="recap-sec-h">📊 Market movers</div>
-                {movers.slice(0, 4).map((m, i) => (
-                  <div className="recap-line" key={i}>
-                    <span>{m.kind === 'hype' ? '📈' : '📉'} <b>{m.setName}</b></span>
-                    <b style={{ color: m.kind === 'hype' ? 'var(--green)' : 'var(--red)' }}>{m.pct > 0 ? '+' : ''}{m.pct}%</b>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Inbox / interest */}
-            {(added > 0 || listingOffers > 0 || premiumOffers > 0 || newWants > 0 || regularCalls > 0 || regularsWon > 0 || resolvedGrades > 0 || binderFiled > 0 || binderReserved > 0 || keeperStocked > 0 || notoDelta > 0) && (
-              <div className="recap-sec">
-                <div className="recap-sec-h">📬 New</div>
-                {newWants > 0 && <div className="recap-line"><span>🐋 {newWants} collector want{newWants === 1 ? '' : 's'} found you</span><span className="muted">Sell tab</span></div>}
-                {regularCalls > 0 && <div className="recap-line"><span>📞 {regularCalls} regular{regularCalls === 1 ? '' : 's'} asked you to stock their lane</span><span className="muted">🤝 Regulars</span></div>}
-                {regularsWon > 0 && <div className="recap-line"><span className="pos">🤝 You came through for {regularsWon} regular{regularsWon === 1 ? '' : 's'}</span></div>}
-                {premiumOffers > 0 && <div className="recap-line"><span className="pos">📈 {premiumOffers} over-market offer{premiumOffers === 1 ? '' : 's'} (hot set)</span></div>}
-                {added > 0 && <div className="recap-line"><span className="muted">{added} new order{added === 1 ? '' : 's'} in your inbox</span></div>}
-                {listingOffers > 0 && <div className="recap-line"><span className="muted">{listingOffers} new offer{listingOffers === 1 ? '' : 's'} on listings</span></div>}
-                {resolvedGrades > 0 && <div className="recap-line"><span className="muted">{resolvedGrades} slab{resolvedGrades === 1 ? '' : 's'} back from grading</span></div>}
-                {binderFiled > 0 && <div className="recap-line"><span className="muted">📒 Curator filed {binderFiled} card{binderFiled === 1 ? '' : 's'} into your binder</span></div>}
-                {keeperStocked > 0 && <div className="recap-line"><span className="muted">🪓 Bin Keeper stocked {keeperStocked} pack{keeperStocked === 1 ? '' : 's'}{keeperBroke > 0 ? ` (broke ${keeperBroke} product${keeperBroke === 1 ? '' : 's'} down)` : ' from backstock'}</span></div>}
-                {/* Say WHY a slot stayed empty — otherwise the reserve reads as the Curator
-                    quietly not doing its job. */}
-                {binderReserved > 0 && <div className="recap-line"><span className="muted">🎚️ {binderReserved} slot{binderReserved === 1 ? '' : 's'} left open — only copy reserved to grade & sell</span></div>}
-                {notoDelta > 0 && (
-                  <div className="recap-line">
-                    <span className="muted">⭐ Reputation{(notoBySrc || []).length > 0 && (
-                      <span className="cap"> ({notoBySrc.map(([tag, d]) => `${repSourceLabel(tag).split(' ')[0]} ${d > 0 ? '+' : ''}${d}`).join(' · ')})</span>
-                    )}</span>
-                    <b className="warn">+{Math.round(notoDelta * 10) / 10}★</b>
-                  </div>
-                )}
-                {hype >= 10 && <div className="recap-line"><span className="muted">🔥 Shop heat</span><b style={{ color: 'var(--orange, #ff9f43)' }}>{Math.round(hype)}{hypeDelta > 0 ? ` (+${Math.round(hypeDelta)})` : ' (fading)'}</b></div>}
-              </div>
-            )}
-
-            {/* Life events — what happened while time passed */}
-            {events.length > 0 && (
-              <div className="recap-sec">
-                <div className="recap-sec-h">📆 While time passed</div>
-                {events.map((e, i) => (
-                  <div className="recap-line recap-event" key={i}>
-                    <span style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--txt)' }}>{e.line}</span>
-                    {e.cashDelta ? <b style={{ color: e.cashDelta > 0 ? 'var(--green)' : 'var(--red)' }}>{e.cashDelta > 0 ? '+' : ''}{fmtMoney(e.cashDelta)}</b> : null}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Overhead out */}
-            {(wages > 0 || rent > 0 || storage > 0 || lease > 0 || payroll > 0) && (
-              <div className="recap-sec">
-                <div className="recap-sec-h">💸 Overhead</div>
-                {wages > 0 && <div className="recap-line"><span className="muted">Wages earned</span><b className="pos">+{fmtMoney(wages)}</b></div>}
-                {rent > 0 && <div className="recap-line"><span className="muted">Rent</span><span>-{fmtMoney(rent)}</span></div>}
-                {storage > 0 && <div className="recap-line"><span className="muted">Inventory storage</span><span>-{fmtMoney(storage)}</span></div>}
-                {lease > 0 && <div className="recap-line"><span className="muted">Store lease</span><span>-{fmtMoney(lease)}</span></div>}
-                {payroll > 0 && <div className="recap-line"><span className="muted">Staff payroll</span><span>-{fmtMoney(payroll)}</span></div>}
-              </div>
-            )}
-
-            {/* Kids who walked up to an empty quarter box. A miss, not a sale — so it sits
-                with the other misses rather than hiding under the bin's income line. */}
-            {binTurnedAway > 0 && (
-              <div className="recap-line" style={{ color: 'var(--red)', marginTop: 4 }}>
-                <span>🗑️ {binTurnedAway} kid{binTurnedAway === 1 ? '' : 's'} found the quarter box empty</span>
-                <span className="muted">stock the bulk bin</span>
-              </div>
-            )}
-
-            {missed > 0 && (
-              <div className="recap-line" style={{ color: 'var(--red)', marginTop: 4 }}>
-                <span>⚠️ Missed {missed} order{missed === 1 ? '' : 's'} while away</span>
-                <span className="muted">{missedOnline ? `${missedOnline} online` : ''}{missedOnline && missedWalkin ? ', ' : ''}{missedWalkin ? `${missedWalkin} walk-in` : ''}</span>
-              </div>
-            )}
-          </div>
-        )}
-        <button className="btn gold" style={{ maxWidth: 160, marginTop: 12, marginLeft: 'auto', marginRight: 'auto', display: 'block' }} onClick={onClose}>Continue</button>
-      </>
-    </Modal>
-  )
-}
-
-// Lose screen — shown when you can't make rent and have nothing left to sell.
 function GameOver() {
   const gameOver = useGame(s => s.gameOver)
   const reset = useGame(s => s.reset)
   if (!gameOver) return null
   return (
-    <Modal dismissable={false} maxWidth={420} zIndex={50} label="Game over"
+    <Modal dismissable={false} maxWidth={420} zIndex={'calc(var(--z-reveal) + 5)'} label="Game over"
       style={{ textAlign: 'center' }}>
       <h2 style={{ marginBottom: 6 }}>💸 Game Over</h2>
       <p className="muted mt-0">
@@ -989,8 +824,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
     return m
   }, [sealedInventory])
   const [distId, setDistId] = useState(DISTRIBUTORS[0].id)
-  const [toastMsg, setToastMsg] = useState(null)
-  const flash = (m) => { setToastMsg(m); setTimeout(() => setToastMsg(null), 2600) }
+  const flash = (m) => toast(m, 2600)
   // Distributor credit line: a global account (not per-distributor) that scales with net worth.
   const creditBalance = useGame(s => s.credit?.balance || 0)
   const creditFrozen = useGame(s => !!s.credit?.frozen)
@@ -1075,7 +909,6 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       {rank >= 1 && Object.values(rec.stock || {}).some(v => (v?.q ?? 1) <= 0) && (
         <div style={{ margin: '8px 0' }}>
           <button className="btn alt t-xs" style={{ padding: '4px 10px' }} disabled={clout < 2}
-            title={clout < 2 ? 'Needs 2 🎫 clout (rank-ups, god packs, clean-sweep goal weeks)' : `Spend 2 🎫 clout — ${dist.name} finds you a delivery and the whole shelf refills today`}
             onClick={() => { const r = cloutRestock(distId); flash(r.error || `📦 ${dist.name} took the call — shelf's full again.`) }}>
             📦 Call in a favor — restock {dist.name} · 2 🎫 (you have {Math.floor(clout)})
           </button>
@@ -1098,7 +931,7 @@ function Shop({ cash, onBuy, onBuyVintage }) {
             : <>Live <b>TCGplayer sealed prices</b> (data {new Date(FETCHED_AT).toLocaleDateString()}); each product rips into its real pack count.</>}
         </Explain>
         {dist.id === 'lgs' && (lgsCredit || 0) > 0 && (
-          <> {' '}<span className="pill" title="In-store credit from turning in bulk (5¢/card). Applied automatically at checkout here." style={{ background: '#5ec98a22', color: 'var(--green)' }}>💳 {fmtMoney(lgsCredit)} store credit — spent automatically here</span></>
+          <> {' '}<span className="pill" style={{ background: '#5ec98a22', color: 'var(--green)' }}>💳 {fmtMoney(lgsCredit)} store credit — spent automatically here</span></>
         )}
       </div>
 
@@ -1119,7 +952,6 @@ function Shop({ cash, onBuy, onBuyVintage }) {
       {/* 🧮 Purchasing Agent's reorder-points ledger (self-gates on the upgrade) */}
       <ReorderPanel />
 
-      {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   )
 }
@@ -1151,9 +983,14 @@ function ReprintWaveBanner({ cash, flash }) {
       📰 <b>Reprint wave</b> — <b>{wave.label}</b> restocks in <b>{daysLeft} day{daysLeft > 1 ? 's' : ''}</b>.
       {' '}Allocation via {wave.distName}: <b>{wave.preordered}/{wave.allocCap}</b> committed at <b>{fmtMoney(wave.unit)}</b> each
       {waveSet ? <> (retail ~{fmtMoney((waveSet.products || []).find(p => p.type === wave.productType)?.price || 0)})</> : null}.
-      {(wave.custPreorders || 0) > 0 && <> <span className="pill" style={{ background: '#ffd45e22', color: 'var(--gold, #ffd45e)' }}
-        title="Locals who paid deposits at your counter — they pick up (and pay the balance at retail + a premium) on drop day. Short them and it's refunds + a grudge.">
-        🧾 {wave.custPreorders} local deposit{wave.custPreorders > 1 ? 's' : ''} riding on it</span></>}
+      {(wave.custPreorders || 0) > 0 && <> <Explain label="What are local deposits?" trigger={
+        <span className="pill" style={{ background: '#ffd45e22', color: 'var(--gold, #ffd45e)' }}>
+        🧾 {wave.custPreorders} local deposit{wave.custPreorders > 1 ? 's' : ''} riding on it</span>
+      }>
+        <b>🧾 Local deposits</b>
+        <p>Locals paid deposits at your counter. They pick up on drop day and pay the balance
+          at retail + a premium. Short them and it's refunds + a grudge.</p>
+      </Explain></>}
       {room > 0 ? (
         <span className="row" style={{ gap: 6, marginTop: 6, alignItems: 'center', display: 'inline-flex', marginLeft: 8 }}>
           <button className="btn alt btn-fixed" style={{ padding: '2px 9px' }} onClick={() => setQty(v => Math.max(1, v - 1))}>−</button>
@@ -1168,7 +1005,6 @@ function ReprintWaveBanner({ cash, flash }) {
       {/* 🎫 Clout spend: argue your way into a bigger slice of the wave (once per wave). */}
       {!wave.allocBonus && rank >= 2 && (
         <button className="btn alt t-xs" style={{ marginLeft: 8, padding: '4px 10px' }} disabled={clout < 3}
-          title={clout < 3 ? 'Needs 3 🎫 clout' : `Spend 3 🎫 clout — your rep argues the rep into a bigger slice (cap ${wave.allocCap} → ${Math.ceil(wave.allocCap * 1.5)})`}
           onClick={() => { const r = cloutJumpAllocation(); flash(r.error || `📰 Queue jumped — your cap is now ${r.allocCap}.`) }}>
           🎫 Jump the queue · 3 🎫
         </button>
@@ -1219,14 +1055,17 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
           what every buy button on the shelf below charges, so hiding it behind a closed panel
           would hide the price the player is about to pay. Only the balance detail collapses. */}
       <div className="credit-toggle mt-4" role="group" aria-label="Pay with">
-        <button className={`btn ${active === 'cash' ? 'gold' : 'alt'}`} onClick={() => setPayMode('cash')}
-          title="Pay with cash on hand">💵 Cash</button>
+        <button className={`btn ${active === 'cash' ? 'gold' : 'alt'}`} onClick={() => setPayMode('cash')}>💵 Cash</button>
         <button className={`btn ${active === 'split' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
-          title={canUseCredit ? `Pay cash first, then put the rest on credit (${creditTitle})` : creditTitle}
           onClick={() => setPayMode('split')}>🔀 Cash + Credit</button>
         <button className={`btn ${active === 'credit' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
-          title={canUseCredit ? `Charge buys to your credit line (${creditTitle})` : creditTitle}
           onClick={() => setPayMode('credit')}>💳 Credit</button>
+      </div>
+      <div className="cap t-sm mt-1">
+        {!canUseCredit ? creditTitle
+          : active === 'cash' ? 'Buys come out of cash on hand.'
+          : active === 'split' ? `Cash first, the rest on credit (${creditTitle}).`
+          : `Buys charge to your credit line (${creditTitle}).`}
       </div>
       {openPanel && (<>
       <div className="credit-stats">
@@ -1409,11 +1248,8 @@ function DistributorPicker({ distributorState, notoriety, upgrades, rank = 0, se
         return (
           <button key={d.id} className={`distrib-chip ${selected === d.id ? 'active' : ''} ${locked ? 'locked' : ''}`}
             style={{ '--dc': d.color }} onClick={() => onSelect(d.id)}
-            title={needsUpgrade ? `Locked — needs the ${UPGRADES[d.requiresUpgrade]?.name || 'right'} upgrade (⚙️ → Upgrades)`
-              : rankGate ? `Locked — become a ${rankGate.emoji} ${rankGate.name} (rank ${d.minRank}) to open an account`
-              : locked ? `Locked — reach ${d.minNotoriety} reputation to open an account`
-              : hasVintage ? `${d.name} has vintage sealed on the shelf this week` : undefined}>
-            {hasVintage && <span className="dc-vintage" title="Vintage in stock this week" aria-label="Vintage in stock">🗝️</span>}
+>
+            {hasVintage && <span className="dc-vintage" aria-label="Vintage in stock this week">🗝️</span>}
             <span className="dc-icon">{d.icon}</span>
             <span className="dc-name">{d.name}</span>
             {needsUpgrade
@@ -1553,10 +1389,7 @@ function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split
       <span className="prod-name">
         {product.icon} {product.name}
         {lim.limit !== Infinity && (
-          <span className={`limit-chip ${spent ? 'spent' : ''}`}
-            title={spent
-              ? `You have had your ${lim.limit} today. The shelf resets tomorrow${lim.limit < 4 ? ' — and a shop that knows you lets you take more' : ''}.`
-              : `${dist.name} rations this: ${lim.limit} per customer per day${lim.level > 0 ? ' — up from 1, because they know you' : ''}. ${lim.left} left today.`}>
+          <span className={`limit-chip ${spent ? 'spent' : ''}`}>
             🚫 {spent ? 'had yours today' : `${lim.limit}/customer`}
           </span>
         )}
@@ -1566,8 +1399,6 @@ function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split
         </span>
       </span>
       <button className="btn" disabled={!afford || spent}
-        title={spent ? `${dist.name} limits this to ${lim.limit} per customer a day, and you have had yours. Back tomorrow.`
-          : afford ? `Buy for ${fmtMoney(price)}` : 'Not enough cash'}
         onClick={() => onBuy(dist.id, anchor, { ...product, _buyPrice: price, _distId: dist.id }, 1, { onCredit, split })}>
         {fmtMoney(price)}
       </button>
@@ -1685,30 +1516,31 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
       </div>
       {soEligible && (
         <button type="button" className={`qty-step so-btn ${soHere ? 'active' : ''}`}
-          title={soHere ? `📋 Standing order active — ${so.qty}× weekly at your rapport price. Tap to cancel.`
-            : `📋 Standing order: auto-buy ${qN}× ${productTypeLabel(product)} every week at your rapport price (while stocked & cash allows). One product at a time — setting this moves it here.`}
-          onClick={() => setSO(soHere ? null : { distId: dist.id, setId: set.id, type: product.type, qty: qN })}>📋</button>
+          aria-label={soHere ? 'Cancel the standing order' : 'Set a weekly standing order'}
+          onClick={() => {
+            if (soHere) { setSO(null); toast('📋 Standing order cancelled.') }
+            else {
+              setSO({ distId: dist.id, setId: set.id, type: product.type, qty: qN })
+              toast(`📋 Standing order — ${qN}× ${productTypeLabel(product)} weekly at your rapport price (one product at a time).`, 4500)
+            }
+          }}>📋</button>
       )}
       <button className={`prodbtn ${product._case ? 'caselot' : ''} ${product._clearance ? 'clearance' : ''} ${out ? 'out' : ''} ${useCredit && canBuy ? 'on-credit' : ''}`}
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit, split })}
-        title={out ? `Sold out — restocks in ~${days}d`
-          : limitLeft <= 0 ? `${dist.name} limits this to ${perCustomer} per customer a day, and you have had yours. Back tomorrow.`
-          : `${product.packs} pack${product.packs > 1 ? 's' : ''}${product.bonus ? ' + promo' : ''} · ${Math.floor(stockQty)}/${cap} in stock · up to ${maxBuy} buyable now${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}${priceNote ? `\n\n${priceNote}` : ''}`}>
-        <span className="prodname" title={productBlurb(product)}>{useCredit ? '💳 ' : ''}{product.icon} {productTypeLabel(product)}</span>
-        {ownedN > 0 && <span className="prodowned" title={`You already hold ${ownedN} sealed ${productTypeLabel(product)} of ${set.name}`}>📦 {ownedN}</span>}
+>
+        <span className="prodname">{useCredit ? '💳 ' : ''}{product.icon} {productTypeLabel(product)}</span>
+        {ownedN > 0 && <span className="prodowned" aria-label={`${ownedN} already in your inventory`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}
           {perCustomer !== Infinity && (
             <span className={`limit-chip ${limitLeft <= 0 ? 'spent' : ''}`}
-              title={limitLeft <= 0
-                ? `You have had your ${perCustomer} today. The shelf resets tomorrow${perCustomer < 4 ? ` — and a shop that knows you lets you take more (rapport ${rapportLvl} → ${Math.min(4, perCustomer + 1)} at the next tier)` : ''}.`
-                : `${dist.name} rations this: ${perCustomer} per customer per day${rapportLvl > 0 ? ` — up from 1, because they know you` : ''}. ${limitLeft} left today.`}>
+>
               🚫 {limitLeft <= 0 ? 'had yours today' : `${perCustomer}/customer`}
             </span>
           )}
         </span>
         <span className="prodprice">
-          {surge > 1.02 && <span className="pricetag surge" title={priceNote}>🔥 +{Math.round((surge - 1) * 100)}%</span>}
+          {surge > 1.02 && <span className="pricetag surge">🔥 +{Math.round((surge - 1) * 100)}%</span>}
           {showStrike && <s className="retail">{fmtMoney(retail)}</s>}{qN > 1 ? `${fmtMoney(total)} · ×${qN}` : fmtMoney(price)}
         </span>
         <StockBar qty={stockQty} cap={cap} out={out} days={days} color={dist.color} />
@@ -1787,11 +1619,9 @@ function VintageShelf({ dist, rec, weekIndex, cash, onBuyVintage, onCredit = fal
         <div className="prodlist">
           <button className={`prodbtn ${useCredit ? 'on-credit' : ''}`} disabled={out || broke}
             onClick={() => onBuyVintage(dist.id, f, { fromHold: held, onCredit, split })}
-            title={out
-              ? `${dist.name} has no more sealed ${f.setName} — it's out of print, so there's no reordering it. A new find turns up next week.`
-              : `${productTypeLabel(f.product)} · ask ${fmtMoney(f.price)} · current market ${fmtMoney(p)}${onCredit ? ' — charged to your 💳 credit line' : split ? ' — cash first, then your 💳 credit line' : ''}`}>
+>
             <span className="prodname">{useCredit ? '💳 ' : ''}{f.product.icon || '📦'} {productTypeLabel(f.product)}</span>
-            <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {held ? '· held' : ''}</span>
+            <span className="prodmeta" style={{ color: up ? 'var(--green)' : 'var(--red)' }}>{up ? '▲' : '▼'} mkt {fmtMoney(p)} {held ? '· held' : ''}</span>
             <span className="prodprice">{out ? '—' : fmtMoney(f.price)}</span>
           </button>
         </div>
@@ -1857,7 +1687,7 @@ function SupplyPanel({ dist, lvl, supplyVendors, supplyChannel, cash, flash }) {
         <div className="consign-strip mt-5">
           <b>📦 In the channel ({supplyChannel.length})</b>
           {supplyChannel.map((w, i) => (
-            <span key={i} className="pill" title={`Pays ${fmtMoney(w.net)} when it sells through`}>{w.label} · {fmtMoney(w.net)} · {w.daysLeft}d</span>
+            <span key={i} className="pill">{w.label} · {fmtMoney(w.net)} · {w.daysLeft}d</span>
           ))}
           <span className="cap">— {fmtMoney(pending)} incoming</span>
         </div>

@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { toast } from '../ui/dialog'
+import { Explain } from '../ui/Explain'
 import { useGame, floorCount, floorSkuCap, floorItemCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
 import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, gradingFeeTotal, cutEstimate, cutRank, CONDITIONS, breakOptions, psaValueAt, rarityRank } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku } from './sku'
@@ -84,8 +86,7 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   const gradesSubmitted = useGame(s => s.gradesSubmitted)
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 precise centering read vs a fuzzy eyeball one
   const upgrades = useGame(s => s.upgrades)   // freight on a grading submission
-  const [toast, setToast] = useState(null)
-  const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2600) }
+  const flash = (m) => toast(m, 2600)
   // Tapping a sealed line/tile opens its detail modal — the "what is this?" read the tiny
   // set-symbol thumbnail can't give. Lives here (not routed through onPick, which is card-only).
   const [sealedView, setSealedView] = useState(null)
@@ -256,7 +257,6 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
     return (
       <div key={cid} className="wants mt-5">
         <div className="wants-head" role="button" tabIndex={0} aria-expanded={!isCollapsed}
-          title={isCollapsed ? 'Show this set' : 'Hide this set'}
           style={{ cursor: 'pointer', userSelect: 'none' }}
           onClick={() => toggleCollapse(cid)}
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(cid) } }}>
@@ -313,13 +313,18 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
       {/* Header: what this place is + the floor depth readout + restock lever */}
       <div className="banner" style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
         <span>{meta.icon} <b>{meta.title}</b> — {totalCount} item{totalCount === 1 ? '' : 's'} · <b>{fmtMoney(totalValue)}</b>
+          {totalCount > 0 && (
+            <Explain label="What do the row actions do?">
+              🛒 puts it out on the sales floor, where walk-ins & the counter can buy it. 📦 sends it to the storeroom — sellable backstock, off the floor. 🎬 rips it right now.
+            </Explain>
+          )}
           {place === 'personal' && <> · <span className="muted">yours first — not for sale except to fill a want</span></>}
           {place === 'floor' && <> · <span className="muted">{onFloorNow} out front · up to {skuCap} of each ({packCap} for loose packs) · 🗝️ vintage unlimited</span></>}
-          {place === 'storeroom' && <> · <span className="muted">backstock — sells routine counter orders; stock the floor for walk-ins & whales</span></>}
+          {place === 'storeroom' && <> · <span className="muted">backstock — sells routine counter orders · fills up to {skuCap} of each ({packCap} for loose packs) when you stock the floor</span></>}
         </span>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {gridOK && totalCount > 0 && (
-            <select value={sortMode} onChange={e => setSort(e.target.value)} title="Sort your keepsakes (switches to the grid)">
+            <select value={sortMode} onChange={e => setSort(e.target.value)}>
               <option value="value">Sort: Value</option>
               <option value="psa10">Sort: PSA 10 price</option>
               <option value="rarity">Sort: Rarity</option>
@@ -328,15 +333,14 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
           )}
           {gridOK && totalCount > 0 && (
             <span className="view-toggle" role="group" aria-label="View">
-              <button className={`vt-btn ${!gridMode ? 'on' : ''}`} title="Table — SKU list with prices" onClick={() => setView('table')}>☰</button>
-              <button className={`vt-btn ${gridMode ? 'on' : ''}`} title="Grid — big card art with centering + condition at a glance" onClick={() => setView('grid')}>🔲</button>
+              <button className={`vt-btn ${!gridMode ? 'on' : ''}`} aria-label="Table view — SKU list with prices" onClick={() => setView('table')}>☰</button>
+              <button className={`vt-btn ${gridMode ? 'on' : ''}`} aria-label="Grid view — big card art with centering + condition at a glance" onClick={() => setView('grid')}>🔲</button>
             </span>
           )}
           {place !== 'personal' && collapseIds.length > 1 && (() => {
             const allFolded = collapseIds.every(id => collapsed.has(id))
             return (
               <button className="btn alt btn-fixed" style={{ padding: '5px 12px' }}
-                title={allFolded ? 'Open every set section' : 'Fold every set down to its header'}
                 onClick={() => setAllCollapsed(!allFolded)}>
                 {allFolded ? '▸ Expand all' : '▾ Collapse all'}
               </button>
@@ -355,7 +359,6 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
           )}
           {!selectMode && place !== 'personal' && (
             <button className="btn btn-fixed" style={{ padding: '5px 12px' }}
-              title={`Fill each line up to ${skuCap} out front — ${packCap} for loose packs (vintage unlimited), best product first`}
               onClick={() => { const n = restockFloor(); flash(n ? `Put ${n} item${n === 1 ? '' : 's'} out on the floor.` : 'Nothing to stock (storeroom empty or every line already out).') }}>
               🛒 Stock the floor
             </button>
@@ -394,26 +397,30 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
                         ? <img className="sealed-tile-logo" src={sealedSet.logo} alt={sealedSet.name} loading="lazy" decoding="async" />
                         : <span className="sealed-ico">{it.product.icon || '📦'}</span>}
                       <div className="sealed-name">{it.product.icon || '📦'} {it.product.type}</div>
-                      {sealedSet && <div className="sealed-set" title={sealedSet.name}>{sealedSet.name}</div>}
+                      {sealedSet && <div className="sealed-set">{sealedSet.name}</div>}
                       <div className="sealed-sub muted">{it.product.packs} pk{it.vintage ? ' · 🗝️ vintage' : ''}</div>
                       <span className="price">{fmtMoney(sealedValue(it))}</span>
                     </div>}
                 {cut && (
                   <div className="cut-row">
-                    <span className="cut-chip" style={{ color: cut.color, background: cut.color + '22' }}
-                      title={hasLoupe ? `Centering: ${cut.label}${cut.detail ? ` — ${cut.detail}` : ''}` : "Eyeball read of the centering — the 🔍 Jeweler's Loupe reads it precisely."}>
-                      {hasLoupe ? '🔍' : '👁️'} {cut.short}
-                    </span>
+                    <Explain label="Centering read" trigger={
+                      <span className="cut-chip" style={{ color: cut.color, background: cut.color + '22' }}>
+                        {hasLoupe ? '🔍' : '👁️'} {cut.short}
+                      </span>}>
+                      {hasLoupe
+                        ? <>Centering: {cut.label}{cut.detail ? ` — ${cut.detail}` : ''}</>
+                        : "Eyeball read of the centering — the 🔍 Jeweler's Loupe reads it precisely."}
+                    </Explain>
                   </div>
                 )}
                 {/* Quick actions per tile so the grid keeps the table's reach. Stop propagation so a
                     button tap doesn't also open the card modal / toggle selection. */}
                 {!selectMode && (
                   <div className="tile-acts" onClick={e => e.stopPropagation()}>
-                    {canBreak && <button className="stock-act" title="Break down a tier (box → loose packs)" onClick={() => tileBreak(it)}>🔨</button>}
-                    {kind === 'sealed' && <button className="stock-act" title="Rip it now" onClick={() => onRip && onRip(it.uid)}>🎬</button>}
-                    <button className="stock-act" title="Put it out on the sales floor" onClick={() => tileMove(kind, it.uid, 'floor')}>🛒</button>
-                    <button className="stock-act" title="Send it to the storeroom" onClick={() => tileMove(kind, it.uid, 'storeroom')}>📦</button>
+                    {canBreak && <button className="stock-act" aria-label="Break down a tier (box → loose packs)" onClick={() => tileBreak(it)}>🔨</button>}
+                    {kind === 'sealed' && <button className="stock-act" aria-label="Rip it now" onClick={() => onRip && onRip(it.uid)}>🎬</button>}
+                    <button className="stock-act" aria-label="Put it out on the sales floor" onClick={() => tileMove(kind, it.uid, 'floor')}>🛒</button>
+                    <button className="stock-act" aria-label="Send it to the storeroom" onClick={() => tileMove(kind, it.uid, 'storeroom')}>📦</button>
                   </div>
                 )}
                 {selectMode && isPicked && <span className="coll-check">✓</span>}
@@ -459,10 +466,14 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
               <button className="btn alt" onClick={() => bulkMove('personal', '🔒 Kept —')}>🔒 Keep (Personal)</button>
             )}
             {onSift && sel.sealedUids.length > 0 && (
-              <button className="btn gold" onClick={bulkSift}
-                title={`Auto-rip these ${sel.sealedUids.length} sealed item${sel.sealedUids.length === 1 ? '' : 's'} — ${sel.packs} pack${sel.packs === 1 ? '' : 's'} in all. It churns pack by pack and stops on the big-hit packs so you can rip those by hand.`}>
-                ⚡ Sift-rip {sel.packs} pack{sel.packs === 1 ? '' : 's'}
-              </button>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                <button className="btn gold" onClick={bulkSift}>
+                  ⚡ Sift-rip {sel.packs} pack{sel.packs === 1 ? '' : 's'}
+                </button>
+                <Explain label="How Sift-rip works">
+                  Auto-rips these {sel.sealedUids.length} sealed item{sel.sealedUids.length === 1 ? '' : 's'} — {sel.packs} pack{sel.packs === 1 ? '' : 's'} in all. It churns pack by pack and stops on the big-hit packs so you can rip those by hand.
+                </Explain>
+              </span>
             )}
             {sel.rawCardUids.length > 0 && (
               // Grading is a singles-only pipeline: with sealed in the same selection the
@@ -475,15 +486,16 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
                     <option key={key} value={key}>{t.name} · ~{t.days}d</option>
                   ))}
                 </select>
-                <button className="btn alt" disabled={sel.sealedUids.length > 0}
-                  title={sel.sealedUids.length ? "Sealed can't be graded — deselect the sealed items to submit these singles." : undefined}
-                  onClick={bulkGrade}>🔬 Grade {sel.rawCardUids.length} ({fmtMoney(gradeTotal)})</button>
+                <button className="btn alt" aria-disabled={sel.sealedUids.length > 0}
+                  onClick={() => {
+                    if (sel.sealedUids.length > 0) { toast("Sealed can't be graded — deselect the sealed items to submit these singles."); return }
+                    bulkGrade()
+                  }}>🔬 Grade {sel.rawCardUids.length} ({fmtMoney(gradeTotal)})</button>
               </div>
             )}
           </div>
         </div>
       )}
-      {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
       {sealedView && <SealedModal item={sealedView} place={place} onClose={() => setSealedView(null)} onRip={onRip} flash={flash} />}
     </>
   )
@@ -563,9 +575,8 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
             onClick={selectMode ? undefined : () => onPick && onPick(first)} style={!selectMode && onPick ? { cursor: 'pointer' } : undefined} />
         : (set?.logo
             ? <img className="tl-thumb sealed-thumb" src={set.logo} alt={set.name} loading="lazy" decoding="async"
-                title={`${first.product.type} · ${set.name} — tap for details`}
                 onClick={selectMode ? undefined : () => onInspect && onInspect(first)} style={!selectMode && onInspect ? { cursor: 'pointer' } : undefined} />
-            : <span className="tl-icon" title="Tap for details"
+            : <span className="tl-icon"
                 onClick={selectMode ? undefined : () => onInspect && onInspect(first)} style={!selectMode && onInspect ? { cursor: 'pointer' } : undefined}>{first.product.icon || '📦'}</span>)}
       <div className="tl-info"
         {...(!selectMode && (kind === 'card' ? onPick : onInspect)
@@ -582,21 +593,30 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
               : (() => {
                   const cond = CONDITIONS[first.condition] || CONDITIONS.NM
                   const cut = lineCutSummary(items, hasLoupe)
-                  return <>
-                    <span className="tl-chip" style={{ color: cond.color, background: cond.color + '22' }} title={cond.label}>{cond.short}</span>
-                    <span className="tl-chip" style={{ color: cut.color, background: cut.color + '22' }} title={cut.title}>{cut.icon} {cut.text}</span>
-                  </>
+                  return (
+                    <Explain label="Condition & centering" trigger={
+                      <span>
+                        <span className="tl-chip" style={{ color: cond.color, background: cond.color + '22' }}>{cond.short}</span>
+                        <span className="tl-chip" style={{ color: cut.color, background: cut.color + '22' }}>{cut.icon} {cut.text}</span>
+                      </span>}>
+                      <b>{cond.label}</b> condition. {cut.title}
+                    </Explain>
+                  )
                 })()}
             {(first.foil || first.reverse) && (
               <span className="tl-chip" style={first.foil ? { color: first.foil.color } : undefined}>
-                <span title={first.foil ? undefined : 'Reverse Holo — the same card with a foil-patterned background, printed in the reverse slot of most packs. Worth a premium over the plain print (bigger on rarer cards).'}>{first.foil ? (first.foil.badge || first.foil.label || 'FOIL') : 'RH'}</span>
+                {first.foil
+                  ? (first.foil.badge || first.foil.label || 'FOIL')
+                  : <Explain label="What is Reverse Holo?" trigger={<span>RH</span>}>
+                      Reverse Holo — the same card with a foil-patterned background, printed in the reverse slot of most packs. Worth a premium over the plain print (bigger on rarer cards).
+                    </Explain>}
               </span>
             )}
           </> : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
         </div>
       </div>
       <span className="tl-unit">{fmtMoney(unit)}</span>
-      <span className="tl-count" title={`${count} in stock`}>×{count}</span>
+      <span className="tl-count">×{count}</span>
 
       {/* Move + sell actions per place (hidden in select mode — use the bulk bar). Grouped in
           one strip so phones can drop it to its own line instead of squeezing the name +
@@ -604,43 +624,45 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
       {!selectMode && <span className="tl-acts">
       {place === 'floor' && <>
         {kind === 'card' && (
-          <button className={`stock-act ${featuredCopy ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
+          <button className={`stock-act ${featuredCopy ? 'on' : ''}`} aria-label="Feature in the display case — pulls whales" onClick={featureToggle}>{featuredCopy ? '⭐' : '☆'}</button>
         )}
         {kind === 'sealed' && (
-          <button className={`stock-act ${featuredSealed ? 'on' : ''}`} title="Feature in the display case — pulls whales" onClick={featureSealedToggle}>{featuredSealed ? '⭐' : '☆'}</button>
+          <button className={`stock-act ${featuredSealed ? 'on' : ''}`} aria-label="Feature in the display case — pulls whales" onClick={featureSealedToggle}>{featuredSealed ? '⭐' : '☆'}</button>
         )}
         {kind === 'sealed' && (
-          <button className="stock-act" title="Rip one now — cracks it right off the floor" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
+          <button className="stock-act" aria-label="Rip one now — cracks it right off the floor" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
         )}
-        <button className="stock-act" title="Take it home (Personal) — off the sales floor, not for sale" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
-        <button className="stock-act" title="Send to the storeroom (off the floor)" onClick={() => move('storeroom', '📦 Moved to back')}>📦</button>
-        {onHold && <button className="stock-act" title="Set one aside for a regular — they come pick it up at a premium" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
+        <button className="stock-act" aria-label="Take it home (Personal) — off the sales floor, not for sale" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
+        <button className="stock-act" aria-label="Send to the storeroom (off the floor)" onClick={() => move('storeroom', '📦 Moved to back')}>📦</button>
+        {onHold && <button className="stock-act" aria-label="Set one aside for a regular — they come pick it up at a premium" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
       </>}
 
       {place === 'storeroom' && <>
-        <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${lineCap} of this out front — the floor's full for this line` : 'Put it out on the sales floor'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
-        {onHold && <button className="stock-act" title="Save one for a regular — pick who from those who want it" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
-        <button className="stock-act" title="Keep it for yourself (Personal)" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
+        <button className="stock-act" aria-disabled={skuFull} aria-label="Put it out on the sales floor"
+          onClick={() => { if (skuFull) { toast(`Already ${lineCap} of this out front — the floor's full for this line`); return } move('floor', '🛒 Out on the floor') }}>🛒</button>
+        {onHold && <button className="stock-act" aria-label="Save one for a regular — pick who from those who want it" onClick={() => onHold(kind, items[0].uid, label)}>🗝️</button>}
+        <button className="stock-act" aria-label="Keep it for yourself (Personal)" onClick={() => move('personal', '🔒 Kept')}>🔒</button>
         {kind === 'card' ? <>
-          <button className="stock-act" title="List one online" onClick={() => { if (listOnSite(items[0].uid, 0.9)) flash(`Listed ${label} online.`) }}>🏷️</button>
-          <button className="stock-act" title="Quick-sell one now" onClick={() => { quickSell(items[0].uid); flash(`Quick-sold ${label}.`) }}>💵</button>
+          <button className="stock-act" aria-label="List one online" onClick={() => { if (listOnSite(items[0].uid, 0.9)) flash(`Listed ${label} online.`) }}>🏷️</button>
+          <button className="stock-act" aria-label="Quick-sell one now" onClick={() => { quickSell(items[0].uid); flash(`Quick-sold ${label}.`) }}>💵</button>
         </> : <>
-          {breakOpt && <button className="stock-act" title={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (lands in the Storeroom)`} onClick={doBreak}>🔨</button>}
-          <button className="stock-act" title="Rip one now" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
-          <button className="stock-act" title="List one online" onClick={() => { if (listSealed(items[0].uid, 1.0)) flash(`Listed ${label} online.`) }}>🏷️</button>
-          <button className="stock-act" title="Quick-flip one for fast cash" onClick={() => { quickFlipSealed(items[0].uid); flash(`Flipped ${label}.`) }}>💵</button>
+          {breakOpt && <button className="stock-act" aria-label={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (lands in the Storeroom)`} onClick={doBreak}>🔨</button>}
+          <button className="stock-act" aria-label="Rip one now" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
+          <button className="stock-act" aria-label="List one online" onClick={() => { if (listSealed(items[0].uid, 1.0)) flash(`Listed ${label} online.`) }}>🏷️</button>
+          <button className="stock-act" aria-label="Quick-flip one for fast cash" onClick={() => { quickFlipSealed(items[0].uid); flash(`Flipped ${label}.`) }}>💵</button>
         </>}
       </>}
 
       {place === 'personal' && <>
         {kind === 'sealed' && breakOpt && (
-          <button className="stock-act" title={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (kept, stays in Personal)`} onClick={doBreak}>🔨</button>
+          <button className="stock-act" aria-label={`Break one into ${breakOpt.count}× ${breakOpt.product.type} (kept, stays in Personal)`} onClick={doBreak}>🔨</button>
         )}
         {kind === 'sealed' && (
-          <button className="stock-act" title="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
+          <button className="stock-act" aria-label="Rip one now — opening a keepsake pack doesn't put it up for sale" onClick={() => onRip && onRip(items[0].uid)}>🎬</button>
         )}
-        <button className="stock-act" disabled={skuFull} title={skuFull ? `Already ${lineCap} of this out front — the floor's full for this line` : 'Put it out on the sales floor (for sale to walk-ins)'} onClick={() => move('floor', '🛒 Out on the floor')}>🛒</button>
-        <button className="stock-act" title="Move to the storeroom — sellable backstock, but not yet on the floor" onClick={() => move('storeroom', '📦 To the storeroom')}>📦</button>
+        <button className="stock-act" aria-disabled={skuFull} aria-label="Put it out on the sales floor (for sale to walk-ins)"
+          onClick={() => { if (skuFull) { toast(`Already ${lineCap} of this out front — the floor's full for this line`); return } move('floor', '🛒 Out on the floor') }}>🛒</button>
+        <button className="stock-act" aria-label="Move to the storeroom — sellable backstock, but not yet on the floor" onClick={() => move('storeroom', '📦 To the storeroom')}>📦</button>
       </>}
       </span>}
     </div>

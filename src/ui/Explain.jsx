@@ -17,16 +17,24 @@ import { useModalEscape } from './dialog'
 //
 // The trigger paints as a 15px dot and taps as 44px (.noto-help::after), so it can sit inline in a
 // sentence without becoming the loudest thing in it.
-export function Explain({ label = 'More about this', children }) {
+//
+// `trigger`: pass a node to make the WHOLE thing the tap target instead of the "?" dot — a
+// header chip, a stat pill. The phone has no hover, so any chip that used to explain itself
+// through title= wraps itself in an Explain instead. The trigger node must not contain a
+// button (the wrapper IS the button).
+export function Explain({ label = 'More about this', trigger = null, triggerClass = '', align = 'left', children }) {
   const [open, setOpen] = useState(false)
   // Escape closes it. Without this the ONLY way out is a mouse click on the popover itself — the
   // pattern this generalises (NotorietyHelp) has that gap, and copying a gap into a shared
   // component multiplies it by every future call site.
   useModalEscape(useCallback(() => setOpen(false), []))
   return (
-    <span className="explain-wrap">
-      <button className="noto-help" aria-label={label} title={label} aria-expanded={open}
-        onClick={() => setOpen(o => !o)}>?</button>
+    <span className={`explain-wrap ${align === 'right' ? 'explain-right' : ''}`.trim()}>
+      {trigger
+        ? <button className={`explain-trigger ${triggerClass}`.trim()} aria-label={label} aria-expanded={open}
+            onClick={() => setOpen(o => !o)}>{trigger}</button>
+        : <button className="noto-help" aria-label={label} aria-expanded={open}
+            onClick={() => setOpen(o => !o)}>?</button>}
       {open && (
         <span className="noto-pop" role="dialog" aria-label={label} onClick={() => setOpen(false)}>
           {children}

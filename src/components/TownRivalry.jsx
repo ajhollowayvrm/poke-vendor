@@ -88,9 +88,10 @@ function BranchPanel() {
           <span className="cap">Who runs it:</span>
           {EMPLOYEES.map(e => (
             <button key={e.id} className={`btn ${mgr === e.id ? 'gold' : 'alt'}`} style={{ flex: 'none', padding: '4px 10px', fontSize: 12 }}
-              title={e.desc} onClick={() => setMgr(e.id)}>{e.title} · ${e.wage}/d</button>
+              onClick={() => setMgr(e.id)}>{e.title} · ${e.wage}/d</button>
           ))}
         </div>
+        <p className="cap mt-2">{employeeById(mgr)?.desc}</p>
         <div className="row mt-5">
           <button className="btn gold" style={{ maxWidth: 280 }} onClick={() => {
             const r = openBranch(mgr)
@@ -132,7 +133,6 @@ function BranchPanel() {
         ))}
         <button className="btn alt btn-fixed" style={{ maxWidth: 170 }}
           disabled={!eligible.length}
-          title={eligible.length ? 'Sends your highest-value storeroom stock — floor stock, keepsakes and holds stay put' : 'Nothing in the storeroom to send'}
           onClick={() => {
             const r = sendToBranch(eligible.slice(0, batch).map(x => x.uid))
             setNote(r?.error || `Sent ${r.sent} item${r.sent === 1 ? '' : 's'} over.`)
@@ -142,6 +142,7 @@ function BranchPanel() {
           ↩︎ Recall all stock
         </button>
       </div>
+      <p className="cap mt-2">{eligible.length ? 'Floor stock, keepsakes and holds stay put.' : 'Nothing in the storeroom to send.'}</p>
       {note && <p className="cap mt-3">{note}</p>}
     </div>
   )

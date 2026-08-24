@@ -2,7 +2,8 @@ import { useMemo } from 'react'
 import { useGame, absoluteDay } from '../game/store'
 import { rosterForShow, vendorPreview, crowdTipFrom, vendorRapport, archetype } from '../game/shows'
 import { sealedValue, fmtMoney, round2 } from '../game/engine'
-import { toast, useModalEscape } from '../ui/dialog'
+import { toast } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 
 // 💬 Pre-show DMs — "it's not the size of the show, it's who's going." For a show a few
 // days out, this is the group chat: which recurring dealers are setting up (rosterForShow —
@@ -20,7 +21,6 @@ export default function ShowDMs({ show, onClose }) {
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const prepayFromVendor = useGame(s => s.prepayFromVendor)
   const reserveFromVendor = useGame(s => s.reserveFromVendor)
-  useModalEscape(onClose)
 
   const absDay = absoluteDay(show.day, monthsElapsed)
   const roster = useMemo(() => rosterForShow(show, showVendors || []), [show, showVendors])
@@ -48,9 +48,7 @@ export default function ShowDMs({ show, onClose }) {
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={640} label="Show DMs">
         <h2 className="t-xl" style={{ marginBottom: 2 }}>💬 Who's going — {show.name}</h2>
         <p className="cap t-sm mt-0">
           Day {show.day} · {show.tier}. The size of the hall isn't what matters — it's who books a table.
@@ -128,7 +126,6 @@ export default function ShowDMs({ show, onClose }) {
           One 💳 buy and one 🤝 hold per dealer per show. Buying over DM builds the same rapport as dealing at their table.
         </p>
         <button className="btn alt" style={{ marginTop: 8, maxWidth: 140 }} onClick={onClose}>Done</button>
-      </div>
-    </div>
+    </Modal>
   )
 }

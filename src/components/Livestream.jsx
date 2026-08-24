@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { Modal } from '../ui/Modal'
 import { useGame, absoluteDay } from '../game/store'
 import { SHOP_SETS, openPack, makeProductPromo, isHit, isChase, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg, showcaseSetIds } from '../game/engine'
 import {
@@ -1494,9 +1495,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
   const pool = [...collection].filter(c => !reservedUids.has(c.uid)).sort((a, b) => cardValue(b) - cardValue(a))
   return (
-    <div className="modalbg" onClick={onClose} style={{ zIndex: 30 }}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={760} zIndex={30} label="Giveaway picker">
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🎁 Give away a card</h2>
           <span className="pill">{pool.length} eligible</span>
@@ -1523,8 +1522,7 @@ function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
           </div>
         )}
         <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={onClose}>Close</button>
-      </div>
-    </div>
+    </Modal>
   )
 }
 

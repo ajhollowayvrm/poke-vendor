@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame, UPGRADES, PAYMENT_METHODS, acceptedMethods } from '../game/store'
 import { fmtMoney } from '../game/engine'
 import { Collapse } from '../ui/Collapse'
@@ -35,8 +36,7 @@ export default function UpgradeShop() {
   const owned = useGame(s => s.upgrades)
   const buy = useGame(s => s.buyUpgrade)
   const accepted = acceptedMethods(owned)
-  const [toast, setToast] = useState(null)
-  const flash = useCallback(m => { setToast(m); setTimeout(() => setToast(null), 2800) }, [])
+  const flash = useCallback(m => toast(m, 2800), [])
 
   function purchase(key, u) {
     if (buy(key)) flash(`${u.icon} ${u.name} unlocked — ${fmtMoney(u.cost)} spent.`)
@@ -96,7 +96,6 @@ export default function UpgradeShop() {
           </Collapse>
         )
       })}
-      {toast && <div className="toast">{toast}</div>}
     </>
   )
 }

@@ -68,6 +68,21 @@
      Eight steps. Round to one; do not add a ninth. */
   --space-0: 0;    --space-1: 2px;  --space-2: 4px;  --space-3: 6px;
   --space-4: 8px;  --space-5: 12px; --space-6: 16px; --space-7: 24px;
+
+  /* GLOBAL LAYER LADDER — every full-screen layer takes its z-index from here.
+     Bottom → top: rip/sift overlay → grade reveal & game over → rip-resume banner →
+     hit burst → hall announcement → modal backdrop → toast stack → confirm dialog.
+     Values inside a component (card-tile chips z 2-7, a picker stacked inside a
+     modal's own stacking context) are LOCAL and stay literal — they never compete
+     with these layers, only with their siblings. */
+  --z-overlay: 25;    /* full-screen rip / sift overlays */
+  --z-reveal: 45;     /* grade reveal (game over sits at +5, above it) */
+  --z-banner: 55;     /* floating "rip in progress" resume banner */
+  --z-burst: 60;      /* celebration burst */
+  --z-announce: 70;   /* show-hall announcements */
+  --z-modal: 80;      /* standard modal backdrop */
+  --z-toast: 95;      /* toast stack */
+  --z-confirm: 100;   /* confirm dialog — always top */
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
@@ -187,7 +202,7 @@ button:disabled:active, [role="button"][aria-disabled="true"]:active { filter: n
    the same rip. Sits BELOW the sticky top bar (z-30) and bottom nav (z-60) so you can still
    navigate away mid-rip, and below modals (z-80). The top bar paints over its top strip;
    the rip content is centred below it. */
-.rip-overlay { position: fixed; inset: 0; z-index: 25; overflow-y: auto;
+.rip-overlay { position: fixed; inset: 0; z-index: var(--z-overlay); overflow-y: auto;
   background: radial-gradient(1200px 600px at 70% -10%, #1a2340 0%, var(--bg) 55%);
   /* Top pad clears the sticky, opaque top bar (which paints over this overlay). Its
      height is variable — it wraps to extra rows on narrow/half-width windows — so track
@@ -217,7 +232,7 @@ button:disabled:active, [role="button"][aria-disabled="true"]:active { filter: n
 body.rip-lock { overflow: hidden; touch-action: none; }
 /* Floating "resume your rip" pill shown when a rip is mid-flight on another tab. */
 .rip-resume-banner { position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: calc(24px + var(--sab)); z-index: 55; cursor: pointer;
+  bottom: calc(24px + var(--sab)); z-index: var(--z-banner); cursor: pointer;
   background: linear-gradient(180deg, #3b6cff, #2a52d8); color: #fff; border: none;
   font-weight: 800; font-size: var(--fs-sm); padding: 10px 16px; border-radius: 999px;
   box-shadow: 0 6px 20px #0007; animation: ripPulse 1.8s ease-in-out infinite; }
@@ -405,7 +420,7 @@ body.rip-lock { overflow: hidden; touch-action: none; }
    spent two full-width blue blocks, so a calendar of eleven locked shows read as a wall of
    buttons with nothing to press. Disabled now falls back to a flat ghost surface, so the eye
    goes to what you CAN do. */
-.btn:disabled { opacity: .55; cursor: not-allowed; background: #ffffff10; color: var(--dim);
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; background: #ffffff10; color: var(--dim);
   box-shadow: none; }
 
 /* Card tile */
@@ -661,11 +676,11 @@ body.rip-lock { overflow: hidden; touch-action: none; }
   /* rip hand: cards still reveal, they just cut straight in (no rise-in pop) */
   .hand-current .hand-face, .hand-current.chase .hand-face { animation: none; }
 }
-.hitburst { position:fixed; inset:0; pointer-events:none; z-index:60; }
+.hitburst { position:fixed; inset:0; pointer-events:none; z-index: var(--z-burst); }
 
 /* Modal */
 .modalbg { position: fixed; inset:0; background:#000b; display:flex; align-items:center; justify-content:center;
-  z-index: 80; padding: 20px; backdrop-filter: blur(3px); animation: backdropIn .18s ease; }
+  z-index: var(--z-modal); padding: 20px; backdrop-filter: blur(3px); animation: backdropIn .18s ease; }
 .modal { background: var(--panel); border:1px solid var(--line); border-radius: 18px; padding: 20px;
   max-width: 760px; width: 100%; max-height: 88vh; overflow:auto; box-shadow: 0 30px 80px #000c;
   position: relative; animation: modalPop .2s cubic-bezier(.2,.9,.3,1); }
@@ -973,7 +988,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
    sitting on the row it was reporting about, taking the taps meant for that row's 🎬 rip button.
    A notification must never be a tap target; the only interactive part is .toast-action, which
    turns pointer-events back on for itself. */
-.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 90;
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: var(--z-toast);
   pointer-events: none;
   background: var(--panel); border:1px solid var(--line); color: var(--txt); padding: 12px 20px; border-radius: 12px;
   font-weight: 700; box-shadow: 0 12px 40px #000b; max-width: 80vw; text-align:center; animation: toastin .25s ease; }
@@ -986,7 +1001,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
    so it reads as a notification rather than a dialog. */
 .toast-stack { position: fixed; bottom: calc(28px + var(--sab)); right: calc(16px + var(--sar));
   left: auto; transform: none;
-  z-index: 95; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none; }
+  z-index: var(--z-toast); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none; }
 .toast-stack .toast { position: static; transform: none; left: auto; bottom: auto;
   max-width: min(320px, 76vw); text-align: left; animation: toaststackin .25s ease; }
 @keyframes toaststackin { from{opacity:0; transform: translateX(16px)} to{opacity:1; transform: none} }
@@ -1583,7 +1598,7 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .credit-pay-btns .btn { flex:1 1 auto; min-width:max-content; padding:8px 10px; font-size: var(--fs-xs); }
 
 /* ---------- Hall announcements (big pulls on the floor) ---------- */
-.hall-announce { position: fixed; top: 88px; left: 50%; transform: translateX(-50%); z-index: 70;
+.hall-announce { position: fixed; top: 88px; left: 50%; transform: translateX(-50%); z-index: var(--z-announce);
   display:flex; gap: 12px; align-items:center; max-width: 520px;
   background: linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--gold);
   box-shadow: 0 0 0 1px #ffcb0544, 0 16px 50px #000b; border-radius: 14px; padding: 12px 16px;
@@ -1889,6 +1904,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
   }
   /* the card detail is an edge-to-edge sheet (no 12px inset), so its ✕ sits a touch higher/righter */
   .modal-detail .modal-close { top: calc(10px + var(--sat)); right: 12px; }
+  /* Opt-in bottom sheet (Modal `sheet` prop). Tall content rises from the bottom edge and
+     scrolls inside itself; short confirms stay centered. !important because the Modal
+     component sets max-width inline (a prop) and the phone presentation must win over it. */
+  .modalbg:has(> .modal-sheet) { align-items: flex-end; padding: 0; }
+  .modal-sheet { width: 100%; max-width: none !important; max-height: 85dvh;
+    border-radius: 16px 16px 0 0; border-left: 0; border-right: 0; border-bottom: 0;
+    padding-bottom: calc(16px + var(--sab)); }
   .detailflex { gap: 12px; } .detailflex img, .modal-holo { width: 200px; }
   .encounter { max-width: 94vw; }
 
@@ -1981,6 +2003,15 @@ button.rip-hit-row:hover { background:#ffffff14; }
    Truncating cut the theft notice at "🕵️ Mandibuzz went missing (was ~$0.08) — lock c…",
    losing exactly the half that tells you what to do about it. */
 .recap-line.recap-event > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
+/* Collapsed detail folds in the recap — quiet one-line headers, same rhythm as .recap-sec-h,
+   so closed folds read as section headings with a count. */
+.recap-fold { margin-top: 8px; }
+.recap-fold-head { margin: 0; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .5px; color: var(--dim); }
+.recap-fold-head .collapse-btn { display: flex; align-items: center; gap: 6px; width: 100%;
+  background: none; border: 0; padding: 4px 0; color: inherit; font: inherit; text-transform: inherit;
+  letter-spacing: inherit; cursor: pointer; min-height: var(--tap-fine); }
+@media (pointer: coarse) { .recap-fold-head .collapse-btn { min-height: var(--tap); } }
+.recap-fold-head .collapse-caret { margin-left: auto; }
 
 /* ---------- Consignment strip ---------- */
 .consign-strip { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:14px 0 4px;
@@ -2305,9 +2336,9 @@ button.rip-hit-row:hover { background:#ffffff14; }
   background:#ffffff10; border:1px solid var(--line); border-radius:8px; padding:3px 5px; }
 .stock-act { flex:none; border:1px solid var(--line); background:#ffffff0e; color:var(--txt);
   border-radius:8px; padding:4px 8px; font-size: var(--fs-sm); line-height:1.2; cursor:pointer; }
-.stock-act:hover:not(:disabled) { background:var(--hover); border-color:var(--accent2); }
+.stock-act:hover:not(:disabled):not([aria-disabled="true"]) { background:var(--hover); border-color:var(--accent2); }
 .stock-act.on { border-color:var(--gold); color:var(--gold); background:#ffcb0518; }
-.stock-act:disabled { opacity:.35; cursor:not-allowed; }
+.stock-act:disabled, .stock-act[aria-disabled="true"] { opacity:.35; cursor:not-allowed; }
 /* Condition / centering / finish chips on a stock row's sub line — the "should I grade
    this?" read without opening every card. Colours come inline (CONDITIONS / CUT_TIERS). */
 .tl-chip { display:inline-block; font-size: var(--fs-xs); font-weight:800; letter-spacing:.02em;
@@ -2699,6 +2730,16 @@ button.rip-hit-row:hover { background:#ffffff14; }
 /* ui/Explain.jsx reuses .noto-help / .noto-pop for any panel's "read this once" copy, so the
    popover needs a positioning context wherever it is used, not just inside the notoriety chip. */
 .explain-wrap { position: relative; display: inline-block; }
+/* Explain `trigger` wrapper: a transparent button shell around a chip that now opens the
+   popover on tap. The chip inside keeps its own painted style. */
+.explain-trigger { background: none; border: 0; padding: 0; margin: 0; font: inherit;
+  color: inherit; text-align: inherit; cursor: pointer; display: inline-flex; position: relative; }
+/* Same trick as .noto-help: paint stays chip-sized, the tap target quietly reaches 44pt. */
+.explain-trigger::after { content: ''; position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%); width: max(100%, var(--tap)); height: max(100%, var(--tap)); }
+.explain-wrap { position: relative; display: inline-flex; }
+/* A chip near the right screen edge opens its popover leftward, not off-screen. */
+.explain-right .noto-pop { left: auto; right: 0; }
 .noto-pop { position: absolute; z-index: 60; top: 100%; left: 0; margin-top: 6px; width: min(340px, 88vw);
   text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   padding: 10px 12px; box-shadow: 0 10px 30px #0009; font-size: var(--fs-xs); cursor: pointer; }
@@ -2726,6 +2767,13 @@ button.rip-hit-row:hover { background:#ffffff14; }
   justify-content: center; gap: 10px; color: var(--dim); }
 .boot-splash .boot-logo { font-size: 40px; opacity: .9; }
 .boot-splash .boot-text { font-size: var(--fs-sm); letter-spacing: .02em; }
+/* Crash screen (ErrorBoundary) — same design system as everything else, so a crash
+   still looks like the game and not like a broken page. */
+.crash-screen { max-width: 480px; margin: 15vh auto 0; padding: var(--space-7); text-align: center; }
+.crash-screen h2 { margin: 10px 0 6px; }
+.crash-logo { font-size: 40px; }
+.crash-msg { word-break: break-word; margin: 0 0 var(--space-6); }
+.crash-actions { display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap; }
 
 /* ---------- Vendor booth: sealed as a set-grouped list ----------------------------
    A dealer's table carries a proper spread now (roughly 10x what it used to), and a grid of

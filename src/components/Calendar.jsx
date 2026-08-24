@@ -3,6 +3,7 @@ import { useGame, dayOrderRate, monthName, yearOf, RANKS } from '../game/store'
 import { generateCalendar, SHOW_TIERS } from '../game/shows'
 import { fmtMoney } from '../game/engine'
 import ShowDMs from './ShowDMs'
+import { Explain } from '../ui/Explain'
 
 // How close a show must be before the pre-show DM circuit lights up (mirrors the
 // daytick lead window — dealers finalize their tables a few days out).
@@ -34,6 +35,10 @@ export default function Calendar({ onAttend }) {
         <span className="noto-group">
           <span className="pill">⭐ {Math.round(notoriety)} · {RANKS[rank]?.emoji} {RANKS[rank]?.name}</span>
           <NotorietyBar n={notoriety} rank={rank} />
+          <Explain label="What do the ticks on the reputation bar mean?">
+            Each tick is a rank threshold — reach the ⭐ and back it with deeds to bank that rank
+            for good. Ranks open the door to bigger shows, better distributors, and sanctioned play.
+          </Explain>
         </span>
       </div>
 
@@ -96,7 +101,7 @@ export default function Calendar({ onAttend }) {
                 Cards ~{fmtMoney(tier.valueBand[0])}–{fmtMoney(tier.valueBand[1])} · {Math.round(tier.traffic * 100)}% traffic
               </div>
               {leads.map(l => (
-                <div key={l.id} className="cal-lead" title={l.text}>
+                <div key={l.id} className="cal-lead">
                   {l.kind === 'vendor'
                     ? <>🗝️ <b>{l.vendorName}</b> is holding a {l.productType} of {l.setName} for you · {fmtMoney(l.price)}</>
                     : l.kind === 'purchase'
@@ -107,8 +112,7 @@ export default function Calendar({ onAttend }) {
               {/* 💬 The pre-show circuit: for a close-enough show, see which dealers you know
                   are going, catch the crowd gossip, and deal with them before doors. */}
               {!show.locked && show.day - currentDay <= DM_WINDOW && (
-                <button className="btn alt mt-3"  onClick={() => setDmShow(show)}
-                  title="Which dealers you know are setting up, what they're hauling, and what the crowd's looking like — deal with them before doors open.">
+                <button className="btn alt mt-3"  onClick={() => setDmShow(show)}>
                   💬 Who's going?
                 </button>
               )}
@@ -122,15 +126,15 @@ export default function Calendar({ onAttend }) {
               <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {show.locked ? (
                   <>
-                    <button className="btn" disabled title={`Unlocks at rank ${tier.minRank}: reach ⭐ ${tier.minNotoriety} and prove yourself (see the reputation panel on the Stats tab)`}>
+                    <button className="btn" disabled>
                       🔒 {RANKS[tier.minRank]?.emoji} {RANKS[tier.minRank]?.name}
                     </button>
+                    <div className="cap">Needs ⭐ {tier.minNotoriety} — reputation panel on Stats</div>
                     {/* 🎫 Waiver: exactly one tier above your rank, a favor gets you a shopper
                         ticket — 3 clout + double the door price. No booth at a show that
                         doesn't know you. */}
                     {tier.minRank === rank + 1 && (
                       <button className="btn alt" disabled={clout < 3 || cash < tier.entryFee * 2}
-                        title={clout < 3 ? 'Needs 3 🎫 clout (rank-ups, god packs, clean-sweep goal weeks)' : `Spend 3 🎫 clout and pay double entry ($${tier.entryFee * 2}) to walk a floor above your rank — shopper ticket only`}
                         onClick={() => onAttend({ ...show, _waiver: true }, 'shop')}>
                         🎫 Talk your way in · 3 🎫 + ${tier.entryFee * 2}
                       </button>
@@ -138,14 +142,10 @@ export default function Calendar({ onAttend }) {
                   </>
                 ) : (
                   <>
-                    <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show, 'shop')}
-                      title="Shopper ticket — walk the floor and buy. No booth.">
+                    <button className="btn gold" disabled={!canAfford} onClick={() => onAttend(show, 'shop')}>
                       🛍️ Attend · ${tier.entryFee}{tripDays > 1 ? ` · ${tripDays}d` : ''}
                     </button>
-                    <button className="btn" disabled={!canVendor || !canAffordVendor} onClick={() => onAttend(show, 'vendor')}
-                      title={canVendor
-                        ? `Run a booth to sell your cards. Entry $${tier.entryFee}${upgrades.sponsorship ? ' — booth fee sponsored 📣' : ` + booth $${tier.vendorFee}`}.`
-                        : 'Requires the 🎪 Vendor Setup upgrade'}>
+                    <button className="btn" disabled={!canVendor || !canAffordVendor} onClick={() => onAttend(show, 'vendor')}>
                       {canVendor ? `🎪 Vendor · $${vendorCost}` : '🎪 Vendor · 🔒 needs setup'}
                     </button>
                   </>
@@ -176,7 +176,7 @@ export function NotorietyBar({ n, rank = 0 }) {
       <div style={{ background: '#ffffff14', border: '1px solid var(--line)', borderRadius: 999, height: 12, overflow: 'hidden', position: 'relative' }}>
         <div style={{ width: pct > 0 ? `max(3px, ${pct}%)` : 0, height: '100%', background: 'linear-gradient(90deg,#5ec98a,#ff9f43,#ff3df0)', transition: 'width .4s' }} />
         {RANKS.map((r, i) => r.min > 0 && (
-          <span key={r.name} title={`${r.emoji} ${r.name} — ⭐ ${r.min} + deeds`}
+          <span key={r.name}
             style={{ position: 'absolute', top: -2, left: `${Math.min(100, (r.min / scale) * 100)}%`, width: 2, height: 16, background: rank >= i ? '#fff' : '#ffffff44' }} />
         ))}
       </div>
