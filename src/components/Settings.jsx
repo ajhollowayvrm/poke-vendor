@@ -40,7 +40,7 @@ function OfflineArt() {
   return (
     <>
       <h3 style={{ margin: '18px 0 4px' }}>Offline art</h3>
-      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+      <p className="cap t-sm mt-0">
         Card images come from the internet. {isNativeShell
           ? 'Everything you have already looked at is kept on this device permanently — this downloads the rest of your collection up front, so it is all there with no signal.'
           : 'In the iPhone app, everything you look at is kept on the device permanently. In a browser that is up to the browser cache.'}
@@ -48,7 +48,7 @@ function OfflineArt() {
       <button className="btn alt" style={{ maxWidth: 280 }} onClick={start} disabled={!mine.length && !job}>
         {job ? `Stop — ${job.done}/${job.total}` : `📥 Download art for my ${mine.length} card${mine.length === 1 ? '' : 's'}`}
       </button>
-      {msg && <div style={{ fontSize: 12, marginTop: 6, color: 'var(--green)' }}>{msg}</div>}
+      {msg && <div className="t-xs" style={{ marginTop: 6, color: 'var(--green)' }}>{msg}</div>}
     </>
   )
 }
@@ -144,13 +144,13 @@ export default function Settings() {
       <Account />
 
       <h3 style={{ margin: '18px 0 4px' }}>Gameplay</h3>
-      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+      <p className="cap t-sm mt-0">
         How sealed product with multiple packs (booster boxes, bundles, ETBs…) opens.
       </p>
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Open multi-pack product one pack at a time</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {openSealedOneByOne
               ? 'On — each pack rips with the full animation; you can fast-forward the rest anytime.'
               : 'Off — the whole box rips instantly into your collection (faster).'}
@@ -166,13 +166,13 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Reveal mode</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {revealMode === 'manual'
               ? 'Manual — cards land face-down; tap each one to flip it yourself. The suspense of the last card is in your hands.'
               : 'Auto — cards flip on their own, best card last. Chase pulls get a suspense beat.'}
           </div>
         </div>
-        <div className="seg" style={{ flex: 'none' }}>
+        <div className="seg btn-fixed">
           <button className={`segbtn ${revealMode === 'auto' ? 'on' : ''}`} onClick={() => setSetting('revealMode', 'auto')}>Auto</button>
           <button className={`segbtn ${revealMode === 'manual' ? 'on' : ''}`} onClick={() => setSetting('revealMode', 'manual')}>Manual</button>
         </div>
@@ -181,9 +181,9 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Rip speed</div>
-          <div className="muted" style={{ fontSize: 12 }}>How fast cards reveal during the animated rip{revealMode === 'manual' ? ' (auto mode only)' : ''}.</div>
+          <div className="cap">How fast cards reveal during the animated rip{revealMode === 'manual' ? ' (auto mode only)' : ''}.</div>
         </div>
-        <div className="seg" style={{ flex: 'none' }}>
+        <div className="seg btn-fixed">
           {RIP_SPEEDS.map(s => (
             <button key={s.v} className={`segbtn ${ripSpeed === s.v ? 'on' : ''}`}
               onClick={() => setSetting('ripSpeed', s.v)}>{s.label}</button>
@@ -194,7 +194,7 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Auto-rip</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {autoAdvance
               ? 'On — once a rip is underway it auto-starts each reveal, and (in one-at-a-time mode) rolls through the rest of a box for you. Pacing only — it doesn’t change where a buy goes.'
               : 'Off — you click to start each reveal yourself.'}
@@ -210,7 +210,7 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Rip sound effects</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {sound
               ? 'On — pack tear, card flips, and a rising chime on hits (pitched to rarity).'
               : 'Off — the rip is silent.'}
@@ -226,7 +226,7 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Haptics</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {haptics
               ? 'On — your phone buzzes on the tear and on hits (supported devices only).'
               : 'Off — no vibration.'}
@@ -242,7 +242,7 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Rip on buy</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {ripOnBuy
               ? 'On — buying sealed rips it immediately instead of stocking it. You skip the 📦 Inventory step.'
               : 'Off — buying sealed stocks it into your 📦 Inventory to rip, list, or flip later.'}
@@ -259,7 +259,7 @@ export default function Settings() {
         <div className="setting-card">
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 700 }}>🧾 Submission Runner</div>
-            <div className="muted" style={{ fontSize: 12 }}>
+            <div className="cap">
               {runnerOn
                 ? 'On — up to 2 clearly-+EV raw cards go to Economy grading overnight (fee from the till).'
                 : 'Paused — the runner submits nothing until you switch them back on.'}
@@ -274,7 +274,7 @@ export default function Settings() {
       )}
 
       <h3 style={{ margin: '18px 0 4px' }}>🤝 Deal detector</h3>
-      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+      <p className="cap t-sm mt-0">
         Define what counts as a <b>DEAL</b> on a vendor's singles — the floor flags any card that matches.
         {hasNetwork
           ? ' Tags show at shows now that you own the Dealer Network.'
@@ -284,9 +284,9 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Price vs market</div>
-          <div className="muted" style={{ fontSize: 12 }}>How cheap the ask must be to flag. "Around market" catches fair asks; the lower settings only flag real bargains.</div>
+          <div className="cap">How cheap the ask must be to flag. "Around market" catches fair asks; the lower settings only flag real bargains.</div>
         </div>
-        <div className="seg" style={{ flex: 'none' }}>
+        <div className="seg btn-fixed">
           {[['15% under', 0.85], ['10% under', 0.9], ['At market', 1.0], ['Around mkt', 1.05]].map(([lbl, v]) => (
             <button key={v} className={`segbtn ${Math.abs(dealMaxMult - v) < 1e-6 ? 'on' : ''}`}
               onClick={() => setSetting('dealMaxMult', v)}>{lbl}</button>
@@ -297,9 +297,9 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Condition</div>
-          <div className="muted" style={{ fontSize: 12 }}>Only flag raw cards this clean or better (a mint, ungraded card is the classic gem-hunter's buy). Slabs ignore this.</div>
+          <div className="cap">Only flag raw cards this clean or better (a mint, ungraded card is the classic gem-hunter's buy). Slabs ignore this.</div>
         </div>
-        <div className="seg" style={{ flex: 'none' }}>
+        <div className="seg btn-fixed">
           {[['Any', 'any'], ['LP+', 'LP'], ['NM only', 'NM']].map(([lbl, v]) => (
             <button key={v} className={`segbtn ${dealCondition === v ? 'on' : ''}`}
               onClick={() => setSetting('dealCondition', v)}>{lbl}</button>
@@ -310,9 +310,9 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Cut quality</div>
-          <div className="muted" style={{ fontSize: 12 }}>Only flag raw cards whose cut is this sharp or better — a Sharp/Pristine cut is the grade-worthy gem. Slabs ignore this.</div>
+          <div className="cap">Only flag raw cards whose cut is this sharp or better — a Sharp/Pristine cut is the grade-worthy gem. Slabs ignore this.</div>
         </div>
-        <div className="seg" style={{ flex: 'none' }}>
+        <div className="seg btn-fixed">
           {[['Any', 'any'], ['Clean+', 'Clean'], ['Sharp+', 'Sharp'], ['Pristine', 'Pristine']].map(([lbl, v]) => (
             <button key={v} className={`segbtn ${dealCut === v ? 'on' : ''}`}
               onClick={() => setSetting('dealCut', v)}>{lbl}</button>
@@ -323,7 +323,7 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Ungraded only</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             {dealUngradedOnly ? 'On — only RAW cards flag as deals (graded slabs are skipped).' : 'Off — graded slabs can flag as deals too.'}
           </div>
         </div>
@@ -337,9 +337,9 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Ignore cheap cards</div>
-          <div className="muted" style={{ fontSize: 12 }}>Skip low-value bulk so the tag means something. Only cards worth at least this flag.</div>
+          <div className="cap">Skip low-value bulk so the tag means something. Only cards worth at least this flag.</div>
         </div>
-        <div className="seg" style={{ flex: 'none' }}>
+        <div className="seg btn-fixed">
           {[['Any', 0], ['$5+', 5], ['$20+', 20], ['$50+', 50]].map(([lbl, v]) => (
             <button key={v} className={`segbtn ${dealMinValue === v ? 'on' : ''}`}
               onClick={() => setSetting('dealMinValue', v)}>{lbl}</button>
@@ -348,7 +348,7 @@ export default function Settings() {
       </div>
 
       <h3 style={{ margin: '18px 0 4px' }}>Card prices</h3>
-      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+      <p className="cap t-sm mt-0">
         Pull the latest TCGplayer market prices for all {SETS.length} loaded sets — instantly from the
         game&#39;s shared daily price cache when you&#39;re signed in, or live from pokemontcg.io otherwise.
         Updates values across the shop, your collection, vendor booths, and offers. No rebuild needed.
@@ -357,27 +357,27 @@ export default function Settings() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>Market prices</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             Bundled snapshot from {built.toLocaleDateString()}
             {lastRefreshed && <> · last refreshed {new Date(lastRefreshed).toLocaleTimeString()}</>}
           </div>
           {status === 'running' && progress && (
-            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+            <div className="cap mt-3">
               Fetching {progress.setName}… ({progress.index + 1}/{progress.count})
             </div>
           )}
           {status === 'done' && result && (
-            <div style={{ fontSize: 12, marginTop: 6, color: 'var(--green)' }}>
+            <div className="t-xs" style={{ marginTop: 6, color: 'var(--green)' }}>
               ✓ Updated {result.updated} of {result.total} cards.
             </div>
           )}
           {status === 'error' && result?.error && (
-            <div style={{ fontSize: 12, marginTop: 6, color: 'var(--red)' }}>
+            <div className="t-xs" style={{ marginTop: 6, color: 'var(--red)' }}>
               Couldn't refresh: {result.error}
             </div>
           )}
         </div>
-        <button className="btn gold" style={{ flex: 'none', maxWidth: 180 }} disabled={status === 'running'} onClick={doRefresh}>
+        <button className="btn gold btn-fixed" style={{ maxWidth: 180 }} disabled={status === 'running'} onClick={doRefresh}>
           {status === 'running' ? 'Refreshing…' : '↻ Refresh prices'}
         </button>
       </div>
@@ -385,7 +385,7 @@ export default function Settings() {
       <OfflineArt />
 
       <h3 style={{ margin: '18px 0 4px' }}>Save</h3>
-      <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+      <p className="cap t-sm mt-0">
         Progress auto-saves to this browser{cloudConfigured() ? ' (and to your account when signed in)' : ''}.
         Resetting wipes cash, collection, notoriety, and upgrades.
       </p>

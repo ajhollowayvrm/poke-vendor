@@ -63,6 +63,18 @@ try {
   // ---- 1. RIP EV per modern shop set ---------------------------------------------
   // N is large: pack value is fat-tailed (a rare chase dwarfs a whole box), so a small
   // sample swings wildly run-to-run. 5k packs keeps the mean stable enough to gate on.
+  //
+  // ...for most sets. It does NOT for Prismatic Evolutions, whose Master Ball Foil trades at
+  // ~55× market — a tail fat enough that the sample mean was observed at 49%, 58%, 93% and
+  // 101% of pack price across four consecutive runs of this very gate. Comparing that estimate
+  // to a hard 1.00 made the suite fail roughly one run in four on a set that is genuinely -EV.
+  // A gate that cries wolf gets ignored, which costs more than the gate is worth.
+  //
+  // So: gate on the estimate AND its uncertainty. Track the sum of squares to get the standard
+  // error of the mean, and fail only when the ratio is above 1.00 by more than 2 standard
+  // errors — i.e. when the sample says the set is +EV rather than merely landing high on a
+  // lucky run. A truly +EV set still fails, because its mean sits above 1.00 by far more than
+  // its noise. This tests the invariant ("ripping is -EV") instead of testing the RNG.
   console.log('\nRIP EV (avg pack value / booster price, N=5000 packs per set) — want < 1.00:')
   const rip = await page.evaluate(async () => {
     const eng = await import('/src/game/engine.js')
@@ -71,15 +83,25 @@ try {
       const booster = (s.products || []).find(p => p.packs === 1 && /booster pack/i.test(p.type || ''))
       if (!booster || !booster.price) continue
       const N = 5000
-      let total = 0
-      for (let i = 0; i < N; i++) for (const c of eng.openPack(s)) total += eng.cardValue(c)
-      out.push({ set: s.name, price: booster.price, ev: total / N })
+      let total = 0, totalSq = 0
+      for (let i = 0; i < N; i++) {
+        let packVal = 0
+        for (const c of eng.openPack(s)) packVal += eng.cardValue(c)
+        total += packVal; totalSq += packVal * packVal
+      }
+      const mean = total / N
+      // Population variance of the per-pack value → standard error of its mean.
+      const variance = Math.max(0, totalSq / N - mean * mean)
+      out.push({ set: s.name, price: booster.price, ev: mean, se: Math.sqrt(variance / N), n: N })
     }
     return out
   })
   for (const r of rip) {
     const ratio = r.ev / r.price
-    pass(`${r.set}: EV $${r.ev.toFixed(2)} vs $${r.price.toFixed(2)} pack (${(ratio * 100).toFixed(0)}%)`, ratio < 1.0)
+    const margin = (2 * r.se) / r.price   // 2 standard errors, in the same units as `ratio`
+    const overByNoise = ratio - 1.0 > margin
+    pass(`${r.set}: EV $${r.ev.toFixed(2)} vs $${r.price.toFixed(2)} pack `
+      + `(${(ratio * 100).toFixed(0)}% ±${(margin * 100).toFixed(0)})`, !overByNoise)
   }
 
   // ---- 1b. 🎌 JP import rip EV ----------------------------------------------------

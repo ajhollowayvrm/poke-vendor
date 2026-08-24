@@ -51,12 +51,12 @@ export default function FirstRun() {
     <div className="firstrun">
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
         <b>🎓 Getting started</b>
-        <button className="linkbtn" style={{ fontSize: 12 }} title="Hide this for good"
+        <button className="linkbtn t-xs"
           onClick={() => { try { localStorage.setItem(DISMISS_KEY, '1') } catch { /* private mode */ }; setHidden(true) }}>
           Dismiss ✕
         </button>
       </div>
-      <p className="muted" style={{ fontSize: 12, margin: '2px 0 8px' }}>
+      <p className="cap" style={{ margin: '2px 0 8px' }}>
         The whole game is one loop. You have {fmtMoney(state.cash)} — the rest is up to you.
       </p>
       <div className="firstrun-steps">
@@ -81,7 +81,7 @@ export function NotorietyHelp() {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <button className="noto-help" aria-label="What does reputation do?" title="What does reputation do?"
+      <button className="noto-help" aria-label="What does reputation do?"
         onClick={() => setOpen(o => !o)}>?</button>
       {open && (
         <div className="noto-pop" role="dialog" onClick={() => setOpen(false)}>

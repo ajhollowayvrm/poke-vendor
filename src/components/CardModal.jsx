@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { Modal } from '../ui/Modal'
 import { AUCTION_LENGTHS, AUCTION_RESERVES } from '../game/auctions'
 import { cardValue, rawValue, psaValueAt, valueHistory, setIdOfCard, setNameOfCard, GRADING, GRADING_VALUE_RATE, GRADERS, gradingFee, gradingShipping, gradingDays, premiumTierFor, graderById, overTierValue, slabLabel, isBlackLabel, graderTier, nextGraderTier, CONDITIONS, fmtMoney, cutEstimate, cardVariant, MASTERSET_VARIANTS, gradePrediction, round2, cardPopulation, CRACK_DAMAGE_CHANCE, cardNumber, rarityLabel } from '../game/engine'
 import { popTier } from '../game/population'
@@ -11,6 +12,7 @@ import { rarityColor, gradeLabel } from './CardTile'
 import { AskPicker } from '../ui/AskPicker'
 import HoloCard from './HoloCard'
 import PriceChart from './PriceChart'
+import { Explain } from '../ui/Explain'
 
 // 📊 The population report, on any real catalog card. Without the 🔭 Grading Scope you get
 // the shape of the census but not the number — the same deal the Scope already offers on the
@@ -21,22 +23,22 @@ function PopulationLine({ card, grade, hasScope }) {
   const t = popTier(pop.count)
   const pct = Math.round((pop.mult - 1) * 100)
   return (
-    <p style={{ fontSize: 13, margin: '6px 0 0' }}>
+    <p className="t-sm" style={{ margin: '6px 0 0' }}>
       <span className="pill" style={{ background: t.color + '22', color: t.color, fontWeight: 700 }}>
         {t.icon} PSA {grade} pop: {hasScope ? pop.count.toLocaleString() : t.label}
       </span>
       {hasScope && pct !== 0 && (
-        <span className="muted" style={{ fontSize: 12, marginLeft: 7 }}>
+        <span className="cap" style={{ marginLeft: 7 }}>
           {pct > 0 ? '+' : ''}{pct}% on the comp — {t.blurb}
         </span>
       )}
       {hasScope && pop.mine > 0 && (
-        <span className="muted" style={{ fontSize: 11.5, marginLeft: 7 }}>
+        <span className="cap" style={{ marginLeft: 7 }}>
           ({pop.mine} of them yours)
         </span>
       )}
       {!hasScope && (
-        <span className="muted" style={{ fontSize: 11, marginLeft: 7 }}>
+        <span className="cap" style={{ marginLeft: 7 }}>
           🔭 Grading Scope prints the real census figure
         </span>
       )}
@@ -52,8 +54,8 @@ function MisprintLine({ card }) {
   return (
     <div className="misprint-box">
       <div className="misprint-head">{d.icon} {d.name}</div>
-      <div className="muted" style={{ fontSize: 12 }}>{d.desc}</div>
-      <div className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>
+      <div className="cap">{d.desc}</div>
+      <div className="cap mt-2">
         {card.grade
           ? 'The label authenticates the error, so it is worth full error money.'
           : 'Raw, the market discounts an error nobody has authenticated. Grading it unlocks the rest.'}
@@ -114,12 +116,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   // in-person sales skip the fees + shipping and earn the walk-in premium.
   const [everywhere, setEverywhere] = useState(true)
   const askMult = (parseFloat(askPct) || 0) / 100
-  // close on Escape — clicking the backdrop already closes; this adds keyboard parity
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
   // Grading Scope prediction: Monte-Carlo the real grade roll (honours cut/condition/loupe)
   // to show a likely grade range before you pay. Only computed for raw cards when owned.
   // MUST stay above the `!card` early return — it's a hook, and a hook that only runs on
@@ -142,9 +138,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
   const ship = gradingShipping([card], upgrades)
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} className="modal-detail" maxWidth={760} label="Card detail">
         <div className="detailflex">
           <HoloCard card={card} maxTilt={18} className="modal-holo"
             extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
@@ -189,7 +183,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     ))}
                   </div>
                 )}
-                <p style={{fontSize:15}}>Graded value: <b style={{color:'var(--green)'}}>${cardValue(card).toFixed(2)}</b>
+                <p className="t-lg">Graded value: <b className="pos">${cardValue(card).toFixed(2)}</b>
                   <span className="muted"> (raw ${rawValue(card).toFixed(2)})</span></p>
                 {/* 📊 The population report. What the census says about this exact card at this
                     exact grade, and what that scarcity is doing to the price. A slab is not one
@@ -197,9 +191,9 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 <PopulationLine card={card} grade={g.overall} hasScope={hasScope} />
                 {card.gradeHistory?.length > 0 && (
                   <div className="grade-history">
-                    <div className="muted" style={{ fontSize: 11, textTransform:'uppercase', letterSpacing:'.5px', fontWeight:700 }}>Grading history</div>
+                    <div className="cap" style={{ textTransform:'uppercase', letterSpacing:'.5px', fontWeight:700 }}>Grading history</div>
                     {card.gradeHistory.map((h, i) => (
-                      <div key={i} className="muted" style={{ fontSize: 12 }}>
+                      <div key={i} className="cap">
                         • {graderById(h.company).name} {h.overall} · {GRADING[h.tier]?.name || h.tier}{h.fee != null ? ` · $${h.fee.toFixed(2)} fee` : ''}
                       </div>
                     ))}
@@ -208,7 +202,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
               </>
             ) : (
               <>
-                <p style={{ fontSize: 15, marginBottom: 4 }}>Market value: <b style={{ color: 'var(--green)' }}>${rawValue(card).toFixed(2)}</b></p>
+                <p className="t-lg" style={{ marginBottom: 4 }}>Market value: <b className="pos">${rawValue(card).toFixed(2)}</b></p>
                 {/* What this card could be worth slabbed, across the grades that actually
                     move on the secondary market — PSA 10/9/8. Condition caps how high it
                     can really grade (a played card can't gem), so grades above the cap are
@@ -245,15 +239,15 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 {(() => {
                   const est = cutEstimate(card, hasLoupe)
                   return (
-                    <p style={{ fontSize: 13, margin: '6px 0 0' }}>
-                      <span className="pill" style={{ background: est.color + '22', color: est.color, fontSize: 12, padding: '2px 7px', borderRadius: 6, fontWeight: 700 }}>
+                    <p className="t-sm" style={{ margin: '6px 0 0' }}>
+                      <span className="pill t-xs" style={{ background: est.color + '22', color: est.color, padding: '2px 7px', borderRadius: 6, fontWeight: 700 }}>
                         👁️ Cut: {est.label}
                       </span>
                       {hasLoupe && est.detail && (
-                        <span className="muted" style={{ fontSize: 12, marginLeft: 7 }}>{est.detail}</span>
+                        <span className="cap" style={{ marginLeft: 7 }}>{est.detail}</span>
                       )}
                       {!hasLoupe && (
-                        <span className="muted" style={{ fontSize: 11, marginLeft: 7 }}>Jeweler's Loupe gives a precise read</span>
+                        <span className="cap" style={{ marginLeft: 7 }}>Jeweler's Loupe gives a precise read</span>
                       )}
                     </p>
                   )
@@ -273,14 +267,14 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 just the read: their ask vs market, and everything above (PSA-if-graded
                 values, cut estimate, history) to judge whether it's a gem-10 candidate. */}
             {inspect && (
-              <div className="banner" style={{ marginTop: 14 }}>
+              <div className="banner mt-6">
                 {ask != null ? (
                   <>🏷️ Their ask: <b>{fmtMoney(ask)}</b> · market {fmtMoney(market)}
-                    {ask < market * 0.85 ? <b style={{ color: 'var(--green)' }}> — a real deal</b>
+                    {ask < market * 0.85 ? <b className="pos"> — a real deal</b>
                       : ask > market * 1.2 ? <b style={{ color: '#ff9f43' }}> — over market</b> : ''}
                     <br /></>
                 ) : null}
-                <span className="muted" style={{ fontSize: 12.5 }}>
+                <span className="cap">
                   In the vendor's case — buy, haggle, or trade for it from their table.
                   {!g && ' The cut read + PSA values above are your gem-hunting tools.'}
                 </span>
@@ -288,8 +282,8 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
             )}
 
             {!inspect && !readOnly && inBinder && (
-              <div className="sell-options" style={{ marginTop: 14 }}>
-                <div className="banner" style={{ marginTop: 0 }}>
+              <div className="sell-options mt-6">
+                <div className="banner mt-0">
                   📒 Slotted in your masterset binder as the{' '}
                   <b style={{ color: MASTERSET_VARIANTS[cardVariant(card)]?.color }}>{MASTERSET_VARIANTS[cardVariant(card)]?.label}</b> copy —
                   protected from every bulk action.
@@ -302,9 +296,8 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
             )}
 
             {!inspect && !readOnly && !inBinder && ((!listing && !auctioning) ? (
-              <div className="sell-options" style={{ marginTop: 14 }}>
+              <div className="sell-options mt-6">
                 <button className="btn alt sellopt" disabled={slotTaken}
-                  title={slotTaken ? 'Your binder already has this variant slotted' : undefined}
                   onClick={() => { if (addToBinder(card.uid)) onClose() }}>
                   <b>📒 Add to masterset binder</b>
                   <small>{slotTaken ? 'This variant slot is already filled' : `Slot the ${MASTERSET_VARIANTS[cardVariant(card)]?.label || 'card'} — moves it out of the sellable pool, safe from bulk actions`}</small>
@@ -356,44 +349,44 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 </button>
               </div>
             ) : auctioning ? (
-              <div className="list-picker" style={{ marginTop: 14 }}>
+              <div className="list-picker mt-6">
                 <div className="row" style={{ justifyContent:'space-between', alignItems:'baseline' }}>
                   <b>🔨 Send it to auction</b>
-                  <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(market)}</span>
+                  <span className="cap">market {fmtMoney(market)}</span>
                 </div>
                 <div className="row" style={{ marginTop: 8, gap: 6, flexWrap: 'wrap' }}>
                   {AUCTION_LENGTHS.map(l => (
                     <button key={l.days} className={`chip-btn ${aucDays === l.days ? 'active' : ''}`} style={{ flex: '1 1 0' }}
-                      onClick={() => setAucDays(l.days)} title={l.blurb}><b>{l.label}</b><small>{l.blurb}</small></button>
+                      onClick={() => setAucDays(l.days)}><b>{l.label}</b><small>{l.blurb}</small></button>
                   ))}
                 </div>
                 <div className="row" style={{ marginTop: 6, gap: 6, flexWrap: 'wrap' }}>
                   {AUCTION_RESERVES.map(r => (
                     <button key={r.label} className={`chip-btn ${aucReserve === r.mult ? 'active' : ''}`} style={{ flex: '1 1 0' }}
-                      onClick={() => setAucReserve(r.mult)} title={r.blurb}><b>{r.label}</b></button>
+                      onClick={() => setAucReserve(r.mult)}><b>{r.label}</b></button>
                   ))}
                 </div>
-                <p className="muted" style={{ fontSize: 11.5, margin: '6px 2px 0' }}>
+                <p className="cap" style={{ margin: '6px 2px 0' }}>
                   {AUCTION_RESERVES.find(r => r.mult === aucReserve)?.blurb}
                 </p>
-                <div className="list-quote" style={{ marginTop: 8 }}>
+                <div className="list-quote mt-4">
                   <div><span className="muted">Expected room</span>
                     <b style={{ color: aucQuote.bidders >= 3 ? 'var(--green)' : aucQuote.bidders >= 2 ? 'var(--gold)' : 'var(--red)' }}>
                       👥 ~{aucQuote.bidders}
                     </b>
                     <small className="muted">{aucQuote.bidders < 2 ? 'thin — your name is the bottleneck' : aucQuote.bidders < 3.5 ? 'a modest crowd' : 'a real bidding war'}</small>
                   </div>
-                  <div><span className="muted">Likely nets</span><b style={{ color:'var(--green)' }}>{fmtMoney(aucQuote.mid)}</b>
+                  <div><span className="muted">Likely nets</span><b className="pos">{fmtMoney(aucQuote.mid)}</b>
                     <small className="muted">{Math.round(aucQuote.midMult * 100)}% of market, after fee + shipping</small></div>
                   <div><span className="muted">Range</span><b>{fmtMoney(aucQuote.lo)} – {fmtMoney(aucQuote.hi)}</b>
                     <small className="muted">a quiet night vs a packed one</small></div>
                 </div>
-                <p className="muted" style={{ fontSize: 11.5, margin: '8px 2px 0' }}>
+                <p className="cap" style={{ margin: '8px 2px 0' }}>
                   {aucReserve
                     ? `Under ${fmtMoney(aucQuote.reserveAt)} it doesn't sell and the card comes back — you'll have spent the ${aucDays} days for nothing.`
                     : 'No reserve: this WILL sell in ' + aucDays + ' days, at whatever the room decides. There is no pulling it back.'}
                 </p>
-                <div className="row" style={{ marginTop: 10 }}>
+                <div className="row mt-5">
                   <button className="btn gold" onClick={() => { listAtAuction(card.uid, aucDays, aucReserve); onClose() }}>
                     Start the auction 🔨
                   </button>
@@ -401,26 +394,27 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 </div>
               </div>
             ) : (
-              <div className="list-picker" style={{ marginTop: 14 }}>
+              <div className="list-picker mt-6">
                 <div className="row" style={{ justifyContent:'space-between', alignItems:'baseline' }}>
                   <b>List for sale</b>
-                  <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(market)}</span>
+                  <span className="cap">market {fmtMoney(market)}</span>
                 </div>
                 {hasStore && (
-                  <div className="row" style={{ marginTop: 8, gap: 6 }}>
-                    <button className={`btn ${everywhere ? 'gold' : 'alt'}`} style={{ fontSize: 12, padding: '6px 10px' }}
-                      title="One card, two channels: it's up on your site AND out in your store case. Whichever finds a buyer first takes it — and an in-person sale skips the fee + shipping and earns the walk-in premium."
+                  <div className="row" style={{ marginTop: 8, gap: 6, alignItems: 'center' }}>
+                    <button className={`btn ${everywhere ? 'gold' : 'alt'}`} style={{ fontSize: 'var(--fs-xs)', padding: '6px 10px' }}
                       onClick={() => setEverywhere(true)}>🏬+🌐 Everywhere</button>
-                    <button className={`btn ${everywhere ? 'alt' : 'gold'}`} style={{ fontSize: 12, padding: '6px 10px' }}
-                      title="Web listing only — walk-ins won't see it."
+                    <button className={`btn ${everywhere ? 'alt' : 'gold'}`} style={{ fontSize: 'var(--fs-xs)', padding: '6px 10px' }}
                       onClick={() => setEverywhere(false)}>🌐 Online only</button>
+                    <Explain label="Everywhere vs Online only">
+                      Everywhere lists it on your site AND out in your store case — whichever finds a buyer first takes it, and an in-person sale skips the fee + shipping and earns the walk-in premium. Online only is a web listing — walk-ins won't see it.
+                    </Explain>
                   </div>
                 )}
                 <AskPicker pct={askPct} onChange={setAskPct}>
                   <b style={{ marginLeft: 'auto', textAlign:'right' }}>{fmtMoney(quote.ask)}</b>
                 </AskPicker>
                 <div className="list-quote">
-                  <div><span className="muted">Online nets</span><b style={{ color:'var(--green)' }}>{fmtMoney(quote.net)}</b><small className="muted">after 5% fee + {fmtMoney(quote.ship ?? 0)} shipping</small></div>
+                  <div><span className="muted">Online nets</span><b className="pos">{fmtMoney(quote.net)}</b><small className="muted">after 5% fee + {fmtMoney(quote.ship ?? 0)} shipping</small></div>
                   <div><span className="muted">Shoppers/day</span><b>👀 ~{quote.viewsPerDay}</b><small className="muted">more with rep</small></div>
                   <div><span className="muted">Who'll buy</span>
                     <b style={{ color: quote.buyShare > 0.6 ? 'var(--green)' : quote.buyShare > 0.25 ? 'var(--gold)' : 'var(--red)' }}>
@@ -430,12 +424,12 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                   </div>
                 </div>
                 {hasStore && everywhere && (
-                  <p className="muted" style={{ fontSize: 11.5, margin: '8px 2px 0' }}>
-                    🏬 A walk-in pays ~<b style={{ color:'var(--green)' }}>{fmtMoney(round2(market * (1 + STORE_SALE_PREMIUM)))}</b> across
+                  <p className="cap" style={{ margin: '8px 2px 0' }}>
+                    🏬 A walk-in pays ~<b className="pos">{fmtMoney(round2(market * (1 + STORE_SALE_PREMIUM)))}</b> across
                     the counter (+{Math.round(STORE_SALE_PREMIUM*100)}% in-person premium, no fee, no shipping) — in-store beats online on the same card.
                   </p>
                 )}
-                <div className="row" style={{ marginTop: 10 }}>
+                <div className="row mt-5">
                   <button className="btn gold" disabled={!askMult} onClick={() => { listOnSite(card.uid, askMult, { everywhere: hasStore && everywhere }); onClose() }}>
                     {hasStore && everywhere ? 'List everywhere ↗' : 'List it ↗'}
                   </button>
@@ -454,29 +448,39 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 head={<span style={{ fontWeight: 800 }}>🔬 Submit for grading</span>}
                 badge={`🤝 ${tier.name}${tier.discount > 0 ? ` · ${Math.round(tier.discount*100)}% off` : ''}`}
                 hint="Mail it to a grader — a high grade can multiply the value, a low one hurts.">
+                {/* The decision pair, before anything else: what it fetches raw today vs what
+                    the slab would comp at. Fees sit on the tier buttons right below. */}
+                <p className="cap t-sm" style={{ margin: '2px 0 6px' }}>
+                  Sell raw now: <b>{fmtMoney(rawValue(card))}</b>
+                  {prediction && <> · at likely PSA {prediction.likely}: <b className="pos">{fmtMoney(psaValueAt(card, prediction.likely))}</b></>}
+                  {' '}· at PSA 10: <b style={{ color: 'var(--gold)' }}>{fmtMoney(psaValueAt(card, 10))}</b>
+                </p>
                 {hasScope && prediction && (
-                  <div className="grade-predict" title="Predicted from this card's cut, condition, and your loupe — a range, not a guarantee.">
-                    <span className="gp-icon">🔭</span>
-                    <span className="gp-range">Likely <b>PSA {prediction.lo === prediction.hi ? prediction.lo : `${prediction.lo}–${prediction.hi}`}</b></span>
-                    <span className="gp-likely">best odds <b>PSA {prediction.likely}</b></span>
-                    <span className="gp-gem" style={{ color: prediction.gemChance >= 0.15 ? 'var(--gold)' : 'var(--dim)' }}>
-                      💎 10: <b>{Math.round(prediction.gemChance * 100)}%</b>
-                    </span>
-                    <span className="muted" style={{ fontSize: 11 }}>· 9+: {Math.round(prediction.highChance * 100)}%</span>
-                  </div>
+                  <Explain label="How this prediction is made" trigger={
+                    <div className="grade-predict">
+                      <span className="gp-icon">🔭</span>
+                      <span className="gp-range">Likely <b>PSA {prediction.lo === prediction.hi ? prediction.lo : `${prediction.lo}–${prediction.hi}`}</b></span>
+                      <span className="gp-likely">best odds <b>PSA {prediction.likely}</b></span>
+                      <span className="gp-gem" style={{ color: prediction.gemChance >= 0.15 ? 'var(--gold)' : 'var(--dim)' }}>
+                        💎 10: <b>{Math.round(prediction.gemChance * 100)}%</b>
+                      </span>
+                      <span className="cap">· 9+: {Math.round(prediction.highChance * 100)}%</span>
+                    </div>}>
+                    Predicted from this card's cut, condition, and your loupe — a range, not a guarantee.
+                  </Explain>
                 )}
                 {/* WHO grades it, then which service. The company changes the fee, the wait,
                     and what the returned slab sells for — never the odds (see GRADERS). */}
                 <div className="grader-pick">
                   {Object.values(GRADERS).map(g => (
                     <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
-                      style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)} title={g.blurb}>
+                      style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
                       <b style={{ color: g.color }}>{g.icon} {g.name}</b>
                       <small>{g.slabMult === 1 ? 'benchmark resale' : `${g.slabMult > 1 ? '+' : ''}${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
                     </button>
                   ))}
                 </div>
-                <p className="muted" style={{ fontSize: 11.5, margin: '4px 0 2px' }}>{graderById(company).blurb}</p>
+                <p className="cap" style={{ margin: '4px 0 2px' }}>{graderById(company).blurb}</p>
                 <div className="row">
                   {Object.entries(GRADING).filter(([, t]) => !t.onSite).map(([key, t]) => {
                     // Freight is charged per submission, and a single card from this modal IS a
@@ -486,31 +490,31 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                     const discounted = !byValue && fee < t.fee
                     return (
                       <button key={key} className="btn alt" disabled={cash < fee}
-                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}
-                        title={byValue ? `Worth more than this tier insures ($${t.maxValue.toLocaleString()}), so it goes on the ${premiumTierFor(rawValue(card)).name} service — a flat $${premiumTierFor(rawValue(card)).fee.toLocaleString()} for anything up to $${premiumTierFor(rawValue(card)).max.toLocaleString()} insured. There is no slow, cheap option for a card this valuable.` : undefined}>
+                        onClick={() => { submitGrade(card.uid, key, company); onClose() }}>
                         {t.name} · ${fee.toFixed(0)}
                         {discounted && <small style={{ textDecoration:'line-through', opacity:.5, marginLeft:4 }}>${t.fee}</small>}
                         <br/><small className="muted">
                           {byValue ? `${premiumTierFor(rawValue(card)).name} · ~${gradingDays(key, company, rawValue(card))}d`
                             : `~${gradingDays(key, company)}d`}
                         </small>
+                        {byValue && <small className="muted">insured to ${t.maxValue.toLocaleString()} · over that, flat fee</small>}
                       </button>
                     )
                   })}
                 </div>
                 {card.condition && CONDITIONS[card.condition] && CONDITIONS[card.condition].maxGrade < 10 && (
-                  <p style={{ fontSize: 11.5, marginTop: 6, color: CONDITIONS[card.condition].color }}>
+                  <p className="t-xs" style={{ marginTop: 6, color: CONDITIONS[card.condition].color }}>
                     ⚠️ {CONDITIONS[card.condition].label} — this card can grade at most PSA {CONDITIONS[card.condition].maxGrade}.
                   </p>
                 )}
                 {/* Don't let the player burn a fee on a card worth less than grading it.
                     Compare the cheapest (economy) fee against the raw value. */}
                 {round2(gradingFee('economy', submitted, 1, company, rawValue(card)) + ship) >= rawValue(card) && (
-                  <p style={{ fontSize: 11.5, marginTop: 6, color: 'var(--red)' }}>
+                  <p className="t-xs" style={{ marginTop: 6, color: 'var(--red)' }}>
                     ⚠️ Grading costs more than this card is worth (${rawValue(card).toFixed(2)} raw). Even a PSA 10 likely won't clear the fee — not worth grading.
                   </p>
                 )}
-                <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>
+                <p className="cap mt-4">
                   Prices include <b>{fmtMoney(ship)}</b> insured postage both ways — charged once per
                   submission, so sending a batch from the 🔬 bench spreads it across every card.
                   A high grade can multiply value 2–4×; low grades hurt — it's a gamble.
@@ -522,7 +526,6 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

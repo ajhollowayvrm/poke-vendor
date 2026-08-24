@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Modal } from '../ui/Modal'
 import { cardValue, rawValue, fmtMoney, GRADING, setNameOfCard, slabLabel } from '../game/engine'
 import HiResImg from './HiResImg'
 import { gradeLabel, rarityColor } from './CardTile'
@@ -33,11 +34,11 @@ export default function GradeReveal({ cards, onDone }) {
   }
 
   return (
-    <div className="modalbg grade-reveal-bg" style={{ zIndex: 45 }}>
-      {burst && <Burst />}
-      <div className="modal grade-reveal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
+    <>
+    {burst && <Burst />}
+    <Modal dismissable={false} className="grade-reveal" bgClassName="grade-reveal-bg" maxWidth={820} zIndex={'var(--z-reveal)'} label="Grading results">
         <h2 style={{ textAlign: 'center', marginBottom: 2 }}>🔬 Back from grading!</h2>
-        <p className="muted" style={{ textAlign: 'center', marginTop: 0, fontSize: 13 }}>
+        <p className="cap t-sm" style={{ textAlign: 'center', marginTop: 0 }}>
           {cards.length} slab{cards.length > 1 ? 's' : ''} just arrived. <b>Tap each one</b> to reveal its grade.
         </p>
 
@@ -80,14 +81,14 @@ export default function GradeReveal({ cards, onDone }) {
 
         <div className="row" style={{ justifyContent: 'center', marginTop: 14 }}>
           {!allRevealed && (
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 160 }} onClick={revealAll}>👁 Reveal all</button>
+            <button className="btn alt btn-fixed" style={{ maxWidth: 160 }} onClick={revealAll}>👁 Reveal all</button>
           )}
-          <button className="btn gold" style={{ flex: 'none', maxWidth: 200 }} onClick={onDone}>
+          <button className="btn gold btn-fixed" style={{ maxWidth: 200 }} onClick={onDone}>
             {allRevealed ? 'Continue →' : 'Skip & continue'}
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
+    </>
   )
 }
 

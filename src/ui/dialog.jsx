@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { pushLayer, popLayer, isTopLayer } from './Modal.jsx'
 
 // Imperative in-app confirm dialog — a polished replacement for window.confirm().
 // Call `confirmDialog({...})` from anywhere; it returns a Promise<boolean> that
@@ -30,27 +31,32 @@ export function DialogHost() {
   // Escape cancels, Enter confirms — keyboard parity with the buttons.
   useEffect(() => {
     if (!d) return
+    // Join the modal layer stack: a pending confirm is always the top layer, so the
+    // Modal it opened over ignores Escape and this handler answers it instead.
+    const token = {}
+    pushLayer(token)
     const onKey = (e) => {
+      if (!isTopLayer(token)) return
       if (e.key === 'Escape') finish(false)
       else if (e.key === 'Enter') finish(true)
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    document.addEventListener('keydown', onKey, true)
+    return () => { document.removeEventListener('keydown', onKey, true); popLayer(token) }
   }, [d])
   if (!d) return null
 
   function finish(ok) { const r = d.resolve; _current = null; _listener?.(); r(ok) }
 
   return (
-    <div className="modalbg" style={{ zIndex: 100 }} onClick={() => finish(false)}>
+    <div className="modalbg" style={{ zIndex: 'var(--z-confirm)' }} onClick={() => finish(false)}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420 }}
         role="alertdialog" aria-modal="true" aria-label={d.title}>
         <h2 style={{ marginBottom: 6 }}>{d.title}</h2>
         {d.body && <p className="muted" style={{ marginTop: 0, whiteSpace: 'pre-line' }}>{d.body}</p>}
-        <div className="row" style={{ marginTop: 14 }}>
+        <div className="row mt-6">
           <button className={`btn ${d.danger ? '' : 'gold'}`} style={d.danger ? { background: 'var(--red)', color: '#fff' } : null}
             autoFocus onClick={() => finish(true)}>{d.confirmText}</button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 140 }} onClick={() => finish(false)}>{d.cancelText}</button>
+          <button className="btn alt btn-fixed" style={{ maxWidth: 140 }} onClick={() => finish(false)}>{d.cancelText}</button>
         </div>
       </div>
     </div>

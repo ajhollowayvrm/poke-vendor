@@ -2,7 +2,8 @@ import { useMemo } from 'react'
 import { useGame, absoluteDay } from '../game/store'
 import { rosterForShow, vendorPreview, crowdTipFrom, vendorRapport, archetype } from '../game/shows'
 import { sealedValue, fmtMoney, round2 } from '../game/engine'
-import { toast, useModalEscape } from '../ui/dialog'
+import { toast } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 
 // 💬 Pre-show DMs — "it's not the size of the show, it's who's going." For a show a few
 // days out, this is the group chat: which recurring dealers are setting up (rosterForShow —
@@ -20,7 +21,6 @@ export default function ShowDMs({ show, onClose }) {
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const prepayFromVendor = useGame(s => s.prepayFromVendor)
   const reserveFromVendor = useGame(s => s.reserveFromVendor)
-  useModalEscape(onClose)
 
   const absDay = absoluteDay(show.day, monthsElapsed)
   const roster = useMemo(() => rosterForShow(show, showVendors || []), [show, showVendors])
@@ -48,11 +48,9 @@ export default function ShowDMs({ show, onClose }) {
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <h2 style={{ fontSize: 19, marginBottom: 2 }}>💬 Who's going — {show.name}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+    <Modal onClose={onClose} maxWidth={640} label="Show DMs">
+        <h2 className="t-xl" style={{ marginBottom: 2 }}>💬 Who's going — {show.name}</h2>
+        <p className="cap t-sm mt-0">
           Day {show.day} · {show.tier}. The size of the hall isn't what matters — it's who books a table.
         </p>
 
@@ -84,13 +82,13 @@ export default function ShowDMs({ show, onClose }) {
                 <span className="pill" style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{rap.disc ? ` · ${Math.round(rap.disc * 100)}% off` : ''}</span>
               </div>
               {rap.level < 1 ? (
-                <p className="muted" style={{ fontSize: 12.5, margin: '6px 0 2px' }}>
+                <p className="cap" style={{ margin: '6px 0 2px' }}>
                   They're setting up, but you don't know them well enough to deal over DM — buy from their table at a show first.
                 </p>
               ) : items.length === 0 ? (
-                <p className="muted" style={{ fontSize: 12.5, margin: '6px 0 2px' }}>"Still packing the van — come see the table."</p>
+                <p className="cap" style={{ margin: '6px 0 2px' }}>"Still packing the van — come see the table."</p>
               ) : (
-                <div className="vsealed-list" style={{ marginTop: 6 }}>
+                <div className="vsealed-list mt-3">
                   {items.map((item, idx) => {
                     const mkt = sealedValue({ product: item.product, setId: item.set.id })
                     const price = round2(item.ask * (1 - rap.disc))
@@ -109,10 +107,8 @@ export default function ShowDMs({ show, onClose }) {
                         </span>
                         <span className="vsealed-act">
                           <button className="btn gold" disabled={bought || cash < price}
-                            title={bought ? 'One pre-show buy per dealer per show' : 'Pay now — it ships to your storeroom after the show, go or not'}
                             onClick={() => doBuy(v, item)}>{bought ? '✓' : '💳 Buy'}</button>
                           <button className="btn alt" disabled={held}
-                            title={held ? "They're already holding something for you" : 'No money down — held on their table at this price, pay when you get there'}
                             onClick={() => doReserve(v, item)}>{held ? '✓' : '🤝 Hold'}</button>
                         </span>
                       </div>
@@ -124,11 +120,10 @@ export default function ShowDMs({ show, onClose }) {
           )
         })}
 
-        <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>
+        <p className="cap mt-4">
           One 💳 buy and one 🤝 hold per dealer per show. Buying over DM builds the same rapport as dealing at their table.
         </p>
         <button className="btn alt" style={{ marginTop: 8, maxWidth: 140 }} onClick={onClose}>Done</button>
-      </div>
-    </div>
+    </Modal>
   )
 }

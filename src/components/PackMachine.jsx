@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame } from '../game/store'
 import { sealedValue, setById, fmtMoney, round2 } from '../game/engine'
 import { groupLines, sealedSku } from './sku'
@@ -16,8 +17,7 @@ export default function PackMachine() {
   const stockMachine = useGame(s => s.stockMachine)
   const unstockMachine = useGame(s => s.unstockMachine)
   const [priceInput, setPriceInput] = useState(machine.price ? String(machine.price) : '')
-  const [toast, setToast] = useState(null)
-  const flash = (m) => { setToast(m); setTimeout(() => setToast(null), 2400) }
+  const flash = (m) => toast(m, 2400)
 
   const stock = machine.stock || []
   const totalVal = useMemo(() => stock.reduce((a, it) => a + sealedValue(it), 0), [stock])
@@ -48,34 +48,34 @@ export default function PackMachine() {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         🎰 <b>Pack Machine</b> — load it with real booster packs and set <b>one flat price</b>. Walk-ins pay that
         price for a <b>random</b> pack (a sealed-pack mystery box). A price below the average pack's value pulls a
         crowd; a markup earns more but sells slower. Break boxes into single packs first.
       </div>
 
       {/* Price + status */}
-      <div className="wants" style={{ marginTop: 12 }}>
+      <div className="wants mt-5">
         <div className="wants-head">🎟️ Flat price <span className="muted">— what a customer pays for any random pack</span></div>
         <div className="toolbar" style={{ marginTop: 6, gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <span className="muted">$</span>
           <input type="number" min="0" step="0.5" value={priceInput} onChange={e => setPriceInput(e.target.value)}
             onFocus={e => e.target.select()} style={{ width: 90 }} aria-label="pack price" />
-          <button className="btn gold" style={{ flex: 'none', padding: '6px 12px' }} onClick={applyPrice}>Set price</button>
-          <span className="muted" style={{ fontSize: 12.5, color: dealRead.color }}>{dealRead.txt}</span>
+          <button className="btn gold btn-fixed" style={{ padding: '6px 12px' }} onClick={applyPrice}>Set price</button>
+          <span className="cap" style={{ color: dealRead.color }}>{dealRead.txt}</span>
         </div>
-        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+        <div className="cap mt-3">
           Loaded: <b>{stock.length}</b> pack{stock.length === 1 ? '' : 's'} · value <b>{fmtMoney(totalVal)}</b>
           {stock.length > 0 && <> · avg <b>{fmtMoney(avgVal)}</b>/pack</>}
-          {(machine.sold || 0) > 0 && <> · lifetime: sold <b>{machine.sold}</b> for <b style={{ color: 'var(--green)' }}>{fmtMoney(machine.revenue || 0)}</b></>}
+          {(machine.sold || 0) > 0 && <> · lifetime: sold <b>{machine.sold}</b> for <b className="pos">{fmtMoney(machine.revenue || 0)}</b></>}
         </div>
       </div>
 
       {/* What's loaded */}
-      <div className="wants" style={{ marginTop: 10 }}>
+      <div className="wants mt-5">
         <div className="wants-head">📥 In the machine <span className="muted">— {stock.length} pack{stock.length === 1 ? '' : 's'} ready to vend</span></div>
         {stockLines.length === 0 ? (
-          <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>Empty — load single packs from your inventory below.</div>
+          <div className="cap" style={{ margin: '6px 2px' }}>Empty — load single packs from your inventory below.</div>
         ) : (
           <div className="stock-lines">
             {stockLines.map(line => (
@@ -85,8 +85,8 @@ export default function PackMachine() {
                   <div className="tl-name">{line.first.product.type} · {setById(line.first.setId)?.name || 'sealed'}</div>
                   <div className="tl-sub muted">{fmtMoney(line.unit)} value each{line.first.vintage ? ' · 🗝️ vintage' : ''}</div>
                 </div>
-                <span className="tl-count" title={`${line.count} loaded`}>×{line.count}</span>
-                <button className="stock-act" title="Pull one back to the storeroom" onClick={() => pullOne(line)}>↩</button>
+                <span className="tl-count">×{line.count}</span>
+                <button className="stock-act" aria-label="Pull one back to the storeroom" onClick={() => pullOne(line)}>↩</button>
               </div>
             ))}
           </div>
@@ -94,10 +94,10 @@ export default function PackMachine() {
       </div>
 
       {/* Load packs from inventory */}
-      <div className="wants" style={{ marginTop: 10 }}>
+      <div className="wants mt-5">
         <div className="wants-head">🎴 Load packs <span className="muted">— single booster packs from your inventory (break boxes first)</span></div>
         {availLines.length === 0 ? (
-          <div className="muted" style={{ fontSize: 12.5, margin: '6px 2px' }}>No single packs on hand. Buy packs, or break a box down in the Storeroom.</div>
+          <div className="cap" style={{ margin: '6px 2px' }}>No single packs on hand. Buy packs, or break a box down in the Storeroom.</div>
         ) : (
           <div className="stock-lines">
             {availLines.map(line => (
@@ -107,15 +107,14 @@ export default function PackMachine() {
                   <div className="tl-name">{line.first.product.type} · {setById(line.first.setId)?.name || 'sealed'}</div>
                   <div className="tl-sub muted">{fmtMoney(line.unit)} value each{line.first.vintage ? ' · 🗝️ vintage' : ''}</div>
                 </div>
-                <span className="tl-count" title={`${line.count} on hand`}>×{line.count}</span>
-                <button className="stock-act" title="Load one into the machine" onClick={() => loadOne(line)}>➕</button>
-                <button className="stock-act" title="Load all of this pack" onClick={() => loadAll(line)}>⏩</button>
+                <span className="tl-count">×{line.count}</span>
+                <button className="stock-act" aria-label="Load one into the machine" onClick={() => loadOne(line)}>➕</button>
+                <button className="stock-act" aria-label="Load all of this pack" onClick={() => loadAll(line)}>⏩</button>
               </div>
             ))}
           </div>
         )}
       </div>
-      {toast && <div className="toast" style={{ position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>{toast}</div>}
     </>
   )
 }

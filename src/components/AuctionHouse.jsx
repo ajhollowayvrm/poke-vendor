@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { cardValue, sealedValue, fmtMoney, cardImg, setById, slabLabel, round2 } from '../game/engine'
 import { useGame } from '../game/store'
-import { useOpen, bigScreen } from '../ui/Collapse'
+import { useOpen } from '../ui/Collapse'
 import {
   lotMarket, lotTotalCost, lotWarning, roomHeat, WATCHERS_MAX, HOUSE_PREMIUM, lotAppeal,
 } from '../game/lots'
 import { absoluteDay } from '../game/store/constants'
+import { clickable } from '../ui/clickable'
+import { Explain } from '../ui/Explain'
 
 // 🔨 The auction house, on the Buy tab — the BUY side of the hammer.
 //
@@ -29,14 +31,19 @@ function RoomBar({ watchers }) {
   const label = heat > 0.66 ? 'packed — it will close over market'
     : heat > 0.33 ? 'a normal room' : 'quiet — where the deals are, and the traps'
   return (
-    <span className="pill" title={`${watchers} watching. The room is what sets the closing price: a packed lot ends over market, a quiet one well under it.`}>
-      {/* The "·" is a real character, not a margin. The count and the descriptor are adjacent
-          inline nodes, so with spacing alone the accessible name came out as "6a normal room"
-          / "12packed — it will close over market" — two values run together for anyone reading
-          by ear, and optically cramped for everyone else. */}
-      👥 <b style={{ color }}>{watchers}</b>
-      <span className="muted" style={{ marginLeft: 5, fontSize: 11 }}>· {label}</span>
-    </span>
+    <Explain label="What does the room mean?" trigger={
+      // The "·" is a real character, not a margin. The count and the descriptor are adjacent
+      // inline nodes, so with spacing alone the accessible name came out as "6a normal room"
+      // / "12packed — it will close over market" — two values run together for anyone reading
+      // by ear, and optically cramped for everyone else.
+      <span className="pill">
+        👥 <b style={{ color }}>{watchers}</b>
+        <span className="cap" style={{ marginLeft: 5 }}>· {label}</span>
+      </span>
+    }>
+      The room is what sets the closing price: a packed lot ends over market, a quiet one well
+      under it — but a quiet lot is also disproportionately where a bad listing hides.
+    </Explain>
   )
 }
 
@@ -67,16 +74,19 @@ function Lot({ lot, day }) {
         <div className="lot-title">
           <b>{lot.title}</b>
           {lot.kind === 'raw' && lot.claimedCondition && (
-            <span className="pill" title="What the listing CLAIMS the condition is. Claims are not always true, and the quieter the lot the less often they are.">
-              {lot.claimedCondition}
-            </span>
+            <Explain label="What does the claimed condition mean?" trigger={
+              <span className="pill">{lot.claimedCondition}</span>
+            }>
+              What the listing CLAIMS the condition is. Claims are not always true, and the
+              quieter the lot the less often they are.
+            </Explain>
           )}
           {lot.kind === 'slab' && lot.card?.grade && <span className="pill">{slabLabel(lot.card.grade)}</span>}
         </div>
         <div className="lot-sub">
           <RoomBar watchers={lot.watchers} />
-          <span className="pill" title="What this lot is worth if the description is accurate.">
-            worth <b>{fmtMoney(market)}</b>
+          <span className="pill">
+            mkt <b>{fmtMoney(market)}</b>
           </span>
           <span className="pill">{daysLeft <= 0 ? 'closing now' : `${daysLeft}d left`}</span>
         </div>
@@ -97,6 +107,17 @@ function Lot({ lot, day }) {
           className="lot-input" type="number" min="0" step="1" placeholder="max"
           value={draft} onChange={e => setDraft(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && draft) place(Number(draft)) }} />
+        {/* The all-in read while the number is still in your hand: hammer + 13% + postage,
+            against the comp — the whole buy decision on one line, before the bid lands. */}
+        {Number(draft) > 0 && (() => {
+          const allIn = lotTotalCost(Number(draft)).total
+          const over = market > 0 ? Math.round((allIn / market - 1) * 100) : 0
+          return (
+            <span className="cap t-xs" style={{ color: allIn <= market ? 'var(--green)' : 'var(--red)' }}>
+              all-in {fmtMoney(allIn)} · {over > 0 ? `${over}% over` : `${-over}% under`} mkt
+            </span>
+          )
+        })()}
         <button className="btn small" disabled={!draft || Number(draft) <= 0} onClick={() => place(Number(draft))}>
           Leave bid
         </button>
@@ -114,7 +135,12 @@ export default function AuctionHouse() {
   const monthsElapsed = useGame(s => s.monthsElapsed)
   const committed = useGame(s => s.lotsCommitted())
   const stats = useGame(s => s.auctionStats)
-  const [open, toggle] = useOpen('pv-lots-open', bigScreen())
+  // Closed by default, desktop included. Expanded, this panel ran ~350px and sat between the
+  // vendor picker and the sealed shelf on the Buy tab — the shelf rendered twelfth. The lot count
+  // in the header still says whether anything is running, which is the only part you need at a
+  // glance. New key (`2`): useOpen persists a player's choice permanently, so a changed default
+  // never reaches anyone who already toggled the old one.
+  const [open, toggle] = useOpen('pv-lots-open2', false)
 
   const day = absoluteDay(currentDay, monthsElapsed)
   // Sort by appeal: a quiet room on a valuable lot floats to the top, because that is the
@@ -126,15 +152,15 @@ export default function AuctionHouse() {
   if (!sorted.length) return null
 
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
-      <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
+    <div className="market-panel mt-5">
+      <div className="market-head" {...clickable(toggle, { style: { cursor: 'pointer' } })}>
         🔨 Auction house <span className="muted">— {sorted.length} lots running</span>
         {committed > 0 && <span className="pill" style={{ marginLeft: 8 }}>{fmtMoney(committed)} committed</span>}
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>
       </div>
       {open && (
         <>
-          <div className="muted" style={{ fontSize: 12.5, margin: '8px 0 10px' }}>
+          <div className="cap" style={{ margin: '8px 0 10px' }}>
             Leave the most you would genuinely pay and walk away. You pay one increment over
             the runner-up, never your maximum — so a high bid costs nothing when the room is
             quiet. The house adds {Math.round(HOUSE_PREMIUM * 100)}% on every win, plus postage.

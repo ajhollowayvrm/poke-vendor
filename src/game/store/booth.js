@@ -1108,6 +1108,9 @@ export function createBoothSlice(set, get) {
           s.addNotoriety(effect.notoriety || 0)
           const n = gotCards.length + gotSealed.length
           s.log('buy', `Quoted ${Math.round((effect.pct || 0) * 100)}% on a walk-up lot — bought ${n} item${n !== 1 ? 's' : ''} for $${price.toFixed(2)}`, -price)
+          // Say so. Every FAILURE path here flashes a line and this success path did not, so a
+          // deal that worked closed the modal in silence — which reads as a bug, not a purchase.
+          msg = `🤝 Bought ${n} item${n !== 1 ? 's' : ''} at ${Math.round((effect.pct || 0) * 100)}% — $${price.toFixed(2)}.`
           get().checkCompletions()
           break
         }
@@ -1120,26 +1123,42 @@ export function createBoothSlice(set, get) {
           if (adj > 0 && get().cash < adj) { msg = "You can't cover the cash top-up — the deal falls through."; break }
           const cardIds = new Set(effect.takeCardUids || [])
           const sealIds = new Set(effect.takeSealedUids || [])
-          const cards = (get().showInventory || []).filter(c => cardIds.has(c.uid))
-          const sealed = (get().showSealed || []).filter(it => sealIds.has(it.uid))
+          // WHERE the bundle comes from depends on which counter they walked up to. At a show it
+          // leaves the table you packed; in the shop it leaves the display case. Reading
+          // showInventory for a store deal found nothing, so a perfectly good credit deal always
+          // failed with "that stock just left your table" — at a store there is no table.
+          const atStore = effect.venue === 'store'
+          const cardPool = atStore ? (get().collection || []) : (get().showInventory || [])
+          const sealedPool = atStore ? (get().sealedInventory || []) : (get().showSealed || [])
+          const cards = cardPool.filter(c => cardIds.has(c.uid))
+          const sealed = sealedPool.filter(it => sealIds.has(it.uid))
           if (cards.length !== cardIds.size || sealed.length !== sealIds.size) {
-            msg = 'Some of that stock just left your table — the deal falls through.'; break
+            msg = atStore ? 'Some of that stock just left the case — the deal falls through.'
+                          : 'Some of that stock just left your table — the deal falls through.'
+            break
           }
           const gotCards = (effect.cards || []).map(c => ({ ...c }))
           const gotSealed = (effect.sealed || [])
             .map(e => get().mintSealedRow(setById(e.setId), e.product, e.paid ?? 0, 'floor')).filter(Boolean)
           set(st => ({
-            showInventory: (st.showInventory || []).filter(c => !cardIds.has(c.uid)),
-            showSealed: (st.showSealed || []).filter(it => !sealIds.has(it.uid)),
+            // A show deal empties the table lists; a store deal takes the cards straight out of
+            // the collection. Both paths still drop the traded sealed out of sealedInventory,
+            // because show sealed is minted there too.
+            showInventory: atStore ? st.showInventory : (st.showInventory || []).filter(c => !cardIds.has(c.uid)),
+            showSealed: atStore ? st.showSealed : (st.showSealed || []).filter(it => !sealIds.has(it.uid)),
             sealedInventory: [...gotSealed, ...(st.sealedInventory || []).filter(it => !sealIds.has(it.uid))],
-            collection: [...gotCards, ...st.collection],
+            collection: [...gotCards, ...(atStore ? st.collection.filter(c => !cardIds.has(c.uid)) : st.collection)],
             stats: { ...st.stats, quotesGiven: (st.stats.quotesGiven || 0) + 1 },
           }))
           if (adj > 0) s.spend(adj)
           else if (adj < 0) s.earn(-adj)
           s.addNotoriety(effect.notoriety || 0)
           const inN = gotCards.length + gotSealed.length, outN = cards.length + sealed.length
-          s.log('trade', `Quoted ${Math.round((effect.pct || 0) * 100)}% in table credit — took ${inN} item${inN !== 1 ? 's' : ''}, they left with ${outN} of yours${adj > 0 ? ` + $${adj.toFixed(2)}` : adj < 0 ? ` (+$${(-adj).toFixed(2)} to you)` : ''}`, -adj)
+          const creditWord = atStore ? 'store credit' : 'table credit'
+          s.log('trade', `Quoted ${Math.round((effect.pct || 0) * 100)}% in ${creditWord} — took ${inN} item${inN !== 1 ? 's' : ''}, they left with ${outN} of yours${adj > 0 ? ` + $${adj.toFixed(2)}` : adj < 0 ? ` (+$${(-adj).toFixed(2)} to you)` : ''}`, -adj)
+          // Same as quoteBuy above: the success path was the only one that said nothing.
+          msg = `🤝 Took ${inN} item${inN !== 1 ? 's' : ''} at ${Math.round((effect.pct || 0) * 100)}% in ${creditWord}`
+            + `${adj > 0 ? ` + $${adj.toFixed(2)} cash` : adj < 0 ? ` — they squared up $${(-adj).toFixed(2)}` : ''}.`
           get().checkCompletions()
           break
         }

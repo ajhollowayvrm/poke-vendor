@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { haggleRound, archetype } from '../game/shows'
 import { fmtMoney } from '../game/engine'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
+import { Explain } from '../ui/Explain'
 
 const MAX_ROUNDS = 3
 
@@ -37,7 +38,6 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   // A stray backdrop click before engaging doesn't burn the card's one haggle.
   const [engaged, setEngaged] = useState(false)
   const close = () => onClose(engaged)
-  useModalEscape(close)
 
   // suggested counter: nudge toward your favor from their current price
   const step = Math.max(0.25, Math.round(their * 0.12 * 100) / 100)
@@ -91,11 +91,9 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
   const outOfRounds = round >= MAX_ROUNDS
 
   return (
-    <div className="modalbg" onClick={close}>
-      <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={close}>✕</button>
-        <h2 style={{ fontSize: 19, marginBottom: 2 }}>Haggle · {vendorName}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+    <Modal onClose={close} maxWidth={460} label="Haggle">
+        <h2 className="t-xl" style={{ marginBottom: 2 }}>Haggle · {vendorName}</h2>
+        <p className="cap t-sm mt-0">
           {card?.name} · market {fmtMoney(market)} · {arch.label} ({side === 'buy' ? 'selling to you' : 'buying from you'})
         </p>
 
@@ -107,7 +105,9 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
           <>
             <div className="haggle-viz">
               <div className="haggle-patience">
-                <span className="hp-label">Patience <span className="hp-mood" title="How they feel about your current offer">{mood}</span></span>
+                <span className="hp-label">Patience <Explain label="What does the mood face mean?" trigger={<span className="hp-mood">{mood}</span>}>
+                  How they feel about your current offer — a read on whether they'll bite, without giving away their exact floor.
+                </Explain></span>
                 <div className="hp-track">
                   <div className="hp-fill" style={{ width: `${Math.round(patienceFrac * 100)}%`,
                     background: patienceFrac > 0.6 ? 'var(--green)' : patienceFrac > 0.3 ? 'var(--gold)' : 'var(--red)' }} />
@@ -115,9 +115,9 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
               </div>
               <div className="haggle-scale">
                 <div className="hs-track">
-                  <span className="hs-pin market" style={{ left: `${at(market)}%` }} title={`Market ${fmtMoney(market)}`} />
-                  <span className="hs-pin their" style={{ left: `${at(their)}%` }} title={`Their price ${fmtMoney(their)}`} />
-                  <span className={`hs-pin you ${better ? 'good' : 'bad'}`} style={{ left: `${at(offer)}%` }} title={`Your offer ${fmtMoney(offer)}`} />
+                  <span className="hs-pin market" style={{ left: `${at(market)}%` }} />
+                  <span className="hs-pin their" style={{ left: `${at(their)}%` }} />
+                  <span className={`hs-pin you ${better ? 'good' : 'bad'}`} style={{ left: `${at(offer)}%` }} />
                 </div>
                 <div className="hs-legend">
                   <span><i className="hs-dot market" /> Market</span>
@@ -128,17 +128,18 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
             </div>
             <div className="haggle-current">
               Their price: <b>{fmtMoney(their)}</b>
-              <span className="muted" style={{ fontSize: 12 }}> · round {Math.min(round + 1, MAX_ROUNDS)}/{MAX_ROUNDS}</span>
+              {market > 0 && <span className="cap"> ({Math.round((their / market) * 100)}% of mkt)</span>}
+              <span className="cap"> · round {Math.min(round + 1, MAX_ROUNDS)}/{MAX_ROUNDS}</span>
             </div>
             <div className="haggle-offer">
-              <span className="muted" style={{ fontSize: 13 }}>Your offer</span>
+              <span className="cap t-sm">Your offer</span>
               <div className="row" style={{ alignItems: 'center', gap: 8 }}>
-                <button className="btn alt" style={{ flex:'none', minWidth:44 }} onClick={() => bump(-1)}>−</button>
+                <button className="btn alt btn-fixed" style={{ minWidth:44 }} onClick={() => bump(-1)}>−</button>
                 <span className="haggle-amt">{fmtMoney(offer)}</span>
-                <button className="btn alt" style={{ flex:'none', minWidth:44 }} onClick={() => bump(1)}>+</button>
+                <button className="btn alt btn-fixed" style={{ minWidth:44 }} onClick={() => bump(1)}>+</button>
               </div>
             </div>
-            <div className="row" style={{ marginTop: 12 }}>
+            <div className="row mt-5">
               {/* Disable when your offer isn't an improvement on their standing
                   price (same rule for buy and sell — `better` already encodes the
                   correct direction per side). Take-their-price is always available. */}
@@ -147,10 +148,9 @@ export default function Haggle({ side, card, market, start, archKey, vendorName,
               <button className="btn" onClick={() => onDeal(their)}>Take {fmtMoney(their)}</button>
               <button className="btn alt" onClick={() => onClose(true)}>Walk away</button>
             </div>
-            {outOfRounds && <p className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>They're out of patience — take their price or walk.</p>}
+            {outOfRounds && <p className="cap mt-4">They're out of patience — take their price or walk.</p>}
           </>
         )}
-      </div>
-    </div>
+    </Modal>
   )
 }

@@ -96,10 +96,10 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
   return (
     <div className="showprep">
       <div className="topbar" style={{ marginBottom: 14 }}>
-        <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} onClick={onCancel}>← Back</button>
+        <button className="btn alt btn-fixed" style={{ maxWidth: 120 }} onClick={onCancel}>← Back</button>
         <div style={{ marginRight: 'auto' }}>
-          <div style={{ fontWeight: 800, fontSize: 18 }}>{show.name}</div>
-          <div className="muted" style={{ fontSize: 13 }}>
+          <div className="t-xl" style={{ fontWeight: 800 }}>{show.name}</div>
+          <div className="cap t-sm">
             <span className="pill" style={{ background: tier.color + '33', color: tier.color }}>{tier.name}</span>
             {isVendor
               ? <>{' · '}Vendor {fmtMoney(doorCost - spotFee)} <span style={{ opacity: 0.7 }}>(entry {fmtMoney(tier.entryFee)} + booth {sponsored ? 'sponsored 📣' : fmtMoney(tier.vendorFee || 0)})</span></>
@@ -110,7 +110,7 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
         <div className="cash" style={{ marginLeft: 0 }}>{fmtMoney(cash)}<small>balance</small></div>
       </div>
 
-      <div className="banner" style={{ marginTop: 0 }}>
+      <div className="banner mt-0">
         {isVendor
           ? <>🎪 <b>Pack your case.</b> Pick the cards <b>and sealed product</b> you'll bring to sell at your booth —
               shoppers on the floor only buy from these. Anything you don't sell comes home when you leave.</>
@@ -147,14 +147,14 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
         </div>
         <input className="prep-wallet-range" type="range" min={0} max={maxBring} step={1}
           value={bring} onChange={e => setBudget(Number(e.target.value))} aria-label="Cash to bring" />
-        <div className="prep-choice-row" style={{ marginTop: 6 }}>
+        <div className="prep-choice-row mt-3">
           {[['All', 1], ['½', 0.5], ['¼', 0.25], ['None', 0]].map(([lbl, f]) => (
             <button key={lbl} className={`chip-btn ${bring === round2(maxBring * f) ? 'active' : ''}`}
               style={{ minWidth: 0, flex: '0 0 auto', padding: '6px 12px' }}
               onClick={() => setBudget(round2(maxBring * f))}><b>{lbl}</b></button>
           ))}
         </div>
-        <div className="muted" style={{ fontSize: 11.5, marginTop: 6 }}>
+        <div className="cap mt-3">
           On the floor you can only spend what you bring — a built-in budget. Sell something there and it tops your wallet back up.
         </div>
       </div>
@@ -165,8 +165,7 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
             <div className="prep-choice-label">📍 Booth spot</div>
             <div className="prep-choice-row">
               {SPOTS.map(s => (
-                <button key={s.key} className={`chip-btn ${spot === s.key ? 'active' : ''}`} onClick={() => setSpot(s.key)}
-                  title={s.blurb}>
+                <button key={s.key} className={`chip-btn ${spot === s.key ? 'active' : ''}`} onClick={() => setSpot(s.key)}>
                   <b>{s.label}</b>
                   <small>{s.feeMult ? (sponsored ? 'sponsored 📣' : `+${fmtMoney(Math.round((tier.vendorFee||0)*s.feeMult))}`) : 'included'} · {s.blurb}</small>
                 </button>
@@ -178,8 +177,7 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
           <div className="prep-choice-label">🕘 When you arrive</div>
           <div className="prep-choice-row">
             {ARRIVALS.map(a => (
-              <button key={a.key} className={`chip-btn ${arrival === a.key ? 'active' : ''}`} onClick={() => setArrival(a.key)}
-                title={a.blurb}>
+              <button key={a.key} className={`chip-btn ${arrival === a.key ? 'active' : ''}`} onClick={() => setArrival(a.key)}>
                 <b>{a.label}</b><small>{a.blurb}</small>
               </button>
             ))}
@@ -188,27 +186,26 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
       </div>
 
       {collection.length === 0 ? (
-        <div className="empty" style={{ marginTop: 18 }}>
+        <div className="empty mt-6">
           {isVendor
             ? 'Your collection is empty — nothing to stock the booth with. You can still pay the vendor fee and man an empty table, but you’d be better off attending as a shopper.'
             : 'Your collection is empty — nothing to bring to sell or trade. That’s fine: bring cash and go hunting for deals.'}
         </div>
       ) : (
         <>
-          <div className="toolbar" style={{ marginTop: 12 }}>
+          <div className="toolbar mt-5">
             <span className="pill" style={{ background: 'color-mix(in srgb, var(--accent2) 13%, transparent)', color: 'var(--accent-light)' }}>
               {collection.length} in collection
             </span>
-            <span className="muted" style={{ fontSize: 12 }}>{isVendor ? 'Bring cards to sell at your booth.' : 'Optional — bring cards to sell/trade to vendors.'}</span>
+            <span className="cap">{isVendor ? 'Bring cards to sell at your booth.' : 'Optional — bring cards to sell/trade to vendors.'}</span>
             <select value={sort} onChange={e => setSort(e.target.value)}>
               <option value="value">Sort: Value</option><option value="rarity">Sort: Rarity</option>
               <option value="name">Sort: Name</option>
             </select>
-            <button className="btn alt" style={{ flex: 'none' }} onClick={selectAll}>
+            <button className="btn alt btn-fixed"  onClick={selectAll}>
               {picked.size === view.length && view.length ? 'Deselect all' : `Select all (${view.length})`}
             </button>
-            <button className="btn alt" style={{ flex: 'none' }} onClick={pickValuable}
-              title="Select every hit, slab, and special foil">⭐ Pick the good stuff</button>
+            <button className="btn alt btn-fixed"  onClick={pickValuable}>⭐ Pick the good stuff</button>
           </div>
 
           <div className="grid coll-grid" style={{ marginTop: 14, paddingBottom: 110 }}>
@@ -224,12 +221,12 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
 
       {sealedView.length > 0 && (
         <>
-          <div className="toolbar" style={{ marginTop: 18 }}>
+          <div className="toolbar mt-6">
             <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 14%, transparent)', color: 'var(--gold)' }}>
               📦 {sealedView.length} sealed on hand
             </span>
-            <span className="muted" style={{ fontSize: 12 }}>{isVendor ? 'Bring sealed product to sell at your booth too.' : 'Bring sealed to sell/trade on the floor too.'}</span>
-            <button className="btn alt" style={{ flex: 'none', marginLeft: 'auto' }} onClick={selectAllSealed}>
+            <span className="cap">{isVendor ? 'Bring sealed product to sell at your booth too.' : 'Bring sealed to sell/trade on the floor too.'}</span>
+            <button className="btn alt btn-fixed" style={{ marginLeft: 'auto' }} onClick={selectAllSealed}>
               {pickedSealed.size === sealedView.length && sealedView.length ? 'Deselect sealed' : `Select all sealed (${sealedView.length})`}
             </button>
           </div>
@@ -237,13 +234,16 @@ export default function ShowPrep({ show, mode = 'vendor', onConfirm, onCancel })
             {sealedView.map(it => {
               const set = setById(it.setId)
               const on = pickedSealed.has(it.uid)
+              // boxShadow, not outline: an inline `outline:'none'` on the unpicked branch beat the
+              // global :focus-visible rule, so this tile was the one control in the app that could
+              // hold keyboard focus and show nothing. See styles.css KEYBOARD FOCUS.
               return (
-                <div key={it.uid} className={`product sealed-item selectable ${on ? 'picked' : ''}`} style={{ cursor: 'pointer', outline: on ? '2px solid var(--accent)' : 'none' }} onClick={() => toggleSealed(it)}>
+                <div key={it.uid} className={`product sealed-item selectable ${on ? 'picked' : ''}`} style={{ cursor: 'pointer', boxShadow: on ? '0 0 0 2px var(--accent)' : undefined }} onClick={() => toggleSealed(it)}>
                   <div className="sealed-head">
                     {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <b className="sealed-name">{it.product.icon || '📦'} {it.product.type}</b>
-                      <div className="muted" style={{ fontSize: 12 }}>{set?.name}{it.vintage ? ' · 🏛️ vintage' : ''} · {it.product.packs} pk</div>
+                      <div className="cap">{set?.name}{it.vintage ? ' · 🏛️ vintage' : ''} · {it.product.packs} pk</div>
                     </div>
                     {on && <span className="coll-check">✓</span>}
                   </div>

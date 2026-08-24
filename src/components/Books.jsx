@@ -88,7 +88,7 @@ function TaxPanel() {
             name read "Audit exposure0% — low" and the two ran together on screen too. */}
         <span className="muted">Audit exposure</span>{' '}
         <b style={{ color: riskColor }}>{(auditRisk * 100).toFixed(0)}% — {riskLabel}</b>
-        <div className="muted" style={{ fontSize: 11.5, marginTop: 3 }}>
+        <div className="cap mt-2">
           {Math.round(cashProfile * 100)}% of your trade reads as cash.
           {cashProfile > 0.45
             ? ' A shop that can only take cash and Venmo is a cash business, and that is the profile that gets looked at. Card rails cost a processing fee and buy this down.'
@@ -103,12 +103,12 @@ function TaxPanel() {
             <div key={i} className="books-hrow">
               <b>{q.label}</b>
               <span className="muted">{fmtMoney(q.revenue)} in · {fmtMoney(q.net)} net</span>
-              <span>{fmtMoney(q.bill)}{q.audited ? <span style={{ color: 'var(--red)' }}> +{fmtMoney(q.penalty)} 🔍</span> : null}</span>
+              <span>{fmtMoney(q.bill)}{q.audited ? <span className="neg"> +{fmtMoney(q.penalty)} 🔍</span> : null}</span>
             </div>
           ))}
         </div>
       )}
-      {msg && <div className="books-note" style={{ color: 'var(--gold)' }}>{msg}</div>}
+      {msg && <div className="books-note warn">{msg}</div>}
     </div>
   )
 }
@@ -125,7 +125,7 @@ function LoanPanel() {
   if (loan) {
     const p = loanProgress(loan)
     return (
-      <div className="market-panel" style={{ marginTop: 12 }}>
+      <div className="market-panel mt-5">
         <div className="market-head">
           {loan.icon} {loan.name} <span className="muted">— {p.left} of {p.of} instalments left</span>
         </div>
@@ -147,13 +147,13 @@ function LoanPanel() {
           onClick={() => { const r = payoffLoan(); flash(r?.error ? `⚠️ ${r.error}` : `🏦 Cleared for ${fmtMoney(r.paid)}.`) }}>
           Clear the note ({fmtMoney(loan.payoff)})
         </button>
-        {msg && <div className="books-note" style={{ color: 'var(--gold)' }}>{msg}</div>}
+        {msg && <div className="books-note warn">{msg}</div>}
       </div>
     )
   }
 
   return (
-    <div className="market-panel" style={{ marginTop: 12 }}>
+    <div className="market-panel mt-5">
       <div className="market-head">🏦 The bank <span className="muted">— a term loan against the business</span></div>
       <div className="muted books-note">
         Different money from the distributor line. That one is revolving credit for stock, sized
@@ -166,21 +166,21 @@ function LoanPanel() {
             <b>{offer.icon} {offer.name}</b>
             <span>{fmtMoney(offer.principal)}</span>
           </div>
-          <div className="muted" style={{ fontSize: 12 }}>{offer.blurb}</div>
+          <div className="cap">{offer.blurb}</div>
           <div className="loan-terms">
             <span className="pill">{fmtMoney(daily)}/day</span>
             <span className="pill">{offer.termDays} days</span>
             <span className="pill">{(offer.apr * 100).toFixed(0)}% APR</span>
-            <span className="pill" title="What you hand back in total, and how much of it is interest.">
+            <span className="pill">
               pay back <b>{fmtMoney(total)}</b> ({fmtMoney(interest)} interest)
             </span>
           </div>
           {ok
             ? <button className="btn small" onClick={() => { const r = takeLoan(offer.id); flash(r?.error ? `⚠️ ${r.error}` : `🏦 ${fmtMoney(offer.principal)} in the account.`) }}>Sign it</button>
-            : <div className="muted" style={{ fontSize: 12 }}>🔒 {why}</div>}
+            : <div className="cap">🔒 {why}</div>}
         </div>
       ))}
-      {msg && <div className="books-note" style={{ color: 'var(--gold)' }}>{msg}</div>}
+      {msg && <div className="books-note warn">{msg}</div>}
     </div>
   )
 }

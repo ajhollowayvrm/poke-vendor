@@ -1,5 +1,5 @@
 import HoloCard from './HoloCard'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
 import { cardValue, sealedValue, fmtMoney, setById, setNameOfCard } from '../game/engine'
 import HiResImg from './HiResImg'
 
@@ -26,7 +26,7 @@ export function TradeItem({ card, sealed }) {
         <HiResImg card={card} alt={card.name} decoding="async" />
       </HoloCard>
       <div className="trade-name">{card.name}</div>
-      {setNameOfCard(card) && <div className="muted" style={{ fontSize: 10 }}>{setNameOfCard(card)}</div>}
+      {setNameOfCard(card) && <div className="cap">{setNameOfCard(card)}</div>}
       <div className="trade-val">{fmtMoney(cardValue(card))}</div>
     </div>
   )
@@ -36,7 +36,6 @@ export function TradeItem({ card, sealed }) {
 // dismisses without choosing — backdrop click, Esc, or the × button. When no
 // onClose is given the modal is non-dismissable (caller wants a forced choice).
 export default function Encounter({ data, onPick, onClose }) {
-  useModalEscape(() => onClose?.())
   // Normalize the trade bundles (arrays) with a fallback to the legacy single-card shape.
   const giveCards = data.giveCards || (data.yourCard ? [data.yourCard] : [])
   const giveSealed = data.giveSealed || []
@@ -44,9 +43,7 @@ export default function Encounter({ data, onPick, onClose }) {
   const getSealed = data.theirsSealed || []
   const isTrade = data.kind === 'trade' && (giveCards.length || giveSealed.length) && (getCards.length || getSealed.length)
   return (
-    <div className="modalbg" onClick={() => onClose?.()}>
-      <div className="modal encounter" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
-        {onClose && <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>}
+    <Modal onClose={() => onClose?.()} dismissable={!!onClose} className="encounter" maxWidth={560} label="Customer encounter">
         {data.regular && (
           <div className="regular-banner">
             <span className="reg-avatar" aria-hidden>{data.regular.emoji}</span>
@@ -55,7 +52,7 @@ export default function Encounter({ data, onPick, onClose }) {
             </span>
           </div>
         )}
-        <h2 style={{ fontSize: 19 }}>{data.title}</h2>
+        <h2 className="t-xl">{data.title}</h2>
 
         {isTrade ? (
           // Two-sided bundle trade: what you give up ↔ what you get, with the cash delta.
@@ -83,11 +80,11 @@ export default function Encounter({ data, onPick, onClose }) {
         ) : data.card && (
           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap: 4, margin:'8px 0' }}>
             <HoloCard card={data.card} maxTilt={16} className="enc-card"><HiResImg card={data.card} alt={data.card.name} decoding="async" fetchpriority="high" /></HoloCard>
-            {setNameOfCard(data.card) && <div className="muted" style={{ fontSize: 11 }}>{setNameOfCard(data.card)}</div>}
+            {setNameOfCard(data.card) && <div className="cap">{setNameOfCard(data.card)}</div>}
           </div>
         )}
 
-        <p style={{ fontSize: 15, lineHeight: 1.45 }}>{data.body}</p>
+        <p className="t-lg" style={{ lineHeight: 1.45 }}>{data.body}</p>
         <div className="encopts">
           {data.options.map((o, i) => (
             <button key={i} className={`encbtn tone-${o.tone}`} onClick={() => onPick(o)}>
@@ -95,7 +92,6 @@ export default function Encounter({ data, onPick, onClose }) {
             </button>
           ))}
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

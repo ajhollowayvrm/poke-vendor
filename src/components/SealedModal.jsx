@@ -1,6 +1,8 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
-import { useGame, flushSaveWrite } from '../game/store'
-import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE } from '../game/engine'
+import { Modal } from '../ui/Modal'
+import { StaleChunk } from '../ui/lazyChunk'
+import { useGame } from '../game/store'
+import { setById, sealedValue, sealedBase, breakOptions, fmtMoney, round2, hitGemRate, SEALED_FLIP_RATE, sealedCard } from '../game/engine'
 import { SEALED_GRADERS, sealedGraderById, sealedGradingFee, sealedGradingDays, sealedSlabLabel, worthGrading } from '../game/sealedgrading'
 import { AskPicker } from '../ui/AskPicker'
 
@@ -10,22 +12,7 @@ import { AskPicker } from '../ui/AskPicker'
 // deploy asks the server for the OLD hashed chunk — which is gone (404) — and an unguarded
 // lazy() would throw all the way to the crash screen. A missing chunk means "the game
 // updated under you", so say that and offer a reload instead.
-const SetPriceList = lazy(() => import('./SetPriceList').catch(() => ({ default: StalePriceSheet })))
-
-function StalePriceSheet() {
-  return (
-    <div className="empty" style={{ marginTop: 12 }}>
-      📵 The game <b>updated since you opened it</b>, so this view couldn't load.
-      Your save is safe — reload to pick up the new version.
-      <div style={{ marginTop: 12 }}>
-        <button className="btn gold" style={{ maxWidth: 200, margin: '0 auto' }}
-          onClick={() => { try { flushSaveWrite() } catch { /* best effort */ } location.reload() }}>
-          🔄 Reload the game
-        </button>
-      </div>
-    </div>
-  )
-}
+const SetPriceList = lazy(() => import('./SetPriceList').catch(() => ({ default: StaleChunk })))
 
 // 📦🔟 The sealed-grading option, with both graders quoted and an honest warning attached.
 //
@@ -51,13 +38,13 @@ function SealedGradeOption({ item, value, onDone }) {
   }
 
   return (
-    <div className="list-picker" style={{ marginTop: 4 }}>
+    <div className="list-picker mt-2">
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
         <b>📦🔟 Sealed grading</b>
-        <span className="muted" style={{ fontSize: 12 }}>market {fmtMoney(value)}</span>
+        <span className="cap">market {fmtMoney(value)}</span>
       </div>
-      {!advice.ok && <div className="lot-warn" style={{ marginTop: 6 }}>⚠️ {advice.why}</div>}
-      <div className="sell-options" style={{ marginTop: 8 }}>
+      {!advice.ok && <div className="lot-warn mt-3">⚠️ {advice.why}</div>}
+      <div className="sell-options mt-4">
         {Object.values(SEALED_GRADERS).map(g => {
           const fee = sealedGradingFee(value, g.key)
           const days = sealedGradingDays(g.key, upgrades)
@@ -101,13 +88,6 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
   const [mult, setMult] = useState(1.0)               // listing ask, as a share of market
   const [qtySel, setQtySel] = useState(1)             // how many units List / Keep act on
 
-  // close on Escape — clicking the backdrop already closes; this adds keyboard parity.
-  // From the price sheet, Escape steps back to the detail first (one layer at a time).
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') showPrices ? setShowPrices(false) : onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose, showPrices])
   if (!item?.product) return null
 
   const p = item.product
@@ -152,22 +132,17 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
   // Price-sheet sub-view: full-width, replaces the detail. A ← Back returns to the detail.
   if (showPrices) {
     return (
-      <div className="modalbg" onClick={onClose}>
-        <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
-          <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+      <Modal onClose={() => setShowPrices(false)} className="modal-detail" maxWidth={760} label="Set price sheet">
           <button className="btn alt" style={{ padding: '5px 12px', marginBottom: 12 }} onClick={() => setShowPrices(false)}>← Back to {p.type}</button>
-          <Suspense fallback={<div className="empty" style={{ marginTop: 12 }}>Loading price sheet…</div>}>
+          <Suspense fallback={<div className="empty mt-5">Loading price sheet…</div>}>
             <SetPriceList setId={item.setId} />
           </Suspense>
-        </div>
-      </div>
+      </Modal>
     )
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal modal-detail" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} className="modal-detail" maxWidth={760} label="Sealed product detail">
         <div className="detailflex">
           {/* Product panel — the set's logo (or the product's icon) big enough to actually read */}
           <div className="sealed-modal-art">
@@ -184,33 +159,33 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
               📦 Sealed product{p.pool?.series ? <> · {p.pool.series} era</> : <>{set?.name ? <> · {set.name}</> : ''}{set?.series ? <> · {set.series}</> : ''}</>}{year ? <> · {year}</> : ''}
             </p>
 
-            <p style={{ fontSize: 15, marginBottom: 4 }}>Market value: <b style={{ color: 'var(--green)' }}>{fmtMoney(value)}</b></p>
+            <p className="t-lg" style={{ marginBottom: 4 }}>Market value: <b className="pos">{fmtMoney(value)}</b></p>
             {cost != null && (
-              <p className="muted" style={{ fontSize: 13, margin: '0 0 6px' }}>
+              <p className="cap t-sm" style={{ margin: '0 0 6px' }}>
                 You paid {fmtMoney(cost)} ·{' '}
                 <b style={{ color: gain >= 0 ? 'var(--green)' : 'var(--red)' }}>{gain >= 0 ? '+' : ''}{fmtMoney(gain)}</b> vs market
               </p>
             )}
 
-            <div className="banner" style={{ marginTop: 8 }}>
+            <div className="banner mt-4">
               <div>📦 <b>{p.packs}</b> booster pack{p.packs === 1 ? '' : 's'} inside{p.packs > 1 ? ` (~${fmtMoney(round2(base / p.packs))}/pack)` : ''}.</div>
               {/* Deliberately vague about WHICH sets: the packs are already inside a sealed box,
                   and you find out by ripping it. Two of these are worth exactly the same. */}
               {p.pool?.series && (
-                <div style={{ marginTop: 4 }}>
+                <div className="mt-2">
                   🎲 The packs are drawn from across the <b>{p.pool.series}</b> era — the mix varies
                   from box to box, and you won't know what's in this one until you open it.
                 </div>
               )}
               {gem && gem.total > 0 && (
-                <div style={{ marginTop: 4 }}>
+                <div className="mt-2">
                   💎 <b>{Math.round(gem.pct * 100)}%</b> of this set's {gem.total} hit{gem.total === 1 ? '' : 's'} clear <b>$100</b> graded PSA 10
                   <span className="muted"> ({gem.count} of {gem.total})</span>.
                 </div>
               )}
-              {p.bonus === 'promo' && <div style={{ marginTop: 4 }}>🎁 Ships a <b>guaranteed promo card</b> on top of the packs — a fixed foil (a headline ex/V chase in premium boxes).</div>}
+              {p.bonus === 'promo' && <div className="mt-2">🎁 Ships a <b>guaranteed promo card</b> on top of the packs — a fixed foil (a headline ex/V chase in premium boxes).</div>}
               {breaks.length > 0 && (
-                <div style={{ marginTop: 4 }}>
+                <div className="mt-2">
                   🔨 Breaks into {breaks.map((b, i) => (
                     <span key={i}>{i > 0 ? ', ' : ''}<b>{b.count}× {b.product.type}</b> ({fmtMoney(b.total)}{b.delta ? `, ${b.delta >= 0 ? '+' : ''}${fmtMoney(b.delta)}` : ''})</span>
                   ))}.
@@ -235,22 +210,22 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
             <div className={`banner ${item.vintage ? 'jewel-call' : ''}`} style={{ marginTop: 12 }}>
               <div style={{ fontWeight: 800, marginBottom: 2 }}>{item.vintage ? '🗝️ Your call' : 'Your call'}</div>
               <div>🎬 <b>Crack it</b> — a shot at this set's chase{gem && gem.total > 0 ? <> ({Math.round(gem.pct * 100)}% of its {gem.total} hits clear $100 in a PSA 10)</> : ''}. The gamble.</div>
-              <div style={{ marginTop: 3 }}>💵 <b>Flip sealed</b> — <b style={{ color: 'var(--green)' }}>{fmtMoney(round2(value * SEALED_FLIP_RATE))}</b> cash now, or list at ~<b style={{ color: 'var(--green)' }}>{fmtMoney(value)}</b>. The sure thing.</div>
+              <div className="mt-2">💵 <b>Flip sealed</b> — <b className="pos">{fmtMoney(round2(value * SEALED_FLIP_RATE))}</b> cash now, or list at ~<b className="pos">{fmtMoney(value)}</b>. The sure thing.</div>
               {item.vintage
-                ? <div style={{ marginTop: 3 }}>🗝️ <b>Hold it</b> — vintage sealed is finite and <b>trends up</b>; it's worth more unopened than the rip. Sit on it as it climbs, or feature it as a showpiece to pull whale offers.</div>
-                : <div style={{ marginTop: 3 }}>📦 <b>Hold it</b> — sit on it in the storeroom and let a hot-set spike come to you before you decide.</div>}
+                ? <div className="mt-2">🗝️ <b>Hold it</b> — vintage sealed is finite and <b>trends up</b>; it's worth more unopened than the rip. Sit on it as it climbs, or feature it as a showpiece to pull whale offers.</div>
+                : <div className="mt-2">📦 <b>Hold it</b> — sit on it in the storeroom and let a hot-set spike come to you before you decide.</div>}
             </div>
 
             {/* With a stack behind the modal, one shared quantity control feeds List / Keep —
                 the compact inventory rows deliberately carry no per-row quantity chrome. */}
             {qty > 1 && (
-              <div className="sealed-qty-ctl" style={{ marginTop: 14 }}>
-                <span className="muted" style={{ fontSize: 12 }}>Quantity</span>
+              <div className="sealed-qty-ctl mt-6">
+                <span className="cap">Quantity</span>
                 <button className="qstep" onClick={() => setQtySel(q => Math.max(1, Math.min(qty, q) - 1))} disabled={n <= 1} aria-label="Fewer">−</button>
                 <b className="qval">{n}</b>
                 <button className="qstep" onClick={() => setQtySel(q => Math.min(qty, Math.max(1, q) + 1))} disabled={n >= qty} aria-label="More">+</button>
                 <button className="qstep qmax" onClick={() => setQtySel(qty)} disabled={n >= qty}>All {qty}</button>
-                <span className="muted" style={{ fontSize: 11, marginLeft: 'auto' }}>applies to List / Keep</span>
+                <span className="cap" style={{ marginLeft: 'auto' }}>applies to List / Keep</span>
               </div>
             )}
 
@@ -314,9 +289,14 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
                       to live on the shelf rows); elsewhere it stays the one-tap 100% list. */}
                   {place === 'inventory' ? (
                     listing ? (
-                      <div className="list-picker" style={{ marginTop: 4 }}>
+                      <div className="list-picker mt-2">
                         <AskPicker pct={Math.round(mult * 100)} onChange={pc => setMult((pc || 0) / 100)} custom={false} label={null}>
-                          <span className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>ask <b>{fmtMoney(value * mult)}</b>{n > 1 ? ` ea · ${fmtMoney(value * mult * n)} total` : ''}</span>
+                          {/* A sealed listing rides the same engine as a card — 5% fee +
+                              shipping out. Quote what it BANKS, not just what it asks. */}
+                          {(() => {
+                            const q = useGame.getState().listingQuote(sealedCard(item), mult)
+                            return <span className="cap" style={{ marginLeft: 'auto' }}>ask <b>{fmtMoney(q.ask)}</b>{n > 1 ? ' ea' : ''} · nets <b>{fmtMoney(q.net)}</b>{n > 1 ? ` ea · ${fmtMoney(round2(q.net * n))} total` : ''}</span>
+                          })()}
                         </AskPicker>
                         <div className="row" style={{ gap: 8, marginTop: 8 }}>
                           <button className="btn gold" style={{ maxWidth: 220 }} onClick={doList}>List {n > 1 ? `${n} units` : 'for sale'}</button>
@@ -344,7 +324,6 @@ export default function SealedModal({ item, stack, place, onClose, onRip, flash 
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

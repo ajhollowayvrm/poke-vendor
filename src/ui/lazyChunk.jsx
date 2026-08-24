@@ -14,12 +14,12 @@ import { flushSaveWrite } from '../game/store'
 // game updated under you", so say that and offer a reload. SealedModal has carried a
 // one-off version of this since the price sheet was split out; this is that pattern, shared.
 
-function StaleChunk() {
+export function StaleChunk() {
   return (
-    <div className="empty" style={{ marginTop: 12 }}>
+    <div className="empty mt-5">
       📵 The game <b>updated since you opened it</b>, so this screen couldn't load.
       Your save is safe — reload to pick up the new version.
-      <div style={{ marginTop: 12 }}>
+      <div className="mt-5">
         <button className="btn gold" style={{ maxWidth: 200, margin: '0 auto' }}
           onClick={() => { try { flushSaveWrite() } catch { /* best effort */ } location.reload() }}>
           🔄 Reload the game
@@ -37,7 +37,7 @@ export function lazyChunk(loader) {
 // The fallback shown while a chunk is in flight. Deliberately plain and short: on a warm
 // cache these resolve in a frame or two, and a spinner that flashes is worse than a word.
 export function ChunkFallback({ label = 'Loading…' }) {
-  return <div className="empty" style={{ marginTop: 12 }}>{label}</div>
+  return <div className="empty mt-5">{label}</div>
 }
 
 // Wrap a lazily-loaded screen. One import instead of remembering Suspense every time.

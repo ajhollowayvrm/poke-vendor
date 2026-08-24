@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame, UPGRADES, PAYMENT_METHODS, acceptedMethods } from '../game/store'
 import { fmtMoney } from '../game/engine'
 import { Collapse } from '../ui/Collapse'
@@ -35,8 +36,7 @@ export default function UpgradeShop() {
   const owned = useGame(s => s.upgrades)
   const buy = useGame(s => s.buyUpgrade)
   const accepted = acceptedMethods(owned)
-  const [toast, setToast] = useState(null)
-  const flash = useCallback(m => { setToast(m); setTimeout(() => setToast(null), 2800) }, [])
+  const flash = useCallback(m => toast(m, 2800), [])
 
   function purchase(key, u) {
     if (buy(key)) flash(`${u.icon} ${u.name} unlocked — ${fmtMoney(u.cost)} spent.`)
@@ -52,17 +52,17 @@ export default function UpgradeShop() {
 
   return (
     <>
-      <p className="muted" style={{ marginTop: 16 }}>Permanent upgrades — buy once, keep forever. The big ones change how you do business.</p>
+      <p className="muted mt-6">Permanent upgrades — buy once, keep forever. The big ones change how you do business.</p>
 
       <div className="paystatus">
-        <span className="muted" style={{ fontSize: 13, fontWeight: 700 }}>Payments accepted:</span>
+        <span className="cap t-sm" style={{ fontWeight: 700 }}>Payments accepted:</span>
         {Object.entries(PAYMENT_METHODS).map(([k, m]) => (
           <span key={k} className="pill" style={{ opacity: accepted.has(k) ? 1 : 0.4 }}>
             {m.icon} {m.short}{accepted.has(k) ? '' : ' 🔒'}
             {m.feePct > 0 && <small style={{ opacity: .7 }}> · {(m.feePct*100).toFixed(1)}%{m.feeFlat ? `+$${m.feeFlat.toFixed(2)}` : ''}</small>}
           </span>
         ))}
-        <span className="muted" style={{ fontSize: 12 }}>· card rails skim a processing fee; cash & Venmo are free</span>
+        <span className="cap">· card rails skim a processing fee; cash & Venmo are free</span>
       </div>
 
       {groups.map(g => {
@@ -72,7 +72,7 @@ export default function UpgradeShop() {
           .filter(k => !owned[k] && (!UPGRADES[k].needs || owned[UPGRADES[k].needs]))
           .sort((a, b) => UPGRADES[a].cost - UPGRADES[b].cost)[0]
         return (
-          <Collapse key={g.id} id={`upg-${g.id}`} className="wants" style={{ marginTop: 14 }}
+          <Collapse key={g.id} id={`upg-${g.id}`} className="wants mt-6" 
             head={g.name} defaultOpen={!!g.open}
             badge={`${nOwned}/${g.keys.length}${next ? ` · next ${UPGRADES[next].icon} ${fmtMoney(UPGRADES[next].cost)}` : nOwned === g.keys.length ? ' ✓' : ''}`}>
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', marginTop: 6 }}>
@@ -96,7 +96,6 @@ export default function UpgradeShop() {
           </Collapse>
         )
       })}
-      {toast && <div className="toast">{toast}</div>}
     </>
   )
 }

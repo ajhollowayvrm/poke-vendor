@@ -360,6 +360,24 @@ export const BUYIN_CAP = 4              // at most this many lots waiting on an 
 export function buyinCap(upgrades, rank = 0) { return (upgrades?.appraisalDesk ? 6 : BUYIN_CAP) + (rank >= 2 ? 1 : 0) }
 export const BUYIN_MIN_NOTO = 10
 export const BUYIN_ESTATE_CHANCE = 0.35 // share of buy-ins that are a whole "leaving the hobby" collection (incl. sealed)
+
+// 🗣️ STORE QUOTE WALK-UPS — "what'll you give me for these?" at your own counter.
+//
+// The other half of buying over the counter. A BUY-IN is a lot with a price on it: the seller
+// names an ask and you accept, haggle or pass. A QUOTE is the reverse and it is the harder
+// question: one to three cards on the glass and YOU name the number. The show floor has had this
+// since quote walk-ups shipped; the shop did not, so the only way to be asked was to travel.
+//
+// Kept a modest share of footfall on purpose. It is the most demanding encounter in the game —
+// you are pricing blind, against a floor you cannot see — and every walk-in being one would make
+// the counter exhausting rather than tense.
+export const STORE_QUOTE_SHARE = 0.14   // share of walk-ins who ask you to name the number
+export const STORE_QUOTE_MIN_NOTO = 10  // nobody brings cards to a shop nobody has heard of
+
+/// The value band a walk-in brings to the counter, by how known you are. Ordinary cards early;
+/// something worth pricing carefully once your name carries. Mirrors makeBuyinOffer's hit band
+/// (5 → 18 + notoriety × 0.4) so the two channels feel like the same town.
+export function storeQuoteBand(notoriety = 0) { return [0.5, 18 + (notoriety || 0) * 0.5] }
 export const STORE_CREDIT_BONUS = 0.25  // credit offer = cash ask × (1 + bonus) — they take more in credit
 export const CREDIT_REDEEM_SHARE = 0.6  // share of each day's counter takings credit-holders can spend down
 export const CREDIT_BREAKAGE = 0.02     // daily % of outstanding credit that's simply never redeemed

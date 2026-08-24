@@ -27,19 +27,40 @@ export function bigScreen() {
 //   badge       — always-visible summary chip (string/node); null/'' hides it
 //   defaultOpen — first-visit state (pass bigScreen() for "open on desktop only")
 //   className / headClass — panel & header styling (defaults match the .wants sections)
-export function Collapse({ id, head, hint, badge, defaultOpen = false, className = 'wants', headClass = 'wants-head', style, children }) {
+//   as          — element for the title text. Defaults to 'h3', because a titled, collapsible
+//                 panel IS a section of the page; pass 'span' for the rare one that is not.
+//
+// On `as`: the app had ZERO h1-h6 elements in the entire document. Every panel title was a styled
+// div, so a screen reader got one flat list of generic containers with no way to skim, and the
+// screens read flat visually for the same reason — nothing declared a level. Defaulting to h3
+// (rather than making 20+ call sites opt in) is what makes that true everywhere at once; the
+// heading reset in styles.css means it renders identically to the span it replaced.
+//
+// STRUCTURE — heading OUTSIDE, button INSIDE. This is the W3C disclosure pattern, and the order
+// matters for the reason the whole change exists. The first attempt put the <h3> inside the
+// clickable row, which carried role="button" — and `button` is children-presentational in ARIA,
+// so the heading was swallowed and heading navigation still found nothing. The markup gained an
+// h3 and assistive tech gained nothing.
+//
+// Wrapping a real <button> in the heading fixes that and pays twice more: a native button gets
+// Enter AND Space for free (deleting the hand-rolled role/tabIndex/onKeyDown), and it is a real
+// tab stop without being talked into one. The button is width:100% so the whole header row stays
+// the tap target it was.
+export function Collapse({ id, head, hint, badge, defaultOpen = false, className = 'wants', headClass = 'wants-head', as: Title = 'h3', style, children }) {
   const [open, toggle] = useOpen(`pv-col-${id}`, defaultOpen)
   return (
     <div className={className} style={style}>
-      <div className={headClass} role="button" tabIndex={0} aria-expanded={open}
-        style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}
-        onClick={toggle}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle() } }}>
-        <span>{head}</span>
-        {badge != null && badge !== '' && <span className="pill" style={{ fontWeight: 600, fontSize: 12 }}>{badge}</span>}
-        {open && hint && <span className="muted" style={{ fontWeight: 400, fontSize: 12.5 }}>{hint}</span>}
-        <span className="muted" style={{ marginLeft: 'auto', fontWeight: 400 }}>{open ? '▾' : '▸'}</span>
-      </div>
+      <Title className={headClass}>
+        <button type="button" className="collapse-btn" aria-expanded={open} onClick={toggle}>
+          <span className="collapse-title">{head}</span>
+          {badge != null && badge !== '' && <span className="pill t-xs" style={{ fontWeight: 600 }}>{badge}</span>}
+          {open && hint && <span className="cap" style={{ fontWeight: 400 }}>{hint}</span>}
+          {/* Decoration only — aria-expanded on the button already states open/closed. Left
+              audible it lands in both the button's and the heading's accessible name, so every
+              panel announced a trailing "▸" and heading navigation read it out. */}
+          <span className="muted collapse-caret" aria-hidden="true">{open ? '▾' : '▸'}</span>
+        </button>
+      </Title>
       {open && children}
     </div>
   )

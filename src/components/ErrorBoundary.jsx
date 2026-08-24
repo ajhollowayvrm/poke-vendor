@@ -38,17 +38,17 @@ export default class ErrorBoundary extends Component {
     if (!this.state.error) return this.props.children
     const msg = String(this.state.error?.message || this.state.error)
     return (
-      <div style={{ maxWidth: 480, margin: '15vh auto 0', padding: 20, textAlign: 'center' }}>
-        <div style={{ fontSize: 40 }}>💥</div>
-        <h2 style={{ margin: '10px 0 6px' }}>Something crashed</h2>
-        <p className="muted" style={{ fontSize: 13, margin: '0 0 4px' }}>
+      <div className="crash-screen">
+        <div className="crash-logo">💥</div>
+        <h2>Something crashed</h2>
+        <p className="cap t-sm">
           Your save is still safe in this browser — this is a bug in the game, not your data.
         </p>
-        <p className="muted" style={{ fontSize: 11.5, wordBreak: 'break-word', margin: '0 0 16px' }}>{msg}</p>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button className="btn gold" style={{ flex: 'none', maxWidth: 160 }}
+        <p className="cap crash-msg">{msg}</p>
+        <div className="crash-actions">
+          <button className="btn gold btn-fixed" style={{ maxWidth: 160 }}
             onClick={() => location.reload()}>Reload the game</button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 200 }}
+          <button className="btn alt btn-fixed" style={{ maxWidth: 200 }}
             onClick={this.downloadSave}>Download save backup</button>
         </div>
       </div>

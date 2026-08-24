@@ -7,8 +7,11 @@ import CardTile, { rarityColor } from './CardTile'
 // (Collapse is already imported below for the sealed tab)
 import CardModal from './CardModal'
 import Haggle from './Haggle'
-import { confirmDialog, useModalEscape } from '../ui/dialog'
+import { confirmDialog } from '../ui/dialog'
+import { clickable } from '../ui/clickable'
+import { Modal } from '../ui/Modal'
 import { Collapse } from '../ui/Collapse'
+import { Explain } from '../ui/Explain'
 import { cardSku, skuBadge, groupLines, groupCardLines, sealedSku } from './sku'
 
 export default function VendorBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, onStockSealed, haggledIds, onHaggled, agreedPrices, onAgreedPrice, takenIds, onTaken, tillLeft, onTillSpend, asVendor = false, starredKeys, onToggleStar }) {
@@ -23,7 +26,6 @@ function KioskBooth({ booth, onClose, flash }) {
   const cash = useGame(s => s.cash)
   const collection = useGame(s => s.collection)
   const submitted = useGame(s => s.gradesSubmitted)
-  useModalEscape(onClose)
   const raw = [...collection].filter(c => !c.grade).sort((a, b) => cardValue(b) - cardValue(a))
   const days = GRADING.kiosk.days
   // Per card now: the kiosk prices a card above its declared-value ceiling off what the card is
@@ -38,14 +40,12 @@ function KioskBooth({ booth, onClose, flash }) {
     flash(`Submitted ${card.name} to the on-site grader — slabbed in ~${days} days.`)
   }
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={820} label="Grading kiosk">
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🔬 On-Site Grading Kiosk</h2>
           <span className="pill" style={{ background: '#7cf0ff22', color: '#7cf0ff' }}>~{days}-day turnaround</span>
         </div>
-        <p className="muted" style={{ marginTop: 2 }}>
+        <p className="muted mt-1">
           Skip the mail-in wait — hand over a raw card and it comes back slabbed in <b>~{days} days</b>, for a
           premium <b>{fmtMoney(fee)}</b> per card. Results land on the next day or two after the show.
         </p>
@@ -58,20 +58,19 @@ function KioskBooth({ booth, onClose, flash }) {
               return (
                 <div key={card.uid} className="vendoritem">
                   <CardTile card={card} interactive={false} />
-                  <div className="muted" style={{ fontSize: 11 }}>mkt {fmtMoney(cardValue(card))}</div>
-                  <button className="btn" disabled={cash < f} onClick={() => submit(card)}
-                    title={byValue ? "Above the kiosk's declared-value ceiling — priced off what the card is worth, not the sticker"
-                      : !worthIt ? 'Grading costs more than this card is worth' : undefined}>
+                  <div className="cap">mkt {fmtMoney(cardValue(card))}</div>
+                  <button className="btn" disabled={cash < f} onClick={() => submit(card)}>
                     Grade {fmtMoney(f)}{byValue ? ' 📈' : !worthIt ? ' ⚠️' : ''}
                   </button>
+                  {byValue && <div className="cap t-xs">📈 Priced off the card's worth, not the sticker</div>}
+                  {!byValue && !worthIt && <div className="cap t-xs">⚠️ Costs more than the card is worth</div>}
                 </div>
               )
             })}
           </div>
         )}
         <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -83,7 +82,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   const starSet = starredKeys || new Set()
   const StarBtn = ({ k }) => onToggleStar ? (
     <button type="button" className={`booth-star ${starSet.has(k) ? 'on' : ''}`}
-      title={starSet.has(k) ? 'Starred — come back for it (tap to unstar)' : 'Star it — come back to this booth later'}
+      aria-label={starSet.has(k) ? 'Starred — come back for it (tap to unstar)' : 'Star it — come back to this booth later'}
       aria-pressed={starSet.has(k)}
       onClick={(e) => { e.stopPropagation(); onToggleStar(k) }}>{starSet.has(k) ? '★' : '☆'}</button>
   ) : null
@@ -171,16 +170,6 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // Tap any card to open its page: { card, ask } for THEIR stock (read-only inspect —
   // PSA-if-graded values + cut read, the gem-hunter's tools), { card, owned:true } for yours.
   const [inspect, setInspect] = useState(null)
-  // Escape closes the top-most layer: a pending prompt if open, else the booth.
-  // (Haggle owns its own escape; the card page also closes itself.)
-  useModalEscape(() => {
-    if (mysteryResult) setMysteryResult(null)
-    else if (inspect) setInspect(null)
-    else if (tradeFor) setTradeFor(null)
-    else if (pendingSealed) setPendingSealed(null)
-    else if (pendingBuy) setPendingBuy(null)
-    else if (!haggle) onClose()
-  })
 
   // Buy & open a mystery pack right here — one random pull (a single, or sometimes a
   // sealed product), revealed on the spot.
@@ -253,7 +242,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   // Green only with the finder unlocked — without it you're meant to do your own appraising.
   const dealName = (n, node) => (
     seeDeals && n > 0
-      ? <span className="deal-set" title={`🔎 ${n} deal${n > 1 ? 's' : ''} spotted in here — priced at or under your bar`}>{node}</span>
+      ? <span className="deal-set">{node}</span>
       : node
   )
 
@@ -414,10 +403,9 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
     return (
       <div key={card.uid} className={`vsingle-row ${inStack ? 'in-stack' : ''} ${starSet.has(card.uid) ? 'starred' : ''}`}>
         <button type="button" className={`stack-check ${inStack ? 'on' : ''}`} onClick={() => toggleStack(card.uid)}
-          title="Add to a stack — 3+ cards gets a volume deal on the lot" aria-pressed={inStack}>{inStack ? '✓' : '+'}</button>
-        <span className="vsingle-rarity" style={{ '--rarity': card.foil ? card.foil.color : rarityColor(card.rarity) }}
-          title={card.rarity + (card.foil ? ` · ${card.foil.label}` : card.reverse ? ' · Reverse Holo' : '')} />
-        <span className="vsingle-name" style={{ cursor: 'zoom-in' }} title="Tap to inspect — grade upside, cut read, price history"
+          aria-label="Add to a stack — 3+ cards gets a volume deal on the lot" aria-pressed={inStack}>{inStack ? '✓' : '+'}</button>
+        <span className="vsingle-rarity" style={{ '--rarity': card.foil ? card.foil.color : rarityColor(card.rarity) }} />
+        <span className="vsingle-name" style={{ cursor: 'zoom-in' }}
           onClick={() => setInspect({ card, ask })}>
           {card.grade ? `🔬${card.grade.overall} ` : ''}{card.name}
           {card._mispriced && seeDeals ? ' 💎' : ''}
@@ -447,7 +435,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
         <StarBtn k={card.uid} />
         {/* Tap the card itself to open its page — PSA-if-graded values, the cut/centering
             read, and price history. How you shop for gem-10 candidates. */}
-        <div style={{ cursor: 'zoom-in' }} title="Tap to inspect — grade upside, cut read, price history"
+        <div style={{ cursor: 'zoom-in' }}
           onClick={() => setInspect({ card, ask })}>
           <CardTile card={card} interactive={false} />
         </div>
@@ -457,16 +445,14 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
           {seeDeals && deal && <span className="dealtag">DEAL</span>}
           {seeDeals && !deal && ask > mkt*1.2 && <span className="overtag">OVER</span>}
         </div>
-        <div className="muted" style={{fontSize:11}}>mkt {fmtMoney(mkt)}</div>
+        <div className="cap">mkt {fmtMoney(mkt)}</div>
         <div className="row" style={{ gap: 6 }}>
           <button className="btn" disabled={cash < ask} onClick={() => buyAt(card, ask)}>Buy</button>
-          <button className="btn alt" style={{ flex:'none', maxWidth: 70 }} disabled={haggled.has(card.uid)}
-            title={haggled.has(card.uid) ? 'Already haggled this one — buy it or move on' : undefined}
+          <button className="btn alt btn-fixed" style={{ maxWidth: 70 }} disabled={haggled.has(card.uid)}
             onClick={() => setHaggle({ side:'buy', card, market: mkt, start: ask })}>
             {haggled.has(card.uid) ? 'Haggled' : 'Haggle'}
           </button>
-          <button className="btn alt" style={{ flex:'none', maxWidth: 70 }} disabled={!canTrade}
-            title={canTrade ? 'Build a trade — offer your cards/sealed (± cash) for this and more' : 'You have nothing to trade'}
+          <button className="btn alt btn-fixed" style={{ maxWidth: 70 }} disabled={!canTrade}
             onClick={() => setTradeFor({ card, ask })}>Trade</button>
         </div>
       </div>
@@ -474,17 +460,21 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
   }
 
   return (
-    <div className="modalbg" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 820 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={820} label="Vendor booth">
         <div className="row" style={{ alignItems:'baseline' }}>
           <h2 style={{ marginRight:'auto' }}>{booth.recurring ? '🤝 ' : ''}{booth.name}</h2>
-          {rap && <span className="pill" title="Your standing with this recurring dealer"
-            style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{disc > 0 ? ` · ${Math.round(disc*100)}% off` : ''}</span>}
+          {rap && (
+            <Explain label="What is dealer standing?"
+              trigger={<span className="pill" style={{ background: rap.color + '22', color: rap.color }}>
+                {rap.name}{disc > 0 ? ` · ${Math.round(disc*100)}% off` : ''}</span>}>
+              Your standing with this recurring dealer. Spend with them to climb the ladder — Stranger →
+              Familiar ($250) → Regular ($1,200) → Trusted ($4,500) — for a bigger standing discount at each rung.
+            </Explain>
+          )}
           <span className="pill">{booth.archLabel}</span>
         </div>
-        <p className="muted" style={{ marginTop: 2 }}>
-          This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> cash{booth.tradeMult ? <> · <b style={{ color: 'var(--gold)' }}>{Math.round(booth.tradeMult*100)}%</b> in trade</> : null} for yours. Try to <b>haggle</b> — but push too hard and they'll walk.
+        <p className="muted mt-1">
+          This vendor is {booth.vibe}. They pay <b>{Math.round(booth.buyMult*100)}%</b> cash{booth.tradeMult ? <> · <b className="warn">{Math.round(booth.tradeMult*100)}%</b> in trade</> : null} for yours. Try to <b>haggle</b> — but push too hard and they'll walk.
           {booth.recurring && <> <span style={{ color: rap?.color }}>A regular on the circuit — keep dealing with them to grow your discount{nextRap ? ` (${fmtMoney(nextRap.min - vendorSpend)} more of business → ${nextRap.name}, ${Math.round(nextRap.disc*100)}% off)` : ' — you\'re fully Trusted here'}.</span></>}
         </p>
 
@@ -505,8 +495,8 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                 <div key={idx} className={`vendoritem featured sealed-mystery ${entry._tk && starSet.has(entry._tk) ? 'starred' : ''}`}>
                   {entry._tk && <StarBtn k={entry._tk} />}
                   <div style={{ fontSize: 34, textAlign: 'center' }}>{entry.icon}</div>
-                  <div style={{ fontWeight: 800, fontSize: 13, textAlign:'center' }}>{entry.name}</div>
-                  <div className="muted" style={{ fontSize: 11.5, textAlign:'center' }}>{entry.blurb}</div>
+                  <div className="t-sm" style={{ fontWeight: 800, textAlign:'center' }}>{entry.name}</div>
+                  <div className="cap" style={{ textAlign:'center' }}>{entry.blurb}</div>
                   <div className="askrow" style={{ justifyContent:'center' }}>
                     <span className="ask">{fmtMoney(entry.price)}</span>
                   </div>
@@ -534,8 +524,13 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                         <span className="vsealed-name">
                           {entry._origin === 'vintage' ? '🗝️ ' : entry._origin === 'aftermarket' ? '🕰️ ' : entry._origin === 'import' ? '🎌 ' : (entry.product.icon || '📦') + ' '}
                           {entry.product.type}
-                          {(entry.qty || 1) > 1 && <span className="pill vsealed-qty" title={`They brought a stack — ${entry.qty} of these on the table.`}>×{entry.qty}</span>}
-                          {entry._lead && <span className="pill" style={{ marginLeft: 6, fontSize: 10, background: '#ffcb0522', color: 'var(--gold)' }} title="They set this aside for you before the show — at the price they quoted.">🤝 held</span>}
+                          {(entry.qty || 1) > 1 && <span className="pill vsealed-qty">×{entry.qty}</span>}
+                          {entry._lead && (
+                            <Explain label="What does held mean?"
+                              trigger={<span className="pill t-xs" style={{ marginLeft: 6, background: '#ffcb0522', color: 'var(--gold)' }}>🤝 held</span>}>
+                              They set this aside for you before the show — at the price they quoted.
+                            </Explain>
+                          )}
                         </span>
                         <span className="vsealed-meta">
                           {entry.product.packs} pk{entry.product.bonus ? ' +🎁' : ''}{mkt > 0 ? ` · mkt ${fmtMoney(mkt)}` : ''}
@@ -554,7 +549,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                               negotiated the price." Same one-haggle-per-line rule as singles,
                               keyed by the line's _tk; the agreed price feeds every buy path. */}
                           <button className="btn alt" disabled={!entry._tk || haggled.has(entry._tk) || mkt <= 0}
-                            title={haggled.has(entry._tk) ? 'Already haggled this line — buy it or move on' : 'Haggle on the price'}
+                            aria-label={haggled.has(entry._tk) ? 'Already haggled this line' : 'Haggle on the price'}
                             onClick={() => setHaggle({ side: 'buy', card: { name: `${entry.set?.name || ''} ${entry.product.type}`.trim() }, market: mkt, start: ask, sealedEntry: entry })}>
                             {haggled.has(entry._tk) ? '—' : '🗣️'}
                           </button>
@@ -562,12 +557,10 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                             const { disc: lotD, total: lotTotal } = lotQuote(entry, entry.qty)
                             return (
                             <button className="btn alt" disabled={cash < lotTotal}
-                              title={`Take all ${entry.qty} at ${Math.round(lotD * 100)}% off the lot — straight to your inventory. Vendors love volume.`}
-                              onClick={() => takeStack(entry)}>🧺 ×{entry.qty}</button>
+                              onClick={() => takeStack(entry)}>🧺 ×{entry.qty} · {Math.round(lotD * 100)}% off</button>
                             )
                           })()}
-                          <button className="btn alt" disabled={!canTrade}
-                            title={canTrade ? 'Build a trade — offer your cards/sealed (± cash) for this sealed and more' : 'You have nothing to trade'}
+                          <button className="btn alt" disabled={!canTrade} aria-label="Trade"
                             onClick={() => setTradeFor({ sealed: entry })}>🔄</button>
                         </span>
                       </div>
@@ -585,13 +578,13 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
             {bigDeal && (
               <div className="banner jewel-call" style={{ marginBottom: 10 }}>
                 <div style={{ fontWeight: 800 }}>🐋 Private package <span className="muted" style={{ fontWeight: 400 }}>— one number, no haggling</span></div>
-                <div style={{ fontSize: 12.5, margin: '4px 0' }}>
+                <div className="t-xs" style={{ margin: '4px 0' }}>
                   {bigDeal.cards.map(c => `🔬${c.grade?.overall ?? ''} ${c.name} (${fmtMoney(cardValue(c))})`).join(' · ')}
                   {bigDeal.sealed ? ` · 🗝️ sealed ${bigDeal.sealed.product.type} of ${bigDeal.sealed.set.name}` : ''}
                 </div>
                 <div className="row" style={{ alignItems: 'center', gap: 10 }}>
-                  <b style={{ fontSize: 16 }}>{fmtMoney(bigDeal.price)}</b>
-                  <span className="muted" style={{ fontSize: 12 }}>combined market {fmtMoney(bigDeal.market)}</span>
+                  <b className="t-lg">{fmtMoney(bigDeal.price)}</b>
+                  <span className="cap">combined market {fmtMoney(bigDeal.market)}</span>
                   <button className="btn gold" style={{ marginLeft: 'auto', flex: 'none' }} disabled={cash < bigDeal.price} onClick={closeBigDeal}>
                     {cash < bigDeal.price ? `Need ${fmtMoney(bigDeal.price)}` : '🤝 Close the deal'}
                   </button>
@@ -654,7 +647,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                   <span><b>🧺 {cards.length}</b> picked{disc > 0 ? <> · <b>{Math.round(disc * 100)}% off</b></> : <> · pick {3 - cards.length} more for a deal</>}</span>
                   <span>{disc > 0 && <s className="retail" style={{ marginRight: 4 }}>{fmtMoney(sum)}</s>}<b className="ask">{fmtMoney(total)}</b></span>
                   <button className="btn gold" disabled={cards.length < 3 || cash < total} onClick={buyStack}>Do the deal</button>
-                  <button className="btn alt" style={{ flex: 'none', maxWidth: 60 }} onClick={() => setStackIds(new Set())}>✕</button>
+                  <button className="btn alt btn-fixed" style={{ maxWidth: 60 }} onClick={() => setStackIds(new Set())}>✕</button>
                 </div>
               )
             })()}
@@ -662,7 +655,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
         ) : (
           collection.length === 0 ? <p className="muted">You have nothing to sell.</p> :
           <>
-            <p className="muted" style={{ fontSize: 12, margin: '0 0 6px' }}>
+            <p className="cap" style={{ margin: '0 0 6px' }}>
               One line per SKU — identical copies (same card, condition, grade) are stacked, so you can move duplicates in one tap.
               {Number.isFinite(tillLeft) && <> This vendor has <b style={{ color: tillLeft < 50 ? 'var(--red)' : 'var(--gold)' }}>{fmtMoney(tillLeft)}</b> left to spend today.</>}
             </p>
@@ -672,23 +665,20 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                 const rep = g.first
                 return (
                   <div key={g.key} className="trade-line" style={{ cursor: 'default' }}>
-                    <img className="tl-thumb" src={cardImg(rep)} alt="" style={{ cursor: 'zoom-in' }}
-                      title="Tap to open this card — check its PSA upside before selling it away"
-                      onClick={() => setInspect({ card: rep, owned: true })} />
+                    <img className="tl-thumb" src={cardImg(rep)} alt={`Open ${rep.name}`}
+                      {...clickable(() => setInspect({ card: rep, owned: true }), { style: { cursor: 'zoom-in' } })} />
                     <div className="tl-info">
                       <div className="tl-name">{rep.foil ? `${rep.foil.badge} ` : rep.reverse ? '✨ ' : ''}{rep.name}</div>
                       <div className="tl-sub muted">{skuBadge(rep)} · mkt {fmtMoney(g.unit)} · they pay {fmtMoney(offer)} each{g.count > 1 ? ` · ×${g.count}` : ''}</div>
                     </div>
                     <div className="row" style={{ gap: 5, flex: 'none', width: 'auto' }}>
-                      <button className="btn alt" style={{ flex: 'none', padding: '5px 9px', fontSize: 12 }}
+                      <button className="btn alt t-xs btn-fixed" style={{ padding: '5px 9px' }}
                         onClick={() => sellAt(rep, offer)}>Sell 1</button>
                       {g.count > 1 && (
-                        <button className="btn" style={{ flex: 'none', padding: '5px 9px', fontSize: 12 }}
-                          title={`Sell all ${g.count} copies at ${fmtMoney(offer)} each`}
+                        <button className="btn t-xs btn-fixed" style={{ padding: '5px 9px' }}
                           onClick={() => sellGroup(g, offer)}>All {g.count} · {fmtMoney(round2(offer * g.count))}</button>
                       )}
-                      <button className="btn" style={{ flex: 'none', padding: '5px 9px', fontSize: 12 }} disabled={haggled.has(rep.uid)}
-                        title={haggled.has(rep.uid) ? 'Already haggled this one — sell it or move on' : 'Haggle one copy up from their offer'}
+                      <button className="btn t-xs btn-fixed" style={{ padding: '5px 9px' }} disabled={haggled.has(rep.uid)}
                         onClick={() => setHaggle({ side: 'sell', card: rep, market: g.unit, start: offer })}>
                         {haggled.has(rep.uid) ? 'Haggled' : 'Haggle'}
                       </button>
@@ -700,7 +690,6 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
           </>
         )}
         <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
-      </div>
 
       {haggle && (
         <Haggle
@@ -727,19 +716,17 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
       )}
 
       {pendingSealed && (
-        <div className="modalbg" style={{ zIndex: 20 }} onClick={() => setPendingSealed(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, textAlign: 'center' }}>
-            <button className="modal-close" aria-label="Close" onClick={() => setPendingSealed(null)}>✕</button>
-            <h3 style={{ marginTop: 0 }}>
+        <Modal onClose={() => setPendingSealed(null)} maxWidth={400} zIndex={20} style={{ textAlign: "center" }} label="Confirm sealed buy">
+            <h3 className="mt-0">
               {pendingSealed._origin === 'vintage' ? '🗝️ ' : (pendingSealed.product.icon || '📦') + ' '}{pendingSealed.product.type}
             </h3>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+            <p className="cap t-sm mt-0">
               {pendingSealed.set.name} · {fmtMoney(sealedRead(pendingSealed).ask)} <span style={{ opacity: 0.8 }}>({agreed.has(pendingSealed._tk) ? 'the price you haggled' : disc > 0 ? 'after your rapport discount' : 'vendor markup'})</span>.
               {(() => { const { mkt } = sealedRead(pendingSealed); return mkt > 0 ? <> Market is <b>{fmtMoney(mkt)}</b>.</> : null })()}
               {pendingSealed._origin === 'vintage' ? ' A sealed vintage gamble.' : ''} Rip it now, or stock it to rip/list/flip later?
             </p>
             {(() => { const { mkt, ask, over } = sealedRead(pendingSealed); return over ? (
-              <p style={{ color: 'var(--red)', fontSize: 12.5, fontWeight: 700, marginTop: -4 }}>
+              <p className="t-xs" style={{ color: 'var(--red)', fontWeight: 700, marginTop: -4 }}>
                 ⚠️ You're paying {fmtMoney(ask)} for a {fmtMoney(mkt)} product — {Math.round((ask / mkt - 1) * 100)}% over market.
               </p>
             ) : null })()}
@@ -753,8 +740,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                 const n = pendingSealed.qty
                 const { disc, total } = lotQuote(pendingSealed, n)
                 return (
-                  <button className="btn gold" disabled={cash < total} onClick={() => ripStackNow(pendingSealed)}
-                    title={`Buy all ${n} at ${Math.round(disc * 100)}% off the lot and rip them back-to-back right here`}>
+                  <button className="btn gold" disabled={cash < total} onClick={() => ripStackNow(pendingSealed)}>
                     🧺 Rip all {n} here — {fmtMoney(total)} <span style={{ opacity: 0.85, fontWeight: 600 }}>({Math.round(disc * 100)}% off)</span>
                   </button>
                 )
@@ -766,27 +752,23 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                 const n = pendingSealed.qty
                 const { disc: ldisc, total } = lotQuote(pendingSealed, n)
                 return (
-                  <button className="btn alt" disabled={cash < total} onClick={() => takeStack(pendingSealed)}
-                    title={`Take all ${n} home sealed at ${Math.round(ldisc * 100)}% off the lot`}>
-                    🧺 Take all {n} sealed — {fmtMoney(total)}
+                  <button className="btn alt" disabled={cash < total} onClick={() => takeStack(pendingSealed)}>
+                    🧺 Take all {n} sealed — {fmtMoney(total)} <span style={{ opacity: 0.85, fontWeight: 600 }}>({Math.round(ldisc * 100)}% off)</span>
                   </button>
                 )
               })()}
             </div>
-            <p className="muted" style={{ fontSize: 11, marginTop: 10 }}>
+            <p className="cap mt-5">
               Held sealed rides the market — vintage climbs the longer you hold it. Anything you
               stock here shows up in your <b>🎒 haul</b>, so you can still rip it before you leave.
             </p>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {pendingBuy && (
-        <div className="modalbg" style={{ zIndex: 20 }} onClick={() => setPendingBuy(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 380, textAlign: 'center' }}>
-            <button className="modal-close" aria-label="Close" onClick={() => setPendingBuy(null)}>✕</button>
-            <h3 style={{ marginTop: 0 }}>Bought {pendingBuy.card.name}</h3>
-            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        <Modal onClose={() => setPendingBuy(null)} maxWidth={380} zIndex={20} style={{ textAlign: "center" }} label="Confirm buy">
+            <h3 className="mt-0">Bought {pendingBuy.card.name}</h3>
+            <p className="cap t-sm mt-0">
               for {fmtMoney(pendingBuy.price)} · market {fmtMoney(cardValue(pendingBuy.card))}.
               What do you want to do with it?
             </p>
@@ -794,7 +776,6 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
               {/* Listing at your booth needs a booth at THIS show. Without the 🎪 Vendor Setup
                   upgrade you can only attend to shop, so there's no table to list on — disable it. */}
               <button className={`btn ${asVendor ? 'gold' : 'alt'}`} disabled={!asVendor}
-                title={asVendor ? undefined : "You're not running a booth at this show — attend as a vendor (needs the 🎪 Vendor Setup upgrade) to sell cards at your own table."}
                 onClick={() => commitBuy(true)}>
                 🪧 List it at your booth — sell it here
               </button>
@@ -802,13 +783,12 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
                 🗂️ Keep it in your collection
               </button>
             </div>
-            <p className="muted" style={{ fontSize: 11, marginTop: 10 }}>
+            <p className="cap mt-5">
               {asVendor
                 ? 'Listed cards are offered to shoppers at your table; unsold ones come home when you leave.'
                 : "You're here to shop, not vend — it goes to your collection. Run a booth (🎪 Vendor Setup) to flip buys at your own table."}
             </p>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {mysteryResult && (
@@ -826,7 +806,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
           collection={collection} sealedInventory={sealedInventory} eff={eff}
           onTrade={doTrade} onClose={() => setTradeFor(null)} />
       )}
-    </div>
+    </Modal>
   )
 }
 
@@ -834,49 +814,42 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
 // random single, but some repacks hide a whole sealed product (it stocks to inventory).
 function MysteryReveal({ result, onClose }) {
   const { card, sealed, set, packName } = result
-  useModalEscape(onClose)
   if (sealed) {
     const val = sealedValue(sealed)
     return (
-      <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
-        <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
-          <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-          <h3 style={{ marginTop: 0 }}>📦 {packName}</h3>
+      <Modal onClose={onClose} maxWidth={360} zIndex={25} style={{ textAlign: "center" }} label="Mystery pack reveal">
+          <h3 className="mt-0">📦 {packName}</h3>
           <div className="vendoritem featured" style={{ maxWidth: 200, margin: '0 auto' }}>
             {set?.logo && <img src={set.logo} alt={set?.name || ''} style={{ height: 44, objectFit: 'contain', alignSelf: 'center' }} />}
             <div style={{ fontSize: 30 }}>{sealed.product.icon || '📦'}</div>
-            <div style={{ fontWeight: 800, fontSize: 13 }}>{sealed.product.type}</div>
-            <div className="muted" style={{ fontSize: 11 }}>{set?.name}</div>
+            <div className="t-sm" style={{ fontWeight: 800 }}>{sealed.product.type}</div>
+            <div className="cap">{set?.name}</div>
             <div style={{ fontWeight: 800, color: 'var(--green)' }}>{fmtMoney(val)}</div>
           </div>
-          <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
+          <p className="cap mt-5">
             Sealed product inside! It's stocked in <b>Inventory → 📦 Sealed</b> — rip, list, or flip it.
           </p>
           <button className="btn gold" style={{ maxWidth: 160, margin: '4px auto 0' }} onClick={onClose}>Nice →</button>
-        </div>
-      </div>
+      </Modal>
     )
   }
   const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
   const val = cardValue(card)
   const hit = card._isHit || !!card.foil || val >= 15
   return (
-    <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360, textAlign: 'center' }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <h3 style={{ marginTop: 0 }}>{hit ? '🎉 ' : '❓ '}{packName}</h3>
+    <Modal onClose={onClose} maxWidth={360} zIndex={25} style={{ textAlign: "center" }} label="Mystery pack reveal">
+        <h3 className="mt-0">{hit ? '🎉 ' : '❓ '}{packName}</h3>
         <div className="vendoritem featured" style={{ '--rarity': edge, maxWidth: 200, margin: '0 auto' }}>
           <img src={cardImg(card)} alt={card.name} style={{ width: '100%', borderRadius: 8 }} />
-          <div style={{ fontWeight: 800, fontSize: 13 }}>{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
-          <div className="muted" style={{ fontSize: 11, color: edge }}>{card.foil ? card.foil.label : card.rarity}</div>
+          <div className="t-sm" style={{ fontWeight: 800 }}>{card.foil ? `${card.foil.badge} ` : ''}{card.name}</div>
+          <div className="cap" style={{ color: edge }}>{card.foil ? card.foil.label : card.rarity}</div>
           <div style={{ fontWeight: 800, color: 'var(--green)' }}>{fmtMoney(val)}</div>
         </div>
-        <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
+        <p className="cap mt-5">
           {hit ? "That's a hit! It's in your collection." : 'Added to your collection.'}
         </p>
         <button className="btn gold" style={{ maxWidth: 160, margin: '4px auto 0' }} onClick={onClose}>Nice →</button>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -907,7 +880,6 @@ function QtyLine({ thumb, name, sub, count, qty, onAdd, onSub }) {
 // Every SKU is one line — duplicates stack, and you dial in how many with the stepper.
 function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, collection, sealedInventory, eff, onTrade, onClose }) {
   const cash = useGame(s => s.cash)
-  useModalEscape(onClose)
   const buyMult = booth.buyMult || 0.6
 
   // SKU lines per side. Yours priced at market (× buy rate at the summary); theirs at
@@ -973,11 +945,9 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
   }
 
   return (
-    <div className="modalbg" style={{ zIndex: 25 }} onClick={onClose}>
-      <div className="modal trade-builder" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
-        <h3 style={{ marginTop: 0 }}>🔁 Build a trade with {booth.name}</h3>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+    <Modal onClose={onClose} className="trade-builder" maxWidth={720} zIndex={25} label="Trade builder">
+        <h3 className="mt-0">🔁 Build a trade with {booth.name}</h3>
+        <p className="cap t-sm mt-0">
           One line per SKU — duplicates stack, tap a line (or +) to add copies. They credit your side
           at <b>{Math.round(effTrade * 100)}% of market in trade</b>{hot ? ' (sweetened — you\'re taking their sealed off their hands)' : ''} up
           to what you take; anything beyond comes back as cash at their {Math.round(buyMult * 100)}% buy rate.
@@ -986,20 +956,20 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
         <div className="trade-summary">
           <div className="row" style={{ justifyContent: 'center', gap: 18, alignItems: 'center' }}>
             <div style={{ textAlign: 'center' }}>
-              <div className="muted" style={{ fontSize: 11 }}>You give ({nGive})</div>
+              <div className="cap">You give ({nGive})</div>
               <b>{fmtMoney(yourVal)}</b>
-              <div className="muted" style={{ fontSize: 11 }}>at {Math.round(effTrade * 100)}% in trade{cashBack > 0 ? ` (${fmtMoney(cashBack)} of it cash-out at ${Math.round(buyMult * 100)}%)` : ''}</div>
+              <div className="cap">at {Math.round(effTrade * 100)}% in trade{cashBack > 0 ? ` (${fmtMoney(cashBack)} of it cash-out at ${Math.round(buyMult * 100)}%)` : ''}</div>
             </div>
-            <div style={{ fontSize: 22 }}>⇄</div>
+            <div className="t-2xl">⇄</div>
             <div style={{ textAlign: 'center' }}>
-              <div className="muted" style={{ fontSize: 11 }}>You get ({nGet})</div>
+              <div className="cap">You get ({nGet})</div>
               <b>{fmtMoney(theirVal)}</b>
-              <div className="muted" style={{ fontSize: 11 }}>their ask</div>
+              <div className="cap">their ask</div>
             </div>
           </div>
           <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 800 }}>
-            {cashDelta > 0 ? <>You also pay <span style={{ color: 'var(--red)' }}>{fmtMoney(cashDelta)}</span></>
-              : cashDelta < 0 ? <>They add <span style={{ color: 'var(--green)' }}>{fmtMoney(-cashDelta)}</span> to you</>
+            {cashDelta > 0 ? <>You also pay <span className="neg">{fmtMoney(cashDelta)}</span></>
+              : cashDelta < 0 ? <>They add <span className="pos">{fmtMoney(-cashDelta)}</span> to you</>
               : nGet > 0 ? 'Straight swap — no cash' : 'Pick something to take'}
           </div>
         </div>
@@ -1008,7 +978,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
           <div className="trade-builder-col">
             <div className="rip-side-head">📤 Your side</div>
             <div className="trade-line-list">
-              {mineCardLines.length === 0 && mineSealedLines.length === 0 && <div className="muted" style={{ fontSize: 12 }}>Nothing to offer — trade cash only.</div>}
+              {mineCardLines.length === 0 && mineSealedLines.length === 0 && <div className="cap">Nothing to offer — trade cash only.</div>}
               {mineSealedLines.map(g => (
                 <QtyLine key={g.key}
                   thumb={<span className="tl-icon">{g.first.product?.icon || '📦'}</span>}
@@ -1028,7 +998,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
                   onSub={() => bump(setGiveQty, g.key, -1, g.count)} />
               ))}
               {mineCardLines.length > MAX_LINES && (
-                <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>
+                <div className="cap" style={{ textAlign: 'center' }}>
                   +{mineCardLines.length - MAX_LINES} more lines (highest value shown)
                 </div>
               )}
@@ -1059,16 +1029,15 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
           </div>
         </div>
 
-        <div className="row" style={{ marginTop: 12 }}>
+        <div className="row mt-5">
           <button className="btn gold" disabled={!canDo} onClick={confirm}>
             {nGet === 0 ? 'Pick something to take'
               : cashDelta > 0 && cash < cashDelta ? `Need ${fmtMoney(cashDelta)}`
               : 'Make the trade'}
           </button>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} onClick={onClose}>Cancel</button>
+          <button className="btn alt btn-fixed" style={{ maxWidth: 120 }} onClick={onClose}>Cancel</button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 

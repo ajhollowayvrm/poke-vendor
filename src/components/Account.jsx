@@ -11,9 +11,13 @@ import {
 import { saveBlocked, storageUsedChars, freeDisposableKeys, flushSaveWrite } from '../game/store'
 import { confirmDialog } from '../ui/dialog'
 
+// No fontSize here on purpose. An inline font-size beats every stylesheet rule including the
+// iOS focus-zoom floor at the end of styles.css, and a 13px field makes Safari zoom the whole
+// page the moment it takes focus — with no way back but a pinch. The size lives on
+// .account-field instead, so the phone can raise it to 16px and the desktop keeps 13px.
 const inputStyle = {
   flex: 1, minWidth: 160, background: 'var(--bg)', border: '1px solid var(--line)',
-  color: '#fff', borderRadius: 8, padding: '8px 10px', fontSize: 13,
+  color: '#fff', borderRadius: 8, padding: '8px 10px',
 }
 
 // Settings panel: sign in with an email + password (AWS Cognito) and the game follows
@@ -78,7 +82,7 @@ export default function Account() {
       <div className="setting-card">
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>👤 Account</div>
-          <div className="muted" style={{ fontSize: 12 }}>
+          <div className="cap">
             Not set up yet. Deploy the AWS backend (see <code>aws/README.md</code>) and put its
             outputs in <code>src/game/syncConfig.js</code> to enable accounts and cloud saves.
           </div>
@@ -287,7 +291,7 @@ export default function Account() {
     if (pct < 0.6) return null
     const kb = n => `${Math.round(n / 1024)}KB`
     return (
-      <div style={{ fontSize: 11.5, color: pct >= 0.85 ? 'var(--gold)' : 'var(--dim)' }}>
+      <div className="t-xs" style={{ color: pct>= 0.85 ? 'var(--gold)' : 'var(--dim)' }}>
         {pct >= 0.85 ? '⚠️ ' : ''}Save size {kb(size.payload)} of {kb(size.cap)}
         {pct >= 0.85 && ' — near the cloud limit. Selling or bulking out singles you don’t want brings it back down.'}
       </div>
@@ -295,7 +299,7 @@ export default function Account() {
   })()
 
   const note = msg && (
-    <div className="muted" style={{ fontSize: 12, color: msg.kind === 'err' ? 'var(--red)' : msg.kind === 'ok' ? 'var(--green)' : 'var(--dim)' }}>
+    <div className="cap" style={{ color: msg.kind === 'err' ? 'var(--red)' : msg.kind === 'ok' ? 'var(--green)' : 'var(--dim)' }}>
       {msg.text}
     </div>
   )
@@ -306,34 +310,34 @@ export default function Account() {
       <div className="setting-card" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 10 }}>
         <div className="row" style={{ alignItems: 'baseline', justifyContent: 'space-between' }}>
           <div style={{ fontWeight: 700 }}>👤 {user.email}</div>
-          {cloudAt && <span className="muted" style={{ fontSize: 11.5 }}>Cloud updated {new Date(cloudAt).toLocaleString()}</span>}
+          {cloudAt && <span className="cap">Cloud updated {new Date(cloudAt).toLocaleString()}</span>}
         </div>
-        <div className="muted" style={{ fontSize: 12, marginTop: -4 }}>
+        <div className="cap" style={{ marginTop: -4 }}>
           Your game is tied to this account — sign in anywhere to keep playing it.
         </div>
 
         {reconciling ? (
-          <div className="muted" style={{ fontSize: 12 }}>Syncing…</div>
+          <div className="cap">Syncing…</div>
         ) : (conflict || syncSt.state === 'conflict') ? (
           <div style={{ border: '1px solid var(--line)', borderRadius: 8, padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: 12.5 }}>
+            <div className="t-xs">
               {conflict
                 ? '⚠️ This device’s game isn’t the one saved on your account. Cloud sync is paused — pick which save to keep:'
                 : '⚠️ This device AND the cloud both changed since they last synced (another device pushed in between). Cloud sync is paused — pick which save to keep:'}
             </div>
             <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-              <button className="btn gold" style={{ flex: 'none', maxWidth: 170 }} disabled={busy} onClick={() => doLoad()}>Use cloud save</button>
-              <button className="btn alt" style={{ flex: 'none', maxWidth: 220 }} disabled={busy} onClick={doKeepLocal}>Keep this device’s game</button>
+              <button className="btn gold btn-fixed" style={{ maxWidth: 170 }} disabled={busy} onClick={() => doLoad()}>Use cloud save</button>
+              <button className="btn alt btn-fixed" style={{ maxWidth: 220 }} disabled={busy} onClick={doKeepLocal}>Keep this device’s game</button>
             </div>
           </div>
         ) : (
           <>
             <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-              <button className="btn gold" style={{ flex: 'none', maxWidth: 150 }} disabled={busy} onClick={doSave}>Save to cloud</button>
-              <button className="btn alt" style={{ flex: 'none', maxWidth: 170 }} disabled={busy} onClick={() => doLoad()}>Reload from cloud</button>
+              <button className="btn gold btn-fixed" style={{ maxWidth: 150 }} disabled={busy} onClick={doSave}>Save to cloud</button>
+              <button className="btn alt btn-fixed" style={{ maxWidth: 170 }} disabled={busy} onClick={() => doLoad()}>Reload from cloud</button>
             </div>
             <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-              <div className="muted" style={{ fontSize: 12 }}>
+              <div className="cap">
                 {auto ? 'Auto-sync on — saves to the cloud as you play.' : 'Auto-sync off — save manually.'}
               </div>
               <button className={`btn ${auto ? 'gold' : 'alt'}`} style={{ flex: 'none', maxWidth: 90 }}
@@ -342,25 +346,25 @@ export default function Account() {
               </button>
             </div>
             {syncSt.state === 'ok' && (
-              <div className="muted" style={{ fontSize: 11.5 }}>✓ Last synced {new Date(syncSt.at).toLocaleTimeString()}</div>
+              <div className="cap">✓ Last synced {new Date(syncSt.at).toLocaleTimeString()}</div>
             )}
             {syncSt.state === 'offline' && (
-              <div className="muted" style={{ fontSize: 11.5 }}>Offline — will sync when the cloud is reachable again.</div>
+              <div className="cap">Offline — will sync when the cloud is reachable again.</div>
             )}
             {syncSt.state === 'toolarge' && (
-              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>
+              <div className="t-xs neg">
                 ⚠️ This save is too large to sync — cloud backups are NOT updating. Your game is safe
                 on this device. Selling, consigning or bulking out singles you don’t want shrinks it;
                 sync resumes on its own once it fits.
               </div>
             )}
             {syncSt.state === 'error' && (
-              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>⚠️ Cloud sync is failing ({syncSt.message || 'unknown error'}) — retrying as you play.</div>
+              <div className="t-xs neg">⚠️ Cloud sync is failing ({syncSt.message || 'unknown error'}) — retrying as you play.</div>
             )}
             {/* Out of localStorage is a different animal from a failed push: it means writes to
                 THIS DEVICE are failing too, so it needs its own words and a way out. */}
             {blocked && (
-              <div style={{ fontSize: 11.5, color: 'var(--red)' }}>
+              <div className="t-xs neg">
                 🛑 This browser is out of storage, so your progress is <b>not being saved to this
                 device</b> either. It's holding about {(used / 524288).toFixed(1)}MB and browsers cap
                 a site near 5MB. Free up what's safe to lose, then keep playing — the pending save
@@ -387,8 +391,8 @@ export default function Account() {
         {note}
 
         <div className="row" style={{ borderTop: '1px solid var(--line)', paddingTop: 10, gap: 8, flexWrap: 'wrap', justifyContent: 'space-between' }}>
-          <button className="btn alt" style={{ flex: 'none', maxWidth: 120 }} disabled={busy} onClick={doSignOut}>Sign out</button>
-          <button className="linkbtn" style={{ fontSize: 12 }} disabled={busy} onClick={doRestorePrev}>
+          <button className="btn alt btn-fixed" style={{ maxWidth: 120 }} disabled={busy} onClick={doSignOut}>Sign out</button>
+          <button className="linkbtn t-xs"  disabled={busy} onClick={doRestorePrev}>
             ↩︎ Restore previous cloud version
           </button>
         </div>
@@ -405,7 +409,7 @@ export default function Account() {
   return (
     <div className="setting-card" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 10 }}>
       <div style={{ fontWeight: 700 }}>👤 Account</div>
-      <div className="muted" style={{ fontSize: 12, marginTop: -4 }}>
+      <div className="cap" style={{ marginTop: -4 }}>
         Sign in to save your game to the cloud and play it on any device. No account? The game still saves to this browser.
       </div>
 
@@ -417,17 +421,17 @@ export default function Account() {
           </div>
           <form onSubmit={mode === 'signin' ? doSignIn : doSignUp}
             style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <input style={inputStyle} type="email" autoComplete="email" placeholder="email"
+            <input className="account-field" style={inputStyle} type="email" autoComplete="email" placeholder="email"
               value={email} onChange={e => setEmail(e.target.value)} />
-            <input style={inputStyle} type="password" placeholder={mode === 'signup' ? 'password (8+ characters)' : 'password'}
+            <input className="account-field" style={inputStyle} type="password" placeholder={mode === 'signup' ? 'password (8+ characters)' : 'password'}
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               value={password} onChange={e => setPassword(e.target.value)} />
             <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-              <button className="btn gold" type="submit" style={{ flex: 'none', maxWidth: 170 }} disabled={busy}>
+              <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 170 }} disabled={busy}>
                 {busy ? '…' : mode === 'signin' ? 'Sign in' : 'Create account'}
               </button>
               {mode === 'signin' && (
-                <button type="button" className="btn alt" style={{ flex: 'none', maxWidth: 170 }} disabled={busy}
+                <button type="button" className="btn alt btn-fixed" style={{ maxWidth: 170 }} disabled={busy}
                   onClick={() => { setMode('forgot'); setMsg(null) }}>Forgot password?</button>
               )}
             </div>
@@ -437,16 +441,16 @@ export default function Account() {
 
       {mode === 'confirm' && (
         <form onSubmit={doConfirm} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div className="muted" style={{ fontSize: 12 }}>Check <b>{cleanEmail() || 'your email'}</b> for a 6-digit code.</div>
-          <input style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="123456"
+          <div className="cap">Check <b>{cleanEmail() || 'your email'}</b> for a 6-digit code.</div>
+          <input className="account-field" style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="123456"
             value={code} onChange={e => setCode(e.target.value)} />
           <div className="row" style={{ gap: 8 }}>
-            <button className="btn gold" type="submit" style={{ flex: 'none', maxWidth: 150 }} disabled={busy}>Confirm</button>
-            <button type="button" className="btn alt" style={{ flex: 'none', maxWidth: 150 }} disabled={busy}
+            <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 150 }} disabled={busy}>Confirm</button>
+            <button type="button" className="btn alt btn-fixed" style={{ maxWidth: 150 }} disabled={busy}
               onClick={() => { resendCode(cleanEmail()).then(() => flash('info', 'New code sent.')).catch(err => flash('err', err.message)) }}>
               Resend code
             </button>
-            <button type="button" className="btn alt" style={{ flex: 'none', maxWidth: 100 }} disabled={busy}
+            <button type="button" className="btn alt btn-fixed" style={{ maxWidth: 100 }} disabled={busy}
               onClick={() => { setMode('signin'); setMsg(null) }}>Back</button>
           </div>
         </form>
@@ -454,12 +458,12 @@ export default function Account() {
 
       {mode === 'forgot' && (
         <form onSubmit={doForgot} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div className="muted" style={{ fontSize: 12 }}>We’ll email a reset code to your account address.</div>
-          <input style={inputStyle} type="email" autoComplete="email" placeholder="email"
+          <div className="cap">We’ll email a reset code to your account address.</div>
+          <input className="account-field" style={inputStyle} type="email" autoComplete="email" placeholder="email"
             value={email} onChange={e => setEmail(e.target.value)} />
           <div className="row" style={{ gap: 8 }}>
-            <button className="btn gold" type="submit" style={{ flex: 'none', maxWidth: 170 }} disabled={busy}>Send reset code</button>
-            <button type="button" className="btn alt" style={{ flex: 'none', maxWidth: 100 }} disabled={busy}
+            <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 170 }} disabled={busy}>Send reset code</button>
+            <button type="button" className="btn alt btn-fixed" style={{ maxWidth: 100 }} disabled={busy}
               onClick={() => { setMode('signin'); setMsg(null) }}>Back</button>
           </div>
         </form>
@@ -467,13 +471,13 @@ export default function Account() {
 
       {mode === 'forgotconfirm' && (
         <form onSubmit={doForgotConfirm} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <input style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="reset code"
+          <input className="account-field" style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="reset code"
             value={code} onChange={e => setCode(e.target.value)} />
-          <input style={inputStyle} type="password" autoComplete="new-password" placeholder="new password (8+ characters)"
+          <input className="account-field" style={inputStyle} type="password" autoComplete="new-password" placeholder="new password (8+ characters)"
             value={password} onChange={e => setPassword(e.target.value)} />
           <div className="row" style={{ gap: 8 }}>
-            <button className="btn gold" type="submit" style={{ flex: 'none', maxWidth: 200 }} disabled={busy}>Set new password</button>
-            <button type="button" className="btn alt" style={{ flex: 'none', maxWidth: 100 }} disabled={busy}
+            <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 200 }} disabled={busy}>Set new password</button>
+            <button type="button" className="btn alt btn-fixed" style={{ maxWidth: 100 }} disabled={busy}
               onClick={() => { setMode('signin'); setMsg(null) }}>Back</button>
           </div>
         </form>

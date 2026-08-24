@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { Modal } from '../ui/Modal'
+import { Explain } from '../ui/Explain'
 import { useGame, absoluteDay } from '../game/store'
 import { SHOP_SETS, openPack, makeProductPromo, isHit, isChase, cardValue, psaValueAt, fmtMoney, rarityRank, HIT_THRESHOLD, preloadCardImages, setById, setNameOfCard, sealedCard, round2, cardImg, showcaseSetIds } from '../game/engine'
 import {
@@ -35,7 +37,7 @@ export default function Livestream() {
 
   if (!hasGear) {
     return (
-      <div className="empty" style={{ marginTop: 24 }}>
+      <div className="empty mt-7">
         🔴 You need a <b>Streaming Setup</b> (camera, lights, capture card) to go live.
         Grab it on the <b>Upgrades</b> tab — then rip on camera for tips, fame, and a big traffic boost.
       </div>
@@ -249,66 +251,74 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
 
   return (
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
-      <div className="banner" style={{ marginTop: 16 }}>
+      <div className="banner mt-6">
         🔴 <b>Go live & rip on camera.</b> Queue up <b>as many held products as you like</b> and rip them
         back-to-back — viewers tune in, react to your pulls, and tip. A hot stream banks a notoriety jump and
         pumps your store's traffic for days — but it <b>burns a game-day</b>, and streaming often <b>tires your
         audience</b> (rest a few days to recover).
         {streamStats?.streams ? <span className="muted"> · {streamStats.streams} stream{streamStats.streams>1?'s':''} · peak {streamStats.peakViewers} · {fmtMoney(streamStats.tips)} tipped lifetime{streamStats.ripOrders ? ` · ${streamStats.ripOrders} rip orders filled` : ''}</span> : null}
         {followers > 0 && <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>👥 {followers.toLocaleString()} followers</span>}
-        {subs > 0 && <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--red) 13%, transparent)', color:'var(--red)' }}
-          title={`Paying channel members — a small daily drip while the channel is alive. Go dark over a week and they drift off.`}>❤️ {subs.toLocaleString()} subs</span>}
-        {streamPacks > 0 && <span className="pill" style={{ marginLeft: 8, background: '#ffcb0522', color: 'var(--gold)' }}
-          title="Built mystery packs with the 🔴 Stream channel on — viewers order them mid-stream and you rip them on camera">
+        {subs > 0 && (
+          <Explain label="What subs do" trigger={
+            <span className="pill" style={{ marginLeft: 8, background:'color-mix(in srgb, var(--red) 13%, transparent)', color:'var(--red)' }}>
+              ❤️ {subs.toLocaleString()} subs</span>}>
+            Paying channel members — a small daily drip while the channel is alive. Go dark over
+            a week and they drift off.
+          </Explain>
+        )}
+        {streamPacks > 0 && <span className="pill" style={{ marginLeft: 8, background: '#ffcb0522', color: 'var(--gold)' }}>
           🎁 {streamPacks} mystery pack{streamPacks > 1 ? 's' : ''} ready for live orders</span>}
       </div>
 
       {/* 📣 Announce a FUTURE stream: promise a night (and optionally a headline giveaway
           card) and the room shows up bigger — if you actually deliver. One promise at a time.
           Always visible so an armed promise is never out of sight. */}
-      <div className="market-panel" style={{ marginTop: 14 }}>
+      <div className="market-panel mt-6">
         <div className="market-head">📣 Announced stream <span className="muted">— hype a broadcast before you go live</span></div>
         {streamPromo ? (
           promoTonight ? (
-            <p style={{ fontSize: 13, margin: '8px 0 0' }}>
+            <p className="t-sm" style={{ margin: '8px 0 0' }}>
               🔥 <b>Tonight's the night!</b> You promised this broadcast{streamPromo.cardName ? <> — headlining a <b>{streamPromo.cardName}</b> ({fmtMoney(streamPromo.cardValue)}) giveaway</> : null}.
-              Expect a <b style={{ color: 'var(--gold)' }}>×{promoViewerMult(streamPromo).toFixed(2)}</b> crowd.
+              Expect a <b className="warn">×{promoViewerMult(streamPromo).toFixed(2)}</b> crowd.
               {streamPromo.cardName && !streamPromo.delivered && <span className="muted"> Raffle the promised card on air (🎁 Giveaway) or the room turns on you (−2★).</span>}
             </p>
           ) : (
             <div className="row" style={{ gap: 10, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 13 }}>
+              <span className="t-sm">
                 📅 Announced for <b>{promoInDays === 1 ? 'tomorrow' : `in ${promoInDays} days`}</b>
                 {streamPromo.cardName ? <> — headlining a <b>{streamPromo.cardName}</b> ({fmtMoney(streamPromo.cardValue)}) giveaway</> : null}.
-                Go live that day for a <b style={{ color: 'var(--gold)' }}>×{promoViewerMult(streamPromo).toFixed(2)}</b> crowd{streamPromo.cardName ? <span className="muted"> — and don't part with the prize before the show</span> : null}.
+                Go live that day for a <b className="warn">×{promoViewerMult(streamPromo).toFixed(2)}</b> crowd{streamPromo.cardName ? <span className="muted"> — and don't part with the prize before the show</span> : null}.
               </span>
-              <button className="btn alt" style={{ flex: 'none', maxWidth: 130, marginLeft: 'auto' }}
+              <button className="btn alt btn-fixed" style={{ maxWidth: 130, marginLeft: 'auto' }}
                 onClick={async () => { if (await confirmDialog({ title: 'Call off the announced stream?', body: 'The room you hyped up will shrug and move on (−1★).', confirmText: 'Call it off', danger: true })) cancelStreamPromo() }}>
                 Call it off</button>
             </div>
           )
         ) : (
           <>
-            <p className="muted" style={{ fontSize: 12.5, margin: '8px 0 0' }}>
+            <p className="cap" style={{ margin: '8px 0 0' }}>
               Promise a broadcast ahead of time and the room shows up bigger on the night — more lead time and a
               headline giveaway people actually want mean a bigger crowd. <b>Skip the night (or the promised card) and your rep takes the hit.</b>
             </p>
             <div className="row" style={{ gap: 8, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span className="muted" style={{ fontSize: 12 }}>When</span>
+              <span className="cap">When</span>
               {[1, 2, 3].map(n => (
                 <button key={n} className={`pctbtn ${promoLead === n ? 'on' : ''}`} onClick={() => setPromoLead(n)}>
                   {n === 1 ? 'Tomorrow' : `In ${n} days`}</button>
               ))}
             </div>
             <div className="row" style={{ gap: 10, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <select value={promoCardUid} onChange={e => setPromoCardUid(e.target.value)} style={{ flex: 1, minWidth: 220 }}
-                title="Headline ONE card you own as the night's giveaway — the pricier the prize, the bigger the promised crowd">
+              <select value={promoCardUid} onChange={e => setPromoCardUid(e.target.value)} style={{ flex: 1, minWidth: 220 }}>
                 <option value="">— no headline giveaway —</option>
                 {promoPool.map(c => (
                   <option key={c.uid} value={c.uid}>🎁 {c.name} · {fmtMoney(cardValue(c))}</option>
                 ))}
               </select>
-              <button className="btn" style={{ flex: 'none' }} onClick={() => announceStream({ daysAhead: promoLead, card: promoCard })}>
+              <Explain label="What the headline giveaway does">
+                Headline ONE card you own as the night's giveaway. The pricier the prize, the
+                bigger the promised crowd.
+              </Explain>
+              <button className="btn btn-fixed"  onClick={() => announceStream({ daysAhead: promoLead, card: promoCard })}>
                 📣 Announce (×{promoViewerMult({ lead: promoLead, cardValue: promoCard ? cardValue(promoCard) : 0 }).toFixed(2)})
               </button>
             </div>
@@ -319,24 +329,30 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
       {/* No sealed AND no stream-channel mystery packs = genuinely nothing to broadcast. With
           packs but no sealed you can still go live and take pack orders, so don't dead-end. */}
       {inventory.length === 0 && streamPacks === 0 ? (
-        <div className="empty" style={{ marginTop: 20 }}>
+        <div className="empty mt-7">
           📦 You have no sealed product to break. Streams rip from your <b>held inventory</b> only —
           <b> buy sealed on the Buy tab</b> (or source it at a show), then come back and queue it up live.
-          <br /><span className="muted" style={{ fontSize: 12.5 }}>You can also go live with nothing but <b>mystery packs</b> — build a pack line with the 🔴 Stream channel on (Sell → ❓ Packs) and viewers will order them on air.</span>
+          <br /><span className="cap">You can also go live with nothing but <b>mystery packs</b> — build a pack line with the 🔴 Stream channel on (Sell → ❓ Packs) and viewers will order them on air.</span>
         </div>
       ) : (
         <>
           {inventory.length > 0 && (
-          <div className="market-panel" style={{ marginTop: 14 }}>
-            <div className="market-head">🎬 Build your rip queue <span className="muted">— from your 📦 inventory</span></div>
+          <div className="market-panel mt-6">
+            <div className="market-head">🎬 Build your rip queue <span className="muted">— from your 📦 inventory</span>
+              {hasStore && <Explain label="What each source means">
+                <div>🔒 <b>Personal</b> — only your kept sealed, the stash you set aside for yourself.</div>
+                <div>🏬 <b>Store stock</b> — sealed on the sales floor or in the storeroom.</div>
+                <div>📦 <b>Everything</b> — all held sealed, wherever it lives.</div>
+              </Explain>}
+            </div>
             {hasStore && (
               <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
                 {[
-                  { key: 'personal', label: `🔒 Personal (${srcCounts.personal})`, hint: 'Only your kept sealed — the stash you 🔒 set aside for yourself.' },
-                  { key: 'store',    label: `🏬 Store stock (${srcCounts.store})`, hint: 'Sealed on the sales floor or in the storeroom.' },
-                  { key: 'all',      label: `📦 Everything (${available.length})`, hint: 'All held sealed, wherever it lives.' },
+                  { key: 'personal', label: `🔒 Personal (${srcCounts.personal})` },
+                  { key: 'store',    label: `🏬 Store stock (${srcCounts.store})` },
+                  { key: 'all',      label: `📦 Everything (${available.length})` },
                 ].map(o => (
-                  <button key={o.key} className={`subtab ${src === o.key ? 'active' : ''}`} title={o.hint}
+                  <button key={o.key} className={`subtab ${src === o.key ? 'active' : ''}`}
                     onClick={() => pickSrc(o.key)}>{o.label}</button>
                 ))}
               </div>
@@ -359,7 +375,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
           )}
 
           {queue.length > 0 && (
-            <div className="market-panel" style={{ marginTop: 12 }}>
+            <div className="market-panel mt-5">
               <div className="market-head">📋 Tonight's queue <span className="muted">— {queue.length} product{queue.length>1?'s':''} · {totalPacks} pack{totalPacks>1?'s':''}, ripped back-to-back</span></div>
               <div className="stream-queue">
                 {queue.map((row, i) => {
@@ -372,21 +388,21 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
                         <span className="sq-idx">{i + 1}</span>
                         <span className="sq-name">{row.product.icon || '📦'} {s?.name}{row.vintage ? ' 🗝️' : ''} {row.product.type}</span>
                         <span className="muted sq-pk">{row.product.packs} pk</span>
-                        <button className="sq-x" title="Remove from queue" onClick={() => removeFromQueue(row.invUid)}>✕</button>
+                        <button className="sq-x" aria-label="Remove from queue" onClick={() => removeFromQueue(row.invUid)}>✕</button>
                       </div>
                       {canBreak && (
                         <div className="sq-break">
-                          <label className="tweet-toggle" style={{ fontSize: 13 }}>
+                          <label className="tweet-toggle t-sm">
                             <input type="checkbox" checked={row.brk.on} onChange={e => patchBreak(row.invUid, { on: e.target.checked })} />
                             📦 <b>Box break</b> <span className="muted">— sell spots up front</span>
                           </label>
                           {row.brk.on && (
-                            <div className="list-pct-row" style={{ marginTop: 6 }}>
-                              <span className="muted" style={{ fontSize: 12 }}>Spots</span>
+                            <div className="list-pct-row mt-3">
+                              <span className="cap">Spots</span>
                               {[2, 4, 6, 8].map(n => (
                                 <button key={n} className={`pctbtn ${row.brk.spots === n ? 'on' : ''}`} onClick={() => patchBreak(row.invUid, { spots: n })}>{n}</button>
                               ))}
-                              <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>{fmtMoney(per)}/spot · all sell ⇒ <b style={{ color:'var(--green)' }}>{fmtMoney(per * row.brk.spots)}</b></span>
+                              <span className="cap" style={{ marginLeft: 'auto' }}>{fmtMoney(per)}/spot · all sell ⇒ <b className="pos">{fmtMoney(per * row.brk.spots)}</b></span>
                             </div>
                           )}
                         </div>
@@ -399,14 +415,18 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
                   the "cost" is that when it hits, the pulled copy goes to a viewer. */}
               {bountyPool.length > 0 && (
                 <div className="row" style={{ gap: 10, marginTop: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span className="muted" style={{ fontSize: 12 }}>🎯 Bounty</span>
-                  <select value={bountyId} onChange={e => setBountyId(e.target.value)} style={{ flex: 1, minWidth: 200 }}
-                    title="Promise the room: if you pull this card tonight, a viewer wins it. The stakes alone draw a crowd — and if it hits, the room detonates (but the card ships to its winner).">
+                  <span className="cap">🎯 Bounty</span>
+                  <Explain label="What a bounty does">
+                    Promise the room: if you pull this card tonight, a viewer wins it. The
+                    stakes alone draw a crowd — and if it hits, the room detonates (but the
+                    card ships to its winner).
+                  </Explain>
+                  <select value={bountyId} onChange={e => setBountyId(e.target.value)} style={{ flex: 1, minWidth: 200 }}>
                     <option value="">— no bounty —</option>
                     {bountyPool.map(c => <option key={c.id} value={c.id}>🎯 {c.name} · {fmtMoney(cardValue(c))}</option>)}
                   </select>
-                  {bountyCard && <span className="muted" style={{ fontSize: 12 }}>
-                    draw <b style={{ color: 'var(--gold)' }}>×{bountyDrawMult(cardValue(bountyCard)).toFixed(2)}</b> · pull it and chat wins it</span>}
+                  {bountyCard && <span className="cap">
+                    draw <b className="warn">×{bountyDrawMult(cardValue(bountyCard)).toFixed(2)}</b> · pull it and chat wins it</span>}
                 </div>
               )}
             </div>
@@ -414,23 +434,28 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
 
           {/* WHAT YOU'LL SELL TONIGHT. Viewers can only ever ask for something you actually hold
               AND opened up here — never a 🔒 locked unit, never one promised to a regular. */}
-          <div className="market-panel" style={{ marginTop: 12 }}>
+          <div className="market-panel mt-5">
             <div className="market-head">
               🎟️ Open for orders <span className="muted">— what viewers may ask you to rip tonight</span>
+              <Explain label="What each option means">
+                <div>📦 <b>Everything I hold</b> — any sealed unit in your case is fair game.</div>
+                <div>✅ <b>Only what I pick</b> — tick the exact units you're willing to part with.</div>
+                <div>🚫 <b>Nothing</b> — take no rip orders, you'll only rip your own queue.</div>
+              </Explain>
             </div>
             <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
               {[
-                { key: 'all',    label: '📦 Everything I hold', hint: 'Any sealed unit in your case is fair game.' },
-                { key: 'picked', label: '✅ Only what I pick',   hint: 'Tick the exact units you\'re willing to part with.' },
-                { key: 'none',   label: '🚫 Nothing',            hint: 'Take no rip orders — you\'ll only rip your own queue.' },
+                { key: 'all',    label: '📦 Everything I hold' },
+                { key: 'picked', label: '✅ Only what I pick' },
+                { key: 'none',   label: '🚫 Nothing' },
               ].map(o => (
                 <button key={o.key} className={`subtab ${orderMode === o.key ? 'active' : ''}`}
-                  title={o.hint} onClick={() => setOrderMode(o.key)}>{o.label}</button>
+                  onClick={() => setOrderMode(o.key)}>{o.label}</button>
               ))}
             </div>
 
             {!hasRipService && orderMode !== 'none' && (
-              <p className="muted" style={{ fontSize: 12, margin: '8px 0 0' }}>
+              <p className="cap" style={{ margin: '8px 0 0' }}>
                 ⚠️ Viewers can't order your <b>sealed</b> without the 🎟️ <b>Live Rip Service</b> upgrade — until you own it,
                 this only governs your mystery packs.
               </p>
@@ -438,13 +463,13 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
 
             {orderMode === 'picked' && (
               offerable.length === 0
-                ? <p className="muted" style={{ fontSize: 12.5, margin: '8px 0 0' }}>Nothing available to offer — it's all queued, locked, or held for a regular.</p>
-                : <div className="stream-offer-grid" style={{ marginTop: 8 }}>
+                ? <p className="cap" style={{ margin: '8px 0 0' }}>Nothing available to offer — it's all queued, locked, or held for a regular.</p>
+                : <div className="stream-offer-grid mt-4">
                     {offerable.map(it => {
                       const s = setById(it.setId)
                       const on = orderUids.has(it.uid)
                       return (
-                        <label key={it.uid} className={`tweet-toggle ${on ? 'on' : ''}`} style={{ fontSize: 12.5 }}>
+                        <label key={it.uid} className={`tweet-toggle ${on ? 'on' : ''}`} style={{ fontSize: 'var(--fs-sm)' }}>
                           <input type="checkbox" checked={on} onChange={() => toggleOrderUid(it.uid)} />
                           {it.vintage ? '🗝️ ' : ''}{it.product.icon || '📦'} {s?.name} {it.product.type}
                           <span className="muted"> · {fmtMoney(ripOrderPrice(it.product, notoriety, s))}</span>
@@ -455,12 +480,15 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
             )}
 
             <div className="row" style={{ gap: 10, marginTop: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-              <label className="tweet-toggle" style={{ fontSize: 13 }}
-                title="Your built mystery packs with the 🔴 Stream channel on. Turn this off to take no pack orders tonight without changing the pack line itself.">
+              <label className="tweet-toggle t-sm">
                 <input type="checkbox" checked={allowPacks} onChange={e => setAllowPacks(e.target.checked)} />
                 🎁 Sell my mystery packs on this stream{streamPacks > 0 ? ` (${streamPacks} ready)` : ''}
               </label>
-              <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>
+              <Explain label="What this switch does">
+                This covers your built mystery packs with the 🔴 Stream channel on. Turn it off
+                to take no pack orders tonight without changing the pack line itself.
+              </Explain>
+              <span className="cap" style={{ marginLeft: 'auto' }}>
                 {openCount > 0
                   ? <>Viewers can order <b>{openCount}</b> sealed unit{openCount === 1 ? '' : 's'}</>
                   : <>No sealed open for orders</>}
@@ -473,36 +501,38 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
             {/* An empty queue is a valid show — you go on air and rip only what viewers buy. But
                 an empty queue with nothing ORDERABLE either is just dead air: no queue, no rip
                 orders (or no upgrade to take them), no packs. Don't let it burn a game-day. */}
-            <button className="btn gold" style={{ maxWidth: 340 }} disabled={deadAir} onClick={go}
-              title={deadAir ? "Nothing to rip and nothing viewers could order — you'd burn a day on dead air." : ''}>
+            <button className="btn gold" style={{ maxWidth: 340 }} disabled={deadAir} onClick={go}>
               {queue.length
                 ? <>🔴 Go live — rip {queue.length} product{queue.length !== 1 ? 's' : ''} ({totalPacks} pk)</>
                 : <>🔴 Go live — take orders only</>}
             </button>
             {/* 🎫 📣 Clout spend: call in favors so tonight opens to a bigger room (×1.5). */}
             {boosted
-              ? <span className="pill" style={{ color: 'var(--gold)' }}>📣 Boosted — tonight opens ×1.5</span>
-              : <button className="btn alt" style={{ maxWidth: 340 }} disabled={clout < 2}
-                  title={clout < 2 ? 'Needs 2 🎫 clout (earn it from rank-ups, god packs, and clean-sweep goal weeks)' : 'Spend 2 🎫 clout — friends of the shop raid in and the algorithm smiles: tonight opens with ×1.5 viewers'}
-                  onClick={() => buyStreamBoost()}>
-                  📣 Boost tonight · 2 🎫 (you have {Math.floor(clout)})
-                </button>}
+              ? <span className="pill warn">📣 Boosted — tonight opens ×1.5</span>
+              : <div>
+                  <button className="btn alt" style={{ maxWidth: 340 }} disabled={clout < 2}
+                    onClick={() => buyStreamBoost()}>
+                    📣 Boost tonight · 2 🎫 (you have {Math.floor(clout)})
+                  </button>
+                  {clout < 2 && <div className="cap" style={{ textAlign: 'center', marginTop: 3 }}>
+                    Earn 🎫 clout from rank-ups, god packs, and clean-sweep goal weeks.</div>}
+                </div>}
           </div>
-          <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 8 }}>
+          <p className="cap" style={{ textAlign: 'center', marginTop: 8 }}>
             {deadAir
-              ? <span style={{ color: 'var(--red)' }}>Nothing queued and nothing viewers could order — queue a product, open some sealed for orders{!hasRipService && ' (needs the 🎟️ Live Rip Service)'}, or put a mystery pack line on the 🔴 Stream channel.</span>
+              ? <span className="neg">Nothing queued and nothing viewers could order — queue a product, open some sealed for orders{!hasRipService && ' (needs the 🎟️ Live Rip Service)'}, or put a mystery pack line on the 🔴 Stream channel.</span>
               : queue.length === 0
               ? <>Nothing queued — you'll go on air with an empty table and rip only what viewers <b>order</b>. Nothing gets opened on spec.
                   {' '}Expecting ~{expected.toLocaleString()} viewers.
-                  {promoTonight && <span style={{ color: 'var(--gold)' }}> · 📣 announced show</span>}
+                  {promoTonight && <span className="warn"> · 📣 announced show</span>}
                   {rhythmNow > 0 && <span style={{ color: 'var(--accent-light)' }}> · 📆 rhythm ×{rhythmMult(rhythmNow).toFixed(2)}</span>}
-                  {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh</span>}</>
+                  {fresh < 0.99 && <span className="warn"> · audience {Math.round(fresh*100)}% fresh</span>}</>
               : <>Expecting ~{expected.toLocaleString()} viewers
-                {promoTonight && <span style={{ color: 'var(--gold)' }}> · 📣 announced show</span>}
+                {promoTonight && <span className="warn"> · 📣 announced show</span>}
                 {rhythmNow > 0 && <span style={{ color: 'var(--accent-light)' }}> · 📆 rhythm ×{rhythmMult(rhythmNow).toFixed(2)}</span>}
-                {bountyCard && <span style={{ color: 'var(--gold)' }}> · 🎯 bounty ×{bountyDrawMult(cardValue(bountyCard)).toFixed(2)}</span>}
-                {fresh < 0.99 && <span style={{ color: 'var(--gold)' }}> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
-                {isFlop(expected) && <span style={{ color: 'var(--red)' }}> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
+                {bountyCard && <span className="warn"> · 🎯 bounty ×{bountyDrawMult(cardValue(bountyCard)).toFixed(2)}</span>}
+                {fresh < 0.99 && <span className="warn"> · audience {Math.round(fresh*100)}% fresh (you've streamed recently — rest to recover)</span>}
+                {isFlop(expected) && <span className="neg"> · ⚠️ risky — barely anyone may show (a flop dings rep)</span>}
                 {' · costs 1 game-day'}</>}
           </p>
         </>
@@ -1291,45 +1321,54 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
         <span className="pill live-dot">🔴 LIVE</span>
         <span className="stream-viewers" style={flopping ? { color: 'var(--red)' } : null}>👁 <AnimatedNumber value={viewers} flash={false} duration={600} format={(n) => Math.round(n).toLocaleString()} /> watching{flopping ? ' · quiet room…' : ''}</span>
         <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }}>💸 {fmtMoney(tips)} tips</span>
-        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }} title="Your returning audience — grows with good streams">
-          👥 {followers.toLocaleString()}{sessionFollowers > 0 ? <b style={{ color:'var(--green)' }}> +{sessionFollowers}</b> : ''}
+        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>
+          👥 {followers.toLocaleString()}{sessionFollowers > 0 ? <b className="pos"> +{sessionFollowers}</b> : ''}
         </span>
         {sessionSubs > 0 && (
-          <span className="pill" style={{ background:'color-mix(in srgb, var(--red) 13%, transparent)', color:'var(--red)' }}
-            title="New paying subscribers this stream — a daily drip once the stream wraps">❤️ +{sessionSubs}</span>
+          <Explain label="What subs do" trigger={
+            <span className="pill" style={{ background:'color-mix(in srgb, var(--red) 13%, transparent)', color:'var(--red)' }}>
+              ❤️ +{sessionSubs}</span>}>
+            New paying subscribers this stream — a daily drip once the stream wraps.
+          </Explain>
         )}
         {bountyRef.current && (
-          <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}
-            title={bountyRef.current.claimed ? 'The promised card hit and shipped to its winner' : `You promised the room: pull the ${bountyRef.current.name} tonight and a viewer wins it`}>
+          <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>
             🎯 {bountyRef.current.claimed ? 'Bounty hit ✓' : bountyRef.current.name}
           </span>
         )}
         {floorSales.count > 0 && (
-          <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }}
-            title="Singles sold off your store floor to hyped viewers (at a stream premium)">🛍️ {floorSales.count} · {fmtMoney(floorSales.revenue)}</span>
+          <Explain label="What floor sales are" trigger={
+            <span className="pill" style={{ background:'color-mix(in srgb, var(--green) 13%, transparent)', color:'var(--green)' }}>
+              🛍️ {floorSales.count} · {fmtMoney(floorSales.revenue)}</span>}>
+            Singles sold off your store floor to hyped viewers, at a stream premium.
+          </Explain>
         )}
         {hypeLevel > 0 && (
-          <span className={`pill hype-train lvl-${Math.min(HYPE_TRAIN_MAX, hypeLevel)}`} title="Consecutive hits stack a tip multiplier — keep the train rolling!">
-            ⚡ Hype ×{hypeLevel} · tips {hypeTrainMult(hypeLevel).toFixed(1)}×{combo > 2 ? ` · 🔥${combo}` : ''}
-          </span>
+          <Explain label="What the hype train is" trigger={
+            <span className={`pill hype-train lvl-${Math.min(HYPE_TRAIN_MAX, hypeLevel)}`}>
+              ⚡ Hype ×{hypeLevel} · tips {hypeTrainMult(hypeLevel).toFixed(1)}×{combo > 2 ? ` · 🔥${combo}` : ''}
+            </span>}>
+            Consecutive hits stack a tip multiplier — keep the train rolling!
+          </Explain>
         )}
         {promoLive && (
-          <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}
-            title="You announced this stream ahead of time — the room showed up bigger for it">
+          <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>
             📣 ×{promoViewerMult(promoLive).toFixed(2)}{promoLive.cardUid ? (promoLive.delivered ? ' · 🎁 delivered ✓' : ` · promised: ${promoLive.cardName}`) : ''}
           </span>
         )}
-        {keptValue > 0 && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}
-          title="Market value of the cards you're keeping from this rip">🃏 {fmtMoney(keptValue)} kept</span>}
+        {keptValue > 0 && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>
+          🃏 {fmtMoney(keptValue)} kept</span>}
         {entry && entry.orderedBy && <span className="pill" style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>{entry.packRip ? '🎁 Pack order' : '🎟️ Rip order'} · {entry.orderedBy}</span>}
         {entry && entry.isBreak && !entry.orderedBy && <span className={`pill ${liveSpotFlash ? 'spot-pop' : ''}`} style={{ background:'color-mix(in srgb, var(--gold) 13%, transparent)', color:'var(--gold)' }}>📦 Break · {entry.filled}/{entry.spots} spots</span>}
-        <span className="pill" title={entry && entry.isBreak
-            ? 'Tips + spot/order cash + value of cards you keep, minus product cost'
-            : 'Tips + market value of every card you rip, minus product cost'}
-          style={{ background: net >= 0 ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>
-          Net {net >= 0 ? '+' : ''}{fmtMoney(net)}
-        </span>
-        <span className="pill" style={{ marginLeft:'auto' }} title={entry ? `${entry.product.type} · ${entry.set.name}` : ''}>
+        <Explain label="How Net is worked out" trigger={
+          <span className="pill" style={{ background: net >= 0 ? 'color-mix(in srgb, var(--green) 13%, transparent)' : 'color-mix(in srgb, var(--red) 13%, transparent)', color: net >= 0 ? 'var(--green)' : 'var(--red)' }}>
+            Net {net >= 0 ? '+' : ''}{fmtMoney(net)}
+          </span>}>
+          {entry && entry.isBreak
+            ? 'Tips + spot/order cash + value of cards you keep, minus product cost.'
+            : 'Tips + market value of every card you rip, minus product cost.'}
+        </Explain>
+        <span className="pill" style={{ marginLeft:'auto' }}>
           📦 {entry ? entry.product.type : ''} · {entryIdx + 1}/{queueRef.current.length} · pk {Math.min(packNo + (phase==='revealing'?1:0), totalPacks)}/{totalPacks}
         </span>
       </div>
@@ -1372,7 +1411,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             <div className="stream-prompt stream-waiting">
               <div className="stream-waiting-icon">🎙️</div>
               <h3 style={{ margin: '6px 0 2px' }}>On air — taking orders</h3>
-              <p className="muted" style={{ fontSize: 13, margin: 0, maxWidth: 420, textAlign: 'center' }}>
+              <p className="cap t-sm" style={{ margin: 0, maxWidth: 420, textAlign: 'center' }}>
                 Nothing on your table. You'll rip whatever the room <b>buys</b> — your mystery packs,
                 and your held sealed if you have the 🎟️ Live Rip Service. Accept an order and it goes
                 straight to the table.
@@ -1384,7 +1423,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
           {pulls.length > 0 && (
             <div className="stream-revealwrap">
               <NowRevealing card={current} />
-              <div className="reveal-row" style={{ marginTop: 0 }}>
+              <div className="reveal-row mt-0">
                 {pulls.map((c, i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   const chase = isChase(c)
@@ -1402,7 +1441,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                         </div>
                       </HoloCard>
                       {i < shown && owner && (c._isHit || c.foil) && (
-                        <span className={`spot-ship ${owner === 'YOU' ? 'mine' : ''}`} title={owner === 'YOU' ? 'Unsold spot — this one is yours' : `Ships to ${owner}`}>
+                        <span className={`spot-ship ${owner === 'YOU' ? 'mine' : ''}`}>
                           {owner === 'YOU' ? '⭐ YOURS' : `📦 ${owner}`}
                         </span>
                       )}
@@ -1424,12 +1463,11 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
             )}
             {/* Not gated on `done` — raffling with a bare table hypes an orders-only show,
                 and an announced stream's promised card must be deliverable any time on air. */}
-            <button className="btn alt" style={{ flex:'none', maxWidth: 190 }} disabled={!collection.length} onClick={() => setGiveawayOpen(true)}
-              title={collection.length ? 'Raffle any card you own to a viewer — the room surges, the hype train climbs, and followers pour in (bigger cards = bigger pop)' : 'You have no cards to give away'}>
+            <button className="btn alt btn-fixed" style={{ maxWidth: 190 }} disabled={!collection.length} onClick={() => setGiveawayOpen(true)}>
               🎁 Giveaway{giveaways > 0 ? ` (${giveaways})` : ''}
             </button>
             {done && <button className="btn gold" style={{ maxWidth: 240 }} onClick={endStream}>End stream & cash out →</button>}
-            {!done && <button className="btn alt" style={{ flex:'none', maxWidth: 150 }} onClick={endEarly}>End early</button>}
+            {!done && <button className="btn alt btn-fixed" style={{ maxWidth: 150 }} onClick={endEarly}>End early</button>}
           </div>
 
           {orders.length > 0 && (
@@ -1455,8 +1493,8 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
                 {[...hits].sort((a,b)=>cardValue(b)-cardValue(a)).map((c,i) => {
                   const edge = c.foil ? c.foil.color : rarityColor(c.rarity)
                   return (
-                    <div key={c.uid+'-'+i} className="stream-hit" style={{ '--rarity': edge }} title={`${c.name} · ${fmtMoney(cardValue(c))}`}>
-                      <img src={cardImg(c)} alt="" /><span>{fmtMoney(cardValue(c))}</span>
+                    <div key={c.uid+'-'+i} className="stream-hit" style={{ '--rarity': edge }}>
+                      <img src={cardImg(c)} alt={c.name} /><span>{fmtMoney(cardValue(c))}</span>
                     </div>
                   )
                 })}
@@ -1494,14 +1532,12 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
   const pool = [...collection].filter(c => !reservedUids.has(c.uid)).sort((a, b) => cardValue(b) - cardValue(a))
   return (
-    <div className="modalbg" onClick={onClose} style={{ zIndex: 30 }}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
+    <Modal onClose={onClose} maxWidth={760} zIndex={30} label="Giveaway picker">
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🎁 Give away a card</h2>
           <span className="pill">{pool.length} eligible</span>
         </div>
-        <p className="muted" style={{ marginTop: 2 }}>
+        <p className="muted mt-1">
           Raffle any card you own to a lucky viewer — chat goes wild and new followers pour in.
           The <b>pricier the card, the bigger the pop</b>. Give away as many as you like.
         </p>
@@ -1514,17 +1550,16 @@ function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
               return (
                 <div key={c.uid} className="vendoritem" style={{ '--rarity': edge }}>
                   <img src={cardImg(c)} alt={c.name} loading="lazy" decoding="async" style={{ width: '100%', borderRadius: 8 }} />
-                  <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>{c.name}</div>
-                  <div style={{ fontSize: 12, fontWeight: 800, textAlign: 'center', color: 'var(--green)' }}>{fmtMoney(cardValue(c))}</div>
-                  <button className="btn gold" style={{ fontSize: 12, padding: '6px' }} onClick={() => onPick(c.uid)}>🎁 Give away</button>
+                  <div className="cap" style={{ textAlign: 'center' }}>{c.name}</div>
+                  <div className="t-xs" style={{ fontWeight: 800, textAlign: 'center', color: 'var(--green)' }}>{fmtMoney(cardValue(c))}</div>
+                  <button className="btn gold t-xs" style={{ padding: '6px' }} onClick={() => onPick(c.uid)}>🎁 Give away</button>
                 </div>
               )
             })}
           </div>
         )}
         <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={onClose}>Close</button>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -1546,7 +1581,7 @@ function NowRevealing({ card }) {
             {!card.grade && <PsaLine card={card} />}
           </div>
         )
-      })() : <div className="muted" style={{ fontSize: 12 }}>Tearing it open…</div>}
+      })() : <div className="cap">Tearing it open…</div>}
     </aside>
   )
 }
@@ -1555,7 +1590,7 @@ function NowRevealing({ card }) {
 // and PSA 9 on the market right now.
 function PsaLine({ card }) {
   return (
-    <div className="rip-now-psa10" title="Market value if this card graded PSA 10 / PSA 9">
+    <div className="rip-now-psa10">
       💎 PSA 10 <b>{fmtMoney(psaValueAt(card, 10))}</b> · 9 <b>{fmtMoney(psaValueAt(card, 9))}</b>
     </div>
   )
@@ -1572,12 +1607,12 @@ function StreamSummary({ session, onDone }) {
     <div className="stage">
       <div style={{ textAlign:'center', maxWidth: 520 }}>
         <h2 style={{ marginBottom: 4 }}>{flopped ? '🦗 Stream over — quiet one.' : '📴 Stream over — GG!'}</h2>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+        <p className="cap t-sm mt-0">
           {s.packsRipped} pack{s.packsRipped>1?'s':''} across {s.products || 1} product{(s.products||1)>1?'s':''} of {s.set.name}{s.products>1?' & more':''}{flopped ? ', to a near-empty room.' : ', ripped live for the people.'}
         </p>
         <div className="stream-summary-grid">
           <div><span className="muted">Peak viewers</span><b>👁 {s.peak.toLocaleString()}</b></div>
-          <div><span className="muted">Tips banked</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.tips)}</b></div>
+          <div><span className="muted">Tips banked</span><b className="pos">{fmtMoney(s.tips)}</b></div>
           <div><span className="muted">Reputation</span><b style={{ color: s.noto >= 0 ? 'var(--gold)' : 'var(--red)' }}>{s.noto>=0?'+':''}{s.noto}★</b></div>
           {!flopped && <div><span className="muted">Shop heat</span><b style={{ color:'#ff9f43' }}>🔥 +{Math.min(25, Math.round(Math.log10(s.peak + 1) * 6 + Math.max(0, s.noto)))}</b></div>}
           <div><span className="muted">Products ripped</span><b>📦 {s.products || 1}</b></div>
@@ -1585,17 +1620,17 @@ function StreamSummary({ session, onDone }) {
           {s.isBreak && <div><span className="muted">Break spots sold</span><b>{s.spotsSold}/{s.spots}</b></div>}
           {s.isBreak && <div><span className="muted">Break P/L</span><b style={{ color: breakPL >= 0 ? 'var(--green)' : 'var(--red)' }}>{breakPL>=0?'+':''}{fmtMoney(breakPL)}</b></div>}
           {s.orderCount > 0 && <div><span className="muted">Rip orders filled</span><b>🎟️ {s.orderCount}</b></div>}
-          {s.orderCount > 0 && <div><span className="muted">Rip order revenue</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.orderRevenue)}</b></div>}
+          {s.orderCount > 0 && <div><span className="muted">Rip order revenue</span><b className="pos">{fmtMoney(s.orderRevenue)}</b></div>}
           {s.packCount > 0 && <div><span className="muted">Mystery packs sold live</span><b>🎁 {s.packCount}</b></div>}
-          {s.packCount > 0 && <div><span className="muted">Pack revenue</span><b style={{ color:'var(--green)' }}>{fmtMoney(s.packRevenue)}</b></div>}
+          {s.packCount > 0 && <div><span className="muted">Pack revenue</span><b className="pos">{fmtMoney(s.packRevenue)}</b></div>}
           {s.followers > 0 && <div><span className="muted">New followers</span><b style={{ color:'var(--accent-light)' }}>👥 +{s.followers}</b></div>}
-          {s.subsGained > 0 && <div><span className="muted">New subscribers</span><b style={{ color:'var(--red)' }}>❤️ +{s.subsGained}</b></div>}
+          {s.subsGained > 0 && <div><span className="muted">New subscribers</span><b className="neg">❤️ +{s.subsGained}</b></div>}
           {s.raid && <div><span className="muted">Raided by</span><b>💥 {s.raid.by} (+{s.raid.size})</b></div>}
-          {s.floorSales?.count > 0 && <div><span className="muted">Shelf sales on air</span><b style={{ color:'var(--green)' }}>🛍️ {s.floorSales.count} · {fmtMoney(s.floorSales.revenue)}</b></div>}
+          {s.floorSales?.count > 0 && <div><span className="muted">Shelf sales on air</span><b className="pos">🛍️ {s.floorSales.count} · {fmtMoney(s.floorSales.revenue)}</b></div>}
           {s.bountyName && <div><span className="muted">🎯 Bounty ({s.bountyName})</span><b style={{ color: s.bountyClaimed ? 'var(--gold)' : 'var(--red)' }}>{s.bountyClaimed ? 'hit — shipped to a viewer!' : 'never pulled'}</b></div>}
           {s.clip && <div><span className="muted">🎬 Clip</span><b style={{ color:'var(--accent-light)' }}>+{s.clip.perDay} followers/day × {s.clip.daysLeft}d</b></div>}
         </div>
-        <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
+        <p className="cap mt-5">
           {s.noto > 0 ? '🔥 Your shop is buzzing — listing traffic is boosted for the next few days. Hop to the Sell tab.'
             : '😬 Barely anyone watched — no afterglow this time. Build some buzz before going live again.'}
           {s.shipped > 0 && ` Shipped ${s.shipped} card${s.shipped>1?'s':''} to break/rip-order buyers; everything else is in your collection.`}

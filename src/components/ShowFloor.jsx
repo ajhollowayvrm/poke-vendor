@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { toast } from '../ui/dialog'
 import { useGame, acceptedMethods, hypeDemandMult, VLOG_BOOTH_MULT } from '../game/store'
 import { generateBooths, boothEncounter, makeWhaleOffer, SHOW_TIERS, NPC_EMOJI, vendorRapport, cardMatchesWant,
   pickSnipe, boothItemKey, SNIPE_GRACE_MS, SNIPE_INTERVAL_MS, SNIPE_RATE } from '../game/shows'
@@ -9,8 +10,10 @@ import QuoteCounter from './QuoteCounter'
 import PackOpening from './PackOpening'
 import AutoRip from './AutoRip'
 import CardTile from './CardTile'
-import { useModalEscape } from '../ui/dialog'
+import { Modal } from '../ui/Modal'
+import { clickable } from '../ui/clickable'
 import { AnimatedNumber, CashFlash } from '../ui/AnimatedNumber'
+import { Explain } from '../ui/Explain'
 
 const ENCOUNTER_COOLDOWN = 15000 // ms between booth walk-ups (longer = calmer floor)
 // How many unsolicited walk-ups your booth can get in a show day. This was a flat 3 — so a
@@ -172,9 +175,7 @@ export default function ShowFloor({ show, onLeave }) {
   const [vaultRip, setVaultRip] = useState(null)
   const [sifting, setSifting] = useState(null)   // sealed rows handed to the ⚡ sifter on the floor
   // Esc backs out of the peek/haul panels (the booth and the rip own their own escape).
-  useModalEscape(() => { if (vaultRip || sifting) return; setShowTable(false); setHaulOpen(false) })
   const [encounter, setEncounter] = useState(null)
-  const [toast, setToast] = useState(null)
   const [boothAlert, setBoothAlert] = useState(null)
   // Buyer appointments from pre-show leads — met (or ignored) during this show.
   const [meets, setMeets] = useState(() => (show._leads || []).filter(l => l.kind === 'buyer'))
@@ -188,7 +189,7 @@ export default function ShowFloor({ show, onLeave }) {
   useEffect(() => { walkupsRef.current = 0; lastEncounterRef.current = Date.now() }, [showDay])
   const accepted = useMemo(() => acceptedMethods(upgrades), [upgrades])
 
-  const flash = useCallback((m) => { setToast(m); setTimeout(() => setToast(null), 2600) }, [])
+  const flash = useCallback((m) => toast(m, 2600), [])
 
   // --- The living hall ---------------------------------------------------------
   // Shoppers drift from table to table (weighted by each booth's draw), linger a few
@@ -276,6 +277,16 @@ export default function ShowFloor({ show, onLeave }) {
   // it stays an event, not a faucet.
   const whaleCountRef = useRef(0)
   useEffect(() => { whaleCountRef.current = 0 }, [showDay])
+  // 💥 Everything the 30s whale roll READS but that must not RESTART it. Its deps used to list
+  // encounter, boothAlert and notoriety directly, and its cleanup clears the interval — so at a
+  // vending booth, where the 3s walk-up loop sets and clears encounter/boothAlert constantly and
+  // notoriety moves on every sale, the timer was torn down and rebuilt before it could ever fire.
+  // On an Invitational or Worlds floor the whale roll may never have run at all.
+  // The 3s walk-up loop below tolerates the same deps because its period is short; a 30s one
+  // cannot. Same fix the snipe interval above already uses — see its comment.
+  // No dep array: this ref must hold the LATEST values on every render.
+  const whaleLiveRef = useRef(null)
+  useEffect(() => { whaleLiveRef.current = { encounter, boothAlert, notoriety, accepted, ticker: upgrades.ticker } })
   // 💸 Ambient scale: at the elite shows, five-figure deals close around you — pure flavor
   // lines on the announce banner, zero economy.
   const [bigSale, setBigSale] = useState(null)
@@ -296,26 +307,29 @@ export default function ShowFloor({ show, onLeave }) {
         setTimeout(() => setBigSale(x => (x && x.id ? null : x)), 6000)
       }
       if (!show._asVendor) return
+      const live = whaleLiveRef.current || {}
       // A whale offer is a no-haggle encounter same as a walk-up — it must not clobber one
       // already waiting to be answered, or it silently burns a whale slot on nothing.
-      if (encounter || boothAlert) return
+      if (live.encounter || live.boothAlert) return
       if (Date.now() - floorEntryRef.current < SNIPE_GRACE_MS) return
       if (whaleCountRef.current >= 2) return
-      if (notoriety < 150) return
+      if ((live.notoriety ?? 0) < 150) return
       if (Math.random() >= pWhale) return
       const inv = useGame.getState().showInventory || []
       const pool = inv.filter(c => cardValue(c) >= tier.valueBand[1] * 0.2)
       if (!pool.length) return
-      const enc = makeWhaleOffer(pool, 'show', [1.20, 1.80], accepted)
+      const enc = makeWhaleOffer(pool, 'show', [1.20, 1.80], live.accepted)
       if (!enc) return
       whaleCountRef.current++
-      if (upgrades.ticker) setBoothAlert(enc)
+      if (live.ticker) setBoothAlert(enc)
       else if (busyRef.current) {
         useGame.getState().log('missed', 'A whale stopped at your booth while you were elsewhere — they moved on. (A 🔔 Visitor Ticker would have alerted you.)', 0)
       } else setEncounter({ enc, atBooth: true })
     }, 30000)
     return () => clearInterval(id)
-  }, [show.tierKey, show._asVendor, notoriety, accepted, upgrades.ticker, encounter, boothAlert])
+    // Only what should genuinely restart the clock. Everything else the interval reads comes off
+    // whaleLiveRef — see its comment above; adding a churning value back here disables the roll.
+  }, [show.tierKey, show._asVendor])
 
   // Booth walk-ups, gated by a cooldown so they don't spam. With the 🔔 Visitor Ticker
   // you get an alert you can answer whenever — without it, a buyer who walks up while
@@ -507,43 +521,47 @@ export default function ShowFloor({ show, onLeave }) {
             positions hold tomorrow's stock. Left in place they blanked whatever happened to sit
             where you bought. The till is keyed by day instead and refills on its own. */}
         {tier.days > 1 && showDay < tier.days && (
-          <button className="btn" style={{ flex:'none', maxWidth: 170, marginLeft:'auto' }}
+          <button className="btn btn-fixed" style={{ maxWidth: 170, marginLeft:'auto' }}
             onClick={() => { setShowDay(d => d + 1); setTakenIds(new Set()); flash(`Day ${showDay + 1} of the show — fresh vendors set up.`) }}>
             Next show day →
           </button>
         )}
         <span className="pill" style={{ marginLeft: tier.days > 1 && showDay < tier.days ? 0 : 'auto' }}>⭐ {Math.round(notoriety)}{shopHype >= 10 ? ` · 🔥 ${Math.round(shopHype)}` : ''}</span>
-        <span className="pill cash-pill" title="Your floor wallet — what you brought to spend here. Selling on the floor tops it back up.">
+        <Explain label="What is the floor wallet?" trigger={<span className="pill cash-pill">
           💵 <AnimatedNumber value={cash} format={fmtMoney} /><CashFlash value={cash} />
-        </span>
+        </span>}>
+          Your floor wallet — what you brought to spend here. Selling on the floor tops it back up.
+        </Explain>
         {showReserve > 0 && (
-          <span className="pill" style={{ flex: 'none', opacity: 0.85 }} title="Cash you left safely at home — it's waiting for you and can't be spent on the floor. Yours again when you leave.">
+          <Explain label="What is cash at home?" trigger={<span className="pill btn-fixed" style={{ opacity: 0.85 }}>
             🏦 {fmtMoney(showReserve)} at home
-          </span>
+          </span>}>
+            Cash you left safely at home — it can't be spent on the floor, and it's yours again when you leave.
+          </Explain>
         )}
-        {/* 🎒 Home base: everything you've picked up here, and the place to rip it. */}
-        <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0, background: haulCount ? 'color-mix(in srgb, var(--gold) 16%, transparent)' : undefined, color: haulCount ? 'var(--gold)' : undefined }}
-          title="Your haul — the sealed and cards you've picked up at this show. Rip any of it right here."
+        {/* 🎒 Home base: everything you've picked up here, and the place to rip it. Tapping it
+            opens the haul panel, which explains itself, so no title is needed here. */}
+        <button className="pill btn-fixed" style={{ cursor: 'pointer', border: 0, background: haulCount ? 'color-mix(in srgb, var(--gold) 16%, transparent)' : undefined, color: haulCount ? 'var(--gold)' : undefined }}
           onClick={() => setHaulOpen(true)}>
           🎒 Haul{haulCount ? ` (${haulCount})` : ''}{haulPacks ? ` · ${haulPacks} pk` : ''}
         </button>
         {show._asVendor ? (
           <>
-            <button className="pill" style={{ flex: 'none', cursor: 'pointer', border: 0 }}
-              title="The cards and sealed product you brought to sell at your booth"
+            <button className="pill btn-fixed" style={{ cursor: 'pointer', border: 0 }}
               onClick={() => setShowTable(true)}>
               {shopIcon(store)} {shopName(store)} ({showInventory.length + (showSealed?.length || 0)})
             </button>
-            <button className="btn gold" style={{ flex: 'none', maxWidth: 150, padding: '6px 12px' }}
-              title="Step back to your own booth and see who's browsing"
+            <button className="btn gold btn-fixed" style={{ maxWidth: 150, padding: '6px 12px' }}
               onClick={tendTable}>
               ⭐ Tend table
             </button>
           </>
         ) : (
-          <span className="pill" style={{ flex: 'none', opacity: 0.7 }} title="You're here as a shopper — buy a Vendor Setup to run your own booth">
+          <Explain label="Why can't I sell here?" trigger={<span className="pill btn-fixed" style={{ opacity: 0.7 }}>
             🛍️ Shopping
-          </span>
+          </span>}>
+            You're here as a shopper — buy a Vendor Setup to run your own booth.
+          </Explain>
         )}
       </div>
 
@@ -571,8 +589,8 @@ export default function ShowFloor({ show, onLeave }) {
                   <span className="muted"> · pays {Math.round(l.premiumMult * 100)}% of market · +{l.notoriety}★</span>
                 </div>
                 {matches.length
-                  ? <button className="btn gold" style={{ flex: 'none', padding: '6px 12px' }} onClick={() => setMeetPick(l)}>🤝 Meet ({matches.length} match{matches.length > 1 ? 'es' : ''})</button>
-                  : <span className="pill" style={{ opacity: 0.7 }} title="You don't have what they're after — maybe a vendor here does…">don't have it</span>}
+                  ? <button className="btn gold btn-fixed" style={{ padding: '6px 12px' }} onClick={() => setMeetPick(l)}>🤝 Meet ({matches.length} match{matches.length > 1 ? 'es' : ''})</button>
+                  : <span className="pill" style={{ opacity: 0.7 }}>don't have it</span>}
               </div>
             )
           })}
@@ -587,7 +605,7 @@ export default function ShowFloor({ show, onLeave }) {
                 <b>{l.vendorName}</b> set aside a <b>{l.productType} of {l.setName}</b>
                 <span className="muted"> · held at {fmtMoney(l.price)} — find their table below</span>
               </div>
-              <button className="btn" style={{ flex: 'none', padding: '6px 12px' }}
+              <button className="btn btn-fixed" style={{ padding: '6px 12px' }}
                 onClick={() => { const b = booths.find(x => x.vendorId === l.vendorId); if (b) visitBooth(b) }}>
                 Go →
               </button>
@@ -602,7 +620,7 @@ export default function ShowFloor({ show, onLeave }) {
           const crowd = boothCrowd[booths.indexOf(booth)] || 0
           if (booth.special === 'kiosk') {
             return (
-              <div key={booth.id} className="vdir-row kiosk" onClick={() => visitBooth(booth)}>
+              <div key={booth.id} className="vdir-row kiosk" {...clickable(() => visitBooth(booth))}>
                 <span className="vdir-icon">🔬</span>
                 <div className="vdir-info">
                   <div className="vdir-name">{booth.name} <span className="pill vdir-arch">{booth.archLabel}</span></div>
@@ -625,20 +643,20 @@ export default function ShowFloor({ show, onLeave }) {
           const starredHere = starredBooths.has(booth.id)
           return (
             <div key={booth.id} className={`vdir-row arch-${booth.archetype} ${crowd >= 3 ? 'busy' : ''} ${booth.leadNote ? 'lead' : ''} ${visited ? 'visited' : ''} ${starredHere ? 'starred' : ''}`}
-              onClick={() => visitBooth(booth)}>
+              {...clickable(() => visitBooth(booth))}>
               <span className="vdir-icon">{booth.recurring ? '🤝' : '🛒'}</span>
               <div className="vdir-info">
                 <div className="vdir-name">
                   {booth.name}
                   <span className="pill vdir-arch">{booth.archLabel}</span>
-                  {booth.specialty === 'sealed' && <span className="pill" style={{ background: '#3b6cff22', color: 'var(--accent-light)' }} title="The sealed table — a wall of product, several copies deep, near-market on current sets.">📦 sealed wall</span>}
-                  {booth.specialty === 'vintage' && <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }} title="Vintage & retro only — no modern product on this table.">🗝️ vintage table</span>}
-                  {booth.bigDeal && !takenIds.has(booth.bigDeal._tk) && <span className="pill" style={{ background: '#7cf0ff22', color: '#7cf0ff' }} title={`A private package deal is on this table — ${fmtMoney(booth.bigDeal.price)}, one number, no haggling.`}>🐋 private package</span>}
-                  {starredHere && <span className="pill vdir-starred" title="You starred something here — come back for it">⭐ come back</span>}
+                  {booth.specialty === 'sealed' && <span className="pill" style={{ background: '#3b6cff22', color: 'var(--accent-light)' }}>📦 sealed wall</span>}
+                  {booth.specialty === 'vintage' && <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>🗝️ vintage table</span>}
+                  {booth.bigDeal && !takenIds.has(booth.bigDeal._tk) && <span className="pill" style={{ background: '#7cf0ff22', color: '#7cf0ff' }}>🐋 private package · {fmtMoney(booth.bigDeal.price)}</span>}
+                  {starredHere && <span className="pill vdir-starred">⭐ come back</span>}
                   {rap && rap.level > 0 && <span className="pill" style={{ background: rap.color + '22', color: rap.color }}>{rap.name}{rap.disc ? ` · ${Math.round(rap.disc * 100)}% off` : ''}</span>}
                   {booth.leadNote && <span className="pill vdir-held">🗝️ set aside for you</span>}
-                  {crowd >= 2 && <span className="pill vdir-crowd" title={`${crowd} shoppers at this table`}>👥 {crowd}</span>}
-                  {visited && <span className="pill vdir-visited" title="You've already walked up to this table">✓ visited</span>}
+                  {crowd >= 2 && <span className="pill vdir-crowd">👥 {crowd}</span>}
+                  {visited && <span className="pill vdir-visited">✓ visited</span>}
                 </div>
                 <div className="vdir-sub muted">
                   {cap(booth.vibe)} · pays {Math.round(booth.buyMult * 100)}% cash{booth.tradeMult ? ` · ${Math.round(booth.tradeMult * 100)}% trade` : ''} for yours
@@ -648,7 +666,7 @@ export default function ShowFloor({ show, onLeave }) {
                   {sealedN > 0 && <> · 📦 {sealedN} sealed{hasVintage ? ' (🗝️ vintage!)' : ''}{hasAftermarket ? ' (🕰️ out-of-print!)' : ''}</>}
                   {mysteryN > 0 && <> · ❓ mystery</>}
                   {top && <> · ⭐ {top.grade ? `${slabLabel(top.grade)} ` : ''}{top.name} {fmtMoney(top._ask)}</>}
-                  {deals > 0 && <span style={{ color: 'var(--green)' }}> · {deals} DEAL{deals > 1 ? 'S' : ''} flagged</span>}
+                  {deals > 0 && <span className="pos"> · {deals} DEAL{deals > 1 ? 'S' : ''} flagged</span>}
                 </div>
               </div>
               <span className="vdir-go">›</span>
@@ -697,7 +715,6 @@ export default function ShowFloor({ show, onLeave }) {
         </div>
       )}
 
-      {toast && <div className="toast">{toast}</div>}
       {openBooth && <VendorBooth booth={openBooth} onClose={() => setOpenBooth(null)} flash={flash} onRipSealed={buySealed}
         onStockSealed={stockSealed} onRipSealedStack={buySealedStack} haggledIds={haggledIds} onHaggled={markHaggled}
         agreedPrices={agreedPrices} onAgreedPrice={markAgreedPrice}
@@ -718,9 +735,7 @@ export default function ShowFloor({ show, onLeave }) {
           rides home with you. Rendered ABOVE the booth and BELOW the rip overlay on purpose —
           ripping out of the haul returns you to the haul. */}
       {haulOpen && (
-        <div className="modalbg" onClick={() => setHaulOpen(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 760 }}>
-            <button className="modal-close" aria-label="Close" onClick={() => setHaulOpen(false)}>✕</button>
+        <Modal onClose={() => setHaulOpen(false)} maxWidth={760} label="Your haul">
             <div className="row" style={{ alignItems: 'baseline' }}>
               <h2 style={{ marginRight: 'auto' }}>🎒 Your haul</h2>
               {haulSealed.length > 0 && (
@@ -730,19 +745,19 @@ export default function ShowFloor({ show, onLeave }) {
               )}
               {haulCards.length > 0 && <span className="pill">🃏 {haulCards.length} card{haulCards.length === 1 ? '' : 's'}</span>}
             </div>
-            <p className="muted" style={{ marginTop: 2, fontSize: 13 }}>
+            <p className="cap t-sm mt-1">
               Everything you've picked up at <b>{show.name}</b> — bought off the tables and pulled here.
               Sealed you're carrying can be <b>ripped right here on the floor</b>; whatever you leave
               wrapped comes home with you.
             </p>
-            <div className="banner" style={{ marginTop: 6 }}>
+            <div className="banner mt-3">
               💵 Spent on the floor <b>{fmtMoney(Math.max(0, round2(spentAll - floorBaseRef.current.spent)))}</b>
-              {' · '}Taken in <b style={{ color: 'var(--green)' }}>{fmtMoney(Math.max(0, round2(earnedAll - floorBaseRef.current.earned)))}</b>
+              {' · '}Taken in <b className="pos">{fmtMoney(Math.max(0, round2(earnedAll - floorBaseRef.current.earned)))}</b>
               {haulCards.length > 0 && <> · 🃏 cards on you worth <b>{fmtMoney(haulCards.reduce((a, c) => a + cardValue(c), 0))}</b></>}
             </div>
 
             {haulCount === 0 ? (
-              <div className="empty" style={{ marginTop: 12 }}>
+              <div className="empty mt-5">
                 Nothing yet — you've not bought anything at this show. Walk the tables above.
               </div>
             ) : (
@@ -762,7 +777,7 @@ export default function ShowFloor({ show, onLeave }) {
                           <span className="vsealed-name">
                             <button type="button" className={`stack-check ${picked ? 'on' : ''}`}
                               style={{ marginRight: 6, verticalAlign: '-7px' }}
-                              aria-pressed={picked} title="Pick this stack for a group rip"
+                              aria-pressed={picked} aria-label="Pick this stack for a group rip"
                               onClick={() => toggleHaulStack(items)}>{picked ? '✓' : '+'}</button>
                             {it.vintage ? '🗝️ ' : (it.product.icon || '📦') + ' '}{it.product.type}
                             {items.length > 1 && <span className="pill vsealed-qty">×{items.length}</span>}
@@ -778,7 +793,7 @@ export default function ShowFloor({ show, onLeave }) {
                               📦 Rip{items.length > 1 ? ' one' : ''}
                             </button>
                             {items.length > 1 && (
-                              <button className="btn alt" title={`Rip all ${items.length} back-to-back, right here`}
+                              <button className="btn alt"
                                 onClick={() => ripHeld(items.map(x => x.uid))}>Rip all {items.length}</button>
                             )}
                           </span>
@@ -790,7 +805,7 @@ export default function ShowFloor({ show, onLeave }) {
 
                 {haulCards.length > 0 && (
                   <>
-                    <div className="floor-sec-h" style={{ marginTop: 12 }}>
+                    <div className="floor-sec-h mt-5">
                       🃏 Cards <span className="muted">— bought at the tables & pulled from rips here</span>
                     </div>
                     <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(112px,1fr))', marginTop: 6 }}>
@@ -801,7 +816,7 @@ export default function ShowFloor({ show, onLeave }) {
                       ))}
                     </div>
                     {haulCards.length > 18 && (
-                      <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+                      <div className="cap mt-3">
                         +{haulCards.length - 18} more in the bag (biggest {18} shown) — the rest are waiting in your collection.
                       </div>
                     )}
@@ -820,21 +835,17 @@ export default function ShowFloor({ show, onLeave }) {
                   <b>{selItems.length} item{selItems.length === 1 ? '' : 's'}</b> · <b>{selPacks} pack{selPacks === 1 ? '' : 's'}</b> picked
                 </div>
                 <div className="bulk-bar-actions">
-                  <button className="btn gold" onClick={ripSelection}
-                    title="Rip them here, back-to-back, with the full animation">📦 Rip {selPacks} pack{selPacks === 1 ? '' : 's'}</button>
-                  <button className="btn alt" onClick={siftSelection}
-                    title="Churn through them fast and stop on the packs worth ripping by hand">⚡ Sift {selPacks}</button>
+                  <button className="btn gold" onClick={ripSelection}>📦 Rip {selPacks} pack{selPacks === 1 ? '' : 's'}</button>
+                  <button className="btn alt" onClick={siftSelection}>⚡ Sift {selPacks}</button>
                   <button className="btn alt" style={{ maxWidth: 60 }} onClick={() => setHaulSel(new Set())}>✕</button>
                 </div>
               </div>
             )}
-          </div>
-        </div>
+        </Modal>
       )}
 
       {vaultRip && (
-        <div className="modalbg vault-rip-bg">
-          <div className="modal vault-rip-modal" style={{ maxWidth: 980 }}>
+        <Modal dismissable={false} className="vault-rip-modal" bgClassName="vault-rip-bg" maxWidth={980} label="Vault rip">
             <div className="vault-ribbon">
               {vaultRip.set?.vintage ? '🗝️ VINTAGE' : '📦 SEALED'} — {vaultRip.set?.name} {vaultRip.product.name || vaultRip.product.type}
               {vaultRip.total > 1 && <> · <b>{vaultRip.idx} of {vaultRip.total}</b></>}
@@ -843,8 +854,7 @@ export default function ShowFloor({ show, onLeave }) {
                 one closes the overlay — so "rip all of them here" really is all of them. */}
             <PackOpening key={vaultRip.nonce || 0} set={vaultRip.set} product={vaultRip.product}
               singleNoReRip onExit={nextRip} />
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* ⚡ The sifter, on the floor. Full-screen takeover like it is at home; the haul panel
@@ -859,11 +869,9 @@ export default function ShowFloor({ show, onLeave }) {
       {meetPick && (() => {
         const matches = [...collection, ...(showInventory || [])].filter(c => cardMatchesWant(c, meetPick.want))
         return (
-          <div className="modalbg" style={{ zIndex: 25 }} onClick={() => setMeetPick(null)}>
-            <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
-              <button className="modal-close" aria-label="Close" onClick={() => setMeetPick(null)}>✕</button>
-              <h2 style={{ fontSize: 18, marginBottom: 2 }}>🤝 Meet {meetPick.who}</h2>
-              <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+          <Modal onClose={() => setMeetPick(null)} maxWidth={640} zIndex={25} label="Meetup pick">
+              <h2 className="t-xl" style={{ marginBottom: 2 }}>🤝 Meet {meetPick.who}</h2>
+              <p className="cap t-sm mt-0">
                 As arranged — they're buying <b>{meetPick.desc}</b> at <b>{Math.round(meetPick.premiumMult * 100)}% of market</b>, cash on the spot (+{meetPick.notoriety}★).
               </p>
               {matches.length === 0 ? (
@@ -886,15 +894,12 @@ export default function ShowFloor({ show, onLeave }) {
                 </div>
               )}
               <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setMeetPick(null)}>Not now</button>
-            </div>
-          </div>
+          </Modal>
         )
       })()}
 
       {showTable && (
-        <div className="modalbg" onClick={() => setShowTable(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 720 }}>
-            <button className="modal-close" aria-label="Close" onClick={() => setShowTable(false)}>✕</button>
+        <Modal onClose={() => setShowTable(false)} maxWidth={720} label="Your table">
             <div className="row" style={{ alignItems: 'baseline' }}>
               <h2 style={{ marginRight: 'auto' }}>
                 <span style={shopAccent(store) ? { color: shopAccent(store) } : undefined}>{shopIcon(store)} {shopName(store)}</span>
@@ -902,10 +907,12 @@ export default function ShowFloor({ show, onLeave }) {
               {(() => {
                 const packsOut = useGame.getState().packsForChannel ? useGame.getState().packsForChannel('show').length : 0
                 return packsOut > 0 && (
-                  <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}
-                    title="Your built mystery packs (with the 🎪 Shows channel on) sell off this table too">
-                    ❓ {packsOut} mystery pack{packsOut === 1 ? '' : 's'} out
-                  </span>
+                  <Explain label="What are mystery packs out?" trigger={
+                    <span className="pill" style={{ background: '#ffcb0522', color: 'var(--gold)' }}>
+                      ❓ {packsOut} mystery pack{packsOut === 1 ? '' : 's'} out
+                    </span>}>
+                    Your built mystery packs (with the 🎪 Shows channel on) sell off this table too.
+                  </Explain>
                 )
               })()}
               {(showSealed?.length || 0) > 0 && (
@@ -916,17 +923,17 @@ export default function ShowFloor({ show, onLeave }) {
               <span className="pill">{showInventory.length} card{showInventory.length === 1 ? '' : 's'} · {fmtMoney(showInventory.reduce((a, c) => a + cardValue(c), 0))}</span>
             </div>
             {store?.tagline?.trim() && <p className="muted" style={{ margin: '2px 0 0', fontStyle: 'italic' }}>“{store.tagline.trim()}”</p>}
-            <p className="muted" style={{ marginTop: 2 }}>
+            <p className="muted mt-1">
               Shoppers who walk up to your booth buy from these — cards <b>and any sealed product you brought</b>.
               <b> Work your table</b> to pull more foot traffic: feature your best pieces in the <b>⭐ showcase</b> (up to 3)
               and flag one <b> 🏷️ Deal of the Show</b> as a crowd-drawing loss-leader.
             </p>
             {show._asVendor && (
-              <div className="banner" style={{ marginTop: 6 }}>
+              <div className="banner mt-3">
                 📍 Spot: <b>{show._spotLabel || 'Standard table'}</b>
                 {' · '}⭐ Showcase {showInventory.filter(c => c._showcase).length}/3
                 {' · '}🏷️ Deal: <b>{showInventory.find(c => c._deal)?.name || 'none'}</b>
-                {' — '}<span style={{ color: 'var(--green)' }}>traffic ×{( (show._boothMult||1) * (1 + Math.min(0.45, showInventory.filter(c=>c._showcase).length*0.15)) * (showInventory.some(c=>c._deal)?1.25:1) ).toFixed(2)}</span>
+                {' — '}<span className="pos">traffic ×{( (show._boothMult||1) * (1 + Math.min(0.45, showInventory.filter(c=>c._showcase).length*0.15)) * (showInventory.some(c=>c._deal)?1.25:1) ).toFixed(2)}</span>
               </div>
             )}
             {showInventory.length === 0 && (showSealed?.length || 0) === 0 ? (
@@ -938,14 +945,13 @@ export default function ShowFloor({ show, onLeave }) {
                     {[...showInventory].sort((a, b) => (b._showcase?1:0)-(a._showcase?1:0) || cardValue(b) - cardValue(a)).map(c => (
                       <div key={c.uid} className={`vendoritem ${c._showcase ? 'featured' : ''}`}>
                         <CardTile card={c} interactive={false} />
-                        <div className="muted" style={{ fontSize: 11 }}>{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
+                        <div className="cap">{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
                         <div className="row" style={{ gap: 5 }}>
-                          <button className={`btn ${c._showcase ? 'gold' : 'alt'}`} style={{ fontSize: 11, padding: '5px 6px' }}
-                            onClick={() => useGame.getState().toggleShowcase(c.uid)}
-                            title="Feature this piece in your showcase to pull more traffic">{c._showcase ? '★ Featured' : '☆ Showcase'}</button>
-                          <button className={`btn ${c._deal ? 'gold' : 'alt'}`} style={{ flex:'none', fontSize: 11, padding: '5px 6px' }}
+                          <button className={`btn ${c._showcase ? 'gold' : 'alt'}`} style={{ fontSize: 'var(--fs-xs)', padding: '5px 6px' }}
+                            onClick={() => useGame.getState().toggleShowcase(c.uid)}>{c._showcase ? '★ Featured' : '☆ Showcase'}</button>
+                          <button className={`btn ${c._deal ? 'gold' : 'alt'}`} style={{ flex:'none', fontSize: 'var(--fs-xs)', padding: '5px 6px' }}
                             onClick={() => useGame.getState().setDealOfShow(c._deal ? null : c.uid)}
-                            title="Flag as the Deal of the Show — a loss-leader that draws a crowd">🏷️</button>
+                            aria-label="Flag as the Deal of the Show">🏷️</button>
                         </div>
                       </div>
                     ))}
@@ -953,7 +959,7 @@ export default function ShowFloor({ show, onLeave }) {
                 )}
                 {(showSealed?.length || 0) > 0 && (
                   <>
-                    <div className="muted" style={{ fontSize: 12, fontWeight: 700, margin: '14px 2px 4px' }}>📦 Sealed on your table</div>
+                    <div className="cap" style={{ fontWeight: 700, margin: '14px 2px 4px' }}>📦 Sealed on your table</div>
                     <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', marginTop: 2 }}>
                       {[...showSealed].sort((a, b) => sealedValue(b) - sealedValue(a)).map(it => {
                         const set = setById(it.setId)
@@ -963,7 +969,7 @@ export default function ShowFloor({ show, onLeave }) {
                               {set?.logo && <img className="sealed-logo" src={set.logo} alt={set.name} />}
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <b className="sealed-name">{it.product.icon || '📦'} {it.product.type}</b>
-                                <div className="muted" style={{ fontSize: 12 }}>{set?.name}{it.vintage ? ' · 🏛️ vintage' : ''} · {it.product.packs} pk</div>
+                                <div className="cap">{set?.name}{it.vintage ? ' · 🏛️ vintage' : ''} · {it.product.packs} pk</div>
                               </div>
                             </div>
                             <div className="sealed-value"><span className="sealed-now">{fmtMoney(sealedValue(it))}</span></div>
@@ -976,8 +982,7 @@ export default function ShowFloor({ show, onLeave }) {
               </>
             )}
             <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={() => setShowTable(false)}>Close</button>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

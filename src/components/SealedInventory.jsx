@@ -3,6 +3,7 @@ import { useGame } from '../game/store'
 import { sealedValue, fmtMoney, setById, productTypeLabel } from '../game/engine'
 import { toast } from '../ui/dialog'
 import { Collapse } from '../ui/Collapse'
+import { Explain } from '../ui/Explain'
 import SealedModal from './SealedModal'
 
 // Your SEALED product on hand — bought but not yet ripped. Identical products (same set +
@@ -74,7 +75,7 @@ export default function SealedInventory({ onRip, onSift }) {
 
   if (!inventory.length) {
     return (
-      <div className="empty" style={{ marginTop: 20 }}>
+      <div className="empty mt-7">
         📦 No sealed product on hand. Buy boxes, packs, or vintage from the <b>🛒 Buy</b> tab —
         they land here to <b>rip</b>, <b>list for sale</b>, or <b>quick-flip</b> whenever you want.
       </div>
@@ -113,30 +114,36 @@ export default function SealedInventory({ onRip, onSift }) {
 
   return (
     <>
-      <div className="banner" style={{ marginTop: 14 }}>
+      <div className="banner mt-6">
         📦 <b>Sealed inventory</b> — {inventory.length} item{inventory.length > 1 ? 's' : ''} ·
         value <b>{fmtMoney(totalValue)}</b> · cost {fmtMoney(totalCost)} ·
         <b style={{ color: pl >= 0 ? 'var(--green)' : 'var(--red)' }}> {pl >= 0 ? '+' : ''}{fmtMoney(pl)}</b> unrealized.
         {' '}Sealed rides the market — <b>vintage climbs</b> the longer you hold it.
         {hasStore && <> <b>🏬 This IS your store's sealed stock</b> — walk-ins buy from it unless a unit is 🔒 kept.</>}
       </div>
-      <div className="toolbar" style={{ marginTop: 10 }}>
+      <div className="toolbar mt-5">
         {selecting ? (
           <>
-            <span className="muted" style={{ fontSize: 12 }}>Tap rows to sift-rip:</span>
-            <button className="btn alt" style={{ flex: 'none' }} onClick={selectAll}>{selected.size === inventory.length ? 'Deselect all' : 'Select all'}</button>
-            <button className="btn alt" style={{ flex: 'none' }} onClick={() => { setSelecting(false); setSelected(new Set()) }}>Cancel</button>
+            <span className="cap">Tap rows to sift-rip:</span>
+            <button className="btn alt btn-fixed"  onClick={selectAll}>{selected.size === inventory.length ? 'Deselect all' : 'Select all'}</button>
+            <button className="btn alt btn-fixed"  onClick={() => { setSelecting(false); setSelected(new Set()) }}>Cancel</button>
           </>
         ) : (
           <>
-            <span className="muted" style={{ fontSize: 12 }}>Move it all at once:</span>
-            <button className="btn alt" style={{ flex: 'none' }} onClick={listAll}>🌐 List all online</button>
-            {onSift && <button className="btn alt" style={{ flex: 'none' }} onClick={() => setSelecting(true)}
-              title="Auto-rip a group of sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand">⚡ Sift-rip…</button>}
+            <span className="cap">Move it all at once:</span>
+            <button className="btn alt btn-fixed"  onClick={listAll}>🌐 List all online</button>
+            {onSift && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                <button className="btn alt btn-fixed" onClick={() => setSelecting(true)}>⚡ Sift-rip…</button>
+                <Explain label="How Sift-rip works">
+                  Auto-rips a group of sealed — churns pack by pack and stops on the big-hit packs so you can rip those by hand.
+                </Explain>
+              </span>
+            )}
           </>
         )}
       </div>
-      <div style={{ marginTop: 12 }}>
+      <div className="mt-5">
         {sections.map(sec => (
           <Collapse key={sec.key} id={`inv-sealed-${sec.key}`} defaultOpen={sections.length <= 3}
             className="wants" headClass="wants-head"
@@ -191,14 +198,13 @@ function InvSealedRow({ items, showSet, onRip, onOpen, selecting, selected, onTo
   return (
     <div className={`vsealed-row inv-sealed-row ${item.vintage ? 'sealed-vintage' : ''} ${selecting && selected ? 'in-stack' : ''}`}
       role="button" tabIndex={0}
-      title={selecting ? 'Tap to add/remove this stack from the sift' : 'Tap for details & all actions — list, keep, break, flip, grade'}
       onClick={rowClick}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rowClick() } }}>
       <span className="vsealed-name">
         {selecting && <span className="sift-check" aria-hidden="true">{selected ? '✅' : '⬜'}</span>}
         {item.product.icon || '📦'} {productTypeLabel(item.product)}
-        {qty > 1 && <span className="pill vsealed-qty" title={`${qty} in stock`}>×{qty}</span>}
-        {item.locked && <span className="pill inv-kept" title="Kept — walk-ins can't buy it (rips, streams & repacks still can use it)">🔒</span>}
+        {qty > 1 && <span className="pill vsealed-qty">×{qty}</span>}
+        {item.locked && <span className="pill inv-kept" aria-label="Kept — walk-ins can't buy it (rips, streams & repacks still can use it)">🔒</span>}
       </span>
       <span className="vsealed-meta">
         {showSet ? `${item.product.pool?.series ? `${item.product.pool.series} era` : (set?.name || '')} · ` : ''}
@@ -212,7 +218,7 @@ function InvSealedRow({ items, showSet, onRip, onOpen, selecting, selected, onTo
       </span>
       <span className="vsealed-act" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
         <button className="btn gold" onClick={() => onRip(item.uid)}>📦 Rip{qty > 1 ? ' one' : ''}</button>
-        <button className="btn alt" onClick={onOpen} title="All actions — list, keep, break, flip, grade">⋯</button>
+        <button className="btn alt" onClick={onOpen} aria-label="All actions — list, keep, break, flip, grade">⋯</button>
       </span>
     </div>
   )

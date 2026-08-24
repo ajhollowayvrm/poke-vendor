@@ -10,6 +10,7 @@ import HandReveal, { NeedBadge } from './HandReveal'
 import Burst from './Burst'
 import { configureFeedback, primeAudio, sfxTear, sfxFlip, sfxHit, sfxWant, sfxTension, sfxGod } from '../game/feedback'
 import { AnimatedNumber } from '../ui/AnimatedNumber'
+import { Explain } from '../ui/Explain'
 
 // Opens sealed product with the animated rip. For a single booster this rips one
 // pack. For a multi-pack product (when "open one at a time" is on) it rips each
@@ -414,25 +415,25 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
         <div style={{ textAlign: 'center', maxWidth: 520 }}>
           {/* The header names what you BOUGHT; the breakdown below names what you GOT. */}
           <h2 style={{ marginBottom: 6 }}>✓ Opened {product?.type || 'pack'} — {packSets ? (product.name || `${product.pool.series} era`) : set.name}</h2>
-          <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
+          <p className="cap t-sm mt-0">
             All {totalPacks} pack{totalPacks > 1 ? 's' : ''}{promo ? ' + promo' : ''} are in your collection.
           </p>
           {packSets && (
-            <p className="muted" style={{ fontSize: 12.5, margin: '2px 0 8px' }}>
+            <p className="cap" style={{ margin: '2px 0 8px' }}>
               {[...packSets.reduce((m, id) => m.set(id, (m.get(id) || 0) + 1), new Map())]
                 .sort((a, b) => b[1] - a[1])
                 .map(([id, n]) => `${n}× ${setById(id)?.name || id}`)
                 .join(' · ')}
             </p>
           )}
-          <p style={{ fontSize: 15, margin: '6px 0' }}>
-            Total pulled <b style={{ color: 'var(--green)' }}>{fmtMoney(ripValue)}</b>{' '}
+          <p className="t-lg" style={{ margin: '6px 0' }}>
+            Total pulled <b className="pos">{fmtMoney(ripValue)}</b>{' '}
             <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
               ({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)} vs {fmtMoney(ripCost)} spent)
             </span>
           </p>
           {promo && (
-            <p className="muted" style={{ fontSize: 13 }}>
+            <p className="cap t-sm">
               {promo._stamp === 'pc' ? '🏬 Pokémon Center stamped promo' : '🎁 Bonus promo'}: <b style={{ color: rarityColor(promo.rarity) }}>{promo.name}</b> · {fmtMoney(cardValue(promo))}
             </p>
           )}
@@ -443,7 +444,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
               {(() => { const n = hits.filter(c => c._isHit || c.foil).length; return n ? `Hits (${n})` : 'Hits' })()}
             </div>
             {hits.length === 0 ? (
-              <p className="muted" style={{ fontSize: 13, margin: '4px 0' }}>No hits this time — better luck next rip. 🤞</p>
+              <p className="cap t-sm" style={{ margin: '4px 0' }}>No hits this time — better luck next rip. 🤞</p>
             ) : (
               <div className="rip-summary-hits-grid">
                 {[...hits].sort((a, b) => cardValue(b) - cardValue(a)).map((c, i) => {
@@ -453,7 +454,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                   const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
                   return (
                     <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}
-                      onClick={() => setModalCard(c)} title="Tap for the full card details">
+                      onClick={() => setModalCard(c)}>
                       <img src={cardImg(c)} alt="" />
                       <div className="rip-hit-info">
                         <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -468,7 +469,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                       </div>
                       <div className="rip-hit-val">
                         {fmtMoney(cardValue(c))}
-                        {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10 / PSA 9">💎 10 {fmtMoney(psaValueAt(c, 10))} · 9 {fmtMoney(psaValueAt(c, 9))}</div>}
+                        {!c.grade && <div className="rip-hit-psa10">💎 10 {fmtMoney(psaValueAt(c, 10))} · 9 {fmtMoney(psaValueAt(c, 9))}</div>}
                         {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                       </div>
                     </button>
@@ -517,8 +518,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
           {/* Live from the very first card of the very first pack — it ticks up as cards land, so
               there's no reason to hold it back until a pack has closed out. */}
           {(packsOpened > 0 || shown > 0) && (
-            <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}
-              title={`${fmtMoney(ripValue)} pulled vs ${fmtMoney(ripCost)} spent`}>
+            <span className="pill" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', color: 'var(--green)' }}>
               {/* Tweened, not snapped: now that it climbs a card at a time, the climb is the
                   point — the number counting up IS the "what did that card just earn me". */}
               💰 Rip <AnimatedNumber value={ripValue} format={fmtMoney} /> <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)})</span>
@@ -526,7 +526,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
           )}
           {product?.bonus && <span className="pill" style={{ background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)' }}>🎁 + promo at the end</span>}
           {(phase === 'idle' || phase === 'done') && remainingToOpen >= 2 && (
-            <button className="btn alt" style={{ flex: 'none', maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
+            <button className="btn alt btn-fixed" style={{ maxWidth: 190 }} onClick={skipRest}>⏩ Skip rest ({remainingToOpen} left)</button>
           )}
         </div>
       )}
@@ -583,7 +583,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                   {autoAdvance && !last && !paused && (held ? (
                     <p className="rip-auto-note">⏸️ Auto-advance held — take your time, then hit “Next pack”.</p>
                   ) : autoLeft > 0 ? (
-                    <button className="btn alt" style={{ flex: 'none', maxWidth: 200 }} onClick={() => setHeld(true)}>
+                    <button className="btn alt btn-fixed" style={{ maxWidth: 200 }} onClick={() => setHeld(true)}>
                       ⏸️ Hold ({autoLeft}s) — still looking
                     </button>
                   ) : null)}
@@ -608,7 +608,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                   This used to be a dead greyed button with an explanation underneath; buying
                   more is now a deliberate trip to the Buy tab, not a tap inside the rip. */}
               {onRipAnother && !multi && !singleNoReRip && !canRipAnother && (
-                <p className="muted" style={{ fontSize: 12, margin: '6px 0 0', width: '100%', textAlign: 'center' }}>
+                <p className="cap" style={{ margin: '6px 0 0', width: '100%', textAlign: 'center' }}>
                   That was your last {product ? productTypeLabel(product) : 'pack'} — pick up more on the 🛒 Buy tab.
                 </p>
               )}
@@ -663,7 +663,7 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                             <div className="flip-front"><img src={cardImg(c)} alt={c.name} decoding="async" fetchpriority="high" /></div>
                           </div>
                         </HoloCard>
-                        <button className="rip-cell-foot" onClick={() => setModalCard(c)} title="Tap for the full card details">
+                        <button className="rip-cell-foot" onClick={() => setModalCard(c)}>
                           <div className="rc-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
                           <div className="rc-meta" style={{ color: edge }}>
                             {c.foil ? c.foil.label : c.grade ? slabLabel(c.grade) : `${c.reverse ? 'Reverse · ' : ''}${c.rarity}`}
@@ -692,21 +692,26 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                       with the pack summary now, which both single and multi rips draw. */}
                   {searched && (
                     <div style={{ marginBottom: 8 }}>
-                      <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}
-                        title="Someone weighed or candled this pack and pulled the hit before resealing it. Loose out-of-print packs carry that risk — worst on a show floor, least from a shop, and never from a box you broke yourself.">
-                        🔦 Searched — the hit was already gone
-                      </span>
+                      <Explain label="What does searched mean?" trigger={
+                        <span className="pill" style={{ background: 'color-mix(in srgb, var(--red) 15%, transparent)', color: 'var(--red)' }}>
+                          🔦 Searched — the hit was already gone
+                        </span>
+                      }>
+                        Someone weighed or candled this pack and pulled the hit before resealing it. Loose
+                        out-of-print packs carry that risk — worst on a show floor, least from a shop, and
+                        never from a box you broke yourself.
+                      </Explain>
                     </div>
                   )}
-                  <div style={{ fontSize: 15, marginBottom: multi ? 4 : 8 }}>
-                    Pack value <b style={{ color: 'var(--green)' }}>{fmtMoney(packTotal)}</b>{' '}
+                  <div className="t-lg" style={{ marginBottom: multi ? 4 : 8 }}>
+                    Pack value <b className="pos">{fmtMoney(packTotal)}</b>{' '}
                     <span style={{ color: profit >= 0 ? 'var(--green)' : 'var(--red)' }}>
                       ({profit >= 0 ? '+' : ''}{fmtMoney(profit)} vs {fmtMoney(packPrice(set))} cost)
                     </span>
                   </div>
                   {multi && (
-                    <div style={{ fontSize: 14, marginBottom: 8 }}>
-                      Rip so far <b style={{ color: 'var(--green)' }}>{fmtMoney(ripValue)}</b>{' '}
+                    <div className="t-md" style={{ marginBottom: 8 }}>
+                      Rip so far <b className="pos">{fmtMoney(ripValue)}</b>{' '}
                       <span className="muted">across {packsOpened} pack{packsOpened === 1 ? '' : 's'}</span>{' '}
                       <span style={{ color: ripProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
                         ({ripProfit >= 0 ? '+' : ''}{fmtMoney(ripProfit)} vs {fmtMoney(ripCost)} spent)
@@ -720,16 +725,16 @@ export default function PackOpening({ set, product, uid, onExit, singleNoReRip =
                     const chal = pulls.filter(c => c._needFor === 'challenge').length
                     if (!need) return null
                     return (
-                      <div style={{ fontSize: 13.5, marginBottom: 6, color: chal ? 'var(--gold)' : 'var(--accent-light)', fontWeight: 700 }}>
+                      <div className="t-sm" style={{ marginBottom: 6, color: chal ? 'var(--gold)' : 'var(--accent-light)', fontWeight: 700 }}>
                         {chal ? `🃏 ${chal} new for your challenge set` : `📒 ${need} you didn't own yet`}
                       </div>
                     )
                   })()}
-                  <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+                  <p className="cap mt-3">
                     Cards added to your collection. Best pull:{' '}
                     <b style={{ color: rarityColor(best(pulls).rarity) }}>{best(pulls).name}</b> · {fmtMoney(cardValue(best(pulls)))}
                   </p>
-                  <p className="muted" style={{ fontSize: 11.5, marginTop: 2 }}>👆 Tap any card for its full details — cut, PSA-if-graded values, and price history.</p>
+                  <p className="cap mt-1">👆 Tap any card for its full details — cut, PSA-if-graded values, and price history.</p>
                 </div>
               )}
             </div>
@@ -751,7 +756,7 @@ function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
     <div className="rip-hits-pane">
       <div className="rip-side-head">✨ Hits this rip {hitCount ? `(${hitCount})` : ''}</div>
       {hits.length === 0 ? (
-        <p className="muted" style={{ fontSize: 13, margin: '6px 0 2px' }}>
+        <p className="cap t-sm" style={{ margin: '6px 0 2px' }}>
           No hits yet — every foil, rare hit, and wanted card lands here as you rip. 🤞
         </p>
       ) : (
@@ -761,7 +766,7 @@ function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
             const cut = !c.grade ? cutEstimate(c, hasLoupe) : null
             return (
               <button key={c.uid + '-' + i} className="rip-hit-row" style={{ '--rarity': edge }}
-                onClick={() => onInspect(c)} title="Tap for the full card details">
+                onClick={() => onInspect(c)}>
                 <img src={cardImg(c)} alt="" />
                 <div className="rip-hit-info">
                   <div className="rip-hit-name">{c.foil ? `${c.foil.badge} ` : ''}{c.name}</div>
@@ -776,7 +781,7 @@ function HitsPane({ hits, hitCount, hasLoupe, onInspect }) {
                 </div>
                 <div className="rip-hit-val">
                   {fmtMoney(cardValue(c))}
-                  {!c.grade && <div className="rip-hit-psa10" title="Value if graded PSA 10">💎 {fmtMoney(psa10Value(c))}</div>}
+                  {!c.grade && <div className="rip-hit-psa10">💎 {fmtMoney(psa10Value(c))}</div>}
                   {c._fillsWant && <div className="rip-hit-want">⭐ Fills a want</div>}
                 </div>
               </button>
