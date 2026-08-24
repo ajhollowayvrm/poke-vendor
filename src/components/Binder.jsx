@@ -7,6 +7,7 @@ import {
 } from '../game/engine'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
+import { clickable } from '../ui/clickable'
 
 // The Binder: a per-set MASTERSET. Every card has a slot for each printing VARIANT it can
 // come in — the normal, its reverse holo, and (where the set has them) the Poké Ball and
@@ -258,7 +259,9 @@ export default function Binder({ onPick }) {
             const art = cardImg(anyOwned) || cardImg(c)
             return (
               <div key={c.id} className={`binder-slot masterset ${ownsAny ? 'owned' : 'missing'} ${chase ? 'chase' : ''}`}>
-                <div className="binder-slot-art" onClick={() => anyOwned && onPick?.(anyOwned)} title={anyOwned ? c.name : `${c.name} · ${c.rarity}`}>
+                <div className="binder-slot-art"
+                  {...(anyOwned ? clickable(() => onPick?.(anyOwned)) : {})}
+                  title={anyOwned ? c.name : `${c.name} · ${c.rarity}`}>
                   {art ? <img src={art} alt={c.name} loading="lazy" decoding="async" style={ownsAny ? null : { opacity: 0.22, filter: 'grayscale(1)' }} /> : <span className="binder-slot-name">{c.name}</span>}
                   <span className="binder-num">#{cardNumber(c)}</span>
                   {chase && <span className="binder-slot-chase">💎</span>}

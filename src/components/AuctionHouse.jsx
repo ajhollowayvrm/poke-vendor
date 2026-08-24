@@ -6,6 +6,7 @@ import {
   lotMarket, lotTotalCost, lotWarning, roomHeat, WATCHERS_MAX, HOUSE_PREMIUM, lotAppeal,
 } from '../game/lots'
 import { absoluteDay } from '../game/store/constants'
+import { clickable } from '../ui/clickable'
 
 // 🔨 The auction house, on the Buy tab — the BUY side of the hammer.
 //
@@ -132,7 +133,7 @@ export default function AuctionHouse() {
 
   return (
     <div className="market-panel mt-5">
-      <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
+      <div className="market-head" {...clickable(toggle, { style: { cursor: 'pointer' } })}>
         🔨 Auction house <span className="muted">— {sorted.length} lots running</span>
         {committed > 0 && <span className="pill" style={{ marginLeft: 8 }}>{fmtMoney(committed)} committed</span>}
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>

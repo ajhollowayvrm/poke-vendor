@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { isNativeShell } from './game/native'
-import { useGame, flushSaveNow } from './game/store'
+import { useGame, flushSaveNow, UPGRADES } from './game/store'
 import './styles.css'
 
 // The one line that makes the whole :active press layer in styles.css exist on iOS.
@@ -72,7 +72,11 @@ function Boot() {
 // state — which looks exactly like the feature under test being broken. Await this before any
 // reload-and-verify.
 if (import.meta.env.VITE_TEST_SEAM) {
-  window.__PV__ = { useGame, store: useGame.getState, flush: flushSaveNow }
+  // UPGRADES rides along so a driver can unlock everything without hard-coding the key list.
+  // tools/ios/sweep.mjs needs every gate open to reach the screens behind them, and a copy of
+  // the ids in the driver goes stale the first time somebody adds an upgrade — silently, by
+  // leaving one screen unswept rather than by failing.
+  window.__PV__ = { useGame, store: useGame.getState, flush: flushSaveNow, UPGRADES }
 }
 
 createRoot(document.getElementById('root')).render(

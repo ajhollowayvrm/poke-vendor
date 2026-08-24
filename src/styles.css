@@ -22,7 +22,13 @@
      OVERRIDDEN in a test to simulate a real device — Chromium reports env(safe-area-inset-*)
      as 0, so without this a desktop browser can never show you the notch collision that a
      phone actually has. (Test does: :root { --sat: 59px; --sab: 34px }.)
-     0px fallbacks mean desktop and Android are completely unaffected. */
+     0px fallbacks mean desktop and Android are completely unaffected.
+
+     USE THE TOKENS, NEVER env() DIRECTLY. Four rules called env(safe-area-inset-*) at the site
+     instead — the rip resume banner, the bulk bar and the full-height card sheet. They read
+     correctly on a real phone and are INVISIBLE TO EVERY TEST, because the override above only
+     moves the tokens and Chromium reports raw env() as 0. A phone sweep therefore measured the
+     card sheet as having no bottom inset at all and put its controls in the home-indicator band. */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px);
@@ -211,12 +217,12 @@ button:disabled:active, [role="button"][aria-disabled="true"]:active { filter: n
 body.rip-lock { overflow: hidden; touch-action: none; }
 /* Floating "resume your rip" pill shown when a rip is mid-flight on another tab. */
 .rip-resume-banner { position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 55; cursor: pointer;
+  bottom: calc(24px + var(--sab)); z-index: 55; cursor: pointer;
   background: linear-gradient(180deg, #3b6cff, #2a52d8); color: #fff; border: none;
   font-weight: 800; font-size: var(--fs-sm); padding: 10px 16px; border-radius: 999px;
   box-shadow: 0 6px 20px #0007; animation: ripPulse 1.8s ease-in-out infinite; }
 @keyframes ripPulse { 0%,100% { box-shadow: 0 6px 20px #0007; } 50% { box-shadow: 0 6px 26px #3b6cffaa; } }
-@media (max-width: 640px) { .rip-resume-banner { bottom: calc(74px + env(safe-area-inset-bottom)); } }
+@media (max-width: 640px) { .rip-resume-banner { bottom: calc(74px + var(--sab)); } }
 
 /* Top bar */
 .topbar { display: flex; align-items: center; gap: 18px; padding: 14px 18px;
@@ -404,7 +410,14 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 
 /* Card tile */
 .cardtile { position: relative; border-radius: 12px; overflow: hidden; background: #0c0f1a;
-  border: 1px solid var(--line); cursor: pointer; transition: transform .12s, box-shadow .12s; }
+  border: 1px solid var(--line); transition: transform .12s, box-shadow .12s; }
+/* The hand cursor follows the HANDLER, not the class. CardTile is rendered decoratively in
+   several places — the vendor booth shows one as a picture of the card being offered, with the
+   real target on the row around it — and an unconditional cursor:pointer told the player every
+   one of those was tappable. CardTile spreads clickable() only when it was given an onClick, so
+   role="button" is exactly the set that should show the cursor. A raw .cardtile div nested inside
+   a clickable parent still inherits the parent's cursor, so those are unaffected. */
+.cardtile[role="button"] { cursor: pointer; }
 .cardtile img { width: 100%; display: block; }
 .cardtile .tag { position: absolute; top: 6px; left: 6px; font-size: var(--fs-xs); font-weight: 800; z-index: 4;
   padding: 2px 6px; border-radius: 6px; background: #000a; backdrop-filter: blur(4px); }
@@ -442,7 +455,7 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 /* ---------- Graded SLAB (PSA-style plastic case) ---------- */
 .cardtile.slab {
   --slab-accent: #d11f2e; /* red PSA label; gem-mint overrides to gold below */
-  overflow: visible; cursor: pointer; background: transparent; border: 0;
+  overflow: visible; background: transparent; border: 0;   /* cursor follows [role=button], as on .cardtile */
   padding: 7px 7px 9px; border-radius: 10px;
   /* the plastic shell: cool translucent gradient + crisp beveled edges */
   background:
@@ -952,7 +965,16 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
   padding: 10px 16px; cursor: pointer; animation: tickerpulse 1s ease-in-out infinite; max-width: 720px; width: 100%; text-align:center; }
 @keyframes tickerpulse { 0%,100%{box-shadow:0 0 0 0 #ffcb0566} 50%{box-shadow:0 0 0 6px #ffcb0500} }
 
+/* pointer-events:none is load-bearing, not tidiness. Eleven components render their OWN
+   `<div className="toast">` outside ToastHost (StoreStock, BulkBin, PackMachine, ShowFloor,
+   BoothInbox, Collection, Marketplace, MysteryPacks, UpgradeShop, App, …), and this rule makes
+   every one of them position:fixed over the content. Without this they SWALLOW TAPS for the
+   three seconds they are on screen — a sweep of the phone caught a "🛒 Out on the floor" toast
+   sitting on the row it was reporting about, taking the taps meant for that row's 🎬 rip button.
+   A notification must never be a tap target; the only interactive part is .toast-action, which
+   turns pointer-events back on for itself. */
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 90;
+  pointer-events: none;
   background: var(--panel); border:1px solid var(--line); color: var(--txt); padding: 12px 20px; border-radius: 12px;
   font-weight: 700; box-shadow: 0 12px 40px #000b; max-width: 80vw; text-align:center; animation: toastin .25s ease; }
 @keyframes toastin { from{opacity:0; transform: translate(-50%, 10px)} to{opacity:1; transform: translate(-50%,0)} }
@@ -1259,7 +1281,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
      sibling), it still stays pinned while a long list scrolls, and it sticks to the bottom of
      its own scroll container — .content on the tab screens, which already sits above the nav,
      and the viewport on the takeovers. No height constant to keep in sync. */
-  .bulk-bar { bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .bulk-bar { bottom: calc(14px + var(--sab)); }
   .bulk-bar-actions { margin-left: 0; width: 100%; }
   .bulk-bar-actions .btn { flex: 1 1 auto; }
 }
@@ -1863,7 +1885,7 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .modalbg:has(> .modal-detail) { align-items: stretch; padding: 0; }
   .modal-detail {
     max-height: none; width: 100%; border-radius: 0; border: 0;
-    padding: calc(14px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    padding: calc(14px + var(--sat)) 16px calc(16px + var(--sab));
   }
   /* the card detail is an edge-to-edge sheet (no 12px inset), so its ✕ sits a touch higher/righter */
   .modal-detail .modal-close { top: calc(10px + var(--sat)); right: 12px; }
@@ -2421,8 +2443,12 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .binder-legend-chip .vbadge { color:var(--vc); font-weight:900; }
 
 .binder-slot.masterset { display:flex; flex-direction:column; gap:6px; }
+/* Cursor follows the handler, as on .cardtile. A binder slot only opens a card you actually own;
+   an empty slot in a 165-card masterset page is a placeholder, and an unconditional cursor:pointer
+   promised a tap on every gap in the set. */
 .binder-slot-art { position:relative; aspect-ratio:0.72; border-radius:10px; overflow:hidden;
-  background:#0c0f1a; border:1px solid var(--line); cursor:pointer; }
+  background:#0c0f1a; border:1px solid var(--line); }
+.binder-slot-art[role="button"] { cursor:pointer; }
 .binder-slot.masterset.owned .binder-slot-art {
   border-color: color-mix(in srgb, var(--rarity, var(--accent)) 40%, var(--line)); }
 .binder-slot-art img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -2816,3 +2842,70 @@ button.rip-hit-row:hover { background:#ffffff14; }
    size had to say so inline, and 60 call sites wrote `flex:'none'` by hand. The maxWidth that
    usually rode along with it stays inline — that one genuinely varies with the label. */
 .btn-fixed { flex: none; }
+/* ==========================================================================================
+   TOUCH TARGET FLOOR — the stragglers, and why each one escaped.
+
+   The floor at line ~382 lists the control classes it covers and sets min-height: var(--tap)
+   under (pointer: coarse). These got past it in three different ways, and a full-phone sweep of
+   every screen — not just the six main tabs — is what surfaced them:
+
+     • .btn.small sets `min-height: 0` (line 747). That does not merely shrink the button, it
+       CANCELS the floor. "Sign it" and "Pay $4,200" in the books are 25px because of it.
+     • .stock-act (40px) and .seg .segbtn (42px) are deliberately grown for touch further down
+       the file, but to figures BELOW the app's own --tap token, and being later they win.
+     • .pctbtn, .vt-btn, .store-branding-toggle and button.pill were never on the list at all.
+
+   Why verify-ui passes while these are short: it walks the six tabs on a FRESH save, so a
+   storeroom row, a bid field and a stream schedule chip never render for it to measure.
+   ========================================================================================== */
+@media (pointer: coarse) {
+  .btn.small,
+  .pctbtn, .vt-btn, .store-branding-toggle, button.pill,
+  .stock-act, .seg .segbtn,
+  .lot-input, .mk-input, .pctinput,
+  input[type='range'] { min-height: var(--tap); }
+  /* Bare text/number fields were never on the floor's class list either — a price box in the
+     pack machine and the bulk bin measured 24px. A field you have to hit before you can type in
+     it is as much a tap target as a button. Checkbox and radio are excluded: they are sized
+     deliberately and their <label> is the real target. */
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']),
+  textarea { min-height: var(--tap); }
+  /* A checkbox keeps its own small box — 44px of painted checkbox is not what anyone wants — so
+     the ROW it sits in becomes the target instead. That row is the <label>, which already
+     activates the control, so this only has to make it tall enough for a thumb. */
+  label:has(> input[type='checkbox']), label:has(> input[type='radio']) { min-height: var(--tap); }
+  /* Square them off too, or min-height alone leaves a 44x40 target. */
+  .tile-acts .stock-act { width: var(--tap); height: var(--tap); }
+}
+
+/* 26pt painted, 44pt tappable — the house pattern (see .noto-help). The star sits in the corner
+   of a booth item ON TOP of the art, so growing the paint would cover the card it belongs to.
+   The pseudo takes no layout space, so nothing moves. */
+.booth-star::after { content: ''; position: absolute; left: 50%; top: 50%;
+  width: var(--tap); height: var(--tap); transform: translate(-50%, -50%); }
+
+/* The account email / password / one-time-code fields. Carries the size that used to be an
+   inline `fontSize: 13` in Account.jsx — inline beat every rule below, including the zoom floor. */
+.account-field { font-size: var(--fs-sm); }
+
+/* ==========================================================================================
+   iOS FOCUS-ZOOM FLOOR — the last rule in the file, and it has to be.
+
+   Safari zooms the page when a focused field's text is under 16px, and it does not zoom back
+   out: the player is left on a magnified, side-scrolling page and has to pinch their way home.
+
+   The guard at line ~1900 uses TYPE selectors (0-0-1), so essentially every class rule in the
+   app beat it — .t-xs on an input (BoothInbox), .lot-input, .mk-input, .pctinput, .qty-ctl
+   input, .store-branding-field input, .binder-standard .bs-field select. This rule is specific
+   enough to win and last so that source order cannot lose either.
+
+   TEXT ENTRY ONLY. checkbox, radio, range and button carry no text to zoom, and raising them
+   would change controls that are sized deliberately.
+
+   An inline font-size still beats this. Do not put one on a field.
+   ========================================================================================== */
+@media (max-width: 640px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='button']):not([type='submit']),
+  select:not([multiple]):not([size]),
+  textarea { font-size: var(--fs-lg); }
+}

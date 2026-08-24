@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { SHOP_SETS, openPack, cardValue, fmtMoney, hitGemRate, marketMult, round2 } from '../game/engine'
 import { useGame } from '../game/store'
 import { useOpen } from '../ui/Collapse'
+import { clickable } from '../ui/clickable'
 
 // Buy-tab intel panels, each gated behind its upgrade (they render null unowned):
 //   📈 Hobby Wire (upgrades.hobbyWire) — demand: what walk-ins asked for and you couldn't
@@ -45,7 +46,7 @@ export function HobbyWire() {
 
   return (
     <div className="market-panel mt-5">
-      <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
+      <div className="market-head" {...clickable(toggle, { style: { cursor: 'pointer' } })}>
         📈 Hobby Wire <span className="muted">— demand at your counter · market movers</span>
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>
       </div>
@@ -133,7 +134,7 @@ export function BreakersAlmanac() {
   )
   return (
     <div className="market-panel mt-5">
-      <div className="market-head" style={{ cursor: 'pointer' }} onClick={toggle}>
+      <div className="market-head" {...clickable(toggle, { style: { cursor: 'pointer' } })}>
         📐 Breaker's Almanac <span className="muted">— {masteredOnly ? '🎓 your mastered sets only (you know those print runs inside out; the 📐 Almanac upgrade covers the rest)' : 'rip EV by set, riding today\'s market'}</span>
         <span className="muted" style={{ marginLeft: 'auto' }}>{open ? '▾' : '▸'}</span>
       </div>

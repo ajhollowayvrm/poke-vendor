@@ -17,6 +17,7 @@
     "verify-showresume": "vite-node scripts/verify-showresume.mjs",
     "verify-boothstock": "vite-node scripts/verify-boothstock.mjs",
     "verify-ui": "node scripts/verify-ui.mjs",
+    "sweep": "node tools/ios/sweep.mjs",
     "verify-quotes": "vite-node scripts/verify-quotes.mjs",
     "ios:build": "npm run build && npm run ios:project",
     "ios:project": "cd ios && xcodegen generate",

@@ -11,9 +11,13 @@ import {
 import { saveBlocked, storageUsedChars, freeDisposableKeys, flushSaveWrite } from '../game/store'
 import { confirmDialog } from '../ui/dialog'
 
+// No fontSize here on purpose. An inline font-size beats every stylesheet rule including the
+// iOS focus-zoom floor at the end of styles.css, and a 13px field makes Safari zoom the whole
+// page the moment it takes focus — with no way back but a pinch. The size lives on
+// .account-field instead, so the phone can raise it to 16px and the desktop keeps 13px.
 const inputStyle = {
   flex: 1, minWidth: 160, background: 'var(--bg)', border: '1px solid var(--line)',
-  color: '#fff', borderRadius: 8, padding: '8px 10px', fontSize: 13,
+  color: '#fff', borderRadius: 8, padding: '8px 10px',
 }
 
 // Settings panel: sign in with an email + password (AWS Cognito) and the game follows
@@ -417,9 +421,9 @@ export default function Account() {
           </div>
           <form onSubmit={mode === 'signin' ? doSignIn : doSignUp}
             style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <input style={inputStyle} type="email" autoComplete="email" placeholder="email"
+            <input className="account-field" style={inputStyle} type="email" autoComplete="email" placeholder="email"
               value={email} onChange={e => setEmail(e.target.value)} />
-            <input style={inputStyle} type="password" placeholder={mode === 'signup' ? 'password (8+ characters)' : 'password'}
+            <input className="account-field" style={inputStyle} type="password" placeholder={mode === 'signup' ? 'password (8+ characters)' : 'password'}
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               value={password} onChange={e => setPassword(e.target.value)} />
             <div className="row" style={{ gap: 8, alignItems: 'center' }}>
@@ -438,7 +442,7 @@ export default function Account() {
       {mode === 'confirm' && (
         <form onSubmit={doConfirm} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div className="cap">Check <b>{cleanEmail() || 'your email'}</b> for a 6-digit code.</div>
-          <input style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="123456"
+          <input className="account-field" style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="123456"
             value={code} onChange={e => setCode(e.target.value)} />
           <div className="row" style={{ gap: 8 }}>
             <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 150 }} disabled={busy}>Confirm</button>
@@ -455,7 +459,7 @@ export default function Account() {
       {mode === 'forgot' && (
         <form onSubmit={doForgot} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div className="cap">We’ll email a reset code to your account address.</div>
-          <input style={inputStyle} type="email" autoComplete="email" placeholder="email"
+          <input className="account-field" style={inputStyle} type="email" autoComplete="email" placeholder="email"
             value={email} onChange={e => setEmail(e.target.value)} />
           <div className="row" style={{ gap: 8 }}>
             <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 170 }} disabled={busy}>Send reset code</button>
@@ -467,9 +471,9 @@ export default function Account() {
 
       {mode === 'forgotconfirm' && (
         <form onSubmit={doForgotConfirm} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <input style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="reset code"
+          <input className="account-field" style={inputStyle} inputMode="numeric" autoComplete="one-time-code" placeholder="reset code"
             value={code} onChange={e => setCode(e.target.value)} />
-          <input style={inputStyle} type="password" autoComplete="new-password" placeholder="new password (8+ characters)"
+          <input className="account-field" style={inputStyle} type="password" autoComplete="new-password" placeholder="new password (8+ characters)"
             value={password} onChange={e => setPassword(e.target.value)} />
           <div className="row" style={{ gap: 8 }}>
             <button className="btn gold btn-fixed" type="submit" style={{ maxWidth: 200 }} disabled={busy}>Set new password</button>
