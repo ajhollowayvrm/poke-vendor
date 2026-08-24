@@ -428,6 +428,17 @@ export const SURFACES = [
     [{ bnav: 'Store' }, { subtab: '📋 Forum' }]),
   T('store-market', 'Store › On the market', 'loaded', '.subtabs',
     [{ bnav: 'Store' }, { subtab: '🌐 On the market' }]),
+  // 🗣️ The store quote walk-up. Seeded rather than waited for: it is a share of walk-in footfall,
+  // so waiting on the dice would make the sweep flaky. venue:'store' is the whole point of the
+  // surface — it decides the wording and where a credit deal shops from.
+  T('store-quote', 'Store › Orders › Quote walk-up', 'stocked', '.modal',
+    [{ patch: `
+        const { useGame, store } = window.__PV__
+        const mod = await import('/src/game/shows.js')
+        const q = mod.makeQuoteRequest(90, null, { band: [1, 40], venue: 'store' })
+        useGame.setState({ boothInbox: [{ ...q, id: 9001, channel: 'walkin' }] })
+      ` },
+     { bnav: 'Store' }, { subtab: '📨 Orders' }, { tapText: ['.product', 'wants a price'] }]),
   T('store-bulkbin', 'Store › Floor › Bulk bin', 'loaded', '.subtabs',
     [{ bnav: 'Store' }, { subtab: '🛒 Floor' }, { tapText: ['.collapse-btn', 'Bulk'] }]),
   T('store-rivalry', 'Store › Floor › Town rivalry', 'loaded', '.subtabs',

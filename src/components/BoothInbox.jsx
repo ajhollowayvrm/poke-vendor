@@ -4,6 +4,7 @@ import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
+import QuoteCounter from './QuoteCounter'
 import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
@@ -15,6 +16,7 @@ import StoreStock from './StoreStock'
 import Regulars from './Regulars'
 import { useModalEscape } from '../ui/dialog'
 import { Collapse } from '../ui/Collapse'
+import { clickable } from '../ui/clickable'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
   walkin: { label: 'Walk-in', icon: '🏬', color: '#ffcb05' } }
@@ -733,6 +735,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         // matches the FIRST section it fits, so nothing renders twice.
         const sections = [
           { key: 'trades', title: '🔁 Trade offers', hint: 'bundles offered for your cards — weigh both sides', match: x => (x.enc.options || []).some(o => o.effect?.type === 'trade') },
+          // 🗣️ Its own section, above the requests. This is the only encounter where YOU set the
+          // price, so it is a different job from the rest of the list and worth finding fast.
+          { key: 'quotes', title: '🗣️ Price my cards', hint: 'they want a number from you — cash or store credit', match: x => x.enc.kind === 'quote' },
           { key: 'requests', title: '🙋 Walk-in requests', hint: 'someone came in hunting a specific item', match: x => x.enc.kind === 'request' },
           { key: 'offers', title: '💰 Offers & browsers', hint: 'offers on your stock, browsers, and inbound deals', match: () => true },
         ]
@@ -751,13 +756,21 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                   // shifts indices and would make React reconcile tiles to the wrong encounter.
                   const key = enc.id || enc.card?.uid || enc.ownedUid || `${enc.channel || 'c'}:${enc.title}`
                   return (
-                    <div key={key} className="product" style={{ cursor: 'pointer' }} onClick={() => setActive({ enc, id: enc.id })}>
+                    // The inbox list is the store's main interaction, and every row was a bare
+                    // clickable div: no tab stop, nothing for the focus ring to paint on, and
+                    // outside the (pointer: coarse) 44px floor, which names [role=button].
+                    <div key={key} className="product"
+                      {...clickable(() => setActive({ enc, id: enc.id }), { style: { cursor: 'pointer' } })}>
                       <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
                       {enc.card && <img src={cardImg(enc.card)} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
                       {enc.card && setNameOfCard(enc.card) && <div className="cap" style={{ textAlign: 'center' }}>{setNameOfCard(enc.card)}</div>}
                       <h3 className="t-lg" style={{ margin: 0 }}>{enc.title}</h3>
-                      <div className="meta" style={{ flex: 1 }}>{enc.body.slice(0, 90)}…</div>
-                      <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →' : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
+                      {/* Defensive on body: an encounter kind that arrives without one used to
+                          take the whole inbox down with a TypeError rather than render plainly. */}
+                      <div className="meta" style={{ flex: 1 }}>{(enc.body || '').slice(0, 90)}…</div>
+                      <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →'
+                        : enc.kind === 'quote' ? '🗣️ Name your price →'
+                        : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
                     </div>
                   )
                 })}
@@ -773,6 +786,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
       {active && (active.enc.kind === 'sealedDeal' && active.enc.deal
         ? <SealedDealModal enc={active.enc} id={active.id} flash={flash}
             onDone={() => setActive(null)} onCancel={() => setActive(null)} />
+        /* 🗣️ A quote walk-up is not a pick-an-option encounter — it is a negotiation where YOU
+           name the number, so it gets the same dedicated screen the show floor uses. Closing it
+           clears the inbox entry the way pick() does, because the deal is done either way and a
+           settled seller must not still be standing at the counter tomorrow. */
+        : active.enc.kind === 'quote'
+        ? <QuoteCounter req={active.enc} onDone={(msg) => { if (msg) flash(msg); clearItem(active.id); setActive(null) }} />
         : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />)}
 
       {/* Hold picker: choose WHICH regular you're saving the item for — only regulars who

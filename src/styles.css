@@ -2260,6 +2260,11 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .trade-item.sealed { background:#0c0f1a; border:1px solid var(--line); border-radius:8px; padding:8px 6px; }
 .trade-item.sealed .trade-sealed-logo { width:70px; max-width:100%; object-fit:contain; }
 .trade-item.sealed .trade-sealed-icon { font-size:34px; line-height:1.4; }
+/* Keep a long product name INSIDE its 96px tile. Nothing here clips, so a name like "Premium
+   Checklane Blister" simply spilled sideways over the item next to it — on a phone, with two
+   items in the strip, that reads as the tiles overlapping. Wrapping mid-word is the right trade
+   for a name that has no short form. */
+.trade-item .trade-name, .trade-item .trade-val { max-width: 100%; overflow-wrap: anywhere; }
 
 /* --- Trade builder (vendor booth, many-to-many) --------------------------- */
 .trade-builder-cols { display:flex; gap:12px; margin-top:12px; }

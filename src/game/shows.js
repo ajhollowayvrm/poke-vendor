@@ -1744,10 +1744,14 @@ export function haggleBuyin(offer, yourOffer) {
 // (they leave with your stock, you part with no money), so their hidden credit floor sits
 // 10–15 points UNDER their cash floor. Two pre-rolled floors, exactly the `_floorCash`
 // idiom the buy-in lots use: the tell is the seller's hint, never the number.
-export function makeQuoteRequest(notoriety, tierKey = 'meetup') {
+export function makeQuoteRequest(notoriety, tierKey = 'meetup', opts = {}) {
   const tier = SHOW_TIERS[tierKey] || SHOW_TIERS.meetup
-  const [lo, hi] = tier.valueBand
-  const who = pickAny(null, VISITOR_NAMES.show)
+  // `band` lets a venue that is not a show set its own value range. The store uses it: a local
+  // walking into a shop brings ordinary cards, and something good only once your name is worth
+  // the trip — the same shape makeBuyinOffer gives its hit band. Shows keep their tier band, so
+  // nothing about the floor changes.
+  const [lo, hi] = opts.band || tier.valueBand
+  const who = pickAny(null, VISITOR_NAMES[opts.venue === 'store' ? 'walkin' : 'show'] || VISITOR_NAMES.show)
   const n = 1 + (Math.random() < 0.45 ? 1 : 0) + (Math.random() < 0.2 ? 1 : 0)
   const items = []
   for (let i = 0; i < n; i++) {
@@ -1767,8 +1771,19 @@ export function makeQuoteRequest(notoriety, tierKey = 'meetup') {
   const tight = Math.random() < 0.4
   const _floorCashPct = round2(tight ? 0.75 + Math.random() * 0.10 : 0.55 + Math.random() * 0.15)
   const _floorCreditPct = round2(Math.max(0.35, _floorCashPct - (0.10 + Math.random() * 0.05)))
+  const n2 = items.length
   return {
     kind: 'quote', who: cap(who), items, market,
+    // Which counter they walked up to. It decides where a CREDIT deal shops its bundle from —
+    // the show table, or the shop floor — so it has to ride along with the request.
+    venue: opts.venue || 'show',
+    // title/body exist for the STORE inbox, which lists every waiting encounter as a card with a
+    // heading and a one-line preview. The show floor opens a quote straight into QuoteCounter and
+    // never reads either, but an encounter that lands in a list without them renders a blank
+    // heading and throws on body.slice. Naming the item count and the market is safe — the show
+    // UI already shows both. The hidden floor stays hidden.
+    title: `🗣️ ${cap(who)} wants a price`,
+    body: `"What'll you give me for ${n2 === 1 ? 'this' : 'these'}?" — ${n2} item${n2 === 1 ? '' : 's'}, about $${market.toFixed(2)} of market. You name the number.`,
     tone: tight ? 'tight' : 'soft',
     hint: tight ? 'seems to know exactly what the comps are' : 'mostly wants it gone today',
     _floorCashPct, _floorCreditPct,

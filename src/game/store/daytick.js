@@ -25,7 +25,7 @@ import {
   showcaseSetIds, showcaseMult, pickMasterLot, LOT_PREMIUM_LO, LOT_PREMIUM_HI,
   ownedIdSet, setCompletion,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeGiftBuyer, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { boothEncounter, makeShopRequest, makeGiftBuyer, makeQuoteRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
 import { packSaleChance, packValue } from '../mysterypacks'
 import { settleAuction, watcherDraw } from '../auctions'
 import {
@@ -41,6 +41,7 @@ import {
   HOLD_PICKUP_PREMIUM, HOLD_DAYS_STORE, CONCIERGE_HOLDS_PER_TICK,
   GIVEAWAY_TRAFFIC_MULT, consignReqCap, CONSIGN_REQ_CHANCE, CONSIGN_MIN_NOTO,
   BUYIN_CHANCE, buyinCap, BUYIN_MIN_NOTO, BUYIN_ESTATE_CHANCE, CREDIT_REDEEM_SHARE, CREDIT_BREAKAGE,
+  STORE_QUOTE_SHARE, STORE_QUOTE_MIN_NOTO, storeQuoteBand,
   creditMonthlyRate, CREDIT_MIN_PCT, CREDIT_MIN_FLOOR, CREDIT_MISS_NOTORIETY,
   STORE_EVENTS, EVENT_COOLDOWN_DAYS, onFloor, walkinDayMult, buyinDayMult, seasonOf,
   supplyById, pickSupplyId, BUYLIST_POLICIES, SUB_DAILY,
@@ -622,7 +623,23 @@ export function advanceDaysWith(set, get, days, away) {
   // roll entirely rather than manufacture filler (price-checks, beggars) about a shop
   // that isn't open. (A deep bargain listing still counts as "open online".)
   const openOnline = listedCards.length > 0 || hasBargain
-  const openWalkin = shelfCards.length > 0 || sellableSealed.length > 0
+  // Two different questions, and they used to be one.
+  //
+  // `openWalkin` is "is there anything on the shelf to look at" — it gates BROWSING, offers and
+  // trades, which are meaningless against an empty case.
+  //
+  // It must NOT gate the demand layer. A customer walking in to ASK for something does not need
+  // you to already own something else, and both makeShopRequest and makeGiftBuyer are written for
+  // exactly that: makeShopRequest carries a `loc: 'none'` branch for product you do not have, and
+  // makeGiftBuyer has a "nothing giftable on the floor in their budget" branch. Both emit
+  // requestMiss, which is what feeds the demand board — the board whose whole job is telling you
+  // what the town keeps asking for so you know what to stock.
+  //
+  // Gating those on already having stock killed the loop at the one moment it matters: an empty
+  // shop, deciding what to buy. Nobody came in, so nothing was recorded, so the board stayed blank
+  // and the shelves stayed empty. Both empty-shelf branches were unreachable code.
+  const shelfHasStock = shelfCards.length > 0 || sellableSealed.length > 0
+  const openWalkin = shelfHasStock
   // Launch week: right after a reprint wave drops, a big share of walk-in requests hunt
   // exactly that set's product (makeShopRequest biasSetId) — stock it or watch them miss.
   const waveRushSetId = (s.reprintWave && s.reprintWave.doneDay != null
@@ -670,19 +687,36 @@ export function advanceDaysWith(set, get, days, away) {
     // makes the rival worth competing with rather than reading about.
     const rivalMult = rivalDrag(s.rival)
     const walkinRate = dayOrderRate('walkin', noto) * orderMult * buzz * signageMult * dayMult * rivalMult * hypeDemandMult(hype0) * showcaseMult(showcaseN)
-    const nWalkin = (hasStore && openWalkin) ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
+    // The door is open whenever you hold the lease. What each visitor turns out to want is what
+    // depends on the shelf, and that is decided per visitor below.
+    const nWalkin = hasStore ? Math.min(MAX_ORDERS_PER_DAY, drawCount(walkinRate)) : 0
     for (let k = 0; k < nWalkin; k++) {
       if (walkinOK) {
         // Season first: in Nov–Dec a slice of walk-ins are GIFT BUYERS with a budget, not a
         // want. Then ~35% come in ASKING for a specific item (the store's demand layer); the
         // rest are the usual offer/browse/trade mix.
-        const enc = (season.gift > 0 && Math.random() < season.gift)
+        // 🗣️ "What'll you give me for these?" — someone puts one to three cards on the glass and
+        // asks YOU to price them. Independent of what is in your case: they are here to SELL, and
+        // a thin shelf is the reason to say yes. Rolled FIRST so a bare shop still gets offered
+        // stock instead of only being asked for it.
+        const quote = (hasStore && noto >= STORE_QUOTE_MIN_NOTO && Math.random() < STORE_QUOTE_SHARE)
+          ? makeQuoteRequest(noto, null, { band: storeQuoteBand(noto), venue: 'store' })
+          : null
+        const enc = quote
+          ? quote
+          : (season.gift > 0 && Math.random() < season.gift)
           ? makeGiftBuyer(s, accepted, noto)
           : Math.random() < 0.35
           // 🎓 Mastered-set perk: the shop known for a set gets asked for it — absent a
           // reprint rush, ~30% of requests lean toward a set you've completed.
           ? makeShopRequest(s, accepted, { biasSetId: waveRushSetId || (masteredIds.length && Math.random() < 0.3 ? masteredIds[Math.floor(Math.random() * masteredIds.length)] : null) })
-          : boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN })
+          // A browser needs something to browse. With a bare case this visitor simply is not an
+          // event — which is why an empty shop still hears the asks but sees no browsing, and
+          // fills back up as you put stock out.
+          : shelfHasStock
+          ? boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN })
+          : null
+        if (!enc) continue
         // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies — a
         // card sells for more across your counter than in a web listing. (fulfillRequest already
         // bakes the premium into its price, so it's intentionally NOT flagged here.)
@@ -994,7 +1028,7 @@ export function advanceDaysWith(set, get, days, away) {
     if (sale.auto) get().log('sell', `Auto-sold ${sale.name} — $${sale.net.toFixed(2)}`, sale.net)
     else get().log('sell', `Sold ${sale.name} to a ${sale.savvy} — $${sale.net.toFixed(2)}`, sale.net)
   }
-  if (lt.newOffers) get().log('listing', `${lt.newOffers} new offer${lt.newOffers > 1 ? 's' : ''} on your listings — review them on the Sell tab.`, 0)
+  if (lt.newOffers) get().log('listing', `${lt.newOffers} new offer${lt.newOffers > 1 ? 's' : ''} on your listings — review them on Store › 🌐 On the market.`, 0)
   // A spiking set drew premium offers ABOVE market — the reward for listing into a hot market.
   if (lt.premiumOffers) get().log('listing', `📈 ${lt.premiumOffers} buyer${lt.premiumOffers > 1 ? 's' : ''} offered OVER market on a hot set — list into the spike while it lasts.`, 0)
   for (const name of lt.staleNow) get().log('listing', `${name} keeps getting looks but no buyers — likely priced too high. Reprice or pull it.`, 0)
@@ -1137,7 +1171,7 @@ export function advanceDaysWith(set, get, days, away) {
       if (Math.random() < Math.min(0.9, CONSIGN_REQ_CHANCE * oppMult * buyinDayMult(startAbs + i + 1))) {
         const req = makeConsignRequest(noto, { casePlus: !!s.upgrades.consignCase })
         consignReqsNext = [req, ...consignReqsNext]
-        get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on the Sell tab.`, 0)
+        get().log('shop', `🧾 ${req.who} came by with a ${req.card.name} — they want YOU to sell it (${Math.round(req.commissionPct * 100)}% commission). Answer on Store › 🛒 Floor.`, 0)
       }
     }
   }
@@ -1160,7 +1194,7 @@ export function advanceDaysWith(set, get, days, away) {
         const who = offer.who.charAt(0).toUpperCase() + offer.who.slice(1)
         const sealedNote = offer.sealedCount ? ` + ${offer.sealedCount} sealed` : ''
         const askNote = offer.free ? 'giving it away FREE' : `asking $${offer.askCash.toFixed(2)}`
-        get().log('shop', `🛍️ ${who} came in with ${offer.count} cards${sealedNote} to SELL — ${askNote}. Appraise it on the Sell tab.`, 0)
+        get().log('shop', `🛍️ ${who} came in with ${offer.count} cards${sealedNote} to SELL — ${askNote}. Appraise it on Store › 🛒 Floor.`, 0)
       }
     }
   }
