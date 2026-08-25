@@ -1,4 +1,4 @@
-import { cardValue, isHit, fmtMoney, CONDITIONS, cutEstimate, cardImg, setNameOfCard } from '../game/engine'
+import { cardValue, isHit, fmtMoney, CONDITIONS, cutEstimate, cardImg, setNameOfCard, graderById, isBlackLabel } from '../game/engine'
 import { misprintDef } from '../game/misprints'
 import { useGame } from '../game/store'
 import HoloCard from './HoloCard'
@@ -38,13 +38,18 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
   if (card.grade) {
     const g = card.grade.overall
     const gemmint = g >= 10
+    const grader = graderById(card.grade.company)
+    // 10s already get a gold gloss (CSS .slab-gem) — a black-label BGS 10 gets its own near-black
+    // shimmer, everything else takes its grader's brand color. Computed here (not left to CSS
+    // cascade) because an inline custom-prop wins over the class rules either way.
+    const accent = isBlackLabel(card.grade) ? '#1a1a22' : gemmint ? '#b8860b' : grader.color
     return (
       <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
-        <div className={`cardtile slab grade-${g} ${gemmint ? 'slab-gem' : ''}`} {...tap}>
+        <div className={`cardtile slab grade-${g} ${gemmint ? 'slab-gem' : ''}`} style={{ '--slab-accent': accent }} {...tap}>
           {card.locked && <span className="lockchip" aria-label="Locked — protected from bulk sells">🔒</span>}
           <div className="slab-shine" aria-hidden="true" />
           <div className="slab-label">
-            <div className="slab-brand">PSA</div>
+            <div className="slab-brand">{grader.icon} {grader.name}</div>
             <div className="slab-grade">
               <b>{g}</b>
               <span>{gradeLabel(g)}</span>

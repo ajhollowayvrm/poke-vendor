@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGame } from '../game/store'
-import { fmtMoney, cardValue, cardImg, setNameOfCard } from '../game/engine'
+import { fmtMoney, cardValue, cardImg, setNameOfCard, slabLabel } from '../game/engine'
 import { absoluteDay } from '../game/store'
 
 // The "on the market" panel — cards you've listed on your own site (browsed by
@@ -119,7 +119,7 @@ function ListingRow({ l }) {
             {setNameOfCard(l.card) && <span className="cap" style={{ marginLeft: 6, fontWeight: 400 }}>{setNameOfCard(l.card)}</span>}
             {l.card.grade && (
               <span className="pill t-xs" style={{ marginLeft: 6, background: 'color-mix(in srgb, var(--gold) 13%, transparent)', color: 'var(--gold)', border: '1px solid color-mix(in srgb, var(--gold) 27%, transparent)' }}>
-                PSA {l.card.grade.overall}
+                {slabLabel(l.card.grade)}
               </span>
             )}
           </div>

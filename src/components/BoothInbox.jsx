@@ -30,6 +30,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — gates the tournament night
+  const hype = useGame(s => s.hype || 0) // 🔥 gates the short-term/modern nights (launch party, streamer meetup)
   const upgrades = useGame(s => s.upgrades)
   const currentDay = useGame(s => s.currentDay)
   const clearItem = useGame(s => s.clearInboxItem)
@@ -579,7 +580,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 ) : (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', marginTop: 4 }}>
                     {Object.entries(STORE_EVENTS).map(([key, ev]) => {
-                      const locked = ev.minRank != null ? rank < ev.minRank : notoriety < (ev.minNoto || 0)
+                      const locked = ev.minRank != null ? rank < ev.minRank
+                        : ev.minHype != null ? hype < ev.minHype
+                        : notoriety < (ev.minNoto || 0)
                       const lockRank = locked && ev.minRank != null ? RANKS[ev.minRank] : null
                       const cantAfford = cash < ev.cost
                       const isWeekly = weeklyEvent?.type === key
@@ -593,7 +596,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                               const r = planStoreEvent(key)
                               flash(r.error || `${ev.icon} ${ev.name} is on tonight — hit Next Day to run it.`)
                             }}>
-                            {lockRank ? `🔒 ${lockRank.emoji} ${lockRank.name}` : locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
+                            {lockRank ? `🔒 ${lockRank.emoji} ${lockRank.name}`
+                              : locked && ev.minHype != null ? `🔒 ${ev.minHype}🔥`
+                              : locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
                           </button>
                           {/* 🎪 Events Coordinator: flag ONE event as the standing weekly night (raffles
                               can't recur — they need a prize picked each time). */}
@@ -807,6 +812,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           take the whole inbox down with a TypeError rather than render plainly. */}
                       <div className="meta" style={{ flex: 1 }}>{(enc.body || '').slice(0, 90)}…</div>
                       <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →'
+                        : enc.kind === 'scalperOffer' ? '💰 View offer →'
                         : enc.kind === 'quote' ? '🗣️ Name your price →'
                         : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
                     </div>
@@ -820,7 +826,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
       </>
       )}
 
-      {active && (active.enc.kind === 'sealedDeal' && active.enc.deal
+      {active && ((active.enc.kind === 'sealedDeal' || active.enc.kind === 'scalperOffer') && active.enc.deal
         ? <SealedDealModal enc={active.enc} id={active.id} flash={flash}
             onDone={() => setActive(null)} onCancel={() => setActive(null)} />
         /* 🗣️ A quote walk-up is not a pick-an-option encounter — it is a negotiation where YOU

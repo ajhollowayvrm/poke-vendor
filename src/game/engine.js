@@ -1394,13 +1394,31 @@ export function marketAsk(value, tierValue = value) {
 const FOIL_VARIANT_FLOOR = 3   // base raw value to list a Poké Ball foil
 const GRADE_VARIANT_FLOOR = 8  // base raw value to list PSA slabs
 
-// A deterministic full PSA grade object for a marketplace slab (no random subgrades —
-// a "PSA 10" listing is exactly that). Mirrors rollGrade's output shape so gradedValue
-// and the rest of the app treat it like any owned slab.
-function marketGrade(overall) {
+// A deterministic full grade object for a marketplace slab at a given company (no random
+// subgrades — a "PSA 10" listing is exactly that). Mirrors rollGrade's output shape so
+// gradedValue and the rest of the app treat it like any owned slab.
+function marketGrade(overall, company = DEFAULT_GRADER) {
   return { overall, centering: overall, corners: overall, edges: overall, surface: overall,
-    fee: 0, tier: 'standard', gradedAt: null, _market: true }
+    fee: 0, tier: 'standard', company, gradedAt: null, _market: true }
 }
+
+// Deterministic [0,1) "roll" from a string seed — the same seed always returns the same
+// value, so a listing decision can be stable across renders/visits without being stored
+// anywhere (a plain FNV-1a hash, not cryptographic — just needs to be stable and well spread).
+function seededChance(seed) {
+  let h = 2166136261
+  for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619) }
+  return ((h >>> 0) % 100000) / 100000
+}
+
+// Companies the marketplace lists slabs from, and how rare a listing at that company is —
+// PSA is the routine default, CGC a common cheaper alternative, BGS the rare premium chase.
+// Every BGS 10 the marketplace lists is a Black Label (marketGrade's subgrades all equal the
+// overall, and isBlackLabel only needs all-10s on a BGS slab) — combined with its low listing
+// odds, that makes a BGS 10 a genuinely rare, eye-catching SKU worth chasing. Mirrors the
+// vendor-booth mix in spirit (see GENERATED_GRADER_WEIGHTS) but kept as flat listing odds
+// since the marketplace always shows the SAME grade pair (9/10) per company, not a roll.
+const MARKET_GRADER_ODDS = { psa: 1, cgc: 0.7, bgs: 0.35 }
 
 // Build the buyable listings for one card. Each listing is everything buyFromMarket
 // needs to mint an instance: a display id, the base card, the finish/condition/grade,
@@ -1418,12 +1436,18 @@ export function marketVariants(card) {
     })
   }
   if (base >= GRADE_VARIANT_FLOOR) {
-    for (const g of [9, 10]) {
-      const grade = marketGrade(g)
-      out.push({
-        id: `${card.id}::psa${g}`, card, kind: 'graded', condition: 'NM', foil: null, grade,
-        label: `PSA ${g}`, ask: marketAsk(gradedValue({ ...card, condition: 'NM', grade }), base),
-      })
+    // Deterministic per-card listing set (not re-rolled every render): whether each grader's
+    // pair shows up at all is seeded off the card id, so a given card's marketplace listings
+    // stay stable across renders/visits instead of flickering between grader mixes.
+    for (const company of Object.keys(GRADERS)) {
+      if (company !== 'psa' && seededChance(`${card.id}::${company}`) > (MARKET_GRADER_ODDS[company] ?? 0)) continue
+      for (const g of [9, 10]) {
+        const grade = marketGrade(g, company)
+        out.push({
+          id: `${card.id}::${company}${g}`, card, kind: 'graded', condition: 'NM', foil: null, grade,
+          label: slabLabel(grade), ask: marketAsk(gradedValue({ ...card, condition: 'NM', grade }), base),
+        })
+      }
     }
   }
   // Cheapest first; on a price tie keep a stable finish order (raw < foil < graded)
@@ -1447,11 +1471,37 @@ const COMP_SLABS = [...ALL_CARDS, ...VINTAGE_CARDS].flatMap(c =>
 // A card that ACTUALLY commands this much is a genuine grail (crown styling + hall hype).
 const GRAIL_VALUE = 10000
 
-// Mint a slabbed instance of a real (card, grade) comp entry.
+// ---- Generated-slab grader mix ------------------------------------------------------
+// Nothing that MINTS a graded slab for the world (vendor booths, the marketplace) used to
+// set a `company` at all — every one silently read as PSA via the `company || DEFAULT_GRADER`
+// fallback everywhere else. This is the shared roll every generator below uses so BGS/CGC
+// slabs actually turn up out in the world, not just when the player chooses them at
+// submission time. PSA stays the common default; CGC is a frequent budget alternative;
+// BGS is the rarer premium/chase grader, with a further small shot at a Black Label 10.
+const GENERATED_GRADER_WEIGHTS = [['psa', 0.60], ['cgc', 0.25], ['bgs', 0.15]]
+const BLACK_LABEL_ROLL_CHANCE = 0.10 // of a generated BGS-10, how often it's a Black Label
+function rollGeneratedCompany(rnd = Math.random) {
+  const r = rnd()
+  let acc = 0
+  for (const [key, w] of GENERATED_GRADER_WEIGHTS) { acc += w; if (r < acc) return key }
+  return 'psa'
+}
+// A generated grade object at a fixed overall grade, with a rolled company (see above) — and
+// for a rolled BGS 10, a chance of an all-10 Black Label instead of the flat same-grade shape.
+function mintGeneratedGrade(overall, rnd = Math.random) {
+  const company = rollGeneratedCompany(rnd)
+  if (company === 'bgs' && overall === 10 && rnd() < BLACK_LABEL_ROLL_CHANCE) {
+    return { overall: 10, centering: 10, corners: 10, edges: 10, surface: 10, tier: 'standard', company, gradedAt: Date.now() }
+  }
+  return { overall, centering: overall, corners: overall, edges: overall, surface: overall, tier: 'standard', company, gradedAt: Date.now() }
+}
+
+// Mint a slabbed instance of a real (card, grade) comp entry. Rolls which grader it came
+// back in — see mintGeneratedGrade — so vendor booths and the marketplace actually carry
+// BGS/CGC slabs instead of every generated slab silently reading as PSA.
 function mintSlab(entry, rnd) {
-  const g = entry.grade
   const c = instance({ ...entry.card, condition: 'NM' }, 'sealed', rnd)
-  c.grade = { overall: g, centering: g, corners: g, edges: g, surface: g, tier: 'standard', gradedAt: Date.now() }
+  c.grade = mintGeneratedGrade(entry.grade, rnd)
   if (gradedValue(c) >= GRAIL_VALUE) c._grail = true
   return c
 }
@@ -1552,7 +1602,7 @@ export function gradedCardInRange(min, max, grade, rnd = Math.random, exclude = 
   }
   const c = cardInValueRange(min / (grade >= 9 ? 3 : 1), Math.min(max, REAL_PRICE_CEILING), rnd)
   c.condition = 'NM' // it's slabbed; condition is locked in by the grade
-  c.grade = { overall: grade, centering: grade, corners: grade, edges: grade, surface: grade, tier: 'standard', gradedAt: Date.now() }
+  c.grade = mintGeneratedGrade(grade, rnd)
   return c
 }
 

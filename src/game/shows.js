@@ -1093,11 +1093,53 @@ export function makeSealedDeal(channel, notoriety = 0) {
   }
 }
 
+// --- Scalper offers ------------------------------------------------------------------
+// A stranger offers you REAL sealed product — no fake risk at all, unlike makeSealedDeal —
+// but priced ABOVE market because your shop is running hot right now. The only decision is
+// whether the hot product is worth the markup, or worth trying to haggle down; a scalper
+// won't sell at a loss to themselves, so the hidden floor never dips below market value.
+// Biased toward recent modern releases — the stuff people actually flip when hype is up.
+function pickHotModernSet() {
+  const sorted = [...SHOP_SETS].sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || ''))
+  const pool = sorted.slice(0, Math.max(1, Math.min(6, sorted.length)))
+  return pickAny(null, pool.length ? pool : sorted)
+}
+export function makeScalperOffer(channel, hype = 0) {
+  const online = channel === 'online'
+  const set = pickHotModernSet()
+  if (!set) return null
+  const prods = setProducts(set)
+  const pool = prods.filter(p => p.packs <= 18) // packs / small boxes — what a flipper carries
+  const product = pickAny(null, pool.length ? pool : prods)
+  const reference = round2(product.price || 0)
+  if (reference <= 0) return null
+  // Richer, more brazen asks the hotter you're running — capped so it's a bad buy, not an
+  // absurd one.
+  const markup = 0.15 + Math.min(0.45, hype / 150)
+  const ask = round2(reference * (1 + markup))
+  const pct = Math.round(markup * 100)
+  const pay = pickPayMethod(channel, null)
+  // Hidden haggle floor: somewhere between fair market value and their opening ask — they'll
+  // give back some of the markup under pressure, never sell below what it's actually worth.
+  const floorFrac = 0.30 + Math.random() * 0.40
+  const _floorCash = round2(reference + (ask - reference) * floorFrac)
+  return {
+    kind: 'scalperOffer',
+    title: online ? 'A reseller DMs you' : 'A reseller offers you sealed product',
+    body: `"Got a sealed ${product.type} of ${set.name} — everyone wants it right now, so it's $${ask.toFixed(2)}."`
+      + ` That's ${pct}% over retail (~$${reference.toFixed(2)}). It's the real thing — they're just riding your hype.`,
+    card: set.logo ? { name: product.type, img: set.logo, imgLarge: set.logo } : null,
+    deal: { setId: set.id, product: { ...product }, ask, reference, payMethod: pay, _floorCash },
+  }
+}
+
 // Build an encounter. channel: 'show' | 'walkin' | 'online'.
 // 'show' = at your table in the hall; 'walkin' = your physical store;
 // 'online' = a remote buyer messaging you (the early game, from your house).
 // `opts.showcase` = how many completed master sets are on display at home (🖼️ the binder
 // draw) — whales come earlier and more often to the shop with the famous page.
+// `opts.followers` scales up how often strangers bring you sealed deals (see the followers
+// term below); `opts.hype` drives how often — and how brazenly — a scalper tries you.
 export function boothEncounter(notoriety, playerCollection, channel = 'show', accepted = null, listedCards = null, shelfCards = null, regulars = null, showSealedPool = null, opts = {}) {
   const roll = Math.random()
   const online = channel === 'online'
@@ -1155,11 +1197,25 @@ export function boothEncounter(notoriety, playerCollection, channel = 'show', ac
   // 0) Inbound sealed-product DEAL — a stranger offers to SELL you sealed below market
   // (sometimes a steal, sometimes a fake). Mostly online; rarer in person. Fires on its
   // OWN roll so it doesn't shift the offer/question/browse bands below it. A KNOWN name is a
-  // bigger target: scammers seek you out more the more famous you get (the downside of fame).
-  const scamChance = (online ? 0.20 : 0.08) + Math.min(online ? 0.12 : 0.08, notoriety / (online ? 900 : 1200))
+  // bigger target: scammers seek you out more the more famous you get (the downside of fame) —
+  // and so is a following: more people bring you sealed the bigger your audience, capped like
+  // the online-order followerBump elsewhere so it can't dwarf the reputation term.
+  const followers = opts.followers || 0
+  const followerDealBonus = Math.min(0.10, followers / 1500)
+  const scamChance = (online ? 0.20 : 0.08) + Math.min(online ? 0.12 : 0.08, notoriety / (online ? 900 : 1200)) + followerDealBonus
   if ((online || walkin) && Math.random() < scamChance) {
     const deal = makeSealedDeal(channel, notoriety)
     if (deal) return deal
+  }
+
+  // 0d) A SCALPER — real product, but priced ABOVE market because your shop is hot right now.
+  // Distinct from the fake/counterfeit deal above: nothing is faked, the seller just knows
+  // you're buying and is trying to cash in on the hype. More likely the hotter you're running.
+  const hype = opts.hype || 0
+  const scalperChance = Math.min(0.12, hype / 600)
+  if ((online || walkin) && Math.random() < scalperChance) {
+    const offer = makeScalperOffer(channel, hype)
+    if (offer) return offer
   }
 
   // 0c) "WHAT'LL YOU GIVE ME FOR THESE?" — someone walks up SELLING and asks you to name

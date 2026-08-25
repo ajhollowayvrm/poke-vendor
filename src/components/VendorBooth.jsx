@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useGame } from '../game/store'
-import { cardValue, rawValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, overTierValue, DEFAULT_GRADER, setById, cardImg, isCardDeal, setNameOfCard, rarityRank } from '../game/engine'
+import { cardValue, rawValue, sealedValue, fmtMoney, round2, GRADING, gradingFee, gradingDays, overTierValue, DEFAULT_GRADER, GRADERS, graderById, setById, cardImg, isCardDeal, setNameOfCard, rarityRank } from '../game/engine'
 import { vendorRapport, nextVendorRapport, boothItemKey } from '../game/shows'
 import { seedSealedLines, consumeLine, sameLine } from '../game/boothstock'
 import CardTile, { rarityColor } from './CardTile'
@@ -27,17 +27,20 @@ function KioskBooth({ booth, onClose, flash }) {
   const collection = useGame(s => s.collection)
   const submitted = useGame(s => s.gradesSubmitted)
   const raw = [...collection].filter(c => !c.grade).sort((a, b) => cardValue(b) - cardValue(a))
-  const days = GRADING.kiosk.days
+  // The kiosk used to always slab PSA with no choice at all — now it offers the same three
+  // graders the mail-in modal does. One picker up top; it applies to whichever card you tap.
+  const [company, setCompany] = useState(DEFAULT_GRADER)
+  const days = gradingDays('kiosk', company)
   // Per card now: the kiosk prices a card above its declared-value ceiling off what the card is
   // WORTH, so a four-figure chase can't be slabbed on the flat sticker. `fee` stays the sticker
   // for the blurb; every actual charge goes through feeFor.
-  const feeFor = (card) => gradingFee('kiosk', submitted, 1, DEFAULT_GRADER, rawValue(card))
-  const fee = gradingFee('kiosk', submitted)
+  const feeFor = (card) => gradingFee('kiosk', submitted, 1, company, rawValue(card))
+  const fee = gradingFee('kiosk', submitted, 1, company)
   function submit(card) {
     const f = feeFor(card)
     if (cash < f) { flash(`Not enough cash for the ${fmtMoney(f)} kiosk fee.`); return }
-    useGame.getState().submitGrade(card.uid, 'kiosk')
-    flash(`Submitted ${card.name} to the on-site grader — slabbed in ~${days} days.`)
+    useGame.getState().submitGrade(card.uid, 'kiosk', company)
+    flash(`Submitted ${card.name} to ${graderById(company).name} — slabbed in ~${days} days.`)
   }
   return (
     <Modal onClose={onClose} maxWidth={820} label="Grading kiosk">
@@ -49,6 +52,16 @@ function KioskBooth({ booth, onClose, flash }) {
           Skip the mail-in wait — hand over a raw card and it comes back slabbed in <b>~{days} days</b>, for a
           premium <b>{fmtMoney(fee)}</b> per card. Results land on the next day or two after the show.
         </p>
+        <div className="grader-pick">
+          {Object.values(GRADERS).map(g => (
+            <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
+              style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
+              <b style={{ color: g.color }}>{g.icon} {g.name}</b>
+              <small>{g.slabMult === 1 ? 'benchmark resale' : `${g.slabMult > 1 ? '+' : ''}${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
+            </button>
+          ))}
+        </div>
+        <p className="cap" style={{ margin: '4px 0 10px' }}>{graderById(company).blurb}</p>
         {raw.length === 0 ? <p className="muted">You have no raw cards on you to grade.</p> : (
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))' }}>
             {raw.slice(0, 30).map(card => {

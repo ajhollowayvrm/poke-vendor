@@ -419,6 +419,25 @@ export const STORE_EVENTS = {
   raffle: { name: 'Raffle Night', icon: '🎟️', cost: 40, minNoto: 0, needsPrize: true,
     desc: 'Put up a prize card and sell tickets. Ticket money in, the prize goes home with a winner — generosity with a box-office.',
     buzzDays: 2, extraWalkins: 1, trust: 3, hype: 4, income: (noto) => Math.min(400, 50 + noto * 1.5) },
+
+  // --- 🔥 Hype-gated: short-term, MODERN-product nights. Needs the meter hot right now,
+  // not a reputation you've banked — the crowd shows up because the shop is hot THIS WEEK.
+  launchParty: { name: 'Midnight Launch Party', icon: '🌙', cost: 150, minHype: 30,
+    desc: 'Doors open at midnight for the new set. Hype-fueled — the crowd is only here because the shop is HOT right now.',
+    buzzDays: 1, extraWalkins: 3, trust: 2, hype: 18, income: (noto) => 90 + noto * 0.4, suppliesBurst: true },
+  streamerMeetup: { name: 'Streamer Meet & Greet', icon: '📱', cost: 200, minHype: 50,
+    desc: 'A local content creator brings their crowd through for pulls and photos — pure hype capital, spent fast.',
+    buzzDays: 2, extraWalkins: 4, hype: 22, income: (noto) => 60 + noto * 0.3, formsRegular: true },
+
+  // --- ⭐ Reputation-gated: long-term, VINTAGE-focused nights. Needs a banked name AND some
+  // vintage/secondary stock on hand to showcase — `needsVintagePiece` is a booking-time
+  // check only (nothing is picked or consumed), see planStoreEvent.
+  appraisalNight: { name: 'Vintage Appraisal Night', icon: '🕰️', cost: 120, minNoto: 60, needsVintagePiece: true,
+    desc: 'Bring in your old stuff — locals line up to get vintage graded on sight.',
+    buzzDays: 2, extraWalkins: 1, trust: 5, noto: 10, income: (noto) => 50 + noto * 0.6 },
+  hallOfFame: { name: 'Hall of Fame Signing', icon: '🏛️', cost: 300, minRank: 3, needsVintagePiece: true,
+    desc: 'A recognized name signs autographs beside your best vintage stock — the kind of night that gets you talked about for months.',
+    buzzDays: 3, extraWalkins: 2, trust: 6, noto: 16, income: (noto) => 100 + noto * 1.0 },
 }
 
 // --- 🧢 Supplies & accessories (the real-LGS margin engine) --------------------

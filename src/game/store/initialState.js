@@ -164,6 +164,10 @@ export function initialState() {
     storeConsignments: [],   // cards you're carrying for locals: {id, who, card, ask, commissionPct, daysLeft} — NOT yours; a sale pays your commission, unsold goes home
     giveawayDaysLeft: 0,     // store buzz window (giveaways + hosted events): walk-in traffic boost days remaining
     buyinOffers: [],         // locals selling YOU their cards: {id, who, hint, cards, askCash, estimate, estimateTight, pendingDays} — pay cash or store credit
+    // 🗣️ Advance word that a walk-in sealed deal/buy-in is coming — someone tipped you off a few
+    // days early. {id, previewText, kind:'sealedDeal'|'buyin', arrivesDay, payload} — payload is
+    // the already-generated real deal/offer, delivered into boothInbox/buyinOffers on arrivesDay.
+    dealTipoffs: [],
     buylistPolicy: 'fair',   // the posted "we pay ~X%" sign (BUYLIST_POLICIES): volume-vs-margin dial on walk-in collections
     // 📇 Promises in the Special Orders Book: {id, what, setId, productType, deposit, price,
     // orderedDay, dueDay, sourced, uid}. Taken at the counter when a walk-in asks for sealed

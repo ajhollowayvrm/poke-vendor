@@ -10,7 +10,7 @@
 // card (collection / listings / show inventory / shop shelf).
 
 import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue, sealedCard,
-  SHOP_SETS, SECONDARY_SETS, setProducts, marketMult, isBulkCard, bulkSellableUids } from '../engine'
+  SHOP_SETS, SECONDARY_SETS, VINTAGE_SETS, setProducts, marketMult, isBulkCard, bulkSellableUids } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin, SHOW_TIERS, vendorRapport } from '../shows'
 
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
@@ -565,6 +565,24 @@ export function createBoothSlice(set, get) {
       if (!on) get().log('shop', `⭐ Featured a sealed ${item.product.type} (${setById(item.setId)?.name || 'sealed'}) in the display case — a showpiece whales come in for`, 0)
       return true
     },
+    // One-tap "Personal → floor, featured": moves the given uids to the floor (same rules as
+    // moveStock — floor SKU depth cap applies) then features as many of the ones that actually
+    // landed as the shared display-case cap (FEATURED_MAX (+vault)) still has room for, in the
+    // order given. Skips anything that got capped off the floor. Returns how many moved,
+    // how many were capped off the floor, and how many got featured.
+    sendToFloorFeatured(kind, uids) {
+      const ids = Array.isArray(uids) ? uids : [uids]
+      const r = get().moveStock(kind, ids, 'floor')
+      const toggle = kind === 'sealed' ? get().toggleFeatureSealed : get().toggleFeatureCard
+      const arrKey = kind === 'sealed' ? 'sealedInventory' : 'collection'
+      let featured = 0
+      for (const uid of ids) {
+        const it = (get()[arrKey] || []).find(x => x.uid === uid)
+        if (!it || it.loc !== 'floor' || it._featured) continue
+        if (toggle(uid)) featured++
+      }
+      return { moved: r.moved, capped: r.capped, featured }
+    },
     // Flip KEEP (not for sale) on a sealed item. Kept sealed stays yours to rip/stream/
     // repack — walk-ins just can't buy it.
     toggleLockSealed(uid) {
@@ -863,12 +881,32 @@ export function createBoothSlice(set, get) {
           ? `Sanctioning wants a name they know — become a ${RANKS[ev.minRank].emoji} ${RANKS[ev.minRank].name} first.`
           : `Nobody would come yet — you need ${ev.minNoto} reputation.` }
       }
+      // 🔥 Hype-gated nights (modern/short-term) need the meter hot RIGHT NOW — separate from
+      // the rank/reputation check above, since a famous shop with cold hype still can't fill
+      // a midnight launch line, and a brand-new shop riding a hot streak can.
+      if (ev.minHype != null && (s.hype || 0) < ev.minHype) {
+        return { error: `Not hot enough yet — you need ${ev.minHype}🔥 hype.` }
+      }
       let prizeCard = null
       if (ev.needsPrize) {
         prizeCard = s.collection.find(c => c.uid === prizeUid)
         if (!prizeCard) return { error: 'Pick a prize card for the raffle.' }
         // Same rail as the giveaway: 🔒 keepsakes and held items can't be raffled off.
         if (prizeCard.locked || prizeCard._heldFor) return { error: 'That one is a 🔒 personal keepsake — unlock it first if you really mean to raffle it.' }
+      }
+      // ⭐ Reputation-gated vintage nights (Appraisal Night, Hall of Fame Signing) need SOME
+      // vintage/secondary stock on hand to showcase — a booking-time check only, nothing is
+      // picked or consumed (unlike the raffle prize above).
+      if (ev.needsVintagePiece) {
+        const hasVintageCard = s.collection.some(c => {
+          const setId = setIdOfCard(c)
+          return setId && (VINTAGE_SETS.some(vs => vs.id === setId) || SECONDARY_SETS.some(vs => vs.id === setId))
+        })
+        const hasVintageSealed = (s.sealedInventory || []).some(it => it.vintage
+          || VINTAGE_SETS.some(vs => vs.id === it.setId) || SECONDARY_SETS.some(vs => vs.id === it.setId))
+        if (!hasVintageCard && !hasVintageSealed) {
+          return { error: "You need some vintage or secondary-market stock on hand to showcase — nothing to draw a crowd for tonight." }
+        }
       }
       if (!get().spend(ev.cost)) return { error: `You can't cover the $${ev.cost} to run it.` }
       set(st => ({
