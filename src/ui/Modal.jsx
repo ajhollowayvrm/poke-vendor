@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
 // Shared modal shell: backdrop + centered panel with real dialog semantics that the
 // hand-rolled bare-div modals never had — role="dialog", aria-modal, Escape to close,
@@ -64,7 +65,20 @@ export function Modal({ children, onClose, dismissable = true, label, labelledBy
     }
   }, [onClose, dismissable])
 
-  return (
+  // Portalled straight to <body> — NOT rendered in place. `.modalbg` is `position:fixed;
+  // inset:0`, which is supposed to cover the whole viewport, but a fixed-position element
+  // only does that relative to its nearest ancestor that establishes a containing block —
+  // and any ancestor with a running (or, on iOS WebKit, even a merely-declared) CSS
+  // animation/transition on `transform` counts as one. `.pane` animates in with a
+  // translateY on every tab switch, so a modal rendered inline inside it (any tab's own
+  // BoothInbox/VendorBooth/ShowFloor popups, all of which live under `.pane`) had its
+  // backdrop and sizing computed against `.pane`'s box instead of the real screen: it
+  // filled the content area and stopped dead at `.pane`'s bottom edge, which sits right
+  // above the bottom nav — so the nav showed through and anything past that edge (a
+  // sheet's close button, the last row of a tall grid) was unreachable. Escaping to
+  // `document.body` removes `.pane` from the ancestor chain entirely, so `inset:0` means
+  // the actual viewport again, regardless of what any future ancestor's CSS does.
+  return createPortal(
     <div className={`modalbg ${bgClassName}`.trim()} style={zIndex != null ? { zIndex } : undefined}
       onClick={dismissable ? onClose : undefined}>
       <div ref={panelRef} className={`modal ${sheet ? 'modal-sheet ' : ''}${className}`.trim()} onClick={e => e.stopPropagation()}
@@ -73,6 +87,7 @@ export function Modal({ children, onClose, dismissable = true, label, labelledBy
         {dismissable && <button className="modal-close" aria-label="Close" onClick={onClose}>✕</button>}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
