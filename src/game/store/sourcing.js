@@ -240,12 +240,18 @@ export function createSourcingSlice(set, get) {
       get().recordSetSpend(pokeSet.id, total)
       get()._recordLimit(distId, pokeSet, product, n)
       const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      // Shared by the player's Buy-tab bulk purchase AND the automated Standing Order /
+      // Purchasing Agent nightly restockers — those two NEVER pass opts.locked, so they keep
+      // landing straight in the storeroom unlocked exactly as before. Only a caller that
+      // explicitly opts in (the player's manual buy) locks into Personal.
+      const locksIn = !!opts.locked && !!get().upgrades?.storefront
       const items = []
       for (let i = 0; i < n; i++) {
         items.push({
           uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
           setId: pokeSet.id, product: { ...product },
           boughtDay: day, boughtPrice: unit, vintage: !!pokeSet.vintage,
+          ...(locksIn ? { locked: true, loc: 'storeroom' } : {}),
         })
       }
       // 🚢 Lead-time channel: the order is PAID and their shelf is decremented now, but the
@@ -364,6 +370,10 @@ export function createSourcingSlice(set, get) {
       // A shop's loose out-of-print stock is the safest place to buy it, but not risk-free —
       // they bought that box off somebody too. See SEARCH_RISK / mintSealedRow.
       const searched = searchable(pokeSet, product) && rollSearched(opts.source || 'shop')
+      // Every caller of buySealed is a manual, in-the-moment player purchase — it lands in
+      // Personal (locked), same as a ripped pack already does, until the player explicitly
+      // moves it to the storeroom. `opts.locked = false` opts a future non-manual caller out.
+      const locksIn = !!get().upgrades?.storefront && opts.locked !== false
       const item = {
         uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
         setId: pokeSet.id,
@@ -371,6 +381,7 @@ export function createSourcingSlice(set, get) {
         boughtDay: absoluteDay(get().currentDay, get().monthsElapsed),
         boughtPrice: round2(cost),
         vintage: !!pokeSet.vintage,
+        ...(locksIn ? { locked: true, loc: 'storeroom' } : {}),
       }
       set(s => ({ sealedInventory: [item, ...(s.sealedInventory || [])] }))
       // Only real cash out of pocket moves the ledger: pure-credit is 0, a split logs just the
@@ -557,6 +568,38 @@ export function createSourcingSlice(set, get) {
         get().log('chargeback', `Chargeback denied — the $${deal.ask.toFixed(2)} is gone for good`, 0)
       }
       return { won, recovered }
+    },
+
+    // --- Scalper offers (see makeScalperOffer) -------------------------------------
+    // Real product, no fake risk at all — the only question is whether the marked-up ask
+    // is worth it, or worth talking down.
+
+    // Counter their inflated ask. Their hidden floor (_floorCash) sits between fair market
+    // value and their opening ask — they'll give back some of the markup under pressure,
+    // but never sell below what it's actually worth.
+    haggleScalperOffer(deal, yourOffer) {
+      if (!deal) return { error: true, msg: 'The offer vanished.' }
+      const ask = deal.ask
+      if (yourOffer >= ask) return { accept: true, price: ask }
+      const floor = deal._floorCash ?? deal.reference
+      if (yourOffer >= floor) return { accept: true, price: round2(yourOffer) }
+      const shortfall = (floor - yourOffer) / Math.max(1, floor)
+      const walkChance = Math.min(0.85, 0.15 + shortfall * 1.3)
+      if (Math.random() < walkChance) return { walk: true }
+      const counter = Math.max(floor, round2(ask - (ask - yourOffer) * 0.5))
+      return { counter }
+    },
+    // Buy at the ask, or at whatever price haggling landed on. Reuses buySealed, so it
+    // picks up the manual-purchase Personal-lock default like any other player buy.
+    buyScalperOffer(deal, price) {
+      if (!deal) return { error: true, msg: 'The offer vanished.' }
+      const set_ = setById(deal.setId)
+      if (!set_) return { error: true, msg: 'The offer vanished before you could pay.' }
+      const pay = round2(price ?? deal.ask)
+      if (get().cash < pay) return { error: true, msg: `You can't cover the $${pay.toFixed(2)} for it.` }
+      const out = get().buySealed(set_, { ...deal.product, _buyPrice: pay }, pay)
+      if (!out) return { error: true, msg: `You can't cover the $${pay.toFixed(2)} for it.` }
+      return { ok: true, price: pay, setName: set_.name, type: deal.product.type }
     },
   }
 }

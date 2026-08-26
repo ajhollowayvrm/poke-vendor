@@ -55,6 +55,10 @@ import { defaultPackTiers } from '../mysterypacks'
 // Re-export the public API (constants + pure helpers) so `import { ... } from '../game/store'`
 // keeps resolving every symbol components use (PAYMENT_METHODS, UPGRADES, JOBS, absoluteDay, …).
 export * from './constants'
+// booth.js isn't barrel-exported wholesale (it also holds createBoothSlice's internal
+// helpers) — this one pure check is shared between planStoreEvent's gate and the BoothInbox
+// lock-icon UI, so it's named through explicitly rather than duplicated.
+export { hasVintageShowpiece } from './booth'
 
 // --- Debounced save writes --------------------------------------------------------
 // persist serializes the WHOLE game on every set() — during a pack rip that's several

@@ -4,16 +4,18 @@
 // price is folded into the key so every copy on a line is guaranteed interchangeable
 // (a line's total is always unit × qty).
 
-import { setNameOfCard } from '../game/engine'
+import { setNameOfCard, slabLabel } from '../game/engine'
 
 export function cardSku(c) {
-  return [c.id, c.condition || '', c.grade ? `psa${c.grade.overall}` : 'raw',
+  // Company is part of the key: a PSA 10 and a BGS 10 of the same card price and read
+  // differently, so they must never collapse into one stacked SKU line.
+  return [c.id, c.condition || '', c.grade ? `${c.grade.company || 'psa'}${c.grade.overall}` : 'raw',
     c.foil ? (c.foil.badge || c.foil.label || 'foil') : c.reverse ? 'rv' : ''].join('|')
 }
 
 // Short per-line descriptor: the set it's from, then grade if slabbed / raw condition.
 export function skuBadge(c) {
-  const grade = c.grade ? `PSA ${c.grade.overall}` : (c.condition || 'raw')
+  const grade = c.grade ? slabLabel(c.grade) : (c.condition || 'raw')
   const setName = setNameOfCard(c)
   return setName ? `${setName} · ${grade}` : grade
 }

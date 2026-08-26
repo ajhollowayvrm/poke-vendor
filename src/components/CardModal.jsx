@@ -143,10 +143,11 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
           <HoloCard card={card} maxTilt={18} className="modal-holo"
             extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
             {g ? (
-              <div className={`cardtile slab grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`}>
+              <div className={`cardtile slab grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`}
+                style={{ '--slab-accent': isBlackLabel(g) ? '#1a1a22' : g.overall >= 10 ? '#b8860b' : graderById(g.company).color }}>
                 <div className="slab-shine" aria-hidden="true" />
                 <div className="slab-label">
-                  <div className="slab-brand">PSA</div>
+                  <div className="slab-brand">{graderById(g.company).icon} {graderById(g.company).name}</div>
                   <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
                   <div className="slab-cert">{card.name}</div>
                 </div>
@@ -171,7 +172,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                 {/* Intentionally light: this mimics a real white PSA grade label, reinforcing
                     the slab look beside the encased card — not theme drift. Leave as-is. */}
                 <div className="banner" style={{background:'#fff', color:'#111', borderColor:'#ddd', textAlign:'center'}}>
-                  <b style={{fontSize:28}}>PSA {g.overall}</b>{' '}
+                  <b style={{fontSize:28}}>{slabLabel(g)}</b>{' '}
                   <span style={{fontWeight:700}}>{gradeLabel(g.overall)}</span>
                 </div>
                 {/* Real PSA only prints subgrades on 9s and 10s; lower grades get

@@ -167,6 +167,9 @@ export function createCollectionSlice(set, get) {
       // stamp the reference directly (a future regrade/crack mechanic could mutate it).
       if (listing.grade) c.grade = { ...listing.grade }
       c._market = true
+      // A manual marketplace buy lands in Personal first, same as any other manual purchase —
+      // the player explicitly moves it to the storeroom when they want to sell it.
+      if (get().upgrades?.storefront) c.locked = true
       set(s => ({ collection: [c, ...s.collection] }))
       const setId = setIdOfCard(c)
       if (setId) get().recordSetSpend(setId, price)

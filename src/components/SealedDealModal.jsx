@@ -10,18 +10,27 @@ const RAIL_LABEL = { venmo: 'Venmo', cash: 'cash', paypal: 'PayPal', card: 'card
 // (needs a Jeweler's Loupe — a paid, fallible read), BUY it, or PASS. Buying reveals
 // whether it was real (stocked to your held inventory) or a scam; if you paid by a
 // reversible rail (card / PayPal) you can file a CHARGEBACK to claw money back.
+//
+// A SCALPER offer (see makeScalperOffer) is a different shape entirely: real product, no
+// fake risk, just an inflated ask — no authenticate/chargeback machinery applies, but you
+// can HAGGLE instead. `scalper` switches the modal between the two flows.
 export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
   const deal = enc.deal
+  const scalper = enc.kind === 'scalperOffer'
   const cash = useGame(s => s.cash)
   const hasAuthKit = useGame(s => !!s.upgrades.authkit)
   const authenticateDeal = useGame(s => s.authenticateDeal)
   const buyDeal = useGame(s => s.buyDeal)
   const chargebackDeal = useGame(s => s.chargebackDeal)
+  const haggleScalperOffer = useGame(s => s.haggleScalperOffer)
+  const buyScalperOffer = useGame(s => s.buyScalperOffer)
   const clearItem = useGame(s => s.clearInboxItem)
 
   const [authRead, setAuthRead] = useState(enc.authResult || null)
-  const [outcome, setOutcome] = useState(null)  // result of buyDeal
+  const [outcome, setOutcome] = useState(null)  // result of buyDeal / buyScalperOffer
   const [charge, setCharge] = useState(null)     // result of chargebackDeal
+  const [haggleMsg, setHaggleMsg] = useState(null) // last haggleScalperOffer result
+  const [agreedPrice, setAgreedPrice] = useState(null) // scalper: price haggled down to, if any
   // You can bail before buying; once bought it's resolved, so Esc/backdrop are inert then.
 
   const fee = Math.max(10, Math.round(deal.ask * 0.05 * 100) / 100)
@@ -44,9 +53,22 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
     flash?.(deal.fake ? 'Smart — that one had scam written all over it.' : 'You let a real deal walk. Can’t win them all.')
     onDone?.()
   }
+  // Scalper flow: haggle down from the ask, or just buy at whatever price is on the table.
+  function doHaggle(offer) {
+    const r = haggleScalperOffer(deal, offer)
+    if (r?.walk) { clearItem(id); flash?.('They walked — pushed too hard.'); onDone?.(); return }
+    setHaggleMsg(r)
+    if (r?.accept || r?.counter) setAgreedPrice(r.accept ? r.price : r.counter)
+  }
+  function doBuyScalper() {
+    const r = buyScalperOffer(deal, agreedPrice ?? deal.ask)
+    if (r?.error) { flash?.(r.msg); return }
+    clearItem(id)
+    setOutcome(r)
+  }
 
   return (
-    <Modal onClose={() => { if (!outcome) onCancel?.() }} dismissable={!outcome && !!onCancel} className="encounter" maxWidth={520} label="Sealed deal">
+    <Modal onClose={() => { if (!outcome) onCancel?.() }} dismissable={!outcome && !!onCancel} className="encounter" maxWidth={520} label={scalper ? 'Scalper offer' : 'Sealed deal'}>
         <h2 className="t-xl">{enc.title}</h2>
         {enc.card && (
           <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
@@ -55,45 +77,91 @@ export default function SealedDealModal({ enc, id, onDone, onCancel, flash }) {
         )}
         <p className="t-lg" style={{ lineHeight: 1.45 }}>{enc.body}</p>
 
-        {/* payment-rail recourse note — the rail you were pushed onto is itself a tell */}
-        <div className="banner t-sm mt-0">
-          {deal.reversible
-            ? <>💳 They take <b>{rail}</b> — if it's fake you could <b>file a chargeback</b> to claw money back.</>
-            : <>⚠️ <b>{rail === 'cash' ? 'Cash, no receipt' : `${rail} F&F`}</b> — irreversible. If it's fake, <b>there's no recourse</b>.</>}
-        </div>
+        {!scalper && (
+          <>
+            {/* payment-rail recourse note — the rail you were pushed onto is itself a tell */}
+            <div className="banner t-sm mt-0">
+              {deal.reversible
+                ? <>💳 They take <b>{rail}</b> — if it's fake you could <b>file a chargeback</b> to claw money back.</>
+                : <>⚠️ <b>{rail === 'cash' ? 'Cash, no receipt' : `${rail} F&F`}</b> — irreversible. If it's fake, <b>there's no recourse</b>.</>}
+            </div>
 
-        {authRead && (
-          <div className="banner result-in t-sm" style={{ marginTop: 8, background: authRead.looksFake ? 'color-mix(in srgb, var(--red) 13%, transparent)' : 'color-mix(in srgb, var(--green) 13%, transparent)', borderColor: authRead.looksFake ? 'color-mix(in srgb, var(--red) 33%, transparent)' : 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
-            🔍 <b>Authentication:</b> {authRead.looksFake
-              ? <>looks <b className="neg">FAKE</b> — wrapper/weight is off.</>
-              : <>looks <b className="pos">GENUINE</b> — checks out, but a clean reseal can still pass.</>}
-            {' '}<span className="muted">(kit is ~{authRead.confidence}% reliable{deal.origin === 'vintage' ? ' · vintage reseals are trickiest' : ''})</span>
+            {authRead && (
+              <div className="banner result-in t-sm" style={{ marginTop: 8, background: authRead.looksFake ? 'color-mix(in srgb, var(--red) 13%, transparent)' : 'color-mix(in srgb, var(--green) 13%, transparent)', borderColor: authRead.looksFake ? 'color-mix(in srgb, var(--red) 33%, transparent)' : 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
+                🔍 <b>Authentication:</b> {authRead.looksFake
+                  ? <>looks <b className="neg">FAKE</b> — wrapper/weight is off.</>
+                  : <>looks <b className="pos">GENUINE</b> — checks out, but a clean reseal can still pass.</>}
+                {' '}<span className="muted">(kit is ~{authRead.confidence}% reliable{deal.origin === 'vintage' ? ' · vintage reseals are trickiest' : ''})</span>
+              </div>
+            )}
+          </>
+        )}
+
+        {scalper && haggleMsg?.counter != null && !outcome && (
+          <div className="banner result-in t-sm" style={{ marginTop: 8 }}>
+            🗣️ They come back at <b>{fmtMoney(haggleMsg.counter)}</b> — take it, or push again.
+          </div>
+        )}
+        {scalper && haggleMsg?.accept && !outcome && (
+          <div className="banner result-in t-sm" style={{ marginTop: 8, background: 'color-mix(in srgb, var(--green) 13%, transparent)', borderColor: 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
+            🤝 They'll take <b>{fmtMoney(haggleMsg.price)}</b> — buy it below to close it out.
           </div>
         )}
 
         {!outcome ? (
-          <div className="encopts">
-            {hasAuthKit && !authRead && (
-              <button className="encbtn tone-fair" disabled={cash < fee} onClick={doAuth}>
-                <span>🔬</span> Authenticate first — {fmtMoney(fee)}{cash < fee ? ' (need cash)' : ''}
+          scalper ? (
+            <div className="encopts">
+              <button className="encbtn tone-kind" disabled={cash < (agreedPrice ?? deal.ask)} onClick={doBuyScalper}>
+                <span>📦</span> Buy it — {fmtMoney(agreedPrice ?? deal.ask)} ({rail}){cash < (agreedPrice ?? deal.ask) ? ' · need cash' : ''}
               </button>
-            )}
-            {!hasAuthKit && (
-              <div className="cap" style={{ marginBottom: 6 }}>
-                🔒 An <b>Authentication Kit</b> would let you authenticate before buying.
-              </div>
-            )}
-            <button className="encbtn tone-kind" disabled={cash < deal.ask} onClick={doBuy}>
-              <span>📦</span> Buy it — {fmtMoney(deal.ask)} ({rail}){cash < deal.ask ? ' · need cash' : ''}
-            </button>
-            <button className="encbtn tone-cold" onClick={pass}>
-              <span>🚶</span> Pass — too risky
-            </button>
-          </div>
+              {!haggleMsg?.accept && (
+                <button className="encbtn tone-fair" onClick={() => doHaggle(round2ish(deal.reference))}>
+                  <span>🗣️</span> Haggle — offer {fmtMoney(deal.reference)} (fair market)
+                </button>
+              )}
+              <button className="encbtn tone-cold" onClick={pass}>
+                <span>🚶</span> Pass — not worth it
+              </button>
+            </div>
+          ) : (
+            <div className="encopts">
+              {hasAuthKit && !authRead && (
+                <button className="encbtn tone-fair" disabled={cash < fee} onClick={doAuth}>
+                  <span>🔬</span> Authenticate first — {fmtMoney(fee)}{cash < fee ? ' (need cash)' : ''}
+                </button>
+              )}
+              {!hasAuthKit && (
+                <div className="cap" style={{ marginBottom: 6 }}>
+                  🔒 An <b>Authentication Kit</b> would let you authenticate before buying.
+                </div>
+              )}
+              <button className="encbtn tone-kind" disabled={cash < deal.ask} onClick={doBuy}>
+                <span>📦</span> Buy it — {fmtMoney(deal.ask)} ({rail}){cash < deal.ask ? ' · need cash' : ''}
+              </button>
+              <button className="encbtn tone-cold" onClick={pass}>
+                <span>🚶</span> Pass — too risky
+              </button>
+            </div>
+          )
+        ) : scalper ? (
+          <ScalperOutcome outcome={outcome} onFinish={onDone} />
         ) : (
           <Outcome outcome={outcome} charge={charge} deal={deal} onCharge={doCharge} onFinish={onDone} />
         )}
     </Modal>
+  )
+}
+
+function round2ish(n) { return Math.round(n * 100) / 100 }
+
+function ScalperOutcome({ outcome, onFinish }) {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div className="banner result-in" style={{ background: 'color-mix(in srgb, var(--green) 13%, transparent)', borderColor: 'color-mix(in srgb, var(--green) 33%, transparent)' }}>
+        📦 Stocked a {outcome.type} of {outcome.setName} for {fmtMoney(outcome.price)}. Find it in 📦 Inventory.
+      </div>
+      <button className="btn gold" style={{ maxWidth: 200, marginTop: 12 }} onClick={onFinish}>Done</button>
+    </div>
   )
 }
 

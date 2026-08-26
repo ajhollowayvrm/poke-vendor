@@ -277,7 +277,7 @@ export default function App() {
       // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
       const limB = useGame.getState().purchaseLimitFor(distId, set, product)
       if (limB.left <= 0) return toast(`${distName} limit ${productTypeLabel(product)} to ${limB.limit} per customer a day — you've had yours. Back tomorrow.`)
-      const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split })
+      const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split, locked: true })
       if (!res) return toast(`${distName} can't fill that order right now.`)
       const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
       const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
@@ -290,7 +290,7 @@ export default function App() {
     if (lim.left <= 0) {
       return toast(`${distName} limit ${productTypeLabel(product)} to ${lim.limit} per customer a day — you've had yours. Back tomorrow${lim.limit < 4 ? ', or keep spending here and they\u2019ll let you take more' : ''}.`)
     }
-    const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split })
+    const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split, locked: true })
     if (!item) return toast(`${distName} are out of ${productTypeLabel(product)} — check back after it restocks.`)
     // 🚢 An import buy is on the water — nothing to rip yet, whatever the Rip-on-buy setting says.
     if (item._inTransit) return toast(`🚢 Import order placed — ${productTypeLabel(product)} of ${origin} is crossing the Pacific (lands in a few days).`)

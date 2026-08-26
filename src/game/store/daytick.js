@@ -25,7 +25,7 @@ import {
   showcaseSetIds, showcaseMult, pickMasterLot, LOT_PREMIUM_LO, LOT_PREMIUM_HI,
   ownedIdSet, setCompletion,
 } from '../engine'
-import { boothEncounter, makeShopRequest, makeGiftBuyer, makeQuoteRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer } from '../shows'
+import { boothEncounter, makeShopRequest, makeGiftBuyer, makeQuoteRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer, makeSealedDeal } from '../shows'
 import { packSaleChance, packValue } from '../mysterypacks'
 import { settleAuction, watcherDraw } from '../auctions'
 import {
@@ -667,7 +667,7 @@ export function advanceDaysWith(set, get, days, away) {
     const onlineRate = (dayOrderRate('online', noto, hasBargain) + followerBump) * orderMult * hypeDemandMult(hype0)
     const nOnline = Math.min(MAX_ORDERS_PER_DAY, drawCount(onlineRate))
     for (let k = 0; k < nOnline && openOnline; k++) {
-      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars, null, { showcase: showcaseN }), channel: 'online' }); onlineCount++ }
+      if (onlineOK) { newOrders.push({ ...boothEncounter(noto, s.collection, 'online', accepted, listedCards, null, s.regulars, null, { showcase: showcaseN, followers: s.followers || 0, hype: hype0 }), channel: 'online' }); onlineCount++ }
       else missedOnline++
     }
     // walk-in channel (only if you have a physical store AND cards out on the shelf). The
@@ -714,7 +714,7 @@ export function advanceDaysWith(set, get, days, away) {
           // event — which is why an empty shop still hears the asks but sees no browsing, and
           // fills back up as you put stock out.
           : shelfHasStock
-          ? boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN })
+          ? boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN, followers: s.followers || 0, hype: hype0 })
           : null
         if (!enc) continue
         // Flag the sale-type effects so the in-store premium (STORE_SALE_PREMIUM) applies — a
@@ -730,7 +730,7 @@ export function advanceDaysWith(set, get, days, away) {
     // guaranteed extra walk-ups on the first day after the event.
     if (i === 0 && eventExtraWalkins > 0 && hasStore && openWalkin && walkinOK) {
       for (let e = 0; e < eventExtraWalkins; e++) {
-        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN })
+        const enc = boothEncounter(noto, shelfCards, 'walkin', accepted, listedCards, shelfCards, s.regulars, null, { showcase: showcaseN, followers: s.followers || 0, hype: hype0 })
         for (const o of (enc.options || [])) {
           if (o.effect && ['sellOwned', 'counter', 'browseSale'].includes(o.effect.type)) o.effect.inStore = true
         }
@@ -1185,8 +1185,11 @@ export function advanceDaysWith(set, get, days, away) {
     // (BUYLIST_POLICIES.chanceMult) and shifts their asks (applied inside makeBuyinOffer).
     const polMult = (BUYLIST_POLICIES[s.buylistPolicy] || BUYLIST_POLICIES.fair).chanceMult
     const adMult = s.upgrades.buyAd ? 1.4 : 1 // 📻 the radio spot pulls sellers through the door
+    // A built audience brings sellers to YOU, same idea as followerBump for online orders —
+    // capped so it can't dwarf the reputation-driven oppMult term.
+    const followerBuyinMult = 1 + Math.min(0.35, (s.followers || 0) / 1500)
     for (let i = 0; i < days && buyinsNext.length < buyinCap(s.upgrades, s.rank || 0); i++) {
-      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * polMult * adMult * buyinDayMult(startAbs + i + 1))) {
+      if (Math.random() < Math.min(0.9, BUYIN_CHANCE * oppMult * polMult * adMult * followerBuyinMult * buyinDayMult(startAbs + i + 1))) {
         // Some sellers are leaving the hobby: a whole-collection lot with SEALED product in it.
         const estate = Math.random() < BUYIN_ESTATE_CHANCE
         const offer = makeBuyinOffer(noto, { estate, policy: s.buylistPolicy })
@@ -1195,6 +1198,51 @@ export function advanceDaysWith(set, get, days, away) {
         const sealedNote = offer.sealedCount ? ` + ${offer.sealedCount} sealed` : ''
         const askNote = offer.free ? 'giving it away FREE' : `asking $${offer.askCash.toFixed(2)}`
         get().log('shop', `🛍️ ${who} came in with ${offer.count} cards${sealedNote} to SELL — ${askNote}. Appraise it on Store › 🛒 Floor.`, 0)
+      }
+    }
+  }
+
+  // 🗣️ Advance word: a regular or contact tips you off a few days before a walk-in sealed
+  // deal or collection buy-in actually shows up. The REAL deal/offer is generated now and
+  // held until arrivesDay — delivered through the same channels a fresh roll would use —
+  // so nothing about the eventual haggle/authenticate decision is different, just the
+  // warning. Scaled by a blend of reputation and followers: a bigger name AND a bigger
+  // audience both mean more people give you a heads-up before they show.
+  // (newAbsDay isn't declared until later in this function — the window's end-day is
+  // exactly startAbs + days, computed the same way, so use that instead of forward-referencing.)
+  const endAbsDay = startAbs + days
+  let tipoffsNext = []
+  for (const t of (s.dealTipoffs || [])) {
+    if (t.arrivesDay > endAbsDay) { tipoffsNext.push(t); continue }
+    // A sealedDeal delivers into newOrders/boothInbox, which caps itself generically at the
+    // final write below — but buyinOffers has no such backstop here, so a tip-off landing
+    // on an already-full queue has to wait its turn rather than pushing the queue over cap.
+    if (t.kind === 'buyin') {
+      if (buyinsNext.length >= buyinCap(s.upgrades, s.rank || 0)) { tipoffsNext.push(t); continue }
+      buyinsNext = [t.payload, ...buyinsNext]
+    } else newOrders.push({ ...t.payload, channel: 'walkin' })
+    get().log('shop', `🗣️ ${t.previewText} — and here they are.`, 0)
+  }
+  if (hasStore) {
+    const tipoffChance = Math.min(0.08, (noto + (s.followers || 0) * 0.4) / 2500)
+    for (let i = 0; i < days && tipoffsNext.length < 3; i++) {
+      if (Math.random() >= tipoffChance) continue
+      const leadDays = 2 + Math.floor(Math.random() * 3) // 2-4 days out
+      const arrivesDay = startAbs + i + 1 + leadDays
+      const id = `tip${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`
+      if (Math.random() < 0.5) {
+        const payload = makeBuyinOffer(noto, { estate: Math.random() < BUYIN_ESTATE_CHANCE, policy: s.buylistPolicy })
+        const who = payload.who.charAt(0).toUpperCase() + payload.who.slice(1)
+        const previewText = `${who} mentioned they'll have a collection to sell in about ${leadDays} days`
+        tipoffsNext.push({ id, kind: 'buyin', previewText, arrivesDay, payload })
+        get().log('shop', `🗣️ ${previewText}.`, 0)
+      } else {
+        const payload = makeSealedDeal('walkin', noto)
+        if (payload) {
+          const previewText = `Word is someone'll have a sealed ${payload.deal.product.type} for you in about ${leadDays} days`
+          tipoffsNext.push({ id, kind: 'sealedDeal', previewText, arrivesDay, payload })
+          get().log('shop', `🗣️ ${previewText} — keep an ear out.`, 0)
+        }
       }
     }
   }
@@ -1837,6 +1885,7 @@ export function advanceDaysWith(set, get, days, away) {
     storeConsignments: storeConsignsNext,   // consigned sales banked, expiries returned
     storeConsignRequests: consignReqsNext,  // fresh asks in, stale asks gone
     buyinOffers: buyinsNext,                // sellers waiting on an answer (fresh in, stale gone)
+    dealTipoffs: tipoffsNext,               // advance word still pending (delivered ones are gone)
     demandLog: (st.demandLog || []).filter(e => newAbsDay - (e.day || 0) <= 14), // the board tracks a fortnight
     supplies: suppliesNext,                 // 🧢 accessory units sold off the rack this window
     suppliesStats: { sold: (st.suppliesStats?.sold || 0) + suppliesSold,
@@ -2082,7 +2131,8 @@ export function advanceDaysWith(set, get, days, away) {
       for (const sh of landed) {
         const nm = setById(sh.setId)?.name || 'that set'
         const tag = distributorById(sh.distId)?.japanese ? '🎌 Import shipment landed' : '📦 Delivery arrived'
-        get().log('buy', `${tag} — ${sh.qty}× ${sh.type} (${nm}) is in your storeroom`, 0)
+        const where = (sh.rows || []).some(r => r.locked) ? 'your Personal shelf — move it out to sell' : 'your storeroom'
+        get().log('buy', `${tag} — ${sh.qty}× ${sh.type} (${nm}) is in ${where}`, 0)
       }
     }
   }
@@ -2476,7 +2526,7 @@ function settleStore(set, get, leaseDue, payrollDue, days) {
         // No shop = no case: consigned cards go home, asks + seller offers lapse, any
         // planned event is off (prize back), unspent store credit dies with the store
         // (locals eat it — hence the rep hit logged below), buzz dies.
-        storeConsignments: [], storeConsignRequests: [], buyinOffers: [],
+        storeConsignments: [], storeConsignRequests: [], buyinOffers: [], dealTipoffs: [],
         storeEventPlanned: null, eventCooldownLeft: 0, storeCredit: 0, giveawayDaysLeft: 0 }
     })
     if ((get().storeCredit || 0) === 0 && (s.storeCredit || 0) > 0) {

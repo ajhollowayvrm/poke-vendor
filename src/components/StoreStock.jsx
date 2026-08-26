@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { toast } from '../ui/dialog'
 import { Explain } from '../ui/Explain'
 import { useGame, floorCount, floorSkuCap, floorItemCap, floorSkuCounts, floorSkuKey, isVintageFloorItem } from '../game/store'
-import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, gradingFeeTotal, cutEstimate, cutRank, CONDITIONS, breakOptions, psaValueAt, rarityRank } from '../game/engine'
+import { cardValue, sealedValue, setById, setIdOfCard, fmtMoney, round2, cardImg, setNameOfCard, GRADING, gradingFee, gradingFeeTotal, cutEstimate, cutRank, CONDITIONS, breakOptions, psaValueAt, rarityRank, slabLabel } from '../game/engine'
 import { groupCardLines, groupLines, sealedSku } from './sku'
 import CardTile from './CardTile'
 import SealedModal from './SealedModal'
@@ -81,6 +81,8 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   const floorSkus = useMemo(() => floorSkuCounts({ collection, sealedInventory }), [collection, sealedInventory])
   const restockFloor = useGame(s => s.restockFloor)
   const moveStock = useGame(s => s.moveStock)
+  const sendToFloorFeatured = useGame(s => s.sendToFloorFeatured)
+  const featuredCap = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0))
   const breakSealed = useGame(s => s.breakSealed)
   const submitGradesBulk = useGame(s => s.submitGradesBulk)
   const gradesSubmitted = useGame(s => s.gradesSubmitted)
@@ -98,6 +100,11 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
     const r = moveStock(kind, [uid], dest)
     if (dest === 'floor' && r.capped) return flash("Floor's full for that one — still in back.")
     flash(dest === 'floor' ? '🛒 Out on the floor.' : '📦 Moved to the storeroom.')
+  }
+  function tileSendFeatured(kind, uid) {
+    const r = sendToFloorFeatured(kind, [uid])
+    if (r.capped) return flash("Floor's full for that one — still in back.")
+    flash(r.featured ? '🛒⭐ Out on the floor and featured.' : `🛒 Out on the floor — display case is full (max ${featuredCap}).`)
   }
   function tileBreak(it) {
     const opt = breakOptions(it)[0]
@@ -285,6 +292,13 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   const allPicked = gridMode ? (gridItems.length > 0 && pickedUids.size === gridItems.length) : (picked.size === allLines.length)
   const selectableCount = gridMode ? gridItems.length : allLines.length
   function exitSelect() { setSelectMode(false); setPicked(new Set()); setPickedUids(new Set()) }
+  function bulkMoveFeatured() {
+    let moved = 0, capped = 0, featured = 0
+    if (sel.cardUids.length) { const r = sendToFloorFeatured('card', sel.cardUids); moved += r.moved; capped += r.capped || 0; featured += r.featured || 0 }
+    if (sel.sealedUids.length) { const r = sendToFloorFeatured('sealed', sel.sealedUids); moved += r.moved; capped += r.capped || 0; featured += r.featured || 0 }
+    flash(`${moved} to the floor${featured ? `, ${featured} featured` : ''}${capped ? ` — ${capped} didn't fit the floor` : ''}.`)
+    exitSelect()
+  }
   function bulkMove(dest, verb) {
     let moved = 0, capped = 0
     if (sel.cardUids.length) { const r = moveStock('card', sel.cardUids, dest); moved += r.moved; capped += r.capped || 0 }
@@ -420,6 +434,9 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
                     {canBreak && <button className="stock-act" aria-label="Break down a tier (box → loose packs)" onClick={() => tileBreak(it)}>🔨</button>}
                     {kind === 'sealed' && <button className="stock-act" aria-label="Rip it now" onClick={() => onRip && onRip(it.uid)}>🎬</button>}
                     <button className="stock-act" aria-label="Put it out on the sales floor" onClick={() => tileMove(kind, it.uid, 'floor')}>🛒</button>
+                    {place === 'personal' && (
+                      <button className="stock-act" aria-label="Put it out on the floor and feature it" onClick={() => tileSendFeatured(kind, it.uid)}>🛒⭐</button>
+                    )}
                     <button className="stock-act" aria-label="Send it to the storeroom" onClick={() => tileMove(kind, it.uid, 'storeroom')}>📦</button>
                   </div>
                 )}
@@ -458,6 +475,9 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
           <div className="bulk-bar-actions">
             {place !== 'floor' && (
               <button className="btn" onClick={() => bulkMove('floor', '🛒 Out on the floor —')}>🛒 To floor</button>
+            )}
+            {place === 'personal' && (
+              <button className="btn gold" onClick={bulkMoveFeatured}>🛒⭐ To floor + featured</button>
             )}
             {place !== 'storeroom' && (
               <button className="btn alt" onClick={() => bulkMove('storeroom', '📦 To the storeroom —')}>📦 To storeroom</button>
@@ -504,6 +524,7 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
 // One SKU line (identical copies stacked) + the actions that fit its place.
 function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, flash, selectMode, selected, onToggle }) {
   const moveStock = useGame(s => s.moveStock)
+  const sendToFloorFeatured = useGame(s => s.sendToFloorFeatured)
   const hasLoupe = useGame(s => !!s.upgrades.loupe) // 🔍 exact centering read vs a fuzzy eyeball one
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
   const toggleFeatureSealed = useGame(s => s.toggleFeatureSealed)
@@ -538,6 +559,12 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
     const r = moveStock(kind, uids, dest)
     if (dest === 'floor' && r.capped) flash(`Floor's full — put out ${r.moved}, ${r.capped} stayed in back.`)
     else flash(`${verb} ${count > 1 ? `${count}× ` : ''}${label}.`)
+  }
+  const sendFeatured = () => {
+    const r = sendToFloorFeatured(kind, uids)
+    if (r.capped) { flash(`Floor's full — put out ${r.moved}, ${r.capped} stayed in back.`); return }
+    flash(r.featured ? `🛒⭐ ${count > 1 ? `${count}× ` : ''}${label} out on the floor and featured.`
+      : `🛒 Out on the floor — display case is full (max ${FEATURED_MAX}).`)
   }
   function featureToggle() {
     if (featuredCopy) { toggleFeatureCard(featuredCopy.uid); flash(`Unfeatured ${label}.`); return }
@@ -589,7 +616,7 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         <div className="tl-sub muted">
           {kind === 'card' ? <>
             {first.grade
-              ? <span className="tl-chip" style={{ color: 'var(--gold)', background: '#ffcb0518' }}>PSA {first.grade.overall}</span>
+              ? <span className="tl-chip" style={{ color: 'var(--gold)', background: '#ffcb0518' }}>{slabLabel(first.grade)}</span>
               : (() => {
                   const cond = CONDITIONS[first.condition] || CONDITIONS.NM
                   const cut = lineCutSummary(items, hasLoupe)
@@ -662,6 +689,8 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
         )}
         <button className="stock-act" aria-disabled={skuFull} aria-label="Put it out on the sales floor (for sale to walk-ins)"
           onClick={() => { if (skuFull) { toast(`Already ${lineCap} of this out front — the floor's full for this line`); return } move('floor', '🛒 Out on the floor') }}>🛒</button>
+        <button className="stock-act" aria-disabled={skuFull} aria-label="Put it out on the floor and feature it in the display case"
+          onClick={() => { if (skuFull) { toast(`Already ${lineCap} of this out front — the floor's full for this line`); return } sendFeatured() }}>🛒⭐</button>
         <button className="stock-act" aria-label="Move to the storeroom — sellable backstock, but not yet on the floor" onClick={() => move('storeroom', '📦 To the storeroom')}>📦</button>
       </>}
       </span>}

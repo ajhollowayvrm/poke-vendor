@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { toast } from '../ui/dialog'
 import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay, RANKS } from '../game/store'
+  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay, RANKS, hasVintageShowpiece } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
@@ -30,6 +30,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — gates the tournament night
+  const hype = useGame(s => s.hype || 0) // 🔥 gates the short-term/modern nights (launch party, streamer meetup)
   const upgrades = useGame(s => s.upgrades)
   const currentDay = useGame(s => s.currentDay)
   const clearItem = useGame(s => s.clearInboxItem)
@@ -48,6 +49,10 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const shopDisplay = useGame(s => s.shopDisplay) // legacy bucket — read only for inbox validation
   const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const sealedInventory = useGame(s => s.sealedInventory)
+  // 🕰️ gates the vintage-showcase nights (Appraisal Night, Hall of Fame Signing) — the exact
+  // same check planStoreEvent's needsVintagePiece gate runs, shared via hasVintageShowpiece
+  // so the lock icon here and the actual booking rule can never disagree.
+  const noVintageStock = useMemo(() => !hasVintageShowpiece({ collection, sealedInventory }), [collection, sealedInventory])
   const store = useGame(s => s.store)
   const FEATURED_MAX = useGame(s => s.FEATURED_MAX + (s.upgrades.vault ? 4 : 0)) // 🏛️ vault doubles the case
   // In-store services: holds for regulars, the consignment case, giveaways.
@@ -579,8 +584,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 ) : (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', marginTop: 4 }}>
                     {Object.entries(STORE_EVENTS).map(([key, ev]) => {
-                      const locked = ev.minRank != null ? rank < ev.minRank : notoriety < (ev.minNoto || 0)
-                      const lockRank = locked && ev.minRank != null ? RANKS[ev.minRank] : null
+                      const gateLocked = ev.minRank != null ? rank < ev.minRank
+                        : ev.minHype != null ? hype < ev.minHype
+                        : notoriety < (ev.minNoto || 0)
+                      const vintageLocked = !gateLocked && ev.needsVintagePiece && noVintageStock
+                      const locked = gateLocked || vintageLocked
+                      const lockRank = gateLocked && ev.minRank != null ? RANKS[ev.minRank] : null
                       const cantAfford = cash < ev.cost
                       const isWeekly = weeklyEvent?.type === key
                       return (
@@ -593,7 +602,10 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                               const r = planStoreEvent(key)
                               flash(r.error || `${ev.icon} ${ev.name} is on tonight — hit Next Day to run it.`)
                             }}>
-                            {lockRank ? `🔒 ${lockRank.emoji} ${lockRank.name}` : locked ? `🔒 ${ev.minNoto}★` : `Host tonight · $${ev.cost}`}
+                            {lockRank ? `🔒 ${lockRank.emoji} ${lockRank.name}`
+                              : gateLocked && ev.minHype != null ? `🔒 ${ev.minHype}🔥`
+                              : gateLocked ? `🔒 ${ev.minNoto}★`
+                              : vintageLocked ? '🔒 need vintage stock' : `Host tonight · $${ev.cost}`}
                           </button>
                           {/* 🎪 Events Coordinator: flag ONE event as the standing weekly night (raffles
                               can't recur — they need a prize picked each time). */}
@@ -807,6 +819,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                           take the whole inbox down with a TypeError rather than render plainly. */}
                       <div className="meta" style={{ flex: 1 }}>{(enc.body || '').slice(0, 90)}…</div>
                       <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →'
+                        : enc.kind === 'scalperOffer' ? '💰 View offer →'
                         : enc.kind === 'quote' ? '🗣️ Name your price →'
                         : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
                     </div>
@@ -820,7 +833,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
       </>
       )}
 
-      {active && (active.enc.kind === 'sealedDeal' && active.enc.deal
+      {active && ((active.enc.kind === 'sealedDeal' || active.enc.kind === 'scalperOffer') && active.enc.deal
         ? <SealedDealModal enc={active.enc} id={active.id} flash={flash}
             onDone={() => setActive(null)} onCancel={() => setActive(null)} />
         /* 🗣️ A quote walk-up is not a pick-an-option encounter — it is a negotiation where YOU
