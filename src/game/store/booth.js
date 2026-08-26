@@ -13,6 +13,21 @@ import { round2, cardValue, setById, setIdOfCard, cardInValueRange, sealedValue,
   SHOP_SETS, SECONDARY_SETS, VINTAGE_SETS, setProducts, marketMult, isBulkCard, bulkSellableUids } from '../engine'
 import { encounterStillValid, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, cardMatchesWant, haggleBuyin, SHOW_TIERS, vendorRapport } from '../shows'
 
+// Does the player own any vintage/secondary card or sealed item worth showcasing? The
+// `needsVintagePiece` gate on Vintage Appraisal Night / Hall of Fame Signing (planStoreEvent
+// below) AND the BoothInbox lock-icon UI both need this exact check — one shared helper so
+// they can never drift apart. Takes a plain `{ collection, sealedInventory }` shape rather
+// than the full store so a component can call it with just its own selectors.
+export function hasVintageShowpiece(s) {
+  const hasVintageCard = (s.collection || []).some(c => {
+    const setId = setIdOfCard(c)
+    return setId && (VINTAGE_SETS.some(vs => vs.id === setId) || SECONDARY_SETS.some(vs => vs.id === setId))
+  })
+  if (hasVintageCard) return true
+  return (s.sealedInventory || []).some(it => it.vintage
+    || VINTAGE_SETS.some(vs => vs.id === it.setId) || SECONDARY_SETS.some(vs => vs.id === it.setId))
+}
+
 // A random modern/aftermarket sealed product whose MARKET value lands in [lo, hi] — what a
 // repack could plausibly hide. Returns { set, product } or null when nothing fits the band.
 function randomSealedInRange(lo, hi) {
@@ -566,19 +581,27 @@ export function createBoothSlice(set, get) {
       return true
     },
     // One-tap "Personal → floor, featured": moves the given uids to the floor (same rules as
-    // moveStock — floor SKU depth cap applies) then features as many of the ones that actually
-    // landed as the shared display-case cap (FEATURED_MAX (+vault)) still has room for, in the
-    // order given. Skips anything that got capped off the floor. Returns how many moved,
-    // how many were capped off the floor, and how many got featured.
+    // moveStock — floor SKU depth cap applies) then features one representative per DISTINCT
+    // card/product (not every uid) — same one-showcase-per-SKU convention featureToggle()/
+    // featureSealedToggle() already follow, so a stacked line of identical copies doesn't
+    // flood the display case with duplicates, while a bulk selection spanning several
+    // different cards still gets one each, up to the shared display-case cap. Skips anything
+    // that got capped off the floor. Returns how many moved, how many were capped off the
+    // floor, and how many got featured.
     sendToFloorFeatured(kind, uids) {
       const ids = Array.isArray(uids) ? uids : [uids]
       const r = get().moveStock(kind, ids, 'floor')
       const toggle = kind === 'sealed' ? get().toggleFeatureSealed : get().toggleFeatureCard
       const arrKey = kind === 'sealed' ? 'sealedInventory' : 'collection'
+      const identity = kind === 'sealed' ? (it => `${it.setId}|${it.product?.type}`) : (it => it.id)
+      const seen = new Set()
       let featured = 0
       for (const uid of ids) {
         const it = (get()[arrKey] || []).find(x => x.uid === uid)
         if (!it || it.loc !== 'floor' || it._featured) continue
+        const key = identity(it)
+        if (seen.has(key)) continue
+        seen.add(key)
         if (toggle(uid)) featured++
       }
       return { moved: r.moved, capped: r.capped, featured }
@@ -897,16 +920,8 @@ export function createBoothSlice(set, get) {
       // ⭐ Reputation-gated vintage nights (Appraisal Night, Hall of Fame Signing) need SOME
       // vintage/secondary stock on hand to showcase — a booking-time check only, nothing is
       // picked or consumed (unlike the raffle prize above).
-      if (ev.needsVintagePiece) {
-        const hasVintageCard = s.collection.some(c => {
-          const setId = setIdOfCard(c)
-          return setId && (VINTAGE_SETS.some(vs => vs.id === setId) || SECONDARY_SETS.some(vs => vs.id === setId))
-        })
-        const hasVintageSealed = (s.sealedInventory || []).some(it => it.vintage
-          || VINTAGE_SETS.some(vs => vs.id === it.setId) || SECONDARY_SETS.some(vs => vs.id === it.setId))
-        if (!hasVintageCard && !hasVintageSealed) {
-          return { error: "You need some vintage or secondary-market stock on hand to showcase — nothing to draw a crowd for tonight." }
-        }
+      if (ev.needsVintagePiece && !hasVintageShowpiece(s)) {
+        return { error: "You need some vintage or secondary-market stock on hand to showcase — nothing to draw a crowd for tonight." }
       }
       if (!get().spend(ev.cost)) return { error: `You can't cover the $${ev.cost} to run it.` }
       set(st => ({

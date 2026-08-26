@@ -1214,8 +1214,13 @@ export function advanceDaysWith(set, get, days, away) {
   let tipoffsNext = []
   for (const t of (s.dealTipoffs || [])) {
     if (t.arrivesDay > endAbsDay) { tipoffsNext.push(t); continue }
-    if (t.kind === 'buyin') buyinsNext = [t.payload, ...buyinsNext]
-    else newOrders.push({ ...t.payload, channel: 'walkin' })
+    // A sealedDeal delivers into newOrders/boothInbox, which caps itself generically at the
+    // final write below — but buyinOffers has no such backstop here, so a tip-off landing
+    // on an already-full queue has to wait its turn rather than pushing the queue over cap.
+    if (t.kind === 'buyin') {
+      if (buyinsNext.length >= buyinCap(s.upgrades, s.rank || 0)) { tipoffsNext.push(t); continue }
+      buyinsNext = [t.payload, ...buyinsNext]
+    } else newOrders.push({ ...t.payload, channel: 'walkin' })
     get().log('shop', `🗣️ ${t.previewText} — and here they are.`, 0)
   }
   if (hasStore) {
