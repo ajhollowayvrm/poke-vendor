@@ -6,6 +6,7 @@ import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, 
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
 import Encounter from './Encounter'
 import QuoteCounter from './QuoteCounter'
+import CardModal from './CardModal'
 import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
@@ -101,6 +102,10 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const [wantPick, setWantPick] = useState(null) // a want/forum post being fulfilled {kind:'want'|'forum', item}
   const [holdPick, setHoldPick] = useState(null) // shelf item being held for a regular {kind, uid, label}
   const [givePick, setGivePick] = useState(false) // picking a card for the in-store giveaway
+  // A card tapped from inside a quote/trade encounter — {card, owned}. `owned` gates
+  // CardModal's inspect mode: their side of a trade isn't in your collection yet, so it
+  // opens read-only (no sell/list/grade buttons for a card you don't actually have).
+  const [tradeInspect, setTradeInspect] = useState(null)
   const [rafflePick, setRafflePick] = useState(false) // picking the raffle prize card
   const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
@@ -846,8 +851,12 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
            clears the inbox entry the way pick() does, because the deal is done either way and a
            settled seller must not still be standing at the counter tomorrow. */
         : active.enc.kind === 'quote'
-        ? <QuoteCounter req={active.enc} onDone={(msg) => { if (msg) flash(msg); clearItem(active.id); setActive(null) }} />
-        : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)} />)}
+        ? <QuoteCounter req={active.enc} onDone={(msg) => { if (msg) flash(msg); clearItem(active.id); setActive(null) }}
+            onInspect={(card, owned) => setTradeInspect({ card, owned })} />
+        : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)}
+            onInspect={(card, owned) => setTradeInspect({ card, owned })} />)}
+
+      {tradeInspect && <CardModal card={tradeInspect.card} inspect={!tradeInspect.owned} onClose={() => setTradeInspect(null)} />}
 
       {/* Hold picker: choose WHICH regular you're saving the item for — only regulars who
           actually collect this item/set are shown, so you never hold a Perfect Order pack

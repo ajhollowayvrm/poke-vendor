@@ -13,7 +13,7 @@ const PRESETS = [50, 60, 70, 80, 90]
 // CASH or in TABLE CREDIT; credit is cheaper (they leave with your stock, you part with no
 // money — their hidden credit floor sits 10–15 points under cash). On a credit deal they
 // shop your table: the game picks a bundle nearest the credit value, you confirm it once.
-export default function QuoteCounter({ req, onDone }) {
+export default function QuoteCounter({ req, onDone, onInspect }) {
   const cash = useGame(s => s.cash)
   // WHICH stock a credit deal can shop from depends on the counter they walked up to.
   //
@@ -184,7 +184,7 @@ export default function QuoteCounter({ req, onDone }) {
           </p>
           <div className="trade-items" style={{ margin: '10px 0' }}>
             {bundle.take.map(x => x.kind === 'card'
-              ? <TradeItem key={x.uid} card={x.item} />
+              ? <TradeItem key={x.uid} card={x.item} onInspect={onInspect ? (c) => onInspect(c, true) : undefined} />
               : <TradeItem key={x.uid} sealed={x.item} />)}
           </div>
           <div className="row mt-5">
@@ -208,7 +208,7 @@ export default function QuoteCounter({ req, onDone }) {
 
         <div className="trade-items" style={{ margin: '8px 0' }}>
           {req.items.map((x, i) => x.kind === 'card'
-            ? <TradeItem key={x.item.uid || i} card={x.item} />
+            ? <TradeItem key={x.item.uid || i} card={x.item} onInspect={onInspect ? (c) => onInspect(c, false) : undefined} />
             : <TradeItem key={i} sealed={x.item} />)}
         </div>
 

@@ -7,7 +7,10 @@ const TONE_ICON = { kind: '💛', fair: '🤝', cold: '🥶' }
 
 // One item thumbnail in a trade bundle — a card, or a sealed-product chip.
 // Exported for the quote walk-up (QuoteCounter), whose item strip is the same idiom.
-export function TradeItem({ card, sealed }) {
+// `onInspect(card)`, when given, opens the card's full detail page — condition, cut,
+// price history — the same page the rest of the game opens a card to. Sealed chips
+// don't take it: there's no per-item detail page for those here.
+export function TradeItem({ card, sealed, onInspect }) {
   if (sealed) {
     const set = setById(sealed.setId)
     return (
@@ -21,7 +24,8 @@ export function TradeItem({ card, sealed }) {
     )
   }
   return (
-    <div className="trade-item">
+    <div className="trade-item" onClick={onInspect ? () => onInspect(card) : undefined}
+      style={onInspect ? { cursor: 'zoom-in' } : undefined}>
       <HoloCard card={card} maxTilt={14} className="enc-card trade-card">
         <HiResImg card={card} alt={card.name} decoding="async" />
       </HoloCard>
@@ -35,7 +39,7 @@ export function TradeItem({ card, sealed }) {
 // An encounter prompt. `onPick` resolves the chosen option. `onClose` (optional)
 // dismisses without choosing — backdrop click, Esc, or the × button. When no
 // onClose is given the modal is non-dismissable (caller wants a forced choice).
-export default function Encounter({ data, onPick, onClose }) {
+export default function Encounter({ data, onPick, onClose, onInspect }) {
   // Normalize the trade bundles (arrays) with a fallback to the legacy single-card shape.
   const giveCards = data.giveCards || (data.yourCard ? [data.yourCard] : [])
   const giveSealed = data.giveSealed || []
@@ -60,7 +64,7 @@ export default function Encounter({ data, onPick, onClose }) {
             <div className="trade-side">
               <div className="trade-label">You give</div>
               <div className="trade-items">
-                {giveCards.map(c => <TradeItem key={c.uid} card={c} />)}
+                {giveCards.map(c => <TradeItem key={c.uid} card={c} onInspect={onInspect ? (card) => onInspect(card, true) : undefined} />)}
                 {giveSealed.map(it => <TradeItem key={it.uid} sealed={it} />)}
               </div>
             </div>
@@ -72,13 +76,14 @@ export default function Encounter({ data, onPick, onClose }) {
             <div className="trade-side">
               <div className="trade-label">You get</div>
               <div className="trade-items">
-                {getCards.map(c => <TradeItem key={c.uid} card={c} />)}
+                {getCards.map(c => <TradeItem key={c.uid} card={c} onInspect={onInspect ? (card) => onInspect(card, false) : undefined} />)}
                 {getSealed.map(it => <TradeItem key={it.uid || it.product?.type} sealed={it} />)}
               </div>
             </div>
           </div>
         ) : data.card && (
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap: 4, margin:'8px 0' }}>
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap: 4, margin:'8px 0', cursor: onInspect ? 'zoom-in' : undefined }}
+            onClick={onInspect ? () => onInspect(data.card, false) : undefined}>
             <HoloCard card={data.card} maxTilt={16} className="enc-card"><HiResImg card={data.card} alt={data.card.name} decoding="async" fetchpriority="high" /></HoloCard>
             {setNameOfCard(data.card) && <div className="cap">{setNameOfCard(data.card)}</div>}
           </div>

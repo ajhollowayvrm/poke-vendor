@@ -181,7 +181,10 @@ export default function ShowFloor({ show, onLeave }) {
   // Buyer appointments from pre-show leads — met (or ignored) during this show.
   const [meets, setMeets] = useState(() => (show._leads || []).filter(l => l.kind === 'buyer'))
   const [meetPick, setMeetPick] = useState(null) // the buyer lead being fulfilled
-  const [inspect, setInspect] = useState(null)   // card tapped for its full detail page (condition, cut, price history)
+  // A card tapped for its full detail page: {card, owned}. `owned` gates CardModal's inspect
+  // mode — a trade/quote counterparty's side of the deal isn't in your collection yet, so it
+  // opens read-only (no sell/list/grade buttons for a card you don't actually have).
+  const [inspect, setInspect] = useState(null)
   const resolveEncounter = useGame(s => s.resolveEncounter)
   // seed with mount time so the cooldown window opens on entry — gives the player
   // a grace period to look around before the first walk-up fires (was 0 = instant).
@@ -728,8 +731,10 @@ export default function ShowFloor({ show, onLeave }) {
       {/* A quote walk-up ("what'll you give me for these?") runs its own negotiation modal;
           everything else is the standard pick-an-option encounter. */}
       {encounter && (encounter.enc.kind === 'quote'
-        ? <QuoteCounter req={encounter.enc} onDone={(msg) => { if (msg) flash(msg); setEncounter(null) }} />
-        : <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)} />)}
+        ? <QuoteCounter req={encounter.enc} onDone={(msg) => { if (msg) flash(msg); setEncounter(null) }}
+            onInspect={(card, owned) => setInspect({ card, owned })} />
+        : <Encounter data={encounter.enc} onPick={pick} onClose={() => setEncounter(null)}
+            onInspect={(card, owned) => setInspect({ card, owned })} />)}
 
       {/* 🎒 YOUR HAUL — the home base at a show. What you've picked up on this floor, in one
           place, with the sealed still rippable HERE: pick a stack (or several) and tear into
@@ -812,7 +817,7 @@ export default function ShowFloor({ show, onLeave }) {
                     </div>
                     <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(112px,1fr))', marginTop: 6 }}>
                       {haulCards.slice(0, 18).map(c => (
-                        <div key={c.uid} className="vendoritem" style={{ cursor: 'zoom-in' }} onClick={() => setInspect(c)}>
+                        <div key={c.uid} className="vendoritem" style={{ cursor: 'zoom-in' }} onClick={() => setInspect({ card: c, owned: true })}>
                           <CardTile card={c} interactive={false} />
                         </div>
                       ))}
@@ -882,7 +887,7 @@ export default function ShowFloor({ show, onLeave }) {
                 <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
                   {matches.map(c => (
                     <div key={c.uid} className="vendoritem">
-                      <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect(c)}>
+                      <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect({ card: c, owned: true })}>
                         <CardTile card={c} interactive={false} />
                       </div>
                       <button className="btn gold" onClick={() => {
@@ -948,7 +953,7 @@ export default function ShowFloor({ show, onLeave }) {
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(132px,1fr))', marginTop: 6 }}>
                     {[...showInventory].sort((a, b) => (b._showcase?1:0)-(a._showcase?1:0) || cardValue(b) - cardValue(a)).map(c => (
                       <div key={c.uid} className={`vendoritem ${c._showcase ? 'featured' : ''}`}>
-                        <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect(c)}>
+                        <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect({ card: c, owned: true })}>
                           <CardTile card={c} interactive={false} />
                         </div>
                         <div className="cap">{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
@@ -991,7 +996,7 @@ export default function ShowFloor({ show, onLeave }) {
         </Modal>
       )}
 
-      {inspect && <CardModal card={inspect} onClose={() => setInspect(null)} />}
+      {inspect && <CardModal card={inspect.card} inspect={!inspect.owned} onClose={() => setInspect(null)} />}
     </div>
   )
 }
