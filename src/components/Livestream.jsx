@@ -308,7 +308,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
               ))}
             </div>
             <div className="row" style={{ gap: 10, marginTop: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <select value={promoCardUid} onChange={e => setPromoCardUid(e.target.value)} style={{ flex: 1, minWidth: 220 }}>
+              <select value={promoCardUid} onChange={e => setPromoCardUid(e.target.value)} style={{ flex: '1 1 220px', minWidth: 0, maxWidth: '100%' }}>
                 <option value="">— no headline giveaway —</option>
                 {promoPool.map(c => (
                   <option key={c.uid} value={c.uid}>🎁 {c.name} · {fmtMoney(cardValue(c))}</option>
@@ -358,7 +358,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
               </div>
             )}
             <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 8 }}>
-              <select value={pick || ''} onChange={e => setPick(e.target.value)} disabled={!shown.length} style={{ flex: 1, minWidth: 220 }}>
+              <select value={pick || ''} onChange={e => setPick(e.target.value)} disabled={!shown.length} style={{ flex: '1 1 220px', minWidth: 0, maxWidth: '100%' }}>
                 {shown.length === 0
                   ? <option value="">{available.length === 0 ? "— everything's queued —"
                       : src === 'personal' ? '— no 🔒 kept sealed — Keep some from your Store stock —'
@@ -421,7 +421,7 @@ function StreamSetup({ notoriety, fatigue, streamStats, onGoLive }) {
                     stakes alone draw a crowd — and if it hits, the room detonates (but the
                     card ships to its winner).
                   </Explain>
-                  <select value={bountyId} onChange={e => setBountyId(e.target.value)} style={{ flex: 1, minWidth: 200 }}>
+                  <select value={bountyId} onChange={e => setBountyId(e.target.value)} style={{ flex: '1 1 200px', minWidth: 0, maxWidth: '100%' }}>
                     <option value="">— no bounty —</option>
                     {bountyPool.map(c => <option key={c.id} value={c.id}>🎯 {c.name} · {fmtMoney(cardValue(c))}</option>)}
                   </select>
