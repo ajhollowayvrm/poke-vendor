@@ -143,11 +143,11 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
           <HoloCard card={card} maxTilt={18} className="modal-holo"
             extraStyle={{ '--rarity': card.foil ? card.foil.color : card._grail ? '#7cf0ff' : rarityColor(card.rarity) }}>
             {g ? (
-              <div className={`cardtile slab grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`}
-                style={{ '--slab-accent': isBlackLabel(g) ? '#1a1a22' : g.overall >= 10 ? '#b8860b' : graderById(g.company).color }}>
+              <div className={`cardtile slab grader-${graderById(g.company).key} grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`}
+                style={{ '--slab-accent': isBlackLabel(g) ? '#1a1a22' : g.overall >= 10 ? '#b8860b' : graderById(g.company).slabColor }}>
                 <div className="slab-shine" aria-hidden="true" />
                 <div className="slab-label">
-                  <div className="slab-brand">{graderById(g.company).icon} {graderById(g.company).name}</div>
+                  <div className="slab-brand">{graderById(g.company).name}</div>
                   <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
                   <div className="slab-cert">{card.name}</div>
                 </div>
@@ -476,7 +476,7 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
                   {Object.values(GRADERS).map(g => (
                     <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
                       style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
-                      <b style={{ color: g.color }}>{g.icon} {g.name}</b>
+                      <b style={{ color: g.color }}>{g.name}</b>
                       <small>{g.slabMult === 1 ? 'benchmark resale' : `${g.slabMult > 1 ? '+' : ''}${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
                     </button>
                   ))}

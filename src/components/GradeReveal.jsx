@@ -49,14 +49,14 @@ export default function GradeReveal({ cards, onDone }) {
             const edge = card.foil ? card.foil.color : rarityColor(card.rarity)
             const gain = round(cardValue(card) - rawValue(card))
             const grader = graderById(g.company)
-            const accent = isBlackLabel(g) ? '#1a1a22' : g.overall >= 10 ? '#b8860b' : grader.color
+            const accent = isBlackLabel(g) ? '#1a1a22' : g.overall >= 10 ? '#b8860b' : grader.slabColor
             return (
               <button key={card.uid} className={`grade-reveal-card ${isRevealed ? 'flipped' : ''} grade-${g.overall} ${g.overall >= 10 ? 'gem' : ''}`}
                 style={{ '--rarity': edge }} onClick={() => reveal(card)} aria-label={isRevealed ? `${card.name} graded ${slabLabel(g)}` : 'Reveal slab'}>
                 <div className="gr-flip">
                   {/* face-down: sealed grading return */}
                   <div className="gr-back">
-                    <div className="gr-back-brand">{grader.icon} {grader.name}</div>
+                    <div className="gr-back-brand">{grader.name}</div>
                     <div className="gr-back-q">?</div>
                     <div className="gr-back-name">{card.name}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}</div>
                     <div className="gr-back-hint">tap to reveal</div>
@@ -64,10 +64,10 @@ export default function GradeReveal({ cards, onDone }) {
                   {/* revealed: the graded slab. --slab-accent must be set directly here (not on
                       an ancestor) — the base .cardtile.slab rule declares it on this exact
                       element, and a direct declaration always beats an inherited one. */}
-                  <div className={`gr-front cardtile slab grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`} style={{ '--slab-accent': accent }}>
+                  <div className={`gr-front cardtile slab grader-${grader.key} grade-${g.overall} ${g.overall >= 10 ? 'slab-gem' : ''}`} style={{ '--slab-accent': accent }}>
                     <div className="slab-shine" aria-hidden="true" />
                     <div className="slab-label">
-                      <div className="slab-brand">{grader.icon} {grader.name}</div>
+                      <div className="slab-brand">{grader.name}</div>
                       <div className="slab-grade"><b>{g.overall}</b><span>{gradeLabel(g.overall)}</span></div>
                       <div className="slab-cert">{card.name}{setNameOfCard(card) ? ` · ${setNameOfCard(card)}` : ''}</div>
                     </div>

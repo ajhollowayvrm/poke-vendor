@@ -46,6 +46,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const goalsResetInDays = useGame(s => s.goalsResetInDays)
   const collection = useGame(s => s.collection)
   const listings = useGame(s => s.listings)
+  const auctions = useGame(s => s.auctions || [])
   const shopDisplay = useGame(s => s.shopDisplay) // legacy bucket — read only for inbox validation
   const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const sealedInventory = useGame(s => s.sealedInventory)
@@ -125,7 +126,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   }
   const sellGroup = GROUP_OF[sellTab] || 'orders'
   const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
-  const marketCount = listings.length + consignments.length
+  const marketCount = listings.length + consignments.length + auctions.length
   const forumCount = (forumPosts || []).length
   const regularsCount = (regulars || []).filter(r => !r.flags?.burned).length
   const builtPackCount = useGame(s => (s.builtPacks || []).length)
@@ -200,7 +201,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
       {sellTab === 'market' ? (
         // Cards you've put up for sale: listed on your own site / consigned. Moved to
         // its own tab so a long listings panel doesn't bury the day-to-day orders.
-        (listings.length || consignments.length)
+        (listings.length || consignments.length || auctions.length)
           ? <SellStrips />
           : <div className="empty">Nothing on the market. List or consign cards from your collection (Inventory → Select) to sell them here. 🌐</div>
       ) : sellTab === 'packs' ? (
@@ -493,7 +494,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', marginTop: 4 }}>
                     {featured.map(c => (
                       <div key={c.uid} className="vendoritem featured">
-                        <CardTile card={c} interactive={false} />
+                        <div style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c)}>
+                          <CardTile card={c} interactive={false} />
+                        </div>
                         <button className="btn alt t-xs" style={{ padding: '4px 8px' }}
                           onClick={() => toggleFeatureCard(c.uid)}>☆ Unfeature</button>
                       </div>
@@ -545,7 +548,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
                     {storeConsignments.map(c => (
                       <div key={c.id} className="vendoritem">
-                        <CardTile card={c.card} interactive={false} />
+                        <div style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c.card)}>
+                          <CardTile card={c.card} interactive={false} />
+                        </div>
                         <div className="cap" style={{ textAlign: 'center' }}>
                           {c.who} · ask {fmtMoney(c.ask)}<br />your cut <b className="pos">{fmtMoney(c.ask * c.commissionPct)}</b> · {c.daysLeft}d left
                         </div>
@@ -892,7 +897,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
 
       {/* Giveaway picker: choose the card to give away — value drives the pop. */}
       {givePick && (
-        <Modal onClose={() => setGivePick(false)} maxWidth={680} label="Giveaway pick">
+        <Modal onClose={() => setGivePick(false)} maxWidth={680} sheet label="Giveaway pick">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>🎁 In-store giveaway</h2>
             <p className="cap t-sm mt-0">
               Pick the prize. A pricier card makes a bigger splash — more reputation, and a
@@ -903,7 +908,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
                 const pop = Math.min(15, Math.round(2 + Math.sqrt(cardValue(c))))
                 return (
                   <div key={c.uid} className="vendoritem">
-                    <CardTile card={c} interactive={false} />
+                    <div style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c)}>
+                      <CardTile card={c} interactive={false} />
+                    </div>
                     <button className="btn gold t-xs" style={{ padding: '4px 8px' }} onClick={() => {
                       const r = runGiveaway(c.uid)
                       if (r) flash(`🎁 Gave away ${c.name} — the room went nuts! (+${r.noto}★, ${GIVEAWAY_BUZZ_DAYS}-day buzz)`)
@@ -919,7 +926,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
 
       {/* Buy-in reveal: the lot you just bought — was your appraisal right? */}
       {buyinReveal && (
-        <Modal onClose={() => setBuyinReveal(null)} maxWidth={680} label="Buy-in reveal">
+        <Modal onClose={() => setBuyinReveal(null)} maxWidth={680} sheet label="Buy-in reveal">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>
               {buyinReveal.market >= buyinReveal.paid * 1.3 ? '🤑' : buyinReveal.market >= buyinReveal.paid ? '🙂' : '😬'} The lot, flipped through
             </h2>
@@ -951,7 +958,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             )}
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(110px,1fr))', marginTop: 8 }}>
               {[...buyinReveal.cards].sort((a, b) => cardValue(b) - cardValue(a)).map(c => (
-                <div key={c.uid} className="vendoritem">
+                <div key={c.uid} className="vendoritem" style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c)}>
                   <CardTile card={c} interactive={false} />
                 </div>
               ))}
@@ -962,7 +969,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
 
       {/* Raffle prize picker: the card that goes home with a winner tonight. */}
       {rafflePick && (
-        <Modal onClose={() => setRafflePick(false)} maxWidth={680} label="Raffle prize">
+        <Modal onClose={() => setRafflePick(false)} maxWidth={680} sheet label="Raffle prize">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>🎟️ Raffle Night — pick the prize</h2>
             <p className="cap t-sm mt-0">
               A flashier prize sells more tickets worth of goodwill — bigger reputation pop when it's drawn.
@@ -972,7 +979,9 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
               <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
                 {collection.filter(c => !c.locked && !c._heldFor).sort((a, b) => cardValue(b) - cardValue(a)).slice(0, 60).map(c => (
                   <div key={c.uid} className="vendoritem">
-                    <CardTile card={c} interactive={false} />
+                    <div style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c)}>
+                      <CardTile card={c} interactive={false} />
+                    </div>
                     <button className="btn gold t-xs" style={{ padding: '4px 8px' }} onClick={() => {
                       const r = planStoreEvent('raffle', c.uid)
                       flash(r.error || `🎟️ Raffle Night is on — ${c.name} is the prize. Hit Next Day to run it.`)
@@ -992,13 +1001,15 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         const isForum = wantPick.kind === 'forum'
         const matches = isForum ? cardsForForumPost(item) : cardsForWant(item)
         return (
-        <Modal onClose={() => setWantPick(null)} maxWidth={640} label="Pick a card">
+        <Modal onClose={() => setWantPick(null)} maxWidth={640} sheet label="Pick a card">
             <h2 className="t-xl" style={{ marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
             <p className="cap t-sm mt-0">Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety}★ reputation.</p>
             <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
               {matches.map(c => (
                 <div key={c.uid} className="vendoritem">
-                  <CardTile card={c} interactive={false} />
+                  <div style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c)}>
+                    <CardTile card={c} interactive={false} />
+                  </div>
                   <button className="btn gold" onClick={() => {
                     const r = isForum ? fulfillForumPost(item.id, c.uid) : fulfillWant(item.id, c.uid)
                     if (r) flash(`${isForum ? 'Filled a forum request' : 'Filled the want'} — earned ${fmtMoney(r.payout)} (+${item.notoriety}★)`)

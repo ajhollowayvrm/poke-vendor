@@ -2241,22 +2241,27 @@ export const MAX_GRADING_DISCOUNT = 0.5
 // keeps the tuning invariant intact (graders sell price/speed/resale, never odds: every
 // company runs the identical rollGrade), while making the choice a real one:
 //
-//   🟥 PSA — the benchmark. The market pays for the red label; nothing is cheap or fast.
-//   🟦 BGS — pricier and slower, and modern BGS trades a touch under PSA… except that a
-//            card grading all-10 subgrades comes back a BLACK LABEL, which is a different
-//            asset entirely. The lottery-ticket grader: submit your pristine cuts here.
-//   🟨 CGC — cheapest and quickest by a mile, and the slabs sell for meaningfully less.
-//            The volume grader: how you slab a stack of mid cards without tying up capital.
+//   PSA — the benchmark. The market pays for the red label; nothing is cheap or fast.
+//   BGS — pricier and slower, and modern BGS trades a touch under PSA… except that a
+//         card grading all-10 subgrades comes back a BLACK LABEL, which is a different
+//         asset entirely. The lottery-ticket grader: submit your pristine cuts here.
+//   CGC — cheapest and quickest by a mile, and the slabs sell for meaningfully less.
+//         The volume grader: how you slab a stack of mid cards without tying up capital.
+//
+// `color` is the brand accent used across the UI (pickers, pills, bench listings) — bright
+// enough to read as text on the near-black background. `slabColor` is separate: the color of
+// the actual holder label on a graded card, matched to what each company's case looks like in
+// real life (PSA red, Beckett/CGC black-cased with their own label tint) rather than the UI hue.
 //
 // A grade with no `company` is a PSA slab (every grade written before this existed).
 export const GRADERS = {
-  psa: { key: 'psa', name: 'PSA', full: 'Professional Sports Authenticator', icon: '🟥', color: '#ff5e6c',
+  psa: { key: 'psa', name: 'PSA', full: 'Professional Sports Authenticator', color: '#ff5e6c', slabColor: '#d11f2e',
     feeMult: 1, daysMult: 1, slabMult: 1,
     blurb: 'The benchmark. Slabs sell for exactly what the comps say — every PSA figure in this game is a PSA figure.' },
-  bgs: { key: 'bgs', name: 'BGS', full: 'Beckett Grading Services', icon: '🟦', color: '#3b6cff',
+  bgs: { key: 'bgs', name: 'BGS', full: 'Beckett Grading Services', color: '#3b6cff', slabColor: '#26282f',
     feeMult: 1.35, daysMult: 1.25, slabMult: 0.92, blackLabelMult: 2.4,
     blurb: 'Dearer and slower, and modern BGS trades ~8% under PSA — but all-10 subgrades come back a ⬛ BLACK LABEL worth multiples of the same card in red. Send your pristine cuts.' },
-  cgc: { key: 'cgc', name: 'CGC', full: 'Certified Guaranty Company', icon: '🟨', color: '#ffcb05',
+  cgc: { key: 'cgc', name: 'CGC', full: 'Certified Guaranty Company', color: '#ffcb05', slabColor: '#1d5fd6',
     feeMult: 0.65, daysMult: 0.6, slabMult: 0.85,
     blurb: 'A third cheaper and nearly twice as fast, at ~15% less on resale. The volume play: slab the mid stack without parking your capital for six weeks.' },
 }

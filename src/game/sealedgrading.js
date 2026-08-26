@@ -23,9 +23,9 @@ import { round2 } from './engine'
 // Who grades sealed product. Two real houses, and they differ the way the card graders do:
 // price, speed, and what the holder is worth on resale.
 export const SEALED_GRADERS = {
-  wata: { key: 'wata', name: 'WATA', icon: '🟪', color: '#a78bfa', feeMult: 1, daysMult: 1, slabMult: 1,
+  wata: { key: 'wata', name: 'WATA', color: '#a78bfa', feeMult: 1, daysMult: 1, slabMult: 1,
     blurb: 'The name the sealed market quotes. Slowest and dearest, and the holder that sells.' },
-  cgc:  { key: 'cgc', name: 'CGC', icon: '🟨', color: '#ffcb05', feeMult: 0.7, daysMult: 0.65, slabMult: 0.88,
+  cgc:  { key: 'cgc', name: 'CGC', color: '#ffcb05', feeMult: 0.7, daysMult: 0.65, slabMult: 0.88,
     blurb: 'Cheaper and much quicker, at a real discount on resale. The volume option.' },
 }
 export const DEFAULT_SEALED_GRADER = 'wata'

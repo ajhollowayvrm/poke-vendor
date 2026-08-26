@@ -53,7 +53,7 @@ function SealedGradeOption({ item, value, onDone }) {
               const r = submitSealedGrade(item.uid, g.key)
               onDone(r?.error ? `⚠️ ${r.error}` : `📦 Sent to ${g.name} — back in ${r.days} days.`)
             }}>
-              <b>{g.icon} {g.name} · {fmtMoney(fee)}</b>
+              <b>{g.name} · {fmtMoney(fee)}</b>
               <small>{days} days · {g.blurb}</small>
             </button>
           )

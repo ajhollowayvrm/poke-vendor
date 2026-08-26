@@ -30,6 +30,7 @@ function KioskBooth({ booth, onClose, flash }) {
   // The kiosk used to always slab PSA with no choice at all — now it offers the same three
   // graders the mail-in modal does. One picker up top; it applies to whichever card you tap.
   const [company, setCompany] = useState(DEFAULT_GRADER)
+  const [inspect, setInspect] = useState(null) // card tapped for its full detail page (condition, cut)
   const days = gradingDays('kiosk', company)
   // Per card now: the kiosk prices a card above its declared-value ceiling off what the card is
   // WORTH, so a four-figure chase can't be slabbed on the flat sticker. `fee` stays the sticker
@@ -43,6 +44,7 @@ function KioskBooth({ booth, onClose, flash }) {
     flash(`Submitted ${card.name} to ${graderById(company).name} — slabbed in ~${days} days.`)
   }
   return (
+    <>
     <Modal onClose={onClose} maxWidth={820} label="Grading kiosk">
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🔬 On-Site Grading Kiosk</h2>
@@ -56,7 +58,7 @@ function KioskBooth({ booth, onClose, flash }) {
           {Object.values(GRADERS).map(g => (
             <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
               style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
-              <b style={{ color: g.color }}>{g.icon} {g.name}</b>
+              <b style={{ color: g.color }}>{g.name}</b>
               <small>{g.slabMult === 1 ? 'benchmark resale' : `${g.slabMult > 1 ? '+' : ''}${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
             </button>
           ))}
@@ -70,7 +72,9 @@ function KioskBooth({ booth, onClose, flash }) {
               const byValue = overTierValue('kiosk', rawValue(card))
               return (
                 <div key={card.uid} className="vendoritem">
-                  <CardTile card={card} interactive={false} />
+                  <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect(card)}>
+                    <CardTile card={card} interactive={false} />
+                  </div>
                   <div className="cap">mkt {fmtMoney(cardValue(card))}</div>
                   <button className="btn" disabled={cash < f} onClick={() => submit(card)}>
                     Grade {fmtMoney(f)}{byValue ? ' 📈' : !worthIt ? ' ⚠️' : ''}
@@ -84,6 +88,8 @@ function KioskBooth({ booth, onClose, flash }) {
         )}
         <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={onClose}>Done</button>
     </Modal>
+    {inspect && <CardModal card={inspect} onClose={() => setInspect(null)} />}
+    </>
   )
 }
 

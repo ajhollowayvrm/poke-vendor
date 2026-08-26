@@ -42,14 +42,14 @@ export default function CardTile({ card, onClick, interactive = true, noBorder =
     // 10s already get a gold gloss (CSS .slab-gem) — a black-label BGS 10 gets its own near-black
     // shimmer, everything else takes its grader's brand color. Computed here (not left to CSS
     // cascade) because an inline custom-prop wins over the class rules either way.
-    const accent = isBlackLabel(card.grade) ? '#1a1a22' : gemmint ? '#b8860b' : grader.color
+    const accent = isBlackLabel(card.grade) ? '#1a1a22' : gemmint ? '#b8860b' : grader.slabColor
     return (
       <HoloCard card={card} interactive={interactive} className={hit ? 'tile-hit' : ''}>
-        <div className={`cardtile slab grade-${g} ${gemmint ? 'slab-gem' : ''}`} style={{ '--slab-accent': accent }} {...tap}>
+        <div className={`cardtile slab grader-${grader.key} grade-${g} ${gemmint ? 'slab-gem' : ''}`} style={{ '--slab-accent': accent }} {...tap}>
           {card.locked && <span className="lockchip" aria-label="Locked — protected from bulk sells">🔒</span>}
           <div className="slab-shine" aria-hidden="true" />
           <div className="slab-label">
-            <div className="slab-brand">{grader.icon} {grader.name}</div>
+            <div className="slab-brand">{grader.name}</div>
             <div className="slab-grade">
               <b>{g}</b>
               <span>{gradeLabel(g)}</span>

@@ -42,7 +42,7 @@ export default function Bench() {
                 <img src={cardImg(p.card)} alt={p.card.name} style={{ width: 70, borderRadius: 8 }} />
                 <div style={{ flex: 1 }}>
                   <b>{p.card.name}</b>
-                  <div className="cap">{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}<span style={{ color: graderById(p.company).color, fontWeight: 700 }}>{graderById(p.company).icon} {graderById(p.company).name}</span> · {GRADING[p.tierKey].name}</div>
+                  <div className="cap">{setNameOfCard(p.card) ? `${setNameOfCard(p.card)} · ` : ''}<span style={{ color: graderById(p.company).color, fontWeight: 700 }}>{graderById(p.company).name}</span> · {GRADING[p.tierKey].name}</div>
                   <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
                     <div style={{ width: pct + '%', height: '100%', background: 'linear-gradient(90deg,var(--accent2),var(--green))', transition: 'width .25s' }} />
                   </div>
@@ -97,7 +97,7 @@ function SealedBench({ today }) {
               <div style={{ flex: 1 }}>
                 <b>{p.item.product?.name || `${set?.name || ''} ${p.item.product?.type || 'Sealed'}`.trim()}</b>
                 <div className="cap">
-                  <span style={{ color: g.color, fontWeight: 700 }}>{g.icon} {g.name}</span>
+                  <span style={{ color: g.color, fontWeight: 700 }}>{g.name}</span>
                   {p.item.vintage ? ' · 🗝️ vintage' : ''} · {fmtMoney(p.paidFee)} fee
                 </div>
                 <div style={{ background: 'var(--bg)', borderRadius: 8, height: 10, marginTop: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
@@ -171,7 +171,7 @@ function BulkSubmit({ collection, submitted, cash, onSubmit }) {
             {Object.values(GRADERS).map(g => (
               <button key={g.key} type="button" className={`chip-btn ${company === g.key ? 'active' : ''}`}
                 style={{ flex: '1 1 0', '--rarity': g.color }} onClick={() => setCompany(g.key)}>
-                <b style={{ color: g.color }}>{g.icon} {g.name}</b>
+                <b style={{ color: g.color }}>{g.name}</b>
                 <small>{g.slabMult === 1 ? 'benchmark resale' : `${Math.round((g.slabMult - 1) * 100)}% resale`}</small>
               </button>
             ))}

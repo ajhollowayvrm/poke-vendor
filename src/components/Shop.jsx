@@ -270,7 +270,17 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
           {hasBalance ? <><b className="credit-owe">{fmtMoney(balance)}</b> owed · </> : null}
           <b className="credit-avail">{fmtMoney(avail)}</b> open
         </span>
-        <span className="muted" style={{ marginLeft: 'auto' }}>{openPanel ? '▾' : '▸'}</span>
+        {/* Paying off the line is the one action worth reaching from the collapsed header — the
+            rest (min payment, stats) stays behind the toggle, but "I'm looking at what I owe,
+            let me clear it" shouldn't require opening the panel first. stopPropagation keeps the
+            tap from also toggling the collapse underneath it. */}
+        {hasBalance && (
+          <button className="btn small gold" style={{ marginLeft: 'auto' }} disabled={cash <= 0}
+            onClick={e => { e.stopPropagation(); onPay(balance) }}>
+            {cash + 0.005 < balance ? `Pay ${fmtMoney(cash)}` : `Pay off ${fmtMoney(balance)}`}
+          </button>
+        )}
+        <span className="muted" style={{ marginLeft: hasBalance ? 0 : 'auto' }}>{openPanel ? '▾' : '▸'}</span>
       </div>
       {/* The pay-with toggle stays OUTSIDE the collapse. It is not reference material: it decides
           what every buy button on the shelf below charges, so hiding it behind a closed panel

@@ -10,6 +10,7 @@ import QuoteCounter from './QuoteCounter'
 import PackOpening from './PackOpening'
 import AutoRip from './AutoRip'
 import CardTile from './CardTile'
+import CardModal from './CardModal'
 import { Modal } from '../ui/Modal'
 import { clickable } from '../ui/clickable'
 import { AnimatedNumber, CashFlash } from '../ui/AnimatedNumber'
@@ -180,6 +181,7 @@ export default function ShowFloor({ show, onLeave }) {
   // Buyer appointments from pre-show leads — met (or ignored) during this show.
   const [meets, setMeets] = useState(() => (show._leads || []).filter(l => l.kind === 'buyer'))
   const [meetPick, setMeetPick] = useState(null) // the buyer lead being fulfilled
+  const [inspect, setInspect] = useState(null)   // card tapped for its full detail page (condition, cut, price history)
   const resolveEncounter = useGame(s => s.resolveEncounter)
   // seed with mount time so the cooldown window opens on entry — gives the player
   // a grace period to look around before the first walk-up fires (was 0 = instant).
@@ -810,7 +812,7 @@ export default function ShowFloor({ show, onLeave }) {
                     </div>
                     <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(112px,1fr))', marginTop: 6 }}>
                       {haulCards.slice(0, 18).map(c => (
-                        <div key={c.uid} className="vendoritem">
+                        <div key={c.uid} className="vendoritem" style={{ cursor: 'zoom-in' }} onClick={() => setInspect(c)}>
                           <CardTile card={c} interactive={false} />
                         </div>
                       ))}
@@ -880,7 +882,9 @@ export default function ShowFloor({ show, onLeave }) {
                 <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))' }}>
                   {matches.map(c => (
                     <div key={c.uid} className="vendoritem">
-                      <CardTile card={c} interactive={false} />
+                      <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect(c)}>
+                        <CardTile card={c} interactive={false} />
+                      </div>
                       <button className="btn gold" onClick={() => {
                         const r = useGame.getState().fulfillShowLead(meetPick, c.uid)
                         if (r) {
@@ -944,7 +948,9 @@ export default function ShowFloor({ show, onLeave }) {
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(132px,1fr))', marginTop: 6 }}>
                     {[...showInventory].sort((a, b) => (b._showcase?1:0)-(a._showcase?1:0) || cardValue(b) - cardValue(a)).map(c => (
                       <div key={c.uid} className={`vendoritem ${c._showcase ? 'featured' : ''}`}>
-                        <CardTile card={c} interactive={false} />
+                        <div style={{ cursor: 'zoom-in' }} onClick={() => setInspect(c)}>
+                          <CardTile card={c} interactive={false} />
+                        </div>
                         <div className="cap">{fmtMoney(cardValue(c))}{c._deal ? ' · 🏷️ deal' : ''}</div>
                         <div className="row" style={{ gap: 5 }}>
                           <button className={`btn ${c._showcase ? 'gold' : 'alt'}`} style={{ fontSize: 'var(--fs-xs)', padding: '5px 6px' }}
@@ -984,6 +990,8 @@ export default function ShowFloor({ show, onLeave }) {
             <button className="btn alt" style={{ marginTop: 16, maxWidth: 160 }} onClick={() => setShowTable(false)}>Close</button>
         </Modal>
       )}
+
+      {inspect && <CardModal card={inspect} onClose={() => setInspect(null)} />}
     </div>
   )
 }
