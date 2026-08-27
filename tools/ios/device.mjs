@@ -53,7 +53,7 @@ function teamId() {
 /// works over wifi — the transport has no bearing on signing or on the 7-day clock.
 function device() {
   const out = sh('xcrun', ['devicectl', 'list', 'devices'])
-  const line = out.split('\n').find(l => /iPhone/.test(l) && /available/.test(l))
+  const line = out.split('\n').find(l => /iPhone/.test(l) && /(available|connected)/.test(l))
   if (!line) throw new Error('no available iPhone — plug one in, unlock it, and trust this Mac')
   const udid = line.match(/([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})/i)?.[1]
   if (!udid) throw new Error(`could not parse a device id from: ${line.trim()}`)
