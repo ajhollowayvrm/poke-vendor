@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 // Shared modal shell: backdrop + centered panel with real dialog semantics that the
@@ -23,6 +23,16 @@ import { createPortal } from 'react-dom'
 // beneath it.
 const _layers = []
 export function pushLayer(token) { _layers.push(token) }
+// How many layers are already open when this one mounts. Every Modal is portalled to <body>,
+// so a stacked Modal is a SIBLING of the one beneath it, not a child of it — it no longer
+// inherits the parent panel's stacking context, and a literal z-index on it competes directly
+// with `--z-modal` (80) on the backdrop below. That is how a booth's "Confirm buy" sheet, which
+// carried the local z-index 20 it needed back when it rendered inline, ended up painted BEHIND
+// the booth's own backdrop: visible to the accessibility tree, unreachable by a tap. Each layer
+// now takes `--z-modal + depth`, so a stacked Modal always outranks its opener by construction
+// and no caller has to pick a number. The `zIndex` prop stays for a layer that is deliberately
+// somewhere else on the global ladder (GradeReveal sits at --z-reveal, below every modal).
+export function layerDepth() { return _layers.length }
 export function popLayer(token) {
   const i = _layers.lastIndexOf(token)
   if (i !== -1) _layers.splice(i, 1)
@@ -33,6 +43,8 @@ export function Modal({ children, onClose, dismissable = true, label, labelledBy
   className = '', bgClassName = '', style, maxWidth = 460, zIndex, sheet = false }) {
   const panelRef = useRef(null)
   const restoreRef = useRef(null)
+  // Read once, at first render: how deep in the modal stack this layer sits. See layerDepth().
+  const [depth] = useState(layerDepth)
 
   useEffect(() => {
     restoreRef.current = document.activeElement
@@ -79,7 +91,8 @@ export function Modal({ children, onClose, dismissable = true, label, labelledBy
   // `document.body` removes `.pane` from the ancestor chain entirely, so `inset:0` means
   // the actual viewport again, regardless of what any future ancestor's CSS does.
   return createPortal(
-    <div className={`modalbg ${bgClassName}`.trim()} style={zIndex != null ? { zIndex } : undefined}
+    <div className={`modalbg ${bgClassName}`.trim()}
+      style={{ zIndex: zIndex != null ? zIndex : `calc(var(--z-modal) + ${depth})` }}
       onClick={dismissable ? onClose : undefined}>
       <div ref={panelRef} className={`modal ${sheet ? 'modal-sheet ' : ''}${className}`.trim()} onClick={e => e.stopPropagation()}
         style={{ maxWidth, ...style }} role="dialog" aria-modal="true"

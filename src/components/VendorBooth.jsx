@@ -735,7 +735,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
       )}
 
       {pendingSealed && (
-        <Modal onClose={() => setPendingSealed(null)} maxWidth={400} zIndex={20} style={{ textAlign: "center" }} label="Confirm sealed buy">
+        <Modal onClose={() => setPendingSealed(null)} maxWidth={400} style={{ textAlign: "center" }} label="Confirm sealed buy">
             <h3 className="mt-0">
               {pendingSealed._origin === 'vintage' ? '🗝️ ' : (pendingSealed.product.icon || '📦') + ' '}{pendingSealed.product.type}
             </h3>
@@ -785,7 +785,7 @@ function RegularBooth({ booth, onClose, flash, onRipSealed, onRipSealedStack, on
       )}
 
       {pendingBuy && (
-        <Modal onClose={() => setPendingBuy(null)} maxWidth={380} zIndex={20} style={{ textAlign: "center" }} label="Confirm buy">
+        <Modal onClose={() => setPendingBuy(null)} maxWidth={380} style={{ textAlign: "center" }} label="Confirm buy">
             <h3 className="mt-0">Bought {pendingBuy.card.name}</h3>
             <p className="cap t-sm mt-0">
               for {fmtMoney(pendingBuy.price)} · market {fmtMoney(cardValue(pendingBuy.card))}.
@@ -836,7 +836,7 @@ function MysteryReveal({ result, onClose }) {
   if (sealed) {
     const val = sealedValue(sealed)
     return (
-      <Modal onClose={onClose} maxWidth={360} zIndex={25} style={{ textAlign: "center" }} label="Mystery pack reveal">
+      <Modal onClose={onClose} maxWidth={360} style={{ textAlign: "center" }} label="Mystery pack reveal">
           <h3 className="mt-0">📦 {packName}</h3>
           <div className="vendoritem featured" style={{ maxWidth: 200, margin: '0 auto' }}>
             {set?.logo && <img src={set.logo} alt={set?.name || ''} style={{ height: 44, objectFit: 'contain', alignSelf: 'center' }} />}
@@ -856,7 +856,7 @@ function MysteryReveal({ result, onClose }) {
   const val = cardValue(card)
   const hit = card._isHit || !!card.foil || val >= 15
   return (
-    <Modal onClose={onClose} maxWidth={360} zIndex={25} style={{ textAlign: "center" }} label="Mystery pack reveal">
+    <Modal onClose={onClose} maxWidth={360} style={{ textAlign: "center" }} label="Mystery pack reveal">
         <h3 className="mt-0">{hit ? '🎉 ' : '❓ '}{packName}</h3>
         <div className="vendoritem featured" style={{ '--rarity': edge, maxWidth: 200, margin: '0 auto' }}>
           <img src={cardImg(card)} alt={card.name} style={{ width: '100%', borderRadius: 8 }} />
@@ -964,7 +964,7 @@ function TradePanel({ booth, seedCard, seedSealed, boothCards, boothSealed, coll
   }
 
   return (
-    <Modal onClose={onClose} className="trade-builder" maxWidth={720} zIndex={25} label="Trade builder">
+    <Modal onClose={onClose} className="trade-builder" maxWidth={720} label="Trade builder">
         <h3 className="mt-0">🔁 Build a trade with {booth.name}</h3>
         <p className="cap t-sm mt-0">
           One line per SKU — duplicates stack, tap a line (or +) to add copies. They credit your side

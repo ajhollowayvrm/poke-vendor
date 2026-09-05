@@ -876,7 +876,7 @@ export default function ShowFloor({ show, onLeave }) {
       {meetPick && (() => {
         const matches = [...collection, ...(showInventory || [])].filter(c => cardMatchesWant(c, meetPick.want))
         return (
-          <Modal onClose={() => setMeetPick(null)} maxWidth={640} zIndex={25} label="Meetup pick">
+          <Modal onClose={() => setMeetPick(null)} maxWidth={640} label="Meetup pick">
               <h2 className="t-xl" style={{ marginBottom: 2 }}>🤝 Meet {meetPick.who}</h2>
               <p className="cap t-sm mt-0">
                 As arranged — they're buying <b>{meetPick.desc}</b> at <b>{Math.round(meetPick.premiumMult * 100)}% of market</b>, cash on the spot (+{meetPick.notoriety}★).

@@ -1532,7 +1532,7 @@ function LiveStage({ session, notoriety, fatigue, onEnd }) {
 function GiveawayPicker({ collection, reservedUids, onPick, onClose }) {
   const pool = [...collection].filter(c => !reservedUids.has(c.uid)).sort((a, b) => cardValue(b) - cardValue(a))
   return (
-    <Modal onClose={onClose} maxWidth={760} zIndex={30} label="Giveaway picker">
+    <Modal onClose={onClose} maxWidth={760} label="Giveaway picker">
         <div className="row" style={{ alignItems: 'baseline' }}>
           <h2 style={{ marginRight: 'auto' }}>🎁 Give away a card</h2>
           <span className="pill">{pool.length} eligible</span>
