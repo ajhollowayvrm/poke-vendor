@@ -348,52 +348,91 @@ export const FOIL = {
 //
 // SlotSpec shapes:
 //   { rarity: string, count: number }          — pick `count` from byR[rarity]
+//   { ids: string[] }                          — those exact cards, in order (a fixed
+//                                                composition, e.g. the nine Eeveelution SIRs)
+//   { ids: string[], count: number }           — `count` DISTINCT cards drawn from that list
 //   { foil: 'pokeball'|'masterball',
 //     from: 'reverseBase',  count: number }    — normal card w/ that foil pattern
 //   { foil: 'pokeball'|'masterball',
 //     rarity: string, count: number }          — high-rarity card w/ that foil
+//   { foil: ..., ids: [...], count: number }   — that foil on cards from an explicit list
 //   { fill: true }                             — remaining slots → normal cards
 //
-// Demigod packs: k = random int in [3..6] hit cards are drawn from `hits`,
-// then (packSize - k) filler cards from `filler`. Hit cards carry _fromDemigod=true.
+// Demigod packs: k hit cards are drawn from `hits`, then (packSize - k) filler cards from
+// `filler`. k is a random int in [3..6], or exactly `hitCount` when the variant sets one.
+// Hit cards carry _fromDemigod=true.
 //
 // Back-compat flags (CRITICAL — existing UI/stream/stats consumers depend on these):
 //   God tier:    pulls._god=true,      each card c._fromGod=true
 //   Demigod tier: pulls._demigod=true, each card c._fromDemigod=true (NOT _god/_fromGod)
 //   All special:  pulls._specialKey=variant.key, pulls._specialLabel=variant.label
+// Prismatic Evolutions god packs are a FIXED composition, not "nine random SIRs". A real one is
+// the whole Eeveelution SIR line — Eevee plus its eight evolutions — which is what makes it the
+// most valuable pack in the modern era. Both id lists below are ordered Eevee → Sylveon.
+// Card ids are stable in sets.json.
+const PE_EEVEE_SIR = [
+  'sv8pt5-167', // Eevee ex
+  'sv8pt5-149', // Vaporeon ex
+  'sv8pt5-153', // Jolteon ex
+  'sv8pt5-146', // Flareon ex
+  'sv8pt5-155', // Espeon ex
+  'sv8pt5-161', // Umbreon ex  — the "Sunbreon" grail
+  'sv8pt5-144', // Leafeon ex
+  'sv8pt5-150', // Glaceon ex
+  'sv8pt5-156', // Sylveon ex
+]
+// The Eeveelution BASE cards (Common/Rare). Master Ball is a reverse-holo pattern printed on
+// ordinary cards — never on an SIR — and the Eeveelution ones are the chase.
+const PE_EEVEE_BASE = [
+  'sv8pt5-74', // Eevee (Common)
+  'sv8pt5-22', // Vaporeon
+  'sv8pt5-29', // Jolteon
+  'sv8pt5-13', // Flareon
+  'sv8pt5-33', // Espeon
+  'sv8pt5-59', // Umbreon
+  'sv8pt5-5',  // Leafeon
+  'sv8pt5-25', // Glaceon
+  'sv8pt5-40', // Sylveon
+]
+
 const SPECIAL_PACKS = {
-  // Prismatic Evolutions — three variants, rarest first.
+  // Prismatic Evolutions — three variants, rarest first. Compositions are the ones the community
+  // has documented from real pulls (card-binder.com "God Pack Sets", woahpoke.com god pack guide).
   sv8pt5: [
-    // 1/15000: Master Ball God — every SIR gets a master-ball foil; common companions get pokeball foil.
+    // 1/15000: Master Ball God — 3 Eeveelution Master Ball reverses + 7 Poké Ball reverses.
     { tier: 'god', key: 'mbgod', label: 'MASTER BALL GOD PACK', odds: 1 / 15000,
       slots: [
-        { foil: 'masterball', rarity: 'Special Illustration Rare', count: 3 },
-        { foil: 'pokeball',   from: 'reverseBase',                 count: 7 },
+        { foil: 'masterball', ids: PE_EEVEE_BASE,  count: 3 },
+        { foil: 'pokeball',   from: 'reverseBase', count: 7 },
       ],
     },
-    // 1/2500: God — 9 SIRs (pad with next-best if pool short).
+    // 1/2500: God — the full Eeveelution SIR line (9 cards), headed by the Eevee Master Ball reverse.
     { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 2500,
       slots: [
-        { rarity: 'Special Illustration Rare', count: 9 },
-        { fill: true },
+        { foil: 'masterball', ids: ['sv8pt5-74'] }, // Eevee Master Ball reverse
+        { ids: PE_EEVEE_SIR },                      // all nine, every time
       ],
     },
-    // 1/500: Demigod — 3–6 SAR hits; remaining slots are pokeball-foil commons.
+    // 1/500: Demigod — exactly 3 SIR hits; the other 7 slots are Poké Ball reverses.
     { tier: 'demigod', key: 'demigod', label: 'DEMIGOD PACK', odds: 1 / 500,
-      hits:   { rarity: 'Special Illustration Rare' },
-      filler: { foil: 'pokeball', from: 'reverseBase' },
+      hits:     { rarity: 'Special Illustration Rare' },
+      hitCount: 3,
+      filler:   { foil: 'pokeball', from: 'reverseBase' },
     },
   ],
-  // Ascended Heroes — two variants.
+  // Ascended Heroes — two variants. The god pack is 3 Mega Attack Rares + 7 Special Illustration
+  // Rares drawn at random from the set's 22 SIRs, at roughly 1 in 950–2,000 packs (PokéBeach set
+  // guide; woahpoke.com; carddeckr.com). Unlike Prismatic Evolutions there is no fixed line and no
+  // Master Ball pattern — Ascended Heroes reverses are Energy / Ball-type / Team Rocket "R" styles.
   me2pt5: [
-    // 1/2000: God — 3 MEGA_ATTACK_RARE + 7 SIR.
-    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 2000,
+    // 1/1500: God — 3 MEGA_ATTACK_RARE + 7 SIR, all ten distinct.
+    { tier: 'god', key: 'god', label: 'GOD PACK', odds: 1 / 1500,
       slots: [
         { rarity: 'MEGA_ATTACK_RARE',           count: 3 },
         { rarity: 'Special Illustration Rare',  count: 7 },
       ],
     },
-    // 1/400: Demigod — 3–6 IR-or-better hits (prefer SIR, fall back to IR); filler = normal.
+    // 1/400: Demigod — 3–6 IR-or-better hits (SIR and IR); the rest is a normal pack remainder.
     { tier: 'demigod', key: 'demigod', label: 'DEMIGOD PACK', odds: 1 / 400,
       hits:   { rarities: ['Special Illustration Rare', 'Illustration Rare'] }, // preferred order
       filler: { from: 'normal' },
@@ -432,6 +471,20 @@ const SPECIAL_PACKS = {
 // Build one special pack from a variant definition. Returns the card array with
 // the correct tier flags set; does NOT set _specialKey/_specialLabel (caller does).
 // Always pads/truncates to exactly packSize cards. Never emits undefined.
+// Resolve an explicit id list to real cards, dropping any id the set data doesn't have (a data
+// refresh can renumber a set — a god pack must never emit undefined).
+function idPool(set, ids) {
+  const byId = new Map(set.cards.map(c => [c.id, c]))
+  return ids.map(id => byId.get(id)).filter(Boolean)
+}
+// n distinct cards from a pool, in random order. Returns fewer if the pool is short.
+function sampleDistinct(pool, n) {
+  const rest = [...pool]
+  const out = []
+  while (out.length < n && rest.length) out.push(rest.splice(Math.floor(Math.random() * rest.length), 1)[0])
+  return out
+}
+
 function buildSpecialPack(set, byR, variant, packSize) {
   const commons = byR['Common'] || byR['Uncommon'] || set.cards
   const uncommons = byR['Uncommon'] || commons
@@ -447,6 +500,19 @@ function buildSpecialPack(set, byR, variant, packSize) {
       // fill: remaining slots → normal (commons/uncommons)
       while (cards.length < packSize) cards.push(instance(pick(commons)))
       break
+    }
+    if (slot.ids) {
+      // Explicit cards. No `count` means the whole list, in order (a fixed god-pack line);
+      // a `count` draws that many DISTINCT cards from the list.
+      const pool = idPool(set, slot.ids)
+      const chosen = slot.count == null ? pool : sampleDistinct(pool, slot.count)
+      for (const card of chosen) {
+        if (cards.length >= packSize) break
+        const c = instance(card)
+        if (slot.foil) c.foil = FOIL[slot.foil]
+        cards.push(c)
+      }
+      continue
     }
     const count = slot.count ?? 1
     if (slot.foil && slot.from === 'reverseBase') {
@@ -489,7 +555,8 @@ function buildSpecialPack(set, byR, variant, packSize) {
 
 // Build a demigod pack: k random hits (3–6) + (packSize - k) filler cards.
 function buildDemigodPack(set, byR, variant, packSize, commons, uncommons) {
-  const k = 3 + Math.floor(Math.random() * 4) // 3, 4, 5, or 6
+  // A variant may pin the hit count (Prismatic Evolutions demigods are always 3 SIRs).
+  const k = variant.hitCount ?? (3 + Math.floor(Math.random() * 4)) // 3, 4, 5, or 6
 
   // Pick hit cards from the hits spec
   const hitCards = []
@@ -520,8 +587,9 @@ function buildDemigodPack(set, byR, variant, packSize, commons, uncommons) {
       fillerCards.push(c)
     }
   } else {
-    // Normal filler: commons and uncommons
-    for (let i = 0; i < fillerCount; i++) fillerCards.push(instance(pick(commons)))
+    // Normal filler: what a plain pack's remaining slots look like — commons, then uncommons.
+    const nCommon = Math.ceil(fillerCount / 2)
+    for (let i = 0; i < fillerCount; i++) fillerCards.push(instance(pick(i < nCommon ? commons : uncommons)))
   }
 
   const cards = [...hitCards, ...fillerCards]
