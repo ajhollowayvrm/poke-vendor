@@ -13,7 +13,8 @@ import {
   storageFee, heldUnits, storageFreeUnits,
   applyNotoGain, ledgerAdd, bumpHype, RANKS, rankEligible,
 } from './constants'
-import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf } from './helpers'
+import { bumpSet, realizableAssets, creditLimit as creditLimitOf, creditAvailable as creditAvailableOf, creditMinimum as creditMinimumOf,
+  clearCreditFreeze } from './helpers'
 import { bookRevenue, bookExpense } from '../tax'
 import { SHOW_TIERS } from '../shows'
 import { advanceDaysWith, mergeSummaries } from './daytick'
@@ -256,8 +257,12 @@ export function createEconomySlice(set, get) {
       get().spend(pay)
       const newBal = Math.max(0, round2(bal - pay))
       const cured = newBal <= 0 || pay + 1e-9 >= minDue
-      set(s => ({ credit: { balance: newBal, frozen: cured ? false : !!(s.credit?.frozen) } }))
+      set(s => ({ credit: { ...s.credit, balance: newBal } }))
+      // Paying cures ONE reason. A line also frozen by a tax lien or a loan default stays
+      // shut — clearCreditFreeze reports true only when that was the last reason standing.
+      const opened = cured && clearCreditFreeze(set, get, 'minimum')
       get().log('credit', `Paid down distributor credit (−$${pay.toFixed(2)}) · balance $${newBal.toFixed(2)}`, -pay)
+      if (opened) get().log('credit', `🏦 Your distributor credit line is open again.`, 0)
       return pay
     },
 

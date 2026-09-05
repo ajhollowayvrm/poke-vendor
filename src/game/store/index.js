@@ -303,7 +303,7 @@ export const useGame = create(persist((set, get) => ({
   ...createMarketSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 68,
+  version: 69,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -934,6 +934,27 @@ export const useGame = create(persist((set, get) => ({
       }
       // Pre-show DM purchases/reserves ride showLeads (kind:'purchase' is additive).
       state.showLeads = state.showLeads ?? []
+    }
+    if (version < 69) {
+      // 💳 The distributor line now records WHY it is frozen, because every freeze needs a
+      // matching thaw. Backfill the reasons an old save can be carrying — and OPEN a line
+      // that is frozen for none of them.
+      //
+      // That last case is the bug this version fixes. A loan default froze the line and set
+      // no marker at all; settleCredit only runs on a carried balance, payCredit refuses a
+      // zero balance, and the tax thaw needed the tax marker. A default freeze with no
+      // balance could never be lifted, so an affected save is frozen for good until here.
+      const c = state.credit || { balance: 0, frozen: false }
+      const day = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
+      const by = []
+      if (c.frozen) {
+        if (state._creditFrozenByTax && (state.books?.owed || 0) > 0.005) by.push('tax')
+        if ((c.balance || 0) > 0.005) by.push('minimum')
+        // Keep a default freeze only while the bank's cooldown still has days left on it.
+        if (!by.length && day < (state.loanDefaultedUntil || 0)) by.push('default')
+      }
+      state.credit = { balance: c.balance || 0, frozen: by.length > 0, frozenBy: by }
+      delete state._creditFrozenByTax
     }
     return state
   },

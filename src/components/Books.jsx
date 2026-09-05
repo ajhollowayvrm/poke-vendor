@@ -3,8 +3,10 @@ import { fmtMoney } from '../game/engine'
 import { useGame } from '../game/store'
 import { FILING_FLOOR, QUARTER_DAYS, ACCOUNTANT_DEDUCTION } from '../game/tax'
 import { loanProgress } from '../game/loans'
+import { creditFreezeReasons, CREDIT_FREEZE } from '../game/store/helpers'
 
-// 🧾🏦 The books — the quarterly tax bill and the bank note, on the Stats tab.
+// 🧾💳🏦 The books — the quarterly tax bill, the distributor credit line and the bank note,
+// on the Stats tab.
 //
 // Both are money the business owes on a clock, and both need to be VISIBLE BEFORE they land.
 // A tax bill that arrives as a surprise is a punishment; a tax bill you can watch building,
@@ -185,10 +187,101 @@ function LoanPanel() {
   )
 }
 
+// 💳 The distributor credit line, on the tab where a player looks for what they owe.
+//
+// The Buy tab has a credit panel too, but it is the SHELF's panel: it carries the pay-mode
+// toggle, so it renders only inside the unlocked, non-marketplace distributor branch. Browse
+// the 📱 marketplace or a locked account and the balance, the payment buttons and the reason
+// the line is frozen all disappear — with nothing on any other tab showing them. A debt you
+// cannot find is a debt you cannot pay, so the balance lives here unconditionally.
+function CreditLinePanel() {
+  const balance = useGame(s => s.credit?.balance || 0)
+  const frozen = useGame(s => !!s.credit?.frozen)
+  const limit = useGame(s => s.creditLimit())
+  const avail = useGame(s => s.creditAvailable())
+  const min = useGame(s => s.creditMinimum())
+  const reasons = useGame(s => creditFreezeReasons(s))
+  const payCredit = useGame(s => s.payCredit)
+  const cash = useGame(s => s.cash)
+  const [msg, setMsg] = useState(null)
+  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(null), 4000) }
+
+  const hasBalance = balance > 0.005
+  // Nothing owed and nothing frozen is the whole story — one line, no panel furniture.
+  if (!hasBalance && !frozen) {
+    return (
+      <div className="market-panel mt-5">
+        <div className="market-head">💳 The distributor line <span className="muted">— nothing owed</span></div>
+        <div className="muted books-note">
+          Revolving credit for stock, sized off what you are worth: {fmtMoney(limit)} limit,
+          {' '}{fmtMoney(avail)} of it open. Buy sealed on credit from the Buy tab and the balance
+          shows up here.
+        </div>
+      </div>
+    )
+  }
+
+  const pay = (amt) => {
+    const paid = payCredit(amt)
+    flash(paid > 0 ? `💳 Paid ${fmtMoney(paid)} toward the line.` : '⚠️ No cash to pay it with.')
+  }
+
+  return (
+    <div className="market-panel mt-5">
+      <div className="market-head">
+        💳 The distributor line <span className="muted">— revolving credit for stock</span>
+      </div>
+
+      {hasBalance && (
+        <div className="books-due">
+          <div>
+            <b>{fmtMoney(balance)} outstanding</b>
+            <span className="muted"> · {fmtMoney(min)} minimum auto-pays each month</span>
+          </div>
+          <div className="row" style={{ gap: 6 }}>
+            <button className="btn small" disabled={cash + 0.005 < balance} onClick={() => pay(balance)}>
+              Pay {fmtMoney(balance)}
+            </button>
+            {cash > 0 && cash + 0.005 < balance && (
+              <button className="btn small ghost" onClick={() => pay(cash)}>Pay what I can ({fmtMoney(cash)})</button>
+            )}
+            {cash > 0 && <button className="btn small ghost" onClick={() => pay(min)}>Pay minimum ({fmtMoney(min)})</button>}
+          </div>
+        </div>
+      )}
+
+      <div className="books-grid">
+        <div><span className="muted">Balance</span><b>{fmtMoney(balance)}</b></div>
+        <div><span className="muted">Limit</span><b>{fmtMoney(limit)}</b></div>
+        <div><span className="muted">Available</span><b>{fmtMoney(avail)}</b></div>
+        <div>
+          <span className="muted">Status</span>
+          <b style={{ color: frozen ? 'var(--red)' : 'var(--green)' }}>{frozen ? 'Frozen' : 'Open'}</b>
+        </div>
+      </div>
+
+      {/* A frozen line must always say WHAT froze it and WHAT lifts it — each reason has its
+          own cure, and "pay it down" is the wrong answer for two of the three. */}
+      {frozen && (
+        <div className="books-note warn">
+          <b>Frozen by {reasons.map(r => CREDIT_FREEZE[r]?.label || r).join(' and ')}.</b>
+          {' '}Buys are cash-only until it lifts.
+          <ul style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+            {reasons.map(r => <li key={r}>{CREDIT_FREEZE[r]?.cure || 'Pay the balance down to clear it.'}</li>)}
+          </ul>
+        </div>
+      )}
+
+      {msg && <div className="books-note warn">{msg}</div>}
+    </div>
+  )
+}
+
 export default function Books() {
   return (
     <>
       <TaxPanel />
+      <CreditLinePanel />
       <LoanPanel />
     </>
   )

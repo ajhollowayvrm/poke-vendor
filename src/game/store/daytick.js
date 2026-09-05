@@ -56,7 +56,8 @@ import {
   SPONSOR_BRANDS, SPONSOR_MIN_FOLLOWERS, SPONSOR_PERIOD, SPONSOR_WINDOW_DAYS,
   SPONSOR_FEATURE_PACKS, SPONSOR_LAPSE_DING, sponsorMonthly,
 } from './constants'
-import { realizableAssets, netWorthFull, isDistributor } from './helpers'
+import { realizableAssets, netWorthFull, isDistributor, freezeCredit, clearCreditFreeze, thawCredit,
+  CREDIT_FREEZE } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
 // 🧾 tax + 🏦 loan settlement and 🔨 the buy-side auction board. The per-day work for each
 // lives beside its own actions rather than in this file, so a system reads in one place.
@@ -2035,6 +2036,11 @@ export function advanceDaysWith(set, get, days, away) {
   // this window crossed its end. Ordering matters: closing first would immediately charge a
   // day of arrears on a bill the player has not yet had a chance to see, let alone pay.
   settleTaxArrears(set, get, days)
+  // 🏦 Every freeze on the distributor line gets swept for its cure once a day: the tax bill
+  // is clear, the default cooldown has run out, the balance is gone. A frozen line has to have
+  // a way back — before this sweep a loan default could shut it for the rest of the save.
+  const thawed = thawCredit(set, get, newAbsDay)
+  if (thawed) get().log('credit', `🏦 Your distributor credit line is open again (${thawed.map(r => CREDIT_FREEZE[r]?.label || r).join(' and ')} cleared).`, 0)
   const quarter = settleQuarter(set, get, newAbsDay)
   set(st => ({ cumWages: round2((st.cumWages || 0) + wagesEarned) })) // wages tracked separately from card income
   // Life events: something may have happened while these days passed (expense, ding, theft,
@@ -2448,7 +2454,7 @@ export function mergeSummaries(a, b) {
 function settleCredit(set, get, monthsRolled) {
   for (let i = 0; i < monthsRolled; i++) {
     let bal = get().credit?.balance || 0
-    if (bal <= 0) { if (get().credit?.frozen) set(st => ({ credit: { ...st.credit, frozen: false } })); continue }
+    if (bal <= 0) continue // nothing to bill; a zero-balance freeze is lifted by thawCredit
     const interest = round2(bal * creditMonthlyRate(get().upgrades)) // 🏦 Preferred Account carries cheaper
     bal = round2(bal + interest)
     const minDue = round2(Math.min(bal, Math.max(CREDIT_MIN_FLOOR, bal * CREDIT_MIN_PCT)))
@@ -2456,7 +2462,11 @@ function settleCredit(set, get, monthsRolled) {
     if (pay > 0) get().spend(pay)
     const newBal = Math.max(0, round2(bal - pay))
     const missed = pay + 1e-9 < minDue
-    set(() => ({ credit: { balance: newBal, frozen: missed } }))
+    // Only the MISSED-MINIMUM reason is settled here. The old line wrote `frozen: missed`
+    // outright, which silently reopened a line frozen by a tax lien or a loan default.
+    set(st => ({ credit: { ...st.credit, balance: newBal } }))
+    if (missed) freezeCredit(set, get, 'minimum')
+    else if (clearCreditFreeze(set, get, 'minimum')) get().log('credit', `🏦 The minimum is covered — your distributor line is open again.`, 0)
     if (interest > 0) get().log('credit', `💳 Credit interest +$${interest.toFixed(2)} on your distributor balance (now $${bal.toFixed(2)})`, 0)
     if (pay > 0) get().log('credit', `💳 Credit minimum paid −$${pay.toFixed(2)} · balance $${newBal.toFixed(2)}`, -pay)
     if (missed) {

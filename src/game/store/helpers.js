@@ -124,6 +124,84 @@ export function creditAvailable(s) {
   if (s.credit?.frozen) return 0 // line suspended until a missed minimum is cured
   return Math.max(0, round2(creditLimit(s) - (s.credit?.balance || 0)))
 }
+
+// --- Freezing and thawing the line --------------------------------------------------
+// Three things freeze the distributor line, and each one has its OWN cure: a missed monthly
+// minimum (pay the balance down), a tax lien (clear the bill), a called-in loan (wait out the
+// bank's cooldown). So the line carries the REASONS it is frozen, not one boolean.
+//
+// 💥 The old shape was `frozen` plus a `_creditFrozenByTax` marker, and a loan default set
+// neither. Nothing could thaw that: settleCredit only runs on a carried balance, payCredit
+// refuses a zero balance, and the tax thaw needs the tax marker. A default freeze with no
+// balance was PERMANENT — and because the panel that shows the balance renders only on an
+// unlocked, non-marketplace distributor, the player could not even see what to pay.
+export const CREDIT_FREEZE = {
+  minimum: {
+    label: 'a missed monthly minimum',
+    cure: 'Pay the balance down — a payment that covers the minimum reopens it.',
+  },
+  tax: {
+    label: 'a tax lien',
+    cure: 'Clear the outstanding tax bill (🧾 The books, above) and the line reopens.',
+  },
+  default: {
+    label: 'a called-in bank loan',
+    cure: 'The distributor reopens the line when the bank\u2019s default cooldown ends.',
+  },
+}
+// Reason order for display: the ones you cannot simply pay off come first.
+const FREEZE_ORDER = ['default', 'tax', 'minimum']
+
+// Old saves (and a hand-built state) can be frozen with no reason list. Read it as a missed
+// minimum — the only freeze that predates the reason list and is curable by paying.
+export function creditFreezeReasons(s) {
+  if (!s?.credit?.frozen) return []
+  const by = s.credit.frozenBy?.length ? s.credit.frozenBy : ['minimum']
+  return FREEZE_ORDER.filter(r => by.includes(r))
+}
+
+// Is this reason's cause gone? 'minimum' cures on a payment too (see clearCreditFreeze) —
+// this is the passive check the day tick runs.
+export function creditFreezeCured(s, reason, absDay) {
+  if (reason === 'tax') return (s.books?.owed || 0) <= 0.005
+  if (reason === 'default') return absDay >= (s.loanDefaultedUntil || 0)
+  return (s.credit?.balance || 0) <= 0.005 // 'minimum' — nothing left to be behind on
+}
+
+// Add a freeze reason. Returns true only the FIRST time a reason lands, so callers can log
+// the freeze once instead of every day the cause persists.
+export function freezeCredit(set, get, reason) {
+  const by = get().credit?.frozenBy || []
+  if (by.includes(reason)) return false
+  set(st => ({ credit: { ...(st.credit || { balance: 0 }), frozen: true, frozenBy: [...(st.credit?.frozenBy || []), reason] } }))
+  return true
+}
+
+// Drop ONE reason (its cure was paid, not waited out). Returns true when that was the last
+// one and the line actually opened, so the caller logs the reopening once.
+export function clearCreditFreeze(set, get, reason) {
+  const s = get()
+  if (!s.credit?.frozen) return false
+  const by = creditFreezeReasons(s)
+  if (!by.includes(reason)) return false
+  const left = by.filter(r => r !== reason)
+  set(st => ({ credit: { ...st.credit, frozen: left.length > 0, frozenBy: left } }))
+  return left.length === 0
+}
+
+// The day-tick sweep: drop every reason whose cause is gone. This is the backstop that makes
+// a freeze temporary by construction — every reason it cannot cure here has a cure elsewhere.
+// Returns the reasons it cleared when the line opened, else null.
+export function thawCredit(set, get, absDay) {
+  const s = get()
+  if (!s.credit?.frozen) return null
+  const by = creditFreezeReasons(s)
+  const left = by.filter(r => !creditFreezeCured(s, r, absDay))
+  // Also normalise a save that is frozen with no reason list at all.
+  if (left.length === by.length && s.credit.frozenBy?.length) return null
+  set(st => ({ credit: { ...st.credit, frozen: left.length > 0, frozenBy: left } }))
+  return left.length === 0 ? by : null
+}
 // The monthly minimum payment on the current balance (10% of it, at least the floor, never
 // more than the balance itself). Shared by the auto-settle and the "pay minimum" UI.
 export function creditMinimum(s) {

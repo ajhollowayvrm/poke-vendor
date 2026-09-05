@@ -6,7 +6,7 @@ import { SHOP_SETS, FETCHED_AT, setProducts, isHit, fmtMoney,
   hypeSurge, cardValue, ERA_PRODUCTS, eraAnchorSet, productTypeLabel } from '../game/engine'
 import { Collapse, useOpen, bigScreen } from '../ui/Collapse'
 import { useGame, RANKS } from '../game/store'
-import { vintageLeft } from '../game/store/helpers'
+import { vintageLeft, creditFreezeReasons, CREDIT_FREEZE } from '../game/store/helpers'
 import { weekIndexOf, absoluteDay, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from '../game/store/constants'
 import { HobbyWire, BreakersAlmanac } from './MarketIntel'
 import AuctionHouse from './AuctionHouse'
@@ -243,10 +243,15 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
   const hasBalance = balance > 0.005
   // 🏦 Preferred Account shows its cheaper carry — the panel must quote the real rate.
   const preferred = useGame(s => !!s.upgrades.preferredAccount)
+  // Why the line is shut. "Pay your balance down" is the wrong answer for two of the three
+  // freezes (a tax lien and a called-in loan), and a default freeze often leaves no balance
+  // to pay at all — so the panel names the actual cure.
+  const reasons = useGame(s => creditFreezeReasons(s))
   const ratePct = +( (preferred ? creditMonthlyRate({ preferredAccount: true }) : CREDIT_MONTHLY_RATE) * 100).toFixed(1)
   // A credit mode the line can't back reads as Cash (matches the Shop's onCredit/split gating).
   const active = canUseCredit ? payMode : 'cash'
-  const creditTitle = frozen ? 'Frozen — pay your balance down to buy on credit again'
+  const freezeCure = reasons.map(r => CREDIT_FREEZE[r]?.cure).filter(Boolean).join(' ')
+  const creditTitle = frozen ? `Frozen by ${reasons.map(r => CREDIT_FREEZE[r]?.label || r).join(' and ')} — ${freezeCure}`
     : avail <= 0 ? 'No credit available yet — your line grows with your net worth (and frees up as you pay down the balance)'
     : `up to ${fmtMoney(avail)} available`
   // Collapsible: the header always shows the load-bearing numbers — balance owed + open credit —
@@ -307,7 +312,8 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
       </div>
       {hasBalance ? (
         <div className="credit-pay">
-          <div className="muted credit-note">~{ratePct}%/mo interest on the balance · the minimum auto-pays from cash each month{frozen ? ' — pay it down to un-freeze the line' : ''}.</div>
+          <div className="muted credit-note">~{ratePct}%/mo interest on the balance · the minimum auto-pays from cash each month.</div>
+          {frozen && <div className="muted credit-note">🧊 {freezeCure}</div>}
           <div className="credit-pay-btns">
             <button className="btn alt" disabled={cash <= 0} onClick={() => onPay(min)}>Pay min {fmtMoney(min)}</button>
             <button className="btn gold" disabled={cash <= 0} onClick={() => onPay(balance)}>
@@ -316,7 +322,11 @@ function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPay
           </div>
         </div>
       ) : (
-        <div className="muted credit-note">Buy sealed on credit and pay it off monthly — your line grows with your net worth. Carry a balance and it accrues ~{ratePct}%/mo.</div>
+        <div className="muted credit-note">
+          {frozen
+            ? `🧊 Nothing is owed, but the line is shut by ${reasons.map(r => CREDIT_FREEZE[r]?.label || r).join(' and ')}. ${freezeCure}`
+            : `Buy sealed on credit and pay it off monthly — your line grows with your net worth. Carry a balance and it accrues ~${ratePct}%/mo.`}
+        </div>
       )}
       </>)}
     </div>

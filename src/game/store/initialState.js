@@ -186,7 +186,9 @@ export function initialState() {
     // Distributor credit line: buy sealed on credit (net terms) and carry a revolving balance.
     // balance = what you owe (principal + accrued interest); frozen = line suspended after a
     // missed monthly minimum (cash-only until you catch up). Limit scales with net worth.
-    credit: { balance: 0, frozen: false },
+    // `frozenBy` lists WHY the line is shut ('minimum' | 'tax' | 'default'); the line opens
+    // when the last reason is cured. See helpers.js CREDIT_FREEZE.
+    credit: { balance: 0, frozen: false, frozenBy: [] },
     // 🧾 THE BOOKS. Cash-basis revenue and deductible spending for the current quarter, plus
     // what share of the takings arrived on an untraceable rail (which is what drives audit
     // exposure). The day tick closes each quarter, bills the tax, and opens the next one.
@@ -198,10 +200,6 @@ export function initialState() {
     // bank will talk to you again after a default. See game/loans.js.
     loan: null,
     loanDefaultedUntil: 0,
-    // Which system froze the distributor line. A tax lien and a missed distributor minimum can
-    // both freeze it, and clearing the tax bill must only thaw a line the TAX froze — otherwise
-    // paying your tax would quietly cure a distributor default too.
-    _creditFrozenByTax: false,
     distributorSince: null,  // absolute day you first became a distributor (Household Name + millionaire); null until then. Gates the passive wholesale income + the one-time unlock notice.
     storeEventPlanned: null, // tonight's hosted event: {type, cost, prizeCard?} — resolves on the next day-advance
     eventCooldownLeft: 0,    // days before you can host another event

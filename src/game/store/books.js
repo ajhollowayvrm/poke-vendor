@@ -9,7 +9,7 @@
 // state.books as it moves, so there is exactly one place money is counted. See game/tax.js.
 
 import { round2, fmtMoney } from '../engine'
-import { netWorthFull } from './helpers'
+import { netWorthFull, freezeCredit, thawCredit } from './helpers'
 import { absoluteDay } from './constants'
 import {
   quarterBill, quarterNet, quarterEnds, freshBooks, quarterLabel, QUARTER_HISTORY,
@@ -67,9 +67,11 @@ export function createBooksSlice(set, get) {
       }))
       const left = get().books.owed
       get().log('tax', `🧾 Paid ${fmtMoney(pay)} in tax${left > 0.005 ? ` — ${fmtMoney(left)} still outstanding` : ' — the quarter is settled'}`, -pay)
-      // Clearing the bill lifts a tax freeze on the distributor line.
-      if (left <= 0.005 && get().credit?.frozen && get()._creditFrozenByTax) {
-        set(st => ({ credit: { ...st.credit, frozen: false }, _creditFrozenByTax: false }))
+      // Clearing the bill lifts a tax freeze on the distributor line. thawCredit drops only
+      // the 'tax' reason — a line ALSO frozen for a missed minimum stays shut until that is
+      // paid too, which the old single boolean got wrong in both directions.
+      const day = absoluteDay(get().currentDay, get().monthsElapsed)
+      if (left <= 0.005 && thawCredit(set, get, day)) {
         get().log('credit', `🏦 The distributor line is open again now the tax lien is cleared.`, 0)
       }
       return { ok: true, paid: pay, left }
@@ -183,8 +185,9 @@ export function settleTaxArrears(set, get, days) {
   const grown = round2(b.owed * Math.pow(1 + ARREARS_DAILY_RATE, days))
   const arrears = (b.arrears || 0) + days
   set(st => ({ books: { ...st.books, owed: grown, arrears } }))
-  if (arrears >= ARREARS_FREEZE_DAYS && !get().credit?.frozen) {
-    set(st => ({ credit: { ...(st.credit || { balance: 0 }), frozen: true }, _creditFrozenByTax: true }))
+  // freezeCredit returns true only the first time the lien lands, so this logs once rather
+  // than every day the bill stays outstanding.
+  if (arrears >= ARREARS_FREEZE_DAYS && freezeCredit(set, get, 'tax')) {
     get().log('tax-late', `🧾 ${arrears} days behind on tax. The lien froze your distributor credit line — clear the bill to reopen it.`, 0)
   }
   return { owed: grown, arrears }
@@ -223,12 +226,15 @@ export function settleLoan(set, get, days) {
     set(st => ({
       loan: null,
       loanDefaultedUntil: day + LOAN_DEFAULT_COOLDOWN,
-      credit: { ...(st.credit || { balance: 0 }), frozen: true },
       // The unpaid balance does not evaporate — it lands on the books as money owed.
       books: { ...(st.books || {}), owed: round2((st.books?.owed || 0) + l.balance) },
     }))
+    // The line freezes with a REASON, so the day tick can lift it when the cooldown ends.
+    // Without one this froze the line for good: a default usually leaves no credit balance,
+    // and every thaw path the game had needed a balance to pay down.
+    freezeCredit(set, get, 'default')
     get().addNotoriety(-LOAN_DEFAULT_NOTORIETY, false, 'dings')
-    get().log('loan-default', `🏦 DEFAULT. ${LOAN_DEFAULT_DAYS} days without an instalment and the bank called the ${l.name} in. The ${fmtMoney(l.balance)} still stands, your distributor line is frozen, and nobody is lending to you for ${LOAN_DEFAULT_COOLDOWN} days.`, 0)
+    get().log('loan-default', `🏦 DEFAULT. ${LOAN_DEFAULT_DAYS} days without an instalment and the bank called the ${l.name} in. The ${fmtMoney(l.balance)} still stands, your distributor line is frozen, and nobody is lending to you for ${LOAN_DEFAULT_COOLDOWN} days — the line reopens when that runs out.`, 0)
     return { defaulted: true, paid, balance: l.balance }
   }
   if (missed > 0) {

@@ -258,11 +258,11 @@ export default function App() {
     if (split) {
       const avail = useGame.getState().creditAvailable()
       if (cash + 1e-9 < price) { // cash alone won't cover it — the rest must ride the line
-        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
+        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
         if (cash + avail + 1e-9 < price) return toast(`Not enough cash + credit for ${productTypeLabel(product)}. Pay down your balance or bring more cash.`)
       }
     } else if (onCredit) {
-      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
+      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
       if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${productTypeLabel(product)}. Pay down your balance or buy with cash.`)
     } else if (cash < price) return toast(`Not enough cash for ${productTypeLabel(product)}.`)
     // How the charge broke down, for the toast: cash-first, credit covers any shortfall.
@@ -369,11 +369,11 @@ export default function App() {
     // on cash — mirrors buyProduct.
     if (split) {
       if (cash + 1e-9 < find.price) {
-        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
+        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
         if (cash + useGame.getState().creditAvailable() + 1e-9 < find.price) return toast(`Not enough cash + credit for the ${find.setName} pack.`)
       }
     } else if (onCredit) {
-      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen — pay it down first (💳 panel on the Buy tab).')
+      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
       if (useGame.getState().creditAvailable() + 1e-9 < find.price) return toast(`Not enough credit available for the ${find.setName} pack. Pay down your balance or buy with cash.`)
     } else if (cash < find.price) return toast(`Not enough cash for the ${find.setName} pack (${fmtMoney(find.price)}).`)
     const item = useGame.getState().buyDistributorVintage(distId, find.setId, find.product, find.price, { ...opts, onCredit, split })
