@@ -284,3 +284,40 @@ function MilestoneShelf({ unlocked }) {
     </Collapse>
   )
 }
+
+// The week's reputation, one bar per day — RepPanel's `📒 This week` list says WHERE the ⭐ came
+// from, and this says WHEN. Bars rather than PriceChart's line, because rep is a per-day DELTA
+// and not a running level: a line between two daily totals draws a slope that never happened.
+//
+// Rep goes negative (a bad sale, a missed pre-order), so the zero baseline is drawn and the
+// scale always includes 0 — otherwise a losing week renders as a cheerful climb, and a week
+// that is all losses renders identically to a week that is all gains.
+function Sparkline({ points, color = 'var(--gold)', height = 34 }) {
+  const pts = (points || []).filter(v => typeof v === 'number' && Number.isFinite(v))
+  if (pts.length < 2) return null
+  const W = 120, H = 34, pad = 2
+  const lo = Math.min(0, ...pts), hi = Math.max(0, ...pts)
+  const span = hi - lo || 1
+  const y = v => pad + (1 - (v - lo) / span) * (H - pad * 2)
+  const zero = y(0)
+  // Gap of one unit between bars, so seven days read as seven days rather than a block.
+  const slot = (W - pad * 2) / pts.length
+  const barW = Math.max(1.5, slot - 1)
+  const total = pts.reduce((a, v) => a + v, 0)
+  return (
+    <svg className="rep-spark" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img"
+      style={{ display: 'block', width: '100%', height, marginTop: 8 }}
+      aria-label={`Reputation by day over the last ${pts.length} days, ${total >= 0 ? 'up' : 'down'} ${Math.abs(Math.round(total))} in total`}>
+      {pts.map((v, i) => {
+        const top = Math.min(y(v), zero)
+        return (
+          <rect key={i} x={(pad + i * slot + (slot - barW) / 2).toFixed(1)} y={top.toFixed(1)}
+            width={barW.toFixed(1)} height={Math.max(0.75, Math.abs(y(v) - zero)).toFixed(1)}
+            fill={v >= 0 ? color : 'var(--red)'} rx="0.75" />
+        )
+      })}
+      <line x1={pad} y1={zero.toFixed(1)} x2={W - pad} y2={zero.toFixed(1)}
+        stroke="var(--line)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+    </svg>
+  )
+}
