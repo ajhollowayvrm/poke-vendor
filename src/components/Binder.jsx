@@ -2,13 +2,15 @@ import { useMemo, useState } from 'react'
 import { useGame, absoluteDay } from '../game/store'
 import {
   SETS, setCompletion, completionReward, isChaseCard, fmtMoney,
-  cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
+  cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats,
+  mastersetStatsForSets, setIdOfCard, cardImg,
   CUT_ORDER, cardNumber, BINDER_VALUE_CAPS, binderReserveActive,
 } from '../game/engine'
 import { BINDER_COST } from '../game/store'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
 import { clickable } from '../ui/clickable'
+import BinderPicker from './BinderPicker'
 import { Explain } from '../ui/Explain'
 
 // The Binder: a per-set MASTERSET. Every card has a slot for each printing VARIANT it can
@@ -78,6 +80,13 @@ export default function Binder({ onPick }) {
   const mySets = useMemo(
     () => mySetIds.map(id => SETS.find(x => x.id === id)).filter(Boolean),
     [mySetIds])
+  // Masterset progress for EVERY binder you own, so the picker can sort by completion. One
+  // batched pass (see engine.mastersetStatsForSets) rather than a mastersetStats() per binder:
+  // at 137 binders and ~7,000 slotted cards the loop version re-walks the binder array 137
+  // times, which is ~1M card reads on every render that touches a card.
+  const allStats = useMemo(
+    () => mastersetStatsForSets(mySetIds, binder, collection, reserve),
+    [mySetIds, binder, collection, reserve])
 
   const [setId, setSetId] = useState(() => mySets[0]?.id || null)
   const [missingOnly, setMissingOnly] = useState(false)
@@ -233,9 +242,8 @@ export default function Binder({ onPick }) {
       )}
       {shelf}
       <div className="binder-head">
-        <select value={set.id} onChange={e => { setSetId(e.target.value); setMissingOnly(false) }}>
-          {mySets.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
+        <BinderPicker sets={mySets} stats={allStats} value={set.id}
+          onChange={id => { setSetId(id); setMissingOnly(false) }} />
         <span className="cap">{set.series}</span>
         {everCompleted && (
           <Explain label="What Set done means" trigger={

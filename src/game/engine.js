@@ -3871,6 +3871,13 @@ export function mastersetStats(set, binderCards, ownedCards = [], reserve = null
   const mine = ownedCards.filter(c => setIdOfCard(c) === set.id)
   const looseKeys = new Set(mine.filter(c => fileableInBinder(c, reserve)).map(c => `${c.id}:${cardVariant(c)}`))
   const anyKeys = new Set(mine.map(c => `${c.id}:${cardVariant(c)}`))
+  return countMastersetSlots(set, binderKeys, looseKeys, anyKeys)
+}
+
+// The slot walk itself, shared by the one-set and the many-set entry points so the two can
+// never drift into reporting different numbers for the same binder.
+const NO_KEYS = new Set()
+function countMastersetSlots(set, binderKeys, looseKeys, anyKeys) {
   let total = 0, placed = 0, placeable = 0, reserved = 0
   for (const card of set.cards) {
     for (const v of cardMastersetVariants(set, card)) {
@@ -3883,6 +3890,44 @@ export function mastersetStats(set, binderCards, ownedCards = [], reserve = null
   }
   return { total, placed, placeable, reserved, pct: total ? Math.round((placed / total) * 100) : 0,
     complete: total > 0 && placed === total }
+}
+
+// The same stats for MANY sets at once — what the binder picker needs to sort every binder you
+// own by completion.
+//
+// Calling mastersetStats() in a loop is the obvious version and it is quadratic: each call
+// filters the WHOLE binder array to find one set's cards, so a real save (137 binders, 6,962
+// slotted cards) walks about a million cards to answer a question worth ~40,000. That is a
+// phone stalling every time the collection changes, for a dropdown.
+//
+// Bucket every card by set in ONE pass instead, then walk each set's slots once.
+// → Map<setId, { total, placed, placeable, reserved, pct, complete }>
+export function mastersetStatsForSets(setIds, binderCards, ownedCards = [], reserve = null) {
+  const want = new Set(setIds)
+  const placedBy = new Map(), looseBy = new Map(), anyBy = new Map()
+  const add = (map, sid, key) => {
+    let s = map.get(sid)
+    if (!s) { s = new Set(); map.set(sid, s) }
+    s.add(key)
+  }
+  for (const c of binderCards) {
+    const sid = setIdOfCard(c)
+    if (sid && want.has(sid)) add(placedBy, sid, `${c.id}:${cardVariant(c)}`)
+  }
+  for (const c of ownedCards) {
+    const sid = setIdOfCard(c)
+    if (!sid || !want.has(sid)) continue
+    const key = `${c.id}:${cardVariant(c)}`
+    add(anyBy, sid, key)
+    if (fileableInBinder(c, reserve)) add(looseBy, sid, key)
+  }
+  const out = new Map()
+  for (const sid of want) {
+    const set = setById(sid)
+    if (!set) continue // a binder pointing at a set this build no longer ships
+    out.set(sid, countMastersetSlots(set, placedBy.get(sid) || NO_KEYS, looseBy.get(sid) || NO_KEYS, anyBy.get(sid) || NO_KEYS))
+  }
+  return out
 }
 
 // --- Bulk-sell protection ----------------------------------------------------

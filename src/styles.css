@@ -2274,6 +2274,62 @@ button.rip-hit-row:hover { background:#ffffff14; }
 .binder-prog-row b { font-size: var(--fs-lg); }
 .binder-bar { height:7px; background:#0c0f1a; border:1px solid var(--line); border-radius:999px; overflow:hidden; }
 .binder-bar > div { height:100%; background:linear-gradient(90deg,var(--accent2),var(--green)); transition:width .3s; }
+/* ---------- Binder picker (custom dropdown, sorted by completion) ----------
+   A native <select> cannot draw a progress bar, and at 137 binders the list has to be
+   filterable and sortable — which is the whole reason this is hand-rolled. */
+.bpick { position: relative; flex: 1 1 260px; min-width: 220px; max-width: 380px; }
+.bpick-trigger { display: flex; flex-direction: column; align-items: stretch; gap: 5px; width: 100%;
+  min-height: var(--tap-fine); padding: 7px 30px 8px 12px; text-align: left; cursor: pointer;
+  background: var(--panel2); color: var(--txt); border: 1px solid var(--line); border-radius: 10px; }
+.bpick-trigger:hover { background: var(--hover); }
+.bpick-trigger-main { display: flex; align-items: baseline; gap: 8px; }
+.bpick-caret { position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--dim); font-size: var(--fs-xs); pointer-events: none; }
+.bpick-name { font-size: var(--fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; min-width: 0; flex: 1; }
+.bpick-pct { font-size: var(--fs-xs); font-weight: 800; color: var(--gold);
+  font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.bpick-pct.done { color: var(--green); }
+/* Same height, radius and fill as .binder-bar, so the bar in a row and the bar on the open
+   binder below read as one measurement rather than two lookalike widgets. */
+.bpick-bar { display: block; height: 5px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 999px; overflow: hidden; }
+.bpick-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent2), var(--green));
+  transition: width .3s; }
+.bpick-bar.done > span { background: var(--green); }
+
+.bpick-pop { position: absolute; z-index: 60; top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 18px 40px #0009; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+.bpick-filter { width: 100%; background: var(--panel2); color: var(--txt); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 10px; font-weight: 600; font-size: var(--fs-sm); min-height: var(--tap-fine); }
+.bpick-filter::placeholder { color: var(--dim); }
+.bpick-list { max-height: min(58vh, 400px); overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; gap: 2px; overscroll-behavior: contain; }
+/* flex:none is load-bearing. A flex COLUMN shrinks its items to fit when their content
+   overflows, and this list is 136 items inside a max-height box — without it every row is
+   squashed below its own content and the rows paint on top of each other. */
+.bpick-row { display: flex; flex: none; flex-direction: column; gap: 3px; padding: 8px 9px;
+  border-radius: 8px; cursor: pointer; border: 1px solid transparent;
+  min-height: var(--tap-fine); justify-content: center; }
+.bpick-row.active { background: var(--hover); border-color: var(--line); }
+.bpick-row.on { border-color: color-mix(in srgb, var(--gold) 55%, transparent);
+  background: color-mix(in srgb, var(--gold) 9%, transparent); }
+.bpick-row-top { display: flex; align-items: baseline; gap: 8px; }
+.bpick-row-sub { display: block; }
+.bpick-empty { padding: 10px 4px; }
+@media (max-width: 640px) {
+  /* A thumb, not a cursor: every control grows to the full tap floor, and the picker takes a
+     whole row of the header — 137 set names need the width more than the series label beside
+     it does. The list gets more of the screen because the page behind it is unreachable while
+     the popup is open anyway. */
+  .bpick { max-width: none; flex-basis: 100%; }
+  .bpick-trigger { min-height: var(--tap); }
+  .bpick-row { min-height: var(--tap); }
+  .bpick-filter { min-height: var(--tap); }
+  .bpick-list { max-height: min(62vh, 420px); }
+}
+
 .binder-grid { margin-top:14px; }
 .binder-slot { position:relative; border-radius:12px; }
 .binder-slot.owned { cursor:pointer; }
