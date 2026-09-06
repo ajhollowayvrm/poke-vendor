@@ -1203,7 +1203,7 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 /* Skip rendering/decoding grid cells far off-screen — big win on long card grids
    (binder/prices can be 100-300 cards). The intrinsic size keeps the scrollbar
    stable while off-screen cells are un-rendered. */
-.coll-cell, .binder-slot, .priceitem { content-visibility: auto; contain-intrinsic-size: auto 210px; }
+.coll-cell, .binder-slot { content-visibility: auto; contain-intrinsic-size: auto 210px; }
 .coll-cell { position: relative; }
 .coll-cell.selectable { cursor: pointer; border-radius: 12px; transition: box-shadow .12s, background .12s; }
 .coll-cell.selectable:hover { box-shadow: 0 0 0 1px var(--line); }
@@ -1334,16 +1334,10 @@ select { background: var(--panel2); color: var(--txt); border:1px solid var(--li
 .calcard.today { box-shadow: 0 0 0 2px var(--accent2); }
 .calday .dur { color: var(--dim); font-weight: 600; text-transform: none; letter-spacing: 0; }
 
-/* ---------- Price guide ---------- */
+/* ---------- Card search box ---------- */
 .search { background: var(--panel2); color: var(--txt); border:1px solid var(--line); border-radius:10px;
   padding:8px 12px; font-weight:600; font-size: var(--fs-md); min-width: 180px; flex: 1; max-width: 280px; }
 .search::placeholder { color: var(--dim); }
-.priceitem { background:#0c0f1a; border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
-.priceitem img { width:100%; display:block; }
-.priceitem .pname { font-size: var(--fs-xs); font-weight:700; padding:6px 8px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.priceitem .prow { display:flex; justify-content:space-between; align-items:center; padding:0 8px 8px; }
-.priceitem .ptag { font-size: var(--fs-xs); font-weight:800; }
-.priceitem .pval { font-size: var(--fs-sm); font-weight:800; color: var(--green); }
 
 /* ---------- Sealed-modal set price sheet (lazy sub-view) ---------- */
 .setprice-head { display:flex; align-items:center; gap:12px; }

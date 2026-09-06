@@ -503,8 +503,6 @@ export const SURFACES = [
     [{ bnav: 'Inventory' }, { subtab: '🔬 Grader' }]),
   T('inv-regulars', 'Inventory › Regulars (inverse gate, no storefront)', 'fresh', '.pane',
     [{ bnav: 'Inventory' }, { subtab: '🤝 Regulars' }]),
-  T('inv-prices', 'Inventory › Price guide', 'loaded', '.pane',
-    [{ bnav: 'Inventory' }, { subtab: '🏷️ Prices' }]),
 
   // ---- Settings ----------------------------------------------------------------------------------
   T('settings', 'Settings', 'loaded', '.pane', [{ bnav: 'More' }, { subtab: '⚙️ Settings' }]),

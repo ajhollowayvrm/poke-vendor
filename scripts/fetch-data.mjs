@@ -198,7 +198,7 @@ const EN_SETS = [
   { id: 'base6',   name: 'Legendary Collection', vintage: true },
 
   // ===================== EXTRA — promo & collectible card POOLS (no sealed product) =====================
-  // These have no booster/box to buy: they're a card pool, browsable in the price guide and — crucially —
+  // These have no booster/box to buy: they're a card pool and — crucially —
   // the source the real bonus promos pin to (a "151 ETB" ships an svp Black Star Promo). `extra:true`
   // keeps them out of the shop, distributors, and the Vault. No SET_GROUP → no products, prices come
   // straight from pokemontcg.io's tcgplayer data.

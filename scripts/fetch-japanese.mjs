@@ -128,7 +128,7 @@ const JP_SET_NAMES = {
 // The 🎌 prefix is load-bearing, not decoration: JP SV11B/SV11W are literally named "Black Bolt"
 // and "White Flare", the same as their English counterparts, and the UI only distinguishes
 // japanese sets inside the distributor panel. Without it a JP card reads identically to a very
-// differently-priced English one in the collection, price guide and card modal.
+// differently-priced English one in the collection, set price sheet and card modal.
 function setName(tcgdexId, jtName, tsetName) {
   const base = JP_SET_NAMES[tcgdexId]
     || String(jtName || '').replace(/^\s*[A-Za-z0-9.]+\s*:\s*/, '').trim()

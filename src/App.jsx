@@ -42,7 +42,6 @@ const UpgradeShop = lazyChunk(() => import('./components/UpgradeShop'))
 const BoothInbox = lazyChunk(() => import('./components/BoothInbox'))
 const StoreMessages = lazyChunk(() => import('./components/StoreMessages'))
 const Settings = lazyChunk(() => import('./components/Settings'))
-const PriceGuide = lazyChunk(() => import('./components/PriceGuide'))
 const SealedInventory = lazyChunk(() => import('./components/SealedInventory'))
 const AutoRip = lazyChunk(() => import('./components/AutoRip'))
 const ShowPrep = lazyChunk(() => import('./components/ShowPrep'))
@@ -751,8 +750,8 @@ export default function App() {
         )}
         {/* 👤 You — everything that is yours, including the two things that were filed
             under analytics on a tab you could only read: your career (job, money, credit,
-            standing) and the upgrades you spend it on. 🏷️ Prices moved into a Collapse at the
-            foot of Collection: it is reference you check, not a place you go. */}
+            standing) and the upgrades you spend it on. The 🏷️ Prices guide is gone — per-set
+            values still live on a sealed product's detail card (SetPriceList). */}
         {tab === 'you' && (
           <>
             <div className="subtabs">
@@ -773,14 +772,9 @@ export default function App() {
               <button className={`subtab ${youTab === 'upgrades' ? 'active' : ''}`} onClick={() => setYouTab('upgrades')}>⬆️ Upgrades</button>
             </div>
             <div className="pane" key={youTab}>
-              {youTab === 'cards' && (
-                <>
-                  {hasStore
-                    ? <StoreStock place="personal" only="cards" onRip={ripFromInventory} onPick={setPicked} />
-                    : <Collection onPick={setPicked} />}
-                  <PriceGuide collapsed />
-                </>
-              )}
+              {youTab === 'cards' && (hasStore
+                ? <StoreStock place="personal" only="cards" onRip={ripFromInventory} onPick={setPicked} />
+                : <Collection onPick={setPicked} />)}
               {youTab === 'sealed' && (hasStore ? <StoreStock place="personal" only="sealed" onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /> : <SealedInventory onRip={ripFromInventory} onSift={startSift} />)}
               {youTab === 'binders' && <Binder onPick={setPicked} />}
               {youTab === 'grader' && <Bench />}

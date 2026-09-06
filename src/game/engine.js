@@ -167,7 +167,7 @@ export const VINTAGE_SETS = data.sets.filter(s => s.vintage)
 export const SECONDARY_SETS = data.sets.filter(s => s.secondary)
 // `extra` sets — Black Star Promos, McDonald's, POP, trainer kits, one-off specials. These have
 // NO sealed product to buy: they never enter the shop, distributors, or the Vault. They exist as
-// a card POOL — browsable in the price guide, and the source the real bonus promos pin to (a
+// a card POOL — the source the real bonus promos pin to (a
 // "151 ETB" ships an svp black-star promo, a card that lives in an `extra` set, not sv3pt5). Kept
 // out of SHOP_SETS above so their cards never flood modern shop stock / offers / wants.
 export const EXTRA_SETS = data.sets.filter(s => s.extra)
