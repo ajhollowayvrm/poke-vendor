@@ -3014,3 +3014,8 @@ button.rip-hit-row:hover { background:#ffffff14; }
 /* Unread carries a left rule rather than a colour swap: the list is read top to bottom and a
    bar in the margin survives being scanned, where a tinted row does not. */
 .dm-line.unread { border-left: 3px solid var(--accent2); }
+
+/* 🏷️ The floor ticket. The marked price leads and the market value sits under it in small —
+   the two together are the margin, which is the number a shop owner is actually reading. */
+.tl-marked { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
+.tl-marked small { font-size: var(--fs-xs); font-weight: 500; }

@@ -7,6 +7,7 @@ import { groupCardLines, groupLines, sealedSku } from './sku'
 import CardTile from './CardTile'
 import SealedModal from './SealedModal'
 import { clickable } from '../ui/clickable'
+import { STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP } from '../game/shows'
 import { Collapse } from '../ui/Collapse'
 import { absoluteDay } from '../game/store/constants'
 
@@ -613,6 +614,10 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
   const featuredTotal = useGame(s => s.collection.filter(c => c._featured).length + (s.sealedInventory || []).filter(it => it._featured).length)
   // This line's own floor depth cap — loose booster packs get a much deeper bin than everything else.
   const lineCap = useGame(s => floorItemCap(s, line.kind, line.first))
+  // What a walk-in is actually charged for this line. Sealed carries the retail markup, singles
+  // the plain in-person premium — the same split resolveEncounter applies at the till
+  // (store/booth.js), read from the same constants so the ticket and the register agree.
+  const marked = round2(line.unit * (1 + (line.kind === 'sealed' ? SEALED_SHOP_MARKUP : STORE_SALE_PREMIUM)))
 
   const { kind, first, items, unit, count } = line
   const set = kind === 'sealed' ? setById(first.setId) : null
@@ -717,7 +722,21 @@ function StockRow({ line, place, floorSkus, onRip, onPick, onInspect, onHold, fl
           </> : `${first.product.packs} pk${first.vintage ? ' · 🗝️ vintage' : ''}`}
         </div>
       </div>
-      <span className="tl-unit">{fmtMoney(unit)}</span>
+      {/* 🏷️ ON THE FLOOR, SHOW THE TICKET. Everywhere else `unit` is market value, which is the
+          right number for stock you are holding — but on the sales floor the question is "what
+          is out, and at what price", and a walk-in does not pay market. They pay the in-person
+          premium (sealed carries the bigger retail markup), which is what resolveEncounter
+          actually charges them. Showing bare market here meant the one screen whose whole job
+          is the shop window was the one screen quoting the wrong price. Market stays visible
+          underneath, because the spread between the two IS the margin. */}
+      {place === 'floor' ? (
+        <span className="tl-unit tl-marked">
+          {fmtMoney(marked)}
+          <small className="muted">mkt {fmtMoney(unit)}</small>
+        </span>
+      ) : (
+        <span className="tl-unit">{fmtMoney(unit)}</span>
+      )}
       <span className="tl-count">×{count}</span>
 
       {/* Move + sell actions per place (hidden in select mode — use the bulk bar). Grouped in
