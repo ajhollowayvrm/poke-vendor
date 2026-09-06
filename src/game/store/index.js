@@ -950,7 +950,10 @@ export const useGame = create(persist((set, get) => ({
       // into: their pages survive, free. Only NEW sets need a bought binder from here.
       const seen = new Set()
       const grandfathered = []
-      for (const c of state.binder || []) {
+      // Array.isArray for the same reason the auction drain uses it (see v71): the guard above
+      // only FILTERS a bucket that is already an array, so a corrupt one reaches here intact
+      // and `for..of` on an object throws — which aborts rehydrate and starts a fresh game.
+      for (const c of (Array.isArray(state.binder) ? state.binder : [])) {
         const sid = setIdOfCard(c)
         if (!sid || seen.has(sid)) continue
         seen.add(sid)
@@ -979,8 +982,12 @@ export const useGame = create(persist((set, get) => ({
       // drop (the drop only stamped `doneDay`), and the boxes it paid for are sitting in the
       // storeroom. Refunding those would hand back the money AND keep the product.
       const wave = state.reprintWave
-      const refund = wave && wave.doneDay == null ? (wave.prepaid || 0) : 0
-      if (refund > 0.005) state.cash = round2((state.cash || 0) + refund)
+      // Number(), because a NaN `cash` is silent and total: every comparison against it is
+      // false, so the game reads as "you cannot afford anything" forever and no error is
+      // raised anywhere. A refund is worth exactly nothing next to that risk.
+      const prepaid = Number(wave?.prepaid) || 0
+      const refund = wave && wave.doneDay == null ? prepaid : 0
+      if (refund > 0.005) state.cash = round2((Number(state.cash) || 0) + refund)
       delete state.auctionLots
       delete state.auctionLotsDay
       delete state.auctionStats
@@ -999,7 +1006,12 @@ export const useGame = create(persist((set, get) => ({
       //
       // They come back UNSOLD and unlisted, which is the honest outcome: the auction they were
       // in will never close now, and nobody bid a real number for them.
-      const homeward = (state.auctions || []).map(a => a?.card).filter(Boolean)
+      // Array.isArray, not `|| []`. A corrupt or hand-edited save can carry a non-array here,
+      // and `.map` on an object THROWS — which aborts rehydrate and boots the player into a
+      // fresh game while their real save sits unreadable on disk. That is the single worst
+      // thing a migration can do, and it is why the corrupt-save guard above exists; this
+      // bucket is not on that list, so it guards itself.
+      const homeward = (Array.isArray(state.auctions) ? state.auctions : []).map(a => a?.card).filter(Boolean)
       if (homeward.length) state.collection = [...homeward, ...(state.collection || [])]
       delete state.auctions
     }

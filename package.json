@@ -16,6 +16,7 @@
     "verify-slimsave": "vite-node scripts/verify-slimsave.mjs",
     "verify-showresume": "vite-node scripts/verify-showresume.mjs",
     "verify-navmigration": "vite-node scripts/verify-navmigration.mjs",
+    "verify-savechain": "vite-node scripts/verify-savechain.mjs",
     "verify-boothstock": "vite-node scripts/verify-boothstock.mjs",
     "verify-ui": "node scripts/verify-ui.mjs",
     "sweep": "node tools/ios/sweep.mjs",
