@@ -27,7 +27,17 @@ const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff
 // Your storefront. Orders accrue per game-DAY — pass a day (here or by attending
 // a show) to generate them. While you're away at a show, online orders need a
 // Smartphone and walk-ins need a Shop Assistant, or they're missed.
-export default function BoothInbox({ onRip, onSift, onPick }) {
+// The Store tab's own sub-tabs (Overview · Messages · Inventory · Financials) are the
+// navigation once there is a storefront, so this screen's group strip has to give way to it:
+//
+//   forceGroup   — pin to one group and hide the strip entirely (Store → Messages: the whole
+//                  screen is the inbox, and a second tab bar for one choice is noise).
+//   hideGroups   — drop some groups from the strip and keep the rest (Store → Inventory: the
+//                  stock, the product lines, the listings and the regulars are four different
+//                  jobs and all four still need a way in — only the inbox moved out).
+//
+// Neither is set on the pre-storefront Sell screen, where the strip IS the navigation.
+export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, hideGroups = null }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — gates the tournament night
@@ -97,7 +107,23 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
   const validInbox = useMemo(
     () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings, shopDisplay)),
     [inbox, collection, listings, shopDisplay])
+  // An encounter with no channel is an online one (that was the only kind when the field
+  // was added) — never drop it out of both lists over a missing tag.
+  const walkinInbox = useMemo(() => validInbox.filter(x => x.enc.channel === 'walkin'), [validInbox])
+  const onlineInbox = useMemo(() => validInbox.filter(x => x.enc.channel !== 'walkin'), [validInbox])
   const consignments = useGame(s => s.consignments)
+  // 💬 Walk-ins and online orders are two different jobs. Somebody standing at your counter
+  // is a conversation you are having NOW; an online order is a queue you work through. They
+  // arrive on separate rates in the day tick and they were landing in one undifferentiated
+  // list, so a shop owner could not tell "four people are in the store" from "four emails".
+  // Device-local like every other view preference (see pv.selltab).
+  const [msgChannel, setMsgChannelRaw] = useState(() => {
+    try { const v = localStorage.getItem('pv.msgchannel'); return v === 'online' || v === 'walkin' ? v : 'walkin' } catch { return 'walkin' }
+  })
+  const setMsgChannel = (v) => {
+    setMsgChannelRaw(v)
+    try { localStorage.setItem('pv.msgchannel', v) } catch { /* private mode */ }
+  }
   const [active, setActive] = useState(null) // {enc, id}
   const [wantPick, setWantPick] = useState(null) // a want/forum post being fulfilled {kind:'want'|'forum', item}
   const [holdPick, setHoldPick] = useState(null) // shelf item being held for a regular {kind, uid, label}
@@ -129,7 +155,18 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
     try { const t = localStorage.getItem('pv.sell.' + g); if (LEAVES.includes(t) && GROUP_OF[t] === g) leaf = t } catch { /* private mode */ }
     setSellTab(leaf)
   }
-  const sellGroup = GROUP_OF[sellTab] || 'orders'
+  const hidden = hideGroups || []
+  const sellGroup = forceGroup || GROUP_OF[sellTab] || 'orders'
+  // A remembered leaf can point at a group this instance does not show — pinned to another
+  // group, or one that was hidden. Land on a visible group's default leaf rather than
+  // rendering the wrong pane under the right heading, or no pane at all.
+  useEffect(() => {
+    if (forceGroup && GROUP_OF[sellTab] !== forceGroup) { openGroup(forceGroup); return }
+    if (!forceGroup && hidden.includes(GROUP_OF[sellTab])) {
+      const first = ['shop', 'products', 'online', 'regulars', 'orders'].find(g => !hidden.includes(g))
+      if (first) openGroup(first)
+    }
+  }, [forceGroup, sellTab, hideGroups])
   const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
   const marketCount = listings.length + consignments.length + auctions.length
   const forumCount = (forumPosts || []).length
@@ -157,11 +194,14 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
 
   return (
     <>
+      {!forceGroup && (
       <div className="subtabs">
-        <button className={`subtab ${sellGroup === 'orders' ? 'active' : ''}`} onClick={() => openGroup('orders')}>
-          📨 Orders{validInbox.length ? ` (${validInbox.length})` : ''}
-        </button>
-        {hasStore && (() => {
+        {!hidden.includes('orders') && (
+          <button className={`subtab ${sellGroup === 'orders' ? 'active' : ''}`} onClick={() => openGroup('orders')}>
+            {hasStore ? '💬 Messages' : '📨 Orders'}{validInbox.length ? ` (${validInbox.length})` : ''}
+          </button>
+        )}
+        {hasStore && !hidden.includes('shop') && (() => {
           const waiting = (storeConsignRequests || []).length + (buyinOffers || []).length
           return (
             <button className={`subtab ${sellGroup === 'shop' ? 'active' : ''}`} onClick={() => openGroup('shop')}>
@@ -169,18 +209,23 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             </button>
           )
         })()}
-        <button className={`subtab ${sellGroup === 'products' ? 'active' : ''}`} onClick={() => openGroup('products')}>
-          🎁 Products{(builtPackCount + machineStock) ? ` (${builtPackCount + machineStock})` : ''}
-        </button>
-        <button className={`subtab ${sellGroup === 'online' ? 'active' : ''}`} onClick={() => openGroup('online')}>
-          🌐 Online{(marketCount + forumCount) ? ` (${marketCount + forumCount}${listingOfferCount ? ` · ${listingOfferCount} to review` : ''})` : ''}
-        </button>
-        {hasStore && (
+        {!hidden.includes('products') && (
+          <button className={`subtab ${sellGroup === 'products' ? 'active' : ''}`} onClick={() => openGroup('products')}>
+            🎁 Products{(builtPackCount + machineStock) ? ` (${builtPackCount + machineStock})` : ''}
+          </button>
+        )}
+        {!hidden.includes('online') && (
+          <button className={`subtab ${sellGroup === 'online' ? 'active' : ''}`} onClick={() => openGroup('online')}>
+            🌐 Online{(marketCount + forumCount) ? ` (${marketCount + forumCount}${listingOfferCount ? ` · ${listingOfferCount} to review` : ''})` : ''}
+          </button>
+        )}
+        {hasStore && !hidden.includes('regulars') && (
           <button className={`subtab ${sellGroup === 'regulars' ? 'active' : ''}`} onClick={() => openGroup('regulars')}>
             🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}
           </button>
         )}
       </div>
+      )}
 
       {/* Inside a grouped pane, a segmented toggle picks the leaf. Machine needs the
           storefront; without one Products is just the pack line and the toggle hides. */}
@@ -196,6 +241,18 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
           <button className={`segbtn ${sellTab === 'machine' ? 'active' : ''}`} onClick={() => setSellTab('machine')}>🎰 Machine{machineStock ? ` (${machineStock})` : ''}</button>
         </div>
       )}
+      {/* 🏬 The counter and the inbox, kept apart. Only a storefront has walk-ins worth
+          separating — before that, everything arrives online and a toggle would be theatre. */}
+      {sellGroup === 'orders' && hasStore && (
+        <div className="seg sell-seg mt-4" role="group" aria-label="Messages view">
+          <button className={`segbtn ${msgChannel === 'walkin' ? 'active' : ''}`} onClick={() => setMsgChannel('walkin')}>
+            🏬 Walk-ins{walkinInbox.length ? ` (${walkinInbox.length})` : ''}
+          </button>
+          <button className={`segbtn ${msgChannel === 'online' ? 'active' : ''}`} onClick={() => setMsgChannel('online')}>
+            🌐 Online orders{onlineInbox.length ? ` (${onlineInbox.length})` : ''}
+          </button>
+        </div>
+      )}
       {sellGroup === 'online' && (
         <div className="seg sell-seg mt-4" role="group" aria-label="Online view">
           <button className={`segbtn ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>🌐 On the market{marketCount ? ` (${marketCount})` : ''}</button>
@@ -208,7 +265,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         // its own tab so a long listings panel doesn't bury the day-to-day orders.
         (listings.length || consignments.length || auctions.length)
           ? <SellStrips />
-          : <div className="empty">Nothing on the market. List or consign cards from your collection (Inventory → Select) to sell them here. 🌐</div>
+          : <div className="empty">Nothing on the market. List or consign cards from your collection (👤 You → Collection → Select) to sell them here. 🌐</div>
       ) : sellTab === 'packs' ? (
         // Your custom mystery-pack product line: tiers, the builder, and built stock.
         <MysteryPacks />
@@ -787,9 +844,19 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         </div>
       )}
 
-      {validInbox.length === 0 ? (
-        <div className="empty">No orders waiting. Let a day pass (or attend a show) to bring customers in. 📨</div>
-      ) : (() => {
+      {(() => {
+        // Without a storefront there is one list; with one, the toggle above chooses which.
+        const shown = !hasStore ? validInbox : msgChannel === 'walkin' ? walkinInbox : onlineInbox
+        if (shown.length === 0) {
+          return (
+            <div className="empty">
+              {!hasStore ? 'No orders waiting. Let a day pass (or attend a show) to bring customers in. 📨'
+                : msgChannel === 'walkin' ? 'Nobody in the shop right now. Keep the floor stocked and let a day pass. 🏬'
+                : 'No online orders waiting. List stock and let a day pass. 🌐'}
+            </div>
+          )
+        }
+        return (() => {
         // Group the inbox into readable sections: trades to weigh, walk-in requests
         // to fill, then everything else (offers, browsers, sealed deals). Each order
         // matches the FIRST section it fits, so nothing renders twice.
@@ -803,7 +870,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
         ]
         const used = new Set()
         return sections.map(sec => {
-          const items = validInbox.filter(x => !used.has(x.i) && sec.match(x))
+          const items = shown.filter(x => !used.has(x.i) && sec.match(x))
           items.forEach(x => used.add(x.i))
           if (!items.length) return null
           return (
@@ -839,6 +906,7 @@ export default function BoothInbox({ onRip, onSift, onPick }) {
             </div>
           )
         })
+        })()
       })()}
       </>
       )}

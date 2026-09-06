@@ -3,10 +3,15 @@ import { SETS, rawValue, fmtMoney, rarityRank, marketMult, cardImg, cardNumber }
 import { useGame } from '../game/store'
 import { rarityColor } from './CardTile'
 import { Explain } from '../ui/Explain'
+import { Collapse } from '../ui/Collapse'
 
 // A reference price guide: pick a set, browse every card with LIVE market prices
 // (the living-market multiplier rides through rawValue, so values move day to day).
-export default function PriceGuide() {
+//
+// `collapsed` folds the whole guide behind a header. It stopped being a sub-tab of its own in
+// the nav rewrite: a sub-tab is a place you GO, and this is something you look up while you
+// are already looking at your cards. It sits at the foot of the Collection now.
+export default function PriceGuide({ collapsed = false }) {
   const [setId, setSetId] = useState(SETS[0].id)
   const [q, setQ] = useState('')
   const [sort, setSort] = useState('number')
@@ -38,11 +43,13 @@ export default function PriceGuide() {
   const total = set.cards.reduce((sum, c) => sum + rawValue(c), 0)
   const priciest = [...set.cards].sort((a, b) => rawValue(b) - rawValue(a))[0]
 
-  return (
+  const body = (
     <>
-      <div className="banner mt-6">
-        💲 Price guide — live TCGplayer market values, with the living market moving each set day to day. Refresh the base snapshot from the ⚙️ menu.
-      </div>
+      {!collapsed && (
+        <div className="banner mt-6">
+          💲 Price guide — live TCGplayer market values, with the living market moving each set day to day. Refresh the base snapshot from the ⚙️ menu.
+        </div>
+      )}
 
       <div className="toolbar">
         <select value={setId} onChange={e => { setSetId(e.target.value); setQ('') }}>
@@ -98,6 +105,15 @@ export default function PriceGuide() {
       </div>
       {cards.length === 0 && <div className="empty">No cards match “{q}”.</div>}
     </>
+  )
+
+  if (!collapsed) return body
+  return (
+    <Collapse id="priceguide" className="wants mt-6" defaultOpen={false}
+      head="💲 Price guide" badge={set.name}
+      hint="Live market values for every card in a set. Reference — look it up and carry on.">
+      {body}
+    </Collapse>
   )
 }
 

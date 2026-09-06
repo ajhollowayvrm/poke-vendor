@@ -16,10 +16,18 @@ import { Explain } from './ui/Explain'
 import { SHOW_TIERS } from './game/shows'
 import { milestoneById } from './game/milestones'
 
-// Primary nav: the core loop + Stats (your money/standing matters more than the upgrade
-// shop, so Stats gets a top slot and Upgrades moves behind the ⚙️ gear). Reference/meta
-// screens (Grader, Prices) live as sub-tabs inside Collection; Settings + Upgrades live
-// behind the gear in the top bar.
+// Primary nav, grouped by WHO OWNS THE THING rather than by what the screen is made of.
+//
+//   👤 You      — everything that is yours: collection, sealed, binders, grading, career, upgrades
+//   🏬 Sell/Store — the business: before a storefront it is a Sell screen; after, a whole shop
+//   🛒 Buy      — the shelves, the local marketplace, and the cart you fill from them
+//   📱 Socials  — the audience: the pulse, three platforms, going live, and the DMs
+//   🎪 Shows    — the calendar and the floor (unchanged)
+//   ⚙️ Misc     — settings, and nothing else
+//
+// The Stats tab is gone. It reported and could not be acted on, and the things worth keeping
+// from it belong with what they are ABOUT: your job and standing are yours (You → Career),
+// the books and the burn are the business's (Store → Financials).
 // Tab-gated screens, split out of the boot chunk. None of these paint on the first render
 // (the Buy tab), and together they were ~500 KB of source that WebKit had to parse before it
 // could show anything. lazyChunk() carries the stale-chunk guard — see src/ui/lazyChunk.jsx.
@@ -27,7 +35,6 @@ const PackOpening = lazyChunk(() => import('./components/PackOpening'))
 const Collection = lazyChunk(() => import('./components/Collection'))
 const CardModal = lazyChunk(() => import('./components/CardModal'))
 const Bench = lazyChunk(() => import('./components/Bench'))
-const Stats = lazyChunk(() => import('./components/Stats'))
 const Books = lazyChunk(() => import('./components/Books'))
 const Calendar = lazyChunk(() => import('./components/Calendar'))
 const ShowFloor = lazyChunk(() => import('./components/ShowFloor'))
@@ -35,12 +42,17 @@ const UpgradeShop = lazyChunk(() => import('./components/UpgradeShop'))
 const BoothInbox = lazyChunk(() => import('./components/BoothInbox'))
 const Settings = lazyChunk(() => import('./components/Settings'))
 const PriceGuide = lazyChunk(() => import('./components/PriceGuide'))
-const Marketplace = lazyChunk(() => import('./components/Marketplace'))
 const SealedInventory = lazyChunk(() => import('./components/SealedInventory'))
 const AutoRip = lazyChunk(() => import('./components/AutoRip'))
 const ShowPrep = lazyChunk(() => import('./components/ShowPrep'))
 const Livestream = lazyChunk(() => import('./components/Livestream'))
 const Socials = lazyChunk(() => import('./components/Socials'))
+const Career = lazyChunk(() => import('./components/Career'))
+const StoreOverview = lazyChunk(() => import('./components/StoreOverview'))
+const StoreFinancials = lazyChunk(() => import('./components/StoreFinancials'))
+const Pulse = lazyChunk(() => import('./components/Pulse'))
+const DMs = lazyChunk(() => import('./components/DMs'))
+const Feed = lazyChunk(() => import('./components/Feed'))
 const Binder = lazyChunk(() => import('./components/Binder'))
 const Regulars = lazyChunk(() => import('./components/Regulars'))
 const StoreStock = lazyChunk(() => import('./components/StoreStock'))
@@ -50,12 +62,16 @@ const Shop = lazyChunk(() => import('./components/Shop'))
 import TabBar from './components/TabBar'
 
 // Vendor flow order: source → stock → sell → shows → content → back office.
-const TABS = ['shop', 'collection', 'myshop', 'shows', 'stream', 'stats']
+const TABS = ['you', 'sell', 'buy', 'socials', 'shows', 'misc']
 // Device-local, deliberately NOT part of the saved game. See the useState that reads it.
 const TAB_KEY = 'pv.tab'
-const TAB_LABEL = { shop: 'Buy', myshop: 'Sell', stream: 'Stream', shows: 'Shows', stats: 'Stats', collection: 'Inventory' }
+const TAB_LABEL = { you: 'You', sell: 'Sell', buy: 'Buy', socials: 'Socials', shows: 'Shows', misc: 'Misc' }
 // Icons for the mobile bottom nav (label is shown small underneath).
-const TAB_ICON = { shop: '🛒', myshop: '🏬', stream: '🔴', shows: '🎪', stats: '📊', collection: '🗂️' }
+const TAB_ICON = { you: '👤', sell: '🏬', buy: '🛒', socials: '📱', shows: '🎪', misc: '⚙️' }
+// The tab ids were renamed with the nav, and `pv.tab` is on the DEVICE — it is not part of the
+// save and no migration reaches it. Without this map every existing player opens the app once
+// on the wrong screen, which reads as the app having lost their place.
+const TAB_ALIAS = { shop: 'buy', collection: 'you', myshop: 'sell', stream: 'socials', stats: 'you', settings: 'misc' }
 
 // The 📦 Inventory items that ARE this product (same set + same product — price and
 // provenance vary by where a copy came from, but it's the same thing to rip).
@@ -86,13 +102,13 @@ export default function App() {
   const [tab, setTab] = useState(() => {
     try {
       const t = localStorage.getItem(TAB_KEY)
-      return t && TABS.includes(t) ? t : 'shop'
-    } catch { return 'shop' }
+      const mapped = TAB_ALIAS[t] || t
+      return mapped && TABS.includes(mapped) ? mapped : 'buy'
+    } catch { return 'buy' }
   })
-  const [collTab, setCollTab] = useState('cards') // Cards sub-tab: cards | sealed | binder | grader | regulars | prices
-  const [shopTab, setShopTab] = useState('sealed') // Buy sub-tab: sealed | market
-  const [settingsPane, setSettingsPane] = useState('settings') // gear sub-pane: settings | upgrades
-  const [statsPane, setStatsPane] = useState('stats')           // Stats sub-pane: stats | books
+  const [youTab, setYouTab] = useState('cards')       // You: cards | sealed | binders | grader | regulars | career | upgrades
+  const [storeTab, setStoreTab] = useState('overview') // Store (with a storefront): overview | messages | inventory | financials
+  const [socialsTab, setSocialsTab] = useState('pulse') // Socials: pulse | tweeter | instantgram | yourtube | dms
   const [ripping, setRipping] = useState(null)   // { set, product } when opening packs
   const [sifting, setSifting] = useState(null)   // array of sealed items being auto-ripped ("sift")
   // Where to land when a rip finishes. A rip you START from your collection/store/inbox
@@ -125,8 +141,14 @@ export default function App() {
   const taxOwed = useGame(s => s.books?.owed || 0)
   const regularsCount = useGame(s => (s.regulars || []).filter(r => !r.flags?.burned).length)
   const hasStore = useGame(s => !!s.upgrades.storefront)
+  // 📒 How many masterset pages you have going — a binder is a thing you bought and put a set
+  // in, so this is a count of chases you chose, not of sets that exist.
+  const binderCount = useGame(s => (s.binders || []).filter(b => b.setId).length)
+  // 💬 Unread socials DMs. Badged on the tab like the store's inbox is, because it is the
+  // same promise: something is waiting for you in there.
+  const unreadDms = useGame(s => (s.dms || []).filter(d => !d.read).length)
   // With a storefront your stock splits into Shop Floor / Storeroom (on the 🏬 Store tab) and
-  // the Cards tab becomes your PERSONAL collection. A pre-store flipper keeps the flat "All"
+  // the Collection sub-tab becomes your PERSONAL collection. A pre-store flipper keeps the flat
   // cards view + Sealed + Regulars here — the three-inventory world is a storefront feature.
   // Personal keepsakes split into their own Cards / Sealed sub-tabs, so each carries its own badge.
   const personalCardCount = useGame(s => (s.collection || []).filter(c => c.locked).length)
@@ -142,7 +164,7 @@ export default function App() {
   // Lock body scroll while a rip overlay is visible (ripping + on the Buy tab).
   // The overlay itself still scrolls internally (overflow-y:auto). Unlocks on cleanup.
   useEffect(() => {
-    if (ripping && tab === 'shop') {
+    if (ripping && tab === 'buy') {
       document.body.classList.add('rip-lock')
       return () => document.body.classList.remove('rip-lock')
     }
@@ -243,61 +265,60 @@ export default function App() {
     useGame.getState().clearPendingRanks()
   }, [pendingRanks])
 
-  // Buying STOCKS sealed product into your inventory (hold-first) — you rip, list, or flip
-  // it later from the 📦 Inventory tab. Only the dedicated "Rip on buy" setting bypasses
-  // that to rip immediately (the old instant-rip behaviour); the "Auto-rip" pacing toggle
-  // does NOT, so turning on auto-advance no longer silently skips the inventory.
+  // Adding to the 🛒 CART, not buying. A stocking run is one order — you fill a basket, then
+  // answer "cash or credit" and "store or personal" once, at checkout (see Cart.jsx and
+  // store/sourcing.js checkoutCart). Every shelf row on the Buy tab lands here.
+  //
+  // ONE exception, and it is the whole reason this branch exists: the "Rip on buy" setting
+  // means the product is opened the moment it is yours, and a cart cannot rip. With it on we
+  // buy immediately, exactly as before. The setting is the player's, and a cart that silently
+  // swallowed it would be the feature breaking a setting rather than respecting it.
   function buyProduct(distId, set, product, qty = 1, opts = {}) {
+    if (!useGame.getState().settings.ripOnBuy) {
+      const price = product._buyPrice ?? product.price
+      const n = Math.max(1, Math.floor(qty))
+      useGame.getState().addToCart(distId, set, product, n, price)
+      const origin = product.pool?.series ? `the ${product.pool.series} era` : set.name
+      toast(`🛒 Added ${n > 1 ? `${n}× ` : ''}${productTypeLabel(product)} of ${origin} — ${fmtMoney(price * n)}. Check out from the cart when the order's done.`, 3200)
+      return
+    }
+    return buyAndRipNow(distId, set, product, opts)
+  }
+
+  // The Rip-on-buy path: charge for ONE unit and open it. Quantity is meaningless here — you
+  // cannot rip four boxes at once — so this deliberately ignores it.
+  function buyAndRipNow(distId, set, product, opts = {}) {
     // The Buy UI passes `_buyPrice` = the actual charged price (the distributor's price
     // at your rapport, a case lot, or a clearance lot), so shown == charged.
     const price = product._buyPrice ?? product.price
     const onCredit = !!opts.onCredit
     const split = !!opts.split // 🔀 cash first, credit for the remainder
-    // Credit buys ride the distributor line; a split needs cash + open credit to cover the
-    // (single-unit) charge, and the credit leg (if any) needs a non-frozen line.
     if (split) {
       const avail = useGame.getState().creditAvailable()
       if (cash + 1e-9 < price) { // cash alone won't cover it — the rest must ride the line
-        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
+        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line in 👤 You → Career for what froze it and what lifts it.')
         if (cash + avail + 1e-9 < price) return toast(`Not enough cash + credit for ${productTypeLabel(product)}. Pay down your balance or bring more cash.`)
       }
     } else if (onCredit) {
-      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
+      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line in 👤 You → Career for what froze it and what lifts it.')
       if (useGame.getState().creditAvailable() + 1e-9 < price) return toast(`Not enough credit available for ${productTypeLabel(product)}. Pay down your balance or buy with cash.`)
     } else if (cash < price) return toast(`Not enough cash for ${productTypeLabel(product)}.`)
-    // How the charge broke down, for the toast: cash-first, credit covers any shortfall.
-    const splitNote = (cp, xp) => xp > 0 ? ` — ${fmtMoney(cp)} cash + ${fmtMoney(xp)} credit 💳` : ''
-    const n = Math.max(1, Math.floor(qty))
     const distName = distributorById(distId)?.name || 'They'
-    // What to call where this came from. A cross-set product has an ANCHOR set for bookkeeping,
-    // but naming it would be a lie — "Ultra Premium Collection of Phantasmal Flames" claims
-    // 18 Phantasmal Flames packs. Name the era instead.
-    const origin = product.pool?.series ? `the ${product.pool.series} era` : set.name
-    if (n > 1) {
-      // Bulk buy: stock N at once into inventory (a stocking action — ignores Rip-on-buy).
-      const limB = useGame.getState().purchaseLimitFor(distId, set, product)
-      if (limB.left <= 0) return toast(`${distName} limit ${productTypeLabel(product)} to ${limB.limit} per customer a day — you've had yours. Back tomorrow.`)
-      const res = useGame.getState().buyFromDistributorBulk(distId, set, product, price, n, { onCredit, split, locked: true })
-      if (!res) return toast(`${distName} can't fill that order right now.`)
-      const short = res.bought < n ? ` (only ${res.bought} were available)` : ''
-      const pay = onCredit ? ' on credit 💳' : split ? splitNote(res.cashPart, res.creditPart) : ''
-      if (res.inTransit) return toast(`🚢 Import order placed — ${res.bought}× ${productTypeLabel(product)} of ${origin} for ${fmtMoney(res.spent)}${pay}${short}. It's crossing the Pacific; watch the Buy tab for the landing.`)
-      return toast(`Stocked ${res.bought}× ${productTypeLabel(product)} of ${origin} for ${fmtMoney(res.spent)}${pay}${short} — in Inventory → 📦 Sealed.`)
-    }
     // 🚫 Check the ration BEFORE blaming the shelf — "sold out" and "you have had your one"
     // need different answers from the player.
     const lim = useGame.getState().purchaseLimitFor(distId, set, product)
     if (lim.left <= 0) {
       return toast(`${distName} limit ${productTypeLabel(product)} to ${lim.limit} per customer a day — you've had yours. Back tomorrow${lim.limit < 4 ? ', or keep spending here and they\u2019ll let you take more' : ''}.`)
     }
+    // What to call where this came from. A cross-set product has an ANCHOR set for bookkeeping,
+    // but naming it would be a lie — "Ultra Premium Collection of Phantasmal Flames" claims
+    // 18 Phantasmal Flames packs. Name the era instead.
+    const origin = product.pool?.series ? `the ${product.pool.series} era` : set.name
     const item = useGame.getState().buyFromDistributor(distId, set, product, price, { onCredit, split, locked: true })
     if (!item) return toast(`${distName} are out of ${productTypeLabel(product)} — check back after it restocks.`)
     // 🚢 An import buy is on the water — nothing to rip yet, whatever the Rip-on-buy setting says.
     if (item._inTransit) return toast(`🚢 Import order placed — ${productTypeLabel(product)} of ${origin} is crossing the Pacific (lands in a few days).`)
-    if (useGame.getState().settings.ripOnBuy) { ripFromInventory(item.uid); return }
-    const cashPart = Math.min(cash, price), creditPart = round2(price - cashPart)
-    const pay = onCredit ? ' on credit 💳' : split ? splitNote(cashPart, creditPart) : ''
-    toast(`Stocked ${productTypeLabel(product)} of ${origin}${pay} — it's in your ${hasStore ? '🏬 Store → 📦 Storeroom' : 'Inventory → 📦 Sealed'}: rip, list, or flip it whenever.`)
+    ripFromInventory(item.uid)
   }
 
   // Rip a held product from inventory: remove it (no re-charge — already paid) and run
@@ -312,13 +333,13 @@ export default function App() {
     const oneByOne = useGame.getState().settings.openSealedOneByOne
     const animated = product.packs === 1 || oneByOne
     if (animated) {
-      setRipReturn(tab)     // came from Cards/Store/Inbox → Done should return you here
+      setRipReturn(tab)     // came from You/Store/Messages → Done should return you here
       // cost: what you ACTUALLY paid for this unit, not what it lists at today — the 📜 rip log
       // records a real P/L, and the sift (which reads boughtPrice directly) must agree with it.
       // uid identifies the physical unit: a cross-set product derives its pack lineup from it,
       // so two of the same UPC rip different sets. See drawPackSets in engine.js.
       setRipping({ set, product, cost: item.boughtPrice, uid: item.uid })
-      setTab('shop')
+      setTab('buy')
       return
     }
     // A cross-set product rips packs from several sets, so name the ERA in the log and the
@@ -340,7 +361,7 @@ export default function App() {
     })
     const hits = all.filter(c => c._isHit || c.foil).length
     const across = packSets ? ` across ${new Set(packSets).size} sets` : ''
-    setTab('collection')
+    setTab('you')
     toast(`Ripped a ${productTypeLabel(product)} of ${originLabel}${across} — ${all.length} cards, ${hits} hit${hits===1?'':'s'}! Check your collection.`)
   }
 
@@ -369,11 +390,11 @@ export default function App() {
     // on cash — mirrors buyProduct.
     if (split) {
       if (cash + 1e-9 < find.price) {
-        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
+        if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line in 👤 You → Career for what froze it and what lifts it.')
         if (cash + useGame.getState().creditAvailable() + 1e-9 < find.price) return toast(`Not enough cash + credit for the ${find.setName} pack.`)
       }
     } else if (onCredit) {
-      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line on the Stats tab for what froze it and what lifts it.')
+      if (useGame.getState().credit?.frozen) return toast('Your credit line is frozen. See 💳 The distributor line in 👤 You → Career for what froze it and what lifts it.')
       if (useGame.getState().creditAvailable() + 1e-9 < find.price) return toast(`Not enough credit available for the ${find.setName} pack. Pay down your balance or buy with cash.`)
     } else if (cash < find.price) return toast(`Not enough cash for the ${find.setName} pack (${fmtMoney(find.price)}).`)
     const item = useGame.getState().buyDistributorVintage(distId, find.setId, find.product, find.price, { ...opts, onCredit, split })
@@ -381,7 +402,7 @@ export default function App() {
     if (!item) return toast(`${distributorById(distId)?.name || 'They'} have no more sealed ${find.setName} — it's out of print. A fresh find turns up next week.`)
     const cashPart = Math.min(cash, find.price), creditPart = round2(find.price - cashPart)
     const pay = onCredit ? ' on credit 💳' : (split && creditPart > 0) ? ` — ${fmtMoney(cashPart)} cash + ${fmtMoney(creditPart)} credit 💳` : ''
-    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${pay}${opts.fromHold ? ' (they held it for you)' : ''} — it's in Inventory → 📦 Sealed.`)
+    toast(`Stocked a sealed ${find.setName} pack for ${fmtMoney(find.price)}${pay}${opts.fromHold ? ' (they held it for you)' : ''} — it's in 👤 You → 📦 Sealed.`)
   }
 
   // "Rip another" from the end-of-rip summary: keep going straight into the next one you
@@ -399,7 +420,7 @@ export default function App() {
     // A different held unit → a different uid → a different pack lineup for a cross-set
     // product. Ripping three UPCs in a row must not deal the same sets three times.
     setRipping(r => ({ set, product: held.product, cost: held.boughtPrice, uid: held.uid, nonce: (r?.nonce ?? 0) + 1 }))
-    setTab('shop')
+    setTab('buy')
   }
 
   // Attend a show in one of two modes — BOTH now open the same prep screen first (pick the
@@ -507,7 +528,7 @@ export default function App() {
   // navigating away would kill the broadcast mid-rip (the escrow would settle it as an
   // abandoned stream — refunds, off-camera cracks, day spent). End it on purpose instead.
   function selectTab(t) {
-    if (streamLive && t !== 'stream') { toast('🔴 You’re live — end the stream before leaving.'); return }
+    if (streamLive && t !== 'socials') { toast('🔴 You’re live — end the stream before leaving.'); return }
     // Re-tapping the tab you are already on scrolls that tab back to the top, which is what every
     // native tab bar on the platform does — and the fastest way out of a long Inventory or Shows
     // list without dragging. Only for a genuine re-tap; a tab CHANGE keeps its own scroll.
@@ -555,18 +576,23 @@ export default function App() {
   }
 
   // One list drives BOTH tab strips (top bar + bottom nav); badges are computed once here.
-  const navItems = [
-    ...TABS.map(t => ({
-      id: t, label: TAB_LABEL[t], icon: TAB_ICON[t],
-      badge: t === 'myshop' ? inboxCount + offerCount : t === 'collection' ? pendingCount : 0,
-    })),
-    // The phone nav has no gear button (the top bar's is display:none ≤640px) — "More" stands in.
-    { id: 'settings', label: 'Settings', bottomLabel: 'More', icon: '⚙️', badge: 0, bottomOnly: true },
-  ]
+  // ⚙️ Misc is a real tab now rather than a synthetic bottom-only stand-in for the gear, so
+  // the phone nav and the desktop strip finally show the same six entries. The top bar keeps
+  // its gear as a shortcut to the same place.
+  const navItems = TABS.map(t => ({
+    id: t,
+    // The Sell tab BECOMES the Store the day you sign a lease. Same tab, same slot, different
+    // job — so the label has to say which one you are looking at.
+    label: t === 'sell' && hasStore ? 'Store' : TAB_LABEL[t],
+    icon: TAB_ICON[t],
+    badge: t === 'sell' ? inboxCount + offerCount
+      : t === 'you' ? pendingCount
+      : t === 'socials' ? unreadDms : 0,
+  }))
 
   return (
     <div className="app">
-      <header className={`topbar ${ripping && tab === 'shop' ? 'rip-hide' : ''}`} ref={topbarRef}>
+      <header className={`topbar ${ripping && tab === 'buy' ? 'rip-hide' : ''}`} ref={topbarRef}>
         <h1 className="brand">Poké<b>Vendor</b></h1>
         <TabBar items={navItems} active={tab} onSelect={selectTab} variant="top" />
         <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
@@ -604,7 +630,7 @@ export default function App() {
               at the grader. Moving value around (grading, buying, listing) doesn't change it;
               only real income or spending does.</p>
           </Explain>
-          <button className={`gear-btn ${tab === 'settings' ? 'active' : ''}`} aria-label="Settings & Stats" onClick={() => selectTab('settings')}>⚙️</button>
+          <button className={`gear-btn ${tab === 'misc' ? 'active' : ''}`} aria-label="Settings" onClick={() => selectTab('misc')}>⚙️</button>
         </div>
       </header>
 
@@ -621,8 +647,8 @@ export default function App() {
       <GameOver />
 
       {/* A rip is mid-flight but you've stepped away to another tab — a tap brings you back. */}
-      {ripping && tab !== 'shop' && (
-        <button className="rip-resume-banner" onClick={() => selectTab('shop')}>
+      {ripping && tab !== 'buy' && (
+        <button className="rip-resume-banner" onClick={() => selectTab('buy')}>
           📦 Rip in progress — tap to resume
         </button>
       )}
@@ -639,79 +665,133 @@ export default function App() {
             Shows, Stats and Inventory, where none of its steps live. Buy is where you land by
             default and where step one ("buy some sealed") happens, so it's the one screen the
             onboarding belongs on; it still dismisses globally. */}
-        {tab === 'shop' && <FirstRun />}
+        {tab === 'buy' && <FirstRun />}
         {/* ONE Suspense for the whole tab area: every screen inside is a lazy chunk, and a
             per-tab boundary would just mean the same fallback written fourteen times. */}
         <Chunk>
-        {tab === 'shop' && (
-          <div className="pane">
-            <div className="subtabs">
-              <button className={`subtab ${shopTab === 'sealed' ? 'active' : ''}`} onClick={() => setShopTab('sealed')}>📦 Sealed</button>
-              <button className={`subtab ${shopTab === 'market' ? 'active' : ''}`} onClick={() => setShopTab('market')}>🛍️ Marketplace</button>
-            </div>
-            {shopTab === 'sealed' && <Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} />}
-            {shopTab === 'market' && <Marketplace />}
-          </div>
+        {/* One shelf, no sub-tabs. The 🛍️ global Marketplace used to sit beside it doing the
+            same job as the 📱 Local Marketplace — buy a single you want, right now — but with
+            honest prices, which made the local board's whole point (nobody here prices to
+            market) into a strictly worse option. The local board is the one that stayed. It is
+            not a sub-tab either: it is what a marketplace DISTRIBUTOR renders (Shop.jsx). */}
+        {tab === 'buy' && (
+          <div className="pane"><Shop cash={cash} onBuy={buyProduct} onBuyVintage={buyDistVintage} /></div>
         )}
 
         {tab === 'shows' && <div className="pane"><Calendar onAttend={attendShow} /></div>}
-        {tab === 'myshop' && <div className="pane"><BoothInbox onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /></div>}
-        {/* 📱 The off-air half of the channel sits above the go-live screen — hidden while
-            you're actually broadcasting, so a live session keeps the whole view. */}
-        {tab === 'stream' && <div className="pane">{!streamLive && <Socials />}<Livestream /></div>}
-        {tab === 'stats' && (
+
+        {/* 🏬 Sell BECOMES Store the day you sign a lease. Before that it is one screen — you
+            are a flipper with a phone, and a four-way split of a shop you do not have would be
+            four mostly-empty screens. After, the shop is a place with a front of house, an
+            inbox, a stockroom and a set of books, and each of those is its own job. */}
+        {tab === 'sell' && !hasStore && (
+          <div className="pane"><BoothInbox onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /></div>
+        )}
+        {tab === 'sell' && hasStore && (
           <>
             <div className="subtabs">
-              <button className={`subtab ${statsPane === 'stats' ? 'active' : ''}`} onClick={() => setStatsPane('stats')}>📊 Stats</button>
-              {/* 🧾 The books sit beside the stats because they read the same way: what the
-                  business did, rather than what you can do next. The tax due chip is on the
-                  tab itself so a bill can never quietly go unpaid. */}
-              <button className={`subtab ${statsPane === 'books' ? 'active' : ''}`} onClick={() => setStatsPane('books')}>
-                🧾 Books{taxOwed > 0 ? ` (${fmtMoney(taxOwed)})` : ''}
+              <button className={`subtab ${storeTab === 'overview' ? 'active' : ''}`} onClick={() => setStoreTab('overview')}>📊 Overview</button>
+              <button className={`subtab ${storeTab === 'messages' ? 'active' : ''}`} onClick={() => setStoreTab('messages')}>
+                💬 Messages{inboxCount + offerCount ? ` (${inboxCount + offerCount})` : ''}
+              </button>
+              <button className={`subtab ${storeTab === 'inventory' ? 'active' : ''}`} onClick={() => setStoreTab('inventory')}>📦 Inventory</button>
+              <button className={`subtab ${storeTab === 'financials' ? 'active' : ''}`} onClick={() => setStoreTab('financials')}>
+                💰 Financials{taxOwed > 0 ? ` (${fmtMoney(taxOwed)})` : ''}
               </button>
             </div>
-            <div className="pane" key={statsPane}>
-              {statsPane === 'stats' ? <Stats /> : <Books />}
+            <div className="pane" key={storeTab}>
+              {storeTab === 'overview' && <StoreOverview />}
+              {/* Messages and Inventory are both still BoothInbox's — it owns the encounter
+                  modal, the quote counter, the holds, the events, the buy-ins and every selling
+                  surface, and splitting those out would be a second rewrite riding on this one.
+                  Messages pins to the inbox; Inventory keeps the rest of its strip, because the
+                  stock, the product lines, the listings and the regulars are four different jobs
+                  and all four still need a way in. */}
+              {storeTab === 'messages' && <BoothInbox forceGroup="orders" onRip={ripFromInventory} onSift={startSift} onPick={setPicked} />}
+              {storeTab === 'inventory' && <BoothInbox hideGroups={['orders']} onRip={ripFromInventory} onSift={startSift} onPick={setPicked} />}
+              {storeTab === 'financials' && <StoreFinancials />}
             </div>
           </>
         )}
-
-        {tab === 'collection' && (
+        {/* 📱 Socials. The livestream lives under ▶️ YourTube, where a long-form channel
+            actually belongs — going live and posting a vlog are the same channel doing the same
+            thing at two lengths, and they had no business being on separate tabs. While you are
+            ON AIR the sub-tab strip is hidden and the broadcast keeps the whole view; selectTab
+            already refuses to leave the tab mid-stream. */}
+        {tab === 'socials' && (
+          <>
+            {!streamLive && (
+              <div className="subtabs">
+                <button className={`subtab ${socialsTab === 'pulse' ? 'active' : ''}`} onClick={() => setSocialsTab('pulse')}>📈 Pulse</button>
+                <button className={`subtab ${socialsTab === 'tweeter' ? 'active' : ''}`} onClick={() => setSocialsTab('tweeter')}>🐦 Tweeter</button>
+                <button className={`subtab ${socialsTab === 'instantgram' ? 'active' : ''}`} onClick={() => setSocialsTab('instantgram')}>📸 Instantgram</button>
+                <button className={`subtab ${socialsTab === 'yourtube' ? 'active' : ''}`} onClick={() => setSocialsTab('yourtube')}>▶️ YourTube</button>
+                <button className={`subtab ${socialsTab === 'dms' ? 'active' : ''}`} onClick={() => setSocialsTab('dms')}>
+                  💬 DMs{unreadDms ? ` (${unreadDms})` : ''}
+                </button>
+              </div>
+            )}
+            <div className="pane" key={streamLive ? 'live' : socialsTab}>
+              {streamLive ? <Livestream /> : (
+                <>
+                  {socialsTab === 'pulse' && <Pulse />}
+                  {socialsTab === 'tweeter' && <Feed platform="tweeter" />}
+                  {socialsTab === 'instantgram' && <Feed platform="instantgram" />}
+                  {socialsTab === 'yourtube' && <><Feed platform="yourtube" /><Livestream /></>}
+                  {socialsTab === 'dms' && <DMs />}
+                  {/* The standing commitments belong with the platforms, not with the pulse
+                      (which is about other people) or the DMs (which are other people). */}
+                  {socialsTab !== 'dms' && socialsTab !== 'pulse' && <Socials />}
+                </>
+              )}
+            </div>
+          </>
+        )}
+        {/* 👤 You — everything that is yours, including the two things that were filed
+            under analytics on a tab you could only read: your career (job, money, credit,
+            standing) and the upgrades you spend it on. 🏷️ Prices moved into a Collapse at the
+            foot of Collection: it is reference you check, not a place you go. */}
+        {tab === 'you' && (
           <>
             <div className="subtabs">
-              <button className={`subtab ${collTab === 'cards' ? 'active' : ''}`} onClick={() => setCollTab('cards')}>
-                {hasStore ? `🗂️ Personal${personalCardCount ? ` (${personalCardCount})` : ''}` : '🗂️ All'}
+              <button className={`subtab ${youTab === 'cards' ? 'active' : ''}`} onClick={() => setYouTab('cards')}>
+                {hasStore ? `🗂️ Collection${personalCardCount ? ` (${personalCardCount})` : ''}` : '🗂️ Collection'}
               </button>
-              <button className={`subtab ${collTab === 'sealed' ? 'active' : ''}`} onClick={() => setCollTab('sealed')}>
+              <button className={`subtab ${youTab === 'sealed' ? 'active' : ''}`} onClick={() => setYouTab('sealed')}>
                 📦 Sealed{(hasStore ? personalSealedCount : sealedCount) ? ` (${hasStore ? personalSealedCount : sealedCount})` : ''}
               </button>
-              <button className={`subtab ${collTab === 'binder' ? 'active' : ''}`} onClick={() => setCollTab('binder')}>📒 Binder</button>
-              <button className={`subtab ${collTab === 'grader' ? 'active' : ''}`} onClick={() => setCollTab('grader')}>🔬 Grader{pendingCount ? ` (${pendingCount})` : ''}</button>
-              {!hasStore && <button className={`subtab ${collTab === 'regulars' ? 'active' : ''}`} onClick={() => setCollTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>}
-              <button className={`subtab ${collTab === 'prices' ? 'active' : ''}`} onClick={() => setCollTab('prices')}>🏷️ Prices</button>
+              <button className={`subtab ${youTab === 'binders' ? 'active' : ''}`} onClick={() => setYouTab('binders')}>
+                📒 Binders{binderCount ? ` (${binderCount})` : ''}
+              </button>
+              <button className={`subtab ${youTab === 'grader' ? 'active' : ''}`} onClick={() => setYouTab('grader')}>🔬 Grading{pendingCount ? ` (${pendingCount})` : ''}</button>
+              {!hasStore && <button className={`subtab ${youTab === 'regulars' ? 'active' : ''}`} onClick={() => setYouTab('regulars')}>🤝 Regulars{regularsCount ? ` (${regularsCount})` : ''}</button>}
+              <button className={`subtab ${youTab === 'career' ? 'active' : ''}`} onClick={() => setYouTab('career')}>
+                💼 Career{!hasStore && taxOwed > 0 ? ` (${fmtMoney(taxOwed)})` : ''}
+              </button>
+              <button className={`subtab ${youTab === 'upgrades' ? 'active' : ''}`} onClick={() => setYouTab('upgrades')}>⬆️ Upgrades</button>
             </div>
-            <div className="pane" key={collTab}>
-              {collTab === 'cards' && (hasStore ? <StoreStock place="personal" only="cards" onRip={ripFromInventory} onPick={setPicked} /> : <Collection onPick={setPicked} />)}
-              {collTab === 'sealed' && (hasStore ? <StoreStock place="personal" only="sealed" onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /> : <SealedInventory onRip={ripFromInventory} onSift={startSift} />)}
-              {collTab === 'binder' && <Binder onPick={setPicked} />}
-              {collTab === 'grader' && <Bench />}
-              {collTab === 'regulars' && !hasStore && <Regulars />}
-              {collTab === 'prices' && <PriceGuide />}
+            <div className="pane" key={youTab}>
+              {youTab === 'cards' && (
+                <>
+                  {hasStore
+                    ? <StoreStock place="personal" only="cards" onRip={ripFromInventory} onPick={setPicked} />
+                    : <Collection onPick={setPicked} />}
+                  <PriceGuide collapsed />
+                </>
+              )}
+              {youTab === 'sealed' && (hasStore ? <StoreStock place="personal" only="sealed" onRip={ripFromInventory} onSift={startSift} onPick={setPicked} /> : <SealedInventory onRip={ripFromInventory} onSift={startSift} />)}
+              {youTab === 'binders' && <Binder onPick={setPicked} />}
+              {youTab === 'grader' && <Bench />}
+              {youTab === 'regulars' && !hasStore && <Regulars />}
+              {youTab === 'career' && <Career />}
+              {youTab === 'upgrades' && <UpgradeShop />}
             </div>
           </>
         )}
 
-        {tab === 'settings' && (
-          <>
-            <div className="subtabs">
-              <button className={`subtab ${settingsPane === 'settings' ? 'active' : ''}`} onClick={() => setSettingsPane('settings')}>⚙️ Settings</button>
-              <button className={`subtab ${settingsPane === 'upgrades' ? 'active' : ''}`} onClick={() => setSettingsPane('upgrades')}>⬆️ Upgrades</button>
-            </div>
-            <div className="pane" key={settingsPane}>
-              {settingsPane === 'settings' ? <Settings /> : <UpgradeShop />}
-            </div>
-          </>
-        )}
+        {/* ⚙️ Misc — settings, and nothing else. ⬆️ Upgrades moved to 👤 You, next to the money
+            that buys them; with nothing left to switch between, the sub-tab row is gone. */}
+        {tab === 'misc' && <div className="pane"><Settings /></div>}
         </Chunk>
       </main>
 
@@ -719,14 +799,14 @@ export default function App() {
           tab switches; hidden (not unmounted) when you're off the Buy tab, so leaving and
           returning resumes the same rip rather than discarding it. */}
       {ripping && (
-        <div className={`rip-overlay rip-full ${tab === 'shop' ? '' : 'hidden'}`}>
+        <div className={`rip-overlay rip-full ${tab === 'buy' ? '' : 'hidden'}`}>
           <Chunk label="Tearing the wrapper…">
           <PackOpening
             key={ripping.nonce ?? 0}
             set={ripping.set}
             product={ripping.product}
             uid={ripping.uid}
-            paused={tab !== 'shop'}
+            paused={tab !== 'buy'}
             costBasis={ripping.cost}
             onExit={exitRip}
             ripAnotherStock={ripStock}

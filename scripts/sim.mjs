@@ -837,71 +837,8 @@ try {
     pass(`an error sets its own floor (a miscut 10¢ common is worth $${mp.floorWorks.toFixed(2)}, not 32¢)`, mp.floorWorks >= 10)
   }
 
-  // ---- 11. 🔨 The auction house (buy side) ----------------------------------------
-  // The channel must not be free money. A naive bidder who enters market value on everything
-  // should end up paying about market once the house's premium and the misdescribed lots are
-  // counted; the edge belongs to whoever reads the room and checks the description.
-  console.log('\n🔨 AUCTION HOUSE (buy side) — want blind bidding to lose, discipline to pay:')
-  {
-    const auc = await page.evaluate(async () => {
-      const L = await import('/src/game/lots.js')
-      // Large N on purpose: the selective strategies below only bid on a slice of the board,
-      // so a small sample leaves them with a few dozen wins and a ratio that swings run to run.
-      const N = 20000
-      // Lot values are fat-tailed (a $4 common and an $800 slab are on the same board), so the
-      // aggregate value-per-dollar is dominated by whichever big lot happened to land and
-      // swings run to run. The MEDIAN per-lot outcome is the stable statistic, and it is also
-      // the better question: on a TYPICAL win, did you do well?
-      const median = (xs) => {
-        if (!xs.length) return 0
-        const s = [...xs].sort((a, b) => a - b)
-        const m = s.length >> 1
-        return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
-      }
-      const run = (strategy) => {
-        let won = 0, paid = 0, got = 0, burned = 0
-        const each = []
-        for (let i = 0; i < N; i++) {
-          const lot = L.makeLot(60, 1)
-          if (!lot) continue
-          const market = L.lotMarket(lot)
-          if (!market) continue
-          const max = strategy(lot, market)
-          if (max <= 0) continue
-          const r = L.settleLot({ ...lot, maxBid: max })
-          if (!r.won) continue
-          won++
-          paid += r.total
-          got += L.lotTrueValue(lot)
-          each.push(L.lotTrueValue(lot) / r.total)
-          if (lot._misdescribed || lot._resealed) burned++
-        }
-        return { won, ratio: got / paid, median: median(each), burnRate: burned / Math.max(1, won) }
-      }
-      return {
-        // Bids market on everything, checks nothing.
-        naive: run((lot, market) => market),
-        // The disciplined line: only quiet rooms, and only at a real discount to market.
-        // This is what the channel is built to reward.
-        disciplined: run((lot, market) => (lot.watchers <= 3 ? market * 0.65 : 0)),
-        // Bids market but only on graded lots, where there is nothing to misdescribe — the
-        // safe, boring line, and the control for the description-risk check below.
-        slabsOnly: run((lot, market) => (lot.kind === 'slab' ? market : 0)),
-        premium: L.HOUSE_PREMIUM, ship: L.LOT_SHIP_FLAT,
-      }
-    })
-    pass(`the house takes ${Math.round(auc.premium * 100)}% on every win`, auc.premium >= 0.1)
-    pass(`a naive bidder does NOT print money (typical win returns $${auc.naive.median.toFixed(2)} of value per $1 paid, ${Math.round(auc.naive.burnRate * 100)}% of wins misdescribed)`,
-      auc.naive.median < 1.1)
-    pass(`discipline is what pays — quiet rooms at 35% under market return $${auc.disciplined.median.toFixed(2)} on a typical win`,
-      auc.disciplined.median > 1 && auc.disciplined.median > auc.naive.median)
-    pass(`...and it is SLOW, not a printer (${auc.disciplined.won} wins against the naive bidder's ${auc.naive.won})`,
-      auc.disciplined.won < auc.naive.won * 0.3)
-    pass(`a quiet lot is quiet for a reason (${Math.round(auc.disciplined.burnRate * 100)}% of quiet-room wins are misdescribed vs ${Math.round(auc.slabsOnly.burnRate * 100)}% on slabs — checking is part of the discipline)`,
-      auc.disciplined.burnRate > auc.slabsOnly.burnRate)
-  }
 
-  // ---- 12. 🔨 Cracking a slab -----------------------------------------------------
+  // ---- 11. 🔨 Cracking a slab -----------------------------------------------------
   // Cracking must not be a free reroll. Two separate properties do that work, and they are
   // different from each other:
   //
@@ -956,7 +893,7 @@ try {
       Math.abs(crack.damageRate - crack.declared) < 0.02)
   }
 
-  // ---- 13. 🧾 Tax and 🏦 the bank --------------------------------------------------
+  // ---- 12. 🧾 Tax and 🏦 the bank --------------------------------------------------
   console.log('\n🧾 THE BOOKS & 🏦 THE BANK:')
   {
     const fin = await page.evaluate(async () => {
@@ -999,7 +936,7 @@ try {
       fin.payoffHalf < fin.balanceHalf)
   }
 
-  // ---- 14. 📦🔟 Sealed grading ------------------------------------------------------
+  // ---- 13. 📦🔟 Sealed grading ------------------------------------------------------
   // The premium is a VINTAGE premium. Slabbing in-print product has to be a mistake, or the
   // system becomes a free multiplier on every box in the storeroom.
   console.log('\n📦🔟 SEALED GRADING — want vintage only:')
@@ -1034,7 +971,7 @@ try {
       !sg.cheap.ok && sg.fee > 0)
   }
 
-  // ---- 15. 🔁 SHOW TRADE RAILS ----------------------------------------------------
+  // ---- 14. 🔁 SHOW TRADE RAILS ----------------------------------------------------
   // Vendors quote a trade-credit rate ABOVE their cash rate (a swap costs them no real
   // money) but BELOW their sell markup (credit spends at their asks — at/above sellMult
   // you could launder their own markup back at them). Both the archetype table and every

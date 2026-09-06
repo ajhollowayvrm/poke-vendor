@@ -3,7 +3,7 @@
 // Pure definitions + evaluators (no store access). Each milestone reads a single number
 // out of game state via its `value(s)` accessor and unlocks the moment that number reaches
 // `goal`. Unlocks are permanent (recorded by id in state.milestones), pay a one-time
-// notoriety reward, and pop a toast. The store calls the evaluators; the Stats panel renders
+// notoriety reward, and pop a toast. The store calls the evaluators; the Career panel renders
 // the shelf; App shows the toasts. To add a milestone, drop an entry in MILESTONES — nothing
 // else needs to change.
 
@@ -97,5 +97,5 @@ export function milestoneProgress(state, mst) {
   return Math.max(0, Math.min(1, (mst.value(state) || 0) / mst.goal))
 }
 
-// Distinct group names in ladder order (for the Stats shelf headings).
+// Distinct group names in ladder order (for the milestone shelf headings).
 export const MILESTONE_GROUPS = MILESTONES.reduce((acc, x) => acc.includes(x.group) ? acc : [...acc, x.group], [])

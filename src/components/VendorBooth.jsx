@@ -846,7 +846,7 @@ function MysteryReveal({ result, onClose }) {
             <div style={{ fontWeight: 800, color: 'var(--green)' }}>{fmtMoney(val)}</div>
           </div>
           <p className="cap mt-5">
-            Sealed product inside! It's stocked in <b>Inventory → 📦 Sealed</b> — rip, list, or flip it.
+            Sealed product inside! It's stocked in <b>📦 Sealed</b> — rip, list, or flip it.
           </p>
           <button className="btn gold" style={{ maxWidth: 160, margin: '4px auto 0' }} onClick={onClose}>Nice →</button>
       </Modal>

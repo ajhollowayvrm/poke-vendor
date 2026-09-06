@@ -71,32 +71,6 @@ export function createSourcingSlice(set, get) {
       if (order) get().log('buy', `📋 Standing order set — ${order.qty}× ${order.type} ships weekly while stocked`, 0)
       else get().log('buy', '📋 Standing order cancelled', 0)
     },
-    // 📰 Reprint-wave preorder: commit to `qty` units of the announced wave at the locked
-    // unit price, PREPAID — the stock lands in your storeroom on drop day (resolved in the
-    // day tick). Clamped to your allocation; the spend builds rapport with the shipping
-    // distributor like any wholesale order. Returns { ok, bought, cost } or { error }.
-    preorderWave(qty) {
-      const w = get().reprintWave
-      const absNow = absoluteDay(get().currentDay, get().monthsElapsed)
-      if (!w || w.doneDay != null || absNow >= w.dropDay) return { error: 'No wave open for preorders right now.' }
-      const n = Math.max(1, Math.floor(Number(qty) || 0))
-      const room = Math.max(0, (w.allocCap || 0) - (w.preordered || 0))
-      if (room < 1) return { error: 'Your allocation is fully committed.' }
-      const take = Math.min(n, room)
-      const cost = round2(take * w.unit)
-      if (!get().spend(cost)) return { error: `You can't cover the $${cost.toFixed(2)} prepay.` }
-      set(s => {
-        const cur = s.distributors[w.distId] || { spend: 0, stock: {} }
-        return {
-          reprintWave: { ...s.reprintWave, preordered: (s.reprintWave.preordered || 0) + take, prepaid: round2((s.reprintWave.prepaid || 0) + cost) },
-          distributors: { ...s.distributors, [w.distId]: { ...cur, spend: round2((cur.spend || 0) + cost) } },
-        }
-      })
-      get().log('buy', `📰 Preordered ${take}× ${w.label} for the reprint wave (−$${cost.toFixed(2)} prepaid — lands on drop day)`, -cost)
-      get().bumpGoal('buy', take)
-      return { ok: true, bought: take, cost }
-    },
-
     // 🎫 📦 Call in a favor (2 clout, rank 1+): your rep makes one call and the truck
     // comes early — the distributor's whole shelf refills to cap. Mechanically: their
     // consumed-stock map clears (an absent key reads as fully stocked, see stockState).
@@ -112,19 +86,87 @@ export function createSourcingSlice(set, get) {
       get().log('buy', `📦 Called in a favor at ${dist.name} — a truck hit their dock this morning; everything's back in stock. (−2 🎫)`, 0)
       return { ok: true }
     },
-    // 🎫 📰 Jump the allocation (3 clout, rank 2+): while a reprint wave's preorder window
-    // is open, your rep argues you into a bigger slice — allocCap ×1.5, once per wave.
-    cloutJumpAllocation() {
-      const w = get().reprintWave
-      const absNow = absoluteDay(get().currentDay, get().monthsElapsed)
-      if (!w || w.doneDay != null || absNow >= w.dropDay) return { error: 'No wave open for preorders right now.' }
-      if (w.allocBonus) return { error: 'You already jumped this queue — once per wave.' }
-      if ((get().rank || 0) < 2) return { error: 'Allocation games need a name — reach 📣 Known Local (rank 2) first.' }
-      if (!get().spendClout(3)) return { error: 'Not enough clout — this favor costs 3 🎫.' }
-      const bumped = Math.ceil((w.allocCap || 0) * 1.5)
-      set(s => ({ reprintWave: { ...s.reprintWave, allocBonus: true, allocCap: bumped } }))
-      get().log('buy', `📰 Jumped the allocation queue — your slice of the ${w.label} wave is now ${bumped} units. (−3 🎫)`, 0)
-      return { ok: true, allocCap: bumped }
+    // --- 🛒 The cart --------------------------------------------------------------
+    // Buying used to be one tap per unit, which made a stocking run a string of unrelated
+    // transactions and asked "cash or credit?" over and over. The cart collects the lines,
+    // then charges them together and asks ONCE where the whole order goes.
+    //
+    // The cart itself holds no rules. Every limit, price, stock check and payment path stays
+    // in buyFromDistributorBulk — checkout just calls it per line. A second implementation of
+    // the buy rules would be a second set of bugs.
+    addToCart(distId, pokeSet, product, qty = 1, unitPrice) {
+      if (!pokeSet || !product) return { error: 'Nothing to add.' }
+      const n = Math.max(1, Math.floor(Number(qty) || 1))
+      const unit = round2(unitPrice ?? product._buyPrice ?? product.price ?? 0)
+      const key = `${distId}|${pokeSet.id}|${product.tcgId || product.type}`
+      set(s => {
+        const lines = [...(s.cart || [])]
+        const at = lines.findIndex(l => l.key === key)
+        if (at >= 0) lines[at] = { ...lines[at], qty: lines[at].qty + n, unitPrice: unit }
+        else lines.push({ id: `c${Date.now().toString(36)}${nextSealedSuffix()}`, key, distId,
+          setId: pokeSet.id, product: { ...product }, qty: n, unitPrice: unit })
+        return { cart: lines }
+      })
+      return { ok: true }
+    },
+    updateCartQty(lineId, qty) {
+      const n = Math.floor(Number(qty) || 0)
+      if (n < 1) return get().removeFromCart(lineId)
+      set(s => ({ cart: (s.cart || []).map(l => (l.id === lineId ? { ...l, qty: n } : l)) }))
+      return { ok: true }
+    },
+    removeFromCart(lineId) {
+      set(s => ({ cart: (s.cart || []).filter(l => l.id !== lineId) }))
+      return { ok: true }
+    },
+    clearCart() { set({ cart: [] }); return { ok: true } },
+    cartTotal() {
+      return round2((get().cart || []).reduce((a, l) => a + l.unitPrice * l.qty, 0))
+    },
+    // Check the WHOLE basket out. `dest` is 'personal' (your own hoard — locked) or 'store'
+    // (the storeroom, sellable); without a storefront there is nowhere else for stock to go,
+    // so the question is never asked and everything lands the way it always did.
+    //
+    // The basket is priced against your money BEFORE anything is charged: a checkout that
+    // pays for four lines and then can't afford the fifth is worse than one that refuses.
+    // Individual lines can still SHORT-FILL on shelf stock or a per-customer limit — that is
+    // the shelf's answer, not a money problem, and the result reports it per line.
+    checkoutCart({ dest = 'personal', onCredit = false, split = false } = {}) {
+      const lines = get().cart || []
+      if (!lines.length) return { error: 'Your cart is empty.' }
+      const total = get().cartTotal()
+      if ((onCredit || split) && get().credit?.frozen) {
+        return { error: 'Your credit line is frozen — pay it down or check out with cash.' }
+      }
+      // 💳 LGS store credit tops the till up on LGS lines and only on LGS lines, and only in
+      // pure cash mode — that is buyFromDistributorBulk's rule, and the check has to agree with
+      // it or the cart refuses an order the shelf would happily fill. It is capped by the LGS
+      // share of the basket, because credit at your local shop does not pay Amazon.
+      const lgsShare = onCredit || split ? 0
+        : round2(lines.filter(l => l.distId === 'lgs').reduce((a, l) => a + l.unitPrice * l.qty, 0))
+      const lgsUsable = Math.min(get().lgsCredit || 0, lgsShare)
+      const avail = split ? round2(get().cash + get().creditAvailable())
+        : onCredit ? get().creditAvailable() : round2(get().cash + lgsUsable)
+      if (avail + 1e-9 < total) {
+        return { error: `That order comes to $${total.toFixed(2)} and you can cover $${avail.toFixed(2)}.` }
+      }
+      // 'personal' rides the same `locked` flag the single-buy path uses; it only means
+      // anything with a storefront, where stock actually splits three ways.
+      const locked = dest === 'personal'
+      const results = []
+      for (const l of lines) {
+        const pokeSet = setById(l.setId)
+        if (!pokeSet) { results.push({ line: l, bought: 0, reason: 'gone' }); continue }
+        const r = get().buyFromDistributorBulk(l.distId, pokeSet, l.product, l.unitPrice, l.qty,
+          { onCredit, split, locked })
+        results.push({ line: l, bought: r?.bought || 0, spent: r?.spent || 0,
+          inTransit: !!r?.inTransit, reason: r ? null : 'refused' })
+      }
+      const bought = results.reduce((a, r) => a + r.bought, 0)
+      const spent = round2(results.reduce((a, r) => a + (r.spent || 0), 0))
+      const short = results.filter(r => r.bought < r.line.qty)
+      set({ cart: [] })
+      return { ok: true, bought, spent, short, results, dest }
     },
 
     // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,
@@ -251,6 +293,10 @@ export function createSourcingSlice(set, get) {
           uid: `s${Date.now().toString(36)}${nextSealedSuffix()}`,
           setId: pokeSet.id, product: { ...product },
           boughtDay: day, boughtPrice: unit, vintage: !!pokeSet.vintage,
+          // Where this unit came FROM, so Store → Inventory's "recently acquired" can show
+          // what YOU went and got and leave out what the 🧮 agent and 📋 standing order
+          // quietly topped up overnight. Absent means a hand-made buy.
+          ...(opts.src ? { src: opts.src } : {}),
           ...(locksIn ? { locked: true, loc: 'storeroom' } : {}),
         })
       }
@@ -353,7 +399,7 @@ export function createSourcingSlice(set, get) {
 
     // --- Sealed inventory --------------------------------------------------------
     // Buy a sealed product and HOLD it (the default — you rip/list/flip later from the
-    // Inventory tab). Charges `price` (the actual price the Buy UI showed: retail,
+    // 📦 Sealed). Charges `price` (the actual price the Buy UI showed: retail,
     // wholesale, or vintage market), attributes the spend to the set, and stocks the
     // item. Returns the new item (so the caller can immediately rip it if Auto-rip is on),
     // or null if you couldn't afford it.

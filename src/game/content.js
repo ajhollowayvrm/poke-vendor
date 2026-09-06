@@ -35,6 +35,10 @@ export const POST_DAYS = 2
 export const MAX_LIVE_POSTS = 4
 // 🔁 The Content Calendar's bank: moments wait here for their slot instead of firing at once.
 export const POST_QUEUE_CAP = 8
+// How many shorts you can film YOURSELF in a day. Filming is a real use of the day, and an
+// uncapped "post for followers" button would make every other way of growing an audience
+// pointless. Four matches MAX_LIVE_POSTS — you can fill the feed, and no more.
+export const SHORTS_PER_DAY = 4
 
 export const POST_KINDS = {
   pull: { icon: '🔥', label: 'chase pull' },

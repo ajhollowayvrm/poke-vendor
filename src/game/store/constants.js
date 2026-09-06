@@ -189,7 +189,7 @@ export function floorSkuCounts(s) {
   return m
 }
 
-// Rolling window (game-days) of net-worth / cash samples kept for the Stats trend
+// Rolling window (game-days) of net-worth / cash samples kept for the daily recap
 // sparkline and the daily recap's "net worth" line. One sample per day-advance.
 export const WORTH_HISTORY_LEN = 30
 
@@ -455,6 +455,11 @@ export const SUPPLIES = [
   { id: 'binder9',    name: '9-Pocket Binder',      icon: '📒', cost: 12,  retail: 25, demandWeight: 2 },
   { id: 'playmat',    name: 'Playmat',              icon: '🖼️', cost: 9,   retail: 20, demandWeight: 2 },
 ]
+
+// 📒 What an empty binder costs YOU at retail — the same 9-pocket binder your own shelf
+// sells to walk-ins (SUPPLIES.binder9), bought from the other side of the counter.
+export const BINDER_COST = 25
+
 export function supplyById(id) { return SUPPLIES.find(x => x.id === id) || null }
 // Weighted pick of one in-stock supply line (sleeves move most). Returns an id or null.
 export function pickSupplyId(supplies, rnd = Math.random) {
@@ -579,7 +584,7 @@ export {
 // collabs, the podcast, brand deals) lives in content.js — same re-export arrangement as
 // rep.js above, so slices keep importing their tuning from this one place.
 export {
-  POST_DAYS, MAX_LIVE_POSTS, POST_QUEUE_CAP, POST_KINDS, postIcon,
+  POST_DAYS, MAX_LIVE_POSTS, POST_QUEUE_CAP, SHORTS_PER_DAY, POST_KINDS, postIcon,
   POST_MIN_VALUE, worthPosting, postDrip, makePost, pushPost, postPatch, cadenceMult,
   VIRAL_CHANCE, VIRAL_MULT, rollViral,
   CHALLENGE_BIAS, challengeScale, huntFollowers, HUNT_EPISODE_EVERY, challengeBounty,
@@ -587,7 +592,7 @@ export {
   vlogFollowers, VLOG_AFTERGLOW_DAYS, VLOG_BOOTH_MULT,
   DISCORD_WANT_BONUS, DISCORD_WANT_CAP_BONUS, DISCORD_HOLD_SKEW, discordRegularChance,
   COLLAB_CREATORS, COLLAB_CHANCE, COLLAB_MIN_FOLLOWERS, collabGain,
-  PODCAST_PERIOD, PODCAST_REP, podcastFollowers, PODCAST_WAVE_LEAD_DAYS,
+  PODCAST_PERIOD, PODCAST_REP, podcastFollowers,
   SPONSOR_BRANDS, SPONSOR_MONTHLY_CAP, SPONSOR_MIN_FOLLOWERS, SPONSOR_PERIOD,
   SPONSOR_WINDOW_DAYS, SPONSOR_FEATURE_PACKS, SPONSOR_LAPSE_DING, sponsorMonthly,
 } from '../content'

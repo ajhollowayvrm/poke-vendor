@@ -7,6 +7,12 @@ import { groupCardLines, groupLines, sealedSku } from './sku'
 import CardTile from './CardTile'
 import SealedModal from './SealedModal'
 import { clickable } from '../ui/clickable'
+import { Collapse } from '../ui/Collapse'
+import { absoluteDay } from '../game/store/constants'
+
+// How far back "recently acquired" reaches. Long enough to survive a multi-day show, short
+// enough that the list stays a list of NEWS rather than a second copy of the storeroom.
+const RECENT_DAYS = 5
 
 // The grouped-by-SET inventory view shared by all three stock places:
 //   place='floor'     — what's out on the sales floor (walk-ins & the counter buy this)
@@ -24,7 +30,11 @@ const PLACE = {
 
 // Split the raw items into { kind, it } and group them by set, newest set first (release date,
 // then name — a stable order, so groups don't reshuffle as the market drifts).
-function bySet(cards, sealed) {
+//
+// `order`: 'set' keeps the release-date grouping (the default — it reads like a shelf).
+// 'value' sorts the groups by what they are WORTH, which is the question a shop owner asks
+// of their own stock: where is my money sitting, and what should go out front.
+function bySet(cards, sealed, order = 'set') {
   const setsMap = new Map() // setId -> { setId, name, items:[{kind,it}], value }
   const push = (setId, kind, it, v) => {
     if (!setsMap.has(setId)) setsMap.set(setId, { setId, name: setById(setId)?.name || setNameOfCard(it) || 'Other', items: [], value: 0 })
@@ -42,6 +52,7 @@ function bySet(cards, sealed) {
     ].sort((a, b) => b.unit - a.unit)
     return { ...g, lines, count: g.items.length }
   })
+  if (order === 'value') return groups.sort((a, b) => b.value - a.value)
   return groups.sort((a, b) => {
     const da = setById(a.setId)?.releaseDate || ''
     const db = setById(b.setId)?.releaseDate || ''
@@ -135,6 +146,20 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
     if (viewMode !== 'grid') setView('grid') // sorting only reads in the flat grid, so switch to it
   }
 
+  // 🏬 Store stock ordering. The set grouping reads like a shelf, which is right for putting
+  // things away — but "where is my money sitting" is the question you ask before deciding what
+  // goes out front, and only a value ordering answers it. Device-local, like every other view
+  // preference here.
+  const today = useGame(st => absoluteDay(st.currentDay, st.monthsElapsed))
+  const orderKey = `pv-stock-order-${place}`
+  const [stockOrder, setStockOrderRaw] = useState(() => {
+    try { return localStorage.getItem(orderKey) === 'value' ? 'value' : 'set' } catch { return 'set' }
+  })
+  function setStockOrder(v) {
+    setStockOrderRaw(v)
+    try { localStorage.setItem(orderKey, v) } catch { /* private mode */ }
+  }
+
   // Multi-select: table picks whole SKU lines; grid picks individual cards (so you can grade
   // by centering, which varies copy-to-copy and is hidden inside a collapsed SKU line).
   const [selectMode, setSelectMode] = useState(false)
@@ -182,16 +207,16 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
     // `only` narrows the view to one kind — used to give Personal separate Cards / Sealed tabs.
     if (only === 'cards') sealed = []
     else if (only === 'sealed') cards = []
-    const groups = bySet(cards, sealed)
+    const groups = bySet(cards, sealed, stockOrder)
     const totalValue = groups.reduce((a, g) => a + g.value, 0)
     const totalCount = groups.reduce((a, g) => a + g.count, 0)
     // `split` renders singles and sealed as two separate shelves (real-shop feel). Each is the
     // same set-grouped list, just filtered to one kind. Selection still runs off `groups`, whose
     // line keys are identical, so nothing else needs to know about the split.
-    const cardGroups = split ? bySet(cards, []) : null
-    const sealedGroups = split ? bySet([], sealed) : null
+    const cardGroups = split ? bySet(cards, [], stockOrder) : null
+    const sealedGroups = split ? bySet([], sealed, stockOrder) : null
     return { groups, totalValue, totalCount, cards, sealed, cardGroups, sealedGroups }
-  }, [collection, sealedInventory, place, only, split])
+  }, [collection, sealedInventory, place, only, split, stockOrder])
 
   // Every collapsible section's id. In the split view the SAME set appears as two independent
   // sections (Singles + Sealed shelves), so ids carry the shelf prefix ('c'/'s') — folding one
@@ -201,6 +226,25 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
       ? [...(cardGroups || []).map(g => 'c' + g.setId), ...(sealedGroups || []).map(g => 's' + g.setId)]
       : groups.map(g => g.setId)
   ), [split, cardGroups, sealedGroups, groups])
+
+  // 🆕 Sealed product you went and GOT, in the last few days. A working shop's storeroom fills
+  // from two very different places: orders you placed and product you picked up, versus the
+  // nightly top-ups the 🧮 Purchasing Agent and the 📋 standing order do on their own. Only the
+  // first kind is news. Auto-bought rows carry src:'auto' (stamped in store/sourcing.js) and
+  // are left out, or this section would fill with restocks and tell you nothing.
+  //
+  // Sealed only, deliberately: `boughtDay` is a sealed-row field. Singles arrive from rips,
+  // trades, buy-ins and the floor with no acquisition date on them, so including them would
+  // mean showing an arbitrary subset and calling it "recent".
+  const recent = useMemo(() => {
+    if (place === 'personal') return []
+    const cut = today - RECENT_DAYS
+    return sealed
+      .filter(x => (x.boughtDay || 0) > cut && x.src !== 'auto')
+      .map(it => ({ kind: 'sealed', it, v: sealedValue(it), day: it.boughtDay || 0 }))
+      .sort((a, b) => b.day - a.day || b.v - a.v)
+      .slice(0, 24)
+  }, [sealed, place, today])
 
   const meta = PLACE[place]
   // Kind-scoped empty copy so a Personal ▸ Sealed tab doesn't show the cards blurb.
@@ -325,6 +369,31 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
   return (
     <>
       {/* Header: what this place is + the floor depth readout + restock lever */}
+      {recent.length > 0 && (
+        <Collapse id={`recent-${place}`} className="wants mt-4" defaultOpen={false}
+          head="🆕 Recently acquired sealed"
+          badge={`${recent.length} in ${RECENT_DAYS}d · ${fmtMoney(recent.reduce((a, r) => a + r.v, 0))}`}
+          hint="Sealed you went and got. Overnight restocks from the Purchasing Agent and the standing order are left out.">
+          <div className="stock-lines">
+            {recent.map(({ kind, it, v, day }) => (
+              <div key={it.uid} className="trade-line stock-line" style={{ cursor: 'default' }}>
+                {kind === 'card'
+                  ? <img className="tl-thumb" src={cardImg(it)} alt="" loading="lazy" decoding="async" />
+                  : <span className="tl-icon">{it.product?.icon || '📦'}</span>}
+                <div className="tl-info">
+                  <div className="tl-name">{kind === 'card' ? it.name : `${it.product?.type} · ${setById(it.setId)?.name || 'sealed'}`}</div>
+                  <div className="tl-sub muted">
+                    {today - day <= 0 ? 'today' : `${today - day}d ago`}
+                    {it.boughtPrice != null && <> · paid {fmtMoney(it.boughtPrice)}</>}
+                  </div>
+                </div>
+                <span className="tl-unit">{fmtMoney(v)}</span>
+              </div>
+            ))}
+          </div>
+        </Collapse>
+      )}
+
       <div className="banner" style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
         <span>{meta.icon} <b>{meta.title}</b> — {totalCount} item{totalCount === 1 ? '' : 's'} · <b>{fmtMoney(totalValue)}</b>
           {totalCount > 0 && (
@@ -337,6 +406,12 @@ export default function StoreStock({ place, onRip, onSift, onPick, onHold, only,
           {place === 'storeroom' && <> · <span className="muted">backstock — sells routine counter orders · fills up to {skuCap} of each ({packCap} for loose packs) when you stock the floor</span></>}
         </span>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {!gridOK && totalCount > 0 && (
+            <select value={stockOrder} onChange={e => setStockOrder(e.target.value)} aria-label="Order stock by">
+              <option value="set">Order: By set</option>
+              <option value="value">Order: By value</option>
+            </select>
+          )}
           {gridOK && totalCount > 0 && (
             <select value={sortMode} onChange={e => setSort(e.target.value)}>
               <option value="value">Sort: Value</option>

@@ -39,17 +39,19 @@ const CHECKS = {
   hoverOnly:    true,  // phase 2 of the overhaul — no long title= without a tap-reachable equivalent
 }
 
-// The six primary tabs, by their visible label in the top bar / bottom nav.
-const TABS = ['Buy', 'Inventory', 'Sell', 'Shows', 'Stream', 'Stats']
+// The six tabs by their VISIBLE label — the walk drives the UI the way a player does, so
+// these must track src/App.jsx's TAB_LABEL. 'Sell' reads 'Store' once a storefront is bought;
+// a fresh save (which is what this walk runs against) has neither, so 'Sell' is correct here.
+const TABS = ['You', 'Sell', 'Buy', 'Socials', 'Shows', 'Misc']
 const VIEWPORTS = [
   { name: 'desktop', width: 1440, height: 900, coarse: false },
   { name: 'tablet',  width: 1024, height: 768, coarse: false },
   { name: 'phone',   width: 390,  height: 844, coarse: true  },
 ]
 
-// The one documented exemption from the type floor. styles.css:1673 records why: 7 tabs on a
-// 390px screen leave ~49px per label, and "Inventory" truncates above 10px. Ellipsising the
-// PRIMARY navigation is never acceptable, so this label stays at 10px on purpose.
+// The one documented exemption from the type floor. styles.css records why: the bottom nav
+// splits a 390px screen six ways, and ellipsising the PRIMARY navigation is never acceptable,
+// so this label stays at 10px on purpose.
 const TYPE_FLOOR_EXEMPT = ['.bnav-label', '.bnav-badge']
 
 let failures = 0
@@ -313,7 +315,14 @@ try {
 
     // Focus ring: Tab off the address bar into the page, then read what the browser painted.
     // Done once per viewport rather than per tab — the rule is global, not per screen.
+    //
+    // BLUR FIRST. The tab walk above ends with a click, so focus is sitting on whatever it
+    // clicked last — and when that is the final control in the document (the last button in
+    // the bottom nav, on a phone) the next Tab leaves the page entirely and this reported a
+    // missing focus ring that was never missing. The check means "Tab INTO the page", so it
+    // has to start from outside it.
     if (CHECKS.focusRing) {
+      await page.evaluate(() => document.activeElement?.blur?.())
       await page.keyboard.press('Tab')
       const ring = await page.evaluate(() => {
         const el = document.activeElement

@@ -157,7 +157,7 @@ export default function Collection({ onPick }) {
           </span>
         )}
         {/* Neutral, and in the flow. As `gold` + `marginLeft:auto` this was a full-width
-            right-aligned bar on its own toolbar row — the loudest control on the Inventory
+            right-aligned bar on its own toolbar row — the loudest control on the Collection
             screen — to turn 19 commons into 95 cents. Gold is the primary action; disposing
             of bulk is a utility. */}
         {!selectMode && bulk.length > 0 && (

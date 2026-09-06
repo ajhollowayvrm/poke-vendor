@@ -10,14 +10,13 @@ import {
   rollGrade, graderById, gradingDays, isBlackLabel, DEFAULT_GRADER, ownedIdSet, SETS, setCompletion, completionReward, bulkSellableUids,
   setById, cardVariant, cardMastersetVariants, fileableInBinder, binderReserveFromSettings, BULK_CREDIT_PER_CARD, fmtMoney,
   pickMasterLot, luckTierOf, crackSlab as crackSlabCard, slabLabel, setPopAdds, sealedValue, cardPopulation,
-  instance, setIdOfCard,
 } from '../engine'
 import {
   rollSealedGrade, sealedGradingFee, sealedGradingDays, sealedSlabLabel, sealedGraderById,
   DEFAULT_SEALED_GRADER,
 } from '../sealedgrading'
 import { setIdOf, bumpSet } from './helpers'
-import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype, postPatch, challengeBounty } from './constants'
+import { absoluteDay, applyNotoGain, ledgerAdd, bumpHype, postPatch, challengeBounty, BINDER_COST } from './constants'
 
 // Quick-selling is the instant-but-worst exit, and now it has teeth beyond the flat rate:
 //   • DUMP PENALTY — every quick-sell you make in a single day floods the buylist, so each
@@ -151,35 +150,6 @@ export function createCollectionSlice(set, get) {
       get().checkMilestones()  // packs/hits/god-pack/best-pull badges — instant feedback on a rip
     },
 
-    // --- Buy a single from the global marketplace ---------------------------------
-    // `listing` comes from engine.marketVariants(): { card, condition, foil, grade, ask, label }.
-    // Mint a fresh owned instance with the listing's finish/condition/grade, pay the ask
-    // (which already includes the marketplace markup), and take it home. spend() rolls the
-    // cost into stats.spent, so marketplace buys count toward distributor volume like sealed.
-    buyFromMarket(listing) {
-      if (!listing) return false
-      const price = round2(listing.ask)
-      if (!get().spend(price)) return false
-      // instance() honors a passed-in condition and spreads foil through, but always nulls
-      // grade — so stamp the slab grade on afterward. source 'grail' = a clean handled copy.
-      const c = instance({ ...listing.card, condition: listing.condition, foil: listing.foil || undefined }, 'grail')
-      // Copy the listing's grade — listing.grade is shared across renders, so never
-      // stamp the reference directly (a future regrade/crack mechanic could mutate it).
-      if (listing.grade) c.grade = { ...listing.grade }
-      c._market = true
-      // A manual marketplace buy lands in Personal first, same as any other manual purchase —
-      // the player explicitly moves it to the storeroom when they want to sell it.
-      if (get().upgrades?.storefront) c.locked = true
-      set(s => ({ collection: [c, ...s.collection] }))
-      const setId = setIdOfCard(c)
-      if (setId) get().recordSetSpend(setId, price)
-      const finish = listing.grade ? ` (${listing.label})` : listing.foil ? ` (${listing.foil.label})` : ''
-      get().log('buy', `Bought ${listing.card.name}${finish} on the marketplace`, -price)
-      get().bumpGoal('buy', 1)
-      get().checkCompletions() // a bought single may finish a set
-      return true
-    },
-
     // --- Master-set completion ---------------------------------------------------
     // Pay the FIRST-TIME completion bonus for any set you now own one-of-every-card in
     // and haven't been rewarded for yet. Idempotent and cheap; safe to call after any
@@ -295,6 +265,43 @@ export function createCollectionSlice(set, get) {
     // collection (so it's safe from every bulk action) but still counted as owned. Placing a
     // card is deliberate curation; a full masterset (every variant of every card) is the flex.
 
+    // --- 📒 Binders you own -------------------------------------------------------
+    // A binder is a PHYSICAL thing: you buy one, then decide which set it is for. Only an
+    // assigned set gets a masterset page. This is the whole difference from the old model,
+    // which derived a page for all 150+ sets whether you cared about them or not — a
+    // masterset you never chose is a chore list, not a chase.
+    //
+    // The cards themselves still live in `binder`; a binder object is permission to have a
+    // page, never a container. That keeps every slotting rule (addToBinder, the reserve, the
+    // Curator's sweep, mastersetStats, sellMasterLot) exactly where it already is.
+    buyBinder() {
+      const cost = BINDER_COST
+      if (!get().spend(cost)) return { error: `A binder is $${cost.toFixed(2)} and you can't cover it.` }
+      const b = { id: `bnd${Date.now().toString(36)}${Math.floor(Math.random() * 1e4).toString(36)}`,
+        setId: null, boughtDay: absoluteDay(get().currentDay, get().monthsElapsed), acquired: 'bought' }
+      set(s => ({ binders: [...(s.binders || []), b] }))
+      get().log('binder', '📒 Bought an empty binder — assign it a set to start the masterset.', -cost)
+      return { ok: true, binder: b }
+    },
+    // Point an empty binder at a set. One set per binder and one binder per set: two pages
+    // for the same masterset would each show half the cards and neither would be right.
+    assignBinder(binderId, setId) {
+      const b = (get().binders || []).find(x => x.id === binderId)
+      if (!b) return { error: 'No such binder.' }
+      if (b.setId) return { error: 'That binder already has a set in it.' }
+      const set_ = setById(setId)
+      if (!set_) return { error: 'No such set.' }
+      if ((get().binders || []).some(x => x.setId === setId)) return { error: `You already have a binder for ${set_.name}.` }
+      set(s => ({ binders: (s.binders || []).map(x => (x.id === binderId ? { ...x, setId } : x)) }))
+      get().log('binder', `📒 Started a ${set_.name} masterset.`, 0)
+      return { ok: true }
+    },
+    // Which sets currently have a page. The Binder screen, the 🃏 challenge and the nightly
+    // Curator all ask this — one answer, so they can never disagree about what you collect.
+    binderSetIds() {
+      return (get().binders || []).map(b => b.setId).filter(Boolean)
+    },
+
     // Move one collection card into its binder slot. No-op if that exact slot is already
     // filled (a masterset holds one of each variant — a duplicate stays sellable). Returns
     // true if it moved.
@@ -302,6 +309,9 @@ export function createCollectionSlice(set, get) {
       const card = get().collection.find(c => c.uid === uid)
       if (!card) return false
       const setId = setIdOf(card)
+      // No binder for that set means no page to slot it into. The Binder screen only offers
+      // slots for sets you have a binder for, so this is the guard for every OTHER caller.
+      if (!get().binderSetIds().includes(setId)) return false
       const variant = cardVariant(card)
       const filled = (get().binder || []).some(b => b.id === card.id && setIdOf(b) === setId && cardVariant(b) === variant)
       if (filled) return false
@@ -330,8 +340,13 @@ export function createCollectionSlice(set, get) {
     // a statement about what your binder is, not which button you pressed). All unset = file
     // everything.
     addAllToBinder(setId = null, { skipGraded = false, skipLocked = false } = {}) {
-      const sets = setId ? [setById(setId)].filter(Boolean) : SETS
-      if (!sets.length) return 0
+      // No setId means "every page I have" — which is the sets I own a BINDER for, not every
+      // set in the catalog. Sweeping all of them would file cards into pages that do not
+      // exist and quietly pull them out of the sellable pool.
+      const sets = setId
+        ? [setById(setId)].filter(Boolean).filter(x => get().binderSetIds().includes(x.id))
+        : get().binderSetIds().map(id => setById(id)).filter(Boolean)
+      if (!sets.length) return { moved: 0, reserved: 0 }
       const reserve = binderReserveFromSettings(get().settings)
       const binder = get().binder || []
       const placed = new Set(binder.map(b => `${setIdOf(b)}:${b.id}:${cardVariant(b)}`))

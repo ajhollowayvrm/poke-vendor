@@ -1,24 +1,20 @@
 import { useMemo } from 'react'
 import {
-  useGame, POST_KINDS, cadenceMult, SPONSOR_FEATURE_PACKS, SPONSOR_WINDOW_DAYS,
+  useGame, SPONSOR_FEATURE_PACKS, SPONSOR_WINDOW_DAYS,
   CHALLENGE_ABANDON_DING, absoluteDay,
 } from '../game/store'
 import { fmtMoney } from '../game/engine'
 import { Collapse, bigScreen } from '../ui/Collapse'
 
-// 📱 The socials panel — the channel's off-air half, above the go-live screen.
+// 📌 The channel's standing commitments — the chase, the sponsor, the creators you know.
 //
-// Everything here is a READOUT of state the day tick maintains (posts, the challenge, the
-// sponsor's obligation, collab rapport); the only action is dropping a challenge, which lives
-// here because it's the one content commitment you can walk away from. Declaring one lives in
-// the Binder, next to the set you'd be chasing.
+// The FEED moved to the per-platform screens (Feed.jsx); what is left here is the part that is
+// true across all of them: what you announced you were doing, what a brand is waiting on, and
+// who you have worked with. Everything is a READOUT of state the day tick maintains; the only
+// action is dropping a challenge, because it's the one content commitment you can walk away
+// from. Declaring one lives in 👤 You → Binders, next to the page you'd be filling.
 export default function Socials() {
   const upgrades = useGame(s => s.upgrades)
-  const followers = useGame(s => s.followers || 0)
-  const subs = useGame(s => s.subs || 0)
-  const posts = useGame(s => s.posts || [])
-  const queue = useGame(s => s.postQueue || [])
-  const streak = useGame(s => s.postStreak || 0)
   const challenge = useGame(s => s.challenge)
   const sponsor = useGame(s => s.sponsor)
   const collab = useGame(s => s.collab)
@@ -35,60 +31,21 @@ export default function Socials() {
   const prog = useMemo(() => (challenge ? challengeProgress() : null), [challenge, challengeProgress])
   if (!anyContent) return null
 
-  const reach = posts.reduce((a, p) => a + (p.perDay || 0), 0)
-  const cadence = cadenceMult(streak)
   // 💰 What the sponsor is still waiting on (they want packs of THEIR set ripped on camera).
   const sponsorDone = sponsor ? (bySet?.[sponsor.setId]?.packsOpened || 0) - (sponsor.packsAt || 0) : 0
   const sponsorLeft = sponsor ? Math.max(0, SPONSOR_FEATURE_PACKS - sponsorDone) : 0
   const sponsorDays = sponsor ? Math.max(0, sponsor.dueDay - absDay) : 0
 
   const badge = [
-    `${followers} followers`,
-    posts.length ? `${posts.length} live · ≈${Math.round(reach * cadence)}/day` : null,
     challenge ? '🃏 chasing' : null,
     sponsor ? '💰 sponsored' : null,
-  ].filter(Boolean).join(' · ')
+    Object.keys(collab?.rapport || {}).length ? `🤝 ${Object.keys(collab.rapport).length}` : null,
+  ].filter(Boolean).join(' · ') || 'nothing announced'
 
   return (
     <Collapse id="socials" className="wants mt-5" 
-      head="📱 Socials" badge={badge} defaultOpen={bigScreen()}
-      hint="The audience you build off-air — posts, the chase, the sponsor.">
-
-      <div className="paystatus mt-3">
-        <span className="pill">👥 {followers} followers</span>
-        {subs > 0 && <span className="pill">❤️ {subs} subs</span>}
-        {streak > 0 && <span className="pill">🔁 {streak}-day streak · ×{cadence.toFixed(2)} reach</span>}
-        {queue.length > 0 && <span className="pill">🗓️ {queue.length} banked</span>}
-      </div>
-
-      {/* --- the live feed --- */}
-      {upgrades.shortsChannel && (
-        <div className="mt-5">
-          <div className="cap" style={{ fontWeight: 700, marginBottom: 4 }}>
-            📱 Circulating now
-          </div>
-          {posts.length === 0 ? (
-            <div className="cap">
-              Nothing up. Rip something worth filming, get a slab back, or take in a collection —
-              the moments post themselves.
-            </div>
-          ) : (
-            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 8 }}>
-              {posts.map((p, i) => (
-                <div key={i} className="product" style={{ padding: '8px 10px', gap: 2 }}>
-                  <div className="t-sm" style={{ fontWeight: 700 }}>
-                    {POST_KINDS[p.kind]?.icon || '📱'} {p.label}
-                    {p.viral && <span className="pill t-xs" style={{ marginLeft: 6 }}>🚀 POPPED</span>}
-                  </div>
-                  <div className="cap">
-                    ≈{p.perDay}/day followers · {p.daysLeft} day{p.daysLeft === 1 ? '' : 's'} left
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      head="📌 Standing commitments" badge={badge} defaultOpen={bigScreen()}
+      hint="What you have announced, what a brand is waiting on, and who you have worked with.">
 
       {/* --- 🃏 the challenge --- */}
       {upgrades.setChallenge && (
@@ -96,8 +53,8 @@ export default function Socials() {
           <div className="cap" style={{ fontWeight: 700, marginBottom: 4 }}>🃏 Master set challenge</div>
           {!challenge ? (
             <div className="cap">
-              No chase announced. Pick a set in <b>Cards → Binder</b> and declare it — dealers start
-              pulling it out for you, and the completion becomes the payoff video.
+              No chase announced. Start a binder in <b>👤 You → Binders</b> and declare that set —
+              dealers start pulling it out for you, and the completion becomes the payoff video.
             </div>
           ) : (
             <div className="product" style={{ padding: '10px 12px', gap: 4 }}>

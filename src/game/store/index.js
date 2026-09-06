@@ -23,12 +23,11 @@
 //   • livestream.js   — going live + box breaks
 //   • socials.js      — 📱 short-form posts + the 🃏 master set challenge (math: game/content.js)
 //   • books.js        — 🧾 the quarterly tax bill + 🏦 the bank note (math: game/tax.js, loans.js)
-//   • auctionhouse.js — 🔨 the BUY side of the hammer: bidding (math: game/lots.js)
 //   • market.js       — 📱 the local marketplace: messaging + meets (math: game/market.js)
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GRADING, setMarketMults, setPopAdds, cardValue, sealedValue } from '../engine'
+import { GRADING, setMarketMults, setPopAdds, cardValue, sealedValue, setIdOfCard, round2 } from '../engine'
 import { makeShowVendors } from '../shows'
 import { jobById, STARTER_JOB, absoluteDay, floorCapacity, rankForNotoriety } from './constants'
 import { newlyUnlocked } from '../milestones'
@@ -43,10 +42,8 @@ import { createLivestreamSlice } from './livestream'
 import { createPacksSlice } from './packs'
 import { createSocialsSlice } from './socials'
 import { createBooksSlice } from './books'
-import { createAuctionHouseSlice } from './auctionhouse'
 import { createMarketSlice } from './market'
 import { freshBooks } from '../tax'
-import { refillLots } from '../lots'
 import { refillBoard } from '../market'
 import { deflateState, inflateState } from './slimsave'
 import { idbAvailable, idbGet, idbSet, idbDel } from './idb'
@@ -299,11 +296,10 @@ export const useGame = create(persist((set, get) => ({
   ...createPacksSlice(set, get),
   ...createSocialsSlice(set, get),
   ...createBooksSlice(set, get),
-  ...createAuctionHouseSlice(set, get),
   ...createMarketSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 69,
+  version: 70,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -378,7 +374,7 @@ export const useGame = create(persist((set, get) => ({
     // localStorage. merge()'s dedupe runs after migrate, so it can't catch this first.
     for (const k of ['collection', 'binder', 'showInventory', 'sealedInventory', 'showSealed',
       'shopDisplay', 'shopSealed', 'pendingGrades', 'pendingSealed', 'listings', 'consignments',
-      'builtPacks', 'imports', 'auctionLots']) {
+      'builtPacks', 'imports']) {
       if (state[k] !== undefined && Array.isArray(state[k])) {
         state[k] = state[k].filter(x => x && typeof x === 'object')
       }
@@ -741,7 +737,6 @@ export const useGame = create(persist((set, get) => ({
     }
     if (version < 49) {
       // 📰 Reprint waves: no wave in flight on an old save — the day tick announces the first.
-      state.reprintWave = state.reprintWave ?? null
     }
     if (version < 50) {
       // 📣 Announced streams: nothing promised on an old save.
@@ -872,7 +867,6 @@ export const useGame = create(persist((set, get) => ({
     if (version < 65) {
       // Seven systems land together (one bump per batch, house style). Every field is
       // additive and every one starts empty, because none of them can be honestly backdated:
-      //   🔨 auctionLots  — the buy-side board. The day tick fills it tomorrow.
       //   🧾 books        — THE QUARTER STARTS TODAY. Deliberately not backdated: billing an
       //                     existing save for a quarter it played under no tax rules would be
       //                     charging for the past. The first bill lands 90 days from now.
@@ -884,12 +878,6 @@ export const useGame = create(persist((set, get) => ({
       //   🖨️ misprints    — errors come out of packs, so they arrive with the next rip. No
       //                     card already in a collection is retroactively a misprint.
       //   🎯 stats.cracks / stats.misprints — new counters, from zero.
-      // Seeded rather than left empty, for the same reason a fresh game seeds it: an existing
-      // save should find the board already running, not a blank panel that fills tomorrow.
-      const lotDay = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
-      state.auctionLots = state.auctionLots ?? refillLots([], state.notoriety || 0, lotDay)
-      state.auctionLotsDay = state.auctionLotsDay ?? lotDay
-      state.auctionStats = state.auctionStats ?? { won: 0, lost: 0, spent: 0, burned: 0 }
       state.books = state.books ?? freshBooks(absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0))
       state.loan = state.loan ?? null
       state.loanDefaultedUntil = state.loanDefaultedUntil ?? 0
@@ -955,6 +943,47 @@ export const useGame = create(persist((set, get) => ({
       }
       state.credit = { balance: c.balance || 0, frozen: by.length > 0, frozenBy: by }
       delete state._creditFrozenByTax
+    }
+    if (version < 70) {
+      // 🧭 The navigation rewrite. Six tabs grouped by who owns the thing, and three systems
+      // retired on the way. Every step here is about not charging the player for the change.
+      //
+      // 📒 BINDERS become objects you buy and assign a set to, rather than a page the game
+      // derives for all 150+ sets. Grandfather every set the player has already slotted cards
+      // into: their pages survive, free. Only NEW sets need a bought binder from here.
+      const seen = new Set()
+      const grandfathered = []
+      for (const c of state.binder || []) {
+        const sid = setIdOfCard(c)
+        if (!sid || seen.has(sid)) continue
+        seen.add(sid)
+        grandfathered.push({ id: `bnd_g${grandfathered.length}`, setId: sid, boughtDay: 0, acquired: 'grandfathered' })
+      }
+      // A declared 🃏 challenge without slotted cards still deserves its page — that IS the
+      // chase, and taking the binder away mid-challenge would strand it.
+      if (state.challenge?.setId && !seen.has(state.challenge.setId)) {
+        grandfathered.push({ id: `bnd_g${grandfathered.length}`, setId: state.challenge.setId, boughtDay: 0, acquired: 'grandfathered' })
+      }
+      state.binders = state.binders ?? grandfathered
+      state.cart = state.cart ?? []
+      state.dms = state.dms ?? []
+      state.dmStats = state.dmStats ?? { got: 0, answered: 0 }
+
+      // 🔨 The buy-side auction house is gone. Money is SITTING in live proxy bids — that cash
+      // left the player's hands for a lot that will now never settle, so hand it back rather
+      // than letting it evaporate with the feature.
+      let refund = 0
+      for (const lot of state.auctionLots || []) {
+        if (lot?.yourBid > 0 && !lot.settled) refund += lot.yourBid
+      }
+      // 📰 Reprint-wave preorders are PREPAID. Same rule: the stock will never land, so the
+      // deposit comes back.
+      refund += state.reprintWave?.prepaid || 0
+      if (refund > 0.005) state.cash = round2((state.cash || 0) + refund)
+      delete state.auctionLots
+      delete state.auctionLotsDay
+      delete state.auctionStats
+      delete state.reprintWave
     }
     return state
   },

@@ -97,6 +97,13 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
     const sid = setIdOfCard(card), variant = cardVariant(card)
     return (s.binder || []).some(b => b.id === card.id && setIdOfCard(b) === sid && cardVariant(b) === variant)
   })
+  // 📒 Is there a binder for this card's set at all? Without one there is no page to slot
+  // into, and the button would silently do nothing.
+  const hasBinderForSet = useGame(s => {
+    if (!card) return false
+    const sid = setIdOfCard(card)
+    return (s.binders || []).some(b => b.setId === sid)
+  })
   const cash = useGame(s => s.cash)
   const submitted = useGame(s => s.gradesSubmitted)
   const upgrades = useGame(s => s.upgrades)   // 📦 Shipping Station cuts submission freight
@@ -298,10 +305,12 @@ export default function CardModal({ card, onClose, inspect = false, ask = null, 
 
             {!inspect && !readOnly && !inBinder && ((!listing && !auctioning) ? (
               <div className="sell-options mt-6">
-                <button className="btn alt sellopt" disabled={slotTaken}
+                <button className="btn alt sellopt" disabled={slotTaken || !hasBinderForSet}
                   onClick={() => { if (addToBinder(card.uid)) onClose() }}>
                   <b>📒 Add to masterset binder</b>
-                  <small>{slotTaken ? 'This variant slot is already filled' : `Slot the ${MASTERSET_VARIANTS[cardVariant(card)]?.label || 'card'} — moves it out of the sellable pool, safe from bulk actions`}</small>
+                  <small>{!hasBinderForSet ? 'No binder for this set — start one in 👤 You → Binders'
+                    : slotTaken ? 'This variant slot is already filled'
+                    : `Slot the ${MASTERSET_VARIANTS[cardVariant(card)]?.label || 'card'} — moves it out of the sellable pool, safe from bulk actions`}</small>
                 </button>
                 <button className="btn alt sellopt" onClick={() => { quickSell(card.uid); onClose() }}>
                   <b>Quick sell · {fmtMoney(market * quickSellRate)}</b>

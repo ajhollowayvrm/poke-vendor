@@ -9,15 +9,21 @@ import { useGame, RANKS } from '../game/store'
 import { vintageLeft, creditFreezeReasons, CREDIT_FREEZE } from '../game/store/helpers'
 import { weekIndexOf, absoluteDay, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from '../game/store/constants'
 import { HobbyWire, BreakersAlmanac } from './MarketIntel'
-import AuctionHouse from './AuctionHouse'
+import CreditPanel from './CreditPanel'
+import Cart from './Cart'
 import LocalMarket from './LocalMarket'
 import { shelfProducts, shelfEraProducts, shelfBlurb } from '../game/shelf'
 import { toast } from '../ui/dialog'
 import { Explain } from '../ui/Explain'
 
 // The Buy tab: distributor accounts, the weekly shelf, the vintage back room, credit,
-// reorders, imports, the reprint wave, the auction house and the intel panels. Moved out
-// of App.jsx as a plain move — App passes cash and the two buy handlers down unchanged.
+// reorders, imports, the cart and the intel panels.
+//
+// `onBuy` no longer means "charge me now". App routes it into the 🛒 cart, which is where a
+// stocking run belongs — you fill a basket, then answer "cash or credit" and "store or
+// personal" ONCE for the whole order. The one exception is the Rip-on-buy setting, which
+// buys immediately because a cart cannot rip; App owns that branch, so every shelf row here
+// stays a plain call and none of them has to know which mode is on.
 export default function Shop({ cash, onBuy, onBuyVintage }) {
   const distributors = useGame(s => s.distributors)
   const notoriety = useGame(s => s.notoriety)
@@ -85,12 +91,16 @@ export default function Shop({ cash, onBuy, onBuyVintage }) {
           intel panels, reorder ledger, rapport bar, clout button, supply panel, distributor
           blurb, credit panel — and only then the thing the player opened the tab to do. Roughly
           a thousand pixels of reference material in front of the one primary action.
-          Now: pick a vendor → choose how you're paying → BUY. Everything that reports rather
+          Now: pick a vendor → choose how you're paying → ADD TO CART. Everything that reports rather
           than acts sits below the shelf, and the panels that used to be open by default are
-          collapsed (see AuctionHouse / MarketIntel / CreditPanel).
+          collapsed (see MarketIntel / CreditPanel).
           The intel panels stay OUTSIDE the unlocked/marketplace branch, exactly as before, so
           they still show on the 📱 marketplace and locked-account views. */}
       <DistributorPicker distributorState={distributors} notoriety={notoriety} upgrades={upgrades} rank={rank} selected={distId} onSelect={setDistId} vintageDists={vintageDists} />
+
+      {/* 🛒 The basket. Sits with the picker and the pay mode because it is the same kind of
+          thing: the frame the shelf below is bought inside, not another thing to read. */}
+      <Cart payMode={payMode} />
 
       {/* 🚢 Import orders still crossing the Pacific — visible whichever shelf you're browsing */}
       <ImportsInTransit />
@@ -160,12 +170,6 @@ export default function Shop({ cash, onBuy, onBuyVintage }) {
 
       {/* Below the fold on purpose — these REPORT, they don't act. They stay outside the
           unlocked/marketplace branch above so the 📱 marketplace and locked views keep them. */}
-      {/* 🔨 The auction house: the buy side of the hammer, alongside the wholesale shelves */}
-      <AuctionHouse />
-
-      {/* 📰 Reprint wave: industry news — shows whichever storefront is selected */}
-      <ReprintWaveBanner cash={cash} flash={flash} />
-
       {/* Buy-tab intel (each self-gates on its upgrade): 📈 demand + movers · 📐 rip EV */}
       <HobbyWire />
       <BreakersAlmanac />
@@ -177,165 +181,6 @@ export default function Shop({ cash, onBuy, onBuyVintage }) {
   )
 }
 
-// 📰 The reprint-wave preorder banner (Buy tab). Shows the active wave: what's restocking,
-// days to drop, your allocation at the locked unit price, and how many locals have paid
-// deposits at your counter. The lifecycle itself lives in the day-tick; committing here
-// goes through sourcing.preorderWave (prepaid — stock lands in the storeroom on drop day).
-function ReprintWaveBanner({ cash, flash }) {
-  const wave = useGame(s => s.reprintWave)
-  const currentDay = useGame(s => s.currentDay)
-  const monthsElapsed = useGame(s => s.monthsElapsed)
-  const preorderWave = useGame(s => s.preorderWave)
-  const rank = useGame(s => s.rank || 0)
-  const clout = useGame(s => s.clout || 0)
-  const cloutJumpAllocation = useGame(s => s.cloutJumpAllocation)
-  useGame(s => s.marketMults) // the announcement dip moves the strike-through retail
-  const [qty, setQty] = useState(1)
-  if (!wave || wave.doneDay != null) return null
-  const absNow = absoluteDay(currentDay, monthsElapsed)
-  if (absNow >= wave.dropDay) return null
-  const daysLeft = wave.dropDay - absNow
-  const room = Math.max(0, (wave.allocCap || 0) - (wave.preordered || 0))
-  const q = Math.max(1, Math.min(qty, Math.max(1, room)))
-  const cost = round2(q * wave.unit)
-  const waveSet = setById(wave.setId)
-  return (
-    <div className="banner" style={{ marginTop: 12, borderColor: 'var(--gold, #ffd45e)' }}>
-      📰 <b>Reprint wave</b> — <b>{wave.label}</b> restocks in <b>{daysLeft} day{daysLeft > 1 ? 's' : ''}</b>.
-      {' '}Allocation via {wave.distName}: <b>{wave.preordered}/{wave.allocCap}</b> committed at <b>{fmtMoney(wave.unit)}</b> each
-      {waveSet ? <> (retail ~{fmtMoney((waveSet.products || []).find(p => p.type === wave.productType)?.price || 0)})</> : null}.
-      {(wave.custPreorders || 0) > 0 && <> <Explain label="What are local deposits?" trigger={
-        <span className="pill" style={{ background: '#ffd45e22', color: 'var(--gold, #ffd45e)' }}>
-        🧾 {wave.custPreorders} local deposit{wave.custPreorders > 1 ? 's' : ''} riding on it</span>
-      }>
-        <b>🧾 Local deposits</b>
-        <p>Locals paid deposits at your counter. They pick up on drop day and pay the balance
-          at retail + a premium. Short them and it's refunds + a grudge.</p>
-      </Explain></>}
-      {room > 0 ? (
-        <span className="row" style={{ gap: 6, marginTop: 6, alignItems: 'center', display: 'inline-flex', marginLeft: 8 }}>
-          <button className="btn alt btn-fixed" style={{ padding: '2px 9px' }} onClick={() => setQty(v => Math.max(1, v - 1))}>−</button>
-          <b>{q}</b>
-          <button className="btn alt btn-fixed" style={{ padding: '2px 9px' }} onClick={() => setQty(v => Math.min(room, v + 1))}>+</button>
-          <button className="btn gold t-xs btn-fixed" style={{ padding: '4px 10px' }} disabled={cash < cost}
-            onClick={() => { const r = preorderWave(q); flash(r.error || `📰 Preordered ${r.bought} — lands on drop day.`); if (!r.error) setQty(1) }}>
-            Preorder {q} · {fmtMoney(cost)}
-          </button>
-        </span>
-      ) : <b style={{ marginLeft: 8 }}> Allocation fully committed.</b>}
-      {/* 🎫 Clout spend: argue your way into a bigger slice of the wave (once per wave). */}
-      {!wave.allocBonus && rank >= 2 && (
-        <button className="btn alt t-xs" style={{ marginLeft: 8, padding: '4px 10px' }} disabled={clout < 3}
-          onClick={() => { const r = cloutJumpAllocation(); flash(r.error || `📰 Queue jumped — your cap is now ${r.allocCap}.`) }}>
-          🎫 Jump the queue · 3 🎫
-        </button>
-      )}
-    </div>
-  )
-}
-
-// The distributor credit line — a single global account (limit scales with net worth). Shows
-// the balance / limit / available, a Cash⇄Credit toggle that routes every buy on this tab, and
-// pay-down controls. Carrying a balance accrues monthly interest; the minimum auto-pays from
-// cash each month, and missing it freezes the line (surfaced here) until you pay it down.
-function CreditPanel({ balance, limit, avail, min, frozen, cash, payMode, setPayMode, onPay }) {
-  const canUseCredit = !frozen && avail > 0
-  const hasBalance = balance > 0.005
-  // 🏦 Preferred Account shows its cheaper carry — the panel must quote the real rate.
-  const preferred = useGame(s => !!s.upgrades.preferredAccount)
-  // Why the line is shut. "Pay your balance down" is the wrong answer for two of the three
-  // freezes (a tax lien and a called-in loan), and a default freeze often leaves no balance
-  // to pay at all — so the panel names the actual cure.
-  const reasons = useGame(s => creditFreezeReasons(s))
-  const ratePct = +( (preferred ? creditMonthlyRate({ preferredAccount: true }) : CREDIT_MONTHLY_RATE) * 100).toFixed(1)
-  // A credit mode the line can't back reads as Cash (matches the Shop's onCredit/split gating).
-  const active = canUseCredit ? payMode : 'cash'
-  const freezeCure = reasons.map(r => CREDIT_FREEZE[r]?.cure).filter(Boolean).join(' ')
-  const creditTitle = frozen ? `Frozen by ${reasons.map(r => CREDIT_FREEZE[r]?.label || r).join(' and ')} — ${freezeCure}`
-    : avail <= 0 ? 'No credit available yet — your line grows with your net worth (and frees up as you pay down the balance)'
-    : `up to ${fmtMoney(avail)} available`
-  // Collapsible: the header always shows the load-bearing numbers — balance owed + open credit —
-  // so closed still informs; the stats and pay-down buttons live in the body.
-  //
-  // Closed by DEFAULT now, on desktop too. This panel sat expanded above the shelf and was one of
-  // four reference panels the player scrolled past to reach the thing they came to buy — the
-  // sealed shelf rendered TWELFTH on this tab. Reference material collapses; the shelf does not.
-  //
-  // The key is `pv-col-credit2`, not `pv-col-credit`. useOpen persists the player's choice
-  // forever, so changing the default alone would have reached nobody who had ever toggled the old
-  // panel — including every existing save. A new key is the only way a changed default lands.
-  const [openPanel, togglePanel] = useOpen('pv-col-credit2', false)
-  return (
-    <div className={`credit-panel ${frozen ? 'frozen' : ''}`}>
-      <div className="credit-top" role="button" tabIndex={0} aria-expanded={openPanel}
-        style={{ cursor: 'pointer', userSelect: 'none' }} onClick={togglePanel}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePanel() } }}>
-        <div className="credit-head">💳 Credit line{frozen && <span className="credit-badge">FROZEN</span>}</div>
-        <span className="cap">
-          {hasBalance ? <><b className="credit-owe">{fmtMoney(balance)}</b> owed · </> : null}
-          <b className="credit-avail">{fmtMoney(avail)}</b> open
-        </span>
-        {/* Paying off the line is the one action worth reaching from the collapsed header — the
-            rest (min payment, stats) stays behind the toggle, but "I'm looking at what I owe,
-            let me clear it" shouldn't require opening the panel first. stopPropagation keeps the
-            tap from also toggling the collapse underneath it. */}
-        {hasBalance && (
-          <button className="btn small gold" style={{ marginLeft: 'auto' }} disabled={cash <= 0}
-            onClick={e => { e.stopPropagation(); onPay(balance) }}>
-            {cash + 0.005 < balance ? `Pay ${fmtMoney(cash)}` : `Pay off ${fmtMoney(balance)}`}
-          </button>
-        )}
-        <span className="muted" style={{ marginLeft: hasBalance ? 0 : 'auto' }}>{openPanel ? '▾' : '▸'}</span>
-      </div>
-      {/* The pay-with toggle stays OUTSIDE the collapse. It is not reference material: it decides
-          what every buy button on the shelf below charges, so hiding it behind a closed panel
-          would hide the price the player is about to pay. Only the balance detail collapses. */}
-      <div className="credit-toggle mt-4" role="group" aria-label="Pay with">
-        <button className={`btn ${active === 'cash' ? 'gold' : 'alt'}`} onClick={() => setPayMode('cash')}>💵 Cash</button>
-        <button className={`btn ${active === 'split' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
-          onClick={() => setPayMode('split')}>🔀 Cash + Credit</button>
-        <button className={`btn ${active === 'credit' ? 'gold' : 'alt'}`} disabled={!canUseCredit}
-          onClick={() => setPayMode('credit')}>💳 Credit</button>
-      </div>
-      <div className="cap t-sm mt-1">
-        {!canUseCredit ? creditTitle
-          : active === 'cash' ? 'Buys come out of cash on hand.'
-          : active === 'split' ? `Cash first, the rest on credit (${creditTitle}).`
-          : `Buys charge to your credit line (${creditTitle}).`}
-      </div>
-      {openPanel && (<>
-      <div className="credit-stats">
-        <span>Balance <b className={hasBalance ? 'credit-owe' : ''}>{fmtMoney(balance)}</b></span>
-        <span>Limit <b>{fmtMoney(limit)}</b></span>
-        <span>Available <b className="credit-avail">{fmtMoney(avail)}</b></span>
-        {hasBalance && <span>Min/mo <b>{fmtMoney(min)}</b></span>}
-      </div>
-      {hasBalance ? (
-        <div className="credit-pay">
-          <div className="muted credit-note">~{ratePct}%/mo interest on the balance · the minimum auto-pays from cash each month.</div>
-          {frozen && <div className="muted credit-note">🧊 {freezeCure}</div>}
-          <div className="credit-pay-btns">
-            <button className="btn alt" disabled={cash <= 0} onClick={() => onPay(min)}>Pay min {fmtMoney(min)}</button>
-            <button className="btn gold" disabled={cash <= 0} onClick={() => onPay(balance)}>
-              {cash + 0.005 < balance ? `Pay ${fmtMoney(cash)} (all cash)` : `Pay off ${fmtMoney(balance)}`}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="muted credit-note">
-          {frozen
-            ? `🧊 Nothing is owed, but the line is shut by ${reasons.map(r => CREDIT_FREEZE[r]?.label || r).join(' and ')}. ${freezeCure}`
-            : `Buy sealed on credit and pay it off monthly — your line grows with your net worth. Carry a balance and it accrues ~${ratePct}%/mo.`}
-        </div>
-      )}
-      </>)}
-    </div>
-  )
-}
-
-// 🧮 The Purchasing Agent's reorder-points ledger: one stepper per product TYPE across the
-// buyable shop list (incl. the 🎌 import shelf once licensed). The agent tops every set that
-// carries the type up to the minimum overnight — see the day tick for the buying rules.
 function ReorderPanel() {
   const owned = useGame(s => !!s.upgrades.purchasingAgent)
   const pointsRaw = useGame(s => s.reorderPoints)
@@ -595,13 +440,20 @@ function DistributorEraCard({ era, dist, lvl, stock, cash, onBuy, clearanceSetId
         <div className="era-body">
           {/* Era-wide product first — a UPC isn't a Lost Origin product, it's a Sword & Shield one. */}
           {eraProducts.length > 0 && (
-            <div className="era-products">
-              <div className="era-products-head">👑 Collector product — rips packs from across the {era.series} era</div>
+            /* Collapsed by DEFAULT. A UPC row is three lines tall and an era can carry eight of
+               them, so opening a shelf used to mean scrolling past a screen of collector product
+               to reach the boxes most buys are actually for. The header still says how many are
+               in there, so nothing is hidden — it is one tap away instead of always underfoot. */
+            <Collapse id={`era-prod-${era.series}`} className="era-products" headClass="era-products-head"
+              defaultOpen={false} as="span"
+              head={`👑 Collector product`}
+              badge={`${eraProducts.length} piece${eraProducts.length !== 1 ? 's' : ''}`}
+              hint={`Rips packs from across the ${era.series} era`}>
               {eraProducts.map(p => (
                 <EraProductRow key={p.tcgId} dist={dist} product={p} lvl={lvl} cash={cash}
                   onBuy={onBuy} owned={owned} {...credit} />
               ))}
-            </div>
+            </Collapse>
           )}
           {era.sets.map(set => (
             <DistributorSetCard key={set.id} dist={dist} set={set} lvl={lvl} stock={stock}
@@ -624,6 +476,7 @@ function EraProductRow({ dist, product, lvl, cash, onBuy, owned, onCredit, split
   if (!anchor) return null
   const price = distributorPrice(dist, product.price, lvl.level, { product, set: anchor })
   const afford = cash >= price || (onCredit && creditAvail >= price) || (split && cash + creditAvail >= price)
+  const ripOnBuy = useGame(s => !!s.settings?.ripOnBuy)
   const spent = lim.left <= 0
   return (
     <div className="prodrow era-prodrow">
@@ -720,6 +573,10 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
   const limitLeft = lim.left
   const maxBuy = out ? 0 : Math.max(0, Math.min(Math.max(1, Math.floor(stockQty)), affordable, limitLeft))
 
+  // 🛒 The button ADDS to the cart unless Rip-on-buy is on, in which case App buys and rips
+  // immediately. The glyph has to say which, or the same button does two different things.
+  const ripOnBuy = useGame(s => !!s.settings?.ripOnBuy)
+
   const [buyQty, setBuyQty] = useState(1)
   const qN = Math.min(Math.max(1, Math.floor(buyQty) || 1), Math.max(1, maxBuy))
   const clampSet = (v) => setBuyQty(Math.min(Math.max(1, Math.floor(v) || 1), Math.max(1, maxBuy)))
@@ -770,7 +627,7 @@ function StockButton({ dist, set, product, lvl, stock, cash, onBuy, owned, onCre
         disabled={!canBuy}
         onClick={() => onBuy(dist.id, set, { ...product, _buyPrice: price, _distId: dist.id }, qN, { onCredit, split })}
 >
-        <span className="prodname">{useCredit ? '💳 ' : ''}{product.icon} {productTypeLabel(product)}</span>
+        <span className="prodname">{ripOnBuy ? '📦 ' : '🛒 '}{product.icon} {productTypeLabel(product)}</span>
         {ownedN > 0 && <span className="prodowned" aria-label={`${ownedN} already in your inventory`}>📦 {ownedN}</span>}
         <span className="prodmeta">{product.packs} pk{product.bonus ? ' +🎁' : ''}{product._case && product.boxes ? ` · ${product.boxes} boxes` : ''}
           {perCustomer !== Infinity && (

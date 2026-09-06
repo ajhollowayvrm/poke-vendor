@@ -6,7 +6,7 @@ import { loanProgress } from '../game/loans'
 import { creditFreezeReasons, CREDIT_FREEZE } from '../game/store/helpers'
 
 // 🧾💳🏦 The books — the quarterly tax bill, the distributor credit line and the bank note,
-// on the Stats tab.
+// on the 🏬 Store → Financials tab (and 👤 You → Career until you have a store).
 //
 // Both are money the business owes on a clock, and both need to be VISIBLE BEFORE they land.
 // A tax bill that arrives as a surprise is a punishment; a tax bill you can watch building,

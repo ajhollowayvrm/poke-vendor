@@ -138,10 +138,44 @@ export function travelCost(miles) { return round2(TRAVEL_PER_MILE * (miles || 0)
 // Weighted toward what people actually list locally: bulk lots and loose sealed, with the
 // occasional single worth real money.
 const KINDS = [
-  { key: 'lot', weight: 34 },      // "whole collection" — a pile of cards, value is fuzzy
-  { key: 'sealed', weight: 38 },   // a box, an ETB, some packs
-  { key: 'card', weight: 28 },     // one single, sometimes a slab
+  { key: 'lot', weight: 55 },      // "whole collection" — a pile of cards, value is fuzzy
+  { key: 'sealed', weight: 26 },   // a box, an ETB, some packs
+  { key: 'card', weight: 19 },     // one single, sometimes a slab
 ]
+
+// The lot is the heart of this channel, so it is not ONE thing. A shoebox, a 4,000-card
+// long box and a binder somebody found in a closet are all "a pile you cannot see the
+// bottom of", and each one asks a different question: how much is in there, how likely is
+// it that the good cards are still in it, and how sure is the seller.
+//
+// `spread` widens or narrows the per-card value band. `pickedChance` is how often somebody
+// has already been through it — the single biggest hidden variable in a real lot. `hidden`
+// is the chance a genuinely good card is buried in it, which is what makes an unknown pile
+// worth driving out for at all.
+export const LOT_FLAVORS = [
+  { key: 'shoebox',  weight: 26, size: [60, 300],    spread: [0.03, 0.16], pickedChance: 0.40, hidden: 0.30,
+    title: (n) => `Shoebox of cards (~${n.toLocaleString()})`,
+    note: 'A shoebox. They counted it once, roughly, a while ago.' },
+  { key: 'longbox',  weight: 22, size: [400, 1600],  spread: [0.03, 0.10], pickedChance: 0.55, hidden: 0.22,
+    title: (n) => `${n.toLocaleString()} card bulk lot`,
+    note: 'Sorted into long boxes. Somebody cared about this once.' },
+  { key: 'binder',   weight: 20, size: [90, 400],    spread: [0.10, 0.45], pickedChance: 0.50, hidden: 0.42,
+    title: (n) => `Full binder (~${n.toLocaleString()} cards)`,
+    note: 'A binder, filled front to back. Binders hold what somebody thought was good.' },
+  { key: 'attic',    weight: 18, size: [150, 900],   spread: [0.04, 0.22], pickedChance: 0.18, hidden: 0.48,
+    title: (n) => `Old collection from the attic (~${n.toLocaleString()})`,
+    note: 'Been in a box since the nineties. Nobody has looked through it since.' },
+  { key: 'storage',  weight: 14, size: [800, 4000],  spread: [0.02, 0.12], pickedChance: 0.62, hidden: 0.35,
+    title: (n) => `Storage unit haul — ${n.toLocaleString()}+ cards`,
+    note: 'Bought the unit, not the cards. They have no idea what is in there.' },
+]
+function pickLotFlavor(rnd) {
+  const total = LOT_FLAVORS.reduce((a, f) => a + f.weight, 0)
+  let r = rnd() * total
+  for (const f of LOT_FLAVORS) { r -= f.weight; if (r <= 0) return f }
+  return LOT_FLAVORS[0]
+}
+export function lotFlavorByKey(key) { return LOT_FLAVORS.find(f => f.key === key) || null }
 function pickKind(rnd) {
   const total = KINDS.reduce((a, k) => a + k.weight, 0)
   let r = rnd() * total
@@ -149,9 +183,8 @@ function pickKind(rnd) {
   return 'sealed'
 }
 
-// A bulk lot's TRUE value is the sum of its cards; the listing only says how many there are.
+// A lot's TRUE value is the sum of its cards; the listing only says how many there are.
 // That is the appraisal problem the buy-in system already poses, pointed the other way.
-export const LOT_SIZES = [[60, 200], [200, 600], [600, 1500], [1500, 4000]]
 
 let _seq = 0
 export function makeListing(notoriety = 0, day = 0, rnd = Math.random) {
@@ -172,16 +205,22 @@ export function makeListing(notoriety = 0, day = 0, rnd = Math.random) {
   }
 
   if (kind === 'lot') {
-    const [lo, hi] = LOT_SIZES[Math.floor(rnd() * LOT_SIZES.length)]
+    const flavor = pickLotFlavor(rnd)
+    const [lo, hi] = flavor.size
     const count = lo + Math.floor(rnd() * (hi - lo))
-    // Most of a local bulk lot is worthless. The value is in the few cards nobody pulled out —
+    // Most of a local pile is worthless. The value is in the few cards nobody pulled out —
     // and whether those are still in there is exactly what you cannot see from the photo.
-    const perCard = 0.03 + rnd() * 0.10
-    const picked = rnd() < 0.55         // has somebody already gone through it?
-    const worth = round2(count * perCard * (picked ? 0.55 : 1) + (picked ? 0 : rnd() * 120))
-    listing.lot = { count, picked }
+    const [plo, phi] = flavor.spread
+    const perCard = plo + rnd() * (phi - plo)
+    const picked = rnd() < flavor.pickedChance   // has somebody already gone through it?
+    // The buried grail. Only an unpicked pile can still have one, which is the entire reason
+    // to care whether it has been picked — and you cannot tell from the listing.
+    const buried = !picked && rnd() < flavor.hidden ? 40 + rnd() * 400 : 0
+    const worth = round2(count * perCard * (picked ? 0.55 : 1) + buried)
+    listing.lot = { count, picked, flavor: flavor.key }
     listing.worth = Math.max(1, worth)
-    listing.title = `${count.toLocaleString()} card bulk lot`
+    listing.title = flavor.title(count)
+    listing.lotNote = flavor.note
     return priceIt(listing, seller, rnd)
   }
 
@@ -291,8 +330,8 @@ export function haggle(listing, offer, rnd = Math.random) {
 }
 
 // --- The board --------------------------------------------------------------------
-export const BOARD_MIN = 5
-export const BOARD_MAX = 10
+export const BOARD_MIN = 8
+export const BOARD_MAX = 16
 export function boardSize(notoriety = 0) {
   return Math.max(BOARD_MIN, Math.min(BOARD_MAX, BOARD_MIN + Math.floor((notoriety || 0) / 70)))
 }

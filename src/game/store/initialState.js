@@ -14,7 +14,6 @@ import { STARTING_CASH, STARTER_JOB } from './constants'
 import { makeShowVendors } from '../shows'
 import { defaultPackTiers } from '../mysterypacks'
 import { freshBooks } from '../tax'
-import { refillLots } from '../lots'
 import { refillBoard } from '../market'
 
 export function initialState() {
@@ -25,6 +24,10 @@ export function initialState() {
     // a `locked` card is PERSONAL (kept, not for sale). Missing loc reads as storeroom. See the
     // three-inventory notes in constants.js (floorCapacity) + the migration in index.js (v43).
     collection: [],
+    // 📒 Binders you OWN. A binder is a physical thing you buy and then assign a set to;
+    // only an assigned set has a masterset page. `binder` (below) holds the cards slotted
+    // into those pages — a binder object is permission to have a page, not a container.
+    binders: [],             // [{ id, setId|null, boughtDay, acquired:'bought'|'grandfathered' }]
     binder: [],              // cards physically slotted into your masterset binder — moved OUT of the collection (protected from bulk actions); one per {set,card,variant} slot
 
     pendingGrades: [],       // {card, tierKey, readyOnDay, submittedAt, paidFee}
@@ -46,7 +49,8 @@ export function initialState() {
     ripLog: [],
     // Per-set ledger: { [setId]: { spent, pulledValue, packsOpened, cardsPulled, hits } }.
     // `spent` = cash put into that set's sealed product; `pulledValue` = market value of
-    // everything ripped from it. Drives the per-set analytics on the Stats page.
+    // everything ripped from it. Read by the sponsor check and the 🃏 challenge; the per-set
+    // analytics VIEW was deleted with the Stats tab, but the ledger itself is load-bearing.
     bySet: {},
     // Set ids you've EVER completed (own one of every card) — the first-time completion
     // bonus pays once and is recorded here permanently, even if you later sell a card.
@@ -58,7 +62,7 @@ export function initialState() {
     marketMults: {},
     marketHistory: {},
     // Rolling net-worth / cash trend: one {d, worth, cash} sample per day-advance,
-    // capped to WORTH_HISTORY_LEN. Powers the Stats trend sparkline + the daily recap.
+    // capped to WORTH_HISTORY_LEN. Powers the daily recap.
     worthHistory: [],
     // Quick-sells done TODAY. Dumping many cards at once floods the buylist and each
     // subsequent quick-sell pays a little less (diminishing returns). Reset every day.
@@ -101,6 +105,13 @@ export function initialState() {
     // for a couple of days each (same shape/drain as streamClip, capped at MAX_LIVE_POSTS).
     posts: [],               // [{kind, label, value, perDay, daysLeft, viral}]
     postQueue: [],           // 🔁 Content Calendar bank — moments waiting for their daily slot
+    // 💬 Your socials inbox. Not the store's: these are the people your CHANNEL brings —
+    // fans, collectors asking after a card, creators pitching a collab, brands, and noise.
+    // Buyer orders stay in boothInbox (Store → Messages); this is the other side of the wall.
+    dms: [],                 // [{ id, from, avatar, kind, body, day, read, payload }]
+    dmStats: { got: 0, answered: 0 },
+    shortsDay: 0,            // absolute day shortsToday counts for (no reset pass needed)
+    shortsToday: 0,          // 🎬 shorts you filmed by hand today (cap: SHORTS_PER_DAY)
     postStreak: 0,           // 🔁 consecutive days posted → cadenceMult on every post's reach
     lastPostDay: null,       // absolute day something last went out
     // 🃏 The master set challenge you announced: { setId, setName, startDay, startPlaced, total,
@@ -132,16 +143,10 @@ export function initialState() {
     // 🚫 "1 per customer": what you have already taken of each limited line today, stamped
     // with the day it belongs to so a new day needs no reset pass. See game/shelf.js.
     buyLimits: { day: 0, counts: {} },
-    // 🔨 The BUY side of the hammer: lots the auction house is running that you can bid on.
-    // Each carries a hidden `maxBid` (your proxy), the visible watcher count that sets the
-    // room, and — on raw and sealed lots — the condition claim that may not be true. The day
-    // tick settles every lot whose clock runs out and refills the board. See game/lots.js.
-    // SEEDED, not empty: the board has to exist on day one or the panel is invisible until
-    // the player happens to advance a day, and a system nobody can see is a system nobody
-    // uses. The day tick refills it from here on.
-    auctionLots: refillLots([], 0, 1),
-    auctionLotsDay: 1,       // absolute day the board was last refilled
-    auctionStats: { won: 0, lost: 0, spent: 0, burned: 0 }, // lifetime: lots won/lost, paid, and lost to bad descriptions
+    // 🛒 The basket. Buying is a stocking RUN, not a string of single taps: lines accumulate
+    // here and checkout charges them together, asking once where the whole order goes.
+    // Each line: { id, distId, setId, product, qty, unitPrice }. Cleared on checkout.
+    cart: [],
     showInventory: [],       // cards you brought to the CURRENT show to sell — floor buyers only see these; unsold ones come home when you leave
     showSealed: [],          // SEALED product you brought to the current show to sell at your booth — floor buyers can buy it; unsold comes home (to sealedInventory) when you leave
     showReserve: 0,          // cash you deliberately LEFT AT HOME when attending a show: while the show is active, `cash` holds only what you brought (your floor wallet); endShow() folds this back in. Counted in net worth so leaving money home never reads as losing it.
@@ -227,10 +232,6 @@ export function initialState() {
     standingOrder: null,     // 📋 { distId, setId, type, qty, lastDay } — one product on weekly auto-ship from a distributor (Standing Order upgrade)
     reorderPoints: {},       // 🧮 { [productType]: minQty } — Purchasing Agent keeps every buyable set at these minimums (nightly top-up in the day tick)
     imports: [],             // 🚢 shipments on the water from an import channel (Japan Direct): { id, distId, setId, type, icon, qty, unit, arrivesDay, orderedDay, rows:[sealed rows] } — rows land in sealedInventory on arrivesDay (day tick)
-    // 📰 The active (or just-finished, cooling-down) reprint wave: hot sets restock in
-    // announced waves — preorder window (allocCap via rapport, locals pay deposits), then
-    // drop day lands the stock + a launch rush. null until the first announcement.
-    reprintWave: null,
     sealedInventory: [],     // {uid, setId, product, boughtDay, boughtPrice, vintage} — sealed product you HOLD (buy now, rip/list/flip later). Value rides the set's market mult; vintage appreciates.
     wantList: [],            // active collector wants who sought YOU out (notoriety-gated)
     showLeads: [],           // pre-show DMs: vendors holding an item for you / buyers arranging to meet you AT an upcoming show. Claimed on entry (→ activeShow._leads); expire if the show passes unattended.

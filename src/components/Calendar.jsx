@@ -129,7 +129,7 @@ export default function Calendar({ onAttend }) {
                     <button className="btn" disabled>
                       🔒 {RANKS[tier.minRank]?.emoji} {RANKS[tier.minRank]?.name}
                     </button>
-                    <div className="cap">Needs ⭐ {tier.minNotoriety} — reputation panel on Stats</div>
+                    <div className="cap">Needs ⭐ {tier.minNotoriety} — reputation panel in 👤 You → Career</div>
                     {/* 🎫 Waiver: exactly one tier above your rank, a favor gets you a shopper
                         ticket — 3 clout + double the door price. No booth at a show that
                         doesn't know you. */}

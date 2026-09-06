@@ -363,7 +363,11 @@ body.rip-lock { overflow: hidden; touch-action: none; }
 .era-products { border: 1px solid var(--gold); border-radius: 12px; padding: 8px 10px 6px;
   background: linear-gradient(180deg, #ffcb050e, transparent); }
 .era-products-head { font-size: var(--fs-xs); font-weight: 800; color: var(--gold);
-  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+  text-transform: uppercase; letter-spacing: .4px; margin: 0; }
+/* The head is a Collapse disclosure button now, so it owns the whole row as a tap target and
+   only pushes the rows below it apart once the panel is actually open. */
+.era-products > .era-products-head .collapse-btn { color: inherit; }
+.era-products > :not(.era-products-head) { margin-top: 6px; }
 .era-prodrow { display: flex; align-items: center; gap: 10px; padding: 6px 0;
   border-top: 1px solid var(--line); }
 .era-prodrow:first-of-type { border-top: none; }
@@ -1866,15 +1870,16 @@ button.rip-hit-row:hover { background:#ffffff14; }
   .bnav-icon { position: relative; font-size: var(--fs-xl); line-height: 1;
     padding: 3px 12px; border-radius: 999px; }
   /* labels shrink to fit the narrower per-tab width; truncate rather than wrap.
-     7 tabs on a 390px screen leaves ~49px of label per cell, and "Inventory" needed ~55px at
-     11px — so the app's own tab was permanently labelled "Invent…". Ellipsising the PRIMARY
-     navigation is the one place truncation is never acceptable: it's the label you learn the
-     app by. 10px + slightly tightened tracking fits the longest label at 375px too. */
+     Ellipsising the PRIMARY navigation is the one place truncation is never acceptable: it's
+     the label you learn the app by. The nav rewrite made this easier rather than harder — six
+     real tabs instead of six plus a "More" stand-in, and the longest label is now "Socials"
+     (7 characters) where it used to be "Inventory" (9), which at 11px did not fit a 390px
+     screen and left the app's own tab reading "Invent…". 10px with slightly tightened tracking
+     clears every label at 375px with room to spare. */
   .bnav-label { font-size: 10px; letter-spacing: -.3px; line-height: 1; max-width: 100%;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  /* the icon pill and the cell padding were both eating room the label needed. "Inventory" is
-     the longest label and the binding constraint — give it a few px of slack rather than
-     landing exactly on the boundary, so a slightly wider system font doesn't re-truncate it. */
+  /* the icon pill and the cell padding both eat room the label needs; keep the slack, so a
+     wider system font (or a longer label added later) doesn't land on the boundary. */
   .bnav-icon { padding: 3px 10px; }
   .bnav-btn { padding-left: 1px; padding-right: 1px; }
   .bnav-badge {
@@ -2983,3 +2988,29 @@ button.rip-hit-row:hover { background:#ffffff14; }
   select:not([multiple]):not([size]),
   textarea { font-size: var(--fs-lg); }
 }
+
+
+/* --- 🛒 The cart (Buy tab) ------------------------------------------------------- */
+.cart-btn { max-width: 100%; margin: 8px 0 0; justify-content: flex-start; }
+.cart-lines { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.cart-line { flex-direction: row; align-items: center; gap: 10px; padding: 8px 10px; }
+.cart-line-info { flex: 1; min-width: 0; }
+.cart-line-total { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Stacked, full-width choices — "store or personal" is a decision, not a toolbar. */
+.row-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.row-btns .btn { max-width: 100%; }
+
+/* --- 📒 The binder shelf (You → Binders) ----------------------------------------- */
+.binder-shelf { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  background: var(--panel2); margin-bottom: 10px; }
+.binder-shelf-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.binder-shelf-head .btn { margin-left: auto; }
+.binder-assign { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+  padding-top: 8px; border-top: 1px solid var(--line); }
+.binder-assign select { flex: 1 1 180px; min-width: 0; }
+
+/* --- 💬 Socials DMs -------------------------------------------------------------- */
+.dm-line .tl-sub { white-space: normal; }
+/* Unread carries a left rule rather than a colour swap: the list is read top to bottom and a
+   bar in the margin survives being scanned, where a tinted row does not. */
+.dm-line.unread { border-left: 3px solid var(--accent2); }

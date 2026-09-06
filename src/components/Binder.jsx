@@ -5,6 +5,7 @@ import {
   cardVariant, cardMastersetVariants, setVariantColumns, MASTERSET_VARIANTS, mastersetStats, setIdOfCard, cardImg,
   CUT_ORDER, cardNumber, BINDER_VALUE_CAPS, binderReserveActive,
 } from '../game/engine'
+import { BINDER_COST } from '../game/store'
 import { rarityColor } from './CardTile'
 import { toast } from '../ui/dialog'
 import { clickable } from '../ui/clickable'
@@ -17,6 +18,12 @@ import { Explain } from '../ui/Explain'
 // everything possible" fills every open slot you already own a copy for. Completing the full
 // masterset (every variant of every card) is the real flex; a plain set (one of each card)
 // still pays its one-time bonus as ownership lands.
+//
+// A BINDER IS A THING YOU BUY. This screen used to derive a page for all 150+ sets in the
+// catalog, which meant the game handed every player a hundred-and-fifty open chases they
+// never chose. A masterset you did not decide on is a chore list. Now you buy an empty
+// binder and put a set in it, and that — the deciding — is the moment the chase starts.
+// `binders` holds those objects; `binder` still holds the cards slotted into their pages.
 export default function Binder({ onPick }) {
   const collection = useGame(s => s.collection)
   const binder = useGame(s => s.binder || [])
@@ -59,24 +66,42 @@ export default function Binder({ onPick }) {
   const currentDay = useGame(s => s.currentDay)
   const monthsElapsed = useGame(s => s.monthsElapsed)
 
-  const [setId, setSetId] = useState(SETS[0].id)
+  // 📒 The binders you own. `assigned` are the ones with a set in them (those have pages);
+  // `empty` are bought-and-waiting. One set per binder, enforced in assignBinder.
+  const binders = useGame(s => s.binders || [])
+  const buyBinder = useGame(s => s.buyBinder)
+  const assignBinder = useGame(s => s.assignBinder)
+  const cash = useGame(s => s.cash)
+  const assigned = useMemo(() => binders.filter(b => b.setId), [binders])
+  const empty = useMemo(() => binders.filter(b => !b.setId), [binders])
+  const mySetIds = useMemo(() => assigned.map(b => b.setId), [assigned])
+  const mySets = useMemo(
+    () => mySetIds.map(id => SETS.find(x => x.id === id)).filter(Boolean),
+    [mySetIds])
+
+  const [setId, setSetId] = useState(() => mySets[0]?.id || null)
   const [missingOnly, setMissingOnly] = useState(false)
-  const set = SETS.find(s => s.id === setId) || SETS[0]
-  const columns = useMemo(() => setVariantColumns(set), [set])
+  const [assignTo, setAssignTo] = useState(SETS[0].id) // set chosen for the next empty binder
+  // Keep the open page on a set you still have a binder for — selling a master lot never
+  // removes a binder, but a save migrated from before binders existed can arrive with none.
+  const set = mySets.find(x => x.id === setId) || mySets[0] || null
+  const columns = useMemo(() => (set ? setVariantColumns(set) : []), [set])
 
   // Per-set slot maps: which variants are placed (in the binder) vs. owned loose (in the
   // collection, available to place). Keyed "<cardId>:<variant>".
   const { placed, loose } = useMemo(() => {
     const placed = new Map(), loose = new Map()
+    if (!set) return { placed, loose }
     for (const c of binder) if (setIdOfCard(c) === set.id) placed.set(`${c.id}:${cardVariant(c)}`, c)
     for (const c of collection) if (setIdOfCard(c) === set.id) {
       const k = `${c.id}:${cardVariant(c)}`
       if (!loose.has(k)) loose.set(k, c) // first (value-sorted below) copy fills the slot
     }
     return { placed, loose }
-  }, [binder, collection, set.id])
+  }, [binder, collection, set])
 
-  const ms = useMemo(() => mastersetStats(set, binder, collection, reserve), [set, binder, collection, reserve])
+  const ms = useMemo(() => (set ? mastersetStats(set, binder, collection, reserve)
+    : { placed: 0, total: 0, pct: 0, complete: false, placeable: 0 }), [set, binder, collection, reserve])
   // Plain set-completion (one of every card, any variant) drives the one-time bonus badge.
   const ownedIds = useMemo(() => {
     const s = new Set()
@@ -84,14 +109,15 @@ export default function Binder({ onPick }) {
     for (const c of binder) if (c.id) s.add(c.id)
     return s
   }, [collection, binder])
-  const comp = useMemo(() => setCompletion(set, ownedIds), [set, ownedIds])
-  const reward = useMemo(() => completionReward(set), [set])
-  const everCompleted = completedSets.includes(set.id)
+  const comp = useMemo(() => (set ? setCompletion(set, ownedIds) : { owned: 0, total: 0, pct: 0, complete: false }), [set, ownedIds])
+  const reward = useMemo(() => (set ? completionReward(set) : { cash: 0, noto: 0, clout: 0 }), [set])
+  const everCompleted = !!set && completedSets.includes(set.id)
 
   // How many slots we could fill right now from the collection (drives the fill button).
   const placeableNow = ms.placeable
 
   const cards = useMemo(() => {
+    if (!set) return []
     const withState = set.cards.map(c => {
       const variants = cardMastersetVariants(set, c)
       const missing = variants.some(v => !placed.has(`${c.id}:${v}`))
@@ -116,6 +142,63 @@ export default function Binder({ onPick }) {
     if (copy) { addToBinder(copy.uid); return }
   }
 
+  // The shelf itself: what you own, and how to start another chase. Rendered above every
+  // page AND on its own when you have no assigned binder yet, because "buy a binder, put a
+  // set in it" is the only way onto this screen and it must never be hard to find.
+  const shelf = (
+    <div className="binder-shelf">
+      <div className="binder-shelf-head">
+        <b>📒 Your binders</b>
+        <span className="cap">
+          {assigned.length} in use{empty.length ? ` · ${empty.length} empty` : ''}
+        </span>
+        <button className="btn alt t-xs btn-fixed" style={{ padding: '3px 10px' }}
+          disabled={cash < BINDER_COST}
+          onClick={() => { const r = buyBinder(); toast(r.error || `📒 Bought a binder for ${fmtMoney(BINDER_COST)} — put a set in it.`) }}>
+          Buy a binder · {fmtMoney(BINDER_COST)}
+        </button>
+      </div>
+      {empty.length > 0 && (
+        <div className="binder-assign">
+          <span className="cap">Empty binder — which set is it for?</span>
+          <select value={assignTo} onChange={e => setAssignTo(e.target.value)}>
+            {SETS.filter(x => !mySetIds.includes(x.id)).map(x => (
+              <option key={x.id} value={x.id}>{x.name}</option>
+            ))}
+          </select>
+          <button className="btn gold t-xs btn-fixed" style={{ padding: '3px 10px' }}
+            onClick={() => {
+              const r = assignBinder(empty[0].id, assignTo)
+              if (r.error) return toast(r.error)
+              setSetId(assignTo)
+              toast(`📒 Started a ${SETS.find(x => x.id === assignTo)?.name} masterset. Slot what you already own.`)
+            }}>
+            Start this masterset
+          </button>
+        </div>
+      )}
+    </div>
+  )
+
+  // Nothing on the shelf yet. Say what a binder IS and what it costs, rather than showing an
+  // empty page for a set the player never chose.
+  if (!set) {
+    return (
+      <>
+        {shelf}
+        <p className="muted mt-5">
+          You have no masterset going. A binder is a physical thing you buy ({fmtMoney(BINDER_COST)})
+          and then put a set in — from then on every variant of every card in that set has a slot
+          waiting for it, and filling the page is the chase.
+        </p>
+        <p className="cap">
+          Completing a set pays a one-time bonus, and an intact page kept on display draws walk-ins,
+          whales and stream viewers for as long as you keep it.
+        </p>
+      </>
+    )
+  }
+
   return (
     <>
       {/* 🖼️ The master-lot offer: a collector wants an intact completed page at a premium
@@ -138,9 +221,10 @@ export default function Binder({ onPick }) {
           </span>
         </div>
       )}
+      {shelf}
       <div className="binder-head">
-        <select value={setId} onChange={e => { setSetId(e.target.value); setMissingOnly(false) }}>
-          {SETS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+        <select value={set.id} onChange={e => { setSetId(e.target.value); setMissingOnly(false) }}>
+          {mySets.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
         <span className="cap">{set.series}</span>
         {everCompleted && (
@@ -156,8 +240,8 @@ export default function Binder({ onPick }) {
           </Explain>
         )}
         {ms.complete && <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 16%, transparent)', color:'var(--accent-light)' }}>✨ Masterset!</span>}
-        {/* 🃏 Declare THIS set as your on-camera chase. Lives here rather than on the Stream
-            tab because the decision is "which set", and this is where you look at sets. */}
+        {/* 🃏 Declare THIS set as your on-camera chase. Lives here rather than on Socials
+            because the decision is "which set", and this is where you look at sets. */}
         {hasChallengeKit && !comp.complete && (
           challenge?.setId === set.id
             ? <Explain label="What Chasing on camera means" trigger={

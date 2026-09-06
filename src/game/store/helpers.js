@@ -87,7 +87,7 @@ export function realizableAssets(s) {
 // booth). Unlike realizableAssets (a quick liquidation figure for rent/job gating), this
 // is the "total worth" headline: it stays put when you just MOVE value around (list a card,
 // buy sealed, send a card to grade) — only real income/spend moves it. One definition, used
-// by the header readout, the daily recap, and the Stats trend so they never disagree.
+// by the header readout, the daily recap, and Store → Financials so they never disagree.
 export function netWorthFull(s) {
   const cv = (arr) => (arr || []).reduce((a, c) => a + cardValue(c), 0)
   return round2(

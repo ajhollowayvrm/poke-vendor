@@ -87,7 +87,9 @@ function Listing({ listing, meetsLeft }) {
         <div className="mk-value">
           worth about <b>{fmtMoney(listing.worth)}</b>
           <span className={`mk-read ${priceRead.tone}`}> — {priceRead.text}</span>
-          {listing.kind === 'lot' && <span className="muted"> · a pile, and you cannot see the bottom of it</span>}
+          {listing.kind === 'lot' && (
+            <span className="muted"> · {listing.lotNote || 'a pile, and you cannot see the bottom of it'}</span>
+          )}
         </div>
         {warning && <div className="mk-warn">{warning.icon} {warning.text}</div>}
         {reply && <div className={`mk-reply ${reply.bad ? 'bad' : ''}`}>{reply.line}</div>}

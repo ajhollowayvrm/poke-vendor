@@ -60,7 +60,7 @@ export default function DaySummary({ summary, onClose }) {
   else if (loanProg && loanProg.left > 0) attention.push({ tone: 'warn', line: `🏦 Loan note — ${fmtMoney(loan.daily)}/day, ${loanProg.left}d left`, note: `${fmtMoney(loan.balance)} to go` })
   if (listingOffers > 0) attention.push({ tone: 'warn', line: `📨 ${listingOffers} offer${listingOffers === 1 ? '' : 's'} waiting on your listings`, note: 'Sell → Orders' })
   if (premiumOffers > 0) attention.push({ tone: 'pos', line: `📈 ${premiumOffers} over-market offer${premiumOffers === 1 ? '' : 's'} (hot set)` })
-  if (resolvedGrades > 0) attention.push({ tone: 'warn', line: `🔬 ${resolvedGrades} slab${resolvedGrades === 1 ? '' : 's'} back from grading — price them`, note: 'Inventory → 🔬 Grader' })
+  if (resolvedGrades > 0) attention.push({ tone: 'warn', line: `🔬 ${resolvedGrades} slab${resolvedGrades === 1 ? '' : 's'} back from grading — price them`, note: '👤 You → 🔬 Grading' })
   if (regularCalls > 0) attention.push({ tone: 'warn', line: `📞 ${regularCalls} regular${regularCalls === 1 ? '' : 's'} asked you to stock their lane`, note: '🤝 Regulars' })
   if (newWants > 0) attention.push({ tone: 'warn', line: `🐋 ${newWants} collector want${newWants === 1 ? '' : 's'} found you`, note: 'pays over market' })
   if (added > 0) attention.push({ tone: 'warn', line: `📨 ${added} new order${added === 1 ? '' : 's'} in your inbox`, note: 'Sell → Orders' })
