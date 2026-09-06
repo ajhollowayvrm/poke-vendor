@@ -27,7 +27,6 @@ import {
 } from '../engine'
 import { boothEncounter, makeShopRequest, makeGiftBuyer, makeQuoteRequest, makeWant, cardMatchesWant, cardMatchesFocus, generateCalendar, makeShowLead, vendorRapport, SHOW_TIERS, STORE_SALE_PREMIUM, SEALED_SHOP_MARKUP, makeConsignRequest, makeBuyinOffer, makeSealedDeal } from '../shows'
 import { packSaleChance, packValue } from '../mysterypacks'
-import { settleAuction, watcherDraw } from '../auctions'
 import {
   CALENDAR_DAYS, INBOX_CAP, inboxCap, RENT_PER_DAY, rentPerDay, STORE_LEASE_PER_DAY, RENT_GRACE_DAYS,
   SPECIAL_ORDER_GRACE, RIVAL_NAMES, RIVAL_HEAT_START, RIVAL_HEAT_DRIFT, RIVAL_PROMO_GATE,
@@ -1444,42 +1443,6 @@ export function advanceDaysWith(set, get, days, away) {
     if (sponsorEvent === 'lapsed') sponsorNext = null
   }
 
-  // --- 🔨 Auctions closing --------------------------------------------------------
-  // Live auctions gather watchers as the days pass; the ones whose clock ran out get
-  // settled by whoever turned up to bid (see game/auctions.js — the bidder count IS the
-  // price). A no-reserve auction always sells; a reserve that isn't met hands the card
-  // back, having spent the days for nothing. Both outcomes are the deal you took.
-  const auctionsLive = []
-  const auctionResults = []
-  for (const a of (s.auctions || [])) {
-    if ((a.endsOn ?? 0) > newAbsDay) {
-      // Still running — the room fills a little each day (pure readout, but it's the
-      // readout that tells you whether the hammer is going to hurt).
-      auctionsLive.push({ ...a, watchers: (a.watchers || 0) + Math.round(watcherDraw(a.card, noto) * days * 0.35) })
-      continue
-    }
-    auctionResults.push({ a, r: settleAuction(a, noto, streamBoostDays, Math.random, hype0) })
-  }
-  for (const { a, r } of auctionResults) {
-    if (!r.met) {
-      // Reserve not met (or nobody bid at all) — the card comes home unsold.
-      set(st => ({ collection: [a.card, ...st.collection] }))
-      get().log('auction', r.bidders === 0
-        ? `🔨 ${a.card.name}'s auction closed with no bids — it's back in your collection. A bigger name draws a bigger room.`
-        : `🔨 ${a.card.name} closed at $${r.hammer.toFixed(2)} — under your $${r.reserveAt.toFixed(2)} reserve, so it didn't sell. Card's back with you.`, 0)
-      continue
-    }
-    const fee = round2(r.hammer * ONLINE_FEE_PCT)
-    const net = round2(r.hammer - fee - shippingCost(r.hammer, s.upgrades))
-    soldProceeds = round2(soldProceeds + net)
-    noteSale(a.card.name, net)
-    const vs = r.mult >= 1 ? `${Math.round((r.mult - 1) * 100)}% OVER market` : `${Math.round((1 - r.mult) * 100)}% under market`
-    get().log('sell', `🔨 ${a.card.name} hammered at $${r.hammer.toFixed(2)} (${r.bidders} bidder${r.bidders === 1 ? '' : 's'}, ${vs}) — net $${net.toFixed(2)}`, net)
-    get().bumpGoal('sell', 1); get().bumpGoal('profit', net)
-    // A packed room is a reputation event in its own right — people saw that sale.
-    if (r.bidders >= 5) get().addNotoriety(1, false, 'sales')
-  }
-
   // --- 📱 The local marketplace churns ---------------------------------------------
   // Somebody else buys the good listings overnight and new ones go up. This is the whole
   // rhythm of the channel: a bargain you scrolled past yesterday is gone today, and the
@@ -1730,7 +1693,6 @@ export function advanceDaysWith(set, get, days, away) {
     supplyChannel: remainingSupply,
     distributors: distributorsNext, // wholesalers refill their shelves + high-rapport holds
     listings: remainingListings,
-    auctions: auctionsLive,                 // 🔨 still running; the closed ones paid out (or came home) above
     specialOrders: specialOrdersNext,       // 📇 promises still open (sourced or not); filled/failed ones are off the book
     rival: rivalNext,                       // 🏪 the shop across town: heat re-settled, promo run down/started
     ...(branchNext !== s.secondLoc ? { secondLoc: branchNext } : {}), // 🏬 branch traded (or closed) this window

@@ -40,6 +40,7 @@ const Calendar = lazyChunk(() => import('./components/Calendar'))
 const ShowFloor = lazyChunk(() => import('./components/ShowFloor'))
 const UpgradeShop = lazyChunk(() => import('./components/UpgradeShop'))
 const BoothInbox = lazyChunk(() => import('./components/BoothInbox'))
+const StoreMessages = lazyChunk(() => import('./components/StoreMessages'))
 const Settings = lazyChunk(() => import('./components/Settings'))
 const PriceGuide = lazyChunk(() => import('./components/PriceGuide'))
 const SealedInventory = lazyChunk(() => import('./components/SealedInventory'))
@@ -701,13 +702,14 @@ export default function App() {
             </div>
             <div className="pane" key={storeTab}>
               {storeTab === 'overview' && <StoreOverview />}
-              {/* Messages and Inventory are both still BoothInbox's — it owns the encounter
-                  modal, the quote counter, the holds, the events, the buy-ins and every selling
-                  surface, and splitting those out would be a second rewrite riding on this one.
-                  Messages pins to the inbox; Inventory keeps the rest of its strip, because the
-                  stock, the product lines, the listings and the regulars are four different jobs
-                  and all four still need a way in. */}
-              {storeTab === 'messages' && <BoothInbox forceGroup="orders" onRip={ripFromInventory} onSift={startSift} onPick={setPicked} />}
+              {/* 💬 Messages is its own component now — the inbox is a whole job with a store,
+                  and it was the one group inside Sell that had nothing to do with the selling
+                  surfaces around it. Inventory is still BoothInbox: it owns the floor, the
+                  storeroom, the product lines, the listings and the regulars, which really are
+                  one screen with four sections, and it keeps its own strip to move between
+                  them. */}
+              {storeTab === 'messages' && <StoreMessages onRip={ripFromInventory} onSift={startSift} onPick={setPicked}
+                onOpenInventory={() => setStoreTab('inventory')} />}
               {storeTab === 'inventory' && <BoothInbox hideGroups={['orders']} onRip={ripFromInventory} onSift={startSift} onPick={setPicked} />}
               {storeTab === 'financials' && <StoreFinancials />}
             </div>

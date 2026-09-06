@@ -4,10 +4,14 @@
 //   1. Grandfather a 📒 binder for every set the player has already slotted cards into (and
 //      for a declared 🃏 challenge), so nobody loses a masterset page they were filling.
 //   2. Seed the new empty buckets — the cart and the DM inbox.
-//   3. Refund cash sitting in live 🔨 auction-house bids, because those lots will never settle.
-//   4. Refund 📰 reprint-wave preorder deposits, because that stock will never land.
+//   3. Refund 📰 reprint-wave preorder deposits, because that stock will never land — but NOT
+//      one that already dropped, whose boxes are in the storeroom.
 //
-// And it must not move a card. This asserts all of that against a synthetic v69 save.
+// v71 retires the SELL side of the auction house, and that one is card-safety critical: a
+// card listed at auction was REMOVED from the collection and lived only inside the auction
+// record, so the array has to be drained home before it is dropped.
+//
+// This asserts all of that against synthetic v69 and v70 saves.
 //
 // Usage:  npx vite-node scripts/verify-navmigration.mjs
 import { useGame } from '../src/game/store/index.js'
@@ -143,7 +147,38 @@ console.log('\n6. Re-running it is a no-op (a v70 save must not be re-migrated):
   check('binders unchanged', (twice.binders || []).length === (once.binders || []).length)
 }
 
-console.log('\n7. The 🛒 cart does not outlive the shelf that priced it:')
+console.log('\n7. v71 brings every auctioned card home before dropping the array:')
+{
+  // The load-bearing fact: listing a card at auction REMOVED it from `collection`
+  // (selling.js filtered it out), so `auctions[].card` was the only copy in the save. Dropping
+  // the array without draining destroys them — and they are the player's BEST cards, because
+  // those are the ones worth sending to auction in the first place.
+  const auctioned = [card(setA, 5), card(setB, 5)]
+  const save = {
+    cash: 400, currentDay: 3, monthsElapsed: 0,
+    collection: [card(setC, 5)],
+    binder: [],
+    auctions: [
+      { id: 'a1', card: auctioned[0], days: 5, reserve: 0.8, endsOn: 40, watchers: 4, bids: 0 },
+      { id: 'a2', card: auctioned[1], days: 3, reserve: null, endsOn: 41, watchers: 1, bids: 0 },
+    ],
+  }
+  const before = save.collection.length
+  const out = migrate(save, 70)
+  check('every card on the block came home',
+    out.collection.length === before + 2, `${before} → ${out.collection.length}`)
+  const uids = new Set(out.collection.map(c => c.uid))
+  check('and they are the SAME cards, by uid',
+    auctioned.every(c => uids.has(c.uid)))
+  check('the array is gone', out.auctions === undefined)
+  check('no cash was invented on the way', Math.abs(out.cash - 400) < 0.005, `cash ${out.cash}`)
+
+  // A save with nothing at auction must not gain a phantom card.
+  const bare = migrate({ cash: 10, collection: [], binder: [], auctions: [], currentDay: 1, monthsElapsed: 0 }, 70)
+  check('an empty block adds nothing', (bare.collection || []).length === 0)
+}
+
+console.log('\n8. The 🛒 cart does not outlive the shelf that priced it:')
 {
   // A line carries the price you were QUOTED. Shelves restock and re-price overnight, so a
   // basket parked for a month would let you buy at last month's price on a set that has since

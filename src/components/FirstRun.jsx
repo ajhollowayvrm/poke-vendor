@@ -87,7 +87,7 @@ export function NotorietyHelp() {
         <div className="noto-pop" role="dialog" onClick={() => setOpen(false)}>
           <b>⭐ Reputation is your permanent standing</b>
           <p>The whole game reads off it — how many orders and walk-ins you get, how rich the
-            collector wants are, how far buyers stretch, how big your auction rooms turn up.
+            collector wants are, how far buyers stretch, how good a table you get at a show.
             It never fades. Earn it doing right by people; lose it letting them down.</p>
           <p><b>🏅 Ranks</b> — reputation plus <i>deeds</i> unlock named ranks (Weekend Flipper →
             Known Local → … → Hobby Legend). Ranks open the doors: bigger shows, big-league

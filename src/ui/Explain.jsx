@@ -4,8 +4,8 @@ import { useModalEscape } from './dialog'
 // A "?" that reveals an explanation, for prose that is worth reading ONCE.
 //
 // Every panel in this app opened with a paragraph explaining itself, printed at the same weight
-// as the data below it — the auction house spent 44 words above the lots, the credit line and the
-// distributor shelf each spent another. Read once, that copy is genuinely useful. Printed on every
+// as the data below it — the credit line spent 44 words above the balance, and the distributor
+// shelf spent another. Read once, that copy is genuinely useful. Printed on every
 // visit forever, it is what makes a screen read as a wall: the eye cannot tell the thing it needs
 // now from the thing it needed the first time.
 //

@@ -130,10 +130,6 @@ export function initialState() {
     gradesSubmitted: 0,      // total cards ever sent to the grader → loyalty tier
     consignments: [],        // {card, net, daysLeft} — pays out (net) when daysLeft hits 0 on day-advance
     listings: [],            // {card, ask, net, askMult, views, offers:[], age, stale?, expired?} — browsed by customers
-    // 🔨 Live auctions: {id, card, days, reserve, endsOn, watchers, bids}. No ask and no pulling
-    // out — the day tick settles each one when its clock runs out, and how many bidders your
-    // NAME pulled is what sets the hammer price (see game/auctions.js).
-    auctions: [],
     // 📱 The LOCAL MARKETPLACE — strangers near you selling cards out of their houses. Not a
     // shelf: one-off listings priced by how the seller FEELS about the thing, which is why the
     // board is mostly junk with the occasional genuine find buried in it. `meetsToday`/`meetDay`

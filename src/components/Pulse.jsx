@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useGame } from '../game/store'
-import { SETS, fmtMoney } from '../game/engine'
+import { SETS } from '../game/engine'
 import { Explain } from '../ui/Explain'
 
 // 📈 The pulse — what the hobby is talking about this week.

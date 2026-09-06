@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useGame, POST_KINDS, cadenceMult, SHORTS_PER_DAY, MAX_LIVE_POSTS,
-  SPONSOR_FEATURE_PACKS, SPONSOR_WINDOW_DAYS, CHALLENGE_ABANDON_DING, absoluteDay } from '../game/store'
+import { useGame, POST_KINDS, cadenceMult, MAX_LIVE_POSTS } from '../game/store'
 import { fmtMoney, cardValue, sealedValue, setById, cardImg, setNameOfCard } from '../game/engine'
 import { Modal } from '../ui/Modal'
 import { toast } from '../ui/dialog'

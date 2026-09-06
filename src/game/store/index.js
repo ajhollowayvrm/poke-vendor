@@ -299,7 +299,7 @@ export const useGame = create(persist((set, get) => ({
   ...createMarketSlice(set, get),
 }), {
   name: 'poke-vendor-save',
-  version: 70,
+  version: 71,
   storage: debouncedStorage,
   // Every card you own used to be saved with a full copy of its catalog row (name, rarity,
   // price, psa comps…) — the game's own bundled data, written back into the save once per
@@ -327,9 +327,6 @@ export const useGame = create(persist((set, get) => ({
     // Pack Machine stock is sealed packs pulled out of sealedInventory (one bucket per uid) —
     // register them too so a stray duplicate elsewhere gets dropped, not the machine's copy.
     for (const it of (state.packMachine?.stock || [])) if (it?.uid) seen.add(it.uid)
-    // 🔨 A card at auction is out of the collection and under a promise to the bidders —
-    // register it first so a stray duplicate never survives at the auctioned copy's expense.
-    for (const a of (state.auctions || [])) if (a?.card?.uid) seen.add(a.card.uid)
     // 📦🔟 Sealed product out at a sealed grader is money already spent on a fee, so it wins
     // over a stray duplicate for exactly the same reason pendingGrades does.
     for (const p of (state.pendingSealed || [])) if (p?.item?.uid) seen.add(p.item.uid)
@@ -782,8 +779,8 @@ export const useGame = create(persist((set, get) => ({
     // already put the catalog back, and the next write goes out slim. The bump exists so
     // the version number honestly tracks the format on disk.
     if (version < 59) {
-      // Six new systems land together (one bump per batch, house style):
-      //   🔨 auctions      — cards out on the block; nothing in flight on an old save
+      // Six new systems land together (one bump per batch, house style). 🔨 auctions was
+      // one of them; it was retired at v71, which drains any card still on the block.
       //   📇 specialOrders — promises taken at the counter; the book starts empty
       //   🏪 rival         — the shop across town. Left NULL on purpose: the day tick
       //                      opens them the first time it sees a storefront, so an
@@ -795,7 +792,6 @@ export const useGame = create(persist((set, get) => ({
       //                      in a save keeps exactly the value it had. No backfill needed.
       //   🎓 onboarding    — the first-run guide is localStorage-only (a UI preference,
       //                      deliberately not part of the save), so nothing to seed.
-      state.auctions = state.auctions ?? []
       state.specialOrders = state.specialOrders ?? []
       state.rival = state.rival ?? null
       state.secondLoc = state.secondLoc ?? null
@@ -887,9 +883,10 @@ export const useGame = create(persist((set, get) => ({
       state.stats = { cracks: 0, misprints: 0, ...(state.stats || {}) }
     }
     if (version < 66) {
-      // 📱 The Local Marketplace. Seeded rather than empty for the same reason the auction
-      // board is: a channel nobody can see is a channel nobody uses. The day tick churns it
-      // from here — good listings get taken, new ones go up.
+      // 📱 The Local Marketplace. Seeded rather than empty because a channel nobody can see
+      // is a channel nobody uses — an existing save should find the board already running, not
+      // a blank panel that fills tomorrow. The day tick churns it from here: good listings get
+      // taken, new ones go up.
       const mkDay = absoluteDay(state.currentDay ?? 1, state.monthsElapsed ?? 0)
       state.market = state.market ?? { listings: refillBoard([], state.notoriety || 0, mkDay), day: mkDay, meetsToday: 0, meetDay: 0 }
       state.marketStats = state.marketStats ?? { bought: 0, spent: 0, burned: 0, steals: 0 }
@@ -988,6 +985,23 @@ export const useGame = create(persist((set, get) => ({
       delete state.auctionLotsDay
       delete state.auctionStats
       delete state.reprintWave
+    }
+    if (version < 71) {
+      // 🔨 The auction house is retired on both sides. The buy side went at v70; this is the
+      // SELL side — listing your own card and waiting for the hammer.
+      //
+      // CARDS LIVE INSIDE THE AUCTION RECORD. `auctions[]` holds `{ id, card, days, reserve,
+      // endsOn, watchers, bids }` and listing a card REMOVED it from `collection` (selling.js
+      // filtered it out), so the auction array was the only place that copy existed. Deleting
+      // the array without draining it first would destroy every card mid-auction — which, on a
+      // save caught mid-week, is the player's best cards, because those are the ones worth
+      // sending to auction. Bring them home first, then drop the array.
+      //
+      // They come back UNSOLD and unlisted, which is the honest outcome: the auction they were
+      // in will never close now, and nobody bid a real number for them.
+      const homeward = (state.auctions || []).map(a => a?.card).filter(Boolean)
+      if (homeward.length) state.collection = [...homeward, ...(state.collection || [])]
+      delete state.auctions
     }
     return state
   },

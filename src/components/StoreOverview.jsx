@@ -3,7 +3,6 @@ import { useGame, EMPLOYEES, employeeById, STORE_LEASE_PER_DAY, STORE_GRACE_DAYS
 import { fmtMoney, shopName, shopIcon } from '../game/engine'
 import { floorCapacity, floorCount } from '../game/store/constants'
 import TownRivalry from './TownRivalry'
-import { Explain } from '../ui/Explain'
 import { Collapse, bigScreen } from '../ui/Collapse'
 
 // 🏬 Store → Overview: the front of house at a glance.

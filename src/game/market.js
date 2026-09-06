@@ -1,8 +1,8 @@
 // 📱 The Local Marketplace — Facebook Marketplace for cardboard.
 //
 // Every other buying channel in this game is a BUSINESS. The shop, the warehouse, the
-// marketplace, the wholesaler, even the auction house: somebody there knows what things are
-// worth, and the price reflects it. This channel is the opposite, and that is the whole point.
+// distributors, the wholesaler: somebody there knows what things are worth, and the price
+// reflects it. This channel is the opposite, and that is the whole point.
 //
 //     Nobody here prices to market. They price to how they FEEL about the thing.
 //

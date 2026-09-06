@@ -4,10 +4,10 @@ import { SHOP_SETS, FETCHED_AT, setProducts, isHit, fmtMoney,
   distributorDiscount, distributorUnlocked, rapportLevel, nextRapport, stockState, daysToRestock, caseLot, round2,
   VINTAGE_SETS, JP_SHOP_SETS, vintageProduct, sealedValue, setById, distributorVintageFind,
   hypeSurge, cardValue, ERA_PRODUCTS, eraAnchorSet, productTypeLabel } from '../game/engine'
-import { Collapse, useOpen, bigScreen } from '../ui/Collapse'
+import { Collapse, bigScreen } from '../ui/Collapse'
 import { useGame, RANKS } from '../game/store'
-import { vintageLeft, creditFreezeReasons, CREDIT_FREEZE } from '../game/store/helpers'
-import { weekIndexOf, absoluteDay, CREDIT_MONTHLY_RATE, creditMonthlyRate, UPGRADES } from '../game/store/constants'
+import { vintageLeft } from '../game/store/helpers'
+import { weekIndexOf, absoluteDay, UPGRADES } from '../game/store/constants'
 import { HobbyWire, BreakersAlmanac } from './MarketIntel'
 import CreditPanel from './CreditPanel'
 import Cart from './Cart'
@@ -87,7 +87,7 @@ export default function Shop({ cash, onBuy, onBuyVintage }) {
   return (
     <>
       {/* ORDER ON THIS TAB IS THE POINT, so read before rearranging.
-          The shelf used to render TWELFTH: picker, imports, auction house, reprint wave, two
+          The shelf used to render TWELFTH, behind a stack of panels — picker, imports, two
           intel panels, reorder ledger, rapport bar, clout button, supply panel, distributor
           blurb, credit panel — and only then the thing the player opened the tab to do. Roughly
           a thousand pixels of reference material in front of the one primary action.

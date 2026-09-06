@@ -1,13 +1,9 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { toast } from '../ui/dialog'
-import { useGame, acceptedMethods, PAYMENT_METHODS, INBOX_CAP, INBOUND_NOTORIETY_GATE, BARGAIN_ASK_MULT, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
-  STORE_EVENTS, STORE_CREDIT_BONUS, EVENT_COOLDOWN_DAYS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay, RANKS, hasVintageShowpiece } from '../game/store'
-import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, round2, cardImg, shopName, shopIcon } from '../game/engine'
+import { useGame, acceptedMethods, INBOUND_NOTORIETY_GATE, HOLD_DAYS_STORE, GIVEAWAY_BUZZ_DAYS,
+  STORE_EVENTS, STORE_CREDIT_BONUS, SUPPLIES, SUPPLY_CASE, BUYLIST_POLICIES, absoluteDay, RANKS, hasVintageShowpiece } from '../game/store'
+import { fmtMoney, cardValue, sealedValue, setById, setNameOfCard, setIdOfCard, cardImg } from '../game/engine'
 import { encounterStillValid, cardMatchesFocus } from '../game/shows'
-import Encounter from './Encounter'
-import QuoteCounter from './QuoteCounter'
-import CardModal from './CardModal'
-import SealedDealModal from './SealedDealModal'
 import CardTile from './CardTile'
 import SellStrips from './SellStrips'
 import TownRivalry from './TownRivalry'
@@ -16,10 +12,11 @@ import PackMachine from './PackMachine'
 import BulkBin from './BulkBin'
 import StoreStock from './StoreStock'
 import Regulars from './Regulars'
+import StoreMessages from './StoreMessages'
+import WantFulfill from './WantFulfill'
 import { Modal } from '../ui/Modal'
 import { Collapse } from '../ui/Collapse'
 import { Explain } from '../ui/Explain'
-import { clickable } from '../ui/clickable'
 
 const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff' },
   walkin: { label: 'Walk-in', icon: '🏬', color: '#ffcb05' } }
@@ -27,17 +24,13 @@ const CHANNEL_BADGE = { online: { label: 'Online', icon: '🌐', color: '#5aa0ff
 // Your storefront. Orders accrue per game-DAY — pass a day (here or by attending
 // a show) to generate them. While you're away at a show, online orders need a
 // Smartphone and walk-ins need a Shop Assistant, or they're missed.
-// The Store tab's own sub-tabs (Overview · Messages · Inventory · Financials) are the
-// navigation once there is a storefront, so this screen's group strip has to give way to it:
-//
-//   forceGroup   — pin to one group and hide the strip entirely (Store → Messages: the whole
-//                  screen is the inbox, and a second tab bar for one choice is noise).
-//   hideGroups   — drop some groups from the strip and keep the rest (Store → Inventory: the
-//                  stock, the product lines, the listings and the regulars are four different
-//                  jobs and all four still need a way in — only the inbox moved out).
-//
-// Neither is set on the pre-storefront Sell screen, where the strip IS the navigation.
-export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, hideGroups = null }) {
+// `hideGroups` drops groups from the strip and keeps the rest. The Store tab's own sub-tabs
+// (Overview · Messages · Inventory · Financials) are the navigation once there is a storefront,
+// so 💬 Messages is hidden here — it has its own screen (StoreMessages.jsx). The stock, the
+// product lines, the listings and the regulars stay: they are four different jobs and all four
+// still need a way in. Unset on the pre-storefront Sell screen, where the strip IS the
+// navigation and the inbox is its first stop.
+export default function BoothInbox({ onRip, onSift, onPick, hideGroups = null }) {
   const inbox = useGame(s => s.boothInbox)
   const notoriety = useGame(s => s.notoriety)
   const rank = useGame(s => s.rank || 0) // 🏅 banked ladder rank — gates the tournament night
@@ -57,7 +50,6 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
   const goalsResetInDays = useGame(s => s.goalsResetInDays)
   const collection = useGame(s => s.collection)
   const listings = useGame(s => s.listings)
-  const auctions = useGame(s => s.auctions || [])
   const shopDisplay = useGame(s => s.shopDisplay) // legacy bucket — read only for inbox validation
   const setListingEverywhere = useGame(s => s.setListingEverywhere)
   const sealedInventory = useGame(s => s.sealedInventory)
@@ -107,31 +99,10 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
   const validInbox = useMemo(
     () => inbox.map((enc, i) => ({ enc, i })).filter(({ enc }) => encounterStillValid(enc, collection, listings, shopDisplay)),
     [inbox, collection, listings, shopDisplay])
-  // An encounter with no channel is an online one (that was the only kind when the field
-  // was added) — never drop it out of both lists over a missing tag.
-  const walkinInbox = useMemo(() => validInbox.filter(x => x.enc.channel === 'walkin'), [validInbox])
-  const onlineInbox = useMemo(() => validInbox.filter(x => x.enc.channel !== 'walkin'), [validInbox])
   const consignments = useGame(s => s.consignments)
-  // 💬 Walk-ins and online orders are two different jobs. Somebody standing at your counter
-  // is a conversation you are having NOW; an online order is a queue you work through. They
-  // arrive on separate rates in the day tick and they were landing in one undifferentiated
-  // list, so a shop owner could not tell "four people are in the store" from "four emails".
-  // Device-local like every other view preference (see pv.selltab).
-  const [msgChannel, setMsgChannelRaw] = useState(() => {
-    try { const v = localStorage.getItem('pv.msgchannel'); return v === 'online' || v === 'walkin' ? v : 'walkin' } catch { return 'walkin' }
-  })
-  const setMsgChannel = (v) => {
-    setMsgChannelRaw(v)
-    try { localStorage.setItem('pv.msgchannel', v) } catch { /* private mode */ }
-  }
-  const [active, setActive] = useState(null) // {enc, id}
   const [wantPick, setWantPick] = useState(null) // a want/forum post being fulfilled {kind:'want'|'forum', item}
   const [holdPick, setHoldPick] = useState(null) // shelf item being held for a regular {kind, uid, label}
   const [givePick, setGivePick] = useState(false) // picking a card for the in-store giveaway
-  // A card tapped from inside a quote/trade encounter — {card, owned}. `owned` gates
-  // CardModal's inspect mode: their side of a trade isn't in your collection yet, so it
-  // opens read-only (no sell/list/grade buttons for a card you don't actually have).
-  const [tradeInspect, setTradeInspect] = useState(null)
   const [rafflePick, setRafflePick] = useState(false) // picking the raffle prize card
   const [buyinReveal, setBuyinReveal] = useState(null) // the lot you just bought: {cards, market, paid, method}
   const toggleFeatureCard = useGame(s => s.toggleFeatureCard)
@@ -156,19 +127,17 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
     setSellTab(leaf)
   }
   const hidden = hideGroups || []
-  const sellGroup = forceGroup || GROUP_OF[sellTab] || 'orders'
-  // A remembered leaf can point at a group this instance does not show — pinned to another
-  // group, or one that was hidden. Land on a visible group's default leaf rather than
-  // rendering the wrong pane under the right heading, or no pane at all.
+  const sellGroup = GROUP_OF[sellTab] || 'orders'
+  // A remembered leaf can point at a group this instance does not show. Land on a visible
+  // group's default leaf rather than rendering no pane at all under a strip that looks fine.
   useEffect(() => {
-    if (forceGroup && GROUP_OF[sellTab] !== forceGroup) { openGroup(forceGroup); return }
-    if (!forceGroup && hidden.includes(GROUP_OF[sellTab])) {
+    if (hidden.includes(GROUP_OF[sellTab])) {
       const first = ['shop', 'products', 'online', 'regulars', 'orders'].find(g => !hidden.includes(g))
       if (first) openGroup(first)
     }
-  }, [forceGroup, sellTab, hideGroups])
+  }, [sellTab, hideGroups])
   const listingOfferCount = listings.filter(l => (l.offers?.length || 0) > 0).length
-  const marketCount = listings.length + consignments.length + auctions.length
+  const marketCount = listings.length + consignments.length
   const forumCount = (forumPosts || []).length
   const regularsCount = (regulars || []).filter(r => !r.flags?.burned).length
   const builtPackCount = useGame(s => (s.builtPacks || []).length)
@@ -194,7 +163,6 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
 
   return (
     <>
-      {!forceGroup && (
       <div className="subtabs">
         {!hidden.includes('orders') && (
           <button className={`subtab ${sellGroup === 'orders' ? 'active' : ''}`} onClick={() => openGroup('orders')}>
@@ -225,7 +193,6 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
           </button>
         )}
       </div>
-      )}
 
       {/* Inside a grouped pane, a segmented toggle picks the leaf. Machine needs the
           storefront; without one Products is just the pack line and the toggle hides. */}
@@ -241,18 +208,6 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
           <button className={`segbtn ${sellTab === 'machine' ? 'active' : ''}`} onClick={() => setSellTab('machine')}>🎰 Machine{machineStock ? ` (${machineStock})` : ''}</button>
         </div>
       )}
-      {/* 🏬 The counter and the inbox, kept apart. Only a storefront has walk-ins worth
-          separating — before that, everything arrives online and a toggle would be theatre. */}
-      {sellGroup === 'orders' && hasStore && (
-        <div className="seg sell-seg mt-4" role="group" aria-label="Messages view">
-          <button className={`segbtn ${msgChannel === 'walkin' ? 'active' : ''}`} onClick={() => setMsgChannel('walkin')}>
-            🏬 Walk-ins{walkinInbox.length ? ` (${walkinInbox.length})` : ''}
-          </button>
-          <button className={`segbtn ${msgChannel === 'online' ? 'active' : ''}`} onClick={() => setMsgChannel('online')}>
-            🌐 Online orders{onlineInbox.length ? ` (${onlineInbox.length})` : ''}
-          </button>
-        </div>
-      )}
       {sellGroup === 'online' && (
         <div className="seg sell-seg mt-4" role="group" aria-label="Online view">
           <button className={`segbtn ${sellTab === 'market' ? 'active' : ''}`} onClick={() => setSellTab('market')}>🌐 On the market{marketCount ? ` (${marketCount})` : ''}</button>
@@ -263,7 +218,7 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
       {sellTab === 'market' ? (
         // Cards you've put up for sale: listed on your own site / consigned. Moved to
         // its own tab so a long listings panel doesn't bury the day-to-day orders.
-        (listings.length || consignments.length || auctions.length)
+        (listings.length || consignments.length)
           ? <SellStrips />
           : <div className="empty">Nothing on the market. List or consign cards from your collection (👤 You → Collection → Select) to sell them here. 🌐</div>
       ) : sellTab === 'packs' ? (
@@ -727,204 +682,11 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
           )}
         </>
       ) : (
-      <>
-      <div className="banner mt-6">
-        {notoriety < INBOUND_NOTORIETY_GATE
-          // Unknown vendor: no unsolicited orders from reputation yet. Tell the truth and
-          // point at the two ways to drum up demand — the Forum, or a bargain listing.
-          ? (() => {
-              const hasBargain = (listings || []).some(l => !l.expired && l.askMult != null && l.askMult <= BARGAIN_ASK_MULT)
-              return <>🪧 You're an <b>unknown vendor</b> (⭐ <b>{Math.round(notoriety)}</b> reputation) — strangers don't seek you out yet. Fill <b>Forum</b> wanted-ads to build a name{hasBargain
-                ? <>, and your bargain listing (≤{Math.round(BARGAIN_ASK_MULT*100)}% of market) is already drawing online deal-hunters.</>
-                : <>, or list a card at <b>≤{Math.round(BARGAIN_ASK_MULT*100)}% of market</b> to pull in online deal-hunters.</>}</>
-            })()
-          : (listings.length === 0 && (!hasStore || (collection.length === 0 && (sealedInventory || []).length === 0)))
-          // Known vendor, but nothing out for sale → no orders will come. Buyers only
-          // message you about cards you've actually listed (or, with a store, stock on your floor).
-          ? <>🤫 Your shop's quiet — <b>nothing's up for sale</b>. Buyers only reach out about cards you've <b>listed online</b>{hasStore ? <> or have <b>in stock at the store</b></> : ''}. Put something out and orders start arriving (⭐ <b>{Math.round(notoriety)}</b> reputation).</>
-          : hasStore
-          ? <>{shopIcon(store)} <b>{shopName(store)}</b> is open — your brick-and-mortar shop <b>and</b> online counter. Your whole stock is on the floor for walk-ins (🔒 keep anything that isn't); online orders come on what you've listed. Scaled by your <b>⭐ {Math.round(notoriety)}</b> reputation.</>
-          : <>🏠 You're flipping cards online from home. Each day brings marketplace/DM orders on what you've <b>listed</b> (⭐ <b>{Math.round(notoriety)}</b> reputation). Open a <b>Brick-and-Mortar Store</b> for in-person walk-ins too.</>}
-      </div>
-
-      <div className="toolbar mt-5">
-        <span className="pill" style={{ background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>📅 Day {currentDay}</span>
-        {/* Inbox fill indicator — the inbox holds INBOX_CAP orders; once full, the
-            oldest unanswered orders drop off, so flag when it's getting close. */}
-        <span className="pill" style={inbox.length >= INBOX_CAP - 1
-          ? { background:'#ff9f4322', color:'#ff9f43' }
-          : { background:'color-mix(in srgb, var(--accent2) 13%, transparent)', color:'var(--accent-light)' }}>
-          📨 Inbox {inbox.length}/{INBOX_CAP}{inbox.length >= INBOX_CAP ? ' · full!' : inbox.length >= INBOX_CAP - 1 ? ' · nearly full' : ''}
-        </span>
-        <Explain label="Who lands in your inbox">
-          People who want to deal with you — online buyers messaging in, and (with a store)
-          walk-ins at the counter. They arrive as game-days pass, so hit Next Day to bring more
-          in. The number is how many are waiting on an answer; ignored ones eventually give up
-          and drop off.
-        </Explain>
-        <span className="cap">Orders arrive as days pass — attend a show to bring in several at once.</span>
-      </div>
-
-      {dailyGoals.length > 0 && (() => {
-        const resetIn = goalsResetInDays()
-        return (
-        <div className="goals">
-          <div className="goals-head">🎯 This week's goals
-            <span className="cap" style={{ fontWeight: 400, marginLeft: 8 }}>
-              {resetIn <= 0 ? 'refreshes next day' : `refreshes in ${resetIn} day${resetIn === 1 ? '' : 's'}`}
-            </span>
-          </div>
-          <div className="goals-row">
-            {dailyGoals.map((g, i) => (
-              <div key={i} className={`goal ${g.done ? 'done' : ''}`}>
-                <div className="goal-label">{g.done ? '✓ ' : ''}{g.label}</div>
-                <div className="goal-bar"><div style={{ width: `${Math.min(100, 100*g.progress/g.target)}%` }} /></div>
-                <div className="goal-reward">{g.key === 'profit' ? `${fmtMoney(g.progress)}/${fmtMoney(g.target)}` : `${g.progress}/${g.target}`} · {g.cash ? fmtMoney(g.cash) : ''}{g.cash && g.noto ? ' + ' : ''}{g.noto ? `${g.noto}★` : ''}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-        )
-      })()}
-
-      <div className="toolbar mt-2">
-        <span className="cap t-sm">You accept:</span>
-        {Object.entries(PAYMENT_METHODS)
-          // Cash is an in-person-only method (unlocked by the storefront). Online
-          // buyers never hand you cash, so don't show it as a locked rail here
-          // until you actually have a physical store.
-          .filter(([k]) => k !== 'cash' || hasStore)
-          .map(([k, m]) => (
-          <span key={k} className={`pill ${accepted.has(k) ? '' : 'off'}`}>
-            {m.icon} {m.short}{accepted.has(k) ? '' : ' 🔒'}
-          </span>
-        ))}
-        {!(accepted.has('paypal') && accepted.has('card')) && <span className="muted rownote t-xs">Buyers who can't use what you accept walk away.</span>}
-      </div>
-
-      {/* remote-management status */}
-      <div className="toolbar mt-2">
-        <span className="cap t-sm">While at a show:</span>
-        <span className={`pill ${upgrades.smartphone ? '' : 'off'}`}>📱 Online {upgrades.smartphone ? 'covered' : 'missed 🔒'}</span>
-        <span className={`pill ${upgrades.staff ? '' : 'off'}`}>🧑‍💼 Walk-ins {upgrades.staff ? 'covered' : 'missed 🔒'}</span>
-      </div>
-
-      {/* The shop floor (stock, holds, consignments, giveaways) lives in its own
-          🏬 sub-tab now — Orders stays focused on people to answer. */}
-      {hasStore && (collection.length + (sealedInventory || []).length + (storeConsignRequests || []).length) > 0 && (
-        <div className="toolbar mt-2">
-          <span className="cap">
-            🏬 Your store stock, holds, consignments & giveaways live on the <b>Shop floor</b> tab
-            {(storeConsignRequests || []).length ? <b> — {storeConsignRequests.length} consignment ask{storeConsignRequests.length > 1 ? 's' : ''} waiting</b> : ''}.
-          </span>
-          <button className="btn alt btn-fixed" style={{ padding: '4px 10px' }} onClick={() => setSellTab('store')}>Open →</button>
-        </div>
+        // 💬 The inbox — its own screen (StoreMessages.jsx). It is the Sell tab's first
+        // screen before a storefront and the 💬 Messages sub-tab after one, so it lives
+        // apart from the selling surfaces around it rather than as a branch inside them.
+        <StoreMessages onRip={onRip} onSift={onSift} onPick={onPick} />
       )}
-
-      {wantList.length > 0 && (
-        <div className="wants">
-          <div className="wants-head">⭐ Collectors seeking you <span className="muted">— your reputation drew these requests; fill one for an above-market premium</span></div>
-          <div className="grid stagger-grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))' }}>
-            {wantList.map(w => {
-              const matches = cardsForWant(w)
-              return (
-                <div key={w.id} className={`product want ${matches.length ? 'fillable' : ''}`}>
-                  {w.img && <img src={w.img} alt="" style={{ width: 56, borderRadius: 8, alignSelf:'center' }} />}
-                  <h3 className="t-md" style={{ margin: 0 }}>{w.desc}</h3>
-                  <div className="meta" style={{ flex:1 }}>
-                    Pays <b className="pos">+{Math.round((w.premiumMult-1)*100)}%</b> over market · +{w.notoriety}★ · expires in {w.daysLeft}d
-                  </div>
-                  {matches.length
-                    ? <button className="btn gold" onClick={() => setWantPick({ kind: 'want', item: w })}>Fill it ({matches.length} match{matches.length>1?'es':''})</button>
-                    : <button className="btn" disabled>You don't have it</button>}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {(() => {
-        // Without a storefront there is one list; with one, the toggle above chooses which.
-        const shown = !hasStore ? validInbox : msgChannel === 'walkin' ? walkinInbox : onlineInbox
-        if (shown.length === 0) {
-          return (
-            <div className="empty">
-              {!hasStore ? 'No orders waiting. Let a day pass (or attend a show) to bring customers in. 📨'
-                : msgChannel === 'walkin' ? 'Nobody in the shop right now. Keep the floor stocked and let a day pass. 🏬'
-                : 'No online orders waiting. List stock and let a day pass. 🌐'}
-            </div>
-          )
-        }
-        return (() => {
-        // Group the inbox into readable sections: trades to weigh, walk-in requests
-        // to fill, then everything else (offers, browsers, sealed deals). Each order
-        // matches the FIRST section it fits, so nothing renders twice.
-        const sections = [
-          { key: 'trades', title: '🔁 Trade offers', hint: 'bundles offered for your cards — weigh both sides', match: x => (x.enc.options || []).some(o => o.effect?.type === 'trade') },
-          // 🗣️ Its own section, above the requests. This is the only encounter where YOU set the
-          // price, so it is a different job from the rest of the list and worth finding fast.
-          { key: 'quotes', title: '🗣️ Price my cards', hint: 'they want a number from you — cash or store credit', match: x => x.enc.kind === 'quote' },
-          { key: 'requests', title: '🙋 Walk-in requests', hint: 'someone came in hunting a specific item', match: x => x.enc.kind === 'request' },
-          { key: 'offers', title: '💰 Offers & browsers', hint: 'offers on your stock, browsers, and inbound deals', match: () => true },
-        ]
-        const used = new Set()
-        return sections.map(sec => {
-          const items = shown.filter(x => !used.has(x.i) && sec.match(x))
-          items.forEach(x => used.add(x.i))
-          if (!items.length) return null
-          return (
-            <div className="mt-6" key={sec.key}>
-              <div className="wants-head">{sec.title} <span className="muted">({items.length}) — {sec.hint}</span></div>
-              <div className="grid stagger-grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', marginTop: 8 }}>
-                {items.map(({ enc, i }) => {
-                  const badge = CHANNEL_BADGE[enc.channel] || CHANNEL_BADGE.online
-                  // Key on stable per-encounter content, NOT the array index — clearing an item
-                  // shifts indices and would make React reconcile tiles to the wrong encounter.
-                  const key = enc.id || enc.card?.uid || enc.ownedUid || `${enc.channel || 'c'}:${enc.title}`
-                  return (
-                    // The inbox list is the store's main interaction, and every row was a bare
-                    // clickable div: no tab stop, nothing for the focus ring to paint on, and
-                    // outside the (pointer: coarse) 44px floor, which names [role=button].
-                    <div key={key} className="product"
-                      {...clickable(() => setActive({ enc, id: enc.id }), { style: { cursor: 'pointer' } })}>
-                      <span className="chanbadge" style={{ color: badge.color, borderColor: badge.color }}>{badge.icon} {badge.label}</span>
-                      {enc.card && <img src={cardImg(enc.card)} alt="" style={{ width: 64, borderRadius: 8, alignSelf: 'center' }} />}
-                      {enc.card && setNameOfCard(enc.card) && <div className="cap" style={{ textAlign: 'center' }}>{setNameOfCard(enc.card)}</div>}
-                      <h3 className="t-lg" style={{ margin: 0 }}>{enc.title}</h3>
-                      {/* Defensive on body: an encounter kind that arrives without one used to
-                          take the whole inbox down with a TypeError rather than render plainly. */}
-                      <div className="meta" style={{ flex: 1 }}>{(enc.body || '').slice(0, 90)}…</div>
-                      <button className="btn">{enc.kind === 'sealedDeal' ? '📦 View deal →'
-                        : enc.kind === 'scalperOffer' ? '💰 View offer →'
-                        : enc.kind === 'quote' ? '🗣️ Name your price →'
-                        : enc.channel === 'online' ? 'Respond →' : 'Help customer →'}</button>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })
-        })()
-      })()}
-      </>
-      )}
-
-      {active && ((active.enc.kind === 'sealedDeal' || active.enc.kind === 'scalperOffer') && active.enc.deal
-        ? <SealedDealModal enc={active.enc} id={active.id} flash={flash}
-            onDone={() => setActive(null)} onCancel={() => setActive(null)} />
-        /* 🗣️ A quote walk-up is not a pick-an-option encounter — it is a negotiation where YOU
-           name the number, so it gets the same dedicated screen the show floor uses. Closing it
-           clears the inbox entry the way pick() does, because the deal is done either way and a
-           settled seller must not still be standing at the counter tomorrow. */
-        : active.enc.kind === 'quote'
-        ? <QuoteCounter req={active.enc} onDone={(msg) => { if (msg) flash(msg); clearItem(active.id); setActive(null) }}
-            onInspect={(card, owned) => setTradeInspect({ card, owned })} />
-        : <Encounter data={active.enc} onPick={pick} onClose={() => setActive(null)}
-            onInspect={(card, owned) => setTradeInspect({ card, owned })} />)}
-
-      {tradeInspect && <CardModal card={tradeInspect.card} inspect={!tradeInspect.owned} onClose={() => setTradeInspect(null)} />}
 
       {/* Hold picker: choose WHICH regular you're saving the item for — only regulars who
           actually collect this item/set are shown, so you never hold a Perfect Order pack
@@ -1072,33 +834,7 @@ export default function BoothInbox({ onRip, onSift, onPick, forceGroup = null, h
         </Modal>
       )}
 
-      {wantPick && (() => {
-        // One picker for both collector wants and forum WTB posts (same matcher/payout).
-        const item = wantPick.item
-        const isForum = wantPick.kind === 'forum'
-        const matches = isForum ? cardsForForumPost(item) : cardsForWant(item)
-        return (
-        <Modal onClose={() => setWantPick(null)} maxWidth={640} sheet label="Pick a card">
-            <h2 className="t-xl" style={{ marginBottom: 2 }}>{isForum ? 'Fill forum WTB' : 'Fill'}: {item.desc}</h2>
-            <p className="cap t-sm mt-0">Pick which copy to hand over — {isForum ? 'the poster' : 'they'} pay {Math.round(item.premiumMult*100)}% of its market value, +{item.notoriety}★ reputation.</p>
-            <div className="grid" style={{ gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))' }}>
-              {matches.map(c => (
-                <div key={c.uid} className="vendoritem">
-                  <div style={{ cursor: 'zoom-in' }} onClick={() => onPick && onPick(c)}>
-                    <CardTile card={c} interactive={false} />
-                  </div>
-                  <button className="btn gold" onClick={() => {
-                    const r = isForum ? fulfillForumPost(item.id, c.uid) : fulfillWant(item.id, c.uid)
-                    if (r) flash(`${isForum ? 'Filled a forum request' : 'Filled the want'} — earned ${fmtMoney(r.payout)} (+${item.notoriety}★)`)
-                    setWantPick(null)
-                  }}>Give · {fmtMoney(cardValue(c) * item.premiumMult)}</button>
-                </div>
-              ))}
-            </div>
-            <button className="btn alt" style={{ marginTop: 14, maxWidth: 140 }} onClick={() => setWantPick(null)}>Cancel</button>
-        </Modal>
-        )
-      })()}
+      <WantFulfill pick={wantPick} onClose={() => setWantPick(null)} onInspect={onPick} flash={flash} />
     </>
   )
 }

@@ -1,6 +1,6 @@
 import { useGame } from '../game/store'
 import { fmtMoney } from '../game/engine'
-import { Collapse, useOpen } from '../ui/Collapse'
+import { useOpen } from '../ui/Collapse'
 import { creditFreezeReasons, CREDIT_FREEZE } from '../game/store/helpers'
 import { CREDIT_MONTHLY_RATE, creditMonthlyRate } from '../game/store/constants'
 

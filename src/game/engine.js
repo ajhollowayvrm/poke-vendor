@@ -3245,10 +3245,11 @@ export const DISTRIBUTOR_WORTH = 1_000_000 // Millionaire
 export function sealedValue(item) {
   if (!item?.product) return 0
   let base = sealedBase(item.product) * marketMult(item.setId)
-  // 🔨 A resealed box. Distinct from a `_searched` loose pack (which keeps its shape and only
+  // 📱 A resealed box. Distinct from a `_searched` loose pack (which keeps its shape and only
   // loses its hit): this is a whole product that has been opened, gone through and shut again,
-  // and the market prices it as the empty box it now is. It only ever arrives from an auction
-  // lot nobody checked — see game/lots.js.
+  // and the market prices it as the empty box it now is. It arrives from the Local
+  // Marketplace — a listing whose photos were of a box somebody had already been through.
+  // See game/market.js (badKind 'resealed') and store/market.js's collectListing.
   if (item.resealed) base *= 0.15
   // 📦🔟 A graded wrapper. The ladder is steep for genuine vintage and almost flat for
   // anything still in print — see sealedgrading.js for why that asymmetry is the whole point.

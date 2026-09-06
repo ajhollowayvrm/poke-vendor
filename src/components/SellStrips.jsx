@@ -8,10 +8,9 @@ import { absoluteDay } from '../game/store'
 export default function SellStrips() {
   const consignments = useGame(s => s.consignments)
   const listings = useGame(s => s.listings)
-  const auctions = useGame(s => s.auctions || [])
   const today = useGame(s => absoluteDay(s.currentDay, s.monthsElapsed))
 
-  if (!listings.length && !consignments.length && !auctions.length) return null
+  if (!listings.length && !consignments.length) return null
 
   return (
     <>
@@ -24,41 +23,6 @@ export default function SellStrips() {
         </div>
       )}
 
-      {auctions.length > 0 && (
-        <div className="market-panel">
-          <div className="market-head">🔨 At auction <span className="muted">({auctions.length}) — no ask, no pulling out: whoever turns up sets the price when the clock runs out</span></div>
-          <div className="market-list">
-            {auctions.map(a => {
-              const left = Math.max(0, (a.endsOn ?? 0) - today)
-              return (
-                <div className={`listing-row ${left === 0 ? 'stale' : ''}`} key={a.id}>
-                  <div className="listing-main">
-                    {cardImg(a.card) && <img src={cardImg(a.card)} alt="" className="listing-thumb" />}
-                    <div className="listing-info">
-                      <div className="listing-name">
-                        {a.card.name}
-                        {setNameOfCard(a.card) && <span className="cap" style={{ marginLeft: 6, fontWeight: 400 }}>{setNameOfCard(a.card)}</span>}
-                      </div>
-                      <div className="cap">
-                        market {fmtMoney(cardValue(a.card))}
-                        {a.reserve
-                          ? ` · reserve ${fmtMoney(cardValue(a.card) * a.reserve)} — under it and the card comes home`
-                          : ' · no reserve — it sells at whatever it reaches'}
-                      </div>
-                      <div className="row" style={{ gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
-                        <span className="pill">👀 {a.watchers || 0} watching</span>
-                        <span className="pill" style={{ color: left <= 1 ? 'var(--gold)' : undefined }}>
-                          🔨 {left === 0 ? 'closes tonight' : `${left} day${left === 1 ? '' : 's'} left`}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
 
       {consignments.length > 0 && (
         <div className="consign-strip">
