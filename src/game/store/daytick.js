@@ -59,8 +59,8 @@ import {
 import { realizableAssets, netWorthFull, isDistributor, freezeCredit, clearCreditFreeze, thawCredit,
   CREDIT_FREEZE } from './helpers'
 import { DISTRIBUTOR_NOTO } from '../engine'
-// 🧾 tax + 🏦 loan settlement and 🔨 the buy-side auction board. The per-day work for each
-// lives beside its own actions rather than in this file, so a system reads in one place.
+// 🧾 tax + 🏦 loan settlement, and 📱 the local marketplace's overnight churn. The per-day work
+// for each lives beside its own actions rather than in this file, so a system reads in one place.
 import { settleQuarter, settleLoan, settleTaxArrears } from './books'
 import { tickMarket } from './market'
 import { drawDms, trimDms } from '../dms'
@@ -1752,8 +1752,7 @@ export function advanceDaysWith(set, get, days, away) {
     storeCredit: storeCreditNext,           // credit spent at the counter + breakage
     storeEventPlanned: null,                // tonight happened (or couldn't) — either way it's spent
     eventCooldownLeft: eventCooldown,
-    // Buzz (giveaway/event) ages out.
-    // its own launch-week window.
+    // Buzz from a giveaway or a hosted night ages out over its own window.
     giveawayDaysLeft: Math.max(0, buzzDays0 - days),
     forumPosts,
     dailyGoals: periodGoals,                       // weekly set; refreshed every 7 days
@@ -2220,9 +2219,9 @@ export function advanceDaysWith(set, get, days, away) {
     regularCalls: regTick.requested.length, regularsWon: regTick.fulfilled.length,
     marketMovers: market.events.map(e => ({ setName: e.setName, kind: e.kind, pct: e.pct })),
     lifeEvents,
-    // 🔨 Lots that closed while the days passed, 🧾 a quarter that ended, 🏦 the note's
-    // instalments. All three are things that happen TO you on a clock, so the recap is the
-    // only place a player reliably sees them.
+    // 📱 Local listings taken by somebody else overnight, 🧾 a quarter that ended, 🏦 the
+    // note's instalments. All of these happen TO you on a clock, so the recap is the only
+    // place a player reliably sees them.
     marketTaken: marketTick?.taken || 0,
     quarterClosed: quarter || null,
     loanPaid: round2(loanResult?.paid || 0),

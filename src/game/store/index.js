@@ -969,16 +969,20 @@ export const useGame = create(persist((set, get) => ({
       state.dms = state.dms ?? []
       state.dmStats = state.dmStats ?? { got: 0, answered: 0 }
 
-      // 🔨 The buy-side auction house is gone. Money is SITTING in live proxy bids — that cash
-      // left the player's hands for a lot that will now never settle, so hand it back rather
-      // than letting it evaporate with the feature.
-      let refund = 0
-      for (const lot of state.auctionLots || []) {
-        if (lot?.yourBid > 0 && !lot.settled) refund += lot.yourBid
-      }
-      // 📰 Reprint-wave preorders are PREPAID. Same rule: the stock will never land, so the
-      // deposit comes back.
-      refund += state.reprintWave?.prepaid || 0
+      // 🔨 The buy-side auction house is gone. Nothing to refund, and that is worth stating
+      // rather than leaving to be rediscovered: a bid there was a PROXY, not an escrow.
+      // bidOnLot only wrote `maxBid`; the cash left at settlement, in settleAuctionLots. So an
+      // open lot is holding none of the player's money and paying anything back here would
+      // mint it. (An earlier draft of this block looped the lots refunding `yourBid` — a field
+      // that has never existed — which is how a refund that protects nothing reads as though
+      // it protects everything.)
+      //
+      // 📰 A reprint-wave preorder IS prepaid, so an UNDELIVERED one comes back: that stock
+      // will never land now. A wave that already dropped must not — `prepaid` survives the
+      // drop (the drop only stamped `doneDay`), and the boxes it paid for are sitting in the
+      // storeroom. Refunding those would hand back the money AND keep the product.
+      const wave = state.reprintWave
+      const refund = wave && wave.doneDay == null ? (wave.prepaid || 0) : 0
       if (refund > 0.005) state.cash = round2((state.cash || 0) + refund)
       delete state.auctionLots
       delete state.auctionLotsDay

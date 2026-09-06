@@ -43,7 +43,29 @@ export default function Cart({ payMode = 'cash' }) {
   // 📦 Rip-on-buy buys the moment you tap, because a cart cannot rip. Say so where the cart
   // would otherwise sit looking broken — a setting that silently swallows a feature is worse
   // than one that explains itself.
-  if (ripOnBuy) {
+  //
+  // The banner REPLACES the button only when there is nothing in the cart. Turning the setting
+  // on with a basket already filled used to hide it completely: no list, no checkout, no way to
+  // empty it, and no hint that toggling the setting back was the way out. A setting must never
+  // strand something the player already built.
+  const stranded = ripOnBuy && cart.length > 0
+
+  function checkout(dest) {
+    const r = checkoutCart({ dest, onCredit, split })
+    if (r.error) return toast(r.error)
+    // A short fill leaves its remainder in the cart, so stay open on it — closing the sheet on
+    // an order that only half went through hides the half you still have to do something about.
+    const left = r.remainder?.length || 0
+    if (!left) setOpen(false)
+    const where = !hasStore ? 'your inventory'
+      : dest === 'personal' ? 'your 👤 personal collection' : 'the 🏬 storeroom'
+    const shortNote = left
+      ? ` ${left} line${left === 1 ? '' : 's'} came up short — the shelf or a per-customer limit ran out. What's left is still in your cart.`
+      : ''
+    toast(`🛒 Ordered ${r.bought} item${r.bought === 1 ? '' : 's'} for ${fmtMoney(r.spent)} → ${where}.${shortNote}`, 6000)
+  }
+
+  if (ripOnBuy && !stranded) {
     return (
       <div className="banner mt-3">
         🛒 The cart is off while <b>Rip on buy</b> is on — every purchase opens straight away.
@@ -52,20 +74,14 @@ export default function Cart({ payMode = 'cash' }) {
     )
   }
 
-  function checkout(dest) {
-    const r = checkoutCart({ dest, onCredit, split })
-    if (r.error) return toast(r.error)
-    setOpen(false)
-    const where = !hasStore ? 'your inventory'
-      : dest === 'personal' ? 'your 👤 personal collection' : 'the 🏬 storeroom'
-    const shortNote = r.short.length
-      ? ` ${r.short.length} line${r.short.length === 1 ? '' : 's'} came up short — the shelf or a per-customer limit ran out.`
-      : ''
-    toast(`🛒 Ordered ${r.bought} item${r.bought === 1 ? '' : 's'} for ${fmtMoney(r.spent)} → ${where}.${shortNote}`, 6000)
-  }
-
   return (
     <>
+      {stranded && (
+        <div className="banner mt-3">
+          ⚠️ <b>Rip on buy</b> is on, so new taps open straight away — but this order is still
+          here. Check it out or empty it, or turn the setting off in <b>Misc → Settings</b>.
+        </div>
+      )}
       <button className={`btn cart-btn ${cart.length ? 'gold' : ''}`} onClick={() => setOpen(true)}
         aria-label={`Cart: ${units} item${units === 1 ? '' : 's'}, ${fmtMoney(total)}`}>
         🛒 Cart{units > 0 ? ` · ${units} item${units === 1 ? '' : 's'} · ${fmtMoney(total)}` : ' — empty'}

@@ -165,8 +165,16 @@ export function createSourcingSlice(set, get) {
       const bought = results.reduce((a, r) => a + r.bought, 0)
       const spent = round2(results.reduce((a, r) => a + (r.spent || 0), 0))
       const short = results.filter(r => r.bought < r.line.qty)
-      set({ cart: [] })
-      return { ok: true, bought, spent, short, results, dest }
+      // KEEP WHAT DID NOT FILL. Emptying the cart wholesale threw away the part of the order
+      // the shelf refused — a line stopped by a per-customer limit or by thin stock is exactly
+      // the line you want to try again tomorrow, or move to another distributor, and rebuilding
+      // it by hand is the work the cart exists to remove. What was bought leaves; the
+      // remainder stays, with its quantity reduced to what is still outstanding.
+      const remainder = short
+        .map(r => ({ ...r.line, qty: r.line.qty - r.bought }))
+        .filter(l => l.qty > 0)
+      set({ cart: remainder })
+      return { ok: true, bought, spent, short, remainder, results, dest }
     },
 
     // Buy a sealed product FROM a specific distributor and hold it. Checks their stock,

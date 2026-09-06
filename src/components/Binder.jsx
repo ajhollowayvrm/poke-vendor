@@ -81,7 +81,16 @@ export default function Binder({ onPick }) {
 
   const [setId, setSetId] = useState(() => mySets[0]?.id || null)
   const [missingOnly, setMissingOnly] = useState(false)
-  const [assignTo, setAssignTo] = useState(SETS[0].id) // set chosen for the next empty binder
+  // Sets you do NOT already have a binder for — the only ones an empty binder can be pointed
+  // at, since it is one set per binder.
+  const assignable = useMemo(() => SETS.filter(x => !mySetIds.includes(x.id)), [mySetIds])
+  // The set chosen for the next empty binder. Held as a value that may fall out of
+  // `assignable` (you just used it), so it is always READ through assignable — a <select>
+  // whose value is not among its options renders the first option as selected while the state
+  // still holds the old one, and the button would then assign a set the player never saw
+  // highlighted, or refuse with "you already have a binder for <some other set>".
+  const [assignToRaw, setAssignTo] = useState(() => SETS[0].id)
+  const assignTo = assignable.some(x => x.id === assignToRaw) ? assignToRaw : (assignable[0]?.id || null)
   // Keep the open page on a set you still have a binder for — selling a master lot never
   // removes a binder, but a save migrated from before binders existed can arrive with none.
   const set = mySets.find(x => x.id === setId) || mySets[0] || null
@@ -161,12 +170,13 @@ export default function Binder({ onPick }) {
       {empty.length > 0 && (
         <div className="binder-assign">
           <span className="cap">Empty binder — which set is it for?</span>
-          <select value={assignTo} onChange={e => setAssignTo(e.target.value)}>
-            {SETS.filter(x => !mySetIds.includes(x.id)).map(x => (
+          <select value={assignTo || ''} onChange={e => setAssignTo(e.target.value)}>
+            {assignable.map(x => (
               <option key={x.id} value={x.id}>{x.name}</option>
             ))}
           </select>
           <button className="btn gold t-xs btn-fixed" style={{ padding: '3px 10px' }}
+            disabled={!assignTo}
             onClick={() => {
               const r = assignBinder(empty[0].id, assignTo)
               if (r.error) return toast(r.error)

@@ -32,22 +32,39 @@ const SETS = setsData.sets
 const setA = SETS[0], setB = SETS[1], setC = SETS[2]
 const card = (s, i) => instance(cardById(s.cards[i].id) || s.cards[i], 'pull')
 
-// A v69 save, mid-career: cards in the binder for two sets, a chase declared on a THIRD set
-// it has no cards for yet, money out on two auction lots, and a paid reprint preorder.
-function v69Save() {
+// A v69 save, mid-career: cards in the binder for two sets, a chase declared on a THIRD set it
+// has no cards for yet, proxy bids on the auction board, and a paid reprint preorder.
+//
+// THE LOTS CARRY THE REAL FIELD NAMES. An earlier version of this file invented
+// `{ id, yourBid, settled }` and asserted against that — a shape the game has never written —
+// so it passed green while the migration's refund loop read fields that do not exist and
+// silently paid back nothing. A fixture you made up only ever tests the fixture.
+//
+// The generator (src/game/lots.js) is DELETED by this same change, so this cannot import it.
+// The shape below is what refillLots() wrote at the point of deletion — see the file in
+// `git show 643706a:src/game/lots.js` (makeLot, ~line 185): an id, an `endsOn` clock, and
+// `maxBid`, the player's proxy, starting at 0. There is no `yourBid` and no `settled`.
+//
+// The load-bearing fact: `maxBid` is a COMMITMENT, not an escrow. bidOnLot only wrote the
+// number; the cash left at settlement in settleAuctionLots. So an open lot holds none of the
+// player's money, and the assertions below pin that the migration pays back nothing for one.
+function v69Save(waveOverrides = {}) {
+  const lots = [
+    { id: 'lot1', endsOn: 9, maxBid: 120, watchers: 3 },  // a live proxy bid
+    { id: 'lot2', endsOn: 11, maxBid: 80, watchers: 1 },  // another
+    { id: 'lot3', endsOn: 7, maxBid: 0, watchers: 6 },    // never bid on
+  ]
   return {
     cash: 1000,
     collection: [card(setA, 0), card(setB, 0), card(setC, 0)],
     binder: [card(setA, 1), card(setA, 2), card(setB, 1)],
     challenge: { setId: setC.id, setName: setC.name, total: 100, placed: 1 },
-    auctionLots: [
-      { id: 'l1', yourBid: 120, settled: false },
-      { id: 'l2', yourBid: 80, settled: true },   // already settled: NOT refunded
-      { id: 'l3', yourBid: 0, settled: false },
-    ],
+    auctionLots: lots,
     auctionLotsDay: 4,
     auctionStats: { won: 1, lost: 2, spent: 300, burned: 0 },
-    reprintWave: { setId: setA.id, prepaid: 250, preordered: 2, dropDay: 99, doneDay: null },
+    // Announced, deposits paid, NOT yet dropped — this stock will never land, so it refunds.
+    reprintWave: { setId: setA.id, prepaid: 250, preordered: 2, dropDay: 99, doneDay: null,
+      ...waveOverrides },
     currentDay: 12, monthsElapsed: 1,
   }
 }
@@ -78,13 +95,26 @@ console.log('\n2. The new buckets are seeded, not left undefined:')
   check('dmStats', !!out.dmStats && out.dmStats.got === 0)
 }
 
-console.log('\n3. Money in retired systems comes BACK:')
+console.log('\n3. Money comes back where money was actually taken — and nowhere else:')
 {
+  // An UNDELIVERED preorder refunds: the boxes will never land now.
   const out = migrate(v69Save(), 69)
-  // 120 (live bid) + 250 (prepaid preorder). The settled lot and the zero bid pay nothing.
-  check('live bids and the paid preorder are refunded',
-    Math.abs(out.cash - (1000 + 120 + 250)) < 0.005, `cash ${out.cash}`)
-  check('a settled lot is not refunded twice', out.cash !== 1000 + 120 + 80 + 250)
+  check('an undelivered reprint preorder is refunded in full',
+    Math.abs(out.cash - (1000 + 250)) < 0.005, `cash ${out.cash}`)
+
+  // A proxy bid is a COMMITMENT, not an escrow — bidOnLot never spent, settleAuctionLots did.
+  // Refunding maxBid would hand the player money that never left their pocket.
+  const bids = v69Save().auctionLots.reduce((a, l) => a + (l.maxBid || 0), 0)
+  check('the fixture really does carry open proxy bids (or this proves nothing)',
+    bids > 0, `bids total ${bids}`)
+  check('open proxy bids are NOT refunded — no cash was ever held in them',
+    Math.abs(out.cash - (1000 + 250)) < 0.005, `cash ${out.cash}, bids ${bids}`)
+
+  // A wave that already dropped delivered its stock. `prepaid` survives the drop (it only
+  // stamps doneDay), so refunding it would hand back the money AND leave the boxes.
+  const dropped = migrate(v69Save({ doneDay: 40 }), 69)
+  check('a DELIVERED preorder is not refunded',
+    Math.abs(dropped.cash - 1000) < 0.005, `cash ${dropped.cash} — the stock already landed`)
 }
 
 console.log('\n4. The retired systems are actually gone:')
