@@ -12,6 +12,10 @@ transition is not a spring. A modal is not a sheet with detents. And the whole n
 iPhone offers — Live Activities, widgets, Spotlight, Metal shaders, Game Center, share
 extensions — is unreachable from inside the web view.
 
+The work orders that execute this plan — 43 of them, in dependency order, each with an exit
+condition — are in [SWIFT-REWRITE-TASKS.md](SWIFT-REWRITE-TASKS.md). This document is the *why*;
+that one is the *what, in what order*.
+
 ## Decisions taken
 
 Five questions shaped this plan and all five are settled. They are recorded here because each one
@@ -31,17 +35,19 @@ deletes work, and a later reader should know the deletions were deliberate.
 
 | | Lines | Fate |
 |---|---|---|
-| `src/game/**` — engine, day tick, shows, store slices | ~15,700 | **Ported.** Deterministic logic, sim-gated. This is the game. |
+| `src/game/**` — engine, day tick, shows, store slices | 18,226 | **Ported.** Deterministic logic, sim-gated. This is the game. |
 | `src/data/sets.json` — 23,475 cards | 2.4 MB | **Recompiled**, not ported. See *The catalog* below. |
-| `src/components/**` + `src/ui/**` — 60 screens | ~18,500 | **Deleted and redesigned.** Not translated. |
+| `src/components/**` + `src/ui/**` + `App.jsx` — 64 files | 17,956 | **Deleted and redesigned.** Not translated. |
 | `src/styles.css` — 3,071 lines, 35 keyframes | 3,071 | **Deleted.** Replaced by system type, semantic colours, SwiftUI animation. |
 | `src/game/auth.js` · `cloudSave.js` · `syncConfig.js` · `Account.jsx` | ~1,030 | **Deleted.** The backend is going. |
 | `aws/**` — Cognito + Lambda + DynamoDB | — | **Deleted**, and the stack torn down. |
 | `ios/Sources/Shell.swift` | 688 | **Mined, then deleted.** `ArtSchemeHandler`'s disk cache and trim policy survive as a native image cache. |
 | `scripts/sim.mjs` — 14 balance invariants | — | **Ported first, and kept in both languages** during the port. See *Proving the port*. |
 
-Roughly 40% of the codebase is worth porting, 55% is worth deleting, and 5% is the test harness
-that makes the other 95% safe to touch.
+Counted rather than estimated, at `ebee488`: `src/game/**` is 19,190 lines, of which 964 are the
+deleted backend and storage shims, leaving **18,226 to port**; the UI is **17,956** plus 3,071 lines
+of CSS to delete. So it is closer to a even split than a 40/55 one, and the ported half is the
+half with all the risk in it.
 
 ### The honest caveat
 
