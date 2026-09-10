@@ -14,7 +14,7 @@ extensions — is unreachable from inside the web view.
 
 ## Decisions taken
 
-Four questions shaped this plan and all four are settled. They are recorded here because each one
+Five questions shaped this plan and all five are settled. They are recorded here because each one
 deletes work, and a later reader should know the deletions were deliberate.
 
 | | Decision | What it removes |
@@ -23,6 +23,7 @@ deletes work, and a later reader should know the deletions were deliberate.
 | **Backend** | **AWS goes.** No accounts, no cloud save, no price proxy. | `aws/` (Cognito, Lambda, DynamoDB), `auth.js`, `cloudSave.js`, `syncConfig.js`, `Account.jsx`, the sign-in/conflict/quota UI, and the 350 KB save cap that `slimsave.js` exists to stay under. |
 | **iPad / Mac** | **Out of scope.** iPhone only, portrait, as today. | `NavigationSplitView`, size-class branching, pointer and keyboard affordances, `TARGETED_DEVICE_FAMILY: "1,2"`. |
 | **Catalog** | **A compiled, memory-mapped file.** Reasoning below. | A SQLite dependency and a query on the hottest lookup path in the app. |
+| **Scope** | **All six phases.** The native feel is the point; the hybrid stop is not a planned outcome. | The Phase 3 go/no-go. Phase 3 now sets the quality bar for Phase 4 instead of deciding whether Phase 4 happens. |
 
 ---
 
@@ -363,7 +364,7 @@ Each phase ends with something installable on the phone. The old web app rides a
 | **0** | **Foundations & proof.** SPM packages, catalog compiler, seeded PRNG in *both* engines, the cross-engine differ, the save exporter shipped in the current app. | Differ green on twenty seeds for pack opens and pricing. A golden save round-trips. |
 | **1** | **Engine port.** In dependency order: catalog/pricing → `constants`/`initialState` → `collection`/`selling`/`sourcing` → `booth`/`shows` → `livestream`/`socials` → `books`/`tax`/`loans`/`market` → `daytick`. | All fourteen sim invariants green in Swift. 500-day golden-save diff clean. |
 | **2** | **State & persistence.** `GameStore`, Codable save, atomic writes, the legacy importer, Files/backup/export. | A career imported from the web app plays, saves, force-quits, relaunches, exports and re-imports. |
-| **3** | **First playable slice.** App skeleton, tab structure, and Buy → Rip → Collection built *natively and properly* — Metal holos, CoreHaptics, gesture-driven tear, `List` inventory, card sheet with detents. | The rip feels better on the phone than the web version. This is the go/no-go for the whole rewrite — see below. |
+| **3** | **First playable slice.** App skeleton, tab structure, and Buy → Rip → Collection built *natively and properly* — Metal holos, CoreHaptics, gesture-driven tear, `List` inventory, card sheet with detents. | The native vocabulary exists and is written down, and the rip is the best thing in the app. Everything in Phase 4 is measured against it — see below. |
 | **4** | **The rest of the game**, one tab per milestone: Sell/Store → Shows → Socials/Stream → You (career, binders, grader, upgrades) → Misc/Settings. | Feature parity with the web app, screen by screen; legacy screen unused. |
 | **5** | **Native surface.** Live Activities, widgets, Spotlight, Game Center, share cards, App Intents. | Each ships behind its own flag and is judged on whether it earns its place. |
 | **6** | **Retire the web app and the backend.** Delete `src/`, `index.html`, `vite.config.js`, the Vite tooling, `dist` bundling in `project.yml`, `Shell.swift`, `tools/ios/web.mjs`, and `aws/` — then tear the CloudFormation stack down. Accessibility pass, Instruments pass. | Cold launch under 400 ms, 120 Hz scrolling on every list, accessibility audit clean, `package.json` down to the data-fetch scripts. |
@@ -371,36 +372,37 @@ Each phase ends with something installable on the phone. The old web app rides a
 Phases 0–2 are engine and infrastructure work with no visible result, which is the hardest part
 of the plan to stick to and the part that determines whether the rest is safe.
 
-### What the Phase 3 verdict actually is
+### Phase 3 sets the bar
 
-Phase 3 is a **deliberate stop point with a defined question**, not a vibe check, and it exists
-because of where the phases put the risk. By the end of Phase 3 the expensive, irreversible,
-invisible work is done — engine ported and proven, saves migrated, backend removed — and the
-remaining ~60% of the effort is Phase 4, which is sixty screens of UI. That is the largest single
-block of work in the plan and the one with the least uncertainty in it. It is worth pausing in
-front of.
+There is no go/no-go here. **All six phases are happening, because the native feel is the point of
+the exercise**, so this section is about what Phase 3 is *for* rather than what it decides.
 
-The question at the gate is narrow: **does the natively-built rip beat the CSS one on the actual
-phone, by enough to justify rebuilding fifty-nine more screens?** Not "is it nicer" — the tilt
-shader and the authored haptics will be nicer. Whether the difference is worth roughly two-thirds
-of the total effort is a different question, and only a built artefact can answer it.
+Phase 3 builds one vertical slice — Buy → Rip → Collection — and its real output is not those
+three screens. It is the **vocabulary the other fifty-nine are written in**, defined once, by
+building something real rather than by writing a style guide against nothing. Five things come out
+of it, and each one is a decision that Phase 4 then applies rather than re-litigates sixty times:
 
-Three outcomes, all of them legitimate:
+| Decided in Phase 3 | So that Phase 4 never argues about |
+|---|---|
+| **Type and colour.** The semantic colour set, in both appearances, and which Dynamic Type styles carry which roles. | What a card row's secondary text is. Whether this screen is dark-only. |
+| **Motion.** The spring constants, which transitions are shared-element, what Reduce Motion does. | Whether this sheet slides or fades. |
+| **The haptic language.** Which events are transients, which are continuous, what a "good thing happened" feels like versus a "big thing happened". | Whether a sale buzzes. |
+| **The card component.** One `CardView` with its size variants, its holo shader hookup, its context menu, its accessibility label. | How a card is drawn — anywhere, ever. |
+| **List idioms.** Which actions are swipes, which are context menus, which are edit-mode multi-select. | Where quick-sell lives on each of six inventory screens. |
 
-- **Yes, clearly.** Continue into Phase 4 as planned.
-- **Yes, but only the rip.** Then the honest move is to *stop expanding* and ship a hybrid: the
-  native app hosts the legacy web screens permanently and replaces only the moments where native
-  wins — the rip, the card sheet, the inventory lists. Phases 0–3 leave this fully available,
-  because the legacy screen is a real, supported part of the app rather than scaffolding. This is
-  a genuinely good end state, not a consolation prize.
-- **No.** Keep the shell, keep the Swift engine as the sim harness (it is faster and better than
-  `sim.mjs` regardless), and the sunk cost is Phases 0–2 — which bought a proven engine port, a
-  smaller save format and a backend teardown that were worth doing on their own terms.
+Get this right and Phase 4 is application work: fast, parallelisable, and consistent by
+construction. Get it wrong — or skip it and start on Sell — and Phase 4 becomes sixty screens each
+inventing their own answer, which is precisely how `styles.css` grew a type ladder with 32 distinct
+font sizes in it. **That failure has already happened once in this codebase**, and the cause was
+not carelessness; it was that nobody defined the vocabulary before the screens needed one.
 
-What makes the gate real rather than decorative is that **the "no" branch leaves a working app**.
-If the plan is going to proceed to Phase 4 no matter what the rip looks like, then the gate
-should be struck from this document rather than pretended at — a gate nobody would ever walk
-through is just a paragraph.
+So the discipline for Phase 3 is: build the rip to a standard you would be happy to see on every
+screen, then write down what you did. `docs/` gets a short design-vocabulary note out of this
+phase, and it is a deliverable of the phase, not a nice-to-have after it.
+
+**The one gate that remains is Phase 1's**, and it is a correctness gate rather than a taste one:
+if the cross-engine differ cannot be made to agree, the port is wrong and no amount of native
+polish fixes that.
 
 ### What survives into the Swift repo
 
@@ -420,6 +422,6 @@ problems). Node stays in the repo as a data pipeline; it stops being the app.
 | **Deleting the app to free a sideload slot** | Free provisioning caps at three apps and deleting one deletes its container. Export before making room; this belongs in the Settings copy, not just in a doc. |
 | **Catalog format churn breaks old saves** | Compiler fails the build on a removed set; `CardID` resolution is a tested invariant. |
 | **Catalog decode tanks launch** | mmap, never `JSONDecoder`. Measured in Phase 0, not assumed. |
-| **The rewrite stalls half-done** | Every phase ships to the device; the legacy web screen means a half-finished Swift app is never a broken app — and is itself a valid end state. |
+| **The rewrite stalls half-done** | Every phase ships to the device, and the legacy web screen means a half-finished Swift app is still a playable one. That is a safety net for an interruption, not a destination — the plan is to run all six phases. |
 | **iCloud Drive adopted "just for sync"** | Explicitly out of plan. It ties saves to an Apple ID permanently. |
 | **Scope creep into design changes** | Phases 1–4 are a port. New systems wait for Phase 6+. The notification section is the model: say no to native features that would change the game. |
