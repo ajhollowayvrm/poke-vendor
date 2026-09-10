@@ -12,6 +12,18 @@ transition is not a spring. A modal is not a sheet with detents. And the whole n
 iPhone offers — Live Activities, widgets, Spotlight, Metal shaders, Game Center, share
 extensions — is unreachable from inside the web view.
 
+## Decisions taken
+
+Four questions shaped this plan and all four are settled. They are recorded here because each one
+deletes work, and a later reader should know the deletions were deliberate.
+
+| | Decision | What it removes |
+|---|---|---|
+| **Saves** | **On-device only, migrated one way.** The Swift app reads the legacy save; the web build never reads a native one. | Two-way serialisation, a shared schema, and any obligation to keep the web app loadable after Phase 6. |
+| **Backend** | **AWS goes.** No accounts, no cloud save, no price proxy. | `aws/` (Cognito, Lambda, DynamoDB), `auth.js`, `cloudSave.js`, `syncConfig.js`, `Account.jsx`, the sign-in/conflict/quota UI, and the 350 KB save cap that `slimsave.js` exists to stay under. |
+| **iPad / Mac** | **Out of scope.** iPhone only, portrait, as today. | `NavigationSplitView`, size-class branching, pointer and keyboard affordances, `TARGETED_DEVICE_FAMILY: "1,2"`. |
+| **Catalog** | **A compiled, memory-mapped file.** Reasoning below. | A SQLite dependency and a query on the hottest lookup path in the app. |
+
 ---
 
 ## What is actually being rewritten
@@ -22,9 +34,10 @@ extensions — is unreachable from inside the web view.
 | `src/data/sets.json` — 23,475 cards | 2.4 MB | **Recompiled**, not ported. See *The catalog* below. |
 | `src/components/**` + `src/ui/**` — 60 screens | ~18,500 | **Deleted and redesigned.** Not translated. |
 | `src/styles.css` — 3,071 lines, 35 keyframes | 3,071 | **Deleted.** Replaced by system type, semantic colours, SwiftUI animation. |
+| `src/game/auth.js` · `cloudSave.js` · `syncConfig.js` · `Account.jsx` | ~1,030 | **Deleted.** The backend is going. |
+| `aws/**` — Cognito + Lambda + DynamoDB | — | **Deleted**, and the stack torn down. |
 | `ios/Sources/Shell.swift` | 688 | **Mined, then deleted.** `ArtSchemeHandler`'s disk cache and trim policy survive as a native image cache. |
 | `scripts/sim.mjs` — 14 balance invariants | — | **Ported first, and kept in both languages** during the port. See *Proving the port*. |
-| `aws/**` — Cognito + Lambda + DynamoDB | — | **Unchanged.** The backend stores an opaque blob; it does not care what wrote it. |
 
 Roughly 40% of the codebase is worth porting, 55% is worth deleting, and 5% is the test harness
 that makes the other 95% safe to touch.
@@ -48,17 +61,18 @@ no big-bang cutover.
 ## Architecture
 
 One Xcode project, one target, **the same bundle ID as today** (`com.ajholloway.pokevendor`).
-That is not a detail — the bundle ID *is* the container, and the container is where the existing
-save lives. Changing it strands every save on the device, exactly as `ios/README.md` warns.
+That is not a detail — the bundle ID *is* the container, and the container is where the save
+lives. Changing it strands every save on the device, exactly as `ios/README.md` warns, and with
+no cloud copy to restore from that is now unrecoverable rather than merely painful.
 
 Local Swift packages, so the engine can be tested and fuzzed without an app or a simulator:
 
 ```
 PokeVendor.xcodeproj            (still XcodeGen — project.yml stays generated)
 ├── Packages/
-│   ├── PVCatalog     — the compiled card catalog + O(1) lookups. No Foundation-heavy decode.
-│   ├── PVEngine      — pure game logic. No SwiftUI, no UIKit, no Foundation date/locale.
-│   ├── PVState       — GameState, actions, persistence, migrations, cloud sync.
+│   ├── PVCatalog     — the compiled card catalog + O(1) lookups. No decode at launch.
+│   ├── PVEngine      — pure game logic. No SwiftUI, no UIKit, no dates, no locale.
+│   ├── PVState       — GameState, actions, persistence, the legacy importer.
 │   └── PVKit         — shared UI atoms: card views, money formatting, haptics, image cache.
 └── App/              — SwiftUI feature modules, one folder per tab.
 ```
@@ -92,14 +106,14 @@ Three things fall out of the value type that the Zustand store cannot have:
   every `set()` mid-animation. A struct is diffed and written on a background actor; the whole
   problem class goes away.
 
-### Persistence — Codable, not SwiftData
+### Persistence — Codable, on device, no server
 
 **Do not use SwiftData.** This is a single-document game with a deep value graph and a fifty-step
-migration chain that already works. SwiftData wants a managed object graph, gives back
-`@Model` reference semantics that fight the struct design above, and its migration story is
-riskier than the one being replaced. Use `Codable` → binary plist → atomic
-temp-file-and-rename into Application Support, written from a background actor, with one rolling
-backup (today's `poke-vendor-save-prev`, kept).
+migration chain that already works. SwiftData wants a managed object graph, gives back `@Model`
+reference semantics that fight the struct design above, and its migration story is riskier than
+the one being replaced. Use `Codable` → binary plist → atomic temp-file-and-rename into the app's
+Documents directory, written from a background actor, with one rolling backup (today's
+`poke-vendor-save-prev`, kept).
 
 The [slim-save trick](../src/game/store/slimsave.js) **disappears by construction**. It exists
 because `engine.instance()` spreads the whole catalog row onto every owned card, so the save was
@@ -118,14 +132,45 @@ struct CardInstance: Codable, Identifiable {
 }
 ```
 
-There is no catalog field to strip because there was never one to write. Expect the save to get
-several times smaller, and the cloud cap to stop being a design constraint.
+There is no catalog field to strip because there was never one to write. With the cloud cap gone
+as well, save size stops being a design constraint at all.
 
 **The invariant that survives:** a `CardID` in a save must keep resolving in the bundled catalog.
 `sets.json` is append-mostly today and must stay that way. This is the same stake `slimsave.js`
 and `cardById()` already raise; the Swift model raises it further, because a missing row now
 costs the card its name *and* its art *and* its price rather than just its catalog extras. The
-catalog compiler should fail the build if a set is removed rather than renamed.
+catalog compiler fails the build if a set is removed rather than renamed.
+
+### Where the backup lives, now that there is no cloud
+
+Removing AWS removes the only copy of a save that survives the phone. Three things replace it,
+and they are worth more attention than the cloud path ever got, because free provisioning makes
+losing the container *routine*: `ios/README.md` already documents that a free profile allows three
+sideloaded apps and that deleting one to make room deletes its container with it.
+
+- **iOS device backup.** The Documents directory is included in iCloud and Finder backups by
+  default. That is free, automatic, and the reason the save goes in Documents rather than
+  Application Support. Do not set `isExcludedFromBackup`.
+- **Files visibility.** `UIFileSharingEnabled` + `LSSupportsOpeningDocumentsInPlace`, so the save
+  is a real document the player can see, copy out, and drop back in from the Files app.
+- **An explicit export.** `ShareLink` on the save document, and a matching importer — the same
+  pair the crash screen's backup button has always wanted to be, now working properly rather than
+  routed around `a.download` being inert.
+
+If device-to-device sync is ever wanted again, iCloud Drive's ubiquity container is the
+zero-server way to get it. **It is not in this plan**, and it should not be added casually: it
+ties saves to an Apple ID permanently.
+
+### One consequence of dropping the backend, stated plainly
+
+`engine.js` uses the Lambda for two things, not one: cloud saves, and a **cached price proxy**
+(`fetchCachedPrices`, `warmPricesOnBoot`). Losing it does not cost live prices — `refreshPrices`
+already falls back to `api.pokemontcg.io` directly, with no key and no auth, and that path ports
+as-is. What is lost is the proxy's shared cache and its rate-limit headroom, so an in-app refresh
+becomes a slower, per-set walk over the public API. Given that `npm run fetch-data` reships the
+snapshot on every build anyway, the honest options are to keep the direct refresh as a Settings
+action, or to drop runtime refresh entirely and let prices move only when the app updates.
+Recommendation: keep it, make it manual, and never call it on boot.
 
 ### The catalog
 
@@ -143,12 +188,18 @@ So do not decode it at all. A build-time tool (`Tools/catalog-compile`) turns `s
   `MARKETPLACE_CARDS`, `cardsByRarity` — precomputed as id ranges.
 
 Boot cost becomes an `mmap` and a header read: effectively zero, and the pages are shared and
-evictable rather than heap. SQLite via GRDB is the acceptable fallback if the compiler turns into
-a maintenance burden, at the cost of a query per lookup on a path that runs thousands of times
-per pack rip.
+evictable rather than heap.
 
-`npm run fetch-data` keeps working exactly as it does; the compiler runs after it and is checked
-into the build as a pre-build phase.
+**Why this over SQLite/GRDB.** SQLite is less code to own, and that is a real argument. It loses
+on the access pattern: this catalog is read-only, ships with the binary, and is hit thousands of
+times per pack rip through `cardById`, `rawValue` and `cardsByRarity` — a prepared statement and a
+row decode per lookup, against a struct read straight out of a mapped page. The dependency also
+buys nothing else here; there are no queries, no writes, no schema evolution at runtime. The
+tripwire for revisiting: if the compiler grows past ~500 lines, or if the catalog ever needs to be
+written to at runtime, take SQLite and the query cost.
+
+`npm run fetch-data` keeps working exactly as it does; the compiler runs after it, as a pre-build
+phase.
 
 ---
 
@@ -230,7 +281,7 @@ Honour Reduce Motion on the rip (a static reveal, not a broken one).
 
 - **Live Activities + Dynamic Island.** The state already carries `readyOnDay` for
   `pendingGrades` and `pendingSealed`, a `streamEscrow` that means ON AIR, and an `activeShow`.
-  Grading turnaround and a live stream are textbook Live Activities. *Caveat below.*
+  A live stream and a show are textbook Live Activities. *Caveat below.*
 - **WidgetKit.** Cash, net worth, pending grades, next show — read from an App Group snapshot
   the app writes on each day advance. Lock Screen and Home Screen.
 - **Share cards.** `ImageRenderer` on a SwiftUI card view → `ShareLink`. "Look what I pulled" as
@@ -239,16 +290,19 @@ Honour Reduce Motion on the rip (a static reveal, not a broken one).
 - **Spotlight.** Donate owned cards as `CSSearchableItem`s: searching "Umbreon" from the home
   screen opens the card in the app. Cheap, and very hard to fake on the web.
 - **Game Center.** `milestones.js` is already an achievement list in all but name, and net worth
-  and masterset completion are leaderboards. Near-free once accounts exist.
-- **Files and export.** `LSSupportsOpeningDocumentsInPlace`, `.fileExporter`, and the save is a
-  real document the player can back up, mail themselves, and restore.
+  and masterset completion are leaderboards. It is also the *only* remaining piece of
+  off-device state in the plan, and it costs no server — worth having precisely because the
+  backend is gone.
+- **Files and export.** Covered under backup above, and load-bearing now rather than a nicety.
 
 ### Tier 3 — later, or if they earn it
 
 - **App Intents / Shortcuts / Siri.** "Advance the day", "how much cash do I have".
-- **iPad and Mac.** `NavigationSplitView`, keyboard shortcuts, pointer hover. The web app is
-  iPhone-only by `TARGETED_DEVICE_FAMILY: "1"`; this is the phase that changes it.
-- **Background tasks.** `BGProcessingTask` for cloud sync and art prefetch on charge.
+- **Background tasks.** `BGProcessingTask` for art prefetch on charge.
+
+iPad and Mac are **out of scope by decision**, not deferred. `TARGETED_DEVICE_FAMILY` stays `"1"`,
+portrait stays locked, and every layout may assume one width class. That assumption is worth real
+time across sixty screens; revisiting it later means revisiting all of them.
 
 ### The notification caveat, stated plainly
 
@@ -256,8 +310,9 @@ Honour Reduce Motion on the rip (a static reveal, not a broken one).
 back" cannot be scheduled against a clock. Most of the notification ideas a native rewrite
 invites are therefore inapplicable here, and shipping them would mean either lying about time or
 changing the game into an idle timer — a design change, not a port. What *is* legitimately
-real-time: cloud-sync conflicts, and a Live Activity for the duration of a session (a stream, a
-show) that ends when the session does. Everything else should stay out.
+real-time is a Live Activity for the duration of a session (a stream, a show) that ends when the
+session does. Everything else should stay out. With the cloud gone there is no sync-conflict
+notification either, which was the one wall-clock event the app used to have.
 
 ### Image loading
 
@@ -274,39 +329,27 @@ rewriting in `engine.js` all delete.
 
 The existing save is in the WKWebView's IndexedDB under the `pokevendor://local` origin, inside
 the app container. A Swift app in the same container cannot read it directly: it is WebKit's
-private storage format. Three paths, and the plan uses all three because losing a career is the
-one unrecoverable failure here.
+private storage format. **Migration is one-way and runs once.** Two paths, because there is no
+cloud copy to fall back on any more and losing a career is now unrecoverable.
 
 1. **Export from the web app now.** Add one bridge (`exportSaveForNative`) to the *current*
    shell, called on every launch, which writes the current save blob to
-   `Application Support/legacy-save.json` in the container. Ship it as a normal update. By the
-   time the Swift app exists, every launch of the old app has already left a native-readable copy
-   behind. This is the belt.
+   `Documents/legacy-save.json` in the container. Ship it as a normal update. By the time the
+   Swift app exists, every launch of the old app has already left a native-readable copy behind.
+   This is the belt, and it is the reason this bridge is Phase 0 work and not Phase 2 work.
 2. **Headless read at first launch.** The Swift app hosts an off-screen `WKWebView` against the
-   same origin and the same bundled `index.html`, reads IndexedDB through the existing test
-   seam, hands the blob out, and marks the migration done. This is the braces, and it also covers
-   a player who has not launched the app since (1) shipped.
-3. **Cloud and file import.** ⚙️ → Account already holds a cloud copy keyed to the Cognito
-   account, and the share-sheet backup is a JSON file. Both become explicit "Import save" paths
-   in the Swift app.
+   same origin and the same bundled `index.html`, reads IndexedDB through the existing test seam,
+   hands the blob out, and marks the migration done. This is the braces, and it covers a player
+   who has not launched the app since (1) shipped.
 
-The importer runs the JS migration chain's *end state* — it targets the current save version and
-refuses anything older with a message telling the player to open the old build once. It writes
-the Swift format, keeps the legacy blob untouched, and is tested against real saves at several
-collection sizes. **Nothing else in Phase 0 is allowed to land until a golden save round-trips
-into Swift and back out with an identical state hash.**
+A third path exists for free once the export/import pair in *Where the backup lives* is built: a
+JSON backup taken from the old app's share sheet can be imported by hand.
 
-Cloud sync keeps the AWS backend as-is. The Lambda stores opaque bytes and enforces a `savedAt`
-compare-and-swap; the native client ports `auth.js`'s Cognito JSON-RPC to `URLSession` (it is
-plain `fetch` against documented endpoints — no SDK needed there either) and keeps the exact CAS
-semantics, including the 409-fork block. Bump the schema version in the pushed envelope so an old
-web build refuses a native save rather than half-reading it.
-
-**CloudKit is a one-way door.** It is free, needs no Lambda, and syncs across a player's devices
-automatically — and it permanently ties saves to an Apple ID and forecloses ever shipping this
-anywhere but Apple platforms. Recommendation: keep AWS through Phase 5, and only consider
-CloudKit once the AWS path has proven redundant. Sign in with Apple *on top of* Cognito is the
-cheap middle ground.
+The importer targets the current save version and refuses anything older with a message telling
+the player to open the old build once — it does not reimplement the fifty-step migration chain.
+It writes the Swift format, keeps the legacy blob untouched, and is tested against real saves at
+several collection sizes. **Nothing else in Phase 0 lands until a golden save round-trips into
+Swift and back out with an identical state hash.**
 
 ---
 
@@ -319,20 +362,49 @@ Each phase ends with something installable on the phone. The old web app rides a
 |---|---|---|
 | **0** | **Foundations & proof.** SPM packages, catalog compiler, seeded PRNG in *both* engines, the cross-engine differ, the save exporter shipped in the current app. | Differ green on twenty seeds for pack opens and pricing. A golden save round-trips. |
 | **1** | **Engine port.** In dependency order: catalog/pricing → `constants`/`initialState` → `collection`/`selling`/`sourcing` → `booth`/`shows` → `livestream`/`socials` → `books`/`tax`/`loans`/`market` → `daytick`. | All fourteen sim invariants green in Swift. 500-day golden-save diff clean. |
-| **2** | **State & persistence.** `GameStore`, Codable save, atomic writes, the legacy importer, Cognito + cloud sync with CAS. | A career imported from the web app plays, saves, force-quits, relaunches and syncs. |
-| **3** | **First playable slice.** App skeleton, tab structure, and Buy → Rip → Collection built *natively and properly* — Metal holos, CoreHaptics, gesture-driven tear, `List` inventory, card sheet with detents. | The rip feels better on the phone than the web version. This is the go/no-go for the whole rewrite. |
-| **4** | **The rest of the game**, one tab per milestone: Sell/Store → Shows → Socials/Stream → You (career, binders, grader, upgrades) → Misc/Settings/Account. | Feature parity with the web app, screen by screen; legacy screen unused. |
-| **5** | **Native surface.** Live Activities, widgets, Spotlight, Game Center, share cards, Files, App Intents. | Each ships behind its own flag and is judged on whether it earns its place. |
-| **6** | **Retire the web app.** Delete `src/`, `index.html`, `vite.config.js`, the Vite tooling, `dist` bundling in `project.yml`, `Shell.swift`, `tools/ios/web.mjs`. Accessibility pass, Instruments pass, iPad. | Cold launch under 400 ms, 120 Hz scrolling on every list, accessibility audit clean, `package.json` down to the data-fetch scripts. |
+| **2** | **State & persistence.** `GameStore`, Codable save, atomic writes, the legacy importer, Files/backup/export. | A career imported from the web app plays, saves, force-quits, relaunches, exports and re-imports. |
+| **3** | **First playable slice.** App skeleton, tab structure, and Buy → Rip → Collection built *natively and properly* — Metal holos, CoreHaptics, gesture-driven tear, `List` inventory, card sheet with detents. | The rip feels better on the phone than the web version. This is the go/no-go for the whole rewrite — see below. |
+| **4** | **The rest of the game**, one tab per milestone: Sell/Store → Shows → Socials/Stream → You (career, binders, grader, upgrades) → Misc/Settings. | Feature parity with the web app, screen by screen; legacy screen unused. |
+| **5** | **Native surface.** Live Activities, widgets, Spotlight, Game Center, share cards, App Intents. | Each ships behind its own flag and is judged on whether it earns its place. |
+| **6** | **Retire the web app and the backend.** Delete `src/`, `index.html`, `vite.config.js`, the Vite tooling, `dist` bundling in `project.yml`, `Shell.swift`, `tools/ios/web.mjs`, and `aws/` — then tear the CloudFormation stack down. Accessibility pass, Instruments pass. | Cold launch under 400 ms, 120 Hz scrolling on every list, accessibility audit clean, `package.json` down to the data-fetch scripts. |
 
 Phases 0–2 are engine and infrastructure work with no visible result, which is the hardest part
-of the plan to stick to and the part that determines whether the rest is safe. Phase 3 is the
-first honest verdict: if the native rip is not obviously better, the remaining phases should be
-reconsidered rather than pushed through.
+of the plan to stick to and the part that determines whether the rest is safe.
+
+### What the Phase 3 verdict actually is
+
+Phase 3 is a **deliberate stop point with a defined question**, not a vibe check, and it exists
+because of where the phases put the risk. By the end of Phase 3 the expensive, irreversible,
+invisible work is done — engine ported and proven, saves migrated, backend removed — and the
+remaining ~60% of the effort is Phase 4, which is sixty screens of UI. That is the largest single
+block of work in the plan and the one with the least uncertainty in it. It is worth pausing in
+front of.
+
+The question at the gate is narrow: **does the natively-built rip beat the CSS one on the actual
+phone, by enough to justify rebuilding fifty-nine more screens?** Not "is it nicer" — the tilt
+shader and the authored haptics will be nicer. Whether the difference is worth roughly two-thirds
+of the total effort is a different question, and only a built artefact can answer it.
+
+Three outcomes, all of them legitimate:
+
+- **Yes, clearly.** Continue into Phase 4 as planned.
+- **Yes, but only the rip.** Then the honest move is to *stop expanding* and ship a hybrid: the
+  native app hosts the legacy web screens permanently and replaces only the moments where native
+  wins — the rip, the card sheet, the inventory lists. Phases 0–3 leave this fully available,
+  because the legacy screen is a real, supported part of the app rather than scaffolding. This is
+  a genuinely good end state, not a consolation prize.
+- **No.** Keep the shell, keep the Swift engine as the sim harness (it is faster and better than
+  `sim.mjs` regardless), and the sunk cost is Phases 0–2 — which bought a proven engine port, a
+  smaller save format and a backend teardown that were worth doing on their own terms.
+
+What makes the gate real rather than decorative is that **the "no" branch leaves a working app**.
+If the plan is going to proceed to Phase 4 no matter what the rip looks like, then the gate
+should be struck from this document rather than pretended at — a gate nobody would ever walk
+through is just a paragraph.
 
 ### What survives into the Swift repo
 
-`scripts/fetch-data.mjs` and its siblings, `aws/`, `src/data/sets.json`, `docs/`, and the
+`scripts/fetch-data.mjs` and its siblings, `src/data/sets.json`, `docs/`, and the
 `tools/ios/device.mjs` signing workflow (which solves several real and badly-documented
 problems). Node stays in the repo as a data pipeline; it stops being the app.
 
@@ -343,29 +415,11 @@ problems). Node stays in the repo as a data pipeline; it stops being the app.
 | Risk | Mitigation |
 |---|---|
 | **Silent economy drift in the port** | The differ, and the sim suite ported before any UI. Byte-identical or it is not done. |
-| **Bundle ID change strands every save** | Same target, same bundle ID, forever. Written into `project.yml`'s comments already. |
+| **Bundle ID change strands every save** | Same target, same bundle ID, forever. With no cloud copy this is now unrecoverable, not merely painful. |
+| **No off-device backup once AWS is gone** | Documents (so device backup covers it), Files visibility, and an export/import pair — all in Phase 2, not Phase 5. |
+| **Deleting the app to free a sideload slot** | Free provisioning caps at three apps and deleting one deletes its container. Export before making room; this belongs in the Settings copy, not just in a doc. |
 | **Catalog format churn breaks old saves** | Compiler fails the build on a removed set; `CardID` resolution is a tested invariant. |
 | **Catalog decode tanks launch** | mmap, never `JSONDecoder`. Measured in Phase 0, not assumed. |
-| **The rewrite stalls half-done** | Every phase ships to the device; the legacy web screen means a half-finished Swift app is never a broken app. |
-| **CloudKit adopted early** | Deferred past Phase 5 on purpose. |
-| **Scope creep into design changes** | Phases 1–4 are a port. New systems wait for Phase 6+. The notification section above is the model: say no to native features that would change the game. |
-
----
-
-## Open decisions
-
-These change the shape of the plan, and none of them is blocking Phase 0:
-
-1. **Save compatibility with the web app — one-way or two-way?** The plan assumes one-way (native
-   reads the legacy save; the old build never reads a native one). Two-way costs a serialiser on
-   both sides and is only worth it if the web app is meant to keep running somewhere.
-2. **Is the AWS backend staying?** Keeping it preserves any future non-Apple client and costs a
-   ported `auth.js`. Moving to CloudKit deletes the Lambda, the table and the Cognito pool — and
-   the option.
-3. **iPad and Mac: in scope, or explicitly not?** It changes layout decisions from Phase 3
-   onward, not from Phase 6, if the answer is yes.
-4. **Catalog store: compiled mmap file (recommended) or SQLite/GRDB?** The first is faster and
-   has no dependency; the second is less code to own.
-5. **Is a Phase 3 verdict acceptable as a real stop point?** If the rewrite is going to happen
-   regardless of how the native rip lands, the go/no-go gate should be dropped from the plan
-   rather than pretended at.
+| **The rewrite stalls half-done** | Every phase ships to the device; the legacy web screen means a half-finished Swift app is never a broken app — and is itself a valid end state. |
+| **iCloud Drive adopted "just for sync"** | Explicitly out of plan. It ties saves to an Apple ID permanently. |
+| **Scope creep into design changes** | Phases 1–4 are a port. New systems wait for Phase 6+. The notification section is the model: say no to native features that would change the game. |
