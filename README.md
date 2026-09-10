@@ -185,6 +185,8 @@ first line, so a stale conclusion never gets quoted as current.
 
 | Doc | What it covers |
 |---|---|
+| [docs/SWIFT-REWRITE.md](docs/SWIFT-REWRITE.md) | 🦅 the plan to rewrite the app as a native SwiftUI iPhone app — **not started**, and phased so the shell keeps shipping until it is |
+| [docs/SWIFT-REWRITE-TASKS.md](docs/SWIFT-REWRITE-TASKS.md) | the same rewrite as 43 numbered work orders, in dependency order, each with a checkable exit condition |
 | [docs/TRADE-SYSTEMS.md](docs/TRADE-SYSTEMS.md) | 🏃 floor competition · 🔨 the buy-side auction house · 📊 population reports · 🔨 crack & regrade · 🖨️ misprints · 📦🔟 sealed grading · 🧾 tax · 🏦 bank loans |
 | [docs/PERFORMANCE.md](docs/PERFORMANCE.md) | what boot costs, what was done about it, and how to re-measure |
 | [ios/README.md](ios/README.md) · [aws/README.md](aws/README.md) | the native iOS shell · accounts and cloud save |
