@@ -22,12 +22,15 @@ tracks four separate currencies, and any one of them can be your route there.
 - [05-pricing-and-market.md](05-pricing-and-market.md) — realistic pricing model, real cards/sets/sealed product, prototype-first then scale up.
 - [06-social-media.md](06-social-media.md) — the unified social media system: posts vs. live streams, virality, burnout, backlash, sponsorships, follower decay.
 - [07-platform-and-scope.md](07-platform-and-scope.md) — iOS/Swift, private build status, the Pokemon IP consideration.
+- [08-ui-direction.md](08-ui-direction.md) — visual direction, the home hub as the density ceiling and info+launch screen, confirmed tap targets.
+- [09-upgrades.md](09-upgrades.md) — the upgrades system in general; will eventually cover every system in the game.
+- [10-grading-and-centering.md](10-grading-and-centering.md) — front/back centering, eyeball vs. paid precise reading, the first defined upgrade.
 
 ## Open topics (not yet explored)
 
-- The garage-sale/meet encounter itself — what you actually see and decide when you arrive.
 - Exact reputation/follower tiering (how many levels, what gates each one).
-- Grading mechanics in detail (turnaround time, grade variance, cost).
+- Grading mechanics in detail beyond centering (turnaround time, overall grade variance, cost).
 - Counterfeit risk mechanics.
-- UI/UX and screen flow.
+- The rest of the upgrades system beyond the centering-reveal example.
+- Screens for most of the home hub's tap targets (see [08-ui-direction.md](08-ui-direction.md)) — in progress.
 - Data pipeline for scaling beyond the prototype set.
