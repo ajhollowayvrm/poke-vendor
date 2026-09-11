@@ -27,6 +27,8 @@ tracks four separate currencies, and any one of them can be your route there.
 - [10-grading.md](10-grading.md) — the four subgrades (centering, corners, edges, surface), eyeball vs. paid vs. upgrade reveals, grading companies (PSA/BGS/CGC), grader variance. Fees/turnaround/prices are pulled live, not hardcoded — see the doc's "Data source" section.
 - [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md) — fallback-only mechanism for gem rate and grade-based price multipliers on cards not yet covered by real data, using a small set of per-card tags (era, finish, distribution, demand tier).
 - [12-acquiring-product.md](12-acquiring-product.md) — how sealed product is acquired: three online storefronts with different price/availability tradeoffs, camping physical drops, reputation-gated wholesale access and case splits, and the rip-or-hold decision.
+- [13-sets.md](13-sets.md) — index of per-set doc files under `docs/sets/`, one file per set, covering pull rates and any other set-specific quirks.
+- [sets/base-set.md](sets/base-set.md) — Base Set (1999): researched real pull-rate structure (pack slots, holo odds, box/case collation, 1st Edition vs. Unlimited), the first set file.
 
 ## Open topics (not yet explored)
 
@@ -38,4 +40,5 @@ tracks four separate currencies, and any one of them can be your route there.
 - The rest of the upgrades system beyond the grading-reveal examples.
 - Screens for most of the home hub's tap targets (see [08-ui-direction.md](08-ui-direction.md)) — in progress.
 - PokemonPriceTracker data-pull cadence: one-time pull vs. periodic re-pulls.
-- Real pull-rate data per set, sourced as each set is added (see [12-acquiring-product.md](12-acquiring-product.md#open-topics)).
+- Real pull-rate data for sets beyond Base Set, added under `docs/sets/` as each is needed (see [13-sets.md](13-sets.md)); Base Set itself is done (see [sets/base-set.md](sets/base-set.md)).
+- Base Set's own two remaining question marks: the common/energy split, and whether the 16 rares are equally weighted (see [sets/base-set.md](sets/base-set.md#open-topics)).

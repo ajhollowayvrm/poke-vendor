@@ -92,6 +92,15 @@ check when that work starts: official print/pull-rate disclosures
 where they exist, and community "pack weight sorting" analyses that
 empirically verify real odds per set.
 
+Unlike card prices, this data doesn't need a live feed — pack
+structure for an already-printed set is fixed historical fact, so it's
+researched once and written down, not re-pulled. See
+[13-sets.md](13-sets.md) for the per-set doc index, and
+[sets/base-set.md](sets/base-set.md) for the first worked example
+(Base Set), including the modeling implication that box contents
+should emerge from independent per-pack draws rather than a guaranteed
+fixed collation.
+
 ## Open topics
 
 - Exact restock-alert-bot upgrade design (how much it improves Pokemon
