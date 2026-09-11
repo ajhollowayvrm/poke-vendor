@@ -41,6 +41,8 @@ all four. Each has its own skill, risk, and reward profile.
   you scale.
 - **Reward**: the most "game-like" path, appeals to players who want odds
   and probability play.
+- Full detail on getting the product itself:
+  [12-acquiring-product.md](12-acquiring-product.md).
 
 ## Cross-pollination
 

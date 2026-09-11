@@ -15,6 +15,9 @@ with an anonymous online crowd.
 - First look at new vendor stock before it hits the public table.
 - Access to limited-badge shows, or a better table location.
 - Other traders proactively bringing you pulls they know you want.
+- Distributor/wholesale access and invitations into case splits — see
+  [12-acquiring-product.md](12-acquiring-product.md) — gated the same
+  way as meets, since both are about being trusted, not about reach.
 - At the top end: private consignment offers — someone's whole vintage
   collection, offered directly before it ever reaches a public sale.
 

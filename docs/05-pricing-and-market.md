@@ -68,7 +68,8 @@ not jitter the same way.
 ## Sealed product — separate pricing logic
 
 Sealed product is not just "cards you have not opened yet." It has its own
-dynamics:
+dynamics. See [12-acquiring-product.md](12-acquiring-product.md) for how the
+player actually gets sealed product in the first place.
 
 - **Sealed premium**: a factory-sealed box or pack often sells for more than
   the expected value of its contents, because collectors pay to preserve the

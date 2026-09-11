@@ -26,12 +26,16 @@ tracks four separate currencies, and any one of them can be your route there.
 - [09-upgrades.md](09-upgrades.md) — the upgrades system in general; will eventually cover every system in the game.
 - [10-grading.md](10-grading.md) — the four subgrades (centering, corners, edges, surface), eyeball vs. paid vs. upgrade reveals, grading companies (PSA/BGS/CGC), grader variance. Fees/turnaround/prices are pulled live, not hardcoded — see the doc's "Data source" section.
 - [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md) — fallback-only mechanism for gem rate and grade-based price multipliers on cards not yet covered by real data, using a small set of per-card tags (era, finish, distribution, demand tier).
+- [12-acquiring-product.md](12-acquiring-product.md) — how sealed product is acquired: three online storefronts with different price/availability tradeoffs, camping physical drops, reputation-gated wholesale access and case splits, and the rip-or-hold decision.
 
 ## Open topics (not yet explored)
 
 - Exact reputation/follower tiering (how many levels, what gates each one).
 - Tuning the archetype-formula coefficients (see [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md#open-topics)) — a balancing task, not a research task.
 - Counterfeit risk mechanics.
+- Whether a disappointing grade can be appealed or resubmitted (see [10-grading.md](10-grading.md#open-topics)).
+- Grading's interaction with counterfeit risk.
 - The rest of the upgrades system beyond the grading-reveal examples.
 - Screens for most of the home hub's tap targets (see [08-ui-direction.md](08-ui-direction.md)) — in progress.
 - PokemonPriceTracker data-pull cadence: one-time pull vs. periodic re-pulls.
+- Real pull-rate data per set, sourced as each set is added (see [12-acquiring-product.md](12-acquiring-product.md#open-topics)).
