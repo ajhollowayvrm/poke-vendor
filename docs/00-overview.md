@@ -24,13 +24,14 @@ tracks four separate currencies, and any one of them can be your route there.
 - [07-platform-and-scope.md](07-platform-and-scope.md) — iOS/Swift, private build status, the Pokemon IP consideration.
 - [08-ui-direction.md](08-ui-direction.md) — visual direction, the home hub as the density ceiling and info+launch screen, confirmed tap targets.
 - [09-upgrades.md](09-upgrades.md) — the upgrades system in general; will eventually cover every system in the game.
-- [10-grading-and-centering.md](10-grading-and-centering.md) — front/back centering, eyeball vs. paid precise reading, the first defined upgrade.
+- [10-grading.md](10-grading.md) — the four subgrades (centering, corners, edges, surface), eyeball vs. paid vs. upgrade reveals, grading companies (PSA/BGS/CGC), grader variance. Fees/turnaround/prices are pulled live, not hardcoded — see the doc's "Data source" section.
+- [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md) — fallback-only mechanism for gem rate and grade-based price multipliers on cards not yet covered by real data, using a small set of per-card tags (era, finish, distribution, demand tier).
 
 ## Open topics (not yet explored)
 
 - Exact reputation/follower tiering (how many levels, what gates each one).
-- Grading mechanics in detail beyond centering (turnaround time, overall grade variance, cost).
+- Tuning the archetype-formula coefficients (see [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md#open-topics)) — a balancing task, not a research task.
 - Counterfeit risk mechanics.
-- The rest of the upgrades system beyond the centering-reveal example.
+- The rest of the upgrades system beyond the grading-reveal examples.
 - Screens for most of the home hub's tap targets (see [08-ui-direction.md](08-ui-direction.md)) — in progress.
-- Data pipeline for scaling beyond the prototype set.
+- PokemonPriceTracker data-pull cadence: one-time pull vs. periodic re-pulls.

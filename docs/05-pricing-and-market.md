@@ -5,27 +5,49 @@ starting prices — not an invented in-game economy.
 
 ## The snapshot approach
 
-Pick a moment in time and a scope, and capture real prices at that moment by
-hand (e.g., from TCGPlayer or PriceCharting-style comps), since this is a
-private build with no live data feed. That snapshot becomes day-zero truth.
+Pick a moment in time and pull real prices at that moment — not hand-entered,
+but a real bulk data pull (see "Data source" below). That snapshot becomes
+day-zero truth. Real prices drift out of date; that's expected and fine —
+the plan is to re-pull current data when it matters, not to freeze a set of
+numbers into these docs and treat them as permanent.
+
+## Data source
+
+**PokemonPriceTracker (PPT)** is the primary source: a bulk API covering
+50,000+ English and Japanese cards, with raw prices, PSA/CGC/BGS/SGC graded
+prices, and grading population data, all in one place. This project has PPT
+Pro access (20,000 calls/day) — enough to pull the full ~18,000–20,000
+unique English-card catalog (per set/variant counting, see
+[11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md)) in a
+single day, not a multi-week scrape.
+
+This changes the scaling story from earlier drafts of this doc: getting real
+per-card data for "as many sets as possible" is a data-pull task, not an
+ongoing manual-research burden. The archetype-tag formula in
+[11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md) still
+matters, but only as a fallback for whatever PPT doesn't cover (a brand-new
+set before PPT has data on it, an obscure promo, etc.) — not as the primary
+mechanism.
 
 ## Scope
 
-- **Prototype phase**: any convenient small set works — the point is to prove
-  the mechanics, not the data breadth. A natural candidate is a full vintage
-  set (e.g., Base Set) plus a handful of standout chase cards from elsewhere,
-  to test how the model handles very different card types side by side.
-- **Long-term goal**: as many sets and as many sealed products as possible.
-  This is a content/data pipeline problem more than a coding problem — where
-  baseline data comes from and how it stays from going stale is an open
-  question, deliberately deferred until after the mechanics are proven.
+- **Prototype phase**: any convenient small pull works — the point is to
+  prove the mechanics, not the data breadth. A natural candidate is a full
+  vintage set (e.g., Base Set) plus a handful of standout chase cards from
+  elsewhere, to test how the model handles very different card types side by
+  side.
+- **Long-term goal**: pull as much of the PPT catalog as makes sense for the
+  game's scope. The remaining open question is refresh cadence (a one-time
+  pull vs. periodic re-pulls to keep prices current), not data acquisition —
+  that part is solved.
 
 ## What drives real card prices (to mirror in simulation)
 
 - **Scarcity**: print run size and pull rate per set. A 1st edition holo
   behaves nothing like a modern rare.
-- **Condition and grade**: raw vs. PSA/CGC graded, and grade tier — a PSA 10
-  can be many multiples of a PSA 8. Ties directly into the grading mechanic.
+- **Condition and grade**: raw vs. graded, and grade tier — a PSA 10 can be
+  many multiples of a PSA 8. See [10-grading.md](10-grading.md) for the full
+  grading mechanic (subgrades, companies, variance, economics).
 - **Nostalgia and set popularity**: vintage sets (Base Set, Jungle, Fossil)
   command a premium mostly from nostalgia, not gameplay.
 - **Competitive relevance**: for cards actually played in the TCG, tournament

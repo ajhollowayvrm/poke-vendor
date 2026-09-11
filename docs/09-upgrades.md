@@ -24,10 +24,11 @@ whatever else gets added. Each system can define its own upgrades as
 that system is designed. Nothing about the upgrade system itself is
 specific to grading or centering.
 
-## First defined upgrade
+## First defined upgrades
 
-See [10-grading-and-centering.md](10-grading-and-centering.md) for the
-centering-reveal upgrade, the first concrete example.
+See [10-grading.md](10-grading.md) for the grading subgrade-reveal
+upgrades (centering, corners, edges, surface) — the first concrete
+examples.
 
 ## Open questions
 
