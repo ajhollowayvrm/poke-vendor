@@ -118,7 +118,7 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 
 | Product | Plasma Blast packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: Potomac Distribution listing. |
 | Three Pack Blister | 3 | Promo, coin | Fixed |
 | Single Pack Blister | 1 | Variant card, coin | Fixed |
 | Plasma Blast Elite Trainer Box | 8 | Sleeves, 40 basic Energy, markers, dice, player's guide | Fixed |
@@ -164,11 +164,13 @@ reverse holo slot instead of a plain reverse holo.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 39](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-39)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 46](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-46)
 - [PokeBeach — The "Look What I Pulled" & Pull Rates Thread, page 14 (XY tins)](https://www.pokebeach.com/forums/threads/the-look-what-i-pulled-pull-rates-thread.111190/page-14)
+- [Potomac Distribution — Plasma Blast Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwpbbc)
 
 ## Open topics
 
-- **Pack direction.** Unknown.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Pack order evidence.** One forum post. No photo or video source.
+  Searched 2026-09-12: no photo or video source found.
 - **Secret rare conflict.** One pre-release post gives ~1 secret per
   case. Flipside gives ~1 per 2 boxes. Twelve box reports give 6 secrets.
 - **EX per box conflict.** One member gives 6 EX per box with Full Art.
@@ -177,7 +179,8 @@ reverse holo slot instead of a plain reverse holo.
   give 1.8 per box.
 - **Second-hand data.** One box report comes from a YouTube video, not
   from the member's own box.
-- **Case size for this set.** No set-specific source.
+- **Case size.** Resolved. Potomac Distribution confirms 6 boxes per
+  case.
 - **Rarity list odds:** no source gives the odds per pack for Reverse holo, Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills the same slot as ACE SPEC, so no source gives its own rate.
 - **Rarity list order:** Rare Ultra (Full Art) and Rare ACE (ACE SPEC) tie at about 1 in 36. This file lists Full Art first, matching the era's rarity system order.

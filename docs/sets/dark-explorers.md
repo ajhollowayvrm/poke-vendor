@@ -103,7 +103,7 @@ Source: Bulbapedia merchandise page.
 
 | Product | Dark Explorers packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: Potomac Distribution listing. |
 | Three Pack Blister (international only) | 3 | Promo, coin | Fixed |
 | Stage 2 Blister (North America) | 2 | Evolution line promos, coin | Fixed |
 | Stage 1 Blister (North America) | 1 | Sampling Pack, evolution line promos | Fixed |
@@ -141,16 +141,20 @@ the most common entry to the rarest entry.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 18](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-18)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 20](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-20)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 28](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-28)
+- [Potomac Distribution — Dark Explorers Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwdebc)
 
 ## Open topics
 
-- **Pack order.** No source covers Dark Explorers by name.
-- **Pack direction.** Unknown.
-- **Holo rare odds.** Only one box gives a holo count.
+- **Pack order.** No source covers Dark Explorers by name. Searched
+  2026-09-12: no photo, video, or named source found.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
+- **Holo rare odds.** Only one box gives a holo count. Searched
+  2026-09-12: no other source found.
 - **Secret rate conflict.** Flipside gives ~1 in 2 boxes. A PokeBeach
   member gives ~1 in 3 boxes. Four box reports gave 2 secrets.
 - **Box report sample.** Only four boxes, and one post is hard to split.
-- **Case size for this set.** No set-specific source.
+- **Case size.** Resolved. Potomac Distribution confirms 6 boxes per
+  case and 36 packs per box.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.
 - **Rarity list order:** Rare Secret uses 1 in 72, about 1 in 2 boxes, from Flipside Gaming. A PokeBeach member gives about 1 in 3 boxes, about 1 in 108 packs.

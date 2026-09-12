@@ -151,18 +151,22 @@ reverse holo slot instead of a plain reverse holo.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 26](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-26)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 27](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-27)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 41](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-41)
+- [Potomac Distribution — Plasma Storm Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwpsbc)
 
 ## Open topics
 
-- **Pack direction.** Unknown.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Pack order evidence.** One forum post. No photo or video source.
+  Searched 2026-09-12: no photo or video source found.
 - **"2 RH from 1 pack."** One report of two reverse holos in one pack.
   This does not fit the slot template. It may be a packing error or a
   holo rare in the rare slot.
 - **Rate conflict.** Flipside gives 1 Full Art and 1 ACE SPEC per box.
   Box reports give 1.6 Full Art and 1.4 ACE SPEC per box.
-- **Holo rare odds.** Only two boxes give holo counts.
-- **Case size for this set.** No set-specific source.
+- **Holo rare odds.** Only two boxes give holo counts. Searched
+  2026-09-12: no other source found.
+- **Case size.** Resolved. Potomac Distribution confirms 6 boxes per
+  case.
 - **Rarity list odds:** no source gives the odds per pack for Reverse holo, Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills the same slot as ACE SPEC, so no source gives its own rate.
 - **Rarity list order:** Rare Ultra (Full Art) and Rare ACE (ACE SPEC) tie at about 1 in 36. This file lists Full Art first, matching the era's rarity system order.

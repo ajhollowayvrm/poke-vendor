@@ -83,7 +83,7 @@ Source: Bulbapedia merchandise page.
 
 | Product | Noble Victories packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: Collector's Cache and Potomac Distribution listings. |
 | Three Pack Blister | 3 | Sampling Pack (3 commons), promo, coin | Fixed |
 | Two Pack Blister | 1 | Sampling Pack (3 commons), promo | Fixed |
 | V for Victini Tin | 5 | Figure, alternate-art Victini, code card | Fixed |
@@ -119,14 +119,18 @@ the most common entry to the rarest entry.
 - [Flipside Gaming — A Comprehensive Review of Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
 - [PokeBeach — Ultra Rares in Rev. Holo Slots](https://www.pokebeach.com/forums/threads/ultra-rares-in-rev-holo-slots.117388/)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 25](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-25)
+- [Collector's Cache — Noble Victories Booster Box](https://www.collectorscache.com/buylist/pokemon_sealed_products-pokemon_booster_boxes/pokemon_black__white_bw3_noble_victories_booster_box/67477)
 
 ## Open topics
 
 - **Pack order.** No source describes an opened Noble Victories pack.
-- **Pack direction.** Unknown.
-- **Holo rare odds.** Unknown.
+  Searched 2026-09-12: no photo, video, or named source found.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
+- **Holo rare odds.** Unknown. Searched 2026-09-12: no source found.
 - **Full Art and secret odds.** Flipside Gaming cites no source. No box
   report confirms the figures.
-- **Box and case size for this set.** No set-specific source.
+- **Case size for this set.** Collector's Cache and Potomac Distribution
+  confirm 36 packs per box. No source gives the case size for this set;
+  the era figure is 6 boxes per case.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.

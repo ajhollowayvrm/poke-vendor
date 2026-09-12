@@ -123,7 +123,7 @@ Source: Bulbapedia merchandise page.
 
 | Product | Plasma Freeze packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: Potomac Distribution listing. |
 | Three Pack Blister | 3 | Promo, coin | Fixed |
 | Single Pack (Checklane) Blister | 1 | Code card, promo, coin | Fixed |
 | Deoxys Box | Typically 1 of 3 | 1–2 Plasma Storm, 0–1 Boundaries Crossed | Variable |
@@ -167,18 +167,23 @@ reverse holo slot instead of a plain reverse holo.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 28](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-28)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 35](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-35)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 45](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-45)
+- [Potomac Distribution — Plasma Freeze Booster Box](https://www.potomacdist.com/detail.asp?itemid=pokebwpfbb)
 
 ## Open topics
 
-- **Pack direction.** Unknown.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Pack order evidence.** One forum post. No photo or video source.
+  Searched 2026-09-12: no photo or video source found.
 - **Regular EX per box.** 15 of 17 reports show exactly 2. No source says
   if boxes guarantee 2 regular EX.
 - **Rate conflict.** Flipside gives 1 Full Art and 1 ACE SPEC per box.
   Box reports give 1.6 Full Art and 1.2 ACE SPEC per box.
 - **Missing ACE SPEC data.** Five box reports do not list ACE SPEC cards.
-- **Holo rare odds.** Only two boxes give holo counts.
-- **Case size for this set.** No set-specific source.
+- **Holo rare odds.** Only two boxes give holo counts. Searched
+  2026-09-12: no other source found.
+- **Case size for this set.** No set-specific source. Searched
+  2026-09-12: Potomac Distribution lists the booster box, but no Plasma
+  Freeze booster case.
 - **Rarity list odds:** no source gives the odds per pack for Reverse holo, Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills the same slot as ACE SPEC, so no source gives its own rate.
 - **Rarity list order:** Rare Ultra (Full Art) and Rare ACE (ACE SPEC) tie at about 1 in 36. This file lists Full Art first, matching the era's rarity system order.

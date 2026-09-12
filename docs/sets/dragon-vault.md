@@ -110,11 +110,12 @@ the stop rule.
 
 ## Open topics
 
-- **Pack order.** Unknown.
+- **Pack order.** Unknown. Searched 2026-09-12: no source found.
 - **Pack contents.** No source says if packs are random, slotted, or
   fixed. A 2012 forum member guessed "the same 5 cards in each pack",
-  but gave no evidence.
-- **Secret rare odds.** Unknown. No English opening data found.
+  but gave no evidence. Searched 2026-09-12: no further source found.
+- **Secret rare odds.** Unknown. No English opening data found. Searched
+  2026-09-12: no source found.
 - **Rarity of Exp. Share, First Ticket, and Kyurem.** The pokemontcg.io
   data has no rarity for these cards.
 - **Code card count.** The blurb says "plus a code card". Bulbapedia puts

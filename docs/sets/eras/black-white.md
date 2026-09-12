@@ -117,13 +117,17 @@ last. Both order sources list the cards this way.
 
 ### Sealed boxes and cases
 
-- **36 packs per booster box.** Retailer listings give 36 for
-  [Next Destinies](https://www.collectorscache.com/buylist/pokemon_sealed_products-pokemon_booster_boxes/pokemon_black__white_bw4_next_destinies_booster_box/199103)
-  and [Plasma Storm](https://toywiz.com/pokemon-trading-card-game-black-white-plasma-storm-booster-box-36-packs/).
-  PokeBeach members use 36 packs per box for other sets. Confidence:
-  retailer data for two sets, community for the others.
+- **36 packs per booster box.** Retailer listings give 36 for Black &
+  White, Emerging Powers, Noble Victories, Next Destinies, Dark
+  Explorers, Dragons Exalted, Boundaries Crossed, Plasma Storm, Plasma
+  Freeze, Plasma Blast, and Legendary Treasures (see the Sources list
+  and each set file). These are every set in the era with a booster
+  box. Dragon Vault has no booster box. Confidence: retailer data.
 - **6 boxes per case.** One PokeBeach post (July 30, 2013) says "per
-  case (6 booster BOXES)". Confidence: community, one post.
+  case (6 booster BOXES)". Potomac Distribution, a retailer, lists a
+  6-box case for Black & White, Dark Explorers, Dragons Exalted, Next
+  Destinies, Plasma Storm, Plasma Blast, and Legendary Treasures.
+  Confidence: retailer data for 7 sets, community for the rest.
 - **Collation: variable.** Box reports on PokeBeach show different hit
   counts in boxes of the same set. Some members say boxes were
   "standardized" or "mediated" before Dragons Exalted or Boundaries
@@ -218,19 +222,39 @@ posts do not say clearly which card is a Full Art.
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Collector's Cache — Next Destinies Booster Box](https://www.collectorscache.com/buylist/pokemon_sealed_products-pokemon_booster_boxes/pokemon_black__white_bw4_next_destinies_booster_box/199103)
 - [ToyWiz — Plasma Storm Booster Box 36 Packs](https://toywiz.com/pokemon-trading-card-game-black-white-plasma-storm-booster-box-36-packs/)
+- [Potomac Distribution — Black & White Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwbc)
+- [Potomac Distribution — Dark Explorers Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwdebc)
+- [Potomac Distribution — Dragons Exalted Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwdrexbc)
+- [Potomac Distribution — Next Destinies Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwndbc)
+- [Potomac Distribution — Plasma Storm Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwpsbc)
+- [Potomac Distribution — Plasma Blast Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwpbbc)
+- [Potomac Distribution — Legendary Treasures Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwltbc)
+- [ToyWiz — Emerging Powers Booster Box 36 Packs](https://toywiz.com/pokemon-black-white-emerging-powers-booster-box-36-packs/)
+- [ToyWiz — Legendary Treasures Booster Box 36 Packs](https://toywiz.com/pokemon-black-white-legendary-treasures-booster-box-36-packs-sealed/)
+- [Collector's Cache — Noble Victories Booster Box](https://www.collectorscache.com/buylist/pokemon_sealed_products-pokemon_booster_boxes/pokemon_black__white_bw3_noble_victories_booster_box/67477)
 
 ## Open topics
 
 - **Pack direction.** No source says which end of the stack faces the
   player. The hit is not in the last three cards in either direction,
-  but its exact position changes (card 7 or card 4).
+  but its exact position changes (card 7 or card 4). TheGamer and
+  PokeCardHQ describe the code card as physically last, with the
+  collector seeing it first, but that claim is about modern 12-card
+  packs, not the Black & White era. Searched 2026-09-12: no Black &
+  White-era source found for pack direction.
 - **Pack order evidence is thin.** One forum post gives the template
   order. No photo or video source confirms it. No source covers Black &
   White, Emerging Powers, Noble Victories, Next Destinies, Dark
-  Explorers, or Boundaries Crossed by name.
+  Explorers, or Boundaries Crossed by name. Searched 2026-09-12: no
+  photo, video, or named source found for these six sets.
 - **Holo rare odds.** No source gives a holo rare rate per pack for any
-  set in this era. Some box reports give holo counts per box.
-- **Case size.** Only one community post gives 6 boxes per case.
+  set in this era. Some box reports give holo counts per box. Searched
+  2026-09-12: Elite Fourum has no Black & White pull-rate thread. No
+  other source gives a Rare or Rare Holo rate per pack.
+- **Case size.** Potomac Distribution confirms 6 boxes per case for 7 of
+  the 12 sets (see Sources). Emerging Powers, Noble Victories,
+  Boundaries Crossed, and Plasma Freeze still have no set-specific case
+  source. Dragon Vault has no booster box or case.
 - **Box collation.** Community posts say early boxes were controlled and
   later boxes were random. No source proves either claim.
 - **Flipside vs. box reports.** Flipside puts ACE SPEC odds "on par with"

@@ -90,7 +90,7 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 
 | Product | Black & White packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: Potomac Distribution listing. |
 | Three Pack Blister | 3 | Sampling Pack (3 commons), promo, coin | Fixed |
 | Two Pack Blister | 1 | Sampling Pack (3 commons), promo | Fixed |
 | Toys "R" Us booster two-pack | 2 | Promo | Fixed |
@@ -136,19 +136,21 @@ the most common entry to the rarest entry.
 - [PokeBeach — Ultra Rares in Rev. Holo Slots](https://www.pokebeach.com/forums/threads/ultra-rares-in-rev-holo-slots.117388/)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 25](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-25)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 35](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-35)
+- [Potomac Distribution — Black & White Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwbc)
 
 ## Open topics
 
 - **Pack order.** No source describes an opened Black & White pack. The
-  order is the era template.
-- **Pack direction.** Unknown.
+  order is the era template. Searched 2026-09-12: no photo, video, or
+  named source found.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Code card in later prints.** Bulbapedia's Black & White page says
   later prints had code cards. The Emerging Powers page says code cards
   in all packs began with Emerging Powers.
-- **Holo rare odds.** Unknown.
+- **Holo rare odds.** Unknown. Searched 2026-09-12: no source found.
 - **Full Art and secret odds.** Flipside Gaming cites no source. No box
   study confirms the figures.
-- **Box and case size for this set.** No set-specific source. The era
-  figures are 36 packs per box and 6 boxes per case.
+- **Box and case size for this set.** Potomac Distribution confirms 36
+  packs per box and 6 boxes per case. This matches the era figures.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.

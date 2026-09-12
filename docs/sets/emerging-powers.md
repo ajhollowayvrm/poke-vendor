@@ -82,7 +82,7 @@ Source: Bulbapedia merchandise page.
 
 | Product | Emerging Powers packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: ToyWiz and Potomac Distribution listings. |
 | Three Pack Blister | 2 | Sampling Pack (3 commons), promo, coin | Fixed |
 | Two Pack Blister | 1 | Sampling Pack (3 commons), promo | Fixed |
 | Collector's Album Box | 2 | Mini album, promo | Fixed |
@@ -127,14 +127,18 @@ the most common entry to the rarest entry. This set has no secret rare.
 - [pokemontcg.io API — Emerging Powers cards](https://api.pokemontcg.io/v2/cards?q=set.id:bw2)
 - [PokeBeach — Ultra Rares in Rev. Holo Slots](https://www.pokebeach.com/forums/threads/ultra-rares-in-rev-holo-slots.117388/)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 19](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-19)
+- [ToyWiz — Emerging Powers Booster Box 36 Packs](https://toywiz.com/pokemon-black-white-emerging-powers-booster-box-36-packs/)
 
 ## Open topics
 
 - **Pack order.** No source describes an opened Emerging Powers pack.
-- **Pack direction.** Unknown.
+  Searched 2026-09-12: no photo, video, or named source found.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **All hit odds.** No source gives holo rare or Full Art odds for this
   set. Flipside Gaming covers Black & White and Noble Victories, but not
-  Emerging Powers.
-- **Box and case size for this set.** No set-specific source.
+  Emerging Powers. Searched 2026-09-12: no source found.
+- **Case size for this set.** ToyWiz and Potomac Distribution confirm 36
+  packs per box. No source gives the case size for this set; the era
+  figure is 6 boxes per case.
 - **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo and Rare Ultra (Full Art). The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.

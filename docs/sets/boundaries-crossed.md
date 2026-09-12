@@ -107,7 +107,7 @@ Source: Bulbapedia merchandise page.
 
 | Product | Boundaries Crossed packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 (era figure) | — | Variable |
+| Booster box | 36 | — | Variable. Source: Potomac Distribution listing. |
 | Three Pack Blister | 3 | Promo, coin | Fixed |
 | Stage 1 Blister | 1 | Sampling Pack, evolution line promos | Fixed |
 | Legends of Justice Box | 1 of 3 | 1 Plasma Storm, 1 Black & White, Emerging Powers, or Noble Victories | Variable for the third pack |
@@ -150,11 +150,13 @@ plain reverse holo.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 37](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-37)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 38](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-38)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 39](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-39)
+- [Potomac Distribution — Boundaries Crossed Booster Box](https://www.potomacdist.com/detail.asp?itemid=pokebwbcbb)
 
 ## Open topics
 
-- **Pack order.** No source covers Boundaries Crossed by name.
-- **Pack direction.** Unknown.
+- **Pack order.** No source covers Boundaries Crossed by name. Searched
+  2026-09-12: no photo, video, or named source found.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **ACE SPEC rate conflict.** Flipside puts ACE SPEC odds "on par with"
   Full Art odds (~1 in 36 packs). Six box reports show 2 per box (~1 in
   18 packs).
@@ -163,7 +165,9 @@ plain reverse holo.
 - **Holo rare odds.** Unknown.
 - **Secret rare slot.** Sources put secret rares in the rare slot for
   Legendary Treasures only. No source confirms it for this set.
-- **Case size for this set.** No set-specific source.
+- **Case size for this set.** No set-specific source. Searched
+  2026-09-12: Potomac Distribution lists the booster box, but no
+  Boundaries Crossed booster case.
 - **Rarity list odds:** no source gives the odds per pack for Reverse holo, Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills the same slot as ACE SPEC, so no source gives its own rate.
 - **Rarity list order:** Rare Ultra (Full Art) and Rare ACE (ACE SPEC) tie at about 1 in 36. This file lists Full Art first, matching the era's rarity system order.

@@ -117,8 +117,8 @@ deduction, not a sourced statement.
 | Gold secret rare | 3 in about 5 prerelease boxes | Community (AnimeDudde, October 27, 2013) |
 | Holo rare | 17, 18, and 21 holos per box in three reports | Empirical, three boxes |
 
-The per-pack figures assume 36 packs per box. No source gives the box
-size for this set.
+The per-pack figures assume 36 packs per box. ToyWiz and Potomac
+Distribution confirm 36 packs per box for this set.
 
 ### Box reports (PokeBeach)
 
@@ -162,7 +162,7 @@ Other reports:
 
 | Product | Legendary Treasures packs | Other contents | Collation | Source |
 |---|---|---|---|---|
-| Booster box | Unknown (36 is the era figure) | — | Variable. Box reports suggest a controlled RC count. | PokeBeach box reports |
+| Booster box | 36 | — | Variable. Box reports suggest a controlled RC count. | ToyWiz and Potomac Distribution listings |
 | Three Pack Blister | 3 | Promo (Mew or Eevee), coin | Fixed | Bulbapedia |
 | Single Pack Blister | 1 | Variant card (Aggron or Ampharos), coin | Fixed | Bulbapedia |
 | Xerneas-EX and Yveltal-EX Tins (XY era) | 1 of 4 (one report) | 1 Plasma Blast, 2 XY | Variable | PokeBeach, March 8, 2014 |
@@ -208,14 +208,17 @@ pack; each of its rarities is its own entry.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 32 (box reports)](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-32)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 41 (box report)](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-41)
 - [PokeBeach — The "Look What I Pulled" & Pull Rates Thread, page 14 (XY products)](https://www.pokebeach.com/forums/threads/the-look-what-i-pulled-pull-rates-thread.111190/page-14)
+- [ToyWiz — Legendary Treasures Booster Box 36 Packs](https://toywiz.com/pokemon-black-white-legendary-treasures-booster-box-36-packs-sealed/)
+- [Potomac Distribution — Legendary Treasures Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwltbc)
 
 ## Open topics
 
-- **Pack direction.** Unknown.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Pack order evidence.** One judge's half box, and one repeat of the
-  same list. No photo or video source.
-- **Box size.** No source gives the number of packs per box for this
-  set.
+  same list. No photo or video source. Searched 2026-09-12: no photo or
+  video source found.
+- **Box and case size.** Resolved. ToyWiz and Potomac Distribution
+  confirm 36 packs per box and 6 boxes per case.
 - **RC Full Art collation.** Box reports show about 2 copies of each RC
   Full Art per box. No source says if this count is guaranteed.
 - **Holo rare odds per pack.** The holo counts per box mix holo rares

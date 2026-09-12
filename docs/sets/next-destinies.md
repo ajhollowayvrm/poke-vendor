@@ -107,7 +107,7 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 
 | Product | Next Destinies packs | Other contents | Collation |
 |---|---|---|---|
-| Booster box | 36 | — | Variable. Source: Collector's Cache listing. |
+| Booster box | 36 | — | Variable. Source: Collector's Cache and Potomac Distribution listings. |
 | Three Pack Blister (international) | 3 | Promo, coin | Fixed |
 | Stage 2 Blister (North America) | 2 | Evolution line promos, coin | Fixed |
 | Stage 1 Blister (North America) | 1 | Sampling Pack, evolution line promos, code card | Fixed |
@@ -150,17 +150,20 @@ Pokémon-EX.
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 10 (box reports)](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-10)
 - [PokeBeach — The English Booster Box "Pull Rates" Thread, page 39 (box averages)](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-39)
 - [PokeBeach — The "Look What I Pulled" & Pull Rates Thread, page 1 (100 packs)](https://www.pokebeach.com/forums/threads/the-look-what-i-pulled-pull-rates-thread.111190/page-1)
+- [Potomac Distribution — Next Destinies Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokebwndbc)
 
 ## Open topics
 
-- **Pack order.** No source covers Next Destinies by name.
-- **Pack direction.** Unknown.
-- **Holo rare odds.** Unknown.
+- **Pack order.** No source covers Next Destinies by name. Searched
+  2026-09-12: no photo, video, or named source found.
+- **Pack direction.** Unknown. Searched 2026-09-12: no source found.
+- **Holo rare odds.** Unknown. Searched 2026-09-12: no source found.
 - **Full Art rate conflict.** Flipside gives ~1 in 36 packs. One
   blister-based report gives ~1 in 14 packs. Two box reports give 1 per
   box (~1 in 36 packs).
 - **Box report sample.** Only two complete box reports.
-- **Case size for this set.** No set-specific source.
+- **Case size.** Resolved. Potomac Distribution confirms 6 boxes per
+  case.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.
 - **Rarity list order:** Rare Ultra (Full Art) uses 1 in 36 from Flipside Gaming. One blister-based report gives about 1 in 14; two box reports give about 1 in 36.
