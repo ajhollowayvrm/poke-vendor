@@ -129,3 +129,6 @@ reverse holo slot, not the rare slot.
   packs, and at what ratio: Unknown.
 - A retailer or box listing that confirms 36 packs for this set.
 - The non-holo rare rate. Boxes per case.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Holo LV.X uses 1 in 18 or 1 in 12. PokeBeach Card Ratios' first post gives 1 in 12 (3 per box); a reply gives 1 in 18 (2 per box).

@@ -165,3 +165,6 @@ Crystal card is rarer still.
 - **Holo odds.** "1 in 3" is not official. Loose Packs found 19 in 72
   packs, and it says holos split cleanly by weight in only 1 of 2 boxes.
 - **Case size and Abyss theme deck contents.** Not found or not checked.
+- **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.
+- **Rarity list order:** Rare Holo uses about 1 in 3 from PSA. Loose Packs gives 26% (19 holos in 72 packs).
+- **Rarity list order:** Crystal (secret rare) uses 1 in 36 from Flipside Gaming. PSA gives 1 to 3 per box, and one forum poster got 0 in a box.

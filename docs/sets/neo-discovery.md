@@ -103,3 +103,4 @@ the most common entry to the rarest entry.
 - Non-holo rare codes: two reads of the Elite Fourum guide gave
   different values (R7/R6 and R10/R9). Check the guide directly.
 - Energy in the pack, boxes per case, and blister formats: Unknown.
+- **Rarity list order:** Rare Holo uses 1 in 3 from PSA and ThePriceDex. Loose Packs gives 27.8% (30 holos in 108 packs).

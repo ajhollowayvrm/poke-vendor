@@ -119,3 +119,4 @@ the stop rule.
   data has no rarity for these cards.
 - **Code card count.** The blurb says "plus a code card". Bulbapedia puts
   one code card in each blister. No source says if packs have their own.
+- **Rarity list odds:** no source gives the odds per pack for Rare Secret (Kyurem). The era's rarity system decides the place of each one in the rarity list.

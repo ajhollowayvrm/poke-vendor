@@ -151,3 +151,6 @@ the most common entry to the rarest entry.
   member gives ~1 in 3 boxes. Four box reports gave 2 secrets.
 - **Box report sample.** Only four boxes, and one post is hard to split.
 - **Case size for this set.** No set-specific source.
+- **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.
+- **Rarity list order:** Rare Secret uses 1 in 72, about 1 in 2 boxes, from Flipside Gaming. A PokeBeach member gives about 1 in 3 boxes, about 1 in 108 packs.

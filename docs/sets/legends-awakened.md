@@ -105,3 +105,6 @@ the most common entry to the rarest entry.
 - LV.X per box: 2 or 3. The sources conflict.
 - A retailer or box listing that confirms 36 packs for this set.
 - The non-holo rare rate. Boxes per case.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Holo LV.X uses 1 in 12 from one PokeBeach post. A reply in the same thread gives 1 in 18.

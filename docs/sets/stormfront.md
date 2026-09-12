@@ -141,3 +141,7 @@ reverse holo slot, not the rare slot.
 - Whether a box has a fixed LV.X and secret card count. Reports suggest
   partial collation, but no study confirms it.
 - The non-holo rare rate. Boxes per case.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Holo LV.X uses 1 in 18. PokeBeach Card Ratios' first post gives 1 in 12 (3 per box).
+- **Rarity list order:** Shiny (SH) uses 1 in 36 from PokeBeach Card Ratios. PokeBeach news reports two Shiny cards per box, about 1 in 18.

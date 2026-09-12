@@ -144,3 +144,4 @@ the most common entry to the rarest entry.
 - **Box toppers.** Unknown whether the 4 toppers have equal odds.
 - **Case size and blister products.** No source found.
 - **Turmoil theme deck contents.** Not checked.
+- **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; the rare slot splits between Rare and Rare Holo.

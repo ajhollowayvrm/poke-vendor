@@ -178,3 +178,9 @@ reverse holo slot instead of a plain reverse holo.
 - **Second-hand data.** One box report comes from a YouTube video, not
   from the member's own box.
 - **Case size for this set.** No set-specific source.
+- **Rarity list odds:** no source gives the odds per pack for Reverse holo, Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills the same slot as ACE SPEC, so no source gives its own rate.
+- **Rarity list order:** Rare Ultra (Full Art) and Rare ACE (ACE SPEC) tie at about 1 in 36. This file lists Full Art first, matching the era's rarity system order.
+- **Rarity list order:** Rare Holo EX uses 1 in 18 from Flipside Gaming. One member reports 6 EX per box with Full Art included; twelve box reports average 3.1 per box.
+- **Rarity list order:** Rare ACE (ACE SPEC) uses 1 in 36 from Flipside Gaming. Nine box reports average 1.8 per box, about 1 in 20 packs.
+- **Rarity list order:** Rare Secret uses 1 in 72, about 1 in 2 boxes, from Flipside Gaming. One pre-release post gives about 1 per case, about 1 in 216 packs. Twelve box reports average 0.5 per box, matching Flipside.

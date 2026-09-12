@@ -145,3 +145,7 @@ holo slot instead of a plain reverse holo.
 - No box-by-box report for this set was found. The HS and UD figures are not
   proof for this set.
 - Unknown: the pack counts of this set in the variable products.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Prime uses 1 in 7 from PokeBeach Card Ratios' final post. An earlier version of the same post gives 1 in 5.
+- **Rarity list order:** Rare Holo LEGEND uses 1 in 9 to 1 in 12 from PokeBeach Card Ratios. This set has 6 LEGEND halves, more than most sets in the era, so the rate can differ.

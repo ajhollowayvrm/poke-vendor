@@ -191,3 +191,8 @@ holo slot instead of a plain reverse holo.
   pattern is a hypothesis.
 - Unknown: the pack split between Undaunted and Triumphant in each Prime
   Challenge Box variant.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Holo uses the era estimate of 1 in 3, about 12 per box. Box reports for this set show 8 to 10 holo rares per box.
+- **Rarity list order:** Rare Prime uses 1 in 7 from PokeBeach Card Ratios' final post. An earlier version of the same post gives 1 in 6.
+- **Rarity list order:** Rare Secret uses 1 in 108 from PokeBeach Card Ratios and Flipside Gaming. Box reports show it in 5 of 13 boxes, about 1 in 94 packs.

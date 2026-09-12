@@ -169,3 +169,4 @@ Rare rate.
 - POP box, display, or case counts: Unknown.
 - EX Series products with POP Series 1–5 packs: not researched.
 - Whether a POP Series 6 pack without the error exists: Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Common, Uncommon, Rare, Rare Holo ex and Rare Holo ☆. The era's rarity system decides the place of each one in the rarity list.

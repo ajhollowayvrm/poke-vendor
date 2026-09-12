@@ -162,3 +162,7 @@ card, not a separate entry.
 - Unknown: whether box collation is fixed (a set number of Primes per box) or
   random. Reports give ranges, not fixed counts.
 - Unknown: the pack counts of this set in the variable products.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Prime uses 1 in 6 from PokeBeach Card Ratios. A reply in the same thread gives 1 in 6 to 1 in 7, and Flipside Gaming agrees with the reply.
+- **Rarity list order:** Rare Holo LEGEND uses 1 in 9 to 1 in 12 from PokeBeach Card Ratios. Flipside Gaming gives 1 in 12 to 1 in 18 for the era.

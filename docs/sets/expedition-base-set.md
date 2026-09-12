@@ -151,3 +151,4 @@ an extra card in about 1 pack in 3.
   whether blisters held a promo or a coin.
 - **Case size and theme deck contents.** Not found or not checked.
 - **Wrapper designs.** Unknown count and art.
+- **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.

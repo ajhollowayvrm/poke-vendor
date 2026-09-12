@@ -124,3 +124,5 @@ reverse holo slot, not the rare slot.
   reject it.
 - The names of the secret cards 148–150 and SH8–SH9: not recorded here.
 - The non-holo rare rate. Boxes per case.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

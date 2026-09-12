@@ -150,3 +150,7 @@ holo slot instead of a plain reverse holo.
   before the set date (November 3, 2010).
 - Unknown: the pack split between Undaunted and Triumphant in each Prime
   Challenge Box variant.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Rare Prime uses 1 in 7 from PokeBeach Card Ratios. Box reports and other estimates give 4 to 6 Primes per box.
+- **Rarity list order:** Rare Holo LEGEND uses 1 in 12 from a PokeBeach estimate before release. Flipside Gaming gives 1 in 12 to 1 in 18 for the era.

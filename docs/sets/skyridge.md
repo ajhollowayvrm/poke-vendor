@@ -161,3 +161,5 @@ reverse holo slot, but it still counts under the Crystal entry.
 - **PokéBeach threads.** PokéBeach blocked the fetch (HTTP 403).
 - **Blister, case size, and theme deck contents.** Not found or not
   checked.
+- **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.
+- **Rarity list order:** Crystal (secret rare) uses Flipside Gaming's 1 in 12 to 1 in 18. PSA gives 1 to 3 per box, about 1 in 12 to 1 in 36.

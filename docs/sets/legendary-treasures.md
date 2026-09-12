@@ -223,3 +223,5 @@ pack; each of its rarities is its own entry.
 - **Gold secret rare odds.** Only 6 boxes and one prerelease count.
 - **Bulbapedia vs. box reports.** Bulbapedia names only blisters as
   merchandise. Members report booster boxes.
+- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo and Radiant Collection — Uncommon. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** by this file's odds, a Radiant Collection Full Art card (1 in 4) comes more often than a Rare Holo EX card (1 in 6). The rarity list therefore puts Radiant Collection — Full Art below Rare Holo EX.

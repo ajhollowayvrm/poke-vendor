@@ -150,3 +150,5 @@ the most common entry to the rarest entry.
   study confirms the figures.
 - **Box and case size for this set.** No set-specific source. The era
   figures are 36 packs per box and 6 boxes per case.
+- **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.

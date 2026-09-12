@@ -120,3 +120,4 @@ so the stop rule does not split them into their own entry.
 - Which holos are H7 and which are H6: Unknown.
 - The counts of rares, uncommons, and commons: Unknown.
 - Wrapper arts, boxes per case, and blister formats: Unknown.
+- **Rarity list order:** Rare Holo uses 1 in 3 from PSA and ThePriceDex. Loose Packs gives 21.5% for 1st Edition packs (23 holos in 107 packs).

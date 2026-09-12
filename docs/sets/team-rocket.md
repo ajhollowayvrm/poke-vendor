@@ -108,3 +108,4 @@ the most common entry to the rarest entry.
 - The rarity split (holo, rare, uncommon, common counts): Unknown.
 - Energy in the pack: Unknown.
 - Wrapper arts, boxes per case, and blister formats: Unknown.
+- **Rarity list order:** Rare Holo uses 1 in 3 from PSA and ThePriceDex. Loose Packs gives 21.1% (38 holos in 180 packs).

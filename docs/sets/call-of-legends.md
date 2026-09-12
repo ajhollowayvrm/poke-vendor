@@ -171,3 +171,6 @@ in the reverse holo slot or the rare slot.
 - Unknown: the pack counts and release dates of the Three Pack Blisters and
   the Knock Out Collection.
 - Unknown: whether the Recon and Retort theme decks hold a booster pack.
+- **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Rarity list order:** Shiny Legendary (SL) uses 1 in 18 from Flipside Gaming. Box reports average about 1 in 14 packs; Kanto Shark gives about 1 per box or fewer.

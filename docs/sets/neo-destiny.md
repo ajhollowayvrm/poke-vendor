@@ -128,3 +128,4 @@ the most common entry to the rarest entry.
 - The PicClick 2-booster blister page did not load. Only the listing
   title confirms it.
 - Energy in the pack and boxes per case: Unknown.
+- **Rarity list order:** Rare Holo uses 1 in 3 from PSA. ThePriceDex gives 1 in 4.

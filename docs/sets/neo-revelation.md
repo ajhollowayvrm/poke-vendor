@@ -113,3 +113,5 @@ the most common entry to the rarest entry.
   22.9% (Loose Packs, one box).
 - The count of uncommons and commons: Unknown.
 - Energy in the pack, boxes per case, and blister formats: Unknown.
+- **Rarity list order:** Rare Holo uses 1 in 3 from PSA. ThePriceDex gives 1 in 3.4. Loose Packs gives 22.9% (8 holos in 35 packs).
+- **Rarity list order:** Shining Pokémon (secret rare) uses 1 in 24 from ThePriceDex. PSA gives about 1 per box. Elite Fourum gives 1.309 per box.
