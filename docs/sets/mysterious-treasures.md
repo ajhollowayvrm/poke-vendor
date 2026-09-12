@@ -66,7 +66,7 @@ Card Ratios.
 
 | Product | Date | Booster packs | Collation |
 |---|---|---|---|
-| Booster box | 2007 | 36 packs (implied by PokeBeach Card Ratios). No retailer page checked for this set. | Variable. Boxes per case: Unknown. |
+| Booster box | 2007 | 36 packs. ToyWiz and Loose Packs list the booster box as 36 packs. | Variable. Boxes per case: Unknown. |
 | Mysterious Treasures Three Pack Blister | Sep 2007 | 2 Mysterious Treasures, 1 late EX Series, plus a coin and a promo | Fixed pack list |
 | Mysterious Treasures Two Pack Blister (reverse holo version) | Sep 2007 | 2 Mysterious Treasures, plus a coin and 2 reverse holo cards | Fixed pack list |
 | Mysterious Treasures Two Pack Blister (promo version) | Sep 2007 | 1 Mysterious Treasures, 1 POP Series 3 | Fixed pack list |
@@ -110,13 +110,16 @@ the most common entry to the rarest entry.
 - [PokeBeach forums — The English Booster Box "Pull Rates" Thread, page 17](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-17)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [ToyWiz — Mysterious Treasures Booster Box](https://toywiz.com/pokemon-diamond-pearl-mysterious-treasures-booster-box-36-packs/)
+- [Loose Packs — Mysterious Treasures Booster Box](https://loosepacks.com/products/d-p-mysterious-treasures-booster-box)
 
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs.
-- A retailer or box listing that confirms 36 packs for this set.
+  opened packs. Searched 2026-09-12: no source found (era-wide search, see
+  the era file).
 - Whether the secret card replaces the LV.X in a box, as one reply claims.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

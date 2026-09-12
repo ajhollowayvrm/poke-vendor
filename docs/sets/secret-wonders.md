@@ -63,7 +63,7 @@ Source for counts: Bulbapedia set list.
 
 | Product | Date | Booster packs | Collation |
 |---|---|---|---|
-| Booster box | 2007 | 36 packs (implied by PokeBeach Card Ratios). No retailer page checked for this set. | Variable. Boxes per case: Unknown. |
+| Booster box | 2007 | 36 packs. ToyWiz, DA Card World, Loose Packs, and Potomac Distribution list the booster box as 36 packs. | Variable. Boxes per case: Unknown. |
 | Secret Wonders Two Pack Blister (Squirtle or Carvanha) | Nov 2007 | 1 Secret Wonders, 1 POP Series 4 | Fixed pack list |
 | Secret Wonders Two Pack Blister (Bulbasaur and Charmander, or Shellos) | Nov 2007 | 2 Secret Wonders, plus a coin | Fixed pack list |
 | Secret Wonders Three Pack Blister | Nov 2007 | 2 Secret Wonders, 1 late EX Series or Mysterious Treasures, plus a coin | Variable third pack |
@@ -106,13 +106,18 @@ reverse holo versions that come only in blister packs.
 - [PokeBeach forums — Ratio for LV.X's in Stormfront boxes](https://www.pokebeach.com/forums/threads/ratio-for-lv-xs-in-stormfront-boxes.67192/)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [ToyWiz — Secret Wonders Booster Box](https://toywiz.com/pokemon-diamond-pearl-secret-wonders-booster-box-36-packs/)
+- [DA Card World — Secret Wonders Booster Box](https://www.dacardworld.com/gaming/pokemon-usa-ex-dandp-secret-wonders-booster-box)
+- [Loose Packs — Secret Wonders Booster Box](https://loosepacks.com/products/d-p-secret-wonders-booster-box)
+- [Potomac Distribution — Secret Wonders Booster Box](https://www.potomacdist.com/detail.asp?ItemId=pokeexdpswbb)
 
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs.
+  opened packs. Searched 2026-09-12: no source found (era-wide search, see
+  the era file).
 - The LV.X rate for a pack when a box can have 0 or 1: no exact figure.
-- A retailer or box listing that confirms 36 packs for this set.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

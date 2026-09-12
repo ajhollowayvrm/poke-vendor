@@ -63,7 +63,7 @@ Confidence: anecdote. It does not prove uneven weighting.
 
 | Product | Date | Booster packs | Collation |
 |---|---|---|---|
-| Booster box | 2008 | 36 packs (implied by PokeBeach Card Ratios). No retailer page checked for this set. | Variable (a box with 0 LV.X is reported). Boxes per case: Unknown. |
+| Booster box | 2008 | 36 packs. ToyWiz, DA Card World, Loose Packs, and Potomac Distribution list the booster box as 36 packs. | Variable (a box with 0 LV.X is reported). Boxes per case: Unknown. |
 | Majestic Dawn Three Pack Blister | Jun 2008 | 2 Majestic Dawn, 1 late EX Series, plus a Lucario coin and a promo | Fixed pack list |
 | Majestic Dawn Two Pack Blister | Jun 2008 | 1 Majestic Dawn, 1 POP Series 6, plus a Manaphy promo | Fixed pack list |
 | Diamond & Pearl Collection | Aug 2008 | 1 Majestic Dawn among 6 packs | Fixed pack list |
@@ -100,13 +100,17 @@ the most common entry to the rarest entry.
 - [PokeBeach forums — Stormfront, average Lv. X per box?](https://www.pokebeach.com/forums/threads/stormfront-average-lv-x-per-box.44402/)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [ToyWiz — Majestic Dawn Booster Box](https://toywiz.com/pokemon-diamond-pearl-majestic-dawn-booster-box-36-packs/)
+- [DA Card World — Majestic Dawn Booster Box](https://www.dacardworld.com/gaming/pokemon-usa-ex-dandp-majestic-dawn-booster-box)
+- [Potomac Distribution — Majestic Dawn Booster Box](https://www.potomacdist.com/detail.asp?itemid=pokedpmdbb)
 
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs.
+  opened packs. Searched 2026-09-12: no source found (era-wide search, see
+  the era file).
 - Whether the 4 LV.X cards have equal weight.
-- A retailer or box listing that confirms 36 packs for this set.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

@@ -209,12 +209,17 @@ product. Card contents are random. Source: Bulbapedia merchandise pages.
 - **Pack order is the biggest gap.** One community guide gives a rare
   position. A second guide says no reliable order exists. No source shows
   real opened packs. A pack-opening video review must confirm the order
-  before the rip screen uses it.
+  before the rip screen uses it. Searched 2026-09-12: no source found.
 - The position of the reverse holo slot is Unknown. SH, RT, and AR hits
-  sit in that slot.
-- Boxes per case: Unknown for every set.
+  sit in that slot. Searched 2026-09-12: no source found.
+- Boxes per case: Unknown for every set. Searched 2026-09-12: no source
+  found. Modern Pokémon TCG cases hold 6 boxes, but no source applies this
+  count to this era.
 - No source gives the non-holo rare rate. No source says if the 1 in 3
-  holo rate includes LV.X or secret cards.
+  holo rate includes LV.X or secret cards. Searched 2026-09-12: no source
+  found.
 - The LV.X figures for Legends Awakened, Stormfront, and Platinum conflict
-  (2 or 3 per box).
+  (2 or 3 per box). Searched 2026-09-12: a PokeBeach forum reply says 2 is
+  the average for Legends Awakened, with reports of 1 and 3. The conflict
+  stands; the simulation default is 2.
 - No source confirms whether an LV.X can come in a reverse holo form.

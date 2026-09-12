@@ -131,9 +131,13 @@ comes from the era's rarity system order.
 
 - Pack order: the two community guides conflict. No source shows real
   opened packs. The reverse holo and Energy positions are Unknown.
+  Searched 2026-09-12: no source found (era-wide search, see the era
+  file).
 - Whether the Energy cards 123–130 are all basic Energy. The PokeBeach
   post says basic. Bulbapedia lists them only as Energy with Common rarity.
-- The non-holo rare rate and the per-card weighting: Unknown.
-- Boxes per case: Unknown.
+- The non-holo rare rate and the per-card weighting: Unknown. Searched
+  2026-09-12: no source found (era-wide search, see the era file).
+- Boxes per case: Unknown. Searched 2026-09-12: no source found (era-wide
+  search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

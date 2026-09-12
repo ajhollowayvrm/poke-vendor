@@ -161,7 +161,8 @@ Rare rate.
 
 ## Open topics
 
-- Rare odds for every POP set except POP Series 6: Unknown.
+- Rare odds for every POP set except POP Series 6: Unknown. Searched
+  2026-09-12: no source found.
 - The slot breakdown of a 2-card pack (for example, 1 rare-or-other plus 1
   common-or-uncommon): Unknown for every set except POP Series 6.
 - Pack order for every set: Unknown.

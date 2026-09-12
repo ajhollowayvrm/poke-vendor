@@ -119,10 +119,13 @@ reverse holo slot, not the rare slot.
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs. The SH card position is Unknown.
+  opened packs. The SH card position is Unknown. Searched 2026-09-12: no
+  source found (era-wide search, see the era file).
 - The LV.X group claim is disputed. A box-opening study must confirm or
-  reject it.
+  reject it. Searched 2026-09-12: the PokeBeach thread repeats the same
+  two groups, with no new confirmation or rejection.
 - The names of the secret cards 148–150 and SH8–SH9: not recorded here.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

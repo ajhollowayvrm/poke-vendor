@@ -126,11 +126,13 @@ Rare Secret cards.
 
 - Pack order: the two community guides conflict. No source shows real
   opened packs. The position of the reverse holo slot matters most for
-  this set, because AR cards are frequent.
+  this set, because AR cards are frequent. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - Whether each box has exactly one of each AR card: "usually", no study.
 - Whether the three Arceus LV.X versions have equal weight.
 - The names of SH10–SH12: not recorded here.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Arceus (AR) ranks above Rare Holo LV.X. AR appears about 1 in 4 packs, more often than the LV.X rate of about 1 in 12.

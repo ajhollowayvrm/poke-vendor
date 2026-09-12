@@ -64,7 +64,7 @@ and SH3 as Voltorb. A PokeBeach news quote names the secret cards as
 | Rare Holo | About 1 in 3 | About 12 | Community estimate (PokeBeach Card Ratios, "any set") |
 | Rare Holo LV.X | About 1 in 18 | 2 (range 0–5 reported) | Community estimate. PokeBeach news (Oct 28, 2008) and forum posts say 2. Card Ratios first post says 3. |
 | Secret card (Charmander line) | About 1 in 36 | 1 ("almost every booster box") | Community estimate (PokeBeach news quote and Card Ratios) |
-| SH card (reverse holo slot) | About 1 in 36 **or** 1 in 18 | 1 **or** 2 | Community estimate. Conflict: Card Ratios says 1. PokeBeach news says "two shiny cards". |
+| SH card (reverse holo slot) | About 1 in 36 **or** 1 in 18 | 1 **or** 2 | Community estimate. Conflict: Card Ratios says 1. PokeBeach news says "two shiny cards". Searched 2026-09-12: a PokeBeach box-ratio post repeats the "2-1-1" pattern (2 LV.X, 1 Charizard-line secret, 2 Shiny). The conflict stands; the simulation default is 2. |
 | Non-holo Rare | Unknown | Unknown | Unknown |
 
 Forum box reports (anecdotes): "2-1-1" (LV.X, Shiny, Charizard line) is
@@ -109,8 +109,8 @@ reverse holo slot, not the rare slot.
 | 4 | Rare | Rarity | — | Yes |
 | 5 | Rare Holo | Rarity | 1 in 3 | Yes |
 | 6 | Rare Holo LV.X | Rarity | 1 in 18 | Yes |
-| 7 | Rare Secret | Rarity | 1 in 36 | Yes |
-| 8 | Shiny (SH) | Subset | 1 in 36 | Yes |
+| 7 | Shiny (SH) | Subset | 1 in 18 | Yes |
+| 8 | Rare Secret | Rarity | 1 in 36 | Yes |
 
 ## Sources
 
@@ -122,6 +122,7 @@ reverse holo slot, not the rare slot.
 - [PokeBeach forums — Card Ratios (2010)](https://www.pokebeach.com/forums/threads/card-ratios.81556/)
 - [PokeBeach forums — Ratio for LV.X's in Stormfront boxes](https://www.pokebeach.com/forums/threads/ratio-for-lv-xs-in-stormfront-boxes.67192/)
 - [PokeBeach forums — Stormfront, average Lv. X per box?](https://www.pokebeach.com/forums/threads/stormfront-average-lv-x-per-box.44402/)
+- [PokeBeach — Stormfront Theme Deck Lists and Box Ratios](https://www.pokebeach.com/2008/10/stormfront-theme-deck-lists-and-box-ratios)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
 - [DA Card World — Stormfront Booster Box](https://www.dacardworld.com/gaming/pokemon-usa-ex-dandp-stormfront-booster-box)
 - [Loose Packs — Stormfront Booster Box](https://loosepacks.com/products/d-p-stormfront-booster-box)
@@ -132,7 +133,11 @@ reverse holo slot, not the rare slot.
 
 - Pack order: the two community guides conflict. No source shows real
   opened packs. The SH card position (reverse holo slot) is Unknown.
-- SH cards per box: 1 or 2. The sources conflict.
+  Searched 2026-09-12: no source found (era-wide search, see the era
+  file).
+- SH cards per box: 1 or 2. The sources conflict. Searched 2026-09-12: a
+  PokeBeach box-ratio post repeats "2-1-1" (2 Shiny). The conflict stands;
+  the simulation default is 2.
 - LV.X per box: 2 or 3. Most reports say 2.
 - The name of SH1. A forum post mentions a shiny Drifloon. No source
   confirms the number.
@@ -140,8 +145,9 @@ reverse holo slot, not the rare slot.
   conflict.
 - Whether a box has a fixed LV.X and secret card count. Reports suggest
   partial collation, but no study confirms it.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Rare Holo LV.X uses 1 in 18. PokeBeach Card Ratios' first post gives 1 in 12 (3 per box).
-- **Rarity list order:** Shiny (SH) uses 1 in 36 from PokeBeach Card Ratios. PokeBeach news reports two Shiny cards per box, about 1 in 18.
+- **Rarity list order:** Shiny (SH) uses 1 in 18 (2 per box), the simulation default from PokeBeach news and a second "2-1-1" report. PokeBeach Card Ratios gives 1 in 36. Shiny (SH) ties with Rare Holo LV.X, so the rarity comes first.

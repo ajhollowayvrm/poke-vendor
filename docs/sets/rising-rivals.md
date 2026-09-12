@@ -61,7 +61,7 @@ Source for counts: Bulbapedia set list.
 | Rare Holo LV.X | 1 in 12 to 1 in 18 | 2–3 | Community estimate (PokeBeach Card Ratios and reply) |
 | Secret card (reprint) | About 1 in 36 | 1 | Community estimate (PokeBeach Card Ratios) |
 | Rotom card (reverse holo slot) | About 1 in 18 | 2 | Community estimate (PokeBeach Card Ratios) |
-| Luxray GL LV.X (one named card) | — | 33% of boxes | Community estimate (one PokeBeach post). Another post claims 70%. |
+| Luxray GL LV.X (one named card) | — | 33% of boxes | Community estimate (one PokeBeach post). Another post claims 70%. A third post (searched 2026-09-12) reports about 22% from a 3-box sample. |
 | Non-holo Rare | Unknown | Unknown | Unknown |
 
 Box report (anecdote, June 2012): "2 Lv.X, 2 Rotom, and a Pikachu".
@@ -76,7 +76,7 @@ Box report (anecdote, June 2012): "2 Lv.X, 2 Rotom, and a Pikachu".
 
 | Product | Date | Booster packs | Collation |
 |---|---|---|---|
-| Booster box | 2009 | 36 packs (implied by PokeBeach Card Ratios). No retailer page checked for this set. | Variable. Boxes per case: Unknown. |
+| Booster box | 2009 | 36 packs. ToyWiz and Potomac Distribution list the booster box as 36 packs. | Variable. Boxes per case: Unknown. |
 | Rising Rivals Three Pack Blister | May 20, 2009 | 2 Rising Rivals, 1 Majestic Dawn, plus a coin and a promo | Fixed pack list |
 | Rising Rivals Two Pack Blister | May 20, 2009 | 1 Rising Rivals, 1 POP Series 7, 8, or 9, plus a coin and a Rotom promo | Variable POP pack |
 | Platinum Series Collection | Dec 2009 | 1 Rising Rivals among 5 packs | Fixed pack list |
@@ -114,16 +114,23 @@ reverse holo slot, not the rare slot.
 - [PokeBeach forums — The English Booster Box "Pull Rates" Thread, page 13](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-13)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [ToyWiz — Rising Rivals Booster Box](https://toywiz.com/pokemon-platinum-rising-rivals-booster-box-36-packs/)
+- [Potomac Distribution — Rising Rivals Booster Box](https://www.potomacdist.com/detail.asp?itemid=pokeprrbb)
+- [PokeBeach forums — Luxray GL LV.X Stories](https://www.pokebeach.com/forums/threads/luxray-gl-lv-x-stories.85403/)
 
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs. The Rotom card position is Unknown.
-- The holo rate: 1 in 3 or 1 in 4. The sources conflict.
-- The Luxray GL LV.X box rate: 33% or 70%. Both are single posts.
+  opened packs. The Rotom card position is Unknown. Searched 2026-09-12:
+  no source found (era-wide search, see the era file).
+- The holo rate: 1 in 3 or 1 in 4. The sources conflict. Searched
+  2026-09-12: no source found.
+- The Luxray GL LV.X box rate: 33%, 70%, or about 22%. All are single
+  posts or small samples. Searched 2026-09-12: no source resolves the
+  conflict.
 - The names of the secret cards 112–114: not recorded here.
-- A retailer or box listing that confirms 36 packs for this set.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Rare Holo uses 1 in 3 or 1 in 4. PokeBeach Card Ratios gives 1 in 3 for any set; a 2012 poster gives 1 in 4 for this set.

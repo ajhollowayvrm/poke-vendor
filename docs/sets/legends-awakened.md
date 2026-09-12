@@ -47,7 +47,7 @@ Source for counts: Bulbapedia set list.
 | Hit | Odds per pack | Per box (36 packs) | Confidence |
 |---|---|---|---|
 | Rare Holo | About 1 in 3 | About 12 | Community estimate (PokeBeach Card Ratios, "any set") |
-| Rare Holo LV.X | 1 in 12 **or** 1 in 18 | 3 **or** 2 | Community estimate. Conflict: PokeBeach Card Ratios first post says 3 (1:12). A reply in the same thread says 2. |
+| Rare Holo LV.X | 1 in 12 **or** 1 in 18 | 3 **or** 2 | Community estimate. Conflict: PokeBeach Card Ratios first post says 3 (1:12). A reply in the same thread says 2. A separate PokeBeach forum reply (searched 2026-09-12) says 2 is the average, with reports of 1 and 3. The default for the simulation is 2. |
 | Rare Holo LV.X (other figure) | 1 in 15–18 | — | Community estimate (PokeBeach Cards from Booster Packs, "for sets LA-on"). Flipside Gaming gives 1:18 for later sets. |
 | Non-holo Rare | Unknown | Unknown | Unknown |
 
@@ -60,7 +60,7 @@ Source for counts: Bulbapedia set list.
 
 | Product | Date | Booster packs | Collation |
 |---|---|---|---|
-| Booster box | 2008 | 36 packs (implied by PokeBeach Card Ratios). No retailer page checked for this set. | Variable. Boxes per case: Unknown. |
+| Booster box | 2008 | 36 packs. ToyWiz, DA Card World, Loose Packs, and Potomac Distribution list the booster box as 36 packs. | Variable. Boxes per case: Unknown. |
 | Legends Awakened Three Pack Blister | Aug 2008 | 2 Legends Awakened, 1 Secret Wonders, plus a Rayquaza coin and a promo | Fixed pack list |
 | Legends Awakened Two Pack Blister | Aug 2008 | 1 Legends Awakened, 1 POP Series 6, plus a Mothim promo | Fixed pack list |
 | Diamond & Pearl Collection | Aug 2008 | 1 Legends Awakened among 6 packs | Fixed pack list |
@@ -83,7 +83,7 @@ the most common entry to the rarest entry.
 | 3 | Reverse holo | Variant | Every pack | No |
 | 4 | Rare | Rarity | — | Yes |
 | 5 | Rare Holo | Rarity | 1 in 3 | Yes |
-| 6 | Rare Holo LV.X | Rarity | 1 in 12 or 1 in 18 | Yes |
+| 6 | Rare Holo LV.X | Rarity | 1 in 18 | Yes |
 
 ## Sources
 
@@ -97,14 +97,21 @@ the most common entry to the rarest entry.
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [ToyWiz — Legends Awakened Booster Box](https://toywiz.com/pokemon-trading-card-game-diamond-pearl-legends-awakened-booster-box-36-packs/)
+- [DA Card World — Legends Awakened Booster Box](https://www.dacardworld.com/gaming/pokemon-usa-ex-dandp-legends-awaken-booster-box)
+- [Loose Packs — Legends Awakened Booster Box](https://loosepacks.com/products/d-p-legends-awakened-booster-box)
+- [Potomac Distribution — Legends Awakened Booster Box](http://www.potomacdist.com/detail.asp?itemid=pokedplabb)
 
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs.
-- LV.X per box: 2 or 3. The sources conflict.
-- A retailer or box listing that confirms 36 packs for this set.
-- The non-holo rare rate. Boxes per case.
+  opened packs. Searched 2026-09-12: no source found (era-wide search, see
+  the era file).
+- LV.X per box: 2 or 3. The sources conflict. Searched 2026-09-12: a
+  PokeBeach forum reply says 2 is the average, with reports of 1 and 3.
+  The conflict stands; the simulation default is 2.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
-- **Rarity list order:** Rare Holo LV.X uses 1 in 12 from one PokeBeach post. A reply in the same thread gives 1 in 18.
+- **Rarity list order:** Rare Holo LV.X uses 1 in 18 (2 per box), the simulation default. The first PokeBeach Card Ratios post gives 1 in 12 (3 per box).

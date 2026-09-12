@@ -60,7 +60,7 @@ Source for counts: Bulbapedia set list.
 
 | Product | Date | Booster packs | Collation |
 |---|---|---|---|
-| Booster box | 2008 | 36 packs (implied by PokeBeach Card Ratios). No retailer page checked for this set. | Variable. Boxes per case: Unknown. |
+| Booster box | 2008 | 36 packs. ToyWiz and Loose Packs list the booster box as 36 packs. | Variable. Boxes per case: Unknown. |
 | Great Encounters Three Pack Blister | Mar 2008 | 2 Great Encounters, 1 late EX Series or earlier Diamond & Pearl Series, plus a coin and a promo | Variable third pack |
 | Great Encounters Two Pack Blister | Mar 2008 | 1 Great Encounters, 1 POP Series 5, plus a Riolu promo | Fixed pack list |
 | 2008 Spring Collector's Tins | Feb 25, 2008 | 4 packs from Mysterious Treasures, Secret Wonders, Great Encounters | Variable mix |
@@ -95,13 +95,16 @@ the most common entry to the rarest entry.
 - [PokeBeach forums — Card Ratios (2010)](https://www.pokebeach.com/forums/threads/card-ratios.81556/)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [ToyWiz — Great Encounters Booster Box](https://toywiz.com/pokemon-diamond-pearl-great-encounters-booster-box-36-packs/)
+- [Loose Packs — Great Encounters Booster Box](https://loosepacks.com/products/d-p-great-encounters-booster-box)
 
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs.
+  opened packs. Searched 2026-09-12: no source found (era-wide search, see
+  the era file).
 - No set-specific pull study found. All odds come from era-wide estimates.
-- A retailer or box listing that confirms 36 packs for this set.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.

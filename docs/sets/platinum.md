@@ -122,13 +122,16 @@ reverse holo slot, not the rare slot.
 ## Open topics
 
 - Pack order: the two community guides conflict. No source shows real
-  opened packs. The SH card position is Unknown.
-- LV.X per box: 2 or 3. The sources conflict.
+  opened packs. The SH card position is Unknown. Searched 2026-09-12: no
+  source found (era-wide search, see the era file).
+- LV.X per box: 2 or 3. The sources conflict. Searched 2026-09-12: a
+  PokeBeach forum post mentions a box with six secret cards and four LV.X
+  cards. This is a single anecdote and does not resolve the conflict.
 - The names of the secret cards 128–130 and SH4–SH6: not recorded here.
 - Whether the misprinted and corrected Dialga G LV.X both came in booster
   packs, and at what ratio: Unknown.
-- A retailer or box listing that confirms 36 packs for this set.
-- The non-holo rare rate. Boxes per case.
+- The non-holo rare rate. Boxes per case. Searched 2026-09-12: no source
+  found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Rare Holo LV.X uses 1 in 18 or 1 in 12. PokeBeach Card Ratios' first post gives 1 in 12 (3 per box); a reply gives 1 in 18 (2 per box).
