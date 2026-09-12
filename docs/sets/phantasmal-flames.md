@@ -142,8 +142,11 @@ come from search-result summaries.
 ## Open topics
 
 - Pack order: no set-specific source. The file uses the era template.
+  Searched 2026-09-12: no source found.
 - Rare odds conflict: 1 in 1.4 (ThePriceDex) against ~30% (TCG
-  Protectors).
+  Protectors). Searched 2026-09-12: both sources confirmed directly.
+  Neither gives a sample size for the Rare figure. Default: 1 in 1.4
+  (ThePriceDex), for consistency with the other sets in the era.
 - Ultra-Premium Collection pack count conflict: 18 (Bulbapedia) against
   8-10 (TCG Protectors). The mix of set packs inside it is Unknown.
 - Knockout Collection pack count: Unknown.

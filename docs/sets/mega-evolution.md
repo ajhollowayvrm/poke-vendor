@@ -108,7 +108,7 @@ by PokeBeach and ThePriceDex.
 | Enhanced Booster Box | 36 + a topper | TCGplayer Quick Facts |
 | Half Booster Box | 18 | TCGplayer Quick Facts |
 | Elite Trainer Box (two variants) | 9 | TCGplayer Quick Facts |
-| Pokemon Center Elite Trainer Box (Mega Lucario) | Unknown | Product exists (Pokemon Center) |
+| Pokemon Center Elite Trainer Box (Mega Lucario) | 11 | Community source (TCGplayer, StockX, Walmart, and Bleecker Trading listings agree) |
 | Booster Bundle | 6 | TCGplayer Quick Facts |
 | Build & Battle Box | 4 + a prebuilt deck | TCGplayer Quick Facts |
 | Mini Tin | 2 | TCGplayer Quick Facts |
@@ -147,19 +147,20 @@ the most common entry to the rarest entry.
 - [NinePocket — Mega Evolution set guide](https://www.ninepocket.net/guides/mega-evolution-set-guide)
 - [Pokemon Center — Mega Evolution Pokemon Center Elite Trainer Box (Mega Lucario)](https://www.pokemoncenter.com/product/10-10047-108/pokemon-tcg-mega-evolution-pokemon-center-elite-trainer-box-mega-lucario)
 - [Cardrake — Mega Evolution master set](https://www.cardrake.com/expansions/me1)
+- [TCGplayer — Mega Evolution Pokemon Center Elite Trainer Box (Mega Lucario)](https://www.tcgplayer.com/product/644282/pokemon-me01-mega-evolution-mega-evolution-pokemon-center-elite-trainer-box-exclusive-mega-lucario)
 
 PokeBeach pages returned HTTP 403 to automated fetch. Their figures come
 from search-result summaries.
 
 ## Open topics
 
-- The Pokemon Center Elite Trainer Box pack count. Later era sets have
-  11. No source confirms 11 for this set.
 - The TCGplayer total of 198 conflicts with its own rarity counts (188).
 - The pack order has only a community-guide source, with no recorded
   opening. The face direction and the code card end need confirmation.
+  Searched 2026-09-12: no source found.
 - The Mega Hyper Rare slot (rare slot or not) has no direct source for
-  this set.
+  this set. Searched 2026-09-12: no source found beyond the era-wide
+  community estimate.
 - Box collation: Unknown.
 - Reverse holo odds are estimates, not study data.
 - The mix of the 2 Mega Hyper Rares, and per-card weights: Unknown.

@@ -185,6 +185,7 @@ pack as an independent draw, as for Base Set.
 - [Pokemon TCG — Chaos Rising expansion page](https://tcg.pokemon.com/en-us/expansions/chaos-rising/)
 - [Pokemon TCG — Pitch Black expansion page](https://tcg.pokemon.com/en-us/expansions/pitch-black/)
 - [Dexerto — All upcoming Pokemon TCG releases](https://www.dexerto.com/pokemon/pokemon-tcg-release-2629243/)
+- [PkmnCards — Sets](https://pkmncards.com/sets/)
 
 Source access note: PokeBeach pages returned HTTP 403 to automated
 fetch. Their figures here come from search-result summaries of those
@@ -193,17 +194,20 @@ pages. Verify them by hand before implementation.
 ## Open topics
 
 - **Pack order has no recorded-opening source.** Only community guides
-  describe it. Find a video or photo series of opened era packs.
+  describe it. Searched 2026-09-12: no video or photo series of an
+  opened era pack found.
 - **Face direction is unclear.** PokéPatch does its trick with the cards
-  "face down". NinePocket does not say. Confirm which way the card faces
-  point in the position table.
+  "face down". NinePocket does not say. Searched 2026-09-12: no source
+  confirms the face direction.
 - **The code card end is unclear.** Sources say "peel off the code card"
-  first, and also place it behind the Energy. Confirm that it is at the
-  back.
+  first, and also place it behind the Energy. Searched 2026-09-12: no
+  source resolves the conflict.
 - **Mega Hyper Rare slot**: only one community source places it in the
-  rare slot.
-- **Collation** for every era product: Unknown.
-- **Set codes**: the three-letter codes come from a search summary. The
-  ME numbers come from TCGplayer and ThePriceDex naming. No official
-  list was read.
+  rare slot. Searched 2026-09-12: no second source found.
+- **Collation** for every era product: Unknown. Searched 2026-09-12: no
+  source states fixed or variable collation for any era product.
+- **Set codes**: PkmnCards, an independent card database, lists the same
+  six codes as this file (MEG, PFL, ASC, POR, CRI, PBL). This is a
+  second community source, not an official TPCi list. Searched
+  2026-09-12: no official list found.
 - **30th Celebration** and **Delta Reign**: research after release.

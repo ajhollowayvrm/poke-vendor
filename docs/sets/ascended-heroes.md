@@ -25,10 +25,10 @@ template in several ways. One file per set (see
 |---|---|---|
 | Common | 4 | Community estimate (ThePriceDex) |
 | Uncommon | 3 | Community estimate (ThePriceDex) |
-| Reverse holo slots | Probably 2 (see below) | Unknown, inferred from estimates |
-| Rare slot | 1 | Community source |
+| Reverse holo slots | 2 (one Energy pattern, one Poké Ball / "R" pattern) | Community guide (PokeBeach set guide, search summary) |
+| Rare slot (Rare, DR, UR, Mega Attack Rare, MHR) | 1 | Community guide (PokeBeach, PortalTCG, search summaries) |
 | Basic Energy | 1 | Community estimate (ThePriceDex "11 cards per pack") |
-| Code card | Unknown | No source read for this set |
+| Code card | Unknown | Searched 2026-09-12: no source found for this set |
 
 **Reverse holo patterns**: each non-ex Pokémon has two reverse holos. One
 has an Energy pattern. One has a Poké Ball pattern (Poké Ball, Love Ball,
@@ -37,8 +37,12 @@ pattern in place of the ball (PokeBeach set guide, search summary;
 Cardrake).
 
 ThePriceDex estimates add up to about 0.92 Energy-pattern reverse holos
-and 0.94 Poké Ball reverse holos per pack. This suggests one slot of
-each pattern. **No source confirms this.** Treat it as an open topic.
+and 0.94 Poké Ball reverse holos per pack. This matches a PokeBeach
+search summary (2026-09-12): every Pokémon card needs both an "Energy
+Holo" and a "Special Reverse Holo" to complete the set, which implies
+one guaranteed slot of each pattern per pack. No source states this as
+an explicit pack-slot rule, so treat the slot count as a community
+guide, not official.
 
 ## Pack order
 
@@ -60,9 +64,11 @@ holo patterns may change positions 8 and 9.
 - An IR or SIR at position 9 is **not** one of the last three.
 - **God packs break this order.** Every card is a hit, so the first card
   is already a hit. The order of cards in a god pack: Unknown.
-- The Mega Attack Rare slot is not confirmed. PokeBeach and EternaCards
-  say that Mega Attack Rares "replace Ultra Rares in the pack
-  structure", which points to the rare slot.
+- **The Mega Attack Rare slot is the rare slot.** PortalTCG and Card
+  Codex (search summaries, 2026-09-12): Mega Attack Rares "take the
+  physical place of the Ultra Rare slot", so Ultra Rare odds fall from
+  1 in 12 to 1 in 21 in this set. This confirms the PokeBeach and
+  EternaCards statement.
 
 ## Rarities and hit odds
 
@@ -124,7 +130,7 @@ written with large text." The set has 7.
 
 | Product | Packs | Confidence |
 |---|---|---|
-| Booster box | **None exists** | Cardrake, TCGplayer product list (TCG Talk claims 36, see Open topics) |
+| Booster box | **None exists** | Cardrake, TCGplayer product list. TCG Talk claims 36; search summaries of Cardrake and TCGplayer disagree and list no such product (2026-09-12). |
 | Elite Trainer Box | 9 | Official (Pokemon.com), TCGplayer |
 | Pokemon Center Elite Trainer Box | 11 | Official (Pokemon Center), TCGplayer |
 | Booster Bundle | 6 | TCGplayer, Pokemon.com |
@@ -176,25 +182,34 @@ Pokémon). Estimates put close to one of each per pack.
 - [Cardrake — Ascended Heroes master set](https://www.cardrake.com/expansions/me2pt5)
 - [Pokemon.com — Ascended Heroes product showcase](https://www.pokemon.com/us/pokemon-news/pokemon-tcg-mega-evolution-ascended-heroes-product-showcase)
 - [Pokemon Center — Ascended Heroes Pokemon Center Elite Trainer Box](https://www.pokemoncenter.com/product/10-10315-108/pokemon-tcg-mega-evolution-ascended-heroes-pokemon-center-elite-trainer-box)
+- [PortalTCG — Ascended Heroes pull rates revealed](https://www.portaltcg.co.uk/post/ascended-heroes-pull-rates-revealed-here-s-how-the-numbers-stack-up)
+- [Card Codex — Ascended Heroes pull rates explained](https://card-codex.com/blog/ascended-heroes-pull-rates-explained/)
 
 PokeBeach and Pokemon.com pages blocked automated fetch. Their facts
 come from search-result summaries.
 
 ## Open topics
 
-- **Pack order**: no source for this set. The order of the two reverse
-  holo patterns and of the cards in a god pack is Unknown.
-- **Reverse holo slots**: one Energy slot and one Poké Ball slot is an
-  inference from estimates, not a sourced fact.
+- **Pack order**: no source for this set. Searched 2026-09-12: no
+  source found. The order of the two reverse holo patterns (positions 8
+  and 9) and of the cards in a god pack is still Unknown.
+- **Reverse holo slots**: one Energy slot and one Poké Ball slot is a
+  community guide (PokeBeach search summary), not an official rule.
 - **Code card and Basic Energy**: no source read confirms both for this
   set. ThePriceDex gives 11 cards, which suggests 10 cards + 1 Energy.
-- **Mega Attack Rare slot**: rare slot is likely but not confirmed.
+  Searched 2026-09-12: no source found for the code card.
+- **Mega Attack Rare slot**: confirmed as the rare slot by PortalTCG and
+  Card Codex (search summaries).
 - **God pack contents** conflict (any IR/SIR/Mega Attack Rare against
-  3 Mega Attack Rares + 7 SIRs).
+  3 Mega Attack Rares + 7 SIRs). Searched 2026-09-12: no source found
+  that resolves the conflict.
 - **God pack odds** conflict, and no study measures them for this set.
+  Searched 2026-09-12: search summaries repeat the same 1 in 950 to
+  1 in 2,000 community range. No official figure found.
 - **Booster box**: TCG Talk lists a 36-pack booster box. Cardrake says
   that there are no booster boxes, and the TCGplayer product list has
-  none. Treat "no booster box" as correct, and confirm.
+  none. Confirmed 2026-09-12: no source found for a genuine 36-pack
+  booster box product. Use "no booster box" as the default.
 - **Release month**: Cardrake says February 2026. Bulbapedia and
   TCGplayer say 2026-01-30. The February date is probably the ETB delay.
 - Box collation and per-card weights: Unknown.

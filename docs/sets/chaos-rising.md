@@ -12,12 +12,12 @@ The fourth main set of the Mega Evolution era. One file per set (see
   ThePriceDex also gives 122.
 - TCG Talk gives 83 main set cards and numbers up to 120/083. This
   conflicts with Bulbapedia and ThePriceDex.
-- **Rarity counts**:
-  - Common, Uncommon, Rare: Unknown.
-  - 10 Double Rare: 5 Mega Evolution Pokémon ex and 5 Pokémon ex
+- **Rarity counts** (Cardrake, 2026-09-12): 38 Common, 26 Uncommon,
+  12 Rare, 10 Double Rare, 18 Ultra Rare, 11 Illustration Rare,
+  6 Special Illustration Rare, 1 Mega Hyper Rare. These add up to 122,
+  which agrees with Bulbapedia and ThePriceDex, against TCG Talk's 120.
+  - The 10 Double Rare are 5 Mega Evolution Pokémon ex and 5 Pokémon ex
     (Bulbapedia, Obsidia).
-  - 18 Ultra Rare, 11 Illustration Rare, 6 Special Illustration Rare,
-    1 Mega Hyper Rare (Bulbapedia, Obsidia). These add up to 36.
 - The Mega Hyper Rare is Mega Greninja ex.
 
 ## Pack structure
@@ -97,8 +97,9 @@ Per-card odds (Obsidia, from the TCGplayer data, equal weight assumed):
 - **TCG Talk** (168 packs, community sample): ex 23.2%, IR 10.7%,
   full-art ex 3.6%, full-art Trainer or Energy 3.0%, SIR 0.6%, Rare only
   57.7%. A second sample of 100 packs gave about 10-12 IRs.
-- A search summary quotes a Double Rare rate of "one in every 3.5 packs".
-  This conflicts with the TCGplayer figure (1 in 5).
+- **CardDeckr** (community estimate): "Double Rares pull at approximately
+  one in every 3.5 packs, making them the most reliably frequent hit in
+  the set." This conflicts with the TCGplayer figure (1 in 5).
 - Prefer the TCGplayer figures. They have the largest sample.
 
 ## Special subsets and mechanics
@@ -152,15 +153,19 @@ Talk.
 - [ThePriceDex — Chaos Rising pull rates](https://www.thepricedex.com/set/me4/chaos-rising/pull-rates)
 - [TCG Talk — Chaos Rising pull rates](https://tcgtalk.com/guides/chaos-rising-pull-rates)
 - [NinePocket — Mega Evolution set guide (era pack order)](https://www.ninepocket.net/guides/mega-evolution-set-guide)
+- [Cardrake — Chaos Rising master set](https://www.cardrake.com/expansions/me04)
+- [CardDeckr — Chaos Rising pull rates: what are your real odds?](https://carddeckr.com/blog/chaos-rising-pull-rates-what-are-your-real-odds/)
 
 ## Open topics
 
 - Pack order: no set-specific source. The file uses the era template.
-- Card count conflict: 86 + 36 = 122 (Bulbapedia, ThePriceDex) against
-  83 main and 120 total (TCG Talk).
-- Common, Uncommon, and Rare card counts: Unknown.
+  Searched 2026-09-12: no source found.
+- Card count conflict: 86 + 36 = 122 (Bulbapedia, ThePriceDex, and now
+  Cardrake's rarity breakdown) against 83 main and 120 total (TCG
+  Talk). Default: 122.
 - SIR and Mega Hyper Rare odds differ between TCGplayer and ThePriceDex.
-- The "1 in 3.5" Double Rare figure has no confirmed source page.
+- The "1 in 3.5" Double Rare figure: sourced 2026-09-12 to CardDeckr, a
+  community estimate. TCGplayer (8,500+ packs) stays the default.
 - The Mega Hyper Rare slot is not confirmed for this set.
 - Whether the League Battle Deck holds booster packs: Unknown.
 - Box collation and per-card weights: Unknown.

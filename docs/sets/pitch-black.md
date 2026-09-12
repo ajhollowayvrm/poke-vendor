@@ -12,14 +12,15 @@ era template is in [eras/mega-evolution.md](eras/mega-evolution.md).
 - **Set code**: PBL. Product line code: ME05 (TCG Talk, PokéPatch).
 - **Card count**: 84 main set + 36 secret rares = 120 cards (Bulbapedia).
   TCGplayer gives 84 main set cards. ThePriceDex gives 120 in total.
+  Cardrake's rarity breakdown (below) also sums to 120.
 - TCG Talk gives 81 main set cards and numbers up to 118/081. This
-  conflicts with Bulbapedia, TCGplayer, and ThePriceDex.
-- **Rarity counts**:
-  - Common, Uncommon, Rare: Unknown.
-  - 10 Double Rare: 6 Mega Evolution Pokémon ex and 4 Pokémon ex
+  conflicts with Bulbapedia, TCGplayer, ThePriceDex, and Cardrake.
+  Default: 120.
+- **Rarity counts** (Cardrake, 2026-09-12): 37 Common, 26 Uncommon,
+  11 Rare, 10 Double Rare, 18 Ultra Rare, 11 Illustration Rare,
+  6 Special Illustration Rare, 1 Mega Hyper Rare. These add up to 120.
+  - The 10 Double Rare are 6 Mega Evolution Pokémon ex and 4 Pokémon ex
     (TCGplayer, Obsidia).
-  - 18 Ultra Rare, 11 Illustration Rare, 6 Special Illustration Rare,
-    1 Mega Hyper Rare (Bulbapedia, Obsidia). These add up to 36.
 - The Mega Hyper Rare is Mega Darkrai ex.
 
 ## Pack structure
@@ -39,9 +40,15 @@ Official: "Each booster pack contains 10 cards, 1 Basic Energy, and
 
 TCG Talk says that the rare slot "can contain regular Rare, ex, IR, UR,
 SIR, or MHR". This conflicts with the era template, where IR and SIR use
-the second reverse holo slot. TCG Talk also counts "shiny/holo energy"
-at 5.6% per pack, as an "energy insert bonus". No other source confirms
-holo Basic Energy in this set.
+the second reverse holo slot. NinePocket's Pitch Black set guide
+(2026-09-12) supports the era template: "your very last card is the
+rare, ultra rare, or illustration/special illustration rare, and the
+card just before it is a reverse holo (if you hit an Illustration Rare
+or Special Illustration Rare, it takes that second reverse-holo slot)."
+Default: the second reverse holo slot, per the era template and
+NinePocket. TCG Talk also counts "shiny/holo energy" at 5.6% per pack,
+as an "energy insert bonus". No other source confirms holo Basic Energy
+in this set.
 
 ## Pack order
 
@@ -61,8 +68,9 @@ describes the pack order of this set directly.
 - The rare-slot hit is position 10 of 12. It **is** one of the last
   three cards.
 - An IR or SIR is position 9 of 12. It is **not** one of the last three.
-- If TCG Talk is correct that IR and SIR use the rare slot, then all
-  hits are at position 10. This conflict is open.
+- NinePocket's set guide (2026-09-12) agrees with this order. TCG
+  Talk's claim that IR and SIR use the rare slot is the outlier; treat
+  it as unconfirmed.
 
 ## Rarities and hit odds
 
@@ -150,18 +158,21 @@ and TCG Talk.
 - [TCG Talk — Pitch Black pull rates](https://tcgtalk.com/guides/pitch-black-pull-rates)
 - [PokéPatch — Pitch Black pull rates (ME05)](https://pokepatch.com/2026/07/25/pitch-black-pull-rates-real-odds-top-chase-cards-me05/)
 - [NinePocket — Mega Evolution set guide (era pack order)](https://www.ninepocket.net/guides/mega-evolution-set-guide)
+- [NinePocket — Pitch Black set guide](https://www.ninepocket.net/guides/pitch-black-set-guide)
+- [Cardrake — Pitch Black master set](https://www.cardrake.com/expansions/me05)
 
 The PokéPatch Pitch Black article was found but not read. It is the
 source of the ME05 code only.
 
 ## Open topics
 
-- Pack order: no set-specific source. The file uses the era template.
-- The IR and SIR slot: second reverse holo slot (era template) against
-  the rare slot (TCG Talk).
-- Card count conflict: 84 + 36 = 120 (Bulbapedia, TCGplayer, ThePriceDex)
-  against 81 main and 118 total (TCG Talk).
-- Common, Uncommon, and Rare card counts: Unknown.
+- Pack order: no set-specific source. Searched 2026-09-12: no source
+  found beyond the era template and NinePocket's community guide.
+- The IR and SIR slot: second reverse holo slot (era template,
+  NinePocket) against the rare slot (TCG Talk). Default: the second
+  reverse holo slot, as the majority position.
+- Card count conflict: 84 + 36 = 120 (Bulbapedia, TCGplayer, ThePriceDex,
+  Cardrake) against 81 main and 118 total (TCG Talk). Default: 120.
 - The source of the 4,000-pack study is not named.
 - The Mega Hyper Rare odds rest on very few pulls.
 - Holo Basic Energy at 5.6%: one unconfirmed source.

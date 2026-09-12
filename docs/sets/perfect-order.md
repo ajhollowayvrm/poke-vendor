@@ -9,14 +9,14 @@ The third main set of the Mega Evolution era. One file per set (see
 - **English release**: 2026-03-27 (Bulbapedia, TCGplayer, Pokemon.com).
 - **Set code**: POR. Product line code: ME03 (Ultima Supply, ThePriceDex).
 - **Card count**: 88 main set + 36 secret rares = 124 cards (Bulbapedia).
-- **Rarity counts**:
-  - Common, Uncommon, Rare: Unknown.
+- **Rarity counts** (Cardrake, 2026-09-12): 44 Common, 24 Uncommon,
+  11 Rare, 9 Double Rare, 18 Ultra Rare, 11 Illustration Rare,
+  6 Special Illustration Rare, 1 Mega Hyper Rare. These add up to 124.
   - Pokémon ex: 4 Mega Evolution Pokémon ex and 9 other Pokémon ex
     (Bulbapedia, TCGplayer).
-  - Obsidia lists 9 Double Rares. This may count only the non-Mega ex.
-  - 18 Ultra Rare, 11 Illustration Rare, 6 Special Illustration Rare,
-    1 Mega Hyper Rare (Bulbapedia, Obsidia). These add up to 36 secret
-    rares.
+  - Cardrake's 9 Double Rare count agrees with Obsidia. Bulbapedia's
+    13 ex figure counts Pokémon ex across every rarity, not only Double
+    Rare.
 - The Mega Hyper Rare is Mega Zygarde ex.
 - Regulation mark: H (Ultima Supply).
 
@@ -145,6 +145,8 @@ the most common entry to the rarest entry.
 - [Ultima Supply — Perfect Order pull rates](https://ultimasupply.com/blogs/news/what-are-the-pull-rates-in-pokemon-perfect-order-full-odds-breakdown-me03)
 - [ComicBook — Perfect Order pull rates from 55 packs](https://comicbook.com/gaming/feature/pokemon-tcg-perfect-order-pull-rates-ex-illustration-rares-estimates/)
 - [NinePocket — Mega Evolution set guide (era pack order)](https://www.ninepocket.net/guides/mega-evolution-set-guide)
+- [Cardrake — Perfect Order master set](https://www.cardrake.com/expansions/me03)
+- [PokéPatch — ME03 Perfect Order pull rates (3,500+ packs)](https://pokepatch.com/2026/07/25/me03-perfect-order-pull-rates-real-data-from-3500-packs/)
 
 The Pokemon.com page blocked automated fetch. Its facts come from a
 search-result summary. The ComicBook article was found but not read.
@@ -152,9 +154,12 @@ search-result summary. The ComicBook article was found but not read.
 ## Open topics
 
 - Pack order: no set-specific source. The file uses the era template.
-- Common, Uncommon, and Rare card counts: Unknown.
-- Double Rare count: 9 (Obsidia) or 13 ex cards in total (Bulbapedia).
-- The data source of the 3,500-pack study is not confirmed as TCGplayer.
+  Searched 2026-09-12: no source found.
+- Double Rare count conflict resolved: Cardrake and Obsidia agree on 9.
+  Bulbapedia's 13 counts all Pokémon ex, not only Double Rares.
+- The data source of the 3,500-pack study is not confirmed as
+  TCGplayer. Searched 2026-09-12: PokéPatch names only "the community
+  and authentication centers", not TCGplayer by name.
 - The Mega Hyper Rare odds rest on very few pulls.
 - Checklane blister pack counts: Unknown.
 - Bulbapedia lists a Pitch Black Build & Battle Box and an Enhanced
