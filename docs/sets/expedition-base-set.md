@@ -11,7 +11,7 @@ Set-specific data for Expedition Base Set. See
 | English release date | September 15, 2002 | Bulbapedia |
 | Series number | 13th English series | PSA |
 | Set symbol | "a Poké Ball drawn to look like a lower case 'e'" | PSA |
-| Abbreviation | EX | JustInBasil's Pokémon TCG Resources. Bulbapedia's infobox uses an internal series logo code instead (Aquapolis shows "E2" and Skyridge shows "E3"), so the Expedition logo code is likely "E1", but no fetch confirmed that text directly. |
+| Abbreviation | EX | JustInBasil's Pokémon TCG Resources. Bulbapedia's infobox uses an internal series logo code instead (Aquapolis shows "E2" and Skyridge shows "E3"), which gives "E1" for Expedition by the same pattern. No fetch confirmed "E1". |
 | Card count | 165 | Bulbapedia, PSA |
 | Secret rares | None | Bulbapedia set list |
 | Editions | Unlimited only. The first non-reprint English set with no 1st Edition. | Bulbapedia |
@@ -150,7 +150,7 @@ an extra card in about 1 pack in 3.
   says the whole era, including this set, has "no reliable trick". It
   gives no N value.
 - **Holo odds.** No English box counts found. A PokéBeach pull-rate thread
-  may have counts, but PokéBeach blocked the fetch (HTTP 403). Searched
+  is not checked, because PokéBeach blocked the fetch (HTTP 403). Searched
   again 2026-09-12: still HTTP 403.
 - **Reverse holo rarity split.** Unknown. Searched 2026-09-12: no source
   found.
