@@ -384,6 +384,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 216/162 | Iron Crown ex | Pokémon (Psychic) | Hyper rare | Holo (Gold) |
 | 217/162 | Iron Boulder ex | Pokémon (Fighting) | Hyper rare | Holo (Gold) |
 | 218/162 | Raging Bolt ex | Pokémon (Dragon) | Hyper rare | Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure above. Odds use the TCGplayer study. Reverse holo slot 1 can hold an ACE SPEC Rare instead of a plain reverse holo.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo slot 1 | 1 | ACE SPEC Rare | ACE SPEC Rare | ACE SPEC Rare | Holo | All | 5.00% |
+| Reverse holo slot 1 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Reverse holo slot 2 | 1 | Illustration Rare | Illustration Rare | Illustration rare | Holo | All | 7.72% |
+| Reverse holo slot 2 | 1 | Special Illustration Rare | Special Illustration Rare | Special illustration rare | Holo | All | 1.17% |
+| Reverse holo slot 2 | 1 | Hyper Rare | Hyper Rare | Hyper rare | Holo (Gold) | All | 0.72% |
+| Reverse holo slot 2 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | 16.83% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | 6.67% |
+| Rare slot | 1 | Rare | Rare | Rare | Holo | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -416,6 +449,10 @@ hold an ACE SPEC Rare instead of a plain reverse holo.
 
 ## Open topics
 
+- **Slot map:** three Rare cards (Feraligatr, Iron Thorns, Relicanth)
+  carry an extra plain Normal print in the card list, with no promo or
+  special tag. The era rule makes Rare cards holofoil, so the slot map
+  treats this print as not from packs. It stays unused.
 - **Physical pack order.** No opened-pack source confirms it for this set.
 - **Basic Energy and code card.** No set-specific source confirms them.
 - **Era conflicts:** the Hyper Rare slot and the last card. See

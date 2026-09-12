@@ -402,6 +402,40 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08.5`),
 | 178/131 | Walking Wake ex | Pokémon (Water) | Hyper rare | Holo (Gold) |
 | 179/131 | Pikachu ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
 | 180/131 | Terapagos ex | Pokémon (Colorless) | Hyper rare | Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure above. The slot contents are a secondary report, and the Poké Ball pattern odds are a community-derived default (see Open topics). This set has no Illustration Rares.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo slot 1 | 1 | Poké Ball pattern | Poké Ball pattern | Common, Uncommon, Rare | Reverse holo (Poké Ball pattern) | All | 1 in 3 |
+| Reverse holo slot 1 | 1 | ACE SPEC Rare | ACE SPEC Rare | ACE SPEC Rare | Holo | All | 1 in 21 |
+| Reverse holo slot 1 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Reverse holo slot 2 | 1 | Master Ball pattern | Master Ball pattern | Common, Uncommon, Rare | Reverse holo (Master Ball pattern) | All | 1 in 19 |
+| Reverse holo slot 2 | 1 | Special Illustration Rare | Special Illustration Rare | Special illustration rare | Holo | All | 1 in 45 |
+| Reverse holo slot 2 | 1 | Hyper Rare | Hyper Rare | Hyper rare | Holo (Gold) | All | 1 in 167 |
+| Reverse holo slot 2 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | 1 in 5 |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | 1 in 13 |
+| Rare slot | 1 | Rare | Rare | Rare | Holo | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

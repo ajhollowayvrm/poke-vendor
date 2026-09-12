@@ -429,6 +429,38 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 242/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
 | 243/182 | Jamming Tower | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 244/182 | Levincia | Trainer (Stadium) | Hyper rare | Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure above. Odds use the TCGplayer study (via Game Rant and pullrates.gg). This set has no ACE SPEC Rares. Reverse holo slot 2 can hold an Illustration Rare or a Special Illustration Rare; the rare slot can hold a Double Rare, an Ultra Rare, or a Hyper Rare.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo slot 1 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Reverse holo slot 2 | 1 | Illustration Rare | Illustration Rare | Illustration rare | Holo | All | 1 in 12 |
+| Reverse holo slot 2 | 1 | Special Illustration Rare | Special Illustration Rare | Special illustration rare | Holo | All | 1 in 94 |
+| Reverse holo slot 2 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | 1 in 5 |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | 1 in 16 |
+| Rare slot | 1 | Hyper Rare | Hyper Rare | Hyper rare | Holo (Gold) | All | 1 in 149 |
+| Rare slot | 1 | Rare | Rare | Rare | Holo | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -469,6 +501,10 @@ Rares.
 
 ## Open topics
 
+- **Slot map:** two Rare cards (Team Rocket's Spidops, Team Rocket's
+  Articuno) carry an extra plain Normal print, with no promo or
+  special tag. The era rule makes Rare cards holofoil, so the slot map
+  treats this print as not from packs. It stays unused.
 - **Pack order:** no source shows an opened Destined Rivals pack.
 - **Code card and Energy position:** sources disagree (first or last).
   TheGamer's account gives a resolution (one source, Community estimate): see

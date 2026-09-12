@@ -262,6 +262,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06.5`),
 | 097/064 | Powerglass | Trainer (Tool) | Hyper rare | Holo, Holo (Gold) |
 | 098/064 | Basic Darkness Energy | Energy (Normal) | Hyper rare | Holo, Holo (Gold) |
 | 099/064 | Basic Metal Energy | Energy (Normal) | Hyper rare | Holo, Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure above. No source gives reliable odds for this set (see the rarity list), so every outcome but Common, Uncommon, and the fixed slots uses `—`.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo slot 1 | 1 | ACE SPEC Rare | ACE SPEC Rare | ACE SPEC Rare | Holo | All | — |
+| Reverse holo slot 1 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | — |
+| Reverse holo slot 2 | 1 | Illustration Rare | Illustration Rare | Illustration rare | Holo | All | — |
+| Reverse holo slot 2 | 1 | Special Illustration Rare | Special Illustration Rare | Special illustration rare | Holo | All | — |
+| Reverse holo slot 2 | 1 | Hyper Rare | Hyper Rare | Hyper rare | Holo (Gold) | All | — |
+| Reverse holo slot 2 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | — |
+| Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | — |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | — |
+| Rare slot | 1 | Rare | Rare | Rare | Holo | All | — |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -300,6 +333,10 @@ order follows the era's rarity system.
 
 ## Open topics
 
+- **Slot map:** all 5 Hyper Rare cards carry both a plain Holo print
+  and a Holo (Gold) print. The slot map uses Holo (Gold) as the pack
+  print, per the era rule that Hyper Rares are gold cards, so the
+  plain Holo print stays unused.
 - **No reliable odds.** Find a large, documented study (for example, a
   TCGplayer study) for this set. Until then, every figure is a community
   estimate. Searched 2026-09-12: no TCGplayer Authentication Center
