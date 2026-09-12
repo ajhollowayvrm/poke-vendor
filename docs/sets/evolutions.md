@@ -120,6 +120,8 @@ the most common entry to the rarest entry.
 - [PokéBeach — The "Look What I Pulled" & Pull Rates Thread, page 71](https://www.pokebeach.com/forums/threads/the-look-what-i-pulled-pull-rates-thread.111190/page-71)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
+- [Potomac Distribution — XY Evolutions Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokexyebc)
+- [Blowout Cards — Pokemon XY Evolution Booster 6 Box Case](https://www.blowoutcards.com/pokemon-xy-evolution-booster-6-box-case.html)
 
 ## Open topics
 
@@ -133,6 +135,8 @@ the most common entry to the rarest entry.
   era-wide community claim.
 - The reverse holo pattern and the theme deck and Prerelease Kit
   contents are Unknown.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6, from Potomac Distribution and Blowout Cards
+  listings (see [eras/xy.md](eras/xy.md#sealed-products)). Collation is
+  Unknown.
 - **Rarity list order:** by this file's odds, Secret Rare (1 in 8.1) comes almost as often as Rare Holo (1 in 6.9), and more often than Rare Holo EX (1 in 8.2), Ultra Rare (1 in 15), and Rare BREAK (1 in 18). The rarity list therefore puts Secret Rare above these entries.
 - **Rarity list order:** Secret Rare uses 1 in 8.1 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era, though it also says Evolutions had more favorable Secret Rare odds than later sets.

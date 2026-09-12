@@ -120,5 +120,6 @@ the most common entry to the rarest entry.
   set-specific.
 - The contents of the theme decks, blisters, Collector Chest, and
   Launch Kit were not checked.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6 (see [eras/xy.md](eras/xy.md#sealed-products)).
+  Collation is Unknown.
 - **Rarity list order:** Secret Rare uses 1 in 125 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

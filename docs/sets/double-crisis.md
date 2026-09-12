@@ -104,7 +104,9 @@ non-holo Rare and no secret rares.
 ## Open topics
 
 - The pack order is Unknown. This is the biggest gap for the rip
-  screen.
+  screen. Searched 2026-09-12: no source describes the Double Crisis
+  7-card pack order specifically. General pack-trick guides describe
+  only the 10-card XY template, which does not apply to a 7-card pack.
 - Whether each pack has its own code card is Unknown.
 - The number of blister versions (for example, Team Aqua and Team
   Magma versions) is Unknown.

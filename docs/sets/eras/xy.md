@@ -67,8 +67,10 @@ The research found no other English booster-pack set from this era.
 ### The rare slot
 
 The rare slot always holds one card. The card is one of: a rare, a
-holo rare, a Pokémon-EX, a full art (Ultra Rare), a Pokémon BREAK
-(from BREAKthrough), or a secret rare. In every template set,
+holo rare, a Pokémon-EX, a full art (Ultra Rare), or a secret rare.
+Pokémon BREAK cards (from BREAKthrough onward) sit in the reverse holo
+slot, not the rare slot (see [Sets that break the
+template](#sets-that-break-the-template)). In every template set,
 ThePriceDex lists the non-holo rare at "1 in 1.5 packs". So about 1
 pack in 3 has a holo rare or better in the rare slot.
 
@@ -190,7 +192,12 @@ publish its method or sample sizes. Confidence: **community estimate
   Bulbapedia also says XY theme decks have no packs.
 - **Blisters:** every set had blisters. Pack counts are known only for
   XY (1, 2, and 3 packs).
-- **Boxes per case:** Unknown.
+- **Boxes per case: 6 boxes.** Potomac Distribution lists "Booster
+  Case [6 boxes]" for XY, BREAKthrough, Phantom Forces, Steam Siege,
+  and Ancient Origins. Blowout Cards lists "XY Evolution Booster 6 Box
+  Case". This matches the 6-box case confirmed for the Sun & Moon,
+  Sword & Shield, and Scarlet & Violet eras. Confidence: **retail
+  listing**.
 - **Collation:** Unknown. No source states a fixed number of hits per
   box. Model each pack as an independent draw until data says
   otherwise. This matches the approach in
@@ -209,7 +216,13 @@ publish its method or sample sizes. Confidence: **community estimate
 - **Phantom Forces:** one community wiki claims that holo Energy
   replaces the reverse holo in 1 in 6 packs. This is not verified.
 - **BREAKthrough, BREAKpoint, Fates Collide, Steam Siege:** the BREAK
-  rarity is added. The rare-slot odds do not add up to 1 (see above).
+  rarity is added. **The BREAK card replaces the reverse holo, not the
+  rare slot.** An Elite Fourum thread states: "They took the place of
+  the reverse holo." Posters report "2 or 3 per booster box" (36
+  packs), which matches the ThePriceDex BREAK rates of 1 in 12.9 to 1
+  in 18. Confidence: **community forum report**. With BREAK removed
+  from the rare-slot sum, the rare-slot figures for these four sets add
+  up to about 1.0 card per pack, which resolves the earlier conflict.
 - **Evolutions:** the secret rare odds are much higher in two sources
   than the era figure. The rare-slot odds do not add up to 1.
 
@@ -236,6 +249,9 @@ publish its method or sample sizes. Confidence: **community estimate
 - [Pack Fresh — Primal Clash Booster Pack](https://pack-fresh.com/products/primal-clash-booster-pack)
 - [CardGuide Wiki — XY Phantom Forces](https://cardguide.fandom.com/wiki/XY_Phantom_Forces)
 - [ThePriceDex — XY pull rates](https://www.thepricedex.com/set/xy1/xy/pull-rates) (one page per set; see each set file)
+- [Elite Fourum — Are BREAK Cards the same pull rates as Ultra Rares?](https://www.elitefourum.com/t/are-break-cards-the-same-pull-rates-as-ultra-rares/30934)
+- [Potomac Distribution — XY-era Booster Case listings (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokexyebc)
+- [Blowout Cards — Pokemon XY Evolution Booster 6 Box Case](https://www.blowoutcards.com/pokemon-xy-evolution-booster-6-box-case.html)
 
 ## Open topics
 
@@ -248,9 +264,14 @@ publish its method or sample sizes. Confidence: **community estimate
 - The ThePriceDex figures repeat across sets, and for five sets they
   add up to more than 1 card in the rare slot.
 - Flipside era figures conflict with ThePriceDex per-set figures.
-- Boxes per case and box collation are Unknown.
+- Box collation is Unknown.
 - Blister and collection pack counts are Unknown for every set except
   XY, Double Crisis, and Generations.
-- The Phantom Forces holo Energy claim is not verified.
+- The Phantom Forces holo Energy claim is not verified. Searched
+  2026-09-12: no second source found. It stays unverified.
 - The PokéBeach pull-rate threads return HTTP 403. Their box-level
   data was seen only as search snippets.
+- Searched 2026-09-12: no source shows a real opened pack for a named
+  XY-era set. The pack order stays an era-wide community claim.
+- Searched 2026-09-12: no source names the first and last sets with
+  the code card rarity hint.

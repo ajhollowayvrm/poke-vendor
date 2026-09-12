@@ -18,7 +18,10 @@ community estimate**.
 
 - 10 cards per pack, plus 1 code card.
 - 1 rare slot, 1 reverse holo, 3 uncommons, 5 commons (ThePriceDex).
-- Where BREAK cards sit is Unknown. See the conflict under
+- **The BREAK card replaces the reverse holo, not the rare slot.** An
+  Elite Fourum thread states BREAK cards "took the place of the
+  reverse holo". Confidence: **community forum report**. See the
+  resolved conflict under
   [Rarities and hit odds](#rarities-and-hit-odds).
 
 ## Pack order
@@ -51,9 +54,13 @@ show Ultra Rare and Secret Rare cards.
 
 All figures come from ThePriceDex.
 
-**Conflict.** These rates add up to about 1.08 cards per pack. The
-rare slot holds only 1 card. Either a figure is wrong, or BREAK cards
-sit outside the rare slot. No source resolves this.
+**Resolved.** Rare BREAK sits in the reverse holo slot, not the rare
+slot (Elite Fourum; see [eras/xy.md](eras/xy.md#sets-that-break-the-template)).
+Without Rare BREAK, the remaining rare-slot rows add up to about 1.00
+card per pack: Rare (0.667) + Rare Holo (0.179) + Rare Holo EX (0.088)
++ Ultra Rare (0.059) + Secret Rare (0.008). Posters on Elite Fourum
+report "2 or 3" BREAK cards per booster box (36 packs), which matches
+the ThePriceDex rate of 1 in 12.9.
 
 Flipside Gaming gives BREAK at "around 1:12 booster packs" and secret
 rares at 1:72 for the era (**community estimate**).
@@ -113,14 +120,15 @@ the most common entry to the rarest entry.
 - [ThePriceDex — BREAKthrough Pull Rates](https://www.thepricedex.com/set/xy8/breakthrough/pull-rates)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
+- [Elite Fourum — Are BREAK Cards the same pull rates as Ultra Rares?](https://www.elitefourum.com/t/are-break-cards-the-same-pull-rates-as-ultra-rares/30934)
+- [Potomac Distribution — XY BREAKthrough Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokexybbc)
 
 ## Open topics
 
-- Which slot BREAK cards occupy is Unknown. The ThePriceDex rare-slot
-  figures add up to more than 1.
 - No source shows a real opened BREAKthrough pack. The pack order is
-  an era-wide community claim.
+  an era-wide community claim. Searched 2026-09-12: no source found.
 - The set code conflicts: BKT against BRT.
 - The Night Striker contents and blister pack counts are Unknown.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6 (see [eras/xy.md](eras/xy.md#sealed-products)).
+  Collation is Unknown.
 - **Rarity list order:** Secret Rare uses 1 in 125 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

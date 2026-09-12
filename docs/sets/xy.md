@@ -117,6 +117,7 @@ the most common entry to the rarest entry. This set has no secret rares.
 - [PokéPatch — Pokemon Card Tricks for EVERY Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
 - [Pokémon Center — XY Sleeved Booster Pack (10 Cards)](https://www.pokemoncenter.com/product/144-10875/pokemon-tcg-xy-sleeved-booster-pack-10-cards)
+- [Potomac Distribution — XY-era Booster Case listings (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokexyebc)
 
 ## Open topics
 
@@ -127,4 +128,5 @@ the most common entry to the rarest entry. This set has no secret rares.
 - The ThePriceDex method and sample size are Unknown.
 - The contents of the Battle Arena Decks are Unknown.
 - The set mix in the Legends of Kalos Tins is Unknown.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6, from a Potomac Distribution listing (see
+  [eras/xy.md](eras/xy.md#sealed-products)). Collation is Unknown.

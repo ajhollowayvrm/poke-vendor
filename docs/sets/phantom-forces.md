@@ -112,6 +112,7 @@ the most common entry to the rarest entry.
 - [TCGplayer — Code Card, XY Phantom Forces Booster Pack](https://www.tcgplayer.com/product/280446/pokemon-xy-phantom-forces-code-card-xy-phantom-forces-booster-pack)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
+- [Potomac Distribution — XY Phantom Forces Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokexypfbc)
 
 ## Open topics
 
@@ -122,5 +123,8 @@ the most common entry to the rarest entry.
 - The secret rare rate conflicts: 1 in 114.3 (ThePriceDex) against
   1:72 (Flipside Gaming).
 - The theme deck, blister, and Launch Kit contents were not checked.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6 (see [eras/xy.md](eras/xy.md#sealed-products)).
+  Collation is Unknown.
+- Searched 2026-09-12: no second source confirmed the CardGuide holo
+  Energy claim. It stays unverified.
 - **Rarity list order:** Secret Rare uses 1 in 114.3 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

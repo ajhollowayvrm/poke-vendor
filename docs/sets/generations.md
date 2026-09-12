@@ -134,6 +134,9 @@ rarities is its own entry.
 
 - The pack order is Unknown, including where the two Radiant
   Collection cards sit. This is the biggest gap for the rip screen.
+  Searched 2026-09-12: no source found. Bulbapedia and TCG Collector
+  describe the Radiant Collection's card numbering, not its pack
+  position.
 - Bulbapedia lists no non-holo Rare or Ultra Rare, but ThePriceDex
   does. Confirm the rarity list.
 - The main-set "8 cards" includes the reverse holo in the ThePriceDex

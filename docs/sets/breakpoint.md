@@ -18,7 +18,9 @@ community estimate**.
 
 - 10 cards per pack, plus 1 code card.
 - 1 rare slot, 1 reverse holo, 3 uncommons, 5 commons (ThePriceDex).
-- Where BREAK cards sit is Unknown.
+- **The BREAK card replaces the reverse holo, not the rare slot.** An
+  Elite Fourum thread states BREAK cards "took the place of the
+  reverse holo". Confidence: **community forum report**.
 
 ## Pack order
 
@@ -47,13 +49,17 @@ Ultra. The expansion list shows 1 secret rare.
 | Ultra Rare (full art) | 1 in 17.0 | 2.1 | Community estimate |
 | Secret Rare | 1 in 125 | 0.3 | Community estimate |
 
-All figures come from ThePriceDex. They add up to about 1.07 cards
-per pack for one slot. See
-[eras/xy.md](eras/xy.md#thepricedex-data-quality).
+**Resolved.** Rare BREAK sits in the reverse holo slot, not the rare
+slot (Elite Fourum; see [eras/xy.md](eras/xy.md#sets-that-break-the-template)).
+Without Rare BREAK, the remaining rare-slot rows add up to about 1.00
+card per pack: Rare (0.667) + Rare Holo (0.167) + Rare Holo EX (0.100)
++ Ultra Rare (0.059) + Secret Rare (0.008).
 
 A PokéBeach forum report of one booster box lists 3 BREAK cards
 (Raticate, Trevenant, and Luxray). Confidence: **anecdotal, one box**.
 The page returned HTTP 403, so this was seen only as a search snippet.
+This matches Elite Fourum posters reporting "2 or 3" BREAK cards per
+box.
 
 Flipside Gaming gives BREAK at "around 1:12 booster packs" and secret
 rares at 1:72 for the era (**community estimate**).
@@ -106,15 +112,15 @@ the most common entry to the rarest entry.
 - [PokéBeach — The English Booster Box "Pull Rates" Thread, page 52](https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-52)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
+- [Elite Fourum — Are BREAK Cards the same pull rates as Ultra Rares?](https://www.elitefourum.com/t/are-break-cards-the-same-pull-rates-as-ultra-rares/30934)
 
 ## Open topics
 
-- Which slot BREAK cards occupy is Unknown. The ThePriceDex rare-slot
-  figures add up to more than 1.
 - The BREAK rate conflicts: 1 in 15 (ThePriceDex) against about 1:12
   (Flipside Gaming).
 - No source shows a real opened BREAKpoint pack. The pack order is an
-  era-wide community claim.
+  era-wide community claim. Searched 2026-09-12: no source found.
 - The PokéBeach box data could not be read in full.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6 (see [eras/xy.md](eras/xy.md#sealed-products)).
+  Collation is Unknown.
 - **Rarity list order:** Secret Rare uses 1 in 125 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

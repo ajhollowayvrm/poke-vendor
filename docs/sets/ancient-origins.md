@@ -104,6 +104,7 @@ the most common entry to the rarest entry.
 - [ThePriceDex — Ancient Origins Pull Rates](https://www.thepricedex.com/set/xy7/ancient-origins/pull-rates)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Flipside Gaming — Rarity in the Pokemon TCG, Part Two](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two)
+- [Potomac Distribution — XY Ancient Origins Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokexyaobc)
 
 ## Open topics
 
@@ -113,5 +114,6 @@ the most common entry to the rarest entry.
   card numbers of the 3 shiny cards are Unknown.
 - No source shows a real opened Ancient Origins pack. The pack order
   is an era-wide community claim.
-- Boxes per case and collation are Unknown.
+- Boxes per case: 6 (see [eras/xy.md](eras/xy.md#sealed-products)).
+  Collation is Unknown.
 - **Rarity list order:** Rare Holo EX, Ultra Rare, and Secret Rare use 1 in 9, 1 in 21.4, and 1 in 50 from ThePriceDex. Flipside Gaming gives about 1 in 6, 1 in 12, and 1 in 72 for the era.
