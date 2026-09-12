@@ -192,7 +192,7 @@ file.
   set file has one. Each set file records, in its own Open
   topics, the entries with no odds and each choice about the order.
   A new set file must also get a rarity list.
-- At least six of the ten eras do not put the hit in the last three
+- At least six of the eleven eras do not put the hit in the last three
   cards: Wizards of the Coast, Diamond & Pearl and Platinum,
   HeartGold & SoulSilver, Black & White, XY, and Sword & Shield. Decide
   if the rip screen uses the real order or the pack-trick order (see

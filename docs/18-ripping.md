@@ -204,8 +204,6 @@ opened.
 
 - The real pack order for each set, from set research (see
   [13-sets.md](13-sets.md)).
-- The rarity list for each set: every rarity and variant, in order from
-  low to high. The 113 set files do not have this list yet.
 - A resealed or fake product that the player finds on opening (see
   [14-counterfeit-risk.md](14-counterfeit-risk.md)).
 - The condition of pulled cards (see [10-grading.md](10-grading.md)
