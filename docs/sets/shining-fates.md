@@ -315,6 +315,46 @@ TCGdex set `swsh4.5sv`: 122 cards.
 | SV120 | Dubwool V | Pokémon (Colorless) | Shiny rare V | Holo |
 | SV121 | Eternatus V | Pokémon (Darkness) | Secret Rare | Holo |
 | SV122 | Eternatus VMAX | Pokémon (Darkness) | Secret Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the era template gives the slots. A Shiny Vault card
+replaces the reverse holo card. This map puts the Amazing Rare in the
+rare slot, next to the other above-Holo-Rare tiers: no source gives its
+slot. The rarity list entry "Rare Secret" (main set, gold) has no
+matching card: the main table's only Secret Rare card is a Rainbow
+print. The map omits that outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Part: Shining Fates | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | Part: Shining Fates | 100% |
+| Reverse holo slot | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | Part: Shining Fates | Rest |
+| Reverse holo slot | 1 | Shiny Vault — Rare Shiny | Shiny Vault — Rare Shiny | Shiny rare | Holo | Part: Shining Fates Shiny Vault | 22.73% |
+| Reverse holo slot | 1 | Shiny Vault — Rare Shiny GX | Shiny Vault — Rare Shiny GX | Shiny rare V, Shiny rare VMAX | Holo | Part: Shining Fates Shiny Vault | 8.96% |
+| Reverse holo slot | 1 | Shiny Vault — Rare Secret | Shiny Vault — Rare Secret | Secret Rare | Holo | Part: Shining Fates Shiny Vault | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal or Holo | Part: Shining Fates | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | Part: Shining Fates | — |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | Part: Shining Fates | 10.84% |
+| Rare slot | 1 | Amazing Rare | Amazing Rare | Amazing Rare | Holo | Part: Shining Fates | 5.76% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | Part: Shining Fates | 5.44% |
+| Rare slot | 1 | Rare Ultra (full art) | Rare Ultra (full art) | Ultra Rare | Holo | Part: Shining Fates | 3.25% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo (Rainbow) | Part: Shining Fates | 1.19% |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -365,6 +405,13 @@ reverse holo card; each of its rarities is its own entry.
 - **Rarity list odds:** no source gives the odds per pack for Rare, Rare
   Holo, and Shiny Vault — Rare Secret. The era's rarity system decides the
   place of each one in the rarity list.
+- **Slot map: "Rare Secret" (gold) entry has no card.** The main table's
+  only Secret Rare is a single Rainbow print. The rarity list keeps the
+  entry from the era's rarity system, but the slot map has no outcome
+  for it.
+- **Slot map: 2 Rare cards have a plain Holo print instead of Normal.**
+  Their rarity is Rare, not Holo Rare. The Rare row uses `Normal or
+  Holo` to pick them up.
 - **Odds source is a community sample,** not an official or authentication
   study: Elite Fourum coded the outcomes from pack-opening videos. The rows
   sum to more than 100%, so a pack can hold more than one counted card (for

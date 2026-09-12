@@ -356,6 +356,46 @@ TCGdex set `swsh9tg`: 30 cards.
 | TG28 | Single Strike Style Mustard | Trainer (Supporter) | Ultra Rare | Holo |
 | TG29 | Single Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo |
 | TG30 | Rapid Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the era template gives the slots. A Trainer Gallery card
+replaces the reverse holo card. TG01–TG12 (TGH) match the "non-V,
+VMAX, or Trainer" tier; TG13–TG30 (TGV, TGU, TGS) match the "V, VMAX,
+or Trainer" tier. How often the VSTAR marker replaces the Energy card
+is Unknown, so both carry `—`.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Part: Brilliant Stars | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | Part: Brilliant Stars | 100% |
+| Reverse holo slot | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | Part: Brilliant Stars | Rest |
+| Reverse holo slot | 1 | Trainer Gallery — non-V, VMAX, or Trainer | Trainer Gallery — non-V, VMAX, or Trainer | Rare | Holo | Part: Brilliant Stars Trainer Gallery | 12.5% |
+| Reverse holo slot | 1 | Trainer Gallery — V, VMAX, or Trainer | Trainer Gallery — V, VMAX, or Trainer | Ultra Rare, Secret Rare | Holo | Part: Brilliant Stars Trainer Gallery | 5.56% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Part: Brilliant Stars | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | Part: Brilliant Stars | 26.39% |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | Part: Brilliant Stars | 14.94% |
+| Rare slot | 1 | Rare Ultra (full art and alternate art) | Rare Ultra (full art and alternate art) | Ultra Rare | Holo | Part: Brilliant Stars | 4.98% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo (Rainbow) | Part: Brilliant Stars | 1.96% |
+| Rare slot | 1 | Rare VSTAR | Rare VSTAR | Holo Rare VSTAR | Holo | Part: Brilliant Stars | 1.89% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | Part: Brilliant Stars | 1.89% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo (Gold) | Part: Brilliant Stars | 1.09% |
+| Basic Energy or VSTAR marker | 1 | Basic Energy | — | — | — | — | — |
+| Basic Energy or VSTAR marker | 1 | VSTAR marker | — | — | — | — | — |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -177,6 +177,44 @@ TCGdex set `cel25cc`: 25 cards.
 | CC023 | Xerneas EX | Pokémon (Fairy) | Classic Collection | Holo |
 | CC024 | M Rayquaza EX | Pokémon (Colorless) | Classic Collection | Holo |
 | CC025 | Tapu Lele GX | Pokémon (Psychic) | Classic Collection | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: SlashGear says at least 3 of the 4 cards are base-set cards,
+and at most 1 is a Classic Collection card. This map uses 3 guaranteed
+"Base card" slots and 1 "Base or Classic card" slot. No source splits
+the odds among the 6 base-set rarities, so each carries `—`. No source
+confirms an Energy card or a code card in this pack, so the map has no
+row for either.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Base card | 3 | Rare | Rare | Rare | Holo | Part: Celebrations | — |
+| Base card | 3 | Rare Holo | Rare Holo | Holo Rare | Holo | Part: Celebrations | — |
+| Base card | 3 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | Part: Celebrations | — |
+| Base card | 3 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | Part: Celebrations | — |
+| Base card | 3 | Rare Ultra | Rare Ultra | Ultra Rare | Holo | Part: Celebrations | — |
+| Base card | 3 | Rare Secret | Rare Secret | Secret Rare | Holo | Part: Celebrations | — |
+| Base or Classic card | 1 | Classic Collection | Classic Collection | Classic Collection | Holo (25th celebration) or Holo | Part: Celebrations Classic Collection | 40.1% |
+| Base or Classic card | 1 | Rare | Rare | Rare | Holo | Part: Celebrations | — |
+| Base or Classic card | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | Part: Celebrations | — |
+| Base or Classic card | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | Part: Celebrations | — |
+| Base or Classic card | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | Part: Celebrations | — |
+| Base or Classic card | 1 | Rare Ultra | Rare Ultra | Ultra Rare | Holo | Part: Celebrations | — |
+| Base or Classic card | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | Part: Celebrations | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

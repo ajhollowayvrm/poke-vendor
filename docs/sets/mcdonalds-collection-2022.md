@@ -116,6 +116,32 @@ Every card in the set, with its variants. Source: the TCGdex API (set `2022swsh`
 | 13/15 | Pangoro | Pokémon (Darkness) | None | Holo, Normal |
 | 14/15 | Drampa | Pokémon (Colorless) | None | Holo, Normal |
 | 15/15 | Smeargle | Pokémon (Colorless) | None | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: a search summary gives the 1-Holofoil, 3-Non-Holofoil
+structure; no primary source confirms it for this set. Only 6 of the
+15 cards carry a Holo print (Rowlet, Gossifleur, Growlithe, Victini,
+Pikachu, Smeargle); only 9 carry a Normal print. `Cards: All` on each
+row lets the Variant column narrow the pool to the right cards.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Holofoil | 1 | Holofoil | Holofoil | None | Holo | All | 100% |
+| Non-Holofoil | 3 | Non-Holofoil | Non-Holofoil | None | Normal | All | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -403,6 +403,44 @@ TCGdex set `swsh12.5gg`: 70 cards.
 | GG68 | Origin Forme Dialga VSTAR | Pokémon (Metal) | Secret Rare | Holo |
 | GG69 | Giratina VSTAR | Pokémon (Dragon) | Secret Rare | Holo |
 | GG70 | Arceus VSTAR | Pokémon (Colorless) | Secret Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: CardShopLive and TCGplayer confirm the Galarian Gallery and
+Radiant cards use the reverse holo slot. No source confirms a VSTAR
+marker for this set, so the map has only a Basic Energy slot.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Part: Crown Zenith | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | Part: Crown Zenith | 100% |
+| Reverse holo slot | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | Part: Crown Zenith | Rest |
+| Reverse holo slot | 1 | Galarian Gallery — non-V Pokémon | Galarian Gallery — non-V Pokémon | Rare | Holo | Part: Crown Zenith Galarian Gallery | 22.40% |
+| Reverse holo slot | 1 | Galarian Gallery — Pokémon V or Trainer | Galarian Gallery — Pokémon V or Trainer | Ultra Rare | Holo | Part: Crown Zenith Galarian Gallery | 12.00% |
+| Reverse holo slot | 1 | Galarian Gallery — gold VSTAR | Galarian Gallery — gold VSTAR | Secret Rare | Holo | Part: Crown Zenith Galarian Gallery | 0.80% |
+| Reverse holo slot | 1 | Rare Radiant | Rare Radiant | Radiant Rare | Holo | Part: Crown Zenith | 4.55% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Part: Crown Zenith | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | Part: Crown Zenith | 40.16% |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | Part: Crown Zenith | 12.35% |
+| Rare slot | 1 | Rare VSTAR | Rare VSTAR | Holo Rare VSTAR | Holo | Part: Crown Zenith | 5.30% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | Part: Crown Zenith | 5.30% |
+| Rare slot | 1 | Rare Ultra (textured Energy and full-art Trainers) | Rare Ultra (textured Energy and full-art Trainers) | Ultra Rare | Holo | Part: Crown Zenith | 2.85% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | Part: Crown Zenith | 0.75% |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

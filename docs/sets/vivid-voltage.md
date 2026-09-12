@@ -304,6 +304,42 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh4`), 
 | 201/185 | Hero's Medal | Trainer (Tool) | Secret Rare | Holo (Gold) |
 | 202/185 | Memory Capsule | Trainer (Tool) | Secret Rare | Holo (Gold) |
 | 203/185 | Telescopic Sight | Trainer (Tool) | Secret Rare | Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: no source says whether an Amazing Rare replaces the reverse
+holo or the rare slot card. This map puts it in the rare slot, next to
+the other above-Holo-Rare tiers, because the DigitalTQ sample counts it
+alongside them.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 21.75% |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | All | 12.7% |
+| Rare slot | 1 | Amazing Rare | Amazing Rare | Amazing Rare | Holo | All | 5.71% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | All | 4.29% |
+| Rare slot | 1 | Rare Ultra (full art) | Rare Ultra (full art) | Ultra Rare | Holo | All | 3.97% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo (Rainbow) | All | 1.27% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo (Gold) | All | 1.11% |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -348,3 +384,11 @@ the Bulbapedia rarity labels; see Open topics for the mapping caveat.
   to Bulbapedia labels.
 - Pack order has no set-specific source. Which end faces the wrapper front
   is Searched 2026-09-12: no source found (see the era file).
+- **Slot map: Rare odds not usable.** The rarity list gives Rare as
+  55.56%, but the other rare-slot outcomes already sum to 50.8%. Adding
+  55.56% would pass 100%, so ThePriceDex's Rare figure is not a share of
+  this slot on its own terms. The slot map marks Rare odds as `—`.
+- **Slot map: two anomalous variants stay unused.** Dialga (121/185, Holo
+  Rare) has a plain Normal print. Pokémon Center Lady (185/185, Ultra
+  Rare) has a plain Normal print. Neither fits a slot in the era
+  template.

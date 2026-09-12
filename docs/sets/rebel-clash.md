@@ -301,6 +301,40 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh2`), 
 | 207/192 | Scoop Up Net | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 208/192 | Tool Scrapper | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 209/192 | Twin Energy | Energy (Special) | Secret Rare | Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the era template gives the slots. The Rare and Rare Holo
+split is Unknown; only the rarities above Holo Rare have measured
+odds.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal or Holo | All | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | — |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | All | 12.65% |
+| Rare slot | 1 | Rare Ultra (full art) | Rare Ultra (full art) | Ultra Rare | Holo | All | 3.76% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | All | 3.40% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo (Rainbow) | All | 1.50% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo (Gold) | All | 0.95% |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -342,5 +376,10 @@ set, so the order follows the era's rarity system.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare
   Holo. The era's rarity system decides the place of each one in the rarity
   list.
+- **Slot map: Rare + Holo anomaly.** Butterfree (3/192) has a plain Holo
+  variant in addition to Normal and Reverse holo, though its rarity is
+  Rare, not Holo Rare. The Rare row uses `Normal or Holo`; since
+  Butterfree also has Normal, this makes no practical difference for
+  that card.
 - **Odds source is a community sample,** not an official or authentication
   study: Elite Fourum coded the outcomes from pack-opening videos.

@@ -317,6 +317,42 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh1`), 
 | 214/202 | Metal Saucer | Trainer (Item) | Secret Rare | Holo |
 | 215/202 | Ordinary Rod | Trainer (Item) | Secret Rare | Holo |
 | 216/202 | Quick Ball | Trainer (Item) | Secret Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the era template gives the slots. The Rare and Rare Holo
+split is Unknown; only the rarities above Holo Rare have measured
+odds. The Rare Rainbow and Rare Secret split by card number is an
+assumption: TCGdex records both as one rarity with no distinguishing
+variant, so the map takes the Bulbapedia counts in order by number.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | — |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | All | 14.20% |
+| Rare slot | 1 | Rare Ultra (full art) | Rare Ultra (full art) | Ultra Rare | Holo | All | 3.74% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | All | 2.20% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo | Nos. 203–210 | 1.23% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | Nos. 211–216 | 0.91% |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -360,5 +396,13 @@ set, so the order follows the era's rarity system.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare
   Holo. The era's rarity system decides the place of each one in the rarity
   list.
+- **Slot map: Rare Rainbow vs. Rare Secret split.** TCGdex gives one
+  rarity, Secret Rare, for numbers 203–216, with no variant to split
+  Rainbow from Gold. The map assigns Nos. 203–210 to Rare Rainbow and
+  Nos. 211–216 to Rare Secret, in card number order, to match the
+  Bulbapedia counts of 8 and 6. Card identity is not confirmed.
+- **Slot map: Holo Rare VMAX Reverse holo.** 2 of the 6 Holo Rare VMAX
+  cards have a Reverse holo variant. The map does not use it: no slot
+  in this era draws a reverse holo of a VMAX card. It stays unused.
 - **Odds source is a community sample,** not an official or authentication
   study: Elite Fourum coded the outcomes from pack-opening videos.

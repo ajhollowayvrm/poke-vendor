@@ -390,6 +390,47 @@ TCGdex set `swsh10tg`: 30 cards.
 | TG28 | Piers | Trainer (Supporter) | Ultra Rare | Holo |
 | TG29 | Ice Rider Calyrex VMAX | Pokémon (Water) | Secret Rare | Holo, Holo (Gold) |
 | TG30 | Shadow Rider Calyrex VMAX | Pokémon (Psychic) | Secret Rare | Holo, Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the era template gives the slots. This set's Radiant slot
+is Unknown; the map puts it in the reverse holo slot, matching Crown
+Zenith, a later set in this era with a confirmed Radiant slot. TG29 and
+TG30 also have a Holo (Gold) print; the map uses their plain Holo
+print, matching the other Trainer Gallery secret rares.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Part: Astral Radiance | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | Part: Astral Radiance | 100% |
+| Reverse holo slot | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | Part: Astral Radiance | Rest |
+| Reverse holo slot | 1 | Trainer Gallery — non-V Pokémon | Trainer Gallery — non-V Pokémon | Rare | Holo | Part: Astral Radiance Trainer Gallery | 8.48% |
+| Reverse holo slot | 1 | Trainer Gallery — V, VMAX, or Trainer | Trainer Gallery — V, VMAX, or Trainer | Ultra Rare, Secret Rare | Holo | Part: Astral Radiance Trainer Gallery | 4.10% |
+| Reverse holo slot | 1 | Rare Radiant | Rare Radiant | Radiant Rare | Holo | Part: Astral Radiance | 4.88% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Part: Astral Radiance | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | Part: Astral Radiance | 25.53% |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | Part: Astral Radiance | 12.77% |
+| Rare slot | 1 | Rare Ultra (full art and alternate art) | Rare Ultra (full art and alternate art) | Ultra Rare | Holo | Part: Astral Radiance | 3.95% |
+| Rare slot | 1 | Rare VSTAR | Rare VSTAR | Holo Rare VSTAR | Holo | Part: Astral Radiance | 3.47% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | Part: Astral Radiance | 3.47% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo (Rainbow) | Part: Astral Radiance | 1.28% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo (Gold) | Part: Astral Radiance | 0.76% |
+| Basic Energy or VSTAR marker | 1 | Basic Energy | — | — | — | — | — |
+| Basic Energy or VSTAR marker | 1 | VSTAR marker | — | — | — | — | — |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

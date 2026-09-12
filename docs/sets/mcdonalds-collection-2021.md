@@ -125,6 +125,30 @@ Every card in the set, with its variants. Source: the TCGdex API (set `2021swsh`
 | 23/25 | Popplio | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
 | 24/25 | Sobble | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
 | 25/25 | Pikachu | Pokémon (Lightning) | None | Normal (25th celebration), Holo (25th celebration) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the pack structure table above is an empirical study of 450
+packs (Titan Cards). Every card has close to an even chance within its
+slot.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Non-Holofoil | 3 | Non-Holofoil | Non-Holofoil | None | Normal (25th celebration) | All | 100% |
+| Confetti Holofoil | 1 | Confetti Holofoil | Confetti Holofoil | None | Holo (25th celebration) | All | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

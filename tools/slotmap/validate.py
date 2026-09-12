@@ -110,6 +110,7 @@ def validate(slug):
         errors.append("slot map table has no rows")
     used = set()
     slots = collections.OrderedDict()
+    per_slot = collections.defaultdict(dict)
     for slot, count, outcome, entry, trar, variant, filt, odds in smrows:
         slots.setdefault(slot, []).append(odds)
         if trar == "—":
@@ -144,6 +145,13 @@ def validate(slug):
             errors.append(f"{slot} / {outcome}: no card matches {names} + {variant!r} + {filt!r}")
         for c, v in matched:
             used.add((c["num"], c["part"], v))
+        keys = {(c["num"], c["part"], v) for c, v in matched}
+        for other, okeys in per_slot[slot].items():
+            both = keys & okeys
+            if both:
+                sample = ", ".join(f"{n} {v}" for n, _, v in sorted(both)[:3])
+                errors.append(f"slot {slot!r}: outcomes {other!r} and {outcome!r} match the same {len(both)} card(s), e.g. {sample}")
+        per_slot[slot][outcome] = keys
     for slot, odds_list in slots.items():
         vals = [pct(o) for o in odds_list if o not in ("Rest", "—")]
         rest = odds_list.count("Rest")

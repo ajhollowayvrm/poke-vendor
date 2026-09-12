@@ -139,6 +139,33 @@ Every card in the set, with its variants. Source: the Bulbapedia set list for Tr
 | Astral Radiance 059/189 | Mismagius | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
 | Astral Radiance 103/189 | Nickit | Pokémon (Darkness) | Common | Normal (Pikachu jack-o'-lantern stamp) |
 
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the rippr.app summary gives 1 guaranteed Rare Holo card and
+2 Common-or-Uncommon cards per 3-card pack. Card numbers keep their
+original set, so `Cards` uses `All` rather than a number range. No
+source splits the odds between Common and Uncommon within the
+non-holo slot.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Holo | 1 | Rare Holo | Rare Holo | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) | All | 100% |
+| Non-holo | 2 | Common | Common | Common | Normal (Pikachu jack-o'-lantern stamp) | All | — |
+| Non-holo | 2 | Uncommon | Uncommon | Uncommon | Normal (Pikachu jack-o'-lantern stamp) | All | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

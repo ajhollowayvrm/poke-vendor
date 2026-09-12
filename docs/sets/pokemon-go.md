@@ -196,6 +196,44 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh10.5`
 | 086/078 | Mewtwo VSTAR | Pokémon (Psychic) | Secret Rare | Holo (Gold) |
 | 087/078 | Egg Incubator | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 088/078 | Lure Module | Trainer (Item) | Secret Rare | Holo (Gold) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: the era template gives the slots. The set list has no plain
+Rare cards, so the rare slot holds Rare Holo or higher. The Radiant
+slot is Unknown; the map puts it in the reverse holo slot, matching
+Astral Radiance and Crown Zenith. The DigitalTQ figures sum past 100%
+even with Radiant moved out, so the map uses Rest for Rare Holo.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo slot | 1 | Reverse holo | Reverse holo | Common, Uncommon, Holo Rare | Reverse holo | All | Rest |
+| Reverse holo slot | 1 | Rare Radiant | Rare Radiant | Radiant Rare | Holo | All | 5.39% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | Rest |
+| Rare slot | 1 | Ultra-Rare Rare (Pokémon V) | Ultra-Rare Rare (Pokémon V) | Holo Rare V | Holo | All | 15.9% |
+| Rare slot | 1 | Rare Ultra (full art and alternate art) | Rare Ultra (full art and alternate art) | Ultra Rare | Holo | All | 5.39% |
+| Rare slot | 1 | Rare VSTAR | Rare VSTAR | Holo Rare VSTAR | Holo | All | 3.77% |
+| Rare slot | 1 | Rare Rainbow | Rare Rainbow | Secret Rare | Holo (Rainbow) | All | 3.23% |
+| Rare slot | 1 | Rare VMAX | Rare VMAX | Holo Rare VMAX | Holo | All | 2.16% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo (Gold) | All | 0.54% |
+| Basic Energy or VSTAR marker | 1 | Basic Energy | — | — | — | — | — |
+| Basic Energy or VSTAR marker | 1 | VSTAR marker | — | — | — | — | — |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -239,3 +277,7 @@ Rare Holo or higher card.
 - Pack order: one guide only. Which end faces the wrapper front is Searched
   2026-09-12: no source found (see the era file).
 - **Rarity list order:** the DigitalTQ rows add to more than 100%, so some packs hold two counted cards. The rarity list odds may overstate how often a pack stops early.
+- **Slot map: Hidden Ditto stays unused.** Spinarak (6), Numel (13), and
+  Bidoof (59) carry a Reverse holo (Peelable ditto) print. No source
+  gives its odds, and the 3 numbers are not adjacent, so the map does
+  not add a row for it.
