@@ -82,6 +82,146 @@ rares at 1:72 for the era (**community estimate**).
 
 Collation: Unknown. No source states a fixed number of hits per box.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `xy10`), fetched 2026-09-12. The list has 129 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/124 | Shuckle | Pokémon (Grass) | Uncommon | Normal |
+| 2/124 | Burmy | Pokémon (Grass) | Common | Normal |
+| 3/124 | Wormadam | Pokémon (Grass) | Uncommon | Normal |
+| 4/124 | Mothim | Pokémon (Grass) | Rare | Normal |
+| 5/124 | Snivy | Pokémon (Grass) | Common | Normal |
+| 6/124 | Servine | Pokémon (Grass) | Uncommon | Normal |
+| 7/124 | Serperior | Pokémon (Grass) | Rare | Normal |
+| 8/124 | Deerling | Pokémon (Grass) | Common | Normal |
+| 9/124 | Moltres | Pokémon (Fire) | Rare | Normal |
+| 10/124 | Fennekin | Pokémon (Fire) | Common | Normal |
+| 11/124 | Fennekin | Pokémon (Fire) | Common | Normal |
+| 12/124 | Braixen | Pokémon (Fire) | Uncommon | Normal |
+| 13/124 | Delphox | Pokémon (Fire) | Rare | Normal |
+| 14/124 | Delphox BREAK | Pokémon (Fire) | Ultra Rare | Normal |
+| 15/124 | Seel | Pokémon (Water) | Common | Normal |
+| 16/124 | Dewgong | Pokémon (Water) | Uncommon | Normal |
+| 17/124 | Omanyte | Pokémon (Water) | Uncommon | Normal |
+| 18/124 | Omastar | Pokémon (Water) | Rare | Normal |
+| 19/124 | Omastar BREAK | Pokémon (Water) | Ultra Rare | Normal |
+| 20/124 | Glaceon EX | Pokémon (Water) | Ultra Rare | Normal |
+| 21/124 | White Kyurem | Pokémon (Water) | Rare | Normal |
+| 22/124 | Binacle | Pokémon (Water) | Common | Normal |
+| 23/124 | Barbaracle | Pokémon (Water) | Rare | Normal |
+| 24/124 | Rotom | Pokémon (Lightning) | Rare | Normal |
+| 25/124 | Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 26/124 | M Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 27/124 | Koffing | Pokémon (Psychic) | Common | Normal |
+| 28/124 | Weezing | Pokémon (Psychic) | Uncommon | Normal |
+| 29/124 | Mew | Pokémon (Psychic) | Rare | Normal |
+| 30/124 | Spoink | Pokémon (Psychic) | Common | Normal |
+| 31/124 | Grumpig | Pokémon (Psychic) | Rare | Normal |
+| 32/124 | Gothita | Pokémon (Psychic) | Common | Normal |
+| 33/124 | Solosis | Pokémon (Psychic) | Common | Normal |
+| 34/124 | Duosion | Pokémon (Psychic) | Uncommon | Normal |
+| 35/124 | Reuniclus | Pokémon (Psychic) | Rare | Normal |
+| 36/124 | Diglett | Pokémon (Fighting) | Common | Normal |
+| 37/124 | Marowak | Pokémon (Fighting) | Rare | Normal |
+| 38/124 | Kabuto | Pokémon (Fighting) | Uncommon | Normal |
+| 39/124 | Kabutops | Pokémon (Fighting) | Rare | Normal |
+| 40/124 | Larvitar | Pokémon (Fighting) | Common | Normal |
+| 41/124 | Larvitar | Pokémon (Fighting) | Common | Normal |
+| 42/124 | Pupitar | Pokémon (Fighting) | Uncommon | Normal |
+| 43/124 | Regirock EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 43a | Regirock EX | Pokémon (Fighting) | Rare | Normal |
+| 44/124 | Wormadam | Pokémon (Fighting) | Uncommon | Normal |
+| 45/124 | Riolu | Pokémon (Fighting) | Common | Normal |
+| 46/124 | Riolu | Pokémon (Fighting) | Common | Normal |
+| 47/124 | Lucario | Pokémon (Fighting) | Rare | Normal |
+| 48/124 | Hawlucha | Pokémon (Fighting) | Uncommon | Normal |
+| 49/124 | Carbink | Pokémon (Fighting) | Rare | Normal |
+| 50/124 | Carbink | Pokémon (Fighting) | Common | Normal |
+| 51/124 | Carbink BREAK | Pokémon (Fighting) | Ultra Rare | Normal |
+| 52/124 | Zygarde | Pokémon (Fighting) | Uncommon | Normal |
+| 53/124 | Zygarde | Pokémon (Fighting) | Rare | Normal |
+| 54/124 | Zygarde EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 54a | Zygarde EX | Pokémon (Fighting) | Rare | Normal |
+| 55/124 | Umbreon EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 56/124 | Tyranitar | Pokémon (Darkness) | Rare | Normal |
+| 57/124 | Vullaby | Pokémon (Darkness) | Common | Normal |
+| 58/124 | Mandibuzz | Pokémon (Darkness) | Rare | Normal |
+| 59/124 | Wormadam | Pokémon (Metal) | Uncommon | Normal |
+| 60/124 | Bronzor | Pokémon (Metal) | Common | Normal |
+| 61/124 | Bronzong | Pokémon (Metal) | Rare | Normal |
+| 62/124 | Bronzong BREAK | Pokémon (Metal) | Ultra Rare | Normal |
+| 63/124 | Lucario | Pokémon (Metal) | Rare | Normal |
+| 64/124 | Genesect EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 65/124 | Jigglypuff | Pokémon (Fairy) | Common | Normal |
+| 66/124 | Wigglytuff | Pokémon (Fairy) | Uncommon | Normal |
+| 67/124 | Mr. Mime | Pokémon (Fairy) | Rare | Normal |
+| 68/124 | Snubbull | Pokémon (Fairy) | Common | Normal |
+| 69/124 | M Altaria EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 70/124 | Cottonee | Pokémon (Fairy) | Common | Normal |
+| 71/124 | Whimsicott | Pokémon (Fairy) | Uncommon | Normal |
+| 72/124 | Diancie EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 73/124 | Kingdra EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 74/124 | Meowth | Pokémon (Colorless) | Common | Normal |
+| 75/124 | Kangaskhan | Pokémon (Colorless) | Uncommon | Normal |
+| 76/124 | Aerodactyl | Pokémon (Colorless) | Rare | Normal |
+| 77/124 | Snorlax | Pokémon (Colorless) | Rare | Normal |
+| 78/124 | Lugia | Pokémon (Colorless) | Rare | Normal |
+| 79/124 | Lugia BREAK | Pokémon (Colorless) | Ultra Rare | Normal |
+| 80/124 | Whismur | Pokémon (Colorless) | Common | Normal |
+| 81/124 | Loudred | Pokémon (Colorless) | Uncommon | Normal |
+| 82/124 | Exploud | Pokémon (Colorless) | Rare | Normal |
+| 83/124 | Altaria EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 84/124 | Audino EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 85/124 | M Audino EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 86/124 | Minccino | Pokémon (Colorless) | Common | Normal |
+| 87/124 | Minccino | Pokémon (Colorless) | Common | Normal |
+| 88/124 | Cinccino | Pokémon (Colorless) | Uncommon | Normal |
+| 89/124 | Cinccino | Pokémon (Colorless) | Uncommon | Normal |
+| 90/124 | Alakazam Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 91/124 | Altaria Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 92/124 | Audino Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 93/124 | Bent Spoon | Trainer (Tool) | Uncommon | Normal |
+| 94/124 | Chaos Tower | Trainer (Stadium) | Uncommon | Normal |
+| 95/124 | Devolution Spray | Trainer (Item) | Uncommon | Normal |
+| 96/124 | Dome Fossil Kabuto | Trainer (Item) | Uncommon | Normal |
+| 97/124 | Energy Pouch | Trainer (Tool) | Uncommon | Normal |
+| 98/124 | Energy Reset | Trainer (Item) | Uncommon | Normal |
+| 99/124 | Fairy Drop | Trainer (Item) | Uncommon | Normal |
+| 100/124 | Fairy Garden | Trainer (Stadium) | Uncommon | Normal |
+| 101/124 | Fossil Excavation Kit | Trainer (Item) | Uncommon | Normal |
+| 102/124 | Helix Fossil Omanyte | Trainer (Item) | Uncommon | Normal |
+| 103/124 | Lass's Special | Trainer (Supporter) | Uncommon | Normal |
+| 104/124 | Mega Catcher | Trainer (Item) | Uncommon | Normal |
+| 105/124 | N | Trainer (Supporter) | Uncommon | Normal |
+| 105a | N | Trainer (Supporter) | Ultra Rare | Normal |
+| 106/124 | Old Amber Aerodactyl | Trainer (Item) | Uncommon | Normal |
+| 107/124 | Pokémon Fan Club | Trainer (Supporter) | Uncommon | Normal |
+| 108/124 | Power Memory | Trainer (Tool) | Uncommon | Normal |
+| 109/124 | Random Receiver | Trainer (Item) | Uncommon | Normal |
+| 110/124 | Scorched Earth | Trainer (Stadium) | Uncommon | Normal |
+| 111/124 | Shauna | Trainer (Supporter) | Uncommon | Normal |
+| 111a | Shauna | Trainer (Supporter) | Uncommon | Normal |
+| 112/124 | Team Rocket's Handiwork | Trainer (Supporter) | Uncommon | Normal |
+| 113/124 | Ultra Ball | Trainer (Item) | Uncommon | Normal |
+| 114/124 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
+| 115/124 | Strong Energy | Energy (Special) | Uncommon | Normal |
+| 116/124 | Glaceon EX | Pokémon (Water) | Ultra Rare | Normal |
+| 117/124 | Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 118/124 | M Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 119/124 | Umbreon EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 120/124 | Genesect EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 121/124 | M Altaria EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 122/124 | Kingdra EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 123/124 | Altaria EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 124/124 | Team Rocket's Handiwork | Trainer (Supporter) | Ultra Rare | Normal |
+| 125/124 | Alakazam EX | Pokémon (Psychic) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

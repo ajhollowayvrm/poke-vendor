@@ -92,6 +92,134 @@ candidates: the main rare slot and the RC slot.
 
 Collation: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `g1`), fetched 2026-09-12. The list has 117 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/83 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 2/83 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 3/83 | Caterpie | Pokémon (Grass) | Common | Normal |
+| 4/83 | Metapod | Pokémon (Grass) | Uncommon | Normal |
+| 5/83 | Butterfree | Pokémon (Grass) | Rare | Normal |
+| 6/83 | Paras | Pokémon (Grass) | Common | Normal |
+| 7/83 | Parasect | Pokémon (Grass) | Rare | Normal |
+| 8/83 | Tangela | Pokémon (Grass) | Common | Normal |
+| 9/83 | Pinsir | Pokémon (Grass) | Rare | Normal |
+| 10/83 | Leafeon EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 11/83 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 12/83 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 13/83 | Ninetales EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 14/83 | Ponyta | Pokémon (Fire) | Common | Normal |
+| 15/83 | Rapidash | Pokémon (Fire) | Rare | Normal |
+| 16/83 | Magmar | Pokémon (Fire) | Common | Normal |
+| 17/83 | Blastoise EX | Pokémon (Water) | Ultra Rare | Normal |
+| 18/83 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Normal |
+| 19/83 | Shellder | Pokémon (Water) | Common | Normal |
+| 20/83 | Cloyster | Pokémon (Water) | Uncommon | Normal |
+| 21/83 | Krabby | Pokémon (Water) | Common | Normal |
+| 22/83 | Magikarp | Pokémon (Water) | Common | Normal |
+| 23/83 | Gyarados | Pokémon (Water) | Rare | Normal |
+| 24/83 | Vaporeon EX | Pokémon (Water) | Ultra Rare | Normal |
+| 25/83 | Articuno | Pokémon (Water) | Ultra Rare | Normal |
+| 26/83 | Pikachu | Pokémon (Lightning) | Common | Normal |
+| 27/83 | Raichu | Pokémon (Lightning) | Rare | Normal |
+| 28/83 | Jolteon EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 28a | Jolteon-EX | Pokémon (Lightning) | Rare | Normal |
+| 29/83 | Zapdos | Pokémon (Lightning) | Ultra Rare | Normal |
+| 30/83 | Zubat | Pokémon (Psychic) | Common | Normal |
+| 31/83 | Golbat | Pokémon (Psychic) | Uncommon | Normal |
+| 32/83 | Slowpoke | Pokémon (Psychic) | Common | Normal |
+| 33/83 | Gastly | Pokémon (Psychic) | Common | Normal |
+| 34/83 | Haunter | Pokémon (Psychic) | Uncommon | Normal |
+| 35/83 | Gengar | Pokémon (Psychic) | Rare | Normal |
+| 36/83 | Jynx | Pokémon (Psychic) | Rare | Normal |
+| 37/83 | Meowstic EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 38/83 | Diglett | Pokémon (Fighting) | Common | Normal |
+| 39/83 | Dugtrio | Pokémon (Fighting) | Rare | Normal |
+| 40/83 | Machop | Pokémon (Fighting) | Common | Normal |
+| 41/83 | Machoke | Pokémon (Fighting) | Uncommon | Normal |
+| 42/83 | Machamp | Pokémon (Fighting) | Rare | Normal |
+| 43/83 | Geodude | Pokémon (Fighting) | Common | Normal |
+| 44/83 | Graveler | Pokémon (Fighting) | Uncommon | Normal |
+| 45/83 | Golem | Pokémon (Fighting) | Rare | Normal |
+| 46/83 | Golem EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 47/83 | Hitmonlee | Pokémon (Fighting) | Rare | Normal |
+| 48/83 | Hitmonchan | Pokémon (Fighting) | Rare | Normal |
+| 49/83 | Rhyhorn | Pokémon (Fighting) | Common | Normal |
+| 50/83 | Clefairy | Pokémon (Fairy) | Common | Normal |
+| 51/83 | Clefable | Pokémon (Fairy) | Uncommon | Normal |
+| 52/83 | Mr. Mime | Pokémon (Fairy) | Uncommon | Normal |
+| 53/83 | Meowth | Pokémon (Colorless) | Common | Normal |
+| 54/83 | Persian | Pokémon (Colorless) | Uncommon | Normal |
+| 55/83 | Doduo | Pokémon (Colorless) | Common | Normal |
+| 56/83 | Dodrio | Pokémon (Colorless) | Rare | Normal |
+| 57/83 | Tauros | Pokémon (Colorless) | Rare | Normal |
+| 58/83 | Snorlax | Pokémon (Colorless) | Rare | Normal |
+| 59/83 | Clemont | Trainer (Supporter) | Uncommon | Normal |
+| 60/83 | Crushing Hammer | Trainer (Item) | Uncommon | Normal |
+| 61/83 | Energy Switch | Trainer (Item) | Uncommon | Normal |
+| 62/83 | Evosoda | Trainer (Item) | Uncommon | Normal |
+| 63/83 | Imakuni? | Trainer (Supporter) | Uncommon | Normal |
+| 64/83 | Maintenance | Trainer (Item) | Uncommon | Normal |
+| 65/83 | Max Revive | Trainer (Item) | Uncommon | Normal |
+| 66/83 | Olympia | Trainer (Supporter) | Uncommon | Normal |
+| 67/83 | Poké Ball | Trainer (Item) | Uncommon | Normal |
+| 68/83 | Pokémon Center Lady | Trainer (Supporter) | Uncommon | Normal |
+| 69/83 | Pokémon Fan Club | Trainer (Supporter) | Uncommon | Normal |
+| 70/83 | Revitalizer | Trainer (Item) | Uncommon | Normal |
+| 71/83 | Red Card | Trainer (Item) | Uncommon | Normal |
+| 72/83 | Shauna | Trainer (Supporter) | Uncommon | Normal |
+| 73/83 | Team Flare Grunt | Trainer (Supporter) | Uncommon | Normal |
+| 73a | Team Flare Grunt | Trainer (Supporter) | Uncommon | Normal |
+| 74/83 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
+| 75/83 | Grass Energy | Energy (Normal) | Common | Normal |
+| 76/83 | Fire Energy | Energy (Normal) | Common | Normal |
+| 77/83 | Water Energy | Energy (Normal) | Common | Normal |
+| 78/83 | Lightning Energy | Energy (Normal) | Common | Normal |
+| 79/83 | Psychic Energy | Energy (Normal) | Common | Normal |
+| 80/83 | Fighting Energy | Energy (Normal) | Common | Normal |
+| 81/83 | Darkness Energy | Energy (Normal) | Common | Normal |
+| 82/83 | Metal Energy | Energy (Normal) | Common | Normal |
+| 83/83 | Fairy Energy | Energy (Normal) | Common | Normal |
+| RC1 | Chikorita | Pokémon (Grass) | Common | Normal |
+| RC2 | Shroomish | Pokémon (Grass) | Common | Normal |
+| RC3 | Charmander | Pokémon (Fire) | Common | Normal |
+| RC4 | Charmeleon | Pokémon (Fire) | Common | Normal |
+| RC5 | Charizard | Pokémon (Fire) | Uncommon | Normal |
+| RC6 | Flareon EX | Pokémon (Fire) | Ultra Rare | Normal |
+| RC7 | Snorunt | Pokémon (Water) | Common | Normal |
+| RC8 | Froslass | Pokémon (Water) | Uncommon | Normal |
+| RC9 | Raichu | Pokémon (Lightning) | Common | Normal |
+| RC10 | Dedenne | Pokémon (Lightning) | Uncommon | Normal |
+| RC11 | Wobbuffet | Pokémon (Psychic) | Common | Normal |
+| RC12 | Gulpin | Pokémon (Psychic) | Common | Normal |
+| RC13 | Jirachi | Pokémon (Psychic) | Uncommon | Normal |
+| RC14 | Espurr | Pokémon (Psychic) | Common | Normal |
+| RC15 | Meowstic | Pokémon (Psychic) | Uncommon | Normal |
+| RC16 | Yveltal | Pokémon (Darkness) | Uncommon | Normal |
+| RC17 | Flabébé | Pokémon (Fairy) | Common | Normal |
+| RC18 | Floette | Pokémon (Fairy) | Uncommon | Normal |
+| RC19 | Swirlix | Pokémon (Fairy) | Uncommon | Normal |
+| RC20 | Slurpuff | Pokémon (Fairy) | Uncommon | Normal |
+| RC21 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| RC22 | Diancie | Pokémon (Fairy) | Uncommon | Normal |
+| RC23 | Swablu | Pokémon (Colorless) | Common | Normal |
+| RC24 | Altaria | Pokémon (Colorless) | Uncommon | Normal |
+| RC25 | Fletchling | Pokémon (Colorless) | Common | Normal |
+| RC26 | Floral Crown | Trainer (Tool) | Common | Normal |
+| RC27 | Wally | Trainer (Supporter) | Uncommon | Normal |
+| RC28 | Flareon EX | Pokémon (Fire) | Ultra Rare | Normal |
+| RC29 | Pikachu | Pokémon (Lightning) | Ultra Rare | Normal |
+| RC30 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| RC31 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| RC32 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

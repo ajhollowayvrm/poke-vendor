@@ -76,6 +76,118 @@ Uncommon "1 in 2.2 packs", Reverse Common "1 in 2.6 packs".
 
 Collation: Unknown. No source states a fixed number of hits per box.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `xy7`), fetched 2026-09-12. The list has 101 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/98 | Oddish | Pokémon (Grass) | Common | Normal |
+| 2/98 | Gloom | Pokémon (Grass) | Uncommon | Normal |
+| 3/98 | Vileplume | Pokémon (Grass) | Rare | Normal |
+| 4/98 | Bellossom | Pokémon (Grass) | Uncommon | Normal |
+| 5/98 | Spinarak | Pokémon (Grass) | Common | Normal |
+| 6/98 | Ariados | Pokémon (Grass) | Uncommon | Normal |
+| 7/98 | Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 8/98 | M Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 9/98 | Combee | Pokémon (Grass) | Common | Normal |
+| 10/98 | Vespiquen | Pokémon (Grass) | Uncommon | Normal |
+| 11/98 | Vespiquen | Pokémon (Grass) | Rare | Normal |
+| 12/98 | Virizion | Pokémon (Grass) | Rare | Normal |
+| 13/98 | Flareon | Pokémon (Fire) | Uncommon | Normal |
+| 14/98 | Entei | Pokémon (Fire) | Rare | Normal |
+| 15/98 | Entei | Pokémon (Fire) | Rare | Normal |
+| 16/98 | Larvesta | Pokémon (Fire) | Common | Normal |
+| 17/98 | Volcarona | Pokémon (Fire) | Rare | Normal |
+| 18/98 | Volcarona | Pokémon (Fire) | Rare | Normal |
+| 19/98 | Magikarp | Pokémon (Water) | Common | Normal |
+| 20/98 | Gyarados | Pokémon (Water) | Rare | Normal |
+| 21/98 | Gyarados | Pokémon (Water) | Rare | Normal |
+| 22/98 | Vaporeon | Pokémon (Water) | Uncommon | Normal |
+| 23/98 | Relicanth | Pokémon (Water) | Common | Normal |
+| 24/98 | Regice | Pokémon (Water) | Rare | Normal |
+| 25/98 | Kyurem EX | Pokémon (Water) | Ultra Rare | Normal |
+| 26/98 | Jolteon | Pokémon (Lightning) | Rare | Normal |
+| 27/98 | Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 28/98 | M Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 29/98 | Rotom | Pokémon (Lightning) | Uncommon | Normal |
+| 30/98 | Unown | Pokémon (Psychic) | Common | Normal |
+| 31/98 | Baltoy | Pokémon (Psychic) | Common | Normal |
+| 32/98 | Baltoy | Pokémon (Psychic) | Common | Normal |
+| 33/98 | Claydol | Pokémon (Psychic) | Rare | Normal |
+| 34/98 | Golett | Pokémon (Psychic) | Common | Normal |
+| 35/98 | Golurk | Pokémon (Psychic) | Rare | Normal |
+| 36/98 | Hoopa EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 37/98 | Machamp EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 38/98 | Wooper | Pokémon (Fighting) | Common | Normal |
+| 39/98 | Quagsire | Pokémon (Fighting) | Common | Normal |
+| 40/98 | Regirock | Pokémon (Fighting) | Rare | Normal |
+| 41/98 | Golurk | Pokémon (Fighting) | Common | Normal |
+| 42/98 | Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 43/98 | M Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 44/98 | Sableye | Pokémon (Darkness) | Uncommon | Normal |
+| 45/98 | Inkay | Pokémon (Darkness) | Common | Normal |
+| 46/98 | Malamar | Pokémon (Darkness) | Common | Normal |
+| 47/98 | Beldum | Pokémon (Metal) | Common | Normal |
+| 48/98 | Metang | Pokémon (Metal) | Uncommon | Normal |
+| 49/98 | Metagross | Pokémon (Metal) | Rare | Normal |
+| 50/98 | Metagross | Pokémon (Metal) | Rare | Normal |
+| 51/98 | Registeel | Pokémon (Metal) | Rare | Normal |
+| 52/98 | Ralts | Pokémon (Fairy) | Common | Normal |
+| 53/98 | Kirlia | Pokémon (Fairy) | Uncommon | Normal |
+| 54/98 | Gardevoir | Pokémon (Fairy) | Rare | Normal |
+| 55/98 | Cottonee | Pokémon (Fairy) | Common | Normal |
+| 56/98 | Whimsicott | Pokémon (Fairy) | Uncommon | Normal |
+| 57/98 | Giratina EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 58/98 | Goomy | Pokémon (Dragon) | Common | Normal |
+| 59/98 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal |
+| 60/98 | Goodra | Pokémon (Dragon) | Rare | Normal |
+| 61/98 | Meowth | Pokémon (Colorless) | Common | Normal |
+| 62/98 | Persian | Pokémon (Colorless) | Common | Normal |
+| 63/98 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 64/98 | Porygon | Pokémon (Colorless) | Common | Normal |
+| 65/98 | Porygon2 | Pokémon (Colorless) | Uncommon | Normal |
+| 66/98 | Porygon-Z | Pokémon (Colorless) | Rare | Normal |
+| 67/98 | Porygon-Z | Pokémon (Colorless) | Rare | Normal |
+| 68/98 | Lugia EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 69/98 | Ace Trainer | Trainer (Supporter) | Uncommon | Normal |
+| 70/98 | Ampharos Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 71/98 | Eco Arm | Trainer (Item) | Uncommon | Normal |
+| 72/98 | Energy Recycler | Trainer (Item) | Uncommon | Normal |
+| 73/98 | Faded Town | Trainer (Stadium) | Uncommon | Normal |
+| 74/98 | Forest of Giant Plants | Trainer (Stadium) | Uncommon | Normal |
+| 75/98 | Hex Maniac | Trainer (Supporter) | Uncommon | Normal |
+| 75a | Hex Maniac | Trainer (Supporter) | Uncommon | Normal |
+| 76/98 | Level Ball | Trainer (Item) | Uncommon | Normal |
+| 77/98 | Lucky Helmet | Trainer (Tool) | Uncommon | Normal |
+| 78/98 | Lysandre | Trainer (Supporter) | Uncommon | Normal |
+| 79/98 | Paint Roller | Trainer (Item) | Uncommon | Normal |
+| 80/98 | Sceptile Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 81/98 | Tyranitar Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 82/98 | Dangerous Energy | Energy (Special) | Uncommon | Normal |
+| 83/98 | Flash Energy | Energy (Special) | Uncommon | Normal |
+| 84/98 | Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 85/98 | M Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 86/98 | Kyurem EX | Pokémon (Water) | Ultra Rare | Normal |
+| 87/98 | Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 88/98 | M Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 89/98 | Hoopa EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 90/98 | Machamp EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 91/98 | Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 92/98 | M Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 93/98 | Giratina EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 94/98 | Lugia EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 95/98 | Steven | Trainer (Supporter) | Ultra Rare | Normal |
+| 96/98 | Primal Kyogre EX | Pokémon (Water) | Secret Rare | Normal |
+| 97/98 | Primal Groudon EX | Pokémon (Fighting) | Secret Rare | Normal |
+| 98/98 | M Rayquaza EX | Pokémon (Colorless) | Secret Rare | Normal |
+| 99/98 | Energy Retrieval | Trainer (Item) | Secret Rare | Normal |
+| 100/098 | Trainers' Mail | Trainer (Item) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

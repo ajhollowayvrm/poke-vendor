@@ -80,6 +80,181 @@ Flipside Gaming gives a secret rare rate of 1:72 for the whole era
 Bulbapedia says ETBs from Primal Clash onward include a TCG Online
 code card. Collation: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `xy5`), fetched 2026-09-12. The list has 164 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/160 | Weedle | Pokémon (Grass) | Common | Normal |
+| 2/160 | Kakuna | Pokémon (Grass) | Uncommon | Normal |
+| 3/160 | Beedrill | Pokémon (Grass) | Rare | Normal |
+| 4/160 | Tangela | Pokémon (Grass) | Common | Normal |
+| 5/160 | Tangrowth | Pokémon (Grass) | Rare | Normal |
+| 6/160 | Treecko | Pokémon (Grass) | Common | Normal |
+| 7/160 | Grovyle | Pokémon (Grass) | Uncommon | Normal |
+| 8/160 | Sceptile | Pokémon (Grass) | Rare | Normal |
+| 9/160 | Sceptile | Pokémon (Grass) | Rare | Normal |
+| 10/160 | Lotad | Pokémon (Grass) | Common | Normal |
+| 11/160 | Lombre | Pokémon (Grass) | Uncommon | Normal |
+| 12/160 | Ludicolo | Pokémon (Grass) | Rare | Normal |
+| 13/160 | Surskit | Pokémon (Grass) | Common | Normal |
+| 14/160 | Masquerain | Pokémon (Grass) | Uncommon | Normal |
+| 15/160 | Shroomish | Pokémon (Grass) | Common | Normal |
+| 16/160 | Breloom | Pokémon (Grass) | Rare | Normal |
+| 17/160 | Volbeat | Pokémon (Grass) | Common | Normal |
+| 18/160 | Illumise | Pokémon (Grass) | Common | Normal |
+| 19/160 | Trevenant EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 20/160 | Vulpix | Pokémon (Fire) | Common | Normal |
+| 21/160 | Ninetales | Pokémon (Fire) | Rare | Normal |
+| 22/160 | Slugma | Pokémon (Fire) | Common | Normal |
+| 23/160 | Magcargo | Pokémon (Fire) | Uncommon | Normal |
+| 24/160 | Magcargo | Pokémon (Fire) | Rare | Normal |
+| 25/160 | Torchic | Pokémon (Fire) | Common | Normal |
+| 26/160 | Torchic | Pokémon (Fire) | Uncommon | Normal |
+| 27/160 | Combusken | Pokémon (Fire) | Uncommon | Normal |
+| 28/160 | Blaziken | Pokémon (Fire) | Rare | Normal |
+| 29/160 | Camerupt EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 30/160 | Horsea | Pokémon (Water) | Common | Normal |
+| 31/160 | Seadra | Pokémon (Water) | Uncommon | Normal |
+| 32/160 | Staryu | Pokémon (Water) | Common | Normal |
+| 33/160 | Mudkip | Pokémon (Water) | Common | Normal |
+| 34/160 | Marshtomp | Pokémon (Water) | Uncommon | Normal |
+| 35/160 | Swampert | Pokémon (Water) | Rare | Normal |
+| 36/160 | Swampert | Pokémon (Water) | Rare | Normal |
+| 37/160 | Ludicolo | Pokémon (Water) | Rare | Normal |
+| 38/160 | Wailord EX | Pokémon (Water) | Ultra Rare | Normal |
+| 39/160 | Barboach | Pokémon (Water) | Common | Normal |
+| 40/160 | Whiscash | Pokémon (Water) | Uncommon | Normal |
+| 41/160 | Whiscash | Pokémon (Water) | Rare | Normal |
+| 42/160 | Corphish | Pokémon (Water) | Common | Normal |
+| 43/160 | Feebas | Pokémon (Water) | Common | Normal |
+| 44/160 | Milotic | Pokémon (Water) | Rare | Normal |
+| 45/160 | Spheal | Pokémon (Water) | Common | Normal |
+| 46/160 | Spheal | Pokémon (Water) | Common | Normal |
+| 47/160 | Sealeo | Pokémon (Water) | Uncommon | Normal |
+| 48/160 | Walrein | Pokémon (Water) | Rare | Normal |
+| 49/160 | Clamperl | Pokémon (Water) | Common | Normal |
+| 50/160 | Huntail | Pokémon (Water) | Rare | Normal |
+| 51/160 | Gorebyss | Pokémon (Water) | Uncommon | Normal |
+| 52/160 | Gorebyss | Pokémon (Water) | Rare | Normal |
+| 53/160 | Kyogre | Pokémon (Water) | Rare | Normal |
+| 54/160 | Kyogre EX | Pokémon (Water) | Ultra Rare | Normal |
+| 55/160 | Primal Kyogre EX | Pokémon (Water) | Ultra Rare | Normal |
+| 56/160 | Manaphy | Pokémon (Water) | Rare | Normal |
+| 57/160 | Chinchou | Pokémon (Lightning) | Common | Normal |
+| 58/160 | Lanturn | Pokémon (Lightning) | Uncommon | Normal |
+| 59/160 | Electrike | Pokémon (Lightning) | Common | Normal |
+| 60/160 | Electrike | Pokémon (Lightning) | Uncommon | Normal |
+| 61/160 | Manectric | Pokémon (Lightning) | Rare | Normal |
+| 62/160 | Tynamo | Pokémon (Lightning) | Common | Normal |
+| 63/160 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal |
+| 64/160 | Eelektrik | Pokémon (Lightning) | Rare | Normal |
+| 65/160 | Eelektross | Pokémon (Lightning) | Rare | Normal |
+| 66/160 | Nidoran♀ | Pokémon (Psychic) | Common | Normal |
+| 67/160 | Nidorina | Pokémon (Psychic) | Uncommon | Normal |
+| 68/160 | Nidoqueen | Pokémon (Psychic) | Uncommon | Normal |
+| 69/160 | Nidoqueen | Pokémon (Psychic) | Rare | Normal |
+| 70/160 | Tentacool | Pokémon (Psychic) | Common | Normal |
+| 71/160 | Tentacool | Pokémon (Psychic) | Uncommon | Normal |
+| 72/160 | Tentacruel | Pokémon (Psychic) | Rare | Normal |
+| 73/160 | Starmie | Pokémon (Psychic) | Rare | Normal |
+| 74/160 | Rhyhorn | Pokémon (Fighting) | Common | Normal |
+| 75/160 | Rhydon | Pokémon (Fighting) | Uncommon | Normal |
+| 76/160 | Rhyperior | Pokémon (Fighting) | Rare | Normal |
+| 77/160 | Rhyperior | Pokémon (Fighting) | Rare | Normal |
+| 78/160 | Nosepass | Pokémon (Fighting) | Common | Normal |
+| 79/160 | Meditite | Pokémon (Fighting) | Common | Normal |
+| 80/160 | Medicham | Pokémon (Fighting) | Rare | Normal |
+| 81/160 | Medicham | Pokémon (Fighting) | Rare | Normal |
+| 82/160 | Trapinch | Pokémon (Fighting) | Common | Normal |
+| 83/160 | Solrock | Pokémon (Fighting) | Common | Normal |
+| 84/160 | Groudon | Pokémon (Fighting) | Rare | Normal |
+| 85/160 | Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 86/160 | Primal Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 87/160 | Hippopotas | Pokémon (Fighting) | Common | Normal |
+| 88/160 | Hippowdon | Pokémon (Fighting) | Rare | Normal |
+| 89/160 | Drilbur | Pokémon (Fighting) | Common | Normal |
+| 90/160 | Diggersby | Pokémon (Fighting) | Rare | Normal |
+| 91/160 | Sharpedo EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 92/160 | Crawdaunt | Pokémon (Darkness) | Rare | Normal |
+| 93/160 | Aggron EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 94/160 | M Aggron EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 95/160 | Probopass | Pokémon (Metal) | Rare | Normal |
+| 96/160 | Excadrill | Pokémon (Metal) | Rare | Normal |
+| 97/160 | Excadrill | Pokémon (Metal) | Rare | Normal |
+| 98/160 | Honedge | Pokémon (Metal) | Common | Normal |
+| 99/160 | Doublade | Pokémon (Metal) | Uncommon | Normal |
+| 100/160 | Aegislash | Pokémon (Metal) | Rare | Normal |
+| 101/160 | Mr. Mime | Pokémon (Fairy) | Uncommon | Normal |
+| 102/160 | Marill | Pokémon (Fairy) | Common | Normal |
+| 103/160 | Azumarill | Pokémon (Fairy) | Rare | Normal |
+| 104/160 | Azumarill | Pokémon (Fairy) | Rare | Normal |
+| 105/160 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 106/160 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 107/160 | Kingdra | Pokémon (Dragon) | Rare | Normal |
+| 108/160 | Kingdra | Pokémon (Dragon) | Rare | Normal |
+| 109/160 | Vibrava | Pokémon (Dragon) | Uncommon | Normal |
+| 110/160 | Flygon | Pokémon (Dragon) | Rare | Normal |
+| 111/160 | Zigzagoon | Pokémon (Colorless) | Common | Normal |
+| 112/160 | Linoone | Pokémon (Colorless) | Uncommon | Normal |
+| 113/160 | Skitty | Pokémon (Colorless) | Common | Normal |
+| 114/160 | Delcatty | Pokémon (Colorless) | Rare | Normal |
+| 115/160 | Spinda | Pokémon (Colorless) | Common | Normal |
+| 116/160 | Bidoof | Pokémon (Colorless) | Common | Normal |
+| 117/160 | Bidoof | Pokémon (Colorless) | Uncommon | Normal |
+| 118/160 | Bibarel | Pokémon (Colorless) | Uncommon | Normal |
+| 119/160 | Bouffalant | Pokémon (Colorless) | Uncommon | Normal |
+| 120/160 | Bunnelby | Pokémon (Colorless) | Common | Normal |
+| 121/160 | Bunnelby | Pokémon (Colorless) | Uncommon | Normal |
+| 122/160 | Acro Bike | Trainer (Item) | Uncommon | Normal |
+| 123/160 | Aggron Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 124/160 | Archie's Ace in the Hole | Trainer (Supporter) | Uncommon | Normal |
+| 125/160 | Dive Ball | Trainer (Item) | Uncommon | Normal |
+| 126/160 | Energy Retrieval | Trainer (Item) | Uncommon | Normal |
+| 127/160 | Escape Rope | Trainer (Item) | Uncommon | Normal |
+| 128/160 | Exp. Share | Trainer (Tool) | Uncommon | Normal |
+| 129/160 | Fresh Water Set | Trainer (Item) | Uncommon | Normal |
+| 130/160 | Gardevoir Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 131/160 | Groudon Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 132/160 | Kyogre Spirit Link | Trainer (Tool) | Uncommon | Normal |
+| 133/160 | Maxie's Hidden Ball Trick | Trainer (Supporter) | Uncommon | Normal |
+| 134/160 | Professor Birch's Observations | Trainer (Supporter) | Uncommon | Normal |
+| 135/160 | Rare Candy | Trainer (Item) | Uncommon | Normal |
+| 136/160 | Repeat Ball | Trainer (Item) | Uncommon | Normal |
+| 137/160 | Rough Seas | Trainer (Stadium) | Uncommon | Normal |
+| 138/160 | Scorched Earth | Trainer (Stadium) | Uncommon | Normal |
+| 139/160 | Shrine of Memories | Trainer (Stadium) | Uncommon | Normal |
+| 140/160 | Silent Lab | Trainer (Stadium) | Uncommon | Normal |
+| 141/160 | Teammates | Trainer (Supporter) | Uncommon | Normal |
+| 142/160 | Weakness Policy | Trainer (Tool) | Uncommon | Normal |
+| 143/160 | Shield Energy | Energy (Special) | Uncommon | Normal |
+| 144/160 | Wonder Energy | Energy (Special) | Uncommon | Normal |
+| 145/160 | Trevenant EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 146/160 | Camerupt EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 147/160 | Wailord EX | Pokémon (Water) | Ultra Rare | Normal |
+| 148/160 | Kyogre EX | Pokémon (Water) | Ultra Rare | Normal |
+| 149/160 | Primal Kyogre EX | Pokémon (Water) | Ultra Rare | Normal |
+| 150/160 | Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 151/160 | Primal Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 152/160 | Sharpedo EX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 153/160 | Aggron EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 154/160 | M Aggron EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 155/160 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 156/160 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 157/160 | Archie's Ace in the Hole | Trainer (Supporter) | Ultra Rare | Normal |
+| 158/160 | Maxie's Hidden Ball Trick | Trainer (Supporter) | Ultra Rare | Normal |
+| 159/160 | Professor Birch's Observations | Trainer (Supporter) | Ultra Rare | Normal |
+| 160/160 | Teammates | Trainer (Supporter) | Ultra Rare | Normal |
+| 161/160 | Dive Ball | Trainer (Item) | Secret Rare | Normal |
+| 162/160 | Enhanced Hammer | Trainer (Item) | Secret Rare | Normal |
+| 163/160 | Switch | Trainer (Item) | Secret Rare | Normal |
+| 164/160 | Weakness Policy | Trainer (Tool) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
