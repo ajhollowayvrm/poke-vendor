@@ -350,7 +350,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv09`), f
 | 188/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
 | 189/159 | N's Zoroark ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
 | 190/159 | Spiky Energy | Energy (Special) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

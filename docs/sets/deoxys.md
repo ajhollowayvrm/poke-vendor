@@ -122,22 +122,23 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex8`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1404`, fetched 2026-09-12). This added 15 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/107 | Altaria | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
-| 2/107 | Beautifly | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
-| 3/107 | Breloom | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
+| 1/107 | Altaria | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 2/107 | Beautifly | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 3/107 | Breloom | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 4/107 | Camerupt | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 5/107 | Claydol | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
-| 6/107 | Crawdaunt | Pokémon (Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 7/107 | Dusclops | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
-| 8/107 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 5/107 | Claydol | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 6/107 | Crawdaunt | Pokémon (Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 7/107 | Dusclops | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 8/107 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 9/107 | Jirachi | Pokémon (Metal) | Rare | Reverse holo (Set logo), Holo, Holo (Curran hill), Holo (Michael gonzalez) |
-| 10/107 | Ludicolo | Pokémon (Water) | Rare | Reverse holo (Set logo), Holo, Holo (Michael gonzalez) |
-| 11/107 | Metagross | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
-| 12/107 | Mightyena | Pokémon (Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 13/107 | Ninjask | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
+| 10/107 | Ludicolo | Pokémon (Water) | Rare | Reverse holo (Set logo), Holo, Holo (Michael gonzalez), Normal |
+| 11/107 | Metagross | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 12/107 | Mightyena | Pokémon (Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 13/107 | Ninjask | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 14/107 | Shedinja | Pokémon (Psychic) | Rare | Reverse holo (Set logo), Holo, Normal |
 | 15/107 | Slaking | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
 | 16/107 | Deoxys | Pokémon (Psychic) | Rare | Normal, Reverse holo (Set logo), Normal (Destiny deoxys), Holo (Cosmos), Normal (Regional championships), Normal (Stadium challenge), Normal (Pokemon day) |
@@ -224,16 +225,15 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex8`), fe
 | 97/107 | Deoxys ex | Pokémon (Psychic) | Rare | Holo |
 | 98/107 | Deoxys ex | Pokémon (Psychic) | Rare | Holo |
 | 99/107 | Deoxys ex | Pokémon (Psychic) | Rare | Holo |
-| 100/107 | Hariyama ex | Pokémon (Fighting) | Rare | Holo |
+| 100/107 | Hariyama ex | Pokémon (Fighting) | Rare | Holo, Normal |
 | 101/107 | Manectric ex | Pokémon (Lightning) | Rare | Holo, Normal (Jason klaczynski) |
 | 102/107 | Rayquaza ex | Pokémon (Colorless) | Rare | Holo |
-| 103/107 | Salamence ex | Pokémon (Colorless) | Rare | Holo |
-| 104/107 | Sharpedo ex | Pokémon (Darkness) | Rare | Holo |
+| 103/107 | Salamence ex | Pokémon (Colorless) | Rare | Holo, Normal |
+| 104/107 | Sharpedo ex | Pokémon (Darkness) | Rare | Holo, Normal |
 | 105/107 | Latias ☆ | Pokémon (Colorless) | Rare | Holo, Normal (Hiroki yano) |
 | 106/107 | Latios ☆ | Pokémon (Colorless) | Rare | Holo |
 | 107/107 | Rayquaza ☆ | Pokémon (Colorless) | Rare | Holo |
-| 108/107 | Rocket's Raikou ex | Pokémon (Darkness) | Rare | Holo |
-
+| 108/107 | Rocket's Raikou ex | Pokémon (Darkness) | Rare | Holo, Normal |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

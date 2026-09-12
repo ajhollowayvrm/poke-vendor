@@ -215,7 +215,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl2`), fe
 | RT4 | Mow Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
 | RT5 | Wash Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
 | RT6 | Charon's Choice | Trainer (Supporter) | Rare | Reverse holo (Cracked ice) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

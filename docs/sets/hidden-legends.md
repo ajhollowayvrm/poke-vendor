@@ -232,7 +232,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex5`), fe
 | 100/101 | Vileplume ex | Pokémon (Grass) | Rare | Holo (Cracked ice) |
 | 101/101 | Wigglytuff ex | Pokémon (Colorless) | Rare | Holo |
 | 102/101 | Groudon | Pokémon (Fighting) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

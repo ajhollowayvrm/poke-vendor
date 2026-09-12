@@ -211,7 +211,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl4`), fe
 | SH10 | Bagon | Pokémon (Colorless) | Rare | Reverse holo |
 | SH11 | Ponyta | Pokémon (Fire) | Rare | Reverse holo |
 | SH12 | Shinx | Pokémon (Lightning) | Rare | Reverse holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

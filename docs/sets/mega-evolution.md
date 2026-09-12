@@ -315,7 +315,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 | 186/132 | Wally's Compassion | Trainer (Supporter) | Special illustration rare | Holo |
 | 187/132 | Mega Gardevoir ex | Pokémon (Psychic) | Mega Hyper Rare | Holo |
 | 188/132 | Mega Lucario ex | Pokémon (Fighting) | Mega Hyper Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

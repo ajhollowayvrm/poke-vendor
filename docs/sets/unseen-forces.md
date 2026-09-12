@@ -290,7 +290,6 @@ TCGdex set `exu`: 28 cards.
 | X | Unown | Pokémon (Psychic) | Rare | Holo |
 | Y | Unown | Pokémon (Psychic) | Rare | Holo |
 | Z | Unown | Pokémon (Psychic) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

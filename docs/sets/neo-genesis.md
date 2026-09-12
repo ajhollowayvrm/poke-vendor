@@ -202,7 +202,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo1`), f
 | 109/111 | Lightning Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 110/111 | Psychic Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 111/111 | Water Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

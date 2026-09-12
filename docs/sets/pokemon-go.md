@@ -196,7 +196,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh10.5`
 | 086/078 | Mewtwo VSTAR | Pokémon (Psychic) | Secret Rare | Holo (Gold) |
 | 087/078 | Egg Incubator | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 088/078 | Lure Module | Trainer (Item) | Secret Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

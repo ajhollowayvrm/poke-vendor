@@ -284,7 +284,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ecard1`),
 | 163/165 | Lightning Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 164/165 | Psychic Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 165/165 | Water Energy | Energy (Normal) | Common | Normal, Reverse holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

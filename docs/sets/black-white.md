@@ -115,113 +115,114 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw1`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1400`, fetched 2026-09-12). This added 119 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/114 | Snivy | Pokémon (Grass) | Common | Normal |
-| 2/114 | Snivy | Pokémon (Grass) | Common | Normal |
-| 3/114 | Servine | Pokémon (Grass) | Uncommon | Normal |
-| 4/114 | Servine | Pokémon (Grass) | Uncommon | Normal |
-| 5/114 | Serperior | Pokémon (Grass) | Rare | Normal |
-| 6/114 | Serperior | Pokémon (Grass) | Rare | Normal |
-| 7/114 | Pansage | Pokémon (Grass) | Common | Normal |
-| 8/114 | Simisage | Pokémon (Grass) | Uncommon | Normal |
-| 9/114 | Petilil | Pokémon (Grass) | Common | Normal |
-| 10/114 | Lilligant | Pokémon (Grass) | Rare | Normal |
-| 11/114 | Maractus | Pokémon (Grass) | Uncommon | Normal |
-| 12/114 | Maractus | Pokémon (Grass) | Rare | Normal |
-| 13/114 | Deerling | Pokémon (Grass) | Common | Normal |
-| 14/114 | Sawsbuck | Pokémon (Grass) | Rare | Normal |
-| 15/114 | Tepig | Pokémon (Fire) | Common | Normal |
-| 16/114 | Tepig | Pokémon (Fire) | Common | Normal |
-| 17/114 | Pignite | Pokémon (Fire) | Uncommon | Normal |
-| 18/114 | Pignite | Pokémon (Fire) | Uncommon | Normal |
-| 19/114 | Emboar | Pokémon (Fire) | Rare | Normal |
-| 20/114 | Emboar | Pokémon (Fire) | Rare | Normal |
-| 21/114 | Pansear | Pokémon (Fire) | Common | Normal |
-| 22/114 | Simisear | Pokémon (Fire) | Uncommon | Normal |
-| 23/114 | Darumaka | Pokémon (Fire) | Common | Normal |
-| 24/114 | Darumaka | Pokémon (Fire) | Uncommon | Normal |
-| 25/114 | Darmanitan | Pokémon (Fire) | Rare | Normal |
-| 26/114 | Reshiram | Pokémon (Fire) | Rare | Normal |
-| 27/114 | Oshawott | Pokémon (Water) | Common | Normal |
-| 28/114 | Oshawott | Pokémon (Water) | Common | Normal |
-| 29/114 | Dewott | Pokémon (Water) | Uncommon | Normal |
-| 30/114 | Dewott | Pokémon (Water) | Uncommon | Normal |
-| 31/114 | Samurott | Pokémon (Water) | Rare | Normal |
-| 32/114 | Samurott | Pokémon (Water) | Rare | Normal |
-| 33/114 | Panpour | Pokémon (Water) | Common | Normal |
-| 34/114 | Simipour | Pokémon (Water) | Uncommon | Normal |
-| 35/114 | Basculin | Pokémon (Water) | Uncommon | Normal |
-| 36/114 | Ducklett | Pokémon (Water) | Common | Normal |
-| 37/114 | Swanna | Pokémon (Water) | Rare | Normal |
-| 38/114 | Alomomola | Pokémon (Water) | Uncommon | Normal |
-| 39/114 | Alomomola | Pokémon (Water) | Rare | Normal |
-| 40/114 | Blitzle | Pokémon (Lightning) | Common | Normal |
-| 41/114 | Blitzle | Pokémon (Lightning) | Common | Normal |
-| 42/114 | Zebstrika | Pokémon (Lightning) | Uncommon | Normal |
-| 43/114 | Zebstrika | Pokémon (Lightning) | Rare | Normal |
-| 44/114 | Joltik | Pokémon (Lightning) | Common | Normal |
-| 45/114 | Joltik | Pokémon (Lightning) | Common | Normal |
-| 46/114 | Galvantula | Pokémon (Lightning) | Rare | Normal |
-| 47/114 | Zekrom | Pokémon (Lightning) | Rare | Normal |
-| 48/114 | Munna | Pokémon (Psychic) | Uncommon | Normal |
-| 49/114 | Musharna | Pokémon (Psychic) | Rare | Normal |
-| 50/114 | Woobat | Pokémon (Psychic) | Common | Normal |
-| 51/114 | Swoobat | Pokémon (Psychic) | Uncommon | Normal |
-| 52/114 | Venipede | Pokémon (Psychic) | Common | Normal |
-| 53/114 | Whirlipede | Pokémon (Psychic) | Uncommon | Normal |
-| 54/114 | Scolipede | Pokémon (Psychic) | Rare | Normal |
-| 55/114 | Solosis | Pokémon (Psychic) | Common | Normal |
-| 56/114 | Duosion | Pokémon (Psychic) | Uncommon | Normal |
-| 57/114 | Reuniclus | Pokémon (Psychic) | Rare | Normal |
-| 58/114 | Timburr | Pokémon (Fighting) | Common | Normal |
-| 59/114 | Timburr | Pokémon (Fighting) | Common | Normal |
-| 60/114 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal |
-| 61/114 | Throh | Pokémon (Fighting) | Rare | Normal |
-| 62/114 | Sawk | Pokémon (Fighting) | Rare | Normal |
-| 63/114 | Sandile | Pokémon (Fighting) | Common | Normal |
-| 64/114 | Krokorok | Pokémon (Fighting) | Uncommon | Normal |
-| 65/114 | Krookodile | Pokémon (Fighting) | Rare | Normal |
-| 66/114 | Purrloin | Pokémon (Darkness) | Common | Normal |
-| 67/114 | Liepard | Pokémon (Darkness) | Rare | Normal |
-| 68/114 | Scraggy | Pokémon (Darkness) | Common | Normal |
-| 69/114 | Scrafty | Pokémon (Darkness) | Rare | Normal |
-| 70/114 | Zorua | Pokémon (Darkness) | Common | Normal |
-| 71/114 | Zoroark | Pokémon (Darkness) | Rare | Normal |
-| 72/114 | Vullaby | Pokémon (Darkness) | Uncommon | Normal |
-| 73/114 | Mandibuzz | Pokémon (Darkness) | Rare | Normal |
-| 74/114 | Klink | Pokémon (Metal) | Common | Normal |
-| 75/114 | Klang | Pokémon (Metal) | Uncommon | Normal |
-| 76/114 | Klinklang | Pokémon (Metal) | Rare | Normal |
-| 77/114 | Patrat | Pokémon (Colorless) | Common | Normal |
-| 78/114 | Patrat | Pokémon (Colorless) | Common | Normal |
-| 79/114 | Watchog | Pokémon (Colorless) | Uncommon | Normal |
-| 80/114 | Lillipup | Pokémon (Colorless) | Common | Normal |
-| 81/114 | Lillipup | Pokémon (Colorless) | Common | Normal |
-| 82/114 | Herdier | Pokémon (Colorless) | Uncommon | Normal |
-| 83/114 | Stoutland | Pokémon (Colorless) | Rare | Normal |
-| 84/114 | Pidove | Pokémon (Colorless) | Common | Normal |
-| 85/114 | Tranquill | Pokémon (Colorless) | Uncommon | Normal |
-| 86/114 | Unfezant | Pokémon (Colorless) | Rare | Normal |
-| 87/114 | Audino | Pokémon (Colorless) | Uncommon | Normal |
-| 88/114 | Minccino | Pokémon (Colorless) | Common | Normal |
-| 89/114 | Cinccino | Pokémon (Colorless) | Rare | Normal |
-| 90/114 | Bouffalant | Pokémon (Colorless) | Uncommon | Normal |
-| 91/114 | Bouffalant | Pokémon (Colorless) | Rare | Normal |
-| 92/114 | Energy Retrieval | Trainer (Item) | Uncommon | Normal |
-| 93/114 | Energy Search | Trainer (Item) | Common | Normal |
-| 94/114 | Energy Switch | Trainer (Item) | Uncommon | Normal |
-| 95/114 | Full Heal | Trainer (Item) | Uncommon | Normal |
-| 96/114 | PlusPower | Trainer (Item) | Uncommon | Normal |
-| 97/114 | Poké Ball | Trainer (Item) | Uncommon | Normal |
-| 98/114 | Pokédex | Trainer (Item) | Uncommon | Normal |
-| 99/114 | Pokémon Communication | Trainer (Item) | Uncommon | Normal |
-| 100/114 | Potion | Trainer (Item) | Common | Normal |
-| 101/114 | Professor Juniper | Trainer (Supporter) | Uncommon | Normal |
-| 102/114 | Revive | Trainer (Item) | Uncommon | Normal |
-| 103/114 | Super Scoop Up | Trainer (Item) | Uncommon | Normal |
-| 104/114 | Switch | Trainer (Item) | Common | Normal |
+| 1/114 | Snivy | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/114 | Snivy | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 3/114 | Servine | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 4/114 | Servine | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 5/114 | Serperior | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 6/114 | Serperior | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 7/114 | Pansage | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 8/114 | Simisage | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 9/114 | Petilil | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 10/114 | Lilligant | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 11/114 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 12/114 | Maractus | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 13/114 | Deerling | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 14/114 | Sawsbuck | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 15/114 | Tepig | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 16/114 | Tepig | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 17/114 | Pignite | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 18/114 | Pignite | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 19/114 | Emboar | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 20/114 | Emboar | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 21/114 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 22/114 | Simisear | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 23/114 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 24/114 | Darumaka | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 25/114 | Darmanitan | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 26/114 | Reshiram | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 27/114 | Oshawott | Pokémon (Water) | Common | Normal, Reverse holo |
+| 28/114 | Oshawott | Pokémon (Water) | Common | Normal, Reverse holo |
+| 29/114 | Dewott | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 30/114 | Dewott | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 31/114 | Samurott | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 32/114 | Samurott | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 33/114 | Panpour | Pokémon (Water) | Common | Normal, Reverse holo |
+| 34/114 | Simipour | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 35/114 | Basculin | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 36/114 | Ducklett | Pokémon (Water) | Common | Normal, Reverse holo |
+| 37/114 | Swanna | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 38/114 | Alomomola | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 39/114 | Alomomola | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 40/114 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 41/114 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 42/114 | Zebstrika | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 43/114 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 44/114 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 45/114 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 46/114 | Galvantula | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 47/114 | Zekrom | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 48/114 | Munna | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 49/114 | Musharna | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 50/114 | Woobat | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 51/114 | Swoobat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 52/114 | Venipede | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 53/114 | Whirlipede | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 54/114 | Scolipede | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 55/114 | Solosis | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 56/114 | Duosion | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 57/114 | Reuniclus | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 58/114 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 59/114 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 60/114 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 61/114 | Throh | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 62/114 | Sawk | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 63/114 | Sandile | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 64/114 | Krokorok | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 65/114 | Krookodile | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 66/114 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 67/114 | Liepard | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 68/114 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 69/114 | Scrafty | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 70/114 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 71/114 | Zoroark | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 72/114 | Vullaby | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 73/114 | Mandibuzz | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 74/114 | Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 75/114 | Klang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 76/114 | Klinklang | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 77/114 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 78/114 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 79/114 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 80/114 | Lillipup | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 81/114 | Lillipup | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 82/114 | Herdier | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 83/114 | Stoutland | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 84/114 | Pidove | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 85/114 | Tranquill | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 86/114 | Unfezant | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 87/114 | Audino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 88/114 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 89/114 | Cinccino | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 90/114 | Bouffalant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 91/114 | Bouffalant | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 92/114 | Energy Retrieval | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 93/114 | Energy Search | Trainer (Item) | Common | Normal, Reverse holo |
+| 94/114 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 95/114 | Full Heal | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 96/114 | PlusPower | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 97/114 | Poké Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 98/114 | Pokédex | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 99/114 | Pokémon Communication | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 100/114 | Potion | Trainer (Item) | Common | Normal, Reverse holo |
+| 101/114 | Professor Juniper | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 102/114 | Revive | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 103/114 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 104/114 | Switch | Trainer (Item) | Common | Normal, Reverse holo |
 | 105/114 | Grass Energy | Energy (Normal) | Common | Normal |
 | 106/114 | Fire Energy | Energy (Normal) | Common | Normal |
 | 107/114 | Water Energy | Energy (Normal) | Common | Normal |
@@ -230,10 +231,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw1`), fe
 | 110/114 | Fighting Energy | Energy (Normal) | Common | Normal |
 | 111/114 | Darkness Energy | Energy (Normal) | Common | Normal |
 | 112/114 | Metal Energy | Energy (Normal) | Common | Normal |
-| 113/114 | Reshiram | Pokémon (Fire) | Ultra Rare | Normal |
-| 114/114 | Zekrom | Pokémon (Lightning) | Ultra Rare | Normal |
-| 115/114 | Pikachu | Pokémon (Lightning) | Secret Rare | Normal |
-
+| 113/114 | Reshiram | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 114/114 | Zekrom | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 115/114 | Pikachu | Pokémon (Lightning) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -135,22 +135,23 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex7`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1428`, fetched 2026-09-12). This added 18 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/109 | Azumarill | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 2/109 | Dark Ampharos | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 2/109 | Dark Ampharos | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 3/109 | Dark Crobat | Pokémon (Grass, Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 4/109 | Dark Electrode | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 5/109 | Dark Houndoom | Pokémon (Darkness, Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 6/109 | Dark Hypno | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 4/109 | Dark Electrode | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 5/109 | Dark Houndoom | Pokémon (Darkness, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 6/109 | Dark Hypno | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 7/109 | Dark Marowak | Pokémon (Fighting, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 8/109 | Dark Octillery | Pokémon (Water, Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 9/109 | Dark Slowking | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 10/109 | Dark Steelix | Pokémon (Metal, Darkness) | Rare | Holo, Reverse holo (Set logo) |
-| 11/109 | Jumpluff | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
-| 12/109 | Kingdra | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
-| 13/109 | Piloswine | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
+| 8/109 | Dark Octillery | Pokémon (Water, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 9/109 | Dark Slowking | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 10/109 | Dark Steelix | Pokémon (Metal, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 11/109 | Jumpluff | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 12/109 | Kingdra | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 13/109 | Piloswine | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 14/109 | Togetic | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
 | 15/109 | Dark Dragonite | Pokémon (Darkness) | Rare | Holo (Cosmos), Reverse holo (Set logo), Normal |
 | 16/109 | Dark Muk | Pokémon (Grass, Darkness) | Rare | Reverse holo (Set logo), Normal |
@@ -233,23 +234,22 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex7`), fe
 | 93/109 | Venture Bomb | Trainer (Rocket's Secret Machine) | Uncommon | Reverse holo (Set logo), Normal |
 | 94/109 | Dark Metal Energy | Energy (Special) | Uncommon | Reverse holo (Set logo), Normal |
 | 95/109 | R Energy | Energy (Special) | Uncommon | Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
-| 96/109 | Rocket's Articuno ex | Pokémon (Darkness) | Rare | Holo |
-| 97/109 | Rocket's Entei ex | Pokémon (Darkness) | Rare | Holo |
-| 98/109 | Rocket's Hitmonchan ex | Pokémon (Darkness) | Rare | Holo |
+| 96/109 | Rocket's Articuno ex | Pokémon (Darkness) | Rare | Holo, Normal |
+| 97/109 | Rocket's Entei ex | Pokémon (Darkness) | Rare | Holo, Normal |
+| 98/109 | Rocket's Hitmonchan ex | Pokémon (Darkness) | Rare | Holo, Normal |
 | 99/109 | Rocket's Mewtwo ex | Pokémon (Darkness) | Rare | Holo |
 | 100/109 | Rocket's Moltres ex | Pokémon (Darkness) | Rare | Holo |
-| 101/109 | Rocket's Scizor ex | Pokémon (Darkness) | Rare | Holo |
-| 102/109 | Rocket's Scyther ex | Pokémon (Darkness) | Rare | Holo |
-| 103/109 | Rocket's Sneasel ex | Pokémon (Darkness) | Rare | Holo |
+| 101/109 | Rocket's Scizor ex | Pokémon (Darkness) | Rare | Holo, Normal |
+| 102/109 | Rocket's Scyther ex | Pokémon (Darkness) | Rare | Holo, Normal |
+| 103/109 | Rocket's Sneasel ex | Pokémon (Darkness) | Rare | Holo, Normal |
 | 104/109 | Rocket's Snorlax ex | Pokémon (Darkness) | Rare | Holo |
-| 105/109 | Rocket's Suicune ex | Pokémon (Darkness) | Rare | Holo |
+| 105/109 | Rocket's Suicune ex | Pokémon (Darkness) | Rare | Holo, Normal |
 | 106/109 | Rocket's Zapdos ex | Pokémon (Darkness) | Rare | Holo |
 | 107/109 | Mudkip ☆ | Pokémon (Water) | Rare | Holo |
 | 108/109 | Torchic ☆ | Pokémon (Fire) | Rare | Holo |
 | 109/109 | Treecko ☆ | Pokémon (Grass) | Rare | Holo |
 | 110/109 | Charmeleon | Pokémon (Fire) | Rare | Holo |
-| 111/109 | Here Comes Team Rocket! | Trainer (Supporter) | Rare | Holo |
-
+| 111/109 | Here Comes Team Rocket! | Trainer (Supporter) | Rare | Holo, Normal |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

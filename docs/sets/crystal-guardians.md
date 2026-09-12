@@ -123,97 +123,98 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex14`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1395`, fetched 2026-09-12). This added 88 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/100 | Banette | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Holo (Jeremy scharff kim) |
-| 2/100 | Blastoise δ | Pokémon (Fighting, Metal) | Rare | Holo, Holo (Set logo) |
-| 3/100 | Camerupt | Pokémon (Fire) | Rare | Holo, Holo (Set logo) |
-| 4/100 | Charizard δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo) |
-| 5/100 | Dugtrio | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Normal |
-| 6/100 | Ludicolo δ | Pokémon (Fire) | Rare | Holo, Holo (Set logo) |
-| 7/100 | Luvdisc | Pokémon (Water) | Rare | Holo, Holo (Set logo) |
-| 8/100 | Manectric | Pokémon (Lightning) | Rare | Holo, Holo (Set logo) |
-| 9/100 | Mawile | Pokémon (Metal) | Rare | Holo, Holo (Set logo) |
-| 10/100 | Sableye | Pokémon (Darkness) | Rare | Holo, Holo (Set logo), Holo (Tristan robinson) |
-| 11/100 | Swalot | Pokémon (Grass) | Rare | Holo, Holo (Set logo) |
-| 12/100 | Tauros | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Holo (Dylan lefavour) |
-| 13/100 | Wigglytuff | Pokémon (Colorless) | Rare | Holo, Holo (Set logo) |
-| 14/100 | Blastoise | Pokémon (Water) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Normal (National championships), Normal (National championships, Staff) |
-| 15/100 | Cacturne δ | Pokémon (Fighting) | Rare | Normal, Normal (Set logo) |
-| 16/100 | Combusken | Pokémon (Fighting) | Rare | Normal, Normal (Set logo) |
-| 17/100 | Dusclops | Pokémon (Psychic) | Rare | Normal, Normal (Set logo) |
-| 18/100 | Fearow δ | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Normal (Jun hasebe) |
-| 19/100 | Grovyle δ | Pokémon (Psychic) | Rare | Normal, Normal (Set logo) |
-| 20/100 | Grumpig | Pokémon (Psychic) | Rare | Normal, Normal (Set logo) |
-| 21/100 | Igglybuff | Pokémon (Colorless) | Rare | Normal, Normal (Set logo) |
-| 22/100 | Kingler δ | Pokémon (Fire, Metal) | Rare | Normal, Normal (Set logo) |
-| 23/100 | Loudred | Pokémon (Colorless) | Rare | Normal, Normal (Set logo) |
-| 24/100 | Marshtomp | Pokémon (Water) | Rare | Normal, Normal (Set logo) |
-| 25/100 | Medicham | Pokémon (Fighting) | Rare | Normal, Normal (Set logo) |
-| 26/100 | Pelipper δ | Pokémon (Lightning) | Rare | Normal, Normal (Set logo) |
-| 27/100 | Swampert | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Holo (Cosmos) |
-| 28/100 | Venusaur | Pokémon (Grass) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Normal (Regional championships) |
-| 29/100 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 30/100 | Charmeleon δ | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo) |
-| 31/100 | Combusken | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 32/100 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo) |
-| 33/100 | Gulpin | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo) |
-| 34/100 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo) |
-| 35/100 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Normal (Prerelease) |
-| 36/100 | Lairon | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo) |
-| 37/100 | Lombre | Pokémon (Water) | Uncommon | Normal, Normal (Set logo) |
-| 38/100 | Marshtomp | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 39/100 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo) |
-| 40/100 | Shuppet | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim) |
-| 41/100 | Skitty | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo) |
-| 42/100 | Wartortle | Pokémon (Water) | Uncommon | Normal, Normal (Set logo), Normal (State championships), Normal (State championships, Staff) |
-| 43/100 | Wartortle | Pokémon (Water) | Uncommon | Normal, Normal (Set logo) |
-| 44/100 | Aron | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 45/100 | Bulbasaur | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 46/100 | Bulbasaur | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 47/100 | Cacnea | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 48/100 | Charmander | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 49/100 | Charmander δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 50/100 | Diglett | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 51/100 | Duskull | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 52/100 | Electrike | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 53/100 | Jigglypuff | Pokémon (Colorless) | Common | Normal, Normal (Set logo) |
-| 54/100 | Krabby | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 55/100 | Lotad | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 56/100 | Meditite | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 57/100 | Mudkip | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 58/100 | Mudkip | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 59/100 | Numel | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 60/100 | Seedot | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 61/100 | Spearow | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Normal (Jun hasebe) |
-| 62/100 | Spoink | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 63/100 | Squirtle | Pokémon (Water) | Common | Normal, Normal (Set logo), Normal (City championships) |
-| 64/100 | Squirtle | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 65/100 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 66/100 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 67/100 | Treecko | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 68/100 | Treecko δ | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 69/100 | Whismur | Pokémon (Colorless) | Common | Normal, Normal (Set logo) |
-| 70/100 | Wingull | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 71/100 | Bill's Maintenance | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo) |
-| 72/100 | Castaway | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson) |
-| 73/100 | Celio's Network | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson), Normal (Jason klaczynski) |
-| 74/100 | Cessation Crystal | Trainer (Tool) | Uncommon | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson) |
-| 75/100 | Crystal Beach | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 76/100 | Crystal Shard | Trainer (Tool) | Uncommon | Normal, Normal (Set logo), Normal (Jun hasebe), Normal (Jeremy scharff kim) |
-| 77/100 | Double Full Heal | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 78/100 | Dual Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 79/100 | Holon Circle | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 80/100 | Memory Berry | Trainer (Tool) | Uncommon | Normal, Normal (Set logo) |
-| 81/100 | Mysterious Shard | Trainer (Tool) | Uncommon | Normal, Normal (Set logo) |
-| 82/100 | Poké Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 83/100 | PokéNav | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 84/100 | Warp Point | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 85/100 | Windstorm | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Normal (Jun hasebe), Normal (Tom roos), Normal (Dylan lefavour), Normal (Jason klaczynski) |
-| 86/100 | Energy Search | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 87/100 | Potion | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 88/100 | Double Rainbow Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Dylan lefavour), Normal (Jason klaczynski) |
+| 1/100 | Banette | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Holo (Jeremy scharff kim), Reverse holo |
+| 2/100 | Blastoise δ | Pokémon (Fighting, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 3/100 | Camerupt | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 4/100 | Charizard δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 5/100 | Dugtrio | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Normal, Reverse holo |
+| 6/100 | Ludicolo δ | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 7/100 | Luvdisc | Pokémon (Water) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 8/100 | Manectric | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 9/100 | Mawile | Pokémon (Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 10/100 | Sableye | Pokémon (Darkness) | Rare | Holo, Holo (Set logo), Holo (Tristan robinson), Reverse holo |
+| 11/100 | Swalot | Pokémon (Grass) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 12/100 | Tauros | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Holo (Dylan lefavour), Reverse holo |
+| 13/100 | Wigglytuff | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 14/100 | Blastoise | Pokémon (Water) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Normal (National championships), Normal (National championships, Staff), Reverse holo |
+| 15/100 | Cacturne δ | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 16/100 | Combusken | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 17/100 | Dusclops | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 18/100 | Fearow δ | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Normal (Jun hasebe), Reverse holo |
+| 19/100 | Grovyle δ | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 20/100 | Grumpig | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 21/100 | Igglybuff | Pokémon (Colorless) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 22/100 | Kingler δ | Pokémon (Fire, Metal) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 23/100 | Loudred | Pokémon (Colorless) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 24/100 | Marshtomp | Pokémon (Water) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 25/100 | Medicham | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 26/100 | Pelipper δ | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 27/100 | Swampert | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Reverse holo |
+| 28/100 | Venusaur | Pokémon (Grass) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Normal (Regional championships), Reverse holo |
+| 29/100 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 30/100 | Charmeleon δ | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 31/100 | Combusken | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 32/100 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 33/100 | Gulpin | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 34/100 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 35/100 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Normal (Prerelease), Reverse holo |
+| 36/100 | Lairon | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 37/100 | Lombre | Pokémon (Water) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 38/100 | Marshtomp | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 39/100 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 40/100 | Shuppet | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim), Reverse holo |
+| 41/100 | Skitty | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 42/100 | Wartortle | Pokémon (Water) | Uncommon | Normal, Normal (Set logo), Normal (State championships), Normal (State championships, Staff), Reverse holo |
+| 43/100 | Wartortle | Pokémon (Water) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 44/100 | Aron | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 45/100 | Bulbasaur | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 46/100 | Bulbasaur | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 47/100 | Cacnea | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 48/100 | Charmander | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 49/100 | Charmander δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 50/100 | Diglett | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 51/100 | Duskull | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 52/100 | Electrike | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 53/100 | Jigglypuff | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Reverse holo |
+| 54/100 | Krabby | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 55/100 | Lotad | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 56/100 | Meditite | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 57/100 | Mudkip | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 58/100 | Mudkip | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 59/100 | Numel | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 60/100 | Seedot | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 61/100 | Spearow | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Normal (Jun hasebe), Reverse holo |
+| 62/100 | Spoink | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 63/100 | Squirtle | Pokémon (Water) | Common | Normal, Normal (Set logo), Normal (City championships), Reverse holo |
+| 64/100 | Squirtle | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 65/100 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 66/100 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 67/100 | Treecko | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 68/100 | Treecko δ | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 69/100 | Whismur | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Reverse holo |
+| 70/100 | Wingull | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 71/100 | Bill's Maintenance | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 72/100 | Castaway | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson), Reverse holo |
+| 73/100 | Celio's Network | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson), Normal (Jason klaczynski), Reverse holo |
+| 74/100 | Cessation Crystal | Trainer (Tool) | Uncommon | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson), Reverse holo |
+| 75/100 | Crystal Beach | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 76/100 | Crystal Shard | Trainer (Tool) | Uncommon | Normal, Normal (Set logo), Normal (Jun hasebe), Normal (Jeremy scharff kim), Reverse holo |
+| 77/100 | Double Full Heal | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 78/100 | Dual Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 79/100 | Holon Circle | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 80/100 | Memory Berry | Trainer (Tool) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 81/100 | Mysterious Shard | Trainer (Tool) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 82/100 | Poké Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 83/100 | PokéNav | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 84/100 | Warp Point | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 85/100 | Windstorm | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Normal (Jun hasebe), Normal (Tom roos), Normal (Dylan lefavour), Normal (Jason klaczynski), Reverse holo |
+| 86/100 | Energy Search | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 87/100 | Potion | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 88/100 | Double Rainbow Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Dylan lefavour), Normal (Jason klaczynski), Reverse holo |
 | 89/100 | Aggron ex | Pokémon (Metal) | Rare | Holo |
 | 90/100 | Blaziken ex | Pokémon (Fighting) | Rare | Holo |
 | 91/100 | Delcatty ex | Pokémon (Colorless) | Rare | Holo |
@@ -226,7 +227,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex14`), f
 | 98/100 | Swampert ex | Pokémon (Water) | Rare | Holo |
 | 99/100 | Alakazam ☆ | Pokémon (Psychic) | Rare | Holo |
 | 100/100 | Celebi ☆ | Pokémon (Grass) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

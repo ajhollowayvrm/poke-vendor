@@ -90,134 +90,134 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy4`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1494`, fetched 2026-09-12). This added 136 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/119 | Venonat | Pokémon (Grass) | Common | Normal |
-| 2/119 | Venomoth | Pokémon (Grass) | Rare | Normal |
-| 3/119 | Yanma | Pokémon (Grass) | Common | Normal |
-| 4/119 | Yanmega | Pokémon (Grass) | Rare | Normal |
-| 5/119 | Sewaddle | Pokémon (Grass) | Common | Normal |
-| 6/119 | Swadloon | Pokémon (Grass) | Uncommon | Normal |
-| 7/119 | Leavanny | Pokémon (Grass) | Rare | Normal |
-| 8/119 | Karrablast | Pokémon (Grass) | Common | Normal |
-| 9/119 | Fletchinder | Pokémon (Fire) | Uncommon | Normal |
-| 10/119 | Talonflame | Pokémon (Fire) | Rare | Normal |
-| 11/119 | Litleo | Pokémon (Fire) | Common | Normal |
-| 12/119 | Pyroar | Pokémon (Fire) | Rare | Normal |
-| 13/119 | Krabby | Pokémon (Water) | Common | Normal |
-| 14/119 | Kingler | Pokémon (Water) | Uncommon | Normal |
-| 15/119 | Totodile | Pokémon (Water) | Common | Normal |
-| 16/119 | Croconaw | Pokémon (Water) | Uncommon | Normal |
-| 17/119 | Feraligatr | Pokémon (Water) | Rare | Normal |
-| 18/119 | Finneon | Pokémon (Water) | Common | Normal |
-| 19/119 | Lumineon | Pokémon (Water) | Uncommon | Normal |
-| 20/119 | Frillish | Pokémon (Water) | Common | Normal |
-| 21/119 | Jellicent | Pokémon (Water) | Rare | Normal |
-| 22/119 | Alomomola | Pokémon (Water) | Common | Normal |
-| 23/119 | Manectric EX | Pokémon (Lightning) | Ultra Rare | Normal |
-| 24/119 | M Manectric EX | Pokémon (Lightning) | Ultra Rare | Normal |
-| 24a | M Manectric EX | Pokémon (Lightning) | Rare | Normal |
-| 25/119 | Pachirisu | Pokémon (Lightning) | Rare | Normal |
-| 26/119 | Joltik | Pokémon (Lightning) | Common | Normal |
-| 27/119 | Galvantula | Pokémon (Lightning) | Rare | Normal |
-| 28/119 | Helioptile | Pokémon (Lightning) | Common | Normal |
-| 29/119 | Helioptile | Pokémon (Lightning) | Common | Normal |
-| 30/119 | Heliolisk | Pokémon (Lightning) | Rare | Normal |
-| 31/119 | Zubat | Pokémon (Psychic) | Common | Normal |
-| 32/119 | Golbat | Pokémon (Psychic) | Uncommon | Normal |
-| 33/119 | Crobat | Pokémon (Psychic) | Rare | Normal |
-| 34/119 | Gengar EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 35/119 | M Gengar EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 36/119 | Wobbuffet | Pokémon (Psychic) | Uncommon | Normal |
-| 37/119 | Gulpin | Pokémon (Psychic) | Common | Normal |
-| 38/119 | Swalot | Pokémon (Psychic) | Rare | Normal |
-| 39/119 | Munna | Pokémon (Psychic) | Common | Normal |
-| 40/119 | Musharna | Pokémon (Psychic) | Rare | Normal |
-| 41/119 | Litwick | Pokémon (Psychic) | Common | Normal |
-| 42/119 | Lampent | Pokémon (Psychic) | Uncommon | Normal |
-| 43/119 | Chandelure | Pokémon (Psychic) | Rare | Normal |
-| 44/119 | Pumpkaboo | Pokémon (Psychic) | Common | Normal |
-| 45/119 | Gourgeist | Pokémon (Psychic) | Rare | Normal |
-| 46/119 | Gligar | Pokémon (Fighting) | Common | Normal |
-| 47/119 | Gliscor | Pokémon (Fighting) | Rare | Normal |
-| 48/119 | Roggenrola | Pokémon (Fighting) | Common | Normal |
-| 49/119 | Boldore | Pokémon (Fighting) | Uncommon | Normal |
-| 50/119 | Gigalith | Pokémon (Fighting) | Rare | Normal |
-| 51/119 | Murkrow | Pokémon (Darkness) | Common | Normal |
-| 52/119 | Honchkrow | Pokémon (Darkness) | Rare | Normal |
-| 53/119 | Poochyena | Pokémon (Darkness) | Common | Normal |
-| 54/119 | Mightyena | Pokémon (Darkness) | Rare | Normal |
-| 55/119 | Spiritomb | Pokémon (Darkness) | Rare | Normal |
-| 56/119 | Purrloin | Pokémon (Darkness) | Common | Normal |
-| 57/119 | Liepard | Pokémon (Darkness) | Uncommon | Normal |
-| 58/119 | Malamar EX | Pokémon (Darkness) | Ultra Rare | Normal |
-| 59/119 | Skarmory | Pokémon (Metal) | Common | Normal |
-| 60/119 | Bronzor | Pokémon (Metal) | Common | Normal |
-| 61/119 | Bronzong | Pokémon (Metal) | Rare | Normal |
-| 62/119 | Dialga EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 63/119 | Heatran | Pokémon (Metal) | Rare | Normal |
-| 64/119 | Escavalier | Pokémon (Metal) | Rare | Normal |
-| 65/119 | Aegislash EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 65a | Aegislash EX | Pokémon (Metal) | Rare | Normal |
-| 66/119 | Klefki | Pokémon (Metal) | Uncommon | Normal |
-| 67/119 | Florges EX | Pokémon (Fairy) | Ultra Rare | Normal |
-| 68/119 | Swirlix | Pokémon (Fairy) | Common | Normal |
-| 69/119 | Slurpuff | Pokémon (Fairy) | Rare | Normal |
-| 70/119 | Dedenne | Pokémon (Fairy) | Common | Normal |
-| 71/119 | Diancie | Pokémon (Fairy) | Rare | Normal |
-| 72/119 | Deino | Pokémon (Dragon) | Common | Normal |
-| 73/119 | Zweilous | Pokémon (Dragon) | Uncommon | Normal |
-| 74/119 | Hydreigon | Pokémon (Dragon) | Rare | Normal |
-| 75/119 | Goomy | Pokémon (Dragon) | Common | Normal |
-| 76/119 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal |
-| 77/119 | Goodra | Pokémon (Dragon) | Rare | Normal |
-| 78/119 | Spearow | Pokémon (Colorless) | Common | Normal |
-| 79/119 | Fearow | Pokémon (Colorless) | Uncommon | Normal |
-| 80/119 | Chansey | Pokémon (Colorless) | Common | Normal |
-| 81/119 | Blissey | Pokémon (Colorless) | Rare | Normal |
-| 82/119 | Girafarig | Pokémon (Colorless) | Uncommon | Normal |
-| 83/119 | Whismur | Pokémon (Colorless) | Common | Normal |
-| 84/119 | Loudred | Pokémon (Colorless) | Uncommon | Normal |
-| 85/119 | Exploud | Pokémon (Colorless) | Rare | Normal |
-| 86/119 | Regigigas | Pokémon (Colorless) | Rare | Normal |
-| 87/119 | Bunnelby | Pokémon (Colorless) | Common | Normal |
-| 88/119 | Diggersby | Pokémon (Colorless) | Rare | Normal |
-| 89/119 | Fletchling | Pokémon (Colorless) | Common | Normal |
-| 90/119 | Furfrou | Pokémon (Colorless) | Uncommon | Normal |
-| 91/119 | AZ | Trainer (Supporter) | Uncommon | Normal |
-| 92/119 | Battle Compressor Team Flare Gear | Trainer (Item) | Uncommon | Normal |
-| 93/119 | Dimension Valley | Trainer (Stadium) | Uncommon | Normal |
-| 94/119 | Enhanced Hammer | Trainer (Item) | Uncommon | Normal |
-| 95/119 | Gengar Spirit Link | Trainer (Tool) | Uncommon | Normal |
-| 96/119 | Hand Scope | Trainer (Item) | Uncommon | Normal |
-| 97/119 | Head Ringer Team Flare Hyper Gear | Trainer (Tool) | Rare | Normal |
-| 98/119 | Jamming Net Team Flare Hyper Gear | Trainer (Tool) | Rare | Normal |
-| 99/119 | Lysandre's Trump Card | Trainer (Supporter) | Uncommon | Normal |
-| 100/119 | Manectric Spirit Link | Trainer (Tool) | Uncommon | Normal |
-| 101/119 | Professor Sycamore | Trainer (Supporter) | Uncommon | Normal |
-| 102/119 | Robo Substitute Team Flare Gear | Trainer (Item) | Uncommon | Normal |
-| 103/119 | Roller Skates | Trainer (Item) | Uncommon | Normal |
-| 104/119 | Shauna | Trainer (Supporter) | Uncommon | Normal |
-| 105/119 | Steel Shelter | Trainer (Stadium) | Uncommon | Normal |
-| 106/119 | Target Whistle Team Flare Gear | Trainer (Item) | Uncommon | Normal |
-| 107/119 | Tierno | Trainer (Supporter) | Uncommon | Normal |
-| 108/119 | Trick Coin | Trainer (Tool) | Uncommon | Normal |
-| 109/119 | VS Seeker | Trainer (Item) | Uncommon | Normal |
-| 110/119 | Xerosic | Trainer (Supporter) | Uncommon | Normal |
-| 111/119 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
-| 112/119 | Mystery Energy | Energy (Special) | Uncommon | Normal |
-| 113/119 | Manectric EX | Pokémon (Lightning) | Ultra Rare | Normal |
-| 114/119 | Gengar EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 115/119 | Malamar EX | Pokémon (Darkness) | Ultra Rare | Normal |
-| 116/119 | Florges EX | Pokémon (Fairy) | Ultra Rare | Normal |
-| 117/119 | AZ | Trainer (Supporter) | Ultra Rare | Normal |
-| 118/119 | Lysandre's Trump Card | Trainer (Supporter) | Ultra Rare | Normal |
-| 119/119 | Xerosic | Trainer (Supporter) | Ultra Rare | Normal |
-| 120/119 | M Manectric EX | Pokémon (Lightning) | Secret Rare | Normal |
-| 121/119 | M Gengar EX | Pokémon (Psychic) | Secret Rare | Normal |
-| 122/119 | Dialga EX | Pokémon (Metal) | Secret Rare | Normal |
-
+| 1/119 | Venonat | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/119 | Venomoth | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 3/119 | Yanma | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 4/119 | Yanmega | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 5/119 | Sewaddle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 6/119 | Swadloon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 7/119 | Leavanny | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 8/119 | Karrablast | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 9/119 | Fletchinder | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 10/119 | Talonflame | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 11/119 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 12/119 | Pyroar | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 13/119 | Krabby | Pokémon (Water) | Common | Normal, Reverse holo |
+| 14/119 | Kingler | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 15/119 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo |
+| 16/119 | Croconaw | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 17/119 | Feraligatr | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 18/119 | Finneon | Pokémon (Water) | Common | Normal, Reverse holo |
+| 19/119 | Lumineon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 20/119 | Frillish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 21/119 | Jellicent | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 22/119 | Alomomola | Pokémon (Water) | Common | Normal, Reverse holo |
+| 23/119 | Manectric EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 24/119 | M Manectric EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 24a | M Manectric EX | Pokémon (Lightning) | Rare | Normal, Holo |
+| 25/119 | Pachirisu | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 26/119 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 27/119 | Galvantula | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 28/119 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 29/119 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 30/119 | Heliolisk | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 31/119 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 32/119 | Golbat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 33/119 | Crobat | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 34/119 | Gengar EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 35/119 | M Gengar EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 36/119 | Wobbuffet | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 37/119 | Gulpin | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 38/119 | Swalot | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 39/119 | Munna | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 40/119 | Musharna | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 41/119 | Litwick | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 42/119 | Lampent | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 43/119 | Chandelure | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 44/119 | Pumpkaboo | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 45/119 | Gourgeist | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 46/119 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 47/119 | Gliscor | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 48/119 | Roggenrola | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 49/119 | Boldore | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 50/119 | Gigalith | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 51/119 | Murkrow | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 52/119 | Honchkrow | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 53/119 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 54/119 | Mightyena | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 55/119 | Spiritomb | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 56/119 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 57/119 | Liepard | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 58/119 | Malamar EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 59/119 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 60/119 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 61/119 | Bronzong | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 62/119 | Dialga EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 63/119 | Heatran | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 64/119 | Escavalier | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 65/119 | Aegislash EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 65a | Aegislash EX | Pokémon (Metal) | Rare | Normal, Holo |
+| 66/119 | Klefki | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 67/119 | Florges EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 68/119 | Swirlix | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 69/119 | Slurpuff | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 70/119 | Dedenne | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 71/119 | Diancie | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 72/119 | Deino | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 73/119 | Zweilous | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 74/119 | Hydreigon | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 75/119 | Goomy | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 76/119 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 77/119 | Goodra | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 78/119 | Spearow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 79/119 | Fearow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 80/119 | Chansey | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 81/119 | Blissey | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 82/119 | Girafarig | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 83/119 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 84/119 | Loudred | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 85/119 | Exploud | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 86/119 | Regigigas | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 87/119 | Bunnelby | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 88/119 | Diggersby | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 89/119 | Fletchling | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 90/119 | Furfrou | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 91/119 | AZ | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 92/119 | Battle Compressor Team Flare Gear | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 93/119 | Dimension Valley | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 94/119 | Enhanced Hammer | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 95/119 | Gengar Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 96/119 | Hand Scope | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 97/119 | Head Ringer Team Flare Hyper Gear | Trainer (Tool) | Rare | Normal, Holo |
+| 98/119 | Jamming Net Team Flare Hyper Gear | Trainer (Tool) | Rare | Normal, Holo |
+| 99/119 | Lysandre's Trump Card | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 100/119 | Manectric Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 101/119 | Professor Sycamore | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 102/119 | Robo Substitute Team Flare Gear | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 103/119 | Roller Skates | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 104/119 | Shauna | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 105/119 | Steel Shelter | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 106/119 | Target Whistle Team Flare Gear | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 107/119 | Tierno | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 108/119 | Trick Coin | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 109/119 | VS Seeker | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 110/119 | Xerosic | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 111/119 | Double Colorless Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 112/119 | Mystery Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 113/119 | Manectric EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 114/119 | Gengar EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 115/119 | Malamar EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 116/119 | Florges EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 117/119 | AZ | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 118/119 | Lysandre's Trump Card | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 119/119 | Xerosic | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 120/119 | M Manectric EX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
+| 121/119 | M Gengar EX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
+| 122/119 | Dialga EX | Pokémon (Metal) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

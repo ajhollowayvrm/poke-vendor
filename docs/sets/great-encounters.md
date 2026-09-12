@@ -187,7 +187,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp4`), fe
 | 104/106 | Darkrai | Pokémon (Darkness) | Rare Holo LV.X | Holo |
 | 105/106 | Dialga | Pokémon (Metal) | Rare Holo LV.X | Holo |
 | 106/106 | Palkia | Pokémon (Water) | Rare Holo LV.X | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

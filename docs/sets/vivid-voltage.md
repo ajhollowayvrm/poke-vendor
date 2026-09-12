@@ -97,6 +97,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh4`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2701`, fetched 2026-09-12). This added 1 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -284,7 +285,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh4`), 
 | 182/185 | Leon | Trainer (Supporter) | Ultra Rare | Holo |
 | 183/185 | Nessa | Trainer (Supporter) | Ultra Rare | Holo |
 | 184/185 | Opal | Trainer (Supporter) | Ultra Rare | Holo |
-| 185/185 | Pokémon Center Lady | Trainer (Supporter) | Ultra Rare | Normal |
+| 185/185 | Pokémon Center Lady | Trainer (Supporter) | Ultra Rare | Normal, Holo |
 | 186/185 | Orbeetle VMAX | Pokémon (Grass) | Secret Rare | Holo (Rainbow) |
 | 187/185 | Galarian Darmanitan VMAX | Pokémon (Water) | Secret Rare | Holo (Rainbow) |
 | 188/185 | Pikachu VMAX | Pokémon (Lightning) | Secret Rare | Holo (Rainbow) |
@@ -303,7 +304,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh4`), 
 | 201/185 | Hero's Medal | Trainer (Tool) | Secret Rare | Holo (Gold) |
 | 202/185 | Memory Capsule | Trainer (Tool) | Secret Rare | Holo (Gold) |
 | 203/185 | Telescopic Sight | Trainer (Tool) | Secret Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

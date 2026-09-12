@@ -232,7 +232,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex1`), fe
 | 107/109 | Psychic Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Miska saari), Normal (Tsuguyoshi yamato), Normal (Kevin nguyen) |
 | 108/109 | Fire Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Jimmy ballard), Normal (Chris fulop) |
 | 109/109 | Lightning Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Chris fulop), Normal (Kevin nguyen), Normal (Jason klaczynski) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

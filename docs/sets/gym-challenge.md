@@ -213,7 +213,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `gym2`), f
 | 130/132 | Lightning Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 131/132 | Psychic Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 132/132 | Water Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

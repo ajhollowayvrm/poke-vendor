@@ -250,7 +250,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me03`), f
 | 122/088 | Jacinthe | Trainer (Supporter) | Special illustration rare | Holo |
 | 123/088 | Rosa's Encouragement | Trainer (Supporter) | Special illustration rare | Holo |
 | 124/088 | Mega Zygarde ex | Pokémon (Fighting) | Mega Hyper Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

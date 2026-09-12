@@ -313,7 +313,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ecard2`),
 | H30 | Victreebel | Pokémon (Grass) | Holo Rare | Holo |
 | H31 | Vileplume | Pokémon (Grass) | Holo Rare | Holo |
 | H32 | Zapdos | Pokémon (Lightning) | Holo Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

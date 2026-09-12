@@ -148,7 +148,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base2`), 
 | 62/64 | Spearow | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
 | 63/64 | Venonat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
 | 64/64 | Poké Ball | Trainer | Common | Normal, Normal (1st Edition) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

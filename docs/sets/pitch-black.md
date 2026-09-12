@@ -257,7 +257,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 | 118/084 | Gladion's Final Battle | Trainer (Supporter) | Special illustration rare | Holo |
 | 119/084 | Gwynn | Trainer (Supporter) | Special illustration rare | Holo |
 | 120/084 | Mega Darkrai ex | Pokémon (Darkness) | Mega Hyper Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

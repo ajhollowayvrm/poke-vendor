@@ -125,100 +125,101 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex16`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1383`, fetched 2026-09-12). This added 91 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/108 | Aggron | Pokémon (Metal) | Rare | Holo, Holo (Set logo) |
-| 2/108 | Altaria | Pokémon (Colorless) | Rare | Holo, Holo (Set logo) |
-| 3/108 | Armaldo | Pokémon (Fighting) | Rare | Holo, Holo (Set logo) |
-| 4/108 | Banette | Pokémon (Psychic) | Rare | Holo, Holo (Set logo) |
-| 5/108 | Blaziken | Pokémon (Fire) | Rare | Holo, Holo (Set logo) |
-| 6/108 | Charizard | Pokémon (Fire) | Rare | Holo, Holo (Set logo) |
-| 7/108 | Cradily | Pokémon (Grass) | Rare | Holo, Holo (Set logo) |
-| 8/108 | Delcatty | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Normal |
-| 9/108 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Normal |
-| 10/108 | Kabutops | Pokémon (Fighting) | Rare | Holo, Holo (Set logo) |
-| 11/108 | Machamp | Pokémon (Fighting) | Rare | Holo, Holo (Set logo) |
-| 12/108 | Raichu | Pokémon (Lightning) | Rare | Holo, Holo (Set logo) |
-| 13/108 | Slaking | Pokémon (Colorless) | Rare | Holo, Holo (Set logo) |
-| 14/108 | Dusclops | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Holo (Cosmos) |
-| 15/108 | Lanturn | Pokémon (Lightning) | Rare | Normal, Normal (Set logo) |
-| 16/108 | Magneton | Pokémon (Lightning) | Rare | Normal, Normal (Set logo) |
-| 17/108 | Mawile | Pokémon (Metal) | Rare | Normal, Normal (Set logo) |
-| 18/108 | Mightyena | Pokémon (Darkness) | Rare | Normal, Normal (Set logo), Holo (Cosmos) |
-| 19/108 | Ninetales | Pokémon (Fire) | Rare | Normal, Normal (Set logo) |
-| 20/108 | Omastar | Pokémon (Water) | Rare | Normal, Normal (Set logo) |
-| 21/108 | Pichu | Pokémon (Lightning) | Rare | Normal, Normal (Set logo) |
-| 22/108 | Sableye | Pokémon (Psychic) | Rare | Normal, Normal (Set logo) |
-| 23/108 | Seviper | Pokémon (Grass) | Rare | Normal, Normal (Set logo) |
-| 24/108 | Wobbuffet | Pokémon (Psychic) | Rare | Normal, Normal (Set logo) |
-| 25/108 | Zangoose | Pokémon (Colorless) | Rare | Normal, Normal (Set logo) |
-| 26/108 | Anorith | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 27/108 | Cacturne | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo), Normal (Prerelease) |
-| 28/108 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 29/108 | Combusken | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 30/108 | Glalie | Pokémon (Water) | Uncommon | Normal, Normal (Set logo) |
-| 31/108 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo) |
-| 32/108 | Lairon | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo) |
-| 33/108 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 34/108 | Medicham | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 35/108 | Metang | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo) |
-| 36/108 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo) |
-| 37/108 | Sealeo | Pokémon (Water) | Uncommon | Normal, Normal (Set logo) |
-| 38/108 | Sharpedo | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo) |
-| 39/108 | Shelgon | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo) |
-| 40/108 | Vibrava | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo) |
-| 41/108 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo) |
-| 42/108 | Aron | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 43/108 | Bagon | Pokémon (Colorless) | Common | Normal, Normal (Set logo) |
-| 44/108 | Baltoy | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 45/108 | Beldum | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 46/108 | Cacnea | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 47/108 | Carvanha | Pokémon (Darkness) | Common | Normal, Normal (Set logo) |
-| 48/108 | Charmander | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 49/108 | Chinchou | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 50/108 | Duskull | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 51/108 | Kabuto | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 52/108 | Lileep | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 53/108 | Machop | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 54/108 | Magnemite | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 55/108 | Meditite | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 56/108 | Omanyte | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 57/108 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 58/108 | Poochyena | Pokémon (Darkness) | Common | Normal, Normal (Set logo) |
-| 59/108 | Ralts | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 60/108 | Seedot | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 61/108 | Shuppet | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 62/108 | Skitty | Pokémon (Colorless) | Common | Normal, Normal (Set logo) |
-| 63/108 | Slakoth | Pokémon (Colorless) | Common | Normal, Normal (Set logo) |
-| 64/108 | Snorunt | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 65/108 | Spheal | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 66/108 | Swablu | Pokémon (Colorless) | Common | Normal, Normal (Set logo) |
-| 67/108 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 68/108 | Trapinch | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 69/108 | Vulpix | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 70/108 | Wynaut | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 71/108 | Battle Frontier | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 72/108 | Drake's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 73/108 | Energy Recycle System | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 74/108 | Energy Removal 2 | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Normal (Paul atanassov) |
-| 75/108 | Energy Switch | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 76/108 | Glacia's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 77/108 | Great Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 78/108 | Master Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 79/108 | Phoebe's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim) |
-| 80/108 | Professor Birch | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo) |
-| 81/108 | Scott | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Tom roos), Normal (Jeremy scharff kim), Normal (Paul atanassov), Normal (Tristan robinson) |
-| 82/108 | Sidney's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 83/108 | Steven's Advice | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson), Normal (Jason klaczynski) |
-| 84/108 | Claw Fossil | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 85/108 | Mysterious Fossil | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 86/108 | Root Fossil | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 87/108 | Darkness Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Normal (Tom roos) |
-| 88/108 | Metal Energy | Energy (Special) | Rare | Normal, Normal (Set logo) |
-| 89/108 | Multi Energy | Energy (Special) | Rare | Normal, Normal (Set logo) |
-| 90/108 | Cyclone Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim), Normal (Jason klaczynski) |
-| 91/108 | Warp Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo) |
+| 1/108 | Aggron | Pokémon (Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 2/108 | Altaria | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 3/108 | Armaldo | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 4/108 | Banette | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 5/108 | Blaziken | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 6/108 | Charizard | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 7/108 | Cradily | Pokémon (Grass) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 8/108 | Delcatty | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Normal, Reverse holo |
+| 9/108 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Normal, Reverse holo |
+| 10/108 | Kabutops | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 11/108 | Machamp | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 12/108 | Raichu | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 13/108 | Slaking | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 14/108 | Dusclops | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Reverse holo |
+| 15/108 | Lanturn | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 16/108 | Magneton | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 17/108 | Mawile | Pokémon (Metal) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 18/108 | Mightyena | Pokémon (Darkness) | Rare | Normal, Normal (Set logo), Holo (Cosmos), Reverse holo |
+| 19/108 | Ninetales | Pokémon (Fire) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 20/108 | Omastar | Pokémon (Water) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 21/108 | Pichu | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 22/108 | Sableye | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 23/108 | Seviper | Pokémon (Grass) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 24/108 | Wobbuffet | Pokémon (Psychic) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 25/108 | Zangoose | Pokémon (Colorless) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 26/108 | Anorith | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 27/108 | Cacturne | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo), Normal (Prerelease), Reverse holo |
+| 28/108 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 29/108 | Combusken | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 30/108 | Glalie | Pokémon (Water) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 31/108 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 32/108 | Lairon | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 33/108 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 34/108 | Medicham | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 35/108 | Metang | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 36/108 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 37/108 | Sealeo | Pokémon (Water) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 38/108 | Sharpedo | Pokémon (Darkness) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 39/108 | Shelgon | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 40/108 | Vibrava | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 41/108 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 42/108 | Aron | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 43/108 | Bagon | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Reverse holo |
+| 44/108 | Baltoy | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 45/108 | Beldum | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 46/108 | Cacnea | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 47/108 | Carvanha | Pokémon (Darkness) | Common | Normal, Normal (Set logo), Reverse holo |
+| 48/108 | Charmander | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 49/108 | Chinchou | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 50/108 | Duskull | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 51/108 | Kabuto | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 52/108 | Lileep | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 53/108 | Machop | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 54/108 | Magnemite | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 55/108 | Meditite | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 56/108 | Omanyte | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 57/108 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 58/108 | Poochyena | Pokémon (Darkness) | Common | Normal, Normal (Set logo), Reverse holo |
+| 59/108 | Ralts | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 60/108 | Seedot | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 61/108 | Shuppet | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 62/108 | Skitty | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Reverse holo |
+| 63/108 | Slakoth | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Reverse holo |
+| 64/108 | Snorunt | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 65/108 | Spheal | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 66/108 | Swablu | Pokémon (Colorless) | Common | Normal, Normal (Set logo), Reverse holo |
+| 67/108 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 68/108 | Trapinch | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 69/108 | Vulpix | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 70/108 | Wynaut | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 71/108 | Battle Frontier | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 72/108 | Drake's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 73/108 | Energy Recycle System | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 74/108 | Energy Removal 2 | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Normal (Paul atanassov), Reverse holo |
+| 75/108 | Energy Switch | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 76/108 | Glacia's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 77/108 | Great Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 78/108 | Master Ball | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 79/108 | Phoebe's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim), Reverse holo |
+| 80/108 | Professor Birch | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 81/108 | Scott | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Tom roos), Normal (Jeremy scharff kim), Normal (Paul atanassov), Normal (Tristan robinson), Reverse holo |
+| 82/108 | Sidney's Stadium | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 83/108 | Steven's Advice | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Normal (Akira miyazaki), Normal (Paul atanassov), Normal (Dylan lefavour), Normal (Tristan robinson), Normal (Jason klaczynski), Reverse holo |
+| 84/108 | Claw Fossil | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 85/108 | Mysterious Fossil | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 86/108 | Root Fossil | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 87/108 | Darkness Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Normal (Tom roos), Reverse holo |
+| 88/108 | Metal Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 89/108 | Multi Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 90/108 | Cyclone Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo), Normal (Jeremy scharff kim), Normal (Jason klaczynski), Reverse holo |
+| 91/108 | Warp Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo), Reverse holo |
 | 92/108 | Absol ex | Pokémon (Darkness) | Rare | Holo, Holo (Jun hasebe), Normal (Tom roos) |
 | 93/108 | Claydol ex | Pokémon (Psychic) | Rare | Holo |
 | 94/108 | Flygon ex | Pokémon (Colorless) | Rare | Holo |
@@ -236,7 +237,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex16`), f
 | 106/108 | Lightning Energy | Energy (Normal) | Rare | Holo |
 | 107/108 | Psychic Energy | Energy (Normal) | Rare | Holo |
 | 108/108 | Fighting Energy | Energy (Normal) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

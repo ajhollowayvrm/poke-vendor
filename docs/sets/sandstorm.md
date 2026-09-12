@@ -219,7 +219,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex2`), fe
 | 98/100 | Raichu ex | Pokémon (Lightning) | Rare | Holo |
 | 99/100 | Typhlosion ex | Pokémon (Fire) | Rare | Holo |
 | 100/100 | Wailord ex | Pokémon (Water) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

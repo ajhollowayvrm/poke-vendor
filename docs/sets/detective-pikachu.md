@@ -88,28 +88,28 @@ Every card in the set, with its variants. Source: the TCGdex API (set `det1`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2409`, fetched 2026-09-12). This added 10 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/18 | Bulbasaur | Pokémon (Grass) | Common | Normal |
-| 2/18 | Ludicolo | Pokémon (Grass) | Rare | Normal |
+| 2/18 | Ludicolo | Pokémon (Grass) | Rare | Normal, Holo |
 | 3/18 | Morelull | Pokémon (Grass) | Common | Normal |
 | 4/18 | Charmander | Pokémon (Fire) | Common | Normal |
-| 5/18 | Charizard | Pokémon (Fire) | Ultra Rare | Normal |
-| 6/18 | Arcanine | Pokémon (Fire) | Rare | Normal |
+| 5/18 | Charizard | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 6/18 | Arcanine | Pokémon (Fire) | Rare | Normal, Holo |
 | 7/18 | Psyduck | Pokémon (Water) | Common | Normal |
 | 8/18 | Magikarp | Pokémon (Water) | Common | Normal |
-| 9/18 | Greninja | Pokémon (Water) | Ultra Rare | Normal |
-| 10/18 | Detective Pikachu | Pokémon (Lightning) | Rare | Normal |
-| 11/18 | Mr. Mime | Pokémon (Psychic) | Rare | Normal |
-| 12/18 | Mewtwo | Pokémon (Psychic) | Ultra Rare | Normal |
-| 13/18 | Machamp | Pokémon (Fighting) | Rare | Normal |
+| 9/18 | Greninja | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 10/18 | Detective Pikachu | Pokémon (Lightning) | Rare | Normal, Holo |
+| 11/18 | Mr. Mime | Pokémon (Psychic) | Rare | Normal, Holo |
+| 12/18 | Mewtwo | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 13/18 | Machamp | Pokémon (Fighting) | Rare | Normal, Holo |
 | 14/18 | Jigglypuff | Pokémon (Fairy) | Common | Normal |
 | 15/18 | Snubbull | Pokémon (Fairy) | Common | Normal |
 | 16/18 | Lickitung | Pokémon (Colorless) | Common | Normal |
-| 17/18 | Ditto | Pokémon (Colorless) | Ultra Rare | Normal |
-| 18/18 | Slaking | Pokémon (Colorless) | Rare | Normal |
-
+| 17/18 | Ditto | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 18/18 | Slaking | Pokémon (Colorless) | Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

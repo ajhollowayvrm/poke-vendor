@@ -384,7 +384,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 216/162 | Iron Crown ex | Pokémon (Psychic) | Hyper rare | Holo (Gold) |
 | 217/162 | Iron Boulder ex | Pokémon (Fighting) | Hyper rare | Holo (Gold) |
 | 218/162 | Raging Bolt ex | Pokémon (Dragon) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

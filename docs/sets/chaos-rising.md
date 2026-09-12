@@ -255,7 +255,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 120/086 | AZ's Tranquility | Trainer (Supporter) | Special illustration rare | Holo |
 | 121/086 | Roxie's Performance | Trainer (Supporter) | Special illustration rare | Holo |
 | 122/086 | Mega Greninja ex | Pokémon (Water) | Mega Hyper Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

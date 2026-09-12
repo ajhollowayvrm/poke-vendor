@@ -102,6 +102,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp1`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1430`, fetched 2026-09-12). This added 2 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -232,10 +233,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp1`), fe
 | 125/130 | Water Energy | Energy (Normal) | Common | Normal |
 | 126/130 | Lightning Energy | Energy (Normal) | Common | Normal |
 | 127/130 | Psychic Energy | Energy (Normal) | Common | Normal |
-| 128/130 | Fighting Energy | Energy (Normal) | Common | Normal |
-| 129/130 | Darkness Energy | Energy (Normal) | Common | Normal |
+| 128/130 | Fighting Energy | Energy (Normal) | Common | Normal, Reverse holo |
+| 129/130 | Darkness Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 130/130 | Metal Energy | Energy (Normal) | Common | Normal |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

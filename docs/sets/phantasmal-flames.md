@@ -245,7 +245,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 | 128/094 | Mega Lopunny ex | Pokémon (Colorless) | Special illustration rare | Holo |
 | 129/094 | Dawn | Trainer (Supporter) | Special illustration rare | Holo |
 | 130/094 | Mega Charizard X ex | Pokémon (Fire) | Mega Hyper Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

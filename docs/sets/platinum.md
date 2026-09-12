@@ -231,7 +231,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl1`), fe
 | SH4 | Lotad | Pokémon (Grass) | Rare | Reverse holo |
 | SH5 | Swablu | Pokémon (Colorless) | Rare | Reverse holo |
 | SH6 | Vulpix | Pokémon (Fire) | Rare | Reverse holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

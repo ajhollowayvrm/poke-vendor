@@ -212,7 +212,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo4`), f
 | 111/105 | Shining Raichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
 | 112/105 | Shining Steelix | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
 | 113/105 | Shining Tyranitar | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

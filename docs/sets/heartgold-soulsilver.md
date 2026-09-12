@@ -117,6 +117,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss1`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1402`, fetched 2026-09-12). This added 1 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -234,7 +235,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss1`), 
 | 112/123 | Ho-Oh LEGEND | Pokémon (Fire) | LEGEND | Holo |
 | 113/123 | Lugia LEGEND | Pokémon (Water) | LEGEND | Holo |
 | 114/123 | Lugia LEGEND | Pokémon (Water) | LEGEND | Holo |
-| 115/123 | Grass Energy | Energy (Normal) | Common | Normal |
+| 115/123 | Grass Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 116/123 | Fire Energy | Energy (Normal) | Common | Normal |
 | 117/123 | Water Energy | Energy (Normal) | Common | Normal |
 | 118/123 | Lightning Energy | Energy (Normal) | Common | Normal |
@@ -244,7 +245,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss1`), 
 | 122/123 | Metal Energy | Energy (Normal) | Common | Normal |
 | 123/123 | Gyarados | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | ONE | Alph Lithograph | Trainer (Item) | Ultra Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

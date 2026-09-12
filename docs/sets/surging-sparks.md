@@ -449,7 +449,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), f
 | 250/191 | Gravity Mountain | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 251/191 | Night Stretcher | Trainer (Item) | Hyper rare | Holo (Gold) |
 | 252/191 | Jet Energy | Energy (Special) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

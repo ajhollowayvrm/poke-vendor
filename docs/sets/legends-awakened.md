@@ -226,7 +226,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp6`), fe
 | 144/146 | Mewtwo | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (David cohen) |
 | 145/146 | Rhyperior | Pokémon (Fighting) | Rare Holo LV.X | Holo |
 | 146/146 | Uxie | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

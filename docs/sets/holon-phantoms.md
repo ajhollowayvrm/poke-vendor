@@ -131,107 +131,108 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex13`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1379`, fetched 2026-09-12). This added 99 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/110 | Armaldo δ | Pokémon (Fighting, Metal) | Rare | Holo, Holo (Set logo) |
-| 2/110 | Cradily δ | Pokémon (Darkness, Metal) | Rare | Holo, Holo (Set logo) |
-| 3/110 | Deoxys δ | Pokémon (Darkness) | Rare | Holo, Holo (Set logo) |
-| 4/110 | Deoxys δ | Pokémon (Metal) | Rare | Holo, Holo (Set logo) |
-| 5/110 | Deoxys δ | Pokémon (Colorless) | Rare | Holo, Holo (Set logo) |
-| 6/110 | Deoxys δ | Pokémon (Lightning) | Rare | Holo, Holo (Set logo) |
-| 7/110 | Flygon δ | Pokémon (Grass, Metal) | Rare | Normal, Normal (Set logo), Normal (Jun hasebe) |
-| 8/110 | Gyarados δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo) |
-| 9/110 | Kabutops δ | Pokémon (Lightning) | Rare | Holo, Holo (Set logo) |
-| 10/110 | Kingdra δ | Pokémon (Fire, Metal) | Rare | Holo, Holo (Set logo) |
-| 11/110 | Latias δ | Pokémon (Fire) | Rare | Holo, Holo (Set logo) |
-| 12/110 | Latios δ | Pokémon (Water) | Rare | Holo, Holo (Set logo) |
-| 13/110 | Omastar δ | Pokémon (Psychic) | Rare | Holo, Holo (Set logo) |
-| 14/110 | Pidgeot δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo) |
-| 15/110 | Raichu δ | Pokémon (Metal) | Rare | Holo, Holo (Set logo) |
-| 16/110 | Rayquaza δ | Pokémon (Water, Metal) | Rare | Holo, Holo (Set logo) |
-| 17/110 | Vileplume δ | Pokémon (Psychic, Metal) | Rare | Holo, Holo (Set logo) |
-| 18/110 | Absol | Pokémon (Darkness) | Rare | Normal, Normal (Set logo) |
-| 19/110 | Bellossom δ | Pokémon (Water) | Rare | Normal, Normal (Set logo) |
-| 20/110 | Blaziken | Pokémon (Fire) | Rare | Normal, Normal (Set logo) |
-| 21/110 | Latias δ | Pokémon (Fire) | Rare | Normal, Normal (Set logo), Holo |
-| 22/110 | Latios δ | Pokémon (Water) | Rare | Normal, Normal (Set logo), Holo |
-| 23/110 | Mawile | Pokémon (Metal) | Rare | Normal, Normal (Set logo) |
-| 24/110 | Mewtwo δ | Pokémon (Lightning) | Rare | Normal, Normal (Set logo) |
-| 25/110 | Nosepass | Pokémon (Fighting) | Rare | Normal, Normal (Set logo) |
-| 26/110 | Rayquaza δ | Pokémon (Fire) | Rare | Normal, Normal (Set logo) |
-| 27/110 | Regice | Pokémon (Water) | Rare | Normal, Normal (Set logo) |
-| 28/110 | Regirock | Pokémon (Fighting) | Rare | Normal, Normal (Set logo) |
-| 29/110 | Registeel | Pokémon (Metal) | Rare | Normal, Normal (Set logo) |
-| 30/110 | Relicanth | Pokémon (Water) | Rare | Normal, Normal (Set logo) |
-| 31/110 | Sableye | Pokémon (Darkness) | Rare | Normal, Normal (Set logo) |
-| 32/110 | Seviper | Pokémon (Grass) | Rare | Normal, Normal (Set logo) |
-| 33/110 | Torkoal | Pokémon (Fire) | Rare | Normal, Normal (Set logo) |
-| 34/110 | Zangoose | Pokémon (Colorless) | Rare | Normal, Normal (Set logo) |
-| 35/110 | Aerodactyl δ | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 36/110 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 37/110 | Chimecho δ | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo) |
-| 38/110 | Claydol | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo) |
-| 39/110 | Combusken | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 40/110 | Donphan | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 41/110 | Exeggutor δ | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Normal (Prerelease) |
-| 42/110 | Gloom δ | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo) |
-| 43/110 | Golduck δ | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo) |
-| 44/110 | Holon's Castform | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo), Normal (Jun hasebe), Normal (Tom roos), Normal (Dylan lefavour) |
-| 45/110 | Lairon | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo) |
-| 46/110 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo) |
-| 47/110 | Masquerain | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo) |
-| 48/110 | Persian δ | Pokémon (Darkness, Metal) | Uncommon | Normal, Normal (Set logo) |
-| 49/110 | Pidgeotto δ | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo) |
-| 50/110 | Primeape δ | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 51/110 | Raichu | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo) |
-| 52/110 | Seadra δ | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo) |
-| 53/110 | Sharpedo δ | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 54/110 | Vibrava δ | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo) |
-| 55/110 | Whiscash | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo) |
-| 56/110 | Wobbuffet | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo) |
-| 57/110 | Anorith δ | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 58/110 | Aron | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 59/110 | Baltoy | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 60/110 | Barboach | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 61/110 | Carvanha δ | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 62/110 | Corphish | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 63/110 | Corphish | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 64/110 | Electrike | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 65/110 | Exeggcute δ | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 66/110 | Horsea δ | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 67/110 | Kabuto δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 68/110 | Lileep δ | Pokémon (Darkness) | Common | Normal, Normal (Set logo) |
-| 69/110 | Magikarp δ | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 70/110 | Mankey δ | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 71/110 | Meowth δ | Pokémon (Darkness, Metal) | Common | Normal, Normal (Set logo) |
-| 72/110 | Numel | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 73/110 | Oddish δ | Pokémon (Water) | Common | Normal, Normal (Set logo) |
-| 74/110 | Omanyte δ | Pokémon (Psychic) | Common | Normal, Normal (Set logo) |
-| 75/110 | Phanpy | Pokémon (Fighting) | Common | Normal, Normal (Set logo) |
-| 76/110 | Pichu δ | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 77/110 | Pidgey δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 78/110 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 79/110 | Pikachu δ | Pokémon (Metal) | Common | Normal, Normal (Set logo) |
-| 80/110 | Poochyena | Pokémon (Darkness) | Common | Normal, Normal (Set logo) |
-| 81/110 | Psyduck δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo) |
-| 82/110 | Surskit | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 83/110 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo) |
-| 84/110 | Trapinch δ | Pokémon (Grass) | Common | Normal, Normal (Set logo) |
-| 85/110 | Holon Adventurer | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo) |
-| 86/110 | Holon Fossil | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 87/110 | Holon Lake | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo) |
-| 88/110 | Mr. Stone's Project | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo) |
-| 89/110 | Professor Cozmo's Discovery | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo) |
-| 90/110 | Rare Candy | Trainer (Item) | Uncommon | Normal, Normal (Set logo) |
-| 91/110 | Claw Fossil | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 92/110 | Mysterious Fossil | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 93/110 | Root Fossil | Trainer (Item) | Common | Normal, Normal (Set logo) |
-| 94/110 | Darkness Energy | Energy (Special) | Rare | Normal, Normal (Set logo) |
-| 95/110 | Metal Energy | Energy (Special) | Rare | Normal, Normal (Set logo) |
-| 96/110 | Multi Energy | Energy (Special) | Rare | Normal, Normal (Set logo) |
-| 97/110 | Dark Metal Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo) |
-| 98/110 | δ Rainbow Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo) |
+| 1/110 | Armaldo δ | Pokémon (Fighting, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 2/110 | Cradily δ | Pokémon (Darkness, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 3/110 | Deoxys δ | Pokémon (Darkness) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 4/110 | Deoxys δ | Pokémon (Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 5/110 | Deoxys δ | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 6/110 | Deoxys δ | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 7/110 | Flygon δ | Pokémon (Grass, Metal) | Rare | Normal, Normal (Set logo), Normal (Jun hasebe), Holo, Reverse holo |
+| 8/110 | Gyarados δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 9/110 | Kabutops δ | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 10/110 | Kingdra δ | Pokémon (Fire, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 11/110 | Latias δ | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 12/110 | Latios δ | Pokémon (Water) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 13/110 | Omastar δ | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 14/110 | Pidgeot δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 15/110 | Raichu δ | Pokémon (Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 16/110 | Rayquaza δ | Pokémon (Water, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 17/110 | Vileplume δ | Pokémon (Psychic, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 18/110 | Absol | Pokémon (Darkness) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 19/110 | Bellossom δ | Pokémon (Water) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 20/110 | Blaziken | Pokémon (Fire) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 21/110 | Latias δ | Pokémon (Fire) | Rare | Normal, Normal (Set logo), Holo, Reverse holo |
+| 22/110 | Latios δ | Pokémon (Water) | Rare | Normal, Normal (Set logo), Holo, Reverse holo |
+| 23/110 | Mawile | Pokémon (Metal) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 24/110 | Mewtwo δ | Pokémon (Lightning) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 25/110 | Nosepass | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 26/110 | Rayquaza δ | Pokémon (Fire) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 27/110 | Regice | Pokémon (Water) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 28/110 | Regirock | Pokémon (Fighting) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 29/110 | Registeel | Pokémon (Metal) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 30/110 | Relicanth | Pokémon (Water) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 31/110 | Sableye | Pokémon (Darkness) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 32/110 | Seviper | Pokémon (Grass) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 33/110 | Torkoal | Pokémon (Fire) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 34/110 | Zangoose | Pokémon (Colorless) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 35/110 | Aerodactyl δ | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 36/110 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 37/110 | Chimecho δ | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 38/110 | Claydol | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 39/110 | Combusken | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 40/110 | Donphan | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 41/110 | Exeggutor δ | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Normal (Prerelease), Reverse holo |
+| 42/110 | Gloom δ | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 43/110 | Golduck δ | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 44/110 | Holon's Castform | Pokémon (Colorless) | Uncommon | Normal, Normal (Set logo), Normal (Jun hasebe), Normal (Tom roos), Normal (Dylan lefavour), Reverse holo |
+| 45/110 | Lairon | Pokémon (Metal) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 46/110 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 47/110 | Masquerain | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 48/110 | Persian δ | Pokémon (Darkness, Metal) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 49/110 | Pidgeotto δ | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 50/110 | Primeape δ | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 51/110 | Raichu | Pokémon (Lightning) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 52/110 | Seadra δ | Pokémon (Fire) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 53/110 | Sharpedo δ | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 54/110 | Vibrava δ | Pokémon (Grass) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 55/110 | Whiscash | Pokémon (Fighting) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 56/110 | Wobbuffet | Pokémon (Psychic) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 57/110 | Anorith δ | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 58/110 | Aron | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 59/110 | Baltoy | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 60/110 | Barboach | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 61/110 | Carvanha δ | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 62/110 | Corphish | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 63/110 | Corphish | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 64/110 | Electrike | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 65/110 | Exeggcute δ | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 66/110 | Horsea δ | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 67/110 | Kabuto δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 68/110 | Lileep δ | Pokémon (Darkness) | Common | Normal, Normal (Set logo), Reverse holo |
+| 69/110 | Magikarp δ | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 70/110 | Mankey δ | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 71/110 | Meowth δ | Pokémon (Darkness, Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 72/110 | Numel | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 73/110 | Oddish δ | Pokémon (Water) | Common | Normal, Normal (Set logo), Reverse holo |
+| 74/110 | Omanyte δ | Pokémon (Psychic) | Common | Normal, Normal (Set logo), Reverse holo |
+| 75/110 | Phanpy | Pokémon (Fighting) | Common | Normal, Normal (Set logo), Reverse holo |
+| 76/110 | Pichu δ | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 77/110 | Pidgey δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 78/110 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 79/110 | Pikachu δ | Pokémon (Metal) | Common | Normal, Normal (Set logo), Reverse holo |
+| 80/110 | Poochyena | Pokémon (Darkness) | Common | Normal, Normal (Set logo), Reverse holo |
+| 81/110 | Psyduck δ | Pokémon (Lightning) | Common | Normal, Normal (Set logo), Reverse holo |
+| 82/110 | Surskit | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 83/110 | Torchic | Pokémon (Fire) | Common | Normal, Normal (Set logo), Reverse holo |
+| 84/110 | Trapinch δ | Pokémon (Grass) | Common | Normal, Normal (Set logo), Reverse holo |
+| 85/110 | Holon Adventurer | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 86/110 | Holon Fossil | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 87/110 | Holon Lake | Trainer (Stadium) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 88/110 | Mr. Stone's Project | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 89/110 | Professor Cozmo's Discovery | Trainer (Supporter) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 90/110 | Rare Candy | Trainer (Item) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 91/110 | Claw Fossil | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 92/110 | Mysterious Fossil | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 93/110 | Root Fossil | Trainer (Item) | Common | Normal, Normal (Set logo), Reverse holo |
+| 94/110 | Darkness Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 95/110 | Metal Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 96/110 | Multi Energy | Energy (Special) | Rare | Normal, Normal (Set logo), Reverse holo |
+| 97/110 | Dark Metal Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo), Reverse holo |
+| 98/110 | δ Rainbow Energy | Energy (Special) | Uncommon | Normal, Normal (Set logo), Reverse holo |
 | 99/110 | Crawdaunt ex | Pokémon (Water) | Rare | Holo |
 | 100/110 | Mew ex | Pokémon (Psychic) | Rare | Holo |
 | 101/110 | Mightyena ex | Pokémon (Darkness) | Rare | Holo |
@@ -245,7 +246,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex13`), f
 | 109/110 | Psychic Energy | Energy (Normal) | Rare | Holo |
 | 110/110 | Fighting Energy | Energy (Normal) | Rare | Holo |
 | 111/110 | Mew | Pokémon (Psychic) | Rare | Holo, Normal |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

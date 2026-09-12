@@ -136,25 +136,26 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex6`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1419`, fetched 2026-09-12). This added 23 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/112 | Beedrill | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy) |
-| 2/112 | Butterfree | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy) |
-| 3/112 | Dewgong | Pokémon (Water) | Rare | Holo, Holo (Energy) |
-| 4/112 | Ditto | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
-| 5/112 | Exeggutor | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy) |
-| 6/112 | Kangaskhan | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
-| 7/112 | Marowak | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy) |
-| 8/112 | Nidoking | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy) |
-| 9/112 | Nidoqueen | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy), Holo (Jeremy maron) |
-| 10/112 | Pidgeot | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy), Holo (Takashi yoneda), Holo (Jeremy maron), Holo (Hiroki yano), Holo (Jimmy ballard) |
+| 1/112 | Beedrill | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy), Normal |
+| 2/112 | Butterfree | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy), Normal |
+| 3/112 | Dewgong | Pokémon (Water) | Rare | Holo, Holo (Energy), Normal, Reverse holo |
+| 4/112 | Ditto | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy), Normal |
+| 5/112 | Exeggutor | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy), Normal |
+| 6/112 | Kangaskhan | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy), Normal |
+| 7/112 | Marowak | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy), Normal |
+| 8/112 | Nidoking | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy), Normal |
+| 9/112 | Nidoqueen | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy), Holo (Jeremy maron), Normal |
+| 10/112 | Pidgeot | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy), Holo (Takashi yoneda), Holo (Jeremy maron), Holo (Hiroki yano), Holo (Jimmy ballard), Normal |
 | 11/112 | Poliwrath | Pokémon (Water) | Rare | Holo, Reverse holo (Energy) |
-| 12/112 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo (Energy) |
-| 13/112 | Rapidash | Pokémon (Fire) | Rare | Holo, Reverse holo (Energy) |
-| 14/112 | Slowbro | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy) |
+| 12/112 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo (Energy), Normal |
+| 13/112 | Rapidash | Pokémon (Fire) | Rare | Holo, Reverse holo (Energy), Normal |
+| 14/112 | Slowbro | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy), Normal |
 | 15/112 | Snorlax | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
-| 16/112 | Tauros | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
+| 16/112 | Tauros | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy), Normal |
 | 17/112 | Victreebel | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy) |
 | 18/112 | Arcanine | Pokémon (Fire) | Rare | Normal, Reverse holo (Energy) |
 | 19/112 | Chansey | Pokémon (Colorless) | Rare | Normal, Reverse holo (Energy) |
@@ -170,7 +171,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex6`), fe
 | 29/112 | Scyther | Pokémon (Grass) | Rare | Normal, Reverse holo (Energy) |
 | 30/112 | Tangela | Pokémon (Grass) | Rare | Normal, Reverse holo (Energy) |
 | 31/112 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Energy) |
-| 32/112 | Drowzee | Pokémon (Psychic) | Uncommon | Normal, Holo (Energy) |
+| 32/112 | Drowzee | Pokémon (Psychic) | Uncommon | Normal, Holo (Energy), Reverse holo |
 | 33/112 | Exeggcute | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Energy) |
 | 34/112 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Energy) |
 | 35/112 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
@@ -244,18 +245,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex6`), fe
 | 103/112 | Multi Energy | Energy (Special) | Rare | Normal, Reverse holo (Energy) |
 | 104/112 | Blastoise ex | Pokémon (Water) | Rare | Holo, Normal (Hiroki yano) |
 | 105/112 | Charizard ex | Pokémon (Fire) | Rare | Holo |
-| 106/112 | Clefable ex | Pokémon (Colorless) | Rare | Holo |
+| 106/112 | Clefable ex | Pokémon (Colorless) | Rare | Holo, Normal |
 | 107/112 | Electrode ex | Pokémon (Lightning) | Rare | Holo |
 | 108/112 | Gengar ex | Pokémon (Psychic) | Rare | Holo |
-| 109/112 | Gyarados ex | Pokémon (Water) | Rare | Holo |
-| 110/112 | Mr. Mime ex | Pokémon (Psychic) | Rare | Holo |
-| 111/112 | Mr. Mime ex | Pokémon (Psychic) | Rare | Holo |
+| 109/112 | Gyarados ex | Pokémon (Water) | Rare | Holo, Normal |
+| 110/112 | Mr. Mime ex | Pokémon (Psychic) | Rare | Holo, Normal |
+| 111/112 | Mr. Mime ex | Pokémon (Psychic) | Rare | Holo, Normal |
 | 112/112 | Venusaur ex | Pokémon (Grass) | Rare | Holo |
-| 113/112 | Charmander | Pokémon (Fire) | Rare | Holo |
+| 113/112 | Charmander | Pokémon (Fire) | Rare | Holo, Normal |
 | 114/112 | Articuno ex | Pokémon (Water) | Rare | Holo |
-| 115/112 | Moltres ex | Pokémon (Fire) | Rare | Holo |
-| 116/112 | Zapdos ex | Pokémon (Lightning) | Rare | Holo |
-
+| 115/112 | Moltres ex | Pokémon (Fire) | Rare | Holo, Normal |
+| 116/112 | Zapdos ex | Pokémon (Lightning) | Rare | Holo, Normal |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

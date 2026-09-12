@@ -165,7 +165,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base5`), 
 | 81/82 | Full Heal Energy | Energy (Special) | Uncommon | Normal, Normal (1st Edition) |
 | 82/82 | Potion Energy | Energy (Special) | Uncommon | Normal, Normal (1st Edition) |
 | 83/82 | Dark Raichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

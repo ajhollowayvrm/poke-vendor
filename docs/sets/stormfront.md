@@ -101,6 +101,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp7`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1369`, fetched 2026-09-12). This added 3 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -207,10 +208,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp7`), fe
 | 101/100 | Charmander | Pokémon (Fire) | Rare | Holo |
 | 102/100 | Charmeleon | Pokémon (Fire) | Rare | Holo |
 | 103/100 | Charizard | Pokémon (Fire) | Rare | Holo |
-| SH1 | Drifloon | Pokémon (Psychic) | Rare Holo LV.X | Holo |
-| SH2 | Duskull | Pokémon (Psychic) | Rare Holo LV.X | Holo |
-| SH3 | Voltorb | Pokémon (Lightning) | Rare Holo LV.X | Holo |
-
+| SH1 | Drifloon | Pokémon (Psychic) | Rare Holo LV.X | Holo, Reverse holo |
+| SH2 | Duskull | Pokémon (Psychic) | Rare Holo LV.X | Holo, Reverse holo |
+| SH3 | Voltorb | Pokémon (Lightning) | Rare Holo LV.X | Holo, Reverse holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -82,44 +82,44 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dc1`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1525`, fetched 2026-09-12). This added 40 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/34 | Team Magma's Numel | Pokémon (Fire) | Common | Normal |
-| 2/34 | Team Magma's Camerupt | Pokémon (Fire) | Rare | Normal |
-| 3/34 | Team Aqua's Spheal | Pokémon (Water) | Common | Normal |
-| 4/34 | Team Aqua's Sealeo | Pokémon (Water) | Common | Normal |
-| 5/34 | Team Aqua's Walrein | Pokémon (Water) | Rare | Normal |
-| 6/34 | Team Aqua's Kyogre EX | Pokémon (Water) | Ultra Rare | Normal |
-| 7/34 | Team Aqua's Grimer | Pokémon (Psychic) | Common | Normal |
-| 8/34 | Team Aqua's Muk | Pokémon (Psychic) | Rare | Normal |
-| 9/34 | Team Aqua's Seviper | Pokémon (Psychic) | Common | Normal |
-| 10/34 | Team Magma's Baltoy | Pokémon (Psychic) | Common | Normal |
-| 11/34 | Team Magma's Claydol | Pokémon (Psychic) | Rare | Normal |
-| 12/34 | Team Magma's Aron | Pokémon (Fighting) | Common | Normal |
-| 13/34 | Team Magma's Lairon | Pokémon (Fighting) | Common | Normal |
-| 14/34 | Team Magma's Aggron | Pokémon (Fighting) | Rare | Normal |
-| 15/34 | Team Magma's Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal |
-| 16/34 | Team Aqua's Poochyena | Pokémon (Darkness) | Common | Normal |
-| 17/34 | Team Magma's Poochyena | Pokémon (Darkness) | Common | Normal |
-| 18/34 | Team Aqua's Mightyena | Pokémon (Darkness) | Common | Normal |
-| 19/34 | Team Magma's Mightyena | Pokémon (Darkness) | Common | Normal |
-| 20/34 | Team Aqua's Carvanha | Pokémon (Darkness) | Common | Normal |
-| 21/34 | Team Aqua's Sharpedo | Pokémon (Darkness) | Rare | Normal |
-| 22/34 | Team Magma's Zangoose | Pokémon (Colorless) | Common | Normal |
-| 23/34 | Aqua Diffuser | Trainer (Tool) | Uncommon | Normal |
-| 24/34 | Magma Pointer | Trainer (Tool) | Uncommon | Normal |
-| 25/34 | Team Aqua Admin | Trainer (Supporter) | Uncommon | Normal |
-| 26/34 | Team Aqua Grunt | Trainer (Supporter) | Uncommon | Normal |
-| 27/34 | Team Aqua's Great Ball | Trainer (Item) | Uncommon | Normal |
-| 28/34 | Team Aqua's Secret Base | Trainer (Stadium) | Uncommon | Normal |
-| 29/34 | Team Magma Admin | Trainer (Supporter) | Uncommon | Normal |
-| 30/34 | Team Magma Grunt | Trainer (Supporter) | Uncommon | Normal |
-| 31/34 | Team Magma's Great Ball | Trainer (Item) | Uncommon | Normal |
-| 32/34 | Team Magma's Secret Base | Trainer (Stadium) | Uncommon | Normal |
-| 33/34 | Double Aqua Energy | Energy (Special) | Uncommon | Normal |
-| 34/34 | Double Magma Energy | Energy (Special) | Uncommon | Normal |
-
+| 1/34 | Team Magma's Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 2/34 | Team Magma's Camerupt | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 3/34 | Team Aqua's Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
+| 4/34 | Team Aqua's Sealeo | Pokémon (Water) | Common | Normal, Reverse holo |
+| 5/34 | Team Aqua's Walrein | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 6/34 | Team Aqua's Kyogre EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 7/34 | Team Aqua's Grimer | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 8/34 | Team Aqua's Muk | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 9/34 | Team Aqua's Seviper | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 10/34 | Team Magma's Baltoy | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 11/34 | Team Magma's Claydol | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 12/34 | Team Magma's Aron | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 13/34 | Team Magma's Lairon | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 14/34 | Team Magma's Aggron | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 15/34 | Team Magma's Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 16/34 | Team Aqua's Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 17/34 | Team Magma's Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 18/34 | Team Aqua's Mightyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 19/34 | Team Magma's Mightyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 20/34 | Team Aqua's Carvanha | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 21/34 | Team Aqua's Sharpedo | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 22/34 | Team Magma's Zangoose | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 23/34 | Aqua Diffuser | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 24/34 | Magma Pointer | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 25/34 | Team Aqua Admin | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 26/34 | Team Aqua Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 27/34 | Team Aqua's Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 28/34 | Team Aqua's Secret Base | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 29/34 | Team Magma Admin | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 30/34 | Team Magma Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 31/34 | Team Magma's Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 32/34 | Team Magma's Secret Base | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 33/34 | Double Aqua Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 34/34 | Double Magma Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

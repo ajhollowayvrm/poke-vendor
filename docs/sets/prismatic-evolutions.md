@@ -402,7 +402,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08.5`),
 | 178/131 | Walking Wake ex | Pokémon (Water) | Hyper rare | Holo (Gold) |
 | 179/131 | Pikachu ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
 | 180/131 | Terapagos ex | Pokémon (Colorless) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

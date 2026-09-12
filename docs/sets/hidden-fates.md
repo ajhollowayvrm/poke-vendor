@@ -128,6 +128,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm115`, `
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2480`, `2594`, fetched 2026-09-12). This added 169 variants.
 
 ### Hidden Fates
 
@@ -135,75 +136,75 @@ TCGdex set `sm115`: 69 cards.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/68 | Caterpie | Pokémon (Grass) | Common | Normal |
-| 2/68 | Metapod | Pokémon (Grass) | Uncommon | Normal |
-| 3/68 | Butterfree | Pokémon (Grass) | Rare | Normal |
-| 4/68 | Paras | Pokémon (Grass) | Common | Normal |
-| 5/68 | Scyther | Pokémon (Grass) | Uncommon | Normal |
-| 6/68 | Pinsir GX | Pokémon (Grass) | Ultra Rare | Normal |
-| 7/68 | Charmander | Pokémon (Fire) | Common | Normal |
-| 8/68 | Charmeleon | Pokémon (Fire) | Uncommon | Normal |
-| 9/68 | Charizard GX | Pokémon (Fire) | Ultra Rare | Normal |
-| 10/68 | Magmar | Pokémon (Fire) | Uncommon | Normal |
-| 11/68 | Psyduck | Pokémon (Water) | Common | Normal |
-| 12/68 | Slowpoke | Pokémon (Water) | Common | Normal |
-| 13/68 | Staryu | Pokémon (Water) | Common | Normal |
-| 14/68 | Starmie GX | Pokémon (Water) | Ultra Rare | Normal |
-| 15/68 | Magikarp | Pokémon (Water) | Common | Normal |
-| 16/68 | Gyarados GX | Pokémon (Water) | Ultra Rare | Normal |
-| 17/68 | Lapras | Pokémon (Water) | Rare | Normal |
-| 18/68 | Vaporeon | Pokémon (Water) | Rare | Normal |
-| 19/68 | Pikachu | Pokémon (Lightning) | Common | Normal |
-| 20/68 | Raichu GX | Pokémon (Lightning) | Ultra Rare | Normal |
-| 21/68 | Voltorb | Pokémon (Lightning) | Common | Normal |
-| 22/68 | Electrode | Pokémon (Lightning) | Rare | Normal |
-| 23/68 | Jolteon | Pokémon (Lightning) | Rare | Normal |
-| 24/68 | Zapdos | Pokémon (Lightning) | Rare | Normal |
-| 25/68 | Ekans | Pokémon (Psychic) | Common | Normal |
-| 26/68 | Ekans | Pokémon (Psychic) | Common | Normal |
-| 27/68 | Arbok | Pokémon (Psychic) | Rare | Normal |
-| 28/68 | Koffing | Pokémon (Psychic) | Common | Normal |
-| 29/68 | Weezing | Pokémon (Psychic) | Rare | Normal |
-| 30/68 | Jynx | Pokémon (Psychic) | Uncommon | Normal |
-| 31/68 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 32/68 | Mew | Pokémon (Psychic) | Rare | Normal |
-| 33/68 | Geodude | Pokémon (Fighting) | Common | Normal |
-| 34/68 | Graveler | Pokémon (Fighting) | Uncommon | Normal |
-| 35/68 | Golem | Pokémon (Fighting) | Rare | Normal |
-| 36/68 | Onix GX | Pokémon (Fighting) | Ultra Rare | Normal |
-| 37/68 | Cubone | Pokémon (Fighting) | Common | Normal |
-| 38/68 | Clefairy | Pokémon (Fairy) | Common | Normal |
-| 39/68 | Clefairy | Pokémon (Fairy) | Common | Normal |
-| 40/68 | Clefable | Pokémon (Fairy) | Rare | Normal |
-| 41/68 | Jigglypuff | Pokémon (Fairy) | Common | Normal |
-| 42/68 | Wigglytuff GX | Pokémon (Fairy) | Ultra Rare | Normal |
-| 43/68 | Mr. Mime | Pokémon (Fairy) | Rare | Normal |
-| 44/68 | Moltres & Zapdos & Articuno GX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 45/68 | Farfetch’d | Pokémon (Colorless) | Uncommon | Normal |
-| 46/68 | Chansey | Pokémon (Colorless) | Uncommon | Normal |
-| 47/68 | Kangaskhan | Pokémon (Colorless) | Rare | Normal |
-| 48/68 | Eevee | Pokémon (Colorless) | Rare | Normal |
-| 49/68 | Eevee | Pokémon (Colorless) | Common | Normal |
-| 50/68 | Snorlax | Pokémon (Colorless) | Rare | Normal |
-| 51/68 | Bill’s Analysis | Trainer (Supporter) | Rare | Normal |
-| 52/68 | Blaine’s Last Stand | Trainer (Supporter) | Rare | Normal |
-| 53/68 | Brock’s Grit | Trainer (Supporter) | Uncommon | Normal |
-| 54/68 | Brock’s Pewter City Gym | Trainer (Stadium) | Uncommon | Normal |
-| 55/68 | Brock’s Training | Trainer (Supporter) | Rare | Normal |
-| 56/68 | Erika’s Hospitality | Trainer (Supporter) | Rare | Normal |
-| 57/68 | Giovanni’s Exile | Trainer (Supporter) | Uncommon | Normal |
-| 58/68 | Jessie & James | Trainer (Supporter) | Rare | Normal |
-| 59/68 | Koga’s Trap | Trainer (Supporter) | Uncommon | Normal |
-| 60/68 | Lt. Surge’s Strategy | Trainer (Supporter) | Uncommon | Normal |
-| 61/68 | Misty’s Cerulean City Gym | Trainer (Stadium) | Uncommon | Normal |
-| 62/68 | Misty’s Determination | Trainer (Supporter) | Uncommon | Normal |
-| 63/68 | Misty’s Water Command | Trainer (Supporter) | Rare | Normal |
-| 64/68 | Pokémon Center Lady | Trainer (Supporter) | Uncommon | Normal |
-| 65/68 | Sabrina’s Suggestion | Trainer (Supporter) | Uncommon | Normal |
-| 66/68 | Moltres & Zapdos & Articuno GX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 67/68 | Giovanni’s Exile | Trainer (Supporter) | Ultra Rare | Normal |
-| 68/68 | Jessie & James | Trainer (Supporter) | Ultra Rare | Normal |
-| 69/68 | Moltres & Zapdos & Articuno GX | Pokémon (Colorless) | Secret Rare | Normal |
+| 1/68 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/68 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/68 | Butterfree | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 4/68 | Paras | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/68 | Scyther | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 6/68 | Pinsir GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 7/68 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 8/68 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 9/68 | Charizard GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 10/68 | Magmar | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 11/68 | Psyduck | Pokémon (Water) | Common | Normal, Reverse holo |
+| 12/68 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo |
+| 13/68 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
+| 14/68 | Starmie GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 15/68 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
+| 16/68 | Gyarados GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 17/68 | Lapras | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 18/68 | Vaporeon | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 19/68 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 20/68 | Raichu GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 21/68 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 22/68 | Electrode | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 23/68 | Jolteon | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 24/68 | Zapdos | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 25/68 | Ekans | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 26/68 | Ekans | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 27/68 | Arbok | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 28/68 | Koffing | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 29/68 | Weezing | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 30/68 | Jynx | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 31/68 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 32/68 | Mew | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 33/68 | Geodude | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 34/68 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 35/68 | Golem | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 36/68 | Onix GX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 37/68 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 38/68 | Clefairy | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 39/68 | Clefairy | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 40/68 | Clefable | Pokémon (Fairy) | Rare | Normal, Reverse holo |
+| 41/68 | Jigglypuff | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 42/68 | Wigglytuff GX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 43/68 | Mr. Mime | Pokémon (Fairy) | Rare | Normal, Reverse holo |
+| 44/68 | Moltres & Zapdos & Articuno GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 45/68 | Farfetch’d | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 46/68 | Chansey | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 47/68 | Kangaskhan | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 48/68 | Eevee | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 49/68 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 50/68 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 51/68 | Bill’s Analysis | Trainer (Supporter) | Rare | Normal, Reverse holo |
+| 52/68 | Blaine’s Last Stand | Trainer (Supporter) | Rare | Normal, Reverse holo |
+| 53/68 | Brock’s Grit | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 54/68 | Brock’s Pewter City Gym | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 55/68 | Brock’s Training | Trainer (Supporter) | Rare | Normal, Reverse holo, Holo |
+| 56/68 | Erika’s Hospitality | Trainer (Supporter) | Rare | Normal, Reverse holo |
+| 57/68 | Giovanni’s Exile | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 58/68 | Jessie & James | Trainer (Supporter) | Rare | Normal, Holo, Reverse holo |
+| 59/68 | Koga’s Trap | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 60/68 | Lt. Surge’s Strategy | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 61/68 | Misty’s Cerulean City Gym | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 62/68 | Misty’s Determination | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 63/68 | Misty’s Water Command | Trainer (Supporter) | Rare | Normal, Reverse holo, Holo |
+| 64/68 | Pokémon Center Lady | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 65/68 | Sabrina’s Suggestion | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 66/68 | Moltres & Zapdos & Articuno GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 67/68 | Giovanni’s Exile | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 68/68 | Jessie & James | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 69/68 | Moltres & Zapdos & Articuno GX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
 
 ### Hidden Fates Shiny Vault
 
@@ -211,101 +212,100 @@ TCGdex set `sma`: 94 cards.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| SV1 | Scyther | Pokémon (Grass) | Shiny rare | Normal |
-| SV2 | Rowlet | Pokémon (Grass) | Shiny rare | Normal |
-| SV3 | Dartrix | Pokémon (Grass) | Shiny rare | Normal |
-| SV4 | Wimpod | Pokémon (Grass) | Shiny rare | Normal |
-| SV5 | Pheromosa | Pokémon (Grass) | Shiny rare | Normal |
-| SV6 | Charmander | Pokémon (Fire) | Shiny rare | Normal |
-| SV7 | Charmeleon | Pokémon (Fire) | Shiny rare | Normal |
-| SV8 | Alolan Vulpix | Pokémon (Water) | Shiny rare | Normal |
-| SV9 | Wooper | Pokémon (Water) | Shiny rare | Normal |
-| SV10 | Quagsire | Pokémon (Water) | Shiny rare | Normal |
-| SV11 | Froakie | Pokémon (Water) | Shiny rare | Normal |
-| SV12 | Frogadier | Pokémon (Water) | Shiny rare | Normal |
-| SV13 | Voltorb | Pokémon (Lightning) | Shiny rare | Normal |
-| SV14 | Xurkitree | Pokémon (Lightning) | Shiny rare | Normal |
-| SV15 | Seviper | Pokémon (Psychic) | Shiny rare | Normal |
-| SV16 | Shuppet | Pokémon (Psychic) | Shiny rare | Normal |
-| SV17 | Inkay | Pokémon (Psychic) | Shiny rare | Normal |
-| SV18 | Malamar | Pokémon (Psychic) | Shiny rare | Normal |
-| SV19 | Poipole | Pokémon (Psychic) | Shiny rare | Normal |
-| SV20 | Sudowoodo | Pokémon (Fighting) | Shiny rare | Normal |
-| SV21 | Riolu | Pokémon (Fighting) | Shiny rare | Normal |
-| SV22 | Lucario | Pokémon (Fighting) | Shiny rare | Normal |
-| SV23 | Rockruff | Pokémon (Fighting) | Shiny rare | Normal |
-| SV24 | Buzzwole | Pokémon (Fighting) | Shiny rare | Normal |
-| SV25 | Zorua | Pokémon (Darkness) | Shiny rare | Normal |
-| SV26 | Guzzlord | Pokémon (Darkness) | Shiny rare | Normal |
-| SV27 | Magnemite | Pokémon (Metal) | Shiny rare | Normal |
-| SV28 | Magneton | Pokémon (Metal) | Shiny rare | Normal |
-| SV29 | Magnezone | Pokémon (Metal) | Shiny rare | Normal |
-| SV30 | Beldum | Pokémon (Metal) | Shiny rare | Normal |
-| SV31 | Metang | Pokémon (Metal) | Shiny rare | Normal |
-| SV32 | Celesteela | Pokémon (Metal) | Shiny rare | Normal |
-| SV33 | Kartana | Pokémon (Metal) | Shiny rare | Normal |
-| SV34 | Ralts | Pokémon (Fairy) | Shiny rare | Normal |
-| SV35 | Kirlia | Pokémon (Fairy) | Shiny rare | Normal |
-| SV36 | Diancie | Pokémon (Fairy) | Shiny rare | Normal |
-| SV37 | Altaria | Pokémon (Dragon) | Shiny rare | Normal |
-| SV38 | Gible | Pokémon (Dragon) | Shiny rare | Normal |
-| SV39 | Gabite | Pokémon (Dragon) | Shiny rare | Normal |
-| SV40 | Garchomp | Pokémon (Dragon) | Shiny rare | Normal |
-| SV41 | Eevee | Pokémon (Colorless) | Shiny rare | Normal |
-| SV42 | Swablu | Pokémon (Colorless) | Shiny rare | Normal |
-| SV43 | Noibat | Pokémon (Colorless) | Shiny rare | Normal |
-| SV44 | Oranguru | Pokémon (Colorless) | Shiny rare | Normal |
-| SV45 | Type: Null | Pokémon (Colorless) | Shiny rare | Normal |
-| SV46 | Leafeon-GX | Pokémon (Grass) | Shiny rare | Normal |
-| SV47 | Decidueye-GX | Pokémon (Grass) | Shiny rare | Normal |
-| SV48 | Golisopod-GX | Pokémon (Grass) | Shiny rare | Normal |
-| SV49 | Charizard-GX | Pokémon (Fire) | Shiny rare | Normal |
-| SV50 | Ho-Oh-GX | Pokémon (Fire) | Shiny rare | Normal |
-| SV51 | Reshiram-GX | Pokémon (Fire) | Shiny rare | Normal |
-| SV52 | Turtonator-GX | Pokémon (Fire) | Shiny rare | Normal |
-| SV53 | Alolan Ninetales-GX | Pokémon (Water) | Shiny rare | Normal |
-| SV54 | Articuno-GX | Pokémon (Water) | Shiny rare | Normal |
-| SV55 | Glaceon-GX | Pokémon (Water) | Shiny rare | Normal |
-| SV56 | Greninja-GX | Pokémon (Water) | Shiny rare | Normal |
-| SV57 | Electrode-GX | Pokémon (Lightning) | Shiny rare | Normal |
-| SV58 | Xurkitree-GX | Pokémon (Lightning) | Shiny rare | Normal |
-| SV59 | Mewtwo-GX | Pokémon (Psychic) | Shiny rare | Normal |
-| SV60 | Espeon-GX | Pokémon (Psychic) | Shiny rare | Normal |
-| SV61 | Banette-GX | Pokémon (Psychic) | Shiny rare | Normal |
-| SV62 | Nihilego-GX | Pokémon (Psychic) | Shiny rare | Normal |
-| SV63 | Naganadel-GX | Pokémon (Psychic) | Shiny rare | Normal |
-| SV64 | Lucario-GX | Pokémon (Fighting) | Shiny rare | Normal |
-| SV65 | Zygarde-GX | Pokémon (Fighting) | Shiny rare | Normal |
-| SV66 | Lycanroc-GX | Pokémon (Fighting) | Shiny rare | Normal |
-| SV67 | Lycanroc-GX | Pokémon (Fighting) | Shiny rare | Normal |
-| SV68 | Buzzwole-GX | Pokémon (Fighting) | Shiny rare | Normal |
-| SV69 | Umbreon-GX | Pokémon (Darkness) | Shiny rare | Normal |
-| SV70 | Darkrai-GX | Pokémon (Darkness) | Shiny rare | Normal |
-| SV71 | Guzzlord-GX | Pokémon (Darkness) | Shiny rare | Normal |
-| SV72 | Scizor-GX | Pokémon (Metal) | Shiny rare | Normal |
-| SV73 | Kartana-GX | Pokémon (Metal) | Shiny rare | Normal |
-| SV74 | Stakataka-GX | Pokémon (Metal) | Shiny rare | Normal |
-| SV75 | Gardevoir-GX | Pokémon (Fairy) | Shiny rare | Normal |
-| SV76 | Sylveon-GX | Pokémon (Fairy) | Shiny rare | Normal |
-| SV77 | Altaria-GX | Pokémon (Dragon) | Shiny rare | Normal |
-| SV78 | Noivern-GX | Pokémon (Dragon) | Shiny rare | Normal |
-| SV79 | Silvally-GX | Pokémon (Colorless) | Shiny rare | Normal |
-| SV80 | Drampa-GX | Pokémon (Colorless) | Shiny rare | Normal |
-| SV81 | Aether Foundation Employee | Trainer (Supporter) | Shiny rare | Normal |
-| SV82 | Cynthia | Trainer (Supporter) | Shiny rare | Normal |
-| SV83 | Fisherman | Trainer (Supporter) | Shiny rare | Normal |
-| SV84 | Guzma | Trainer (Supporter) | Shiny rare | Normal |
-| SV85 | Hiker | Trainer (Supporter) | Shiny rare | Normal |
-| SV86 | Lady | Trainer (Supporter) | Shiny rare | Normal |
-| SV87 | Aether Paradise Conservation Area | Trainer (Stadium) | Secret Rare | Normal |
-| SV88 | Brooklet Hill | Trainer (Stadium) | Secret Rare | Normal |
-| SV89 | Mt. Coronet | Trainer (Stadium) | Secret Rare | Normal |
-| SV90 | Shrine of Punishment | Trainer (Stadium) | Secret Rare | Normal |
-| SV91 | Tapu Bulu-GX | Pokémon (Grass) | Secret Rare | Normal |
-| SV92 | Tapu Fini-GX | Pokémon (Water) | Secret Rare | Normal |
-| SV93 | Tapu Koko-GX | Pokémon (Lightning) | Secret Rare | Normal |
-| SV94 | Tapu Lele-GX | Pokémon (Psychic) | Secret Rare | Normal |
-
+| SV1 | Scyther | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV2 | Rowlet | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV3 | Dartrix | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV4 | Wimpod | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV5 | Pheromosa | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV6 | Charmander | Pokémon (Fire) | Shiny rare | Normal, Holo |
+| SV7 | Charmeleon | Pokémon (Fire) | Shiny rare | Normal, Holo |
+| SV8 | Alolan Vulpix | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV9 | Wooper | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV10 | Quagsire | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV11 | Froakie | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV12 | Frogadier | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV13 | Voltorb | Pokémon (Lightning) | Shiny rare | Normal, Holo |
+| SV14 | Xurkitree | Pokémon (Lightning) | Shiny rare | Normal, Holo |
+| SV15 | Seviper | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV16 | Shuppet | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV17 | Inkay | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV18 | Malamar | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV19 | Poipole | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV20 | Sudowoodo | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV21 | Riolu | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV22 | Lucario | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV23 | Rockruff | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV24 | Buzzwole | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV25 | Zorua | Pokémon (Darkness) | Shiny rare | Normal, Holo |
+| SV26 | Guzzlord | Pokémon (Darkness) | Shiny rare | Normal, Holo |
+| SV27 | Magnemite | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV28 | Magneton | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV29 | Magnezone | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV30 | Beldum | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV31 | Metang | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV32 | Celesteela | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV33 | Kartana | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV34 | Ralts | Pokémon (Fairy) | Shiny rare | Normal, Holo |
+| SV35 | Kirlia | Pokémon (Fairy) | Shiny rare | Normal, Holo |
+| SV36 | Diancie | Pokémon (Fairy) | Shiny rare | Normal, Holo |
+| SV37 | Altaria | Pokémon (Dragon) | Shiny rare | Normal, Holo |
+| SV38 | Gible | Pokémon (Dragon) | Shiny rare | Normal, Holo |
+| SV39 | Gabite | Pokémon (Dragon) | Shiny rare | Normal, Holo |
+| SV40 | Garchomp | Pokémon (Dragon) | Shiny rare | Normal, Holo |
+| SV41 | Eevee | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV42 | Swablu | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV43 | Noibat | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV44 | Oranguru | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV45 | Type: Null | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV46 | Leafeon-GX | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV47 | Decidueye-GX | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV48 | Golisopod-GX | Pokémon (Grass) | Shiny rare | Normal, Holo |
+| SV49 | Charizard-GX | Pokémon (Fire) | Shiny rare | Normal, Holo |
+| SV50 | Ho-Oh-GX | Pokémon (Fire) | Shiny rare | Normal, Holo |
+| SV51 | Reshiram-GX | Pokémon (Fire) | Shiny rare | Normal, Holo |
+| SV52 | Turtonator-GX | Pokémon (Fire) | Shiny rare | Normal, Holo |
+| SV53 | Alolan Ninetales-GX | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV54 | Articuno-GX | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV55 | Glaceon-GX | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV56 | Greninja-GX | Pokémon (Water) | Shiny rare | Normal, Holo |
+| SV57 | Electrode-GX | Pokémon (Lightning) | Shiny rare | Normal, Holo |
+| SV58 | Xurkitree-GX | Pokémon (Lightning) | Shiny rare | Normal, Holo |
+| SV59 | Mewtwo-GX | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV60 | Espeon-GX | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV61 | Banette-GX | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV62 | Nihilego-GX | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV63 | Naganadel-GX | Pokémon (Psychic) | Shiny rare | Normal, Holo |
+| SV64 | Lucario-GX | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV65 | Zygarde-GX | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV66 | Lycanroc-GX | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV67 | Lycanroc-GX | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV68 | Buzzwole-GX | Pokémon (Fighting) | Shiny rare | Normal, Holo |
+| SV69 | Umbreon-GX | Pokémon (Darkness) | Shiny rare | Normal, Holo |
+| SV70 | Darkrai-GX | Pokémon (Darkness) | Shiny rare | Normal, Holo |
+| SV71 | Guzzlord-GX | Pokémon (Darkness) | Shiny rare | Normal, Holo |
+| SV72 | Scizor-GX | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV73 | Kartana-GX | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV74 | Stakataka-GX | Pokémon (Metal) | Shiny rare | Normal, Holo |
+| SV75 | Gardevoir-GX | Pokémon (Fairy) | Shiny rare | Normal, Holo |
+| SV76 | Sylveon-GX | Pokémon (Fairy) | Shiny rare | Normal, Holo |
+| SV77 | Altaria-GX | Pokémon (Dragon) | Shiny rare | Normal, Holo |
+| SV78 | Noivern-GX | Pokémon (Dragon) | Shiny rare | Normal, Holo |
+| SV79 | Silvally-GX | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV80 | Drampa-GX | Pokémon (Colorless) | Shiny rare | Normal, Holo |
+| SV81 | Aether Foundation Employee | Trainer (Supporter) | Shiny rare | Normal, Holo |
+| SV82 | Cynthia | Trainer (Supporter) | Shiny rare | Normal, Holo |
+| SV83 | Fisherman | Trainer (Supporter) | Shiny rare | Normal, Holo |
+| SV84 | Guzma | Trainer (Supporter) | Shiny rare | Normal, Holo |
+| SV85 | Hiker | Trainer (Supporter) | Shiny rare | Normal, Holo |
+| SV86 | Lady | Trainer (Supporter) | Shiny rare | Normal, Holo |
+| SV87 | Aether Paradise Conservation Area | Trainer (Stadium) | Secret Rare | Normal, Holo |
+| SV88 | Brooklet Hill | Trainer (Stadium) | Secret Rare | Normal, Holo |
+| SV89 | Mt. Coronet | Trainer (Stadium) | Secret Rare | Normal, Holo |
+| SV90 | Shrine of Punishment | Trainer (Stadium) | Secret Rare | Normal, Holo |
+| SV91 | Tapu Bulu-GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
+| SV92 | Tapu Fini-GX | Pokémon (Water) | Secret Rare | Normal, Holo |
+| SV93 | Tapu Koko-GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
+| SV94 | Tapu Lele-GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

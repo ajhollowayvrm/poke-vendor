@@ -301,7 +301,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh2`), 
 | 207/192 | Scoop Up Net | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 208/192 | Tool Scrapper | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 209/192 | Twin Energy | Energy (Special) | Secret Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -131,6 +131,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pop1`, `p
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1422`, `1447`, `1442`, `1452`, `1439`, `1432`, `1414`, `1450`, `1446`, fetched 2026-09-12). This added 1 variants.
 
 ### POP Series 1
 
@@ -317,7 +318,7 @@ TCGdex set `pop8`: 17 cards.
 | 9/17 | Night Maintenance | Trainer (Item) | Uncommon | Normal |
 | 10/17 | Rare Candy | Trainer (Item) | Uncommon | Normal |
 | 11/17 | Roseanne’s Research | Trainer (Supporter) | Uncommon | Normal |
-| 12/17 | Chimchar | Pokémon (Fire) | Common | Normal, Holo (Cracked ice) |
+| 12/17 | Chimchar | Pokémon (Fire) | Common | Normal, Holo (Cracked ice), Reverse holo |
 | 13/17 | Croagunk | Pokémon (Psychic) | Common | Normal, Holo (Cracked ice) |
 | 14/17 | Happiny | Pokémon (Colorless) | Common | Normal, Holo (Cosmos) |
 | 15/17 | Piplup | Pokémon (Water) | Common | Normal |
@@ -347,7 +348,6 @@ TCGdex set `pop9`: 17 cards.
 | 15/17 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Pokemon day) |
 | 16/17 | Piplup | Pokémon (Water) | Common | Normal |
 | 17/17 | Turtwig | Pokémon (Grass) | Common | Normal |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

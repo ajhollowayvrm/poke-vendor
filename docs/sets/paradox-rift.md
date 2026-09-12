@@ -408,7 +408,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv04`), f
 | 264/182 | Counter Catcher | Trainer (Item) | Hyper rare | Holo |
 | 265/182 | Luxurious Cape | Trainer (Tool) | Hyper rare | Holo |
 | 266/182 | Reversal Energy | Energy (Normal) | Hyper rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -113,18 +113,19 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex9`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1410`, fetched 2026-09-12). This added 18 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/106 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 2/106 | Deoxys | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
-| 3/106 | Exploud | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Holo (National championships), Holo (National championships, Staff) |
-| 4/106 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
-| 5/106 | Groudon | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
-| 6/106 | Kyogre | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 2/106 | Deoxys | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 3/106 | Exploud | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Holo (National championships), Holo (National championships, Staff), Normal |
+| 4/106 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 5/106 | Groudon | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 6/106 | Kyogre | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 7/106 | Manectric | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 8/106 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
-| 9/106 | Rayquaza | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
+| 8/106 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 9/106 | Rayquaza | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 10/106 | Sceptile | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 11/106 | Swampert | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 12/106 | Chimecho | Pokémon (Psychic) | Rare | Normal, Reverse holo (Set logo) |
@@ -206,24 +207,23 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex9`), fe
 | 88/106 | Metal Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo), Normal (Curran hill), Normal (Takashi yoneda) |
 | 89/106 | Multi Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo) |
 | 90/106 | Altaria ex | Pokémon (Colorless) | Rare | Holo |
-| 91/106 | Cacturne ex | Pokémon (Grass) | Rare | Holo |
+| 91/106 | Cacturne ex | Pokémon (Grass) | Rare | Holo, Normal |
 | 92/106 | Camerupt ex | Pokémon (Fire) | Rare | Holo |
 | 93/106 | Deoxys ex | Pokémon (Psychic) | Rare | Holo, Holo (Jason klaczynski) |
 | 94/106 | Dusclops ex | Pokémon (Psychic) | Rare | Holo |
-| 95/106 | Medicham ex | Pokémon (Fighting) | Rare | Holo, Holo (Curran hill) |
+| 95/106 | Medicham ex | Pokémon (Fighting) | Rare | Holo, Holo (Curran hill), Normal |
 | 96/106 | Milotic ex | Pokémon (Water) | Rare | Holo |
-| 97/106 | Raichu ex | Pokémon (Lightning) | Rare | Holo |
+| 97/106 | Raichu ex | Pokémon (Lightning) | Rare | Holo, Normal |
 | 98/106 | Regice ex | Pokémon (Water) | Rare | Holo |
-| 99/106 | Regirock ex | Pokémon (Fighting) | Rare | Holo |
-| 100/106 | Registeel ex | Pokémon (Metal) | Rare | Holo |
-| 101/106 | Grass Energy | Energy (Normal) | Rare | Holo |
-| 102/106 | Fire Energy | Energy (Normal) | Rare | Holo |
-| 103/106 | Water Energy | Energy (Normal) | Rare | Holo |
-| 104/106 | Lightning Energy | Energy (Normal) | Rare | Holo |
-| 105/106 | Psychic Energy | Energy (Normal) | Rare | Holo |
-| 106/106 | Fighting Energy | Energy (Normal) | Rare | Holo |
+| 99/106 | Regirock ex | Pokémon (Fighting) | Rare | Holo, Normal |
+| 100/106 | Registeel ex | Pokémon (Metal) | Rare | Holo, Normal |
+| 101/106 | Grass Energy | Energy (Normal) | Rare | Holo, Normal |
+| 102/106 | Fire Energy | Energy (Normal) | Rare | Holo, Normal |
+| 103/106 | Water Energy | Energy (Normal) | Rare | Holo, Normal |
+| 104/106 | Lightning Energy | Energy (Normal) | Rare | Holo, Normal |
+| 105/106 | Psychic Energy | Energy (Normal) | Rare | Holo, Normal |
+| 106/106 | Fighting Energy | Energy (Normal) | Rare | Holo, Normal |
 | 107/106 | Farfetch'd | Pokémon (Colorless) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

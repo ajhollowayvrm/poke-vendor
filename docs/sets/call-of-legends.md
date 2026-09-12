@@ -128,6 +128,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `col1`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1415`, fetched 2026-09-12). This added 7 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -218,14 +219,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `col1`), f
 | 85/95 | Sage's Training | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 86/95 | Darkness Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 87/95 | Metal Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 88/95 | Grass Energy | Energy (Normal) | Common | Holo, Holo (Player rewards program) |
-| 89/95 | Fire Energy | Energy (Normal) | Common | Holo |
-| 90/95 | Water Energy | Energy (Normal) | Common | Holo |
-| 91/95 | Lightning Energy | Energy (Normal) | Common | Holo |
+| 88/95 | Grass Energy | Energy (Normal) | Common | Holo, Holo (Player rewards program), Normal |
+| 89/95 | Fire Energy | Energy (Normal) | Common | Holo, Normal |
+| 90/95 | Water Energy | Energy (Normal) | Common | Holo, Normal |
+| 91/95 | Lightning Energy | Energy (Normal) | Common | Holo, Normal |
 | 92/95 | Psychic Energy | Energy (Normal) | Common | Holo |
-| 93/95 | Fighting Energy | Energy (Normal) | Common | Holo |
-| 94/95 | Darkness Energy | Energy (Normal) | Common | Holo |
-| 95/95 | Metal Energy | Energy (Normal) | Common | Holo |
+| 93/95 | Fighting Energy | Energy (Normal) | Common | Holo, Normal |
+| 94/95 | Darkness Energy | Energy (Normal) | Common | Holo, Normal |
+| 95/95 | Metal Energy | Energy (Normal) | Common | Holo, Normal |
 | SL1 | Deoxys | Pokémon (Psychic) | Holo Rare | Holo |
 | SL2 | Dialga | Pokémon (Metal) | Holo Rare | Holo |
 | SL3 | Entei | Pokémon (Fire) | Holo Rare | Holo |
@@ -237,7 +238,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `col1`), f
 | SL9 | Raikou | Pokémon (Lightning) | Holo Rare | Holo |
 | SL10 | Rayquaza | Pokémon (Colorless) | Holo Rare | Holo |
 | SL11 | Suicune | Pokémon (Water) | Holo Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

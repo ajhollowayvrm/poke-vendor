@@ -145,6 +145,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss3`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1403`, fetched 2026-09-12). This added 2 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -223,7 +224,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss3`), 
 | 73/90 | Energy Exchanger | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 74/90 | Flower Shop Lady | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 75/90 | Legend Box | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 76/90 | Ruins of Alph | Trainer (Stadium) | Uncommon | Normal, Normal (Shuto itagaki) |
+| 76/90 | Ruins of Alph | Trainer (Stadium) | Uncommon | Normal, Normal (Shuto itagaki), Reverse holo |
 | 77/90 | Sage's Training | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Christopher kan) |
 | 78/90 | Team Rocket's Trickery | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 79/90 | Darkness Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Reverse holo (League) |
@@ -238,8 +239,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss3`), 
 | 88/90 | Kyogre & Groudon LEGEND | Pokémon (Water, Fighting) | LEGEND | Holo |
 | 89/90 | Rayquaza & Deoxys LEGEND | Pokémon (Colorless, Psychic) | LEGEND | Holo, Normal (David cohen) |
 | 90/90 | Rayquaza & Deoxys LEGEND | Pokémon (Colorless, Psychic) | LEGEND | Holo, Normal (David cohen) |
-| THREE | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal |
-
+| THREE | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

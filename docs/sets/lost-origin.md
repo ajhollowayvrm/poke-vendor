@@ -391,7 +391,6 @@ TCGdex set `swsh11tg`: 30 cards.
 | TG28 | Opal | Trainer (Supporter) | Ultra Rare | Holo |
 | TG29 | Pikachu VMAX | Pokémon (Lightning) | Secret Rare | Holo (Gold) |
 | TG30 | Mew VMAX | Pokémon (Psychic) | Secret Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

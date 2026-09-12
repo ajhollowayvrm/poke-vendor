@@ -75,120 +75,120 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy2`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1464`, fetched 2026-09-12). This added 118 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/106 | Caterpie | Pokémon (Grass) | Common | Normal |
-| 2/106 | Metapod | Pokémon (Grass) | Uncommon | Normal |
-| 3/106 | Butterfree | Pokémon (Grass) | Rare | Normal |
-| 4/106 | Pineco | Pokémon (Grass) | Common | Normal |
-| 5/106 | Seedot | Pokémon (Grass) | Common | Normal |
-| 6/106 | Nuzleaf | Pokémon (Grass) | Uncommon | Normal |
-| 7/106 | Shiftry | Pokémon (Grass) | Rare | Normal |
-| 8/106 | Roselia | Pokémon (Grass) | Common | Normal |
-| 9/106 | Roserade | Pokémon (Grass) | Uncommon | Normal |
-| 10/106 | Maractus | Pokémon (Grass) | Uncommon | Normal |
-| 11/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal |
-| 12/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal |
-| 13/106 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal |
-| 14/106 | Ponyta | Pokémon (Fire) | Common | Normal |
-| 15/106 | Rapidash | Pokémon (Fire) | Uncommon | Normal |
-| 16/106 | Torkoal | Pokémon (Fire) | Uncommon | Normal |
-| 17/106 | Fletchinder | Pokémon (Fire) | Uncommon | Normal |
-| 18/106 | Litleo | Pokémon (Fire) | Common | Normal |
-| 19/106 | Litleo | Pokémon (Fire) | Common | Normal |
-| 20/106 | Pyroar | Pokémon (Fire) | Rare | Normal |
-| 21/106 | Qwilfish | Pokémon (Water) | Rare | Normal |
-| 22/106 | Feebas | Pokémon (Water) | Common | Normal |
-| 23/106 | Milotic | Pokémon (Water) | Rare | Normal |
-| 24/106 | Spheal | Pokémon (Water) | Common | Normal |
-| 25/106 | Sealeo | Pokémon (Water) | Uncommon | Normal |
-| 26/106 | Walrein | Pokémon (Water) | Rare | Normal |
-| 27/106 | Luvdisc | Pokémon (Water) | Uncommon | Normal |
-| 28/106 | Buizel | Pokémon (Water) | Common | Normal |
-| 29/106 | Floatzel | Pokémon (Water) | Rare | Normal |
-| 30/106 | Bergmite | Pokémon (Water) | Common | Normal |
-| 31/106 | Avalugg | Pokémon (Water) | Uncommon | Normal |
-| 32/106 | Shinx | Pokémon (Lightning) | Common | Normal |
-| 33/106 | Luxio | Pokémon (Lightning) | Uncommon | Normal |
-| 34/106 | Luxray | Pokémon (Lightning) | Rare | Normal |
-| 35/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Normal |
-| 36/106 | Helioptile | Pokémon (Lightning) | Common | Normal |
-| 37/106 | Heliolisk | Pokémon (Lightning) | Rare | Normal |
-| 38/106 | Duskull | Pokémon (Psychic) | Common | Normal |
-| 39/106 | Dusclops | Pokémon (Psychic) | Uncommon | Normal |
-| 40/106 | Dusknoir | Pokémon (Psychic) | Rare | Normal |
-| 41/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 42/106 | Espurr | Pokémon (Psychic) | Common | Normal |
-| 43/106 | Meowstic | Pokémon (Psychic) | Rare | Normal |
-| 44/106 | Skrelp | Pokémon (Psychic) | Common | Normal |
-| 45/106 | Geodude | Pokémon (Fighting) | Common | Normal |
-| 46/106 | Graveler | Pokémon (Fighting) | Uncommon | Normal |
-| 47/106 | Golem | Pokémon (Fighting) | Rare | Normal |
-| 48/106 | Binacle | Pokémon (Fighting) | Common | Normal |
-| 49/106 | Barbaracle | Pokémon (Fighting) | Rare | Normal |
-| 50/106 | Sneasel | Pokémon (Darkness) | Uncommon | Normal |
-| 51/106 | Sneasel | Pokémon (Darkness) | Common | Normal |
-| 52/106 | Weavile | Pokémon (Darkness) | Rare | Normal |
-| 53/106 | Stunky | Pokémon (Darkness) | Common | Normal |
-| 54/106 | Stunky | Pokémon (Darkness) | Common | Normal |
-| 55/106 | Skuntank | Pokémon (Darkness) | Rare | Normal |
-| 56/106 | Sandile | Pokémon (Darkness) | Common | Normal |
-| 57/106 | Krokorok | Pokémon (Darkness) | Uncommon | Normal |
-| 58/106 | Scraggy | Pokémon (Darkness) | Common | Normal |
-| 59/106 | Scrafty | Pokémon (Darkness) | Rare | Normal |
-| 60/106 | Forretress | Pokémon (Metal) | Rare | Normal |
-| 61/106 | Durant | Pokémon (Metal) | Rare | Normal |
-| 62/106 | Flabébé | Pokémon (Fairy) | Common | Normal |
-| 63/106 | Flabébé | Pokémon (Fairy) | Common | Normal |
-| 64/106 | Floette | Pokémon (Fairy) | Rare | Normal |
-| 65/106 | Floette | Pokémon (Fairy) | Uncommon | Normal |
-| 66/106 | Florges | Pokémon (Fairy) | Rare | Normal |
-| 67/106 | Spritzee | Pokémon (Fairy) | Common | Normal |
-| 68/106 | Carbink | Pokémon (Fairy) | Rare | Normal |
-| 69/106 | M Charizard EX | Pokémon (Dragon) | Ultra Rare | Normal |
-| 70/106 | Druddigon | Pokémon (Dragon) | Rare | Normal |
-| 71/106 | Dragalge | Pokémon (Dragon) | Rare | Normal |
-| 72/106 | Goomy | Pokémon (Dragon) | Common | Normal |
-| 73/106 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal |
-| 74/106 | Goodra | Pokémon (Dragon) | Rare | Normal |
-| 75/106 | Pidgey | Pokémon (Colorless) | Common | Normal |
-| 76/106 | Pidgeotto | Pokémon (Colorless) | Uncommon | Normal |
-| 77/106 | Pidgeot | Pokémon (Colorless) | Rare | Normal |
-| 78/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 79/106 | M Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 80/106 | Snorlax | Pokémon (Colorless) | Rare | Normal |
-| 81/106 | Sentret | Pokémon (Colorless) | Common | Normal |
-| 82/106 | Furret | Pokémon (Colorless) | Rare | Normal |
-| 83/106 | Miltank | Pokémon (Colorless) | Uncommon | Normal |
-| 84/106 | Buneary | Pokémon (Colorless) | Common | Normal |
-| 85/106 | Lopunny | Pokémon (Colorless) | Rare | Normal |
-| 86/106 | Fletchling | Pokémon (Colorless) | Common | Normal |
-| 87/106 | Furfrou | Pokémon (Colorless) | Uncommon | Normal |
-| 88/106 | Blacksmith | Trainer (Supporter) | Uncommon | Normal |
-| 88a | Blacksmith | Trainer (Supporter) | Uncommon | Normal |
-| 89/106 | Fiery Torch | Trainer (Item) | Uncommon | Normal |
-| 90/106 | Lysandre | Trainer (Supporter) | Uncommon | Normal |
-| 91/106 | Magnetic Storm | Trainer (Stadium) | Uncommon | Normal |
-| 92/106 | Pal Pad | Trainer (Item) | Uncommon | Normal |
-| 93/106 | Pokémon Center Lady | Trainer (Supporter) | Uncommon | Normal |
-| 94/106 | Pokémon Fan Club | Trainer (Supporter) | Uncommon | Normal |
-| 95/106 | Protection Cube | Trainer (Tool) | Uncommon | Normal |
-| 96/106 | Sacred Ash | Trainer (Item) | Uncommon | Normal |
-| 97/106 | Startling Megaphone | Trainer (Item) | Uncommon | Normal |
-| 98/106 | Trick Shovel | Trainer (Item) | Uncommon | Normal |
-| 99/106 | Ultra Ball | Trainer (Item) | Uncommon | Normal |
-| 100/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal |
-| 101/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Normal |
-| 102/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 103/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 104/106 | Lysandre | Trainer (Supporter) | Ultra Rare | Normal |
-| 105/106 | Pokémon Center Lady | Trainer (Supporter) | Ultra Rare | Normal |
-| 106/106 | Pokémon Fan Club | Trainer (Supporter) | Ultra Rare | Normal |
-| 107/106 | M Charizard EX | Pokémon (Fire) | Secret Rare | Normal |
-| 108/106 | M Charizard EX | Pokémon (Dragon) | Secret Rare | Normal |
-| 109/106 | M Kangaskhan EX | Pokémon (Colorless) | Secret Rare | Normal |
-
+| 1/106 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/106 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/106 | Butterfree | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 4/106 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/106 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 6/106 | Nuzleaf | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 7/106 | Shiftry | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 8/106 | Roselia | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 9/106 | Roserade | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 10/106 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 11/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 12/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 13/106 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 14/106 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 15/106 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 16/106 | Torkoal | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 17/106 | Fletchinder | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 18/106 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 19/106 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 20/106 | Pyroar | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 21/106 | Qwilfish | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 22/106 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
+| 23/106 | Milotic | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 24/106 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
+| 25/106 | Sealeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 26/106 | Walrein | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 27/106 | Luvdisc | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 28/106 | Buizel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 29/106 | Floatzel | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 30/106 | Bergmite | Pokémon (Water) | Common | Normal, Reverse holo |
+| 31/106 | Avalugg | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 32/106 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 33/106 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 34/106 | Luxray | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 35/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 36/106 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 37/106 | Heliolisk | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 38/106 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 39/106 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 40/106 | Dusknoir | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 41/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 42/106 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 43/106 | Meowstic | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 44/106 | Skrelp | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 45/106 | Geodude | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 46/106 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 47/106 | Golem | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 48/106 | Binacle | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 49/106 | Barbaracle | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 50/106 | Sneasel | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 51/106 | Sneasel | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 52/106 | Weavile | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 53/106 | Stunky | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 54/106 | Stunky | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 55/106 | Skuntank | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 56/106 | Sandile | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 57/106 | Krokorok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 58/106 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 59/106 | Scrafty | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 60/106 | Forretress | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 61/106 | Durant | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 62/106 | Flabébé | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 63/106 | Flabébé | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 64/106 | Floette | Pokémon (Fairy) | Rare | Normal, Reverse holo |
+| 65/106 | Floette | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
+| 66/106 | Florges | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 67/106 | Spritzee | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 68/106 | Carbink | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 69/106 | M Charizard EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 70/106 | Druddigon | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 71/106 | Dragalge | Pokémon (Dragon) | Rare | Normal, Reverse holo |
+| 72/106 | Goomy | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 73/106 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 74/106 | Goodra | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 75/106 | Pidgey | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 76/106 | Pidgeotto | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 77/106 | Pidgeot | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 78/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 79/106 | M Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 80/106 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 81/106 | Sentret | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 82/106 | Furret | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 83/106 | Miltank | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 84/106 | Buneary | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 85/106 | Lopunny | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 86/106 | Fletchling | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 87/106 | Furfrou | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 88/106 | Blacksmith | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 88a | Blacksmith | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 89/106 | Fiery Torch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 90/106 | Lysandre | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 91/106 | Magnetic Storm | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 92/106 | Pal Pad | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 93/106 | Pokémon Center Lady | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 94/106 | Pokémon Fan Club | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 95/106 | Protection Cube | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 96/106 | Sacred Ash | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 97/106 | Startling Megaphone | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 98/106 | Trick Shovel | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 99/106 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 100/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 101/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 102/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 103/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 104/106 | Lysandre | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 105/106 | Pokémon Center Lady | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 106/106 | Pokémon Fan Club | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 107/106 | M Charizard EX | Pokémon (Fire) | Secret Rare | Normal, Holo |
+| 108/106 | M Charizard EX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
+| 109/106 | M Kangaskhan EX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

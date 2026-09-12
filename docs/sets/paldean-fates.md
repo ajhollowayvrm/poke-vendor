@@ -406,7 +406,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv04.5`),
 | 243/091 | Miraidon ex | Pokémon (Lightning) | Hyper rare | Holo |
 | 244/091 | Ting-Lu ex | Pokémon (Fighting) | Hyper rare | Holo |
 | 245/091 | Koraidon ex | Pokémon (Fighting) | Hyper rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

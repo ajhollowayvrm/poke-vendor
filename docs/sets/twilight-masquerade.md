@@ -374,7 +374,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 | 224/167 | Enhanced Hammer | Trainer (Item) | Hyper rare | Holo (Gold) |
 | 225/167 | Rescue Board | Trainer (Tool) | Hyper rare | Holo (Gold) |
 | 226/167 | Luminous Energy | Energy (Special) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

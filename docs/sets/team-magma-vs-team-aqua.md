@@ -235,7 +235,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex4`), fe
 | 95/95 | Swampert ex | Pokémon (Fighting) | Rare | Holo, Holo (Reed weichler) |
 | 96/95 | Absol | Pokémon (Darkness) | Rare | Holo |
 | 97/95 | Jirachi | Pokémon (Psychic) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

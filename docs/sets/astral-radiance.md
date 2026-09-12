@@ -390,7 +390,6 @@ TCGdex set `swsh10tg`: 30 cards.
 | TG28 | Piers | Trainer (Supporter) | Ultra Rare | Holo |
 | TG29 | Ice Rider Calyrex VMAX | Pokémon (Water) | Secret Rare | Holo, Holo (Gold) |
 | TG30 | Shadow Rider Calyrex VMAX | Pokémon (Psychic) | Secret Rare | Holo, Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

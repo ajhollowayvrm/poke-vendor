@@ -222,7 +222,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp3`), fe
 | 130/132 | Metal Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Normal (Tristan robinson) |
 | 131/132 | Gardevoir | Pokémon (Psychic) | Rare Holo LV.X | Holo, Normal (Jason klaczynski), Normal (Michael pramawat) |
 | 132/132 | Honchkrow | Pokémon (Darkness) | Rare Holo LV.X | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

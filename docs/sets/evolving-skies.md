@@ -352,7 +352,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh7`), 
 | 235/203 | Lightning Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 236/203 | Darkness Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 237/203 | Metal Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

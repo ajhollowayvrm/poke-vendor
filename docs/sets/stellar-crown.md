@@ -334,7 +334,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv07`), f
 | 173/142 | Terapagos ex | Pokémon (Colorless) | Hyper rare | Holo |
 | 174/142 | Area Zero Underdepths | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 175/142 | Bravery Charm | Trainer (Tool) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

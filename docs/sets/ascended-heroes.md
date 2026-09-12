@@ -448,7 +448,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02.5`),
 | 293/217 | Surfer | Trainer (Supporter) | Special illustration rare | Holo |
 | 294/217 | Mega Charizard Y ex | Pokémon (Fire) | Mega Hyper Rare | Holo |
 | 295/217 | Mega Dragonite ex | Pokémon (Dragon) | Mega Hyper Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

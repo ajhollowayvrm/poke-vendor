@@ -227,7 +227,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `lc`), fet
 | 108/110 | Bill | Trainer | Common | Reverse holo, Normal |
 | 109/110 | Mysterious Fossil | Trainer | Common | Reverse holo, Normal |
 | 110/110 | Potion | Trainer | Common | Reverse holo, Normal |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

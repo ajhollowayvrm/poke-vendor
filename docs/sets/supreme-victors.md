@@ -248,7 +248,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl3`), fe
 | SH7 | Milotic | Pokémon (Water) | Rare | Reverse holo |
 | SH8 | Relicanth | Pokémon (Fighting) | Rare | Reverse holo |
 | SH9 | Yanma | Pokémon (Grass) | Rare | Reverse holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

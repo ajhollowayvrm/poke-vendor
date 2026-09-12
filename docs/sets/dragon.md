@@ -227,7 +227,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex3`), fe
 | 98/97 | Charmander | Pokémon (Fire) | Rare | Holo, Holo (City championships) |
 | 99/97 | Charmeleon | Pokémon (Fire) | Rare | Holo, Holo (State championships) |
 | 100/097 | Charizard | Pokémon (Fire) | Rare | Holo, Holo (National championships) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

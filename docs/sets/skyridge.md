@@ -307,7 +307,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ecard3`),
 | H30 | Umbreon | Pokémon (Darkness) | Holo Rare | Holo |
 | H31 | Vaporeon | Pokémon (Water) | Holo Rare | Holo |
 | H32 | Xatu | Pokémon (Psychic) | Holo Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

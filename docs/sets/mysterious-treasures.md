@@ -217,7 +217,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp2`), fe
 | 122/123 | Lucario | Pokémon (Fighting) | Rare Holo LV.X | Holo |
 | 123/123 | Magmortar | Pokémon (Fire) | Rare Holo LV.X | Holo |
 | 124/123 | Time-Space Distortion | Trainer (Item) | Rare | Holo, Normal (Paul atanassov) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

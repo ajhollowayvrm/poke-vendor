@@ -97,25 +97,25 @@ Every card in the set, with its variants. Source: the TCGdex API (set `2022swsh`
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `3150`, fetched 2026-09-12). This added 9 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/15 | Ledyba | Pokémon (Grass) | None | Holo |
+| 1/15 | Ledyba | Pokémon (Grass) | None | Holo, Normal |
 | 2/15 | Rowlet | Pokémon (Grass) | None | Holo |
 | 3/15 | Gossifleur | Pokémon (Grass) | None | Holo |
 | 4/15 | Growlithe | Pokémon (Fire) | None | Holo |
 | 5/15 | Victini | Pokémon (Fire) | None | Holo |
-| 6/15 | Lapras | Pokémon (Water) | None | Holo |
+| 6/15 | Lapras | Pokémon (Water) | None | Holo, Normal |
 | 7/15 | Pikachu | Pokémon (Lightning) | None | Holo |
-| 8/15 | Chinchou | Pokémon (Lightning) | None | Holo |
-| 9/15 | Flaaffy | Pokémon (Lightning) | None | Holo |
-| 10/15 | Tynamo | Pokémon (Lightning) | None | Holo |
-| 11/15 | Cutiefly | Pokémon (Psychic) | None | Holo |
-| 12/15 | Bewear | Pokémon (Fighting) | None | Holo |
-| 13/15 | Pangoro | Pokémon (Darkness) | None | Holo |
-| 14/15 | Drampa | Pokémon (Colorless) | None | Holo |
+| 8/15 | Chinchou | Pokémon (Lightning) | None | Holo, Normal |
+| 9/15 | Flaaffy | Pokémon (Lightning) | None | Holo, Normal |
+| 10/15 | Tynamo | Pokémon (Lightning) | None | Holo, Normal |
+| 11/15 | Cutiefly | Pokémon (Psychic) | None | Holo, Normal |
+| 12/15 | Bewear | Pokémon (Fighting) | None | Holo, Normal |
+| 13/15 | Pangoro | Pokémon (Darkness) | None | Holo, Normal |
+| 14/15 | Drampa | Pokémon (Colorless) | None | Holo, Normal |
 | 15/15 | Smeargle | Pokémon (Colorless) | None | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

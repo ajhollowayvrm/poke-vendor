@@ -215,7 +215,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss4`), 
 | 101/102 | Palkia & Dialga LEGEND | Pokémon (Water, Metal) | LEGEND | Holo, Holo (Jumbo) |
 | 102/102 | Palkia & Dialga LEGEND | Pokémon (Water, Metal) | LEGEND | Holo |
 | FOUR | Alph Lithograph | Trainer (Item) | Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

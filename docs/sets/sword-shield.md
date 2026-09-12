@@ -97,6 +97,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh1`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2585`, fetched 2026-09-12). This added 1 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -262,7 +263,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh1`), 
 | 160/202 | Energy Retrieval | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 161/202 | Energy Search | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 162/202 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 163/202 | Evolution Incense | Trainer (Item) | Uncommon | Normal |
+| 163/202 | Evolution Incense | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 164/202 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 165/202 | Hop | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 166/202 | Hyper Potion | Trainer (Item) | Uncommon | Normal, Reverse holo |
@@ -316,7 +317,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh1`), 
 | 214/202 | Metal Saucer | Trainer (Item) | Secret Rare | Holo |
 | 215/202 | Ordinary Rod | Trainer (Item) | Secret Rare | Holo |
 | 216/202 | Quick Ball | Trainer (Item) | Secret Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

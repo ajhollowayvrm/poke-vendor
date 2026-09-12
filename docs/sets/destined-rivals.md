@@ -429,7 +429,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 242/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
 | 243/182 | Jamming Tower | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 244/182 | Levincia | Trainer (Stadium) | Hyper rare | Holo (Gold) |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

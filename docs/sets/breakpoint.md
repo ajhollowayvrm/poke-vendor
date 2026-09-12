@@ -90,136 +90,136 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy9`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1701`, fetched 2026-09-12). This added 133 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/122 | Chikorita | Pokémon (Grass) | Common | Normal |
-| 2/122 | Bayleef | Pokémon (Grass) | Uncommon | Normal |
-| 3/122 | Meganium | Pokémon (Grass) | Rare | Normal |
-| 4/122 | Seedot | Pokémon (Grass) | Common | Normal |
-| 5/122 | Kricketot | Pokémon (Grass) | Common | Normal |
-| 6/122 | Kricketune | Pokémon (Grass) | Uncommon | Normal |
-| 7/122 | Petilil | Pokémon (Grass) | Common | Normal |
-| 8/122 | Lilligant | Pokémon (Grass) | Rare | Normal |
-| 9/122 | Durant | Pokémon (Grass) | Uncommon | Normal |
-| 10/122 | Growlithe | Pokémon (Fire) | Common | Normal |
-| 11/122 | Arcanine | Pokémon (Fire) | Uncommon | Normal |
-| 12/122 | Numel | Pokémon (Fire) | Common | Normal |
-| 13/122 | Camerupt | Pokémon (Fire) | Rare | Normal |
-| 14/122 | Emboar EX | Pokémon (Fire) | Ultra Rare | Normal |
-| 15/122 | Heatmor | Pokémon (Fire) | Uncommon | Normal |
-| 16/122 | Psyduck | Pokémon (Water) | Common | Normal |
-| 17/122 | Golduck | Pokémon (Water) | Rare | Normal |
-| 18/122 | Golduck BREAK | Pokémon (Water) | Ultra Rare | Normal |
-| 19/122 | Slowpoke | Pokémon (Water) | Common | Normal |
-| 20/122 | Slowbro | Pokémon (Water) | Uncommon | Normal |
-| 21/122 | Slowking | Pokémon (Water) | Rare | Normal |
-| 22/122 | Shellder | Pokémon (Water) | Common | Normal |
-| 23/122 | Shellder | Pokémon (Water) | Common | Normal |
-| 24/122 | Cloyster | Pokémon (Water) | Uncommon | Normal |
-| 25/122 | Staryu | Pokémon (Water) | Common | Normal |
-| 26/122 | Gyarados EX | Pokémon (Water) | Ultra Rare | Normal |
-| 27/122 | M Gyarados EX | Pokémon (Water) | Ultra Rare | Normal |
-| 28/122 | Lapras | Pokémon (Water) | Uncommon | Normal |
-| 29/122 | Corsola | Pokémon (Water) | Common | Normal |
-| 30/122 | Suicune | Pokémon (Water) | Rare | Normal |
-| 31/122 | Palkia EX | Pokémon (Water) | Ultra Rare | Normal |
-| 32/122 | Manaphy EX | Pokémon (Water) | Ultra Rare | Normal |
-| 33/122 | Tympole | Pokémon (Water) | Common | Normal |
-| 34/122 | Palpitoad | Pokémon (Water) | Uncommon | Normal |
-| 35/122 | Seismitoad | Pokémon (Water) | Rare | Normal |
-| 36/122 | Ducklett | Pokémon (Water) | Common | Normal |
-| 37/122 | Swanna | Pokémon (Water) | Uncommon | Normal |
-| 38/122 | Froakie | Pokémon (Water) | Common | Normal |
-| 39/122 | Frogadier | Pokémon (Water) | Uncommon | Normal |
-| 40/122 | Greninja | Pokémon (Water) | Rare | Normal |
-| 41/122 | Greninja BREAK | Pokémon (Water) | Ultra Rare | Normal |
-| 42/122 | Electabuzz | Pokémon (Lightning) | Common | Normal |
-| 43/122 | Electivire | Pokémon (Lightning) | Uncommon | Normal |
-| 44/122 | Shinx | Pokémon (Lightning) | Common | Normal |
-| 45/122 | Luxio | Pokémon (Lightning) | Uncommon | Normal |
-| 46/122 | Luxray | Pokémon (Lightning) | Rare | Normal |
-| 47/122 | Luxray BREAK | Pokémon (Lightning) | Ultra Rare | Normal |
-| 48/122 | Blitzle | Pokémon (Lightning) | Common | Normal |
-| 49/122 | Zebstrika | Pokémon (Lightning) | Rare | Normal |
-| 50/122 | Drowzee | Pokémon (Psychic) | Common | Normal |
-| 51/122 | Hypno | Pokémon (Psychic) | Rare | Normal |
-| 52/122 | Espeon EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 53/122 | Skorupi | Pokémon (Psychic) | Common | Normal |
-| 54/122 | Drapion | Pokémon (Psychic) | Rare | Normal |
-| 55/122 | Sigilyph | Pokémon (Psychic) | Uncommon | Normal |
-| 56/122 | Trubbish | Pokémon (Psychic) | Common | Normal |
-| 57/122 | Garbodor | Pokémon (Psychic) | Rare | Normal |
-| 58/122 | Espurr | Pokémon (Psychic) | Common | Normal |
-| 59/122 | Meowstic | Pokémon (Psychic) | Rare | Normal |
-| 60/122 | Honedge | Pokémon (Psychic) | Common | Normal |
-| 61/122 | Doublade | Pokémon (Psychic) | Uncommon | Normal |
-| 62/122 | Aegislash | Pokémon (Psychic) | Rare | Normal |
-| 63/122 | Skrelp | Pokémon (Psychic) | Common | Normal |
-| 64/122 | Phantump | Pokémon (Psychic) | Common | Normal |
-| 65/122 | Trevenant | Pokémon (Psychic) | Rare | Normal |
-| 66/122 | Trevenant BREAK | Pokémon (Psychic) | Ultra Rare | Normal |
-| 67/122 | Sudowoodo | Pokémon (Fighting) | Uncommon | Normal |
-| 68/122 | Gible | Pokémon (Fighting) | Common | Normal |
-| 69/122 | Gabite | Pokémon (Fighting) | Uncommon | Normal |
-| 70/122 | Garchomp | Pokémon (Fighting) | Rare | Normal |
-| 71/122 | Pancham | Pokémon (Fighting) | Common | Normal |
-| 72/122 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal |
-| 73/122 | Shiftry | Pokémon (Darkness) | Rare | Normal |
-| 74/122 | Darkrai EX | Pokémon (Darkness) | Ultra Rare | Normal |
-| 75/122 | Pangoro | Pokémon (Darkness) | Rare | Normal |
-| 76/122 | Scizor EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 77/122 | M Scizor EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 78/122 | Mawile | Pokémon (Metal) | Uncommon | Normal |
-| 79/122 | Ferroseed | Pokémon (Metal) | Common | Normal |
-| 80/122 | Ferrothorn | Pokémon (Metal) | Rare | Normal |
-| 81/122 | Clefairy | Pokémon (Fairy) | Common | Normal |
-| 82/122 | Clefable | Pokémon (Fairy) | Rare | Normal |
-| 83/122 | Togekiss EX | Pokémon (Fairy) | Ultra Rare | Normal |
-| 84/122 | Spritzee | Pokémon (Fairy) | Common | Normal |
-| 85/122 | Aromatisse | Pokémon (Fairy) | Uncommon | Normal |
-| 86/122 | Dragalge | Pokémon (Dragon) | Rare | Normal |
-| 87/122 | Rattata | Pokémon (Colorless) | Common | Normal |
-| 88/122 | Raticate | Pokémon (Colorless) | Rare | Normal |
-| 89/122 | Raticate BREAK | Pokémon (Colorless) | Ultra Rare | Normal |
-| 90/122 | Dunsparce | Pokémon (Colorless) | Uncommon | Normal |
-| 91/122 | Stantler | Pokémon (Colorless) | Uncommon | Normal |
-| 92/122 | Ho-Oh EX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 93/122 | Glameow | Pokémon (Colorless) | Common | Normal |
-| 94/122 | Purugly | Pokémon (Colorless) | Uncommon | Normal |
-| 95/122 | Furfrou | Pokémon (Colorless) | Common | Normal |
-| 96/122 | All-Night Party | Trainer (Stadium) | Uncommon | Normal |
-| 97/122 | Bursting Balloon | Trainer (Tool) | Uncommon | Normal |
-| 98/122 | Delinquent | Trainer (Supporter) | Uncommon | Normal |
-| 98a | Delinquent | Trainer (Supporter) | Uncommon | Normal |
-| 98b | Delinquent | Trainer (Supporter) | Uncommon | Normal |
-| 99/122 | Fighting Fury Belt | Trainer (Tool) | Uncommon | Normal |
-| 100/122 | Great Ball | Trainer (Item) | Uncommon | Normal |
-| 101/122 | Gyarados Spirit Link | Trainer (Tool) | Uncommon | Normal |
-| 102/122 | Max Elixir | Trainer (Item) | Uncommon | Normal |
-| 103/122 | Max Potion | Trainer (Item) | Uncommon | Normal |
-| 104/122 | Misty's Determination | Trainer (Supporter) | Uncommon | Normal |
-| 105/122 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal |
-| 106/122 | Potion | Trainer (Item) | Uncommon | Normal |
-| 107/122 | Professor Sycamore | Trainer (Supporter) | Uncommon | Normal |
-| 107a | Professor Sycamore | Trainer (Supporter) | Uncommon | Normal |
-| 108/122 | Psychic's Third Eye | Trainer (Supporter) | Uncommon | Normal |
-| 109/122 | Puzzle of Time | Trainer (Item) | Uncommon | Normal |
-| 110/122 | Reverse Valley | Trainer (Stadium) | Uncommon | Normal |
-| 111/122 | Scizor Spirit Link | Trainer (Tool) | Uncommon | Normal |
-| 112/122 | Tierno | Trainer (Supporter) | Uncommon | Normal |
-| 113/122 | Splash Energy | Energy (Special) | Uncommon | Normal |
-| 114/122 | Gyarados EX | Pokémon (Water) | Ultra Rare | Normal |
-| 115/122 | M Gyarados EX | Pokémon (Water) | Ultra Rare | Normal |
-| 116/122 | Manaphy EX | Pokémon (Water) | Ultra Rare | Normal |
-| 117/122 | Espeon EX | Pokémon (Psychic) | Ultra Rare | Normal |
-| 118/122 | Darkrai EX | Pokémon (Darkness) | Ultra Rare | Normal |
-| 119/122 | Scizor EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 120/122 | M Scizor EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 121/122 | Ho-Oh EX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 122/122 | Skyla | Trainer (Supporter) | Ultra Rare | Normal |
-| 123/122 | Gyarados EX | Pokémon (Water) | Secret Rare | Normal |
-
+| 1/122 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/122 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/122 | Meganium | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 4/122 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/122 | Kricketot | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 6/122 | Kricketune | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 7/122 | Petilil | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 8/122 | Lilligant | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 9/122 | Durant | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 10/122 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 11/122 | Arcanine | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 12/122 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 13/122 | Camerupt | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 14/122 | Emboar EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 15/122 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 16/122 | Psyduck | Pokémon (Water) | Common | Normal, Reverse holo |
+| 17/122 | Golduck | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 18/122 | Golduck BREAK | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 19/122 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo |
+| 20/122 | Slowbro | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 21/122 | Slowking | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 22/122 | Shellder | Pokémon (Water) | Common | Normal, Reverse holo |
+| 23/122 | Shellder | Pokémon (Water) | Common | Normal, Reverse holo |
+| 24/122 | Cloyster | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 25/122 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
+| 26/122 | Gyarados EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 27/122 | M Gyarados EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 28/122 | Lapras | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 29/122 | Corsola | Pokémon (Water) | Common | Normal, Reverse holo |
+| 30/122 | Suicune | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 31/122 | Palkia EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 32/122 | Manaphy EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 33/122 | Tympole | Pokémon (Water) | Common | Normal, Reverse holo |
+| 34/122 | Palpitoad | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 35/122 | Seismitoad | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 36/122 | Ducklett | Pokémon (Water) | Common | Normal, Reverse holo |
+| 37/122 | Swanna | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 38/122 | Froakie | Pokémon (Water) | Common | Normal, Reverse holo |
+| 39/122 | Frogadier | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 40/122 | Greninja | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 41/122 | Greninja BREAK | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 42/122 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 43/122 | Electivire | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 44/122 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 45/122 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 46/122 | Luxray | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 47/122 | Luxray BREAK | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 48/122 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 49/122 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 50/122 | Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 51/122 | Hypno | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 52/122 | Espeon EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 53/122 | Skorupi | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 54/122 | Drapion | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 55/122 | Sigilyph | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 56/122 | Trubbish | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 57/122 | Garbodor | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 58/122 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 59/122 | Meowstic | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 60/122 | Honedge | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 61/122 | Doublade | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 62/122 | Aegislash | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 63/122 | Skrelp | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 64/122 | Phantump | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 65/122 | Trevenant | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 66/122 | Trevenant BREAK | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 67/122 | Sudowoodo | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 68/122 | Gible | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 69/122 | Gabite | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 70/122 | Garchomp | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 71/122 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 72/122 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 73/122 | Shiftry | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 74/122 | Darkrai EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 75/122 | Pangoro | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 76/122 | Scizor EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 77/122 | M Scizor EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 78/122 | Mawile | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 79/122 | Ferroseed | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 80/122 | Ferrothorn | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 81/122 | Clefairy | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 82/122 | Clefable | Pokémon (Fairy) | Rare | Normal, Reverse holo |
+| 83/122 | Togekiss EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 84/122 | Spritzee | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 85/122 | Aromatisse | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
+| 86/122 | Dragalge | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 87/122 | Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 88/122 | Raticate | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 89/122 | Raticate BREAK | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 90/122 | Dunsparce | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 91/122 | Stantler | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 92/122 | Ho-Oh EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 93/122 | Glameow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 94/122 | Purugly | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 95/122 | Furfrou | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 96/122 | All-Night Party | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 97/122 | Bursting Balloon | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 98/122 | Delinquent | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 98a | Delinquent | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 98b | Delinquent | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 99/122 | Fighting Fury Belt | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 100/122 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 101/122 | Gyarados Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 102/122 | Max Elixir | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 103/122 | Max Potion | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 104/122 | Misty's Determination | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 105/122 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 106/122 | Potion | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 107/122 | Professor Sycamore | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 107a | Professor Sycamore | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 108/122 | Psychic's Third Eye | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 109/122 | Puzzle of Time | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 110/122 | Reverse Valley | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 111/122 | Scizor Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 112/122 | Tierno | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 113/122 | Splash Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 114/122 | Gyarados EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 115/122 | M Gyarados EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 116/122 | Manaphy EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 117/122 | Espeon EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 118/122 | Darkrai EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 119/122 | Scizor EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 120/122 | M Scizor EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 121/122 | Ho-Oh EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 122/122 | Skyla | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 123/122 | Gyarados EX | Pokémon (Water) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

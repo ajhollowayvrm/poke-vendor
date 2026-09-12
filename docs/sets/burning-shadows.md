@@ -264,7 +264,6 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3`), fe
 | 167/147 | Fire Energy | Energy (Normal) | Secret Rare | Holo |
 | 168/147 | Darkness Energy | Energy (Normal) | Secret Rare | Holo |
 | 169/147 | Fairy Energy | Energy (Normal) | Secret Rare | Holo |
-
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

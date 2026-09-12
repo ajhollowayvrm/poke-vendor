@@ -123,148 +123,148 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1413`, fetched 2026-09-12). This added 148 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/135 | Turtwig | Pokémon (Grass) | Common | Normal |
-| 2/135 | Grotle | Pokémon (Grass) | Uncommon | Normal |
-| 3/135 | Torterra | Pokémon (Grass) | Rare | Normal |
-| 4/135 | Combee | Pokémon (Grass) | Common | Normal |
-| 5/135 | Vespiquen | Pokémon (Grass) | Rare | Normal |
-| 6/135 | Cherubi | Pokémon (Grass) | Common | Normal |
-| 7/135 | Cherrim | Pokémon (Grass) | Rare | Normal |
-| 8/135 | Sewaddle | Pokémon (Grass) | Common | Normal |
-| 9/135 | Swadloon | Pokémon (Grass) | Uncommon | Normal |
-| 10/135 | Leavanny | Pokémon (Grass) | Rare | Normal |
-| 11/135 | Maractus | Pokémon (Grass) | Uncommon | Normal |
-| 12/135 | Foongus | Pokémon (Grass) | Common | Normal |
-| 13/135 | Amoonguss | Pokémon (Grass) | Uncommon | Normal |
-| 14/135 | Moltres-EX | Pokémon (Fire) | Rare | Normal |
-| 15/135 | Chimchar | Pokémon (Fire) | Common | Normal |
-| 16/135 | Monferno | Pokémon (Fire) | Uncommon | Normal |
-| 17/135 | Infernape | Pokémon (Fire) | Rare | Normal |
-| 18/135 | Victini-EX | Pokémon (Fire) | Rare | Normal |
-| 19/135 | Pansear | Pokémon (Fire) | Common | Normal |
-| 20/135 | Simisear | Pokémon (Fire) | Uncommon | Normal |
-| 21/135 | Litwick | Pokémon (Fire) | Common | Normal |
-| 22/135 | Lampent | Pokémon (Fire) | Uncommon | Normal |
-| 23/135 | Heatmor | Pokémon (Fire) | Uncommon | Normal |
-| 24/135 | Squirtle | Pokémon (Water) | Common | Normal |
-| 25/135 | Articuno-EX | Pokémon (Water) | Rare | Normal |
-| 26/135 | Swinub | Pokémon (Water) | Common | Normal |
-| 27/135 | Piloswine | Pokémon (Water) | Uncommon | Normal |
-| 28/135 | Mamoswine | Pokémon (Water) | Rare | Normal |
-| 29/135 | Lotad | Pokémon (Water) | Common | Normal |
-| 30/135 | Lombre | Pokémon (Water) | Uncommon | Normal |
-| 31/135 | Ludicolo | Pokémon (Water) | Rare | Normal |
-| 32/135 | Carvanha | Pokémon (Water) | Common | Normal |
-| 33/135 | Sharpedo | Pokémon (Water) | Rare | Normal |
-| 34/135 | Manaphy | Pokémon (Water) | Rare | Normal |
-| 35/135 | Vanillite | Pokémon (Water) | Common | Normal |
-| 36/135 | Vanillish | Pokémon (Water) | Uncommon | Normal |
-| 37/135 | Vanilluxe | Pokémon (Water) | Rare | Normal |
-| 38/135 | Frillish | Pokémon (Water) | Common | Normal |
-| 39/135 | Jellicent | Pokémon (Water) | Rare | Normal |
-| 40/135 | Cubchoo | Pokémon (Water) | Common | Normal |
-| 41/135 | Beartic | Pokémon (Water) | Rare | Normal |
-| 42/135 | Magnemite | Pokémon (Lightning) | Common | Normal |
-| 43/135 | Magnemite | Pokémon (Lightning) | Common | Normal |
-| 44/135 | Magneton | Pokémon (Lightning) | Uncommon | Normal |
-| 45/135 | Magneton | Pokémon (Lightning) | Uncommon | Normal |
-| 46/135 | Magnezone | Pokémon (Lightning) | Rare | Normal |
-| 47/135 | Magnezone | Pokémon (Lightning) | Rare | Normal |
-| 48/135 | Zapdos-EX | Pokémon (Lightning) | Rare | Normal |
-| 49/135 | Rotom | Pokémon (Lightning) | Uncommon | Normal |
-| 50/135 | Joltik | Pokémon (Lightning) | Common | Normal |
-| 51/135 | Galvantula | Pokémon (Lightning) | Uncommon | Normal |
-| 52/135 | Zubat | Pokémon (Psychic) | Common | Normal |
-| 53/135 | Zubat | Pokémon (Psychic) | Common | Normal |
-| 54/135 | Golbat | Pokémon (Psychic) | Uncommon | Normal |
-| 55/135 | Crobat | Pokémon (Psychic) | Rare | Normal |
-| 56/135 | Koffing | Pokémon (Psychic) | Common | Normal |
-| 57/135 | Koffing | Pokémon (Psychic) | Uncommon | Normal |
-| 58/135 | Weezing | Pokémon (Psychic) | Rare | Normal |
-| 59/135 | Ralts | Pokémon (Psychic) | Common | Normal |
-| 60/135 | Kirlia | Pokémon (Psychic) | Uncommon | Normal |
-| 61/135 | Gallade | Pokémon (Psychic) | Rare | Normal |
-| 62/135 | Giratina | Pokémon (Psychic) | Rare | Normal |
-| 63/135 | Trubbish | Pokémon (Psychic) | Uncommon | Normal |
-| 64/135 | Trubbish | Pokémon (Psychic) | Common | Normal |
-| 65/135 | Trubbish | Pokémon (Psychic) | Common | Normal |
-| 66/135 | Garbodor | Pokémon (Psychic) | Rare | Normal |
-| 67/135 | Garbodor | Pokémon (Psychic) | Rare | Normal |
-| 68/135 | Elgyem | Pokémon (Psychic) | Common | Normal |
-| 69/135 | Elgyem | Pokémon (Psychic) | Uncommon | Normal |
-| 70/135 | Beheeyem | Pokémon (Psychic) | Rare | Normal |
-| 71/135 | Phanpy | Pokémon (Fighting) | Common | Normal |
-| 72/135 | Donphan | Pokémon (Fighting) | Uncommon | Normal |
-| 73/135 | Lunatone | Pokémon (Fighting) | Uncommon | Normal |
-| 74/135 | Solrock | Pokémon (Fighting) | Uncommon | Normal |
-| 75/135 | Riolu | Pokémon (Fighting) | Common | Normal |
-| 76/135 | Riolu | Pokémon (Fighting) | Common | Normal |
-| 77/135 | Lucario | Pokémon (Fighting) | Uncommon | Normal |
-| 78/135 | Lucario | Pokémon (Fighting) | Rare | Normal |
-| 79/135 | Timburr | Pokémon (Fighting) | Common | Normal |
-| 80/135 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal |
-| 81/135 | Conkeldurr | Pokémon (Fighting) | Rare | Normal |
-| 82/135 | Purrloin | Pokémon (Darkness) | Common | Normal |
-| 83/135 | Purrloin | Pokémon (Darkness) | Common | Normal |
-| 84/135 | Liepard | Pokémon (Darkness) | Rare | Normal |
-| 85/135 | Scraggy | Pokémon (Darkness) | Common | Normal |
-| 86/135 | Scrafty | Pokémon (Darkness) | Rare | Normal |
-| 87/135 | Skarmory | Pokémon (Metal) | Rare | Normal |
-| 88/135 | Klink | Pokémon (Metal) | Common | Normal |
-| 89/135 | Klang | Pokémon (Metal) | Uncommon | Normal |
-| 90/135 | Klinklang | Pokémon (Metal) | Rare | Normal |
-| 91/135 | Durant | Pokémon (Metal) | Uncommon | Normal |
-| 92/135 | Durant | Pokémon (Metal) | Uncommon | Normal |
-| 93/135 | Cobalion-EX | Pokémon (Metal) | Rare | Normal |
-| 94/135 | Druddigon | Pokémon (Dragon) | Rare | Normal |
-| 95/135 | Black Kyurem-EX | Pokémon (Dragon) | Rare | Normal |
-| 96/135 | White Kyurem-EX | Pokémon (Dragon) | Rare | Normal |
-| 97/135 | Clefairy | Pokémon (Colorless) | Common | Normal |
-| 98/135 | Clefable | Pokémon (Colorless) | Rare | Normal |
-| 99/135 | Doduo | Pokémon (Colorless) | Common | Normal |
-| 100/135 | Dodrio | Pokémon (Colorless) | Rare | Normal |
-| 101/135 | Snorlax | Pokémon (Colorless) | Rare | Normal |
-| 102/135 | Togepi | Pokémon (Colorless) | Common | Normal |
-| 103/135 | Togetic | Pokémon (Colorless) | Uncommon | Normal |
-| 104/135 | Togekiss | Pokémon (Colorless) | Rare | Normal |
-| 105/135 | Whismur | Pokémon (Colorless) | Common | Normal |
-| 106/135 | Loudred | Pokémon (Colorless) | Uncommon | Normal |
-| 107/135 | Exploud | Pokémon (Colorless) | Rare | Normal |
-| 108/135 | Lugia-EX | Pokémon (Colorless) | Rare | Normal |
-| 109/135 | Skitty | Pokémon (Colorless) | Common | Normal |
-| 110/135 | Patrat | Pokémon (Colorless) | Common | Normal |
-| 111/135 | Patrat | Pokémon (Colorless) | Common | Normal |
-| 112/135 | Watchog | Pokémon (Colorless) | Uncommon | Normal |
-| 113/135 | Watchog | Pokémon (Colorless) | Rare | Normal |
-| 114/135 | Bouffalant | Pokémon (Colorless) | Rare | Normal |
-| 115/135 | Rufflet | Pokémon (Colorless) | Common | Normal |
-| 116/135 | Braviary | Pokémon (Colorless) | Rare | Normal |
-| 117/135 | Bicycle | Trainer (Item) | Uncommon | Normal |
-| 118/135 | Colress | Trainer (Supporter) | Uncommon | Normal |
-| 119/135 | Colress Machine | Trainer (Item) | Uncommon | Normal |
-| 120/135 | Escape Rope | Trainer (Item) | Uncommon | Normal |
-| 121/135 | Ether | Trainer (Item) | Uncommon | Normal |
-| 122/135 | Eviolite | Trainer (Tool) | Uncommon | Normal |
-| 123/135 | Hypnotoxic Laser | Trainer (Item) | Uncommon | Normal |
-| 124/135 | Plasma Frigate | Trainer (Stadium) | Uncommon | Normal |
-| 125/135 | Team Plasma Grunt | Trainer (Supporter) | Uncommon | Normal |
-| 126/135 | Virbank City Gym | Trainer (Stadium) | Uncommon | Normal |
-| 127/135 | Plasma Energy | Energy (Special) | Uncommon | Normal |
-| 128/135 | Dowsing Machine | Trainer (Item) | Rare | Normal |
-| 129/135 | Scramble Switch | Trainer (Item) | Rare | Normal |
-| 130/135 | Victory Piece | Trainer (Tool) | Rare | Normal |
-| 131/135 | Victini-EX | Pokémon (Fire) | Ultra Rare | Normal |
-| 132/135 | Articuno-EX | Pokémon (Water) | Ultra Rare | Normal |
-| 133/135 | Cobalion-EX | Pokémon (Metal) | Ultra Rare | Normal |
-| 134/135 | Lugia-EX | Pokémon (Colorless) | Ultra Rare | Normal |
-| 135/135 | Colress | Trainer (Supporter) | Ultra Rare | Normal |
-| 136/135 | Charizard | Pokémon (Fire) | Secret Rare | Normal |
-| 137/135 | Blastoise | Pokémon (Water) | Secret Rare | Normal |
-| 138/135 | Random Receiver | Trainer (Item) | Secret Rare | Normal |
-
+| 1/135 | Turtwig | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/135 | Grotle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/135 | Torterra | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 4/135 | Combee | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/135 | Vespiquen | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 6/135 | Cherubi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 7/135 | Cherrim | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 8/135 | Sewaddle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 9/135 | Swadloon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 10/135 | Leavanny | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 11/135 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 12/135 | Foongus | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 13/135 | Amoonguss | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 14/135 | Moltres-EX | Pokémon (Fire) | Rare | Normal, Holo |
+| 15/135 | Chimchar | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 16/135 | Monferno | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 17/135 | Infernape | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 18/135 | Victini-EX | Pokémon (Fire) | Rare | Normal, Holo |
+| 19/135 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 20/135 | Simisear | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 21/135 | Litwick | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 22/135 | Lampent | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 23/135 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 24/135 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
+| 25/135 | Articuno-EX | Pokémon (Water) | Rare | Normal, Holo |
+| 26/135 | Swinub | Pokémon (Water) | Common | Normal, Reverse holo |
+| 27/135 | Piloswine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 28/135 | Mamoswine | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 29/135 | Lotad | Pokémon (Water) | Common | Normal, Reverse holo |
+| 30/135 | Lombre | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 31/135 | Ludicolo | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 32/135 | Carvanha | Pokémon (Water) | Common | Normal, Reverse holo |
+| 33/135 | Sharpedo | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 34/135 | Manaphy | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 35/135 | Vanillite | Pokémon (Water) | Common | Normal, Reverse holo |
+| 36/135 | Vanillish | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 37/135 | Vanilluxe | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 38/135 | Frillish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 39/135 | Jellicent | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 40/135 | Cubchoo | Pokémon (Water) | Common | Normal, Reverse holo |
+| 41/135 | Beartic | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 42/135 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 43/135 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 44/135 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 45/135 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 46/135 | Magnezone | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 47/135 | Magnezone | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 48/135 | Zapdos-EX | Pokémon (Lightning) | Rare | Normal, Holo |
+| 49/135 | Rotom | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 50/135 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 51/135 | Galvantula | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 52/135 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 53/135 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 54/135 | Golbat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 55/135 | Crobat | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 56/135 | Koffing | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 57/135 | Koffing | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 58/135 | Weezing | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 59/135 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 60/135 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 61/135 | Gallade | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 62/135 | Giratina | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 63/135 | Trubbish | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 64/135 | Trubbish | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 65/135 | Trubbish | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 66/135 | Garbodor | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 67/135 | Garbodor | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 68/135 | Elgyem | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 69/135 | Elgyem | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 70/135 | Beheeyem | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 71/135 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 72/135 | Donphan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 73/135 | Lunatone | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 74/135 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 75/135 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 76/135 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 77/135 | Lucario | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 78/135 | Lucario | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 79/135 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 80/135 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 81/135 | Conkeldurr | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 82/135 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 83/135 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 84/135 | Liepard | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 85/135 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 86/135 | Scrafty | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 87/135 | Skarmory | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 88/135 | Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 89/135 | Klang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 90/135 | Klinklang | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 91/135 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 92/135 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 93/135 | Cobalion-EX | Pokémon (Metal) | Rare | Normal, Holo |
+| 94/135 | Druddigon | Pokémon (Dragon) | Rare | Normal, Reverse holo |
+| 95/135 | Black Kyurem-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 96/135 | White Kyurem-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 97/135 | Clefairy | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 98/135 | Clefable | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 99/135 | Doduo | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 100/135 | Dodrio | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 101/135 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 102/135 | Togepi | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 103/135 | Togetic | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 104/135 | Togekiss | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 105/135 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 106/135 | Loudred | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 107/135 | Exploud | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 108/135 | Lugia-EX | Pokémon (Colorless) | Rare | Normal, Holo |
+| 109/135 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 110/135 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 111/135 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 112/135 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 113/135 | Watchog | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 114/135 | Bouffalant | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 115/135 | Rufflet | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 116/135 | Braviary | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 117/135 | Bicycle | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 118/135 | Colress | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 119/135 | Colress Machine | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 120/135 | Escape Rope | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 121/135 | Ether | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 122/135 | Eviolite | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 123/135 | Hypnotoxic Laser | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 124/135 | Plasma Frigate | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 125/135 | Team Plasma Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 126/135 | Virbank City Gym | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 127/135 | Plasma Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 128/135 | Dowsing Machine | Trainer (Item) | Rare | Normal, Holo |
+| 129/135 | Scramble Switch | Trainer (Item) | Rare | Normal, Holo |
+| 130/135 | Victory Piece | Trainer (Tool) | Rare | Normal, Holo |
+| 131/135 | Victini-EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 132/135 | Articuno-EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 133/135 | Cobalion-EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 134/135 | Lugia-EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 135/135 | Colress | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 136/135 | Charizard | Pokémon (Fire) | Secret Rare | Normal, Holo |
+| 137/135 | Blastoise | Pokémon (Water) | Secret Rare | Normal, Holo |
+| 138/135 | Random Receiver | Trainer (Item) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

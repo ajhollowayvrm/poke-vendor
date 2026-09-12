@@ -106,6 +106,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1399`, fetched 2026-09-12). This added 3 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -134,7 +135,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 | 23/95 | Roserade | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 24/95 | Steelix | Pokémon (Metal) | Rare | Normal, Reverse holo, Reverse holo (League), Holo |
 | 25/95 | Torkoal | Pokémon (Fire) | Rare | Normal, Reverse holo |
-| 26/95 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 26/95 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Reverse holo, Holo (Cosmos), Normal |
 | 27/95 | Ursaring | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 28/95 | Cherrim | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 29/95 | Dunsparce | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
@@ -189,7 +190,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 | 78/95 | Judge | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat), Normal (Yuka furusawa), Normal (Gustavo wada) |
 | 79/95 | Life Herb | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 80/95 | PlusPower | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Yuka furusawa) |
-| 81/95 | Pokémon Circulator | Trainer (Item) | Uncommon | Normal |
+| 81/95 | Pokémon Circulator | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 82/95 | Rare Candy | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat), Normal (Yuka furusawa), Normal (Gustavo wada), Normal (Christopher kan), Normal (Ross cawthorn), Normal (David cohen) |
 | 83/95 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Mychael bryan) |
 | 84/95 | Crobat | Pokémon (Psychic) | Rare PRIME | Holo |
@@ -204,8 +205,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 | 93/95 | Raikou & Suicune LEGEND | Pokémon (Lightning, Water) | LEGEND | Holo |
 | 94/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Holo (Ross cawthorn) |
 | 95/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Normal (Ross cawthorn) |
-| TWO | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal |
-
+| TWO | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

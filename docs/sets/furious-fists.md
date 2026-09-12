@@ -74,124 +74,124 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1481`, fetched 2026-09-12). This added 123 variants.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/111 | Bellsprout | Pokémon (Grass) | Common | Normal |
-| 2/111 | Weepinbell | Pokémon (Grass) | Uncommon | Normal |
-| 3/111 | Victreebel | Pokémon (Grass) | Rare | Normal |
-| 4/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Normal |
-| 5/111 | M Heracross EX | Pokémon (Grass) | Ultra Rare | Normal |
-| 6/111 | Shroomish | Pokémon (Grass) | Common | Normal |
-| 7/111 | Leafeon | Pokémon (Grass) | Rare | Normal |
-| 8/111 | Shelmet | Pokémon (Grass) | Common | Normal |
-| 9/111 | Accelgor | Pokémon (Grass) | Uncommon | Normal |
-| 10/111 | Magmar | Pokémon (Fire) | Common | Normal |
-| 11/111 | Magmortar | Pokémon (Fire) | Rare | Normal |
-| 12/111 | Torchic | Pokémon (Fire) | Common | Normal |
-| 13/111 | Combusken | Pokémon (Fire) | Uncommon | Normal |
-| 14/111 | Blaziken | Pokémon (Fire) | Rare | Normal |
-| 15/111 | Poliwag | Pokémon (Water) | Common | Normal |
-| 16/111 | Poliwhirl | Pokémon (Water) | Uncommon | Normal |
-| 17/111 | Poliwrath | Pokémon (Water) | Rare | Normal |
-| 18/111 | Politoed | Pokémon (Water) | Rare | Normal |
-| 19/111 | Glaceon | Pokémon (Water) | Rare | Normal |
-| 20/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Normal |
-| 21/111 | Cubchoo | Pokémon (Water) | Common | Normal |
-| 22/111 | Beartic | Pokémon (Water) | Rare | Normal |
-| 23/111 | Clauncher | Pokémon (Water) | Common | Normal |
-| 24/111 | Clawitzer | Pokémon (Water) | Rare | Normal |
-| 25/111 | Amaura | Pokémon (Water) | Uncommon | Normal |
-| 26/111 | Aurorus | Pokémon (Water) | Rare | Normal |
-| 27/111 | Pikachu | Pokémon (Lightning) | Common | Normal |
-| 28/111 | Raichu | Pokémon (Lightning) | Uncommon | Normal |
-| 29/111 | Electabuzz | Pokémon (Lightning) | Common | Normal |
-| 30/111 | Electivire | Pokémon (Lightning) | Rare | Normal |
-| 31/111 | Plusle | Pokémon (Lightning) | Common | Normal |
-| 32/111 | Minun | Pokémon (Lightning) | Common | Normal |
-| 33/111 | Thundurus | Pokémon (Lightning) | Rare | Normal |
-| 34/111 | Dedenne | Pokémon (Lightning) | Uncommon | Normal |
-| 35/111 | Drowzee | Pokémon (Psychic) | Common | Normal |
-| 36/111 | Hypno | Pokémon (Psychic) | Rare | Normal |
-| 37/111 | Jynx | Pokémon (Psychic) | Rare | Normal |
-| 38/111 | Skorupi | Pokémon (Psychic) | Common | Normal |
-| 39/111 | Gothita | Pokémon (Psychic) | Common | Normal |
-| 40/111 | Gothorita | Pokémon (Psychic) | Uncommon | Normal |
-| 41/111 | Gothitelle | Pokémon (Psychic) | Rare | Normal |
-| 42/111 | Golett | Pokémon (Psychic) | Common | Normal |
-| 43/111 | Golurk | Pokémon (Psychic) | Rare | Normal |
-| 44/111 | Machop | Pokémon (Fighting) | Common | Normal |
-| 45/111 | Machoke | Pokémon (Fighting) | Uncommon | Normal |
-| 46/111 | Machamp | Pokémon (Fighting) | Rare | Normal |
-| 47/111 | Hitmonlee | Pokémon (Fighting) | Uncommon | Normal |
-| 48/111 | Hitmonchan | Pokémon (Fighting) | Uncommon | Normal |
-| 49/111 | Hitmontop | Pokémon (Fighting) | Uncommon | Normal |
-| 50/111 | Breloom | Pokémon (Fighting) | Rare | Normal |
-| 51/111 | Makuhita | Pokémon (Fighting) | Common | Normal |
-| 52/111 | Hariyama | Pokémon (Fighting) | Rare | Normal |
-| 53/111 | Trapinch | Pokémon (Fighting) | Common | Normal |
-| 54/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal |
-| 55/111 | M Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal |
-| 55a | M Lucario EX | Pokémon (Fighting) | Rare | Normal |
-| 56/111 | Mienfoo | Pokémon (Fighting) | Common | Normal |
-| 57/111 | Mienshao | Pokémon (Fighting) | Uncommon | Normal |
-| 58/111 | Landorus | Pokémon (Fighting) | Rare | Normal |
-| 59/111 | Pancham | Pokémon (Fighting) | Uncommon | Normal |
-| 60/111 | Pancham | Pokémon (Fighting) | Common | Normal |
-| 61/111 | Tyrunt | Pokémon (Fighting) | Uncommon | Normal |
-| 62/111 | Tyrantrum | Pokémon (Fighting) | Rare | Normal |
-| 63/111 | Hawlucha | Pokémon (Fighting) | Rare | Normal |
-| 64/111 | Hawlucha EX | Pokémon (Fighting) | Ultra Rare | Normal |
-| 65/111 | Drapion | Pokémon (Darkness) | Rare | Normal |
-| 66/111 | Scraggy | Pokémon (Darkness) | Common | Normal |
-| 67/111 | Scrafty | Pokémon (Darkness) | Uncommon | Normal |
-| 68/111 | Pangoro | Pokémon (Darkness) | Rare | Normal |
-| 69/111 | Clefairy | Pokémon (Fairy) | Common | Normal |
-| 70/111 | Clefairy | Pokémon (Fairy) | Common | Normal |
-| 71/111 | Clefable | Pokémon (Fairy) | Uncommon | Normal |
-| 72/111 | Sylveon | Pokémon (Fairy) | Rare | Normal |
-| 73/111 | Klefki | Pokémon (Fairy) | Uncommon | Normal |
-| 74/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Normal |
-| 75/111 | Vibrava | Pokémon (Dragon) | Uncommon | Normal |
-| 76/111 | Flygon | Pokémon (Dragon) | Rare | Normal |
-| 77/111 | Noivern | Pokémon (Dragon) | Rare | Normal |
-| 78/111 | Lickitung | Pokémon (Colorless) | Common | Normal |
-| 79/111 | Lickilicky | Pokémon (Colorless) | Uncommon | Normal |
-| 80/111 | Eevee | Pokémon (Colorless) | Common | Normal |
-| 81/111 | Slakoth | Pokémon (Colorless) | Common | Normal |
-| 82/111 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal |
-| 83/111 | Slaking | Pokémon (Colorless) | Rare | Normal |
-| 84/111 | Patrat | Pokémon (Colorless) | Common | Normal |
-| 85/111 | Watchog | Pokémon (Colorless) | Uncommon | Normal |
-| 86/111 | Tornadus | Pokémon (Colorless) | Rare | Normal |
-| 87/111 | Noibat | Pokémon (Colorless) | Common | Normal |
-| 88/111 | Battle Reporter | Trainer (Supporter) | Uncommon | Normal |
-| 89/111 | Energy Switch | Trainer (Item) | Uncommon | Normal |
-| 90/111 | Fighting Stadium | Trainer (Stadium) | Uncommon | Normal |
-| 91/111 | Focus Sash | Trainer (Tool) | Uncommon | Normal |
-| 92/111 | Fossil Researcher | Trainer (Supporter) | Uncommon | Normal |
-| 93/111 | Full Heal | Trainer (Item) | Uncommon | Normal |
-| 94/111 | Jaw Fossil | Trainer (Item) | Uncommon | Normal |
-| 95/111 | Korrina | Trainer (Supporter) | Uncommon | Normal |
-| 96/111 | Maintenance | Trainer (Item) | Uncommon | Normal |
-| 97/111 | Mountain Ring | Trainer (Stadium) | Uncommon | Normal |
-| 98/111 | Sail Fossil | Trainer (Item) | Uncommon | Normal |
-| 99/111 | Sparkling Robe | Trainer (Tool) | Uncommon | Normal |
-| 100/111 | Super Scoop Up | Trainer (Item) | Uncommon | Normal |
-| 101/111 | Tool Retriever | Trainer (Item) | Uncommon | Normal |
-| 102/111 | Training Center | Trainer (Stadium) | Uncommon | Normal |
-| 103/111 | Herbal Energy | Energy (Special) | Uncommon | Normal |
-| 104/111 | Strong Energy | Energy (Special) | Uncommon | Normal |
-| 105/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Normal |
-| 106/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Normal |
-| 107/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal |
-| 108/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Normal |
-| 109/111 | Battle Reporter | Trainer (Supporter) | Ultra Rare | Normal |
-| 110/111 | Fossil Researcher | Trainer (Supporter) | Ultra Rare | Normal |
-| 111/111 | Korrina | Trainer (Supporter) | Ultra Rare | Normal |
-| 112/111 | M Heracross EX | Pokémon (Grass) | Secret Rare | Normal |
-| 113/111 | M Lucario EX | Pokémon (Fighting) | Secret Rare | Normal |
-
+| 1/111 | Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/111 | Weepinbell | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/111 | Victreebel | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 4/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 5/111 | M Heracross EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 6/111 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 7/111 | Leafeon | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 8/111 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 9/111 | Accelgor | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 10/111 | Magmar | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 11/111 | Magmortar | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 12/111 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 13/111 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 14/111 | Blaziken | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 15/111 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo |
+| 16/111 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 17/111 | Poliwrath | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 18/111 | Politoed | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 19/111 | Glaceon | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 20/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 21/111 | Cubchoo | Pokémon (Water) | Common | Normal, Reverse holo |
+| 22/111 | Beartic | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 23/111 | Clauncher | Pokémon (Water) | Common | Normal, Reverse holo |
+| 24/111 | Clawitzer | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 25/111 | Amaura | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 26/111 | Aurorus | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 27/111 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 28/111 | Raichu | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 29/111 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 30/111 | Electivire | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 31/111 | Plusle | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 32/111 | Minun | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 33/111 | Thundurus | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 34/111 | Dedenne | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 35/111 | Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 36/111 | Hypno | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 37/111 | Jynx | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 38/111 | Skorupi | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 39/111 | Gothita | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 40/111 | Gothorita | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 41/111 | Gothitelle | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 42/111 | Golett | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 43/111 | Golurk | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 44/111 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 45/111 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 46/111 | Machamp | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 47/111 | Hitmonlee | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 48/111 | Hitmonchan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 49/111 | Hitmontop | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 50/111 | Breloom | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 51/111 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 52/111 | Hariyama | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 53/111 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 54/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 55/111 | M Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 55a | M Lucario EX | Pokémon (Fighting) | Rare | Normal, Holo |
+| 56/111 | Mienfoo | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 57/111 | Mienshao | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 58/111 | Landorus | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 59/111 | Pancham | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 60/111 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 61/111 | Tyrunt | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 62/111 | Tyrantrum | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 63/111 | Hawlucha | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 64/111 | Hawlucha EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 65/111 | Drapion | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 66/111 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 67/111 | Scrafty | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 68/111 | Pangoro | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 69/111 | Clefairy | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 70/111 | Clefairy | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 71/111 | Clefable | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
+| 72/111 | Sylveon | Pokémon (Fairy) | Rare | Normal, Reverse holo |
+| 73/111 | Klefki | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
+| 74/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 75/111 | Vibrava | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 76/111 | Flygon | Pokémon (Dragon) | Rare | Normal, Reverse holo |
+| 77/111 | Noivern | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 78/111 | Lickitung | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 79/111 | Lickilicky | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 80/111 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 81/111 | Slakoth | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 82/111 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 83/111 | Slaking | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 84/111 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 85/111 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 86/111 | Tornadus | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 87/111 | Noibat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 88/111 | Battle Reporter | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 89/111 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 90/111 | Fighting Stadium | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 91/111 | Focus Sash | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 92/111 | Fossil Researcher | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 93/111 | Full Heal | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 94/111 | Jaw Fossil | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 95/111 | Korrina | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 96/111 | Maintenance | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 97/111 | Mountain Ring | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 98/111 | Sail Fossil | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 99/111 | Sparkling Robe | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 100/111 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 101/111 | Tool Retriever | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 102/111 | Training Center | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 103/111 | Herbal Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 104/111 | Strong Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 105/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 106/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 107/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 108/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 109/111 | Battle Reporter | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 110/111 | Fossil Researcher | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 111/111 | Korrina | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 112/111 | M Heracross EX | Pokémon (Grass) | Secret Rare | Normal, Holo |
+| 113/111 | M Lucario EX | Pokémon (Fighting) | Secret Rare | Normal, Holo |
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
