@@ -315,6 +315,40 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 | 186/132 | Wally's Compassion | Trainer (Supporter) | Special illustration rare | Holo |
 | 187/132 | Mega Gardevoir ex | Pokémon (Psychic) | Mega Hyper Rare | Holo |
 | 188/132 | Mega Lucario ex | Pokémon (Fighting) | Mega Hyper Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack template in
+[eras/mega-evolution.md](eras/mega-evolution.md#the-pack-template). The
+slot contents are a community guide, not confirmed for this set.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo 1 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Reverse holo 2 | 1 | Illustration Rare | Illustration Rare | Illustration rare | Holo | All | 11.11% |
+| Reverse holo 2 | 1 | Special Illustration Rare | Special Illustration Rare | Special illustration rare | Holo | All | 0.99% |
+| Reverse holo 2 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | 20% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | 8.33% |
+| Rare slot | 1 | Mega Hyper Rare | Mega Hyper Rare | Mega Hyper Rare | Holo (Gold) or Holo | All | 0.08% |
+| Rare slot | 1 | Rare | Rare | Rare | Holo | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

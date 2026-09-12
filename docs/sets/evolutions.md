@@ -212,6 +212,50 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy12`), f
 | 111/108 | Surfing Pikachu | Pokémon (Lightning) | Secret Rare | Normal |
 | 112/108 | Imakuni?'s Doduo | Pokémon (Colorless) | Secret Rare | Normal |
 | 113/108 | Here Comes Team Rocket! | Trainer (Supporter) | Secret Rare | Normal |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Rare Holo EX and Ultra Rare split one TCGdex rarity.** TCGdex records
+both the regular Pokémon-EX cards and the full-art secret cards under
+the single rarity "Ultra Rare". The Cards column splits them: the
+full-art cards sit in a number block at the end of the Ultra Rare
+range; every other Ultra Rare number is a regular Rare Holo EX.
+
+**Rare BREAK sits in the reverse holo slot, not the rare slot** (see
+[eras/xy.md](eras/xy.md#sets-that-break-the-template)). TCGdex also
+records BREAK cards under the "Ultra Rare" rarity; the Cards column
+picks them out by number.
+
+Confidence: this map follows the pack template in
+[eras/xy.md](eras/xy.md#the-pack-template). No source shows a real
+opened pack for this set; the slot contents are the era-wide community
+guide.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Rare BREAK | Rare BREAK | Ultra Rare | Holo | Nos. 16, 32, 46, 60 | 5.56% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Secret Rare | Secret Rare | Secret Rare | Holo or Normal | All | 12.35% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo or Normal | Nos. 100–108 | 6.67% |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Ultra Rare | Holo or Reverse holo | Not nos. 100–108; Not nos. 16, 32, 46, 60 | 12.2% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | 14.49% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

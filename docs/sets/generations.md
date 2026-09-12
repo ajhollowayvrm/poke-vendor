@@ -220,6 +220,48 @@ Every card in the set, with its variants. Source: the TCGdex API (set `g1`), fet
 | RC30 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
 | RC31 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
 | RC32 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Generations breaks the era template: 8 main-set cards plus 2 Radiant
+Collection cards, no code card confirmed, and no booster box. The
+Radiant Collection cards sit inside the main card list table, numbered
+RC1–RC32, so `Nos. RC1–RC32` picks them out. TCGdex records the main
+set's Pokémon-EX cards under "Ultra Rare"; this file treats them all as
+Rare Holo EX, since Bulbapedia lists no separate full-art main-set
+tier. The Radiant Collection's own Ultra Rare and Rare Holo EX cards
+split the same way: RC28–RC32 are the 5 RC Ultra Rare cards; RC6 and
+RC21 are the 2 RC Rare Holo EX cards.
+
+Confidence: this map follows the pack structure above. No source
+shows a real opened Generations pack, and the Energy-slot estimate
+inside the 4 commons is not modeled separately (see Open topics).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | Not nos. RC1–RC32 | 100% |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | Not nos. RC1–RC32 | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | Not nos. RC1–RC32 | 100% |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Ultra Rare | Holo | Not nos. RC1–RC32 | 20.41% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. RC1–RC32 | 10.53% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. RC1–RC32 | Rest |
+| Radiant Collection common | 1 | Radiant Collection — Common | Radiant Collection — Common | Common | Normal | Nos. RC1–RC32 | 100% |
+| Radiant Collection slot | 1 | Radiant Collection — Ultra Rare | Radiant Collection — Ultra Rare | Ultra Rare | Holo | Nos. RC28–RC32 | 20% |
+| Radiant Collection slot | 1 | Radiant Collection — Rare Holo EX | Radiant Collection — Rare Holo EX | Ultra Rare | Holo | Nos. RC6, RC21 | 8% |
+| Radiant Collection slot | 1 | Radiant Collection — Uncommon | Radiant Collection — Uncommon | Uncommon | Normal or Holo | Nos. RC1–RC32 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -276,3 +318,11 @@ rarities is its own entry.
   boxes) may exist. Bulbapedia names only the products above.
 - **Rarity list order:** by this file's odds, Rare Holo EX (1 in 4.9) comes more often than Rare Holo (1 in 9.5). The rarity list therefore puts Rare Holo EX above Rare Holo.
 - **Rarity list order:** by this file's odds, Radiant Collection — Ultra Rare (1 in 5) comes more often than Radiant Collection — Rare Holo EX (1 in 12.5). The rarity list therefore puts Radiant Collection — Ultra Rare above Radiant Collection — Rare Holo EX.
+- **Slot map:** the main set's "Ultra Rare" entry (1 in 45) has no
+  card block distinct from Rare Holo EX in the card list. This file
+  treats every main-set Ultra Rare TCGdex card as Rare Holo EX and
+  does not add a separate main-set Ultra Rare row.
+- **Slot map:** the Energy card estimate (1 in 1.1 packs) sits inside
+  the 4-card common slot. It is not modeled as its own slot.
+- **Slot map:** no code card row, since the code card is Unknown for
+  this set's packs.

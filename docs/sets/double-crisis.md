@@ -120,6 +120,36 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dc1`), fe
 | 32/34 | Team Magma's Secret Base | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 33/34 | Double Aqua Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 34/34 | Double Magma Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Double Crisis breaks the era template: a 7-card pack, no non-holo
+Rare, and no code card confirmed for the pack itself (only for the
+blister). This map omits a code card row; see Open topics.
+
+Confidence: this map follows the pack structure above. No source shows
+a real opened Double Crisis pack.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 3 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Ultra Rare | Holo | All | 11.11% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -156,3 +186,5 @@ non-holo Rare and no secret rares.
 - The number of blister versions (for example, Team Aqua and Team
   Magma versions) is Unknown.
 - The ThePriceDex method and sample size are Unknown.
+- **Slot map:** no code card row, since a per-pack code card is
+  Unknown for this set.
