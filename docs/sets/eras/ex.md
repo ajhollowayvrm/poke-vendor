@@ -273,11 +273,10 @@ otherwise.
   114/113).
 - **EX Legend Maker:** 3 Rare Holo ☆ (Regice ☆, Regirock ☆, Registeel ☆)
   and 1 Secret Rare (Pikachu δ, 93/92).
-- **EX Holon Phantoms:** 4 Rare Holo ☆, three of them pack-pullable
-  (Gyarados ☆ δ, Mewtwo ☆, Pikachu ☆) and one, Mew ☆ (111/110), that
-  Bulbapedia lists as distributed with the "Lucario and the Mystery of
-  Mew" DVD rather than in packs. The set file should mark Mew ☆'s pack
-  odds as not applicable, not Unknown.
+- **EX Holon Phantoms:** 3 Rare Holo ☆ (Gyarados ☆ δ, Mewtwo ☆, Pikachu
+  ☆) and 1 Secret Rare, Mew (111/110), both from packs. Bulbapedia also
+  lists a non-holo Mew (111/110) that came only with the "Lucario and
+  the Mystery of Mew" DVD. That card is not in packs.
 - **EX Crystal Guardians:** its two Rare Holo ☆ (Alakazam ☆, Celebi ☆)
   sit inside the printed 100-card count, at 99/100 and 100/100, so they
   are not Secret Rares by the numbering convention this file uses
