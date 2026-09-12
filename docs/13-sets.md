@@ -32,6 +32,10 @@ drifts like a market price. A set file should cover:
   hit sits. The default is that the hit is one of the last three cards.
   The set file records every exception, because the rip screen follows
   it (see [18-ripping.md](18-ripping.md#where-the-hit-sits)).
+- Rarity list: every rarity and every variant in the set, for example
+  the Poké Ball pattern, in order from low to high. The stop rule menu
+  on the rip screen shows this list (see
+  [18-ripping.md](18-ripping.md#the-stop-rule)).
 - Anything else set-specific that comes up: print-run notes, known
   errors, special mechanics unique to that set.
 
