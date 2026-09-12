@@ -70,6 +70,163 @@ Source for counts: Bulbapedia set list.
 Pack artworks: 4 (Luxray, Lucario, Rhyperior, Giratina). Source:
 Bulbapedia booster pack page.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `dp6`), fetched 2026-09-12. The list has 146 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/146 | Deoxys Normal Forme | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
+| 2/146 | Dragonite | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo, Holo (National championships), Holo (National championships, Staff) |
+| 3/146 | Froslass | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
+| 4/146 | Giratina | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo, Holo (Platinum) |
+| 5/146 | Gliscor | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo, Normal |
+| 6/146 | Heatran | Pokémon (Fire) | Rare Holo | Holo, Reverse holo |
+| 7/146 | Kingdra | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
+| 8/146 | Luxray | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
+| 9/146 | Mamoswine | Pokémon (Water) | Rare Holo | Holo, Reverse holo, Normal |
+| 10/146 | Metagross | Pokémon (Metal) | Rare Holo | Holo, Reverse holo, Normal |
+| 11/146 | Mewtwo | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
+| 12/146 | Politoed | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
+| 13/146 | Probopass | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo |
+| 14/146 | Rayquaza | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
+| 15/146 | Regigigas | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
+| 16/146 | Spiritomb | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
+| 17/146 | Yanmega | Pokémon (Grass) | Rare Holo | Holo, Reverse holo, Normal |
+| 18/146 | Armaldo | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 19/146 | Azelf | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo (League), Normal (Tsubasa nakamura), Normal (Stephen silvestro), Normal (David cohen), Normal (Michael pramawat), Normal (Mychael bryan), Normal (Yuta komatsuda) |
+| 20/146 | Bellossom | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 21/146 | Cradily | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 22/146 | Crawdaunt | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 23/146 | Delcatty | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 24/146 | Deoxys Attack Forme | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 25/146 | Deoxys Defense Forme | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 26/146 | Deoxys Speed Forme | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 27/146 | Ditto | Pokémon (Colorless) | Rare | Normal, Reverse holo, Normal (Tsubasa nakamura) |
+| 28/146 | Forretress | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 29/146 | Groudon | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 30/146 | Heatran | Pokémon (Metal) | Rare | Normal, Reverse holo, Holo (Cosmos), Normal (Regional championships), Normal (Regional championships, Staff) |
+| 31/146 | Jirachi | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 32/146 | Kyogre | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 33/146 | Lopunny | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 34/146 | Mesprit | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 35/146 | Poliwrath | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 36/146 | Regice | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 37/146 | Regigigas | Pokémon (Colorless) | Rare | Normal, Reverse holo, Holo (Cosmos) |
+| 38/146 | Regirock | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 39/146 | Registeel | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 40/146 | Shedinja | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 41/146 | Torkoal | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 42/146 | Unown ! | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 43/146 | Uxie | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo (League), Normal (Tsubasa nakamura), Normal (Jason martinez), Normal (David cohen), Normal (Michael pramawat), Normal (Mychael bryan), Normal (Yuka furusawa), Normal (Yuta komatsuda) |
+| 44/146 | Victreebel | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 45/146 | Vileplume | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 46/146 | Anorith | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 47/146 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 48/146 | Castform | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 49/146 | Castform Rain Form | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 50/146 | Castform Snow-cloud Form | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 51/146 | Castform Sunny Form | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 52/146 | Dragonair | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Normal (State championships), Normal (State championships, Staff) |
+| 53/146 | Drifblim | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 54/146 | Exeggutor | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 55/146 | Gliscor | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 56/146 | Grumpig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 57/146 | Houndoom | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 58/146 | Lanturn | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 59/146 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 60/146 | Ledian | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 61/146 | Lucario | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 62/146 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 63/146 | Marowak | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 64/146 | Metang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 65/146 | Metang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 66/146 | Mightyena | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 67/146 | Ninjask | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 68/146 | Persian | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 69/146 | Piloswine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 70/146 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 71/146 | Starmie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 72/146 | Swalot | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 73/146 | Swellow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 74/146 | Tauros | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 75/146 | Tentacruel | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 76/146 | Unown J | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 77/146 | Unown R | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Normal (Yuka furusawa) |
+| 78/146 | Unown U | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 79/146 | Unown V | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 80/146 | Unown W | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 81/146 | Unown Y | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 82/146 | Unown ? | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 83/146 | Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 84/146 | Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 85/146 | Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 86/146 | Buneary | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 87/146 | Chinchou | Pokémon (Water) | Common | Normal, Reverse holo |
+| 88/146 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 89/146 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 90/146 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 91/146 | Dratini | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (City championships), Normal (City championships, Staff) |
+| 92/146 | Drifloon | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 93/146 | Exeggcute | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 94/146 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 95/146 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 96/146 | Gloom | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 97/146 | Gloom | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 98/146 | Gulpin | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 99/146 | Hitmonchan | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 100/146 | Hitmonlee | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 101/146 | Hitmontop | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 102/146 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
+| 103/146 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 104/146 | Ledyba | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 105/146 | Lileep | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 106/146 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Platinum) |
+| 107/146 | Misdreavus | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 108/146 | Nincada | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 109/146 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 110/146 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 111/146 | Oddish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 112/146 | Oddish | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 113/146 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 114/146 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo |
+| 115/146 | Poliwhirl | Pokémon (Water) | Common | Normal, Reverse holo |
+| 116/146 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 117/146 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 118/146 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 119/146 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 120/146 | Sneasel | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 121/146 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 122/146 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
+| 123/146 | Swinub | Pokémon (Water) | Common | Normal, Reverse holo |
+| 124/146 | Taillow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 125/146 | Tentacool | Pokémon (Water) | Common | Normal, Reverse holo |
+| 126/146 | Tyrogue | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 127/146 | Weepinbell | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 128/146 | Yanma | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 129/146 | Bubble Coat | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 130/146 | Buck's Training | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Prerelease), Normal (Prerelease, Staff) |
+| 131/146 | Cynthia's Feelings | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Holo (Cosmos), Normal (Stephen silvestro), Normal (Mychael bryan) |
+| 132/146 | Energy Pickup | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 133/146 | Poké Radar | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 134/146 | Snowpoint Temple | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 135/146 | Stark Mountain | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 136/146 | Technical Machine TS-1 | Trainer (Technical Machine) | Uncommon | Normal, Reverse holo |
+| 137/146 | Technical Machine TS-2 | Trainer (Technical Machine) | Uncommon | Normal, Reverse holo |
+| 138/146 | Claw Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 139/146 | Root Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 140/146 | Azelf | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (Michael pramawat) |
+| 141/146 | Gliscor | Pokémon (Fighting) | Rare Holo LV.X | Holo |
+| 142/146 | Magnezone | Pokémon (Metal) | Rare Holo LV.X | Holo |
+| 143/146 | Mesprit | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| 144/146 | Mewtwo | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (David cohen) |
+| 145/146 | Rhyperior | Pokémon (Fighting) | Rare Holo LV.X | Holo |
+| 146/146 | Uxie | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

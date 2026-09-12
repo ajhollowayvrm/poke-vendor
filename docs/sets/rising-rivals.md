@@ -85,6 +85,137 @@ Box report (anecdote, June 2012): "2 Lv.X, 2 Rotom, and a Pikachu".
 Pack artworks: 4 (Scizor, Houndoom, Leafeon, Rotom). Source: Bulbapedia
 booster pack page.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `pl2`), fetched 2026-09-12. The list has 120 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/111 | Arcanine | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 2/111 | Bastiodon GL | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 3/111 | Darkrai G | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 4/111 | Floatzel GL | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 5/111 | Flygon | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal, Normal (David cohen) |
+| 6/111 | Froslass GL | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 7/111 | Jirachi | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 8/111 | Lucario GL | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo, Normal, Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
+| 9/111 | Luxray GL | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo, Holo (Tsubasa nakamura), Holo (Stephen silvestro), Holo (Yuta komatsuda), Holo (Mychael bryan) |
+| 10/111 | Mismagius GL | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 11/111 | Rampardos GL | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 12/111 | Roserade GL | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 13/111 | Shiftry | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 14/111 | Aggron | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 15/111 | Beedrill | Pokémon (Grass) | Rare | Normal, Reverse holo, Holo (Stephen silvestro) |
+| 16/111 | Bronzong E4 | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 17/111 | Drapion E4 | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 18/111 | Espeon E4 | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 19/111 | Flareon | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 20/111 | Gallade E4 | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo (Cosmos) |
+| 21/111 | Gastrodon East Sea | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 22/111 | Gastrodon West Sea | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 23/111 | Golem E4 | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 24/111 | Heracross E4 | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 25/111 | Hippowdon | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 26/111 | Jolteon | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 27/111 | Mamoswine GL | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 28/111 | Mr. Mime E4 | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 29/111 | Nidoking | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 30/111 | Nidoqueen | Pokémon (Psychic) | Rare | Normal, Reverse holo, Normal (Jason martinez), Normal (David cohen) |
+| 31/111 | Raichu GL | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 32/111 | Rhyperior E4 | Pokémon (Fighting) | Rare | Normal, Reverse holo, Holo |
+| 33/111 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo, Reverse holo (League) |
+| 34/111 | Vaporeon | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 35/111 | Vespiquen E4 | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 36/111 | Walrein | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 37/111 | Yanmega E4 | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 38/111 | Alakazam E4 | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 39/111 | Electrode G | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 40/111 | Gengar GL | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 41/111 | Glaceon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 42/111 | Hippowdon E4 | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 43/111 | Infernape E4 | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 44/111 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 45/111 | Leafeon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 46/111 | Machamp GL | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 47/111 | Rapidash E4 | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 48/111 | Scizor E4 | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 49/111 | Sharpedo | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 50/111 | Starmie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 51/111 | Steelix GL | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 52/111 | Tropius | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Normal (Prerelease), Normal (Prerelease, Staff) |
+| 53/111 | Vibrava | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Normal (David cohen) |
+| 54/111 | Whiscash E4 | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 55/111 | Aerodactyl GL | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 56/111 | Ambipom G | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 57/111 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 58/111 | Carvanha | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 59/111 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 60/111 | Flareon E4 | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Cracked ice) |
+| 61/111 | Forretress G | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 62/111 | Gliscor E4 | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Cracked ice) |
+| 63/111 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 64/111 | Hippopotas | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 65/111 | Houndoom E4 | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 66/111 | Kakuna | Pokémon (Grass) | Common | Normal, Reverse holo, Normal (Stephen silvestro) |
+| 67/111 | Kecleon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 68/111 | Koffing | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 69/111 | Munchlax | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Chicago 2009) |
+| 70/111 | Munchlax | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 71/111 | Nidoran ♀ | Pokémon (Psychic) | Common | Normal, Reverse holo, Normal (David cohen), Normal (Jason martinez) |
+| 72/111 | Nidoran ♂ | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 73/111 | Nidorina | Pokémon (Psychic) | Common | Normal, Reverse holo, Normal (Jason martinez) |
+| 74/111 | Nidorino | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 75/111 | Nuzleaf | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 76/111 | Quagsire GL | Pokémon (Water) | Common | Normal, Reverse holo |
+| 77/111 | Sealeo | Pokémon (Water) | Common | Normal, Reverse holo |
+| 78/111 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 79/111 | Shellos East Sea | Pokémon (Water) | Common | Normal, Reverse holo |
+| 80/111 | Shellos West Sea | Pokémon (Water) | Common | Normal, Reverse holo |
+| 81/111 | Snorlax | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 82/111 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
+| 83/111 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
+| 84/111 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 85/111 | Turtwig GL | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 86/111 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 87/111 | Weezing | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 88/111 | Aaron's Collection | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Tsubasa nakamura), Normal (Yuta komatsuda) |
+| 89/111 | Bebe's Search | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 90/111 | Bertha's Warmth | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 91/111 | Flint's Willpower | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 92/111 | Lucian's Assignment | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat) |
+| 93/111 | Pokémon Contest Hall | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 94/111 | Sunyshore City Gym | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 95/111 | Team Galactic's Invention G-107 Technical Machine G | Trainer (Technical Machine) | Uncommon | Normal, Reverse holo |
+| 96/111 | Team Galactic's Invention G-109 SP Radar | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Tsubasa nakamura), Normal (Stephen silvestro), Normal (Yuta komatsuda) |
+| 97/111 | Underground Expedition | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League) |
+| 98/111 | Volkner's Philosophy | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League) |
+| 99/111 | Darkness Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 100/111 | Metal Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 101/111 | SP Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Normal (Tsubasa nakamura) |
+| 102/111 | Upper Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (David cohen) |
+| 103/111 | Alakazam E4 LV.X | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| 104/111 | Floatzel GL LV.X | Pokémon (Water) | Rare Holo LV.X | Holo |
+| 105/111 | Flygon LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo, Holo (David cohen) |
+| 106/111 | Gallade E4 LV.X | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| 107/111 | Hippowdon LV.X | Pokémon (Fighting) | Rare Holo LV.X | Holo |
+| 108/111 | Infernape E4 LV.X | Pokémon (Fire) | Rare Holo LV.X | Holo |
+| 109/111 | Luxray GL LV.X | Pokémon (Lightning) | Rare Holo LV.X | Holo, Normal, Normal (Tsubasa nakamura), Normal (David cohen), Normal (Stephen silvestro), Normal (Mychael bryan), Normal (Yuta komatsuda) |
+| 110/111 | Mismagius GL LV.X | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| 111/111 | Snorlax LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo |
+| 112/111 | Pikachu | Pokémon (Lightning) | Rare | Holo |
+| 113/111 | Flying Pikachu | Pokémon (Lightning) | Rare | Holo |
+| 114/111 | Surfing Pikachu | Pokémon (Lightning) | Rare | Holo |
+| RT1 | Fan Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
+| RT2 | Frost Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
+| RT3 | Heat Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
+| RT4 | Mow Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
+| RT5 | Wash Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
+| RT6 | Charon's Choice | Trainer (Supporter) | Rare | Reverse holo (Cracked ice) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

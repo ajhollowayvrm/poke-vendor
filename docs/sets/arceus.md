@@ -90,6 +90,128 @@ Source for counts: Bulbapedia set list and Arceus card list.
 Pack artworks: 4 (Zapdos, Salamence, Arceus Meadow Plate, Arceus Splash
 Plate). Source: Bulbapedia booster pack page.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `pl4`), fetched 2026-09-12. The list has 111 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/99 | Charizard | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Reverse holo (Cracked ice) |
+| 2/99 | Froslass | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 3/99 | Heatran | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 4/99 | Kabutops | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 5/99 | Luxray | Pokémon (Lightning) | Holo Rare | Holo, Normal, Reverse holo |
+| 6/99 | Mothim | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 7/99 | Probopass | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 8/99 | Salamence | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 9/99 | Swalot | Pokémon (Psychic) | Holo Rare | Holo, Normal, Reverse holo |
+| 10/99 | Tangrowth | Pokémon (Grass) | Holo Rare | Holo, Normal, Reverse holo |
+| 11/99 | Toxicroak | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 12/99 | Zapdos G | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 13/99 | Aerodactyl | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 14/99 | Bronzong | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 15/99 | Cherrim | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 16/99 | Gengar | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 17/99 | Gengar | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 18/99 | Glalie | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 19/99 | Golem | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 20/99 | Hariyama | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 21/99 | Lopunny | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 22/99 | Manectric | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 23/99 | Omastar | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 24/99 | Pelipper | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 25/99 | Pichu | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 26/99 | Porygon-Z G | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 27/99 | Raichu | Pokémon (Lightning) | Rare | Normal, Reverse holo, Normal (Prerelease), Normal (Prerelease, Staff) |
+| 28/99 | Rapidash | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 29/99 | Raticate | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 30/99 | Sceptile | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 31/99 | Sceptile | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 32/99 | Spiritomb | Pokémon (Darkness) | Rare | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat) |
+| 33/99 | Bronzong | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 34/99 | Bronzor | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 35/99 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 36/99 | Gastly | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 37/99 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 38/99 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 39/99 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 40/99 | Gulpin | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 41/99 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 42/99 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 43/99 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 44/99 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 45/99 | Pelipper | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 46/99 | Ponyta | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 47/99 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 48/99 | Shelgon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 49/99 | Wormadam Plant Cloak | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 50/99 | Wormadam Sandy Cloak | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 51/99 | Wormadam Trash Cloak | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 52/99 | Bagon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 53/99 | Beedrill G | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 54/99 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 55/99 | Buneary | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 56/99 | Burmy Plant Cloak | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 57/99 | Burmy Sandy Cloak | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 58/99 | Burmy Trash Cloak | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 59/99 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 60/99 | Cherubi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 61/99 | Croagunk | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 62/99 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 63/99 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 64/99 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 65/99 | Geodude | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 66/99 | Gulpin | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 67/99 | Kabuto | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 68/99 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 69/99 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 70/99 | Omanyte | Pokémon (Water) | Common | Normal, Reverse holo |
+| 71/99 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 72/99 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 73/99 | Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 74/99 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 75/99 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo |
+| 76/99 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 77/99 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 78/99 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 79/99 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 80/99 | Wingull | Pokémon (Water) | Common | Normal, Reverse holo |
+| 81/99 | Wingull | Pokémon (Water) | Common | Normal, Reverse holo |
+| 82/99 | Beginning Door | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 83/99 | Bench Shield | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 84/99 | Buffer Piece | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 85/99 | Department Store Girl | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 86/99 | Energy Restore | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 87/99 | Expert Belt | Trainer (Tool) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat), Normal (Mychael bryan), Normal (Yuka furusawa) |
+| 88/99 | Lucky Egg | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 89/99 | Old Amber | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 90/99 | Professor Oak's Visit | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 91/99 | Ultimate Zone | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 92/99 | Dome Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 93/99 | Helix Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 94/99 | Arceus LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo |
+| 95/99 | Arceus LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo |
+| 96/99 | Arceus LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo |
+| 97/99 | Gengar LV.X | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| 98/99 | Salamence LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo |
+| 99/99 | Tangrowth LV.X | Pokémon (Grass) | Rare Holo LV.X | Holo |
+| AR1 | Arceus | Pokémon (Darkness) | Rare | Holo |
+| AR2 | Arceus | Pokémon (Grass) | Rare | Holo |
+| AR3 | Arceus | Pokémon (Fire) | Rare | Holo |
+| AR4 | Arceus | Pokémon (Water) | Rare | Holo |
+| AR5 | Arceus | Pokémon (Colorless) | Rare | Holo |
+| AR6 | Arceus | Pokémon (Lightning) | Rare | Holo |
+| AR7 | Arceus | Pokémon (Psychic) | Rare | Holo |
+| AR8 | Arceus | Pokémon (Fighting) | Rare | Holo |
+| AR9 | Arceus | Pokémon (Metal) | Rare | Holo |
+| SH10 | Bagon | Pokémon (Colorless) | Rare | Reverse holo |
+| SH11 | Ponyta | Pokémon (Fire) | Rare | Reverse holo |
+| SH12 | Shinx | Pokémon (Lightning) | Rare | Reverse holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

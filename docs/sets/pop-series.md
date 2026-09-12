@@ -124,6 +124,230 @@ are not researched.
 Bulbapedia (POP Series 1): boosters also appeared "in special card kits and
 at Pokémon-related events".
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `pop1`, `pop2`, `pop3`, `pop4`, `pop5`, `pop6`, `pop7`, `pop8`, `pop9`), fetched 2026-09-12. The list has 153 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+### POP Series 1
+
+TCGdex set `pop1`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Blaziken | Pokémon (Fire) | Rare | Normal, Holo |
+| 2/17 | Metagross | Pokémon (Metal) | Rare | Normal, Holo |
+| 3/17 | Rayquaza | Pokémon (Colorless) | Rare | Normal, Holo |
+| 4/17 | Sceptile | Pokémon (Grass) | Rare | Normal, Holo |
+| 5/17 | Swampert | Pokémon (Water) | Rare | Normal, Holo |
+| 6/17 | Beautifly | Pokémon (Grass) | Uncommon | Normal |
+| 7/17 | Masquerain | Pokémon (Grass) | Uncommon | Normal |
+| 8/17 | Murkrow | Pokémon (Darkness) | Uncommon | Normal |
+| 9/17 | Pupitar | Pokémon (Fighting) | Uncommon | Normal |
+| 10/17 | Torkoal | Pokémon (Fighting) | Uncommon | Normal |
+| 11/17 | Larvitar | Pokémon (Fighting) | Common | Normal |
+| 12/17 | Minun | Pokémon (Lightning) | Common | Normal |
+| 13/17 | Plusle | Pokémon (Lightning) | Common | Normal |
+| 14/17 | Surskit | Pokémon (Water) | Common | Normal |
+| 15/17 | Swellow | Pokémon (Colorless) | Common | Normal |
+| 16/17 | Armaldo ex | Pokémon (Fighting) | Rare | Normal, Holo |
+| 17/17 | Tyranitar ex | Pokémon (Darkness) | Rare | Normal, Holo |
+
+### POP Series 2
+
+TCGdex set `pop2`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Entei | Pokémon (Fire) | Rare | Normal, Holo |
+| 2/17 | Pidgeot | Pokémon (Colorless) | Rare | Normal, Holo |
+| 3/17 | Raikou | Pokémon (Lightning) | Rare | Normal, Holo |
+| 4/17 | Suicune | Pokémon (Water) | Rare | Normal, Holo |
+| 5/17 | Tauros | Pokémon (Colorless) | Rare | Normal, Holo |
+| 6/17 | Venusaur | Pokémon (Grass) | Rare | Normal, Holo |
+| 7/17 | Ivysaur | Pokémon (Grass) | Uncommon | Normal |
+| 8/17 | Mr. Briney's Compassion | Trainer (Supporter) | Uncommon | Normal |
+| 9/17 | Multi Technical Machine 01 | Trainer (Technical Machine) | Uncommon | Normal |
+| 10/17 | Pokémon Park | Trainer (Stadium) | Uncommon | Normal |
+| 11/17 | TV Reporter | Trainer (Supporter) | Uncommon | Normal |
+| 12/17 | Bulbasaur | Pokémon (Grass) | Common | Normal |
+| 13/17 | Cacnea | Pokémon (Grass) | Common | Normal |
+| 14/17 | Luvdisc | Pokémon (Water) | Common | Normal |
+| 15/17 | Phanpy | Pokémon (Fighting) | Common | Normal |
+| 16/17 | Pikachu | Pokémon (Lightning) | Common | Normal |
+| 17/17 | Celebi ex | Pokémon (Psychic) | Rare | Normal, Holo |
+
+### POP Series 3
+
+TCGdex set `pop3`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Blastoise | Pokémon (Water) | Rare | Normal, Holo |
+| 2/17 | Flareon | Pokémon (Fire) | Rare | Normal, Holo |
+| 3/17 | Jolteon | Pokémon (Lightning) | Rare | Normal, Holo |
+| 4/17 | Minun | Pokémon (Lightning) | Rare | Normal, Holo |
+| 5/17 | Plusle | Pokémon (Lightning) | Rare | Normal, Holo |
+| 6/17 | Vaporeon | Pokémon (Water) | Rare | Normal, Holo |
+| 7/17 | Combusken | Pokémon (Fire) | Uncommon | Normal |
+| 8/17 | Donphan | Pokémon (Fighting) | Uncommon | Normal |
+| 9/17 | Forretress | Pokémon (Grass) | Uncommon | Normal |
+| 10/17 | High Pressure System | Trainer (Stadium) | Uncommon | Normal |
+| 11/17 | Low Pressure System | Trainer (Stadium) | Uncommon | Normal |
+| 12/17 | Ditto | Pokémon (Psychic) | Common | Normal |
+| 13/17 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 14/17 | Ivysaur | Pokémon (Grass) | Common | Normal |
+| 15/17 | Marshtomp | Pokémon (Fighting) | Common | Normal |
+| 16/17 | Pichu Bros. | Pokémon (Lightning) | Common | Normal |
+| 17/17 | Ho-Oh ex | Pokémon (Fire) | Rare | Normal, Holo |
+
+### POP Series 4
+
+TCGdex set `pop4`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Chimecho δ | Pokémon (Metal) | Rare | Normal |
+| 2/17 | Deoxys δ | Pokémon (Colorless) | Rare | Normal, Holo |
+| 3/17 | Flygon | Pokémon (Fighting) | Rare | Normal, Holo |
+| 4/17 | Mew | Pokémon (Psychic) | Rare | Normal, Holo |
+| 5/17 | Sceptile | Pokémon (Grass) | Rare | Normal |
+| 6/17 | Combusken | Pokémon (Fire) | Uncommon | Normal, Holo |
+| 7/17 | Grovyle | Pokémon (Grass) | Uncommon | Normal |
+| 8/17 | Heal Energy | Energy (Special) | Uncommon | Normal |
+| 9/17 | Pokémon Fan Club | Trainer (Supporter) | Uncommon | Normal |
+| 10/17 | Scramble Energy | Energy (Special) | Uncommon | Normal |
+| 11/17 | Mudkip | Pokémon (Water) | Common | Normal, Holo |
+| 12/17 | Pidgey | Pokémon (Colorless) | Common | Normal |
+| 13/17 | Pikachu | Pokémon (Lightning) | Common | Normal, Holo |
+| 14/17 | Squirtle | Pokémon (Water) | Common | Normal |
+| 15/17 | Treecko δ | Pokémon (Psychic) | Common | Normal |
+| 16/17 | Wobbuffet | Pokémon (Psychic) | Common | Normal, Holo |
+| 17/17 | Deoxys ex | Pokémon (Psychic) | Rare | Normal |
+
+### POP Series 5
+
+TCGdex set `pop5`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Ho-Oh | Pokémon (Fire) | Rare | Normal, Holo |
+| 2/17 | Lugia | Pokémon (Psychic) | Rare | Normal, Holo |
+| 3/17 | Mew δ | Pokémon (Fire) | Rare | Normal, Holo |
+| 4/17 | Double Rainbow Energy | Energy (Special) | Rare | Normal |
+| 5/17 | Charmeleon δ | Pokémon (Lightning) | Uncommon | Normal |
+| 6/17 | Bill's Maintenance | Trainer (Supporter) | Uncommon | Normal |
+| 7/17 | Rare Candy | Trainer (Item) | Uncommon | Normal |
+| 8/17 | Boost Energy | Energy (Special) | Uncommon | Normal |
+| 9/17 | δ Rainbow Energy | Energy (Special) | Uncommon | Normal |
+| 10/17 | Charmander δ | Pokémon (Lightning) | Common | Normal |
+| 11/17 | Meowth δ | Pokémon (Darkness) | Common | Normal |
+| 12/17 | Pikachu | Pokémon (Lightning) | Common | Normal, Holo |
+| 13/17 | Pikachu δ | Pokémon (Metal) | Common | Normal |
+| 14/17 | Pelipper δ | Pokémon (Lightning) | Common | Normal, Holo |
+| 15/17 | Zangoose δ | Pokémon (Metal) | Common | Normal, Holo |
+| 16/17 | Espeon ★ | Pokémon (Psychic) | Rare | Normal |
+| 17/17 | Umbreon ★ | Pokémon (Darkness) | Rare | Normal, Holo |
+
+### POP Series 6
+
+TCGdex set `pop6`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Bastiodon | Pokémon (Metal) | Rare | Normal |
+| 2/17 | Lucario | Pokémon (Fighting) | Rare | Normal |
+| 3/17 | Manaphy | Pokémon (Water) | Rare | Normal, Holo |
+| 4/17 | Pachirisu | Pokémon (Lightning) | Rare | Normal, Holo |
+| 5/17 | Rampardos | Pokémon (Fighting) | Rare | Normal |
+| 6/17 | Drifloon | Pokémon (Psychic) | Uncommon | Normal |
+| 7/17 | Gible | Pokémon (Colorless) | Uncommon | Normal, Holo |
+| 8/17 | Riolu | Pokémon (Fighting) | Uncommon | Normal, Holo |
+| 9/17 | Pikachu | Pokémon (Lightning) | Uncommon | Normal, Holo, Normal (Pokemon day) |
+| 10/17 | Staravia | Pokémon (Colorless) | Uncommon | Normal |
+| 11/17 | Bidoof | Pokémon (Colorless) | Common | Normal |
+| 12/17 | Buneary | Pokémon (Colorless) | Common | Normal |
+| 13/17 | Cherubi | Pokémon (Grass) | Common | Normal |
+| 14/17 | Chimchar | Pokémon (Fire) | Common | Normal, Holo |
+| 15/17 | Piplup | Pokémon (Water) | Common | Normal, Holo |
+| 16/17 | Starly | Pokémon (Colorless) | Common | Normal |
+| 17/17 | Turtwig | Pokémon (Grass) | Common | Normal, Holo |
+
+### POP Series 7
+
+TCGdex set `pop7`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Ampharos | Pokémon (Lightning) | Rare | Normal, Holo |
+| 2/17 | Gallade | Pokémon (Fighting) | Rare | Normal, Holo, Normal (Jason klaczynski), Normal (Michael pramawat) |
+| 3/17 | Latias | Pokémon (Colorless) | Rare | Normal, Holo (Cosmos) |
+| 4/17 | Latios | Pokémon (Colorless) | Rare | Normal, Holo (Cosmos) |
+| 5/17 | Mothim | Pokémon (Grass) | Rare | Normal, Holo (Cosmos) |
+| 6/17 | Delibird | Pokémon (Water) | Uncommon | Normal |
+| 7/17 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal |
+| 8/17 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Holo, Normal (Jason klaczynski) |
+| 9/17 | Stantler | Pokémon (Colorless) | Uncommon | Normal, Holo (Cosmos) |
+| 10/17 | Wormadam Sandy Cloak | Pokémon (Fighting) | Uncommon | Normal |
+| 11/17 | Burmy Plant Cloak | Pokémon (Grass) | Common | Normal |
+| 12/17 | Burmy Sandy Cloak | Pokémon (Grass) | Common | Normal |
+| 13/17 | Corsola | Pokémon (Water) | Common | Normal |
+| 14/17 | Mareep | Pokémon (Lightning) | Common | Normal |
+| 15/17 | Ralts | Pokémon (Psychic) | Common | Normal, Normal (Jason klaczynski) |
+| 16/17 | Sentret | Pokémon (Colorless) | Common | Normal |
+| 17/17 | Spinda | Pokémon (Colorless) | Common | Normal |
+
+### POP Series 8
+
+TCGdex set `pop8`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Heatran | Pokémon (Fire) | Rare | Normal, Holo (Cosmos) |
+| 2/17 | Lucario | Pokémon (Fighting) | Rare | Normal, Holo (Cosmos) |
+| 3/17 | Luxray | Pokémon (Lightning) | Rare | Normal, Holo (Cosmos) |
+| 4/17 | Probopass | Pokémon (Metal) | Rare | Normal, Holo (Cosmos) |
+| 5/17 | Yanmega | Pokémon (Grass) | Rare | Normal, Holo (Cosmos) |
+| 6/17 | Cherrim | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Cracked ice) |
+| 7/17 | Carnivine | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Cracked ice) |
+| 8/17 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Holo (Cracked ice) |
+| 9/17 | Night Maintenance | Trainer (Item) | Uncommon | Normal |
+| 10/17 | Rare Candy | Trainer (Item) | Uncommon | Normal |
+| 11/17 | Roseanne’s Research | Trainer (Supporter) | Uncommon | Normal |
+| 12/17 | Chimchar | Pokémon (Fire) | Common | Normal, Holo (Cracked ice) |
+| 13/17 | Croagunk | Pokémon (Psychic) | Common | Normal, Holo (Cracked ice) |
+| 14/17 | Happiny | Pokémon (Colorless) | Common | Normal, Holo (Cosmos) |
+| 15/17 | Piplup | Pokémon (Water) | Common | Normal |
+| 16/17 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo (Cracked ice) |
+| 17/17 | Turtwig | Pokémon (Grass) | Common | Normal |
+
+### POP Series 9
+
+TCGdex set `pop9`: 17 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/17 | Garchomp | Pokémon (Colorless) | Rare | Normal |
+| 2/17 | Manaphy | Pokémon (Water) | Rare | Normal, Holo |
+| 3/17 | Raichu | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 4/17 | Regigigas | Pokémon (Colorless) | Rare | Normal, Holo |
+| 5/17 | Rotom | Pokémon (Lightning) | Rare | Normal, Holo |
+| 6/17 | Buizel | Pokémon (Water) | Uncommon | Normal |
+| 7/17 | Croagunk | Pokémon (Psychic) | Uncommon | Normal |
+| 8/17 | Gabite | Pokémon (Colorless) | Uncommon | Normal |
+| 9/17 | Lopunny | Pokémon (Colorless) | Uncommon | Normal, Holo |
+| 10/17 | Pachirisu | Pokémon (Lightning) | Uncommon | Normal |
+| 11/17 | Pichu | Pokémon (Lightning) | Uncommon | Normal |
+| 12/17 | Buneary | Pokémon (Colorless) | Common | Normal |
+| 13/17 | Chimchar | Pokémon (Fire) | Common | Normal |
+| 14/17 | Gible | Pokémon (Colorless) | Common | Normal |
+| 15/17 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Pokemon day) |
+| 16/17 | Piplup | Pokémon (Water) | Common | Normal |
+| 17/17 | Turtwig | Pokémon (Grass) | Common | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -94,6 +94,123 @@ Shiny", and "All but between 2-4 Holo's".
 Pack artworks: 4 (Torterra, Infernape, Dusknoir, Regigigas). Source:
 Bulbapedia booster pack page.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `dp7`), fetched 2026-09-12. The list has 106 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/100 | Dusknoir | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
+| 2/100 | Empoleon | Pokémon (Metal) | Rare Holo | Holo, Reverse holo |
+| 3/100 | Infernape | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo |
+| 4/100 | Lumineon | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
+| 5/100 | Magnezone | Pokémon (Metal) | Rare Holo | Holo, Reverse holo |
+| 6/100 | Magnezone | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
+| 7/100 | Mismagius | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
+| 8/100 | Raichu | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
+| 9/100 | Regigigas | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
+| 10/100 | Sceptile | Pokémon (Grass) | Rare Holo | Holo, Reverse holo, Normal |
+| 11/100 | Torterra | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo |
+| 12/100 | Abomasnow | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 13/100 | Bronzong | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 14/100 | Cherrim | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 15/100 | Drapion | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 16/100 | Drifblim | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 17/100 | Dusknoir | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 18/100 | Gengar | Pokémon (Psychic) | Rare | Normal, Reverse holo, Normal (Jason martinez) |
+| 19/100 | Gyarados | Pokémon (Water) | Rare | Normal, Reverse holo, Holo (Cosmos), Normal (Mychael bryan) |
+| 20/100 | Machamp | Pokémon (Fighting) | Rare | Normal, Reverse holo, Normal (Michael pramawat) |
+| 21/100 | Mamoswine | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 22/100 | Rapidash | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 23/100 | Roserade | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 24/100 | Salamence | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 25/100 | Scizor | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 26/100 | Skuntank | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 27/100 | Staraptor | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 28/100 | Steelix | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 29/100 | Tangrowth | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 30/100 | Tyranitar | Pokémon (Darkness) | Rare | Normal, Reverse holo, Holo (Cosmos) |
+| 31/100 | Vespiquen | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 32/100 | Bibarel | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 33/100 | Budew | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 34/100 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 35/100 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Normal (Michael pramawat) |
+| 36/100 | Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 37/100 | Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 38/100 | Farfetch'd | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 39/100 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 40/100 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Normal (Jason martinez) |
+| 41/100 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 42/100 | Magneton | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 43/100 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 44/100 | Miltank | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 45/100 | Pichu | Pokémon (Lightning) | Uncommon | Normal, Reverse holo, Normal (Platinum) |
+| 46/100 | Piloswine | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Normal (Prerelease), Normal (Prerelease, Staff) |
+| 47/100 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 48/100 | Sableye | Pokémon (Darkness) | Uncommon | Normal, Reverse holo, Normal (Tsubasa nakamura), Normal (Mychael bryan) |
+| 49/100 | Scyther | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 50/100 | Shelgon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 51/100 | Skarmory | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 52/100 | Staravia | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 53/100 | Bagon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 54/100 | Bidoof | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 55/100 | Bronzor | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 56/100 | Cherubi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 57/100 | Combee | Pokémon (Grass) | Common | Normal, Reverse holo, Normal (Mychael bryan) |
+| 58/100 | Drifloon | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 59/100 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 60/100 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 61/100 | Finneon | Pokémon (Water) | Common | Normal, Reverse holo |
+| 62/100 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo, Normal (Jason martinez) |
+| 63/100 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 64/100 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 65/100 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Mychael bryan) |
+| 66/100 | Magnemite | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 67/100 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 68/100 | Misdreavus | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 69/100 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 70/100 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 71/100 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 72/100 | Roselia | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 73/100 | Skorupi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 74/100 | Snover | Pokémon (Water) | Common | Normal, Reverse holo |
+| 75/100 | Starly | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 76/100 | Stunky | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 77/100 | Swinub | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 78/100 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 79/100 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 80/100 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 81/100 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 82/100 | Conductive Quarry | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 83/100 | Energy Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 84/100 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 85/100 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 86/100 | Luxury Ball | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Stephen silvestro), Normal (Jason martinez), Normal (David cohen), Normal (Michael pramawat), Normal (Yuta komatsuda), Normal (Yuka furusawa) |
+| 87/100 | Marley's Request | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 88/100 | Poké Blower + | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 89/100 | Poké Drawer + | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (David cohen) |
+| 90/100 | Poké Healer + | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 91/100 | Premier Ball | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (David cohen) |
+| 92/100 | Potion | Trainer (Item) | Common | Normal, Reverse holo |
+| 93/100 | Switch | Trainer (Item) | Common | Normal, Reverse holo |
+| 94/100 | Cyclone Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Normal (Mychael bryan) |
+| 95/100 | Warp Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Normal (Yuta komatsuda), Normal (Mychael bryan) |
+| 96/100 | Dusknoir | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| 97/100 | Heatran | Pokémon (Fire) | Rare Holo LV.X | Holo |
+| 98/100 | Machamp | Pokémon (Fighting) | Rare Holo LV.X | Holo |
+| 99/100 | Raichu | Pokémon (Lightning) | Rare Holo LV.X | Holo |
+| 100/100 | Regigigas | Pokémon (Colorless) | Rare Holo LV.X | Holo |
+| 101/100 | Charmander | Pokémon (Fire) | Rare | Holo |
+| 102/100 | Charmeleon | Pokémon (Fire) | Rare | Holo |
+| 103/100 | Charizard | Pokémon (Fire) | Rare | Holo |
+| SH1 | Drifloon | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| SH2 | Duskull | Pokémon (Psychic) | Rare Holo LV.X | Holo |
+| SH3 | Voltorb | Pokémon (Lightning) | Rare Holo LV.X | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
