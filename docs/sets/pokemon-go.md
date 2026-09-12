@@ -98,6 +98,105 @@ Pull odds. The only source is DigitalTQ: 371 packs.
 
 - Collation: variable. Official: no guaranteed ratio per product.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `swsh10.5`), fetched 2026-09-12. The list has 88 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/078 | Bulbasaur | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/078 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 003/078 | Venusaur | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 004/078 | Radiant Venusaur | Pokémon (Grass) | Radiant Rare | Holo |
+| 005/078 | Alolan Exeggutor V | Pokémon (Grass) | Holo Rare V | Holo |
+| 006/078 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Peelable ditto) |
+| 007/078 | Ariados | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 008/078 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 009/078 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 010/078 | Charizard | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 011/078 | Radiant Charizard | Pokémon (Fire) | Radiant Rare | Holo |
+| 012/078 | Moltres | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 013/078 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Peelable ditto) |
+| 014/078 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 015/078 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
+| 016/078 | Wartortle | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 017/078 | Blastoise | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 018/078 | Radiant Blastoise | Pokémon (Water) | Radiant Rare | Holo |
+| 019/078 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo |
+| 020/078 | Slowbro | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 021/078 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
+| 022/078 | Gyarados | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 023/078 | Lapras | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 024/078 | Articuno | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 025/078 | Wimpod | Pokémon (Water) | Common | Normal, Reverse holo |
+| 026/078 | Golisopod | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 027/078 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 028/078 | Pikachu | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 029/078 | Zapdos | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo, Normal (Jesse parker) |
+| 030/078 | Mewtwo V | Pokémon (Psychic) | Holo Rare V | Holo, Holo (Player rewards program) |
+| 031/078 | Mewtwo VSTAR | Pokémon (Psychic) | Holo Rare VMAX | Holo |
+| 032/078 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 033/078 | Xatu | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 034/078 | Lunatone | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 035/078 | Sylveon | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 036/078 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 037/078 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 038/078 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 039/078 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 040/078 | Conkeldurr V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 041/078 | Alolan Rattata | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 042/078 | Alolan Raticate | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 043/078 | Tyranitar | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 044/078 | Steelix | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 045/078 | Meltan | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 046/078 | Melmetal | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 047/078 | Melmetal V | Pokémon (Metal) | Holo Rare V | Holo |
+| 048/078 | Melmetal VMAX | Pokémon (Metal) | Holo Rare VMAX | Holo |
+| 049/078 | Dragonite V | Pokémon (Dragon) | Holo Rare V | Holo |
+| 050/078 | Dragonite VSTAR | Pokémon (Dragon) | Holo Rare VSTAR | Holo |
+| 051/078 | Chansey | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 052/078 | Blissey | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 053/078 | Ditto | Pokémon (Colorless) | Holo Rare | Holo |
+| 054/078 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 055/078 | Snorlax | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 056/078 | Aipom | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 057/078 | Ambipom | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 058/078 | Slaking V | Pokémon (Colorless) | Holo Rare V | Holo, Normal (Gabriel fernandez) |
+| 059/078 | Bidoof | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Peelable ditto) |
+| 060/078 | Bibarel | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 061/078 | Pidove | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 062/078 | Tranquill | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 063/078 | Unfezant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 064/078 | Blanche | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 065/078 | Candela | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 066/078 | Egg Incubator | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 067/078 | Lure Module | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 068/078 | PokéStop | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Normal (Shao tong yen), Normal (Sakuya ota) |
+| 069/078 | Rare Candy | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 070/078 | Spark | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 071/078 | Alolan Exeggutor V | Pokémon (Grass) | Ultra Rare | Holo |
+| 072/078 | Mewtwo V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 073/078 | Conkeldurr V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 074/078 | Conkeldurr V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 075/078 | Melmetal V | Pokémon (Metal) | Ultra Rare | Holo |
+| 076/078 | Dragonite V | Pokémon (Dragon) | Ultra Rare | Holo |
+| 077/078 | Slaking V | Pokémon (Colorless) | Ultra Rare | Holo |
+| 078/078 | Professor's Research | Trainer (Supporter) | Ultra Rare | Holo |
+| 079/078 | Mewtwo VSTAR | Pokémon (Psychic) | Secret Rare | Holo (Rainbow) |
+| 080/078 | Melmetal VMAX | Pokémon (Metal) | Secret Rare | Holo (Rainbow) |
+| 081/078 | Dragonite VSTAR | Pokémon (Dragon) | Secret Rare | Holo (Rainbow) |
+| 082/078 | Blanche | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 083/078 | Candela | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 084/078 | Professor's Research | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 085/078 | Spark | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 086/078 | Mewtwo VSTAR | Pokémon (Psychic) | Secret Rare | Holo (Gold) |
+| 087/078 | Egg Incubator | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 088/078 | Lure Module | Trainer (Item) | Secret Rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

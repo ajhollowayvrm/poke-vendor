@@ -90,6 +90,42 @@ it is Pikachu, not because it is rarer to pull.
 
 No booster box, tin, or bundle product exists for this set.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `2021swsh`), fetched 2026-09-12. The list has 25 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/25 | Bulbasaur | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 2/25 | Chikorita | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 3/25 | Treecko | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 4/25 | Turtwig | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 5/25 | Snivy | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 6/25 | Chespin | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 7/25 | Rowlet | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 8/25 | Grookey | Pokémon (Grass) | None | Normal (25th celebration), Holo (25th celebration) |
+| 9/25 | Charmander | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 10/25 | Cyndaquil | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 11/25 | Torchic | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 12/25 | Chimchar | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 13/25 | Tepig | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 14/25 | Fennekin | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 15/25 | Litten | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 16/25 | Scorbunny | Pokémon (Fire) | None | Normal (25th celebration), Holo (25th celebration) |
+| 17/25 | Squirtle | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 18/25 | Totodile | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 19/25 | Mudkip | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 20/25 | Piplup | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 21/25 | Oshawott | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 22/25 | Froakie | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 23/25 | Popplio | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 24/25 | Sobble | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
+| 25/25 | Pikachu | Pokémon (Lightning) | None | Normal (25th celebration), Holo (25th celebration) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

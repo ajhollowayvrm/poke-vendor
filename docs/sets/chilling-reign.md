@@ -84,6 +84,250 @@ Pull odds. Source: a Reddit community sample of 5,000 packs, republished as
   Unknown. Other sets in the era list 6.
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `swsh6`), fetched 2026-09-12. The list has 233 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/198 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/198 | Kakuna | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/198 | Beedrill | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 4/198 | Ledyba | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/198 | Ledian | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 6/198 | Heracross | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 7/198 | Celebi V | Pokémon (Grass) | Holo Rare V | Holo |
+| 8/198 | Celebi VMAX | Pokémon (Grass) | Holo Rare VMAX | Holo |
+| 9/198 | Snover | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 10/198 | Abomasnow | Pokémon (Grass) | Rare | Normal, Normal (Snowflake), Reverse holo |
+| 11/198 | Deerling | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 12/198 | Sawsbuck | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 13/198 | Bounsweet | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 14/198 | Steenee | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 15/198 | Tsareena | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 16/198 | Grookey | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 17/198 | Thwackey | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 18/198 | Rillaboom | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 19/198 | Zarude | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 20/198 | Blaziken V | Pokémon (Fire) | Holo Rare V | Holo |
+| 21/198 | Blaziken VMAX | Pokémon (Fire) | Holo Rare VMAX | Holo |
+| 22/198 | Castform Sunny Form | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 23/198 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 24/198 | Volcarona | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 25/198 | Volcanion V | Pokémon (Fire) | Holo Rare V | Holo |
+| 26/198 | Scorbunny | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 27/198 | Raboot | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 28/198 | Cinderace | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 29/198 | Lapras | Pokémon (Water) | Common | Normal, Reverse holo |
+| 30/198 | Sneasel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 31/198 | Weavile | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 32/198 | Delibird | Pokémon (Water) | Common | Normal, Normal (Snowflake), Reverse holo |
+| 33/198 | Castform Rainy Form | Pokémon (Water) | Common | Normal, Reverse holo |
+| 34/198 | Castform Snowy Form | Pokémon (Water) | Common | Normal, Reverse holo |
+| 35/198 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo |
+| 36/198 | Froslass | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 37/198 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
+| 38/198 | Sealeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 39/198 | Walrein | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 40/198 | Tapu Fini | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 41/198 | Sobble | Pokémon (Water) | Common | Normal, Reverse holo |
+| 42/198 | Drizzile | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 43/198 | Inteleon | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 44/198 | Rapid Strike Urshifu | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 45/198 | Ice Rider Calyrex V | Pokémon (Water) | Holo Rare V | Holo, Holo (Snowflake) |
+| 46/198 | Ice Rider Calyrex VMAX | Pokémon (Water) | Holo Rare VMAX | Holo, Holo (Snowflake) |
+| 47/198 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 48/198 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 49/198 | Ampharos | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 50/198 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 51/198 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 52/198 | Thundurus | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 53/198 | Zeraora V | Pokémon (Lightning) | Holo Rare V | Holo |
+| 54/198 | Galarian Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 55/198 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 56/198 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 57/198 | Gengar | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 58/198 | Galarian Articuno V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 59/198 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 60/198 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 61/198 | Gardevoir | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 62/198 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 63/198 | Banette | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 64/198 | Cresselia | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 65/198 | Golett | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 66/198 | Golurk | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 67/198 | Swirlix | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 68/198 | Slurpuff | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 69/198 | Inkay | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 70/198 | Malamar | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 71/198 | Hatenna | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 72/198 | Hattrem | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 73/198 | Hatterene | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 74/198 | Shadow Rider Calyrex V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 75/198 | Shadow Rider Calyrex VMAX | Pokémon (Psychic) | Holo Rare VMAX | Holo |
+| 76/198 | Diglett | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 77/198 | Dugtrio | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 78/198 | Galarian Farfetch'd | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 79/198 | Galarian Sirfetch'd | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 80/198 | Galarian Zapdos V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 81/198 | Gallade | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 82/198 | Galarian Yamask | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 83/198 | Galarian Runerigus | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 84/198 | Crabrawler | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 85/198 | Crabominable | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 86/198 | Rockruff | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 87/198 | Lycanroc | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 88/198 | Passimian | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 89/198 | Sandaconda V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 90/198 | Sandaconda VMAX | Pokémon (Fighting) | Holo Rare VMAX | Holo |
+| 91/198 | Clobbopus | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 92/198 | Grapploct | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 93/198 | Kubfu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 94/198 | Koffing | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 95/198 | Weezing | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 96/198 | Galarian Weezing | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 97/198 | Galarian Moltres V | Pokémon (Darkness) | Holo Rare V | Holo |
+| 98/198 | Galarian Slowking | Pokémon (Darkness) | Holo Rare | Holo, Holo (Cosmos), Reverse holo |
+| 99/198 | Galarian Slowking V | Pokémon (Darkness) | Holo Rare V | Holo, Holo (Jumbo) |
+| 100/198 | Galarian Slowking VMAX | Pokémon (Darkness) | Holo Rare VMAX | Holo |
+| 101/198 | Qwilfish | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 102/198 | Seviper | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 103/198 | Spiritomb | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 104/198 | Liepard V | Pokémon (Darkness) | Holo Rare V | Holo |
+| 105/198 | Venipede | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 106/198 | Whirlipede | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 107/198 | Scolipede | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 108/198 | Single Strike Urshifu | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 109/198 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 110/198 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 111/198 | Aggron | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 112/198 | Metagross V | Pokémon (Metal) | Holo Rare V | Holo |
+| 113/198 | Metagross VMAX | Pokémon (Metal) | Holo Rare VMAX | Holo |
+| 114/198 | Cobalion | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 115/198 | Tauros | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 116/198 | Porygon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 117/198 | Porygon2 | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 118/198 | Porygon-Z | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 119/198 | Blissey V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 120/198 | Zangoose | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 121/198 | Castform | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 122/198 | Kecleon | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 123/198 | Shaymin | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 124/198 | Tornadus V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 125/198 | Tornadus VMAX | Pokémon (Colorless) | Holo Rare VMAX | Holo |
+| 126/198 | Furfrou | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 127/198 | Skwovet | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 128/198 | Greedent | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 129/198 | Agatha | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 130/198 | Avery | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 131/198 | Brawly | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 132/198 | Caitlin | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 133/198 | Crushing Gloves | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 134/198 | Doctor | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 135/198 | Dyna Tree Hill | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 136/198 | Echoing Horn | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 137/198 | Expedition Uniform | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 138/198 | Fire-Resistant Gloves | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 139/198 | Flannery | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 140/198 | Fog Crystal | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 141/198 | Galarian Chestplate | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 142/198 | Honey | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 143/198 | Justified Gloves | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 144/198 | Karen's Conviction | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 145/198 | Klara | Trainer (Supporter) | Uncommon | Normal, Holo (Cosmos), Reverse holo |
+| 146/198 | Melony | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 147/198 | Old Cemetery | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 148/198 | Path to the Peak | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 149/198 | Peonia | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 150/198 | Peony | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 151/198 | Rapid Strike Scroll of the Skies | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 152/198 | Rugged Helmet | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 153/198 | Siebold | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 154/198 | Single Strike Scroll of Piercing | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 155/198 | Weeding Gloves | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 156/198 | Welcoming Lantern | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 157/198 | Impact Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 158/198 | Lucky Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 159/198 | Spiral Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 160/198 | Celebi V | Pokémon (Grass) | Ultra Rare | Holo |
+| 161/198 | Blaziken V | Pokémon (Fire) | Ultra Rare | Holo |
+| 162/198 | Volcanion V | Pokémon (Fire) | Ultra Rare | Holo |
+| 163/198 | Ice Rider Calyrex V | Pokémon (Water) | Ultra Rare | Holo |
+| 164/198 | Ice Rider Calyrex V | Pokémon (Water) | Ultra Rare | Holo |
+| 165/198 | Zeraora V | Pokémon (Lightning) | Ultra Rare | Holo |
+| 166/198 | Zeraora V | Pokémon (Lightning) | Ultra Rare | Holo |
+| 167/198 | Galarian Rapidash V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 168/198 | Galarian Rapidash V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 169/198 | Galarian Articuno V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 170/198 | Galarian Articuno V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 171/198 | Shadow Rider Calyrex V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 172/198 | Shadow Rider Calyrex V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 173/198 | Galarian Zapdos V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 174/198 | Galarian Zapdos V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 175/198 | Sandaconda V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 176/198 | Galarian Moltres V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 177/198 | Galarian Moltres V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 178/198 | Galarian Slowking V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 179/198 | Galarian Slowking V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 180/198 | Liepard V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 181/198 | Metagross V | Pokémon (Metal) | Ultra Rare | Holo |
+| 182/198 | Blissey V | Pokémon (Colorless) | Ultra Rare | Holo |
+| 183/198 | Blissey V | Pokémon (Colorless) | Ultra Rare | Holo |
+| 184/198 | Tornadus V | Pokémon (Colorless) | Ultra Rare | Holo |
+| 185/198 | Tornadus V | Pokémon (Colorless) | Ultra Rare | Holo |
+| 186/198 | Agatha | Trainer (Supporter) | Ultra Rare | Holo |
+| 187/198 | Avery | Trainer (Supporter) | Ultra Rare | Holo |
+| 188/198 | Brawly | Trainer (Supporter) | Ultra Rare | Holo |
+| 189/198 | Caitlin | Trainer (Supporter) | Ultra Rare | Holo |
+| 190/198 | Doctor | Trainer (Supporter) | Ultra Rare | Holo |
+| 191/198 | Flannery | Trainer (Supporter) | Ultra Rare | Holo |
+| 192/198 | Honey | Trainer (Supporter) | Ultra Rare | Holo |
+| 193/198 | Karen's Conviction | Trainer (Supporter) | Ultra Rare | Holo |
+| 194/198 | Klara | Trainer (Supporter) | Ultra Rare | Holo |
+| 195/198 | Melony | Trainer (Supporter) | Ultra Rare | Holo |
+| 196/198 | Peonia | Trainer (Supporter) | Ultra Rare | Holo |
+| 197/198 | Peony | Trainer (Supporter) | Ultra Rare | Holo |
+| 198/198 | Siebold | Trainer (Supporter) | Ultra Rare | Holo |
+| 199/198 | Celebi VMAX | Pokémon (Grass) | Secret Rare | Holo (Rainbow) |
+| 200/198 | Blaziken VMAX | Pokémon (Fire) | Secret Rare | Holo (Rainbow) |
+| 201/198 | Blaziken VMAX | Pokémon (Fire) | Secret Rare | Holo |
+| 202/198 | Ice Rider Calyrex VMAX | Pokémon (Water) | Secret Rare | Holo (Rainbow) |
+| 203/198 | Ice Rider Calyrex VMAX | Pokémon (Water) | Secret Rare | Holo |
+| 204/198 | Shadow Rider Calyrex VMAX | Pokémon (Psychic) | Secret Rare | Holo (Rainbow) |
+| 205/198 | Shadow Rider Calyrex VMAX | Pokémon (Psychic) | Secret Rare | Holo |
+| 206/198 | Sandaconda VMAX | Pokémon (Fighting) | Secret Rare | Holo (Rainbow) |
+| 207/198 | Galarian Slowking VMAX | Pokémon (Darkness) | Secret Rare | Holo (Rainbow) |
+| 208/198 | Metagross VMAX | Pokémon (Metal) | Secret Rare | Holo (Rainbow) |
+| 209/198 | Tornadus VMAX | Pokémon (Colorless) | Secret Rare | Holo (Rainbow) |
+| 210/198 | Agatha | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 211/198 | Avery | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 212/198 | Brawly | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 213/198 | Caitlin | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 214/198 | Doctor | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 215/198 | Flannery | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 216/198 | Karen's Conviction | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 217/198 | Klara | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 218/198 | Melony | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 219/198 | Peonia | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 220/198 | Peony | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 221/198 | Siebold | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 222/198 | Electrode | Pokémon (Lightning) | Secret Rare | Holo (Gold) |
+| 223/198 | Bronzong | Pokémon (Metal) | Secret Rare | Holo (Gold) |
+| 224/198 | Snorlax | Pokémon (Colorless) | Secret Rare | Holo (Gold) |
+| 225/198 | Echoing Horn | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 226/198 | Fan of Waves | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 227/198 | Fog Crystal | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 228/198 | Rugged Helmet | Trainer (Tool) | Secret Rare | Holo (Gold) |
+| 229/198 | Urn of Vitality | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 230/198 | Welcoming Lantern | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 231/198 | Water Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
+| 232/198 | Psychic Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
+| 233/198 | Fighting Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -99,6 +99,46 @@ a conflict this file cannot resolve from the sources fetched.
 
 No booster box or single mini pack was sold separately at retail.
 
+## Card list
+
+Every card in the set, with its variants. Source: the Bulbapedia set list for Trick or Trade 2022 (wiki text, fetched 2026-09-12). TCGdex has no entry for this set. The list has 30 cards.
+
+- **No.** is the original set and number. Every card is a reprint that keeps its original number.
+- **Variants:** every card has the Pikachu jack-o'-lantern stamp. A Rare Holo card is holo. Every other card is not holo.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| Rebel Clash 015/192 | Trevenant | Pokémon (Grass) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Rebel Clash 031/192 | Litwick | Pokémon (Fire) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Rebel Clash 032/192 | Lampent | Pokémon (Fire) | Uncommon | Normal (Pikachu jack-o'-lantern stamp) |
+| Rebel Clash 033/192 | Chandelure | Pokémon (Fire) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Darkness Ablaze 081/189 | Mimikyu | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Darkness Ablaze 082/189 | Sinistea | Pokémon (Psychic) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Darkness Ablaze 083/189 | Polteageist | Pokémon (Psychic) | Uncommon | Normal (Pikachu jack-o'-lantern stamp) |
+| Darkness Ablaze 102/189 | Spinarak | Pokémon (Darkness) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Darkness Ablaze 103/189 | Ariados | Pokémon (Darkness) | Uncommon | Normal (Pikachu jack-o'-lantern stamp) |
+| Darkness Ablaze 105/189 | Darkrai | Pokémon (Darkness) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Champion's Path 018/073 | Hatenna | Pokémon (Psychic) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Battle Styles 069/163 | Cubone | Pokémon (Fighting) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Battle Styles 089/163 | Zubat | Pokémon (Darkness) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Battle Styles 093/163 | Murkrow | Pokémon (Darkness) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Chilling Reign 055/198 | Gastly | Pokémon (Psychic) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Chilling Reign 056/198 | Haunter | Pokémon (Psychic) | Uncommon | Normal (Pikachu jack-o'-lantern stamp) |
+| Chilling Reign 057/198 | Gengar | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Chilling Reign 072/198 | Hattrem | Pokémon (Psychic) | Uncommon | Normal (Pikachu jack-o'-lantern stamp) |
+| Chilling Reign 073/198 | Hatterene | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Evolving Skies 049/203 | Pikachu | Pokémon (Lightning) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Evolving Skies 076/203 | Pumpkaboo | Pokémon (Psychic) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Evolving Skies 077/203 | Gourgeist | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Fusion Strike 016/264 | Phantump | Pokémon (Grass) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Brilliant Stars 056/172 | Mewtwo | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Brilliant Stars 060/172 | Duskull | Pokémon (Psychic) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Brilliant Stars 061/172 | Dusclops | Pokémon (Psychic) | Uncommon | Normal (Pikachu jack-o'-lantern stamp) |
+| Brilliant Stars 062/172 | Dusknoir | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Astral Radiance 058/189 | Misdreavus | Pokémon (Psychic) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+| Astral Radiance 059/189 | Mismagius | Pokémon (Psychic) | Rare Holo | Holo (Pikachu jack-o'-lantern stamp) |
+| Astral Radiance 103/189 | Nickit | Pokémon (Darkness) | Common | Normal (Pikachu jack-o'-lantern stamp) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

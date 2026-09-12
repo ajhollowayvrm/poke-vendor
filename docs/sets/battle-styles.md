@@ -83,6 +83,200 @@ Rare figure for this set.
   Unknown. Other sets in the era list 6.
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `swsh5`), fetched 2026-09-12. The list has 183 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/163 | Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/163 | Weepinbell | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/163 | Victreebel | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 4/163 | Cacnea | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/163 | Cacturne | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 6/163 | Kricketune V | Pokémon (Grass) | Holo Rare V | Holo |
+| 7/163 | Cherubi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 8/163 | Cherrim | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 9/163 | Carnivine | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 10/163 | Durant | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 11/163 | Scatterbug | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 12/163 | Spewpa | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 13/163 | Vivillon | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 14/163 | Fomantis | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 15/163 | Lurantis | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 16/163 | Tapu Bulu | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 17/163 | Blipbug | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 18/163 | Flapple V | Pokémon (Grass) | Holo Rare V | Holo |
+| 19/163 | Flapple VMAX | Pokémon (Grass) | Holo Rare VMAX | Holo |
+| 20/163 | Entei | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 21/163 | Victini V | Pokémon (Fire) | Holo Rare V | Holo |
+| 22/163 | Victini VMAX | Pokémon (Fire) | Holo Rare VMAX | Holo |
+| 23/163 | Tepig | Pokémon (Fire) | Common | Normal, Holo (Cosmos), Reverse holo |
+| 24/163 | Pignite | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 25/163 | Emboar | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 26/163 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 27/163 | Salandit | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 28/163 | Salazzle | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 29/163 | Sizzlipede | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 30/163 | Centiskorch | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 31/163 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
+| 32/163 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 33/163 | Kingdra | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 34/163 | Galarian Mr. Mime | Pokémon (Water) | Common | Normal, Reverse holo |
+| 35/163 | Galarian Mr. Rime | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 36/163 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo |
+| 37/163 | Octillery | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 38/163 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 39/163 | Crawdaunt | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 40/163 | Empoleon V | Pokémon (Water) | Holo Rare V | Holo |
+| 41/163 | Frillish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 42/163 | Jellicent | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 43/163 | Bruxish | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 44/163 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 45/163 | Electivire | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 46/163 | Shinx | Pokémon (Lightning) | Common | Normal, Holo (Cosmos), Reverse holo |
+| 47/163 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 48/163 | Luxray | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 49/163 | Pachirisu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 50/163 | Tapu Koko V | Pokémon (Lightning) | Holo Rare V | Holo |
+| 51/163 | Tapu Koko VMAX | Pokémon (Lightning) | Holo Rare VMAX | Holo |
+| 52/163 | Yamper | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 53/163 | Boltund | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 54/163 | Galarian Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 55/163 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 56/163 | Grumpig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 57/163 | Baltoy | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 58/163 | Claydol | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 59/163 | Chimecho | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 60/163 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 61/163 | Meowstic | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 62/163 | Mimikyu V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 63/163 | Necrozma V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 64/163 | Dottler | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 65/163 | Orbeetle | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 66/163 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 67/163 | Primeape | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 68/163 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 69/163 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 70/163 | Marowak | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 71/163 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 72/163 | Gliscor | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 73/163 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 74/163 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 75/163 | Conkeldurr | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 76/163 | Mienfoo | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 77/163 | Mienshao | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 78/163 | Rolycoly | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 79/163 | Carkol | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 80/163 | Coalossal | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 81/163 | Silicobra | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 82/163 | Sandaconda | Pokémon (Fighting) | Holo Rare | Holo, Holo (Gamestop), Holo (Eb games), Holo (Cosmos), Reverse holo |
+| 83/163 | Falinks | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 84/163 | Stonjourner | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 85/163 | Single Strike Urshifu V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 86/163 | Single Strike Urshifu VMAX | Pokémon (Fighting) | Holo Rare VMAX | Holo, Holo (Jumbo) |
+| 87/163 | Rapid Strike Urshifu V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 88/163 | Rapid Strike Urshifu VMAX | Pokémon (Fighting) | Holo Rare VMAX | Holo, Holo (Jumbo) |
+| 89/163 | Zubat | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 90/163 | Golbat | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 91/163 | Crobat | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 92/163 | Galarian Slowbro | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 93/163 | Murkrow | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 94/163 | Honchkrow | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 95/163 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 96/163 | Houndoom | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 97/163 | Tyranitar V | Pokémon (Darkness) | Holo Rare V | Holo |
+| 98/163 | Morpeko | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 99/163 | Steelix | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 100/163 | Mawile | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 101/163 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 102/163 | Bronzong | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 103/163 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 104/163 | Bisharp | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 105/163 | Honedge | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 106/163 | Doublade | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 107/163 | Aegislash | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 108/163 | Aegislash | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 109/163 | Corviknight V | Pokémon (Metal) | Holo Rare V | Holo |
+| 110/163 | Corviknight VMAX | Pokémon (Metal) | Holo Rare VMAX | Holo |
+| 111/163 | Spearow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 112/163 | Fearow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 113/163 | Lickitung | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 114/163 | Lickilicky | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 115/163 | Glameow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 116/163 | Purugly | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 117/163 | Stoutland V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 118/163 | Bouffalant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 119/163 | Drampa | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 120/163 | Indeedee | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 121/163 | Bruno | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 122/163 | Camping Gear | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 123/163 | Cheryl | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 124/163 | Energy Recycler | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 125/163 | Escape Rope | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 126/163 | Exp. Share | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 127/163 | Fan of Waves | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 128/163 | Korrina's Focus | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 129/163 | Level Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 130/163 | Phoebe | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 131/163 | Rapid Strike Scroll of Swirls | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 132/163 | Rapid Strike Style Mustard | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 133/163 | Single Strike Scroll of Scorn | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 134/163 | Single Strike Style Mustard | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 135/163 | Sordward & Shielbert | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 136/163 | Tool Jammer | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 137/163 | Tower of Darkness | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 138/163 | Tower of Waters | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 139/163 | Urn of Vitality | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 140/163 | Rapid Strike Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 141/163 | Single Strike Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 142/163 | Kricketune V | Pokémon (Grass) | Ultra Rare | Holo |
+| 143/163 | Flapple V | Pokémon (Grass) | Ultra Rare | Holo |
+| 144/163 | Victini V | Pokémon (Fire) | Ultra Rare | Holo |
+| 145/163 | Empoleon V | Pokémon (Water) | Ultra Rare | Holo |
+| 146/163 | Empoleon V | Pokémon (Water) | Ultra Rare | Holo |
+| 147/163 | Tapu Koko V | Pokémon (Lightning) | Ultra Rare | Holo |
+| 148/163 | Mimikyu V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 149/163 | Necrozma V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 150/163 | Single Strike Urshifu V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 151/163 | Single Strike Urshifu V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 152/163 | Rapid Strike Urshifu V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 153/163 | Rapid Strike Urshifu V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 154/163 | Tyranitar V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 155/163 | Tyranitar V | Pokémon (Darkness) | Ultra Rare | Holo |
+| 156/163 | Corviknight V | Pokémon (Metal) | Ultra Rare | Holo |
+| 157/163 | Stoutland V | Pokémon (Colorless) | Ultra Rare | Holo |
+| 158/163 | Bruno | Trainer (Supporter) | Ultra Rare | Holo |
+| 159/163 | Cheryl | Trainer (Supporter) | Ultra Rare | Holo |
+| 160/163 | Korrina's Focus | Trainer (Supporter) | Ultra Rare | Holo |
+| 161/163 | Phoebe | Trainer (Supporter) | Ultra Rare | Holo |
+| 162/163 | Rapid Strike Style Mustard | Trainer (Supporter) | Ultra Rare | Holo |
+| 163/163 | Single Strike Style Mustard | Trainer (Supporter) | Ultra Rare | Holo |
+| 164/163 | Flapple VMAX | Pokémon (Grass) | Secret Rare | Holo (Rainbow) |
+| 165/163 | Victini VMAX | Pokémon (Fire) | Secret Rare | Holo (Rainbow) |
+| 166/163 | Tapu Koko VMAX | Pokémon (Lightning) | Secret Rare | Holo (Rainbow) |
+| 167/163 | Single Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo (Rainbow) |
+| 168/163 | Single Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo |
+| 169/163 | Rapid Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo (Rainbow) |
+| 170/163 | Rapid Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo |
+| 171/163 | Corviknight VMAX | Pokémon (Metal) | Secret Rare | Holo (Rainbow) |
+| 172/163 | Bruno | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 173/163 | Cheryl | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 174/163 | Korrina's Focus | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 175/163 | Phoebe | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 176/163 | Rapid Strike Style Mustard | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 177/163 | Single Strike Style Mustard | Trainer (Supporter) | Secret Rare | Holo (Rainbow) |
+| 178/163 | Octillery | Pokémon (Water) | Secret Rare | Holo (Gold) |
+| 179/163 | Houndoom | Pokémon (Darkness) | Secret Rare | Holo (Gold) |
+| 180/163 | Exp. Share | Trainer (Tool) | Secret Rare | Holo (Gold) |
+| 181/163 | Level Ball | Trainer (Item) | Secret Rare | Holo (Gold) |
+| 182/163 | Rapid Strike Energy | Energy (Special) | Secret Rare | Holo (Gold) |
+| 183/163 | Single Strike Energy | Energy (Special) | Secret Rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

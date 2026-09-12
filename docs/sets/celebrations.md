@@ -106,6 +106,78 @@ come from various sets.
 
 - Collation: variable. The set of the "other" packs varies by product.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `cel25`, `cel25cc`), fetched 2026-09-12. The list has 50 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+### Celebrations
+
+TCGdex set `cel25`: 25 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/25 | Ho-Oh | Pokémon (Fire) | Rare | Holo |
+| 2/25 | Reshiram | Pokémon (Fire) | Rare | Holo |
+| 3/25 | Kyogre | Pokémon (Water) | Rare | Holo |
+| 4/25 | Palkia | Pokémon (Water) | Rare | Holo |
+| 5/25 | Pikachu | Pokémon (Lightning) | Holo Rare | Holo |
+| 6/25 | Flying Pikachu V | Pokémon (Lightning) | Holo Rare V | Holo |
+| 7/25 | Flying Pikachu VMAX | Pokémon (Lightning) | Holo Rare VMAX | Holo |
+| 8/25 | Surfing Pikachu V | Pokémon (Lightning) | Holo Rare V | Holo |
+| 9/25 | Surfing Pikachu VMAX | Pokémon (Lightning) | Holo Rare VMAX | Holo |
+| 10/25 | Zekrom | Pokémon (Lightning) | Rare | Holo |
+| 11/25 | Mew | Pokémon (Psychic) | Holo Rare | Holo |
+| 12/25 | Xerneas | Pokémon (Psychic) | Rare | Holo |
+| 13/25 | Cosmog | Pokémon (Psychic) | Rare | Holo |
+| 14/25 | Cosmoem | Pokémon (Psychic) | Rare | Holo |
+| 15/25 | Lunala | Pokémon (Psychic) | Holo Rare | Holo |
+| 16/25 | Zacian V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 17/25 | Groudon | Pokémon (Fighting) | Rare | Holo |
+| 18/25 | Zamazenta V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 19/25 | Yveltal | Pokémon (Darkness) | Rare | Holo |
+| 20/25 | Dialga | Pokémon (Metal) | Rare | Holo |
+| 21/25 | Solgaleo | Pokémon (Metal) | Holo Rare | Holo |
+| 22/25 | Lugia | Pokémon (Colorless) | Rare | Holo |
+| 23/25 | Professor's Research (Professor Oak) | Trainer (Supporter) | Holo Rare | Holo |
+| 24/25 | Professor's Research (Professor Oak) | Trainer (Supporter) | Ultra Rare | Holo |
+| 25/25 | Mew | Pokémon (Psychic) | Secret Rare | Holo |
+
+### Celebrations Classic Collection
+
+TCGdex set `cel25cc`: 25 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| CC001 | Blastoise | Pokémon (Water) | Classic Collection | Holo |
+| CC002 | Charizard | Pokémon (Fire) | Classic Collection | Holo |
+| CC003 | Venusaur | Pokémon (Grass) | Classic Collection | Holo |
+| CC004 | Imposter Professor Oak | Trainer (Supporter) | Classic Collection | Holo |
+| CC005 | Dark Gyarados | Pokémon (Water) | Classic Collection | Holo |
+| CC006 | Here Comes Team Rocket! | Trainer (Supporter) | Classic Collection | Holo |
+| CC007 | Rocket's Zapdos | Pokémon (Lightning) | Classic Collection | Holo |
+| CC008 | _____'s Pikachu | Pokémon (Lightning) | Classic Collection | Holo |
+| CC009 | Cleffa | Pokémon (Colorless) | Classic Collection | Holo |
+| CC010 | Shining Magikarp | Pokémon (Water) | Classic Collection | Holo |
+| CC011 | Team Magma's Groudon | Pokémon (Fighting) | Classic Collection | Holo |
+| CC012 | Rocket's Admin. | Trainer (Supporter) | Classic Collection | Holo |
+| CC013 | Mew ex | Pokémon (Psychic) | Classic Collection | Holo |
+| CC014 | Gardevoir ex | Pokémon (Fire) | Classic Collection | Holo |
+| CC015 | Umbreon ☆ | Pokémon (Darkness) | Classic Collection | Holo |
+| CC016 | Claydol | Pokémon (Fighting) | Classic Collection | Holo |
+| CC017 | Luxray GL LV.X | Pokémon (Lightning) | Classic Collection | Holo |
+| CC018 | Garchomp C LV.X | Pokémon (Colorless) | Classic Collection | Holo |
+| CC019 | Donphan | Pokémon (Fighting) | Classic Collection | Holo |
+| CC020 | Reshiram | Pokémon (Fire) | Classic Collection | Holo (25th celebration) |
+| CC021 | Zekrom | Pokémon (Lightning) | Classic Collection | Holo (25th celebration) |
+| CC022 | Mewtwo EX | Pokémon (Psychic) | Classic Collection | Holo |
+| CC023 | Xerneas EX | Pokémon (Fairy) | Classic Collection | Holo |
+| CC024 | M Rayquaza EX | Pokémon (Colorless) | Classic Collection | Holo |
+| CC025 | Tapu Lele GX | Pokémon (Psychic) | Classic Collection | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

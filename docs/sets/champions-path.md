@@ -90,6 +90,97 @@ pack-opening videos, not official data).
 
 - Collation: variable. Official: no guaranteed ratio per box or product.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `swsh3.5`), fetched 2026-09-12. The list has 80 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/73 | Venusaur V | Pokémon (Grass) | Holo Rare V | Holo |
+| 2/73 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 3/73 | Kakuna | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 4/73 | Beedrill | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 5/73 | Eldegoss V | Pokémon (Grass) | Holo Rare V | Holo |
+| 6/73 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 7/73 | Victini | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 8/73 | Incineroar V | Pokémon (Fire) | Holo Rare V | Holo |
+| 9/73 | Sizzlipede | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 10/73 | Centiskorch | Pokémon (Fire) | Holo Rare | Reverse holo, Holo |
+| 11/73 | Carvanha | Pokémon (Water) | Common | Normal, Reverse holo |
+| 12/73 | Sharpedo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 13/73 | Wailord V | Pokémon (Water) | Holo Rare V | Holo |
+| 14/73 | Drednaw V | Pokémon (Water) | Holo Rare V | Holo |
+| 15/73 | Drednaw VMAX | Pokémon (Water) | Holo Rare VMAX | Holo |
+| 16/73 | Gardevoir V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 17/73 | Gardevoir VMAX | Pokémon (Psychic) | Holo Rare VMAX | Holo |
+| 18/73 | Hatenna | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 19/73 | Hattrem | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 20/73 | Hatterene | Pokémon (Psychic) | Holo Rare | Reverse holo, Holo |
+| 21/73 | Galarian Cursola V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 22/73 | Alcremie V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 23/73 | Alcremie VMAX | Pokémon (Psychic) | Holo Rare VMAX | Holo |
+| 24/73 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 25/73 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 26/73 | Machamp | Pokémon (Fighting) | Holo Rare | Reverse holo, Holo |
+| 27/73 | Lucario V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 28/73 | Zygarde | Pokémon (Fighting) | Holo Rare | Reverse holo, Holo |
+| 29/73 | Rockruff | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 30/73 | Lycanroc | Pokémon (Fighting) | Holo Rare | Reverse holo, Holo |
+| 31/73 | Rolycoly | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 32/73 | Grapploct V | Pokémon (Fighting) | Holo Rare V | Holo |
+| 33/73 | Ekans | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 34/73 | Arbok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 35/73 | Galarian Zigzagoon | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 36/73 | Galarian Linoone | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 37/73 | Galarian Obstagoon | Pokémon (Darkness) | Holo Rare | Reverse holo, Holo |
+| 38/73 | Absol | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 39/73 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 40/73 | Liepard | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 41/73 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 42/73 | Scrafty | Pokémon (Darkness) | Holo Rare | Reverse holo, Holo |
+| 43/73 | Trubbish | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 44/73 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 45/73 | Malamar | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 46/73 | Nickit | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 47/73 | Duraludon V | Pokémon (Metal) | Holo Rare V | Holo |
+| 48/73 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 49/73 | Altaria | Pokémon (Colorless) | Holo Rare | Reverse holo, Holo |
+| 50/73 | Bede | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 51/73 | Full Heal | Trainer (Item) | Common | Normal, Reverse holo |
+| 52/73 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 53/73 | Hop | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 54/73 | Hyper Potion | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 55/73 | Kabu | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 56/73 | Marnie | Trainer (Supporter) | Holo Rare | Reverse holo, Holo |
+| 57/73 | Milo | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 58/73 | Piers | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 59/73 | Poké Ball | Trainer (Item) | Common | Normal, Reverse holo |
+| 60/73 | Pokémon Center Lady | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 61/73 | Potion | Trainer (Item) | Common | Normal, Reverse holo |
+| 62/73 | Professor's Research (Professor Magnolia) | Trainer (Supporter) | Holo Rare | Reverse holo, Holo |
+| 63/73 | Rotom Bike | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 64/73 | Rotom Phone | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 65/73 | Sonia | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 66/73 | Suspicious Food Tin | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 67/73 | Team Yell Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 68/73 | Turffield Stadium | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 69/73 | Drednaw V | Pokémon (Water) | Ultra Rare | Holo |
+| 70/73 | Gardevoir V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 71/73 | Galarian Cursola V | Pokémon (Psychic) | Ultra Rare | Holo |
+| 72/73 | Grapploct V | Pokémon (Fighting) | Ultra Rare | Holo |
+| 73/73 | Hop | Trainer (Supporter) | Ultra Rare | Holo |
+| 74/73 | Charizard VMAX | Pokémon (Fire) | Secret Rare | Holo |
+| 75/73 | Drednaw VMAX | Pokémon (Water) | Secret Rare | Holo |
+| 76/73 | Gardevoir VMAX | Pokémon (Psychic) | Secret Rare | Holo |
+| 77/73 | Kabu | Trainer (Supporter) | Secret Rare | Holo |
+| 78/73 | Piers | Trainer (Supporter) | Secret Rare | Holo |
+| 79/73 | Charizard V | Pokémon (Fire) | Secret Rare | Holo |
+| 80/73 | Suspicious Food Tin | Trainer (Item) | Secret Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

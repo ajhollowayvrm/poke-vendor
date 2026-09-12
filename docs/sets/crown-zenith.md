@@ -152,6 +152,258 @@ Ultra Rare 9.27%, Rare Holo VSTAR 5.2%, Rare Radiant 5.04%, Rare Holo VMAX
 
 - Collation: variable. Official: no guaranteed ratio per product.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `swsh12.5`, `swsh12.5gg`), fetched 2026-09-12. The list has 230 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+### Crown Zenith
+
+TCGdex set `swsh12.5`: 160 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/159 | Oddish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/159 | Gloom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 003/159 | Bellossom | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 004/159 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/159 | Tangrowth | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 006/159 | Scyther | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/159 | Sunkern | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 008/159 | Yanma | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 009/159 | Yanmega | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 010/159 | Kricketot | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/159 | Cherubi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 012/159 | Carnivine | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 013/159 | Leafeon V | Pokémon (Grass) | Holo Rare V | Holo |
+| 014/159 | Leafeon VSTAR | Pokémon (Grass) | Holo Rare VSTAR | Holo |
+| 015/159 | Grubbin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 016/159 | Zarude | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 017/159 | Calyrex | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 018/159 | Charizard V | Pokémon (Fire) | Holo Rare V | Holo |
+| 019/159 | Charizard VSTAR | Pokémon (Fire) | Holo Rare VSTAR | Holo |
+| 020/159 | Radiant Charizard | Pokémon (Fire) | Radiant Rare | Holo |
+| 021/159 | Entei | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 022/159 | Simisear V | Pokémon (Fire) | Holo Rare V | Holo |
+| 023/159 | Simisear VSTAR | Pokémon (Fire) | Holo Rare VSTAR | Holo |
+| 024/159 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 025/159 | Volcarona | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 026/159 | Volcanion | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 027/159 | Salandit | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 028/159 | Salazzle | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 029/159 | Seel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 030/159 | Galarian Mr. Mime | Pokémon (Water) | Common | Normal, Reverse holo |
+| 031/159 | Wailmer | Pokémon (Water) | Common | Normal, Reverse holo |
+| 032/159 | Wailord | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 033/159 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 034/159 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo |
+| 035/159 | Luvdisc | Pokémon (Water) | Common | Normal, Reverse holo |
+| 036/159 | Kyogre | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 037/159 | Kyogre V | Pokémon (Water) | Holo Rare V | Holo |
+| 038/159 | Glaceon V | Pokémon (Water) | Holo Rare V | Holo |
+| 039/159 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 040/159 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 041/159 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 042/159 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 043/159 | Luxray | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 044/159 | Luxray | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 045/159 | Rotom V | Pokémon (Lightning) | Holo Rare V | Holo |
+| 046/159 | Rotom VSTAR | Pokémon (Lightning) | Holo Rare VSTAR | Holo |
+| 047/159 | Emolga | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 048/159 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 049/159 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 050/159 | Heliolisk | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 051/159 | Radiant Charjabug | Pokémon (Lightning) | Radiant Rare | Holo |
+| 052/159 | Zeraora | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 053/159 | Zeraora V | Pokémon (Lightning) | Holo Rare V | Holo |
+| 054/159 | Zeraora VMAX | Pokémon (Lightning) | Holo Rare VMAX | Holo |
+| 055/159 | Zeraora VSTAR | Pokémon (Lightning) | Holo Rare VSTAR | Holo |
+| 056/159 | Pincurchin | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 057/159 | Exeggcute | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 058/159 | Exeggutor | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 059/159 | Mewtwo | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 060/159 | Mew V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 061/159 | Girafarig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 062/159 | Lunatone | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 063/159 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 064/159 | Tapu Lele | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 065/159 | Hatterene V | Pokémon (Psychic) | Holo Rare V | Holo |
+| 066/159 | Hatterene VMAX | Pokémon (Psychic) | Holo Rare VMAX | Holo |
+| 067/159 | Enamorus | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 068/159 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 069/159 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 070/159 | Baltoy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 071/159 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 072/159 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 073/159 | Rockruff | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 074/159 | Lycanroc | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 075/159 | Koffing | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 076/159 | Absol | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 077/159 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 078/159 | Liepard | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 079/159 | Krokorok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 080/159 | Pangoro | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 081/159 | Skrelp | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 082/159 | Dragalge | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 083/159 | Hoopa | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 084/159 | Galarian Meowth | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 085/159 | Galarian Perrserker | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 086/159 | Scizor | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 087/159 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 088/159 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 089/159 | Aggron | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 090/159 | Metang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 091/159 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 092/159 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 093/159 | Bisharp | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 094/159 | Zacian | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 095/159 | Zacian V | Pokémon (Metal) | Holo Rare V | Holo, Holo (Jumbo) |
+| 096/159 | Zacian VSTAR | Pokémon (Metal) | Holo Rare VSTAR | Holo |
+| 097/159 | Zamazenta | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 098/159 | Zamazenta V | Pokémon (Metal) | Holo Rare V | Holo |
+| 099/159 | Zamazenta VSTAR | Pokémon (Metal) | Holo Rare VSTAR | Holo |
+| 100/159 | Rayquaza V | Pokémon (Dragon) | Holo Rare V | Holo, Holo (Jumbo) |
+| 101/159 | Rayquaza VMAX | Pokémon (Dragon) | Holo Rare VMAX | Holo |
+| 102/159 | Rayquaza VMAX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 103/159 | Duraludon V | Pokémon (Dragon) | Holo Rare V | Holo |
+| 104/159 | Duraludon VMAX | Pokémon (Dragon) | Holo Rare VMAX | Holo |
+| 105/159 | Radiant Eternatus | Pokémon (Dragon) | Radiant Rare | Holo |
+| 106/159 | Tauros | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 107/159 | Ditto | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 108/159 | Eevee V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 109/159 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 110/159 | Starly | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 111/159 | Bidoof | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 112/159 | Chatot | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 113/159 | Regigigas V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 114/159 | Regigigas VSTAR | Pokémon (Colorless) | Holo Rare VSTAR | Holo |
+| 115/159 | Shaymin | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 116/159 | Stoutland V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 117/159 | Yungoos | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 118/159 | Gumshoos | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 119/159 | Oranguru | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 120/159 | Greedent V | Pokémon (Colorless) | Holo Rare V | Holo |
+| 121/159 | Wooloo | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 122/159 | Dubwool | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 123/159 | Bea | Trainer (Supporter) | Holo Rare | Holo, Reverse holo |
+| 124/159 | Bede | Trainer (Supporter) | Holo Rare | Holo, Reverse holo |
+| 125/159 | Crushing Hammer | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 126/159 | Digging Duo | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 127/159 | Energy Retrieval | Trainer (Item) | Common | Normal, Reverse holo |
+| 128/159 | Energy Search | Trainer (Item) | Common | Normal, Reverse holo |
+| 129/159 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 130/159 | Friends in Hisui | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 131/159 | Friends in Sinnoh | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 132/159 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 133/159 | Hop | Trainer (Supporter) | Holo Rare | Holo, Reverse holo |
+| 134/159 | Leon | Trainer (Supporter) | Holo Rare | Holo, Reverse holo |
+| 135/159 | Lost Vacuum | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 136/159 | Nessa | Trainer (Supporter) | Holo Rare | Holo, Reverse holo |
+| 137/159 | Poké Ball | Trainer (Item) | Common | Normal, Reverse holo |
+| 138/159 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 139/159 | Potion | Trainer (Item) | Common | Normal, Reverse holo |
+| 140/159 | Raihan | Trainer (Supporter) | Holo Rare | Holo, Reverse holo |
+| 141/159 | Rare Candy | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 142/159 | Rescue Carrier | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 143/159 | Sky Seal Stone | Trainer (Tool) | Holo Rare | Holo |
+| 144/159 | Switch | Trainer (Item) | Common | Normal, Reverse holo |
+| 145/159 | Trekking Shoes | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 146/159 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 147/159 | Elesa's Sparkle | Trainer (Supporter) | Ultra Rare | Holo |
+| 148/159 | Friends in Hisui | Trainer (Supporter) | Ultra Rare | Holo |
+| 149/159 | Friends in Sinnoh | Trainer (Supporter) | Ultra Rare | Holo |
+| 150/159 | Professor's Research | Trainer (Supporter) | Ultra Rare | Holo |
+| 151/159 | Volo | Trainer (Supporter) | Ultra Rare | Holo |
+| 152/159 | Grass Energy | Energy (Normal) | Ultra Rare | Holo |
+| 153/159 | Fire Energy | Energy (Normal) | Ultra Rare | Holo |
+| 154/159 | Water Energy | Energy (Normal) | Ultra Rare | Holo |
+| 155/159 | Lightning Energy | Energy (Normal) | Ultra Rare | Holo |
+| 156/159 | Psychic Energy | Energy (Normal) | Ultra Rare | Holo |
+| 157/159 | Fighting Energy | Energy (Normal) | Ultra Rare | Holo |
+| 158/159 | Darkness Energy | Energy (Normal) | Ultra Rare | Holo |
+| 159/159 | Metal Energy | Energy (Normal) | Ultra Rare | Holo |
+| 160/159 | Pikachu | Pokémon (Lightning) | Secret Rare | Holo |
+
+### Crown Zenith Galarian Gallery
+
+TCGdex set `swsh12.5gg`: 70 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| GG01 | Hisuian Voltorb | Pokémon (Grass) | Rare | Holo |
+| GG02 | Kricketune | Pokémon (Grass) | Rare | Holo |
+| GG03 | Magmortar | Pokémon (Fire) | Rare | Holo |
+| GG04 | Oricorio | Pokémon (Fire) | Rare | Holo |
+| GG05 | Lapras | Pokémon (Water) | Rare | Holo |
+| GG06 | Manaphy | Pokémon (Water) | Rare | Holo |
+| GG07 | Keldeo | Pokémon (Water) | Rare | Holo |
+| GG08 | Electivire | Pokémon (Lightning) | Rare | Holo |
+| GG09 | Toxtricity | Pokémon (Lightning) | Rare | Holo |
+| GG10 | Mew | Pokémon (Psychic) | Rare | Holo |
+| GG11 | Lunatone | Pokémon (Psychic) | Rare | Holo |
+| GG12 | Deoxys | Pokémon (Psychic) | Rare | Holo |
+| GG13 | Diancie | Pokémon (Psychic) | Rare | Holo |
+| GG14 | Comfey | Pokémon (Psychic) | Rare | Holo |
+| GG15 | Solrock | Pokémon (Fighting) | Rare | Holo |
+| GG16 | Absol | Pokémon (Darkness) | Rare | Holo |
+| GG17 | Thievul | Pokémon (Darkness) | Rare | Holo |
+| GG18 | Magnezone | Pokémon (Metal) | Rare | Holo |
+| GG19 | Altaria | Pokémon (Dragon) | Rare | Holo |
+| GG20 | Latias | Pokémon (Dragon) | Rare | Holo |
+| GG21 | Hisuian Goodra | Pokémon (Dragon) | Rare | Holo |
+| GG22 | Ditto | Pokémon (Colorless) | Rare | Holo |
+| GG23 | Dunsparce | Pokémon (Colorless) | Rare | Holo |
+| GG24 | Miltank | Pokémon (Colorless) | Rare | Holo |
+| GG25 | Bibarel | Pokémon (Colorless) | Rare | Holo |
+| GG26 | Riolu | Pokémon (Fighting) | Rare | Holo |
+| GG27 | Swablu | Pokémon (Colorless) | Rare | Holo |
+| GG28 | Duskull | Pokémon (Psychic) | Rare | Holo |
+| GG29 | Bidoof | Pokémon (Colorless) | Rare | Holo |
+| GG30 | Pikachu | Pokémon (Lightning) | Rare | Holo |
+| GG31 | Turtwig | Pokémon (Grass) | Rare | Holo |
+| GG32 | Paras | Pokémon (Grass) | Rare | Holo |
+| GG33 | Poochyena | Pokémon (Darkness) | Rare | Holo |
+| GG34 | Mareep | Pokémon (Lightning) | Rare | Holo |
+| GG35 | Leafeon VSTAR | Pokémon (Grass) | Ultra Rare | Holo |
+| GG36 | Entei V | Pokémon (Fire) | Ultra Rare | Holo |
+| GG37 | Simisear VSTAR | Pokémon (Fire) | Ultra Rare | Holo |
+| GG38 | Suicune V | Pokémon (Water) | Ultra Rare | Holo |
+| GG39 | Lumineon V | Pokémon (Water) | Ultra Rare | Holo |
+| GG40 | Glaceon VSTAR | Pokémon (Water) | Ultra Rare | Holo |
+| GG41 | Raikou V | Pokémon (Lightning) | Ultra Rare | Holo |
+| GG42 | Zeraora VMAX | Pokémon (Lightning) | Ultra Rare | Holo |
+| GG43 | Zeraora VSTAR | Pokémon (Lightning) | Ultra Rare | Holo |
+| GG44 | Mewtwo VSTAR | Pokémon (Psychic) | Ultra Rare | Holo |
+| GG45 | Deoxys VMAX | Pokémon (Psychic) | Ultra Rare | Holo |
+| GG46 | Deoxys VSTAR | Pokémon (Psychic) | Ultra Rare | Holo |
+| GG47 | Hatterene VMAX | Pokémon (Psychic) | Ultra Rare | Holo |
+| GG48 | Zacian V | Pokémon (Psychic) | Ultra Rare | Holo |
+| GG49 | Drapion V | Pokémon (Darkness) | Ultra Rare | Holo |
+| GG50 | Darkrai VSTAR | Pokémon (Darkness) | Ultra Rare | Holo |
+| GG51 | Hisuian Samurott V | Pokémon (Darkness) | Ultra Rare | Holo |
+| GG52 | Hisuian Samurott VSTAR | Pokémon (Darkness) | Ultra Rare | Holo |
+| GG53 | Hoopa V | Pokémon (Darkness) | Ultra Rare | Holo |
+| GG54 | Zamazenta V | Pokémon (Metal) | Ultra Rare | Holo |
+| GG55 | Regigigas VSTAR | Pokémon (Colorless) | Ultra Rare | Holo |
+| GG56 | Hisuian Zoroark VSTAR | Pokémon (Colorless) | Ultra Rare | Holo |
+| GG57 | Adaman | Trainer (Supporter) | Ultra Rare | Holo |
+| GG58 | Cheren's Care | Trainer (Supporter) | Ultra Rare | Holo |
+| GG59 | Colress's Experiment | Trainer (Supporter) | Ultra Rare | Holo |
+| GG60 | Cynthia's Ambition | Trainer (Supporter) | Ultra Rare | Holo |
+| GG61 | Gardenia's Vigor | Trainer (Supporter) | Ultra Rare | Holo |
+| GG62 | Grant | Trainer (Supporter) | Ultra Rare | Holo |
+| GG63 | Irida | Trainer (Supporter) | Ultra Rare | Holo |
+| GG64 | Melony | Trainer (Supporter) | Ultra Rare | Holo |
+| GG65 | Raihan | Trainer (Supporter) | Ultra Rare | Holo |
+| GG66 | Roxanne | Trainer (Supporter) | Ultra Rare | Holo |
+| GG67 | Origin Forme Palkia VSTAR | Pokémon (Water) | Secret Rare | Holo |
+| GG68 | Origin Forme Dialga VSTAR | Pokémon (Metal) | Secret Rare | Holo |
+| GG69 | Giratina VSTAR | Pokémon (Dragon) | Secret Rare | Holo |
+| GG70 | Arceus VSTAR | Pokémon (Colorless) | Secret Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
