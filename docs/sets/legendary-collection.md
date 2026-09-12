@@ -107,6 +107,127 @@ was found. Loose Packs shows the set only in a photo, with no data.
 | Blister pack | Unknown | — | — | — |
 | Case | Unknown boxes per case | — | — | — |
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `lc`), fetched 2026-09-12. The list has 110 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/110 | Alakazam | Pokémon (Psychic) | Holo Rare | Reverse holo, Holo |
+| 2/110 | Articuno | Pokémon (Water) | Holo Rare | Reverse holo, Holo |
+| 3/110 | Charizard | Pokémon (Fire) | Holo Rare | Normal, Reverse holo, Holo, Reverse holo (Jumbo) |
+| 4/110 | Dark Blastoise | Pokémon (Water) | Holo Rare | Normal, Reverse holo, Holo, Reverse holo (Jumbo) |
+| 5/110 | Dark Dragonite | Pokémon (Colorless) | Holo Rare | Reverse holo, Holo |
+| 6/110 | Dark Persian | Pokémon (Colorless) | Holo Rare | Reverse holo, Holo |
+| 7/110 | Dark Raichu | Pokémon (Lightning) | Holo Rare | Normal, Reverse holo, Holo, Reverse holo (Jumbo) |
+| 8/110 | Dark Slowbro | Pokémon (Psychic) | Holo Rare | Reverse holo, Holo |
+| 9/110 | Dark Vaporeon | Pokémon (Water) | Holo Rare | Reverse holo, Holo |
+| 10/110 | Flareon | Pokémon (Fire) | Holo Rare | Reverse holo, Holo |
+| 11/110 | Gengar | Pokémon (Psychic) | Holo Rare | Reverse holo, Holo |
+| 12/110 | Gyarados | Pokémon (Water) | Holo Rare | Reverse holo, Holo |
+| 13/110 | Hitmonlee | Pokémon (Fighting) | Holo Rare | Reverse holo, Holo |
+| 14/110 | Jolteon | Pokémon (Lightning) | Holo Rare | Reverse holo, Holo |
+| 15/110 | Machamp | Pokémon (Fighting) | Holo Rare | Reverse holo, Holo |
+| 16/110 | Muk | Pokémon (Grass) | Holo Rare | Reverse holo, Holo |
+| 17/110 | Ninetales | Pokémon (Fire) | Holo Rare | Reverse holo, Holo |
+| 18/110 | Venusaur | Pokémon (Grass) | Holo Rare | Reverse holo, Holo |
+| 19/110 | Zapdos | Pokémon (Lightning) | Holo Rare | Reverse holo, Holo |
+| 20/110 | Beedrill | Pokémon (Grass) | Rare | Reverse holo, Normal |
+| 21/110 | Butterfree | Pokémon (Grass) | Rare | Reverse holo, Normal |
+| 22/110 | Electrode | Pokémon (Lightning) | Rare | Reverse holo, Normal |
+| 23/110 | Exeggutor | Pokémon (Grass) | Rare | Reverse holo, Normal |
+| 24/110 | Golem | Pokémon (Fighting) | Rare | Reverse holo, Normal |
+| 25/110 | Hypno | Pokémon (Psychic) | Rare | Reverse holo, Normal |
+| 26/110 | Jynx | Pokémon (Psychic) | Rare | Reverse holo, Normal |
+| 27/110 | Kabutops | Pokémon (Fighting) | Rare | Reverse holo, Normal |
+| 28/110 | Magneton | Pokémon (Lightning) | Rare | Reverse holo, Normal |
+| 29/110 | Mewtwo | Pokémon (Psychic) | Rare | Reverse holo, Normal, Reverse holo (Jumbo) |
+| 30/110 | Moltres | Pokémon (Fire) | Rare | Reverse holo, Normal |
+| 31/110 | Nidoking | Pokémon (Grass) | Rare | Reverse holo, Normal |
+| 32/110 | Nidoqueen | Pokémon (Grass) | Rare | Reverse holo, Normal |
+| 33/110 | Pidgeot | Pokémon (Colorless) | Rare | Reverse holo, Normal |
+| 34/110 | Pidgeotto | Pokémon (Colorless) | Rare | Reverse holo, Normal |
+| 35/110 | Rhydon | Pokémon (Fighting) | Rare | Reverse holo, Normal |
+| 36/110 | Arcanine | Pokémon (Fire) | Uncommon | Reverse holo, Normal |
+| 37/110 | Charmeleon | Pokémon (Fire) | Uncommon | Reverse holo, Normal |
+| 38/110 | Dark Dragonair | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 39/110 | Dark Wartortle | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 40/110 | Dewgong | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 41/110 | Dodrio | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 42/110 | Fearow | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 43/110 | Golduck | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 44/110 | Graveler | Pokémon (Fighting) | Uncommon | Reverse holo, Normal |
+| 45/110 | Growlithe | Pokémon (Fire) | Uncommon | Reverse holo, Normal |
+| 46/110 | Haunter | Pokémon (Psychic) | Uncommon | Reverse holo, Normal |
+| 47/110 | Ivysaur | Pokémon (Grass) | Uncommon | Reverse holo, Normal |
+| 48/110 | Kabuto | Pokémon (Fighting) | Uncommon | Reverse holo, Normal |
+| 49/110 | Kadabra | Pokémon (Psychic) | Uncommon | Reverse holo, Normal |
+| 50/110 | Kakuna | Pokémon (Grass) | Uncommon | Reverse holo, Normal |
+| 51/110 | Machoke | Pokémon (Fighting) | Uncommon | Reverse holo, Normal |
+| 52/110 | Magikarp | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 53/110 | Meowth | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 54/110 | Metapod | Pokémon (Grass) | Uncommon | Reverse holo, Normal |
+| 55/110 | Nidorina | Pokémon (Grass) | Uncommon | Reverse holo, Normal |
+| 56/110 | Nidorino | Pokémon (Grass) | Uncommon | Reverse holo, Normal |
+| 57/110 | Omanyte | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 58/110 | Omastar | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 59/110 | Primeape | Pokémon (Fighting) | Uncommon | Reverse holo, Normal |
+| 60/110 | Rapidash | Pokémon (Fire) | Uncommon | Reverse holo, Normal |
+| 61/110 | Raticate | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 62/110 | Sandslash | Pokémon (Fighting) | Uncommon | Reverse holo, Normal |
+| 63/110 | Seadra | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 64/110 | Snorlax | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 65/110 | Tauros | Pokémon (Colorless) | Uncommon | Reverse holo, Normal |
+| 66/110 | Tentacruel | Pokémon (Water) | Uncommon | Reverse holo, Normal |
+| 67/110 | Abra | Pokémon (Psychic) | Common | Reverse holo, Normal |
+| 68/110 | Bulbasaur | Pokémon (Grass) | Common | Reverse holo, Normal |
+| 69/110 | Caterpie | Pokémon (Grass) | Common | Reverse holo, Normal |
+| 70/110 | Charmander | Pokémon (Fire) | Common | Reverse holo, Normal |
+| 71/110 | Doduo | Pokémon (Colorless) | Common | Reverse holo, Normal |
+| 72/110 | Dratini | Pokémon (Colorless) | Common | Reverse holo, Normal |
+| 73/110 | Drowzee | Pokémon (Psychic) | Common | Reverse holo, Normal |
+| 74/110 | Eevee | Pokémon (Colorless) | Common | Reverse holo, Normal |
+| 75/110 | Exeggcute | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Shifted energy cost) |
+| 76/110 | Gastly | Pokémon (Psychic) | Common | Reverse holo, Normal |
+| 77/110 | Geodude | Pokémon (Fighting) | Common | Reverse holo, Normal |
+| 78/110 | Grimer | Pokémon (Grass) | Common | Reverse holo, Normal |
+| 79/110 | Machop | Pokémon (Fighting) | Common | Reverse holo, Normal |
+| 80/110 | Magnemite | Pokémon (Lightning) | Common | Reverse holo, Normal |
+| 81/110 | Mankey | Pokémon (Fighting) | Common | Reverse holo, Normal |
+| 82/110 | Nidoran ♀ | Pokémon (Grass) | Common | Reverse holo, Normal |
+| 83/110 | Nidoran ♂ | Pokémon (Grass) | Common | Reverse holo, Normal |
+| 84/110 | Onix | Pokémon (Fighting) | Common | Reverse holo, Normal |
+| 85/110 | Pidgey | Pokémon (Colorless) | Common | Reverse holo, Normal |
+| 86/110 | Pikachu | Pokémon (Lightning) | Common | Reverse holo, Normal |
+| 87/110 | Ponyta | Pokémon (Fire) | Common | Reverse holo, Normal |
+| 88/110 | Psyduck | Pokémon (Water) | Common | Reverse holo, Normal |
+| 89/110 | Rattata | Pokémon (Colorless) | Common | Reverse holo, Normal |
+| 90/110 | Rhyhorn | Pokémon (Fighting) | Common | Reverse holo, Normal |
+| 91/110 | Sandshrew | Pokémon (Fighting) | Common | Reverse holo, Normal |
+| 92/110 | Seel | Pokémon (Water) | Common | Reverse holo, Normal |
+| 93/110 | Slowpoke | Pokémon (Psychic) | Common | Reverse holo, Normal |
+| 94/110 | Spearow | Pokémon (Colorless) | Common | Reverse holo, Normal |
+| 95/110 | Squirtle | Pokémon (Water) | Common | Reverse holo, Normal |
+| 96/110 | Tentacool | Pokémon (Water) | Common | Reverse holo, Normal |
+| 97/110 | Voltorb | Pokémon (Lightning) | Common | Reverse holo, Normal |
+| 98/110 | Vulpix | Pokémon (Fire) | Common | Reverse holo, Normal |
+| 99/110 | Weedle | Pokémon (Grass) | Common | Reverse holo, Normal |
+| 100/110 | Full Heal Energy | Energy (Special) | Uncommon | Reverse holo, Normal |
+| 101/110 | Potion Energy | Energy (Special) | Uncommon | Reverse holo, Normal |
+| 102/110 | Pokémon Breeder | Trainer | Rare | Reverse holo, Normal |
+| 103/110 | Pokémon Trader | Trainer | Rare | Reverse holo, Normal |
+| 104/110 | Scoop Up | Trainer | Rare | Reverse holo, Normal |
+| 105/110 | The Boss's Way | Trainer | Uncommon | Reverse holo, Normal |
+| 106/110 | Challenge! | Trainer | Uncommon | Reverse holo, Normal |
+| 107/110 | Energy Retrieval | Trainer | Uncommon | Reverse holo, Normal |
+| 108/110 | Bill | Trainer | Common | Reverse holo, Normal |
+| 109/110 | Mysterious Fossil | Trainer | Common | Reverse holo, Normal |
+| 110/110 | Potion | Trainer | Common | Reverse holo, Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
