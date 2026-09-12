@@ -142,10 +142,13 @@ holo slot instead of a plain reverse holo.
 - Unknown: packs per box from a retailer or official source. The value 36
   is a community figure.
 - Unknown: boxes per case.
+  Searched 2026-09-12: no source found.
 - Unknown: the holo rare odds for this set. The "1 in 3" figure is generic.
 - Conflict: Prime per box is 4, 5, or 4–6 across reports and estimates. Only
   6 boxes have reported counts.
 - Unknown: the Alph Lithograph FOUR odds from a source specific to this set.
+  Searched 2026-09-12: no source found. Flipside Gaming states only the
+  era-wide figure (1 in 108, 1 in 3 boxes).
 - The Bulbapedia theme deck and blister date (November 2, 2010) is one day
   before the set date (November 3, 2010).
 - Unknown: the pack split between Undaunted and Triumphant in each Prime

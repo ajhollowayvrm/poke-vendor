@@ -160,14 +160,20 @@ in the reverse holo slot or the rare slot.
 - The pack order is a community claim. Sources conflict. See the era file.
 - **Unknown: the slot of a Shiny Legendary card.** It can be the rare slot
   (card 7) or the reverse holo slot (card 6).
+  Searched 2026-09-12: no source found. PokéBeach box-report threads and
+  Kanto Shark's set guide give per-box Shiny Legendary counts but do not
+  name the slot.
 - Unknown: the holo rare odds for this set. This set has 22 holo rares and 17
   non-holo rares, so the generic "1 in 3" figure is doubtful.
+  Searched 2026-09-12: no source found.
 - Conflict: Shiny Legendary odds. Flipside Gaming gives 1 in 18 (2 per box).
   Box reports average about 2.6 per box. Kanto Shark gives 1 per box or
   fewer.
 - Unknown: whether the basic energy cards 88–95 take the reverse holo slot
   at the same rate as other cards.
 - Unknown: boxes per case.
+  Searched 2026-09-12: no source found. Current retailer listings sell
+  single boxes, not sealed cases, for this set.
 - Unknown: the pack counts and release dates of the Three Pack Blisters and
   the Knock Out Collection.
 - Unknown: whether the Recon and Retort theme decks hold a booster pack.

@@ -176,7 +176,10 @@ holo slot instead of a plain reverse holo.
 
 - The pack order is a community claim. Sources conflict. See the era file.
 - Unknown: boxes per case.
+  Searched 2026-09-12: no source found.
 - Conflict: the generic holo estimate is 12 per box. Box reports show 8–10.
+  Searched 2026-09-12: no source specific to this set found beyond the
+  existing box reports.
 - Conflict: Prime estimates are 1 in 6 or 1 in 7. Box reports support 5 per
   box.
 - Conflict: Alph Lithograph estimates are 1 in 3 boxes. Box reports show it

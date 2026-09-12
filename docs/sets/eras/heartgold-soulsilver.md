@@ -173,6 +173,8 @@ community-derived.
   NinePocket says this era has no reliable order. No source shows a
   documented sample of opened HGSS-era packs. A video study of real packs
   must confirm the order.
+  Searched 2026-09-12: no source found. Elite Fourum threads on pack slots
+  and card rarity guides do not cover a documented HGSS-era pack order.
 - The forum source uses a Stormfront pack as its example. No source gives
   an example pack from an HGSS-era set.
 - Unknown: whether the order holds for every print run and every pack
@@ -181,6 +183,8 @@ community-derived.
   order reverses and the rare becomes card 4.
 - Unknown: the order of the 5 commons and 3 uncommons in cards 1–5 and 8–10.
 - Unknown: boxes per case for every set in this era.
+  Searched 2026-09-12: no source found. Current retailer listings for this
+  era sell single boxes, not sealed cases.
 - Unknown: whether the holo rare figure "1 in 3 packs for any set" applies
   to this era. Undaunted box reports show 8–10 holos per box, not 12.
 - Not checked: McDonald's Collection 2011 and its era.

@@ -148,7 +148,11 @@ card, not a separate entry.
 
 - The pack order is a community claim. Sources conflict. See the era file.
 - Unknown: boxes per case.
+  Searched 2026-09-12: no source found.
 - Unknown: the holo rare odds for this set. The "1 in 3" figure is generic.
+  Searched 2026-09-12: no source found. Third-party rip simulators
+  (PackRip, ThePriceDex) show set-specific holo rare rates with no stated
+  historical source, so this file does not use them.
 - Conflict: Prime per box is 6 in one post and 6–7 in a reply.
 - Conflict: LEGEND halves per box are 3–4 in one post and 2–4 in a reply.
   Flipside Gaming gives 1 in 12–18 packs for the era.

@@ -136,7 +136,11 @@ holo slot instead of a plain reverse holo.
 - Unknown: packs per box from a retailer or official source. The value 36
   is a community figure.
 - Unknown: boxes per case.
+  Searched 2026-09-12: no source found.
 - Unknown: the holo rare odds for this set. The "1 in 3" figure is generic.
+  Searched 2026-09-12: no source found. Third-party rip simulators
+  (PackRip, ThePriceDex) show set-specific holo rare rates with no stated
+  historical source, so this file does not use them.
 - Conflict: Prime odds are 1 in 7 (5 per box) or 1 in 5 (6–7 per box).
   Replies with box results support 5 per box.
 - Conflict: LEGEND halves per box are 3–4 or 4. This set has 6 LEGEND
