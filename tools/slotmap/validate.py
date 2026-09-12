@@ -2,6 +2,7 @@
 
 Usage: python3 tools/slotmap/validate.py [slug ...]   (no slugs: every set file with a slot map)
 Exit code 1 if any set has an error.
+A Variant cell can list options, "A or B": each card uses the first option that it has.
 """
 import glob, os, re, sys, collections
 
@@ -126,7 +127,16 @@ def validate(slug):
             if missing:
                 matched = [(c, "[missing]") for c in cards if c["rarity"] in names and in_filter(c, filt)]
             else:
-                matched = [(c, v) for c in cards if c["rarity"] in names and in_filter(c, filt) for v in c["variants"] if variant_matches(v, variant, runs)]
+                options = [o.strip() for o in variant.split(" or ")]
+                matched = []
+                for c in cards:
+                    if c["rarity"] not in names or not in_filter(c, filt):
+                        continue
+                    for option in options:
+                        hits = [v for v in c["variants"] if variant_matches(v, option, runs)]
+                        if hits:
+                            matched += [(c, v) for v in hits]
+                            break
         except ValueError as e:
             errors.append(f"{slot} / {outcome}: {e}")
             continue

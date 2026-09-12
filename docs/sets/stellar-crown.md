@@ -362,7 +362,7 @@ Confidence: this map follows the pack structure above. Odds use the file's defau
 | Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | 1 in 6 |
 | Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | 1 in 15 |
 | Rare slot | 1 | ACE SPEC Rare | ACE SPEC Rare | ACE SPEC Rare | Holo | All | 1 in 20 |
-| Rare slot | 1 | Hyper Rare | Hyper Rare | Hyper rare | Holo (Gold) | All | 1 in 137 |
+| Rare slot | 1 | Hyper Rare | Hyper Rare | Hyper rare | Holo (Gold) or Holo | All | 1 in 137 |
 | Rare slot | 1 | Rare | Rare | Rare | Holo | All | Rest |
 | Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
 | Code card | 1 | Code card | — | — | — | — | 100% |
@@ -408,11 +408,9 @@ Joseph Writer Anderson ACE SPEC figure).
 
 ## Open topics
 
-- **Slot map:** the Hyper Rare rarity has 3 cards. 2 carry the Holo
-  (Gold) print; 1 carries a plain Holo print instead. The slot map
-  uses Holo (Gold) as the pack print, per the era rule that Hyper
-  Rares are gold cards, so the card with only a plain Holo print
-  stays unused.
+- **Slot map:** the Hyper Rare row uses `Holo (Gold) or Holo`. Area Zero
+  Underdepths and Bravery Charm have a `Holo (Gold)` print. The card list
+  gives Terapagos ex (173/142) only a `Holo` print, so the map uses it.
 - **Slot map:** two Rare cards (Ledian, Bouffalant) carry an extra
   plain Normal print, with no promo or special tag. The era rule makes
   Rare cards holofoil, so the slot map treats this print as not from
