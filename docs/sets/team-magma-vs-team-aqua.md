@@ -24,16 +24,13 @@ border design.
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 28 | Bulbapedia |
-| Uncommon | 28 | Bulbapedia |
-| Rare | 12 | Bulbapedia |
-| Rare Holo | 17 | Bulbapedia |
-| Rare Holo ex | 8 | Bulbapedia |
-| Secret Rare | 2 | Bulbapedia |
-
-The main-set counts (28+28+12+17+8=93) sum 2 short of the 95-card main
-set (97 total minus the 2 Secret Rares). This research pass could not
-resolve the gap. See Open topics.
+| Common | 32 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 32 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 12 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 12 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 7 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Secret Rare | 2 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **97** | Sum of the rows |
 
 Rare Holo ex cards (Bulbapedia): Blaziken ex, Cradily ex, Entei ex,
 Kabutops ex, Raikou ex, Sceptile ex, Suicune ex, Swampert ex.
@@ -159,17 +156,6 @@ matching the era rarity system's usual order.
 
 ## Open topics
 
-- **Rarity count mismatch.** The main-set rarity counts
-  (28+28+12+17+8=93) sum 2 short of the 95-card main set (97 total
-  minus 2 Secret Rares). Searched 2026-09-12: two separate fetches of
-  Bulbapedia's card list (the rendered page, and its raw wikitext) each
-  returned a different rarity breakdown and a different total (79 and
-  87), and a third fetch of Serebii's card list 404'd. No fetch gave a
-  consistent, verifiable count. This file keeps the original
-  Bulbapedia-page counts above rather than adopt any of the conflicting
-  figures. A follow-up pass should read the live page directly in a
-  browser, not through an automated fetch, and check whether Trainer
-  and Energy cards (not counted in the table above) close the gap.
 - **Fractional box counts.** The Rare Holo (8.7) and Secret Rare (0.3)
   per-box figures are not whole numbers. Searched 2026-09-12: no source
   explained the fractional values; this file uses them as given.

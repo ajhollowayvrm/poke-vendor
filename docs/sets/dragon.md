@@ -24,15 +24,13 @@ no Rare Holo ☆ (see
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 21 | Bulbapedia |
-| Uncommon | 17 | Bulbapedia |
-| Rare | 13 | Bulbapedia |
-| Rare Holo | 12 | Bulbapedia |
-| Rare Holo ex | 9 | Bulbapedia |
-| Secret Rare | 3 | Bulbapedia |
-
-The six counts above sum to 75, not the stated total of 100. This
-research pass could not resolve the gap. See Open topics.
+| Common | 33 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 33 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 10 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 12 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 9 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Secret Rare | 3 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **100** | Sum of the rows |
 
 Secret Rare cards, numbered past the printed 97-card total (Bulbapedia):
 
@@ -148,17 +146,6 @@ the era's rarity system order.
 
 ## Open topics
 
-- **Rarity count mismatch.** The six rarity counts
-  (21+17+13+12+9+3=75) do not sum to the stated total of 100 cards.
-  Searched 2026-09-12: three separate fetches (Bulbapedia's rendered
-  page twice, and Serebii's card list once) each returned a different
-  rarity breakdown, with totals of 100, 91, and 90. No fetch gave a
-  consistent, verifiable count, though every fetch agreed the Secret
-  Rare count is 3. This file keeps the original Bulbapedia-page counts
-  above rather than adopt any of the conflicting figures. A follow-up
-  pass should read the live page directly in a browser, not through an
-  automated fetch, and check whether Trainer and Energy cards (not
-  counted in the table above) close the gap.
 - **Common/uncommon per-pack split.** Not confirmed for this specific
   set. Searched 2026-09-12: no source found; see the general
   Common/uncommon split conflict in

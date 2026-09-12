@@ -24,18 +24,17 @@ with no Rare Holo ☆ and no Secret Rare (see
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 24 | Bulbapedia |
-| Uncommon | 21 | Bulbapedia |
-| Rare | 8 | Bulbapedia |
-| Rare Holo | 14 | Bulbapedia |
-| Rare Holo ex | 10 | Bulbapedia |
+| Common | 40 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 34 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 13 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 14 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 8 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **109** | Sum of the rows |
 
-The five counts above sum to 77, not the stated total of 109. This
-research pass could not resolve the gap. See Open topics.
-
-Rare Holo ex cards (partial list, Bulbapedia): Chansey ex, Electabuzz
-ex, Hitmonchan ex, Lapras ex, Magmar ex, Mewtwo ex, Scyther ex, Sneasel
-ex, plus two more not named in the fetched extract.
+Rare Holo ex cards (Bulbapedia set list): Chansey ex (96/109),
+Electabuzz ex (97/109), Hitmonchan ex (98/109), Lapras ex (99/109),
+Magmar ex (100/109), Mewtwo ex (101/109), Scyther ex (102/109), and
+Sneasel ex (103/109).
 
 ## Pack structure
 
@@ -141,19 +140,6 @@ and no Secret Rare, so the list stops at Rare Holo ex.
 
 ## Open topics
 
-- **Rarity count mismatch.** The five rarity counts (24+21+8+14+10=77)
-  do not sum to the stated total of 109 cards. Searched 2026-09-12:
-  three separate fetches of Bulbapedia's card list (the rendered page
-  twice, and its raw wikitext once) each returned a different rarity
-  breakdown and a different total (102, then 102, then 102 by one
-  count and 109 minus a stated "Additional cards" group of
-  promotional, Theme Deck, and jumbo variants by another). No fetch
-  gave a consistent, verifiable count. This file keeps the original
-  Bulbapedia-page counts above rather than adopt any of the conflicting
-  figures. A follow-up pass should read the live page directly in a
-  browser, not through an automated fetch, and separately confirm
-  whether Trainer and Energy cards (not counted in the table above) and
-  the "Additional cards" variants close the gap.
 - **Common/uncommon per-pack split.** The box counts (168 commons, 72
   uncommons over 36 packs) give 4.67 commons and 2 uncommons per pack,
   which conflicts with the 5-commons/2-uncommons split stated

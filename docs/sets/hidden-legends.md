@@ -24,15 +24,13 @@ set, EX Team Rocket Returns (see
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 23 | Bulbapedia |
-| Uncommon | 19 | Bulbapedia |
-| Rare | 15 | Bulbapedia |
-| Rare Holo | 15 | Bulbapedia |
-| Rare Holo ex | 10 | Bulbapedia |
-| Secret Rare | 1 | Bulbapedia |
-
-The six counts above sum to 83, not the stated total of 102. This
-research pass could not resolve the gap. See Open topics.
+| Common | 32 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 33 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 12 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 15 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 9 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Secret Rare | 1 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **102** | Sum of the rows |
 
 Secret Rare card, numbered past the printed 101-card total (Bulbapedia):
 
@@ -150,10 +148,6 @@ era rarity system's usual order. This set has no Rare Holo ☆.
 
 ## Open topics
 
-- **Rarity count mismatch.** The six rarity counts (23+19+15+15+10+1=83)
-  do not sum to the stated total of 102 cards. Searched 2026-09-12: no
-  source resolved the gap. A follow-up pass should read Bulbapedia's
-  card list table directly, not a summarized extract.
 - **Set code.** Not confirmed in a fetched source.
 - **Pack order and hit position.** Searched 2026-09-12: no source
   found beyond the one low-confidence secondary claim in

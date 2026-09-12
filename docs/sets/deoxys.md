@@ -23,16 +23,14 @@ centers on the clash between Deoxys and Rayquaza.
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 24 | Bulbapedia |
-| Uncommon | 19 | Bulbapedia |
-| Rare | 16 | Bulbapedia |
-| Rare Holo | 14 | Bulbapedia |
-| Rare Holo ex | 8 | Bulbapedia |
-| Rare Holo ☆ | 3 | Bulbapedia |
-| Secret Rare | 1 | Bulbapedia |
-
-The seven counts above sum to 85, not the stated total of 108. This
-research pass could not resolve the gap. See Open topics.
+| Common | 32 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 34 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 14 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 15 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 9 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ☆ | 3 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Secret Rare | 1 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **108** | Sum of the rows |
 
 ## Pack structure
 
@@ -147,11 +145,6 @@ exists for the Secret Rare, so the era rarity system places it last.
 
 ## Open topics
 
-- **Rarity count mismatch.** The seven rarity counts
-  (24+19+16+14+8+3+1=85) do not sum to the stated total of 108 cards.
-  Searched 2026-09-12: no source resolved the gap. A follow-up pass
-  should read Bulbapedia's card list table directly, not a summarized
-  extract.
 - **Set code.** Not confirmed in a fetched source.
 - **Pack order and hit position.** Searched 2026-09-12: no source
   found beyond the one low-confidence secondary claim in

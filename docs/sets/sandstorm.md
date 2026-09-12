@@ -24,14 +24,12 @@ with no Rare Holo ☆ and no Secret Rare (see
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 29 | Bulbapedia |
-| Uncommon | 21 | Bulbapedia |
-| Rare | 13 | Bulbapedia |
-| Rare Holo | 14 | Bulbapedia |
-| Rare Holo ex | 7 | Bulbapedia |
-
-The five counts above sum to 84, not the stated total of 100. This
-research pass could not resolve the gap. See Open topics.
+| Common | 33 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 33 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 13 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 14 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 7 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **100** | Sum of the rows |
 
 Rare Holo ex cards (Bulbapedia): Aerodactyl ex, Aggron ex, Gardevoir
 ex, Kabutops ex, Raichu ex, Typhlosion ex, Wailord ex.
@@ -137,17 +135,6 @@ and no Secret Rare, so the list stops at Rare Holo ex.
 
 ## Open topics
 
-- **Rarity count mismatch.** The five rarity counts (29+21+13+14+7=84)
-  do not sum to the stated total of 100 cards. Searched 2026-09-12:
-  three separate fetches of Bulbapedia's card list (the rendered page
-  twice, and its raw wikitext once) each returned a different rarity
-  breakdown (totals of 100, 98, and 100 with different per-rarity
-  splits each time). No fetch gave a consistent, verifiable count. This
-  file keeps the original Bulbapedia-page counts above rather than
-  adopt any of the conflicting figures. A follow-up pass should read
-  the live page directly in a browser, not through an automated fetch,
-  and check whether Trainer and Energy cards (not counted in the table
-  above) close the gap.
 - **Common/uncommon per-pack split.** Not confirmed for this specific
   set. Searched 2026-09-12: no source found; see the general
   Common/uncommon split conflict in

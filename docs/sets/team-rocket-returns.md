@@ -23,16 +23,14 @@ EX Team Rocket Returns is the first set in the era with Rare Holo ☆
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 27 | Bulbapedia |
-| Uncommon | 19 | Bulbapedia |
-| Rare | 18 | Bulbapedia |
-| Rare Holo | 10 | Bulbapedia |
-| Rare Holo ex | 12 | Bulbapedia |
-| Rare Holo ☆ | 3 | Bulbapedia |
-| Secret Rare | 2 | Bulbapedia |
-
-The seven counts above sum to 91, not the stated total of 111. This
-research pass could not resolve the gap. See Open topics.
+| Common | 32 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 35 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 14 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 14 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 11 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ☆ | 3 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Secret Rare | 2 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **111** | Sum of the rows |
 
 Rare Holo ☆ cards (Bulbapedia): Mudkip ☆, Torchic ☆, Treecko ☆.
 
@@ -159,11 +157,6 @@ Secret Rare, matching the era rarity system's usual order.
 
 ## Open topics
 
-- **Rarity count mismatch.** The seven rarity counts
-  (27+19+18+10+12+3+2=91) do not sum to the stated total of 111 cards.
-  Searched 2026-09-12: no source resolved the gap. A follow-up pass
-  should read Bulbapedia's card list table directly, not a summarized
-  extract.
 - **Fractional box counts.** The Rare Holo (8.2), Rare Holo ☆ (0.5),
   and Secret Rare (0.3) per-box figures are not whole numbers. Searched
   2026-09-12: no source explained the fractional values; this file

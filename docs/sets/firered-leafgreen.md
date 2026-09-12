@@ -24,18 +24,18 @@ next set, EX Team Rocket Returns (see
 
 | Rarity | Count | Source |
 |---|---|---|
-| Common | 27 | Bulbapedia |
-| Uncommon | 23 | Bulbapedia |
-| Rare | 17 | Bulbapedia |
-| Rare Holo | 17 | Bulbapedia |
-| Rare Holo ex | 9 | Bulbapedia |
-| Secret Rare | 4 | Bulbapedia |
+| Common | 36 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Uncommon | 36 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare | 14 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo | 17 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Rare Holo ex | 9 | Bulbapedia set list (wiki text, 2026-09-12) |
+| Secret Rare | 4 | Bulbapedia set list (wiki text, 2026-09-12) |
+| **Total** | **116** | Sum of the rows |
 
-The six counts above sum to 97, not the stated total of 116. This
-research pass could not resolve the gap. A fetched summary also
-mentions 2 further promotional variant cards tied to this set, which
-this file does not fold into the rarity table because their rarity was
-not stated. See Open topics.
+Bulbapedia also lists 2 additional cards that do not come from booster
+packs: a Wartortle (50/112) with a "Prerelease" stamp, and a Prof. Oak's
+Research (98/112) from the Professor Program 2004–2005. The table does
+not count them.
 
 Secret Rare cards, numbered past the printed 112-card main set
 (Bulbapedia):
@@ -158,10 +158,6 @@ Holo ☆.
 
 ## Open topics
 
-- **Rarity count mismatch.** The six rarity counts (27+23+17+17+9+4=97)
-  do not sum to the stated total of 116 cards. Searched 2026-09-12: no
-  source resolved the gap. A follow-up pass should read Bulbapedia's
-  card list table directly, not a summarized extract.
 - **Two unlabeled promotional cards.** A fetched summary mentions 2
   further cards tied to this set with no stated rarity. Searched
   2026-09-12: no source found that names or classifies them.
