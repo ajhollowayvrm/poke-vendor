@@ -110,6 +110,141 @@ Contents come from the Bulbapedia merchandise page, except where noted.
 | HeartGold & SoulSilver Variety Blister | Black & White era | Unknown | 3 random packs | Variable |
 | Sneak-Peek Tins | March 9, 2011 | Unknown | 4 packs from the Platinum Series to the HGSS Series | Variable |
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `hgss1`), fetched 2026-09-12. The list has 124 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/123 | Arcanine | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Normal |
+| 2/123 | Azumarill | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 3/123 | Clefable | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 4/123 | Gyarados | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 5/123 | Hitmontop | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 6/123 | Jumpluff | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Holo (Yuka furusawa) |
+| 7/123 | Ninetales | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 8/123 | Noctowl | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal |
+| 9/123 | Quagsire | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 10/123 | Raichu | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 11/123 | Shuckle | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 12/123 | Slowking | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 13/123 | Wobbuffet | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 14/123 | Ampharos | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 15/123 | Ariados | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 16/123 | Butterfree | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 17/123 | Cleffa | Pokémon (Colorless) | Rare | Normal, Reverse holo, Normal (David cohen) |
+| 18/123 | Exeggutor | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 19/123 | Farfetch'd | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 20/123 | Feraligatr | Pokémon (Water) | Rare | Normal, Reverse holo, Holo (Cracked ice), Holo (Cosmos) |
+| 21/123 | Furret | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 22/123 | Granbull | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 23/123 | Hypno | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 24/123 | Lapras | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 25/123 | Ledian | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 26/123 | Meganium | Pokémon (Grass) | Rare | Normal, Reverse holo, Holo (Cracked ice), Holo (Cosmos) |
+| 27/123 | Persian | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 28/123 | Pichu | Pokémon (Lightning) | Rare | Normal, Reverse holo, Holo (Prerelease), Holo (Staff, Prerelease), Normal (Ross cawthorn) |
+| 29/123 | Sandslash | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 30/123 | Smoochum | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 31/123 | Sunflora | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 32/123 | Typhlosion | Pokémon (Fire) | Rare | Normal, Reverse holo, Holo (Cracked ice), Holo (Cosmos) |
+| 33/123 | Tyrogue | Pokémon (Fighting) | Rare | Normal, Reverse holo, Normal (Gustavo wada) |
+| 34/123 | Weezing | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 35/123 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 36/123 | Blissey | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 37/123 | Corsola | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 38/123 | Croconaw | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 39/123 | Delibird | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Snowflake) |
+| 40/123 | Donphan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Reverse holo (League) |
+| 41/123 | Dunsparce | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 42/123 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 43/123 | Heracross | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 44/123 | Igglybuff | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 45/123 | Mantine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 46/123 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 47/123 | Miltank | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Normal (Snowflake) |
+| 48/123 | Parasect | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 49/123 | Quilava | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 50/123 | Qwilfish | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 51/123 | Skiploom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 52/123 | Slowbro | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 53/123 | Starmie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 54/123 | Unown | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 55/123 | Unown | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 56/123 | Wigglytuff | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 57/123 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 58/123 | Chansey | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Ross cawthorn) |
+| 59/123 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 60/123 | Clefairy | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 61/123 | Cyndaquil | Pokémon (Fire) | Common | Normal, Reverse holo, Normal (Christopher kan) |
+| 62/123 | Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 63/123 | Exeggcute | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 64/123 | Girafarig | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 65/123 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 66/123 | Hoothoot | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 67/123 | Hoppip | Pokémon (Grass) | Common | Normal, Reverse holo, Normal (Yuka furusawa) |
+| 68/123 | Jigglypuff | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 69/123 | Jynx | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 70/123 | Koffing | Pokémon (Psychic) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 71/123 | Ledyba | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 72/123 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 73/123 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 74/123 | Marill | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 75/123 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 76/123 | Paras | Pokémon (Grass) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 77/123 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo, Normal (Ross cawthorn) |
+| 78/123 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 79/123 | Sandshrew | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 80/123 | Sentret | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 81/123 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo |
+| 82/123 | Snubbull | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 83/123 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 84/123 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 85/123 | Sunkern | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 86/123 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 87/123 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 88/123 | Wooper | Pokémon (Water) | Common | Normal, Reverse holo |
+| 89/123 | Bill | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 90/123 | Copycat | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Gustavo wada), Normal (Ross cawthorn) |
+| 91/123 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 92/123 | Fisherman | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (David cohen) |
+| 93/123 | Full Heal | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 94/123 | Moomoo Milk | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 95/123 | Poké Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 96/123 | Pokégear 3.0 | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Christopher kan) |
+| 97/123 | Pokémon Collector | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Mychael bryan), Normal (Yuta komatsuda), Normal (Yuka furusawa), Normal (Gustavo wada), Normal (Christopher kan), Normal (Ross cawthorn), Normal (David cohen) |
+| 98/123 | Pokémon Communication | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Yuta komatsuda), Normal (Yuka furusawa) |
+| 99/123 | Pokémon Reversal | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Gustavo wada) |
+| 100/123 | Professor Elm's Training Method | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Professor program), Normal (Christopher kan) |
+| 101/123 | Professor Oak's New Theory | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Professor program), Normal (Yuta komatsuda), Normal (Gustavo wada), Normal (Christopher kan), Normal (Igor costa), Normal (Chase moloney), Normal (Ross cawthorn), Normal (David cohen), Normal (Shuto itagaki), Normal (Zachary bokhari) |
+| 102/123 | Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 103/123 | Double Colorless Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat), Normal (Yuta komatsuda), Normal (Ross cawthorn), Normal (Chase moloney), Normal (Igor costa), Normal (Shuto itagaki), Normal (Zachary bokhari) |
+| 104/123 | Rainbow Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Holo (Player rewards program), Normal (Ross cawthorn) |
+| 105/123 | Ampharos | Pokémon (Lightning) | Rare PRIME | Holo |
+| 106/123 | Blissey | Pokémon (Colorless) | Rare PRIME | Holo, Normal (Ross cawthorn) |
+| 107/123 | Donphan | Pokémon (Fighting) | Rare PRIME | Holo, Normal (Ross cawthorn) |
+| 108/123 | Feraligatr | Pokémon (Water) | Rare PRIME | Holo |
+| 109/123 | Meganium | Pokémon (Grass) | Rare PRIME | Holo |
+| 110/123 | Typhlosion | Pokémon (Fire) | Rare PRIME | Holo, Normal (Christopher kan) |
+| 111/123 | Ho-Oh LEGEND | Pokémon (Fire) | LEGEND | Holo |
+| 112/123 | Ho-Oh LEGEND | Pokémon (Fire) | LEGEND | Holo |
+| 113/123 | Lugia LEGEND | Pokémon (Water) | LEGEND | Holo |
+| 114/123 | Lugia LEGEND | Pokémon (Water) | LEGEND | Holo |
+| 115/123 | Grass Energy | Energy (Normal) | Common | Normal |
+| 116/123 | Fire Energy | Energy (Normal) | Common | Normal |
+| 117/123 | Water Energy | Energy (Normal) | Common | Normal |
+| 118/123 | Lightning Energy | Energy (Normal) | Common | Normal |
+| 119/123 | Psychic Energy | Energy (Normal) | Common | Normal |
+| 120/123 | Fighting Energy | Energy (Normal) | Common | Normal |
+| 121/123 | Darkness Energy | Energy (Normal) | Common | Normal |
+| 122/123 | Metal Energy | Energy (Normal) | Common | Normal |
+| 123/123 | Gyarados | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| ONE | Alph Lithograph | Trainer (Item) | Ultra Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

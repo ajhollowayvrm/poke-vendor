@@ -99,6 +99,113 @@ Contents come from the Bulbapedia merchandise pages.
 | Clash of Legends (Darkrai/Cresselia or Dialga/Palkia) | November 2010 | 1 | 1 Arceus, 1 Supreme Victors, 1 Rising Rivals | Fixed |
 | Player's Collection, Player's Pack, Knock Out Collection, Variety Blister, Sneak-Peek Tins | 2010–2011 | Unknown | Assorted packs | Variable |
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), fetched 2026-09-12. The list has 96 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/95 | Jirachi | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 2/95 | Magmortar | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 3/95 | Manaphy | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 4/95 | Metagross | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 5/95 | Mismagius | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Normal |
+| 6/95 | Octillery | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 7/95 | Politoed | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Reverse holo (League), Reverse holo (Staff) |
+| 8/95 | Shaymin | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Holo (Zachary bokhari), Holo (Igor costa) |
+| 9/95 | Sudowoodo | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 10/95 | Torterra | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 11/95 | Xatu | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 12/95 | Beedrill | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 13/95 | Blastoise | Pokémon (Water) | Rare | Normal, Reverse holo, Holo (Cracked ice), Normal (Prerelease, Staff), Normal (Prerelease) |
+| 14/95 | Crobat | Pokémon (Psychic) | Rare | Normal, Reverse holo, Reverse holo (League) |
+| 15/95 | Fearow | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 16/95 | Floatzel | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 17/95 | Kingdra | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 18/95 | Lanturn | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 19/95 | Lucario | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 20/95 | Ninetales | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 21/95 | Poliwrath | Pokémon (Water) | Rare | Normal, Reverse holo, Reverse holo (League), Reverse holo (League, Staff) |
+| 22/95 | Primeape | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 23/95 | Roserade | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 24/95 | Steelix | Pokémon (Metal) | Rare | Normal, Reverse holo, Reverse holo (League), Holo |
+| 25/95 | Torkoal | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 26/95 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 27/95 | Ursaring | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 28/95 | Cherrim | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 29/95 | Dunsparce | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 30/95 | Golbat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 31/95 | Grotle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 32/95 | Kakuna | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 33/95 | Metang | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 34/95 | Minun | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 35/95 | Numel | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 36/95 | Plusle | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 37/95 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (League), Reverse holo (League, Staff) |
+| 38/95 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 39/95 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 40/95 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo, Normal (Gustavo wada) |
+| 41/95 | Tauros | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 42/95 | Wartortle | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 43/95 | Aipom | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Comic con), Normal (Snowflake) |
+| 44/95 | Beldum | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 45/95 | Buizel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 46/95 | Carnivine | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 47/95 | Cherubi | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 48/95 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 49/95 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Gustavo wada), Normal (Snowflake) |
+| 50/95 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 51/95 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 52/95 | Magmar | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 53/95 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 54/95 | Misdreavus | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 55/95 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 56/95 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 57/95 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 58/95 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (League), Reverse holo (League, Staff) |
+| 59/95 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo |
+| 60/95 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 61/95 | Roselia | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 62/95 | Spearow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 63/95 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
+| 64/95 | Stantler | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 65/95 | Teddiursa | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 66/95 | Tropius | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 67/95 | Turtwig | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 68/95 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 69/95 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 70/95 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 71/95 | Cheerleader's Cheer | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 72/95 | Dual Ball | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Igor costa) |
+| 73/95 | Emcee's Chatter | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 74/95 | Energy Returner | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 75/95 | Engineer's Adjustments | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Christopher kan) |
+| 76/95 | Good Rod | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 77/95 | Interviewer's Questions | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 78/95 | Judge | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat), Normal (Yuka furusawa), Normal (Gustavo wada) |
+| 79/95 | Life Herb | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 80/95 | PlusPower | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Yuka furusawa) |
+| 81/95 | Pokémon Circulator | Trainer (Item) | Uncommon | Normal |
+| 82/95 | Rare Candy | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Michael pramawat), Normal (Yuka furusawa), Normal (Gustavo wada), Normal (Christopher kan), Normal (Ross cawthorn), Normal (David cohen) |
+| 83/95 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (League), Normal (Mychael bryan) |
+| 84/95 | Crobat | Pokémon (Psychic) | Rare PRIME | Holo |
+| 85/95 | Kingdra | Pokémon (Water) | Rare PRIME | Holo, Normal (Gustavo wada) |
+| 86/95 | Lanturn | Pokémon (Lightning) | Rare PRIME | Holo |
+| 87/95 | Steelix | Pokémon (Metal) | Rare PRIME | Holo |
+| 88/95 | Tyranitar | Pokémon (Darkness) | Rare PRIME | Holo |
+| 89/95 | Ursaring | Pokémon (Colorless) | Rare PRIME | Holo |
+| 90/95 | Entei & Raikou LEGEND | Pokémon (Fire, Lightning) | LEGEND | Holo |
+| 91/95 | Entei & Raikou LEGEND | Pokémon (Fire, Lightning) | LEGEND | Holo |
+| 92/95 | Raikou & Suicune LEGEND | Pokémon (Lightning, Water) | LEGEND | Holo |
+| 93/95 | Raikou & Suicune LEGEND | Pokémon (Lightning, Water) | LEGEND | Holo |
+| 94/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Holo (Ross cawthorn) |
+| 95/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Normal (Ross cawthorn) |
+| TWO | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
