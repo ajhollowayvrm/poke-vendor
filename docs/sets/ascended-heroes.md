@@ -143,6 +143,312 @@ written with large text." The set has 7.
 
 **Collation**: Unknown. The god pack rate per product: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `me02.5`), fetched 2026-09-12. The list has 295 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/217 | Erika's Oddish | Pokémon (Grass) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 002/217 | Erika's Gloom | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 003/217 | Erika's Vileplume ex | Pokémon (Grass) | Double rare | Holo |
+| 004/217 | Erika's Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 005/217 | Erika's Weepinbell | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 006/217 | Erika's Victreebel | Pokémon (Grass) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 007/217 | Erika's Tangela | Pokémon (Grass) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy), Holo (Cosmos) |
+| 008/217 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy), Holo (Cosmos) |
+| 009/217 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 010/217 | Mega Meganium ex | Pokémon (Grass) | Double rare | Holo |
+| 011/217 | Wurmple | Pokémon (Grass) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 012/217 | Silcoon | Pokémon (Grass) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 013/217 | Beautifly | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 014/217 | Cascoon | Pokémon (Grass) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 015/217 | Dustox | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 016/217 | Budew | Pokémon (Grass) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 017/217 | Grubbin | Pokémon (Grass) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 018/217 | Team Rocket's Tarountula | Pokémon (Grass) | Common | Normal, Reverse holo (Team rocket), Reverse holo (Energy) |
+| 019/217 | Team Rocket's Spidops | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 020/217 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy), Holo (Cosmos) |
+| 021/217 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 022/217 | Mega Charizard Y ex | Pokémon (Fire) | Double rare | Holo |
+| 023/217 | Ethan's Slugma | Pokémon (Fire) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 024/217 | Ethan's Magcargo | Pokémon (Fire) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 025/217 | Entei | Pokémon (Fire) | Rare | Holo, Reverse holo (Quickball), Reverse holo (Energy) |
+| 026/217 | Ethan's Ho-Oh ex | Pokémon (Fire) | Double rare | Holo |
+| 027/217 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 028/217 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 029/217 | Tepig | Pokémon (Fire) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy), Holo (Cosmos) |
+| 030/217 | Pignite | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 031/217 | Mega Emboar ex | Pokémon (Fire) | Double rare | Holo |
+| 032/217 | N's Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 033/217 | N's Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 034/217 | Salandit | Pokémon (Fire) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 035/217 | Salazzle | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 036/217 | Scorbunny | Pokémon (Fire) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 037/217 | Raboot | Pokémon (Fire) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 038/217 | Cinderace ex | Pokémon (Fire) | Double rare | Holo |
+| 039/217 | Psyduck | Pokémon (Water) | Common | Normal, Normal (Pokemon center), Holo (Pokemon center), Reverse holo (Loveball), Reverse holo (Energy) |
+| 040/217 | Golduck | Pokémon (Water) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 041/217 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy), Holo (Cosmos) |
+| 042/217 | Croconaw | Pokémon (Water) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 043/217 | Mega Feraligatr ex | Pokémon (Water) | Double rare | Holo |
+| 044/217 | Sneasel | Pokémon (Water) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 045/217 | Weavile | Pokémon (Water) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 046/217 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 047/217 | Mega Froslass ex | Pokémon (Water) | Double rare | Holo |
+| 048/217 | Regice ex | Pokémon (Water) | Double rare | Holo |
+| 049/217 | N's Vanillite | Pokémon (Water) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 050/217 | N's Vanillish | Pokémon (Water) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 051/217 | N's Vanilluxe | Pokémon (Water) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 052/217 | Snom | Pokémon (Water) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 053/217 | Frosmoth | Pokémon (Water) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 054/217 | Glastrier | Pokémon (Water) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 055/217 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 056/217 | Raichu | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 057/217 | Pikachu ex | Pokémon (Lightning) | Double rare | Holo |
+| 058/217 | Voltorb ex | Pokémon (Lightning) | Double rare | Holo |
+| 059/217 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 060/217 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 061/217 | Mega Eelektross ex | Pokémon (Lightning) | Double rare | Holo |
+| 062/217 | Stunfisk | Pokémon (Lightning) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 063/217 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 064/217 | Heliolisk | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 065/217 | Charjabug | Pokémon (Lightning) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 066/217 | Vikavolt | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 067/217 | Tapu Koko | Pokémon (Lightning) | Rare | Holo, Reverse holo (Quickball), Reverse holo (Energy) |
+| 068/217 | Hop's Pincurchin ex | Pokémon (Lightning) | Double rare | Holo |
+| 069/217 | Iono's Tadbulb | Pokémon (Lightning) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 070/217 | Iono's Bellibolt ex | Pokémon (Lightning) | Double rare | Holo |
+| 071/217 | Iono's Wattrel | Pokémon (Lightning) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 072/217 | Iono's Kilowattrel | Pokémon (Lightning) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 073/217 | Miraidon ex | Pokémon (Lightning) | Double rare | Holo |
+| 074/217 | Clefairy | Pokémon (Psychic) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 075/217 | Clefable | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 076/217 | Lillie's Clefairy ex | Pokémon (Psychic) | Double rare | Holo |
+| 077/217 | Team Rocket's Exeggcute | Pokémon (Psychic) | Common | Normal, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 078/217 | Team Rocket's Exeggutor | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 079/217 | Team Rocket's Mewtwo ex | Pokémon (Psychic) | Double rare | Holo |
+| 080/217 | Togepi | Pokémon (Psychic) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 081/217 | Togetic | Pokémon (Psychic) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 082/217 | Togekiss | Pokémon (Psychic) | Rare | Holo, Reverse holo (Loveball), Reverse holo (Energy) |
+| 083/217 | Marill | Pokémon (Psychic) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 084/217 | Azumarill ex | Pokémon (Psychic) | Double rare | Holo |
+| 085/217 | Misdreavus | Pokémon (Psychic) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 086/217 | Mismagius | Pokémon (Psychic) | Rare | Holo, Holo (Pokemon center), Reverse holo (Duskball), Reverse holo (Energy) |
+| 087/217 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 088/217 | Kirlia | Pokémon (Psychic) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 089/217 | Mega Gardevoir ex | Pokémon (Psychic) | Double rare | Holo |
+| 090/217 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 091/217 | Banette | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 092/217 | Rotom | Pokémon (Psychic) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 093/217 | Swirlix | Pokémon (Psychic) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 094/217 | Slurpuff | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 095/217 | Hop's Phantump | Pokémon (Psychic) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 096/217 | Hop's Trevenant | Pokémon (Psychic) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 097/217 | Team Rocket's Mimikyu | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 098/217 | Spectrier | Pokémon (Psychic) | Rare | Holo, Reverse holo (Duskball), Reverse holo (Energy) |
+| 099/217 | Munkidori | Pokémon (Psychic) | Rare | Holo, Reverse holo (Duskball), Reverse holo (Energy) |
+| 100/217 | Team Rocket's Diglett | Pokémon (Fighting) | Common | Normal, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 101/217 | Team Rocket's Dugtrio | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 102/217 | Hitmontop | Pokémon (Fighting) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 103/217 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 104/217 | Medicham | Pokémon (Fighting) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 105/217 | Lunatone | Pokémon (Fighting) | Rare | Holo, Reverse holo (Duskball), Reverse holo (Energy) |
+| 106/217 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 107/217 | Regirock ex | Pokémon (Fighting) | Double rare | Holo |
+| 108/217 | Groudon | Pokémon (Fighting) | Rare | Holo, Reverse holo (Duskball), Reverse holo (Energy) |
+| 109/217 | Cynthia's Gible | Pokémon (Fighting) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 110/217 | Cynthia's Gabite | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 111/217 | Cynthia's Garchomp ex | Pokémon (Fighting) | Double rare | Holo |
+| 112/217 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 113/217 | Mega Lucario ex | Pokémon (Fighting) | Double rare | Holo |
+| 114/217 | Stunfisk ex | Pokémon (Fighting) | Double rare | Holo |
+| 115/217 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 116/217 | Mega Hawlucha ex | Pokémon (Fighting) | Double rare | Holo |
+| 117/217 | Carbink | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 118/217 | Rolycoly | Pokémon (Fighting) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 119/217 | Carkol | Pokémon (Fighting) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 120/217 | Coalossal | Pokémon (Fighting) | Rare | Holo, Reverse holo (Duskball), Reverse holo (Energy) |
+| 121/217 | Koraidon ex | Pokémon (Fighting) | Double rare | Holo |
+| 122/217 | Okidogi | Pokémon (Fighting) | Rare | Holo, Reverse holo (Friendball), Reverse holo (Energy) |
+| 123/217 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy), Holo (Cosmos) |
+| 124/217 | Haunter | Pokémon (Darkness) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 125/217 | Mega Gengar ex | Pokémon (Darkness) | Double rare | Holo |
+| 126/217 | Team Rocket's Murkrow | Pokémon (Darkness) | Common | Normal, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 127/217 | Team Rocket's Honchkrow | Pokémon (Darkness) | Rare | Holo, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 128/217 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 129/217 | Mightyena | Pokémon (Darkness) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 130/217 | Galarian Zigzagoon | Pokémon (Darkness) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 131/217 | Galarian Linoone | Pokémon (Darkness) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 132/217 | Galarian Obstagoon | Pokémon (Darkness) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 133/217 | Cynthia's Spiritomb | Pokémon (Darkness) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 134/217 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 135/217 | Mega Scrafty ex | Pokémon (Darkness) | Double rare | Holo |
+| 136/217 | N's Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 137/217 | N's Zoroark ex | Pokémon (Darkness) | Double rare | Holo |
+| 138/217 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 139/217 | Mandibuzz ex | Pokémon (Darkness) | Double rare | Holo |
+| 140/217 | Pangoro | Pokémon (Darkness) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 141/217 | Hoopa | Pokémon (Darkness) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 142/217 | Fezandipiti ex | Pokémon (Darkness) | Double rare | Holo |
+| 143/217 | Pecharunt | Pokémon (Darkness) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 144/217 | Mawile | Pokémon (Metal) | Uncommon | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 145/217 | Registeel ex | Pokémon (Metal) | Double rare | Holo |
+| 146/217 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 147/217 | Bisharp | Pokémon (Metal) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 148/217 | Kingambit | Pokémon (Metal) | Rare | Holo, Reverse holo (Quickball), Reverse holo (Energy) |
+| 149/217 | Togedemaru ex | Pokémon (Metal) | Double rare | Holo |
+| 150/217 | Dratini | Pokémon (Dragon) | Common | Normal, Holo (Pokemon center), Reverse holo (Loveball), Reverse holo (Energy) |
+| 151/217 | Dragonair | Pokémon (Dragon) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 152/217 | Mega Dragonite ex | Pokémon (Dragon) | Double rare | Holo |
+| 153/217 | Rayquaza | Pokémon (Dragon) | Rare | Holo, Reverse holo (Friendball), Reverse holo (Energy) |
+| 154/217 | N's Reshiram | Pokémon (Dragon) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 155/217 | N's Zekrom | Pokémon (Dragon) | Rare | Holo, Normal (Pokemon center), Holo (Pokemon center), Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 156/217 | Noibat | Pokémon (Dragon) | Common | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 157/217 | Noivern | Pokémon (Dragon) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 158/217 | Dreepy | Pokémon (Dragon) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 159/217 | Drakloak | Pokémon (Dragon) | Common | Normal, Reverse holo (Quickball), Reverse holo (Energy) |
+| 160/217 | Dragapult ex | Pokémon (Dragon) | Double rare | Holo |
+| 161/217 | Team Rocket's Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy), Reverse holo (Team rocket) |
+| 162/217 | Team Rocket's Kangaskhan ex | Pokémon (Colorless) | Double rare | Holo |
+| 163/217 | Larry's Dunsparce | Pokémon (Colorless) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 164/217 | Larry's Dudunsparce ex | Pokémon (Colorless) | Double rare | Holo |
+| 165/217 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 166/217 | Delcatty | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Loveball), Reverse holo (Energy) |
+| 167/217 | Zangoose ex | Pokémon (Colorless) | Double rare | Holo |
+| 168/217 | Larry's Starly | Pokémon (Colorless) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 169/217 | Larry's Staravia | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 170/217 | Larry's Staraptor | Pokémon (Colorless) | Rare | Holo, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 171/217 | Fan Rotom | Pokémon (Colorless) | Common | Normal, Reverse holo (Duskball), Reverse holo (Energy) |
+| 172/217 | Mega Audino ex | Pokémon (Colorless) | Double rare | Holo |
+| 173/217 | Larry's Rufflet | Pokémon (Colorless) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 174/217 | Larry's Braviary | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 175/217 | Larry's Komala | Pokémon (Colorless) | Common | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy), Holo (Cosmos) |
+| 176/217 | Drampa | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Friendball), Reverse holo (Energy) |
+| 177/217 | Hop's Cramorant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Poké Ball pattern), Reverse holo (Energy) |
+| 178/217 | Terapagos | Pokémon (Colorless) | Rare | Holo, Reverse holo (Loveball), Reverse holo (Energy) |
+| 179/217 | Terapagos ex | Pokémon (Colorless) | Double rare | Holo |
+| 180/217 | Acerola's Mischief | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 181/217 | Air Balloon | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 182/217 | Anthea & Concordia | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 183/217 | Boss's Orders | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Pokemon center), Holo (Pokemon center) |
+| 184/217 | Buddy-Buddy Poffin | Trainer (Item) | Common | Normal, Reverse holo |
+| 185/217 | Canari | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Holo (Pokemon center) |
+| 186/217 | Counter Gain | Trainer (Tool) | Common | Normal, Reverse holo |
+| 187/217 | Fighting Gong | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 188/217 | Forest of Vitality | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 189/217 | Glass Trumpet | Trainer (Item) | Common | Normal, Reverse holo |
+| 190/217 | Iris's Fighting Spirit | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 191/217 | Light Ball | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 192/217 | Lillie's Determination | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 193/217 | Mega Signal | Trainer (Item) | Common | Normal, Reverse holo |
+| 194/217 | Mystery Garden | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 195/217 | N's PP Up | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 196/217 | Night Stretcher | Trainer (Item) | Common | Normal, Reverse holo |
+| 197/217 | Nighttime Mine | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 198/217 | Poké Pad | Trainer (Item) | Common | Normal, Reverse holo |
+| 199/217 | Premium Power Pro | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 200/217 | Surfer | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 201/217 | Team Rocket's Archer | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 202/217 | Team Rocket's Ariana | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 203/217 | Team Rocket's Factory | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 204/217 | Team Rocket's Giovanni | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 205/217 | Team Rocket's Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 206/217 | Team Rocket's Hypnotizer | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 207/217 | Team Rocket's Petrel | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 208/217 | Team Rocket's Proton | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 209/217 | Team Rocket's Transceiver | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 210/217 | Team Rocket's Watchtower | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 211/217 | Thick Scale | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 212/217 | Tool Scrapper | Trainer (Item) | Common | Normal, Reverse holo |
+| 213/217 | Ultra Ball | Trainer (Item) | Common | Normal, Reverse holo |
+| 214/217 | Urbain | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 215/217 | Waitress | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 216/217 | Prism Energy | Energy (Normal) | Uncommon | Normal, Reverse holo |
+| 217/217 | Team Rocket's Energy | Energy (Normal) | Uncommon | Normal, Reverse holo |
+| 218/217 | Erika's Tangela | Pokémon (Grass) | Illustration rare | Holo |
+| 219/217 | Beautifly | Pokémon (Grass) | Illustration rare | Holo |
+| 220/217 | Dustox | Pokémon (Grass) | Illustration rare | Holo |
+| 221/217 | Budew | Pokémon (Grass) | Illustration rare | Holo |
+| 222/217 | Ethan's Magcargo | Pokémon (Fire) | Illustration rare | Holo |
+| 223/217 | Numel | Pokémon (Fire) | Illustration rare | Holo |
+| 224/217 | Salazzle | Pokémon (Fire) | Illustration rare | Holo |
+| 225/217 | Scorbunny | Pokémon (Fire) | Illustration rare | Holo |
+| 226/217 | Psyduck | Pokémon (Water) | Illustration rare | Holo |
+| 227/217 | Snorunt | Pokémon (Water) | Illustration rare | Holo |
+| 228/217 | Weavile | Pokémon (Water) | Illustration rare | Holo |
+| 229/217 | Heliolisk | Pokémon (Lightning) | Illustration rare | Holo |
+| 230/217 | Vikavolt | Pokémon (Lightning) | Illustration rare | Holo |
+| 231/217 | Iono's Wattrel | Pokémon (Lightning) | Illustration rare | Holo |
+| 232/217 | Marill | Pokémon (Psychic) | Illustration rare | Holo |
+| 233/217 | Misdreavus | Pokémon (Psychic) | Illustration rare | Holo |
+| 234/217 | Banette | Pokémon (Psychic) | Illustration rare | Holo |
+| 235/217 | Togekiss | Pokémon (Psychic) | Illustration rare | Holo |
+| 236/217 | Slurpuff | Pokémon (Psychic) | Illustration rare | Holo |
+| 237/217 | Hop's Trevenant | Pokémon (Psychic) | Illustration rare | Holo |
+| 238/217 | Team Rocket's Mimikyu | Pokémon (Psychic) | Illustration rare | Holo |
+| 239/217 | Team Rocket's Dugtrio | Pokémon (Fighting) | Illustration rare | Holo |
+| 240/217 | Hitmontop | Pokémon (Fighting) | Illustration rare | Holo |
+| 241/217 | Medicham | Pokémon (Fighting) | Illustration rare | Holo |
+| 242/217 | Carbink | Pokémon (Fighting) | Illustration rare | Holo |
+| 243/217 | Mightyena | Pokémon (Darkness) | Illustration rare | Holo |
+| 244/217 | Cynthia's Spiritomb | Pokémon (Darkness) | Illustration rare | Holo |
+| 245/217 | Galarian Obstagoon | Pokémon (Darkness) | Illustration rare | Holo |
+| 246/217 | Mawile | Pokémon (Metal) | Illustration rare | Holo |
+| 247/217 | Dreepy | Pokémon (Dragon) | Illustration rare | Holo |
+| 248/217 | Drakloak | Pokémon (Dragon) | Illustration rare | Holo |
+| 249/217 | Larry's Staraptor | Pokémon (Colorless) | Illustration rare | Holo |
+| 250/217 | Fan Rotom | Pokémon (Colorless) | Illustration rare | Holo |
+| 251/217 | Sprigatito ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 252/217 | Stunfisk ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 253/217 | Mega Audino ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 254/217 | Anthea & Concordia | Trainer (Supporter) | Ultra Rare | Holo |
+| 255/217 | Black Belt's Training | Trainer (Supporter) | Ultra Rare | Holo |
+| 256/217 | Boss's Orders | Trainer (Supporter) | Ultra Rare | Holo |
+| 257/217 | Canari | Trainer (Supporter) | Ultra Rare | Holo |
+| 258/217 | Cheren | Trainer (Supporter) | Ultra Rare | Holo |
+| 259/217 | Counter Gain | Trainer (Tool) | Ultra Rare | Holo |
+| 260/217 | Glass Trumpet | Trainer (Item) | Ultra Rare | Holo |
+| 261/217 | Jamming Tower | Trainer (Stadium) | Ultra Rare | Holo |
+| 262/217 | N's PP Up | Trainer (Item) | Ultra Rare | Holo |
+| 263/217 | Team Rocket's Transceiver | Trainer (Item) | Ultra Rare | Holo |
+| 264/217 | Ultra Ball | Trainer (Item) | Ultra Rare | Holo |
+| 265/217 | Mega Froslass ex | Pokémon (Water) | Ultra Rare | Holo |
+| 266/217 | Mega Eelektross ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 267/217 | Mega Diancie ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 268/217 | Mega Hawlucha ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 269/217 | Mega Gengar ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 270/217 | Mega Scrafty ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 271/217 | Mega Dragonite ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 272/217 | Mega Meganium ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 273/217 | Mega Emboar ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 274/217 | Mega Feraligatr ex | Pokémon (Water) | Special illustration rare | Holo |
+| 275/217 | Mega Froslass ex | Pokémon (Water) | Special illustration rare | Holo |
+| 276/217 | Pikachu ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 277/217 | Pikachu ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 278/217 | Mega Eelektross ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 279/217 | Iono's Bellibolt ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 280/217 | Lillie's Clefairy ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 281/217 | Team Rocket's Mewtwo ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 282/217 | Mega Diancie ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 283/217 | Mega Hawlucha ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 284/217 | Mega Gengar ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 285/217 | Mega Scrafty ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 286/217 | N's Zoroark ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 287/217 | Marnie's Grimmsnarl ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 288/217 | Fezandipiti ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 289/217 | Steven's Metagross ex | Pokémon (Metal) | Special illustration rare | Holo |
+| 290/217 | Mega Dragonite ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 291/217 | Canari | Trainer (Supporter) | Special illustration rare | Holo |
+| 292/217 | Iris's Fighting Spirit | Trainer (Supporter) | Special illustration rare | Holo |
+| 293/217 | Surfer | Trainer (Supporter) | Special illustration rare | Holo |
+| 294/217 | Mega Charizard Y ex | Pokémon (Fire) | Mega Hyper Rare | Holo |
+| 295/217 | Mega Dragonite ex | Pokémon (Dragon) | Mega Hyper Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

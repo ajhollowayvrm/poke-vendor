@@ -116,6 +116,141 @@ only 1 or 2 hits expected in 3,500 packs, its confidence is low.
 
 **Collation**: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `me03`), fetched 2026-09-12. The list has 124 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/088 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/088 | Ariados | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/088 | Shaymin | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 004/088 | Snivy | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/088 | Servine | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/088 | Serperior | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal |
+| 007/088 | Scatterbug | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 008/088 | Spewpa | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 009/088 | Vivillon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 010/088 | Rowlet | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/088 | Dartrix | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 012/088 | Decidueye ex | Pokémon (Grass) | Double rare | Holo, Holo (Player rewards program) |
+| 013/088 | Fletchinder | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 014/088 | Talonflame | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 015/088 | Salandit | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 016/088 | Salazzle ex | Pokémon (Fire) | Double rare | Holo |
+| 017/088 | Turtonator | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 018/088 | Seel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 019/088 | Dewgong | Pokémon (Water) | Rare | Holo, Reverse holo, Normal (Player rewards program) |
+| 020/088 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
+| 021/088 | Mega Starmie ex | Pokémon (Water) | Double rare | Holo, Holo (Player rewards program) |
+| 022/088 | Lapras ex | Pokémon (Water) | Double rare | Holo |
+| 023/088 | Amaura | Pokémon (Water) | Common | Normal, Reverse holo |
+| 024/088 | Aurorus | Pokémon (Water) | Rare | Holo, Reverse holo, Normal (Set logo), Holo (Cosmos) |
+| 025/088 | Volcanion | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 026/088 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 027/088 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 028/088 | Luxray | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal (Set logo), Holo (Cosmos) |
+| 029/088 | Dedenne | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 030/088 | Clefairy | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 031/088 | Mega Clefable ex | Pokémon (Psychic) | Double rare | Holo |
+| 032/088 | Mawile | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 033/088 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 034/088 | Meowstic | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 035/088 | Spritzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 036/088 | Aromatisse | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 037/088 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 038/088 | Probopass | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 039/088 | Hippopotas | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 040/088 | Hippowdon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 041/088 | Landorus | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal |
+| 042/088 | Binacle | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 043/088 | Barbaracle | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 044/088 | Tyrunt | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 045/088 | Tyrantrum | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 046/088 | Hawlucha | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 047/088 | Mega Zygarde ex | Pokémon (Fighting) | Double rare | Holo, Holo (Player rewards program) |
+| 048/088 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo, Normal (Player rewards program) |
+| 049/088 | Haunter | Pokémon (Darkness) | Common | Normal, Reverse holo, Normal (Player rewards program) |
+| 050/088 | Gengar | Pokémon (Darkness) | Rare | Holo, Reverse holo, Normal (Player rewards program), Holo (Cosmos), Holo (Cosmos, Gamestop), Holo (Cosmos, Eb games) |
+| 051/088 | Skorupi | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 052/088 | Drapion | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 053/088 | Yveltal ex | Pokémon (Darkness) | Double rare | Holo, Holo (Player rewards program) |
+| 054/088 | Chien-Pao | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 055/088 | Mega Skarmory ex | Pokémon (Metal) | Double rare | Holo, Holo (Player rewards program) |
+| 056/088 | Honedge | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 057/088 | Doublade | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 058/088 | Aegislash | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 059/088 | Klefki | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 060/088 | Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 061/088 | Raticate | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 062/088 | Meowth ex | Pokémon (Colorless) | Double rare | Holo, Holo (Player rewards program) |
+| 063/088 | Snorlax | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 064/088 | Bunnelby | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 065/088 | Diggersby | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 066/088 | Fletchling | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 067/088 | Furfrou | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 068/088 | Antique Jaw Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 069/088 | Antique Sail Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 070/088 | Core Memory | Trainer (Tool) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 071/088 | Crushing Hammer | Trainer (Item) | Common | Normal, Reverse holo |
+| 072/088 | Energy Search | Trainer (Item) | Common | Normal, Reverse holo |
+| 073/088 | Energy Swatter | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 074/088 | Hole-Digging Shovel | Trainer (Item) | Common | Normal, Reverse holo |
+| 075/088 | Jacinthe | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 076/088 | Judge | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Regional championships), Normal (Regional championships, Staff) |
+| 077/088 | Lumiose City | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 078/088 | Lumiose Galette | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 079/088 | Naveen | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 080/088 | Poké Ball | Trainer (Item) | Common | Normal, Reverse holo |
+| 081/088 | Poké Pad | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 082/088 | Pokémon Catcher | Trainer (Item) | Common | Normal, Reverse holo |
+| 083/088 | Potion | Trainer (Item) | Common | Normal, Reverse holo |
+| 084/088 | Rosa's Encouragement | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 085/088 | Tarragon | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 086/088 | Growing Grass Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
+| 087/088 | Rocky Fighting Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
+| 088/088 | Telepathic Psychic Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
+| 089/088 | Spewpa | Pokémon (Grass) | Illustration rare | Holo |
+| 090/088 | Rowlet | Pokémon (Grass) | Illustration rare | Holo |
+| 091/088 | Talonflame | Pokémon (Fire) | Illustration rare | Holo |
+| 092/088 | Aurorus | Pokémon (Water) | Illustration rare | Holo |
+| 093/088 | Dedenne | Pokémon (Lightning) | Illustration rare | Holo |
+| 094/088 | Clefairy | Pokémon (Psychic) | Illustration rare | Holo |
+| 095/088 | Espurr | Pokémon (Psychic) | Illustration rare | Holo |
+| 096/088 | Probopass | Pokémon (Fighting) | Illustration rare | Holo |
+| 097/088 | Drapion | Pokémon (Darkness) | Illustration rare | Holo |
+| 098/088 | Doublade | Pokémon (Metal) | Illustration rare | Holo |
+| 099/088 | Raticate | Pokémon (Colorless) | Illustration rare | Holo |
+| 100/088 | Decidueye ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 101/088 | Salazzle ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 102/088 | Mega Starmie ex | Pokémon (Water) | Ultra Rare | Holo |
+| 103/088 | Mega Clefable ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 104/088 | Mega Zygarde ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 105/088 | Yveltal ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 106/088 | Mega Skarmory ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 107/088 | Meowth ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 108/088 | Energy Recycler | Trainer (Item) | Ultra Rare | Holo |
+| 109/088 | Forest of Vitality | Trainer (Stadium) | Ultra Rare | Holo |
+| 110/088 | Jacinthe | Trainer (Supporter) | Ultra Rare | Holo |
+| 111/088 | Lumiose City | Trainer (Stadium) | Ultra Rare | Holo |
+| 112/088 | Naveen | Trainer (Supporter) | Ultra Rare | Holo |
+| 113/088 | Poké Pad | Trainer (Item) | Ultra Rare | Holo |
+| 114/088 | Rosa's Encouragement | Trainer (Supporter) | Ultra Rare | Holo |
+| 115/088 | Sacred Ash | Trainer (Item) | Ultra Rare | Holo |
+| 116/088 | Tarragon | Trainer (Supporter) | Ultra Rare | Holo |
+| 117/088 | Wondrous Patch | Trainer (Item) | Ultra Rare | Holo |
+| 118/088 | Mega Starmie ex | Pokémon (Water) | Special illustration rare | Holo |
+| 119/088 | Mega Clefable ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 120/088 | Mega Zygarde ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 121/088 | Meowth ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 122/088 | Jacinthe | Trainer (Supporter) | Special illustration rare | Holo |
+| 123/088 | Rosa's Encouragement | Trainer (Supporter) | Special illustration rare | Holo |
+| 124/088 | Mega Zygarde ex | Pokémon (Fighting) | Mega Hyper Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

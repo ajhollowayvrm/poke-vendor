@@ -123,6 +123,139 @@ The Mega Lucario ex League Battle Deck is listed with the set
 
 **Collation**: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `me04`), fetched 2026-09-12. The list has 122 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/086 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/086 | Kakuna | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/086 | Beedrill ex | Pokémon (Grass) | Double rare | Holo |
+| 004/086 | Carnivine | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/086 | Chespin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/086 | Quilladin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/086 | Chesnaught | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 008/086 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 009/086 | Ninetales | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 010/086 | Ho-Oh | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Gamestop), Holo (Eb games) |
+| 011/086 | Fennekin | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 012/086 | Braixen | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 013/086 | Delphox | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal, Holo (Set logo) |
+| 014/086 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 015/086 | Mega Pyroar ex | Pokémon (Fire) | Double rare | Holo |
+| 016/086 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo |
+| 017/086 | Octillery | Pokémon (Water) | Common | Normal, Reverse holo |
+| 018/086 | Delibird | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 019/086 | Keldeo | Pokémon (Water) | Rare | Holo, Reverse holo, Holo (Set logo) |
+| 020/086 | Froakie | Pokémon (Water) | Common | Normal, Reverse holo |
+| 021/086 | Frogadier | Pokémon (Water) | Common | Normal, Reverse holo |
+| 022/086 | Mega Greninja ex | Pokémon (Water) | Double rare | Holo |
+| 023/086 | Bergmite | Pokémon (Water) | Common | Normal, Reverse holo |
+| 024/086 | Avalugg | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 025/086 | Wimpod | Pokémon (Water) | Common | Normal, Reverse holo |
+| 026/086 | Golisopod | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 027/086 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 028/086 | Flaaffy | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 029/086 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal |
+| 030/086 | Emolga | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 031/086 | Deoxys | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 032/086 | Deoxys | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 033/086 | Deoxys | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 034/086 | Deoxys | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 035/086 | Mega Floette ex | Pokémon (Psychic) | Double rare | Holo |
+| 036/086 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 037/086 | Meowstic | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 038/086 | Phantump | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 039/086 | Trevenant | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 040/086 | Pumpkaboo | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 041/086 | Gourgeist ex | Pokémon (Psychic) | Double rare | Holo |
+| 042/086 | Xerneas | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 043/086 | Sudowoodo | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 044/086 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 045/086 | Donphan | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 046/086 | Baltoy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 047/086 | Claydol | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 048/086 | Mega Gallade ex | Pokémon (Fighting) | Double rare | Holo |
+| 049/086 | Zubat | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 050/086 | Golbat | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 051/086 | Crobat | Pokémon (Darkness) | Rare | Holo, Reverse holo, Normal |
+| 052/086 | Qwilfish | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 053/086 | Stunky | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 054/086 | Skuntank | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 055/086 | Krookodile ex | Pokémon (Darkness) | Double rare | Holo |
+| 056/086 | Trubbish | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 057/086 | Garbodor | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 058/086 | Skrelp | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 059/086 | Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 060/086 | Metang | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 061/086 | Metagross | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 062/086 | Ferroseed | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 063/086 | Ferrothorn | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 064/086 | Cobalion ex | Pokémon (Metal) | Double rare | Holo |
+| 065/086 | Mega Dragalge ex | Pokémon (Dragon) | Double rare | Holo |
+| 066/086 | Goomy | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 067/086 | Sliggoo | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 068/086 | Goodra | Pokémon (Dragon) | Rare | Holo, Reverse holo, Normal |
+| 069/086 | Tauros | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 070/086 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 071/086 | Watchog | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 072/086 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 073/086 | Cinccino ex | Pokémon (Colorless) | Double rare | Holo |
+| 074/086 | Adversity Policy | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 075/086 | Ange Floette | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 076/086 | AZ's Tranquility | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 077/086 | Emma | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 078/086 | Great Haul Net | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 079/086 | Philippe | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 080/086 | Prism Tower | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 081/086 | Roxie's Performance | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 082/086 | Special Red Card | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 083/086 | Transformation Tome | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 084/086 | Bubbly Water Energy | Energy (Normal) | Rare | Holo, Reverse holo |
+| 085/086 | Magnetic Metal Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal |
+| 086/086 | Nitro Fire Energy | Energy (Normal) | Rare | Holo, Reverse holo |
+| 087/086 | Chespin | Pokémon (Grass) | Illustration rare | Holo |
+| 088/086 | Froakie | Pokémon (Water) | Illustration rare | Holo |
+| 089/086 | Frogadier | Pokémon (Water) | Illustration rare | Holo |
+| 090/086 | Ampharos | Pokémon (Lightning) | Illustration rare | Holo |
+| 091/086 | Xerneas | Pokémon (Psychic) | Illustration rare | Holo |
+| 092/086 | Claydol | Pokémon (Fighting) | Illustration rare | Holo |
+| 093/086 | Crobat | Pokémon (Darkness) | Illustration rare | Holo |
+| 094/086 | Metang | Pokémon (Metal) | Illustration rare | Holo |
+| 095/086 | Sliggoo | Pokémon (Dragon) | Illustration rare | Holo |
+| 096/086 | Tauros | Pokémon (Colorless) | Illustration rare | Holo |
+| 097/086 | Watchog | Pokémon (Colorless) | Illustration rare | Holo |
+| 098/086 | Beedrill ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 099/086 | Mega Pyroar ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 100/086 | Mega Greninja ex | Pokémon (Water) | Ultra Rare | Holo |
+| 101/086 | Mega Floette ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 102/086 | Gourgeist ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 103/086 | Cobalion ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 104/086 | Mega Dragalge ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 105/086 | Cinccino ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 106/086 | AZ's Tranquility | Trainer (Supporter) | Ultra Rare | Holo |
+| 107/086 | Emma | Trainer (Supporter) | Ultra Rare | Holo |
+| 108/086 | Energy Retrieval | Trainer (Item) | Ultra Rare | Holo |
+| 109/086 | Jumbo Ice Cream | Trainer (Item) | Ultra Rare | Holo |
+| 110/086 | Philippe | Trainer (Supporter) | Ultra Rare | Holo |
+| 111/086 | Prism Tower | Trainer (Stadium) | Ultra Rare | Holo |
+| 112/086 | Roxie's Performance | Trainer (Supporter) | Ultra Rare | Holo |
+| 113/086 | Special Red Card | Trainer (Item) | Ultra Rare | Holo |
+| 114/086 | Surfing Beach | Trainer (Stadium) | Ultra Rare | Holo |
+| 115/086 | Tool Scrapper | Trainer (Item) | Ultra Rare | Holo |
+| 116/086 | Mega Greninja ex | Pokémon (Water) | Special illustration rare | Holo |
+| 117/086 | Mega Floette ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 118/086 | Mega Dragalge ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 119/086 | Cinccino ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 120/086 | AZ's Tranquility | Trainer (Supporter) | Special illustration rare | Holo |
+| 121/086 | Roxie's Performance | Trainer (Supporter) | Special illustration rare | Holo |
+| 122/086 | Mega Greninja ex | Pokémon (Water) | Mega Hyper Rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -127,6 +127,137 @@ saw very few Mega Hyper Rares.
 
 **Collation**: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `me05`), fetched 2026-09-12. The list has 120 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/084 | Tropius | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/084 | Grubbin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/084 | Fomantis | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 004/084 | Lurantis ex | Pokémon (Grass) | Double rare | Holo |
+| 005/084 | Poltchageist | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/084 | Sinistcha | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 007/084 | Heatran | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 008/084 | Mega Delphox ex | Pokémon (Fire) | Double rare | Holo |
+| 009/084 | Sizzlipede | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 010/084 | Centiskorch | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 011/084 | Charcadet | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 012/084 | Armarouge | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 013/084 | Goldeen | Pokémon (Water) | Common | Normal, Reverse holo |
+| 014/084 | Seaking | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 015/084 | Wailmer | Pokémon (Water) | Common | Normal, Reverse holo |
+| 016/084 | Wailord ex | Pokémon (Water) | Double rare | Holo |
+| 017/084 | Relicanth | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 018/084 | Popplio | Pokémon (Water) | Common | Normal, Reverse holo |
+| 019/084 | Brionne | Pokémon (Water) | Common | Normal, Reverse holo |
+| 020/084 | Primarina | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 021/084 | Finizen | Pokémon (Water) | Common | Normal, Reverse holo |
+| 022/084 | Palafin | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 023/084 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 024/084 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 025/084 | Charjabug | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 026/084 | Vikavolt | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 027/084 | Mega Zeraora ex | Pokémon (Lightning) | Double rare | Holo |
+| 028/084 | Miraidon | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal |
+| 029/084 | Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 030/084 | Slowbro | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 031/084 | Mega Slowbro ex | Pokémon (Psychic) | Double rare | Holo |
+| 032/084 | Jynx | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 033/084 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 034/084 | Banette | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 035/084 | Spiritomb | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal |
+| 036/084 | Litwick | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 037/084 | Lampent | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 038/084 | Mega Chandelure ex | Pokémon (Psychic) | Double rare | Holo |
+| 039/084 | Dhelmise | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 040/084 | Marshadow | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 041/084 | Annihilape | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 042/084 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 043/084 | Primeape | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 044/084 | Cranidos | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 045/084 | Rampardos ex | Pokémon (Fighting) | Double rare | Holo |
+| 046/084 | Drilbur | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 047/084 | Koraidon | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 048/084 | Mega Darkrai ex | Pokémon (Darkness) | Double rare | Holo |
+| 049/084 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 050/084 | Mandibuzz | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 051/084 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 052/084 | Malamar | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 053/084 | Nickit | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 054/084 | Thievul | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 055/084 | Morpeko ex | Pokémon (Darkness) | Double rare | Holo |
+| 056/084 | Zarude | Pokémon (Darkness) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 057/084 | Maschiff | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 058/084 | Mabosstiff | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 059/084 | Chi-Yu | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 060/084 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 061/084 | Shieldon | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 062/084 | Bastiodon | Pokémon (Metal) | Rare | Holo, Reverse holo, Normal |
+| 063/084 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 064/084 | Bronzong | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 065/084 | Mega Excadrill ex | Pokémon (Metal) | Double rare | Holo |
+| 066/084 | Pikipek | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 067/084 | Trumbeak | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 068/084 | Toucannon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 069/084 | Type: Null | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 070/084 | Silvally | Pokémon (Colorless) | Rare | Holo, Reverse holo, Normal |
+| 071/084 | Bombirdier | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 072/084 | Antique Armor Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 073/084 | Antique Skull Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 074/084 | Backtrack Badge | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 075/084 | Dark Bell | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 076/084 | Fossil Quarry | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 077/084 | Gladion's Final Battle | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 078/084 | Gwynn | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 079/084 | Jett | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 080/084 | Misty's Vitality | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 081/084 | Rust Syndicate Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 082/084 | Tremendous Bomb | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 083/084 | Shadowy Darkness Energy | Energy (Normal) | Rare | Holo, Reverse holo |
+| 084/084 | Voltaic Lightning Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal |
+| 085/084 | Fomantis | Pokémon (Grass) | Illustration rare | Holo |
+| 086/084 | Armarouge | Pokémon (Fire) | Illustration rare | Holo |
+| 087/084 | Goldeen | Pokémon (Water) | Illustration rare | Holo |
+| 088/084 | Primarina | Pokémon (Water) | Illustration rare | Holo |
+| 089/084 | Manectric | Pokémon (Lightning) | Illustration rare | Holo |
+| 090/084 | Slowbro | Pokémon (Psychic) | Illustration rare | Holo |
+| 091/084 | Dhelmise | Pokémon (Psychic) | Illustration rare | Holo |
+| 092/084 | Thievul | Pokémon (Darkness) | Illustration rare | Holo |
+| 093/084 | Bastiodon | Pokémon (Metal) | Illustration rare | Holo |
+| 094/084 | Toucannon | Pokémon (Colorless) | Illustration rare | Holo |
+| 095/084 | Silvally | Pokémon (Colorless) | Illustration rare | Holo |
+| 096/084 | Lurantis ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 097/084 | Wailord ex | Pokémon (Water) | Ultra Rare | Holo |
+| 098/084 | Mega Zeraora ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 099/084 | Mega Chandelure ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 100/084 | Rampardos ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 101/084 | Mega Darkrai ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 102/084 | Morpeko ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 103/084 | Mega Excadrill ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 104/084 | Brave Bangle | Trainer (Tool) | Ultra Rare | Holo |
+| 105/084 | Crushing Hammer | Trainer (Item) | Ultra Rare | Holo |
+| 106/084 | Dark Bell | Trainer (Item) | Ultra Rare | Holo |
+| 107/084 | Energy Switch | Trainer (Item) | Ultra Rare | Holo |
+| 108/084 | Gladion's Final Battle | Trainer (Supporter) | Ultra Rare | Holo |
+| 109/084 | Gwynn | Trainer (Supporter) | Ultra Rare | Holo |
+| 110/084 | Iron Defender | Trainer (Item) | Ultra Rare | Holo |
+| 111/084 | Misty's Vitality | Trainer (Supporter) | Ultra Rare | Holo |
+| 112/084 | Rust Syndicate Grunt | Trainer (Supporter) | Ultra Rare | Holo |
+| 113/084 | Tremendous Bomb | Trainer (Tool) | Ultra Rare | Holo |
+| 114/084 | Mega Zeraora ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 115/084 | Mega Chandelure ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 116/084 | Mega Darkrai ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 117/084 | Morpeko ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 118/084 | Gladion's Final Battle | Trainer (Supporter) | Special illustration rare | Holo |
+| 119/084 | Gwynn | Trainer (Supporter) | Special illustration rare | Holo |
+| 120/084 | Mega Darkrai ex | Pokémon (Darkness) | Mega Hyper Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

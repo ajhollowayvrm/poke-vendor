@@ -105,6 +105,147 @@ with the set. No source confirms that they hold booster packs.
 
 **Collation**: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `me02`), fetched 2026-09-12. The list has 130 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/094 | Oddish | Pokémon (Grass) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 002/094 | Gloom | Pokémon (Grass) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 003/094 | Vileplume | Pokémon (Grass) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 004/094 | Mega Heracross ex | Pokémon (Grass) | Double rare | Holo |
+| 005/094 | Lotad | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/094 | Lombre | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/094 | Ludicolo | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 008/094 | Genesect | Pokémon (Grass) | Rare | Holo, Reverse holo, Holo (Cosmos, Set logo) |
+| 009/094 | Nymble | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 010/094 | Lokix | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 011/094 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 012/094 | Charmeleon | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 013/094 | Mega Charizard X ex | Pokémon (Fire) | Double rare | Holo |
+| 014/094 | Moltres | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal |
+| 015/094 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 016/094 | Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 017/094 | Reshiram | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Set logo), Holo (Cosmos) |
+| 018/094 | Oricorio ex | Pokémon (Fire) | Double rare | Holo |
+| 019/094 | Charcadet | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 020/094 | Ceruledge | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 021/094 | Seel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 022/094 | Dewgong | Pokémon (Water) | Common | Normal, Reverse holo |
+| 023/094 | Swinub | Pokémon (Water) | Common | Normal, Reverse holo |
+| 024/094 | Piloswine | Pokémon (Water) | Common | Normal, Reverse holo |
+| 025/094 | Mamoswine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 026/094 | Suicune | Pokémon (Water) | Rare | Holo, Reverse holo, Holo (Cosmos), Holo (Eb games), Holo (Cosmos, Gamestop) |
+| 027/094 | Piplup | Pokémon (Water) | Common | Normal, Reverse holo |
+| 028/094 | Prinplup | Pokémon (Water) | Common | Normal, Reverse holo |
+| 029/094 | Rotom ex | Pokémon (Lightning) | Double rare | Holo |
+| 030/094 | Yamper | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 031/094 | Boltund | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 032/094 | Pawmi | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 033/094 | Pawmo | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 034/094 | Pawmot | Pokémon (Lightning) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 035/094 | Misdreavus | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 036/094 | Mismagius ex | Pokémon (Psychic) | Double rare | Holo |
+| 037/094 | Snubbull | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 038/094 | Granbull | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 039/094 | Cresselia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 040/094 | Meloetta | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 041/094 | Mega Diancie ex | Pokémon (Psychic) | Double rare | Holo |
+| 042/094 | Mimikyu | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 043/094 | Milcery | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 044/094 | Alcremie | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 045/094 | Zacian | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 046/094 | Bramblin | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 047/094 | Brambleghast | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 048/094 | Paldean Tauros | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 049/094 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 050/094 | Gliscor | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 051/094 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 052/094 | Vibrava | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 053/094 | Flygon | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 054/094 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 055/094 | Haunter | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 056/094 | Mega Gengar ex | Pokémon (Darkness) | Double rare | Holo |
+| 057/094 | Murkrow | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 058/094 | Honchkrow | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 059/094 | Sableye | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 060/094 | Carvanha | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 061/094 | Mega Sharpedo ex | Pokémon (Darkness) | Double rare | Holo |
+| 062/094 | Seviper | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 063/094 | Absol | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 064/094 | Sandile | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 065/094 | Krokorok | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 066/094 | Krookodile | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 067/094 | Toxel | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 068/094 | Toxtricity | Pokémon (Darkness) | Rare | Holo, Reverse holo, Normal |
+| 069/094 | Eternatus | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 070/094 | Empoleon ex | Pokémon (Metal) | Double rare | Holo |
+| 071/094 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 072/094 | Bronzong | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 073/094 | Togedemaru | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 074/094 | Duraludon | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 075/094 | Archaludon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 076/094 | Jigglypuff | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 077/094 | Wigglytuff | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 078/094 | Aipom | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 079/094 | Ambipom | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 080/094 | Smeargle | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 081/094 | Zigzagoon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 082/094 | Linoone | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 083/094 | Buneary | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 084/094 | Mega Lopunny ex | Pokémon (Colorless) | Double rare | Holo |
+| 085/094 | Battle Cage | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 086/094 | Blowtorch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 087/094 | Dawn | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 088/094 | Dizzying Valley | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 089/094 | Firebreather | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 090/094 | Grimsley's Move | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 091/094 | Jumbo Ice Cream | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 092/094 | Punk Helmet | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 093/094 | Sacred Charm | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 094/094 | Wondrous Patch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 095/094 | Ludicolo | Pokémon (Grass) | Illustration rare | Holo |
+| 096/094 | Nymble | Pokémon (Grass) | Illustration rare | Holo |
+| 097/094 | Dewgong | Pokémon (Water) | Illustration rare | Holo |
+| 098/094 | Piplup | Pokémon (Water) | Illustration rare | Holo |
+| 099/094 | Yamper | Pokémon (Lightning) | Illustration rare | Holo |
+| 100/094 | Zacian | Pokémon (Psychic) | Illustration rare | Holo |
+| 101/094 | Flygon | Pokémon (Fighting) | Illustration rare | Holo |
+| 102/094 | Paldean Wooper | Pokémon (Darkness) | Illustration rare | Holo |
+| 103/094 | Toxtricity | Pokémon (Darkness) | Illustration rare | Holo |
+| 104/094 | Togedemaru | Pokémon (Metal) | Illustration rare | Holo |
+| 105/094 | Wigglytuff | Pokémon (Colorless) | Illustration rare | Holo |
+| 106/094 | Meowth | Pokémon (Colorless) | Illustration rare | Holo |
+| 107/094 | Ambipom | Pokémon (Colorless) | Illustration rare | Holo |
+| 108/094 | Mega Heracross ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 109/094 | Mega Charizard X ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 110/094 | Oricorio ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 111/094 | Rotom ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 112/094 | Mismagius ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 113/094 | Mega Sharpedo ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 114/094 | Empoleon ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 115/094 | Mega Lopunny ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 116/094 | Battle Cage | Trainer (Stadium) | Ultra Rare | Holo |
+| 117/094 | Blowtorch | Trainer (Item) | Ultra Rare | Holo |
+| 118/094 | Dawn | Trainer (Supporter) | Ultra Rare | Holo |
+| 119/094 | Firebreather | Trainer (Supporter) | Ultra Rare | Holo |
+| 120/094 | Grimsley's Move | Trainer (Supporter) | Ultra Rare | Holo |
+| 121/094 | Punk Helmet | Trainer (Tool) | Ultra Rare | Holo |
+| 122/094 | Sacred Charm | Trainer (Tool) | Ultra Rare | Holo |
+| 123/094 | Switch | Trainer (Item) | Ultra Rare | Holo |
+| 124/094 | Ignition Energy | Energy (Normal) | Ultra Rare | Holo |
+| 125/094 | Mega Charizard X ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 126/094 | Rotom ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 127/094 | Mega Sharpedo ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 128/094 | Mega Lopunny ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 129/094 | Dawn | Trainer (Supporter) | Special illustration rare | Holo |
+| 130/094 | Mega Charizard X ex | Pokémon (Fire) | Mega Hyper Rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
