@@ -129,6 +129,133 @@ Follows the era's sealed product template
 
 Collation: unknown. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `ex6`), fetched 2026-09-12. The list has 116 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/112 | Beedrill | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy) |
+| 2/112 | Butterfree | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy) |
+| 3/112 | Dewgong | Pokémon (Water) | Rare | Holo, Holo (Energy) |
+| 4/112 | Ditto | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
+| 5/112 | Exeggutor | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy) |
+| 6/112 | Kangaskhan | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
+| 7/112 | Marowak | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy) |
+| 8/112 | Nidoking | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy) |
+| 9/112 | Nidoqueen | Pokémon (Fighting) | Rare | Holo, Reverse holo (Energy), Holo (Jeremy maron) |
+| 10/112 | Pidgeot | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy), Holo (Takashi yoneda), Holo (Jeremy maron), Holo (Hiroki yano), Holo (Jimmy ballard) |
+| 11/112 | Poliwrath | Pokémon (Water) | Rare | Holo, Reverse holo (Energy) |
+| 12/112 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo (Energy) |
+| 13/112 | Rapidash | Pokémon (Fire) | Rare | Holo, Reverse holo (Energy) |
+| 14/112 | Slowbro | Pokémon (Psychic) | Rare | Holo, Reverse holo (Energy) |
+| 15/112 | Snorlax | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
+| 16/112 | Tauros | Pokémon (Colorless) | Rare | Holo, Reverse holo (Energy) |
+| 17/112 | Victreebel | Pokémon (Grass) | Rare | Holo, Reverse holo (Energy) |
+| 18/112 | Arcanine | Pokémon (Fire) | Rare | Normal, Reverse holo (Energy) |
+| 19/112 | Chansey | Pokémon (Colorless) | Rare | Normal, Reverse holo (Energy) |
+| 20/112 | Cloyster | Pokémon (Water) | Rare | Normal, Reverse holo (Energy) |
+| 21/112 | Dodrio | Pokémon (Colorless) | Rare | Normal, Reverse holo (Energy) |
+| 22/112 | Dugtrio | Pokémon (Fighting) | Rare | Normal, Reverse holo (Energy) |
+| 23/112 | Farfetch'd | Pokémon (Colorless) | Rare | Normal, Reverse holo (Energy) |
+| 24/112 | Fearow | Pokémon (Colorless) | Rare | Normal, Reverse holo (Energy) |
+| 25/112 | Hypno | Pokémon (Psychic) | Rare | Normal, Reverse holo (Energy) |
+| 26/112 | Kingler | Pokémon (Water) | Rare | Normal, Reverse holo (Energy) |
+| 27/112 | Magneton | Pokémon (Lightning) | Rare | Normal, Reverse holo (Energy) |
+| 28/112 | Primeape | Pokémon (Fighting) | Rare | Normal, Reverse holo (Energy) |
+| 29/112 | Scyther | Pokémon (Grass) | Rare | Normal, Reverse holo (Energy) |
+| 30/112 | Tangela | Pokémon (Grass) | Rare | Normal, Reverse holo (Energy) |
+| 31/112 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Energy) |
+| 32/112 | Drowzee | Pokémon (Psychic) | Uncommon | Normal, Holo (Energy) |
+| 33/112 | Exeggcute | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Energy) |
+| 34/112 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Energy) |
+| 35/112 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 36/112 | Kakuna | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 37/112 | Lickitung | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Energy) |
+| 38/112 | Mankey | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Energy) |
+| 39/112 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 40/112 | Nidorina | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy), Normal (Jeremy maron) |
+| 41/112 | Nidorino | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 42/112 | Onix | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Energy) |
+| 43/112 | Parasect | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 44/112 | Persian | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Energy) |
+| 45/112 | Pidgeotto | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Energy), Normal (Takashi yoneda), Normal (Jeremy maron), Normal (Hiroki yano), Normal (Jimmy ballard) |
+| 46/112 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Reverse holo (Energy) |
+| 47/112 | Porygon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Energy) |
+| 48/112 | Raticate | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Energy) |
+| 49/112 | Venomoth | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 50/112 | Wartortle | Pokémon (Water) | Uncommon | Normal, Reverse holo (Energy), Normal (Prerelease), Normal (Hiroki yano) |
+| 51/112 | Weepinbell | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Energy) |
+| 52/112 | Wigglytuff | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Energy) |
+| 53/112 | Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 54/112 | Bulbasaur | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 55/112 | Bulbasaur | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 56/112 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 57/112 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo (Energy) |
+| 58/112 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo (Energy) |
+| 59/112 | Clefairy | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy) |
+| 60/112 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo (Energy) |
+| 61/112 | Diglett | Pokémon (Fighting) | Common | Normal, Reverse holo (Energy) |
+| 62/112 | Doduo | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy) |
+| 63/112 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo (Energy) |
+| 64/112 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo (Energy) |
+| 65/112 | Jigglypuff | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy) |
+| 66/112 | Krabby | Pokémon (Water) | Common | Normal, Reverse holo (Energy) |
+| 67/112 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo (Energy), Normal (Rarity error), Reverse holo (Rarity error, Energy) |
+| 68/112 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo (Energy) |
+| 69/112 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy) |
+| 70/112 | Nidoran♀ | Pokémon (Grass) | Common | Normal, Reverse holo (Energy), Normal (Jeremy maron) |
+| 71/112 | Nidoran♂ | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 72/112 | Paras | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 73/112 | Pidgey | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy), Normal (Takashi yoneda), Normal (Jeremy maron), Normal (Hiroki yano), Normal (Jimmy ballard) |
+| 74/112 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo (Energy) |
+| 75/112 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo (Energy) |
+| 76/112 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo (Energy) |
+| 77/112 | Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy) |
+| 78/112 | Seel | Pokémon (Water) | Common | Normal, Reverse holo (Energy) |
+| 79/112 | Shellder | Pokémon (Water) | Common | Normal, Reverse holo (Energy) |
+| 80/112 | Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo (Energy) |
+| 81/112 | Spearow | Pokémon (Colorless) | Common | Normal, Reverse holo (Energy) |
+| 82/112 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo (Energy) |
+| 83/112 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo (Energy), Normal (Hiroki yano) |
+| 84/112 | Venonat | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 85/112 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo (Energy) |
+| 86/112 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo (Energy) |
+| 87/112 | Bill's Maintenance | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Energy), Normal (Takashi yoneda), Normal (Jimmy ballard) |
+| 88/112 | Celio's Network | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Energy), Normal (Takashi yoneda), Normal (Jeremy maron), Normal (Hiroki yano), Normal (Jimmy ballard), Normal (Michael gonzalez) |
+| 89/112 | Energy Removal 2 | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy), Normal (Curran hill) |
+| 90/112 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy) |
+| 91/112 | EXP. ALL | Trainer (Tool) | Uncommon | Normal, Reverse holo (Energy) |
+| 92/112 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy), Normal (Jeremy maron) |
+| 93/112 | Life Herb | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy) |
+| 94/112 | Mt. Moon | Trainer (Stadium) | Uncommon | Normal, Reverse holo (Energy) |
+| 95/112 | Poké Ball | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy) |
+| 96/112 | PokéDex (HANDY909) | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy) |
+| 97/112 | Pokémon Reversal | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy), Normal (Curran hill), Normal (Michael gonzalez) |
+| 98/112 | Prof. Oak's Research | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Energy), Normal (Professor program) |
+| 99/112 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy) |
+| 100/112 | VS Seeker | Trainer (Item) | Uncommon | Normal, Reverse holo (Energy) |
+| 101/112 | Potion | Trainer (Item) | Common | Normal, Reverse holo (Energy) |
+| 102/112 | Switch | Trainer (Item) | Common | Normal, Reverse holo (Energy) |
+| 103/112 | Multi Energy | Energy (Special) | Rare | Normal, Reverse holo (Energy) |
+| 104/112 | Blastoise ex | Pokémon (Water) | Rare | Holo, Normal (Hiroki yano) |
+| 105/112 | Charizard ex | Pokémon (Fire) | Rare | Holo |
+| 106/112 | Clefable ex | Pokémon (Colorless) | Rare | Holo |
+| 107/112 | Electrode ex | Pokémon (Lightning) | Rare | Holo |
+| 108/112 | Gengar ex | Pokémon (Psychic) | Rare | Holo |
+| 109/112 | Gyarados ex | Pokémon (Water) | Rare | Holo |
+| 110/112 | Mr. Mime ex | Pokémon (Psychic) | Rare | Holo |
+| 111/112 | Mr. Mime ex | Pokémon (Psychic) | Rare | Holo |
+| 112/112 | Venusaur ex | Pokémon (Grass) | Rare | Holo |
+| 113/112 | Charmander | Pokémon (Fire) | Rare | Holo |
+| 114/112 | Articuno ex | Pokémon (Water) | Rare | Holo |
+| 115/112 | Moltres ex | Pokémon (Fire) | Rare | Holo |
+| 116/112 | Zapdos ex | Pokémon (Lightning) | Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

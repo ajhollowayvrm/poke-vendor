@@ -128,6 +128,128 @@ Follows the era's sealed product template
 
 Collation: unknown. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `ex7`), fetched 2026-09-12. The list has 111 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/109 | Azumarill | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 2/109 | Dark Ampharos | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 3/109 | Dark Crobat | Pokémon (Grass, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 4/109 | Dark Electrode | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 5/109 | Dark Houndoom | Pokémon (Darkness, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 6/109 | Dark Hypno | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 7/109 | Dark Marowak | Pokémon (Fighting, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 8/109 | Dark Octillery | Pokémon (Water, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 9/109 | Dark Slowking | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 10/109 | Dark Steelix | Pokémon (Metal, Darkness) | Rare | Holo, Reverse holo (Set logo) |
+| 11/109 | Jumpluff | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
+| 12/109 | Kingdra | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 13/109 | Piloswine | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
+| 14/109 | Togetic | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
+| 15/109 | Dark Dragonite | Pokémon (Darkness) | Rare | Holo (Cosmos), Reverse holo (Set logo), Normal |
+| 16/109 | Dark Muk | Pokémon (Grass, Darkness) | Rare | Reverse holo (Set logo), Normal |
+| 17/109 | Dark Raticate | Pokémon (Darkness) | Rare | Reverse holo (Set logo), Normal |
+| 18/109 | Dark Sandslash | Pokémon (Fighting, Darkness) | Rare | Reverse holo (Set logo), Normal |
+| 19/109 | Dark Tyranitar | Pokémon (Darkness) | Rare | Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
+| 20/109 | Dark Tyranitar | Pokémon (Fighting, Darkness) | Rare | Holo (Cosmos), Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
+| 21/109 | Delibird | Pokémon (Water) | Rare | Reverse holo (Set logo), Normal |
+| 22/109 | Furret | Pokémon (Colorless) | Rare | Reverse holo (Set logo), Normal |
+| 23/109 | Ledian | Pokémon (Grass) | Rare | Reverse holo (Set logo), Normal |
+| 24/109 | Magby | Pokémon (Fire) | Rare | Reverse holo (Set logo), Normal |
+| 25/109 | Misdreavus | Pokémon (Psychic) | Rare | Reverse holo (Set logo), Normal |
+| 26/109 | Quagsire | Pokémon (Water) | Rare | Reverse holo (Set logo), Normal |
+| 27/109 | Qwilfish | Pokémon (Water) | Rare | Reverse holo (Set logo), Normal |
+| 28/109 | Yanma | Pokémon (Grass) | Rare | Reverse holo (Set logo), Normal |
+| 29/109 | Dark Arbok | Pokémon (Grass, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 30/109 | Dark Ariados | Pokémon (Grass, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 31/109 | Dark Dragonair | Pokémon (Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 32/109 | Dark Dragonair | Pokémon (Darkness, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 33/109 | Dark Flaaffy | Pokémon (Lightning, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 34/109 | Dark Golbat | Pokémon (Grass, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 35/109 | Dark Golduck | Pokémon (Water, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 36/109 | Dark Gyarados | Pokémon (Water, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 37/109 | Dark Houndoom | Pokémon (Fire, Darkness) | Uncommon | Normal, Reverse holo (Set logo), Normal (Prerelease) |
+| 38/109 | Dark Magcargo | Pokémon (Fire, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 39/109 | Dark Magneton | Pokémon (Lightning, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 40/109 | Dark Pupitar | Pokémon (Fighting, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 41/109 | Dark Pupitar | Pokémon (Fighting, Darkness) | Uncommon | Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
+| 42/109 | Dark Weezing | Pokémon (Grass, Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 43/109 | Heracross | Pokémon (Fighting) | Uncommon | Reverse holo (Set logo), Normal |
+| 44/109 | Magmar | Pokémon (Fire) | Uncommon | Reverse holo (Set logo), Normal |
+| 45/109 | Mantine | Pokémon (Water) | Uncommon | Reverse holo (Set logo), Normal |
+| 46/109 | Rocket's Meowth | Pokémon (Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 47/109 | Rocket's Wobbuffet | Pokémon (Darkness) | Uncommon | Reverse holo (Set logo), Normal |
+| 48/109 | Seadra | Pokémon (Water) | Uncommon | Reverse holo (Set logo), Normal |
+| 49/109 | Skiploom | Pokémon (Grass) | Uncommon | Reverse holo (Set logo), Normal |
+| 50/109 | Togepi | Pokémon (Colorless) | Uncommon | Reverse holo (Set logo), Normal |
+| 51/109 | Cubone | Pokémon (Fighting) | Common | Reverse holo (Set logo), Normal |
+| 52/109 | Dratini | Pokémon (Colorless) | Common | Reverse holo (Set logo), Normal |
+| 53/109 | Dratini | Pokémon (Colorless) | Common | Reverse holo (Set logo), Normal |
+| 54/109 | Drowzee | Pokémon (Psychic) | Common | Reverse holo (Set logo), Normal |
+| 55/109 | Ekans | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 56/109 | Grimer | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 57/109 | Hoppip | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 58/109 | Horsea | Pokémon (Water) | Common | Reverse holo (Set logo), Normal |
+| 59/109 | Houndour | Pokémon (Fire) | Common | Reverse holo (Set logo), Normal |
+| 60/109 | Houndour | Pokémon (Fire) | Common | Reverse holo (Set logo), Normal |
+| 61/109 | Koffing | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 62/109 | Larvitar | Pokémon (Fighting) | Common | Reverse holo (Set logo), Normal |
+| 63/109 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
+| 64/109 | Ledyba | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 65/109 | Magikarp | Pokémon (Water) | Common | Reverse holo (Set logo), Normal |
+| 66/109 | Magnemite | Pokémon (Lightning) | Common | Reverse holo (Set logo), Normal |
+| 67/109 | Mareep | Pokémon (Lightning) | Common | Reverse holo (Set logo), Normal |
+| 68/109 | Marill | Pokémon (Water) | Common | Reverse holo (Set logo), Normal |
+| 69/109 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo), Normal (Hiroki yano) |
+| 70/109 | Psyduck | Pokémon (Water) | Common | Reverse holo (Set logo), Normal |
+| 71/109 | Rattata | Pokémon (Colorless) | Common | Reverse holo (Set logo), Normal |
+| 72/109 | Rattata | Pokémon (Colorless) | Common | Reverse holo (Set logo), Normal |
+| 73/109 | Remoraid | Pokémon (Water) | Common | Reverse holo (Set logo), Normal |
+| 74/109 | Sandshrew | Pokémon (Fighting) | Common | Reverse holo (Set logo), Normal |
+| 75/109 | Sentret | Pokémon (Colorless) | Common | Reverse holo (Set logo), Normal |
+| 76/109 | Slowpoke | Pokémon (Psychic) | Common | Reverse holo (Set logo), Normal |
+| 77/109 | Slugma | Pokémon (Fire) | Common | Reverse holo (Set logo), Normal |
+| 78/109 | Spinarak | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 79/109 | Swinub | Pokémon (Fighting) | Common | Reverse holo (Set logo), Normal |
+| 80/109 | Voltorb | Pokémon (Lightning) | Common | Reverse holo (Set logo), Normal |
+| 81/109 | Wooper | Pokémon (Water) | Common | Reverse holo (Set logo), Normal |
+| 82/109 | Zubat | Pokémon (Grass) | Common | Reverse holo (Set logo), Normal |
+| 83/109 | Copycat | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Normal (Takashi yoneda), Normal (Michael gonzalez), Normal (Jeremy maron), Normal (Hiroki yano), Normal (Jimmy ballard) |
+| 84/109 | Pokémon Retriever | Trainer (Rocket's Secret Machine) | Uncommon | Normal, Reverse holo (Set logo), Normal (Takashi yoneda), Normal (Miska saari), Normal (Jimmy ballard) |
+| 85/109 | Pow! Hand Extension | Trainer (Rocket's Secret Machine) | Uncommon | Normal, Reverse holo (Set logo), Normal (Curran hill), Normal (Jason klaczynski) |
+| 86/109 | Rocket's Admin. | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Normal (Curran hill), Normal (Takashi yoneda), Normal (Michael gonzalez), Normal (Jeremy maron), Normal (Hiroki yano), Normal (Jimmy ballard), Normal (Jason klaczynski), Normal (Miska saari) |
+| 87/109 | Rocket's Hideout | Trainer (Stadium) | Uncommon | Reverse holo (Set logo), Normal |
+| 88/109 | Rocket's Mission | Trainer (Supporter) | Uncommon | Reverse holo (Set logo), Normal |
+| 89/109 | Rocket's Poké Ball | Trainer (Item) | Uncommon | Reverse holo (Set logo), Normal |
+| 90/109 | Rocket's Tricky Gym | Trainer (Stadium) | Uncommon | Reverse holo (Set logo), Normal |
+| 91/109 | Surprise! Time Machine | Trainer (Rocket's Secret Machine) | Uncommon | Normal, Reverse holo (Set logo), Normal (Jimmy ballard) |
+| 92/109 | Swoop! Teleporter | Trainer (Rocket's Secret Machine) | Uncommon | Normal, Reverse holo (Set logo), Normal (Curran hill), Normal (Michael gonzalez) |
+| 93/109 | Venture Bomb | Trainer (Rocket's Secret Machine) | Uncommon | Reverse holo (Set logo), Normal |
+| 94/109 | Dark Metal Energy | Energy (Special) | Uncommon | Reverse holo (Set logo), Normal |
+| 95/109 | R Energy | Energy (Special) | Uncommon | Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
+| 96/109 | Rocket's Articuno ex | Pokémon (Darkness) | Rare | Holo |
+| 97/109 | Rocket's Entei ex | Pokémon (Darkness) | Rare | Holo |
+| 98/109 | Rocket's Hitmonchan ex | Pokémon (Darkness) | Rare | Holo |
+| 99/109 | Rocket's Mewtwo ex | Pokémon (Darkness) | Rare | Holo |
+| 100/109 | Rocket's Moltres ex | Pokémon (Darkness) | Rare | Holo |
+| 101/109 | Rocket's Scizor ex | Pokémon (Darkness) | Rare | Holo |
+| 102/109 | Rocket's Scyther ex | Pokémon (Darkness) | Rare | Holo |
+| 103/109 | Rocket's Sneasel ex | Pokémon (Darkness) | Rare | Holo |
+| 104/109 | Rocket's Snorlax ex | Pokémon (Darkness) | Rare | Holo |
+| 105/109 | Rocket's Suicune ex | Pokémon (Darkness) | Rare | Holo |
+| 106/109 | Rocket's Zapdos ex | Pokémon (Darkness) | Rare | Holo |
+| 107/109 | Mudkip ☆ | Pokémon (Water) | Rare | Holo |
+| 108/109 | Torchic ☆ | Pokémon (Fire) | Rare | Holo |
+| 109/109 | Treecko ☆ | Pokémon (Grass) | Rare | Holo |
+| 110/109 | Charmeleon | Pokémon (Fire) | Rare | Holo |
+| 111/109 | Here Comes Team Rocket! | Trainer (Supporter) | Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -117,6 +117,117 @@ Follows the era's sealed product template
 
 Collation: unknown. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `ex3`), fetched 2026-09-12. The list has 100 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/97 | Absol | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 2/97 | Altaria | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 3/97 | Crawdaunt | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 4/97 | Flygon | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 5/97 | Golem | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 6/97 | Grumpig | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
+| 7/97 | Minun | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 8/97 | Plusle | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 9/97 | Roselia | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 10/97 | Salamence | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 11/97 | Shedinja | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 12/97 | Torkoal | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 13/97 | Crawdaunt | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 14/97 | Dragonair | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 15/97 | Flygon | Pokémon (Colorless) | Rare | Normal, Reverse holo, Holo (Cosmos), Holo (Cosmos, Winner) |
+| 16/97 | Girafarig | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 17/97 | Magneton | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 18/97 | Ninjask | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 19/97 | Salamence | Pokémon (Colorless) | Rare | Normal, Reverse holo, Holo (Cosmos), Holo (Cosmos, Winner) |
+| 20/97 | Shelgon | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 21/97 | Skarmory | Pokémon (Metal) | Rare | Normal, Reverse holo |
+| 22/97 | Vibrava | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 23/97 | Bagon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 24/97 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 25/97 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 26/97 | Dratini | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 27/97 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 28/97 | Forretress | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 29/97 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 30/97 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 31/97 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 32/97 | Gyarados | Pokémon (Water) | Uncommon | Normal, Reverse holo, Normal (Prerelease) |
+| 33/97 | Horsea | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 34/97 | Houndoom | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 35/97 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 36/97 | Marshtomp | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 37/97 | Meditite | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 38/97 | Ninjask | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 39/97 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 40/97 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 41/97 | Shelgon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 42/97 | Shelgon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 43/97 | Shuppet | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 44/97 | Snorunt | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 45/97 | Swellow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 46/97 | Vibrava | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 47/97 | Vibrava | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 48/97 | Whiscash | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 49/97 | Bagon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 50/97 | Bagon | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (Gen con), Normal (Scrye), Normal (Inquest gamer) |
+| 51/97 | Barboach | Pokémon (Water) | Common | Normal, Reverse holo |
+| 52/97 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 53/97 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 54/97 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 55/97 | Geodude | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 56/97 | Geodude | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 57/97 | Grimer | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 58/97 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
+| 59/97 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 60/97 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
+| 61/97 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 62/97 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 63/97 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 64/97 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 65/97 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo |
+| 66/97 | Nincada | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 67/97 | Nincada | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 68/97 | Nincada | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 69/97 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 70/97 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 71/97 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 72/97 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 73/97 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 74/97 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 75/97 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 76/97 | Taillow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 77/97 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 78/97 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 79/97 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 80/97 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 81/97 | Wurmple | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 82/97 | Balloon Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 83/97 | Buffer Piece | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 84/97 | Energy Recycle System | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 85/97 | High Pressure System | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 86/97 | Low Pressure System | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 87/97 | Mr. Briney's Compassion | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 88/97 | TV Reporter | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 89/97 | Ampharos ex | Pokémon (Lightning) | Rare | Holo |
+| 90/97 | Dragonite ex | Pokémon (Colorless) | Rare | Holo |
+| 91/97 | Golem ex | Pokémon (Fighting) | Rare | Holo |
+| 92/97 | Kingdra ex | Pokémon (Water) | Rare | Holo |
+| 93/97 | Latias ex | Pokémon (Colorless) | Rare | Holo |
+| 94/97 | Latios ex | Pokémon (Colorless) | Rare | Holo |
+| 95/97 | Magcargo ex | Pokémon (Fire) | Rare | Holo |
+| 96/97 | Muk ex | Pokémon (Grass) | Rare | Holo |
+| 97/97 | Rayquaza ex | Pokémon (Colorless) | Rare | Holo, Normal (Chris fulop) |
+| 98/97 | Charmander | Pokémon (Fire) | Rare | Holo, Holo (City championships) |
+| 99/97 | Charmeleon | Pokémon (Fire) | Rare | Holo, Holo (State championships) |
+| 100/097 | Charizard | Pokémon (Fire) | Rare | Holo, Holo (National championships) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

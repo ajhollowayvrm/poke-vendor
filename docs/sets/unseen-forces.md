@@ -124,6 +124,173 @@ Follows the era's sealed product template
 
 Collation: unknown. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `ex10`, `exu`), fetched 2026-09-12. The list has 145 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+### Unseen Forces
+
+TCGdex set `ex10`: 117 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/115 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo) |
+| 2/115 | Ariados | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
+| 3/115 | Bellossom | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
+| 4/115 | Feraligatr | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 5/115 | Flareon | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo) |
+| 6/115 | Forretress | Pokémon (Metal) | Rare | Holo, Reverse holo (Set logo) |
+| 7/115 | Houndoom | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo) |
+| 8/115 | Jolteon | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo) |
+| 9/115 | Meganium | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 10/115 | Octillery | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 11/115 | Poliwrath | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
+| 12/115 | Porygon2 | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
+| 13/115 | Slowbro | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 14/115 | Slowking | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
+| 15/115 | Sudowoodo | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
+| 16/115 | Sunflora | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
+| 17/115 | Typhlosion | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 18/115 | Ursaring | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
+| 19/115 | Vaporeon | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 20/115 | Chansey | Pokémon (Colorless) | Rare | Normal, Reverse holo (Set logo) |
+| 21/115 | Cleffa | Pokémon (Colorless) | Rare | Normal, Reverse holo (Set logo) |
+| 22/115 | Electabuzz | Pokémon (Lightning) | Rare | Normal, Reverse holo (Set logo) |
+| 23/115 | Elekid | Pokémon (Lightning) | Rare | Normal, Reverse holo (Set logo) |
+| 24/115 | Hitmonchan | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 25/115 | Hitmonlee | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 26/115 | Hitmontop | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 27/115 | Ho-Oh | Pokémon (Fire) | Rare | Normal, Reverse holo (Set logo), Holo (Cosmos), Normal (Pokemon day) |
+| 28/115 | Jynx | Pokémon (Water) | Rare | Normal, Reverse holo (Set logo) |
+| 29/115 | Lugia | Pokémon (Psychic) | Rare | Normal, Reverse holo (Set logo), Holo (Cosmos), Normal (Pokemon rocks america) |
+| 30/115 | Murkrow | Pokémon (Darkness) | Rare | Normal, Reverse holo (Set logo) |
+| 31/115 | Smoochum | Pokémon (Water) | Rare | Normal, Reverse holo (Set logo) |
+| 32/115 | Stantler | Pokémon (Colorless) | Rare | Normal, Reverse holo (Set logo) |
+| 33/115 | Tyrogue | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 34/115 | Aipom | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 35/115 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo), Normal (Prerelease) |
+| 36/115 | Clefable | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 37/115 | Corsola | Pokémon (Water) | Uncommon | Normal, Reverse holo (Set logo), Normal (Akira miyazaki) |
+| 38/115 | Croconaw | Pokémon (Water) | Uncommon | Normal, Reverse holo (Set logo) |
+| 39/115 | Granbull | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 40/115 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Set logo) |
+| 41/115 | Magcargo | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Set logo) |
+| 42/115 | Miltank | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 43/115 | Noctowl | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 44/115 | Quagsire | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Set logo) |
+| 45/115 | Quilava | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Set logo) |
+| 46/115 | Scyther | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 47/115 | Shuckle | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 48/115 | Smeargle | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 49/115 | Xatu | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Set logo) |
+| 50/115 | Yanma | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 51/115 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 52/115 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo) |
+| 53/115 | Clefairy | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 54/115 | Cyndaquil | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo) |
+| 55/115 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 56/115 | Flaaffy | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo) |
+| 57/115 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 58/115 | Gloom | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 59/115 | Hoothoot | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 60/115 | Houndour | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo) |
+| 61/115 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 62/115 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo) |
+| 63/115 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo (Set logo) |
+| 64/115 | Oddish | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 65/115 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 66/115 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 67/115 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 68/115 | Poliwhirl | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 69/115 | Porygon | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 70/115 | Pupitar | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 71/115 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 72/115 | Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo (Set logo) |
+| 73/115 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo) |
+| 74/115 | Snubbull | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 75/115 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 76/115 | Sunkern | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 77/115 | Teddiursa | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 78/115 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 79/115 | Wooper | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 80/115 | Curse Powder | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo) |
+| 81/115 | Energy Recycle System | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo) |
+| 82/115 | Energy Removal 2 | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo), Normal (Miska saari) |
+| 83/115 | Energy Root | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo), Normal (Miska saari) |
+| 84/115 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo) |
+| 85/115 | Fluffy Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo) |
+| 86/115 | Mary's Request | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Normal (Jason klaczynski), Normal (Miska saari), Normal (Tom roos) |
+| 87/115 | Poké Ball | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo) |
+| 88/115 | Pokémon Reversal | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo), Normal (Miska saari), Normal (Jeremy scharff kim) |
+| 89/115 | Professor Elm's Training Method | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Normal (Hiroki yano), Normal (Jimmy ballard), Normal (Jason klaczynski) |
+| 90/115 | Protective Orb | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo) |
+| 91/115 | Sitrus Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo) |
+| 92/115 | Solid Rage | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo) |
+| 93/115 | Warp Point | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo), Normal (Hiroki yano), Normal (Miska saari) |
+| 94/115 | Energy Search | Trainer (Item) | Common | Normal, Reverse holo (Set logo) |
+| 95/115 | Potion | Trainer (Item) | Common | Normal, Reverse holo (Set logo) |
+| 96/115 | Darkness Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo) |
+| 97/115 | Metal Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo) |
+| 98/115 | Boost Energy | Energy (Special) | Uncommon | Normal, Reverse holo (Set logo) |
+| 99/115 | Cyclone Energy | Energy (Special) | Uncommon | Normal, Reverse holo (Set logo) |
+| 100/115 | Warp Energy | Energy (Special) | Uncommon | Normal, Reverse holo (Set logo) |
+| 101/115 | Blissey ex | Pokémon (Colorless) | Rare | Holo |
+| 102/115 | Espeon ex | Pokémon (Psychic) | Rare | Holo, Holo (Jimmy ballard), Holo (Tom roos) |
+| 103/115 | Feraligatr ex | Pokémon (Water) | Rare | Holo |
+| 104/115 | Ho-Oh ex | Pokémon (Fire) | Rare | Holo |
+| 105/115 | Lugia ex | Pokémon (Colorless) | Rare | Holo, Holo (Hiroki yano) |
+| 106/115 | Meganium ex | Pokémon (Grass) | Rare | Holo |
+| 107/115 | Politoed ex | Pokémon (Water) | Rare | Holo |
+| 108/115 | Scizor ex | Pokémon (Metal) | Rare | Holo |
+| 109/115 | Steelix ex | Pokémon (Metal) | Rare | Holo, Holo (Hiroki yano) |
+| 110/115 | Typhlosion ex | Pokémon (Fire) | Rare | Holo |
+| 111/115 | Tyranitar ex | Pokémon (Darkness) | Rare | Holo |
+| 112/115 | Umbreon ex | Pokémon (Darkness) | Rare | Holo, Holo (Jimmy ballard) |
+| 113/115 | Entei ☆ | Pokémon (Fire) | Rare | Holo |
+| 114/115 | Raikou ☆ | Pokémon (Lightning) | Rare | Holo |
+| 115/115 | Suicune ☆ | Pokémon (Water) | Rare | Holo |
+| 116/115 | Rocket's Persian ex | Pokémon (Darkness) | Rare | Holo |
+| 117/115 | Celebi ex | Pokémon (Grass) | Rare | Holo |
+
+### Unseen Forces Unown Collection
+
+TCGdex set `exu`: 28 cards.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| ! | Unown | Pokémon (Psychic) | Rare | Holo |
+| %3F | Unown | Pokémon (Psychic) | Rare | Holo |
+| A | Unown | Pokémon (Psychic) | Rare | Holo |
+| B | Unown | Pokémon (Psychic) | Rare | Holo |
+| C | Unown | Pokémon (Psychic) | Rare | Holo |
+| D | Unown | Pokémon (Psychic) | Rare | Holo |
+| E | Unown | Pokémon (Psychic) | Rare | Holo |
+| F | Unown | Pokémon (Psychic) | Rare | Holo |
+| G | Unown | Pokémon (Psychic) | Rare | Holo |
+| H | Unown | Pokémon (Psychic) | Rare | Holo |
+| I | Unown | Pokémon (Psychic) | Rare | Holo |
+| J | Unown | Pokémon (Psychic) | Rare | Holo |
+| K | Unown | Pokémon (Psychic) | Rare | Holo |
+| L | Unown | Pokémon (Psychic) | Rare | Holo |
+| M | Unown | Pokémon (Psychic) | Rare | Holo |
+| N | Unown | Pokémon (Psychic) | Rare | Holo |
+| O | Unown | Pokémon (Psychic) | Rare | Holo |
+| P | Unown | Pokémon (Psychic) | Rare | Holo |
+| Q | Unown | Pokémon (Psychic) | Rare | Holo |
+| R | Unown | Pokémon (Psychic) | Rare | Holo |
+| S | Unown | Pokémon (Psychic) | Rare | Holo |
+| T | Unown | Pokémon (Psychic) | Rare | Holo |
+| U | Unown | Pokémon (Psychic) | Rare | Holo |
+| V | Unown | Pokémon (Psychic) | Rare | Holo |
+| W | Unown | Pokémon (Psychic) | Rare | Holo |
+| X | Unown | Pokémon (Psychic) | Rare | Holo |
+| Y | Unown | Pokémon (Psychic) | Rare | Holo |
+| Z | Unown | Pokémon (Psychic) | Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -106,6 +106,124 @@ Follows the era's sealed product template
 
 Collation: unknown. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `ex9`), fetched 2026-09-12. The list has 107 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/106 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 2/106 | Deoxys | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
+| 3/106 | Exploud | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Holo (National championships), Holo (National championships, Staff) |
+| 4/106 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
+| 5/106 | Groudon | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
+| 6/106 | Kyogre | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 7/106 | Manectric | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 8/106 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
+| 9/106 | Rayquaza | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
+| 10/106 | Sceptile | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 11/106 | Swampert | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 12/106 | Chimecho | Pokémon (Psychic) | Rare | Normal, Reverse holo (Set logo) |
+| 13/106 | Glalie | Pokémon (Water) | Rare | Normal, Reverse holo (Set logo) |
+| 14/106 | Groudon | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 15/106 | Kyogre | Pokémon (Water) | Rare | Normal, Reverse holo (Set logo) |
+| 16/106 | Manectric | Pokémon (Lightning) | Rare | Normal, Reverse holo (Set logo) |
+| 17/106 | Nosepass | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 18/106 | Relicanth | Pokémon (Water) | Rare | Normal, Reverse holo (Set logo) |
+| 19/106 | Rhydon | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |
+| 20/106 | Seviper | Pokémon (Grass) | Rare | Normal, Reverse holo (Set logo) |
+| 21/106 | Zangoose | Pokémon (Colorless) | Rare | Normal, Reverse holo (Set logo) |
+| 22/106 | Breloom | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 23/106 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Set logo) |
+| 24/106 | Claydol | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Set logo) |
+| 25/106 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Set logo) |
+| 26/106 | Dodrio | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 27/106 | Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Set logo) |
+| 28/106 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 29/106 | Grumpig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Set logo), Normal (Prerelease) |
+| 30/106 | Grumpig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Set logo) |
+| 31/106 | Hariyama | Pokémon (Fighting) | Uncommon | Normal, Reverse holo (Set logo) |
+| 32/106 | Illumise | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 33/106 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo (Set logo) |
+| 34/106 | Linoone | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 35/106 | Loudred | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo), Normal (Regional championships), Normal (State championships) |
+| 36/106 | Marshtomp | Pokémon (Water) | Uncommon | Normal, Reverse holo (Set logo) |
+| 37/106 | Minun | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Set logo) |
+| 38/106 | Ninetales | Pokémon (Fire) | Uncommon | Normal, Reverse holo (Set logo) |
+| 39/106 | Plusle | Pokémon (Lightning) | Uncommon | Normal, Reverse holo (Set logo) |
+| 40/106 | Swalot | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 41/106 | Swellow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo (Set logo) |
+| 42/106 | Volbeat | Pokémon (Grass) | Uncommon | Normal, Reverse holo (Set logo) |
+| 43/106 | Baltoy | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 44/106 | Cacnea | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 45/106 | Doduo | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 46/106 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo (Set logo) |
+| 47/106 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo) |
+| 48/106 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo) |
+| 49/106 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 50/106 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 51/106 | Gulpin | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 52/106 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 53/106 | Luvdisc | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 54/106 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 55/106 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo), Normal (Curran hill) |
+| 56/106 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo (Set logo), Holo (Wizard world philadelphia) |
+| 57/106 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo) |
+| 58/106 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo) |
+| 59/106 | Pichu | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo), Normal (Nintendo world) |
+| 60/106 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo), Normal (Comic con) |
+| 61/106 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo (Set logo) |
+| 62/106 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Reverse holo (Set logo) |
+| 63/106 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo) |
+| 64/106 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo (Set logo) |
+| 65/106 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo (Set logo) |
+| 66/106 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo (Set logo) |
+| 67/106 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 68/106 | Taillow | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 69/106 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo), Holo (Wizard world chicago) |
+| 70/106 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo (Set logo), Normal (Gen con) |
+| 71/106 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo (Set logo) |
+| 72/106 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo (Set logo) |
+| 73/106 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo), Normal (City championships) |
+| 74/106 | Zigzagoon | Pokémon (Colorless) | Common | Normal, Reverse holo (Set logo) |
+| 75/106 | Battle Frontier | Trainer (Stadium) | Uncommon | Normal, Reverse holo (Set logo), Normal (Jason klaczynski) |
+| 76/106 | Double Full Heal | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo) |
+| 77/106 | Lanette's Net Search | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo) |
+| 78/106 | Lum Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo) |
+| 79/106 | Mr. Stone's Project | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo) |
+| 80/106 | Oran Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo (Set logo) |
+| 81/106 | PokéNav | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo) |
+| 82/106 | Professor Birch | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Holo (Professor program) |
+| 83/106 | Rare Candy | Trainer (Item) | Uncommon | Normal, Reverse holo (Set logo), Normal (Takashi yoneda), Normal (Michael gonzalez), Normal (Jeremy maron) |
+| 84/106 | Scott | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Normal (Curran hill), Normal (Takashi yoneda), Normal (Jason klaczynski) |
+| 85/106 | Wally's Training | Trainer (Supporter) | Uncommon | Normal, Reverse holo (Set logo), Normal (Curran hill) |
+| 86/106 | Darkness Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo), Normal (Takashi yoneda) |
+| 87/106 | Double Rainbow Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo), Normal (Michael gonzalez), Normal (Jeremy maron) |
+| 88/106 | Metal Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo), Normal (Curran hill), Normal (Takashi yoneda) |
+| 89/106 | Multi Energy | Energy (Special) | Rare | Normal, Reverse holo (Set logo) |
+| 90/106 | Altaria ex | Pokémon (Colorless) | Rare | Holo |
+| 91/106 | Cacturne ex | Pokémon (Grass) | Rare | Holo |
+| 92/106 | Camerupt ex | Pokémon (Fire) | Rare | Holo |
+| 93/106 | Deoxys ex | Pokémon (Psychic) | Rare | Holo, Holo (Jason klaczynski) |
+| 94/106 | Dusclops ex | Pokémon (Psychic) | Rare | Holo |
+| 95/106 | Medicham ex | Pokémon (Fighting) | Rare | Holo, Holo (Curran hill) |
+| 96/106 | Milotic ex | Pokémon (Water) | Rare | Holo |
+| 97/106 | Raichu ex | Pokémon (Lightning) | Rare | Holo |
+| 98/106 | Regice ex | Pokémon (Water) | Rare | Holo |
+| 99/106 | Regirock ex | Pokémon (Fighting) | Rare | Holo |
+| 100/106 | Registeel ex | Pokémon (Metal) | Rare | Holo |
+| 101/106 | Grass Energy | Energy (Normal) | Rare | Holo |
+| 102/106 | Fire Energy | Energy (Normal) | Rare | Holo |
+| 103/106 | Water Energy | Energy (Normal) | Rare | Holo |
+| 104/106 | Lightning Energy | Energy (Normal) | Rare | Holo |
+| 105/106 | Psychic Energy | Energy (Normal) | Rare | Holo |
+| 106/106 | Fighting Energy | Energy (Normal) | Rare | Holo |
+| 107/106 | Farfetch'd | Pokémon (Colorless) | Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

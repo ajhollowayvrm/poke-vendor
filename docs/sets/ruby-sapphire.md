@@ -113,6 +113,126 @@ Follows the era's sealed product template
 
 Collation: unknown. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `ex1`), fetched 2026-09-12. The list has 109 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/109 | Aggron | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
+| 2/109 | Beautifly | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 3/109 | Blaziken | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Holo (No e reader), Reverse holo (No e reader), Holo (Chris fulop) |
+| 4/109 | Camerupt | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
+| 5/109 | Delcatty | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal (Kevin nguyen), Normal (Chris fulop), Normal (Reed weichler) |
+| 6/109 | Dustox | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 7/109 | Gardevoir | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Holo (No e reader), Reverse holo (No e reader), Holo (Kevin nguyen) |
+| 8/109 | Hariyama | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
+| 9/109 | Manectric | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |
+| 10/109 | Mightyena | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
+| 11/109 | Sceptile | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 12/109 | Slaking | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 13/109 | Swampert | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Normal (Reed weichler) |
+| 14/109 | Wailord | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
+| 15/109 | Blaziken | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 16/109 | Breloom | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 17/109 | Donphan | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 18/109 | Nosepass | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 19/109 | Pelipper | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 20/109 | Sceptile | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 21/109 | Seaking | Pokémon (Water) | Rare | Normal, Reverse holo, Normal (No e reader) |
+| 22/109 | Sharpedo | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 23/109 | Swampert | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 24/109 | Weezing | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 25/109 | Aron | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 26/109 | Cascoon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 27/109 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 28/109 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Normal (Chris fulop) |
+| 29/109 | Delcatty | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Normal (No e reader) |
+| 30/109 | Electrike | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 31/109 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 32/109 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 33/109 | Hariyama | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Normal (No e reader) |
+| 34/109 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Normal (No e reader), Normal (Kevin nguyen) |
+| 35/109 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 36/109 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 37/109 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 38/109 | Linoone | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 39/109 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 40/109 | Marshtomp | Pokémon (Water) | Uncommon | Normal, Reverse holo, Normal (Reed weichler) |
+| 41/109 | Marshtomp | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 42/109 | Mightyena | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 43/109 | Silcoon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 44/109 | Skitty | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Normal (Reed weichler), Normal (Chris fulop) |
+| 45/109 | Slakoth | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 46/109 | Swellow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Normal (No e reader) |
+| 47/109 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 48/109 | Wailmer | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 49/109 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 50/109 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 51/109 | Carvanha | Pokémon (Water) | Common | Normal, Reverse holo |
+| 52/109 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 53/109 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 54/109 | Koffing | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 55/109 | Goldeen | Pokémon (Water) | Common | Normal, Reverse holo, Normal (No e reader) |
+| 56/109 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 57/109 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo, Normal (No e reader) |
+| 58/109 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 59/109 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo, Normal (25th celebration, Jumbo), Normal (Reed weichler) |
+| 60/109 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo |
+| 61/109 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo, Normal (No e reader) |
+| 62/109 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 63/109 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 64/109 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 65/109 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 66/109 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 67/109 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 68/109 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 69/109 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 70/109 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 71/109 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 72/109 | Taillow | Pokémon (Colorless) | Common | Normal, Reverse holo, Normal (No e reader) |
+| 73/109 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo, Normal (No e reader) |
+| 74/109 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo, Normal (25th celebration, Jumbo), Normal (Chris fulop) |
+| 75/109 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 76/109 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo, Normal (25th celebration, Jumbo), Normal (Reed weichler) |
+| 77/109 | Wingull | Pokémon (Water) | Common | Normal, Reverse holo |
+| 78/109 | Wurmple | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 79/109 | Zigzagoon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 80/109 | Energy Removal 2 | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 81/109 | Energy Restore | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 82/109 | Energy Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 83/109 | Lady Outing | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (No e reader) |
+| 84/109 | Lum Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 85/109 | Oran Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 86/109 | Poké Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 87/109 | Pokémon Reversal | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Tsuguyoshi yamato), Normal (Kevin nguyen) |
+| 88/109 | PokéNav | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (No e reader) |
+| 89/109 | Professor Birch | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (No e reader) |
+| 90/109 | Energy Search | Trainer (Item) | Common | Normal, Reverse holo, Normal (No e reader) |
+| 91/109 | Potion | Trainer (Item) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Reed weichler) |
+| 92/109 | Switch | Trainer (Item) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Reed weichler), Normal (Chris fulop), Normal (Tsuguyoshi yamato), Normal (Kevin nguyen) |
+| 93/109 | Darkness Energy | Energy (Special) | Rare | Normal, Reverse holo, Holo (Cosmos), Normal (Tsuguyoshi yamato), Normal (No e reader), Holo (Cosmos, Winner) |
+| 94/109 | Metal Energy | Energy (Special) | Rare | Normal, Reverse holo, Holo (Cosmos), Normal (Tsuguyoshi yamato), Normal (No e reader), Normal (Jumbo), Holo (Winner) |
+| 95/109 | Rainbow Energy | Energy (Special) | Rare | Normal, Reverse holo, Normal (Tsuguyoshi yamato) |
+| 96/109 | Chansey ex | Pokémon (Colorless) | Rare | Holo |
+| 97/109 | Electabuzz ex | Pokémon (Lightning) | Rare | Holo |
+| 98/109 | Hitmonchan ex | Pokémon (Fighting) | Rare | Holo |
+| 99/109 | Lapras ex | Pokémon (Water) | Rare | Holo |
+| 100/109 | Magmar ex | Pokémon (Fire) | Rare | Holo |
+| 101/109 | Mewtwo ex | Pokémon (Psychic) | Rare | Holo |
+| 102/109 | Scyther ex | Pokémon (Grass) | Rare | Holo |
+| 103/109 | Sneasel ex | Pokémon (Darkness) | Rare | Holo |
+| 104/109 | Grass Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program) |
+| 105/109 | Fighting Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (Professor program), Normal (No e reader), Normal (Miska saari), Normal (Tsuguyoshi yamato) |
+| 106/109 | Water Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Hiroki yano), Normal (Jimmy ballard), Normal (Reed weichler) |
+| 107/109 | Psychic Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Miska saari), Normal (Tsuguyoshi yamato), Normal (Kevin nguyen) |
+| 108/109 | Fire Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Jimmy ballard), Normal (Chris fulop) |
+| 109/109 | Lightning Energy | Energy (Normal) | Common | Normal, Reverse holo, Normal (No e reader), Normal (Professor program), Normal (Chris fulop), Normal (Kevin nguyen), Normal (Jason klaczynski) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
