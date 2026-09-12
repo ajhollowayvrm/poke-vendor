@@ -68,6 +68,147 @@ Base Set 2 follows the era pack order. See
 
 Pack wrapper arts: Charizard and Mewtwo (PullMarket).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `base4`), fetched 2026-09-12. The list has 130 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/130 | Alakazam | Pokémon (Psychic) | Rare | Holo |
+| 2/130 | Blastoise | Pokémon (Water) | Rare | Holo |
+| 3/130 | Chansey | Pokémon (Colorless) | Rare | Holo |
+| 4/130 | Charizard | Pokémon (Fire) | Rare | Holo |
+| 5/130 | Clefable | Pokémon (Colorless) | Rare | Holo |
+| 6/130 | Clefairy | Pokémon (Colorless) | Rare | Holo |
+| 7/130 | Gyarados | Pokémon (Water) | Rare | Holo |
+| 8/130 | Hitmonchan | Pokémon (Fighting) | Rare | Holo |
+| 9/130 | Magneton | Pokémon (Lightning) | Rare | Holo |
+| 10/130 | Mewtwo | Pokémon (Psychic) | Rare | Holo |
+| 11/130 | Nidoking | Pokémon (Grass) | Rare | Holo |
+| 12/130 | Nidoqueen | Pokémon (Grass) | Rare | Holo |
+| 13/130 | Ninetales | Pokémon (Fire) | Rare | Holo |
+| 14/130 | Pidgeot | Pokémon (Colorless) | Rare | Holo |
+| 15/130 | Poliwrath | Pokémon (Water) | Rare | Holo |
+| 16/130 | Raichu | Pokémon (Lightning) | Rare | Holo |
+| 17/130 | Scyther | Pokémon (Grass) | Rare | Holo |
+| 18/130 | Venusaur | Pokémon (Grass) | Rare | Holo |
+| 19/130 | Wigglytuff | Pokémon (Colorless) | Rare | Holo |
+| 20/130 | Zapdos | Pokémon (Lightning) | Rare | Holo |
+| 21/130 | Beedrill | Pokémon (Grass) | Rare | Normal |
+| 22/130 | Dragonair | Pokémon (Colorless) | Rare | Normal |
+| 23/130 | Dugtrio | Pokémon (Fighting) | Rare | Normal |
+| 24/130 | Electabuzz | Pokémon (Lightning) | Rare | Normal |
+| 25/130 | Electrode | Pokémon (Lightning) | Rare | Normal |
+| 26/130 | Kangaskhan | Pokémon (Colorless) | Rare | Normal |
+| 27/130 | Mr. Mime | Pokémon (Psychic) | Rare | Normal |
+| 28/130 | Pidgeotto | Pokémon (Colorless) | Rare | Normal |
+| 29/130 | Pinsir | Pokémon (Grass) | Rare | Normal |
+| 30/130 | Snorlax | Pokémon (Colorless) | Rare | Normal |
+| 31/130 | Venomoth | Pokémon (Grass) | Rare | Normal |
+| 32/130 | Victreebel | Pokémon (Grass) | Rare | Normal |
+| 33/130 | Arcanine | Pokémon (Fire) | Uncommon | Normal |
+| 34/130 | Butterfree | Pokémon (Grass) | Uncommon | Normal |
+| 35/130 | Charmeleon | Pokémon (Fire) | Uncommon | Normal |
+| 36/130 | Dewgong | Pokémon (Water) | Uncommon | Normal |
+| 37/130 | Dodrio | Pokémon (Colorless) | Uncommon | Normal |
+| 38/130 | Dratini | Pokémon (Colorless) | Uncommon | Normal |
+| 39/130 | Exeggutor | Pokémon (Grass) | Uncommon | Normal |
+| 40/130 | Farfetch'd | Pokémon (Colorless) | Uncommon | Normal |
+| 41/130 | Fearow | Pokémon (Colorless) | Uncommon | Normal |
+| 42/130 | Growlithe | Pokémon (Fire) | Uncommon | Normal |
+| 43/130 | Haunter | Pokémon (Psychic) | Uncommon | Normal |
+| 44/130 | Ivysaur | Pokémon (Grass) | Uncommon | Normal |
+| 45/130 | Jynx | Pokémon (Psychic) | Uncommon | Normal |
+| 46/130 | Kadabra | Pokémon (Psychic) | Uncommon | Normal |
+| 47/130 | Kakuna | Pokémon (Grass) | Uncommon | Normal |
+| 48/130 | Lickitung | Pokémon (Colorless) | Uncommon | Normal |
+| 49/130 | Machoke | Pokémon (Fighting) | Uncommon | Normal |
+| 50/130 | Magikarp | Pokémon (Water) | Uncommon | Normal |
+| 51/130 | Magmar | Pokémon (Fire) | Uncommon | Normal |
+| 52/130 | Marowak | Pokémon (Fighting) | Uncommon | Normal |
+| 53/130 | Nidorina | Pokémon (Grass) | Uncommon | Normal |
+| 54/130 | Nidorino | Pokémon (Grass) | Uncommon | Normal |
+| 55/130 | Parasect | Pokémon (Grass) | Uncommon | Normal |
+| 56/130 | Persian | Pokémon (Colorless) | Uncommon | Normal |
+| 57/130 | Poliwhirl | Pokémon (Water) | Uncommon | Normal |
+| 58/130 | Raticate | Pokémon (Colorless) | Uncommon | Normal |
+| 59/130 | Rhydon | Pokémon (Fighting) | Uncommon | Normal |
+| 60/130 | Seaking | Pokémon (Water) | Uncommon | Normal |
+| 61/130 | Seel | Pokémon (Water) | Uncommon | Normal |
+| 62/130 | Tauros | Pokémon (Colorless) | Uncommon | Normal |
+| 63/130 | Wartortle | Pokémon (Water) | Uncommon | Normal, Normal (WotC) |
+| 64/130 | Weepinbell | Pokémon (Grass) | Uncommon | Normal |
+| 65/130 | Abra | Pokémon (Psychic) | Common | Normal |
+| 66/130 | Bellsprout | Pokémon (Grass) | Common | Normal |
+| 67/130 | Bulbasaur | Pokémon (Grass) | Common | Normal |
+| 68/130 | Caterpie | Pokémon (Grass) | Common | Normal |
+| 69/130 | Charmander | Pokémon (Fire) | Common | Normal |
+| 70/130 | Cubone | Pokémon (Fighting) | Common | Normal |
+| 71/130 | Diglett | Pokémon (Fighting) | Common | Normal |
+| 72/130 | Doduo | Pokémon (Colorless) | Common | Normal |
+| 73/130 | Drowzee | Pokémon (Psychic) | Common | Normal |
+| 74/130 | Exeggcute | Pokémon (Grass) | Common | Normal |
+| 75/130 | Gastly | Pokémon (Psychic) | Common | Normal |
+| 76/130 | Goldeen | Pokémon (Water) | Common | Normal |
+| 77/130 | Jigglypuff | Pokémon (Colorless) | Common | Normal |
+| 78/130 | Machop | Pokémon (Fighting) | Common | Normal |
+| 79/130 | Magnemite | Pokémon (Lightning) | Common | Normal |
+| 80/130 | Meowth | Pokémon (Colorless) | Common | Normal |
+| 81/130 | Metapod | Pokémon (Grass) | Common | Normal |
+| 82/130 | Nidoran♀ | Pokémon (Grass) | Common | Normal |
+| 83/130 | Nidoran♂ | Pokémon (Grass) | Common | Normal |
+| 84/130 | Onix | Pokémon (Fighting) | Common | Normal |
+| 85/130 | Paras | Pokémon (Grass) | Common | Normal |
+| 86/130 | Pidgey | Pokémon (Colorless) | Common | Normal |
+| 87/130 | Pikachu | Pokémon (Lightning) | Common | Normal |
+| 88/130 | Poliwag | Pokémon (Water) | Common | Normal |
+| 89/130 | Rattata | Pokémon (Colorless) | Common | Normal |
+| 90/130 | Rhyhorn | Pokémon (Fighting) | Common | Normal |
+| 91/130 | Sandshrew | Pokémon (Fighting) | Common | Normal |
+| 92/130 | Spearow | Pokémon (Colorless) | Common | Normal |
+| 93/130 | Squirtle | Pokémon (Water) | Common | Normal |
+| 94/130 | Starmie | Pokémon (Water) | Common | Normal |
+| 95/130 | Staryu | Pokémon (Water) | Common | Normal |
+| 96/130 | Tangela | Pokémon (Grass) | Common | Normal |
+| 97/130 | Venonat | Pokémon (Grass) | Common | Normal |
+| 98/130 | Voltorb | Pokémon (Lightning) | Common | Normal |
+| 99/130 | Vulpix | Pokémon (Fire) | Common | Normal |
+| 100/130 | Weedle | Pokémon (Grass) | Common | Normal |
+| 101/130 | Computer Search | Trainer | Rare | Normal |
+| 102/130 | Impostor Professor Oak | Trainer | Rare | Normal |
+| 103/130 | Item Finder | Trainer | Rare | Normal |
+| 104/130 | Lass | Trainer | Rare | Normal |
+| 105/130 | Pokémon Breeder | Trainer | Rare | Normal |
+| 106/130 | Pokémon Trader | Trainer | Rare | Normal |
+| 107/130 | Scoop Up | Trainer | Rare | Normal |
+| 108/130 | Super Energy Removal | Trainer | Rare | Normal |
+| 109/130 | Defender | Trainer | Uncommon | Normal |
+| 110/130 | Energy Retrieval | Trainer | Uncommon | Normal |
+| 111/130 | Full Heal | Trainer | Uncommon | Normal |
+| 112/130 | Maintenance | Trainer | Uncommon | Normal |
+| 113/130 | PlusPower | Trainer | Uncommon | Normal |
+| 114/130 | Pokémon Center | Trainer | Uncommon | Normal |
+| 115/130 | Pokédex | Trainer | Uncommon | Normal |
+| 116/130 | Professor Oak | Trainer | Uncommon | Normal |
+| 117/130 | Super Potion | Trainer | Uncommon | Normal |
+| 118/130 | Bill | Trainer | Common | Normal |
+| 119/130 | Energy Removal | Trainer | Common | Normal |
+| 120/130 | Gust of Wind | Trainer | Common | Normal |
+| 121/130 | Poké Ball | Trainer | Common | Normal |
+| 122/130 | Potion | Trainer | Common | Normal |
+| 123/130 | Switch | Trainer | Common | Normal |
+| 124/130 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
+| 125/130 | Fighting Energy | Energy (Normal) | Common | Normal |
+| 126/130 | Fire Energy | Energy (Normal) | Common | Normal |
+| 127/130 | Grass Energy | Energy (Normal) | Common | Normal |
+| 128/130 | Lightning Energy | Energy (Normal) | Common | Normal |
+| 129/130 | Psychic Energy | Energy (Normal) | Common | Normal |
+| 130/130 | Water Energy | Energy (Normal) | Common | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

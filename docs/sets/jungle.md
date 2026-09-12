@@ -74,6 +74,81 @@ Pack wrapper arts: PSA lists three (Scyther, Wigglytuff, Flareon) for
 1st Edition. PullMarket lists five (Flareon, Scyther, Wigglytuff,
 Mr. Mime, Pinsir).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `base2`), fetched 2026-09-12. The list has 64 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/64 | Clefable | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol), Holo (Prerelease) |
+| 2/64 | Electrode | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 3/64 | Flareon | Pokémon (Fire) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 4/64 | Jolteon | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 5/64 | Kangaskhan | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 6/64 | Mr. Mime | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 7/64 | Nidoqueen | Pokémon (Grass) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 8/64 | Pidgeot | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 9/64 | Pinsir | Pokémon (Grass) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol), Holo (1st Edition scratch error) |
+| 10/64 | Scyther | Pokémon (Grass) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 11/64 | Snorlax | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 12/64 | Vaporeon | Pokémon (Water) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 13/64 | Venomoth | Pokémon (Grass) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 14/64 | Victreebel | Pokémon (Grass) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 15/64 | Vileplume | Pokémon (Grass) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 16/64 | Wigglytuff | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition), Holo (Missing expansion symbol) |
+| 17/64 | Clefable | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 18/64 | Electrode | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 19/64 | Flareon | Pokémon (Fire) | Rare | Normal, Normal (1st Edition) |
+| 20/64 | Jolteon | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 21/64 | Kangaskhan | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 22/64 | Mr. Mime | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 23/64 | Nidoqueen | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 24/64 | Pidgeot | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 25/64 | Pinsir | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 26/64 | Scyther | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 27/64 | Snorlax | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 28/64 | Vaporeon | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 29/64 | Venomoth | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 30/64 | Victreebel | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 31/64 | Vileplume | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 32/64 | Wigglytuff | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 33/64 | Butterfree | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition), Normal (D Edition error) |
+| 34/64 | Dodrio | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 35/64 | Exeggutor | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 36/64 | Fearow | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 37/64 | Gloom | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 38/64 | Lickitung | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 39/64 | Marowak | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 40/64 | Nidorina | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 41/64 | Parasect | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 42/64 | Persian | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 43/64 | Primeape | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 44/64 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 45/64 | Rhydon | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 46/64 | Seaking | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 47/64 | Tauros | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 48/64 | Weepinbell | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 49/64 | Bellsprout | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 50/64 | Cubone | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 51/64 | Eevee | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 52/64 | Exeggcute | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 53/64 | Goldeen | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 54/64 | Jigglypuff | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 55/64 | Mankey | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 56/64 | Meowth | Pokémon (Colorless) | Common | Normal, Normal (1st Edition), Normal (Gold border) |
+| 57/64 | Nidoran♀ | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 58/64 | Oddish | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 59/64 | Paras | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 60/64 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (1st Edition), Normal (Pikachu tail), Normal (WotC) |
+| 61/64 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 62/64 | Spearow | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 63/64 | Venonat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 64/64 | Poké Ball | Trainer | Common | Normal, Normal (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

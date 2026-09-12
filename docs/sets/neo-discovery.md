@@ -68,6 +68,92 @@ Neo Discovery follows the era pack order. See
 Pack wrapper arts: four, one each for Scizor, Smeargle, Xatu, and
 Umbreon (PSA).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `neo2`), fetched 2026-09-12. The list has 75 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/75 | Espeon | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 2/75 | Forretress | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 3/75 | Hitmontop | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 4/75 | Houndoom | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
+| 5/75 | Houndour | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 6/75 | Kabutops | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 7/75 | Magnemite | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 8/75 | Politoed | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 9/75 | Poliwrath | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 10/75 | Scizor | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 11/75 | Smeargle | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 12/75 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
+| 13/75 | Umbreon | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
+| 14/75 | Unown [A] | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 15/75 | Ursaring | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 16/75 | Wobbuffet | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 17/75 | Yanma | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 18/75 | Beedrill | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 19/75 | Butterfree | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 20/75 | Espeon | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 21/75 | Forretress | Pokémon (Metal) | Rare | Normal, Normal (1st Edition) |
+| 22/75 | Hitmontop | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 23/75 | Houndoom | Pokémon (Darkness) | Rare | Normal, Normal (1st Edition) |
+| 24/75 | Houndour | Pokémon (Fire) | Rare | Normal, Normal (1st Edition) |
+| 25/75 | Kabutops | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 26/75 | Magnemite | Pokémon (Metal) | Rare | Normal, Normal (1st Edition) |
+| 27/75 | Politoed | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 28/75 | Poliwrath | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 29/75 | Scizor | Pokémon (Metal) | Rare | Normal, Normal (1st Edition) |
+| 30/75 | Smeargle | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 31/75 | Tyranitar | Pokémon (Darkness) | Rare | Normal, Normal (1st Edition) |
+| 32/75 | Umbreon | Pokémon (Darkness) | Rare | Normal, Normal (1st Edition) |
+| 33/75 | Unown [A] | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 34/75 | Ursaring | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 35/75 | Wobbuffet | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 36/75 | Yanma | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 37/75 | Corsola | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 38/75 | Eevee | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 39/75 | Houndour | Pokémon (Darkness) | Uncommon | Normal, Normal (1st Edition) |
+| 40/75 | Igglybuff | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 41/75 | Kakuna | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 42/75 | Metapod | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 43/75 | Omastar | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 44/75 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 45/75 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 46/75 | Scyther | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 47/75 | Unown [D] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 48/75 | Unown [F] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 49/75 | Unown [M] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 50/75 | Unown [N] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 51/75 | Unown [U] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 52/75 | Xatu | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 53/75 | Caterpie | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 54/75 | Dunsparce | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 55/75 | Hoppip | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 56/75 | Kabuto | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 57/75 | Larvitar | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 58/75 | Mareep | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 59/75 | Natu | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 60/75 | Omanyte | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 61/75 | Pineco | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 62/75 | Poliwag | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 63/75 | Sentret | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 64/75 | Spinarak | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 65/75 | Teddiursa | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 66/75 | Tyrogue | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 67/75 | Unown [E] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 68/75 | Unown [I] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 69/75 | Unown [O] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 70/75 | Weedle | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 71/75 | Wooper | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 72/75 | Fossil Egg | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 73/75 | Hyper Devolution Spray | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 74/75 | Ruin Wall | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 75/75 | Energy Ark | Trainer | Common | Normal, Normal (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

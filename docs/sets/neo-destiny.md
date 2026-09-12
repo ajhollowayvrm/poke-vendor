@@ -89,6 +89,130 @@ Shining cards.
 Pack wrapper arts: four, one each for Togetic, Tyranitar, Noctowl, and
 Celebi (PSA).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `neo4`), fetched 2026-09-12. The list has 113 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/105 | Dark Ampharos | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 2/105 | Dark Crobat | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 3/105 | Dark Donphan | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 4/105 | Dark Espeon | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 5/105 | Dark Feraligatr | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 6/105 | Dark Gengar | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 7/105 | Dark Houndoom | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 8/105 | Dark Porygon2 | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 9/105 | Dark Scizor | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 10/105 | Dark Typhlosion | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 11/105 | Dark Tyranitar | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 12/105 | Light Arcanine | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 13/105 | Light Azumarill | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 14/105 | Light Dragonite | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 15/105 | Light Togetic | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 16/105 | Miracle Energy | Energy (Special) | Rare | Holo, Holo (1st Edition) |
+| 17/105 | Dark Ariados | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 18/105 | Dark Magcargo | Pokémon (Fire) | Rare | Normal, Normal (1st Edition) |
+| 19/105 | Dark Omastar | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 20/105 | Dark Slowking | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 21/105 | Dark Ursaring | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 22/105 | Light Dragonair | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 23/105 | Light Lanturn | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 24/105 | Light Ledian | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 25/105 | Light Machamp | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 26/105 | Light Piloswine | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 27/105 | Unown [G] | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 28/105 | Unown [H] | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 29/105 | Unown [W] | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 30/105 | Unown [X] | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 31/105 | Chansey | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 32/105 | Dark Croconaw | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 33/105 | Dark Exeggutor | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 34/105 | Dark Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 35/105 | Dark Forretress | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 36/105 | Dark Haunter | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 37/105 | Dark Omanyte | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 38/105 | Dark Pupitar | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 39/105 | Dark Quilava | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 40/105 | Dark Wigglytuff | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 41/105 | Heracross | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 42/105 | Hitmonlee | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 43/105 | Houndour | Pokémon (Darkness) | Uncommon | Normal, Normal (1st Edition) |
+| 44/105 | Jigglypuff | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 45/105 | Light Dewgong | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 46/105 | Light Flareon | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 47/105 | Light Golduck | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 48/105 | Light Jolteon | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 49/105 | Light Machoke | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 50/105 | Light Ninetales | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 51/105 | Light Slowbro | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 52/105 | Light Vaporeon | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 53/105 | Light Venomoth | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 54/105 | Light Wigglytuff | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 55/105 | Scyther | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 56/105 | Togepi | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 57/105 | Unown [C] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 58/105 | Unown [P] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 59/105 | Unown [Q] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 60/105 | Unown [Z] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 61/105 | Cyndaquil | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 62/105 | Dark Octillery | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 63/105 | Dratini | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 64/105 | Exeggcute | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 65/105 | Gastly | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 66/105 | Girafarig | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 67/105 | Gligar | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 68/105 | Growlithe | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 69/105 | Hitmonchan | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 70/105 | Larvitar | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 71/105 | Ledyba | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 72/105 | Light Sunflora | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 73/105 | Machop | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 74/105 | Mantine | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 75/105 | Mareep | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 76/105 | Phanpy | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 77/105 | Pineco | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 78/105 | Porygon | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 79/105 | Psyduck | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 80/105 | Remoraid | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 81/105 | Seel | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 82/105 | Slugma | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 83/105 | Sunkern | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 84/105 | Swinub | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 85/105 | Totodile | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 86/105 | Unown [L] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 87/105 | Unown [S] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 88/105 | Unown [T] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 89/105 | Unown [V] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 90/105 | Venonat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 91/105 | Vulpix | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 92/105 | Broken Ground Gym | Trainer | Rare | Normal, Normal (1st Edition) |
+| 93/105 | EXP.ALL | Trainer | Rare | Normal, Normal (1st Edition) |
+| 94/105 | Impostor Professor Oak's Invention | Trainer | Rare | Normal, Normal (1st Edition) |
+| 95/105 | Radio Tower | Trainer | Rare | Normal, Normal (1st Edition) |
+| 96/105 | Thought Wave Machine (Rocket's Secret Machine) | Trainer | Rare | Normal, Normal (1st Edition) |
+| 97/105 | Counterattack Claws | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 98/105 | Energy Amplifier | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 99/105 | Energy Stadium | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 100/105 | Lucky Stadium | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 101/105 | Magnifier | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 102/105 | Pokémon Personality Test | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 103/105 | Team Rocket's Evil Deeds | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 104/105 | Heal Powder | Trainer | Common | Normal, Normal (1st Edition) |
+| 105/105 | Mail from Bill | Trainer | Common | Normal, Normal (1st Edition) |
+| 106/105 | Shining Celebi | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 107/105 | Shining Charizard | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 108/105 | Shining Kabutops | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 109/105 | Shining Mewtwo | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 110/105 | Shining Noctowl | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 111/105 | Shining Raichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 112/105 | Shining Steelix | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 113/105 | Shining Tyranitar | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

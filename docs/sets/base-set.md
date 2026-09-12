@@ -150,6 +150,119 @@ that affects scarcity/collector value (see
 what comes out of a pack. Model both with identical pack-structure
 odds.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `base1`), fetched 2026-09-12. The list has 102 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/102 | Alakazam | Pokémon (Psychic) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 2/102 | Blastoise | Pokémon (Water) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 3/102 | Chansey | Pokémon (Colorless) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 4/102 | Charizard | Pokémon (Fire) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 5/102 | Clefairy | Pokémon (Colorless) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 6/102 | Gyarados | Pokémon (Water) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 7/102 | Hitmonchan | Pokémon (Fighting) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 8/102 | Machamp | Pokémon (Fighting) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 9/102 | Magneton | Pokémon (Lightning) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 10/102 | Mewtwo | Pokémon (Psychic) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 11/102 | Nidoking | Pokémon (Grass) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 12/102 | Ninetales | Pokémon (Fire) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 13/102 | Poliwrath | Pokémon (Water) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 14/102 | Raichu | Pokémon (Lightning) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 15/102 | Venusaur | Pokémon (Grass) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 16/102 | Zapdos | Pokémon (Lightning) | Rare | Holo (Unlimited), Holo (Shadowless, 1st Edition), Holo (Shadowless), Holo (1999–2000 copyright) |
+| 17/102 | Beedrill | Pokémon (Grass) | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 18/102 | Dragonair | Pokémon (Colorless) | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 19/102 | Dugtrio | Pokémon (Fighting) | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 20/102 | Electabuzz | Pokémon (Lightning) | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 21/102 | Electrode | Pokémon (Lightning) | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 22/102 | Pidgeotto | Pokémon (Colorless) | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 23/102 | Arcanine | Pokémon (Fire) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 24/102 | Charmeleon | Pokémon (Fire) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 25/102 | Dewgong | Pokémon (Water) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 26/102 | Dratini | Pokémon (Colorless) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 27/102 | Farfetch'd | Pokémon (Colorless) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 28/102 | Growlithe | Pokémon (Fire) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 29/102 | Haunter | Pokémon (Psychic) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 30/102 | Ivysaur | Pokémon (Grass) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 31/102 | Jynx | Pokémon (Psychic) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 32/102 | Kadabra | Pokémon (Psychic) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 33/102 | Kakuna | Pokémon (Grass) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 34/102 | Machoke | Pokémon (Fighting) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 35/102 | Magikarp | Pokémon (Water) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 36/102 | Magmar | Pokémon (Fire) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 37/102 | Nidorino | Pokémon (Grass) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 38/102 | Poliwhirl | Pokémon (Water) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 39/102 | Porygon | Pokémon (Colorless) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 40/102 | Raticate | Pokémon (Colorless) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 41/102 | Seel | Pokémon (Water) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 42/102 | Wartortle | Pokémon (Water) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 43/102 | Abra | Pokémon (Psychic) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 44/102 | Bulbasaur | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright), Normal (Pikachu, Jumbo) |
+| 45/102 | Caterpie | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 46/102 | Charmander | Pokémon (Fire) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright), Normal (Pikachu, Jumbo) |
+| 47/102 | Diglett | Pokémon (Fighting) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 48/102 | Doduo | Pokémon (Colorless) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 49/102 | Drowzee | Pokémon (Psychic) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 50/102 | Gastly | Pokémon (Psychic) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 51/102 | Koffing | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 52/102 | Machop | Pokémon (Fighting) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 53/102 | Magnemite | Pokémon (Lightning) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 54/102 | Metapod | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 55/102 | Nidoran♂ | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 56/102 | Onix | Pokémon (Fighting) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 57/102 | Pidgey | Pokémon (Colorless) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 58/102 | Pikachu | Pokémon (Lightning) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (Shadowless red cheek), Normal (Shadowless red cheek, 1st Edition), Normal (1999–2000 copyright), Normal (Jumbo), Normal (Unlimited, PokéTour 99) |
+| 59/102 | Poliwag | Pokémon (Water) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 60/102 | Ponyta | Pokémon (Fire) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 61/102 | Rattata | Pokémon (Colorless) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 62/102 | Sandshrew | Pokémon (Fighting) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 63/102 | Squirtle | Pokémon (Water) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright), Normal (Pikachu, Jumbo) |
+| 64/102 | Starmie | Pokémon (Water) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 65/102 | Staryu | Pokémon (Water) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 66/102 | Tangela | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 67/102 | Voltorb | Pokémon (Lightning) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 68/102 | Vulpix | Pokémon (Fire) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 69/102 | Weedle | Pokémon (Grass) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 70/102 | Clefairy Doll | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 71/102 | Computer Search | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 72/102 | Devolution Spray | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 73/102 | Impostor Professor Oak | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 74/102 | Item Finder | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 75/102 | Lass | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 76/102 | Pokémon Breeder | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 77/102 | Pokémon Trader | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 78/102 | Scoop Up | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 79/102 | Super Energy Removal | Trainer | Rare | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 80/102 | Defender | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 81/102 | Energy Retrieval | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 82/102 | Full Heal | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 83/102 | Maintenance | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 84/102 | PlusPower | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 85/102 | Pokémon Center | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 86/102 | Pokémon Flute | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 87/102 | Pokédex | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 88/102 | Professor Oak | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 89/102 | Revive | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 90/102 | Super Potion | Trainer | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 91/102 | Bill | Trainer | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 92/102 | Energy Removal | Trainer | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 93/102 | Gust of Wind | Trainer | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 94/102 | Potion | Trainer | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 95/102 | Switch | Trainer | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 96/102 | Double Colorless Energy | Energy (Special) | Uncommon | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 97/102 | Fighting Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 98/102 | Fire Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 99/102 | Grass Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 100/102 | Lightning Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 101/102 | Psychic Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+| 102/102 | Water Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -86,6 +86,35 @@ There is no random draw for the Southern Islands cards themselves.
 
 No booster box or booster pack of Southern Islands cards exists in English.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `si1`), fetched 2026-09-12. The list has 18 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/18 | Mew | Pokémon (Psychic) | Common | Reverse holo |
+| 2/18 | Pidgeot | Pokémon (Colorless) | Common | Normal |
+| 3/18 | Onix | Pokémon (Fighting) | Common | Normal |
+| 4/18 | Togepi | Pokémon (Colorless) | Common | Reverse holo |
+| 5/18 | Ivysaur | Pokémon (Grass) | Common | Normal |
+| 6/18 | Raticate | Pokémon (Colorless) | Common | Normal |
+| 7/18 | Ledyba | Pokémon (Grass) | Common | Reverse holo |
+| 8/18 | Jigglypuff | Pokémon (Colorless) | Common | Normal |
+| 9/18 | Butterfree | Pokémon (Grass) | Common | Normal |
+| 10/18 | Tentacruel | Pokémon (Water) | Common | Normal |
+| 11/18 | Marill | Pokémon (Water) | Common | Reverse holo |
+| 12/18 | Lapras | Pokémon (Water) | Common | Normal |
+| 13/18 | Exeggutor | Pokémon (Grass) | Common | Normal |
+| 14/18 | Slowking | Pokémon (Psychic) | Common | Reverse holo |
+| 15/18 | Wartortle | Pokémon (Water) | Common | Normal |
+| 16/18 | Lickitung | Pokémon (Colorless) | Common | Normal |
+| 17/18 | Vileplume | Pokémon (Grass) | Common | Reverse holo |
+| 18/18 | Primeape | Pokémon (Fighting) | Common | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -70,6 +70,149 @@ Gym Heroes follows the era pack order. See
 
 Pack wrapper arts: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `gym1`), fetched 2026-09-12. The list has 132 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/132 | Blaine's Moltres | Pokémon (Fire) | Holo Rare | Holo, Holo (1st Edition) |
+| 2/132 | Brock's Rhydon | Pokémon (Fighting) | Holo Rare | Holo, Holo (1st Edition) |
+| 3/132 | Erika's Clefable | Pokémon (Colorless) | Holo Rare | Holo, Holo (1st Edition) |
+| 4/132 | Erika's Dragonair | Pokémon (Colorless) | Holo Rare | Holo, Holo (1st Edition) |
+| 5/132 | Erika's Vileplume | Pokémon (Grass) | Holo Rare | Holo, Holo (1st Edition) |
+| 6/132 | Lt. Surge's Electabuzz | Pokémon (Lightning) | Holo Rare | Holo, Holo (1st Edition) |
+| 7/132 | Lt. Surge's Fearow | Pokémon (Colorless) | Holo Rare | Holo, Holo (1st Edition) |
+| 8/132 | Lt. Surge's Magneton | Pokémon (Lightning) | Holo Rare | Holo, Holo (1st Edition) |
+| 9/132 | Misty's Seadra | Pokémon (Water) | Holo Rare | Holo, Holo (1st Edition), Holo (Prerelease) |
+| 10/132 | Misty's Tentacruel | Pokémon (Water) | Holo Rare | Holo, Holo (1st Edition) |
+| 11/132 | Rocket's Hitmonchan | Pokémon (Fighting) | Holo Rare | Holo, Holo (1st Edition), Holo (Winner, Jumbo) |
+| 12/132 | Rocket's Moltres | Pokémon (Fire) | Holo Rare | Holo, Holo (1st Edition) |
+| 13/132 | Rocket's Scyther | Pokémon (Grass) | Holo Rare | Holo, Holo (1st Edition) |
+| 14/132 | Sabrina's Gengar | Pokémon (Psychic) | Holo Rare | Holo, Holo (1st Edition) |
+| 15/132 | Brock | Trainer | Holo Rare | Holo, Holo (1st Edition) |
+| 16/132 | Erika | Trainer | Holo Rare | Holo, Holo (1st Edition) |
+| 17/132 | Lt. Surge | Trainer | Holo Rare | Holo, Holo (1st Edition) |
+| 18/132 | Misty | Trainer | Holo Rare | Holo, Holo (1st Edition) |
+| 19/132 | The Rocket's Trap | Trainer | Holo Rare | Holo, Holo (1st Edition) |
+| 20/132 | Brock's Golem | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 21/132 | Brock's Onix | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 22/132 | Brock's Rhyhorn | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 23/132 | Brock's Sandslash | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 24/132 | Brock's Zubat | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 25/132 | Erika's Clefairy | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 26/132 | Erika's Victreebel | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 27/132 | Lt. Surge's Electabuzz | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 28/132 | Lt. Surge's Raichu | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 29/132 | Misty's Cloyster | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 30/132 | Misty's Goldeen | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 31/132 | Misty's Poliwrath | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 32/132 | Misty's Tentacool | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 33/132 | Rocket's Snorlax | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 34/132 | Sabrina's Venomoth | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 35/132 | Blaine's Growlithe | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 36/132 | Blaine's Kangaskhan | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 37/132 | Blaine's Magmar | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 38/132 | Brock's Geodude | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 39/132 | Brock's Golbat | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 40/132 | Brock's Graveler | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 41/132 | Brock's Lickitung | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 42/132 | Erika's Dratini | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 43/132 | Erika's Exeggcute | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 44/132 | Erika's Exeggutor | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 45/132 | Erika's Gloom | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 46/132 | Erika's Gloom | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 47/132 | Erika's Oddish | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 48/132 | Erika's Weepinbell | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 49/132 | Erika's Weepinbell | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 50/132 | Lt. Surge's Magnemite | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 51/132 | Lt. Surge's Raticate | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 52/132 | Lt. Surge's Spearow | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 53/132 | Misty's Poliwhirl | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 54/132 | Misty's Psyduck | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition), Normal (WotC) |
+| 55/132 | Misty's Seaking | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 56/132 | Misty's Starmie | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 57/132 | Misty's Tentacool | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 58/132 | Sabrina's Haunter | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 59/132 | Sabrina's Jynx | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 60/132 | Sabrina's Slowbro | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 61/132 | Blaine's Charmander | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 62/132 | Blaine's Growlithe | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 63/132 | Blaine's Ponyta | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 64/132 | Blaine's Tauros | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 65/132 | Blaine's Vulpix | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 66/132 | Brock's Geodude | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 67/132 | Brock's Mankey | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 68/132 | Brock's Mankey | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 69/132 | Brock's Onix | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 70/132 | Brock's Rhyhorn | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 71/132 | Brock's Sandshrew | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 72/132 | Brock's Sandshrew | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 73/132 | Brock's Vulpix | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 74/132 | Brock's Zubat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 75/132 | Erika's Bellsprout | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 76/132 | Erika's Bellsprout | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 77/132 | Erika's Exeggcute | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 78/132 | Erika's Oddish | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 79/132 | Erika's Tangela | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 80/132 | Lt. Surge's Magnemite | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 81/132 | Lt. Surge's Pikachu | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 82/132 | Lt. Surge's Rattata | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 83/132 | Lt. Surge's Spearow | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 84/132 | Lt. Surge's Voltorb | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 85/132 | Misty's Goldeen | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 86/132 | Misty's Horsea | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 87/132 | Misty's Poliwag | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 88/132 | Misty's Seel | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 89/132 | Misty's Shellder | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 90/132 | Misty's Staryu | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 91/132 | Sabrina's Abra | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 92/132 | Sabrina's Drowzee | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 93/132 | Sabrina's Gastly | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 94/132 | Sabrina's Mr. Mime | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 95/132 | Sabrina's Slowpoke | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 96/132 | Sabrina's Venonat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 97/132 | Blaine's Quiz #1 | Trainer | Rare | Normal, Normal (1st Edition) |
+| 98/132 | Brock | Trainer | Rare | Normal, Normal (1st Edition) |
+| 99/132 | Charity | Trainer | Rare | Normal, Normal (1st Edition) |
+| 100/132 | Erika | Trainer | Rare | Normal, Normal (1st Edition) |
+| 101/132 | Lt. Surge | Trainer | Rare | Normal, Normal (1st Edition) |
+| 102/132 | Misty | Trainer | Rare | Normal, Normal (1st Edition) |
+| 103/132 | No Removal Gym | Trainer (Stadium) | Rare | Normal, Normal (1st Edition) |
+| 104/132 | The Rocket's Training Gym | Trainer (Stadium) | Rare | Normal, Normal (1st Edition) |
+| 105/132 | Blaine's Last Resort | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 106/132 | Brock's Training Method | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 107/132 | Celadon City Gym | Trainer (Stadium) | Uncommon | Normal, Normal (1st Edition) |
+| 108/132 | Cerulean City Gym | Trainer (Stadium) | Uncommon | Normal, Normal (1st Edition) |
+| 109/132 | Erika's Maids | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 110/132 | Erika's Perfume | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 111/132 | Good Manners | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 112/132 | Lt. Surge's Treaty | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 113/132 | Minion of Team Rocket | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 114/132 | Misty's Wrath | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 115/132 | Pewter City Gym | Trainer (Stadium) | Uncommon | Normal, Normal (1st Edition) |
+| 116/132 | Recall | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 117/132 | Sabrina's ESP | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 118/132 | Secret Mission | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 119/132 | Tickling Machine | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 120/132 | Vermilion City Gym | Trainer (Stadium) | Uncommon | Normal, Normal (1st Edition) |
+| 121/132 | Blaine's Gamble | Trainer | Common | Normal, Normal (1st Edition) |
+| 122/132 | Energy Flow | Trainer | Common | Normal, Normal (1st Edition) |
+| 123/132 | Misty's Duel | Trainer | Common | Normal, Normal (1st Edition) |
+| 124/132 | Narrow Gym | Trainer (Stadium) | Common | Normal, Normal (1st Edition) |
+| 125/132 | Sabrina's Gaze | Trainer | Common | Normal, Normal (1st Edition) |
+| 126/132 | Trash Exchange | Trainer | Common | Normal, Normal (1st Edition) |
+| 127/132 | Fighting Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 128/132 | Fire Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 129/132 | Grass Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 130/132 | Lightning Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 131/132 | Psychic Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 132/132 | Water Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

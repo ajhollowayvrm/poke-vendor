@@ -72,6 +72,100 @@ Team Rocket follows the era pack order. See
 
 Pack wrapper arts: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `base5`), fetched 2026-09-12. The list has 83 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/82 | Dark Alakazam | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 2/82 | Dark Arbok | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 3/82 | Dark Blastoise | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 4/82 | Dark Charizard | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 5/82 | Dark Dragonite | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition), Holo (No holo error), Holo (No holo error, 1st Edition) |
+| 6/82 | Dark Dugtrio | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 7/82 | Dark Golbat | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 8/82 | Dark Gyarados | Pokémon (Water) | Rare | Holo, Holo (1st Edition), Holo (Prerelease) |
+| 9/82 | Dark Hypno | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 10/82 | Dark Machamp | Pokémon (Fighting) | Rare | Holo, Holo (1st Edition) |
+| 11/82 | Dark Magneton | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 12/82 | Dark Slowbro | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 13/82 | Dark Vileplume | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 14/82 | Dark Weezing | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 15/82 | Here Comes Team Rocket! | Trainer | Rare | Holo, Holo (1st Edition) |
+| 16/82 | Rocket's Sneak Attack | Trainer | Rare | Holo, Holo (1st Edition) |
+| 17/82 | Rainbow Energy | Energy | Rare | Holo, Holo (1st Edition) |
+| 18/82 | Dark Alakazam | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 19/82 | Dark Arbok | Pokémon (Grass) | Rare | Normal, Normal (1st Edition), Normal (WotC) |
+| 20/82 | Dark Blastoise | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 21/82 | Dark Charizard | Pokémon (Fire) | Rare | Normal, Normal (1st Edition) |
+| 22/82 | Dark Dragonite | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 23/82 | Dark Dugtrio | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 24/82 | Dark Golbat | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 25/82 | Dark Gyarados | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 26/82 | Dark Hypno | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 27/82 | Dark Machamp | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 28/82 | Dark Magneton | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 29/82 | Dark Slowbro | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 30/82 | Dark Vileplume | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 31/82 | Dark Weezing | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 32/82 | Dark Charmeleon | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition), Normal (W promo) |
+| 33/82 | Dark Dragonair | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 34/82 | Dark Electrode | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 35/82 | Dark Flareon | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 36/82 | Dark Gloom | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 37/82 | Dark Golduck | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 38/82 | Dark Jolteon | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 39/82 | Dark Kadabra | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 40/82 | Dark Machoke | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 41/82 | Dark Muk | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 42/82 | Dark Persian | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 43/82 | Dark Primeape | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 44/82 | Dark Rapidash | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 45/82 | Dark Vaporeon | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 46/82 | Dark Wartortle | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 47/82 | Magikarp | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 48/82 | Porygon | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 49/82 | Abra | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 50/82 | Charmander | Pokémon (Fire) | Common | Normal, Normal (D ink dot error), Normal (1st Edition) |
+| 51/82 | Dark Raticate | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 52/82 | Diglett | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 53/82 | Dratini | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 54/82 | Drowzee | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 55/82 | Eevee | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 56/82 | Ekans | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 57/82 | Grimer | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 58/82 | Koffing | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 59/82 | Machop | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 60/82 | Magnemite | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 61/82 | Mankey | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 62/82 | Meowth | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 63/82 | Oddish | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 64/82 | Ponyta | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 65/82 | Psyduck | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 66/82 | Rattata | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 67/82 | Slowpoke | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 68/82 | Squirtle | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 69/82 | Voltorb | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 70/82 | Zubat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 71/82 | Here Comes Team Rocket! | Trainer | Rare | Normal, Normal (1st Edition) |
+| 72/82 | Rocket's Sneak Attack | Trainer | Rare | Normal, Normal (1st Edition) |
+| 73/82 | The Boss's Way | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 74/82 | Challenge! | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 75/82 | Digger | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 76/82 | Imposter Oak's Revenge | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 77/82 | Nightly Garbage Run | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 78/82 | Goop Gas Attack | Trainer | Common | Normal, Normal (1st Edition) |
+| 79/82 | Sleep! | Trainer | Common | Normal, Normal (1st Edition) |
+| 80/82 | Rainbow Energy | Energy (Special) | Rare | Normal, Normal (1st Edition) |
+| 81/82 | Full Heal Energy | Energy (Special) | Uncommon | Normal, Normal (1st Edition) |
+| 82/82 | Potion Energy | Energy (Special) | Uncommon | Normal, Normal (1st Edition) |
+| 83/82 | Dark Raichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

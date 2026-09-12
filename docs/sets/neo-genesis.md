@@ -81,6 +81,128 @@ equally.
 
 Pack wrapper arts: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `neo1`), fetched 2026-09-12. The list has 111 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/111 | Ampharos | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 2/111 | Azumarill | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 3/111 | Bellossom | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 4/111 | Feraligatr | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 5/111 | Feraligatr | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 6/111 | Heracross | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 7/111 | Jumpluff | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 8/111 | Kingdra | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 9/111 | Lugia | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 10/111 | Meganium | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 11/111 | Meganium | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 12/111 | Pichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 13/111 | Skarmory | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 14/111 | Slowking | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 15/111 | Steelix | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 16/111 | Togetic | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 17/111 | Typhlosion | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 18/111 | Typhlosion | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 19/111 | Metal Energy | Energy (Special) | Rare | Holo, Holo (1st Edition) |
+| 20/111 | Cleffa | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 21/111 | Donphan | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 22/111 | Elekid | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 23/111 | Magby | Pokémon (Fire) | Rare | Normal, Normal (1st Edition) |
+| 24/111 | Murkrow | Pokémon (Darkness) | Rare | Normal, Normal (1st Edition) |
+| 25/111 | Sneasel | Pokémon (Darkness) | Rare | Normal, Normal (1st Edition) |
+| 26/111 | Aipom | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 27/111 | Ariados | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 28/111 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 29/111 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 30/111 | Clefairy | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 31/111 | Croconaw | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 32/111 | Croconaw | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 33/111 | Electabuzz | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 34/111 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 35/111 | Furret | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 36/111 | Gloom | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 37/111 | Granbull | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 38/111 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 39/111 | Ledian | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 40/111 | Magmar | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 41/111 | Miltank | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 42/111 | Noctowl | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 43/111 | Phanpy | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 44/111 | Piloswine | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 45/111 | Quagsire | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 46/111 | Quilava | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 47/111 | Quilava | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 48/111 | Seadra | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 49/111 | Skiploom | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 50/111 | Sunflora | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 51/111 | Togepi | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 52/111 | Xatu | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 53/111 | Chikorita | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 54/111 | Chikorita | Pokémon (Grass) | Common | Normal, Normal (1st Edition), Normal (25th celebration, Jumbo) |
+| 55/111 | Chinchou | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 56/111 | Cyndaquil | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 57/111 | Cyndaquil | Pokémon (Fire) | Common | Normal, Normal (1st Edition), Normal (25th celebration, Jumbo) |
+| 58/111 | Girafarig | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 59/111 | Gligar | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 60/111 | Hoothoot | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 61/111 | Hoppip | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 62/111 | Horsea | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 63/111 | Ledyba | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 64/111 | Mantine | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 65/111 | Mareep | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 66/111 | Marill | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 67/111 | Natu | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 68/111 | Oddish | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 69/111 | Onix | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 70/111 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 71/111 | Sentret | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 72/111 | Shuckle | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 73/111 | Slowpoke | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 74/111 | Snubbull | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 75/111 | Spinarak | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 76/111 | Stantler | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 77/111 | Sudowoodo | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 78/111 | Sunkern | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 79/111 | Swinub | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 80/111 | Totodile | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 81/111 | Totodile | Pokémon (Water) | Common | Normal, Normal (1st Edition), Normal (25th celebration, Jumbo) |
+| 82/111 | Wooper | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 83/111 | Arcade Game | Trainer | Rare | Normal, Normal (1st Edition) |
+| 84/111 | Ecogym | Trainer | Rare | Normal, Normal (1st Edition) |
+| 85/111 | Energy Charge | Trainer | Rare | Normal, Normal (1st Edition) |
+| 86/111 | Focus Band | Trainer | Rare | Normal, Normal (1st Edition) |
+| 87/111 | Mary | Trainer | Rare | Normal, Normal (1st Edition) |
+| 88/111 | PokéGear | Trainer | Rare | Normal, Normal (1st Edition) |
+| 89/111 | Super Energy Retrieval | Trainer | Rare | Normal, Normal (1st Edition) |
+| 90/111 | Time Capsule | Trainer | Rare | Normal, Normal (1st Edition) |
+| 91/111 | Bill's Teleporter | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 92/111 | Card-Flip Game | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 93/111 | Gold Berry | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 94/111 | Miracle Berry | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 95/111 | New Pokédex | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 96/111 | Professor Elm | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 97/111 | Sprout Tower | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 98/111 | Super Scoop Up | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 99/111 | Berry | Trainer | Common | Normal, Normal (1st Edition) |
+| 100/111 | Double Gust | Trainer | Common | Normal, Normal (1st Edition) |
+| 101/111 | Moo-Moo Milk | Trainer | Common | Normal, Normal (1st Edition) |
+| 102/111 | Pokémon March | Trainer | Common | Normal, Normal (1st Edition) |
+| 103/111 | Super Rod | Trainer | Common | Normal, Normal (1st Edition) |
+| 104/111 | Darkness Energy | Energy (Special) | Rare | Normal, Normal (1st Edition) |
+| 105/111 | Recycle Energy | Energy (Special) | Rare | Normal, Normal (1st Edition) |
+| 106/111 | Fighting Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 107/111 | Fire Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 108/111 | Grass Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 109/111 | Lightning Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 110/111 | Psychic Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+| 111/111 | Water Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

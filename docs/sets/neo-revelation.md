@@ -78,6 +78,83 @@ box)." The author bases this on 10 boxes from recorded openings.
 Pack wrapper arts: four, one each for Entei, Suicune, Raikou, and
 Misdreavus (PSA).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `neo3`), fetched 2026-09-12. The list has 66 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/64 | Ampharos | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 2/64 | Blissey | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 3/64 | Celebi | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 4/64 | Crobat | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 5/64 | Delibird | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 6/64 | Entei | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 7/64 | Ho-oh | Pokémon (Fire) | Rare | Holo, Holo (1st Edition) |
+| 8/64 | Houndoom | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
+| 9/64 | Jumpluff | Pokémon (Grass) | Rare | Holo, Holo (1st Edition) |
+| 10/64 | Magneton | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
+| 11/64 | Misdreavus | Pokémon (Psychic) | Rare | Holo, Holo (1st Edition) |
+| 12/64 | Porygon2 | Pokémon (Colorless) | Rare | Holo, Holo (1st Edition) |
+| 13/64 | Raikou | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+| 14/64 | Suicune | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 15/64 | Aerodactyl | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 16/64 | Celebi | Pokémon (Grass) | Rare | Normal, Normal (1st Edition) |
+| 17/64 | Entei | Pokémon (Fire) | Rare | Normal, Normal (1st Edition) |
+| 18/64 | Ho-oh | Pokémon (Colorless) | Rare | Normal, Normal (1st Edition) |
+| 19/64 | Kingdra | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 20/64 | Lugia | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 21/64 | Raichu | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 22/64 | Raikou | Pokémon (Lightning) | Rare | Normal, Normal (1st Edition) |
+| 23/64 | Skarmory | Pokémon (Metal) | Rare | Normal, Normal (1st Edition) |
+| 24/64 | Sneasel | Pokémon (Darkness) | Rare | Normal, Normal (1st Edition) |
+| 25/64 | Starmie | Pokémon (Psychic) | Rare | Normal, Normal (1st Edition) |
+| 26/64 | Sudowoodo | Pokémon (Fighting) | Rare | Normal, Normal (1st Edition) |
+| 27/64 | Suicune | Pokémon (Water) | Rare | Normal, Normal (1st Edition) |
+| 28/64 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 29/64 | Golbat | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 30/64 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 31/64 | Jynx | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 32/64 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Normal (1st Edition) |
+| 33/64 | Magcargo | Pokémon (Fire) | Uncommon | Normal, Normal (1st Edition) |
+| 34/64 | Octillery | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 35/64 | Parasect | Pokémon (Grass) | Uncommon | Normal, Normal (1st Edition) |
+| 36/64 | Piloswine | Pokémon (Fighting) | Uncommon | Normal, Normal (1st Edition) |
+| 37/64 | Seaking | Pokémon (Water) | Uncommon | Normal, Normal (1st Edition) |
+| 38/64 | Stantler | Pokémon (Colorless) | Uncommon | Normal, Normal (1st Edition) |
+| 39/64 | Unown [B] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 40/64 | Unown [Y] | Pokémon (Psychic) | Uncommon | Normal, Normal (1st Edition) |
+| 41/64 | Aipom | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 42/64 | Chinchou | Pokémon (Lightning) | Common | Normal, Normal (1st Edition) |
+| 43/64 | Farfetch'd | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 44/64 | Geodude | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 45/64 | Goldeen | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 46/64 | Murkrow | Pokémon (Darkness) | Common | Normal, Normal (1st Edition) |
+| 47/64 | Paras | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 48/64 | Quagsire | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 49/64 | Qwilfish | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 50/64 | Remoraid | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 51/64 | Shuckle | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 52/64 | Skiploom | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 53/64 | Slugma | Pokémon (Fire) | Common | Normal, Normal (1st Edition) |
+| 54/64 | Smoochum | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 55/64 | Snubbull | Pokémon (Colorless) | Common | Normal, Normal (1st Edition) |
+| 56/64 | Staryu | Pokémon (Water) | Common | Normal, Normal (1st Edition) |
+| 57/64 | Swinub | Pokémon (Fighting) | Common | Normal, Normal (1st Edition) |
+| 58/64 | Unown [K] | Pokémon (Psychic) | Common | Normal, Normal (1st Edition) |
+| 59/64 | Zubat | Pokémon (Grass) | Common | Normal, Normal (1st Edition) |
+| 60/64 | Balloon Berry | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 61/64 | Healing Field | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 62/64 | Pokémon Breeder Fields | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 63/64 | Rocket's Hideout | Trainer | Uncommon | Normal, Normal (1st Edition) |
+| 64/64 | Old Rod | Trainer | Common | Normal, Normal (1st Edition) |
+| 65/64 | Shining Gyarados | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+| 66/64 | Shining Magikarp | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
