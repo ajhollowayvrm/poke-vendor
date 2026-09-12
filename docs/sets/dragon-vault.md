@@ -85,6 +85,38 @@ Source: Bulbapedia merchandise page.
 Bulbapedia says the blisters "were the only products associated with
 this expansion".
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `dv1`), fetched 2026-09-12. The list has 21 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/20 | Dratini | Pokémon (Dragon) | Rare | Normal |
+| 2/20 | Dratini | Pokémon (Dragon) | Rare | Normal |
+| 3/20 | Dragonair | Pokémon (Dragon) | Rare | Normal |
+| 4/20 | Dragonair | Pokémon (Dragon) | Rare | Normal |
+| 5/20 | Dragonite | Pokémon (Dragon) | Rare | Normal |
+| 6/20 | Bagon | Pokémon (Dragon) | Rare | Normal |
+| 7/20 | Shelgon | Pokémon (Dragon) | Rare | Normal |
+| 8/20 | Salamence | Pokémon (Dragon) | Rare | Normal |
+| 9/20 | Latias | Pokémon (Dragon) | Rare | Normal |
+| 10/20 | Latios | Pokémon (Dragon) | Rare | Normal |
+| 11/20 | Rayquaza | Pokémon (Dragon) | Rare | Normal |
+| 12/20 | Axew | Pokémon (Dragon) | Rare | Normal |
+| 13/20 | Axew | Pokémon (Dragon) | Rare | Normal |
+| 14/20 | Fraxure | Pokémon (Dragon) | Rare | Normal |
+| 15/20 | Fraxure | Pokémon (Dragon) | Rare | Normal |
+| 16/20 | Haxorus | Pokémon (Dragon) | Rare | Normal |
+| 17/20 | Druddigon | Pokémon (Dragon) | Rare | Normal |
+| 18/20 | Exp. Share | Trainer (Tool) | Rare | Normal |
+| 19/20 | First Ticket | Trainer (Item) | Rare | Normal |
+| 20/20 | Super Rod | Trainer (Item) | Rare | Normal |
+| 21/20 | Kyurem | Pokémon (Dragon) | Common | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

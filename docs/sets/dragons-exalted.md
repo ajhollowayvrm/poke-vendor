@@ -115,6 +115,145 @@ Source: Bulbapedia merchandise page.
 | EX Power Tins | 0–2 of 4 | 1 Plasma Storm, 1 Boundaries Crossed, 2 from Emerging Powers, Next Destinies, or Dragons Exalted | Variable |
 | Evolved Battle Action Tins (later retail version) | Typically 1 of 3 | 1 Next Destinies, 1 Boundaries Crossed | Variable |
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fetched 2026-09-12. The list has 128 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/124 | Hoppip | Pokémon (Grass) | Common | Normal |
+| 2/124 | Skiploom | Pokémon (Grass) | Uncommon | Normal |
+| 3/124 | Jumpluff | Pokémon (Grass) | Rare | Normal |
+| 4/124 | Yanma | Pokémon (Grass) | Common | Normal |
+| 5/124 | Yanmega | Pokémon (Grass) | Rare | Normal |
+| 6/124 | Wurmple | Pokémon (Grass) | Common | Normal |
+| 7/124 | Silcoon | Pokémon (Grass) | Uncommon | Normal |
+| 8/124 | Beautifly | Pokémon (Grass) | Rare | Normal |
+| 9/124 | Cascoon | Pokémon (Grass) | Uncommon | Normal |
+| 10/124 | Nincada | Pokémon (Grass) | Common | Normal |
+| 11/124 | Ninjask | Pokémon (Grass) | Uncommon | Normal |
+| 12/124 | Roselia | Pokémon (Grass) | Uncommon | Normal |
+| 13/124 | Roselia | Pokémon (Grass) | Common | Normal |
+| 14/124 | Roserade | Pokémon (Grass) | Uncommon | Normal |
+| 15/124 | Roserade | Pokémon (Grass) | Rare | Normal |
+| 16/124 | Maractus | Pokémon (Grass) | Uncommon | Normal |
+| 17/124 | Foongus | Pokémon (Grass) | Common | Normal |
+| 18/124 | Vulpix | Pokémon (Fire) | Common | Normal |
+| 19/124 | Ninetales | Pokémon (Fire) | Rare | Normal |
+| 20/124 | Magmar | Pokémon (Fire) | Common | Normal |
+| 21/124 | Magmortar | Pokémon (Fire) | Rare | Normal |
+| 22/124 | Ho-Oh-EX | Pokémon (Fire) | Rare | Normal |
+| 23/124 | Magikarp | Pokémon (Water) | Common | Normal |
+| 24/124 | Gyarados | Pokémon (Water) | Rare | Normal |
+| 25/124 | Wailmer | Pokémon (Water) | Uncommon | Normal |
+| 26/124 | Wailord | Pokémon (Water) | Rare | Normal |
+| 27/124 | Feebas | Pokémon (Water) | Common | Normal |
+| 28/124 | Milotic | Pokémon (Water) | Rare | Normal |
+| 29/124 | Spheal | Pokémon (Water) | Common | Normal |
+| 30/124 | Sealeo | Pokémon (Water) | Uncommon | Normal |
+| 31/124 | Walrein | Pokémon (Water) | Rare | Normal |
+| 32/124 | Buizel | Pokémon (Water) | Common | Normal |
+| 33/124 | Floatzel | Pokémon (Water) | Uncommon | Normal |
+| 34/124 | Tympole | Pokémon (Water) | Common | Normal |
+| 35/124 | Palpitoad | Pokémon (Water) | Uncommon | Normal |
+| 36/124 | Seismitoad | Pokémon (Water) | Rare | Normal |
+| 37/124 | Alomomola | Pokémon (Water) | Rare | Normal |
+| 38/124 | Mareep | Pokémon (Lightning) | Common | Normal |
+| 39/124 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal |
+| 40/124 | Ampharos | Pokémon (Lightning) | Rare | Normal |
+| 41/124 | Electrike | Pokémon (Lightning) | Common | Normal |
+| 42/124 | Electrike | Pokémon (Lightning) | Common | Normal |
+| 43/124 | Manectric | Pokémon (Lightning) | Rare | Normal |
+| 44/124 | Manectric | Pokémon (Lightning) | Rare | Normal |
+| 45/124 | Emolga | Pokémon (Lightning) | Uncommon | Normal |
+| 46/124 | Mew-EX | Pokémon (Psychic) | Rare | Normal |
+| 47/124 | Dustox | Pokémon (Psychic) | Rare | Normal |
+| 48/124 | Shedinja | Pokémon (Psychic) | Rare | Normal |
+| 49/124 | Drifloon | Pokémon (Psychic) | Common | Normal |
+| 50/124 | Drifloon | Pokémon (Psychic) | Common | Normal |
+| 51/124 | Drifblim | Pokémon (Psychic) | Rare | Normal |
+| 52/124 | Sigilyph | Pokémon (Psychic) | Rare | Normal |
+| 53/124 | Trubbish | Pokémon (Psychic) | Common | Normal |
+| 54/124 | Garbodor | Pokémon (Psychic) | Rare | Normal |
+| 55/124 | Gothita | Pokémon (Psychic) | Common | Normal |
+| 56/124 | Gothorita | Pokémon (Psychic) | Uncommon | Normal |
+| 57/124 | Gothitelle | Pokémon (Psychic) | Rare | Normal |
+| 58/124 | Golett | Pokémon (Psychic) | Common | Normal |
+| 59/124 | Golurk | Pokémon (Psychic) | Rare | Normal |
+| 60/124 | Cubone | Pokémon (Fighting) | Common | Normal |
+| 61/124 | Marowak | Pokémon (Fighting) | Rare | Normal |
+| 62/124 | Nosepass | Pokémon (Fighting) | Common | Normal |
+| 63/124 | Baltoy | Pokémon (Fighting) | Common | Normal |
+| 64/124 | Claydol | Pokémon (Fighting) | Rare | Normal |
+| 65/124 | Roggenrola | Pokémon (Fighting) | Common | Normal |
+| 66/124 | Boldore | Pokémon (Fighting) | Uncommon | Normal |
+| 67/124 | Gigalith | Pokémon (Fighting) | Rare | Normal |
+| 68/124 | Throh | Pokémon (Fighting) | Uncommon | Normal |
+| 69/124 | Sawk | Pokémon (Fighting) | Uncommon | Normal |
+| 70/124 | Stunfisk | Pokémon (Fighting) | Uncommon | Normal |
+| 71/124 | Terrakion-EX | Pokémon (Fighting) | Rare | Normal |
+| 72/124 | Murkrow | Pokémon (Darkness) | Common | Normal |
+| 73/124 | Honchkrow | Pokémon (Darkness) | Rare | Normal |
+| 74/124 | Houndour | Pokémon (Darkness) | Common | Normal |
+| 75/124 | Houndoom | Pokémon (Darkness) | Rare | Normal |
+| 76/124 | Stunky | Pokémon (Darkness) | Common | Normal |
+| 77/124 | Skuntank | Pokémon (Darkness) | Uncommon | Normal |
+| 78/124 | Aron | Pokémon (Metal) | Common | Normal |
+| 79/124 | Lairon | Pokémon (Metal) | Uncommon | Normal |
+| 80/124 | Aggron | Pokémon (Metal) | Rare | Normal |
+| 81/124 | Registeel-EX | Pokémon (Metal) | Rare | Normal |
+| 82/124 | Probopass | Pokémon (Metal) | Rare | Normal |
+| 83/124 | Durant | Pokémon (Metal) | Uncommon | Normal |
+| 84/124 | Altaria | Pokémon (Dragon) | Rare | Normal |
+| 85/124 | Rayquaza-EX | Pokémon (Dragon) | Rare | Normal |
+| 86/124 | Gible | Pokémon (Dragon) | Common | Normal |
+| 87/124 | Gible | Pokémon (Dragon) | Common | Normal |
+| 88/124 | Gabite | Pokémon (Dragon) | Uncommon | Normal |
+| 89/124 | Gabite | Pokémon (Dragon) | Uncommon | Normal |
+| 90/124 | Garchomp | Pokémon (Dragon) | Rare | Normal |
+| 91/124 | Garchomp | Pokémon (Dragon) | Rare | Normal |
+| 92/124 | Giratina-EX | Pokémon (Dragon) | Rare | Normal |
+| 93/124 | Deino | Pokémon (Dragon) | Common | Normal |
+| 94/124 | Deino | Pokémon (Dragon) | Common | Normal |
+| 95/124 | Zweilous | Pokémon (Dragon) | Uncommon | Normal |
+| 96/124 | Zweilous | Pokémon (Dragon) | Uncommon | Normal |
+| 97/124 | Hydreigon | Pokémon (Dragon) | Rare | Normal |
+| 98/124 | Hydreigon | Pokémon (Dragon) | Rare | Normal |
+| 99/124 | Aipom | Pokémon (Colorless) | Common | Normal |
+| 100/124 | Ambipom | Pokémon (Colorless) | Rare | Normal |
+| 101/124 | Slakoth | Pokémon (Colorless) | Common | Normal |
+| 102/124 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal |
+| 103/124 | Slaking | Pokémon (Colorless) | Rare | Normal |
+| 104/124 | Swablu | Pokémon (Colorless) | Uncommon | Normal |
+| 105/124 | Swablu | Pokémon (Colorless) | Common | Normal |
+| 106/124 | Bidoof | Pokémon (Colorless) | Common | Normal |
+| 107/124 | Bibarel | Pokémon (Colorless) | Uncommon | Normal |
+| 108/124 | Audino | Pokémon (Colorless) | Uncommon | Normal |
+| 109/124 | Minccino | Pokémon (Colorless) | Common | Normal |
+| 110/124 | Bouffalant | Pokémon (Colorless) | Uncommon | Normal |
+| 111/124 | Rufflet | Pokémon (Colorless) | Common | Normal |
+| 112/124 | Braviary | Pokémon (Colorless) | Rare | Normal |
+| 113/124 | Devolution Spray | Trainer (Item) | Uncommon | Normal |
+| 114/124 | Giant Cape | Trainer (Tool) | Uncommon | Normal |
+| 115/124 | Rescue Scarf | Trainer (Tool) | Uncommon | Normal |
+| 116/124 | Tool Scrapper | Trainer (Item) | Uncommon | Normal |
+| 117/124 | Blend Energy Grass Fire Psychic Darkness | Energy (Special) | Uncommon | Normal |
+| 118/124 | Blend Energy Water Lightning Fighting Metal | Energy (Special) | Uncommon | Normal |
+| 119/124 | Ho-Oh-EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 120/124 | Mew-EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 121/124 | Terrakion-EX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 122/124 | Registeel-EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 123/124 | Rayquaza-EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 124/124 | Giratina-EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 125/124 | Serperior | Pokémon (Grass) | Secret Rare | Normal |
+| 126/124 | Reuniclus | Pokémon (Psychic) | Secret Rare | Normal |
+| 127/124 | Krookodile | Pokémon (Darkness) | Secret Rare | Normal |
+| 128/124 | Rayquaza | Pokémon (Dragon) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

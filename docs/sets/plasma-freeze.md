@@ -132,6 +132,139 @@ Source: Bulbapedia merchandise page.
 
 No Plasma Freeze Elite Trainer Box is in Bulbapedia's merchandise list.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `bw9`), fetched 2026-09-12. The list has 122 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/116 | Weedle | Pokémon (Grass) | Common | Normal |
+| 2/116 | Kakuna | Pokémon (Grass) | Uncommon | Normal |
+| 3/116 | Beedrill | Pokémon (Grass) | Rare | Normal |
+| 4/116 | Exeggcute | Pokémon (Grass) | Uncommon | Normal |
+| 5/116 | Exeggutor | Pokémon (Grass) | Rare | Normal |
+| 6/116 | Treecko | Pokémon (Grass) | Common | Normal |
+| 7/116 | Grovyle | Pokémon (Grass) | Uncommon | Normal |
+| 8/116 | Sceptile | Pokémon (Grass) | Rare | Normal |
+| 9/116 | Cacnea | Pokémon (Grass) | Common | Normal |
+| 10/116 | Cacturne | Pokémon (Grass) | Rare | Normal |
+| 11/116 | Leafeon | Pokémon (Grass) | Rare | Normal |
+| 12/116 | Flareon | Pokémon (Fire) | Uncommon | Normal |
+| 13/116 | Heatran-EX | Pokémon (Fire) | Rare | Normal |
+| 14/116 | Litwick | Pokémon (Fire) | Common | Normal |
+| 15/116 | Lampent | Pokémon (Fire) | Uncommon | Normal |
+| 16/116 | Chandelure | Pokémon (Fire) | Rare | Normal |
+| 17/116 | Reshiram | Pokémon (Fire) | Rare | Normal |
+| 18/116 | Horsea | Pokémon (Water) | Common | Normal |
+| 19/116 | Seadra | Pokémon (Water) | Uncommon | Normal |
+| 20/116 | Vaporeon | Pokémon (Water) | Uncommon | Normal |
+| 21/116 | Wooper | Pokémon (Water) | Common | Normal |
+| 22/116 | Quagsire | Pokémon (Water) | Rare | Normal |
+| 23/116 | Glaceon | Pokémon (Water) | Rare | Normal |
+| 24/116 | Tympole | Pokémon (Water) | Common | Normal |
+| 25/116 | Palpitoad | Pokémon (Water) | Uncommon | Normal |
+| 26/116 | Seismitoad | Pokémon (Water) | Rare | Normal |
+| 27/116 | Vanillite | Pokémon (Water) | Common | Normal |
+| 28/116 | Vanillish | Pokémon (Water) | Uncommon | Normal |
+| 29/116 | Vanilluxe | Pokémon (Water) | Rare | Normal |
+| 30/116 | Cryogonal | Pokémon (Water) | Uncommon | Normal |
+| 31/116 | Kyurem | Pokémon (Water) | Rare | Normal |
+| 32/116 | Voltorb | Pokémon (Lightning) | Common | Normal |
+| 33/116 | Electrode | Pokémon (Lightning) | Rare | Normal |
+| 34/116 | Jolteon | Pokémon (Lightning) | Uncommon | Normal |
+| 35/116 | Chinchou | Pokémon (Lightning) | Common | Normal |
+| 36/116 | Lanturn | Pokémon (Lightning) | Uncommon | Normal |
+| 37/116 | Pachirisu | Pokémon (Lightning) | Common | Normal |
+| 38/116 | Thundurus-EX | Pokémon (Lightning) | Rare | Normal |
+| 39/116 | Zekrom | Pokémon (Lightning) | Rare | Normal |
+| 40/116 | Nidoran♀ | Pokémon (Psychic) | Common | Normal |
+| 41/116 | Nidorina | Pokémon (Psychic) | Uncommon | Normal |
+| 42/116 | Nidoqueen | Pokémon (Psychic) | Rare | Normal |
+| 43/116 | Nidoran♂ | Pokémon (Psychic) | Common | Normal |
+| 44/116 | Nidorino | Pokémon (Psychic) | Uncommon | Normal |
+| 45/116 | Grimer | Pokémon (Psychic) | Common | Normal |
+| 46/116 | Muk | Pokémon (Psychic) | Rare | Normal |
+| 47/116 | Mr. Mime | Pokémon (Psychic) | Rare | Normal |
+| 48/116 | Espeon | Pokémon (Psychic) | Uncommon | Normal |
+| 49/116 | Sableye | Pokémon (Psychic) | Rare | Normal |
+| 50/116 | Beldum | Pokémon (Psychic) | Common | Normal |
+| 51/116 | Metang | Pokémon (Psychic) | Uncommon | Normal |
+| 52/116 | Metagross | Pokémon (Psychic) | Rare | Normal |
+| 53/116 | Deoxys-EX | Pokémon (Psychic) | Rare | Normal |
+| 54/116 | Yamask | Pokémon (Psychic) | Common | Normal |
+| 55/116 | Yamask | Pokémon (Psychic) | Common | Normal |
+| 56/116 | Cofagrigus | Pokémon (Psychic) | Rare | Normal |
+| 57/116 | Cofagrigus | Pokémon (Psychic) | Rare | Normal |
+| 58/116 | Nidoking | Pokémon (Fighting) | Rare | Normal |
+| 59/116 | Mankey | Pokémon (Fighting) | Common | Normal |
+| 60/116 | Primeape | Pokémon (Fighting) | Common | Normal |
+| 61/116 | Onix | Pokémon (Fighting) | Uncommon | Normal |
+| 62/116 | Makuhita | Pokémon (Fighting) | Common | Normal |
+| 63/116 | Hariyama | Pokémon (Fighting) | Rare | Normal |
+| 64/116 | Umbreon | Pokémon (Darkness) | Rare | Normal |
+| 65/116 | Sneasel | Pokémon (Darkness) | Common | Normal |
+| 66/116 | Weavile | Pokémon (Darkness) | Rare | Normal |
+| 67/116 | Absol | Pokémon (Darkness) | Rare | Normal |
+| 68/116 | Sandile | Pokémon (Darkness) | Common | Normal |
+| 69/116 | Krokorok | Pokémon (Darkness) | Uncommon | Normal |
+| 70/116 | Krookodile | Pokémon (Darkness) | Rare | Normal |
+| 71/116 | Pawniard | Pokémon (Darkness) | Common | Normal |
+| 72/116 | Pawniard | Pokémon (Darkness) | Common | Normal |
+| 73/116 | Bisharp | Pokémon (Darkness) | Rare | Normal |
+| 74/116 | Bisharp | Pokémon (Darkness) | Uncommon | Normal |
+| 75/116 | Deino | Pokémon (Darkness) | Common | Normal |
+| 76/116 | Deino | Pokémon (Darkness) | Common | Normal |
+| 77/116 | Zweilous | Pokémon (Darkness) | Uncommon | Normal |
+| 78/116 | Hydreigon | Pokémon (Darkness) | Rare | Normal |
+| 79/116 | Steelix | Pokémon (Metal) | Rare | Normal |
+| 80/116 | Mawile | Pokémon (Metal) | Uncommon | Normal |
+| 81/116 | Dratini | Pokémon (Dragon) | Common | Normal |
+| 82/116 | Dragonair | Pokémon (Dragon) | Uncommon | Normal |
+| 83/116 | Dragonite | Pokémon (Dragon) | Rare | Normal |
+| 84/116 | Kingdra | Pokémon (Dragon) | Rare | Normal |
+| 85/116 | Latias-EX | Pokémon (Dragon) | Rare | Normal |
+| 86/116 | Latios-EX | Pokémon (Dragon) | Rare | Normal |
+| 87/116 | Rattata | Pokémon (Colorless) | Common | Normal |
+| 88/116 | Raticate | Pokémon (Colorless) | Rare | Normal |
+| 89/116 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 90/116 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 91/116 | Hoothoot | Pokémon (Colorless) | Common | Normal |
+| 92/116 | Noctowl | Pokémon (Colorless) | Uncommon | Normal |
+| 93/116 | Miltank | Pokémon (Colorless) | Uncommon | Normal |
+| 94/116 | Kecleon | Pokémon (Colorless) | Rare | Normal |
+| 95/116 | Starly | Pokémon (Colorless) | Common | Normal |
+| 96/116 | Staravia | Pokémon (Colorless) | Uncommon | Normal |
+| 97/116 | Staraptor | Pokémon (Colorless) | Rare | Normal |
+| 98/116 | Tornadus-EX | Pokémon (Colorless) | Rare | Normal |
+| 99/116 | Float Stone | Trainer (Tool) | Uncommon | Normal |
+| 100/116 | Frozen City | Trainer (Stadium) | Uncommon | Normal |
+| 101/116 | Ghetsis | Trainer (Supporter) | Rare | Normal |
+| 102/116 | Shadow Triad | Trainer (Supporter) | Uncommon | Normal |
+| 103/116 | Superior Energy Retrieval | Trainer (Item) | Uncommon | Normal |
+| 104/116 | Team Plasma Badge | Trainer (Tool) | Uncommon | Normal |
+| 105/116 | Team Plasma Ball | Trainer (Item) | Uncommon | Normal |
+| 106/116 | Plasma Energy | Energy (Special) | Uncommon | Normal |
+| 107/116 | Life Dew | Trainer (Tool) | Rare | Normal |
+| 108/116 | Rock Guard | Trainer (Tool) | Rare | Normal |
+| 109/116 | Heatran-EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 110/116 | Thundurus-EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 111/116 | Deoxys-EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 112/116 | Latias-EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 113/116 | Latios-EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 114/116 | Tornadus-EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 115/116 | Ghetsis | Trainer (Supporter) | Ultra Rare | Normal |
+| 116/116 | Professor Juniper | Trainer (Supporter) | Ultra Rare | Normal |
+| 117/116 | Empoleon | Pokémon (Water) | Secret Rare | Normal |
+| 118/116 | Sigilyph | Pokémon (Psychic) | Secret Rare | Normal |
+| 119/116 | Garbodor | Pokémon (Psychic) | Secret Rare | Normal |
+| 120/116 | Garchomp | Pokémon (Dragon) | Secret Rare | Normal |
+| 121/116 | Max Potion | Trainer (Item) | Secret Rare | Normal |
+| 122/116 | Ultra Ball | Trainer (Item) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

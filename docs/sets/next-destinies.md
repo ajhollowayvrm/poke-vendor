@@ -117,6 +117,120 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 | EX Power Tins | 0–2 of 4 | 1 Plasma Storm, 1 Boundaries Crossed, 2 from Emerging Powers, Next Destinies, or Dragons Exalted | Variable |
 | Evolved Battle Action Tins (later retail version) | Typically 1 of 3 | 1 Dragons Exalted, 1 Boundaries Crossed | Variable |
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `bw4`), fetched 2026-09-12. The list has 103 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/99 | Pinsir | Pokémon (Grass) | Rare | Normal |
+| 2/99 | Seedot | Pokémon (Grass) | Common | Normal |
+| 3/99 | Kricketot | Pokémon (Grass) | Common | Normal |
+| 4/99 | Kricketune | Pokémon (Grass) | Uncommon | Normal |
+| 5/99 | Shaymin-EX | Pokémon (Grass) | Rare | Normal |
+| 6/99 | Pansage | Pokémon (Grass) | Common | Normal |
+| 7/99 | Simisage | Pokémon (Grass) | Rare | Normal |
+| 8/99 | Foongus | Pokémon (Grass) | Common | Normal |
+| 9/99 | Amoonguss | Pokémon (Grass) | Rare | Normal |
+| 10/99 | Growlithe | Pokémon (Fire) | Common | Normal |
+| 11/99 | Growlithe | Pokémon (Fire) | Common | Normal |
+| 12/99 | Arcanine | Pokémon (Fire) | Rare | Normal |
+| 13/99 | Arcanine | Pokémon (Fire) | Uncommon | Normal |
+| 14/99 | Moltres | Pokémon (Fire) | Rare | Normal |
+| 15/99 | Pansear | Pokémon (Fire) | Common | Normal |
+| 16/99 | Simisear | Pokémon (Fire) | Rare | Normal |
+| 17/99 | Darumaka | Pokémon (Fire) | Common | Normal |
+| 18/99 | Litwick | Pokémon (Fire) | Common | Normal |
+| 19/99 | Lampent | Pokémon (Fire) | Uncommon | Normal |
+| 20/99 | Chandelure | Pokémon (Fire) | Rare | Normal |
+| 21/99 | Reshiram | Pokémon (Fire) | Rare | Normal |
+| 22/99 | Reshiram-EX | Pokémon (Fire) | Rare | Normal |
+| 23/99 | Staryu | Pokémon (Water) | Common | Normal |
+| 24/99 | Starmie | Pokémon (Water) | Uncommon | Normal |
+| 25/99 | Lapras | Pokémon (Water) | Rare | Normal |
+| 26/99 | Lapras | Pokémon (Water) | Uncommon | Normal |
+| 27/99 | Articuno | Pokémon (Water) | Rare | Normal |
+| 28/99 | Panpour | Pokémon (Water) | Common | Normal |
+| 29/99 | Simipour | Pokémon (Water) | Rare | Normal |
+| 30/99 | Basculin | Pokémon (Water) | Uncommon | Normal |
+| 31/99 | Vanillite | Pokémon (Water) | Common | Normal |
+| 32/99 | Vanillish | Pokémon (Water) | Uncommon | Normal |
+| 33/99 | Vanilluxe | Pokémon (Water) | Rare | Normal |
+| 34/99 | Frillish | Pokémon (Water) | Uncommon | Normal |
+| 35/99 | Jellicent | Pokémon (Water) | Rare | Normal |
+| 36/99 | Cubchoo | Pokémon (Water) | Common | Normal |
+| 37/99 | Beartic | Pokémon (Water) | Rare | Normal |
+| 38/99 | Kyurem-EX | Pokémon (Water) | Rare | Normal |
+| 39/99 | Pikachu | Pokémon (Lightning) | Common | Normal |
+| 40/99 | Raichu | Pokémon (Lightning) | Uncommon | Normal |
+| 41/99 | Zapdos | Pokémon (Lightning) | Rare | Normal |
+| 42/99 | Shinx | Pokémon (Lightning) | Common | Normal |
+| 43/99 | Shinx | Pokémon (Lightning) | Common | Normal |
+| 44/99 | Luxio | Pokémon (Lightning) | Uncommon | Normal |
+| 45/99 | Luxio | Pokémon (Lightning) | Uncommon | Normal |
+| 46/99 | Luxray | Pokémon (Lightning) | Rare | Normal |
+| 47/99 | Blitzle | Pokémon (Lightning) | Common | Normal |
+| 48/99 | Zebstrika | Pokémon (Lightning) | Rare | Normal |
+| 49/99 | Emolga | Pokémon (Lightning) | Uncommon | Normal |
+| 50/99 | Zekrom | Pokémon (Lightning) | Rare | Normal |
+| 51/99 | Zekrom-EX | Pokémon (Lightning) | Rare | Normal |
+| 52/99 | Grimer | Pokémon (Psychic) | Common | Normal |
+| 53/99 | Muk | Pokémon (Psychic) | Rare | Normal |
+| 54/99 | Mewtwo-EX | Pokémon (Psychic) | Rare | Normal |
+| 55/99 | Ralts | Pokémon (Psychic) | Common | Normal |
+| 56/99 | Kirlia | Pokémon (Psychic) | Uncommon | Normal |
+| 57/99 | Gardevoir | Pokémon (Psychic) | Rare | Normal |
+| 58/99 | Munna | Pokémon (Psychic) | Common | Normal |
+| 59/99 | Musharna | Pokémon (Psychic) | Rare | Normal |
+| 60/99 | Darmanitan | Pokémon (Psychic) | Rare | Normal |
+| 61/99 | Elgyem | Pokémon (Psychic) | Common | Normal |
+| 62/99 | Beheeyem | Pokémon (Psychic) | Rare | Normal |
+| 63/99 | Riolu | Pokémon (Fighting) | Common | Normal |
+| 64/99 | Lucario | Pokémon (Fighting) | Rare | Normal |
+| 65/99 | Hippopotas | Pokémon (Fighting) | Common | Normal |
+| 66/99 | Hippowdon | Pokémon (Fighting) | Uncommon | Normal |
+| 67/99 | Mienfoo | Pokémon (Fighting) | Common | Normal |
+| 68/99 | Mienshao | Pokémon (Fighting) | Uncommon | Normal |
+| 69/99 | Sneasel | Pokémon (Darkness) | Common | Normal |
+| 70/99 | Weavile | Pokémon (Darkness) | Rare | Normal |
+| 71/99 | Nuzleaf | Pokémon (Darkness) | Uncommon | Normal |
+| 72/99 | Shiftry | Pokémon (Darkness) | Rare | Normal |
+| 73/99 | Scraggy | Pokémon (Darkness) | Uncommon | Normal |
+| 74/99 | Scrafty | Pokémon (Darkness) | Rare | Normal |
+| 75/99 | Bronzor | Pokémon (Metal) | Common | Normal |
+| 76/99 | Bronzong | Pokémon (Metal) | Rare | Normal |
+| 77/99 | Ferroseed | Pokémon (Metal) | Common | Normal |
+| 78/99 | Jigglypuff | Pokémon (Colorless) | Uncommon | Normal |
+| 79/99 | Wigglytuff | Pokémon (Colorless) | Rare | Normal |
+| 80/99 | Meowth | Pokémon (Colorless) | Common | Normal |
+| 81/99 | Persian | Pokémon (Colorless) | Rare | Normal |
+| 82/99 | Regigigas-EX | Pokémon (Colorless) | Rare | Normal |
+| 83/99 | Pidove | Pokémon (Colorless) | Common | Normal |
+| 84/99 | Minccino | Pokémon (Colorless) | Uncommon | Normal |
+| 85/99 | Cinccino | Pokémon (Colorless) | Rare | Normal |
+| 86/99 | Cilan | Trainer (Supporter) | Uncommon | Normal |
+| 87/99 | Exp. Share | Trainer (Tool) | Uncommon | Normal |
+| 88/99 | Heavy Ball | Trainer (Item) | Uncommon | Normal |
+| 89/99 | Level Ball | Trainer (Item) | Uncommon | Normal |
+| 90/99 | Pokémon Center | Trainer (Stadium) | Uncommon | Normal |
+| 91/99 | Skyarrow Bridge | Trainer (Stadium) | Uncommon | Normal |
+| 92/99 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
+| 93/99 | Prism Energy | Energy (Special) | Uncommon | Normal |
+| 94/99 | Shaymin-EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 95/99 | Reshiram-EX | Pokémon (Fire) | Ultra Rare | Normal |
+| 96/99 | Kyurem-EX | Pokémon (Water) | Ultra Rare | Normal |
+| 97/99 | Zekrom-EX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 98/99 | Mewtwo-EX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 99/99 | Regigigas-EX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 100/099 | Emboar | Pokémon (Fire) | Secret Rare | Normal |
+| 101/099 | Chandelure | Pokémon (Psychic) | Secret Rare | Normal |
+| 102/099 | Zoroark | Pokémon (Darkness) | Secret Rare | Normal |
+| 103/099 | Hydreigon | Pokémon (Darkness) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

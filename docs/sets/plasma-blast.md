@@ -126,6 +126,122 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 | Best of Black & White Tins | Typically 1 of 4 | 1 Plasma Freeze, 2 Plasma Storm | Variable |
 | Xerneas-EX and Yveltal-EX Tins (XY era) | 1 of 4 (one report) | 1 Legendary Treasures, 2 XY | Variable. Source: PokeBeach report, March 8, 2014. |
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `bw10`), fetched 2026-09-12. The list has 105 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/101 | Surskit | Pokémon (Grass) | Common | Normal |
+| 2/101 | Masquerain | Pokémon (Grass) | Rare | Normal |
+| 3/101 | Lileep | Pokémon (Grass) | Uncommon | Normal |
+| 4/101 | Cradily | Pokémon (Grass) | Rare | Normal |
+| 5/101 | Tropius | Pokémon (Grass) | Uncommon | Normal |
+| 6/101 | Karrablast | Pokémon (Grass) | Common | Normal |
+| 7/101 | Shelmet | Pokémon (Grass) | Common | Normal |
+| 8/101 | Accelgor | Pokémon (Grass) | Rare | Normal |
+| 9/101 | Virizion-EX | Pokémon (Grass) | Rare | Normal |
+| 10/101 | Genesect | Pokémon (Grass) | Rare | Normal |
+| 11/101 | Genesect-EX | Pokémon (Grass) | Rare | Normal |
+| 12/101 | Larvesta | Pokémon (Fire) | Common | Normal |
+| 13/101 | Volcarona | Pokémon (Fire) | Rare | Normal |
+| 14/101 | Squirtle | Pokémon (Water) | Common | Normal |
+| 15/101 | Wartortle | Pokémon (Water) | Uncommon | Normal |
+| 16/101 | Blastoise | Pokémon (Water) | Rare | Normal |
+| 17/101 | Lapras | Pokémon (Water) | Common | Normal |
+| 18/101 | Remoraid | Pokémon (Water) | Common | Normal |
+| 19/101 | Octillery | Pokémon (Water) | Uncommon | Normal |
+| 20/101 | Suicune | Pokémon (Water) | Rare | Normal |
+| 21/101 | Snorunt | Pokémon (Water) | Common | Normal |
+| 22/101 | Glalie | Pokémon (Water) | Uncommon | Normal |
+| 23/101 | Froslass | Pokémon (Water) | Rare | Normal |
+| 24/101 | Relicanth | Pokémon (Water) | Uncommon | Normal |
+| 25/101 | Snover | Pokémon (Water) | Common | Normal |
+| 26/101 | Abomasnow | Pokémon (Water) | Uncommon | Normal |
+| 27/101 | Tirtouga | Pokémon (Water) | Uncommon | Normal |
+| 28/101 | Carracosta | Pokémon (Water) | Rare | Normal |
+| 29/101 | Ducklett | Pokémon (Water) | Common | Normal |
+| 30/101 | Kyurem-EX | Pokémon (Water) | Rare | Normal |
+| 31/101 | Tynamo | Pokémon (Lightning) | Common | Normal |
+| 32/101 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal |
+| 33/101 | Eelektross | Pokémon (Lightning) | Rare | Normal |
+| 34/101 | Drifloon | Pokémon (Psychic) | Common | Normal |
+| 35/101 | Drifblim | Pokémon (Psychic) | Rare | Normal |
+| 36/101 | Uxie | Pokémon (Psychic) | Rare | Normal |
+| 37/101 | Mesprit | Pokémon (Psychic) | Rare | Normal |
+| 38/101 | Azelf | Pokémon (Psychic) | Rare | Normal |
+| 39/101 | Munna | Pokémon (Psychic) | Common | Normal |
+| 40/101 | Musharna | Pokémon (Psychic) | Uncommon | Normal |
+| 41/101 | Sigilyph | Pokémon (Psychic) | Rare | Normal |
+| 42/101 | Solosis | Pokémon (Psychic) | Common | Normal |
+| 43/101 | Duosion | Pokémon (Psychic) | Uncommon | Normal |
+| 44/101 | Reuniclus | Pokémon (Psychic) | Rare | Normal |
+| 45/101 | Golett | Pokémon (Psychic) | Common | Normal |
+| 46/101 | Golurk | Pokémon (Psychic) | Rare | Normal |
+| 47/101 | Machop | Pokémon (Fighting) | Common | Normal |
+| 48/101 | Machoke | Pokémon (Fighting) | Uncommon | Normal |
+| 49/101 | Machamp | Pokémon (Fighting) | Rare | Normal |
+| 50/101 | Machamp | Pokémon (Fighting) | Rare | Normal |
+| 51/101 | Throh | Pokémon (Fighting) | Common | Normal |
+| 52/101 | Sawk | Pokémon (Fighting) | Common | Normal |
+| 53/101 | Archen | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 54/101 | Archeops | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 55/101 | Houndour | Pokémon (Darkness) | Common | Normal |
+| 56/101 | Houndoom | Pokémon (Darkness) | Rare | Normal |
+| 57/101 | Aron | Pokémon (Metal) | Common | Normal |
+| 58/101 | Lairon | Pokémon (Metal) | Uncommon | Normal |
+| 59/101 | Aggron | Pokémon (Metal) | Rare | Normal |
+| 60/101 | Jirachi-EX | Pokémon (Metal) | Rare | Normal |
+| 61/101 | Escavalier | Pokémon (Metal) | Rare | Normal |
+| 62/101 | Bagon | Pokémon (Dragon) | Common | Normal |
+| 63/101 | Shelgon | Pokémon (Dragon) | Uncommon | Normal |
+| 64/101 | Salamence | Pokémon (Dragon) | Rare | Normal |
+| 65/101 | Dialga-EX | Pokémon (Dragon) | Rare | Normal |
+| 66/101 | Palkia-EX | Pokémon (Dragon) | Rare | Normal |
+| 67/101 | Axew | Pokémon (Dragon) | Common | Normal |
+| 68/101 | Fraxure | Pokémon (Dragon) | Uncommon | Normal |
+| 69/101 | Haxorus | Pokémon (Dragon) | Rare | Normal |
+| 70/101 | Druddigon | Pokémon (Dragon) | Common | Normal |
+| 71/101 | Kangaskhan | Pokémon (Colorless) | Common | Normal |
+| 72/101 | Porygon | Pokémon (Colorless) | Common | Normal |
+| 73/101 | Porygon2 | Pokémon (Colorless) | Uncommon | Normal |
+| 74/101 | Porygon-Z | Pokémon (Colorless) | Rare | Normal |
+| 75/101 | Teddiursa | Pokémon (Colorless) | Common | Normal |
+| 76/101 | Ursaring | Pokémon (Colorless) | Uncommon | Normal |
+| 77/101 | Chatot | Pokémon (Colorless) | Uncommon | Normal |
+| 78/101 | Caitlin | Trainer (Supporter) | Uncommon | Normal |
+| 79/101 | Cover Fossil | Trainer (Item) | Uncommon | Normal |
+| 80/101 | Energy Retrieval | Trainer (Item) | Uncommon | Normal |
+| 81/101 | Iris | Trainer (Supporter) | Uncommon | Normal |
+| 82/101 | Plume Fossil | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 83/101 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal |
+| 84/101 | Professor Juniper | Trainer (Supporter) | Uncommon | Normal |
+| 85/101 | Rare Candy | Trainer (Item) | Uncommon | Normal |
+| 86/101 | Reversal Trigger | Trainer (Tool) | Uncommon | Normal |
+| 87/101 | Root Fossil Lileep | Trainer (Item) | Uncommon | Normal |
+| 88/101 | Silver Bangle | Trainer (Tool) | Uncommon | Normal |
+| 89/101 | Silver Mirror | Trainer (Tool) | Uncommon | Normal |
+| 90/101 | Ultra Ball | Trainer (Item) | Uncommon | Normal |
+| 91/101 | Plasma Energy | Energy (Special) | Uncommon | Normal |
+| 92/101 | G Booster | Trainer (Tool) | Rare | Normal |
+| 93/101 | G Scope | Trainer (Tool) | Rare | Normal |
+| 94/101 | Master Ball | Trainer (Item) | Rare | Normal |
+| 95/101 | Scoop Up Cyclone | Trainer (Item) | Rare | Normal |
+| 96/101 | Virizion-EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 97/101 | Genesect-EX | Pokémon (Grass) | Ultra Rare | Normal |
+| 98/101 | Jirachi-EX | Pokémon (Metal) | Ultra Rare | Normal |
+| 99/101 | Dialga-EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 100/101 | Palkia-EX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 101/101 | Iris | Trainer (Supporter) | Ultra Rare | Normal |
+| 102/101 | Exeggcute | Pokémon (Grass) | Secret Rare | Normal |
+| 103/101 | Virizion | Pokémon (Grass) | Secret Rare | Normal |
+| 104/101 | Dusknoir | Pokémon (Psychic) | Secret Rare | Normal |
+| 105/101 | Rare Candy | Trainer (Item) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
