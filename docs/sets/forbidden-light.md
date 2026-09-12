@@ -88,6 +88,163 @@ video is about 1,000 packs.
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm6`), fetched 2026-09-12. The list has 146 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/131 | Exeggcute | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/131 | Alolan Exeggutor | Pokémon (Grass) | Rare | Normal |
+| 3/131 | Snover | Pokémon (Grass) | Common | Normal |
+| 4/131 | Abomasnow | Pokémon (Grass) | Rare | Normal |
+| 5/131 | Scatterbug | Pokémon (Grass) | Common | Normal |
+| 6/131 | Scatterbug | Pokémon (Grass) | Common | Normal |
+| 7/131 | Spewpa | Pokémon (Grass) | Uncommon | Normal |
+| 8/131 | Vivillon | Pokémon (Grass) | Rare | Normal |
+| 9/131 | Skiddo | Pokémon (Grass) | Common | Normal |
+| 10/131 | Gogoat | Pokémon (Grass) | Uncommon | Normal |
+| 11/131 | Pheromosa | Pokémon (Grass) | Rare | Normal |
+| 12/131 | Alolan Marowak | Pokémon (Fire) | Rare | Normal |
+| 13/131 | Heatran | Pokémon (Fire) | Rare | Normal |
+| 14/131 | Fennekin | Pokémon (Fire) | Common | Normal |
+| 15/131 | Fennekin | Pokémon (Fire) | Common | Normal |
+| 16/131 | Braixen | Pokémon (Fire) | Uncommon | Normal |
+| 17/131 | Delphox | Pokémon (Fire) | Rare | Normal |
+| 18/131 | Litleo | Pokémon (Fire) | Common | Normal |
+| 19/131 | Pyroar | Pokémon (Fire) | Rare | Normal |
+| 20/131 | Palkia GX | Pokémon (Water) | Ultra Rare | Normal |
+| 21/131 | Froakie | Pokémon (Water) | Common | Normal |
+| 22/131 | Froakie | Pokémon (Water) | Common | Normal |
+| 23/131 | Frogadier | Pokémon (Water) | Uncommon | Normal |
+| 24/131 | Greninja GX | Pokémon (Water) | Ultra Rare | Normal |
+| 25/131 | Clauncher | Pokémon (Water) | Common | Normal |
+| 26/131 | Clawitzer | Pokémon (Water) | Rare | Normal |
+| 27/131 | Amaura | Pokémon (Water) | Uncommon | Normal |
+| 28/131 | Aurorus | Pokémon (Water) | Rare | Normal |
+| 29/131 | Bergmite | Pokémon (Water) | Common | Normal |
+| 30/131 | Avalugg | Pokémon (Water) | Rare | Normal |
+| 31/131 | Volcanion ◇ | Pokémon (Water) | Rare | Normal |
+| 32/131 | Dewpider | Pokémon (Water) | Common | Normal |
+| 33/131 | Araquanid | Pokémon (Water) | Uncommon | Normal |
+| 34/131 | Magnemite | Pokémon (Lightning) | Common | Normal |
+| 35/131 | Magneton | Pokémon (Lightning) | Uncommon | Normal |
+| 36/131 | Magnezone | Pokémon (Lightning) | Rare | Normal |
+| 37/131 | Helioptile | Pokémon (Lightning) | Common | Normal |
+| 38/131 | Heliolisk | Pokémon (Lightning) | Uncommon | Normal |
+| 39/131 | Xurkitree | Pokémon (Lightning) | Rare | Normal |
+| 40/131 | Rotom | Pokémon (Psychic) | Rare | Normal |
+| 41/131 | Uxie | Pokémon (Psychic) | Uncommon | Normal |
+| 42/131 | Mesprit | Pokémon (Psychic) | Uncommon | Normal |
+| 43/131 | Azelf | Pokémon (Psychic) | Uncommon | Normal |
+| 44/131 | Espurr | Pokémon (Psychic) | Common | Normal |
+| 45/131 | Meowstic | Pokémon (Psychic) | Rare | Normal |
+| 46/131 | Honedge | Pokémon (Psychic) | Common | Normal |
+| 47/131 | Honedge | Pokémon (Psychic) | Common | Normal |
+| 48/131 | Doublade | Pokémon (Psychic) | Uncommon | Normal |
+| 49/131 | Aegislash | Pokémon (Psychic) | Rare | Normal |
+| 50/131 | Inkay | Pokémon (Psychic) | Common | Normal |
+| 51/131 | Malamar | Pokémon (Psychic) | Rare | Normal |
+| 52/131 | Skrelp | Pokémon (Psychic) | Common | Normal |
+| 53/131 | Dragalge | Pokémon (Psychic) | Rare | Normal |
+| 54/131 | Hoopa | Pokémon (Psychic) | Uncommon | Normal |
+| 55/131 | Poipole | Pokémon (Psychic) | Uncommon | Normal |
+| 56/131 | Naganadel GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 57/131 | Cubone | Pokémon (Fighting) | Common | Normal |
+| 58/131 | Torterra | Pokémon (Fighting) | Rare | Normal |
+| 59/131 | Infernape | Pokémon (Fighting) | Rare | Normal |
+| 60/131 | Gible | Pokémon (Fighting) | Common | Normal |
+| 61/131 | Gabite | Pokémon (Fighting) | Uncommon | Normal |
+| 62/131 | Garchomp | Pokémon (Fighting) | Rare | Normal |
+| 63/131 | Croagunk | Pokémon (Fighting) | Common | Normal |
+| 64/131 | Toxicroak | Pokémon (Fighting) | Rare | Normal |
+| 65/131 | Pancham | Pokémon (Fighting) | Common | Normal |
+| 66/131 | Binacle | Pokémon (Fighting) | Common | Normal |
+| 67/131 | Barbaracle | Pokémon (Fighting) | Rare | Normal |
+| 68/131 | Tyrunt | Pokémon (Fighting) | Uncommon | Normal |
+| 69/131 | Tyrantrum | Pokémon (Fighting) | Rare | Normal |
+| 70/131 | Hawlucha | Pokémon (Fighting) | Uncommon | Normal |
+| 71/131 | Zygarde | Pokémon (Fighting) | Uncommon | Normal |
+| 72/131 | Zygarde | Pokémon (Fighting) | Rare | Normal |
+| 73/131 | Zygarde GX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 74/131 | Diancie ◇ | Pokémon (Fighting) | Rare | Normal |
+| 75/131 | Rockruff | Pokémon (Fighting) | Common | Normal |
+| 76/131 | Lycanroc | Pokémon (Fighting) | Rare | Normal |
+| 77/131 | Buzzwole | Pokémon (Fighting) | Rare | Normal |
+| 78/131 | Pangoro | Pokémon (Darkness) | Rare | Normal |
+| 79/131 | Yveltal GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 80/131 | Guzzlord | Pokémon (Darkness) | Rare | Normal |
+| 81/131 | Empoleon | Pokémon (Metal) | Rare | Normal |
+| 82/131 | Dialga GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 83/131 | Flabébé | Pokémon (Fairy) | Common | Normal |
+| 84/131 | Flabébé | Pokémon (Fairy) | Common | Normal |
+| 85/131 | Floette | Pokémon (Fairy) | Uncommon | Normal |
+| 86/131 | Florges | Pokémon (Fairy) | Rare | Normal |
+| 87/131 | Sylveon | Pokémon (Fairy) | Rare | Normal |
+| 88/131 | Dedenne | Pokémon (Fairy) | Uncommon | Normal |
+| 89/131 | Klefki | Pokémon (Fairy) | Uncommon | Normal |
+| 90/131 | Xerneas GX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 91/131 | Goomy | Pokémon (Dragon) | Common | Normal |
+| 92/131 | Goomy | Pokémon (Dragon) | Common | Normal |
+| 93/131 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal |
+| 94/131 | Goodra | Pokémon (Dragon) | Rare | Normal |
+| 95/131 | Ultra Necrozma GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 96/131 | Arceus ◇ | Pokémon (Colorless) | Rare | Normal |
+| 97/131 | Bunnelby | Pokémon (Colorless) | Common | Normal |
+| 98/131 | Diggersby | Pokémon (Colorless) | Uncommon | Normal |
+| 99/131 | Furfrou | Pokémon (Colorless) | Common | Normal |
+| 100/131 | Noibat | Pokémon (Colorless) | Common | Normal |
+| 101/131 | Noivern | Pokémon (Colorless) | Rare | Normal |
+| 102/131 | Beast Ring | Trainer (Item) | Rare | Normal |
+| 103/131 | Bonnie | Trainer (Supporter) | Uncommon | Normal |
+| 104/131 | Crasher Wake | Trainer (Supporter) | Uncommon | Normal |
+| 105/131 | Diantha | Trainer (Supporter) | Rare | Normal |
+| 106/131 | Eneporter | Trainer (Item) | Uncommon | Normal |
+| 107/131 | Fossil Excavation Map | Trainer (Item) | Uncommon | Normal |
+| 108/131 | Judge | Trainer (Supporter) | Uncommon | Normal |
+| 109/131 | Lady | Trainer (Supporter) | Uncommon | Normal |
+| 110/131 | Lysandre ◇ | Trainer (Supporter) | Rare | Normal |
+| 111/131 | Lysandre Labs | Trainer (Stadium) | Uncommon | Normal |
+| 112/131 | Metal Frying Pan | Trainer (Tool) | Uncommon | Normal |
+| 113/131 | Mysterious Treasure | Trainer (Item) | Uncommon | Normal |
+| 114/131 | Ultra Recon Squad | Trainer (Supporter) | Uncommon | Normal |
+| 115/131 | Ultra Space | Trainer (Stadium) | Uncommon | Normal |
+| 116/131 | Unidentified Fossil | Trainer (Item) | Uncommon | Normal |
+| 117/131 | Beast Energy ◇ | Energy (Special) | Rare | Normal |
+| 118/131 | Unit Energy FightingDarknessFairy | Energy (Special) | Uncommon | Normal |
+| 119/131 | Palkia GX | Pokémon (Water) | Ultra Rare | Normal |
+| 120/131 | Greninja GX | Pokémon (Water) | Ultra Rare | Normal |
+| 121/131 | Naganadel GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 122/131 | Lucario GX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 123/131 | Zygarde GX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 124/131 | Yveltal GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 125/131 | Dialga GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 126/131 | Xerneas GX | Pokémon (Fairy) | Ultra Rare | Normal |
+| 127/131 | Ultra Necrozma GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 128/131 | Bonnie | Trainer (Supporter) | Ultra Rare | Normal |
+| 129/131 | Crasher Wake | Trainer (Supporter) | Ultra Rare | Normal |
+| 130/131 | Diantha | Trainer (Supporter) | Ultra Rare | Normal |
+| 131/131 | Ultra Recon Squad | Trainer (Supporter) | Ultra Rare | Normal |
+| 132/131 | Palkia GX | Pokémon (Water) | Secret Rare | Normal |
+| 133/131 | Greninja GX | Pokémon (Water) | Secret Rare | Normal |
+| 134/131 | Naganadel GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 135/131 | Lucario GX | Pokémon (Fighting) | Secret Rare | Normal |
+| 136/131 | Zygarde GX | Pokémon (Fighting) | Secret Rare | Normal |
+| 137/131 | Yveltal GX | Pokémon (Darkness) | Secret Rare | Normal |
+| 138/131 | Dialga GX | Pokémon (Metal) | Secret Rare | Normal |
+| 139/131 | Xerneas GX | Pokémon (Fairy) | Secret Rare | Normal |
+| 140/131 | Ultra Necrozma GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 141/131 | Beast Ring | Trainer (Item) | Secret Rare | Normal |
+| 142/131 | Eneporter | Trainer (Item) | Secret Rare | Normal |
+| 143/131 | Energy Recycler | Trainer (Item) | Secret Rare | Normal |
+| 144/131 | Metal Frying Pan | Trainer (Tool) | Secret Rare | Normal |
+| 145/131 | Mysterious Treasure | Trainer (Item) | Secret Rare | Normal |
+| 146/131 | Unit Energy FightingDarknessFairy | Energy (Special) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

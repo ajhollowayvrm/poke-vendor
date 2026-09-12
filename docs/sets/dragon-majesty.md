@@ -107,6 +107,95 @@ No booster boxes. Packs came only in set merchandise (Bulbapedia).
 
 Source: Bulbapedia merchandise page.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm7.5`), fetched 2026-09-12. The list has 78 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/70 | Charmander | Pokémon (Fire) | Common | Normal |
+| 2/70 | Charmeleon | Pokémon (Fire) | Uncommon | Normal |
+| 3/70 | Charizard | Pokémon (Fire) | Rare | Normal |
+| 4/70 | Torchic | Pokémon (Fire) | Common | Normal |
+| 5/70 | Combusken | Pokémon (Fire) | Uncommon | Normal |
+| 6/70 | Blaziken | Pokémon (Fire) | Rare | Normal |
+| 7/70 | Victini ◇ | Pokémon (Fire) | Rare | Normal |
+| 8/70 | Darumaka | Pokémon (Fire) | Common | Normal |
+| 9/70 | Darmanitan | Pokémon (Fire) | Uncommon | Normal |
+| 10/70 | Heatmor | Pokémon (Fire) | Uncommon | Normal |
+| 11/70 | Reshiram GX | Pokémon (Fire) | Ultra Rare | Normal |
+| 12/70 | Litten | Pokémon (Fire) | Common | Normal |
+| 13/70 | Salandit | Pokémon (Fire) | Common | Normal |
+| 14/70 | Salazzle | Pokémon (Fire) | Uncommon | Normal |
+| 15/70 | Horsea | Pokémon (Water) | Common | Normal |
+| 16/70 | Horsea | Pokémon (Water) | Common | Normal |
+| 17/70 | Seadra | Pokémon (Water) | Uncommon | Normal |
+| 18/70 | Kingdra GX | Pokémon (Water) | Ultra Rare | Normal |
+| 19/70 | Magikarp | Pokémon (Water) | Common | Normal |
+| 20/70 | Gyarados | Pokémon (Water) | Rare | Normal |
+| 21/70 | Lapras | Pokémon (Water) | Uncommon | Normal |
+| 22/70 | Totodile | Pokémon (Water) | Common | Normal |
+| 23/70 | Croconaw | Pokémon (Water) | Uncommon | Normal |
+| 24/70 | Feraligatr | Pokémon (Water) | Rare | Normal |
+| 25/70 | Wooper | Pokémon (Water) | Common | Normal |
+| 26/70 | Quagsire | Pokémon (Water) | Uncommon | Normal |
+| 27/70 | Corsola | Pokémon (Water) | Common | Normal |
+| 28/70 | Feebas | Pokémon (Water) | Common | Normal |
+| 29/70 | Milotic | Pokémon (Water) | Uncommon | Normal |
+| 30/70 | Phione | Pokémon (Water) | Uncommon | Normal |
+| 31/70 | Wishiwashi | Pokémon (Water) | Common | Normal |
+| 32/70 | Trapinch | Pokémon (Fighting) | Common | Normal |
+| 33/70 | Hydreigon | Pokémon (Darkness) | Rare | Normal |
+| 34/70 | Dratini | Pokémon (Dragon) | Common | Normal |
+| 35/70 | Dratini | Pokémon (Dragon) | Common | Normal |
+| 36/70 | Dragonair | Pokémon (Dragon) | Uncommon | Normal |
+| 37/70 | Dragonite GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 38/70 | Vibrava | Pokémon (Dragon) | Common | Normal |
+| 39/70 | Flygon | Pokémon (Dragon) | Uncommon | Normal |
+| 40/70 | Altaria | Pokémon (Dragon) | Rare | Normal |
+| 41/70 | Altaria GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 42/70 | Bagon | Pokémon (Dragon) | Common | Normal |
+| 43/70 | Shelgon | Pokémon (Dragon) | Uncommon | Normal |
+| 44/70 | Salamence GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 45/70 | Druddigon | Pokémon (Dragon) | Uncommon | Normal |
+| 46/70 | Zekrom | Pokémon (Dragon) | Rare | Normal |
+| 47/70 | Kyurem | Pokémon (Dragon) | Rare | Normal |
+| 48/70 | White Kyurem GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 49/70 | Zygarde | Pokémon (Dragon) | Uncommon | Normal |
+| 50/70 | Turtonator | Pokémon (Dragon) | Uncommon | Normal |
+| 51/70 | Drampa | Pokémon (Dragon) | Uncommon | Normal |
+| 52/70 | Jangmo-o | Pokémon (Dragon) | Common | Normal |
+| 53/70 | Hakamo-o | Pokémon (Dragon) | Common | Normal |
+| 54/70 | Kommo-o | Pokémon (Dragon) | Rare | Normal |
+| 55/70 | Kangaskhan | Pokémon (Colorless) | Common | Normal |
+| 56/70 | Swablu | Pokémon (Colorless) | Common | Normal |
+| 57/70 | Swablu | Pokémon (Colorless) | Common | Normal |
+| 58/70 | Blaine’s Last Stand | Trainer (Supporter) | Rare | Normal |
+| 59/70 | Dragon Talon | Trainer (Tool) | Uncommon | Normal |
+| 60/70 | Fiery Flint | Trainer (Item) | Uncommon | Normal |
+| 61/70 | Lance ◇ | Trainer (Supporter) | Rare | Normal |
+| 62/70 | Switch Raft | Trainer (Item) | Uncommon | Normal |
+| 63/70 | Wela Volcano Park | Trainer (Stadium) | Uncommon | Normal |
+| 64/70 | Zinnia | Trainer (Supporter) | Uncommon | Normal |
+| 65/70 | Reshiram GX | Pokémon (Fire) | Ultra Rare | Normal |
+| 66/70 | Kingdra GX | Pokémon (Water) | Ultra Rare | Normal |
+| 67/70 | Dragonite GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 68/70 | Altaria GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 69/70 | Blaine’s Last Stand | Trainer (Supporter) | Ultra Rare | Normal |
+| 70/70 | Zinnia | Trainer (Supporter) | Ultra Rare | Normal |
+| 71/70 | Reshiram GX | Pokémon (Fire) | Secret Rare | Normal |
+| 72/70 | Altaria GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 73/70 | Salamence GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 74/70 | White Kyurem GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 75/70 | Dragon Talon | Trainer (Tool) | Secret Rare | Normal |
+| 76/70 | Fiery Flint | Trainer (Item) | Secret Rare | Normal |
+| 77/70 | Switch Raft | Trainer (Item) | Secret Rare | Normal |
+| 78/70 | Ultra Necrozma GX | Pokémon (Dragon) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

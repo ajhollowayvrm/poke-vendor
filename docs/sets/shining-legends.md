@@ -99,6 +99,95 @@ No booster boxes. Packs came only in set merchandise (Bulbapedia).
 
 Source: Bulbapedia merchandise page.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), fetched 2026-09-12. The list has 78 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/73 | Bulbasaur | Pokémon (Grass) | Common | Normal |
+| 2/73 | Ivysaur | Pokémon (Grass) | Common | Normal |
+| 3/73 | Venusaur | Pokémon (Grass) | Uncommon | Normal |
+| 4/73 | Shroomish | Pokémon (Grass) | Common | Normal |
+| 5/73 | Breloom | Pokémon (Grass) | Common | Normal |
+| 6/73 | Carnivine | Pokémon (Grass) | Uncommon | Normal |
+| 7/73 | Shaymin | Pokémon (Grass) | Rare | Normal |
+| 8/73 | Virizion | Pokémon (Grass) | Rare | Normal |
+| 9/73 | Shining Genesect | Pokémon (Grass) | Ultra Rare | Normal |
+| 10/73 | Entei GX | Pokémon (Fire) | Rare | Normal |
+| 11/73 | Torkoal | Pokémon (Fire) | Common | Normal |
+| 12/73 | Larvesta | Pokémon (Fire) | Common | Normal |
+| 13/73 | Volcarona | Pokémon (Fire) | Uncommon | Normal |
+| 14/73 | Reshiram | Pokémon (Fire) | Rare | Normal |
+| 15/73 | Litten | Pokémon (Fire) | Common | Normal |
+| 16/73 | Torracat | Pokémon (Fire) | Common | Normal |
+| 17/73 | Incineroar | Pokémon (Fire) | Uncommon | Normal |
+| 18/73 | Totodile | Pokémon (Water) | Common | Normal |
+| 19/73 | Croconaw | Pokémon (Water) | Common | Normal |
+| 20/73 | Feraligatr | Pokémon (Water) | Uncommon | Normal |
+| 21/73 | Qwilfish | Pokémon (Water) | Common | Normal |
+| 22/73 | Buizel | Pokémon (Water) | Common | Normal |
+| 23/73 | Floatzel | Pokémon (Water) | Uncommon | Normal |
+| 24/73 | Palkia | Pokémon (Water) | Rare | Normal |
+| 25/73 | Manaphy | Pokémon (Water) | Rare | Normal |
+| 26/73 | Keldeo | Pokémon (Water) | Rare | Normal |
+| 27/73 | Shining Volcanion | Pokémon (Water) | Ultra Rare | Normal |
+| 28/73 | Pikachu | Pokémon (Lightning) | Common | Normal |
+| 29/73 | Raichu GX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 30/73 | Voltorb | Pokémon (Lightning) | Common | Normal |
+| 31/73 | Electrode | Pokémon (Lightning) | Uncommon | Normal |
+| 32/73 | Raikou | Pokémon (Lightning) | Rare | Normal |
+| 33/73 | Plusle | Pokémon (Lightning) | Common | Normal |
+| 34/73 | Minun | Pokémon (Lightning) | Common | Normal |
+| 35/73 | Zekrom | Pokémon (Lightning) | Rare | Normal |
+| 36/73 | Ekans | Pokémon (Psychic) | Common | Normal |
+| 37/73 | Arbok | Pokémon (Psychic) | Uncommon | Normal |
+| 38/73 | Jynx | Pokémon (Psychic) | Common | Normal |
+| 39/73 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 40/73 | Shining Mew | Pokémon (Psychic) | Ultra Rare | Normal |
+| 41/73 | Latios | Pokémon (Psychic) | Rare | Normal |
+| 42/73 | Shining Jirachi | Pokémon (Psychic) | Ultra Rare | Normal |
+| 43/73 | Golett | Pokémon (Psychic) | Common | Normal |
+| 44/73 | Golurk | Pokémon (Psychic) | Uncommon | Normal |
+| 45/73 | Marshadow | Pokémon (Psychic) | Rare | Normal |
+| 46/73 | Stunfisk | Pokémon (Fighting) | Common | Normal |
+| 47/73 | Spiritomb | Pokémon (Darkness) | Uncommon | Normal |
+| 48/73 | Purrloin | Pokémon (Darkness) | Common | Normal |
+| 49/73 | Liepard | Pokémon (Darkness) | Uncommon | Normal |
+| 50/73 | Scraggy | Pokémon (Darkness) | Common | Normal |
+| 51/73 | Scrafty | Pokémon (Darkness) | Uncommon | Normal |
+| 52/73 | Zorua | Pokémon (Darkness) | Common | Normal |
+| 53/73 | Zoroark GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 54/73 | Yveltal | Pokémon (Darkness) | Rare | Normal |
+| 55/73 | Hoopa | Pokémon (Darkness) | Rare | Normal |
+| 56/73 | Shining Rayquaza | Pokémon (Dragon) | Ultra Rare | Normal |
+| 57/73 | Shining Arceus | Pokémon (Colorless) | Ultra Rare | Normal |
+| 58/73 | Damage Mover | Trainer (Item) | Uncommon | Normal |
+| 59/73 | Energy Retrieval | Trainer (Item) | Uncommon | Normal |
+| 60/73 | Great Ball | Trainer (Item) | Uncommon | Normal |
+| 61/73 | Hau | Trainer (Supporter) | Uncommon | Normal |
+| 62/73 | Lillie | Trainer (Supporter) | Uncommon | Normal |
+| 63/73 | Pokémon Breeder | Trainer (Supporter) | Uncommon | Normal |
+| 64/73 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal |
+| 65/73 | Sophocles | Trainer (Supporter) | Uncommon | Normal |
+| 66/73 | Super Scoop Up | Trainer (Item) | Uncommon | Normal |
+| 67/73 | Switch | Trainer (Item) | Uncommon | Normal |
+| 68/73 | Ultra Ball | Trainer (Item) | Uncommon | Normal |
+| 69/73 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
+| 70/73 | Warp Energy | Energy (Special) | Uncommon | Normal |
+| 71/73 | Entei GX | Pokémon (Fire) | Ultra Rare | Normal |
+| 72/73 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 73/73 | Pokémon Breeder | Trainer (Supporter) | Ultra Rare | Normal |
+| 74/73 | Entei GX | Pokémon (Fire) | Secret Rare | Normal |
+| 75/73 | Raichu GX | Pokémon (Lightning) | Secret Rare | Normal |
+| 76/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 77/73 | Zoroark GX | Pokémon (Darkness) | Secret Rare | Normal |
+| 78/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

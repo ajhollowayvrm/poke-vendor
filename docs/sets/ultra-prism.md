@@ -94,6 +94,190 @@ full art Trainers fill the other 49 slots.
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm5`), fetched 2026-09-12. The list has 173 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/156 | Exeggcute | Pokémon (Grass) | Common | Normal |
+| 2/156 | Yanma | Pokémon (Grass) | Common | Normal |
+| 3/156 | Yanmega | Pokémon (Grass) | Uncommon | Normal |
+| 4/156 | Roselia | Pokémon (Grass) | Common | Normal |
+| 5/156 | Roserade | Pokémon (Grass) | Rare | Normal |
+| 6/156 | Turtwig | Pokémon (Grass) | Common | Normal |
+| 7/156 | Turtwig | Pokémon (Grass) | Common | Normal |
+| 8/156 | Grotle | Pokémon (Grass) | Uncommon | Normal |
+| 9/156 | Torterra | Pokémon (Grass) | Rare | Normal |
+| 10/156 | Cherubi | Pokémon (Grass) | Common | Normal |
+| 11/156 | Cherrim | Pokémon (Grass) | Uncommon | Normal |
+| 12/156 | Carnivine | Pokémon (Grass) | Common | Normal |
+| 13/156 | Leafeon GX | Pokémon (Grass) | Ultra Rare | Normal |
+| 14/156 | Mow Rotom | Pokémon (Grass) | Rare | Normal |
+| 15/156 | Shaymin | Pokémon (Grass) | Rare | Normal |
+| 16/156 | Dewpider | Pokémon (Grass) | Common | Normal |
+| 17/156 | Araquanid | Pokémon (Grass) | Rare | Normal |
+| 18/156 | Magmar | Pokémon (Fire) | Common | Normal |
+| 19/156 | Magmortar | Pokémon (Fire) | Rare | Normal |
+| 20/156 | Chimchar | Pokémon (Fire) | Common | Normal |
+| 21/156 | Chimchar | Pokémon (Fire) | Common | Normal |
+| 22/156 | Monferno | Pokémon (Fire) | Uncommon | Normal |
+| 23/156 | Infernape | Pokémon (Fire) | Rare | Normal |
+| 24/156 | Heat Rotom | Pokémon (Fire) | Rare | Normal |
+| 25/156 | Salandit | Pokémon (Fire) | Common | Normal |
+| 26/156 | Salazzle | Pokémon (Fire) | Rare | Normal |
+| 27/156 | Turtonator | Pokémon (Fire) | Uncommon | Normal |
+| 28/156 | Alolan Sandshrew | Pokémon (Water) | Common | Normal |
+| 29/156 | Alolan Sandslash | Pokémon (Water) | Rare | Normal |
+| 30/156 | Alolan Vulpix | Pokémon (Water) | Common | Normal |
+| 31/156 | Piplup | Pokémon (Water) | Common | Normal |
+| 32/156 | Piplup | Pokémon (Water) | Common | Normal |
+| 33/156 | Prinplup | Pokémon (Water) | Uncommon | Normal |
+| 34/156 | Empoleon | Pokémon (Water) | Rare | Normal |
+| 35/156 | Buizel | Pokémon (Water) | Common | Normal |
+| 36/156 | Floatzel | Pokémon (Water) | Uncommon | Normal |
+| 37/156 | Snover | Pokémon (Water) | Common | Normal |
+| 38/156 | Abomasnow | Pokémon (Water) | Rare | Normal |
+| 39/156 | Glaceon GX | Pokémon (Water) | Ultra Rare | Normal |
+| 40/156 | Wash Rotom | Pokémon (Water) | Rare | Normal |
+| 41/156 | Frost Rotom | Pokémon (Water) | Rare | Normal |
+| 42/156 | Manaphy | Pokémon (Water) | Uncommon | Normal |
+| 43/156 | Electabuzz | Pokémon (Lightning) | Common | Normal |
+| 44/156 | Electivire | Pokémon (Lightning) | Rare | Normal |
+| 45/156 | Shinx | Pokémon (Lightning) | Common | Normal |
+| 46/156 | Shinx | Pokémon (Lightning) | Common | Normal |
+| 47/156 | Luxio | Pokémon (Lightning) | Uncommon | Normal |
+| 48/156 | Luxray | Pokémon (Lightning) | Rare | Normal |
+| 49/156 | Pachirisu | Pokémon (Lightning) | Common | Normal |
+| 50/156 | Rotom | Pokémon (Lightning) | Uncommon | Normal |
+| 51/156 | Drifloon | Pokémon (Psychic) | Common | Normal |
+| 52/156 | Drifblim | Pokémon (Psychic) | Uncommon | Normal |
+| 53/156 | Spiritomb | Pokémon (Psychic) | Uncommon | Normal |
+| 54/156 | Skorupi | Pokémon (Psychic) | Common | Normal |
+| 55/156 | Drapion | Pokémon (Psychic) | Rare | Normal |
+| 56/156 | Croagunk | Pokémon (Psychic) | Common | Normal |
+| 57/156 | Toxicroak | Pokémon (Psychic) | Rare | Normal |
+| 58/156 | Giratina ◇ | Pokémon (Psychic) | Rare | Normal |
+| 59/156 | Cresselia | Pokémon (Psychic) | Rare | Normal |
+| 60/156 | Cosmog | Pokémon (Psychic) | Common | Normal |
+| 61/156 | Cosmoem | Pokémon (Psychic) | Uncommon | Normal |
+| 62/156 | Lunala ◇ | Pokémon (Psychic) | Rare | Normal |
+| 63/156 | Dawn Wings Necrozma GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 64/156 | Cranidos | Pokémon (Fighting) | Uncommon | Normal |
+| 65/156 | Rampardos | Pokémon (Fighting) | Rare | Normal |
+| 66/156 | Riolu | Pokémon (Fighting) | Common | Normal |
+| 67/156 | Lucario | Pokémon (Fighting) | Rare | Normal |
+| 68/156 | Hippopotas | Pokémon (Fighting) | Common | Normal |
+| 69/156 | Hippowdon | Pokémon (Fighting) | Rare | Normal |
+| 70/156 | Passimian | Pokémon (Fighting) | Common | Normal |
+| 71/156 | Murkrow | Pokémon (Darkness) | Common | Normal |
+| 72/156 | Honchkrow | Pokémon (Darkness) | Uncommon | Normal |
+| 73/156 | Sneasel | Pokémon (Darkness) | Common | Normal |
+| 74/156 | Weavile | Pokémon (Darkness) | Rare | Normal |
+| 75/156 | Stunky | Pokémon (Darkness) | Common | Normal |
+| 76/156 | Skuntank | Pokémon (Darkness) | Uncommon | Normal |
+| 77/156 | Darkrai ◇ | Pokémon (Darkness) | Rare | Normal |
+| 78/156 | Alolan Diglett | Pokémon (Metal) | Common | Normal |
+| 79/156 | Alolan Dugtrio | Pokémon (Metal) | Uncommon | Normal |
+| 80/156 | Magnemite | Pokémon (Metal) | Common | Normal |
+| 81/156 | Magnemite | Pokémon (Metal) | Common | Normal |
+| 82/156 | Magneton | Pokémon (Metal) | Uncommon | Normal |
+| 83/156 | Magnezone | Pokémon (Metal) | Rare | Normal |
+| 84/156 | Shieldon | Pokémon (Metal) | Uncommon | Normal |
+| 85/156 | Bastiodon | Pokémon (Metal) | Rare | Normal |
+| 86/156 | Bronzor | Pokémon (Metal) | Common | Normal |
+| 87/156 | Bronzong | Pokémon (Metal) | Uncommon | Normal |
+| 88/156 | Heatran | Pokémon (Metal) | Rare | Normal |
+| 89/156 | Solgaleo ◇ | Pokémon (Metal) | Rare | Normal |
+| 90/156 | Dusk Mane Necrozma GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 91/156 | Magearna | Pokémon (Metal) | Rare | Normal |
+| 92/156 | Morelull | Pokémon (Fairy) | Common | Normal |
+| 93/156 | Shiinotic | Pokémon (Fairy) | Rare | Normal |
+| 94/156 | Tapu Lele | Pokémon (Fairy) | Rare | Normal |
+| 95/156 | Alolan Exeggutor | Pokémon (Dragon) | Rare | Normal |
+| 96/156 | Gible | Pokémon (Dragon) | Common | Normal |
+| 97/156 | Gible | Pokémon (Dragon) | Common | Normal |
+| 98/156 | Gabite | Pokémon (Dragon) | Uncommon | Normal |
+| 99/156 | Garchomp | Pokémon (Dragon) | Rare | Normal |
+| 100/156 | Dialga GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 101/156 | Palkia GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 102/156 | Lickitung | Pokémon (Colorless) | Common | Normal |
+| 103/156 | Lickilicky | Pokémon (Colorless) | Rare | Normal |
+| 104/156 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 105/156 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 106/156 | Buneary | Pokémon (Colorless) | Common | Normal |
+| 107/156 | Lopunny | Pokémon (Colorless) | Uncommon | Normal |
+| 108/156 | Glameow | Pokémon (Colorless) | Common | Normal |
+| 109/156 | Purugly | Pokémon (Colorless) | Uncommon | Normal |
+| 110/156 | Fan Rotom | Pokémon (Colorless) | Rare | Normal |
+| 111/156 | Shaymin | Pokémon (Colorless) | Rare | Normal |
+| 112/156 | Yungoos | Pokémon (Colorless) | Common | Normal |
+| 113/156 | Gumshoos | Pokémon (Colorless) | Uncommon | Normal |
+| 114/156 | Oranguru | Pokémon (Colorless) | Uncommon | Normal |
+| 115/156 | Type: Null | Pokémon (Colorless) | Rare | Normal |
+| 116/156 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 117/156 | Drampa | Pokémon (Colorless) | Rare | Normal |
+| 118/156 | Ancient Crystal | Trainer (Tool) | Uncommon | Normal |
+| 119/156 | Cynthia | Trainer (Supporter) | Uncommon | Normal |
+| 120/156 | Cyrus ◇ | Trainer (Supporter) | Rare | Normal |
+| 121/156 | Electric Memory | Trainer (Tool) | Uncommon | Normal |
+| 122/156 | Escape Board | Trainer (Tool) | Uncommon | Normal |
+| 123/156 | Fire Memory | Trainer (Tool) | Uncommon | Normal |
+| 124/156 | Gardenia | Trainer (Supporter) | Uncommon | Normal |
+| 125/156 | Lillie | Trainer (Supporter) | Uncommon | Normal |
+| 126/156 | Looker | Trainer (Supporter) | Uncommon | Normal |
+| 127/156 | Looker Whistle | Trainer (Item) | Uncommon | Normal |
+| 128/156 | Mars | Trainer (Supporter) | Uncommon | Normal |
+| 129/156 | Missing Clover | Trainer (Item) | Uncommon | Normal |
+| 130/156 | Mt. Coronet | Trainer (Stadium) | Uncommon | Normal |
+| 131/156 | Order Pad | Trainer (Item) | Uncommon | Normal |
+| 132/156 | Pal Pad | Trainer (Item) | Uncommon | Normal |
+| 133/156 | Pokémon Fan Club | Trainer (Supporter) | Uncommon | Normal |
+| 134/156 | Unidentified Fossil | Trainer (Item) | Uncommon | Normal |
+| 135/156 | Volkner | Trainer (Supporter) | Uncommon | Normal |
+| 136/156 | Super Boost Energy ◇ | Energy (Special) | Rare | Normal |
+| 137/156 | Unit Energy GrassFireWater | Energy (Special) | Uncommon | Normal |
+| 138/156 | Unit Energy LightningPsychicMetal | Energy (Special) | Uncommon | Normal |
+| 139/156 | Leafeon GX | Pokémon (Grass) | Ultra Rare | Normal |
+| 140/156 | Pheromosa GX | Pokémon (Grass) | Ultra Rare | Normal |
+| 141/156 | Glaceon GX | Pokémon (Water) | Ultra Rare | Normal |
+| 142/156 | Xurkitree GX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 143/156 | Dawn Wings Necrozma GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 144/156 | Celesteela GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 145/156 | Dusk Mane Necrozma GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 146/156 | Dialga GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 147/156 | Palkia GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 148/156 | Cynthia | Trainer (Supporter) | Ultra Rare | Normal |
+| 149/156 | Gardenia | Trainer (Supporter) | Ultra Rare | Normal |
+| 150/156 | Lana | Trainer (Supporter) | Ultra Rare | Normal |
+| 151/156 | Lillie | Trainer (Supporter) | Ultra Rare | Normal |
+| 152/156 | Looker | Trainer (Supporter) | Ultra Rare | Normal |
+| 153/156 | Lusamine | Trainer (Supporter) | Ultra Rare | Normal |
+| 154/156 | Mars | Trainer (Supporter) | Ultra Rare | Normal |
+| 155/156 | Pokémon Fan Club | Trainer (Supporter) | Ultra Rare | Normal |
+| 156/156 | Volkner | Trainer (Supporter) | Ultra Rare | Normal |
+| 157/156 | Leafeon GX | Pokémon (Grass) | Secret Rare | Normal |
+| 158/156 | Pheromosa GX | Pokémon (Grass) | Secret Rare | Normal |
+| 159/156 | Glaceon GX | Pokémon (Water) | Secret Rare | Normal |
+| 160/156 | Xurkitree GX | Pokémon (Lightning) | Secret Rare | Normal |
+| 161/156 | Dawn Wings Necrozma GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 162/156 | Celesteela GX | Pokémon (Metal) | Secret Rare | Normal |
+| 163/156 | Dusk Mane Necrozma GX | Pokémon (Metal) | Secret Rare | Normal |
+| 164/156 | Dialga GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 165/156 | Palkia GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 166/156 | Crushing Hammer | Trainer (Item) | Secret Rare | Normal |
+| 167/156 | Escape Board | Trainer (Tool) | Secret Rare | Normal |
+| 168/156 | Missing Clover | Trainer (Item) | Secret Rare | Normal |
+| 169/156 | Peeking Red Card | Trainer (Item) | Secret Rare | Normal |
+| 170/156 | Unit Energy GrassFireWater | Energy (Special) | Secret Rare | Normal |
+| 171/156 | Unit Energy LightningPsychicMetal | Energy (Special) | Secret Rare | Normal |
+| 172/156 | Lunala GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 173/156 | Solgaleo GX | Pokémon (Metal) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

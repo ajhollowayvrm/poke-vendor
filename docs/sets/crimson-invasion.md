@@ -85,6 +85,142 @@ secret rares per box.
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fetched 2026-09-12. The list has 125 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/111 | Weedle | Pokémon (Grass) | Common | Normal |
+| 2/111 | Kakuna | Pokémon (Grass) | Uncommon | Normal |
+| 3/111 | Beedrill | Pokémon (Grass) | Rare | Normal |
+| 4/111 | Exeggcute | Pokémon (Grass) | Common | Normal |
+| 5/111 | Cacnea | Pokémon (Grass) | Common | Normal |
+| 6/111 | Cacturne | Pokémon (Grass) | Rare | Normal |
+| 7/111 | Karrablast | Pokémon (Grass) | Common | Normal |
+| 8/111 | Shelmet | Pokémon (Grass) | Common | Normal |
+| 9/111 | Accelgor | Pokémon (Grass) | Uncommon | Normal |
+| 10/111 | Skiddo | Pokémon (Grass) | Common | Normal |
+| 11/111 | Gogoat | Pokémon (Grass) | Rare | Normal |
+| 12/111 | Alolan Marowak | Pokémon (Fire) | Rare | Normal |
+| 13/111 | Numel | Pokémon (Fire) | Common | Normal |
+| 14/111 | Camerupt | Pokémon (Fire) | Rare | Normal |
+| 15/111 | Staryu | Pokémon (Water) | Common | Normal |
+| 16/111 | Starmie | Pokémon (Water) | Rare | Normal |
+| 17/111 | Magikarp | Pokémon (Water) | Common | Normal |
+| 18/111 | Gyarados GX | Pokémon (Water) | Ultra Rare | Normal |
+| 19/111 | Swinub | Pokémon (Water) | Common | Normal |
+| 20/111 | Piloswine | Pokémon (Water) | Uncommon | Normal |
+| 21/111 | Mamoswine | Pokémon (Water) | Rare | Normal |
+| 22/111 | Remoraid | Pokémon (Water) | Common | Normal |
+| 23/111 | Octillery | Pokémon (Water) | Rare | Normal |
+| 24/111 | Corphish | Pokémon (Water) | Common | Normal |
+| 25/111 | Crawdaunt | Pokémon (Water) | Rare | Normal |
+| 26/111 | Feebas | Pokémon (Water) | Common | Normal |
+| 27/111 | Milotic | Pokémon (Water) | Rare | Normal |
+| 28/111 | Regice | Pokémon (Water) | Rare | Normal |
+| 29/111 | Shellos | Pokémon (Water) | Common | Normal |
+| 30/111 | Pikachu | Pokémon (Lightning) | Common | Normal |
+| 31/111 | Alolan Raichu | Pokémon (Lightning) | Rare | Normal |
+| 32/111 | Alolan Geodude | Pokémon (Lightning) | Common | Normal |
+| 33/111 | Alolan Graveler | Pokémon (Lightning) | Uncommon | Normal |
+| 34/111 | Alolan Golem GX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 35/111 | Emolga | Pokémon (Lightning) | Uncommon | Normal |
+| 36/111 | Gastly | Pokémon (Psychic) | Common | Normal |
+| 37/111 | Haunter | Pokémon (Psychic) | Uncommon | Normal |
+| 38/111 | Gengar | Pokémon (Psychic) | Rare | Normal |
+| 39/111 | Misdreavus | Pokémon (Psychic) | Common | Normal |
+| 40/111 | Mismagius | Pokémon (Psychic) | Rare | Normal |
+| 41/111 | Spoink | Pokémon (Psychic) | Common | Normal |
+| 42/111 | Grumpig | Pokémon (Psychic) | Uncommon | Normal |
+| 43/111 | Chimecho | Pokémon (Psychic) | Common | Normal |
+| 44/111 | Pumpkaboo | Pokémon (Psychic) | Common | Normal |
+| 45/111 | Gourgeist | Pokémon (Psychic) | Rare | Normal |
+| 46/111 | Salandit | Pokémon (Psychic) | Common | Normal |
+| 47/111 | Salazzle | Pokémon (Psychic) | Rare | Normal |
+| 48/111 | Oranguru | Pokémon (Psychic) | Rare | Normal |
+| 49/111 | Nihilego GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 50/111 | Mankey | Pokémon (Fighting) | Common | Normal |
+| 51/111 | Primeape | Pokémon (Fighting) | Rare | Normal |
+| 52/111 | Cubone | Pokémon (Fighting) | Common | Normal |
+| 53/111 | Regirock | Pokémon (Fighting) | Rare | Normal |
+| 54/111 | Gastrodon | Pokémon (Fighting) | Uncommon | Normal |
+| 55/111 | Stufful | Pokémon (Fighting) | Common | Normal |
+| 56/111 | Bewear | Pokémon (Fighting) | Rare | Normal |
+| 57/111 | Buzzwole GX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 58/111 | Houndour | Pokémon (Darkness) | Common | Normal |
+| 59/111 | Houndoom | Pokémon (Darkness) | Rare | Normal |
+| 60/111 | Deino | Pokémon (Darkness) | Common | Normal |
+| 61/111 | Zweilous | Pokémon (Darkness) | Uncommon | Normal |
+| 62/111 | Hydreigon | Pokémon (Darkness) | Rare | Normal |
+| 63/111 | Guzzlord GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 63a | Guzzlord-GX | Pokémon (Darkness) | Rare | Normal |
+| 64/111 | Mawile | Pokémon (Metal) | Uncommon | Normal |
+| 65/111 | Aron | Pokémon (Metal) | Common | Normal |
+| 66/111 | Lairon | Pokémon (Metal) | Uncommon | Normal |
+| 67/111 | Aggron | Pokémon (Metal) | Rare | Normal |
+| 68/111 | Registeel | Pokémon (Metal) | Rare | Normal |
+| 69/111 | Escavalier | Pokémon (Metal) | Rare | Normal |
+| 70/111 | Kartana GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 71/111 | Jigglypuff | Pokémon (Fairy) | Common | Normal |
+| 72/111 | Wigglytuff | Pokémon (Fairy) | Rare | Normal |
+| 73/111 | Xerneas | Pokémon (Fairy) | Rare | Normal |
+| 74/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 75/111 | Jangmo-o | Pokémon (Dragon) | Common | Normal |
+| 76/111 | Hakamo-o | Pokémon (Dragon) | Uncommon | Normal |
+| 77/111 | Kommo-o | Pokémon (Dragon) | Rare | Normal |
+| 78/111 | Miltank | Pokémon (Colorless) | Uncommon | Normal |
+| 79/111 | Swablu | Pokémon (Colorless) | Common | Normal |
+| 80/111 | Altaria | Pokémon (Colorless) | Rare | Normal |
+| 81/111 | Starly | Pokémon (Colorless) | Common | Normal |
+| 82/111 | Staravia | Pokémon (Colorless) | Uncommon | Normal |
+| 83/111 | Staraptor | Pokémon (Colorless) | Rare | Normal |
+| 84/111 | Regigigas | Pokémon (Colorless) | Rare | Normal |
+| 85/111 | Minccino | Pokémon (Colorless) | Common | Normal |
+| 86/111 | Cinccino | Pokémon (Colorless) | Uncommon | Normal |
+| 87/111 | Bunnelby | Pokémon (Colorless) | Common | Normal |
+| 88/111 | Diggersby | Pokémon (Colorless) | Uncommon | Normal |
+| 89/111 | Type: Null | Pokémon (Colorless) | Rare | Normal |
+| 90/111 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 91/111 | Counter Catcher | Trainer (Item) | Uncommon | Normal |
+| 92/111 | Dashing Pouch | Trainer (Tool) | Uncommon | Normal |
+| 93/111 | Devoured Field | Trainer (Stadium) | Uncommon | Normal |
+| 94/111 | Fighting Memory | Trainer (Tool) | Uncommon | Normal |
+| 95/111 | Gladion | Trainer (Supporter) | Uncommon | Normal |
+| 96/111 | Lusamine | Trainer (Supporter) | Uncommon | Normal |
+| 97/111 | Peeking Red Card | Trainer (Item) | Uncommon | Normal |
+| 98/111 | Psychic Memory | Trainer (Tool) | Uncommon | Normal |
+| 99/111 | Sea of Nothingness | Trainer (Stadium) | Uncommon | Normal |
+| 100/111 | Counter Energy | Energy (Special) | Uncommon | Normal |
+| 101/111 | Gyarados GX | Pokémon (Water) | Ultra Rare | Normal |
+| 102/111 | Alolan Golem GX | Pokémon (Lightning) | Ultra Rare | Normal |
+| 103/111 | Nihilego GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 104/111 | Buzzwole GX | Pokémon (Fighting) | Ultra Rare | Normal |
+| 105/111 | Guzzlord GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 106/111 | Kartana GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 107/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Ultra Rare | Normal |
+| 108/111 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 109/111 | Gladion | Trainer (Supporter) | Ultra Rare | Normal |
+| 110/111 | Lusamine | Trainer (Supporter) | Ultra Rare | Normal |
+| 111/111 | Olivia | Trainer (Supporter) | Ultra Rare | Normal |
+| 112/111 | Gyarados GX | Pokémon (Water) | Secret Rare | Normal |
+| 113/111 | Alolan Golem GX | Pokémon (Lightning) | Secret Rare | Normal |
+| 114/111 | Nihilego GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 115/111 | Buzzwole GX | Pokémon (Fighting) | Secret Rare | Normal |
+| 116/111 | Guzzlord GX | Pokémon (Darkness) | Secret Rare | Normal |
+| 117/111 | Kartana GX | Pokémon (Metal) | Secret Rare | Normal |
+| 118/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Secret Rare | Normal |
+| 119/111 | Silvally GX | Pokémon (Colorless) | Secret Rare | Normal |
+| 120/111 | Counter Catcher | Trainer (Item) | Secret Rare | Normal |
+| 121/111 | Wishful Baton | Trainer (Tool) | Secret Rare | Normal |
+| 122/111 | Counter Energy | Energy (Special) | Secret Rare | Normal |
+| 123/111 | Warp Energy | Energy (Special) | Secret Rare | Normal |
+| 124/111 | Water Energy | Energy (Normal) | Secret Rare | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

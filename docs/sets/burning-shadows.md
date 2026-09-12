@@ -85,6 +85,186 @@ of the 22 secret rares prints 3 times on the shared sheet.
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm3`), fetched 2026-09-12. The list has 169 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/147 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 2/147 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 3/147 | Butterfree | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 4/147 | Oddish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 5/147 | Gloom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 6/147 | Vileplume | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 7/147 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 8/147 | Tangrowth | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 9/147 | Ledyba | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 10/147 | Ledian | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 11/147 | Heracross | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 12/147 | Pansage | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 13/147 | Simisage | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 14/147 | Dewpider | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 15/147 | Araquanid | Pokémon (Grass) | Rare | Normal, Reverse holo |
+| 16/147 | Wimpod | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 17/147 | Golisopod GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 18/147 | Charmander | Pokémon (Fire) | Common | Normal, Holo, Reverse holo |
+| 19/147 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Holo, Reverse holo |
+| 20/147 | Charizard GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 21/147 | Ho-Oh GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 22/147 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 23/147 | Simisear | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 24/147 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 25/147 | Salazzle GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 26/147 | Turtonator | Pokémon (Fire) | Rare | Normal, Reverse holo |
+| 27/147 | Alolan Vulpix | Pokémon (Water) | Common | Normal, Reverse holo |
+| 28/147 | Alolan Ninetales | Pokémon (Water) | Rare | Normal, Holo (Cracked ice), Reverse holo |
+| 29/147 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
+| 30/147 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 31/147 | Kingdra | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 32/147 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
+| 33/147 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 34/147 | Marill | Pokémon (Water) | Common | Normal, Reverse holo |
+| 35/147 | Azumarill | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 36/147 | Panpour | Pokémon (Water) | Common | Normal, Reverse holo |
+| 37/147 | Simipour | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 38/147 | Bruxish | Pokémon (Water) | Rare | Normal, Reverse holo |
+| 39/147 | Tapu Fini GX | Pokémon (Water) | Rare | Holo |
+| 40/147 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 41/147 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 42/147 | Electabuzz | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 43/147 | Electivire | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 44/147 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 45/147 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 46/147 | Eelektross | Pokémon (Lightning) | Rare | Normal, Reverse holo |
+| 47/147 | Togedemaru | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 48/147 | Slowking | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 49/147 | Wobbuffet | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 50/147 | Seviper | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 51/147 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 52/147 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 53/147 | Dusknoir | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 54/147 | Croagunk | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 55/147 | Toxicroak | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 56/147 | Venipede | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 57/147 | Whirlipede | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 58/147 | Scolipede | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 59/147 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 60/147 | Meowstic | Pokémon (Psychic) | Rare | Normal, Reverse holo |
+| 61/147 | Sandygast | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 62/147 | Palossand | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 63/147 | Necrozma GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 64/147 | Machamp GX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 65/147 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 66/147 | Rhydon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 67/147 | Rhyperior | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 68/147 | Lunatone | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 69/147 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 70/147 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 71/147 | Lucario | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 72/147 | Sawk | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 73/147 | Crabrawler | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 74/147 | Crabominable | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 75/147 | Lycanroc | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 76/147 | Lycanroc | Pokémon (Fighting) | Rare | Normal, Holo (Cracked ice), Reverse holo |
+| 77/147 | Mudbray | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 78/147 | Mudsdale | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 79/147 | Passimian | Pokémon (Fighting) | Rare | Normal, Reverse holo |
+| 80/147 | Marshadow GX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 81/147 | Alolan Rattata | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 82/147 | Alolan Raticate | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 83/147 | Alolan Grimer | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 84/147 | Alolan Muk GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 85/147 | Sneasel | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 86/147 | Weavile | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 87/147 | Darkrai | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 88/147 | Darkrai GX | Pokémon (Darkness) | Ultra Rare | Holo, Holo (Jumbo) |
+| 89/147 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 90/147 | Malamar | Pokémon (Darkness) | Rare | Normal, Reverse holo |
+| 91/147 | Ralts | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 92/147 | Kirlia | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
+| 93/147 | Gardevoir GX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 94/147 | Diancie | Pokémon (Fairy) | Rare | Holo, Reverse holo |
+| 95/147 | Cutiefly | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 96/147 | Ribombee | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
+| 97/147 | Morelull | Pokémon (Fairy) | Common | Normal, Reverse holo |
+| 98/147 | Shiinotic | Pokémon (Fairy) | Rare | Normal, Reverse holo |
+| 99/147 | Noivern GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 100/147 | Zygarde | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 101/147 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 102/147 | Persian | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 103/147 | Porygon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 104/147 | Porygon2 | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 105/147 | Porygon-Z | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 106/147 | Hoothoot | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 107/147 | Noctowl | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 108/147 | Bouffalant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 109/147 | Noibat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 110/147 | Stufful | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 111/147 | Bewear | Pokémon (Colorless) | Rare | Normal, Reverse holo |
+| 112/147 | Acerola | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 113/147 | Bodybuilding Dumbbells | Trainer (Tool) | Uncommon | Normal, Reverse holo, Reverse holo (Staff) |
+| 114/147 | Escape Rope | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 115/147 | Guzma | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 116/147 | Kiawe | Trainer (Supporter) | Rare | Normal, Reverse holo |
+| 117/147 | Lana | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 118/147 | Mount Lanakila | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 119/147 | Olivia | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 120/147 | Plumeria | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 121/147 | Po Town | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 122/147 | Rotom Dex—Poké Finder Mode | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 123/147 | Sophocles | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 124/147 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 125/147 | Tormenting Spray | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 126/147 | Weakness Policy | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 127/147 | Wicke | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 128/147 | Wishful Baton | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 129/147 | Golisopod GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 130/147 | Tapu Bulu GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 131/147 | Ho-Oh GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 132/147 | Salazzle GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 133/147 | Tapu Fini GX | Pokémon (Water) | Ultra Rare | Holo |
+| 134/147 | Necrozma GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 135/147 | Machamp GX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 136/147 | Lycanroc GX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 137/147 | Marshadow GX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 138/147 | Alolan Muk GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 139/147 | Darkrai GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 140/147 | Gardevoir GX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 141/147 | Noivern GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 142/147 | Acerola | Trainer (Supporter) | Ultra Rare | Holo |
+| 143/147 | Guzma | Trainer (Supporter) | Ultra Rare | Holo |
+| 144/147 | Kiawe | Trainer (Supporter) | Ultra Rare | Holo |
+| 145/147 | Plumeria | Trainer (Supporter) | Ultra Rare | Holo |
+| 146/147 | Sophocles | Trainer (Supporter) | Ultra Rare | Holo |
+| 147/147 | Wicke | Trainer (Supporter) | Ultra Rare | Holo |
+| 148/147 | Golisopod GX | Pokémon (Grass) | Secret Rare | Holo |
+| 149/147 | Tapu Bulu GX | Pokémon (Grass) | Secret Rare | Holo |
+| 150/147 | Charizard GX | Pokémon (Fire) | Secret Rare | Holo |
+| 151/147 | Salazzle GX | Pokémon (Fire) | Secret Rare | Holo |
+| 152/147 | Tapu Fini GX | Pokémon (Water) | Secret Rare | Holo |
+| 153/147 | Necrozma GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 154/147 | Machamp GX | Pokémon (Fighting) | Secret Rare | Holo |
+| 155/147 | Lycanroc GX | Pokémon (Fighting) | Secret Rare | Holo |
+| 156/147 | Marshadow GX | Pokémon (Fighting) | Secret Rare | Holo |
+| 157/147 | Alolan Muk GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 158/147 | Darkrai GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 159/147 | Gardevoir GX | Pokémon (Fairy) | Secret Rare | Holo |
+| 160/147 | Noivern GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 161/147 | Bodybuilding Dumbbells | Trainer (Tool) | Secret Rare | Holo |
+| 162/147 | Choice Band | Trainer (Tool) | Secret Rare | Holo |
+| 163/147 | Escape Rope | Trainer (Item) | Secret Rare | Holo |
+| 164/147 | Multi Switch | Trainer (Item) | Secret Rare | Holo |
+| 165/147 | Rescue Stretcher | Trainer (Item) | Secret Rare | Holo |
+| 166/147 | Super Scoop Up | Trainer (Item) | Secret Rare | Holo |
+| 167/147 | Fire Energy | Energy (Normal) | Secret Rare | Holo |
+| 168/147 | Darkness Energy | Energy (Normal) | Secret Rare | Holo |
+| 169/147 | Fairy Energy | Energy (Normal) | Secret Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

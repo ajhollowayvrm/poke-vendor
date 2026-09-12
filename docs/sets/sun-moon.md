@@ -98,6 +98,189 @@ study; the Derium data for this set comes from two large opening videos.
 - Source: Bulbapedia, Sun & Moon TCG Series merchandise; ThePriceDex for
   box size.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fetched 2026-09-12. The list has 172 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 1/149 | Caterpie | Pokémon (Grass) | Common | Normal |
+| 2/149 | Metapod | Pokémon (Grass) | Uncommon | Normal |
+| 3/149 | Butterfree | Pokémon (Grass) | Rare | Normal |
+| 4/149 | Paras | Pokémon (Grass) | Common | Normal |
+| 5/149 | Parasect | Pokémon (Grass) | Rare | Normal |
+| 6/149 | Pinsir | Pokémon (Grass) | Uncommon | Normal |
+| 7/149 | Surskit | Pokémon (Grass) | Common | Normal |
+| 8/149 | Masquerain | Pokémon (Grass) | Rare | Normal |
+| 9/149 | Rowlet | Pokémon (Grass) | Common | Normal |
+| 10/149 | Dartrix | Pokémon (Grass) | Uncommon | Normal |
+| 11/149 | Decidueye | Pokémon (Grass) | Rare | Normal |
+| 12/149 | Decidueye GX | Pokémon (Grass) | Ultra Rare | Normal |
+| 13/149 | Grubbin | Pokémon (Grass) | Common | Normal |
+| 14/149 | Fomantis | Pokémon (Grass) | Common | Normal |
+| 15/149 | Lurantis GX | Pokémon (Grass) | Ultra Rare | Normal |
+| 16/149 | Morelull | Pokémon (Grass) | Common | Normal |
+| 17/149 | Shiinotic | Pokémon (Grass) | Rare | Normal |
+| 18/149 | Bounsweet | Pokémon (Grass) | Common | Normal |
+| 19/149 | Steenee | Pokémon (Grass) | Uncommon | Normal |
+| 20/149 | Tsareena | Pokémon (Grass) | Rare | Normal |
+| 21/149 | Growlithe | Pokémon (Fire) | Common | Normal |
+| 22/149 | Arcanine | Pokémon (Fire) | Rare | Normal |
+| 23/149 | Torkoal | Pokémon (Fire) | Common | Normal |
+| 24/149 | Litten | Pokémon (Fire) | Common | Normal |
+| 25/149 | Torracat | Pokémon (Fire) | Uncommon | Normal |
+| 26/149 | Incineroar | Pokémon (Fire) | Rare | Normal |
+| 27/149 | Incineroar GX | Pokémon (Fire) | Ultra Rare | Normal |
+| 28/149 | Psyduck | Pokémon (Water) | Common | Normal |
+| 29/149 | Golduck | Pokémon (Water) | Rare | Normal |
+| 30/149 | Poliwag | Pokémon (Water) | Common | Normal |
+| 31/149 | Poliwhirl | Pokémon (Water) | Uncommon | Normal |
+| 32/149 | Poliwrath | Pokémon (Water) | Rare | Normal |
+| 33/149 | Shellder | Pokémon (Water) | Common | Normal |
+| 34/149 | Cloyster | Pokémon (Water) | Rare | Normal |
+| 35/149 | Lapras GX | Pokémon (Water) | Ultra Rare | Normal |
+| 36/149 | Corsola | Pokémon (Water) | Uncommon | Normal |
+| 37/149 | Wingull | Pokémon (Water) | Common | Normal |
+| 38/149 | Pelipper | Pokémon (Water) | Uncommon | Normal |
+| 39/149 | Popplio | Pokémon (Water) | Common | Normal |
+| 40/149 | Brionne | Pokémon (Water) | Uncommon | Normal |
+| 41/149 | Primarina | Pokémon (Water) | Rare | Normal |
+| 42/149 | Primarina GX | Pokémon (Water) | Ultra Rare | Normal |
+| 43/149 | Crabominable | Pokémon (Water) | Rare | Normal |
+| 44/149 | Wishiwashi | Pokémon (Water) | Uncommon | Normal |
+| 45/149 | Dewpider | Pokémon (Water) | Common | Normal |
+| 46/149 | Araquanid | Pokémon (Water) | Uncommon | Normal |
+| 47/149 | Pyukumuku | Pokémon (Water) | Uncommon | Normal |
+| 48/149 | Bruxish | Pokémon (Water) | Rare | Normal |
+| 49/149 | Chinchou | Pokémon (Lightning) | Common | Normal |
+| 50/149 | Lanturn | Pokémon (Lightning) | Rare | Normal |
+| 51/149 | Charjabug | Pokémon (Lightning) | Uncommon | Normal |
+| 52/149 | Vikavolt | Pokémon (Lightning) | Rare | Normal |
+| 53/149 | Togedemaru | Pokémon (Lightning) | Common | Normal |
+| 54/149 | Zubat | Pokémon (Psychic) | Common | Normal |
+| 55/149 | Golbat | Pokémon (Psychic) | Uncommon | Normal |
+| 56/149 | Crobat | Pokémon (Psychic) | Rare | Normal |
+| 57/149 | Alolan Grimer | Pokémon (Psychic) | Common | Normal |
+| 58/149 | Alolan Muk | Pokémon (Psychic) | Rare | Normal |
+| 59/149 | Drowzee | Pokémon (Psychic) | Common | Normal |
+| 60/149 | Hypno | Pokémon (Psychic) | Uncommon | Normal |
+| 61/149 | Espeon GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 62/149 | Mareanie | Pokémon (Psychic) | Common | Normal |
+| 63/149 | Toxapex | Pokémon (Psychic) | Rare | Normal |
+| 64/149 | Cosmog | Pokémon (Psychic) | Common | Normal |
+| 65/149 | Cosmoem | Pokémon (Psychic) | Rare | Normal |
+| 66/149 | Lunala GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 67/149 | Makuhita | Pokémon (Fighting) | Common | Normal |
+| 68/149 | Hariyama | Pokémon (Fighting) | Rare | Normal |
+| 69/149 | Roggenrola | Pokémon (Fighting) | Common | Normal |
+| 70/149 | Boldore | Pokémon (Fighting) | Uncommon | Normal |
+| 71/149 | Gigalith | Pokémon (Fighting) | Rare | Normal |
+| 72/149 | Crabrawler | Pokémon (Fighting) | Common | Normal |
+| 73/149 | Passimian | Pokémon (Fighting) | Uncommon | Normal |
+| 74/149 | Sandygast | Pokémon (Fighting) | Common | Normal |
+| 75/149 | Palossand | Pokémon (Fighting) | Rare | Normal |
+| 76/149 | Alolan Rattata | Pokémon (Darkness) | Common | Normal |
+| 77/149 | Alolan Raticate | Pokémon (Darkness) | Uncommon | Normal |
+| 78/149 | Alolan Meowth | Pokémon (Darkness) | Common | Normal |
+| 79/149 | Alolan Persian | Pokémon (Darkness) | Uncommon | Normal |
+| 80/149 | Umbreon GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 81/149 | Carvanha | Pokémon (Darkness) | Common | Normal |
+| 82/149 | Sharpedo | Pokémon (Darkness) | Rare | Normal |
+| 83/149 | Sandile | Pokémon (Darkness) | Common | Normal |
+| 84/149 | Krokorok | Pokémon (Darkness) | Uncommon | Normal |
+| 85/149 | Krookodile | Pokémon (Darkness) | Rare | Normal |
+| 86/149 | Alolan Diglett | Pokémon (Metal) | Common | Normal |
+| 87/149 | Alolan Dugtrio | Pokémon (Metal) | Rare | Normal |
+| 88/149 | Skarmory | Pokémon (Metal) | Common | Normal |
+| 89/149 | Solgaleo GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 90/149 | Snubbull | Pokémon (Fairy) | Common | Normal |
+| 91/149 | Granbull | Pokémon (Fairy) | Uncommon | Normal |
+| 92/149 | Cutiefly | Pokémon (Fairy) | Common | Normal |
+| 93/149 | Ribombee | Pokémon (Fairy) | Rare | Normal |
+| 94/149 | Dratini | Pokémon (Dragon) | Common | Normal |
+| 95/149 | Dragonair | Pokémon (Dragon) | Uncommon | Normal |
+| 96/149 | Dragonite | Pokémon (Dragon) | Rare | Normal |
+| 97/149 | Spearow | Pokémon (Colorless) | Common | Normal |
+| 98/149 | Fearow | Pokémon (Colorless) | Common | Normal |
+| 99/149 | Kangaskhan | Pokémon (Colorless) | Rare | Normal |
+| 100/149 | Tauros GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 101/149 | Eevee | Pokémon (Colorless) | Common | Normal |
+| 102/149 | Spinda | Pokémon (Colorless) | Uncommon | Normal |
+| 103/149 | Lillipup | Pokémon (Colorless) | Common | Normal |
+| 104/149 | Herdier | Pokémon (Colorless) | Uncommon | Normal |
+| 105/149 | Stoutland | Pokémon (Colorless) | Rare | Normal |
+| 106/149 | Pikipek | Pokémon (Colorless) | Common | Normal |
+| 107/149 | Trumbeak | Pokémon (Colorless) | Uncommon | Normal |
+| 108/149 | Toucannon | Pokémon (Colorless) | Rare | Normal |
+| 109/149 | Yungoos | Pokémon (Colorless) | Common | Normal |
+| 110/149 | Gumshoos GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 111/149 | Stufful | Pokémon (Colorless) | Common | Normal |
+| 112/149 | Bewear | Pokémon (Colorless) | Rare | Normal |
+| 113/149 | Oranguru | Pokémon (Colorless) | Rare | Normal |
+| 114/149 | Big Malasada | Trainer (Item) | Uncommon | Normal |
+| 115/149 | Crushing Hammer | Trainer (Item) | Uncommon | Normal |
+| 116/149 | Energy Retrieval | Trainer (Item) | Uncommon | Normal |
+| 117/149 | Energy Switch | Trainer (Item) | Uncommon | Normal |
+| 118/149 | Exp. Share | Trainer (Tool) | Uncommon | Normal |
+| 119/149 | Great Ball | Trainer (Item) | Uncommon | Normal |
+| 120/149 | Hau | Trainer (Supporter) | Uncommon | Normal |
+| 121/149 | Ilima | Trainer (Supporter) | Uncommon | Normal |
+| 122/149 | Lillie | Trainer (Supporter) | Uncommon | Normal |
+| 123/149 | Nest Ball | Trainer (Item) | Uncommon | Normal |
+| 124/149 | Poison Barb | Trainer (Tool) | Uncommon | Normal |
+| 125/149 | Poké Ball | Trainer (Item) | Uncommon | Normal |
+| 126/149 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal |
+| 127/149 | Potion | Trainer (Item) | Uncommon | Normal |
+| 128/149 | Professor Kukui | Trainer (Supporter) | Uncommon | Normal |
+| 129/149 | Rare Candy | Trainer (Item) | Uncommon | Normal |
+| 130/149 | Repel | Trainer (Item) | Uncommon | Normal |
+| 131/149 | Rotom Dex | Trainer (Item) | Uncommon | Normal |
+| 132/149 | Switch | Trainer (Item) | Uncommon | Normal |
+| 133/149 | Team Skull Grunt | Trainer (Supporter) | Uncommon | Normal |
+| 134/149 | Timer Ball | Trainer (Item) | Uncommon | Normal |
+| 135/149 | Ultra Ball | Trainer (Item) | Uncommon | Normal |
+| 136/149 | Double Colorless Energy | Energy (Special) | Uncommon | Normal |
+| 137/149 | Rainbow Energy | Energy (Special) | Uncommon | Normal |
+| 138/149 | Lurantis GX | Pokémon (Grass) | Ultra Rare | Normal |
+| 139/149 | Lapras GX | Pokémon (Water) | Ultra Rare | Normal |
+| 140/149 | Espeon GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 141/149 | Lunala GX | Pokémon (Psychic) | Ultra Rare | Normal |
+| 142/149 | Umbreon GX | Pokémon (Darkness) | Ultra Rare | Normal |
+| 143/149 | Solgaleo GX | Pokémon (Metal) | Ultra Rare | Normal |
+| 144/149 | Tauros GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 145/149 | Gumshoos GX | Pokémon (Colorless) | Ultra Rare | Normal |
+| 146/149 | Ilima | Trainer (Supporter) | Ultra Rare | Normal |
+| 147/149 | Lillie | Trainer (Supporter) | Ultra Rare | Normal |
+| 148/149 | Professor Kukui | Trainer (Supporter) | Ultra Rare | Normal |
+| 149/149 | Team Skull Grunt | Trainer (Supporter) | Ultra Rare | Normal |
+| 150/149 | Lurantis GX | Pokémon (Grass) | Secret Rare | Normal |
+| 151/149 | Lapras GX | Pokémon (Water) | Secret Rare | Normal |
+| 152/149 | Espeon GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 153/149 | Lunala GX | Pokémon (Psychic) | Secret Rare | Normal |
+| 154/149 | Umbreon GX | Pokémon (Darkness) | Secret Rare | Normal |
+| 155/149 | Solgaleo GX | Pokémon (Metal) | Secret Rare | Normal |
+| 156/149 | Tauros GX | Pokémon (Colorless) | Secret Rare | Normal |
+| 157/149 | Gumshoos GX | Pokémon (Colorless) | Secret Rare | Normal |
+| 158/149 | Nest Ball | Trainer (Item) | Secret Rare | Normal |
+| 159/149 | Rotom Dex | Trainer (Item) | Secret Rare | Normal |
+| 160/149 | Switch | Trainer (Item) | Secret Rare | Normal |
+| 161/149 | Ultra Ball | Trainer (Item) | Secret Rare | Normal |
+| 162/149 | Psychic Energy | Energy (Normal) | Secret Rare | Normal |
+| 163/149 | Metal Energy | Energy (Normal) | Secret Rare | Normal |
+| 164/149 | Grass Energy | Energy (Normal) | Common | Normal |
+| 165/149 | Fire Energy | Energy (Normal) | Common | Normal |
+| 166/149 | Water Energy | Energy (Normal) | Common | Normal |
+| 167/149 | Lightning Energy | Energy (Normal) | Common | Normal |
+| 168/149 | Psychic Energy | Energy (Normal) | Common | Normal |
+| 169/149 | Fighting Energy | Energy (Normal) | Common | Normal |
+| 170/149 | Darkness Energy | Energy (Normal) | Common | Normal |
+| 171/149 | Metal Energy | Energy (Normal) | Common | Normal |
+| 172/149 | Fairy Energy | Energy (Normal) | Common | Normal |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
