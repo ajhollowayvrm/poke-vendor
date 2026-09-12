@@ -127,7 +127,7 @@ estimate** for every row.
 | EX Ruby & Sapphire | 168 | 72 | 36 | 6 | 6 | — | — |
 | EX Sandstorm | 168 | 72 | 36 | 6 | 6 | — | — |
 | EX Dragon | 168 | 72 | 36 | 5 | 6 | 1 | — |
-| EX Team Magma vs Team Aqua | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | — |
+| EX Team Magma vs Team Aqua | 180 | 72 | 24 | 8.7 | 3 | 0.3 per box | — |
 | EX Hidden Legends | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | — |
 | EX FireRed & LeafGreen | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | — |
 | EX Team Rocket Returns | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | ~1 in 72 packs (community estimate) |
@@ -154,8 +154,10 @@ estimate** for every row.
 - The Elite Fourum "Guide to early EX Series pull rates" thread states
   it has complete box-count breakdowns for EX Team Magma vs Team Aqua,
   EX Hidden Legends, EX FireRed & LeafGreen, EX Team Rocket Returns, EX
-  Deoxys, and EX Dragon Frontiers, but this research pass could not
-  extract the exact figures from the thread text. See Open topics.
+  Deoxys, and EX Dragon Frontiers. A later research pass extracted the
+  EX Team Magma vs Team Aqua figures (see the table above and
+  [../team-magma-vs-team-aqua.md](../team-magma-vs-team-aqua.md)). The
+  other five sets' figures are still not extracted. See Open topics.
 - No source at all was found, in this research pass, with pull-rate
   figures for EX Emerald, EX Unseen Forces, EX Delta Species, EX Legend
   Maker, EX Holon Phantoms, EX Crystal Guardians, or EX Power Keepers
@@ -289,13 +291,16 @@ otherwise.
 - **Boxes per case.** Searched 2026-09-12: no source found for the
   original print run.
 - **Collation.** Searched 2026-09-12: no source found for any set.
-- **Full box-count breakdowns for six sets.** The Elite Fourum "Guide to
-  early EX Series pull rates" thread states it holds complete
-  Common/Uncommon/Rare/Rare Holo/ex/Secret Rare box counts for EX Team
-  Magma vs Team Aqua, EX Hidden Legends, EX FireRed & LeafGreen, EX Team
-  Rocket Returns, EX Deoxys, and EX Dragon Frontiers. This research pass
-  could not extract the specific numbers from the thread. A follow-up
-  pass should open the thread directly and transcribe the figures.
+- **Full box-count breakdowns for five sets.** The Elite Fourum "Guide
+  to early EX Series pull rates" thread states it holds complete
+  Common/Uncommon/Rare/Rare Holo/ex/Secret Rare box counts for EX
+  Hidden Legends, EX FireRed & LeafGreen, EX Team Rocket Returns, EX
+  Deoxys, and EX Dragon Frontiers. This research pass extracted the EX
+  Team Magma vs Team Aqua figures (see the Odds by set table and
+  [../team-magma-vs-team-aqua.md](../team-magma-vs-team-aqua.md)), but
+  could not extract the other five sets' numbers from the thread. A
+  follow-up pass should open the thread directly and transcribe the
+  figures.
 - **Pull rates for EX Emerald, EX Unseen Forces, EX Delta Species, EX
   Legend Maker, EX Holon Phantoms, and EX Crystal Guardians.** Searched
   2026-09-12: no source found beyond the general ~1:72 Gold Star
