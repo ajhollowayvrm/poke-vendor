@@ -106,6 +106,9 @@ Not one fake fidelity level — mirrors the grader-variance design in
   [06-social-media.md](06-social-media.md#consequences) — reputation
   and/or follower backlash applies even though the seller did not know,
   mirroring how the hobby's community reacts on intent-blind terms.
+  On TCGPlayer and eBay, the platform also refunds the buyer, so the
+  player loses the sale. The refund does not prevent the public scam
+  accusation. See [15-selling.md](15-selling.md#bad-sales-and-scam-accusations).
 
 ## Open topics
 

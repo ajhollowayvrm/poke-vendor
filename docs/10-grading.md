@@ -115,10 +115,12 @@ out of this doc.
 
 Submission is a free action (see
 [01-premise-and-loop.md](01-premise-and-loop.md)) — no day-budget cost
-to drop a card in the mail. The result comes back after a real
-calendar-day delay (current turnaround figures per company, pulled
-when needed rather than hardcoded here), independent of the day-tick
-time budget. It shows up as an event in the recent-activity feed once
+to drop a card in the mail. The result comes back after a turnaround
+measured in game days (current turnaround figures per company, pulled
+when needed rather than hardcoded here). Each tap on End Day moves
+every open grading submission forward by 1 day (see
+[16-time-and-day.md](16-time-and-day.md#game-days)). The turnaround
+does not use the day's hour budget. It shows up as an event in the recent-activity feed once
 the card returns (see the Wallet screen mockup in
 [08-ui-direction.md](08-ui-direction.md)).
 

@@ -68,6 +68,10 @@ that the player chooses for a day. A camping event appears on the home
 hub, in the same list as card shows (see
 [08-ui-direction.md](08-ui-direction.md)).
 
+Camping targets a store restock day. The calendar posts the restock
+day 2 to 3 days ahead (see
+[17-calendar-and-events.md](17-calendar-and-events.md#posted-entries)).
+
 On a success, the player spends cash and gets product at MSRP. Camping
 carries real variance: the store sells out before the player arrives,
 or other buyers get the stock first. A bust costs the day and returns
@@ -89,7 +93,9 @@ run goes stop by stop. At each stop, the player sees the shelf, then
 buys or goes to the next stop. A stop with an empty shelf is a bust
 that costs the time for that stop.
 
-A store run is different from camping. Camping targets a known drop.
+A store run is different from camping. Camping targets a restock day
+that the calendar posts 2 to 3 days ahead (see
+[17-calendar-and-events.md](17-calendar-and-events.md#posted-entries)).
 A store run is a check with no notice.
 
 #### The local game shop
@@ -97,8 +103,10 @@ A store run is a check with no notice.
 The local game shop is a local store with more features:
 
 - Better stock odds than the big stores, but in small quantities.
-- Regulars get holds and preorders on hot product. The player earns
-  this through standing with the shop owner.
+- Regulars get holds on hot product. The player earns this through
+  standing with the shop owner. There are no preorders, because no new
+  sets release during a run (see
+  [17-calendar-and-events.md](17-calendar-and-events.md#no-new-set-releases)).
 
 Standing is per store. Each game shop keeps its own standing with the
 player, and it is separate from the global reputation track (see
@@ -106,10 +114,43 @@ player, and it is separate from the global reputation track (see
 A player can be a regular at one shop and unknown at another. Big
 retail stores and the Pokemon Center have no standing at all.
 
+There are two game shops near the player. Both shops use the same
+rules, and each one keeps its own standing.
+
+##### Standing levels
+
+Standing is a points total with each shop, from 0 to 100. The points
+set the level. Every player starts at 0 with each shop.
+
+| Level | Points | Buylist price | Holds | Consignment |
+| --- | --- | --- | --- | --- |
+| Stranger | 0–9 | 50% of market | No | No |
+| Familiar | 10–29 | 55% of market | No | No |
+| Regular | 30–59 | 60% of market | Yes | Yes; the shop keeps 20% |
+| Trusted | 60–100 | 70% of market | Yes, and first pick on hot product | Yes; the shop keeps 12% |
+
+##### How standing changes
+
+| Event | Points |
+| --- | --- |
+| Attend league night (see [17-calendar-and-events.md](17-calendar-and-events.md#what-league-night-gives)) | +3 |
+| Spend $50 at the shop, in cash or store credit | +1 for each $50 |
+| A consigned card sells | +2 |
+| A hold that the player does not pick up within 3 days | −5 |
+| The shop finds a fake that the player sold it | −20 |
+| No visit to the shop for 4 weeks | −2 for each week after that |
+
+Standing never goes below 0 or above 100. All values in this section
+are starting values for balancing.
+
 The local game shop also has:
 - A display case of singles, so the shop is also a place to buy
   singles.
-- Events: league nights and prereleases.
+- Events: a weekly league night (see
+  [17-calendar-and-events.md](17-calendar-and-events.md#recurring-entries)).
+- It buys cards too: a buylist for instant cash, bulk for store credit
+  only, and consignment (see
+  [15-selling.md](15-selling.md#the-local-game-shop)).
 
 ### Distributor / wholesale (reputation-gated)
 
@@ -203,6 +244,4 @@ fixed collation.
   sealed product.
 - The time each local store adds to a store run, and the stock odds
   per store (balancing tasks).
-- How standing with a game shop rises and falls, its levels, and how
-  many game shops exist near the player.
 - How the local game shop's events connect to meets and reputation.- Actual pull-rate data per set, sourced as each set is added.

@@ -30,6 +30,9 @@ tracks four separate currencies, and any one of them can be your route there.
 - [13-sets.md](13-sets.md) — index of per-set doc files under `docs/sets/`, one file per set, covering pull rates and any other set-specific quirks.
 - [sets/base-set.md](sets/base-set.md) — Base Set (1999): researched real pull-rate structure (pack slots, holo odds, box/case collation, 1st Edition vs. Unlimited), the first set file.
 - [14-counterfeit-risk.md](14-counterfeit-risk.md) — fake singles and resealed sealed product: which channels carry the risk, the eyeball/paid/upgrade detection pattern reused from grading, fake quality tiers, and consequences (loss, or a scam accusation if resold unknowingly).
+- [15-selling.md](15-selling.md) — the selling channels: TCGPlayer (price ladder), eBay, Facebook Marketplace, Whatnot live auctions, social media, the local game shop (buylist, bulk for store credit, consignment), and local meets. Card shows are out of scope for now.
+- [16-time-and-day.md](16-time-and-day.md) — time in hours on a clock: 16 waking hours (7 AM–11 PM), the End Day button, travel included in each action, starting hour values, game days (End Day moves grading and every other wait forward by 1 day), the weekday day job (weekly pay, a four-job ladder, sick days and time off booked in advance, a dice roll to get hired), rent ($1,200 every 4 weeks, with a 3-day warning; miss it and the game is over), and the late-night choice (start tired, or sleep in).
+- [17-calendar-and-events.md](17-calendar-and-events.md) — the weekly calendar: recurring entries (work shift, Friday paycheck, league night, fixed weekly meets), posted entries 2–3 days ahead (garage sales, estate sales, store restock days) where early arrival gets the best cards, scheduled entries (card shows, rent), surprise entries (Pokemon Center drops, store run stock, alert-banner events), and the fixed set list with no new releases.
 
 ## Open topics (not yet explored)
 

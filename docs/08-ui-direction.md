@@ -76,15 +76,17 @@ money go, and where did it come from.
 **Ledger categories:**
 
 - Cash in: a sale (singles or sealed, any channel), a sponsorship
-  payout, live-stream tips, a consignment sale.
+  payout, live-stream tips, a consignment sale, a paycheck from the
+  day job (see [16-time-and-day.md](16-time-and-day.md#the-day-job)).
 - Cash out: a sealed-product purchase, a grading fee, an authentication
   fee (see [14-counterfeit-risk.md](14-counterfeit-risk.md)), an
-  upgrade purchase (see [09-upgrades.md](09-upgrades.md)).
+  upgrade purchase (see [09-upgrades.md](09-upgrades.md)), rent (see
+  [16-time-and-day.md](16-time-and-day.md#rent)).
 
 **Pending entries update in place, they do not duplicate.** A grading
 submission posts as an expense immediately (fee paid), tagged
-"pending." When the card's result comes back after its real
-calendar-day turnaround (see
+"pending." When the card's result comes back after its turnaround in
+game days (see
 [10-grading.md](10-grading.md#turnaround)), that same ledger line
 updates to show the outcome — it does not spawn a second entry. This is
 what "shows up in the recent-activity feed once the card returns" means
@@ -100,6 +102,10 @@ of it.
 
 **New player state:** the ledger opens with a single entry, starting
 capital, so the balance is never a bare unexplained number.
+
+**Store credit is not in the Wallet.** Store credit at a local game
+shop is not cash. The player sees it on that shop's own screen (see
+[15-selling.md](15-selling.md#store-credit)).
 
 **The in/out summary's period is switchable**, a Week/Month segmented
 toggle right on the card, not a fixed window. Switching it recomputes
@@ -146,7 +152,7 @@ player buys sealed product online here (see
   sees the total trip time, and starts the run. The run goes stop by
   stop: each stop shows the shelf, then the player buys or moves on. A
   summary closes the run. The local game shop row also opens the
-  shop's own screen (standing, holds, preorders, the singles display
+  shop's own screen (standing, holds, the singles display
   case, and events).
 - **A Pokemon Center drop** gives one attempt per drop. A miss shows
   as the result of that attempt. The screen shows no upcoming drops,

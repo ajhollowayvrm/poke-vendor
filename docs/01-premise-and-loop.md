@@ -24,6 +24,10 @@ personally value — cash, an audience, standing in the trading world, or a
 collection you are proud of — to buy whatever you want at a show or store, or
 just to feel like you have arrived. Play until it feels good.
 
+There is no win screen, but there is a way to lose. If the player cannot
+pay rent, the game is over (see
+[16-time-and-day.md](16-time-and-day.md#rent)).
+
 See [03-currencies.md](03-currencies.md) for why this is tracked as four
 separate numbers instead of one score.
 
@@ -37,6 +41,11 @@ detail on each.
 ## Day structure
 
 A day is the atomic tick of the game. A single day can contain many actions.
+
+A day has 16 waking hours on a clock, from 7 AM to 11 PM, and a day job
+takes 8 of them on weekdays. See [16-time-and-day.md](16-time-and-day.md)
+for the clock, the hour cost of each action, the day job, and late
+nights.
 
 ### Free actions (no time cost, stack freely)
 
