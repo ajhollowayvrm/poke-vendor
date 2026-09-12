@@ -136,6 +136,14 @@ rare. This is our reading of the guides, not a statement in them.
 **Default for the rip screen:** use the per-set position in each set
 file. Mark each position as low confidence.
 
+A third source, NinePocket, disagrees with PokéPatch and Card Collector
+for the whole era. It states: "No reliable trick — internal order varied
+and vintage packs are best left sealed" for Legendary Collection,
+Expedition Base Set, Aquapolis, and Skyridge. NinePocket gives trick
+steps only for XY-era sets and later. This source does not give an N
+value or a stack direction. It supports the existing low confidence
+label. It does not change the default.
+
 ## Sets that break the template
 
 - **Legendary Collection:** 11 cards, not 9. The pack is 9 cards in a row
@@ -174,19 +182,27 @@ file. Mark each position as low confidence.
 - [Retro Pokémon TCG — e-Card: The Lost Age of the Pokémon TCG](https://jklaczpokemon.com/e-card/)
 - [PokéPatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
+- [NinePocket — The Pokémon Pack Trick, How It Works for Every Set](https://www.ninepocket.net/guides/pokemon-pack-trick)
 
 ## Open topics
 
 - **Holo slot model (A or B).** PSA gives Model A for Expedition and
   Model B for Aquapolis and Skyridge. A photo of an opened pack with a
-  holo and a rare together would settle it.
+  holo and a rare together would settle it. Searched 2026-09-12: no
+  source found.
 - **Pack order.** Only card trick guides exist. They conflict on
   Expedition (N = 2 or 3). No guide lists the position of the extra holo.
-  No guide says which way the stack leaves the wrapper.
+  No guide says which way the stack leaves the wrapper. Searched
+  2026-09-12: a third source (NinePocket) says the whole era has no
+  reliable trick. It gives no N value or stack direction, so the gap
+  stays open.
 - **The "last three cards" default.** With N = 3, the rare is the fourth
   card from the end. Skyridge and possibly Expedition break the default.
 - **Case size.** No source gives boxes per case for any set in this era.
+  Searched 2026-09-12: no source found.
 - **Holo odds.** "1 in 3" has no official source. The empirical counts
   (11 of 36, 19 of 72) come from only 3 boxes.
 - **PokéBeach threads.** PokéBeach blocked the fetch (HTTP 403). The
   "English Booster Box Pull Rates" thread may hold per-box counts.
+  Searched again 2026-09-12: still HTTP 403 on the thread and on a
+  related Skyridge/Aquapolis holo pull rate thread.

@@ -144,22 +144,31 @@ reverse holo slot, but it still counts under the Crystal entry.
 - [Flipside Gaming — A Comprehensive Review of Rarity in the Pokemon TCG](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg)
 - [Loose Packs — Pokemon Pack Weight Guide](https://loosepacks.com/blogs/guides/pokemon-pack-weight-guide)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
+- [NinePocket — The Pokémon Pack Trick, How It Works for Every Set](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [Elite Fourum — Is Skyridge Crystal Charizard rare?](https://www.elitefourum.com/t/is-skyridge-crystal-charizard-rare/39231)
 
 ## Open topics
 
 - **Pack order.** One trick guide only. It puts the rare at card 6, outside
   the last three cards. The reverse holo and extra holo positions are
-  Unknown.
+  Unknown. Searched 2026-09-12: NinePocket says the whole era, including
+  this set, has "no reliable trick". It gives no N value or positions.
 - **Crystal odds.** Flipside (1 in 12 to 18 packs) and PSA (1 to 3 per box,
   so 1 in 12 to 36 packs) overlap only in part. Unknown whether Flipside
-  counts reverse holo Crystal cards.
+  counts reverse holo Crystal cards. Searched 2026-09-12: the PokéBeach
+  pull-rates thread blocked the fetch again (HTTP 403), so no new count.
 - **Which Crystal cards are rarer.** The Elite Fourum guide suggests 4 of 6
-  are an "H2" tier. It does not name them.
+  are an "H2" tier. It does not name them. Searched 2026-09-12: a separate
+  Elite Fourum thread has one collector's comment that Charizard and
+  Ho-Oh felt harder to pull than Kabutops or Golem. This is one person's
+  anecdote, not a named list, so the gap stays open.
 - **Holo slot model.** PSA's Model B text for Skyridge copies its Aquapolis
-  text. No second source confirms it for Skyridge.
+  text. No second source confirms it for Skyridge. Searched 2026-09-12:
+  no source found.
 - **Holo odds.** Loose Packs has only 1 box (11 holos).
-- **PokéBeach threads.** PokéBeach blocked the fetch (HTTP 403).
+- **PokéBeach threads.** PokéBeach blocked the fetch (HTTP 403). Searched
+  again 2026-09-12: still HTTP 403.
 - **Blister, case size, and theme deck contents.** Not found or not
-  checked.
+  checked. Searched 2026-09-12: no source found for case size.
 - **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.
 - **Rarity list order:** Crystal (secret rare) uses Flipside Gaming's 1 in 12 to 1 in 18. PSA gives 1 to 3 per box, about 1 in 12 to 1 in 36.

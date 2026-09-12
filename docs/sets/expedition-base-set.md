@@ -11,7 +11,7 @@ Set-specific data for Expedition Base Set. See
 | English release date | September 15, 2002 | Bulbapedia |
 | Series number | 13th English series | PSA |
 | Set symbol | "a Poké Ball drawn to look like a lower case 'e'" | PSA |
-| Abbreviation | Unknown | — |
+| Abbreviation | EX | JustInBasil's Pokémon TCG Resources. Bulbapedia's infobox uses an internal series logo code instead (Aquapolis shows "E2" and Skyridge shows "E3"), so the Expedition logo code is likely "E1", but no fetch confirmed that text directly. |
 | Card count | 165 | Bulbapedia, PSA |
 | Secret rares | None | Bulbapedia set list |
 | Editions | Unlimited only. The first non-reprint English set with no 1st Edition. | Bulbapedia |
@@ -137,18 +137,26 @@ an extra card in about 1 pack in 3.
 - [Loose Packs — Pokemon Pack Weight Guide](https://loosepacks.com/blogs/guides/pokemon-pack-weight-guide)
 - [Josh's Cards — Expedition: Base Set Blister Pack](https://joshscards.com/products/expedition-base-set-blister-pack) (search summary only)
 - [Istari Collectibles — Expedition Sealed Blister](https://www.istaricollectibles.co.uk/products/pokemon-expedition-base-set-sealed-blister-2002) (search summary only)
+- [JustInBasil — Appendix I: Set Symbols and Abbreviations](https://www.justinbasil.com/guide/appendix1)
+- [NinePocket — The Pokémon Pack Trick, How It Works for Every Set](https://www.ninepocket.net/guides/pokemon-pack-trick)
 
 ## Open topics
 
 - **Holo slot model.** PSA and Bulbapedia say the holo is the rare. The
-  Elite Fourum guide says the holo replaces a common.
+  Elite Fourum guide says the holo replaces a common. Searched 2026-09-12:
+  no source found that settles it.
 - **Pack order.** The trick guides conflict (N = 2 or 3). If N = 3, the
-  rare is not in the last three cards.
+  rare is not in the last three cards. Searched 2026-09-12: NinePocket
+  says the whole era, including this set, has "no reliable trick". It
+  gives no N value.
 - **Holo odds.** No English box counts found. A PokéBeach pull-rate thread
-  may have counts, but PokéBeach blocked the fetch (HTTP 403).
-- **Reverse holo rarity split.** Unknown.
+  may have counts, but PokéBeach blocked the fetch (HTTP 403). Searched
+  again 2026-09-12: still HTTP 403.
+- **Reverse holo rarity split.** Unknown. Searched 2026-09-12: no source
+  found.
 - **Blister contents.** Only retail listings in search summaries. Unknown
   whether blisters held a promo or a coin.
 - **Case size and theme deck contents.** Not found or not checked.
+  Searched 2026-09-12: no source found for case size.
 - **Wrapper designs.** Unknown count and art.
 - **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.

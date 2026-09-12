@@ -12,7 +12,7 @@ transition set, and it breaks that template.
 | English release date | May 24, 2002 | Bulbapedia, PSA |
 | Set number | 12 | Bulbapedia |
 | Set symbol | A symbol that PSA calls "a medallion located under the right part of the artwork" | PSA |
-| Abbreviation | Unknown | — |
+| Abbreviation | LC | JustInBasil's Pokémon TCG Resources |
 | Card count | 110 | Bulbapedia, PSA |
 | Secret rares | None | Bulbapedia set list |
 | Editions | Unlimited only. No 1st Edition. | Bulbapedia |
@@ -131,17 +131,23 @@ the most common entry to the rarest entry.
 - [Elite Fourum — The English Pokémon card rarity guide (Legendary Collection post)](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762/26)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
 - [Loose Packs — Pokemon Pack Weight Guide](https://loosepacks.com/blogs/guides/pokemon-pack-weight-guide)
+- [JustInBasil — Appendix I: Set Symbols and Abbreviations](https://www.justinbasil.com/guide/appendix1)
+- [NinePocket — The Pokémon Pack Trick, How It Works for Every Set](https://www.ninepocket.net/guides/pokemon-pack-trick)
 
 ## Open topics
 
 - **Pack order.** Unknown for the rare and the reverse holo. One guide
-  says the set has no card trick.
+  says the set has no card trick. Searched 2026-09-12: NinePocket agrees
+  that the whole e-Card era, including this set, has "no reliable
+  trick". No source names a position or a stack direction.
 - **Uncommons per pack.** PSA says 3. The Elite Fourum sheet model gives
-  "nearly 3" on average. The real sheet layout is Unknown.
+  "nearly 3" on average. The real sheet layout is Unknown. Searched
+  2026-09-12: no source found.
 - **Holo odds.** "1 in 3" has no official or empirical source for this set.
 - **Rare slot sheet.** Unknown whether the 19 holos and 19 rares share a
   sheet, and at what ratio.
 - **Box toppers.** Unknown whether the 4 toppers have equal odds.
-- **Case size and blister products.** No source found.
+- **Case size and blister products.** No source found. Searched
+  2026-09-12: no source found.
 - **Turmoil theme deck contents.** Not checked.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; the rare slot splits between Rare and Rare Holo.

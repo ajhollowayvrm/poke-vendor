@@ -11,7 +11,7 @@ e-Card template.
 | English release date | January 15, 2003 | Bulbapedia, PSA |
 | Set number | 14 | Bulbapedia |
 | Set symbol | Shown as an image on Bulbapedia. No text description found. | Bulbapedia |
-| Abbreviation | Unknown | — |
+| Abbreviation | AQ (JustInBasil's Pokémon TCG Resources). Conflict: Bulbapedia's infobox shows the internal series logo code "E2" instead. Default for the simulation: AQ, to match the two-letter style already used for Skyridge (SK) and Legendary Collection (LC). | JustInBasil, Bulbapedia |
 | Card count | 186 | Bulbapedia, PSA |
 | Printed main set total | /147 | Bulbapedia set list |
 | Secret rares | 3 Crystal cards (148/147 to 150/147) | Bulbapedia, PSA |
@@ -150,14 +150,20 @@ Crystal card is rarer still.
 - [Heritage Auctions — Aquapolis Sealed Blister Booster Pack](https://comics.ha.com/itm/memorabilia/trading-cards/pokemon-aquapolis-sealed-blister-booster-pack-wizards-of-the-coast-2002-/a/332308-59088.s)
 - [PokéPatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Card Collector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
+- [JustInBasil — Appendix I: Set Symbols and Abbreviations](https://www.justinbasil.com/guide/appendix1)
+- [NinePocket — The Pokémon Pack Trick, How It Works for Every Set](https://www.ninepocket.net/guides/pokemon-pack-trick)
 
 ## Open topics
 
 - **Extra holo position.** Unknown where the holo sits in a holo pack.
+  Searched 2026-09-12: no source found. NinePocket says the era has "no
+  reliable trick" and gives no positions.
 - **Reverse holo position.** Card 6 puts the reverse holo outside the
   last three cards. A rare-rarity reverse holo is a hit.
 - **Crystal odds.** Flipside gives 1 in 36 packs. PSA gives 1 to 3 per box.
-  One forum poster got 0 in a box. No large study found.
+  One forum poster got 0 in a box. No large study found. Searched
+  2026-09-12: no new source found; the PokéBeach pull-rates thread
+  blocked the fetch again (HTTP 403).
 - **Crystal sheet.** The Elite Fourum guide assumes the Crystal cards
   share the holo sheet. The guide calls this assumption arbitrary.
 - **Reverse holo card count.** The Elite Fourum guide gives 151 reverses
@@ -165,6 +171,10 @@ Crystal card is rarer still.
 - **Holo odds.** "1 in 3" is not official. Loose Packs found 19 in 72
   packs, and it says holos split cleanly by weight in only 1 of 2 boxes.
 - **Case size and Abyss theme deck contents.** Not found or not checked.
+  Searched 2026-09-12: no source found for case size.
+- **Abbreviation.** JustInBasil gives "AQ". Bulbapedia's infobox gives
+  the internal series logo code "E2" instead. Unresolved which one the
+  official product used as the printed abbreviation.
 - **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.
 - **Rarity list order:** Rare Holo uses about 1 in 3 from PSA. Loose Packs gives 26% (19 holos in 72 packs).
 - **Rarity list order:** Crystal (secret rare) uses 1 in 36 from Flipside Gaming. PSA gives 1 to 3 per box, and one forum poster got 0 in a box.
