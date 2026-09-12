@@ -161,9 +161,15 @@ matching the era rarity system's usual order.
 
 - **Rarity count mismatch.** The main-set rarity counts
   (28+28+12+17+8=93) sum 2 short of the 95-card main set (97 total
-  minus 2 Secret Rares). Searched 2026-09-12: no source resolved the
-  gap. A follow-up pass should read Bulbapedia's card list table
-  directly, not a summarized extract.
+  minus 2 Secret Rares). Searched 2026-09-12: two separate fetches of
+  Bulbapedia's card list (the rendered page, and its raw wikitext) each
+  returned a different rarity breakdown and a different total (79 and
+  87), and a third fetch of Serebii's card list 404'd. No fetch gave a
+  consistent, verifiable count. This file keeps the original
+  Bulbapedia-page counts above rather than adopt any of the conflicting
+  figures. A follow-up pass should read the live page directly in a
+  browser, not through an automated fetch, and check whether Trainer
+  and Energy cards (not counted in the table above) close the gap.
 - **Fractional box counts.** The Rare Holo (8.7) and Secret Rare (0.3)
   per-box figures are not whole numbers. Searched 2026-09-12: no source
   explained the fractional values; this file uses them as given.

@@ -138,9 +138,16 @@ and no Secret Rare, so the list stops at Rare Holo ex.
 ## Open topics
 
 - **Rarity count mismatch.** The five rarity counts (29+21+13+14+7=84)
-  do not sum to the stated total of 100 cards. Searched 2026-09-12: no
-  source resolved the gap. A follow-up pass should read Bulbapedia's
-  card list table directly, not a summarized extract.
+  do not sum to the stated total of 100 cards. Searched 2026-09-12:
+  three separate fetches of Bulbapedia's card list (the rendered page
+  twice, and its raw wikitext once) each returned a different rarity
+  breakdown (totals of 100, 98, and 100 with different per-rarity
+  splits each time). No fetch gave a consistent, verifiable count. This
+  file keeps the original Bulbapedia-page counts above rather than
+  adopt any of the conflicting figures. A follow-up pass should read
+  the live page directly in a browser, not through an automated fetch,
+  and check whether Trainer and Energy cards (not counted in the table
+  above) close the gap.
 - **Common/uncommon per-pack split.** Not confirmed for this specific
   set. Searched 2026-09-12: no source found; see the general
   Common/uncommon split conflict in

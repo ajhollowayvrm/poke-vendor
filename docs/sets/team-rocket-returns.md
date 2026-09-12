@@ -1,0 +1,177 @@
+# EX Team Rocket Returns (2004)
+
+Set-specific data for EX Team Rocket Returns, the seventh set of the EX
+Series. The shared pack template, pack order, and rarity system are in
+[eras/ex.md](eras/ex.md). This file records the set data and every
+exception. See [../13-sets.md](../13-sets.md) for the general
+approach.
+
+EX Team Rocket Returns is the first set in the era with Rare Holo ☆
+(see [eras/ex.md](eras/ex.md#sets-that-break-the-template)).
+
+## Release
+
+| Field | Value | Source |
+|---|---|---|
+| English release date | November 8, 2004 | Bulbapedia |
+| Japanese source set | Rocket Gang Strikes Back, October 15, 2004 | Bulbapedia |
+| Set number | #22 (English), #24 (Japanese) | Bulbapedia |
+| Set code | Not confirmed in a fetched source | — |
+| Total | 111 cards (English), 85 cards (Japanese) | Bulbapedia |
+
+### Cards per rarity
+
+| Rarity | Count | Source |
+|---|---|---|
+| Common | 27 | Bulbapedia |
+| Uncommon | 19 | Bulbapedia |
+| Rare | 18 | Bulbapedia |
+| Rare Holo | 10 | Bulbapedia |
+| Rare Holo ex | 12 | Bulbapedia |
+| Rare Holo ☆ | 3 | Bulbapedia |
+| Secret Rare | 2 | Bulbapedia |
+
+The seven counts above sum to 91, not the stated total of 111. This
+research pass could not resolve the gap. See Open topics.
+
+Rare Holo ☆ cards (Bulbapedia): Mudkip ☆, Torchic ☆, Treecko ☆.
+
+Secret Rare cards, numbered past the printed 109-card main set
+([eras/ex.md](eras/ex.md#sets-that-break-the-template)): one Secret
+Rare Pokémon and one Secret Rare Trainer card, at 110–111/109
+(Bulbapedia).
+
+## Pack structure
+
+Follows the era's pack template
+([eras/ex.md](eras/ex.md#pack-contents)): 9 cards per pack.
+**Confidence: community estimate.** A box-count source (Elite Fourum)
+gives this set 5 commons and 2 uncommons per pack, worked out below.
+
+| Slot | Count | Can hold |
+|---|---|---|
+| Common | 5 | Common |
+| Uncommon | 2 | Uncommon |
+| Rare slot | 1 | Rare, Rare Holo, Rare Holo ex, Rare Holo ☆, or Secret Rare |
+| Reverse holo slot | 1 | Reverse Holo of a Common, Uncommon, or Rare |
+
+Box: 36 packs (Bulbapedia merchandise page). The box-count source gives
+180 commons and 72 uncommons per box, which divide evenly to 5 and 2
+per pack.
+
+## Pack order
+
+**Confidence: unknown.** No primary source (a photo or video of an
+opened pack) was found for this set. See
+[eras/ex.md](eras/ex.md#pack-order) for the one low-confidence
+secondary claim that applies to the era in general.
+
+### Where the hit sits
+
+Not confirmed. If the era's one secondary claim holds, the hit sits at
+position 8 or 9 of 9, inside the last three cards. No source confirms
+this for EX Team Rocket Returns specifically. A Rare Holo ☆ or a Secret
+Rare, when pulled, occupies the rare slot in place of a Rare, Rare
+Holo, or Rare Holo ex.
+
+## Rarities and hit odds
+
+Source: Elite Fourum's "Guide to early EX Series pull rates," as a
+36-pack (one box) breakdown. **Confidence: community estimate** for
+every row. This is one of the five sets that
+[eras/ex.md](eras/ex.md#open-topics) flagged as unresolved; this
+research pass extracted the box counts directly from the thread.
+
+| Rarity | Count per 36-pack box | Odds per pack | Confidence |
+|---|---|---|---|
+| Common | 180 | Every pack | Community estimate |
+| Uncommon | 72 | Every pack | Community estimate |
+| Rare | 24 | 1 in 1.5 | Community estimate |
+| Rare Holo | 8.2 | 1 in 4.4 | Community estimate |
+| Rare Holo ex | 3 | 1 in 12 | Community estimate |
+| Rare Holo ☆ | 0.5 | 1 in 72 | Community estimate |
+| Secret Rare | 0.3 | 1 in 120 | Community estimate |
+
+The Rare, Rare Holo, Rare Holo ex, Rare Holo ☆, and Secret Rare counts
+(24 + 8.2 + 3 + 0.5 + 0.3 = 36) add up to exactly one card per pack
+across the 36-pack box, matching a single rare slot. The fractional
+Rare Holo, Rare Holo ☆, and Secret Rare counts are not whole numbers;
+this file uses them as given. The Rare Holo ☆ rate (0.5 per box, 1 in
+72) matches [eras/ex.md](eras/ex.md#odds-by-set)'s general "~1 in 72
+packs" era estimate. See Open topics.
+
+**Default for the simulation:** use the box-count column above.
+
+## Special subsets and mechanics
+
+- **First Rare Holo ☆ in the era.** Mudkip ☆, Torchic ☆, and Treecko ☆
+  (Bulbapedia; see
+  [eras/ex.md](eras/ex.md#sets-that-break-the-template)).
+- **Team Rocket returns.** Bulbapedia: Rocket's Pokémon-ex cards carry
+  spike borders around the artwork and type symbols, with Team Rocket
+  logos on the attack boxes.
+- **Reverse Holofoil.** Bulbapedia: Reverse Holofoil cards display set
+  logos with gold foil name text and rarity symbols on Rare and Rare
+  Holo cards.
+- **Two Theme Decks:** Jessie (Grass/Psychic/Fighting) and James
+  (Grass/Water/Lightning) (Bulbapedia).
+- **God packs:** no source found. Confidence: unknown.
+
+## Sealed products
+
+Follows the era's sealed product template
+([eras/ex.md](eras/ex.md#sealed-product-template)).
+
+| Product | Packs | Notes |
+|---|---|---|
+| Booster Box | 36 | Standard box. |
+| Theme Deck | 0 (fixed 60-card deck) | Jessie and James versions (Bulbapedia). |
+| EX Deck Tins (Oct 2004) | 2 | Four versions with Treecko, Torchic, Mudkip, and Whismur promos, plus a sticker sheet (era template). Release month precedes this set by one month; the Treecko, Torchic, and Mudkip promos match this set's Rare Holo ☆ trio. |
+
+Collation: unknown. Model each pack as an independent draw.
+
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This set's box-count data
+keeps the rarity order Rare > Rare Holo > Rare Holo ex > Rare Holo ☆ >
+Secret Rare, matching the era rarity system's usual order.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 4.4 | Yes |
+| 6 | Rare Holo ex | Rarity | 1 in 12 | Yes |
+| 7 | Rare Holo ☆ | Rarity | 1 in 72 | Yes |
+| 8 | Secret Rare | Rarity | 1 in 120 | Yes |
+
+## Sources
+
+- [Bulbapedia — EX Team Rocket Returns (TCG)](https://bulbapedia.bulbagarden.net/wiki/EX_Team_Rocket_Returns_(TCG))
+- [Bulbapedia — Booster pack (TCG)](https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG))
+- [Bulbapedia — EX TCG Series merchandise](https://bulbapedia.bulbagarden.net/wiki/EX_TCG_Series_merchandise)
+- [Elite Fourum — Guide to early EX Series pull rates](https://www.elitefourum.com/t/guide-to-early-ex-series-pull-rates/30710)
+- [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+
+## Open topics
+
+- **Rarity count mismatch.** The seven rarity counts
+  (27+19+18+10+12+3+2=91) do not sum to the stated total of 111 cards.
+  Searched 2026-09-12: no source resolved the gap. A follow-up pass
+  should read Bulbapedia's card list table directly, not a summarized
+  extract.
+- **Fractional box counts.** The Rare Holo (8.2), Rare Holo ☆ (0.5),
+  and Secret Rare (0.3) per-box figures are not whole numbers. Searched
+  2026-09-12: no source explained the fractional values; this file
+  uses them as given.
+- **Set code.** Not confirmed in a fetched source.
+- **Pack order and hit position.** Searched 2026-09-12: no source
+  found beyond the one low-confidence secondary claim in
+  [eras/ex.md](eras/ex.md#pack-order).
+- **Rarity list odds:** no source gives odds for Rare beyond the
+  computed 1 in 1.5. The era's rarity system decides the place of any
+  entry with no odds.

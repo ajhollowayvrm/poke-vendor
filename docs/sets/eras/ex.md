@@ -128,10 +128,10 @@ estimate** for every row.
 | EX Sandstorm | 168 | 72 | 36 | 6 | 6 | — | — |
 | EX Dragon | 168 | 72 | 36 | 5 | 6 | 1 | — |
 | EX Team Magma vs Team Aqua | 180 | 72 | 24 | 8.7 | 3 | 0.3 per box | — |
-| EX Hidden Legends | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | — |
-| EX FireRed & LeafGreen | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | — |
-| EX Team Rocket Returns | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | ~1 in 72 packs (community estimate) |
-| EX Deoxys | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | — |
+| EX Hidden Legends | 180 | 72 | 24 | 9 | 3 | Unknown | — |
+| EX FireRed & LeafGreen | 180 | 72 | 24 | 8 | 3 | 1 | — |
+| EX Team Rocket Returns | 180 | 72 | 24 | 8.2 | 3 | 0.3 per box | 0.5 per box (~1 in 72 packs) |
+| EX Deoxys | 180 | 72 | 24 | 8.5 | 3 | Unknown | 0.5 per box (~1 in 72 packs) |
 | EX Emerald | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | — |
 | EX Unseen Forces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
 | EX Delta Species | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
@@ -156,8 +156,14 @@ estimate** for every row.
   EX Hidden Legends, EX FireRed & LeafGreen, EX Team Rocket Returns, EX
   Deoxys, and EX Dragon Frontiers. A later research pass extracted the
   EX Team Magma vs Team Aqua figures (see the table above and
-  [../team-magma-vs-team-aqua.md](../team-magma-vs-team-aqua.md)). The
-  other five sets' figures are still not extracted. See Open topics.
+  [../team-magma-vs-team-aqua.md](../team-magma-vs-team-aqua.md)). A
+  further research pass extracted the EX Hidden Legends, EX FireRed &
+  LeafGreen, EX Team Rocket Returns, and EX Deoxys figures (see the
+  table above and [../hidden-legends.md](../hidden-legends.md),
+  [../firered-leafgreen.md](../firered-leafgreen.md),
+  [../team-rocket-returns.md](../team-rocket-returns.md), and
+  [../deoxys.md](../deoxys.md)). EX Dragon Frontiers' figures are still
+  not extracted. See Open topics.
 - No source at all was found, in this research pass, with pull-rate
   figures for EX Emerald, EX Unseen Forces, EX Delta Species, EX Legend
   Maker, EX Holon Phantoms, EX Crystal Guardians, or EX Power Keepers
@@ -291,16 +297,15 @@ otherwise.
 - **Boxes per case.** Searched 2026-09-12: no source found for the
   original print run.
 - **Collation.** Searched 2026-09-12: no source found for any set.
-- **Full box-count breakdowns for five sets.** The Elite Fourum "Guide
-  to early EX Series pull rates" thread states it holds complete
-  Common/Uncommon/Rare/Rare Holo/ex/Secret Rare box counts for EX
-  Hidden Legends, EX FireRed & LeafGreen, EX Team Rocket Returns, EX
-  Deoxys, and EX Dragon Frontiers. This research pass extracted the EX
-  Team Magma vs Team Aqua figures (see the Odds by set table and
-  [../team-magma-vs-team-aqua.md](../team-magma-vs-team-aqua.md)), but
-  could not extract the other five sets' numbers from the thread. A
-  follow-up pass should open the thread directly and transcribe the
-  figures.
+- **Full box-count breakdown for EX Dragon Frontiers.** The Elite
+  Fourum "Guide to early EX Series pull rates" thread states it holds
+  complete Common/Uncommon/Rare/Rare Holo/ex/Secret Rare box counts for
+  this set. This research pass extracted the figures for EX Team Magma
+  vs Team Aqua, EX Hidden Legends, EX FireRed & LeafGreen, EX Team
+  Rocket Returns, and EX Deoxys (see the Odds by set table and each
+  set's own file), but could not extract EX Dragon Frontiers' numbers
+  from the thread. A follow-up pass should open the thread directly and
+  transcribe the figures.
 - **Pull rates for EX Emerald, EX Unseen Forces, EX Delta Species, EX
   Legend Maker, EX Holon Phantoms, and EX Crystal Guardians.** Searched
   2026-09-12: no source found beyond the general ~1:72 Gold Star
