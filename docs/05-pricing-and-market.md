@@ -77,9 +77,9 @@ player actually gets sealed product in the first place.
 - **Age-driven appreciation**: sealed product tends to appreciate as a set
   ages out of print, independent of any single card inside it.
 - **Print run and legitimacy risk**: older sealed product carries
-  resealing/counterfeit risk in real life — a natural fit for a
-  counterfeit-risk mechanic (not yet designed, see
-  [00-overview.md](00-overview.md)).
+  resealing/counterfeit risk in real life — see
+  [14-counterfeit-risk.md](14-counterfeit-risk.md) for the full
+  mechanic.
 - **EV tension**: a player who understands pull rates can calculate whether
   it is better to open a box or sell it sealed. That tension is a deliberate
   in-game decision point.

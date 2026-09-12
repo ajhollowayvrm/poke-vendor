@@ -8,48 +8,125 @@ sealed-product pricing model in
 
 ## Acquisition channels
 
-### Online — three storefronts, three tradeoffs
+### Online — five storefronts, five tradeoffs
 
 Online buying is a free action (see
-[01-premise-and-loop.md](01-premise-and-loop.md)), but "online" isn't
-one option — it's three, each with a different price/availability
-tradeoff, mirroring how this actually works in real life:
+[01-premise-and-loop.md](01-premise-and-loop.md)). "Online" is not one
+option. It is five options, and each option has a different price,
+availability, and risk tradeoff. This mirrors how online buying works
+in real life:
 
-- **Pokemon Center**: MSRP pricing, but for any hyped release it sells
-  out almost immediately. Most attempts to buy a hot set here simply
-  fail — not a time-budget cost, just a near-certain miss. A rare
-  success gets you the best possible price. An upgrade (a restock-alert
-  bot, see [09-upgrades.md](09-upgrades.md)) could meaningfully improve
-  these odds later.
+- **Pokemon Center**: MSRP pricing, but stock for a hyped release
+  comes only in timed drops (see "Pokemon Center drops" below). A
+  successful attempt gets the best possible price.
 - **Amazon**: broad availability, but pricing is inconsistent — ranges
   from roughly MSRP to noticeably marked up, varying by set and moment.
   The reliable middle ground.
 - **Hyped Reseller**: always in stock, both current and older
   out-of-print product, but always significantly overpriced. The
   fallback when you need product now, or need something no longer
-  sold at retail at all.
+  sold at retail at all. The reseller does not care if an item is
+  fake, because it moves so much product (see
+  [14-counterfeit-risk.md](14-counterfeit-risk.md)).
+- **eBay**: individual sellers list their own product in a structured
+  market. It also carries international product that the other stores
+  do not sell.
+- **Facebook Marketplace**: local people sell lots and random items at
+  random prices. It is the least structured channel. A purchase here
+  is not a free action: the pickup costs time, the same as a garage
+  sale. Sometimes the seller sets the pickup for a later day, so the
+  item arrives only after that meeting.
 
-### Camp a store drop (physical, time-cost)
+eBay and Facebook Marketplace have the best deals of all the channels.
+They also have the highest chance of a fake or a resealed product (see
+[14-counterfeit-risk.md](14-counterfeit-risk.md)).
 
-A time-cost action (see [01-premise-and-loop.md](01-premise-and-loop.md))
-— a real shot at MSRP in person. Carries real variance: sold out
-before you arrive, beaten by other buyers, or a clean success. A
-genuine bust is possible here, consistent with the game's existing
-risk design.
+#### Pokemon Center drops
+
+Stock for a hyped release comes out as a drop. A drop stays open for
+one day. During that day, the player gets one attempt to buy. The
+attempt succeeds at a fixed chance. The starting value is 30%, and the
+exact value is a balancing task. A miss costs no time and no cash.
+When the day ends, the drop closes.
+
+A drop comes with no notice. The player learns about a drop only when
+it goes live, and the Pokemon Center screen shows no upcoming drops.
+This mirrors real life, where only people in a drop-alert Discord
+group know early.
+
+Two possible upgrades (see [09-upgrades.md](09-upgrades.md)):
+
+- A drop-alert Discord membership gives notice before a drop.
+- A restock-alert bot increases the chance of success.
+
+### Camp a store drop (event, time-cost)
+
+Camping is an event, not a storefront. It does not appear on the buy
+screen. It works the same way as a garage sale or a local meet: a
+time-cost action (see [01-premise-and-loop.md](01-premise-and-loop.md))
+that the player chooses for a day. A camping event appears on the home
+hub, in the same list as card shows (see
+[08-ui-direction.md](08-ui-direction.md)).
+
+On a success, the player spends cash and gets product at MSRP. Camping
+carries real variance: the store sells out before the player arrives,
+or other buyers get the stock first. A bust costs the day and returns
+no product, consistent with the game's existing risk design.
+
+### Local stores (store run, time-cost)
+
+Big retail stores and the local game shop sell sealed product at MSRP.
+Stock is rare: most visits find an empty shelf. The player learns what
+a store has only on arrival. There is no advance information.
+
+The local stores are Target, Walmart, Best Buy, GameStop, Barnes &
+Noble, and a local game shop.
+
+A store run is a time-cost action (see
+[01-premise-and-loop.md](01-premise-and-loop.md)). The player picks one
+or more stores for one trip, and each store adds time to the trip. The
+run goes stop by stop. At each stop, the player sees the shelf, then
+buys or goes to the next stop. A stop with an empty shelf is a bust
+that costs the time for that stop.
+
+A store run is different from camping. Camping targets a known drop.
+A store run is a check with no notice.
+
+#### The local game shop
+
+The local game shop is a local store with more features:
+
+- Better stock odds than the big stores, but in small quantities.
+- Regulars get holds and preorders on hot product. The player earns
+  this through standing with the shop owner.
+
+Standing is per store. Each game shop keeps its own standing with the
+player, and it is separate from the global reputation track (see
+[04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md)).
+A player can be a regular at one shop and unknown at another. Big
+retail stores and the Pokemon Center have no standing at all.
+
+The local game shop also has:
+- A display case of singles, so the shop is also a place to buy
+  singles.
+- Events: league nights and prereleases.
 
 ### Distributor / wholesale (reputation-gated)
 
-Unlocked at higher reputation tiers (see
-[04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md)):
-true wholesale pricing and priority case allocation on hot releases,
-once the player is established enough to be trusted with it.
+Unlocked at reputation tier 3, Respected (see
+[04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#reputation-tiers)):
+true wholesale pricing, once the player is established enough to be
+trusted with it. Priority case allocation on hot releases is a step up,
+unlocked at tier 4, Elite.
 
 ### Garage sales, estate finds, meets and shows
 
 The existing Sourcer and Flipper channels
 ([02-playstyles.md](02-playstyles.md)) occasionally surface old sealed
 product instead of singles — no separate mechanic needed, just another
-possible find at an existing activity.
+possible find at an existing activity. This is also the main source of
+counterfeit/reseal risk on sealed product — see
+[14-counterfeit-risk.md](14-counterfeit-risk.md).
 
 ### Case splits (reputation-gated)
 
@@ -67,9 +144,24 @@ and private consignment (see
 This is capital-pooling, not scale/reach, so it's gated by trust
 (reputation), not audience size (followers).
 
+## Product types
+
+Sealed product is not only packs, boxes, and cases. The catalog also
+includes premium collector items, for example the Mega Charizard X
+Ultra-Premium Collection (UPC) and the Prismatic Evolutions
+Super-Premium Collection (SPC). Collectors buy these items for the
+sealed item itself. They sell through the same storefronts as other
+sealed product, and the player finds them on the buy screen (see
+[08-ui-direction.md](08-ui-direction.md)).
+
+## Where bought product goes
+
+Every purchase goes straight to Inventory. This is true for every
+channel. The buy flow never offers an "open now" choice.
+
 ## The rip-or-hold decision
 
-Once product is owned, the player chooses to open it (gambling on pull
+Once product is in Inventory, the player chooses to open it (gambling on pull
 rates) or hold it sealed (letting it appreciate). This tension is
 already designed in
 [05-pricing-and-market.md](05-pricing-and-market.md#sealed-product--separate-pricing-logic)
@@ -105,7 +197,12 @@ fixed collation.
 
 - Exact restock-alert-bot upgrade design (how much it improves Pokemon
   Center odds).
-- Whether distributor/wholesale access has its own reputation tier
-  thresholds distinct from the meet-access tiers already sketched in
-  [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md).
-- Actual pull-rate data per set, sourced as each set is added.
+- The exact Pokemon Center drop success chance (30% is the starting
+  value).
+- Whether eBay and Facebook Marketplace also sell singles, or only
+  sealed product.
+- The time each local store adds to a store run, and the stock odds
+  per store (balancing tasks).
+- How standing with a game shop rises and falls, its levels, and how
+  many game shops exist near the player.
+- How the local game shop's events connect to meets and reputation.- Actual pull-rate data per set, sourced as each set is added.

@@ -122,8 +122,21 @@ time budget. It shows up as an event in the recent-activity feed once
 the card returns (see the Wallet screen mockup in
 [08-ui-direction.md](08-ui-direction.md)).
 
-## Open topics
+## Counterfeit interaction
 
-- Whether a disappointing grade can be appealed or resubmitted, and at
-  what cost.
-- Interaction with counterfeit-risk mechanics (not yet designed).
+Submitting a card for grading also authenticates it: PSA/BGS/CGC reject
+and flag a counterfeit during submission instead of returning a numeric
+grade. This makes grading submission a real, if slow and non-free,
+backstop against fakes even before a player owns any dedicated
+authentication upgrade — see
+[14-counterfeit-risk.md](14-counterfeit-risk.md#detection-the-same-reveal-pattern-as-grading)
+for the full counterfeit mechanic, including why a grading company's
+real/fake call is treated as final.
+
+## Resubmission and appeal
+
+Out of scope for now, not planned soon. A returned grade is final —
+there is no in-game path to appeal or resubmit a card for a second
+opinion. This keeps the grading result a real, committed-to outcome of
+the risk/variance design, rather than something a player can grind
+around.

@@ -52,6 +52,10 @@ A day is the atomic tick of the game. A single day can contain many actions.
 - A local garage sale (partial day).
 - A far garage sale (most of the day).
 - Camping a store drop (large chunk of the day).
+- A store run to local stores (partial day; each store adds time — see
+  [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)).
+- A Facebook Marketplace pickup (see
+  [12-acquiring-product.md](12-acquiring-product.md)).
 - Working a local meet (partial day).
 - Going live on social media (time-cost, competes with the above).
 
