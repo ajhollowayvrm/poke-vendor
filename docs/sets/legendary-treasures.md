@@ -172,6 +172,28 @@ Bulbapedia calls the blisters "The only merchandise released to promote
 the Legendary Treasures expansion". Booster boxes still existed, because
 members report opening them.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This set has no ACE SPEC. The
+Radiant Collection is a 25-card subset with two guaranteed slots per
+pack; each of its rarities is its own entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Radiant Collection — Common | Subset | Every pack | No |
+| 4 | Reverse holo | Variant | About half of packs | No |
+| 5 | Rare | Rarity | — | Yes |
+| 6 | Rare Holo | Rarity | — | Yes |
+| 7 | Radiant Collection — Uncommon | Subset | — | No |
+| 8 | Radiant Collection — Full Art | Subset | 1 in 4 | Yes |
+| 9 | Rare Holo EX | Rarity | 1 in 6 | Yes |
+| 10 | Radiant Collection — Rare (Meloetta-EX) | Subset | 1 in 24 | Yes |
+| 11 | Rare Secret | Rarity | 1 in 72 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Legendary Treasures (TCG)](https://bulbapedia.bulbagarden.net/wiki/Legendary_Treasures_(TCG))

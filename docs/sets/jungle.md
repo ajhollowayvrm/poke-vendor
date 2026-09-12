@@ -74,6 +74,19 @@ Pack wrapper arts: PSA lists three (Scyther, Wigglytuff, Flareon) for
 1st Edition. PullMarket lists five (Flareon, Scyther, Wigglytuff,
 Mr. Mime, Pinsir).
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Rare | Rarity | 1 in 1.5 | Yes |
+| 4 | Rare Holo | Rarity | 1 in 3 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Jungle (TCG)](https://bulbapedia.bulbagarden.net/wiki/Jungle_(TCG))

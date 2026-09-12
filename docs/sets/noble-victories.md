@@ -93,6 +93,22 @@ Source: Bulbapedia merchandise page.
 | Black & White Variety Blisters | 0–3 of 3 | Random Black & White, Emerging Powers, or Noble Victories packs | Variable |
 | Legends of Justice Box | 0–1 of 3 | 1 Plasma Storm, 1 Boundaries Crossed | Variable |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Rare Ultra (Full Art) | Rarity | 1 in 18 | Yes |
+| 7 | Rare Secret | Rarity | 1 in 72 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Noble Victories (TCG)](https://bulbapedia.bulbagarden.net/wiki/Noble_Victories_(TCG))

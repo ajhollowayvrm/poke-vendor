@@ -124,6 +124,24 @@ are not researched.
 Bulbapedia (POP Series 1): boosters also appeared "in special card kits and
 at Pokémon-related events".
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). This file covers
+nine separate sets with no confirmed per-pack odds, so the list gives
+only the shared rarity order. Rare Holo ex appears only in POP Series
+1–4. Rare Holo ☆ appears only in POP Series 5. A production error makes
+every POP Series 6 pack hold a Rare card; every other set has no known
+Rare rate.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | — | No |
+| 2 | Uncommon | Rarity | — | No |
+| 3 | Rare | Rarity | — | Yes |
+| 4 | Rare Holo ex | Rarity | — | Yes |
+| 5 | Rare Holo ☆ | Rarity | — | Yes |
+
 ## Sources
 
 - [Bulbapedia — POP Series 1 (TCG)](https://bulbapedia.bulbagarden.net/wiki/POP_Series_1_(TCG))

@@ -109,6 +109,22 @@ English set, so this file does not use it.
 | Electric Garden theme deck | Not checked | — | — | Bulbapedia, PSA |
 | Case | Unknown boxes per case | — | — | — |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This uses the era's default
+Model B: the rare slot always holds a non-holo rare, and a Rare Holo is
+an extra card in about 1 pack in 3.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Rare | Rarity | Every pack | Yes |
+| 4 | Reverse holo | Variant | Every pack | No |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Expedition Base Set (TCG)](https://bulbapedia.bulbagarden.net/wiki/Expedition_Base_Set_(TCG))

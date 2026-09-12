@@ -138,6 +138,24 @@ Contents come from the Bulbapedia merchandise pages.
 | Prime Challenge Boxes (two Undaunted variants) | November 15, 2011 | 2 packs from Undaunted or Triumphant | One theme deck | Unknown |
 | Player's Collection, Player's Pack, Knock Out Collection, Variety Blister, Sneak-Peek Tins | 2010–2011 | Unknown | Assorted packs | Variable |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. A Prime fills the reverse
+holo slot instead of a plain reverse holo.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+| 6 | Rare Prime | Rarity | 1 in 7 | Yes |
+| 7 | Rare Holo LEGEND | Rarity | 1 in 9 to 1 in 12 | Yes |
+| 8 | Rare Secret | Rarity | 1 in 108 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Undaunted (TCG)](https://bulbapedia.bulbagarden.net/wiki/Undaunted_(TCG))

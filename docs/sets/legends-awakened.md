@@ -70,6 +70,21 @@ Source for counts: Bulbapedia set list.
 Pack artworks: 4 (Luxray, Lucario, Rhyperior, Giratina). Source:
 Bulbapedia booster pack page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+| 6 | Rare Holo LV.X | Rarity | 1 in 12 or 1 in 18 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Legends Awakened (TCG)](https://bulbapedia.bulbagarden.net/wiki/Legends_Awakened_(TCG))

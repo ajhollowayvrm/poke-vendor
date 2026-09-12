@@ -116,6 +116,25 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 | Team Plasma Tins | Typically 1 of 4 | 1 Plasma Freeze, 2 Plasma Blast | Variable |
 | Best of Black & White Tins | Typically 2 of 4 | 1 Plasma Blast, 1 Plasma Freeze | Variable |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. An ACE SPEC takes the
+reverse holo slot instead of a plain reverse holo.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | — | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 18 | Yes |
+| 7 | Rare Ultra (Full Art) | Rarity | 1 in 36 | Yes |
+| 8 | Rare ACE (ACE SPEC) | Rarity | 1 in 36 | Yes |
+| 9 | Rare Secret | Rarity | 1 in 72 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Plasma Storm (TCG)](https://bulbapedia.bulbagarden.net/wiki/Plasma_Storm_(TCG))

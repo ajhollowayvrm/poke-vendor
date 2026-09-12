@@ -121,6 +121,23 @@ The 8 reports total 21 Shiny Legendary cards in 288 packs.
 | Zoroark-Illusions Collection | October 5, 2011 | Typically 1 | Typically 2 Emerging Powers | Variable | Bulbapedia (Black & White merchandise) |
 | Evolved Battle Action Tins | November 2, 2011 | Typically 1 | Typically 2 Emerging Powers, 1 Black & White, 1 Triumphant | Variable | Bulbapedia (Black & White merchandise) |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This set has no Prime and no
+LEGEND cards. The slot of a Shiny Legendary card is Unknown; it can sit
+in the reverse holo slot or the rare slot.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Shiny Legendary (SL) | Subset | 1 in 18 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Call of Legends (TCG)](https://bulbapedia.bulbagarden.net/wiki/Call_of_Legends_(TCG))

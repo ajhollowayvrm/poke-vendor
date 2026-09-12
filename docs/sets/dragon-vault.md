@@ -85,6 +85,19 @@ Source: Bulbapedia merchandise page.
 Bulbapedia says the blisters "were the only products associated with
 this expansion".
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). Dragon Vault has no
+booster box; it comes only in a 3-pack blister with 5 all-holo cards per
+pack. Every card in a pack is Rare Holo, so this entry always matches
+the stop rule.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Rare Holo | Rarity | Every card | Yes |
+| 2 | Rare Secret (Kyurem) | Rarity | — | Yes |
+
 ## Sources
 
 - [Bulbapedia — Dragon Vault (TCG)](https://bulbapedia.bulbagarden.net/wiki/Dragon_Vault_(TCG))

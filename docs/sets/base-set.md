@@ -138,6 +138,19 @@ that affects scarcity/collector value (see
 what comes out of a pack. Model both with identical pack-structure
 odds.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Rare | Rarity | 67% | Yes |
+| 4 | Rare Holo | Rarity | 1 in 3 | Yes |
+
 ## Sources
 
 - [Loose Packs — Pokemon Pack Weight Guide](https://loosepacks.com/blogs/guides/pokemon-pack-weight-guide) (the empirical 288-pack study)

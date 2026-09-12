@@ -94,6 +94,24 @@ Shiny", and "All but between 2-4 Holo's".
 Pack artworks: 4 (Torterra, Infernape, Dusknoir, Regigigas). Source:
 Bulbapedia booster pack page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Shiny (SH) cards come in the
+reverse holo slot, not the rare slot.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+| 6 | Rare Holo LV.X | Rarity | 1 in 18 | Yes |
+| 7 | Rare Secret | Rarity | 1 in 36 | Yes |
+| 8 | Shiny (SH) | Subset | 1 in 36 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Stormfront (TCG)](https://bulbapedia.bulbagarden.net/wiki/Stormfront_(TCG))

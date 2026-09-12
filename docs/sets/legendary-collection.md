@@ -107,6 +107,20 @@ was found. Loose Packs shows the set only in a photo, with no data.
 | Blister pack | Unknown | — | — | — |
 | Case | Unknown boxes per case | — | — | — |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 2 in 3 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Legendary Collection (TCG)](https://bulbapedia.bulbagarden.net/wiki/Legendary_Collection_(TCG))

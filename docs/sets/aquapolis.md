@@ -117,6 +117,23 @@ Wizards of the Coast published no odds.
 | Abyss theme deck | Not checked | — | — | Bulbapedia, PSA |
 | Case | Unknown boxes per case | — | — | — |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. The rare slot always holds a
+non-holo rare (Model B); a Rare Holo (H card) is an extra card, and a
+Crystal card is rarer still.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Rare | Rarity | Every pack | Yes |
+| 4 | Reverse holo | Variant | Every pack | No |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+| 6 | Crystal (secret rare) | Rarity | 1 in 36 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Aquapolis (TCG)](https://bulbapedia.bulbagarden.net/wiki/Aquapolis_(TCG))

@@ -90,6 +90,25 @@ Source for counts: Bulbapedia set list and Arceus card list.
 Pack artworks: 4 (Zapdos, Salamence, Arceus Meadow Plate, Arceus Splash
 Plate). Source: Bulbapedia booster pack page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Arceus (AR) and Shiny (SH)
+cards come in the reverse holo slot, not the rare slot. Arceus has no
+Rare Secret cards.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 1 in 3 | Yes |
+| 6 | Arceus (AR) | Subset | 1 in 4 | Yes |
+| 7 | Rare Holo LV.X | Rarity | 1 in 12 | Yes |
+| 8 | Shiny (SH) | Subset | 1 in 36 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Platinum: Arceus (TCG)](https://bulbapedia.bulbagarden.net/wiki/Platinum:_Arceus_(TCG))

@@ -85,6 +85,24 @@ Box report (anecdote, June 2012): "2 Lv.X, 2 Rotom, and a Pikachu".
 Pack artworks: 4 (Scizor, Houndoom, Leafeon, Rotom). Source: Bulbapedia
 booster pack page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Rotom (RT) cards come in the
+reverse holo slot, not the rare slot.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 1 in 3 or 1 in 4 | Yes |
+| 6 | Rare Holo LV.X | Rarity | 1 in 12 to 1 in 18 | Yes |
+| 7 | Rotom (RT) | Subset | 1 in 18 | Yes |
+| 8 | Rare Secret | Rarity | 1 in 36 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Rising Rivals (TCG)](https://bulbapedia.bulbagarden.net/wiki/Rising_Rivals_(TCG))

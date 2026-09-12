@@ -111,6 +111,23 @@ Source: Bulbapedia merchandise page.
 A PokeBeach member wrote that the Three Pack Blisters "were only released
 overseas", not in North America. This agrees with Bulbapedia.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 18 | Yes |
+| 7 | Rare Ultra (Full Art) | Rarity | 1 in 36 | Yes |
+| 8 | Rare Secret | Rarity | 1 in 72 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Dark Explorers (TCG)](https://bulbapedia.bulbagarden.net/wiki/Dark_Explorers_(TCG))

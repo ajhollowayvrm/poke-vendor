@@ -64,15 +64,20 @@ rule has two parts. A card that matches **either** part stops the rip.
 The rarities come from the set file, so each set has its own rarity
 list (see [13-sets.md](13-sets.md#what-goes-in-a-set-file)).
 
-- The list holds every rarity **and** every variant in the set, in
-  order from low to high. For example, the Black Bolt list holds
-  Double Rare, Illustration Rare, and also the Poké Ball pattern and
-  the Master Ball pattern.
+- The list holds every rarity, every variant, and every subset in the
+  set, including the special rarities of that set. For example, the
+  Black Bolt list holds Double Rare, Illustration Rare, Black White
+  Rare, and also the Poké Ball pattern and the Master Ball pattern.
+- The list goes in order of pull odds. The most common entry is first,
+  and the rarest entry is last. When a set has no odds for an entry,
+  the era's rarity system decides its place.
 - The player selects single entries, for example only the Poké Ball
   pattern.
 - The player can also select **"this rarity or higher"**, for example
-  Double Rare or higher. The set file's order decides what "higher"
-  means.
+  Double Rare or higher. "Higher" means rarer: every entry after that
+  entry in the list. In Black Bolt, "Double Rare or higher" does not
+  include the Poké Ball pattern, because the Poké Ball pattern is more
+  common than Double Rare.
 - When the queue holds more than one set, the stop rule menu shows one
   rarity list for each set.
 - Settings saves the rarity selection for each set. A set with no saved

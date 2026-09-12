@@ -117,6 +117,24 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 | EX Power Tins | 0–2 of 4 | 1 Plasma Storm, 1 Boundaries Crossed, 2 from Emerging Powers, Next Destinies, or Dragons Exalted | Variable |
 | Evolved Battle Action Tins (later retail version) | Typically 1 of 3 | 1 Dragons Exalted, 1 Boundaries Crossed | Variable |
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This is the first set with
+Pokémon-EX.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 18 | Yes |
+| 7 | Rare Ultra (Full Art) | Rarity | 1 in 36 | Yes |
+| 8 | Rare Secret | Rarity | 1 in 72 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Next Destinies (TCG)](https://bulbapedia.bulbagarden.net/wiki/Next_Destinies_(TCG))
