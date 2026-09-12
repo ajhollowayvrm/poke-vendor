@@ -110,6 +110,36 @@ Every card in the set, with its variants. Source: the TCGdex API (set `det1`), f
 | 16/18 | Lickitung | Pokémon (Colorless) | Common | Normal |
 | 17/18 | Ditto | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
 | 18/18 | Slaking | Pokémon (Colorless) | Rare | Normal, Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the 4-card pack structure above. TCGdex
+splits the Rare Holo cards into two rarities, Rare and Ultra Rare; the
+Rare Holo outcome draws from both. TCGdex records the Common Holo cards
+with only a Normal variant, not a Holo variant. Basic Energy and the
+code card are Unknown for this set, so the map gives them no row of
+their own beyond the placeholder below.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common Holo | 3 | Common Holo | Common Holo | Common | Normal | All | 100% |
+| Rare Holo | 1 | Rare Holo | Rare Holo | Rare, Ultra Rare | Holo | All | 100% |
+| Basic Energy | Unknown | Basic Energy | — | — | — | — | — |
+| Code card | Unknown | Code card | — | — | — | — | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -133,6 +163,17 @@ there is no booster box. This set has only two rarities.
 
 ## Open topics
 
+- **Slot map:** TCGdex tags 4 of the 10 Rare Holo cards (Charizard,
+  Greninja, Mewtwo, Ditto) as Ultra Rare rather than Rare. The Rare
+  Holo outcome draws from both TCGdex rarities as one pool, since the
+  set's rarity list has only Common Holo and Rare Holo.
+- **Slot map:** TCGdex records the 8 Common Holo cards with only a
+  Normal variant. No source confirms whether the physical print is
+  holo, plain, or both.
+- **Slot map:** Basic Energy and the code card are Unknown for this
+  set. The map keeps a placeholder row for each with no odds.
+- **Slot map:** the Normal variant of the 10 Rare and Ultra Rare cards
+  stays unused. The Rare Holo outcome uses their Holo variant instead.
 - **Pack order: Unknown.** Searched 2026-09-12: no pack-opening video
   or guide found for this set.
 - **Per-card odds conflict.** With 9 Rare Holos and even weighting, one

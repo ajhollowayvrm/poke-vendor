@@ -281,6 +281,46 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 | 170/149 | Darkness Energy | Energy (Normal) | Common | Normal |
 | 171/149 | Metal Energy | Energy (Normal) | Common | Normal |
 | 172/149 | Fairy Energy | Energy (Normal) | Common | Normal |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure and the ThePriceDex
+odds above. The card list gives Basic Energy cards the Common rarity,
+so the Common slot and the Basic Energy slot split by category, not by
+a separate TCGdex rarity. TCGdex records Rare Holo GX, Ultra Rare (full
+art), and Rainbow Rare as one rarity, Ultra Rare, and the true Secret
+Rare shares its rarity with Rainbow Rare. The card numbers tell the four
+outcomes apart: Rare Holo GX is the first appearance of each GX card,
+Ultra Rare is the full art repeat, Rainbow Rare is the second repeat,
+and Secret Rare is the trailing Trainer and Energy cards.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Category: Pokémon | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Secret Rare | Secret Rare | Secret Rare | Holo | Nos. 158–163 | 1% |
+| Rare slot | 1 | Rainbow Rare | Rainbow Rare | Secret Rare | Holo | Nos. 150–157 | 1.33% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | Nos. 138–149 | 4.33% |
+| Rare slot | 1 | Rare Holo GX | Rare Holo GX | Ultra Rare | Holo | Nos. 12–110 | 11.11% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | 15.63% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Basic Energy | 1 | Basic Energy | Common | Common | Normal | Category: Energy | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -314,6 +354,19 @@ the most common entry to the rarest entry.
 
 ## Open topics
 
+- **Slot map:** TCGdex records Rare Holo GX and Ultra Rare (full art)
+  under one rarity, Ultra Rare, and Rainbow Rare and Secret Rare under
+  one rarity, Secret Rare. The slot map splits each pair by card number:
+  the first appearance of a GX card is Rare Holo GX, its full art repeat
+  is Ultra Rare, its second repeat is Rainbow Rare, and the trailing
+  Trainer and Energy cards are Secret Rare. No source confirms this
+  split by name; it follows the repeating pattern in the card numbers.
+- **Slot map:** the Ultra Rare Normal variant (23 cards) and the Secret
+  Rare Normal variant (14 cards) stay unused. TCGplayer added these
+  Normal prints to cards that pull only as Holo in a pack.
+- **Slot map:** the Rare outcome draws from the Rare rarity's Normal
+  variant, all 33 cards. 16 of those cards also carry a Holo variant,
+  used by the Rare Holo outcome. The two outcomes share cards.
 - Pack order: no source shows a real opened Sun & Moon pack. See the era
   file.
 - The PokeBeach article returned HTTP 403. The slot breakdown from

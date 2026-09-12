@@ -188,6 +188,50 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), 
 | 76/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
 | 77/73 | Zoroark GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
 | 78/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure and the ThePriceDex
+odds above. This set has no non-holo Rare; the TCGdex Rare rarity (13
+cards) holds the one Rare Holo GX card (Entei GX, no. 10) and the 12
+regular holo rares together, told apart by card number. TCGdex also
+records the Shining Pokémon, Rare Holo GX repeats, and full art
+Trainers under one rarity, Ultra Rare, and the Rainbow Rare and Secret
+Rare repeats under one rarity, Secret Rare; the map tells each group
+apart by card number and name (the Shining Pokémon by name, the GX
+repeats by number range). The card list holds no Basic Energy card, so
+the dedicated Basic Energy slot does not draw from it. The reverse holo
+slot can also give a reverse holo Basic Energy; no card in the list
+represents it.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse Basic Energy | Reverse holo | — | Reverse holo [missing] | — | 1 in 14.3 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Secret Rare | Secret Rare | Secret Rare | Holo | Nos. 78 | 0.51% |
+| Rare slot | 1 | Rainbow Rare | Rainbow Rare | Secret Rare | Holo | Nos. 74–77 | 2.02% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | Nos. 29,39,53,71–73 | 4.13% |
+| Rare slot | 1 | Rare Holo GX | Rare Holo GX | Rare | Holo | Nos. 10 | 11.11% |
+| Rare slot | 1 | Rare Shining | Rare Shining | Ultra Rare | Holo | Nos. 9,27,40,42,56,57 | 8.85% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 10 | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | Unknown | Code card | — | — | — | — | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -220,6 +264,19 @@ set has no non-holo Rare.
 
 ## Open topics
 
+- **Slot map:** the TCGdex card list has no Basic Energy card. The
+  reverse holo slot outcome for Reverse Basic Energy uses the ` [missing]`
+  tag and the odds figure from the pull-rate table above.
+- **Slot map:** TCGdex tags only one card (Entei GX, no. 10) as Rare
+  Holo GX; it splits the other GX names (Raichu GX, Mewtwo GX, Zoroark
+  GX), the 6 Shining Pokémon, and the one full art Trainer into the
+  Ultra Rare and Rare Shining outcomes by card number and name, and the
+  GX repeats into Rainbow Rare and Secret Rare by card number. No
+  source confirms this split; it follows the repeating pattern in the
+  card names and numbers.
+- **Slot map:** the Normal variant of Rare, Ultra Rare, and Secret Rare
+  (30 cards) stays unused. TCGplayer added these Normal prints to cards
+  that pull only as Holo in a pack.
 - Pack order for this set: not confirmed by any source.
 - Code card in the pack: Unknown. Searched 2026-09-12: Bulbapedia states
   only "11 cards, with 2 guaranteed foil cards" and does not mention a

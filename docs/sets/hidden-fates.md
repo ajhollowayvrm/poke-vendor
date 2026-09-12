@@ -306,6 +306,57 @@ TCGdex set `sma`: 94 cards.
 | SV92 | Tapu Fini-GX | Pokémon (Water) | Secret Rare | Normal, Holo |
 | SV93 | Tapu Koko-GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
 | SV94 | Tapu Lele-GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure and the ThePriceDex
+odds above. The card list has two tables, Hidden Fates and Hidden
+Fates Shiny Vault. Both hold a Secret Rare TCGdex rarity, so the map
+uses `Part:` to tell the main set's one Secret Rare card apart from
+the Shiny Vault's 8 Secret Rare cards. The common and uncommon slot has
+no confirmed split; the map gives it one combined slot with no odds
+per outcome. The card list holds no Basic Energy card, so the
+dedicated Basic Energy slot does not draw from it. TCGdex records Rare
+Holo GX and Ultra Rare under one rarity, Ultra Rare (split here by card
+number: Rare Holo GX is the first appearance of each GX card, Ultra
+Rare is the full art repeat and the 2 Supporter cards). It also records
+the Shiny Vault's Shiny Rare and Shiny Rare GX under one rarity, Shiny
+rare (split by card number: SV1–SV45 and SV81–SV86 are Shiny Rare,
+SV46–SV80 are Shiny Rare GX), and the Shiny Vault's Secret Rare and
+Ultra Rare under one rarity, Secret Rare (split by card number: SV87–
+SV90, the Stadium cards, are Secret Rare; SV91–SV94, the full-gold Tapu
+Pokémon-GX named in Special subsets above, are Ultra Rare).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common and uncommon | 7 | Common | Common | Common | Normal | Part: Hidden Fates | — |
+| Common and uncommon | 7 | Uncommon | Uncommon | Uncommon | Normal | Part: Hidden Fates | — |
+| Reverse holo | 1 | Shiny Vault — Ultra Rare | Shiny Vault — Ultra Rare | Secret Rare | Holo | Part: Hidden Fates Shiny Vault; Nos. SV91–SV94 | 1.19% |
+| Reverse holo | 1 | Shiny Vault — Secret Rare | Shiny Vault — Secret Rare | Secret Rare | Holo | Part: Hidden Fates Shiny Vault; Nos. SV87–SV90 | 1.59% |
+| Reverse holo | 1 | Shiny Vault — Shiny Rare GX | Shiny Vault — Shiny Rare GX | Shiny rare | Holo | Part: Hidden Fates Shiny Vault; Nos. SV46–SV80 | 9.43% |
+| Reverse holo | 1 | Shiny Vault — Shiny Rare | Shiny Vault — Shiny Rare | Shiny rare | Holo | Part: Hidden Fates Shiny Vault; Nos. SV1–SV45,SV81–SV86 | 21.28% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | Part: Hidden Fates | Rest |
+| Rare slot | 1 | Rainbow Rare | Rainbow Rare | Secret Rare | Holo | Part: Hidden Fates | 1.1% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | Nos. 66–68 | 3.91% |
+| Rare slot | 1 | Rare Holo GX | Rare Holo GX | Ultra Rare | Holo | Nos. 6,9,14,16,20,31,36,42,44 | 14.93% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | 20% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -344,6 +395,22 @@ plain reverse holos; each of its rarities is its own entry.
 
 ## Open topics
 
+- **Slot map:** the common and uncommon split is Unknown, so the slot
+  map gives both outcomes `—` odds in one combined slot.
+- **Slot map:** TCGdex records Rare Holo GX and Ultra Rare under one
+  rarity, Ultra Rare (12 cards); Shiny Vault Shiny Rare and Shiny Rare
+  GX under one rarity, Shiny rare (86 cards); and Shiny Vault Secret
+  Rare and Ultra Rare under one rarity, Secret Rare (8 cards). The slot
+  map splits each pair by card number, using the repeating GX pattern
+  for the main set and the SV number ranges for the Shiny Vault. No
+  source confirms these splits.
+- **Slot map:** the main set's Rainbow Rare outcome uses the Secret
+  Rare rarity's one card (the TAG TEAM full art rainbow rare), told
+  apart from the Shiny Vault's 8 Secret Rare cards by `Part:`.
+- **Slot map:** the Normal variant of Ultra Rare (12 cards), Secret Rare
+  (9 cards across both tables), and Shiny rare (86 cards) stays unused.
+  TCGplayer added these Normal prints to cards that pull only as Holo
+  in a pack.
 - Pack order for this set: not confirmed by any source. Searched
   2026-09-12: no card-by-card source found.
 - **Pack size conflict.** Bulbapedia gives 10 cards plus an Energy and a

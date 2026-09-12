@@ -196,6 +196,53 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7.5`), 
 | 76/70 | Fiery Flint | Trainer (Item) | Secret Rare | Normal, Holo |
 | 77/70 | Switch Raft | Trainer (Item) | Secret Rare | Normal, Holo |
 | 78/70 | Ultra Necrozma GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure and the ThePriceDex
+odds above. This set has no non-holo Rare; the TCGdex Rare rarity holds
+the holo rares. TCGdex records Rare Holo GX and Ultra Rare (full art)
+under one rarity, Ultra Rare, and Rainbow Rare and Secret Rare under one
+rarity, Secret Rare. The card numbers tell the outcomes apart: Rare
+Holo GX is the first appearance of each GX card, Ultra Rare is the full
+art repeat, Rainbow Rare is the second repeat, and Secret Rare is the
+trailing Trainer, Item, and unique GX cards. TCGdex tags Prism Star
+cards with the ◇ mark in the card name, inside the Rare rarity; the map
+finds them by name and number, so Rare Prism Star and Rare Holo do not
+share cards. The pack slot for Prism Star cards is Unknown, so this map
+places the outcome in the rare slot, alongside the other hit outcomes.
+The card list holds no Basic Energy card, so the dedicated Basic Energy
+slot does not draw from it. The reverse holo slot can also give a
+reverse holo Basic Energy; no card in the list represents it.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse Basic Energy | Reverse holo | — | Reverse holo [missing] | — | 1 in 14.9 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Secret Rare | Secret Rare | Secret Rare | Holo | Nos. 75–78 | 2.13% |
+| Rare slot | 1 | Rainbow Rare | Rainbow Rare | Secret Rare | Holo | Nos. 71–74 | 2.13% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | Nos. 65–70 | 5.75% |
+| Rare slot | 1 | Rare Prism Star | Rare Prism Star | Rare | Holo | Nos. 7,61 | 10% |
+| Rare slot | 1 | Rare Holo GX | Rare Holo GX | Ultra Rare | Holo | Nos. 11,18,37,41,44,48 | 14.93% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 7,61 | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | Unknown | Code card | — | — | — | — | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -228,6 +275,18 @@ set has no non-holo Rare.
 
 ## Open topics
 
+- **Slot map:** the pack slot for Prism Star cards is Unknown. The slot
+  map places Rare Prism Star in the rare slot, by card number and the ◇
+  mark in the card name. Fix this row if a source confirms the reverse
+  holo slot instead.
+- **Slot map:** TCGdex records Rare Holo GX and Ultra Rare (full art)
+  under one rarity, Ultra Rare, and Rainbow Rare and Secret Rare under
+  one rarity, Secret Rare. The slot map splits each pair by card
+  number, from the repeating pattern in the card names. No source
+  confirms the split.
+- **Slot map:** the TCGdex card list has no Basic Energy card. The
+  reverse holo slot outcome for Reverse Basic Energy uses the ` [missing]`
+  tag and the odds figure from the pull-rate table above.
 - Pack order for this set: not confirmed by any source.
 - The Prism Star slot: Unknown. In the main sets, Prism Stars come in
   the reverse slot, but no source confirms this for Dragon Majesty.

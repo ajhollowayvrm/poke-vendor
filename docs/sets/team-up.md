@@ -302,6 +302,50 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 194/181 | Judge Whistle | Trainer (Item) | Secret Rare | Normal, Holo |
 | 195/181 | Metal Goggles | Trainer (Tool) | Secret Rare | Normal, Holo |
 | 196/181 | Pokémon Communication | Trainer (Item) | Secret Rare | Normal, Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure and the ThePriceDex
+odds above. The card list holds no Basic Energy card, so the Basic
+Energy slot does not draw from it. TCGdex records Rare Holo GX (this
+includes TAG TEAM Pokémon-GX) and Ultra Rare (full art) under one
+rarity, Ultra Rare, and Rainbow Rare and Secret Rare under one rarity,
+Secret Rare. The card numbers tell the four outcomes apart: Rare Holo
+GX is the first appearance of each GX card, Ultra Rare is the full art
+or alternate art repeat, Rainbow Rare is the next repeat, and Secret
+Rare is the trailing Trainer cards. TCGdex tags Prism Star cards with
+the ◇ mark in the card name, inside the Rare rarity; the map finds them
+by name and number, so the reverse holo slot's Prism Star outcome and
+the rare slot's Rare Holo outcome do not share cards.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Rare Prism Star | Rare Prism Star | Rare | Holo | Nos. 10,51,134,158 | 5.56% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Secret Rare | Secret Rare | Secret Rare | Holo | Nos. 192–196 | 0.83% |
+| Rare slot | 1 | Rainbow Rare | Rainbow Rare | Secret Rare | Holo | Nos. 182–191 | 1.67% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | Nos. 159–181 | 4.17% |
+| Rare slot | 1 | Rare Holo GX | Rare Holo GX | Ultra Rare | Holo | Nos. 1–120 | 10% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 10,51,134,158 | 16.67% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -337,6 +381,17 @@ entries; no source gives them a separate rate.
 
 ## Open topics
 
+- **Slot map:** TCGdex records Rare Holo GX and Ultra Rare (full art)
+  under one rarity, Ultra Rare, and Rainbow Rare and Secret Rare under
+  one rarity, Secret Rare. The slot map splits each pair by card
+  number, from the repeating pattern in the card names. No source
+  confirms the split.
+- **Slot map:** TCGdex tags Prism Star cards with a ◇ mark in the card
+  name, inside the Rare rarity. The map lists the 4 Prism Star cards by
+  number, so Rare Prism Star and Rare Holo do not share cards.
+- **Slot map:** the Ultra Rare Normal variant (34 cards) and the Secret
+  Rare Normal variant (15 cards) stay unused. TCGplayer added these
+  Normal prints to cards that pull only as Holo in a pack.
 - Pack order: no source shows a real opened Team Up pack.
   Searched 2026-09-12 at the era level: no card-by-card video or
   photo source was found. See eras/sun-moon.md#orientation for the
