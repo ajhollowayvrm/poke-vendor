@@ -1,0 +1,122 @@
+# Southern Islands (2001)
+
+Set data for Southern Islands, a fixed 18-card subset from Wizards of the
+Coast. Southern Islands does **not** use the Wizards of the Coast era pack
+template. The template is in
+[eras/wizards-of-the-coast.md](eras/wizards-of-the-coast.md). The general
+approach is in [../13-sets.md](../13-sets.md).
+
+Southern Islands has no booster packs of its own. Wizards of the Coast sold
+it only as a folder collection. The Wizards of the Coast era file and
+[eras/e-card.md](eras/e-card.md) both exclude it from their set lists for
+this reason.
+
+## Release
+
+| Field | Value | Source | Confidence |
+|---|---|---|---|
+| English release date | July 31, 2001 | Bulbapedia | Official |
+| Japanese release date | July 17, 1999 | Bulbapedia | Official |
+| Total cards | 18 | Bulbapedia, Going Twice | Official |
+| Card design | English cards use the Neo series card frame. Japanese cards use the older Base Set through Team Rocket frame. | Bulbapedia | Official |
+| Rarity symbols | None. The cards are numbered 1/18 to 18/18, with no rarity symbol, because the set is a fixed set. | Bulbapedia | Official |
+| Set abbreviation | SI (per card database convention; not confirmed as an official Wizards of the Coast code) | Not confirmed in a fetched source | Unknown |
+
+### Cards per rarity
+
+| Variant | Count | Cards | Source |
+|---|---|---|---|
+| Regular (non-holo) | 12 | The 12 cards not listed below | Bulbapedia, t206cards |
+| Reverse holo (galaxy foil) | 6 | Mew (1/18), Togepi (4/18), Ledyba (7/18), Marill (11/18), Slowking (14/18), Vileplume (17/18) | Bulbapedia, Going Twice, t206cards |
+
+Going Twice: the galaxy foil pattern sits "outside of the Pokemon character
+box" on the card. Every other card in the set has no foil.
+
+## How the set is sold
+
+Southern Islands has no booster packs of its own. Wizards of the Coast sold
+the English version as one folder product.
+
+- **The folder.** A hard-shell, three-ring binder folder ("Going Twice"
+  calls it a "hard shell three ring binder"). Card art across the set forms
+  scenes when the cards sit together in the folder (Bulbapedia).
+- **Contents.** All 18 Southern Islands cards, postcards that show Southern
+  Islands artwork, and 3 booster packs (Going Twice, Bulbapedia).
+- **The 3 booster packs are not Southern Islands packs.** They are packs
+  from other Neo era sets: "a mix of Neo Discovery and Neo Genesis" (Going
+  Twice). Confidence: community source (a retail blog), read as a search
+  extract.
+- **Conflict:** one search result describes the release as "sold in 6 sets,
+  each containing 3 cards (one Holo and 2 regular)". No fetched source
+  explains this claim, and it does not match the folder description above.
+  This file does not use it. It may describe how the 18 cards group into 6
+  scenes of 3 cards each, not a separate product.
+- **MSRP.** Unknown. No fetched source gives an original retail price.
+- **Japanese release.** Sold differently: two promo folders of 9 cards each
+  (Rainbow Island and Tropical Island) with the second Pokémon movie in
+  1999, and also as 3-card box sets (Bulbapedia). This file covers the
+  English release only.
+
+## Pack structure
+
+Not applicable. Southern Islands has no packs of its own. The 3 booster
+packs in the folder are Neo Genesis and Neo Discovery packs; their pack
+structure is in [eras/wizards-of-the-coast.md](eras/wizards-of-the-coast.md).
+
+## Pack order
+
+Not applicable. The folder gives every buyer the same fixed 18 cards.
+
+## Odds
+
+Every folder holds the same fixed 18 cards: 12 regular and 6 reverse holo.
+There is no random draw for the Southern Islands cards themselves.
+
+| Figure | Value | Confidence |
+|---|---|---|
+| Any Southern Islands card in a folder | 100%, every folder has all 18 | Official |
+| A specific card (for example Mew) in a folder | 100%, the set is fixed | Official |
+| The 3 bundled booster packs' contents | Random, per the Wizards of the Coast era template | Community estimate |
+
+## Sealed products
+
+| Product | Contents | Source |
+|---|---|---|
+| Southern Islands Collection folder | 18 cards, postcards, 3 Neo era booster packs (Neo Genesis and Neo Discovery mix) | Bulbapedia, Going Twice |
+
+No booster box or booster pack of Southern Islands cards exists in English.
+
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). Southern Islands has no
+packs of its own; a buyer receives the complete fixed set of 18 cards in one
+folder, so there is no pull-rate order to rank.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Regular | Variant | Every folder (100%, fixed) | No |
+| 2 | Reverse holo (galaxy foil) | Variant | Every folder (100%, fixed) | No |
+
+## Sources
+
+- [Bulbapedia — Southern Islands (TCG)](https://bulbapedia.bulbagarden.net/wiki/Southern_Islands_(TCG))
+- [Going Twice — The Southern Islands Collection](https://www.goingtwice.com/blogs/pokemon/the-southern-islands-collection)
+- [t206cards — The 2001 Pokemon Southern Islands Set Checklist](https://t206cards.com/checklists/southern-islands/)
+- [Bulbapedia — List of Pokémon Trading Card Game expansions](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_Trading_Card_Game_expansions)
+
+## Open topics
+
+- **MSRP:** Searched 2026-09-12: no source found for the original folder
+  price.
+- **Set abbreviation:** not confirmed as an official Wizards of the Coast
+  code.
+- **The "6 sets of 3 cards" claim:** one search result gives it with no
+  supporting source. It conflicts with the single-folder description in
+  Bulbapedia and Going Twice. Not used in this file.
+- **Rarity list odds:** the set has no pull rates because every folder
+  holds the same fixed 18 cards. "Odds per pack" is 100% for both entries
+  by definition.
+- **Rarity list order:** Regular sits first because there are more Regular
+  cards (12) than Reverse holo cards (6), matching the "most common first"
+  rule even though every folder contains both in full.

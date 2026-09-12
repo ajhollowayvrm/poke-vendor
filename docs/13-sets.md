@@ -48,7 +48,7 @@ records only its set data and its exceptions to the template.
 
 ## Sets done so far
 
-113 set files in 10 eras.
+117 set files in 10 eras.
 
 - **Wizards of the Coast (1999–2002)** —
   [eras/wizards-of-the-coast.md](sets/eras/wizards-of-the-coast.md):
@@ -58,7 +58,8 @@ records only its set data and its exceptions to the template.
   [Gym Challenge](sets/gym-challenge.md), [Neo Genesis](sets/neo-genesis.md),
   [Neo Discovery](sets/neo-discovery.md),
   [Neo Revelation](sets/neo-revelation.md),
-  [Neo Destiny](sets/neo-destiny.md).
+  [Neo Destiny](sets/neo-destiny.md),
+  [Southern Islands](sets/southern-islands.md).
 - **e-Card (2002–2003)** — [eras/e-card.md](sets/eras/e-card.md):
   [Legendary Collection](sets/legendary-collection.md),
   [Expedition Base Set](sets/expedition-base-set.md),
@@ -140,7 +141,10 @@ records only its set data and its exceptions to the template.
   [Astral Radiance](sets/astral-radiance.md),
   [Pokémon GO](sets/pokemon-go.md), [Lost Origin](sets/lost-origin.md),
   [Silver Tempest](sets/silver-tempest.md),
-  [Crown Zenith](sets/crown-zenith.md).
+  [Crown Zenith](sets/crown-zenith.md),
+  [McDonald's Collection 2021](sets/mcdonalds-collection-2021.md),
+  [McDonald's Collection 2022](sets/mcdonalds-collection-2022.md),
+  [Trick or Trade 2022](sets/trick-or-trade-2022.md).
 - **Scarlet & Violet (2023–2025)** —
   [eras/scarlet-violet.md](sets/eras/scarlet-violet.md):
   [Scarlet & Violet](sets/scarlet-violet.md),
@@ -167,14 +171,12 @@ records only its set data and its exceptions to the template.
 
 ## Open topics
 
-- Rarity lists (see [18-ripping.md](18-ripping.md#the-stop-rule)): all
-  113 set files have one. Each set file records, in its own Open
+- Rarity lists (see [18-ripping.md](18-ripping.md#the-stop-rule)): every
+  set file has one. Each set file records, in its own Open
   topics, the entries with no odds and each choice about the order.
   A new set file must also get a rarity list.
-- Sets with no file: the Sword & Shield promotional sets (McDonald's
-  Collection 2021 and 2022, Trick or Trade 2022). Add them when the
-  game needs them (see
-  [12-acquiring-product.md](12-acquiring-product.md)).
+- Sets with no file: the 16 EX era sets (2003–2007). The EX era has
+  no era file yet.
 - At least six of the ten eras do not put the hit in the last three
   cards: Wizards of the Coast, Diamond & Pearl and Platinum,
   HeartGold & SoulSilver, Black & White, XY, and Sword & Shield. Decide

@@ -1,0 +1,141 @@
+# Trick or Trade 2022 (2022)
+
+Set data for Trick or Trade 2022, a promotional Sword & Shield era set
+sold only as mini packs inside one large bundle bag. The era's booster-box
+template does not apply. The era file is
+[eras/sword-shield.md](eras/sword-shield.md). The general approach is in
+[../13-sets.md](../13-sets.md). The era file lists this set as "Sets in
+this era" with "No set file yet" before this file existed. Trick or Trade
+is the first of a yearly series that ran from 2022 to 2024 (Bulbapedia).
+
+## Release
+
+| Field | Value | Source | Confidence |
+|---|---|---|---|
+| Release date | September 1, 2022, in Canada, the U.S., and the UK | Bulbapedia | Official |
+| Early retail stocking | Some U.S. outlets stocked shelves in mid-August 2022 | Gamepur | Community estimate |
+| Total cards | 30 | Bulbapedia | Official |
+| Card source | Reprints selected from Rebel Clash through Astral Radiance, chosen for a Halloween theme | Bulbapedia | Official |
+| Card marking | Original set number kept; a Pikachu jack-o'-lantern stamp is added in the bottom right corner of the artwork | Bulbapedia | Official |
+
+### Cards per rarity
+
+| Rarity | Count | Cards | Source |
+|---|---|---|---|
+| Common | 13 | Not individually listed in fetched sources | Bulbapedia |
+| Uncommon | 7 | Not individually listed in fetched sources | Bulbapedia |
+| Rare Holo | 10 | Trevenant, Chandelure, Mimikyu, Gengar, Hatterene, Gourgeist, Mewtwo, Dusknoir, Mismagius, and one more card (Bulbapedia states 10 Rare Holo, but names only 9) | Bulbapedia |
+
+13 + 7 + 10 = 30. Every card keeps a single rarity and finish; there is
+no separate non-holo version of the Rare Holo cards, unlike the two
+McDonald's Collection sets.
+
+## How the product is sold
+
+Trick or Trade 2022 has no booster box and no single-pack retail product.
+It is sold only as one large bag, the "Trick or Trade BOOster Bundle."
+
+- **Cards per mini pack:** 3.
+- **Mini packs per bundle:** 40.
+- **Cards per bundle:** 120 (40 × 3).
+- **Price:** $14.99 per bundle (Gamepur).
+- **Set completion:** the 120 cards in one bundle average 4 copies of
+  each of the 30 cards, so 1 bundle usually completes the set, with some
+  variance (rippr.app search summary).
+- **Conflict:** one search result mentions "a larger version with 120
+  mini packs" (Bulbapedia summary). No fetched source describes this
+  product in detail. It may be a case of multiple bundles, not a single
+  product; not confirmed.
+
+## Pack structure
+
+| Slot | Count | Contents | Confidence |
+|---|---|---|---|
+| Holo | 1 | 1 of the 10 Rare Holo cards | Empirical study (rippr.app, 200 packs across 5 bundles) |
+| Non-holo | 2 | 2 of the 20 Common or Uncommon cards | Empirical study (derived from the same source) |
+
+A search summary of the rippr.app pull-rate article: "every pack holding
+exactly 3 cards and guaranteeing 1 holographic card per pack." Confidence:
+empirical study, but the direct article page could not be fetched (HTTP
+403); this figure comes from the search result summary only.
+
+## Pack order
+
+Unknown. No fetched source describes the order of the 3 cards inside a
+mini pack.
+
+## Odds
+
+The only pull-rate data found is a rippr.app study, read only through a
+search result summary (the article itself returned HTTP 403 on fetch).
+The study covers "five bags (200 packs)."
+
+| Figure | Value | Confidence |
+|---|---|---|
+| Rare Holo card, any of the 10, per pack | Guaranteed, 1 per pack | Empirical study (summary only) |
+| Darkrai pull | Hardest to pull: "one or two in every bag" (of 40 packs) | Empirical study, small sample (5 bags), summary only |
+| Chandelure pull | Next hardest: "about two in every bag" | Empirical study, small sample (5 bags), summary only |
+| Dusknoir, Mismagius, Gourgeist pulls | Most common holo pulls | Empirical study, small sample (5 bags), summary only |
+| Ultra-rare tier (EX, V, VMAX) | None in this set | Official (derived from the 30-card list) |
+
+The rippr.app summary calls out Darkrai as a chase card, but Bulbapedia's
+10-card Rare Holo list (above) does not include Darkrai by name; this is
+a conflict this file cannot resolve from the sources fetched.
+
+## Special mechanics
+
+- **Halloween theme.** An alternative to candy for trick-or-treaters
+  (Bulbapedia, Gamepur).
+- **No ultra-rare tier.** The set has no EX, V, or VMAX cards; Rare Holo
+  is the top rarity (rippr.app summary).
+- **Yearly series.** Trick or Trade returned in 2023 and 2024 with new
+  card lists (Bulbapedia).
+
+## Sealed products
+
+| Product | Cards per mini pack | Mini packs per product | Total cards | Price | Source |
+|---|---|---|---|---|---|
+| Trick or Trade BOOster Bundle | 3 | 40 | 120 | $14.99 | Gamepur, rippr.app summary |
+
+No booster box or single mini pack was sold separately at retail.
+
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). Trick or Trade 2022
+has no booster box; every pack is a 3-card mini pack with one guaranteed
+Rare Holo card. Odds use the rippr.app study (5 bundles, 200 packs), read
+only through a search summary.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | — | No |
+| 2 | Uncommon | Rarity | — | No |
+| 3 | Rare Holo | Rarity | Every pack (guaranteed, 1 of 10 cards) | Yes |
+
+## Sources
+
+- [Bulbapedia — Trick or Trade 2022 (TCG)](https://bulbapedia.bulbagarden.net/wiki/Trick_or_Trade_2022_(TCG))
+- [Bulbapedia — Trick or Trade (TCG series)](https://bulbapedia.bulbagarden.net/wiki/Trick_or_Trade_(TCG))
+- [Gamepur — All Trick or Trade Pokémon cards: rarity, prices, and more](https://www.gamepur.com/guides/all-trick-or-trade-pokemon-cards-rarity-prices-and-more)
+- [rippr.app — 2022 Trick or Trade Chase Cards: Gengar, Mimikyu & Stamp Pulls](https://rippr.app/blog/2022-pokemon-trick-or-trade-booster-bundle-chase-cards-pull-rates) (fetch failed with HTTP 403; cited only through the search result summary)
+- [PokeBeach — All 30 Pokemon "Trick or Trade" Halloween Cards](https://www.pokebeach.com/2022/08/all-30-pokemon-trick-or-trade-halloween-cards) (fetch failed with HTTP 403; not used as a citation beyond its title)
+
+## Open topics
+
+- **The 10th Rare Holo card's name:** Bulbapedia's summary names only 9 of
+  the 10 Rare Holo cards. Searched 2026-09-12: no source found for the
+  10th name. Darkrai is a candidate, based on the rippr.app pull-rate
+  summary, but this is not confirmed against the Bulbapedia card list.
+- **Pack order:** Searched 2026-09-12: no source found.
+- **"Larger version with 120 mini packs":** one summary mentions this
+  product. Not confirmed as a real separate product, versus a
+  misreading of the 120 total cards in one bundle.
+- **Per-card odds beyond Darkrai and Chandelure:** only a small, 5-bag
+  sample exists. Individual card odds for the other 8 Rare Holo cards
+  are Unknown.
+- **Common and Uncommon card names:** not individually listed in any
+  fetched source.
+- **Rarity list odds:** no source gives per-pack odds broken out for
+  Common versus Uncommon. The era's rarity system does not cover this
+  set, since it falls outside the booster-box template.

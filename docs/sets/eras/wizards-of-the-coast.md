@@ -128,6 +128,7 @@ Release dates and card counts come from the
   folder. It had no Southern Islands booster packs. The folder held
   "three packs from the new Neo era, a mix of Neo Discovery and Neo
   Genesis" ([Going Twice](https://www.goingtwice.com/blogs/pokemon/the-southern-islands-collection)).
+  Set file: [southern-islands.md](../southern-islands.md).
 
 ## Sets that break the template
 

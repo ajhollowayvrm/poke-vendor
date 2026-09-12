@@ -150,7 +150,7 @@ which match the Bulbapedia counts for the sets that have both.
 | Darkness Ablaze | August 14, 2020 | Main | [../darkness-ablaze.md](../darkness-ablaze.md) |
 | Champion's Path | September 25, 2020 | Special | [../champions-path.md](../champions-path.md) |
 | Vivid Voltage | November 13, 2020 | Main | [../vivid-voltage.md](../vivid-voltage.md) |
-| McDonald's Collection 2021 | February 9, 2021 | Promotional | No set file yet |
+| McDonald's Collection 2021 | February 9, 2021 | Promotional | [../mcdonalds-collection-2021.md](../mcdonalds-collection-2021.md) |
 | Shining Fates | February 19, 2021 | Special | [../shining-fates.md](../shining-fates.md) |
 | Battle Styles | March 19, 2021 | Main | [../battle-styles.md](../battle-styles.md) |
 | Chilling Reign | June 18, 2021 | Main | [../chilling-reign.md](../chilling-reign.md) |
@@ -160,8 +160,8 @@ which match the Bulbapedia counts for the sets that have both.
 | Brilliant Stars | February 25, 2022 | Main | [../brilliant-stars.md](../brilliant-stars.md) |
 | Astral Radiance | May 27, 2022 | Main | [../astral-radiance.md](../astral-radiance.md) |
 | Pokémon GO | July 1, 2022 | Special | [../pokemon-go.md](../pokemon-go.md) |
-| McDonald's Collection 2022 | August 3, 2022 | Promotional | No set file yet |
-| Trick or Trade 2022 | September 1, 2022 | Promotional | No set file yet |
+| McDonald's Collection 2022 | August 3, 2022 | Promotional | [../mcdonalds-collection-2022.md](../mcdonalds-collection-2022.md) |
+| Trick or Trade 2022 | September 1, 2022 | Promotional | [../trick-or-trade-2022.md](../trick-or-trade-2022.md) |
 | Lost Origin | September 9, 2022 | Main | [../lost-origin.md](../lost-origin.md) |
 | Silver Tempest | November 11, 2022 | Main | [../silver-tempest.md](../silver-tempest.md) |
 | Crown Zenith | January 20, 2023 | Special | [../crown-zenith.md](../crown-zenith.md) |
