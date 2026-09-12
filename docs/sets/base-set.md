@@ -6,6 +6,48 @@ Currently just pull rates; anything else set-specific belongs here too
 as it comes up (print-run notes, known errors, whatever's unique to
 this set).
 
+## Release
+
+The era template is in
+[eras/wizards-of-the-coast.md](eras/wizards-of-the-coast.md).
+
+- **English release date:** January 9, 1999 (Bulbapedia).
+- **Set symbol:** none. Bulbapedia shows no set symbol for Base Set.
+  Abbreviation: Unknown. ThePriceDex uses the database ID `base1`.
+- **Card count:** 102. No secret rares.
+- **Print runs:** the Elite Fourum pack guide lists these English runs:
+  - Demo Game: "released in December of 1998, but the pack shows
+    Copyright 1999".
+  - 1st Edition (1999): the "1st Edition" stamp is on the pack and the
+    cards.
+  - Shadowless and Unlimited (1999): older Shadowless packs say "11
+    Tradeable Game Cards". Unlimited packs say "11 ADDITIONAL GAME
+    CARDS".
+  - 1999-2000 print: "Copyright 1999-2000" with a curved WotC logo.
+- **Sheet notes:** the Elite Fourum rarity guide shows different sheet
+  layouts across the print runs.
+- **Pack wrapper arts:** Charizard, Blastoise, and Venusaur
+  (PullMarket).
+
+## Pack order
+
+Base Set follows the era pack order. See
+[eras/wizards-of-the-coast.md](eras/wizards-of-the-coast.md#pack-order).
+
+- **Claim A** ([CardCollector](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)):
+  "3" for Base Set. Hold the stack with the card backs toward you. Move
+  the nearest card to the front three times. Then the rare is the last
+  card that you see. Confidence: low. The page gives no method.
+- **What Claim A means (our derivation):** the rare is card 8 of 11,
+  the fourth card from the end. It is **not** one of the last three.
+- **Claim B** ([NinePocket](https://www.ninepocket.net/guides/pokemon-pack-trick)):
+  packs from this era "did not follow one reliably documented internal
+  order". Confidence: low.
+- **Energy card position:** Unknown. Base Set packs hold 1 or 2 energy
+  cards (see Pack structure below).
+- **Direction:** Unknown. No source says which way the cards face in
+  the wrapper.
+
 ## Pull rates
 
 The first concrete worked example for the pull-rate model described in
@@ -75,6 +117,18 @@ variance/bust design (see
 [../01-premise-and-loop.md](../01-premise-and-loop.md#variance-and-busts)):
 opening a whole box is still a gamble, not a guaranteed haul.
 
+## Sealed products
+
+The booster box and case values are in "Box and case structure" above.
+
+| Product | Packs | Collation | Source |
+|---|---|---|---|
+| Booster box | 36 | Variable (6 to 18 holos per box) | See above |
+| Booster case | 6 boxes | Variable | See above |
+| Hanger pack | 1 (a pack variant with a hanger crimp) | Not applicable | [Elite Fourum pack guide](https://www.elitefourum.com/t/guide-to-identifying-all-wotc-base-set-booster-packs/41521) |
+| Base Set & Jungle League Promo blister | Unknown | Unknown | [Loose Packs — WotC collection](https://loosepacks.com/collections/wotc) (product name only) |
+| 2-Player Starter Set | Unknown whether it holds booster packs | Unknown | — |
+
 ## 1st Edition vs. Unlimited
 
 No source found showing a pull-rate difference. The two only differ
@@ -94,6 +148,13 @@ odds.
 - [Flipside Gaming — Rarity in the Pokemon TCG](https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg)
 - [DA Card World — Base Set Booster Box](https://www.dacardworld.com/gaming/wotc-pokemon-base-set-1-booster-box)
 - [PullMarket — Pokemon Original Sets Guide](https://pullmarket.io/learn/pokemon-original-sets-guide)
+- [Bulbapedia — Base Set (TCG)](https://bulbapedia.bulbagarden.net/wiki/Base_Set_(TCG))
+- [Bulbapedia — List of Pokémon Trading Card Game expansions](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_Trading_Card_Game_expansions)
+- [Elite Fourum — Guide To Identifying All WotC Base Set Booster Packs](https://www.elitefourum.com/t/guide-to-identifying-all-wotc-base-set-booster-packs/41521)
+- [Elite Fourum — The English Pokémon card rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762)
+- [CardCollector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
+- [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [Loose Packs — WotC collection](https://loosepacks.com/collections/wotc)
 
 ## Open topics
 
@@ -102,3 +163,12 @@ odds.
   a firm answer before implementation.
 - Whether the 16 rares are actually equally weighted on the real print
   sheet (unconfirmed either way).
+- The Elite Fourum rarity guide rebuilds the Unlimited sheets. It
+  reports two weight levels for the holos and two for the rares. Our
+  read of the per-card values was not consistent, so this file gives
+  no codes. Check the guide directly for the per-card list.
+- Pack order: find a source that shows real opened Base Set packs card
+  by card. Confirm or reject Claim A (rare at card 8 of 11).
+- Energy card position in the pack: Unknown.
+- The contents of the Base Set & Jungle League Promo blister: Unknown.
+- Whether the 2-Player Starter Set holds booster packs: Unknown.

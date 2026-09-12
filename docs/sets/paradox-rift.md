@@ -1,0 +1,155 @@
+# Paradox Rift (2023)
+
+Set data for Paradox Rift. The shared pack template, pack order, and rarity
+system are in [eras/scarlet-violet.md](eras/scarlet-violet.md). This file
+records the set data and every exception. See [../13-sets.md](../13-sets.md)
+for the general approach.
+
+## Release
+
+- **English release:** November 3, 2023.
+- **Set code:** PAR.
+- **Card count:** 266 cards. The main set has 182 cards. The secret rares are
+  84 cards, numbered 183/182 to 266/182.
+
+| Part | Rarity | Cards |
+|---|---|---|
+| Main set | Common | 81 |
+| Main set | Uncommon | 54 |
+| Main set | Rare | 27 |
+| Main set | Double Rare | 20 |
+| Secret rares | Ultra Rare | 28 |
+| Secret rares | Illustration Rare | 34 |
+| Secret rares | Special Illustration Rare | 15 |
+| Secret rares | Hyper Rare | 7 |
+
+The counts come from the Bulbapedia set list. TCGplayer gives the same
+counts.
+
+## Pack structure
+
+12 cards per pack: 10 set cards, 1 Basic Energy card, and 1 code card.
+
+| Slot | Count | Can hold |
+|---|---|---|
+| Common | 4 | Common |
+| Uncommon | 3 | Uncommon |
+| Reverse holo slot 1 | 1 | Reverse Holo |
+| Reverse holo slot 2 | 1 | Reverse Holo, Illustration Rare, Special Illustration Rare, Hyper Rare |
+| Rare slot | 1 | Rare, Double Rare, Ultra Rare |
+| Basic Energy | 1 | Basic Energy card |
+| Code card | 1 | Pokémon TCG Live code card |
+
+**Confidence:** era-wide sources (PokeBeach report before release, Bulbapedia
+table). TCGplayer's opened-pack study confirms the slot for each rarity in
+this set. No source confirms the Basic Energy and code card for this set
+specifically.
+
+## Pack order
+
+| Position | Slot |
+|---|---|
+| 1–4 | Common |
+| 5–7 | Uncommon |
+| 8 | Reverse holo slot 1 (Reverse Holo only) |
+| 9 | Reverse holo slot 2 (Illustration Rare, Special Illustration Rare, Hyper Rare) |
+| 10 | Rare slot (Double Rare, Ultra Rare) |
+| 11 | Basic Energy |
+| 12 | Code card |
+
+**Confidence: industry news report before release** (PokeBeach, era-wide).
+No source in this research shows an opened pack of this set card by card.
+
+- **Double Rare and Ultra Rare:** card 10, the third card from the end. It is
+  one of the last three cards.
+- **Illustration Rare, Special Illustration Rare, and Hyper Rare:** card 9,
+  the fourth card from the end. It is not one of the last three cards. If the
+  rip screen hides the code card, card 9 is the third card from the end.
+- **Exceptions for this set:** none found in the structure. The odds change
+  (see below). The era conflicts apply (Hyper Rare slot, last card).
+
+## Rarities and hit odds
+
+Primary source: the TCGplayer Authentication Center opened more than 8,000
+packs. The ranges are 95% confidence intervals. The specific-card figures
+assume that each card of a rarity has the same pull rate. TCGplayer says each
+card it found fit the interval for its rarity, which supports this assumption.
+
+| Rarity | Slot | Cards | Any card of the rarity, per pack | Specific card, per pack | Confidence |
+|---|---|---|---|---|---|
+| Rare | Rare slot | 27 | 77.79% | Unknown | Derived from the empirical study (100% minus Double Rare and Ultra Rare) |
+| Double Rare | Rare slot | 20 | 15.57% ± 0.76% (1 in 6) | 0.78% ± 0.19% (1 in 128) | Empirical study |
+| Ultra Rare | Rare slot | 28 | 6.64% ± 0.53% (1 in 15) | 0.24% ± 0.10% (1 in 421) | Empirical study |
+| Reverse Holo (in reverse holo slot 2) | Reverse holo slot 2 | — | 88.97% | — | Derived from the empirical study |
+| Illustration Rare | Reverse holo slot 2 | 34 | 7.70% ± 0.56% (1 in 13) | 0.23% ± 0.10% (1 in 442) | Empirical study |
+| Special Illustration Rare | Reverse holo slot 2 | 15 | 2.11% ± 0.30% (1 in 47) | 0.14% ± 0.08% (1 in 712) | Empirical study |
+| Hyper Rare | Reverse holo slot 2 | 7 | 1.22% ± 0.23% (1 in 82) | 0.17% ± 0.09% (1 in 576) | Empirical study |
+| ACE SPEC Rare | — | 0 | Not in this set | — | — |
+| Shiny Rare | — | 0 | Not in this set | — | — |
+| Shiny Ultra Rare | — | 0 | Not in this set | — | — |
+
+Other figures:
+
+- **Better than Rare:** "just north of 30%" of packs (TCGplayer). Empirical
+  study.
+- **Special Illustration Rare Roaring Moon ex:** 0.14% per pack (TCGplayer).
+  Empirical study.
+
+## Special subsets and mechanics
+
+- **Rate change.** This is the first set in the era with lower top-rarity
+  rates. The Special Illustration Rare rate fell from 3.13% (Obsidian
+  Flames) to 2.11%. The Hyper Rare rate fell from 1.92% to 1.22%. The Double
+  Rare rate rose from 13.61% to 15.57% (TCGplayer).
+- No ACE SPEC Rare and no shiny subset.
+- No source in this research reports a god pack or a demi-god pack for this
+  set.
+
+## Sealed products
+
+| Product | Packs of this set |
+|---|---|
+| Booster Display Box | 36. An 18-pack half display was also sold in European countries. |
+| Elite Trainer Box (Roaring Moon or Iron Valiant) | 9 |
+| Pokémon Center Elite Trainer Box | 11 |
+| Booster Bundle | 6 |
+| Build & Battle Box | 4 |
+| Build & Battle Stadium | 2 Build & Battle Boxes plus 3 packs (see Open topics) |
+| Collector's Kit | 1 |
+| Blisters | Unknown per blister |
+
+Multi-set products with packs of this set. Bulbapedia calls these mixes
+"typical", so the mix is variable:
+
+- Roaring Moon ex Box and Iron Valiant ex Box: 4 packs, 2 Paradox Rift.
+- Fall 2023 Collector Chest: 6 packs. First runs held 2 Paradox Rift.
+- Combined Powers Premium Collection: 11 packs, usually 4 Paradox Rift.
+- Mabosstiff ex Box: 4 packs, usually 2 Paradox Rift.
+
+Collation:
+
+- Boxes per case: Unknown.
+- Hits per booster box: Unknown.
+
+## Sources
+
+- [Bulbapedia — Paradox Rift (TCG)](https://bulbapedia.bulbagarden.net/wiki/Paradox_Rift_(TCG))
+- [Bulbapedia — List of Pokémon Trading Card Game expansions](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_Trading_Card_Game_expansions)
+- [Bulbapedia — Booster pack (TCG)](https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG))
+- [Bulbapedia — Scarlet & Violet TCG Series merchandise](https://bulbapedia.bulbagarden.net/wiki/Scarlet_%26_Violet_TCG_Series_merchandise)
+- [Bulbapedia — Build & Battle Box (TCG)](https://bulbapedia.bulbagarden.net/wiki/Build_%26_Battle_Box_(TCG))
+- [PokeBeach — "Scarlet & Violet" Booster Pack Configuration Finally Revealed](https://www.pokebeach.com/2023/03/scarlet-violet-booster-pack-configuration-finally-revealed-major-exciting-changes)
+- [TCGplayer — Paradox Rift Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Paradox-Rift-Pull-Rates/0b5fb648-38fc-4f61-a6af-57c2737b4a48/)
+
+## Open topics
+
+- **Physical pack order.** No opened-pack source confirms it for this set.
+- **Era conflicts:** the Hyper Rare slot and the last card. See
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
+- **Box release date.** The Bulbapedia merchandise page says the booster
+  boxes came out "November 3, 2024". The set released November 3, 2023. The
+  year is probably a typing error, but no second source confirms.
+- **Boxes per case** and **hits per box:** Unknown.
+- **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
+  Build & Battle Box page says 4.
+- **Blister contents** for this set: Unknown.

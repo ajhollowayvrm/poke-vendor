@@ -157,6 +157,16 @@ The exact cost, delivery time, and loss chance are balancing values.
 The risk has the same shape as the declared-value risk on a grading
 submission (see [10-grading.md](10-grading.md#data-source)).
 
+### Shipping insurance and lost packages
+
+The player can buy **shipping insurance** for a sale.
+
+- **Insured package lost**: the insurance pays the player back the
+  card's value.
+- **Uninsured package lost**: the card is gone, and the buyer gets
+  their money back. Nothing else happens. A lost package is not a bad
+  sale, and it does not cause a scam accusation.
+
 ## Bad sales and scam accusations
 
 **A fake sold without knowing.** The result depends on the channel:
@@ -175,10 +185,12 @@ become a public scam accusation (see
 platform refund does not prevent this. A bad sale includes a fake, a
 late shipment, and a card in worse condition than the listing said.
 
+The chance that a bad sale goes public is a set number that rises with
+the player's **notoriety**. A player whom few people know can make a
+mistake quietly. A well-known player cannot.
+
 ## Open topics
 
-- What happens after a lost package, and whether the player can buy
-  shipping insurance.
-- The chance that a bad sale goes public, per channel.
+- How notoriety is measured.
 - The meet encounter and trading. A separate design.
 - Card shows. A separate design.

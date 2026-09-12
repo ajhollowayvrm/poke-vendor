@@ -202,6 +202,9 @@ channel. The buy flow never offers an "open now" choice.
 
 ## The rip-or-hold decision
 
+The screen where the player opens product is in
+[18-ripping.md](18-ripping.md).
+
 Once product is in Inventory, the player chooses to open it (gambling on pull
 rates) or hold it sealed (letting it appreciate). This tension is
 already designed in
