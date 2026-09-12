@@ -32,6 +32,9 @@ drifts like a market price. A set file should cover:
   hit sits. The default is that the hit is one of the last three cards.
   The set file records every exception, because the rip screen follows
   it (see [18-ripping.md](18-ripping.md#where-the-hit-sits)).
+- Card list: every card in the set, with its number, name, category,
+  rarity, and variants. The source is the TCGdex API. A set that TCGdex
+  does not have uses the Bulbapedia set list.
 - Rarity list: every rarity, variant, and subset in the set, for
   example the Poké Ball pattern, in order of pull odds from the most
   common to the rarest. The stop rule menu
@@ -188,6 +191,13 @@ file.
 
 ## Open topics
 
+- Rarity name map: the card lists use TCGdex rarity names, and the
+  rarity lists use the set's own names. 15 TCGdex names have no exact
+  match in a rarity list, for example "Holo Rare" (37 sets), "Ultra
+  Rare" (33), "Secret Rare" (28), "Holo Rare V" and "Holo Rare VMAX"
+  (17), "Radiant Rare" (5), "LEGEND" (4), "Shiny rare" (2), and
+  "None" (3). Before the game builds packs from the card lists, map
+  each TCGdex name to a rarity list entry.
 - Rarity lists (see [18-ripping.md](18-ripping.md#the-stop-rule)): every
   set file has one. Each set file records, in its own Open
   topics, the entries with no odds and each choice about the order.
