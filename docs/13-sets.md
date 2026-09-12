@@ -48,7 +48,8 @@ records only its set data and its exceptions to the template.
 
 ## Sets done so far
 
-117 set files in 10 eras.
+133 set files in 11 eras. Every English set with booster packs has a
+file.
 
 - **Wizards of the Coast (1999–2002)** —
   [eras/wizards-of-the-coast.md](sets/eras/wizards-of-the-coast.md):
@@ -64,6 +65,22 @@ records only its set data and its exceptions to the template.
   [Legendary Collection](sets/legendary-collection.md),
   [Expedition Base Set](sets/expedition-base-set.md),
   [Aquapolis](sets/aquapolis.md), [Skyridge](sets/skyridge.md).
+- **EX (2003–2007)** — [eras/ex.md](sets/eras/ex.md):
+  [EX Ruby & Sapphire](sets/ruby-sapphire.md),
+  [EX Sandstorm](sets/sandstorm.md), [EX Dragon](sets/dragon.md),
+  [EX Team Magma vs Team Aqua](sets/team-magma-vs-team-aqua.md),
+  [EX Hidden Legends](sets/hidden-legends.md),
+  [EX FireRed & LeafGreen](sets/firered-leafgreen.md),
+  [EX Team Rocket Returns](sets/team-rocket-returns.md),
+  [EX Deoxys](sets/deoxys.md), [EX Emerald](sets/emerald.md),
+  [EX Unseen Forces](sets/unseen-forces.md),
+  [EX Delta Species](sets/delta-species.md),
+  [EX Legend Maker](sets/legend-maker.md),
+  [EX Holon Phantoms](sets/holon-phantoms.md),
+  [EX Crystal Guardians](sets/crystal-guardians.md),
+  [EX Dragon Frontiers](sets/dragon-frontiers.md),
+  [EX Power Keepers](sets/power-keepers.md). POP Series 1–5 are EX era
+  promotional sets; they are in [POP Series 1–9](sets/pop-series.md).
 - **Diamond & Pearl and Platinum (2007–2009)** —
   [eras/diamond-pearl-platinum.md](sets/eras/diamond-pearl-platinum.md):
   [Diamond & Pearl](sets/diamond-and-pearl.md),
@@ -175,8 +192,6 @@ records only its set data and its exceptions to the template.
   set file has one. Each set file records, in its own Open
   topics, the entries with no odds and each choice about the order.
   A new set file must also get a rarity list.
-- Sets with no file: the 16 EX era sets (2003–2007). The EX era has
-  no era file yet.
 - At least six of the ten eras do not put the hit in the last three
   cards: Wizards of the Coast, Diamond & Pearl and Platinum,
   HeartGold & SoulSilver, Black & White, XY, and Sword & Shield. Decide

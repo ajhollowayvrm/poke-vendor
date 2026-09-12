@@ -136,10 +136,10 @@ estimate** for every row.
 | EX Unseen Forces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
 | EX Delta Species | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
 | EX Legend Maker | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
-| EX Holon Phantoms | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
-| EX Crystal Guardians | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | ~1 in 72 packs (community estimate) |
-| EX Dragon Frontiers | See Open topics | See Open topics | See Open topics | See Open topics | See Open topics | Unknown | ~1 in 72 packs (community estimate) |
-| EX Power Keepers | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | "1 to 2 per box," higher than other sets (community estimate, Flipside Gaming) |
+| EX Holon Phantoms | Unknown | Unknown | Unknown | Unknown | ~1 per box (36 packs) | Unknown | ~1 in 108 packs, set-specific (community estimate; conflicts with the era's general ~1 in 72 figure) |
+| EX Crystal Guardians | Unknown | Unknown | Unknown | Unknown | ~2.4 to 3 per box, two conflicting samples | — (no Secret Rare; two Rare Holo ☆ sit inside the printed count) | ~1 in 141 packs, set-specific (community estimate; conflicts with the era's general ~1 in 72 figure) |
+| EX Dragon Frontiers | 180 | 72 | 24 | 8.5 | 3 | — (no Secret Rare) | 0.5 per box (~1 in 72 packs) |
+| EX Power Keepers | Unknown | Unknown | Unknown | Unknown | 3 to 7 per box, conflicting reports | Unknown | "1 to 2 per box" (Flipside Gaming) or ~1 in 72 packs (a conflicting Elite Fourum post) |
 
 - The "~1 in 72 packs" Gold Star figure (about 2 booster boxes) comes
   from Flipside Gaming's rarity review and from an Elite Fourum thread
@@ -178,9 +178,22 @@ estimate** for every row.
   [../legend-maker.md](../legend-maker.md) for each set's own Open
   topics.
 - No source at all was found, in this research pass, with pull-rate
-  figures for EX Emerald, EX Unseen Forces, EX Delta Species, EX Legend
-  Maker, EX Holon Phantoms, EX Crystal Guardians, or EX Power Keepers
-  beyond the Gold Star figures above.
+  figures for EX Emerald, EX Unseen Forces, EX Delta Species, or EX
+  Legend Maker beyond the Gold Star figures above.
+- A further research pass (2026-09-12) extracts figures for the last
+  four EX-era sets. EX Dragon Frontiers' full box-count breakdown is
+  now extracted from the Elite Fourum guide thread (see the table
+  above and [../dragon-frontiers.md](../dragon-frontiers.md)). EX
+  Holon Phantoms, EX Crystal Guardians, and EX Power Keepers still
+  have no full box-count breakdown, but this pass finds set-specific
+  Rare Holo ex and Rare Holo ☆ figures for each, from other Elite
+  Fourum posts (see the table above and
+  [../holon-phantoms.md](../holon-phantoms.md),
+  [../crystal-guardians.md](../crystal-guardians.md), and
+  [../power-keepers.md](../power-keepers.md)). Each of these three
+  sets' set-specific Rare Holo ☆ figure conflicts with this file's
+  general ~1 in 72 packs era estimate; the set files use their own
+  set-specific figure and record the conflict.
 
 ## Sealed product template
 
@@ -310,19 +323,18 @@ otherwise.
 - **Boxes per case.** Searched 2026-09-12: no source found for the
   original print run.
 - **Collation.** Searched 2026-09-12: no source found for any set.
-- **Full box-count breakdown for EX Dragon Frontiers.** The Elite
-  Fourum "Guide to early EX Series pull rates" thread states it holds
-  complete Common/Uncommon/Rare/Rare Holo/ex/Secret Rare box counts for
-  this set. This research pass extracted the figures for EX Team Magma
-  vs Team Aqua, EX Hidden Legends, EX FireRed & LeafGreen, EX Team
-  Rocket Returns, and EX Deoxys (see the Odds by set table and each
-  set's own file), but could not extract EX Dragon Frontiers' numbers
-  from the thread. A follow-up pass should open the thread directly and
-  transcribe the figures.
-- **Pull rates for EX Emerald, EX Unseen Forces, EX Delta Species, EX
-  Legend Maker, EX Holon Phantoms, and EX Crystal Guardians.** Searched
-  2026-09-12: no source found beyond the general ~1:72 Gold Star
-  estimate.
+- **Full box-count breakdown for EX Dragon Frontiers.** Resolved
+  2026-09-12: extracted from the Elite Fourum "Guide to early EX
+  Series pull rates" thread (see the Odds by set table and
+  [../dragon-frontiers.md](../dragon-frontiers.md)).
+- **Pull rates for EX Emerald, EX Unseen Forces, EX Delta Species, and
+  EX Legend Maker.** Searched 2026-09-12: no source found beyond the
+  general ~1:72 Gold Star estimate.
+- **Pull rates for EX Holon Phantoms, EX Crystal Guardians, and EX
+  Power Keepers.** Partly resolved 2026-09-12: set-specific Rare Holo
+  ex and Rare Holo ☆ figures found for each (see the Odds by set
+  table). No full box-count breakdown found for any of the three; see
+  each set's own Open topics.
 - **Theme Deck pack contents.** Bulbapedia's merchandise page implies an
   attached booster pack for some Theme Decks, but this research could
   not confirm whether that applies to every EX-era Theme Deck or to a
