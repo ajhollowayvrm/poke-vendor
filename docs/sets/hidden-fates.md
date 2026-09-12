@@ -121,6 +121,30 @@ No booster boxes. Packs came only in set merchandise (Bulbapedia).
 
 Source: Bulbapedia merchandise page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Hidden Fates packs come
+only in special collections and boxes; there is no booster box. The
+Shiny Vault is a 94-card subset that shares the reverse holo slot with
+plain reverse holos; each of its rarities is its own entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.7 | Yes |
+| 5 | Shiny Vault — Shiny Rare | Subset | 1 in 4.7 | Yes |
+| 6 | Rare Holo | Rarity | 1 in 5 | Yes |
+| 7 | Rare Holo GX | Rarity | 1 in 6.7 | Yes |
+| 8 | Shiny Vault — Shiny Rare GX | Subset | 1 in 10.6 | Yes |
+| 9 | Ultra Rare | Rarity | 1 in 25.6 | Yes |
+| 10 | Shiny Vault — Secret Rare | Subset | 1 in 63 | Yes |
+| 11 | Shiny Vault — Ultra Rare | Subset | 1 in 84 | Yes |
+| 12 | Rainbow Rare | Rarity | 1 in 90.9 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Hidden Fates (TCG)](https://bulbapedia.bulbagarden.net/wiki/Hidden_Fates_(TCG))
@@ -147,3 +171,4 @@ Source: Bulbapedia merchandise page.
 - The @burpies data does not separate main set and Shiny Vault full art
   Trainers.
 - Release date of the Ultra-Premium Collection: Unknown.
+- **Rarity list order:** by this file's odds, Shiny Vault — Shiny Rare (1 in 4.7) comes more often than Rare Holo (1 in 5). The rarity list therefore puts the Shiny Vault entry above Rare Holo.

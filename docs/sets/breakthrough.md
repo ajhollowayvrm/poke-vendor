@@ -84,6 +84,24 @@ A summary of the Bulbapedia set page said the theme decks contain
 booster packs. The Burning Spark page lists no booster pack. This file
 uses the Burning Spark page. Collation: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 5.6 | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 11.3 | Yes |
+| 7 | Rare BREAK | Rarity | 1 in 12.9 | Yes |
+| 8 | Ultra Rare | Rarity | 1 in 17.0 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 125 | Yes |
+
 ## Sources
 
 - [Bulbapedia — BREAKthrough (TCG)](https://bulbapedia.bulbagarden.net/wiki/BREAKthrough_(TCG))
@@ -105,3 +123,4 @@ uses the Burning Spark page. Collation: Unknown.
 - The set code conflicts: BKT against BRT.
 - The Night Striker contents and blister pack counts are Unknown.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** Secret Rare uses 1 in 125 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

@@ -77,6 +77,24 @@ Uncommon "1 in 2.5 packs", Reverse Common "1 in 3.1 packs".
 
 Collation: Unknown. No source states a fixed number of hits per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6 | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 10 | Yes |
+| 7 | Rare BREAK | Rarity | 1 in 15 | Yes |
+| 8 | Ultra Rare | Rarity | 1 in 17.0 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 125 | Yes |
+
 ## Sources
 
 - [Bulbapedia — BREAKpoint (TCG)](https://bulbapedia.bulbagarden.net/wiki/BREAKpoint_(TCG))
@@ -99,3 +117,4 @@ Collation: Unknown. No source states a fixed number of hits per box.
   era-wide community claim.
 - The PokéBeach box data could not be read in full.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** Secret Rare uses 1 in 125 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

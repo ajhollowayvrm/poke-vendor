@@ -68,6 +68,23 @@ The two figures conflict.
 
 Collation: Unknown. No source states a fixed number of hits per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 5.1 | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 11.3 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 25.7 | Yes |
+| 8 | Secret Rare | Rarity | 1 in 114.3 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Flashfire (TCG)](https://bulbapedia.bulbagarden.net/wiki/Flashfire_(TCG))
@@ -93,3 +110,4 @@ Collation: Unknown. No source states a fixed number of hits per box.
 - The pack counts of Flashfire Blisters and the Charizard-EX Box are
   Unknown.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** Secret Rare uses 1 in 114.3 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

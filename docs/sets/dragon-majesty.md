@@ -107,6 +107,26 @@ No booster boxes. Packs came only in set merchandise (Bulbapedia).
 
 Source: Bulbapedia merchandise page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Dragon Majesty packs come
+only in special collections and boxes; there is no booster box. This
+set has no non-holo Rare.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare Holo | Rarity | 1 in 1.3 | Yes |
+| 5 | Rare Holo GX | Rarity | 1 in 6.7 | Yes |
+| 6 | Rare Prism Star | Rarity | 1 in 10 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 17.4 | Yes |
+| 8 | Rainbow Rare | Rarity | 1 in 46.9 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 46.9 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Dragon Majesty (TCG)](https://bulbapedia.bulbagarden.net/wiki/Dragon_Majesty_(TCG))
@@ -127,3 +147,4 @@ Source: Bulbapedia merchandise page.
 - The data sample is smaller than for the main sets.
 - The author did not check if the reverse Basic Energy cards are rarer
   than other reverses.
+- **Rarity list order:** Rainbow Rare and Secret Rare both use 1 in 46.9 from ThePriceDex. The list places Rainbow Rare first, from the era's rarity system order.

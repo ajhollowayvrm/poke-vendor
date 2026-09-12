@@ -74,6 +74,23 @@ Flipside Gaming gives a secret rare rate of 1:72 for the whole era
 
 Collation: Unknown. No source states a fixed number of hits per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6.4 | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 9 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 17.0 | Yes |
+| 8 | Secret Rare | Rarity | 1 in 125 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Roaring Skies (TCG)](https://bulbapedia.bulbagarden.net/wiki/Roaring_Skies_(TCG))
@@ -97,3 +114,4 @@ Collation: Unknown. No source states a fixed number of hits per box.
 - Bulbapedia mentions "Cracked Ice Holo" and "Cosmos Holo" versions.
   Which products had them is Unknown.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** Secret Rare uses 1 in 125 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era.

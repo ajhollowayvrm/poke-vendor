@@ -99,6 +99,26 @@ No booster boxes. Packs came only in set merchandise (Bulbapedia).
 
 Source: Bulbapedia merchandise page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Shining Legends packs come
+only in special collections and boxes; there is no booster box. This
+set has no non-holo Rare.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare Holo | Rarity | 1 in 1.4 | Yes |
+| 5 | Rare Holo GX | Rarity | 1 in 9 | Yes |
+| 6 | Rare Shining | Rarity | 1 in 11.3 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 24.2 | Yes |
+| 8 | Rainbow Rare | Rarity | 1 in 49.5 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 197.8 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Shining Legends (TCG)](https://bulbapedia.bulbagarden.net/wiki/Shining_Legends_(TCG))

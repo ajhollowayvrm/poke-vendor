@@ -88,6 +88,24 @@ The Pokémon.com ETB page blocked the fetch. Its content list ("8
 Pokémon TCG: XY—Evolutions booster packs") was seen in search results.
 Collation: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6.9 | Yes |
+| 6 | Secret Rare | Rarity | 1 in 8.1 | Yes |
+| 7 | Rare Holo EX | Rarity | 1 in 8.2 | Yes |
+| 8 | Ultra Rare | Rarity | 1 in 15 | Yes |
+| 9 | Rare BREAK | Rarity | 1 in 18 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Evolutions (TCG)](https://bulbapedia.bulbagarden.net/wiki/Evolutions_(TCG))
@@ -116,3 +134,5 @@ Collation: Unknown.
 - The reverse holo pattern and the theme deck and Prerelease Kit
   contents are Unknown.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** by this file's odds, Secret Rare (1 in 8.1) comes almost as often as Rare Holo (1 in 6.9), and more often than Rare Holo EX (1 in 8.2), Ultra Rare (1 in 15), and Rare BREAK (1 in 18). The rarity list therefore puts Secret Rare above these entries.
+- **Rarity list order:** Secret Rare uses 1 in 8.1 from ThePriceDex. Flipside Gaming gives 1 in 72 for the era, though it also says Evolutions had more favorable Secret Rare odds than later sets.

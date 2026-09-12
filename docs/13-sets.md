@@ -168,8 +168,8 @@ records only its set data and its exceptions to the template.
 ## Open topics
 
 - Rarity lists (see [18-ripping.md](18-ripping.md#the-stop-rule)):
-  - **Done:** the 44 sets from Wizards of the Coast to Black & White.
-  - **Not done:** the sets from XY to Mega Evolution.
+  - **Done:** the 74 sets from Wizards of the Coast to Sun & Moon.
+  - **Not done:** the sets from Sword & Shield to Mega Evolution.
   - Each set file records, in its own Open topics, the entries with no
     odds and each choice about the order.
 - Sets with no file: the Sword & Shield promotional sets (McDonald's

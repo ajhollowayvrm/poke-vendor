@@ -88,6 +88,26 @@ author's own sample).
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. A Prism Star card can be a
+second hit alongside the rare slot, in the reverse holo slot.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6 | Yes |
+| 6 | Rare Prism Star | Rarity | 1 in 8.2 | Yes |
+| 7 | Rare Holo GX | Rarity | 1 in 10 | Yes |
+| 8 | Ultra Rare | Rarity | 1 in 23.3 | Yes |
+| 9 | Rainbow Rare | Rarity | 1 in 71.0 | Yes |
+| 10 | Secret Rare | Rarity | 1 in 102.6 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Lost Thunder (TCG)](https://bulbapedia.bulbagarden.net/wiki/Lost_Thunder_(TCG))

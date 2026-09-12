@@ -92,6 +92,29 @@ candidates: the main rare slot and the RC slot.
 
 Collation: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Generations packs come only
+in special anniversary products; there is no booster box. The Radiant
+Collection is a 32-card subset with its own numbers; each of its
+rarities is its own entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Radiant Collection — Common | Subset | Every pack | No |
+| 5 | Radiant Collection — Uncommon | Subset | 1 in 1.4 | No |
+| 6 | Rare | Rarity | 1 in 1.5 | Yes |
+| 7 | Rare Holo EX | Rarity | 1 in 4.9 | Yes |
+| 8 | Radiant Collection — Ultra Rare | Subset | 1 in 5 | Yes |
+| 9 | Rare Holo | Rarity | 1 in 9.5 | Yes |
+| 10 | Radiant Collection — Rare Holo EX | Subset | 1 in 12.5 | Yes |
+| 11 | Ultra Rare | Rarity | 1 in 45 | Yes |
+
 ## Sources
 
 - [Pokémon.com — Generations](https://www.pokemon.com/us/pokemon-tcg/generations)
@@ -120,3 +143,5 @@ Collation: Unknown.
 - Whether each pack has a code card is Unknown.
 - Other Generations products (for example, other 20th anniversary
   boxes) may exist. Bulbapedia names only the products above.
+- **Rarity list order:** by this file's odds, Rare Holo EX (1 in 4.9) comes more often than Rare Holo (1 in 9.5). The rarity list therefore puts Rare Holo EX above Rare Holo.
+- **Rarity list order:** by this file's odds, Radiant Collection — Ultra Rare (1 in 5) comes more often than Radiant Collection — Rare Holo EX (1 in 12.5). The rarity list therefore puts Radiant Collection — Ultra Rare above Radiant Collection — Rare Holo EX.

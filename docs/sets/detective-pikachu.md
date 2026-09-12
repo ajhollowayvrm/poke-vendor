@@ -81,6 +81,19 @@ No booster boxes. Packs came only in set merchandise (Bulbapedia).
 "Sun & Moon Series" packs: Bulbapedia does not name the set, so the mix
 is Unknown. Source: Bulbapedia merchandise page.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Detective Pikachu packs
+come only in special collections and boxes, each holding 4 cards;
+there is no booster box. This set has only two rarities.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common Holo | Rarity | Every pack | No |
+| 2 | Rare Holo | Rarity | Every pack | Yes |
+
 ## Sources
 
 - [Bulbapedia — Detective Pikachu (TCG)](https://bulbapedia.bulbagarden.net/wiki/Detective_Pikachu_(TCG))

@@ -75,6 +75,22 @@ one hit.
 No booster box and no Elite Trainer Box exist (Bulbapedia). The number
 of different blister versions is Unknown. Collation: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Double Crisis packs come
+only in a 4-pack blister; there is no booster box. This set has no
+non-holo Rare and no secret rares.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare Holo | Rarity | 1 in 1.1 | Yes |
+| 5 | Rare Holo EX | Rarity | 1 in 9 | Yes |
+
 ## Sources
 
 - [Pokémon.com — Double Crisis](https://www.pokemon.com/us/pokemon-tcg/double-crisis)

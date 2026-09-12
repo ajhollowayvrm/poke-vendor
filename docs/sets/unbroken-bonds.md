@@ -87,6 +87,26 @@ and TheGameCapital (2,592 packs).
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. TAG TEAM Pokémon-GX sit
+inside the Rare Holo GX, Ultra Rare, and Rainbow Rare entries; no
+source gives them a separate rate.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6 | Yes |
+| 6 | Rare Holo GX | Rarity | 1 in 10 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 24.2 | Yes |
+| 8 | Rainbow Rare | Rarity | 1 in 56.5 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 131.9 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Unbroken Bonds (TCG)](https://bulbapedia.bulbagarden.net/wiki/Unbroken_Bonds_(TCG))

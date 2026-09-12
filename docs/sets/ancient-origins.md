@@ -76,6 +76,23 @@ Uncommon "1 in 2.2 packs", Reverse Common "1 in 2.6 packs".
 
 Collation: Unknown. No source states a fixed number of hits per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6.4 | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 9 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 21.4 | Yes |
+| 8 | Secret Rare | Rarity | 1 in 50 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Ancient Origins (TCG)](https://bulbapedia.bulbagarden.net/wiki/Ancient_Origins_(TCG))
@@ -97,3 +114,4 @@ Collation: Unknown. No source states a fixed number of hits per box.
 - No source shows a real opened Ancient Origins pack. The pack order
   is an era-wide community claim.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** Rare Holo EX, Ultra Rare, and Secret Rare use 1 in 9, 1 in 21.4, and 1 in 50 from ThePriceDex. Flipside Gaming gives about 1 in 6, 1 in 12, and 1 in 72 for the era.

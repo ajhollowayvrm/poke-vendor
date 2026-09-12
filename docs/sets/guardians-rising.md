@@ -87,6 +87,24 @@ The Derium data comes from three large opening videos.
 
 Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 6.4 | Yes |
+| 6 | Rare Holo GX | Rarity | 1 in 9 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 23.4 | Yes |
+| 8 | Rainbow Rare | Rarity | 1 in 66.7 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 111.1 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Guardians Rising (TCG)](https://bulbapedia.bulbagarden.net/wiki/Guardians_Rising_(TCG))

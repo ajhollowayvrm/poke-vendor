@@ -79,6 +79,24 @@ A summary of the Bulbapedia set page said each theme deck "contained
 booster packs". The Bulbapedia pages for two other XY-era theme decks
 list no booster packs. Collation: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.5 | Yes |
+| 5 | Rare Holo | Rarity | 1 in 5 | Yes |
+| 6 | Rare Holo EX | Rarity | 1 in 15 | Yes |
+| 7 | Rare BREAK | Rarity | 1 in 15 | Yes |
+| 8 | Ultra Rare | Rarity | 1 in 17.0 | Yes |
+| 9 | Secret Rare | Rarity | 1 in 125 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Steam Siege (TCG)](https://bulbapedia.bulbagarden.net/wiki/Steam_Siege_(TCG))
@@ -102,3 +120,4 @@ list no booster packs. Collation: Unknown.
   era-wide community claim.
 - Blister and other product pack counts are Unknown.
 - Boxes per case and collation are Unknown.
+- **Rarity list order:** Rare Holo EX and Rare BREAK both use 1 in 15 from ThePriceDex. The list places Rare Holo EX first, from the era's rarity system order. Secret Rare uses 1 in 125 from ThePriceDex; Flipside Gaming gives 1 in 72 for the era.
