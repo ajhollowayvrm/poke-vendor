@@ -1,0 +1,415 @@
+{
+"base-set": [
+"base1"
+],
+"jungle": [
+"base2"
+],
+"fossil": [
+"base3"
+],
+"base-set-2": [
+"base4"
+],
+"team-rocket": [
+"base5"
+],
+"gym-heroes": [
+"gym1"
+],
+"gym-challenge": [
+"gym2"
+],
+"neo-genesis": [
+"neo1"
+],
+"neo-discovery": [
+"neo2"
+],
+"neo-revelation": [
+"neo3"
+],
+"neo-destiny": [
+"neo4"
+],
+"southern-islands": [
+"si1"
+],
+"legendary-collection": [
+"lc"
+],
+"expedition-base-set": [
+"ecard1"
+],
+"aquapolis": [
+"ecard2"
+],
+"skyridge": [
+"ecard3"
+],
+"ruby-sapphire": [
+"ex1"
+],
+"sandstorm": [
+"ex2"
+],
+"dragon": [
+"ex3"
+],
+"team-magma-vs-team-aqua": [
+"ex4"
+],
+"hidden-legends": [
+"ex5"
+],
+"firered-leafgreen": [
+"ex6"
+],
+"team-rocket-returns": [
+"ex7"
+],
+"deoxys": [
+"ex8"
+],
+"emerald": [
+"ex9"
+],
+"unseen-forces": [
+"ex10",
+"exu"
+],
+"delta-species": [
+"ex11"
+],
+"legend-maker": [
+"ex12"
+],
+"holon-phantoms": [
+"ex13"
+],
+"crystal-guardians": [
+"ex14"
+],
+"dragon-frontiers": [
+"ex15"
+],
+"power-keepers": [
+"ex16"
+],
+"pop-series": [
+"pop1",
+"pop2",
+"pop3",
+"pop4",
+"pop5",
+"pop6",
+"pop7",
+"pop8",
+"pop9"
+],
+"diamond-and-pearl": [
+"dp1"
+],
+"mysterious-treasures": [
+"dp2"
+],
+"secret-wonders": [
+"dp3"
+],
+"great-encounters": [
+"dp4"
+],
+"majestic-dawn": [
+"dp5"
+],
+"legends-awakened": [
+"dp6"
+],
+"stormfront": [
+"dp7"
+],
+"platinum": [
+"pl1"
+],
+"rising-rivals": [
+"pl2"
+],
+"supreme-victors": [
+"pl3"
+],
+"arceus": [
+"pl4"
+],
+"heartgold-soulsilver": [
+"hgss1"
+],
+"unleashed": [
+"hgss2"
+],
+"undaunted": [
+"hgss3"
+],
+"triumphant": [
+"hgss4"
+],
+"call-of-legends": [
+"col1"
+],
+"black-white": [
+"bw1"
+],
+"emerging-powers": [
+"bw2"
+],
+"noble-victories": [
+"bw3"
+],
+"next-destinies": [
+"bw4"
+],
+"dark-explorers": [
+"bw5"
+],
+"dragons-exalted": [
+"bw6"
+],
+"dragon-vault": [
+"dv1"
+],
+"boundaries-crossed": [
+"bw7"
+],
+"plasma-storm": [
+"bw8"
+],
+"plasma-freeze": [
+"bw9"
+],
+"plasma-blast": [
+"bw10"
+],
+"legendary-treasures": [
+"bw11"
+],
+"xy": [
+"xy1"
+],
+"flashfire": [
+"xy2"
+],
+"furious-fists": [
+"xy3"
+],
+"phantom-forces": [
+"xy4"
+],
+"primal-clash": [
+"xy5"
+],
+"double-crisis": [
+"dc1"
+],
+"roaring-skies": [
+"xy6"
+],
+"ancient-origins": [
+"xy7"
+],
+"breakthrough": [
+"xy8"
+],
+"breakpoint": [
+"xy9"
+],
+"generations": [
+"g1"
+],
+"fates-collide": [
+"xy10"
+],
+"steam-siege": [
+"xy11"
+],
+"evolutions": [
+"xy12"
+],
+"sun-moon": [
+"sm1"
+],
+"guardians-rising": [
+"sm2"
+],
+"burning-shadows": [
+"sm3"
+],
+"shining-legends": [
+"sm3.5"
+],
+"crimson-invasion": [
+"sm4"
+],
+"ultra-prism": [
+"sm5"
+],
+"forbidden-light": [
+"sm6"
+],
+"celestial-storm": [
+"sm7"
+],
+"dragon-majesty": [
+"sm7.5"
+],
+"lost-thunder": [
+"sm8"
+],
+"team-up": [
+"sm9"
+],
+"detective-pikachu": [
+"det1"
+],
+"unbroken-bonds": [
+"sm10"
+],
+"unified-minds": [
+"sm11"
+],
+"hidden-fates": [
+"sm115",
+"sma"
+],
+"cosmic-eclipse": [
+"sm12"
+],
+"sword-shield": [
+"swsh1"
+],
+"rebel-clash": [
+"swsh2"
+],
+"darkness-ablaze": [
+"swsh3"
+],
+"champions-path": [
+"swsh3.5"
+],
+"vivid-voltage": [
+"swsh4"
+],
+"mcdonalds-collection-2021": [
+"2021swsh"
+],
+"shining-fates": [
+"swsh4.5",
+"swsh4.5sv"
+],
+"battle-styles": [
+"swsh5"
+],
+"chilling-reign": [
+"swsh6"
+],
+"evolving-skies": [
+"swsh7"
+],
+"celebrations": [
+"cel25",
+"cel25cc"
+],
+"fusion-strike": [
+"swsh8"
+],
+"brilliant-stars": [
+"swsh9",
+"swsh9tg"
+],
+"astral-radiance": [
+"swsh10",
+"swsh10tg"
+],
+"pokemon-go": [
+"swsh10.5"
+],
+"mcdonalds-collection-2022": [
+"2022swsh"
+],
+"lost-origin": [
+"swsh11",
+"swsh11tg"
+],
+"silver-tempest": [
+"swsh12",
+"swsh12tg"
+],
+"crown-zenith": [
+"swsh12.5",
+"swsh12.5gg"
+],
+"scarlet-violet": [
+"sv01"
+],
+"paldea-evolved": [
+"sv02"
+],
+"obsidian-flames": [
+"sv03"
+],
+"151": [
+"sv03.5"
+],
+"paradox-rift": [
+"sv04"
+],
+"paldean-fates": [
+"sv04.5"
+],
+"temporal-forces": [
+"sv05"
+],
+"twilight-masquerade": [
+"sv06"
+],
+"shrouded-fable": [
+"sv06.5"
+],
+"stellar-crown": [
+"sv07"
+],
+"surging-sparks": [
+"sv08"
+],
+"prismatic-evolutions": [
+"sv08.5"
+],
+"journey-together": [
+"sv09"
+],
+"destined-rivals": [
+"sv10"
+],
+"black-bolt": [
+"sv10.5b"
+],
+"white-flare": [
+"sv10.5w"
+],
+"mega-evolution": [
+"me01"
+],
+"phantasmal-flames": [
+"me02"
+],
+"ascended-heroes": [
+"me02.5"
+],
+"perfect-order": [
+"me03"
+],
+"chaos-rising": [
+"me04"
+],
+"pitch-black": [
+"me05"
+]
+}
