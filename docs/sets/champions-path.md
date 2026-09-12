@@ -86,6 +86,27 @@ Pull odds:
 
 - Collation: variable. Official: no guaranteed ratio per box or product.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Champion's Path has no
+English booster box; packs came only in Elite Trainer Boxes and other
+set products. The set list has no plain Rare cards, so the rare slot
+holds Rare Holo or higher.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare Holo | Rarity | — | Yes |
+| 5 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
+| 6 | Rare VMAX | Rarity | — | Yes |
+| 7 | Rare Ultra (full art) | Rarity | — | Yes |
+| 8 | Rare Rainbow | Rarity | — | Yes |
+| 9 | Rare Secret | Rarity | — | Yes |
+
 ## Sources
 
 - [Bulbapedia — Champion's Path (TCG)](https://bulbapedia.bulbagarden.net/wiki/Champion%27s_Path_(TCG))
@@ -101,3 +122,4 @@ Pull odds:
 - No pull-rate study found for any rarity.
 - Slot breakdown, Energy card, and code card: not confirmed for this set.
 - Pack order: one guide only. Which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art), Rare Rainbow and Rare Secret. The era's rarity system decides the place of each one in the rarity list.

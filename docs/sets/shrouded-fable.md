@@ -147,6 +147,29 @@ set has no booster boxes. No official statement was found.
 - Pack counts per product are fixed.
 - Hits per product: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Shrouded Fable has no
+booster box; packs came only in Elite Trainer Boxes and other set
+products. Reverse holo slot 1 can hold an ACE SPEC Rare instead of a
+plain reverse holo. No source gives reliable odds for this set, so the
+order follows the era's rarity system.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Double Rare | Rarity | — | Yes |
+| 6 | Ultra Rare | Rarity | — | Yes |
+| 7 | Illustration Rare | Rarity | — | Yes |
+| 8 | Special Illustration Rare | Rarity | — | Yes |
+| 9 | Hyper Rare | Rarity | — | Yes |
+| 10 | ACE SPEC Rare | Rarity | — | Yes |
+
 ## Sources
 
 - [Bulbapedia — Shrouded Fable (TCG)](https://bulbapedia.bulbagarden.net/wiki/Shrouded_Fable_(TCG))
@@ -176,3 +199,5 @@ set has no booster boxes. No official statement was found.
 - **Physical pack order.** No opened-pack source confirms it.
 - **Era conflicts:** the Hyper Rare slot and the last card.
 - **Pack count** for the Mini Tin Bundle: Unknown.
+- **Rarity list odds:** no source gives reliable odds per pack for Rare, Double Rare, Ultra Rare, Illustration Rare, Special Illustration Rare, Hyper Rare and ACE SPEC Rare. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** the era's rarity system places ACE SPEC Rare after Hyper Rare, but community estimates put ACE SPEC Rare around 1 in 20, more common than Special Illustration Rare and Hyper Rare. This file follows the era order because no source is reliable enough to choose specific odds.

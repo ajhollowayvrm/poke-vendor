@@ -128,6 +128,24 @@ Collation:
 - Boxes per case: Unknown.
 - Hits per booster box: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 79.76% | Yes |
+| 5 | Double Rare | Rarity | 13.61% | Yes |
+| 6 | Illustration Rare | Rarity | 7.60% | Yes |
+| 7 | Ultra Rare | Rarity | 6.63% | Yes |
+| 8 | Special Illustration Rare | Rarity | 3.13% | Yes |
+| 9 | Hyper Rare | Rarity | 1.92% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Obsidian Flames (TCG)](https://bulbapedia.bulbagarden.net/wiki/Obsidian_Flames_(TCG))
@@ -150,3 +168,4 @@ Collation:
 - **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
   Build & Battle Box page says 4.
 - **Blister contents** for this set: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.60%) is more common than Ultra Rare (6.63%), even though Ultra Rare is the higher secret-rare tier by name.

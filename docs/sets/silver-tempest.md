@@ -126,6 +126,32 @@ community sample.
 
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. The Trainer Gallery subset
+shares the reverse holo slot with plain reverse holos and Radiant
+Pokémon; its three rarity groups are separate entries.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 25.35% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 11.55% | Yes |
+| 7 | Trainer Gallery — non-V Pokémon | Subset | 8.25% | Yes |
+| 8 | Rare Radiant | Rarity | 4.55% | Yes |
+| 9 | Rare VSTAR | Rarity | 3.72% | Yes |
+| 10 | Rare VMAX | Rarity | 3.72% | Yes |
+| 11 | Rare Ultra (full art and alternate art) | Rarity | 3.71% | Yes |
+| 12 | Trainer Gallery — V, VMAX, or Trainer | Subset | 3.08% | Yes |
+| 13 | Rare Rainbow | Rarity | 1.26% | Yes |
+| 14 | Rare Secret | Rarity | 0.94% | Yes |
+| 15 | Trainer Gallery — gold-and-black VMAX | Subset | 0.90% | Yes |
+
 ## Sources
 
 - [TCGplayer — Pokémon TCG: Silver Tempest Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Silver-Tempest-Pull-Rates/6490d591-e582-4930-8446-00e190876d30/)
@@ -146,3 +172,5 @@ community sample.
 - DigitalTQ recorded 1 plain "Rare" as a hit. Its labels do not match the
   TCGplayer groups.
 - Pack order: which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no reliable source gives the odds per pack for Rare. DigitalTQ recorded one plain Rare pull (0.14%), too small to use. The era's rarity system decides its place in the rarity list.
+- **Rarity list odds:** TCGplayer gives one combined figure (3.72%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.

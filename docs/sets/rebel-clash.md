@@ -80,6 +80,26 @@ Pull odds:
 
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. No source gives odds for this
+set, so the order follows the era's rarity system.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
+| 7 | Rare VMAX | Rarity | — | Yes |
+| 8 | Rare Ultra (full art) | Rarity | — | Yes |
+| 9 | Rare Rainbow | Rarity | — | Yes |
+| 10 | Rare Secret | Rarity | — | Yes |
+
 ## Sources
 
 - [Bulbapedia — Rebel Clash (TCG)](https://bulbapedia.bulbagarden.net/wiki/Rebel_Clash_(TCG))
@@ -97,3 +117,4 @@ Pull odds:
 - Pack order has no set-specific source. Which end faces the wrapper front is
   Unknown.
 - The commons count of 5 is derived.
+- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art), Rare Rainbow and Rare Secret. The era's rarity system decides the place of each one in the rarity list.

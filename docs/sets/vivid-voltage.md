@@ -84,6 +84,27 @@ Pull odds. The only source is DigitalTQ: 630 packs.
   Unknown. Other sets in the era list 6.
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. The DigitalTQ labels map to
+the Bulbapedia rarity labels; see Open topics for the mapping caveat.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 21.75% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 12.7% | Yes |
+| 7 | Amazing Rare | Rarity | 5.71% | Yes |
+| 8 | Rare VMAX | Rarity | 4.29% | Yes |
+| 9 | Rare Ultra (full art) | Rarity | 3.97% | Yes |
+| 10 | Rare Rainbow | Rarity | 1.27% | Yes |
+| 11 | Rare Secret | Rarity | 1.11% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Vivid Voltage (TCG)](https://bulbapedia.bulbagarden.net/wiki/Vivid_Voltage_(TCG))
@@ -102,3 +123,4 @@ Pull odds. The only source is DigitalTQ: 630 packs.
 - DigitalTQ labels ("Ultra Rare", "Secret Rare Holo") do not map one-to-one
   to Bulbapedia labels.
 - Pack order has no set-specific source.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.

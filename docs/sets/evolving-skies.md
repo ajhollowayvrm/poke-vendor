@@ -105,6 +105,27 @@ Specific cards (TCGplayer, assumes equal weight inside each rarity):
 
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Rare Ultra combines the full
+art cards and the alternate-art Pokémon V cards. Rare Rainbow combines
+the rainbow rares and the alternate-art Pokémon VMAX cards.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 10.56% | Yes |
+| 7 | Rare VMAX | Rarity | 5.60% | Yes |
+| 8 | Rare Ultra (full art and alternate-art V) | Rarity | 3.88% | Yes |
+| 9 | Rare Rainbow (rainbow and alternate-art VMAX) | Rarity | 1.14% | Yes |
+| 10 | Rare Secret | Rarity | 0.91% | Yes |
+
 ## Sources
 
 - [TCGplayer — Pokémon TCG: Evolving Skies Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Evolving-Skies-Pull-Rates/6a743d7b-e5ee-4fd6-9d18-64a636990e8c/)
@@ -126,3 +147,4 @@ Specific cards (TCGplayer, assumes equal weight inside each rarity):
 - TCGplayer counts 16 rainbow rares and 6 alternate-art VMAX cards. Bulbapedia
   labels all 22 "Rare Rainbow".
 - Pack order: which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.

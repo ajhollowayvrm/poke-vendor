@@ -103,6 +103,25 @@ come from various sets.
 
 - Collation: variable. The set of the "other" packs varies by product.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Celebrations has no English
+booster box; its 4-card packs come only in products bundled with other
+Sword & Shield Series packs. The set has no Common or Uncommon cards, so
+every card is Rare or higher.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Rare | Rarity | — | Yes |
+| 2 | Rare Holo | Rarity | — | Yes |
+| 3 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
+| 4 | Rare VMAX | Rarity | — | Yes |
+| 5 | Rare Ultra | Rarity | — | Yes |
+| 6 | Rare Secret | Rarity | — | Yes |
+| 7 | Classic Collection | Subset | 40.1% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Celebrations (TCG)](https://bulbapedia.bulbagarden.net/wiki/Celebrations_(TCG))
@@ -124,3 +143,5 @@ come from various sets.
 - Classic Collection odds: one small sample (541 packs) and one source of
   unknown quality. No large study found.
 - Can a pack hold more than one Classic Collection card? Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra and Rare Secret. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list order:** Classic Collection has odds of 40.1%, more common than any main-set rarity in this file. No main-set rarity has odds to compare it against, so the rarity list places Classic Collection last, following the era's rarity system.

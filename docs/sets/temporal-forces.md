@@ -155,6 +155,26 @@ Collation:
 - Boxes per case: Unknown.
 - Hits per booster box: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Reverse holo slot 1 can
+hold an ACE SPEC Rare instead of a plain reverse holo.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 76.50% | Yes |
+| 5 | Double Rare | Rarity | 16.83% | Yes |
+| 6 | Illustration Rare | Rarity | 7.72% | Yes |
+| 7 | Ultra Rare | Rarity | 6.67% | Yes |
+| 8 | ACE SPEC Rare | Rarity | 5.00% | Yes |
+| 9 | Special Illustration Rare | Rarity | 1.17% | Yes |
+| 10 | Hyper Rare | Rarity | 0.72% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Temporal Forces (TCG)](https://bulbapedia.bulbagarden.net/wiki/Temporal_Forces_(TCG))
@@ -173,3 +193,4 @@ Collation:
   [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 - **Boxes per case** and **hits per box:** Unknown.
 - **Blister contents** for this set: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.72%) is more common than Ultra Rare (6.67%), even though Ultra Rare is the higher secret-rare tier by name.

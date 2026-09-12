@@ -206,6 +206,30 @@ source confirms it for this set.
 Collation: **unknown**. No source describes fixed hits per Elite
 Trainer Box. Model each pack as an independent draw.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Prismatic Evolutions has no
+booster box; packs came only in Elite Trainer Boxes and other set
+products. The Poké Ball and Master Ball patterns replace the reverse
+holo in Common, Uncommon, and Rare cards; this set has no Illustration
+Rares.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 | Yes |
+| 6 | Ultra Rare | Rarity | 1 in 13 | Yes |
+| 7 | Poké Ball pattern | Variant | — | No |
+| 8 | Master Ball pattern | Variant | 1 in 19 | No |
+| 9 | ACE SPEC Rare | Rarity | 1 in 21 | Yes |
+| 10 | Special Illustration Rare | Rarity | 1 in 45 | Yes |
+| 11 | Hyper Rare | Rarity | 1 in 167 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Prismatic Evolutions (TCG)](https://bulbapedia.bulbagarden.net/wiki/Prismatic_Evolutions_(TCG))
@@ -254,3 +278,5 @@ Trainer Box. Model each pack as an independent draw.
 - **Booster box:** tcgtalk mentions one. The official list has none.
 - **Pack counts:** Binder Collection, Poster Collection, Accessory Pouch
   Special Collection, and Premium Figure Collection.
+- **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** the official expansion page says the Poké Ball pattern is more common than the Master Ball pattern, so this file places it above Master Ball. No source gives a number for Poké Ball, so its exact place against Double Rare, Ultra Rare, and ACE SPEC Rare is unconfirmed.

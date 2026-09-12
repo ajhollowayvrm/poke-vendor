@@ -122,6 +122,26 @@ The Mega Lucario ex League Battle Deck is listed with the set
 
 **Collation**: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Odds use the TCGplayer
+figures; see Open topics for the conflict with ThePriceDex and TCG
+Talk.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.4 | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 (20.30%) | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 9 (10.66%) | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 12 (8.29%) | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 83 (1.21%) | Yes |
+| 9 | Mega Hyper Rare | Rarity | 1 in 956 (0.10%) | Yes |
+
 ## Sources
 
 - [Bulbapedia — Chaos Rising (TCG)](https://bulbapedia.bulbagarden.net/wiki/Chaos_Rising_(TCG))
@@ -144,3 +164,4 @@ The Mega Lucario ex League Battle Deck is listed with the set
 - The Mega Hyper Rare slot is not confirmed for this set.
 - Whether the League Battle Deck holds booster packs: Unknown.
 - Box collation and per-card weights: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (10.66%) is more common than Ultra Rare (8.29%), even though Ultra Rare is the higher secret-rare tier by name.

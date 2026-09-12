@@ -183,6 +183,30 @@ Each product exists in a Black Bolt version and a White Flare version.
 
 Collation: **unknown**. Model each pack as an independent draw.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Black Bolt has no booster
+box; packs came only in Elite Trainer Boxes and other set products.
+The Poké Ball and Master Ball patterns replace the reverse holo in
+Common, Uncommon, and Rare cards. Odds use the TCGplayer study (column
+A), the only large study, which combines Black Bolt and White Flare.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Poké Ball pattern | Variant | 30.56% (about 1 in 3) | No |
+| 6 | Double Rare | Rarity | 21.11% (about 1 in 5) | Yes |
+| 7 | Illustration Rare | Rarity | 16.39% (about 1 in 6) | Yes |
+| 8 | Ultra Rare | Rarity | 5.83% (about 1 in 17) | Yes |
+| 9 | Master Ball pattern | Variant | 5.14% (about 1 in 19) | No |
+| 10 | Special Illustration Rare | Rarity | 1.25% (about 1 in 80) | Yes |
+| 11 | Black White Rare | Rarity | 1 in 496 (0.2%) | Yes |
+
 ## Sources
 
 - [Bulbapedia — Black Bolt & White Flare (TCG)](https://bulbapedia.bulbagarden.net/wiki/Black_Bolt_%26_White_Flare_(TCG))
@@ -220,3 +244,6 @@ Collation: **unknown**. Model each pack as an independent draw.
   Mini Tin, Tech Sticker Collection, Victini Illustration Collection,
   and Unova Heavy Hitters Premium Collection.
 - **Set code BLK:** not confirmed in a fetched source.
+- **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** Master Ball pattern uses 5.14% from the TCGplayer study (700+ packs, combined sets). PokeBeach gives 1 in 15 (6.67%).
+- **Rarity list order:** by this file's odds, Illustration Rare (16.39%) is far more common than Ultra Rare (5.83%), even though Ultra Rare is the higher secret-rare tier by name.

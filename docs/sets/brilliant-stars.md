@@ -119,6 +119,30 @@ DigitalTQ community sample, 1,004 packs:
 - Collation: variable. Official: no guaranteed ratio per box. TCGplayer
   estimates a 73% chance to pull one of the top 9 cards in a booster box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. The Trainer Gallery subset
+shares the reverse holo slot with plain reverse holos; its two rarity
+groups are separate entries.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 26.39% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 14.94% | Yes |
+| 7 | Trainer Gallery — non-V, VMAX, or Trainer | Subset | 12.5% | Yes |
+| 8 | Trainer Gallery — V, VMAX, or Trainer | Subset | 5.56% | Yes |
+| 9 | Rare Ultra (full art and alternate art) | Rarity | 4.98% | Yes |
+| 10 | Rare Rainbow | Rarity | 1.96% | Yes |
+| 11 | Rare VSTAR | Rarity | 1.89% | Yes |
+| 12 | Rare VMAX | Rarity | 1.89% | Yes |
+| 13 | Rare Secret | Rarity | 1.09% | Yes |
+
 ## Sources
 
 - [TCGplayer — Brilliant Stars Pull Rates infographic](https://mktg-assets.tcgplayer.com/content/pokemon/3_22/01/C-02-25-2022-PKM-Brilliant-Stars-Pull-Rates.jpg)
@@ -142,3 +166,6 @@ DigitalTQ community sample, 1,004 packs:
 - DigitalTQ and TCGplayer use different category groups. Do not mix them.
 - How often the VSTAR marker replaces the Energy card: Unknown.
 - Pack order: which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** Rare Rainbow uses 1.96% from the TCGplayer infographic (10,000+ packs). DigitalTQ gives 1.29% (community sample, 1,004 packs).
+- **Rarity list order:** Rare Secret uses 1.09% from the TCGplayer infographic. DigitalTQ gives 1.49% (community sample).

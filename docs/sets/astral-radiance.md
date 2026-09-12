@@ -123,6 +123,31 @@ Ultra Rare 5.37%, Rare Holo VSTAR 2.6%, Secret Rare Holo 1.3%, Rare Rainbow
   Unknown. Other sets in the era list 6.
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. The Trainer Gallery subset
+shares the reverse holo slot with plain reverse holos and Radiant
+Pokémon; its two rarity groups are separate entries.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 25.53% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 12.77% | Yes |
+| 7 | Trainer Gallery — non-V Pokémon | Subset | 8.48% | Yes |
+| 8 | Rare Radiant | Rarity | 4.88% | Yes |
+| 9 | Trainer Gallery — V, VMAX, or Trainer | Subset | 4.10% | Yes |
+| 10 | Rare Ultra (full art and alternate art) | Rarity | 3.95% | Yes |
+| 11 | Rare VSTAR | Rarity | 3.47% | Yes |
+| 12 | Rare VMAX | Rarity | 3.47% | Yes |
+| 13 | Rare Rainbow | Rarity | 1.28% | Yes |
+| 14 | Rare Secret | Rarity | 0.76% | Yes |
+
 ## Sources
 
 - [TCGplayer — Pokémon TCG: Astral Radiance Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Astral-Radiance-Pull-Rates/10da749f-9c8b-45c0-b80a-dbd86ca5dcde/)
@@ -144,3 +169,5 @@ Ultra Rare 5.37%, Rare Holo VSTAR 2.6%, Secret Rare Holo 1.3%, Rare Rainbow
   alternate-art cards "six full-art trainer cards". The table values look
   correct.
 - Pack order: which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list odds:** TCGplayer gives one combined figure (3.47%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.

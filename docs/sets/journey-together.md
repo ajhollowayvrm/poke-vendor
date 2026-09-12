@@ -145,6 +145,25 @@ Enhanced box adds one fixed promo. The promo is not a pack card.
 
 Boxes per case: **unknown**.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This set has no ACE SPEC
+Rares.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Double Rare | Rarity | 1 in 6 (16.67%) | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 13 (7.69%) | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 15 (6.67%) | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 90 (1.11%) | Yes |
+| 9 | Hyper Rare | Rarity | 1 in 150 (0.67%) | Yes |
+
 ## Sources
 
 - [Bulbapedia — Journey Together (TCG)](https://bulbapedia.bulbagarden.net/wiki/Journey_Together_(TCG))
@@ -175,3 +194,5 @@ Boxes per case: **unknown**.
   confirmed.
 - **Case size and box collation:** not found.
 - **Set code JTG:** not confirmed in a fetched source.
+- **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.69%) is more common than Ultra Rare (6.67%), even though Ultra Rare is the higher secret-rare tier by name.

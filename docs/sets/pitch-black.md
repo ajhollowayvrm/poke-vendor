@@ -119,6 +119,26 @@ saw very few Mega Hyper Rares.
 
 **Collation**: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Odds use the Obsidia
+4,000+ pack study; see Open topics for the conflict with ThePriceDex
+and TCG Talk.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.4 | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 (21.02%) | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 9 (11.01%) | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 12 (8.30%) | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 80 (1.25%) | Yes |
+| 9 | Mega Hyper Rare | Rarity | 1 in 1,081 (0.09%) | Yes |
+
 ## Sources
 
 - [Bulbapedia — Pitch Black (TCG)](https://bulbapedia.bulbagarden.net/wiki/Pitch_Black_(TCG))
@@ -146,3 +166,4 @@ source of the ME05 code only.
 - The Mega Hyper Rare odds rest on very few pulls.
 - Holo Basic Energy at 5.6%: one unconfirmed source.
 - Box collation and per-card weights: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (11.01%) is more common than Ultra Rare (8.30%), even though Ultra Rare is the higher secret-rare tier by name.

@@ -152,6 +152,33 @@ Ultra Rare 9.27%, Rare Holo VSTAR 5.2%, Rare Radiant 5.04%, Rare Holo VMAX
 
 - Collation: variable. Official: no guaranteed ratio per product.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Crown Zenith has no English
+booster box; packs came only in Elite Trainer Boxes and other set
+products. The Galarian Gallery subset shares the reverse holo slot with
+plain reverse holos and Radiant Pokémon; its rarity groups are separate
+entries.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 40.16% | Yes |
+| 6 | Galarian Gallery — non-V Pokémon | Subset | 22.40% | Yes |
+| 7 | Ultra-Rare Rare (Pokémon V) | Rarity | 12.35% | Yes |
+| 8 | Galarian Gallery — Pokémon V or Trainer | Subset | 12.00% | Yes |
+| 9 | Rare VSTAR | Rarity | 5.30% | Yes |
+| 10 | Rare VMAX | Rarity | 5.30% | Yes |
+| 11 | Rare Radiant | Rarity | 4.55% | Yes |
+| 12 | Rare Ultra (textured Energy and full-art Trainers) | Rarity | 2.85% | Yes |
+| 13 | Galarian Gallery — gold VSTAR | Subset | 0.80% | Yes |
+| 14 | Rare Secret | Rarity | 0.75% | Yes |
+
 ## Sources
 
 - [TCGplayer — Pokémon TCG: Crown Zenith Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Crown-Zenith-Pull-Rates/56af3032-cb34-4da1-92fb-9cf206d10c0f/)
@@ -178,3 +205,5 @@ Ultra Rare 9.27%, Rare Holo VSTAR 5.2%, Rare Radiant 5.04%, Rare Holo VMAX
   plus Energy and code card.
 - VSTAR marker in Crown Zenith packs: Unknown.
 - Pack order: which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list odds:** TCGplayer gives one combined figure (5.30%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.

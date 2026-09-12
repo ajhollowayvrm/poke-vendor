@@ -183,6 +183,25 @@ box. Model each pack as an independent draw, as in
 
 Boxes per case: **unknown**.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Double Rare | Rarity | 1 in 6 (16.9%) | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 13 (7.7%) | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 15 (6.7%) | Yes |
+| 8 | ACE SPEC Rare | Rarity | 1 in 20 | Yes |
+| 9 | Special Illustration Rare | Rarity | 1 in 87 (1.2%) | Yes |
+| 10 | Hyper Rare | Rarity | 1 in 188 (0.5%) | Yes |
+
 ## Sources
 
 - [Bulbapedia — Surging Sparks (TCG)](https://bulbapedia.bulbagarden.net/wiki/Surging_Sparks_(TCG))
@@ -226,3 +245,5 @@ Boxes per case: **unknown**.
 - **Booster Bundle and Build & Battle Box pack counts:** not found.
 - **Case size and box collation:** not found.
 - **Demi-god packs:** social media claims only.
+- **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.7%) is more common than Ultra Rare (6.7%), even though Ultra Rare is the higher secret-rare tier by name.

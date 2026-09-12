@@ -116,6 +116,24 @@ only 1 or 2 hits expected in 3,500 packs, its confidence is low.
 
 **Collation**: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.4 | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 9 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 12 | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 81 | Yes |
+| 9 | Mega Hyper Rare | Rarity | 1 in 1,786 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Perfect Order (TCG)](https://bulbapedia.bulbagarden.net/wiki/Perfect_Order_(TCG))
@@ -142,3 +160,4 @@ search-result summary. The ComicBook article was found but not read.
 - Bulbapedia lists a Pitch Black Build & Battle Box and an Enhanced
   2 Pack Blister on this set page. Which set's packs they hold: Unknown.
 - Box collation and per-card weights: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (1 in 9) is more common than Ultra Rare (1 in 12), even though Ultra Rare is the higher secret-rare tier by name.

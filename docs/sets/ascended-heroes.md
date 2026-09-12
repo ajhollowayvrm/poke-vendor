@@ -137,6 +137,30 @@ written with large text." The set has 7.
 
 **Collation**: Unknown. The god pack rate per product: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Ascended Heroes has no
+booster box; packs came only in Elite Trainer Boxes and other set
+products. Each non-ex Pokémon has two reverse holo patterns: an Energy
+pattern and a Poké Ball pattern (an "R" pattern for Team Rocket's
+Pokémon). Estimates put close to one of each per pack.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Energy pattern reverse holo | Variant | Every pack | No |
+| 4 | Poké Ball pattern reverse holo | Variant | Every pack | No |
+| 5 | Rare | Rarity | 1 in 1.4 | Yes |
+| 6 | Double Rare | Rarity | 1 in 5 | Yes |
+| 7 | Illustration Rare | Rarity | 1 in 9 | Yes |
+| 8 | Ultra Rare | Rarity | 1 in 21 | Yes |
+| 9 | Mega Attack Rare | Rarity | 1 in 29 | Yes |
+| 10 | Special Illustration Rare | Rarity | 1 in 70 | Yes |
+| 11 | Mega Hyper Rare | Rarity | 1 in 540 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Ascended Heroes (TCG)](https://bulbapedia.bulbagarden.net/wiki/Ascended_Heroes_(TCG))
@@ -174,3 +198,5 @@ come from search-result summaries.
 - **Release month**: Cardrake says February 2026. Bulbapedia and
   TCGplayer say 2026-01-30. The February date is probably the ETB delay.
 - Box collation and per-card weights: Unknown.
+- **Rarity list odds:** ThePriceDex estimates suggest close to one Energy-pattern and one Poké Ball-pattern reverse holo per pack, but no source confirms a guaranteed slot for each pattern.
+- **Rarity list order:** by this file's odds, Illustration Rare (1 in 9) is more common than Ultra Rare (1 in 21), even though Ultra Rare is the higher secret-rare tier by name.

@@ -170,6 +170,25 @@ each pack as an independent draw.
 
 Boxes per case: **unknown**.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This set has no ACE SPEC
+Rares.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 12 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 16 | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 94 | Yes |
+| 9 | Hyper Rare | Rarity | 1 in 149 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Destined Rivals (TCG)](https://bulbapedia.bulbagarden.net/wiki/Destined_Rivals_(TCG))
@@ -202,3 +221,5 @@ Boxes per case: **unknown**.
 - **Case size and box collation:** not found.
 - **Demi-god packs:** social media claims only.
 - **Set code DRI:** not confirmed in a fetched source.
+- **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** by this file's odds, Illustration Rare (1 in 12) is more common than Ultra Rare (1 in 16), even though Ultra Rare is the higher secret-rare tier by name.

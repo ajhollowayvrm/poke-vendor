@@ -144,6 +144,27 @@ Collation: **unknown**. Model each pack as an independent draw.
 
 Boxes per case: **unknown**.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Odds use the file's default
+simulation values (the PokéPatch copy of the TCGplayer study, plus the
+Joseph Writer Anderson ACE SPEC figure).
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Double Rare | Rarity | 1 in 6 | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 13 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 15 | Yes |
+| 8 | ACE SPEC Rare | Rarity | 1 in 20 | Yes |
+| 9 | Special Illustration Rare | Rarity | 1 in 90 | Yes |
+| 10 | Hyper Rare | Rarity | 1 in 137 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Stellar Crown (TCG)](https://bulbapedia.bulbagarden.net/wiki/Stellar_Crown_(TCG))
@@ -173,3 +194,5 @@ Boxes per case: **unknown**.
 - **Product pack counts:** only the Booster Display Box is confirmed.
 - **Case size and box collation:** not found.
 - **Set code SCR:** not confirmed in a fetched source.
+- **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list order:** by this file's default odds, Illustration Rare (1 in 13) is more common than Ultra Rare (1 in 15), even though Ultra Rare is the higher secret-rare tier by name.

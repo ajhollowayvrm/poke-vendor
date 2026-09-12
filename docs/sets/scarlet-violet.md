@@ -154,6 +154,24 @@ Collation:
 - Hits per booster box: Unknown. No source says whether the hit count per box
   is fixed or variable.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 79.67% | Yes |
+| 5 | Double Rare | Rarity | 13.76% | Yes |
+| 6 | Illustration Rare | Rarity | 7.67% | Yes |
+| 7 | Ultra Rare | Rarity | 6.57% | Yes |
+| 8 | Special Illustration Rare | Rarity | 3.15% | Yes |
+| 9 | Hyper Rare | Rarity | 1.85% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Scarlet & Violet (TCG)](https://bulbapedia.bulbagarden.net/wiki/Scarlet_%26_Violet_(TCG))
@@ -181,3 +199,4 @@ Collation:
 - **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
   Build & Battle Box page says 4.
 - **Blister contents** for this set: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.67%) is more common than Ultra Rare (6.57%), even though Ultra Rare is the higher secret-rare tier by name.

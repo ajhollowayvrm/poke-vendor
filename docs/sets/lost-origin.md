@@ -123,6 +123,32 @@ Ultra Rare 4.6%, Rare Holo VSTAR 4.18%, Rare Radiant 4.04%, Secret Rare Holo
   Unknown. Other sets in the era list 6.
 - Collation: variable. Official: no guaranteed ratio per box.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. The Trainer Gallery subset
+shares the reverse holo slot with plain reverse holos and Radiant
+Pokémon; its three rarity groups are separate entries.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | 26.46% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 11.63% | Yes |
+| 7 | Trainer Gallery — non-V Pokémon | Subset | 8.29% | Yes |
+| 8 | Rare Radiant | Rarity | 5.01% | Yes |
+| 9 | Rare VSTAR | Rarity | 4.42% | Yes |
+| 10 | Rare VMAX | Rarity | 4.42% | Yes |
+| 11 | Rare Ultra (full art and alternate art) | Rarity | 3.90% | Yes |
+| 12 | Trainer Gallery — V, VMAX, or Trainer | Subset | 3.17% | Yes |
+| 13 | Rare Rainbow | Rarity | 1.28% | Yes |
+| 14 | Trainer Gallery — gold-and-black VMAX | Subset | 0.86% | Yes |
+| 15 | Rare Secret | Rarity | 0.76% | Yes |
+
 ## Sources
 
 - [TCGplayer — Pokémon TCG: Lost Origin Pull Rates](https://infinite.tcgplayer.com/article/Pok%C3%A9mon-TCG-Lost-Origin-Pull-Rates/ba20ac4d-9448-45ce-b919-d856d107c744/)
@@ -144,3 +170,5 @@ Ultra Rare 4.6%, Rare Holo VSTAR 4.18%, Rare Radiant 4.04%, Secret Rare Holo
 - Radiant slot: Unknown.
 - Holo rare: only a community sample.
 - Pack order: which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
+- **Rarity list odds:** TCGplayer gives one combined figure (4.42%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.

@@ -93,6 +93,32 @@ Pull odds:
 
 - Collation: variable. Official: no guaranteed ratio per product.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Shining Fates has no English
+booster box; packs came only in Elite Trainer Boxes and other set
+products. The Shiny Vault is a 122-card subset that can replace the
+reverse holo card; each of its rarities is its own entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | — | Yes |
+| 5 | Rare Holo | Rarity | — | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
+| 7 | Rare VMAX | Rarity | — | Yes |
+| 8 | Rare Ultra (full art) | Rarity | — | Yes |
+| 9 | Rare Rainbow | Rarity | — | Yes |
+| 10 | Rare Secret | Rarity | — | Yes |
+| 11 | Amazing Rare | Rarity | — | Yes |
+| 12 | Shiny Vault — Rare Shiny | Subset | — | Yes |
+| 13 | Shiny Vault — Rare Shiny GX | Subset | — | Yes |
+| 14 | Shiny Vault — Rare Secret | Subset | — | Yes |
+
 ## Sources
 
 - [Bulbapedia — Shining Fates (TCG)](https://bulbapedia.bulbagarden.net/wiki/Shining_Fates_(TCG))
@@ -109,3 +135,4 @@ Pull odds:
 - Amazing Rare slot: Unknown.
 - Slot breakdown, Energy card, and code card: not confirmed for this set.
 - Pack order: one guide only. Which end faces the wrapper front is Unknown.
+- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art), Rare Rainbow, Rare Secret, Amazing Rare, Shiny Vault — Rare Shiny, Shiny Vault — Rare Shiny GX and Shiny Vault — Rare Secret. The era's rarity system decides the place of each one in the rarity list.

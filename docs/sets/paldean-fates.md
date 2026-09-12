@@ -151,6 +151,29 @@ merchandise list has no Paldean Fates Booster Display Box.
 - Pack counts per product are fixed.
 - Hits per product: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Paldean Fates has no
+booster box; packs came only in Elite Trainer Boxes and other set
+products. Reverse holo slot 1 can hold a Shiny Rare or a Shiny Ultra
+Rare instead of a plain reverse holo.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 77.50% | Yes |
+| 5 | Shiny Rare | Rarity | 25.44% | Yes |
+| 6 | Double Rare | Rarity | 15.89% | Yes |
+| 7 | Shiny Ultra Rare | Rarity | 7.72% | Yes |
+| 8 | Illustration Rare | Rarity | 7.22% | Yes |
+| 9 | Ultra Rare | Rarity | 6.61% | Yes |
+| 10 | Special Illustration Rare | Rarity | 1.72% | Yes |
+| 11 | Hyper Rare | Rarity | 1.61% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Paldean Fates (TCG)](https://bulbapedia.bulbagarden.net/wiki/Paldean_Fates_(TCG))
@@ -175,3 +198,4 @@ merchandise list has no Paldean Fates Booster Display Box.
 - **Era conflicts:** the Hyper Rare slot and the last card.
 - **Pack counts** for the Mini Tin 3-Pack and the Charizard ex Special
   Collection: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.22%) is more common than Ultra Rare (6.61%), even though Ultra Rare is the higher secret-rare tier by name.

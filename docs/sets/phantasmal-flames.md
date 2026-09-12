@@ -105,6 +105,26 @@ with the set. No source confirms that they hold booster packs.
 
 **Collation**: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. This file uses the
+ThePriceDex figure for Rare; see Open topics for the conflict with TCG
+Protectors.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.4 | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 (20.1%) | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 9 (10.97%) | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 12 (8.06%) | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 80 (1.25%) | Yes |
+| 9 | Mega Hyper Rare | Rarity | 1 in 1,260 (0.079%) | Yes |
+
 ## Sources
 
 - [Bulbapedia — Phantasmal Flames (TCG)](https://bulbapedia.bulbagarden.net/wiki/Phantasmal_Flames_(TCG))
@@ -130,3 +150,5 @@ come from search-result summaries.
 - Whether the Mega Battle Decks hold booster packs: Unknown.
 - Box collation: Unknown.
 - Per-card weights inside each rarity: Unknown.
+- **Rarity list order:** Rare uses 1 in 1.4 from ThePriceDex. TCG Protectors gives about 30% (roughly 1 in 3.3) from the same 10,000-pack analysis.
+- **Rarity list order:** by this file's odds, Illustration Rare (10.97%) is more common than Ultra Rare (8.06%), even though Ultra Rare is the higher secret-rare tier by name.

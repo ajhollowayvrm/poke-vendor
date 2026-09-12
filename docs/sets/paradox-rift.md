@@ -131,6 +131,24 @@ Collation:
 - Boxes per case: Unknown.
 - Hits per booster box: Unknown.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 77.79% | Yes |
+| 5 | Double Rare | Rarity | 15.57% | Yes |
+| 6 | Illustration Rare | Rarity | 7.70% | Yes |
+| 7 | Ultra Rare | Rarity | 6.64% | Yes |
+| 8 | Special Illustration Rare | Rarity | 2.11% | Yes |
+| 9 | Hyper Rare | Rarity | 1.22% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Paradox Rift (TCG)](https://bulbapedia.bulbagarden.net/wiki/Paradox_Rift_(TCG))
@@ -153,3 +171,4 @@ Collation:
 - **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
   Build & Battle Box page says 4.
 - **Blister contents** for this set: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (7.70%) is more common than Ultra Rare (6.64%), even though Ultra Rare is the higher secret-rare tier by name.

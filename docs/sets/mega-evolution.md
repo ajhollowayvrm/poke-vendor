@@ -117,6 +117,24 @@ by PokeBeach and ThePriceDex.
 
 **Collation**: Unknown. No source states fixed or variable collation.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare | Rarity | 1 in 1.4 | Yes |
+| 5 | Double Rare | Rarity | 1 in 5 | Yes |
+| 6 | Illustration Rare | Rarity | 1 in 9 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 12 | Yes |
+| 8 | Special Illustration Rare | Rarity | 1 in 101 | Yes |
+| 9 | Mega Hyper Rare | Rarity | 1 in 1,260 | Yes |
+
 ## Sources
 
 - [Bulbapedia — Mega Evolution (TCG)](https://bulbapedia.bulbagarden.net/wiki/Mega_Evolution_(TCG))
@@ -145,3 +163,4 @@ from search-result summaries.
 - Box collation: Unknown.
 - Reverse holo odds are estimates, not study data.
 - The mix of the 2 Mega Hyper Rares, and per-card weights: Unknown.
+- **Rarity list order:** by this file's odds, Illustration Rare (1 in 9) is more common than Ultra Rare (1 in 12), even though Ultra Rare is the higher secret-rare tier by name.

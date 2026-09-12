@@ -98,6 +98,29 @@ Pull odds. The only source is DigitalTQ: 371 packs.
 
 - Collation: variable. Official: no guaranteed ratio per product.
 
+## Rarity list
+
+The stop rule menu on the rip screen shows this list (see
+[../18-ripping.md](../18-ripping.md#the-stop-rule)). The list goes from
+the most common entry to the rarest entry. Pokémon GO has no English
+booster box; packs came only in Elite Trainer Boxes and other set
+products. The set has no plain Rare cards: the rare slot always holds a
+Rare Holo or higher card.
+
+| # | Entry | Type | Odds per pack | Default stop |
+|---|---|---|---|---|
+| 1 | Common | Rarity | Every pack | No |
+| 2 | Uncommon | Rarity | Every pack | No |
+| 3 | Reverse holo | Variant | Every pack | No |
+| 4 | Rare Holo | Rarity | 70.35% | Yes |
+| 5 | Ultra-Rare Rare (Pokémon V) | Rarity | 15.9% | Yes |
+| 6 | Rare Radiant | Rarity | 5.39% | Yes |
+| 7 | Rare Ultra (full art and alternate art) | Rarity | 5.39% | Yes |
+| 8 | Rare VSTAR | Rarity | 3.77% | Yes |
+| 9 | Rare Rainbow | Rarity | 3.23% | Yes |
+| 10 | Rare VMAX | Rarity | 2.16% | Yes |
+| 11 | Rare Secret | Rarity | 0.54% | Yes |
+
 ## Sources
 
 - [Bulbapedia — Pokémon GO (TCG)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_GO_(TCG))
@@ -115,3 +138,4 @@ Pull odds. The only source is DigitalTQ: 371 packs.
 - Hidden Ditto card odds: Unknown.
 - Slot breakdown: not confirmed for this set.
 - Pack order: one guide only. Which end faces the wrapper front is Unknown.
+- **Rarity list order:** the DigitalTQ rows add to more than 100%, so some packs hold two counted cards. The rarity list odds may overstate how often a pack stops early.
