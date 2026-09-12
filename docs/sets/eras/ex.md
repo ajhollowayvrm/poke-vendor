@@ -164,6 +164,19 @@ estimate** for every row.
   [../team-rocket-returns.md](../team-rocket-returns.md), and
   [../deoxys.md](../deoxys.md)). EX Dragon Frontiers' figures are still
   not extracted. See Open topics.
+- A further research pass (2026-09-12) confirms no box-count source
+  exists for EX Emerald, EX Unseen Forces, EX Delta Species, or EX
+  Legend Maker: the Elite Fourum guide thread author states its
+  breakdown for these sets is "not yet posted." One qualitative claim
+  from that thread applies to EX Emerald: "The avg. number of a given
+  holo you pull per box is higher in Emerald than in any of the other
+  15 EX Series sets" (community estimate; see
+  [../emerald.md](../emerald.md)). EX Emerald has no Rare Holo ☆, so
+  its Gold Star column stays a dash. See
+  [../unseen-forces.md](../unseen-forces.md),
+  [../delta-species.md](../delta-species.md), and
+  [../legend-maker.md](../legend-maker.md) for each set's own Open
+  topics.
 - No source at all was found, in this research pass, with pull-rate
   figures for EX Emerald, EX Unseen Forces, EX Delta Species, EX Legend
   Maker, EX Holon Phantoms, EX Crystal Guardians, or EX Power Keepers
