@@ -35,6 +35,12 @@ drifts like a market price. A set file should cover:
 - Card list: every card in the set, with its number, name, category,
   rarity, and variants. The source is the TCGdex API. A set that TCGdex
   does not have uses the Bulbapedia set list.
+- Slot map: how the game builds one pack from the card list. Each row
+  is one outcome of one slot, with the exact TCGdex rarity and variant,
+  a card filter, and the odds in the slot. Check it with
+  `python3 tools/slotmap/validate.py <set>`. See
+  [sets/black-bolt.md](sets/black-bolt.md#slot-map) and
+  [sets/base-set.md](sets/base-set.md#slot-map) for the format.
 - Rarity list: every rarity, variant, and subset in the set, for
   example the Poké Ball pattern, in order of pull odds from the most
   common to the rarest. The stop rule menu

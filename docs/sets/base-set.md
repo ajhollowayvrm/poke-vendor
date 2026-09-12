@@ -263,6 +263,38 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base1`), 
 | 101/102 | Psychic Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
 | 102/102 | Water Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
 
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (Unlimited), 1st Edition (Shadowless, 1st
+Edition), Shadowless (Shadowless), and the 1999–2000 print (1999–2000
+copyright). A product must name its print run.
+
+Confidence: the slots use Variant A (5 commons, 2 energy). All cards
+in one row have equal weight. The print sheet weights for the rares
+are known only as counts (see "Rare slot odds").
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Not nos. 97–102 | 100% |
+| Energy | 2 | Basic Energy | Common | Common | Normal | Nos. 97–102 | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | 33.3% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

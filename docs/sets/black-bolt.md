@@ -371,6 +371,41 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10.5b`)
 | 171/086 | Victini | Pokémon (Fire) | Black White Rare | Holo |
 | 172/086 | Zekrom ex | Pokémon (Lightning) | Black White Rare | Holo |
 
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the pack structure above. The slot
+contents are "Expected", not confirmed.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo 1 | 1 | Poké Ball pattern | Poké Ball pattern | Common, Uncommon, Rare | Reverse holo (Poké Ball pattern) | All | 30.56% |
+| Reverse holo 1 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Reverse holo 2 | 1 | Illustration Rare | Illustration Rare | Illustration rare | Holo | All | 16.39% |
+| Reverse holo 2 | 1 | Master Ball pattern | Master Ball pattern | Common, Uncommon, Rare | Reverse holo (Master Ball pattern) | All | 5.14% |
+| Reverse holo 2 | 1 | Special Illustration Rare | Special Illustration Rare | Special illustration rare | Holo | All | 1.25% |
+| Reverse holo 2 | 1 | Black White Rare | Black White Rare | Black White Rare | Holo | All | 0.2% |
+| Reverse holo 2 | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Double Rare | Double Rare | Double rare | Holo | All | 21.11% |
+| Rare slot | 1 | Ultra Rare | Ultra Rare | Ultra Rare | Holo | All | 5.83% |
+| Rare slot | 1 | Rare | Rare | Rare | Holo | All | Rest |
+| Basic Energy | 1 | Basic Energy | — | — | — | — | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
