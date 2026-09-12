@@ -124,7 +124,8 @@ Multi-set products with packs of this set. Bulbapedia calls these mixes
 
 Collation:
 
-- Boxes per case: Unknown.
+- Boxes per case: 6 (era-wide retailer consensus; see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 - Hits per booster box: Unknown.
 
 ## Rarity list
@@ -160,7 +161,8 @@ the most common entry to the rarest entry.
 - **Physical pack order.** No opened-pack source confirms it for this set.
 - **Era conflicts:** the Hyper Rare slot and the last card. See
   [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
-- **Boxes per case** and **hits per box:** Unknown.
+- **Boxes per case:** 6 (era-wide retailer consensus, not official).
+- **Hits per box:** Unknown.
 - **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
   Build & Battle Box page says 4.
 - **Blister contents** for this set: Unknown.

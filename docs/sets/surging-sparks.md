@@ -108,10 +108,13 @@ Where the hit sits:
 Exceptions and conflicts:
 - **Energy and code card position:** the PokeBeach extract puts both
   cards after the rare. Another extract of the same search says "The
-  first card that you will see is the redeem code card". The two
-  statements agree only if the player opens the pack so that the
-  back of the stack faces them. No source says which face of the
-  stack faces the front of the wrapper.
+  first card that you will see is the redeem code card". TheGamer's
+  account (see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template))
+  suggests these agree: the code card sits last in the stack, but the
+  pack trick flips the stack for a reveal, so it becomes the first card
+  the player sees. No source says which face of the stack faces the
+  front of the wrapper.
 - **Opening end:** no source says whether the order changes when a
   player tears the bottom of the wrapper.
 
@@ -181,7 +184,8 @@ Collation: **unknown**. No source describes a fixed count of hits per
 box. Model each pack as an independent draw, as in
 [base-set.md](base-set.md#box-and-case-structure).
 
-Boxes per case: **unknown**.
+Boxes per case: **6** (era-wide retailer consensus, not official; see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
 ## Rarity list
 
@@ -229,21 +233,25 @@ the most common entry to the rarest entry.
 - **Pack order:** no source shows an opened Surging Sparks pack. Confirm
   the order with a pack-opening video or photo.
 - **Code card and Energy position:** the sources disagree on whether
-  the code card is the first card or the last card. Confirm which face
-  of the stack faces the front of the wrapper.
+  the code card is the first card or the last card. TheGamer's account
+  gives a resolution (one source, Community estimate): see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
+  Confirm which face of the stack faces the front of the wrapper.
 - **Hit in the last three cards:** an Illustration Rare or Special
   Illustration Rare is the fourth-last card if the Energy and the code
   card count. Decide if the rip screen counts them.
 - **Hyper Rare slot:** PokeBeach says the rare slot. Card Shop Live
   says the second reverse holo slot. No Surging Sparks source settles
   it.
-- **ACE SPEC slot:** unknown.
+- **ACE SPEC slot:** unknown. Searched 2026-09-12: no source names the
+  slot for this set.
 - **TCGplayer sample size:** only pullrates.gg gives "~8,640" packs.
   The original article was not readable.
 - **Specific-card odds:** only one weak figure (specific Special
   Illustration Rare, about 1 in 960).
 - **Booster Bundle and Build & Battle Box pack counts:** not found.
-- **Case size and box collation:** not found.
+- **Box collation:** not found. Boxes per case is 6 (era-wide retailer
+  consensus).
 - **Demi-god packs:** social media claims only.
 - **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
 - **Rarity list order:** by this file's odds, Illustration Rare (7.7%) is more common than Ultra Rare (6.7%), even though Ultra Rare is the higher secret-rare tier by name.

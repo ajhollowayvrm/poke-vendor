@@ -13,7 +13,7 @@ data and every exception.
 | English release date | September 13, 2024 | Bulbapedia |
 | Series number | SV7 (English set number 101) | Bulbapedia |
 | Japanese source set | Stellar Miracle, July 19, 2024 | Bulbapedia |
-| Set code | SCR | Not confirmed in a fetched source |
+| Set code | SCR | Confirmed: Limitless TCG, pkmncards, tcg.pokemon.com expansion overview |
 | Main set | 142 cards | Bulbapedia, Cardrake |
 | Secret rares | 33 cards | Bulbapedia expansion list, Cardrake |
 | Total | 175 cards | Bulbapedia |
@@ -86,7 +86,11 @@ Where the hit sits:
   unless the rip screen skips the Energy and the code card.
 
 Conflict: one extract puts the Energy and code card last. Another says
-the code card is the first card the player sees.
+the code card is the first card the player sees. TheGamer's account
+(see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template))
+suggests these agree: the code card sits last in the stack, but the
+pack trick flips the stack for a reveal, so the player sees it first.
 
 ## Rarities and hit odds
 
@@ -135,14 +139,15 @@ TCGplayer study, plus the ACE SPEC figure from Joseph Writer Anderson.
 | Product | Packs | Source |
 |---|---|---|
 | Booster Display Box | 36 | Pokémon Center |
-| Elite Trainer Box | Unknown | Not found |
-| Pokémon Center Elite Trainer Box | Unknown | Not found |
+| Elite Trainer Box | 9 | Pokémon Center, pokemon.com |
+| Pokémon Center Elite Trainer Box | 11 | Pokémon Center, pokemon.com |
 | Booster Bundle | Unknown | Not found |
 | Other products | Unknown | Bulbapedia mentions collection boxes without pack counts |
 
 Collation: **unknown**. Model each pack as an independent draw.
 
-Boxes per case: **unknown**.
+Boxes per case: **6** (era-wide retailer consensus, not official; see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
 ## Rarity list
 
@@ -179,20 +184,28 @@ Joseph Writer Anderson ACE SPEC figure).
 - [PokeBeach — Scarlet & Violet Booster Pack Configuration Finally Revealed](https://www.pokebeach.com/2023/03/scarlet-violet-booster-pack-configuration-finally-revealed-major-exciting-changes) (search extract only)
 - [Pokémon Support — What can I expect in a booster pack](https://support.pokemon.com/hc/en-us/articles/360000981613-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-booster-pack)
 - [Card Shop Live — Hit Rates for Scarlet & Violet](https://cardshoplive.com/pages/hit-rates-for-pokemon-tcg-scarlet-and-violet)
+- [Limitless TCG — Stellar Crown (SCR)](https://limitlesstcg.com/cards/SCR)
+- [Pokémon Center — Stellar Crown Elite Trainer Box](https://www.pokemoncenter.com/product/190-85923/pokemon-tcg-scarlet-and-violet-stellar-crown-pokemon-center-elite-trainer-box)
+- [pokemon.com — Stellar Crown Elite Trainer Box](https://www.pokemon.com/us/pokemon-tcg/product-gallery/scarlet-violet-stellar-crown-elite-trainer-box)
 
 ## Open topics
 
 - **Pack order:** no source shows an opened Stellar Crown pack.
 - **Code card and Energy position:** sources disagree (first or last).
+  TheGamer's account gives a resolution (one source, Community estimate): see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 - **Hit in the last three cards:** an Illustration Rare or Special
   Illustration Rare is the fourth-last card if the Energy and code card
   count.
 - **Pull-rate conflicts:** Ultra Rare (1 in 15, 1 in 17, or 1 in 28),
   Special Illustration Rare (1 in 90, 1 in 100, 1 in 130, or 4.9%), and
   whether 1 in 137 is the "any" or the "specific" Hyper Rare rate.
-- **Hyper Rare slot and ACE SPEC slot:** not confirmed.
-- **Product pack counts:** only the Booster Display Box is confirmed.
-- **Case size and box collation:** not found.
-- **Set code SCR:** not confirmed in a fetched source.
+- **Hyper Rare slot and ACE SPEC slot:** not confirmed. Searched
+  2026-09-12: no opened-pack source found for this set.
+- **Product pack counts:** Booster Display Box, Elite Trainer Box, and
+  Pokémon Center Elite Trainer Box are confirmed. The Booster Bundle and
+  other collection products are not.
+- **Box collation:** not found. Boxes per case is 6 (era-wide retailer
+  consensus).
 - **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
 - **Rarity list order:** by this file's default odds, Illustration Rare (1 in 13) is more common than Ultra Rare (1 in 15), even though Ultra Rare is the higher secret-rare tier by name.

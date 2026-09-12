@@ -106,6 +106,18 @@ this, you'll find 1x Basic Energy and 1x code card."
    from the later-set research, says the code card is the first card the
    player sees. It is unknown which source is correct, or whether the
    position changes between packs.
+   - **Resolution (one source).** TheGamer explains that the code card sits
+     physically last in the pack (nearest the seal), which agrees with
+     PokeBeach. Collectors then apply the pack trick (see
+     [../18-ripping.md](../18-ripping.md#the-pack-trick)) to flip the stack
+     so the rarest card comes out last during a reveal. This flip makes
+     the code card the first card the player actually sees. The "code card
+     first" and "code card last" sources describe the same pack from
+     two different reference frames: the card's fixed position in the
+     stack, against the order the player flips through after the trick.
+     TheGamer also says the code card has two border designs (black or
+     white) that hint at the pack's contents before the player sees a
+     card, which is why the site calls it a "spoiler".
 
 ## Odds by set
 
@@ -152,7 +164,11 @@ The Ultra Rare rate stays near 6.6% and the Illustration Rare rate stays near
 
 - The special sets 151, Paldean Fates, and Shrouded Fable have no Booster
   Display Box in the Bulbapedia merchandise list.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** Multiple sealed-case retailers (Blowout Cards,
+  Midwest Cards, Steel City Collectibles, Flipside Gaming, PokeCharles) sell
+  "6 Booster Box Case" and "Master Case" products for main sets across the
+  era, all holding 6 Booster Display Boxes. **Confidence: retailer
+  product-listing consensus**, not an official Pokémon Company statement.
 - Collation (a fixed or variable number of hits per box): Unknown for every
   set in this era.
 - Multi-set products (tins, "ex Box" products, Premium Collections) list a
@@ -256,21 +272,29 @@ study of 700 packs for both sets together.
 - [TCGplayer — Paldean Fates Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Paldean-Fates-Pull-Rates/23de3e93-0d0f-4ae0-abc4-13664f3001a3/)
 - [TCGplayer — Temporal Forces Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Temporal-Forces-Pull-Rates/28c0ad22-00a4-428f-b22d-e7fee9ec50bc/)
 - [TCGplayer — Twilight Masquerade Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Twilight-Masquerade-Pull-Rates/f3eea967-e5fb-4108-8655-bb1c89587628/)
+- [Blowout Cards — Pokemon Scarlet & Violet Booster 6 Box Case](https://www.blowoutcards.com/pokemon-scarlet-violet-booster-6-box-case.html)
+- [Midwest Cards — Pokemon Scarlet & Violet Booster 6 Box Case](https://www.midwestcards.com/shop/pokemon-scarlet-violet-booster-6-box-case/)
+- [Steel City Collectibles — Pokemon Scarlet & Violet Booster 6-Box Case](https://www.steelcitycollectibles.com/i/pokemon-scarlet-&-violet-booster-6-box-case)
+- [TheGamer — I Wish Pokemon TCG Live Code Cards Would Stop Spoiling The Pack](https://www.thegamer.com/pokemon-tcg-live-codes-booster-pack-spoiler/)
 
 ## Open topics
 
 - **Physical pack order.** Confirm the order with an opened-pack source (a
   video or photos) for each set. The current order comes from one report
   made before release.
-- **Last card.** Find out whether the code card (PokeBeach) or the Basic
-  Energy (TCGplayer 151 article) is the last card.
-- **Pack direction.** Find out which face is the front, and whether a pack
-  can open from either end.
+- **Last card.** TheGamer (searched 2026-09-12) says the code card sits
+  physically last in the pack, nearest the seal, which agrees with
+  PokeBeach and conflicts with the TCGplayer 151 statement about the Basic
+  Energy. See "Resolution (one source)" above.
+- **Pack direction.** TheGamer's account suggests the card order in the
+  set files (Common through code card) is the fixed stack order, and the
+  pack trick then flips this stack for a reveal that ends on the rarest
+  card. This still does not confirm which face of the physical wrapper is
+  the "front".
 - **Hits outside the last three cards.** Illustration Rares, Special
   Illustration Rares, and Hyper Rares sit at card 9 of 12. The rip screen
   default ("one of the last three cards") does not hold for them unless the
   game hides the code card.
-- **Boxes per case.** No source in this research gives the number.
 - **Collation.** No source gives the hit spread per booster box.
 - **Mini-pack products.** Decide whether the game needs the Trick or Trade
   and McDonald's mini packs.

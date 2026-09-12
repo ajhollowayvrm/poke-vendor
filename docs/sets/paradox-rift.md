@@ -128,7 +128,8 @@ Multi-set products with packs of this set. Bulbapedia calls these mixes
 
 Collation:
 
-- Boxes per case: Unknown.
+- Boxes per case: 6 (era-wide retailer consensus; see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 - Hits per booster box: Unknown.
 
 ## Rarity list
@@ -167,7 +168,8 @@ the most common entry to the rarest entry.
 - **Box release date.** The Bulbapedia merchandise page says the booster
   boxes came out "November 3, 2024". The set released November 3, 2023. The
   year is probably a typing error, but no second source confirms.
-- **Boxes per case** and **hits per box:** Unknown.
+- **Boxes per case:** 6 (era-wide retailer consensus, not official).
+- **Hits per box:** Unknown.
 - **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
   Build & Battle Box page says 4.
 - **Blister contents** for this set: Unknown.

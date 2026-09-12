@@ -99,8 +99,12 @@ Where the hit sits:
 Exceptions and conflicts:
 - **Energy and code card position:** one extract puts them last.
   Another extract says the code card is the first card the player
-  sees. No source settles which face of the stack faces the front of
-  the wrapper.
+  sees. TheGamer's account (see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template))
+  suggests these describe the same fixed stack, seen from two ends: the
+  code card sits last in the stack, but becomes the first card the
+  player sees after the pack trick flips the stack for a reveal. No
+  source settles which face of the wrapper is the "front".
 
 ## Rarities and hit odds
 
@@ -168,7 +172,8 @@ this division, so the match does not prove equal weight.
 Collation: **unknown**. No source describes fixed hits per box. Model
 each pack as an independent draw.
 
-Boxes per case: **unknown**.
+Boxes per case: **6** (era-wide retailer consensus, not official; see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
 ## Rarity list
 
@@ -212,13 +217,16 @@ Rares.
 
 - **Pack order:** no source shows an opened Destined Rivals pack.
 - **Code card and Energy position:** sources disagree (first or last).
+  TheGamer's account gives a resolution (one source, Community estimate): see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 - **Hit in the last three cards:** an Illustration Rare or Special
   Illustration Rare is the fourth-last card if the Energy and code card
   count.
 - **Hyper Rare slot:** rare slot or second reverse holo slot.
 - **Premium Collection and Ultra-Premium Collection pack counts:** not
   found.
-- **Case size and box collation:** not found.
+- **Box collation:** not found. Boxes per case is 6 (era-wide retailer
+  consensus).
 - **Demi-god packs:** social media claims only.
 - **Set code DRI:** not confirmed in a fetched source.
 - **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.

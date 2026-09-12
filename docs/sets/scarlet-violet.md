@@ -150,7 +150,8 @@ Multi-set products with packs of this set. Bulbapedia calls these mixes
 
 Collation:
 
-- Boxes per case: Unknown.
+- Boxes per case: 6 (era-wide retailer consensus; see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 - Hits per booster box: Unknown. No source says whether the hit count per box
   is fixed or variable.
 
@@ -195,7 +196,8 @@ the most common entry to the rarest entry.
   Live, and Bulbapedia say reverse holo slot 2.
 - **Last card.** Code card (PokeBeach) or Basic Energy (TCGplayer)?
 - **Physical pack order.** No opened-pack source confirms it for this set.
-- **Boxes per case** and **hits per box:** Unknown.
+- **Boxes per case:** 6 (era-wide retailer consensus, not official).
+- **Hits per box:** Unknown.
 - **Build & Battle Stadium.** The merchandise page says 3 extra packs. The
   Build & Battle Box page says 4.
 - **Blister contents** for this set: Unknown.

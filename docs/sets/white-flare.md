@@ -86,7 +86,9 @@ Confidence: **unknown** for this set. The layout is the same as
 
 Only the rare-slot hit (position 10) is one of the last three cards.
 Position 9 is the fourth-last card. Position 8 is the fifth-last card.
-Sources disagree on whether the code card is first or last.
+Sources disagree on whether the code card is first or last. TheGamer's
+account gives a resolution (one source, Community estimate): see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 
 ## Rarities and hit odds
 
@@ -110,9 +112,11 @@ The full table with error margins and every source is in
 ## Special subsets and mechanics
 
 - **Poké Ball and Master Ball pattern reverse holos.**
-- **Black White Rare:** 2 cards in White Flare (Cardrake). Sources name
-  Reshiram ex, Zekrom ex, and Victini as Black White Rare Pokémon
-  across the two sets. No fetched source names the 2 White Flare cards.
+- **Black White Rare:** 2 cards in White Flare (Cardrake): Reshiram ex
+  and the Victini promo (card 172). Wargamer confirms "the Reshirams
+  can be found in White Flare", against Zekrom ex in Black Bolt. A
+  PokeBeach search extract places the Victini BWR promo as card 172 in
+  White Flare (card 171 in Black Bolt).
 - **No booster box** (PokeBeach extract).
 - **God packs:** no source found. Confidence: unknown.
 
@@ -172,6 +176,7 @@ measures White Flare alone.
 - [pokemon.com — Black Bolt and White Flare Elite Trainer Boxes](https://www.pokemon.com/us/pokemon-tcg/product-gallery/scarlet-violet-black-bolt-elite-trainer-box-scarlet-violet-white-flare-elite-trainer-box)
 - [pokemon.com — Black Bolt and White Flare Booster Bundles](https://www.pokemon.com/us/pokemon-tcg/product-gallery/scarlet-violet-black-bolt-and-white-flare-booster-bundles)
 - [pokemon.com — Black Bolt and White Flare Binder Collections](https://www.pokemon.com/us/pokemon-tcg/product-gallery/scarlet-violet-black-bolt-binder-collection-scarlet-violet-white-flare-binder-collection)
+- [Wargamer — The 9 biggest chase cards in Pokémon Black Bolt and White Flare](https://www.wargamer.com/pokemon-trading-card-game/chase-cards-black-bolt-white-flare)
 
 ## Open topics
 
@@ -179,7 +184,8 @@ measures White Flare alone.
 - **Per-set odds:** every study combines Black Bolt and White Flare.
   The one extra Illustration Rare can change White Flare odds for a
   specific card.
-- **Black White Rare odds and card names:** not confirmed.
+- **Black White Rare odds:** not confirmed. See black-bolt.md for the
+  community range.
 - **Master Ball odds:** 1 in 15 or 1 in 19.
 - **Code card:** not confirmed for this set.
 - **Pack counts:** the same gaps as Black Bolt.

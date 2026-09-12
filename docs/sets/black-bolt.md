@@ -111,7 +111,9 @@ Where the hit sits (if the expected layout is correct):
   thus sit before the last three cards.
 
 Conflict: one extract puts the Energy and code card last. Another says
-the code card is the first card the player sees.
+the code card is the first card the player sees. TheGamer's account
+gives a resolution (one source, Community estimate): see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 
 ## Rarities and hit odds
 
@@ -151,8 +153,11 @@ odds. No source measures them apart.
   Flare. The TCGplayer seller blog says "Zekrom ex and Reshiram ex
   feature a Black White Rare rarity". Game Rant also names Victini. Game
   Rant describes the cards as "full illustration in a monochromatic
-  color scheme". Black Bolt has 2 Black White Rares (Cardrake). No
-  fetched source names the 2 cards for Black Bolt.
+  color scheme". Black Bolt has 2 Black White Rares (Cardrake): Zekrom
+  ex and the Victini promo. Wargamer confirms "All the Zekroms are in
+  the Black Bolt set and the Reshirams can be found in White Flare." A
+  PokeBeach search extract places the Victini BWR promo as card 171 in
+  Black Bolt and card 172 in White Flare.
 - **Very high Illustration Rare count.** 69 of 86 secret cards are
   Illustration Rares. The PokeBeach extract says "each of the 156 Unova
   Pokemon will get a regular card, a reverse holo, a Poke Ball reverse
@@ -224,19 +229,24 @@ A), the only large study, which combines Black Bolt and White Flare.
 - [pokemon.com — Black Bolt and White Flare Booster Bundles](https://www.pokemon.com/us/pokemon-tcg/product-gallery/scarlet-violet-black-bolt-and-white-flare-booster-bundles)
 - [pokemon.com — Black Bolt and White Flare Binder Collections](https://www.pokemon.com/us/pokemon-tcg/product-gallery/scarlet-violet-black-bolt-binder-collection-scarlet-violet-white-flare-binder-collection)
 - [Pokémon Support — What can I expect in a booster pack](https://support.pokemon.com/hc/en-us/articles/360000981613-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-booster-pack)
+- [Wargamer — The 9 biggest chase cards in Pokémon Black Bolt and White Flare](https://www.wargamer.com/pokemon-trading-card-game/chase-cards-black-bolt-white-flare)
 
 ## Open topics
 
 - **Slot structure:** no source describes the slots for this set. This
-  is the largest gap for this set.
-- **Pack order:** no source shows an opened pack.
+  is the largest gap for this set. Searched 2026-09-12: no opened-pack
+  source or official breakdown found beyond the sources already cited.
+- **Pack order:** no source shows an opened pack. Searched 2026-09-12:
+  no source found.
 - **Hits outside the last three cards:** if the Prismatic Evolutions
   layout applies, Poké Ball, Master Ball, Illustration Rare, Special
   Illustration Rare, and Black White Rare cards sit before the last
   three cards.
 - **Black White Rare odds:** TCGplayer could not measure them. The
   community range is 1 in 496 to 1 in 1,200.
-- **Black White Rare card names per set:** not confirmed.
+- **Black White Rare card names per set:** Zekrom ex and the Victini
+  promo (card 171) for Black Bolt (Wargamer, PokeBeach search extract).
+  The White Flare pair is Reshiram ex and the Victini promo (card 172).
 - **Master Ball odds:** 1 in 15 (PokeBeach) or 1 in 19 (TCGplayer).
 - **Per-set odds:** every study combines both sets.
 - **Code card:** not confirmed for this set.

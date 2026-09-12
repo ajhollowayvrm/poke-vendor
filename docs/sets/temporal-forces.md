@@ -152,7 +152,8 @@ Multi-set products with packs of this set. Bulbapedia calls these mixes
 
 Collation:
 
-- Boxes per case: Unknown.
+- Boxes per case: 6 (era-wide retailer consensus; see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 - Hits per booster box: Unknown.
 
 ## Rarity list
@@ -191,6 +192,7 @@ hold an ACE SPEC Rare instead of a plain reverse holo.
 - **Basic Energy and code card.** No set-specific source confirms them.
 - **Era conflicts:** the Hyper Rare slot and the last card. See
   [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
-- **Boxes per case** and **hits per box:** Unknown.
+- **Boxes per case:** 6 (era-wide retailer consensus, not official).
+- **Hits per box:** Unknown.
 - **Blister contents** for this set: Unknown.
 - **Rarity list order:** by this file's odds, Illustration Rare (7.72%) is more common than Ultra Rare (6.67%), even though Ultra Rare is the higher secret-rare tier by name.

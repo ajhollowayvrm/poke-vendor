@@ -122,7 +122,13 @@ reliable enough to choose. See Open topics.
   list).
 - **Parallel foil:** Bulbapedia says Shrouded Fable "introduces a new unique
   Holofoil pattern ... known as 'parallel foil'". It is a type of Reverse
-  Holofoil. Which slot and how often: Unknown.
+  Holofoil, marked by a white expansion code box with black text, against
+  the black-with-white-text box on a regular card (PokeBeach set guide,
+  search extract). It is the look of every reverse holo in this set, not a
+  separate pull rate: it replaces the plain Reverse Holo in both reverse
+  holo slots. A PokeBeach set guide extract also says Shrouded Fable packs
+  can hold a reverse holo Basic Energy, the same kind of exception as the
+  151 Cosmos Holofoil Basic Energy. No source gives its rate for this set.
 - No source in this research reports a god pack or a demi-god pack for this
   set.
 
@@ -181,12 +187,15 @@ order follows the era's rarity system.
 - [Pokemon Engage — Shrouded Fable Pull Rates](https://pokemonengage.wordpress.com/2024/08/15/shrouded-fable-pull-rates/)
 - [ThePriceDex — Shrouded Fable Pull Rates](https://www.thepricedex.com/set/sv6pt5/shrouded-fable/pull-rates)
 - [PokéPatch — Shrouded Fable Pull Rates](https://pokepatch.com/2025/05/24/shrouded-fable-pull-rates-in-pokemon-tcg-set/)
+- [PokeBeach — "Shrouded Fable" Set Guide! Card Images, Special Reverse Holos, and Product List!](https://www.pokebeach.com/2024/07/shrouded-fable-set-guide-card-images-special-reverse-holos-and-product-list) (search extract only)
 
 ## Open topics
 
 - **No reliable odds.** Find a large, documented study (for example, a
   TCGplayer study) for this set. Until then, every figure is a community
-  estimate.
+  estimate. Searched 2026-09-12: no TCGplayer Authentication Center
+  study was found for this set; only the three community sources
+  already in this file.
 - **Source conflicts.** Special Illustration Rare: 1 in 64, 1 in 67, or 1 in
   87.2. Hyper Rare: 1 in 118, 1 in 128.3, or 1 in 144.
 - **Dripshop specific-card figures** for the Ultra Rare and ACE SPEC Rare
@@ -195,7 +204,9 @@ order follows the era's rarity system.
 - **Slot confirmation.** No opened-pack source confirms the slot for each
   rarity in this set.
 - **Cards per pack.** ThePriceDex says 11. The era template says 12.
-- **Parallel foil:** slot and rate Unknown.
+- **Parallel foil:** resolved as the look of every reverse holo in this
+  set, not a separate rarity. See "Special subsets and mechanics" above.
+- **Reverse holo Basic Energy rate:** Unknown.
 - **Physical pack order.** No opened-pack source confirms it.
 - **Era conflicts:** the Hyper Rare slot and the last card.
 - **Pack count** for the Mini Tin Bundle: Unknown.

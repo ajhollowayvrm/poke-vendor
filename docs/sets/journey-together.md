@@ -89,7 +89,11 @@ Where the hit sits:
   unless the rip screen skips the Energy and the code card.
 
 Conflict: one extract puts the Energy and code card last. Another says
-the code card is the first card the player sees.
+the code card is the first card the player sees. TheGamer's account
+(see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template))
+suggests these agree: the code card sits last in the stack, but the
+pack trick flips the stack for a reveal, so the player sees it first.
 
 ## Rarities and hit odds
 
@@ -143,7 +147,8 @@ rarity as equally likely.
 Collation: **unknown**. Model each pack as an independent draw. The
 Enhanced box adds one fixed promo. The promo is not a pack card.
 
-Boxes per case: **unknown**.
+Boxes per case: **6** (era-wide retailer consensus, not official; see
+[eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
 ## Rarity list
 
@@ -183,6 +188,8 @@ Rares.
 
 - **Pack order:** no source shows an opened Journey Together pack.
 - **Code card and Energy position:** sources disagree (first or last).
+  TheGamer's account gives a resolution (one source, Community estimate): see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 - **Hit in the last three cards:** an Illustration Rare or Special
   Illustration Rare is the fourth-last card if the Energy and code card
   count.
@@ -192,7 +199,8 @@ Rares.
   16 Double Rares.
 - **Product pack counts:** only the Enhanced Booster Display Box is
   confirmed.
-- **Case size and box collation:** not found.
+- **Box collation:** not found. Boxes per case is 6 (era-wide retailer
+  consensus).
 - **Set code JTG:** not confirmed in a fetched source.
 - **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
 - **Rarity list order:** by this file's odds, Illustration Rare (7.69%) is more common than Ultra Rare (6.67%), even though Ultra Rare is the higher secret-rare tier by name.

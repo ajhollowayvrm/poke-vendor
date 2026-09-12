@@ -117,7 +117,8 @@ Exceptions and conflicts:
 - **Energy and code card position:** the same conflict as the base
   Scarlet & Violet template. One extract puts the code card last.
   Another extract says the code card is the first card the player
-  sees.
+  sees. TheGamer's account gives a resolution (one source, Community estimate): see
+  [eras/scarlet-violet.md](eras/scarlet-violet.md#conflicts-in-the-template).
 - **Is the order of slots 8 and 9 fixed?** The sources say "first
   slot" and "second slot". They do not say that "first" means the
   card nearer the front.
@@ -146,8 +147,13 @@ Three data sets exist:
 | Master Ball pattern | — | 1 in 19 (5.2%) | 1 in 20 (5%) | Empirical study (B); community estimate (C) |
 | Special Illustration Rare | 1 in 45 | 1 in 53 (1.9%) | 1 in 45 (2.2%) | Empirical study; sources conflict |
 | Hyper Rare | 1 in 167 | 1 in 152 (0.6%) | 1 in 180 (0.5%) | Empirical study; sources conflict |
-| Poké Ball pattern | Unknown | Unknown | Unknown | Unknown |
+| Poké Ball pattern | about 1 in 3 (D) | Unknown | Unknown | Empirical study (D) |
 | Illustration Rare | Not in this set | — | — | — |
+
+**D:** CardDeckr's copy of the same TCGplayer 1,200-pack study (column A) gives
+"approximately one in three packs" for the Poké Ball pattern. The same
+CardDeckr copy gives Master Ball as "approximately one in ten packs", which
+conflicts with column B (1 in 19) and column C (1 in 20).
 
 Specific-card odds:
 
@@ -161,10 +167,10 @@ Specific-card odds:
 
 **Default for the simulation:** use column A for Double Rare, Ultra
 Rare, ACE SPEC, Special Illustration Rare, and Hyper Rare. Use column B
-for the Master Ball pattern (1 in 19). The Poké Ball rate is unknown.
-Black Bolt and White Flare use the same pattern and give 1 in 3
-(see [black-bolt.md](black-bolt.md)). Do not copy that value until a
-source confirms it for this set.
+for the Master Ball pattern (1 in 19). Use column D (about 1 in 3) for
+the Poké Ball pattern. This value matches the 1 in 3 rate that Black
+Bolt and White Flare report for the same pattern (see
+[black-bolt.md](black-bolt.md)), which supports using it here too.
 
 ## Special subsets and mechanics
 
@@ -222,9 +228,9 @@ Rares.
 | 2 | Uncommon | Rarity | Every pack | No |
 | 3 | Reverse holo | Variant | Every pack | No |
 | 4 | Rare | Rarity | — | Yes |
-| 5 | Double Rare | Rarity | 1 in 5 | Yes |
-| 6 | Ultra Rare | Rarity | 1 in 13 | Yes |
-| 7 | Poké Ball pattern | Variant | — | No |
+| 5 | Poké Ball pattern | Variant | about 1 in 3 | No |
+| 6 | Double Rare | Rarity | 1 in 5 | Yes |
+| 7 | Ultra Rare | Rarity | 1 in 13 | Yes |
 | 8 | Master Ball pattern | Variant | 1 in 19 | No |
 | 9 | ACE SPEC Rare | Rarity | 1 in 21 | Yes |
 | 10 | Special Illustration Rare | Rarity | 1 in 45 | Yes |
@@ -253,11 +259,13 @@ Rares.
 - [tcgtalk — Prismatic Evolutions Pull Rates and God Pack Odds](https://tcgtalk.com/guides/prismatic-evolutions-pull-rates-god-pack)
 - [PokeBeach — Scarlet & Violet Booster Pack Configuration Finally Revealed](https://www.pokebeach.com/2023/03/scarlet-violet-booster-pack-configuration-finally-revealed-major-exciting-changes) (search extract only)
 - [Pokémon Support — What can I expect in a booster pack](https://support.pokemon.com/hc/en-us/articles/360000981613-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-booster-pack)
+- [CardDeckr — Prismatic Evolutions: The Complete Guide to the Most Sought After Pokemon TCG Set of 2025](https://carddeckr.com/blog/prismatic-evolutions-the-complete-guide-to-the-most-sought-after-pokemon-tcg-set-of-2025/)
 
 ## Open topics
 
-- **Poké Ball pattern odds:** no source found. This is the largest gap
-  for this set.
+- **Poké Ball pattern odds:** CardDeckr's copy of the TCGplayer 1,200-pack
+  study (column A) gives about 1 in 3. This file now uses that figure. No
+  source gives a specific-card figure for the Poké Ball pattern.
 - **Pack order:** no source shows an opened pack. Confirm the positions
   of reverse holo 1, reverse holo 2, the rare slot, the Energy, and the
   code card.
@@ -270,7 +278,8 @@ Rares.
 - **ACE SPEC slot:** only a search extract puts it in reverse holo 1.
 - **Pull-rate conflicts:** Ultra Rare (1 in 13 or 1 in 16), ACE SPEC
   (1 in 21 or 1 in 29), Special Illustration Rare (1 in 45 or 1 in 53),
-  and Hyper Rare (1 in 152, 1 in 167, or 1 in 180).
+  Hyper Rare (1 in 152, 1 in 167, or 1 in 180), and Master Ball pattern
+  (1 in 10, 1 in 19, or 1 in 20).
 - **PokeBeach pull-rate figures:** the article was not readable.
 - **Regular reverse holo count:** 108 or 100.
 - **God pack:** no official confirmation. The odds are a wide community
@@ -279,4 +288,6 @@ Rares.
 - **Pack counts:** Binder Collection, Poster Collection, Accessory Pouch
   Special Collection, and Premium Figure Collection.
 - **Rarity list odds:** no source gives odds for Rare. The era's rarity system decides its place in the rarity list.
-- **Rarity list order:** the official expansion page says the Poké Ball pattern is more common than the Master Ball pattern, so this file places it above Master Ball. No source gives a number for Poké Ball, so its exact place against Double Rare, Ultra Rare, and ACE SPEC Rare is unconfirmed.
+- **Rarity list order:** CardDeckr's about 1 in 3 rate for the Poké Ball
+  pattern places it above Double Rare (1 in 5). This uses the TCGplayer
+  1,200-pack study, the same source as the other odds in this file.
