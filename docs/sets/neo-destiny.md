@@ -38,10 +38,12 @@ Neo Destiny follows the era pack order. See
 - **Claim B** ([NinePocket](https://www.ninepocket.net/guides/pokemon-pack-trick)):
   no reliable order for this era. Confidence: low.
 - **Shining Pokémon position, normal packs:** Unknown. No source says
-  which slot a Shining card uses in a normal pack.
+  which slot a Shining card uses in a normal pack. Searched
+  2026-09-12: no source found.
 - **Shining Pokémon position, error packs:** a common slot (Elite
   Fourum). The position of that common slot in the pack is Unknown. So
-  an error pack can have a hit outside the rare position.
+  an error pack can have a hit outside the rare position. Searched
+  2026-09-12: no source found for the exact position.
 
 ## Rarities and hit odds
 
@@ -80,7 +82,7 @@ Shining cards.
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box (1st Edition and Unlimited) | 36 | Variable per pack. Some Unlimited boxes are error boxes with extra Shining cards. | PSA, Elite Fourum, [Collector's Cache](https://www.collectorscache.com/buylist/pokemon_sealed_products-pokemon_booster_boxes/pokemon_neo_destiny_unlimited_booster_box/240243) |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Single-pack blister | 1 | Not applicable | [Loose Packs — Neo Destiny blister](https://loosepacks.com/products/neo-destiny-blister), [ToyWiz](https://toywiz.com/pokemon-trading-card-game-neo-destiny-blister-booster-pack-11-cards/) |
 | 2-booster blister | 2 | Not applicable | [PicClick listing](https://picclick.com/Sealed-Pokemon-TCG-NEO-DESTINY-2-Booster-Blister-Pack-262912992910.html) (listing title only) |
 
@@ -127,5 +129,7 @@ the most common entry to the rarest entry.
 - The count of holos, rares, uncommons, and commons: Unknown.
 - The PicClick 2-booster blister page did not load. Only the listing
   title confirms it.
-- Energy in the pack and boxes per case: Unknown.
+- Energy in the pack: Unknown. Searched 2026-09-12: no source found.
+- Boxes per case: 6, from an era-wide working assumption (see the era
+  file and Sealed products above).
 - **Rarity list order:** Rare Holo uses 1 in 3 from PSA. ThePriceDex gives 1 in 4.

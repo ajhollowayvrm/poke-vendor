@@ -88,6 +88,14 @@ on the holo/non-holo split among named rares should be double-checked
 against this before implementation — the ratio here describes overall
 holo-vs-non-holo odds, not confirmed per-card weighting.)
 
+**The 16 rares are not equally weighted on the print sheet.** The Elite
+Fourum rarity guide, from its sheet reconstruction, states: "of the 16
+rares, 9 appeared on the sheet 8 times and 7 appeared 7 times." So 9
+rares are common inside the rare slot (weight 8) and 7 are less common
+(weight 7). The guide does not name which specific rares carry each
+weight. Confidence: empirical study (sheet reconstruction), per-card
+names unconfirmed.
+
 ## Specific card odds (weakest confidence)
 
 Community estimates: a named holo (e.g. Charizard) roughly 1 in 45
@@ -104,8 +112,12 @@ within theirs, until better data says otherwise.
 
 ## Box and case structure
 
-- 36 packs per booster box (396 cards).
-- 6 boxes per case.
+- 36 packs per booster box (396 cards) as the standard. [Loose Packs](https://loosepacks.com/blogs/guides/pokemon-pack-weight-guide)
+  reports the factory was "not always consistent": it has logged a
+  Base Set box with an extra pack, and two US boxes at 35 packs.
+- 6 boxes per case. The [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762)
+  states this as its own working assumption for the era, in addition to
+  the one Fossil case listing in the era file. Confidence: low-medium.
 - Mean ~12 holos per box, but the real recorded range across opened
   boxes is 6 to 18 — collation is **not** a fixed, guaranteed count.
 
@@ -166,6 +178,7 @@ the most common entry to the rarest entry.
 - [Elite Fourum — Guide To Identifying All WotC Base Set Booster Packs](https://www.elitefourum.com/t/guide-to-identifying-all-wotc-base-set-booster-packs/41521)
 - [Elite Fourum — The English Pokémon card rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762)
 - [CardCollector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
+- [PokéPatch — Pokemon Card Tricks for EVERY Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Loose Packs — WotC collection](https://loosepacks.com/collections/wotc)
 
@@ -174,14 +187,18 @@ the most common entry to the rarest entry.
 - Resolve the 5-common-2-energy vs. 6-common-1-energy discrepancy —
   likely doesn't matter much for the simulation either way, but worth
   a firm answer before implementation.
-- Whether the 16 rares are actually equally weighted on the real print
-  sheet (unconfirmed either way).
+- Resolved: the 16 rares are not equally weighted. 9 are weight-8 (R8)
+  and 7 are weight-7 (R7) on the print sheet (Elite Fourum rarity
+  guide). Which specific cards carry each weight stays unknown.
 - The Elite Fourum rarity guide rebuilds the Unlimited sheets. It
   reports two weight levels for the holos and two for the rares. Our
   read of the per-card values was not consistent, so this file gives
   no codes. Check the guide directly for the per-card list.
 - Pack order: find a source that shows real opened Base Set packs card
-  by card. Confirm or reject Claim A (rare at card 8 of 11).
-- Energy card position in the pack: Unknown.
+  by card. Confirm or reject Claim A (rare at card 8 of 11). Searched
+  2026-09-12: PokéPatch agrees with Claim A (see the era file) but
+  shows no real opened pack.
+- Energy card position in the pack: Unknown. Searched 2026-09-12: no
+  source found.
 - The contents of the Base Set & Jungle League Promo blister: Unknown.
 - Whether the 2-Player Starter Set holds booster packs: Unknown.

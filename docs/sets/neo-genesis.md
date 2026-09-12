@@ -75,7 +75,7 @@ equally.
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | PSA |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Southern Islands Collection | 3 packs in total, "a mix of Neo Discovery and Neo Genesis". The split per set is unknown. | Unknown | [Going Twice](https://www.goingtwice.com/blogs/pokemon/the-southern-islands-collection), [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Southern_Islands_(TCG)) |
 | Blister | Unknown | Unknown | — |
 
@@ -112,12 +112,14 @@ so the stop rule does not split them into their own entry.
 
 - Pack order: see the era file. No Neo Genesis-specific source exists.
 - Energy count: 7 commons (PSA) vs. 6 commons and 1 energy
-  (ThePriceDex).
+  (ThePriceDex). Searched 2026-09-12: no source found to resolve this.
 - Holo rate conflict: about 33% (PSA, ThePriceDex, Loose Packs
   Unlimited) vs. 21.5% (Loose Packs 1st Edition, 107 packs). Loose
   Packs says the weights "overlap" for this set. It does not explain
   the low count.
 - Which holos are H7 and which are H6: Unknown.
 - The counts of rares, uncommons, and commons: Unknown.
-- Wrapper arts, boxes per case, and blister formats: Unknown.
+- Wrapper arts and blister formats: Unknown. Boxes per case: 6, from an
+  era-wide working assumption (see the era file and Sealed products
+  above).
 - **Rarity list order:** Rare Holo uses 1 in 3 from PSA and ThePriceDex. Loose Packs gives 21.5% for 1st Edition packs (23 holos in 107 packs).

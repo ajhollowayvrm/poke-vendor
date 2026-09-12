@@ -63,7 +63,7 @@ Base Set 2 follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | [Heritage Auctions](https://comics.ha.com/itm/memorabilia/trading-cards/pokemon-unlimited-edition-base-set-2-sealed-booster-box-wizards-of-the-coast-2000-/a/7231-92166.s), [ToyWiz](https://toywiz.com/pokemon-base-set-2-booster-box-36-packs/) |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Blister | Unknown | Unknown | — |
 
 Pack wrapper arts: Charizard and Mewtwo (PullMarket).
@@ -97,6 +97,8 @@ the most common entry to the rarest entry.
 
 - Pack order: see the era file. No Base Set 2-specific source exists.
 - Energy count: 2 energy (ThePriceDex) vs. 7 commons (PullMarket).
+  Searched 2026-09-12: no source found to resolve this.
 - The rarity split (holo, rare, uncommon, common counts): Unknown.
 - Which holos are H6 and which are H7: Unknown.
-- Boxes per case and blister products: Unknown.
+- Boxes per case: 6, from an era-wide working assumption (see the era
+  file and Sealed products above). Blister products: Unknown.

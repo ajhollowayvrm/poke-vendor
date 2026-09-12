@@ -67,7 +67,7 @@ Jungle follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable. A box can hold as few as 7 holos. | PSA, Loose Packs |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Single-pack blister | 1 | Not applicable | [Loose Packs — Jungle blister](https://loosepacks.com/products/jungle-blister) |
 
 Pack wrapper arts: PSA lists three (Scyther, Wigglytuff, Flareon) for
@@ -102,9 +102,10 @@ the most common entry to the rarest entry.
 ## Open topics
 
 - Pack order: see the era file. No Jungle-specific source exists.
-- Energy in the pack: Unknown.
+- Energy in the pack: Unknown. Searched 2026-09-12: no source found.
 - Wrapper arts: three (PSA) or five (PullMarket). The extra two can be
   Unlimited-only arts. No source confirms this.
-- Boxes per case: Unknown.
+- Boxes per case: 6, from an era-wide working assumption (see the era
+  file and Sealed products above). Not Jungle-specific.
 - Error promo Pikachu rate: only one estimate (PSA, about 1 per 10
   boxes).

@@ -61,7 +61,7 @@ Neo Discovery follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | PSA |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Southern Islands Collection | 3 packs in total, "a mix of Neo Discovery and Neo Genesis". The split per set is unknown. | Unknown | [Going Twice](https://www.goingtwice.com/blogs/pokemon/the-southern-islands-collection), [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Southern_Islands_(TCG)) |
 | Blister | Unknown | Unknown | — |
 
@@ -102,5 +102,7 @@ the most common entry to the rarest entry.
 - The rarity split (holo, rare, uncommon, common counts): Unknown.
 - Non-holo rare codes: two reads of the Elite Fourum guide gave
   different values (R7/R6 and R10/R9). Check the guide directly.
-- Energy in the pack, boxes per case, and blister formats: Unknown.
+- Energy in the pack: Unknown. Searched 2026-09-12: no source found.
+- Blister formats: Unknown. Boxes per case: 6, from an era-wide working
+  assumption (see the era file and Sealed products above).
 - **Rarity list order:** Rare Holo uses 1 in 3 from PSA and ThePriceDex. Loose Packs gives 27.8% (30 holos in 108 packs).

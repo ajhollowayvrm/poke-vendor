@@ -20,7 +20,7 @@ them in detail.
 | Holo rate | About 1 in 3 packs | PSA set articles, ThePriceDex, Loose Packs weight study | Community estimate, with empirical support for most sets |
 | Reverse holo | None. Reverse holos start with Legendary Collection. | Bulbapedia | High |
 | Packs per booster box | 36 | PSA set articles, auction listings | High |
-| Boxes per case | 6 (one Fossil case listing only) | [Goldin](https://goldin.co/item/1999-pokemon-fossil-booster-1st-edition-wizards-of-the-coast-factory-sav9rc) | Low. Only one set is confirmed. |
+| Boxes per case | 6 | [Goldin](https://goldin.co/item/1999-pokemon-fossil-booster-1st-edition-wizards-of-the-coast-factory-sav9rc) (one Fossil listing), [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (states a 216-pack, 6-box case as its working assumption "for all (or at least most) sets from generation 1 to generation 5") | Low-medium. Two independent sources agree on 6, but the Elite Fourum figure is a stated modeling assumption, not an audited case count. |
 | Print runs | 1st Edition and Unlimited. Base Set 2 has no 1st Edition. | Bulbapedia, PSA | High |
 
 ### The energy disagreement
@@ -68,6 +68,14 @@ record of an opened WotC pack. Two community sources disagree.
   card that's closest to you, and put it to the front. Do this another
   two times." After that, "the rare card will be the last one you
   reveal". The page gives no method or evidence.
+- **A second source agrees with Claim A.** [PokéPatch — Pokemon Card
+  Tricks for EVERY Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
+  gives one instruction for "Base Set, Jungle, Fossil" (and, by the
+  page's own grouping, the rest of the Wizards of the Coast era): move
+  3 cards from the back to the front. This matches Claim A's method and
+  result. The page gives no method or evidence of its own, so this does
+  not raise the confidence level, but two independent community sources
+  now agree, against the one from NinePocket.
 - **What Claim A means (our derivation).** Three cards sit behind the
   rare. When the player shows the cards from the front of the stack to
   the back, the rare is **card 8 of 11**. So the rare is the fourth card
@@ -154,6 +162,7 @@ Release dates and card counts come from the
 - [Bulbapedia — List of Pokémon Trading Card Game expansions](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_Trading_Card_Game_expansions)
 - [Elite Fourum — The English Pokémon card rarity guide (sturzflugbombardieru, 2024)](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762)
 - [CardCollector — The Pokémon Card Trick](https://cardcollector.co.uk/pokemon-card-trick-pack-opening/)
+- [PokéPatch — Pokemon Card Tricks for EVERY Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Loose Packs — Pokémon Pack Weight Guide](https://loosepacks.com/blogs/guides/pokemon-pack-weight-guide)
 - [PullMarket — Pokémon Original Sets Guide](https://pullmarket.io/learn/pokemon-original-sets-guide)
@@ -165,15 +174,25 @@ Release dates and card counts come from the
 ## Open topics
 
 - **Pack order.** Find a source that shows real opened WotC packs card
-  by card. Confirm or reject Claim A (rare at card 8 of 11).
+  by card. Confirm or reject Claim A (rare at card 8 of 11). Searched
+  2026-09-12: PokéPatch agrees with Claim A but gives no method or
+  evidence of its own. No source shows a real opened pack card by card.
 - **Card direction in the wrapper.** Find which way the card faces
-  point when the wrapper front faces the player.
+  point when the wrapper front faces the player. Searched 2026-09-12:
+  no source found.
 - **Energy slot.** Resolve 7 commons vs. 6 commons and 1 energy vs.
-  5 commons and 2 energy, per set.
+  5 commons and 2 energy, per set. Searched 2026-09-12: no source
+  found.
 - **Printed odds.** Bulbapedia says "early Wizards of the Coast sets
   even provided approximate odds for pulling Holo Rares". We did not
-  find the printed text.
-- **Boxes per case.** Only one Fossil listing confirms 6 boxes per case.
+  find the printed text. Searched 2026-09-12: no source found beyond
+  the same Bulbapedia statement.
+- **Boxes per case.** The Elite Fourum rarity guide states 6 boxes per
+  case (216 packs) as its own working assumption for "generation 1 to
+  generation 5" sets, alongside the one confirmed Fossil listing. This
+  raises the count of agreeing sources to two, but neither is an
+  audited case count, so the figure stays a default, not a confirmed
+  fact.
 - **Blister products.** Single-pack blisters exist for some sets. Bulbapedia
   says Team Rocket was "the first set not to be packaged in cardboard
   backed blister packs". The full blister history is unknown.

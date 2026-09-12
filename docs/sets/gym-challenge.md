@@ -65,7 +65,7 @@ Gym Challenge follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | PSA |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Blister | Unknown | Unknown | — |
 
 Pack wrapper arts: four, one each for Blaine, Giovanni, Koga, and
@@ -99,7 +99,8 @@ the most common entry to the rarest entry.
 - Pack order: see the era file. No Gym Challenge-specific source
   exists.
 - Energy count: 7 commons (PSA) vs. 6 commons and 1 energy
-  (ThePriceDex).
+  (ThePriceDex). Searched 2026-09-12: no source found to resolve this.
 - The rarity split (holo, rare, uncommon, common counts): Unknown.
 - Per-card holo and rare codes: the guide says its data is not enough.
-- Boxes per case and blister formats: Unknown.
+- Blister formats: Unknown. Boxes per case: 6, from an era-wide working
+  assumption (see the era file and Sealed products above).

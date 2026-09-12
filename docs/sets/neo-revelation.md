@@ -38,7 +38,8 @@ Neo Revelation follows the era pack order. See
 - **Shining Pokémon position:** Unknown. The Elite Fourum author
   guesses that the Shining cards "were printed on the same sheet" as
   the holos. If so, a Shining card fills the rare slot. No source
-  confirms this.
+  confirms this. Searched 2026-09-12: no source found for the exact
+  slot or pack position.
 
 ## Rarities and hit odds
 
@@ -71,7 +72,7 @@ box)." The author bases this on 10 boxes from recorded openings.
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | PSA |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Blister | Unknown | Unknown | — |
 
 Pack wrapper arts: four, one each for Entei, Suicune, Raikou, and
@@ -112,6 +113,8 @@ the most common entry to the rarest entry.
 - Holo rate conflict: about 33% (PSA) vs. 1 in 3.4 (ThePriceDex) vs.
   22.9% (Loose Packs, one box).
 - The count of uncommons and commons: Unknown.
-- Energy in the pack, boxes per case, and blister formats: Unknown.
+- Energy in the pack: Unknown. Searched 2026-09-12: no source found.
+- Blister formats: Unknown. Boxes per case: 6, from an era-wide working
+  assumption (see the era file and Sealed products above).
 - **Rarity list order:** Rare Holo uses 1 in 3 from PSA. ThePriceDex gives 1 in 3.4. Loose Packs gives 22.9% (8 holos in 35 packs).
 - **Rarity list order:** Shining Pokémon (secret rare) uses 1 in 24 from ThePriceDex. PSA gives about 1 per box. Elite Fourum gives 1.309 per box.

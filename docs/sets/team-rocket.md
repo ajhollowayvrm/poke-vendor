@@ -34,7 +34,9 @@ Team Rocket follows the era pack order. See
   no reliable order for this era. Confidence: low.
 - **Dark Raichu position:** Unknown. The Elite Fourum guide gives it
   the same rarity as the other holos. This suggests that it uses the
-  rare slot, but no source says so directly.
+  rare slot, but no source says so directly. Searched 2026-09-12: no
+  source found for whether Dark Raichu fills the rare slot or adds a
+  12th card to the pack.
 
 ## Rarities and hit odds
 
@@ -65,7 +67,7 @@ Team Rocket follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box (1st Edition and Unlimited) | 36 | Variable per pack | [Goldin](https://goldin.co/item/2000-pokemon-team-rocket-1st-edition-factory-sealed-booster-box-36-pacoo4a8), [ToyWiz 1st Edition](https://toywiz.com/pokemon-team-rocket-1st-edition-booster-box-36-packs/), [ToyWiz Unlimited](https://toywiz.com/pokemon-team-rocket-booster-box-36-packs/) |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Blister | Bulbapedia: "Team Rocket was also the first set not to be packaged in cardboard backed blister packs." | — | [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Team_Rocket_(TCG)) |
 
 Pack wrapper arts: Unknown.
@@ -106,6 +108,8 @@ the most common entry to the rarest entry.
   other holos" (Elite Fourum). The holo count of the set is unknown, so
   we cannot check the two figures against each other.
 - The rarity split (holo, rare, uncommon, common counts): Unknown.
-- Energy in the pack: Unknown.
-- Wrapper arts, boxes per case, and blister formats: Unknown.
+- Energy in the pack: Unknown. Searched 2026-09-12: no source found.
+- Wrapper arts and blister formats: Unknown. Boxes per case: 6, from an
+  era-wide working assumption (see the era file and Sealed products
+  above).
 - **Rarity list order:** Rare Holo uses 1 in 3 from PSA and ThePriceDex. Loose Packs gives 21.1% (38 holos in 180 packs).

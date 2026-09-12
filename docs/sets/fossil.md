@@ -61,7 +61,7 @@ Fossil follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | PSA |
-| Booster case (1st Edition) | 6 boxes (216 packs) | Variable | [Goldin](https://goldin.co/item/1999-pokemon-fossil-booster-1st-edition-wizards-of-the-coast-factory-sav9rc) (listing title) |
+| Booster case (1st Edition) | 6 boxes (216 packs) | Variable | [Goldin](https://goldin.co/item/1999-pokemon-fossil-booster-1st-edition-wizards-of-the-coast-factory-sav9rc) (listing title), [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Single-pack blister | 1 | Not applicable | [Loose Packs — Fossil blister](https://loosepacks.com/products/fossil-blister) |
 
 Pack wrapper arts: Aerodactyl, Zapdos, and Lapras (PSA, PullMarket).
@@ -95,7 +95,11 @@ the most common entry to the rarest entry.
 ## Open topics
 
 - Pack order: see the era file. No Fossil-specific source exists.
-- Energy in the pack: Unknown.
-- Holos per box range: Unknown. Loose Packs gives totals only.
+- Energy in the pack: Unknown. Searched 2026-09-12: no source found.
+- Holos per box range: Unknown. Loose Packs gives totals only. Searched
+  2026-09-12: the Loose Packs weight guide gives an era-wide low of 6
+  and high of 18 holos per box, but no Fossil-specific range.
 - The Goldin case page did not load. The "6 Factory Sealed Boxes" value
-  comes from the listing title only.
+  comes from the listing title only. It is now supported by a second,
+  independent source: the Elite Fourum rarity guide's era-wide working
+  assumption of 6 boxes per case.

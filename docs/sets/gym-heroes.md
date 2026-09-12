@@ -65,7 +65,7 @@ Gym Heroes follows the era pack order. See
 | Product | Packs | Collation | Source |
 |---|---|---|---|
 | Booster box | 36 | Variable per pack | PSA |
-| Booster case | Unknown | Unknown | — |
+| Booster case | 6 boxes (default, low-medium confidence) | Unknown | [Elite Fourum rarity guide](https://www.elitefourum.com/t/the-english-pokemon-card-rarity-guide/39762) (era-wide working assumption, see the era file) |
 | Blister | Unknown | Unknown | — |
 
 Pack wrapper arts: Unknown.
@@ -98,9 +98,11 @@ the most common entry to the rarest entry.
 
 - Pack order: see the era file. No Gym Heroes-specific source exists.
 - Energy count: 7 commons (PSA) vs. 6 commons and 1 energy
-  (ThePriceDex).
+  (ThePriceDex). Searched 2026-09-12: no source found to resolve this.
 - The rarity split (holo, rare, uncommon, common counts): Unknown.
 - Which holos are H6 and which are H5: Unknown.
 - Non-holo rare codes: two reads of the Elite Fourum guide gave
   different values (R8/R7 and R6/R5). Check the guide directly.
-- Wrapper arts, boxes per case, and blister formats: Unknown.
+- Wrapper arts and blister formats: Unknown. Boxes per case: 6, from an
+  era-wide working assumption (see the era file and Sealed products
+  above).
