@@ -117,8 +117,12 @@ the most common entry to the rarest entry.
 ## Open topics
 
 - Pack order: no source shows a real opened Crimson Invasion pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - Bulbapedia says the Japanese sets Awakened Heroes and
   Ultradimensional Beasts guaranteed an SR or better per box. No source
   gives a guarantee for English Crimson Invasion boxes.
 - The pack mix in the Three Pack Blister: Unknown.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

@@ -82,11 +82,24 @@ direction. The commons count of 5 is derived.
 
 **Conflicts and gaps:**
 
-- Which end of the stack faces the front of the wrapper: Unknown.
+- Which end of the stack faces the front of the wrapper: Searched 2026-09-12:
+  no source found.
 - The two guides do not agree on how to hold the stack. PokePatch says to hold
   it face down and then "flip the stack over". NinePocket does not say.
 - NinePocket puts the 4-card method on Celebrations. A Celebrations pack has
   only 4 cards, so the method cannot apply as written.
+- **Code card position, resolved the same way as Scarlet & Violet.** TheGamer
+  says the code card sits physically last in the pack, nearest the seal
+  ([TheGamer — Pokémon TCG Live Codes](https://www.thegamer.com/pokemon-tcg-live-codes-booster-pack-spoiler/)).
+  PokeCardHQ agrees: "The last card is always the code card"
+  ([PokeCardHQ — How To Open A Pokémon Card Pack](https://www.pokecardhq.com/how-to-open-a-pokemon-card-pack/)).
+  Both sites describe the community pack trick as moving the code card (and
+  the other back-of-stack cards) to the front, so the collector sees the
+  code card first after the trick. This is the same reference-frame
+  resolution as the Scarlet & Violet era (see
+  [scarlet-violet.md](scarlet-violet.md#conflicts-in-the-template)): a fixed
+  physical position at the back of the stack, against the reveal order after
+  the pack trick.
 
 ## Template: rarity system
 
@@ -202,7 +215,9 @@ which match the Bulbapedia counts for the sets that have both.
 ## Open topics
 
 - Find a source that shows real opened packs for this era. Confirm the order
-  and which end faces the wrapper front.
+  and which end faces the wrapper front. Searched 2026-09-12: no source found
+  for which end faces the wrapper front. The code card's physical position
+  is resolved (see Conflicts and gaps above).
 - Decide if the rip screen uses the natural order (hit in the middle) or the
   pack-trick order (hit last). This is a design decision for
   [18-ripping.md](../../18-ripping.md).

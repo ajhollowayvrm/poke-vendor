@@ -39,7 +39,7 @@ Trainer Gallery under the Sun & Moon to Sword & Shield method.
 - A Trainer Gallery hit sits next to the rare slot, near the middle.
 - With the community pack trick, the rare is last and the reverse holo slot
   is second-to-last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -165,7 +165,9 @@ groups are separate entries.
   from the card images.
 - DigitalTQ and TCGplayer use different category groups. Do not mix them.
 - How often the VSTAR marker replaces the Energy card: Unknown.
-- Pack order: which end faces the wrapper front is Unknown.
+- Pack order: which end faces the wrapper front is Searched 2026-09-12: no
+  source found (see the era file). The code card's physical position is
+  resolved at the era level.
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
 - **Rarity list order:** Rare Rainbow uses 1.96% from the TCGplayer infographic (10,000+ packs). DigitalTQ gives 1.29% (community sample, 1,004 packs).
 - **Rarity list order:** Rare Secret uses 1.09% from the TCGplayer infographic. DigitalTQ gives 1.49% (community sample).

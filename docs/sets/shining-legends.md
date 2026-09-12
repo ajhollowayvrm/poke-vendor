@@ -132,7 +132,9 @@ set has no non-holo Rare.
 ## Open topics
 
 - Pack order for this set: not confirmed by any source.
-- Code card in the pack: Unknown.
+- Code card in the pack: Unknown. Searched 2026-09-12: Bulbapedia states
+  only "11 cards, with 2 guaranteed foil cards" and does not mention a
+  code card. No source found.
 - Shining Pokémon count: the Elite Fourum post says 6 Shining Pokémon.
   Bulbapedia lists 5 secret rares. These are different card groups, but
   the exact Shining Pokémon list was not checked.

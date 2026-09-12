@@ -155,10 +155,12 @@ plain reverse holos; each of its rarities is its own entry.
 - [Elite Fourum — Pull rates in Sun & Moon / Sword & Shield sets (@burpies)](https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [PokéPatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
+- [PokeGuardian — Hidden Fates Ultra-Premium Collection revealed](https://www.pokeguardian.com/351234_hidden-fates-ultra-premium-collection-revealed)
 
 ## Open topics
 
-- Pack order for this set: not confirmed by any source.
+- Pack order for this set: not confirmed by any source. Searched
+  2026-09-12: no card-by-card source found.
 - **Pack size conflict.** Bulbapedia gives 10 cards plus an Energy and a
   code card. ThePriceDex gives 11 cards. The common and uncommon split
   is Unknown.
@@ -170,5 +172,6 @@ plain reverse holos; each of its rarities is its own entry.
   this file does not use it.
 - The @burpies data does not separate main set and Shiny Vault full art
   Trainers.
-- Release date of the Ultra-Premium Collection: Unknown.
+- **Release date of the Ultra-Premium Collection: November 15, 2019**
+  (PokeGuardian, "Hidden Fates Ultra-Premium Collection revealed").
 - **Rarity list order:** by this file's odds, Shiny Vault — Shiny Rare (1 in 4.7) comes more often than Rare Holo (1 in 5). The rarity list therefore puts the Shiny Vault entry above Rare Holo.

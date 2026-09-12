@@ -104,12 +104,16 @@ there is no booster box. This set has only two rarities.
 
 ## Open topics
 
-- **Pack order: Unknown.** Find a pack-opening video or guide.
+- **Pack order: Unknown.** Searched 2026-09-12: no pack-opening video
+  or guide found for this set.
 - **Per-card odds conflict.** With 9 Rare Holos and even weighting, one
   specific Rare Holo is 1 in 9 packs. ThePriceDex gives 1 in 10. With 9
   Common Holos and 3 per pack, one specific Common Holo is 1 in 3 packs.
   ThePriceDex gives 1 in 2.7. The method behind the ThePriceDex figures
   is Unknown.
-- Basic Energy or code card in the pack: Unknown.
+- Basic Energy or code card in the pack: Unknown. Searched 2026-09-12:
+  Bulbapedia states only "Each booster pack contained four Holofoil
+  cards" and does not mention Basic Energy or a code card. No source
+  found.
 - The set of the "other Sun & Moon Series" packs in each product:
   Unknown.

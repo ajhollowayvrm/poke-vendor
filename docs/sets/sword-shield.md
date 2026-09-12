@@ -36,7 +36,7 @@ evidence behind the pack order.
   rare is position 6 and the reverse holo and 5 commons follow it.
 - With the community pack trick, the rare is last and the reverse holo is
   second-to-last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -54,16 +54,18 @@ Card counts per Bulbapedia rarity label (216 cards):
 | Rare Rainbow | 8 |
 | Rare Secret (gold) | 6 |
 
-Pull odds:
+Pull odds. Source: Elite Fourum community sample, 4,628 packs (coded from
+pack-opening videos, not official data).
 
 | Rarity | Odds per pack | Confidence |
 |---|---|---|
 | Holo rare | Unknown | Unknown |
-| Pokémon V | Unknown | Unknown |
-| Pokémon VMAX | Unknown | Unknown |
-| Full art | Unknown | Unknown |
-| Rainbow rare | Unknown | Unknown |
-| Gold secret rare | Unknown | Unknown |
+| Pokémon V | 14.20% (1 in 7.04) | Community sample (4,628 packs) |
+| Pokémon VMAX | 2.20% (1 in 45.37) | Community sample |
+| Full art | 3.74% (1 in 26.75) | Community sample |
+| Rainbow rare | 1.23% (1 in 81.19) | Community sample |
+| Gold secret rare | 0.91% (1 in 110.19) | Community sample |
+| Hit rate: any rarity above Holo Rare | 22.28% (1 in 4.49) | Community sample |
 
 Code card border (community article): a green-bordered code card signals a
 non-holo rare. A white-bordered code card signals a holo rare or better
@@ -102,11 +104,11 @@ set, so the order follows the era's rarity system.
 | 3 | Reverse holo | Variant | Every pack | No |
 | 4 | Rare | Rarity | — | Yes |
 | 5 | Rare Holo | Rarity | — | Yes |
-| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
-| 7 | Rare VMAX | Rarity | — | Yes |
-| 8 | Rare Ultra (full art) | Rarity | — | Yes |
-| 9 | Rare Rainbow | Rarity | — | Yes |
-| 10 | Rare Secret | Rarity | — | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 14.20% | Yes |
+| 7 | Rare Ultra (full art) | Rarity | 3.74% | Yes |
+| 8 | Rare VMAX | Rarity | 2.20% | Yes |
+| 9 | Rare Rainbow | Rarity | 1.23% | Yes |
+| 10 | Rare Secret | Rarity | 0.91% | Yes |
 
 ## Sources
 
@@ -118,12 +120,18 @@ set, so the order follows the era's rarity system.
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [PokePatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Card Codex — What Your Code Card Is Telling You](https://cardcodex.com/blog/the-pokemon-pack-spoiler-what-your-code-card-is-telling-you/)
+- [Elite Fourum — Pull Rates in Sun & Moon - Sword & Shield Sets](https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220)
 - [Pokémon Center Support — Booster pack contents](https://support.pokemoncenter.com/hc/en-us/articles/360028979571-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-Booster-Pack)
 
 ## Open topics
 
-- No pull-rate study found for any rarity.
+- Holo rare and plain Rare odds: Searched 2026-09-12: no source found. The
+  Elite Fourum sample gives every other rarity above Holo Rare.
 - Pack order has no set-specific source. Which end faces the wrapper front is
-  Unknown.
+  Searched 2026-09-12: no source found (see the era file).
 - The commons count of 5 is derived, not stated by a source.
-- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art), Rare Rainbow and Rare Secret. The era's rarity system decides the place of each one in the rarity list.
+- **Rarity list odds:** no source gives the odds per pack for Rare and Rare
+  Holo. The era's rarity system decides the place of each one in the rarity
+  list.
+- **Odds source is a community sample,** not an official or authentication
+  study: Elite Fourum coded the outcomes from pack-opening videos.

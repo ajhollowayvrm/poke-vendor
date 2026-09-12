@@ -16,7 +16,10 @@ Set data for Celebrations, a special expansion for the 25th anniversary. See
 
 - Bulbapedia: "Each Celebrations booster pack contains four cards".
 - TCGplayer: "Each Celebrations booster pack contains 4 random cards."
-- Slot breakdown: Unknown.
+- SlashGear: each pack has "one chance for a sub-set card, and at least
+  three will be from the base set". A pack holds 4 base-set cards, or 3
+  base-set cards plus 1 Classic Collection card. A pack never holds more
+  than 1 Classic Collection card.
 - Energy card: Unknown. Code card: Unknown.
 - Bulbapedia: "There is no Reverse Holo parallel set for Celebrations".
 - The set list has no commons and no uncommons.
@@ -133,15 +136,17 @@ every card is Rare or higher.
 - [DigitalTQ — Celebrations Booster Pull Rates](https://www.digitaltq.com/celebrations-booster-pull-rates-pokemon-tcg)
 - [PullRates — Celebrations](https://pullrates.com/set/celebrations)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
+- [SlashGear — Pokemon TCG Celebrations Unboxing: Release Day Time Warp!](https://www.slashgear.com/pokemon-tcg-celebrations-unboxing-release-day-time-warp-08694490/)
 
 ## Open topics
 
-- Pack order and where the hit sits: Unknown. This is the biggest gap for
-  the rip screen.
-- Slot breakdown of the 4 cards: Unknown.
-- Code card in the pack: Unknown.
+- Pack order and where the hit sits: Searched 2026-09-12: no source found.
+  This is the biggest remaining gap for the rip screen.
+- Slot breakdown of the 4 cards: the base-set-to-Classic-Collection ratio is
+  now known (see Pack structure). The order the 4 cards come out is still
+  Unknown. Searched 2026-09-12: no source found.
+- Code card in the pack: Searched 2026-09-12: no source found.
 - Classic Collection odds: one small sample (541 packs) and one source of
   unknown quality. No large study found.
-- Can a pack hold more than one Classic Collection card? Unknown.
 - **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra and Rare Secret. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Classic Collection has odds of 40.1%, more common than any main-set rarity in this file. No main-set rarity has odds to compare it against, so the rarity list places Classic Collection last, following the era's rarity system.

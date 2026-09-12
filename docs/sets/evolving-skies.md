@@ -36,7 +36,7 @@ template and the evidence behind the pack order.
 
 - The rare is **not** one of the last three cards in either direction.
 - With the community pack trick, the rare is last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -146,5 +146,7 @@ the rainbow rares and the alternate-art Pokémon VMAX cards.
   the values match the gold rare figures. This file uses them as gold.
 - TCGplayer counts 16 rainbow rares and 6 alternate-art VMAX cards. Bulbapedia
   labels all 22 "Rare Rainbow".
-- Pack order: which end faces the wrapper front is Unknown.
+- Pack order: which end faces the wrapper front is Searched 2026-09-12: no
+  source found (see the era file). The code card's physical position is
+  resolved at the era level.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.

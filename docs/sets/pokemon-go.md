@@ -37,7 +37,7 @@ Sun & Moon to Sword & Shield method. No other source was found.
 | 12 | Code card |
 
 - The rare is **not** one of the last three cards in either direction.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -134,8 +134,10 @@ Rare Holo or higher card.
 ## Open topics
 
 - Only one small community sample (371 packs). No large study found.
-- Radiant slot: Unknown.
-- Hidden Ditto card odds: Unknown.
-- Slot breakdown: not confirmed for this set.
-- Pack order: one guide only. Which end faces the wrapper front is Unknown.
+- Radiant slot: Searched 2026-09-12: no source found.
+- Hidden Ditto card odds: Searched 2026-09-12: no source found.
+- Slot breakdown: not confirmed for this set. Searched 2026-09-12: no source
+  found beyond the era template.
+- Pack order: one guide only. Which end faces the wrapper front is Searched
+  2026-09-12: no source found (see the era file).
 - **Rarity list order:** the DigitalTQ rows add to more than 100%, so some packs hold two counted cards. The rarity list odds may overstate how often a pack stops early.

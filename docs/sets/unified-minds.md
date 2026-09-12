@@ -123,8 +123,13 @@ source gives them a separate rate.
 ## Open topics
 
 - Pack order: no source shows a real opened Unified Minds pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - The study changed its Unified Minds model in April 2024. Later edits
   can change the figures again.
-- No source gives separate odds for TAG TEAM Pokémon-GX.
+- Searched 2026-09-12: no source found for separate odds for TAG TEAM
+  Pokémon-GX.
 - The pack mix in the Three Pack Blister: Unknown.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

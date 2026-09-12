@@ -107,7 +107,28 @@ second to last. Both are in the last three.
 PokéPatch tells the reader to hold the cards "face down (so the blue
 Pokemon logo is facing you)". NinePocket does not define "back". No
 source describes the order with the wrapper front facing the player.
-This is an open topic.
+
+PokeCardHQ confirms that the code card "is always found at the back of
+the card pile you get from the booster pack" and that a player tears
+the pack "at the center of the pack's back part". This matches the raw
+order table: the code card sits physically last, and the front of the
+stack (position 1) is the first card the player sees when the player
+does not apply the pack trick. This is the same physical layout that
+the Scarlet & Violet era file resolves in its "Last card" conflict (see
+[scarlet-violet.md](scarlet-violet.md#conflicts-in-the-template)): the
+code card sits physically last, near the seal, and the pack trick flips
+the stack so the rare shows last during a reveal.
+
+**Resolution for the rip screen.** [../../18-ripping.md](../../18-ripping.md#the-pack-trick)
+states that the game always animates the pack trick, and that "the hit
+is one of the last three cards", matching a real pack. So the rip
+screen uses the **pack-trick order** for the reveal the player sees,
+and the **raw order** stays on record as the pack's true physical
+order, the one the trick animation starts from. This closes the "one
+order for this era" question below.
+
+- Searched 2026-09-12: no source gives the exact wrapper-front
+  orientation beyond the code-card-at-the-back fact above.
 
 ## Rarity system
 
@@ -161,7 +182,12 @@ rares on the full art Trainer sheet.
   1,008 packs from 28 boxes also agree).
 - Elite Trainer Box: 8 packs for main sets, 10 packs for Shining
   Legends, Dragon Majesty, and Hidden Fates (Bulbapedia).
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** Multiple sealed-case retailers (Blowout Cards,
+  Steel City Collectibles, Potomac Distribution, and eBay listings) sell
+  "6 Booster Box Case" and "Master Case" products for main sets across
+  the era, all holding 6 Booster Display Boxes. **Confidence: retailer
+  standard**, the same confidence level the Scarlet & Violet era file
+  uses for the same fact.
 - **Collation: variable.** The study reports average "box ratios", not
   a guaranteed count per box. The study also finds that machines fill
   packs from print sheets in sequence. For example, the reverses in one
@@ -228,26 +254,34 @@ rares on the full art Trainer sheet.
 - [NinePocket — The Pokémon Pack Trick: How It Works for Every Set](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [PokéPatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [PokeBeach — 'Sun & Moon' Boosters Reintroducing 11 Cards Per Pack, New Reverse Holo Style!](https://www.pokebeach.com/2017/01/sun-moon-booster-packs-reintroducing-11-cards-new-reverse-holo-style)
+- [PokeCardHQ — How to Open a Pokemon Card Pack Properly](https://www.pokecardhq.com/how-to-open-a-pokemon-card-pack/)
+- [Blowout Cards — Pokemon Sun & Moon Booster 6 Box Case](https://www.blowoutcards.com/pokemon-sun-moon-booster-6-box-case.html)
+- [Steel City Collectibles — Pokemon Sun & Moon Booster 6-Box Case](https://www.steelcitycollectibles.com/i/pokemon-sun-&-moon-booster-6-box-case)
+- [Potomac Distribution — Pokemon: Sun & Moon Booster Case (6 boxes)](https://www.potomacdist.com/detail.asp?itemid=pokesmbc)
 
 ## Open topics
 
-- **The pack order has no source that shows real opened packs.** Both
-  sources are pack-trick guides. Confirm the order with a pack-opening
-  video for at least one set.
-- **Orientation**: no source says how the order looks with the wrapper
-  front facing the player. Confirm which end of the stack a player sees
-  first.
-- **The rip screen rule and this era**: in the raw order, the rare slot
-  is card 7 of 12, not one of the last three. The hit is in the last
-  three only in the pack-trick order. The design must choose one order
-  for this era (see [../../18-ripping.md](../../18-ripping.md#where-the-hit-sits)).
+- **The pack order has no source that shows real opened packs.**
+  Both sources are pack-trick guides. Searched 2026-09-12: PokeCardHQ
+  confirms the code card sits at the back of the stack (matches the
+  raw order table) but gives no card-by-card video or photo. No
+  pack-opening video or photo source with a full card list was found.
+- **Orientation and the rip screen rule are resolved.** See
+  [Orientation](#orientation) above: the rip screen uses the
+  pack-trick order for the reveal, and the raw order is the pack's
+  physical order.
 - The position of the commons in the raw order is an inference.
 - NinePocket and PokéPatch do not name exceptions for the special sets.
   The pack order for Shining Legends, Dragon Majesty, and Hidden Fates
   is not confirmed. The Detective Pikachu pack order is Unknown.
-- No source gives separate odds for TAG TEAM Pokémon-GX.
-- Boxes per case: Unknown.
-- A second, independent pull-rate source was not available.
-  Pokecompare returned HTTP 429 on each try.
+- Searched 2026-09-12: no source found for separate odds for TAG TEAM
+  Pokémon-GX. They stay inside the GX, Ultra Rare, and Rainbow Rare
+  figures for Team Up, Unbroken Bonds, Unified Minds, and Cosmic
+  Eclipse.
+- **Boxes per case: resolved to 6.** See
+  [Box and case structure](#box-and-case-structure) above.
+- A second, independent pull-rate source was not available. Searched
+  2026-09-12: Pokecompare returned HTTP 429 again. A DripShop blog on
+  Unbroken Bonds returned HTTP 403.
 - Bulbapedia lists three-card "Mini Packs" for most sets. Only the Sun &
   Moon Mini Pack contents were read.

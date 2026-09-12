@@ -33,7 +33,7 @@ template and the evidence behind the pack order.
 
 - The rare is **not** one of the last three cards in either direction.
 - With the community pack trick, the rare is last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -52,10 +52,13 @@ Card counts per Bulbapedia rarity label (203 cards):
 | Rare Rainbow | 12 |
 | Rare Secret (gold) | 6 |
 
-Pull odds. The only source is DigitalTQ: 630 packs.
+Pull odds. The main source is DigitalTQ: 630 packs. ThePriceDex republishes
+the same figures as "1 in N" odds and adds a plain Rare figure not in the
+DigitalTQ table.
 
 | Rarity (DigitalTQ label) | Pulls | Odds per pack | Confidence |
 |---|---|---|---|
+| Rare | — | 55.56% (1 in 1.8) | Community estimate (ThePriceDex, derived from the same sample) |
 | Rare Holo | 137 | 21.75% | Community sample (630 packs) |
 | Rare Holo V | 80 | 12.7% | Community sample |
 | Amazing Rare | 36 | 5.71% | Community sample |
@@ -66,6 +69,9 @@ Pull odds. The only source is DigitalTQ: 630 packs.
 
 - DigitalTQ says: "This data is compiled from our own card pulls and other
   third party sources, so it may not be accurate or reliable."
+- ThePriceDex's Rare Holo, Rare Holo V, Amazing Rare, Rare Holo VMAX, Ultra
+  Rare, Rare Rainbow, and Secret Rare Holo figures match the DigitalTQ
+  percentages within 0.01 points, so both sites use one source (inference from the matching figures).
 
 ## Special subsets or mechanics
 
@@ -96,7 +102,7 @@ the Bulbapedia rarity labels; see Open topics for the mapping caveat.
 | 1 | Common | Rarity | Every pack | No |
 | 2 | Uncommon | Rarity | Every pack | No |
 | 3 | Reverse holo | Variant | Every pack | No |
-| 4 | Rare | Rarity | — | Yes |
+| 4 | Rare | Rarity | 55.56% | Yes |
 | 5 | Rare Holo | Rarity | 21.75% | Yes |
 | 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 12.7% | Yes |
 | 7 | Amazing Rare | Rarity | 5.71% | Yes |
@@ -115,12 +121,16 @@ the Bulbapedia rarity labels; see Open topics for the mapping caveat.
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [PokePatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Pokémon Center Support — Booster pack contents](https://support.pokemoncenter.com/hc/en-us/articles/360028979571-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-Booster-Pack)
+- [ThePriceDex — Vivid Voltage Pull Rates](https://www.thepricedex.com/set/swsh4/vivid-voltage/pull-rates)
 
 ## Open topics
 
-- Only one small community sample for odds. No large study found.
-- Which slot an Amazing Rare uses (rare slot or reverse holo slot): Unknown.
+- Only one small community sample for odds (630 packs). No large study
+  found. Searched 2026-09-12: ThePriceDex gives the same figures, plus the
+  Rare odds. The matching figures indicate the same sample.
+- Which slot an Amazing Rare uses (rare slot or reverse holo slot): Searched
+  2026-09-12: no source found.
 - DigitalTQ labels ("Ultra Rare", "Secret Rare Holo") do not map one-to-one
   to Bulbapedia labels.
-- Pack order has no set-specific source.
-- **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
+- Pack order has no set-specific source. Which end faces the wrapper front
+  is Searched 2026-09-12: no source found (see the era file).

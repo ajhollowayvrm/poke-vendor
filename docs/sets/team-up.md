@@ -58,6 +58,8 @@ full arts), Rare Rainbow, Rare Secret.
 | Rainbow Rare | 1 in 60 | Empirical study |
 | Secret Rare (gold) | 1 in 120 | Empirical study |
 | TAG TEAM Pokémon-GX (any version) | Unknown | Unknown |
+| Reverse Rare Holo (reverse slot) | 1 in 8.0 | Estimate |
+| Reverse Rare (reverse slot) | 1 in 4.9 | Estimate |
 
 Odds source: ThePriceDex, which cites the Elite Fourum post for this
 set.
@@ -129,9 +131,15 @@ entries; no source gives them a separate rate.
 ## Open topics
 
 - Pack order: no source shows a real opened Team Up pack.
-- No source gives separate odds for TAG TEAM Pokémon-GX. They are inside
-  the GX, full art, and rainbow figures.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
+- Searched 2026-09-12: no source found for separate odds for TAG TEAM
+  Pokémon-GX. They stay inside the GX, full art, and rainbow figures.
 - The Elite Fourum post gives the box ratios only in an image. The
   figures above come from ThePriceDex.
-- ThePriceDex gives no reverse slot odds for reverse holo rares.
-- Boxes per case: Unknown.
+- **Resolved.** ThePriceDex now gives reverse slot odds for reverse
+  holo rares (Reverse Rare Holo 1 in 8.0, Reverse Rare 1 in 4.9). Added
+  to the odds table above.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

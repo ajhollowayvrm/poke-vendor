@@ -42,7 +42,7 @@ Trainer Gallery under the Sun & Moon to Sword & Shield method.
 - The rare is **not** one of the last three cards in either direction.
 - A Trainer Gallery hit sits next to the rare slot, near the middle.
 - With the community pack trick, the rare is last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -167,10 +167,14 @@ Pokémon; its three rarity groups are separate entries.
 
 ## Open topics
 
-- Radiant slot: Unknown.
+- Radiant slot: Searched 2026-09-12: no clear source found. Crown Zenith, a
+  later set in this era, confirms its Radiant cards use the reverse holo
+  slot; this set's slot is still unconfirmed.
 - Holo rare: only a community sample.
 - DigitalTQ recorded 1 plain "Rare" as a hit. Its labels do not match the
   TCGplayer groups.
-- Pack order: which end faces the wrapper front is Unknown.
+- Pack order: which end faces the wrapper front is Searched 2026-09-12: no
+  source found (see the era file). The code card's physical position is
+  resolved at the era level.
 - **Rarity list odds:** no reliable source gives the odds per pack for Rare. DigitalTQ recorded one plain Rare pull (0.14%), too small to use. The era's rarity system decides its place in the rarity list.
 - **Rarity list odds:** TCGplayer gives one combined figure (3.72%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.

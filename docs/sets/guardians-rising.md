@@ -52,9 +52,12 @@ Rare Rainbow, Rare Secret.
 | Ultra Rare (full art Pokémon-GX + full art Trainer) | 1 in 23.4 | Empirical study |
 | Rainbow Rare | 1 in 66.7 | Empirical study |
 | Secret Rare (gold) | 1 in 111.1 | Empirical study |
+| Reverse Rare Holo (reverse slot) | 1 in 7.9 | Estimate |
+| Reverse Rare (reverse slot) | 1 in 4.7 | Estimate |
 
 Odds source: ThePriceDex, which cites the Elite Fourum post for this
-set. ThePriceDex gives no reverse slot figures for this set.
+set. Searched 2026-09-12: ThePriceDex now gives reverse slot figures
+for this set (see the two rows above).
 
 Elite Fourum model: all 24 secret rares print 3 times on the 10x10 full
 art Trainer and secret rare sheet. That is 72 of 100 slots, and 0.86
@@ -119,10 +122,14 @@ the most common entry to the rarest entry.
 ## Open topics
 
 - Pack order: no source shows a real opened Guardians Rising pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - The Elite Fourum post gives no text value for the "regular"
   Pokémon-GX box ratio. The value is in an image. ThePriceDex gives
   1 in 9 packs.
 - An alternative model gives 2 secret rares 1 in 1,500 packs. The author
   chose the equal model.
 - The pack mix in the Three Pack Blister: Unknown.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

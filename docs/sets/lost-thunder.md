@@ -57,6 +57,8 @@ Star, Rare Ultra, Rare Rainbow, Rare Secret.
 | Ultra Rare (full art Pokémon-GX + full art Trainer) | 1 in 23.3 | Empirical study |
 | Rainbow Rare | 1 in 71.0 | Empirical study |
 | Secret Rare (gold) | 1 in 102.6 | Empirical study |
+| Reverse Rare Holo (reverse slot) | 1 in 9.4 | Estimate |
+| Reverse Rare (reverse slot) | 1 in 5.2 | Estimate |
 
 Odds source: ThePriceDex, which cites the Elite Fourum post for this
 set.
@@ -123,9 +125,15 @@ second hit alongside the rare slot, in the reverse holo slot.
 ## Open topics
 
 - Pack order: no source shows a real opened Lost Thunder pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - The author's own sample disagrees with the other two on the secret
   rare share. The model follows the other two.
-- ThePriceDex gives no reverse slot odds for reverse holo rares.
+- **Resolved.** ThePriceDex now gives reverse slot odds for reverse
+  holo rares (Reverse Rare Holo 1 in 9.4, Reverse Rare 1 in 5.2). Added
+  to the odds table above.
 - Walmart Two Pack Blisters (December 2018) held a Burning Shadows pack
   and one more pack. The second pack name was cut off in the extract.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

@@ -47,7 +47,7 @@ Galarian Gallery under the same method.
   set.
 - With the community pack trick, the rare is last and the reverse holo slot
   is second-to-last. Both hits then fall in the last three cards.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -204,6 +204,8 @@ entries.
 - CardShopLive says "102 cards" per pack. This is a typing error for 10 cards
   plus Energy and code card.
 - VSTAR marker in Crown Zenith packs: Unknown.
-- Pack order: which end faces the wrapper front is Unknown.
+- Pack order: which end faces the wrapper front is Searched 2026-09-12: no
+  source found (see the era file). The code card's physical position is
+  resolved at the era level.
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
 - **Rarity list odds:** TCGplayer gives one combined figure (5.30%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.

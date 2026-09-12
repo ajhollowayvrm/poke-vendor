@@ -142,8 +142,11 @@ set has no non-holo Rare.
 - Pack order for this set: not confirmed by any source.
 - The Prism Star slot: Unknown. In the main sets, Prism Stars come in
   the reverse slot, but no source confirms this for Dragon Majesty.
-- Code card in the pack: Unknown.
+  Searched 2026-09-12: no source found.
+- Code card in the pack: Unknown. Searched 2026-09-12: no source found.
 - Pack size from Bulbapedia: Unknown. Only ThePriceDex gives 11.
+  Searched 2026-09-12: the Bulbapedia set article gives no per-pack
+  card count. No source found.
 - The data sample is smaller than for the main sets.
 - The author did not check if the reverse Basic Energy cards are rarer
   than other reverses.

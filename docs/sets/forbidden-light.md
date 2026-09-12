@@ -56,6 +56,8 @@ Star, Rare Ultra, Rare Rainbow, Rare Secret.
 | Ultra Rare (full art Pokémon-GX + full art Trainer) | 1 in 24.3 | Empirical study |
 | Rainbow Rare | 1 in 83.3 | Empirical study |
 | Secret Rare (gold) | 1 in 125 | Empirical study |
+| Reverse Rare Holo (reverse slot) | 1 in 10.4 | Estimate |
+| Reverse Rare (reverse slot) | 1 in 4.6 | Estimate |
 
 Odds source: ThePriceDex, which cites the Elite Fourum post for this
 set.
@@ -120,7 +122,13 @@ second hit alongside the rare slot, in the reverse holo slot.
 ## Open topics
 
 - Pack order: no source shows a real opened Forbidden Light pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - The Elite Fourum post gives the "regular" Pokémon-GX and Prism Star
   box ratios only in an image. The figures above come from ThePriceDex.
-- ThePriceDex gives no reverse slot odds for reverse holo rares.
-- Boxes per case: Unknown.
+- **Resolved.** ThePriceDex now gives reverse slot odds for reverse
+  holo rares (Reverse Rare Holo 1 in 10.4, Reverse Rare 1 in 4.6). Added
+  to the odds table above.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

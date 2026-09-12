@@ -121,13 +121,18 @@ source gives them a separate rate.
 ## Open topics
 
 - Pack order: no source shows a real opened Unbroken Bonds pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - **Secret rare model conflict.** The study also gives an alternative:
   the 6 full art Trainers and 16 secret rares print 4 times, and 4 print
   3 times. That gives 0.99 secret rares per box. The author prefers the
   first model because 0.99 "seems too much".
 - One TheGameCapital case also appears in the author's own sample. The
   author removed that overlap.
-- A DripShop blog gives other Unbroken Bonds odds. The page was not
-  read, so this file does not use it.
-- No source gives separate odds for TAG TEAM Pokémon-GX.
-- Boxes per case: Unknown.
+- A DripShop blog gives other Unbroken Bonds odds. Searched 2026-09-12:
+  the page returned HTTP 403 again, so this file still does not use it.
+- Searched 2026-09-12: no source found for separate odds for TAG TEAM
+  Pokémon-GX.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

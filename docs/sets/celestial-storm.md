@@ -125,8 +125,12 @@ second hit alongside the rare slot, in the reverse holo slot.
 ## Open topics
 
 - Pack order: no source shows a real opened Celestial Storm pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - An equal model (all 15 secret rares 4 times) gives 0.84 secret rares
   per box. The author prefers the mixed model at 0.73.
 - The rare-sheet short prints and the rare uncommons are not in the
   odds table above. The game needs per-card weights to use them.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

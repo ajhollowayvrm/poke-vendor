@@ -41,7 +41,7 @@ Shiny Vault under the Sun & Moon to Sword & Shield method.
 
 - The rare is **not** one of the last three cards in either direction.
 - A Shiny Vault card sits next to the rare slot, near the middle.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -62,15 +62,21 @@ Card counts per Bulbapedia rarity label:
 | Shiny Vault: Rare Shiny GX (Shiny Pokémon V and VMAX) | 16 |
 | Shiny Vault: Rare Secret (Eternatus V and VMAX) | 2 |
 
-Pull odds:
+Pull odds. Source: Elite Fourum community sample, 2,187 packs (coded from
+pack-opening videos, not official data).
 
 | Rarity | Odds per pack | Confidence |
 |---|---|---|
 | Holo rare | Unknown | Unknown |
-| Pokémon V or VMAX | Unknown | Unknown |
-| Shiny Vault card (any) | Unknown | Unknown |
-| Shiny Pokémon V or VMAX | Unknown | Unknown |
-| Amazing Rare | Unknown | Unknown |
+| Pokémon V (Holo Rare V) | 10.84% (1 in 9.23) | Community sample (2,187 packs) |
+| Pokémon VMAX (Holo Rare VMAX) | 5.44% (1 in 18.38) | Community sample |
+| Full art (Ultra Rare) | 3.25% (1 in 30.80) | Community sample |
+| Amazing Rare | 5.76% (1 in 17.36) | Community sample |
+| Rainbow rare | 1.19% (1 in 84.12) | Community sample |
+| Gold secret rare | 0.91% (1 in 109.35) | Community sample |
+| Shiny Vault card (Shiny Rare) | 22.73% (1 in 4.40) | Community sample |
+| Shiny Pokémon V or VMAX (Shiny Rare V/VMAX) | 8.96% (1 in 11.16) | Community sample |
+| Hit rate: any rarity above Holo Rare | 59.08% (1 in 1.69) | Community sample |
 
 ## Special subsets or mechanics
 
@@ -109,14 +115,14 @@ reverse holo card; each of its rarities is its own entry.
 | 3 | Reverse holo | Variant | Every pack | No |
 | 4 | Rare | Rarity | — | Yes |
 | 5 | Rare Holo | Rarity | — | Yes |
-| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
-| 7 | Rare VMAX | Rarity | — | Yes |
-| 8 | Rare Ultra (full art) | Rarity | — | Yes |
-| 9 | Rare Rainbow | Rarity | — | Yes |
-| 10 | Rare Secret | Rarity | — | Yes |
-| 11 | Amazing Rare | Rarity | — | Yes |
-| 12 | Shiny Vault — Rare Shiny | Subset | — | Yes |
-| 13 | Shiny Vault — Rare Shiny GX | Subset | — | Yes |
+| 6 | Shiny Vault — Rare Shiny | Subset | 22.73% | Yes |
+| 7 | Ultra-Rare Rare (Pokémon V) | Rarity | 10.84% | Yes |
+| 8 | Shiny Vault — Rare Shiny GX | Subset | 8.96% | Yes |
+| 9 | Amazing Rare | Rarity | 5.76% | Yes |
+| 10 | Rare VMAX | Rarity | 5.44% | Yes |
+| 11 | Rare Ultra (full art) | Rarity | 3.25% | Yes |
+| 12 | Rare Rainbow | Rarity | 1.19% | Yes |
+| 13 | Rare Secret | Rarity | 0.91% | Yes |
 | 14 | Shiny Vault — Rare Secret | Subset | — | Yes |
 
 ## Sources
@@ -127,12 +133,23 @@ reverse holo card; each of its rarities is its own entry.
 - [TCGplayer — Shining Fates Booster Pack](https://www.tcgplayer.com/product/232636)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Pokémon Center Support — Booster pack contents](https://support.pokemoncenter.com/hc/en-us/articles/360028979571-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-Booster-Pack)
+- [Elite Fourum — Pull Rates in Sun & Moon - Sword & Shield Sets](https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220)
 
 ## Open topics
 
-- No pull-rate study found. The Shiny Vault rate is the biggest gap.
-- Is a Pokémon V or VMAX guaranteed in English packs? Unknown.
-- Amazing Rare slot: Unknown.
+- Holo rare and plain Rare odds: Searched 2026-09-12: no source found.
+- Is a Pokémon V or VMAX guaranteed in English packs? Searched 2026-09-12: no
+  source found.
+- Amazing Rare slot: Searched 2026-09-12: no source found for the slot,
+  though the odds (5.76%) are now known.
 - Slot breakdown, Energy card, and code card: not confirmed for this set.
-- Pack order: one guide only. Which end faces the wrapper front is Unknown.
-- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art), Rare Rainbow, Rare Secret, Amazing Rare, Shiny Vault — Rare Shiny, Shiny Vault — Rare Shiny GX and Shiny Vault — Rare Secret. The era's rarity system decides the place of each one in the rarity list.
+  Searched 2026-09-12: no source found beyond the era template.
+- Pack order: one guide only. Which end faces the wrapper front is Searched
+  2026-09-12: no source found (see the era file).
+- **Rarity list odds:** no source gives the odds per pack for Rare, Rare
+  Holo, and Shiny Vault — Rare Secret. The era's rarity system decides the
+  place of each one in the rarity list.
+- **Odds source is a community sample,** not an official or authentication
+  study: Elite Fourum coded the outcomes from pack-opening videos. The rows
+  sum to more than 100%, so a pack can hold more than one counted card (for
+  example a Shiny Vault card and a main-set hit together).

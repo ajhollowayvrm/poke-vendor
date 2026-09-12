@@ -33,7 +33,7 @@ template and the evidence behind the pack order.
 
 - The rare is **not** one of the last three cards in either direction.
 - With the community pack trick, the rare is last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -51,17 +51,18 @@ Card counts per Bulbapedia rarity label (233 cards):
 | Rare Rainbow | 23 |
 | Rare Secret (gold) | 12 |
 
-Pull odds:
+Pull odds. Source: a Reddit community sample of 5,000 packs, republished as
+"1 in N" odds by ThePriceDex.
 
 | Rarity | Odds per pack | Confidence |
 |---|---|---|
-| Holo rare | Unknown | Unknown |
-| Pokémon V | Unknown | Unknown |
-| Pokémon VMAX | Unknown | Unknown |
-| Full art | Unknown | Unknown |
-| Alternate art | Unknown | Unknown |
-| Rainbow rare | Unknown | Unknown |
-| Gold secret rare | Unknown | Unknown |
+| Rare | 62.5% (1 in 1.6) | Community sample (5,000 packs) |
+| Holo rare | 17.86% (1 in 5.6) | Community sample |
+| Pokémon V | 7.87% (1 in 12.7) | Community sample |
+| Pokémon VMAX | 4.22% (1 in 23.7) | Community sample |
+| Full art or alternate art (Ultra Rare) | 4.00% (1 in 25.0) | Community sample |
+| Rainbow rare | 1.04% (1 in 96.2) | Community sample |
+| Gold secret rare | 1.00% (1 in 100) | Community sample |
 | Alternate-art Blaziken VMAX (one card) | "about 1/450" | Community estimate, no sample size or source given (PokePatch) |
 
 ## Special subsets or mechanics
@@ -95,13 +96,13 @@ set, so the order follows the era's rarity system.
 | 1 | Common | Rarity | Every pack | No |
 | 2 | Uncommon | Rarity | Every pack | No |
 | 3 | Reverse holo | Variant | Every pack | No |
-| 4 | Rare | Rarity | — | Yes |
-| 5 | Rare Holo | Rarity | — | Yes |
-| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
-| 7 | Rare VMAX | Rarity | — | Yes |
-| 8 | Rare Ultra (full art and alternate art) | Rarity | — | Yes |
-| 9 | Rare Rainbow | Rarity | — | Yes |
-| 10 | Rare Secret | Rarity | — | Yes |
+| 4 | Rare | Rarity | 62.5% | Yes |
+| 5 | Rare Holo | Rarity | 17.86% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 7.87% | Yes |
+| 7 | Rare VMAX | Rarity | 4.22% | Yes |
+| 8 | Rare Ultra (full art and alternate art) | Rarity | 4.00% | Yes |
+| 9 | Rare Rainbow | Rarity | 1.04% | Yes |
+| 10 | Rare Secret | Rarity | 1.00% | Yes |
 
 ## Sources
 
@@ -113,9 +114,12 @@ set, so the order follows the era's rarity system.
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [PokePatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Pokémon Center Support — Booster pack contents](https://support.pokemoncenter.com/hc/en-us/articles/360028979571-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-Booster-Pack)
+- [ThePriceDex — Chilling Reign Pull Rates](https://www.thepricedex.com/set/swsh6/chilling-reign/pull-rates)
 
 ## Open topics
 
-- No pull-rate study found. The one card figure has no stated sample.
-- Pack order has no set-specific source.
-- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art and alternate art), Rare Rainbow and Rare Secret. The era's rarity system decides the place of each one in the rarity list.
+- The alternate-art Blaziken VMAX figure has no stated sample.
+- Pack order has no set-specific source. Which end faces the wrapper front
+  is Searched 2026-09-12: no source found (see the era file).
+- **Odds source is a community sample** (5,000 packs, from a Reddit post),
+  not an official or authentication study.

@@ -36,7 +36,7 @@ template and the evidence behind the pack order.
 
 - The rare is **not** one of the last three cards in either direction.
 - With the community pack trick, the rare is last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -54,17 +54,18 @@ Card counts per Bulbapedia rarity label (284 cards):
 | Rare Rainbow | 15 |
 | Rare Secret (gold) | 5 |
 
-Pull odds:
+Pull odds. Source: a community sample republished as "1 in N" odds by
+ThePriceDex; the sample size is not stated on that page.
 
 | Rarity or card | Odds per pack | Confidence |
 |---|---|---|
-| Holo rare | Unknown | Unknown |
-| Pokémon V | Unknown | Unknown |
-| Pokémon VMAX | Unknown | Unknown |
-| Full art | Unknown | Unknown |
-| Alternate art | Unknown | Unknown |
-| Rainbow rare | Unknown | Unknown |
-| Gold secret rare | Unknown | Unknown |
+| Rare | 62.5% (1 in 1.6) | Community estimate (ThePriceDex) |
+| Holo rare | 17.86% (1 in 5.6) | Community estimate |
+| Pokémon V | 9.01% (1 in 11.1) | Community estimate |
+| Pokémon VMAX | 3.77% (1 in 26.5) | Community estimate |
+| Full art or alternate art (Ultra Rare) | 3.85% (1 in 26.0) | Community estimate |
+| Rainbow rare | 1.09% (1 in 91.9) | Community estimate |
+| Gold secret rare | 0.83% (1 in 120) | Community estimate |
 | Alternate-art Mew VMAX (one card) | "1/2100" | Community estimate from Twitter posts, no sample size (PokePatch, November 2021) |
 
 - PullRates.com says its Fusion Strike rates come from "8,000+ booster pack
@@ -104,13 +105,13 @@ set, so the order follows the era's rarity system.
 | 1 | Common | Rarity | Every pack | No |
 | 2 | Uncommon | Rarity | Every pack | No |
 | 3 | Reverse holo | Variant | Every pack | No |
-| 4 | Rare | Rarity | — | Yes |
-| 5 | Rare Holo | Rarity | — | Yes |
-| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
-| 7 | Rare VMAX | Rarity | — | Yes |
-| 8 | Rare Ultra (full art and alternate art) | Rarity | — | Yes |
-| 9 | Rare Rainbow | Rarity | — | Yes |
-| 10 | Rare Secret | Rarity | — | Yes |
+| 4 | Rare | Rarity | 62.5% | Yes |
+| 5 | Rare Holo | Rarity | 17.86% | Yes |
+| 6 | Ultra-Rare Rare (Pokémon V) | Rarity | 9.01% | Yes |
+| 7 | Rare Ultra (full art and alternate art) | Rarity | 3.85% | Yes |
+| 8 | Rare VMAX | Rarity | 3.77% | Yes |
+| 9 | Rare Rainbow | Rarity | 1.09% | Yes |
+| 10 | Rare Secret | Rarity | 0.83% | Yes |
 
 ## Sources
 
@@ -123,10 +124,13 @@ set, so the order follows the era's rarity system.
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [PokePatch — Pokemon Card Tricks for Every Set](https://pokepatch.com/2022/07/26/how-to-open-pokemon-cards-card-trick-for-each-set/)
 - [Pokémon Center Support — Booster pack contents](https://support.pokemoncenter.com/hc/en-us/articles/360028979571-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-Booster-Pack)
+- [ThePriceDex — Fusion Strike Pull Rates](https://www.thepricedex.com/set/swsh8/fusion-strike/pull-rates)
 
 ## Open topics
 
-- No pull-rate study found. Find the TCGplayer study that PullRates.com
-  cites, if it exists.
-- Pack order has no set-specific source.
-- **Rarity list odds:** no source gives the odds per pack for Rare, Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art and alternate art), Rare Rainbow and Rare Secret. The era's rarity system decides the place of each one in the rarity list.
+- Searched 2026-09-12: no TCGplayer study found for this set. The odds now
+  used are a community estimate from ThePriceDex with no stated sample size.
+- Pack order has no set-specific source. Which end faces the wrapper front
+  is Searched 2026-09-12: no source found (see the era file).
+- **Odds source has no stated sample size,** unlike the sources for most
+  other sets in this era.

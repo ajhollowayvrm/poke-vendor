@@ -138,8 +138,9 @@ the most common entry to the rarest entry.
 - A 2017 press claim said that the code card color shows a rare pack
   and that boxes were "mapped". The article returned HTTP 403, so this
   file does not use it.
-- Pokecompare lists other Sun & Moon odds. The page returned HTTP 429,
-  so the figures were not checked.
-- Boxes per case: Unknown.
+- Pokecompare lists other Sun & Moon odds. Searched 2026-09-12: the page
+  returned HTTP 429 again, so the figures were not checked.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).
 - Per-card weighting inside the rare slot: Unknown except for the secret
   rare model above.

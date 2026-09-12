@@ -131,6 +131,9 @@ entries; no source gives them a separate rate.
 ## Open topics
 
 - Pack order: no source shows a real opened Cosmic Eclipse pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - **The odds data is weaker than for other main sets.** There is no
   Derium opening. The Danny Phantump data shows a large outlier for the
   "regular" Pokémon-GX ratio.
@@ -138,6 +141,8 @@ entries; no source gives them a separate rate.
   main number. The study's shared sheet has 23 secret rares and 9 full
   art Trainers. The two sources count different groups. The exact split
   was not checked.
-- No source gives separate odds for TAG TEAM Pokémon-GX.
+- Searched 2026-09-12: no source found for separate odds for TAG TEAM
+  Pokémon-GX.
 - The pack mix in the Three Pack Blister: Unknown.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

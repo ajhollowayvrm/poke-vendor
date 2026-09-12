@@ -51,6 +51,8 @@ Rare Rainbow, Rare Secret.
 | Ultra Rare (full art Pokémon-GX + full art Trainer) | 1 in 23.3 | Empirical study |
 | Rainbow Rare | 1 in 71.0 | Empirical study |
 | Secret Rare (gold) | 1 in 102.6 | Empirical study |
+| Reverse Rare Holo (reverse slot) | 1 in 8.9 | Estimate |
+| Reverse Rare (reverse slot) | 1 in 4.6 | Estimate |
 
 Odds source: ThePriceDex, which cites the Elite Fourum post for this
 set.
@@ -115,9 +117,15 @@ the most common entry to the rarest entry.
 ## Open topics
 
 - Pack order: no source shows a real opened Burning Shadows pack.
+  Searched 2026-09-12 at the era level: no card-by-card video or
+  photo source was found. See eras/sun-moon.md#orientation for the
+  resolved raw-order vs pack-trick-order question.
 - The study changed its box ratios in March 2024 (full art Pokémon-GX
   from 1.0 to 1.1, full art Trainer and secret rare sheet from 1.4 to
   1.3). Later edits can change the figures again.
-- ThePriceDex gives no reverse slot figures for this set.
+- **Resolved.** ThePriceDex now gives reverse slot figures for this
+  set (Reverse Rare Holo 1 in 8.9, Reverse Rare 1 in 4.6). Added to the
+  odds table above.
 - The pack mix in the Three Pack and Two Pack Blisters: Unknown.
-- Boxes per case: Unknown.
+- **Boxes per case: 6.** See the era file
+  [eras/sun-moon.md](eras/sun-moon.md#box-and-case-structure).

@@ -36,7 +36,7 @@ the Sun & Moon to Sword & Shield method. No other source was found.
 | 12 | Code card |
 
 - The rare is **not** one of the last three cards in either direction.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -53,17 +53,21 @@ Card counts per Bulbapedia rarity label (80 cards):
 | Rare Rainbow | 5 |
 | Rare Secret (gold) | 2 |
 
-Pull odds:
+Pull odds. Source: Elite Fourum community sample, 3,192 packs (coded from
+pack-opening videos, not official data).
 
 | Rarity | Odds per pack | Confidence |
 |---|---|---|
 | Holo rare | Unknown | Unknown |
-| Pokémon V | Unknown | Unknown |
-| Pokémon VMAX | Unknown | Unknown |
-| Full art | Unknown | Unknown |
-| Rainbow rare | Unknown | Unknown |
-| Gold secret rare | Unknown | Unknown |
+| Pokémon V | 15.73% (1 in 6.36) | Community sample (3,192 packs) |
+| Full art | 5.39% (1 in 18.56) | Community sample |
+| Pokémon VMAX | 3.55% (1 in 29.83) | Community sample |
+| Rainbow rare | 1.57% (1 in 63.84) | Community sample |
+| Gold secret rare | 1.32% (1 in 76.00) | Community sample |
+| Hit rate: any rarity above Holo Rare | 27.35% (1 in 3.66) | Community sample |
 
+- Elite Fourum: "pull rate for hits are significantly higher in [Champion's
+  Path] compared to other SW&SH sets (27% vs 22%)."
 - A TCGplayer article calls the pull rates "abysmal". It gives no figure and
   assumes Brilliant Stars rates for an estimate. Do not use it as data.
 
@@ -101,11 +105,11 @@ holds Rare Holo or higher.
 | 2 | Uncommon | Rarity | Every pack | No |
 | 3 | Reverse holo | Variant | Every pack | No |
 | 4 | Rare Holo | Rarity | — | Yes |
-| 5 | Ultra-Rare Rare (Pokémon V) | Rarity | — | Yes |
-| 6 | Rare VMAX | Rarity | — | Yes |
-| 7 | Rare Ultra (full art) | Rarity | — | Yes |
-| 8 | Rare Rainbow | Rarity | — | Yes |
-| 9 | Rare Secret | Rarity | — | Yes |
+| 5 | Ultra-Rare Rare (Pokémon V) | Rarity | 15.73% | Yes |
+| 6 | Rare Ultra (full art) | Rarity | 5.39% | Yes |
+| 7 | Rare VMAX | Rarity | 3.55% | Yes |
+| 8 | Rare Rainbow | Rarity | 1.57% | Yes |
+| 9 | Rare Secret | Rarity | 1.32% | Yes |
 
 ## Sources
 
@@ -116,10 +120,16 @@ holds Rare Holo or higher.
 - [TCGplayer — Forget Evolving Skies. Buy This Sword & Shield Set Instead.](https://infinite.tcgplayer.com/article/Forget-Evolving-Skies-Buy-This-Sword-Shield-Set-Instead/d5aa57aa-02c7-48eb-af89-6406d410b402/)
 - [NinePocket — The Pokémon Pack Trick](https://www.ninepocket.net/guides/pokemon-pack-trick)
 - [Pokémon Center Support — Booster pack contents](https://support.pokemoncenter.com/hc/en-us/articles/360028979571-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-Booster-Pack)
+- [Elite Fourum — Pull Rates in Sun & Moon - Sword & Shield Sets](https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220)
 
 ## Open topics
 
-- No pull-rate study found for any rarity.
+- Holo rare odds: Searched 2026-09-12: no source found.
 - Slot breakdown, Energy card, and code card: not confirmed for this set.
-- Pack order: one guide only. Which end faces the wrapper front is Unknown.
-- **Rarity list odds:** no source gives the odds per pack for Rare Holo, Ultra-Rare Rare (Pokémon V), Rare VMAX, Rare Ultra (full art), Rare Rainbow and Rare Secret. The era's rarity system decides the place of each one in the rarity list.
+  Searched 2026-09-12: no source found beyond the era template.
+- Pack order: one guide only. Which end faces the wrapper front is Searched
+  2026-09-12: no source found (see the era file).
+- **Rarity list odds:** no source gives the odds per pack for Rare Holo. The
+  era's rarity system decides its place in the rarity list.
+- **Odds source is a community sample,** not an official or authentication
+  study: Elite Fourum coded the outcomes from pack-opening videos.

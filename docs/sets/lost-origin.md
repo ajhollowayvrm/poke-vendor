@@ -39,7 +39,7 @@ Sword and Shield trick. NinePocket lists it under the same method.
 - The rare is **not** one of the last three cards in either direction.
 - A Trainer Gallery hit sits next to the rare slot, near the middle.
 - With the community pack trick, the rare is last.
-- Which end faces the wrapper front: Unknown.
+- Which end faces the wrapper front: Searched 2026-09-12: no source found (see the era file, which also resolves the code card's physical position).
 
 ## Rarities and hit odds
 
@@ -167,8 +167,12 @@ Pokémon; its three rarity groups are separate entries.
 
 - TCGplayer table and text disagree on rainbow rare (1 in 78 or 1 in 70) and
   gold rare (1 in 131 or 1 in 114). Use the table values until resolved.
-- Radiant slot: Unknown.
+- Radiant slot: Searched 2026-09-12: no clear source found. Crown Zenith, a
+  later set in this era, confirms its Radiant cards use the reverse holo
+  slot; this set's slot is still unconfirmed.
 - Holo rare: only a community sample.
-- Pack order: which end faces the wrapper front is Unknown.
+- Pack order: which end faces the wrapper front is Searched 2026-09-12: no
+  source found (see the era file). The code card's physical position is
+  resolved at the era level.
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides its place in the rarity list.
 - **Rarity list odds:** TCGplayer gives one combined figure (4.42%) for Pokémon VMAX or VSTAR. No source splits Rare VSTAR from Rare VMAX, so both entries use the combined figure.
