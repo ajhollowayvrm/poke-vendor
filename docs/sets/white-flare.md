@@ -136,6 +136,190 @@ sources.
 
 Collation: **unknown**. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv10.5w`), fetched 2026-09-12. The list has 173 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/086 | Sewaddle | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 002/086 | Swadloon | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 003/086 | Leavanny | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 004/086 | Cottonee | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 005/086 | Whimsicott ex | Pokémon (Grass) | Double rare | Holo |
+| 006/086 | Deerling | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 007/086 | Sawsbuck | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 008/086 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 009/086 | Accelgor | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 010/086 | Virizion | Pokémon (Grass) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 011/086 | Tepig | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Tinsel) |
+| 012/086 | Pignite | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 013/086 | Emboar | Pokémon (Fire) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 014/086 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 015/086 | Simisear | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 016/086 | Litwick | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 017/086 | Lampent | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 018/086 | Chandelure | Pokémon (Fire) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 019/086 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 020/086 | Reshiram ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo) |
+| 021/086 | Oshawott | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Tinsel) |
+| 022/086 | Dewott | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 023/086 | Samurott | Pokémon (Water) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 024/086 | Basculin | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 025/086 | Ducklett | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 026/086 | Swanna | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 027/086 | Vanillite | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 028/086 | Vanillish | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 029/086 | Vanilluxe | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 030/086 | Keldeo ex | Pokémon (Water) | Double rare | Holo |
+| 031/086 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 032/086 | Zebstrika | Pokémon (Lightning) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 033/086 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 034/086 | Galvantula | Pokémon (Lightning) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 035/086 | Stunfisk | Pokémon (Lightning) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 036/086 | Woobat | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 037/086 | Swoobat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 038/086 | Sigilyph | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 039/086 | Yamask | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 040/086 | Cofagrigus | Pokémon (Psychic) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 041/086 | Gothita | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 042/086 | Gothorita | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 043/086 | Gothitelle | Pokémon (Psychic) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 044/086 | Frillish | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 045/086 | Jellicent ex | Pokémon (Psychic) | Double rare | Holo |
+| 046/086 | Roggenrola | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 047/086 | Boldore | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 048/086 | Gigalith | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 049/086 | Sawk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 050/086 | Archen | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 051/086 | Archeops | Pokémon (Fighting) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Fossil museum) |
+| 052/086 | Mienfoo | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 053/086 | Mienshao | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 054/086 | Terrakion | Pokémon (Fighting) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 055/086 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 056/086 | Liepard | Pokémon (Darkness) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 057/086 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 058/086 | Scrafty | Pokémon (Darkness) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 059/086 | Trubbish | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 060/086 | Garbodor | Pokémon (Darkness) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 061/086 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 062/086 | Zoroark | Pokémon (Darkness) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Set logo) |
+| 063/086 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 064/086 | Mandibuzz | Pokémon (Darkness) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 065/086 | Deino | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 066/086 | Zweilous | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 067/086 | Hydreigon ex | Pokémon (Darkness) | Double rare | Holo |
+| 068/086 | Ferroseed | Pokémon (Metal) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 069/086 | Ferrothorn | Pokémon (Metal) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 070/086 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 071/086 | Druddigon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 072/086 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 073/086 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 074/086 | Lillipup | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 075/086 | Herdier | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 076/086 | Stoutland | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 077/086 | Bouffalant ex | Pokémon (Colorless) | Double rare | Holo |
+| 078/086 | Tornadus | Pokémon (Colorless) | Rare | Holo, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 079/086 | Antique Plume Fossil | Trainer (Item) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 080/086 | Brave Bangle | Trainer (Tool) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 081/086 | Cheren | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 082/086 | Energy Retrieval | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 083/086 | Harlequin | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 084/086 | Hilda | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 085/086 | Tool Scrapper | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 086/086 | Ignition Energy | Energy (Normal) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 087/086 | Sewaddle | Pokémon (Grass) | Illustration rare | Holo |
+| 088/086 | Swadloon | Pokémon (Grass) | Illustration rare | Holo |
+| 089/086 | Leavanny | Pokémon (Grass) | Illustration rare | Holo |
+| 090/086 | Cottonee | Pokémon (Grass) | Illustration rare | Holo |
+| 091/086 | Deerling | Pokémon (Grass) | Illustration rare | Holo |
+| 092/086 | Sawsbuck | Pokémon (Grass) | Illustration rare | Holo |
+| 093/086 | Shelmet | Pokémon (Grass) | Illustration rare | Holo |
+| 094/086 | Accelgor | Pokémon (Grass) | Illustration rare | Holo |
+| 095/086 | Virizion | Pokémon (Grass) | Illustration rare | Holo |
+| 096/086 | Tepig | Pokémon (Fire) | Illustration rare | Holo |
+| 097/086 | Pignite | Pokémon (Fire) | Illustration rare | Holo |
+| 098/086 | Emboar | Pokémon (Fire) | Illustration rare | Holo |
+| 099/086 | Pansear | Pokémon (Fire) | Illustration rare | Holo |
+| 100/086 | Simisear | Pokémon (Fire) | Illustration rare | Holo |
+| 101/086 | Litwick | Pokémon (Fire) | Illustration rare | Holo |
+| 102/086 | Lampent | Pokémon (Fire) | Illustration rare | Holo |
+| 103/086 | Chandelure | Pokémon (Fire) | Illustration rare | Holo |
+| 104/086 | Heatmor | Pokémon (Fire) | Illustration rare | Holo |
+| 105/086 | Oshawott | Pokémon (Water) | Illustration rare | Holo |
+| 106/086 | Dewott | Pokémon (Water) | Illustration rare | Holo |
+| 107/086 | Samurott | Pokémon (Water) | Illustration rare | Holo |
+| 108/086 | Basculin | Pokémon (Water) | Illustration rare | Holo |
+| 109/086 | Ducklett | Pokémon (Water) | Illustration rare | Holo |
+| 110/086 | Swanna | Pokémon (Water) | Illustration rare | Holo |
+| 111/086 | Vanillite | Pokémon (Water) | Illustration rare | Holo |
+| 112/086 | Vanillish | Pokémon (Water) | Illustration rare | Holo |
+| 113/086 | Vanilluxe | Pokémon (Water) | Illustration rare | Holo |
+| 114/086 | Blitzle | Pokémon (Lightning) | Illustration rare | Holo |
+| 115/086 | Zebstrika | Pokémon (Lightning) | Illustration rare | Holo |
+| 116/086 | Joltik | Pokémon (Lightning) | Illustration rare | Holo |
+| 117/086 | Galvantula | Pokémon (Lightning) | Illustration rare | Holo |
+| 118/086 | Stunfisk | Pokémon (Lightning) | Illustration rare | Holo |
+| 119/086 | Woobat | Pokémon (Psychic) | Illustration rare | Holo |
+| 120/086 | Swoobat | Pokémon (Psychic) | Illustration rare | Holo |
+| 121/086 | Sigilyph | Pokémon (Psychic) | Illustration rare | Holo |
+| 122/086 | Yamask | Pokémon (Psychic) | Illustration rare | Holo |
+| 123/086 | Cofagrigus | Pokémon (Psychic) | Illustration rare | Holo |
+| 124/086 | Gothita | Pokémon (Psychic) | Illustration rare | Holo |
+| 125/086 | Gothorita | Pokémon (Psychic) | Illustration rare | Holo |
+| 126/086 | Frillish | Pokémon (Psychic) | Illustration rare | Holo |
+| 127/086 | Roggenrola | Pokémon (Fighting) | Illustration rare | Holo |
+| 128/086 | Boldore | Pokémon (Fighting) | Illustration rare | Holo |
+| 129/086 | Gigalith | Pokémon (Fighting) | Illustration rare | Holo |
+| 130/086 | Sawk | Pokémon (Fighting) | Illustration rare | Holo |
+| 131/086 | Archen | Pokémon (Fighting) | Illustration rare | Holo |
+| 132/086 | Archeops | Pokémon (Fighting) | Illustration rare | Holo |
+| 133/086 | Mienfoo | Pokémon (Fighting) | Illustration rare | Holo |
+| 134/086 | Mienshao | Pokémon (Fighting) | Illustration rare | Holo |
+| 135/086 | Terrakion | Pokémon (Fighting) | Illustration rare | Holo |
+| 136/086 | Purrloin | Pokémon (Darkness) | Illustration rare | Holo |
+| 137/086 | Liepard | Pokémon (Darkness) | Illustration rare | Holo |
+| 138/086 | Scraggy | Pokémon (Darkness) | Illustration rare | Holo |
+| 139/086 | Scrafty | Pokémon (Darkness) | Illustration rare | Holo |
+| 140/086 | Trubbish | Pokémon (Darkness) | Illustration rare | Holo |
+| 141/086 | Garbodor | Pokémon (Darkness) | Illustration rare | Holo |
+| 142/086 | Zorua | Pokémon (Darkness) | Illustration rare | Holo |
+| 143/086 | Zoroark | Pokémon (Darkness) | Illustration rare | Holo |
+| 144/086 | Vullaby | Pokémon (Darkness) | Illustration rare | Holo |
+| 145/086 | Mandibuzz | Pokémon (Darkness) | Illustration rare | Holo |
+| 146/086 | Deino | Pokémon (Darkness) | Illustration rare | Holo |
+| 147/086 | Zweilous | Pokémon (Darkness) | Illustration rare | Holo |
+| 148/086 | Ferroseed | Pokémon (Metal) | Illustration rare | Holo |
+| 149/086 | Ferrothorn | Pokémon (Metal) | Illustration rare | Holo |
+| 150/086 | Durant | Pokémon (Metal) | Illustration rare | Holo |
+| 151/086 | Druddigon | Pokémon (Dragon) | Illustration rare | Holo |
+| 152/086 | Patrat | Pokémon (Colorless) | Illustration rare | Holo |
+| 153/086 | Watchog | Pokémon (Colorless) | Illustration rare | Holo |
+| 154/086 | Lillipup | Pokémon (Colorless) | Illustration rare | Holo |
+| 155/086 | Herdier | Pokémon (Colorless) | Illustration rare | Holo |
+| 156/086 | Stoutland | Pokémon (Colorless) | Illustration rare | Holo |
+| 157/086 | Whimsicott ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 158/086 | Reshiram ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 159/086 | Keldeo ex | Pokémon (Water) | Ultra Rare | Holo |
+| 160/086 | Jellicent ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 161/086 | Hydreigon ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 162/086 | Bouffalant ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 163/086 | Harlequin | Trainer (Supporter) | Ultra Rare | Holo |
+| 164/086 | Hilda | Trainer (Supporter) | Ultra Rare | Holo |
+| 165/086 | Whimsicott ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 166/086 | Reshiram ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 167/086 | Keldeo ex | Pokémon (Water) | Special illustration rare | Holo |
+| 168/086 | Jellicent ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 169/086 | Hydreigon ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 170/086 | Bouffalant ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 171/086 | Hilda | Trainer (Supporter) | Special illustration rare | Holo |
+| 172/086 | Victini | Pokémon (Fire) | Black White Rare | Holo |
+| 173/086 | Reshiram ex | Pokémon (Fire) | Black White Rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

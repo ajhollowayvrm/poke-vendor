@@ -150,6 +150,207 @@ Enhanced box adds one fixed promo. The promo is not a pack card.
 Boxes per case: **6** (era-wide retailer consensus, not official; see
 [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv09`), fetched 2026-09-12. The list has 190 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/159 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/159 | Metapod | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/159 | Butterfree | Pokémon (Grass) | Rare | Reverse holo, Holo |
+| 004/159 | Paras | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/159 | Parasect | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/159 | Petilil | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/159 | Lilligant | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 008/159 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 009/159 | Karrablast | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 010/159 | Foongus | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/159 | Amoonguss ex | Pokémon (Grass) | Double rare | Holo |
+| 012/159 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 013/159 | Accelgor | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 014/159 | Durant | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 015/159 | Virizion | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 016/159 | Sprigatito | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 017/159 | Floragato | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 018/159 | Meowscarada | Pokémon (Grass) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 019/159 | Nymble | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 020/159 | Magmar | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 021/159 | Magmortar | Pokémon (Fire) | Rare | Reverse holo, Holo |
+| 022/159 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 023/159 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 024/159 | Blaziken ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo), Holo (Jumbo) |
+| 025/159 | Torkoal | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 026/159 | N's Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 027/159 | N's Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program) |
+| 028/159 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 029/159 | Volcarona | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 030/159 | Reshiram ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 031/159 | Volcanion ex | Pokémon (Fire) | Double rare | Holo |
+| 032/159 | Articuno | Pokémon (Water) | Uncommon | Normal, Reverse holo, Holo (Snowflake) |
+| 033/159 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo |
+| 034/159 | Octillery | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 035/159 | Lotad | Pokémon (Water) | Common | Normal, Reverse holo |
+| 036/159 | Lombre | Pokémon (Water) | Common | Normal, Reverse holo |
+| 037/159 | Ludicolo | Pokémon (Water) | Rare | Reverse holo, Holo |
+| 038/159 | Wingull | Pokémon (Water) | Common | Normal, Reverse holo |
+| 039/159 | Pelipper | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 040/159 | Wailmer | Pokémon (Water) | Common | Normal, Reverse holo |
+| 041/159 | Wailord | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 042/159 | Regice | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 043/159 | Veluza ex | Pokémon (Water) | Double rare | Holo |
+| 044/159 | Alolan Geodude | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 045/159 | Alolan Graveler | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 046/159 | Alolan Golem | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 047/159 | Iono's Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo, Holo (Cosmos, Player rewards program) |
+| 048/159 | Iono's Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 049/159 | N's Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 050/159 | Togedemaru | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 051/159 | Tapu Koko ex | Pokémon (Lightning) | Double rare | Holo |
+| 052/159 | Iono's Tadbulb | Pokémon (Lightning) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 053/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Double rare | Holo, Holo (Player rewards program) |
+| 054/159 | Iono's Wattrel | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 055/159 | Iono's Kilowattrel | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 056/159 | Lillie's Clefairy ex | Pokémon (Psychic) | Double rare | Holo, Holo (Player rewards program) |
+| 057/159 | Alolan Marowak | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 058/159 | Mr. Mime | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 059/159 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 060/159 | Banette | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 061/159 | Beldum | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 062/159 | Metang | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 063/159 | Metagross | Pokémon (Psychic) | Rare | Reverse holo, Holo |
+| 064/159 | N's Sigilyph | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 065/159 | Oricorio | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 066/159 | Lillie's Cutiefly | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 067/159 | Lillie's Ribombee | Pokémon (Psychic) | Rare | Reverse holo, Holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 068/159 | Lillie's Comfey | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 069/159 | Mimikyu ex | Pokémon (Psychic) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 070/159 | Dhelmise | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 071/159 | Impidimp | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 072/159 | Morgrem | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 073/159 | Grimmsnarl | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 074/159 | Milcery | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 075/159 | Alcremie ex | Pokémon (Psychic) | Double rare | Holo, Holo (Jumbo) |
+| 076/159 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 077/159 | Swinub | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 078/159 | Piloswine | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 079/159 | Mamoswine ex | Pokémon (Fighting) | Double rare | Holo, Holo (Player rewards program) |
+| 080/159 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 081/159 | Pupitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 082/159 | Regirock | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 083/159 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 084/159 | Rockruff | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 085/159 | Lycanroc | Pokémon (Fighting) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 086/159 | Hop's Silicobra | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 087/159 | Hop's Sandaconda | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 088/159 | Toedscool | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 089/159 | Toedscruel | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 090/159 | Klawf | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 091/159 | Koffing | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 092/159 | Weezing | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 093/159 | Paldean Wooper | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 094/159 | Paldean Clodsire ex | Pokémon (Darkness) | Double rare | Holo |
+| 095/159 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Reverse holo, Holo (Cosmos), Normal (Player rewards program) |
+| 096/159 | N's Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 097/159 | N's Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 098/159 | N's Zoroark ex | Pokémon (Darkness) | Double rare | Holo, Holo (Master ball league), Holo (Player rewards program) |
+| 099/159 | Pangoro | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 100/159 | Lokix | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 101/159 | Bombirdier | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 102/159 | Escavalier | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 103/159 | N's Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 104/159 | N's Klang | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 105/159 | N's Klinklang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 106/159 | Galarian Stunfisk | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 107/159 | Magearna | Pokémon (Metal) | Rare | Reverse holo, Holo |
+| 108/159 | Hop's Corviknight | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 109/159 | Cufant | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 110/159 | Copperajah | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 111/159 | Hop's Zacian ex | Pokémon (Metal) | Double rare | Holo, Holo (Player rewards program) |
+| 112/159 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 113/159 | Shelgon | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 114/159 | Salamence ex | Pokémon (Dragon) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 115/159 | Druddigon | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 116/159 | N's Reshiram | Pokémon (Dragon) | Rare | Reverse holo, Holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 117/159 | Hop's Snorlax | Pokémon (Colorless) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Gamestop), Holo (Eb games), Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 118/159 | Sentret | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 119/159 | Furret | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 120/159 | Dunsparce | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 121/159 | Dudunsparce ex | Pokémon (Colorless) | Double rare | Holo |
+| 122/159 | Kecleon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 123/159 | Tropius | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 124/159 | Audino | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 125/159 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 126/159 | Cinccino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 127/159 | Noibat | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 128/159 | Noivern | Pokémon (Colorless) | Rare | Reverse holo, Holo, Normal |
+| 129/159 | Komala | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 130/159 | Drampa | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 131/159 | Skwovet | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 132/159 | Greedent | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 133/159 | Hop's Rookidee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 134/159 | Hop's Corvisquire | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 135/159 | Hop's Wooloo | Pokémon (Colorless) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 136/159 | Hop's Dubwool | Pokémon (Colorless) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Cosmos) |
+| 137/159 | Cramorant | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 138/159 | Hop's Cramorant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 139/159 | Lechonk | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 140/159 | Oinkologne | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 141/159 | Squawkabilly | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 142/159 | Billy & O'Nare | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 143/159 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 144/159 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 145/159 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 146/159 | Brock's Scouting | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 147/159 | Hop's Bag | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 148/159 | Hop's Choice Band | Trainer (Tool) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program) |
+| 149/159 | Iris's Fighting Spirit | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Gym challenge), Normal (Player rewards program), Normal (Regional championships), Normal (Regional championships, Staff), Normal (Ultra ball league) |
+| 150/159 | Levincia | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Normal (Gym challenge), Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 151/159 | Lillie's Pearl | Trainer (Tool) | Uncommon | Normal, Reverse holo, Holo (Cosmos), Holo (Cosmos, Player rewards program) |
+| 152/159 | N's Castle | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 153/159 | N's PP Up | Trainer (Item) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 154/159 | Postwick | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program) |
+| 155/159 | Professor's Research | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 156/159 | Redeemable Ticket | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 157/159 | Ruffian | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 158/159 | Super Potion | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 159/159 | Spiky Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 160/159 | Maractus | Pokémon (Grass) | Illustration rare | Holo |
+| 161/159 | Articuno | Pokémon (Water) | Illustration rare | Holo |
+| 162/159 | Wailord | Pokémon (Water) | Illustration rare | Holo |
+| 163/159 | Iono's Kilowattrel | Pokémon (Lightning) | Illustration rare | Holo |
+| 164/159 | Lillie's Ribombee | Pokémon (Psychic) | Illustration rare | Holo |
+| 165/159 | Swinub | Pokémon (Fighting) | Illustration rare | Holo |
+| 166/159 | Lycanroc | Pokémon (Fighting) | Illustration rare | Holo |
+| 167/159 | N's Reshiram | Pokémon (Dragon) | Illustration rare | Holo, Holo (Set logo) |
+| 168/159 | Furret | Pokémon (Colorless) | Illustration rare | Holo |
+| 169/159 | Noibat | Pokémon (Colorless) | Illustration rare | Holo |
+| 170/159 | Hop's Wooloo | Pokémon (Colorless) | Illustration rare | Holo |
+| 171/159 | Volcanion ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 172/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 173/159 | Lillie's Clefairy ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 174/159 | Mamoswine ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 175/159 | N's Zoroark ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 176/159 | Hop's Zacian ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 177/159 | Salamence ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 178/159 | Dudunsparce ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 179/159 | Brock's Scouting | Trainer (Supporter) | Ultra Rare | Holo |
+| 180/159 | Iris's Fighting Spirit | Trainer (Supporter) | Ultra Rare | Holo |
+| 181/159 | Ruffian | Trainer (Supporter) | Ultra Rare | Holo |
+| 182/159 | Volcanion ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 183/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 184/159 | Lillie's Clefairy ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 185/159 | N's Zoroark ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 186/159 | Hop's Zacian ex | Pokémon (Metal) | Special illustration rare | Holo |
+| 187/159 | Salamence ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 188/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
+| 189/159 | N's Zoroark ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
+| 190/159 | Spiky Energy | Energy (Special) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

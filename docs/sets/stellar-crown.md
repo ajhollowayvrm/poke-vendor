@@ -149,6 +149,192 @@ Collation: **unknown**. Model each pack as an independent draw.
 Boxes per case: **6** (era-wide retailer consensus, not official; see
 [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv07`), fetched 2026-09-12. The list has 175 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/142 | Venusaur ex | Pokémon (Grass) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 002/142 | Ledyba | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/142 | Ledian | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal |
+| 004/142 | Celebi | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 005/142 | Lileep | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/142 | Cradily | Pokémon (Grass) | Rare | Reverse holo, Holo |
+| 007/142 | Carnivine | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 008/142 | Mow Rotom | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 009/142 | Grubbin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 010/142 | Gossifleur | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/142 | Eldegoss | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 012/142 | Applin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 013/142 | Dipplin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 014/142 | Hydrapple ex | Pokémon (Grass) | Double rare | Holo |
+| 015/142 | Nymble | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 016/142 | Lokix | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 017/142 | Toedscool | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 018/142 | Toedscruel | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 019/142 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 020/142 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 021/142 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 022/142 | Reshiram | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Normal (Set logo) |
+| 023/142 | Salandit | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 024/142 | Salazzle | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 025/142 | Turtonator | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 026/142 | Scorbunny | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 027/142 | Raboot | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 028/142 | Cinderace ex | Pokémon (Fire) | Double rare | Holo |
+| 029/142 | Charcadet | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 030/142 | Blastoise ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo) |
+| 031/142 | Lapras | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 032/142 | Lapras ex | Pokémon (Water) | Double rare | Holo |
+| 033/142 | Marill | Pokémon (Water) | Common | Normal, Reverse holo |
+| 034/142 | Azumarill | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 035/142 | Finneon | Pokémon (Water) | Common | Normal, Reverse holo |
+| 036/142 | Lumineon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 037/142 | Tirtouga | Pokémon (Water) | Common | Normal, Reverse holo |
+| 038/142 | Carracosta | Pokémon (Water) | Rare | Reverse holo, Holo |
+| 039/142 | Froakie | Pokémon (Water) | Common | Normal, Reverse holo |
+| 040/142 | Frogadier | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 041/142 | Greninja ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 042/142 | Crabominable | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 043/142 | Chewtle | Pokémon (Water) | Common | Normal, Reverse holo |
+| 044/142 | Drednaw | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 045/142 | Veluza | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 046/142 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 047/142 | Electivire | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 048/142 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 049/142 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 050/142 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 051/142 | Galvantula ex | Pokémon (Lightning) | Double rare | Holo |
+| 052/142 | Charjabug | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 053/142 | Vikavolt | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 054/142 | Togedemaru | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 055/142 | Zeraora | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 056/142 | Pawmi | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 057/142 | Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 058/142 | Slowking | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 059/142 | Mewtwo | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 060/142 | Drifloon | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 061/142 | Drifblim | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 062/142 | Yamask | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 063/142 | Comfey | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 064/142 | Milcery | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 065/142 | Alcremie | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 066/142 | Fidough | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 067/142 | Dachsbun ex | Pokémon (Psychic) | Double rare | Holo |
+| 068/142 | Flittle | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 069/142 | Espathra | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 070/142 | Greavard | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 071/142 | Iron Boulder | Pokémon (Psychic) | Rare | Reverse holo, Holo |
+| 072/142 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 073/142 | Marowak | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 074/142 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 075/142 | Rhydon | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 076/142 | Rhyperior | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 077/142 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 078/142 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 079/142 | Medicham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 080/142 | Medicham ex | Pokémon (Fighting) | Double rare | Holo |
+| 081/142 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 082/142 | Lucario ex | Pokémon (Fighting) | Double rare | Holo |
+| 083/142 | Mienfoo | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 084/142 | Mienshao | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 085/142 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 086/142 | Diancie | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 087/142 | Crabrawler | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 088/142 | Falinks | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 089/142 | Garganacl ex | Pokémon (Fighting) | Double rare | Holo |
+| 090/142 | Koraidon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 091/142 | Gulpin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 092/142 | Swalot | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 093/142 | Pangoro | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 094/142 | Impidimp | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 095/142 | Morgrem | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 096/142 | Grimmsnarl | Pokémon (Darkness) | Rare | Reverse holo, Holo, Normal (League) |
+| 097/142 | Bombirdier | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 098/142 | Jirachi | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 099/142 | Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 100/142 | Klang | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 101/142 | Klinklang | Pokémon (Metal) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 102/142 | Meltan | Pokémon (Metal) | Common | Normal, Reverse holo, Normal (Set logo) |
+| 103/142 | Meltan | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 104/142 | Melmetal | Pokémon (Metal) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 105/142 | Melmetal ex | Pokémon (Metal) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 106/142 | Duraludon | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 107/142 | Archaludon | Pokémon (Metal) | Rare | Holo, Reverse holo, Holo (Gamestop), Holo (Eb games), Holo (Set logo), Holo (Cosmos), Normal (League) |
+| 108/142 | Varoom | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 109/142 | Revavroom | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 110/142 | Orthworm ex | Pokémon (Metal) | Double rare | Holo |
+| 111/142 | Raging Bolt | Pokémon (Dragon) | Rare | Holo, Reverse holo, Holo (Set logo) |
+| 112/142 | Tauros | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 113/142 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 114/142 | Hoothoot | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 115/142 | Noctowl | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 116/142 | Glameow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 117/142 | Purugly | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 118/142 | Fan Rotom | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 119/142 | Bouffalant | Pokémon (Colorless) | Rare | Holo, Reverse holo, Normal |
+| 120/142 | Tornadus | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 121/142 | Fletchling | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 122/142 | Fletchinder | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 123/142 | Talonflame | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 124/142 | Wooloo | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 125/142 | Dubwool | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 126/142 | Lechonk | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 127/142 | Cyclizar | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 128/142 | Terapagos ex | Pokémon (Colorless) | Double rare | Holo, Holo (Jumbo) |
+| 129/142 | Antique Cover Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 130/142 | Antique Root Fossil | Trainer (Item) | Common | Normal, Reverse holo |
+| 131/142 | Area Zero Underdepths | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 132/142 | Briar | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 133/142 | Crispin | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 134/142 | Deluxe Bomb | Trainer (Tool) | ACE SPEC Rare | Holo |
+| 135/142 | Glass Trumpet | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 136/142 | Grand Tree | Trainer (Stadium) | ACE SPEC Rare | Holo |
+| 137/142 | Gravity Gemstone | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 138/142 | Kofu | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 139/142 | Lacey | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 140/142 | Occa Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 141/142 | Payapa Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 142/142 | Sparkling Crystal | Trainer (Tool) | ACE SPEC Rare | Holo |
+| 143/142 | Bulbasaur | Pokémon (Grass) | Illustration rare | Holo |
+| 144/142 | Ledian | Pokémon (Grass) | Illustration rare | Holo |
+| 145/142 | Lileep | Pokémon (Grass) | Illustration rare | Holo |
+| 146/142 | Turtonator | Pokémon (Fire) | Illustration rare | Holo |
+| 147/142 | Raboot | Pokémon (Fire) | Illustration rare | Holo |
+| 148/142 | Squirtle | Pokémon (Water) | Illustration rare | Holo |
+| 149/142 | Crabominable | Pokémon (Water) | Illustration rare | Holo, Holo (Snowflake) |
+| 150/142 | Joltik | Pokémon (Lightning) | Illustration rare | Holo |
+| 151/142 | Zeraora | Pokémon (Lightning) | Illustration rare | Holo |
+| 152/142 | Milcery | Pokémon (Psychic) | Illustration rare | Holo |
+| 153/142 | Meditite | Pokémon (Fighting) | Illustration rare | Holo |
+| 154/142 | Gulpin | Pokémon (Darkness) | Illustration rare | Holo |
+| 155/142 | Archaludon | Pokémon (Metal) | Illustration rare | Holo |
+| 156/142 | Hydrapple ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 157/142 | Cinderace ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 158/142 | Lapras ex | Pokémon (Water) | Ultra Rare | Holo |
+| 159/142 | Galvantula ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 160/142 | Dachsbun ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 161/142 | Medicham ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 162/142 | Orthworm ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 163/142 | Briar | Trainer (Supporter) | Ultra Rare | Holo |
+| 164/142 | Crispin | Trainer (Supporter) | Ultra Rare | Holo |
+| 165/142 | Kofu | Trainer (Supporter) | Ultra Rare | Holo |
+| 166/142 | Lacey | Trainer (Supporter) | Ultra Rare | Holo |
+| 167/142 | Hydrapple ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 168/142 | Galvantula ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 169/142 | Dachsbun ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 170/142 | Terapagos ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 171/142 | Briar | Trainer (Supporter) | Special illustration rare | Holo |
+| 172/142 | Lacey | Trainer (Supporter) | Special illustration rare | Holo |
+| 173/142 | Terapagos ex | Pokémon (Colorless) | Hyper rare | Holo |
+| 174/142 | Area Zero Underdepths | Trainer (Stadium) | Hyper rare | Holo (Gold) |
+| 175/142 | Bravery Charm | Trainer (Tool) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

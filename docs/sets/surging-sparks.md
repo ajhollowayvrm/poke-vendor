@@ -187,6 +187,269 @@ box. Model each pack as an independent draw, as in
 Boxes per case: **6** (era-wide retailer consensus, not official; see
 [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), fetched 2026-09-12. The list has 252 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/191 | Exeggcute | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/191 | Exeggcute | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/191 | Exeggutor | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 004/191 | Durant ex | Pokémon (Grass) | Double rare | Holo |
+| 005/191 | Scatterbug | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/191 | Spewpa | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/191 | Vivillon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 008/191 | Morelull | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 009/191 | Shiinotic | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 010/191 | Dhelmise | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/191 | Zarude | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 012/191 | Capsakid | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 013/191 | Rellor | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 014/191 | Rabsca | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 015/191 | Wo-Chien | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 016/191 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 017/191 | Ninetales | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 018/191 | Paldean Tauros | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 019/191 | Ho-Oh | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 020/191 | Castform Sunny Form | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 021/191 | Victini | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 022/191 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 023/191 | Simisear | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 024/191 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 025/191 | Volcarona | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 026/191 | Oricorio | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 027/191 | Sizzlipede | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 028/191 | Centiskorch | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 029/191 | Fuecoco | Pokémon (Fire) | Common | Normal, Reverse holo, Normal (Horizons) |
+| 030/191 | Crocalor | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 031/191 | Skeledirge | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 032/191 | Charcadet | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 033/191 | Charcadet | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 034/191 | Armarouge | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 035/191 | Ceruledge | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 036/191 | Ceruledge ex | Pokémon (Fire) | Double rare | Holo, Holo (Player rewards program) |
+| 037/191 | Scovillain ex | Pokémon (Fire) | Double rare | Holo |
+| 038/191 | Gouging Fire | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal |
+| 039/191 | Paldean Tauros | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 040/191 | Mantine | Pokémon (Water) | Common | Normal, Reverse holo |
+| 041/191 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
+| 042/191 | Milotic ex | Pokémon (Water) | Double rare | Holo |
+| 043/191 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
+| 044/191 | Sealeo | Pokémon (Water) | Common | Normal, Reverse holo |
+| 045/191 | Walrein | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 046/191 | Shellos | Pokémon (Water) | Common | Normal, Reverse holo |
+| 047/191 | Cryogonal | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Snowflake) |
+| 048/191 | Black Kyurem ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 049/191 | Bruxish | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 050/191 | Quaxly | Pokémon (Water) | Common | Normal, Reverse holo, Normal (Horizons) |
+| 051/191 | Quaxwell | Pokémon (Water) | Common | Normal, Reverse holo |
+| 052/191 | Quaquaval | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 053/191 | Cetoddle | Pokémon (Water) | Common | Normal, Reverse holo |
+| 054/191 | Cetitan | Pokémon (Water) | Common | Normal, Reverse holo |
+| 055/191 | Iron Bundle | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 056/191 | Chien-Pao | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 057/191 | Pikachu ex | Pokémon (Lightning) | Double rare | Holo, Holo (Player rewards program) |
+| 058/191 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 059/191 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo, Normal (Gym challenge), Normal (Player rewards program) |
+| 060/191 | Magnezone | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 061/191 | Rotom | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 062/191 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 063/191 | Zebstrika | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 064/191 | Stunfisk | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 065/191 | Tapu Koko | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 066/191 | Wattrel | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 067/191 | Kilowattrel | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 068/191 | Kilowattrel ex | Pokémon (Lightning) | Double rare | Holo |
+| 069/191 | Miraidon | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 070/191 | Togepi | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 071/191 | Togetic | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 072/191 | Togekiss | Pokémon (Psychic) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 073/191 | Marill | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 074/191 | Azumarill | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 075/191 | Smoochum | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 076/191 | Latias ex | Pokémon (Psychic) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo), Holo (Player rewards program), Holo (Gym challenge) |
+| 077/191 | Latios | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 078/191 | Uxie | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 079/191 | Mesprit | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 080/191 | Azelf | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 081/191 | Sigilyph | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 082/191 | Yamask | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 083/191 | Cofagrigus | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 084/191 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 085/191 | Meowstic | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 086/191 | Sylveon ex | Pokémon (Psychic) | Double rare | Holo, Holo (Player rewards program) |
+| 087/191 | Dedenne | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 088/191 | Xerneas | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 089/191 | Oricorio | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 090/191 | Sandygast | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 091/191 | Palossand ex | Pokémon (Psychic) | Double rare | Holo |
+| 092/191 | Tapu Lele | Pokémon (Psychic) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 093/191 | Indeedee | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 094/191 | Flittle | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 095/191 | Espathra | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 096/191 | Flutter Mane | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 097/191 | Gimmighoul | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 098/191 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 099/191 | Primeape | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 100/191 | Annihilape | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 101/191 | Paldean Tauros | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 102/191 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 103/191 | Donphan | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 104/191 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 105/191 | Vibrava | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 106/191 | Flygon ex | Pokémon (Fighting) | Double rare | Holo |
+| 107/191 | Gastrodon | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos), Normal (Player rewards program) |
+| 108/191 | Drilbur | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 109/191 | Excadrill | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 110/191 | Landorus | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 111/191 | Passimian | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 112/191 | Clobbopus | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 113/191 | Grapploct | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 114/191 | Glimmet | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 115/191 | Glimmora | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 116/191 | Koraidon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 117/191 | Deino | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 118/191 | Zweilous | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 119/191 | Hydreigon ex | Pokémon (Darkness) | Double rare | Holo |
+| 120/191 | Shroodle | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 121/191 | Grafaiai | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 122/191 | Alolan Diglett | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 123/191 | Alolan Dugtrio | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 124/191 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 125/191 | Registeel | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 126/191 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 127/191 | Bronzong | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 128/191 | Klefki | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 129/191 | Duraludon | Pokémon (Metal) | Common | Normal, Reverse holo, Holo (Set logo) |
+| 130/191 | Archaludon ex | Pokémon (Metal) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo), Holo (Player rewards program) |
+| 131/191 | Gholdengo | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 132/191 | Iron Crown | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 133/191 | Alolan Exeggutor ex | Pokémon (Dragon) | Double rare | Holo |
+| 134/191 | Altaria | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 135/191 | Dialga | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 136/191 | Palkia | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 137/191 | Turtonator | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 138/191 | Applin | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 139/191 | Flapple | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 140/191 | Appletun | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 141/191 | Eternatus | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 142/191 | Tatsugiri ex | Pokémon (Dragon) | Double rare | Holo |
+| 143/191 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 144/191 | Snorlax | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 145/191 | Slakoth | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 146/191 | Vigoroth | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 147/191 | Slaking ex | Pokémon (Colorless) | Double rare | Holo |
+| 148/191 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 149/191 | Zangoose | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 150/191 | Kecleon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 151/191 | Bouffalant | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 152/191 | Rufflet | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 153/191 | Braviary | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 154/191 | Helioptile | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 155/191 | Heliolisk | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 156/191 | Oranguru | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 157/191 | Tandemaus | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 158/191 | Maushold | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 159/191 | Cyclizar ex | Pokémon (Colorless) | Double rare | Holo |
+| 160/191 | Flamigo ex | Pokémon (Colorless) | Double rare | Holo |
+| 161/191 | Terapagos | Pokémon (Colorless) | Rare | Holo, Reverse holo, Holo (Horizons) |
+| 162/191 | Amulet of Hope | Trainer (Tool) | ACE SPEC Rare | Holo |
+| 163/191 | Babiri Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 164/191 | Brilliant Blender | Trainer (Item) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 165/191 | Call Bell | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 166/191 | Chill Teaser Toy | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 167/191 | Clemont's Quick Wit | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 168/191 | Colbur Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 169/191 | Counter Gain | Trainer (Tool) | Uncommon | Normal, Reverse holo, Normal (Gym challenge), Normal (Player rewards program) |
+| 170/191 | Cyrano | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 171/191 | Deduction Kit | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 172/191 | Dragon Elixir | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 173/191 | Drasna | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 174/191 | Drayton | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 175/191 | Dusk Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 176/191 | Energy Search Pro | Trainer (Item) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 177/191 | Gravity Mountain | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 178/191 | Jasmine's Gaze | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 179/191 | Lisia's Appeal | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 180/191 | Lively Stadium | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 181/191 | Meddling Memo | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 182/191 | Megaton Blower | Trainer (Item) | ACE SPEC Rare | Holo |
+| 183/191 | Miracle Headset | Trainer (Item) | ACE SPEC Rare | Holo |
+| 184/191 | Passho Berry | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 185/191 | Precious Trolley | Trainer (Item) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 186/191 | Scramble Switch | Trainer (Item) | ACE SPEC Rare | Holo |
+| 187/191 | Surfer | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 188/191 | Technical Machine: Fluorite | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 189/191 | Tera Orb | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 190/191 | Tyme | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 191/191 | Enriching Energy | Energy (Special) | ACE SPEC Rare | Holo |
+| 192/191 | Exeggcute | Pokémon (Grass) | Illustration rare | Holo |
+| 193/191 | Vivillon | Pokémon (Grass) | Illustration rare | Holo |
+| 194/191 | Shiinotic | Pokémon (Grass) | Illustration rare | Holo |
+| 195/191 | Castform Sunny Form | Pokémon (Fire) | Illustration rare | Holo |
+| 196/191 | Larvesta | Pokémon (Fire) | Illustration rare | Holo |
+| 197/191 | Ceruledge | Pokémon (Fire) | Illustration rare | Holo |
+| 198/191 | Feebas | Pokémon (Water) | Illustration rare | Holo |
+| 199/191 | Spheal | Pokémon (Water) | Illustration rare | Holo |
+| 200/191 | Bruxish | Pokémon (Water) | Illustration rare | Holo |
+| 201/191 | Cetitan | Pokémon (Water) | Illustration rare | Holo |
+| 202/191 | Stunfisk | Pokémon (Lightning) | Illustration rare | Holo |
+| 203/191 | Latios | Pokémon (Psychic) | Illustration rare | Holo |
+| 204/191 | Mesprit | Pokémon (Psychic) | Illustration rare | Holo |
+| 205/191 | Phanpy | Pokémon (Fighting) | Illustration rare | Holo |
+| 206/191 | Vibrava | Pokémon (Fighting) | Illustration rare | Holo |
+| 207/191 | Clobbopus | Pokémon (Fighting) | Illustration rare | Holo |
+| 208/191 | Alolan Dugtrio | Pokémon (Metal) | Illustration rare | Holo |
+| 209/191 | Skarmory | Pokémon (Metal) | Illustration rare | Holo |
+| 210/191 | Flapple | Pokémon (Dragon) | Illustration rare | Holo |
+| 211/191 | Appletun | Pokémon (Dragon) | Illustration rare | Holo |
+| 212/191 | Slakoth | Pokémon (Colorless) | Illustration rare | Holo |
+| 213/191 | Kecleon | Pokémon (Colorless) | Illustration rare | Holo |
+| 214/191 | Braviary | Pokémon (Colorless) | Illustration rare | Holo |
+| 215/191 | Durant ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 216/191 | Scovillain ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 217/191 | Milotic ex | Pokémon (Water) | Ultra Rare | Holo |
+| 218/191 | Black Kyurem ex | Pokémon (Water) | Ultra Rare | Holo |
+| 219/191 | Pikachu ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 220/191 | Latias ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 221/191 | Palossand ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 222/191 | Flygon ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 223/191 | Hydreigon ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 224/191 | Archaludon ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 225/191 | Alolan Exeggutor ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 226/191 | Tatsugiri ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 227/191 | Slaking ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 228/191 | Cyclizar ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 229/191 | Clemont's Quick Wit | Trainer (Supporter) | Ultra Rare | Holo |
+| 230/191 | Cyrano | Trainer (Supporter) | Ultra Rare | Holo |
+| 231/191 | Drasna | Trainer (Supporter) | Ultra Rare | Holo |
+| 232/191 | Drayton | Trainer (Supporter) | Ultra Rare | Holo |
+| 233/191 | Jasmine's Gaze | Trainer (Supporter) | Ultra Rare | Holo |
+| 234/191 | Lisia's Appeal | Trainer (Supporter) | Ultra Rare | Holo |
+| 235/191 | Surfer | Trainer (Supporter) | Ultra Rare | Holo |
+| 236/191 | Durant ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 237/191 | Milotic ex | Pokémon (Water) | Special illustration rare | Holo |
+| 238/191 | Pikachu ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 239/191 | Latias ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 240/191 | Hydreigon ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 241/191 | Archaludon ex | Pokémon (Metal) | Special illustration rare | Holo |
+| 242/191 | Alolan Exeggutor ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 243/191 | Clemont's Quick Wit | Trainer (Supporter) | Special illustration rare | Holo |
+| 244/191 | Drayton | Trainer (Supporter) | Special illustration rare | Holo |
+| 245/191 | Jasmine's Gaze | Trainer (Supporter) | Special illustration rare | Holo |
+| 246/191 | Lisia's Appeal | Trainer (Supporter) | Special illustration rare | Holo |
+| 247/191 | Pikachu ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
+| 248/191 | Alolan Exeggutor ex | Pokémon (Dragon) | Hyper rare | Holo (Gold) |
+| 249/191 | Counter Gain | Trainer (Tool) | Hyper rare | Holo (Gold) |
+| 250/191 | Gravity Mountain | Trainer (Stadium) | Hyper rare | Holo (Gold) |
+| 251/191 | Night Stretcher | Trainer (Item) | Hyper rare | Holo (Gold) |
+| 252/191 | Jet Energy | Energy (Special) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

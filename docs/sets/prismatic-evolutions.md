@@ -212,6 +212,197 @@ Bolt and White Flare report for the same pattern (see
 Collation: **unknown**. No source describes fixed hits per Elite
 Trainer Box. Model each pack as an independent draw.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv08.5`), fetched 2026-09-12. The list has 180 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/131 | Exeggcute | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 002/131 | Exeggutor | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 003/131 | Pinsir | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 004/131 | Budew | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 005/131 | Leafeon | Pokémon (Grass) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 006/131 | Leafeon ex | Pokémon (Grass) | Double rare | Holo, Holo (Set logo) |
+| 007/131 | Cottonee | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 008/131 | Whimsicott | Pokémon (Grass) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 009/131 | Applin | Pokémon (Grass) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 010/131 | Dipplin | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 011/131 | Hydrapple ex | Pokémon (Grass) | Double rare | Holo |
+| 012/131 | Teal Mask Ogerpon ex | Pokémon (Grass) | Double rare | Holo |
+| 013/131 | Flareon | Pokémon (Fire) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 014/131 | Flareon ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo) |
+| 015/131 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 016/131 | Pyroar | Pokémon (Fire) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 017/131 | Hearthflame Mask Ogerpon ex | Pokémon (Fire) | Double rare | Holo |
+| 018/131 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 019/131 | Slowking | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 020/131 | Goldeen | Pokémon (Water) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 021/131 | Seaking | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 022/131 | Vaporeon | Pokémon (Water) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 023/131 | Vaporeon ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo) |
+| 024/131 | Suicune | Pokémon (Water) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 025/131 | Glaceon | Pokémon (Water) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 026/131 | Glaceon ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo), Holo (Snowflake) |
+| 027/131 | Wellspring Mask Ogerpon ex | Pokémon (Water) | Double rare | Holo |
+| 028/131 | Pikachu ex | Pokémon (Lightning) | Double rare | Holo |
+| 029/131 | Jolteon | Pokémon (Lightning) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 030/131 | Jolteon ex | Pokémon (Lightning) | Double rare | Holo, Holo (Set logo) |
+| 031/131 | Iron Hands ex | Pokémon (Lightning) | Double rare | Holo |
+| 032/131 | Iron Thorns ex | Pokémon (Lightning) | Double rare | Holo |
+| 033/131 | Espeon | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 034/131 | Espeon ex | Pokémon (Psychic) | Double rare | Holo, Holo (Set logo) |
+| 035/131 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 036/131 | Dusclops | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 037/131 | Dusknoir | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 038/131 | Spritzee | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 039/131 | Aromatisse | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 040/131 | Sylveon | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (30th pokeday), Holo (Cosmos) |
+| 041/131 | Sylveon ex | Pokémon (Psychic) | Double rare | Holo, Holo (Set logo) |
+| 042/131 | Scream Tail | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 043/131 | Flutter Mane | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 044/131 | Munkidori | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 045/131 | Fezandipiti | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 046/131 | Iron Boulder | Pokémon (Psychic) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 047/131 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 048/131 | Pupitar | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 049/131 | Groudon | Pokémon (Fighting) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 050/131 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 051/131 | Lucario ex | Pokémon (Fighting) | Double rare | Holo, Holo (Set logo), Holo (Jumbo) |
+| 052/131 | Hippopotas | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 053/131 | Hippowdon | Pokémon (Fighting) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 054/131 | Bloodmoon Ursaluna | Pokémon (Fighting) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 055/131 | Great Tusk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 056/131 | Sandy Shocks ex | Pokémon (Fighting) | Double rare | Holo |
+| 057/131 | Okidogi | Pokémon (Fighting) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 058/131 | Cornerstone Mask Ogerpon ex | Pokémon (Fighting) | Double rare | Holo |
+| 059/131 | Umbreon | Pokémon (Darkness) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Holo (Cosmos) |
+| 060/131 | Umbreon ex | Pokémon (Darkness) | Double rare | Holo, Holo (Set logo) |
+| 061/131 | Sneasel | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 062/131 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 063/131 | Houndoom | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 064/131 | Tyranitar ex | Pokémon (Darkness) | Double rare | Holo, Holo (Set logo) |
+| 065/131 | Roaring Moon | Pokémon (Darkness) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 066/131 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 067/131 | Bronzong | Pokémon (Metal) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 068/131 | Heatran | Pokémon (Metal) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 069/131 | Duraludon | Pokémon (Metal) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 070/131 | Archaludon | Pokémon (Metal) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 071/131 | Dreepy | Pokémon (Dragon) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 072/131 | Drakloak | Pokémon (Dragon) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 073/131 | Dragapult ex | Pokémon (Dragon) | Double rare | Holo |
+| 074/131 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern), Reverse holo (Cosmos) |
+| 075/131 | Eevee ex | Pokémon (Colorless) | Double rare | Holo, Holo (Set logo) |
+| 076/131 | Snorlax ex | Pokémon (Colorless) | Double rare | Holo, Holo (Set logo), Holo (Jumbo) |
+| 077/131 | Hoothoot | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 078/131 | Noctowl | Pokémon (Colorless) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 079/131 | Dunsparce | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 080/131 | Dudunsparce | Pokémon (Colorless) | Rare | Reverse holo, Holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 081/131 | Miltank | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 082/131 | Lugia ex | Pokémon (Colorless) | Double rare | Holo, Normal (Set logo), Normal (Set logo, Jumbo), Holo (Set logo), Holo (Set logo, Jumbo) |
+| 083/131 | Buneary | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 084/131 | Lopunny | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 085/131 | Fan Rotom | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 086/131 | Regigigas | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 087/131 | Shaymin | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 088/131 | Furfrou | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 089/131 | Hawlucha | Pokémon (Colorless) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 090/131 | Noibat | Pokémon (Colorless) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern), Reverse holo (Master Ball pattern) |
+| 091/131 | Noivern ex | Pokémon (Colorless) | Double rare | Holo |
+| 092/131 | Terapagos ex | Pokémon (Colorless) | Double rare | Holo |
+| 093/131 | Amarys | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 094/131 | Area Zero Underdepths | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 095/131 | Binding Mochi | Trainer (Tool) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 096/131 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 097/131 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 098/131 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 099/131 | Black Belt's Training | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 100/131 | Briar | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 101/131 | Buddy-Buddy Poffin | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 102/131 | Bug Catching Set | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 103/131 | Carmine | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 104/131 | Ciphermaniac's Codebreaking | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 105/131 | Crispin | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 106/131 | Earthen Vessel | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 107/131 | Explorer's Guidance | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 108/131 | Festival Grounds | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 109/131 | Friends in Paldea | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 110/131 | Glass Trumpet | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 111/131 | Haban Berry | Trainer (Tool) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 112/131 | Janine's Secret Art | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 113/131 | Kieran | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 114/131 | Lacey | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 115/131 | Larry's Skill | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 116/131 | Max Rod | Trainer (Item) | ACE SPEC Rare | Holo |
+| 117/131 | Maximum Belt | Trainer (Tool) | ACE SPEC Rare | Holo |
+| 118/131 | Ogre's Mask | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 119/131 | Prime Catcher | Trainer (Item) | ACE SPEC Rare | Holo |
+| 120/131 | Professor Sada's Vitality | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 121/131 | Professor Turo's Scenario | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 122/131 | Professor's Research | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 123/131 | Professor's Research | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 124/131 | Professor's Research | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 125/131 | Professor's Research | Trainer (Supporter) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 126/131 | Rescue Board | Trainer (Tool) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 127/131 | Roto-Stick | Trainer (Item) | Common | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 128/131 | Scoop Up Cyclone | Trainer (Item) | ACE SPEC Rare | Holo |
+| 129/131 | Sparkling Crystal | Trainer (Tool) | ACE SPEC Rare | Holo |
+| 130/131 | Techno Radar | Trainer (Item) | Uncommon | Normal, Reverse holo, Reverse holo (Poké Ball pattern) |
+| 131/131 | Treasure Tracker | Trainer (Item) | ACE SPEC Rare | Holo |
+| 132/131 | Amarys | Trainer (Supporter) | Ultra Rare | Holo |
+| 133/131 | Atticus | Trainer (Supporter) | Ultra Rare | Holo |
+| 134/131 | Atticus | Trainer (Supporter) | Ultra Rare | Holo |
+| 135/131 | Brassius | Trainer (Supporter) | Ultra Rare | Holo |
+| 136/131 | Eri | Trainer (Supporter) | Ultra Rare | Holo |
+| 137/131 | Friends in Paldea | Trainer (Supporter) | Ultra Rare | Holo |
+| 138/131 | Giacomo | Trainer (Supporter) | Ultra Rare | Holo |
+| 139/131 | Larry's Skill | Trainer (Supporter) | Ultra Rare | Holo |
+| 140/131 | Mela | Trainer (Supporter) | Ultra Rare | Holo |
+| 141/131 | Ortega | Trainer (Supporter) | Ultra Rare | Holo |
+| 142/131 | Raifort | Trainer (Supporter) | Ultra Rare | Holo |
+| 143/131 | Tyme | Trainer (Supporter) | Ultra Rare | Holo |
+| 144/131 | Leafeon ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 145/131 | Teal Mask Ogerpon ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 146/131 | Flareon ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 147/131 | Ceruledge ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 148/131 | Hearthflame Mask Ogerpon ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 149/131 | Vaporeon ex | Pokémon (Water) | Special illustration rare | Holo |
+| 150/131 | Glaceon ex | Pokémon (Water) | Special illustration rare | Holo |
+| 151/131 | Palafin ex | Pokémon (Water) | Special illustration rare | Holo |
+| 152/131 | Wellspring Mask Ogerpon ex | Pokémon (Water) | Special illustration rare | Holo |
+| 153/131 | Jolteon ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 154/131 | Iron Hands ex | Pokémon (Lightning) | Special illustration rare | Holo |
+| 155/131 | Espeon ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 156/131 | Sylveon ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 157/131 | Iron Valiant ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 158/131 | Iron Crown ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 159/131 | Sandy Shocks ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 160/131 | Cornerstone Mask Ogerpon ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 161/131 | Umbreon ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 162/131 | Roaring Moon ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 163/131 | Pecharunt ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 164/131 | Gholdengo ex | Pokémon (Metal) | Special illustration rare | Holo |
+| 165/131 | Dragapult ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 166/131 | Raging Bolt ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 167/131 | Eevee ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 168/131 | Bloodmoon Ursaluna ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 169/131 | Terapagos ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 170/131 | Amarys | Trainer (Supporter) | Special illustration rare | Holo |
+| 171/131 | Crispin | Trainer (Supporter) | Special illustration rare | Holo |
+| 172/131 | Drayton | Trainer (Supporter) | Special illustration rare | Holo |
+| 173/131 | Janine's Secret Art | Trainer (Supporter) | Special illustration rare | Holo |
+| 174/131 | Kieran | Trainer (Supporter) | Special illustration rare | Holo |
+| 175/131 | Lacey | Trainer (Supporter) | Special illustration rare | Holo |
+| 176/131 | Iron Leaves ex | Pokémon (Grass) | Hyper rare | Holo (Gold) |
+| 177/131 | Teal Mask Ogerpon ex | Pokémon (Grass) | Hyper rare | Holo (Gold) |
+| 178/131 | Walking Wake ex | Pokémon (Water) | Hyper rare | Holo (Gold) |
+| 179/131 | Pikachu ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
+| 180/131 | Terapagos ex | Pokémon (Colorless) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

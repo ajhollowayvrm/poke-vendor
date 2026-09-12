@@ -138,6 +138,243 @@ Collation:
   [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 - Hits per booster box: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), fetched 2026-09-12. The list has 226 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/167 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/167 | Tangrowth | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/167 | Pinsir | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 004/167 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/167 | Ariados | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 006/167 | Sunkern | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/167 | Sunflora | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 008/167 | Heracross | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 009/167 | Volbeat | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 010/167 | Illumise | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/167 | Leafeon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 012/167 | Phantump | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 013/167 | Trevenant | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 014/167 | Grookey | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 015/167 | Thwackey | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 016/167 | Rillaboom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 017/167 | Applin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 018/167 | Dipplin | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Holo (Cosmos) |
+| 019/167 | Iron Leaves | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 020/167 | Poltchageist | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 021/167 | Poltchageist | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 022/167 | Sinistcha | Pokémon (Grass) | Rare | Holo, Reverse holo, Holo (Galaxy), Holo (Cosmos) |
+| 023/167 | Sinistcha ex | Pokémon (Grass) | Double rare | Holo |
+| 024/167 | Teal Mask Ogerpon | Pokémon (Grass) | Rare | Holo, Reverse holo, Holo (Gamestop), Holo (Eb games), Holo (Cosmos, Set logo), Holo (Cosmos) |
+| 025/167 | Teal Mask Ogerpon ex | Pokémon (Grass) | Double rare | Holo |
+| 026/167 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 027/167 | Ninetales | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 028/167 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 029/167 | Magcargo ex | Pokémon (Fire) | Double rare | Holo |
+| 030/167 | Torkoal | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 031/167 | Chimchar | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 032/167 | Monferno | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 033/167 | Infernape | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal |
+| 034/167 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 035/167 | Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 036/167 | Litwick | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 037/167 | Lampent | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 038/167 | Chandelure | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 039/167 | Chi-Yu | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 040/167 | Hearthflame Mask Ogerpon ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
+| 041/167 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo |
+| 042/167 | Poliwhirl | Pokémon (Water) | Common | Normal, Reverse holo |
+| 043/167 | Poliwrath | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 044/167 | Goldeen | Pokémon (Water) | Common | Normal, Reverse holo |
+| 045/167 | Seaking | Pokémon (Water) | Common | Normal, Reverse holo |
+| 046/167 | Jynx | Pokémon (Water) | Common | Normal, Reverse holo |
+| 047/167 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
+| 048/167 | Crawdaunt | Pokémon (Water) | Common | Normal, Reverse holo |
+| 049/167 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
+| 050/167 | Milotic | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 051/167 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo |
+| 052/167 | Glalie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 053/167 | Froslass | Pokémon (Water) | Rare | Holo, Reverse holo, Normal |
+| 054/167 | Glaceon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 055/167 | Phione | Pokémon (Water) | Common | Normal, Reverse holo |
+| 056/167 | Froakie | Pokémon (Water) | Common | Normal, Reverse holo |
+| 057/167 | Frogadier | Pokémon (Water) | Common | Normal, Reverse holo |
+| 058/167 | Cramorant | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 059/167 | Finizen | Pokémon (Water) | Common | Normal, Reverse holo, Holo |
+| 060/167 | Palafin | Pokémon (Water) | Uncommon | Normal, Reverse holo, Holo |
+| 061/167 | Palafin ex | Pokémon (Water) | Double rare | Holo |
+| 062/167 | Iron Bundle | Pokémon (Water) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Snowflake) |
+| 063/167 | Walking Wake | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 064/167 | Wellspring Mask Ogerpon ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo) |
+| 065/167 | Zapdos | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 066/167 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 067/167 | Luxio | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 068/167 | Luxray ex | Pokémon (Lightning) | Double rare | Holo |
+| 069/167 | Emolga | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 070/167 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 071/167 | Heliolisk | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 072/167 | Morpeko | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 073/167 | Tadbulb | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 074/167 | Bellibolt | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 075/167 | Wattrel | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 076/167 | Kilowattrel | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 077/167 | Iron Thorns ex | Pokémon (Lightning) | Double rare | Holo |
+| 078/167 | Clefairy | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 079/167 | Clefable | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 080/167 | Abra | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 081/167 | Kadabra | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 082/167 | Alakazam | Pokémon (Psychic) | Rare | Holo, Reverse holo, Holo (Cosmos) |
+| 083/167 | Girafarig | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 084/167 | Farigiraf | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 085/167 | Chimecho | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 086/167 | Flabébé | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 087/167 | Floette | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 088/167 | Florges | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 089/167 | Swirlix | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 090/167 | Slurpuff | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 091/167 | Sandygast | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 092/167 | Palossand | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 093/167 | Enamorus | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 094/167 | Scream Tail ex | Pokémon (Psychic) | Double rare | Holo |
+| 095/167 | Munkidori | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal |
+| 096/167 | Fezandipiti | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal |
+| 097/167 | Sandshrew | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 098/167 | Sandslash | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 099/167 | Hisuian Growlithe | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 100/167 | Hisuian Arcanine | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos), Normal |
+| 101/167 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 102/167 | Probopass | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 103/167 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 104/167 | Gurdurr | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 105/167 | Conkeldurr | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 106/167 | Greninja ex | Pokémon (Fighting) | Double rare | Holo, Metal |
+| 107/167 | Hawlucha | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 108/167 | Glimmet | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 109/167 | Glimmora | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 110/167 | Ting-Lu | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 111/167 | Okidogi | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal |
+| 112/167 | Cornerstone Mask Ogerpon ex | Pokémon (Fighting) | Double rare | Holo |
+| 113/167 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 114/167 | Mightyena | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 115/167 | Venipede | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 116/167 | Whirlipede | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 117/167 | Scolipede | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 118/167 | Brute Bonnet | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 119/167 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 120/167 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 121/167 | Lairon | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 122/167 | Aggron | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 123/167 | Heatran | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 124/167 | Varoom | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 125/167 | Revavroom | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 126/167 | Applin | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 127/167 | Dipplin | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 128/167 | Dreepy | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 129/167 | Drakloak | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 130/167 | Dragapult ex | Pokémon (Dragon) | Double rare | Holo, Holo (Jumbo) |
+| 131/167 | Tatsugiri | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 132/167 | Farfetch'd | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 133/167 | Chansey | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 134/167 | Blissey ex | Pokémon (Colorless) | Double rare | Holo, Holo (Set logo) |
+| 135/167 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 136/167 | Snorlax | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 137/167 | Aipom | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 138/167 | Ambipom | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 139/167 | Ducklett | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 140/167 | Swanna | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 141/167 | Bloodmoon Ursaluna ex | Pokémon (Colorless) | Double rare | Holo |
+| 142/167 | Accompanying Flute | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 143/167 | Bug Catching Set | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 144/167 | Caretaker | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 145/167 | Carmine | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 146/167 | Community Center | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 147/167 | Cook | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 148/167 | Enhanced Hammer | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 149/167 | Festival Grounds | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 150/167 | Handheld Fan | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 151/167 | Hassel | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 152/167 | Hyper Aroma | Trainer (Item) | ACE SPEC Rare | Holo |
+| 153/167 | Jamming Tower | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 154/167 | Kieran | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 155/167 | Lana's Aid | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 156/167 | Love Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 157/167 | Lucian | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 158/167 | Lucky Helmet | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 159/167 | Ogre's Mask | Trainer (Item) | Uncommon | Normal, Reverse holo, Holo (Cosmos) |
+| 160/167 | Perrin | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 161/167 | Raifort | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 162/167 | Scoop Up Cyclone | Trainer (Item) | ACE SPEC Rare | Holo |
+| 163/167 | Secret Box | Trainer (Item) | ACE SPEC Rare | Holo |
+| 164/167 | Survival Brace | Trainer (Tool) | ACE SPEC Rare | Holo |
+| 165/167 | Unfair Stamp | Trainer (Item) | ACE SPEC Rare | Holo |
+| 166/167 | Boomerang Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 167/167 | Legacy Energy | Energy (Special) | ACE SPEC Rare | Holo |
+| 168/167 | Pinsir | Pokémon (Grass) | Illustration rare | Holo |
+| 169/167 | Sunflora | Pokémon (Grass) | Illustration rare | Holo |
+| 170/167 | Dipplin | Pokémon (Grass) | Illustration rare | Holo |
+| 171/167 | Poltchageist | Pokémon (Grass) | Illustration rare | Holo |
+| 172/167 | Torkoal | Pokémon (Fire) | Illustration rare | Holo |
+| 173/167 | Infernape | Pokémon (Fire) | Illustration rare | Holo |
+| 174/167 | Froslass | Pokémon (Water) | Illustration rare | Holo |
+| 175/167 | Phione | Pokémon (Water) | Illustration rare | Holo |
+| 176/167 | Cramorant | Pokémon (Water) | Illustration rare | Holo |
+| 177/167 | Heliolisk | Pokémon (Lightning) | Illustration rare | Holo |
+| 178/167 | Wattrel | Pokémon (Lightning) | Illustration rare | Holo |
+| 179/167 | Chimecho | Pokémon (Psychic) | Illustration rare | Holo |
+| 180/167 | Enamorus | Pokémon (Psychic) | Illustration rare | Holo |
+| 181/167 | Hisuian Growlithe | Pokémon (Fighting) | Illustration rare | Holo |
+| 182/167 | Probopass | Pokémon (Fighting) | Illustration rare | Holo |
+| 183/167 | Timburr | Pokémon (Fighting) | Illustration rare | Holo |
+| 184/167 | Lairon | Pokémon (Metal) | Illustration rare | Holo |
+| 185/167 | Applin | Pokémon (Dragon) | Illustration rare | Holo |
+| 186/167 | Tatsugiri | Pokémon (Dragon) | Illustration rare | Holo |
+| 187/167 | Chansey | Pokémon (Colorless) | Illustration rare | Holo |
+| 188/167 | Eevee | Pokémon (Colorless) | Illustration rare | Holo |
+| 189/167 | Sinistcha ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 190/167 | Teal Mask Ogerpon ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 191/167 | Magcargo ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 192/167 | Hearthflame Mask Ogerpon ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 193/167 | Palafin ex | Pokémon (Water) | Ultra Rare | Holo |
+| 194/167 | Wellspring Mask Ogerpon ex | Pokémon (Water) | Ultra Rare | Holo |
+| 195/167 | Luxray ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 196/167 | Iron Thorns ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 197/167 | Scream Tail ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 198/167 | Greninja ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 199/167 | Cornerstone Mask Ogerpon ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 200/167 | Dragapult ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 201/167 | Blissey ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 202/167 | Bloodmoon Ursaluna ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 203/167 | Caretaker | Trainer (Supporter) | Ultra Rare | Holo |
+| 204/167 | Carmine | Trainer (Supporter) | Ultra Rare | Holo |
+| 205/167 | Hassel | Trainer (Supporter) | Ultra Rare | Holo |
+| 206/167 | Kieran | Trainer (Supporter) | Ultra Rare | Holo |
+| 207/167 | Lana's Aid | Trainer (Supporter) | Ultra Rare | Holo |
+| 208/167 | Lucian | Trainer (Supporter) | Ultra Rare | Holo |
+| 209/167 | Perrin | Trainer (Supporter) | Ultra Rare | Holo |
+| 210/167 | Sinistcha ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 211/167 | Teal Mask Ogerpon ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 212/167 | Hearthflame Mask Ogerpon ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 213/167 | Wellspring Mask Ogerpon ex | Pokémon (Water) | Special illustration rare | Holo |
+| 214/167 | Greninja ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 215/167 | Cornerstone Mask Ogerpon ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 216/167 | Bloodmoon Ursaluna ex | Pokémon (Colorless) | Special illustration rare | Holo |
+| 217/167 | Carmine | Trainer (Supporter) | Special illustration rare | Holo |
+| 218/167 | Kieran | Trainer (Supporter) | Special illustration rare | Holo |
+| 219/167 | Lana's Aid | Trainer (Supporter) | Special illustration rare | Holo |
+| 220/167 | Perrin | Trainer (Supporter) | Special illustration rare | Holo |
+| 221/167 | Teal Mask Ogerpon ex | Pokémon (Grass) | Hyper rare | Holo (Gold) |
+| 222/167 | Bloodmoon Ursaluna ex | Pokémon (Colorless) | Hyper rare | Holo (Gold) |
+| 223/167 | Buddy-Buddy Poffin | Trainer (Item) | Hyper rare | Holo (Gold) |
+| 224/167 | Enhanced Hammer | Trainer (Item) | Hyper rare | Holo (Gold) |
+| 225/167 | Rescue Board | Trainer (Tool) | Hyper rare | Holo (Gold) |
+| 226/167 | Luminous Energy | Energy (Special) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

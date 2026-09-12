@@ -156,6 +156,235 @@ Collation:
   [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 - Hits per booster box: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), fetched 2026-09-12. The list has 218 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/162 | Scyther | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/162 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/162 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 004/162 | Nuzleaf | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/162 | Shiftry | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 006/162 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/162 | Breloom | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 008/162 | Roselia | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 009/162 | Roserade | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 010/162 | Turtwig | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 011/162 | Grotle | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 012/162 | Torterra ex | Pokémon (Grass) | Double rare | Holo, Holo (Set logo) |
+| 013/162 | Shaymin | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 014/162 | Cottonee | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 015/162 | Whimsicott | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 016/162 | Deerling | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 017/162 | Sawsbuck | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 018/162 | Grubbin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 019/162 | Dhelmise | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 020/162 | Bramblin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 021/162 | Brambleghast | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal (Player rewards program) |
+| 022/162 | Scovillain ex | Pokémon (Grass) | Double rare | Holo |
+| 023/162 | Rellor | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 024/162 | Rabsca | Pokémon (Grass) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 025/162 | Iron Leaves ex | Pokémon (Grass) | Double rare | Holo |
+| 026/162 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 027/162 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 028/162 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 029/162 | Magcargo | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 030/162 | Victini | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 031/162 | Heatmor | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 032/162 | Litten | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 033/162 | Torracat | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 034/162 | Incineroar ex | Pokémon (Fire) | Double rare | Holo, Holo (Jumbo), Holo (Set logo), Holo (Set logo, Jumbo) |
+| 035/162 | Turtonator | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 036/162 | Sizzlipede | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 037/162 | Centiskorch | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 038/162 | Gouging Fire ex | Pokémon (Fire) | Double rare | Holo |
+| 039/162 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo |
+| 040/162 | Croconaw | Pokémon (Water) | Common | Normal, Reverse holo |
+| 041/162 | Feraligatr | Pokémon (Water) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 042/162 | Carvanha | Pokémon (Water) | Common | Normal, Reverse holo |
+| 043/162 | Sharpedo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 044/162 | Keldeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 045/162 | Snom | Pokémon (Water) | Common | Normal, Reverse holo |
+| 046/162 | Frosmoth | Pokémon (Water) | Common | Normal, Reverse holo |
+| 047/162 | Wiglett | Pokémon (Water) | Common | Normal, Reverse holo |
+| 048/162 | Finizen | Pokémon (Water) | Common | Normal, Reverse holo |
+| 049/162 | Palafin | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 050/162 | Walking Wake ex | Pokémon (Water) | Double rare | Holo |
+| 051/162 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo, Holo (Cosmos), Holo (Pokemon day) |
+| 052/162 | Raichu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 053/162 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 054/162 | Electivire | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 055/162 | Charjabug | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 056/162 | Vikavolt | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 057/162 | Zeraora | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 058/162 | Yamper | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 059/162 | Boltund | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 060/162 | Wugtrio ex | Pokémon (Lightning) | Double rare | Holo |
+| 061/162 | Iron Hands | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 062/162 | Iron Thorns | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 063/162 | Mr. Mime | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 064/162 | Marill | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 065/162 | Azumarill | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 066/162 | Girafarig | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 067/162 | Latias | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 068/162 | Bronzor | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 069/162 | Bronzong | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 070/162 | Solosis | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 071/162 | Duosion | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 072/162 | Reuniclus | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 073/162 | Elgyem | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 074/162 | Beheeyem | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 075/162 | Cutiefly | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 076/162 | Ribombee | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 077/162 | Scream Tail | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Holo (Cosmos) |
+| 078/162 | Flutter Mane | Pokémon (Psychic) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 079/162 | Iron Valiant | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Holo (Cosmos) |
+| 080/162 | Iron Valiant | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 081/162 | Iron Crown ex | Pokémon (Psychic) | Double rare | Holo, Holo (Set logo, Jumbo), Holo (Jumbo) |
+| 082/162 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 083/162 | Medicham | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 084/162 | Relicanth | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal |
+| 085/162 | Drilbur | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 086/162 | Excadrill | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 087/162 | Golett | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 088/162 | Golurk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 089/162 | Rockruff | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 090/162 | Lycanroc | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 091/162 | Mudbray | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 092/162 | Mudsdale | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 093/162 | Rolycoly | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 094/162 | Carkol | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 095/162 | Coalossal | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 096/162 | Great Tusk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Normal (Set logo) |
+| 097/162 | Great Tusk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 098/162 | Sandy Shocks | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 099/162 | Iron Boulder ex | Pokémon (Fighting) | Double rare | Holo |
+| 100/162 | Ekans | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 101/162 | Arbok | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 102/162 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 103/162 | Haunter | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 104/162 | Gengar ex | Pokémon (Darkness) | Double rare | Holo |
+| 105/162 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 106/162 | Mightyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 107/162 | Sableye | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 108/162 | Farigiraf ex | Pokémon (Darkness) | Double rare | Holo |
+| 109/162 | Roaring Moon | Pokémon (Darkness) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 110/162 | Forretress | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 111/162 | Scizor ex | Pokémon (Metal) | Double rare | Holo |
+| 112/162 | Mawile | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 113/162 | Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 114/162 | Metang | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 115/162 | Metagross | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 116/162 | Meltan | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 117/162 | Melmetal | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 118/162 | Iron Treads | Pokémon (Metal) | Uncommon | Normal, Reverse holo, Normal (Set logo) |
+| 119/162 | Koraidon | Pokémon (Dragon) | Rare | Holo, Reverse holo, Reverse holo (Galaxy, Gamestop), Normal, Holo (Galaxy, Set logo), Normal (Eb games), Holo (Cosmos) |
+| 120/162 | Koraidon ex | Pokémon (Dragon) | Double rare | Holo |
+| 121/162 | Miraidon | Pokémon (Dragon) | Rare | Holo, Reverse holo, Holo (Galaxy), Normal, Holo (Cosmos) |
+| 122/162 | Miraidon ex | Pokémon (Dragon) | Double rare | Holo |
+| 123/162 | Raging Bolt ex | Pokémon (Dragon) | Double rare | Holo, Holo (Set logo, Jumbo), Holo (Jumbo) |
+| 124/162 | Lickitung | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 125/162 | Lickilicky | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 126/162 | Hoothoot | Pokémon (Colorless) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 127/162 | Noctowl | Pokémon (Colorless) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 128/162 | Dunsparce | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 129/162 | Dudunsparce | Pokémon (Colorless) | Rare | Holo, Reverse holo, Normal (League) |
+| 130/162 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 131/162 | Delcatty | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 132/162 | Chatot | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 133/162 | Pidove | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 134/162 | Tranquill | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 135/162 | Unfezant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 136/162 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 137/162 | Cinccino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 138/162 | Drampa | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 139/162 | Iron Jugulis | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 140/162 | Ancient Booster Energy Capsule | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 141/162 | Awakening Drum | Trainer (Item) | ACE SPEC Rare | Holo |
+| 142/162 | Bianca's Devotion | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Professor program) |
+| 143/162 | Boxed Order | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 144/162 | Buddy-Buddy Poffin | Trainer (Item) | Uncommon | Normal, Reverse holo, Normal (International championship europe), Normal (International championship europe, Champion), Normal (International championship europe, Staff), Normal (International championship europe, Top eight), Normal (International championship latin america), Normal (International championship latin america, Champion), Normal (International championship latin america, Staff), Normal (International championship latin america, Top eight), Normal (International championship north america), Normal (International championship north america, Champion), Normal (International championship north america, Staff), Normal (International championship north america, Top eight), Normal (Gym challenge), Normal (Master ball league), Normal (Master ball league, Judge), Reverse holo (Player reward), Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 145/162 | Ciphermaniac's Codebreaking | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 146/162 | Eri | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 147/162 | Explorer's Guidance | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Regional championships), Normal (Regional championships, Staff) |
+| 148/162 | Full Metal Lab | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program) |
+| 149/162 | Future Booster Energy Capsule | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 150/162 | Hand Trimmer | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 151/162 | Heavy Baton | Trainer (Tool) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 152/162 | Hero's Cape | Trainer (Tool) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 153/162 | Master Ball | Trainer (Item) | ACE SPEC Rare | Holo |
+| 154/162 | Maximum Belt | Trainer (Tool) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 155/162 | Morty's Conviction | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 156/162 | Perilous Jungle | Trainer (Stadium) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program) |
+| 157/162 | Prime Catcher | Trainer (Item) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 158/162 | Reboot Pod | Trainer (Item) | ACE SPEC Rare | Holo, Holo (Player rewards program) |
+| 159/162 | Rescue Board | Trainer (Tool) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 160/162 | Salvatore | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
+| 161/162 | Mist Energy | Energy (Special) | Uncommon | Normal, Reverse holo, Reverse holo (Cosmos, Player rewards program), Normal (Player rewards program) |
+| 162/162 | Neo Upper Energy | Energy (Special) | ACE SPEC Rare | Holo, Normal (Player rewards program) |
+| 163/162 | Shiftry | Pokémon (Grass) | Illustration rare | Holo |
+| 164/162 | Grotle | Pokémon (Grass) | Illustration rare | Holo |
+| 165/162 | Deerling | Pokémon (Grass) | Illustration rare | Holo |
+| 166/162 | Sawsbuck | Pokémon (Grass) | Illustration rare | Holo |
+| 167/162 | Litten | Pokémon (Fire) | Illustration rare | Holo |
+| 168/162 | Snom | Pokémon (Water) | Illustration rare | Holo |
+| 169/162 | Charjabug | Pokémon (Lightning) | Illustration rare | Holo |
+| 170/162 | Bronzor | Pokémon (Psychic) | Illustration rare | Holo |
+| 171/162 | Reuniclus | Pokémon (Psychic) | Illustration rare | Holo |
+| 172/162 | Cutiefly | Pokémon (Psychic) | Illustration rare | Holo |
+| 173/162 | Relicanth | Pokémon (Fighting) | Illustration rare | Holo |
+| 174/162 | Excadrill | Pokémon (Fighting) | Illustration rare | Holo |
+| 175/162 | Mudsdale | Pokémon (Fighting) | Illustration rare | Holo |
+| 176/162 | Arbok | Pokémon (Darkness) | Illustration rare | Holo |
+| 177/162 | Gastly | Pokémon (Darkness) | Illustration rare | Holo |
+| 178/162 | Metagross | Pokémon (Metal) | Illustration rare | Holo |
+| 179/162 | Meltan | Pokémon (Metal) | Illustration rare | Holo |
+| 180/162 | Lickitung | Pokémon (Colorless) | Illustration rare | Holo |
+| 181/162 | Chatot | Pokémon (Colorless) | Illustration rare | Holo |
+| 182/162 | Minccino | Pokémon (Colorless) | Illustration rare | Holo |
+| 183/162 | Cinccino | Pokémon (Colorless) | Illustration rare | Holo |
+| 184/162 | Drampa | Pokémon (Colorless) | Illustration rare | Holo |
+| 185/162 | Torterra ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 186/162 | Iron Leaves ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 187/162 | Incineroar ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 188/162 | Gouging Fire ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 189/162 | Walking Wake ex | Pokémon (Water) | Ultra Rare | Holo |
+| 190/162 | Wugtrio ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 191/162 | Iron Crown ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 192/162 | Iron Boulder ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 193/162 | Gengar ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 194/162 | Farigiraf ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 195/162 | Scizor ex | Pokémon (Metal) | Ultra Rare | Holo |
+| 196/162 | Raging Bolt ex | Pokémon (Dragon) | Ultra Rare | Holo |
+| 197/162 | Bianca's Devotion | Trainer (Supporter) | Ultra Rare | Holo |
+| 198/162 | Ciphermaniac's Codebreaking | Trainer (Supporter) | Ultra Rare | Holo |
+| 199/162 | Eri | Trainer (Supporter) | Ultra Rare | Holo |
+| 200/162 | Explorer's Guidance | Trainer (Supporter) | Ultra Rare | Holo |
+| 201/162 | Morty's Conviction | Trainer (Supporter) | Ultra Rare | Holo |
+| 202/162 | Salvatore | Trainer (Supporter) | Ultra Rare | Holo |
+| 203/162 | Iron Leaves ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 204/162 | Gouging Fire ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 205/162 | Walking Wake ex | Pokémon (Water) | Special illustration rare | Holo |
+| 206/162 | Iron Crown ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 207/162 | Iron Boulder ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 208/162 | Raging Bolt ex | Pokémon (Dragon) | Special illustration rare | Holo |
+| 209/162 | Bianca's Devotion | Trainer (Supporter) | Special illustration rare | Holo |
+| 210/162 | Eri | Trainer (Supporter) | Special illustration rare | Holo |
+| 211/162 | Morty's Conviction | Trainer (Supporter) | Special illustration rare | Holo |
+| 212/162 | Salvatore | Trainer (Supporter) | Special illustration rare | Holo |
+| 213/162 | Iron Leaves ex | Pokémon (Grass) | Hyper rare | Holo (Gold) |
+| 214/162 | Gouging Fire ex | Pokémon (Fire) | Hyper rare | Holo (Gold) |
+| 215/162 | Walking Wake ex | Pokémon (Water) | Hyper rare | Holo (Gold) |
+| 216/162 | Iron Crown ex | Pokémon (Psychic) | Hyper rare | Holo (Gold) |
+| 217/162 | Iron Boulder ex | Pokémon (Fighting) | Hyper rare | Holo (Gold) |
+| 218/162 | Raging Bolt ex | Pokémon (Dragon) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

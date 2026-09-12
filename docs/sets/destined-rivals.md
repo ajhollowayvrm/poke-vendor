@@ -175,6 +175,261 @@ each pack as an independent draw.
 Boxes per case: **6** (era-wide retailer consensus, not official; see
 [eras/scarlet-violet.md](eras/scarlet-violet.md#sealed-product-template)).
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), fetched 2026-09-12. The list has 244 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/182 | Ethan's Pinsir | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 002/182 | Yanma | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 003/182 | Yanmega ex | Pokémon (Grass) | Double rare | Holo |
+| 004/182 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/182 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 006/182 | Breloom | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 007/182 | Cynthia's Roselia | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 008/182 | Cynthia's Roserade | Pokémon (Grass) | Rare | Reverse holo, Holo |
+| 009/182 | Mow Rotom | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 010/182 | Shaymin | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 011/182 | Dwebble | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 012/182 | Crustle | Pokémon (Grass) | Rare | Reverse holo, Holo |
+| 013/182 | Fomantis | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 014/182 | Lurantis | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 015/182 | Team Rocket's Blipbug | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 016/182 | Applin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 017/182 | Dipplin | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 018/182 | Hydrapple | Pokémon (Grass) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 019/182 | Team Rocket's Tarountula | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 020/182 | Team Rocket's Spidops | Pokémon (Grass) | Rare | Reverse holo, Holo, Normal |
+| 021/182 | Smoliv | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 022/182 | Dolliv | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 023/182 | Arboliva ex | Pokémon (Grass) | Double rare | Holo |
+| 024/182 | Rellor | Pokémon (Grass) | Common | Normal, Reverse holo, Holo (Cosmos) |
+| 025/182 | Rabsca ex | Pokémon (Grass) | Double rare | Holo |
+| 026/182 | Teal Mask Ogerpon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 027/182 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 028/182 | Arcanine | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 029/182 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 030/182 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 031/182 | Team Rocket's Moltres ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo) |
+| 032/182 | Ethan's Cyndaquil | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 033/182 | Ethan's Quilava | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 034/182 | Ethan's Typhlosion | Pokémon (Fire) | Rare | Reverse holo, Holo, Holo (Set logo), Normal, Holo (Staff) |
+| 035/182 | Ethan's Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 036/182 | Ethan's Magcargo | Pokémon (Fire) | Rare | Reverse holo, Holo |
+| 037/182 | Team Rocket's Houndour | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 038/182 | Team Rocket's Houndoom | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 039/182 | Ethan's Ho-Oh ex | Pokémon (Fire) | Double rare | Holo |
+| 040/182 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 041/182 | Combusken | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 042/182 | Blaziken | Pokémon (Fire) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 043/182 | Heat Rotom | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 044/182 | Hearthflame Mask Ogerpon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 045/182 | Misty's Psyduck | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 046/182 | Misty's Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
+| 047/182 | Misty's Starmie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 048/182 | Misty's Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
+| 049/182 | Misty's Gyarados | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Set logo), Normal, Holo (Set logo, Staff) |
+| 050/182 | Misty's Lapras | Pokémon (Water) | Common | Normal, Reverse holo |
+| 051/182 | Team Rocket's Articuno | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Cosmos), Normal |
+| 052/182 | Cynthia's Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
+| 053/182 | Cynthia's Milotic | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 054/182 | Clamperl | Pokémon (Water) | Common | Normal, Reverse holo |
+| 055/182 | Huntail | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 056/182 | Gorebyss | Pokémon (Water) | Rare | Reverse holo, Holo |
+| 057/182 | Buizel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 058/182 | Floatzel | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 059/182 | Snover | Pokémon (Water) | Common | Normal, Reverse holo |
+| 060/182 | Abomasnow | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 061/182 | Wash Rotom | Pokémon (Water) | Common | Normal, Reverse holo |
+| 062/182 | Arrokuda | Pokémon (Water) | Common | Normal, Reverse holo |
+| 063/182 | Barraskewda | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 064/182 | Cetoddle | Pokémon (Water) | Common | Normal, Reverse holo |
+| 065/182 | Cetitan ex | Pokémon (Water) | Double rare | Holo |
+| 066/182 | Dondozo ex | Pokémon (Water) | Double rare | Holo |
+| 067/182 | Wellspring Mask Ogerpon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 068/182 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 069/182 | Electivire ex | Pokémon (Lightning) | Double rare | Holo |
+| 070/182 | Team Rocket's Zapdos | Pokémon (Lightning) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Cosmos, Eb games), Holo (Cosmos) |
+| 071/182 | Ethan's Pichu | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 072/182 | Team Rocket's Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 073/182 | Team Rocket's Flaaffy | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 074/182 | Team Rocket's Ampharos | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 075/182 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 076/182 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 077/182 | Rotom | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 078/182 | Zeraora | Pokémon (Lightning) | Rare | Reverse holo, Holo |
+| 079/182 | Team Rocket's Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 080/182 | Team Rocket's Hypno | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 081/182 | Team Rocket's Mewtwo ex | Pokémon (Psychic) | Double rare | Holo |
+| 082/182 | Team Rocket's Wobbuffet | Pokémon (Psychic) | Rare | Reverse holo, Holo |
+| 083/182 | Steven's Baltoy | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 084/182 | Steven's Claydol | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 085/182 | Team Rocket's Chingling | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 086/182 | Steven's Carbink | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 087/182 | Team Rocket's Mimikyu | Pokémon (Psychic) | Uncommon | Normal, Reverse holo, Holo (Set logo), Holo (Set logo, Staff) |
+| 088/182 | Team Rocket's Dottler | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 089/182 | Team Rocket's Orbeetle | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 090/182 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 091/182 | Primeape | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 092/182 | Annihilape | Pokémon (Fighting) | Rare | Reverse holo, Holo |
+| 093/182 | Ethan's Sudowoodo | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 094/182 | Team Rocket's Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 095/182 | Team Rocket's Pupitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 096/182 | Team Rocket's Tyranitar | Pokémon (Fighting) | Rare | Reverse holo, Holo, Holo (Set logo), Normal, Holo (Set logo, Staff), Holo (Cosmos) |
+| 097/182 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 098/182 | Probopass | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 099/182 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 100/182 | Medicham | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 101/182 | Regirock ex | Pokémon (Fighting) | Double rare | Holo |
+| 102/182 | Cynthia's Gible | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 103/182 | Cynthia's Gabite | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 104/182 | Cynthia's Garchomp ex | Pokémon (Fighting) | Double rare | Holo |
+| 105/182 | Hippopotas | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 106/182 | Hippowdon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 107/182 | Mudbray | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 108/182 | Mudsdale | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 109/182 | Arven's Toedscool | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 110/182 | Arven's Toedscruel | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 111/182 | Cornerstone Mask Ogerpon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 112/182 | Team Rocket's Ekans | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 113/182 | Team Rocket's Arbok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 114/182 | Team Rocket's Nidoran♀ | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 115/182 | Team Rocket's Nidorina | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 116/182 | Team Rocket's Nidoqueen | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 117/182 | Team Rocket's Nidoran♂ | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 118/182 | Team Rocket's Nidorino | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 119/182 | Team Rocket's Nidoking ex | Pokémon (Darkness) | Double rare | Holo |
+| 120/182 | Team Rocket's Zubat | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 121/182 | Team Rocket's Golbat | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 122/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Double rare | Holo |
+| 123/182 | Team Rocket's Grimer | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 124/182 | Team Rocket's Muk | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 125/182 | Team Rocket's Koffing | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 126/182 | Team Rocket's Weezing | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 127/182 | Team Rocket's Murkrow | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 128/182 | Team Rocket's Sneasel | Pokémon (Darkness) | Rare | Reverse holo, Holo |
+| 129/182 | Cynthia's Spiritomb | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 130/182 | Marnie's Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 131/182 | Marnie's Liepard | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 132/182 | Marnie's Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 133/182 | Marnie's Scrafty | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 134/182 | Marnie's Impidimp | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 135/182 | Marnie's Morgrem | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 136/182 | Marnie's Grimmsnarl ex | Pokémon (Darkness) | Double rare | Holo |
+| 137/182 | Marnie's Morpeko | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 138/182 | Arven's Maschiff | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 139/182 | Arven's Mabosstiff ex | Pokémon (Darkness) | Double rare | Holo |
+| 140/182 | Forretress | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 141/182 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 142/182 | Steven's Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 143/182 | Steven's Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 144/182 | Steven's Metang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 145/182 | Steven's Metagross ex | Pokémon (Metal) | Double rare | Holo |
+| 146/182 | Zamazenta | Pokémon (Metal) | Rare | Reverse holo, Holo |
+| 147/182 | Team Rocket's Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 148/182 | Team Rocket's Raticate | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 149/182 | Team Rocket's Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 150/182 | Team Rocket's Persian ex | Pokémon (Colorless) | Double rare | Holo |
+| 151/182 | Kangaskhan | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 152/182 | Tauros | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 153/182 | Team Rocket's Porygon | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 154/182 | Team Rocket's Porygon2 | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 155/182 | Team Rocket's Porygon-Z | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 156/182 | Taillow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 157/182 | Swellow | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 158/182 | Arven's Skwovet | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 159/182 | Arven's Greedent | Pokémon (Colorless) | Rare | Reverse holo, Holo, Holo (Cosmos) |
+| 160/182 | Squawkabilly | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 161/182 | Arven's Sandwich | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 162/182 | Cynthia's Power Weight | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 163/182 | Emcee's Hype | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 164/182 | Energy Recycler | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 165/182 | Ethan's Adventure | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 166/182 | Granite Cave | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 167/182 | Judge | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 168/182 | Sacred Ash | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 169/182 | Spikemuth Gym | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 170/182 | Team Rocket's Archer | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 171/182 | Team Rocket's Ariana | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 172/182 | Team Rocket's Bother-Bot | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 173/182 | Team Rocket's Factory | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 174/182 | Team Rocket's Giovanni | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 175/182 | Team Rocket's Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 176/182 | Team Rocket's Petrel | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 177/182 | Team Rocket's Proton | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 178/182 | Team Rocket's Transceiver | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 179/182 | Team Rocket's Venture Bomb | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 180/182 | Team Rocket's Watchtower | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 181/182 | TM Machine | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 182/182 | Team Rocket's Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+| 183/182 | Yanma | Pokémon (Grass) | Illustration rare | Holo |
+| 184/182 | Cynthia's Roserade | Pokémon (Grass) | Illustration rare | Holo |
+| 185/182 | Shaymin | Pokémon (Grass) | Illustration rare | Holo |
+| 186/182 | Crustle | Pokémon (Grass) | Illustration rare | Holo |
+| 187/182 | Team Rocket's Spidops | Pokémon (Grass) | Illustration rare | Holo |
+| 188/182 | Hydrapple | Pokémon (Grass) | Illustration rare | Holo |
+| 189/182 | Rapidash | Pokémon (Fire) | Illustration rare | Holo |
+| 190/182 | Ethan's Typhlosion | Pokémon (Fire) | Illustration rare | Holo |
+| 191/182 | Team Rocket's Houndoom | Pokémon (Fire) | Illustration rare | Holo |
+| 192/182 | Blaziken | Pokémon (Fire) | Illustration rare | Holo |
+| 193/182 | Misty's Psyduck | Pokémon (Water) | Illustration rare | Holo |
+| 194/182 | Misty's Lapras | Pokémon (Water) | Illustration rare | Holo |
+| 195/182 | Clamperl | Pokémon (Water) | Illustration rare | Holo |
+| 196/182 | Electrike | Pokémon (Lightning) | Illustration rare | Holo |
+| 197/182 | Rotom | Pokémon (Lightning) | Illustration rare | Holo |
+| 198/182 | Team Rocket's Orbeetle | Pokémon (Psychic) | Illustration rare | Holo |
+| 199/182 | Team Rocket's Weezing | Pokémon (Darkness) | Illustration rare | Holo |
+| 200/182 | Team Rocket's Murkrow | Pokémon (Darkness) | Illustration rare | Holo |
+| 201/182 | Zamazenta | Pokémon (Metal) | Illustration rare | Holo |
+| 202/182 | Team Rocket's Raticate | Pokémon (Colorless) | Illustration rare | Holo |
+| 203/182 | Team Rocket's Meowth | Pokémon (Colorless) | Illustration rare | Holo |
+| 204/182 | Kangaskhan | Pokémon (Colorless) | Illustration rare | Holo |
+| 205/182 | Arven's Greedent | Pokémon (Colorless) | Illustration rare | Holo |
+| 206/182 | Yanmega ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 207/182 | Arboliva ex | Pokémon (Grass) | Ultra Rare | Holo |
+| 208/182 | Team Rocket's Moltres ex | Pokémon (Fire) | Ultra Rare | Holo, Holo (Set logo) |
+| 209/182 | Ethan's Ho-Oh ex | Pokémon (Fire) | Ultra Rare | Holo |
+| 210/182 | Cetitan ex | Pokémon (Water) | Ultra Rare | Holo |
+| 211/182 | Dondozo ex | Pokémon (Water) | Ultra Rare | Holo |
+| 212/182 | Electivire ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 213/182 | Team Rocket's Mewtwo ex | Pokémon (Psychic) | Ultra Rare | Holo |
+| 214/182 | Regirock ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 215/182 | Cynthia's Garchomp ex | Pokémon (Fighting) | Ultra Rare | Holo |
+| 216/182 | Team Rocket's Nidoking ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 217/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 218/182 | Arven's Mabosstiff ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 219/182 | Team Rocket's Persian ex | Pokémon (Colorless) | Ultra Rare | Holo |
+| 220/182 | Emcee's Hype | Trainer (Supporter) | Ultra Rare | Holo |
+| 221/182 | Ethan's Adventure | Trainer (Supporter) | Ultra Rare | Holo |
+| 222/182 | Judge | Trainer (Supporter) | Ultra Rare | Holo |
+| 223/182 | Team Rocket's Archer | Trainer (Supporter) | Ultra Rare | Holo |
+| 224/182 | Team Rocket's Ariana | Trainer (Supporter) | Ultra Rare | Holo |
+| 225/182 | Team Rocket's Giovanni | Trainer (Supporter) | Ultra Rare | Holo |
+| 226/182 | Team Rocket's Petrel | Trainer (Supporter) | Ultra Rare | Holo |
+| 227/182 | Team Rocket's Proton | Trainer (Supporter) | Ultra Rare | Holo |
+| 228/182 | Yanmega ex | Pokémon (Grass) | Special illustration rare | Holo |
+| 229/182 | Team Rocket's Moltres ex | Pokémon (Fire) | Special illustration rare | Holo, Holo (Set logo) |
+| 230/182 | Ethan's Ho-Oh ex | Pokémon (Fire) | Special illustration rare | Holo |
+| 231/182 | Team Rocket's Mewtwo ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 232/182 | Cynthia's Garchomp ex | Pokémon (Fighting) | Special illustration rare | Holo |
+| 233/182 | Team Rocket's Nidoking ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 234/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 235/182 | Arven's Mabosstiff ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 236/182 | Ethan's Adventure | Trainer (Supporter) | Special illustration rare | Holo |
+| 237/182 | Team Rocket's Ariana | Trainer (Supporter) | Special illustration rare | Holo |
+| 238/182 | Team Rocket's Giovanni | Trainer (Supporter) | Special illustration rare | Holo |
+| 239/182 | Ethan's Ho-Oh ex | Pokémon (Fire) | Hyper rare | Holo (Gold) |
+| 240/182 | Team Rocket's Mewtwo ex | Pokémon (Psychic) | Hyper rare | Holo (Gold) |
+| 241/182 | Cynthia's Garchomp ex | Pokémon (Fighting) | Hyper rare | Holo (Gold) |
+| 242/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
+| 243/182 | Jamming Tower | Trainer (Stadium) | Hyper rare | Holo (Gold) |
+| 244/182 | Levincia | Trainer (Stadium) | Hyper rare | Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

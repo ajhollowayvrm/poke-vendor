@@ -153,6 +153,116 @@ set has no booster boxes. No official statement was found.
 - Pack counts per product are fixed.
 - Hits per product: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv06.5`), fetched 2026-09-12. The list has 99 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/064 | Joltik | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/064 | Galvantula | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 003/064 | Rowlet | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 004/064 | Dartrix | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/064 | Decidueye | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
+| 006/064 | Tapu Bulu | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 007/064 | Houndour | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 008/064 | Houndoom | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 009/064 | Iron Moth | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 010/064 | Horsea | Pokémon (Water) | Common | Normal, Holo (Cosmos), Reverse holo |
+| 011/064 | Seadra | Pokémon (Water) | Common | Normal, Holo (Cosmos), Reverse holo |
+| 012/064 | Kingdra ex | Pokémon (Water) | Double rare | Holo, Holo (Set logo) |
+| 013/064 | Sneasel | Pokémon (Water) | Common | Normal, Reverse holo |
+| 014/064 | Weavile | Pokémon (Water) | Uncommon | Normal, Reverse holo |
+| 015/064 | Revavroom ex | Pokémon (Lightning) | Double rare | Holo |
+| 016/064 | Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 017/064 | Hypno | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 018/064 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 019/064 | Dusclops | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 020/064 | Dusknoir | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 021/064 | Cresselia | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 022/064 | Sylveon | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 023/064 | Croagunk | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 024/064 | Toxicroak | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 025/064 | Bloodmoon Ursaluna | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 026/064 | Slither Wing | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 027/064 | Zubat | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 028/064 | Golbat | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 029/064 | Crobat | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 030/064 | Absol | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 031/064 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 032/064 | Zoroark | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 033/064 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 034/064 | Malamar | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 035/064 | Yveltal | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 036/064 | Okidogi ex | Pokémon (Darkness) | Double rare | Holo |
+| 037/064 | Munkidori ex | Pokémon (Darkness) | Double rare | Holo |
+| 038/064 | Fezandipiti ex | Pokémon (Darkness) | Double rare | Holo |
+| 039/064 | Pecharunt ex | Pokémon (Darkness) | Double rare | Holo |
+| 040/064 | Genesect | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
+| 041/064 | Cufant | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 042/064 | Copperajah | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 043/064 | Varoom | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 044/064 | Axew | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 045/064 | Fraxure | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 046/064 | Haxorus | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 047/064 | Kyurem | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
+| 048/064 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 049/064 | Persian | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 050/064 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 051/064 | Furfrou | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 052/064 | Stufful | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 053/064 | Bewear | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 054/064 | Academy at Night | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 055/064 | Binding Mochi | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 056/064 | Cassiopeia | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 057/064 | Colress's Tenacity | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 058/064 | Dangerous Laser | Trainer (Item) | ACE SPEC Rare | Holo |
+| 059/064 | Janine's Secret Art | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 060/064 | Neutralization Zone | Trainer (Stadium) | ACE SPEC Rare | Holo |
+| 061/064 | Night Stretcher | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 062/064 | Poké Vital A | Trainer (Item) | ACE SPEC Rare | Holo |
+| 063/064 | Powerglass | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 064/064 | Xerosic's Machinations | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 065/064 | Tapu Bulu | Pokémon (Grass) | Illustration rare | Holo |
+| 066/064 | Houndoom | Pokémon (Fire) | Illustration rare | Holo |
+| 067/064 | Horsea | Pokémon (Water) | Illustration rare | Holo |
+| 068/064 | Duskull | Pokémon (Psychic) | Illustration rare | Holo |
+| 069/064 | Dusclops | Pokémon (Psychic) | Illustration rare | Holo |
+| 070/064 | Dusknoir | Pokémon (Psychic) | Illustration rare | Holo |
+| 071/064 | Cresselia | Pokémon (Psychic) | Illustration rare | Holo |
+| 072/064 | Munkidori | Pokémon (Psychic) | Illustration rare | Holo |
+| 073/064 | Fezandipiti | Pokémon (Psychic) | Illustration rare | Holo |
+| 074/064 | Okidogi | Pokémon (Fighting) | Illustration rare | Holo |
+| 075/064 | Zorua | Pokémon (Darkness) | Illustration rare | Holo |
+| 076/064 | Cufant | Pokémon (Metal) | Illustration rare | Holo |
+| 077/064 | Fraxure | Pokémon (Dragon) | Illustration rare | Holo |
+| 078/064 | Persian | Pokémon (Colorless) | Illustration rare | Holo |
+| 079/064 | Bewear | Pokémon (Colorless) | Illustration rare | Holo |
+| 080/064 | Kingdra ex | Pokémon (Water) | Ultra Rare | Holo |
+| 081/064 | Revavroom ex | Pokémon (Lightning) | Ultra Rare | Holo |
+| 082/064 | Okidogi ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 083/064 | Munkidori ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 084/064 | Fezandipiti ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 085/064 | Pecharunt ex | Pokémon (Darkness) | Ultra Rare | Holo |
+| 086/064 | Cassiopeia | Trainer (Supporter) | Ultra Rare | Holo |
+| 087/064 | Colress's Tenacity | Trainer (Supporter) | Ultra Rare | Holo |
+| 088/064 | Janine's Secret Art | Trainer (Supporter) | Ultra Rare | Holo |
+| 089/064 | Xerosic's Machinations | Trainer (Supporter) | Ultra Rare | Holo |
+| 090/064 | Okidogi ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 091/064 | Munkidori ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 092/064 | Fezandipiti ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 093/064 | Pecharunt ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 094/064 | Cassiopeia | Trainer (Supporter) | Special illustration rare | Holo |
+| 095/064 | Pecharunt ex | Pokémon (Darkness) | Hyper rare | Holo, Holo (Gold) |
+| 096/064 | Earthen Vessel | Trainer (Item) | Hyper rare | Holo, Holo (Gold) |
+| 097/064 | Powerglass | Trainer (Tool) | Hyper rare | Holo, Holo (Gold) |
+| 098/064 | Basic Darkness Energy | Energy (Normal) | Hyper rare | Holo, Holo (Gold) |
+| 099/064 | Basic Metal Energy | Energy (Normal) | Hyper rare | Holo, Holo (Gold) |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -151,6 +151,262 @@ merchandise list has no Paldean Fates Booster Display Box.
 - Pack counts per product are fixed.
 - Hits per product: Unknown.
 
+## Card list
+
+Every card in the set, with its variants. Source: the TCGdex API (set `sv04.5`), fetched 2026-09-12. The list has 245 cards.
+
+- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
+- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
+- A variant in this list can come from a product other than a booster pack.
+
+| No. | Card | Category | Rarity | Variants |
+|---|---|---|---|---|
+| 001/091 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 002/091 | Forretress ex | Pokémon (Grass) | Double rare | Holo |
+| 003/091 | Maractus | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 004/091 | Toedscool | Pokémon (Grass) | Common | Normal, Reverse holo |
+| 005/091 | Toedscruel ex | Pokémon (Grass) | Double rare | Holo |
+| 006/091 | Espathra ex | Pokémon (Grass) | Double rare | Holo |
+| 007/091 | Charmander | Pokémon (Fire) | Common | Normal, Holo (Cosmos), Reverse holo |
+| 008/091 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Holo (Cosmos), Reverse holo |
+| 009/091 | Magmar | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 010/091 | Magmortar | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 011/091 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 012/091 | Camerupt | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
+| 013/091 | Heat Rotom | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 014/091 | Charcadet | Pokémon (Fire) | Common | Normal, Reverse holo |
+| 015/091 | Armarouge | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 016/091 | Lapras | Pokémon (Water) | Common | Normal, Reverse holo |
+| 017/091 | Frigibax | Pokémon (Water) | Common | Normal, Reverse holo |
+| 018/091 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo, Reverse holo (Cosmos) |
+| 019/091 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 020/091 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
+| 021/091 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 022/091 | Kilowattrel | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
+| 023/091 | Exeggcute | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 024/091 | Exeggutor | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 025/091 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 026/091 | Xatu | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 027/091 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 028/091 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 029/091 | Gardevoir ex | Pokémon (Psychic) | Double rare | Holo |
+| 030/091 | Chimecho | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 031/091 | Mime Jr. | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 032/091 | Woobat | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 033/091 | Swoobat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 034/091 | Cottonee | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 035/091 | Whimsicott | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 036/091 | Dedenne | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 037/091 | Mimikyu | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 038/091 | Fidough | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Cosmos) |
+| 039/091 | Dachsbun | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
+| 040/091 | Ceruledge | Pokémon (Psychic) | Rare | Holo, Holo (Pokemon day), Reverse holo |
+| 041/091 | Flittle | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 042/091 | Greavard | Pokémon (Psychic) | Common | Normal, Reverse holo, Reverse holo (Cosmos) |
+| 043/091 | Houndstone | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 044/091 | Gimmighoul | Pokémon (Psychic) | Common | Normal, Reverse holo |
+| 045/091 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 046/091 | Primeape | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 047/091 | Annihilape | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 048/091 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 049/091 | Donphan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 050/091 | Barboach | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 051/091 | Clobbopus | Pokémon (Fighting) | Common | Normal, Reverse holo |
+| 052/091 | Grapploct | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
+| 053/091 | Great Tusk ex | Pokémon (Fighting) | Double rare | Holo |
+| 054/091 | Charizard ex | Pokémon (Darkness) | Double rare | Holo |
+| 055/091 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 056/091 | Haunter | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 057/091 | Gengar | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 058/091 | Paldean Wooper | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 059/091 | Paldean Clodsire ex | Pokémon (Darkness) | Double rare | Holo |
+| 060/091 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
+| 061/091 | Scrafty | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
+| 062/091 | Maschiff | Pokémon (Darkness) | Common | Normal, Reverse holo, Reverse holo (Cosmos) |
+| 063/091 | Mabosstiff | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 064/091 | Varoom | Pokémon (Metal) | Common | Normal, Reverse holo |
+| 065/091 | Revavroom | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 066/091 | Iron Treads ex | Pokémon (Metal) | Double rare | Holo |
+| 067/091 | Gholdengo | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 068/091 | Noibat | Pokémon (Dragon) | Common | Normal, Reverse holo |
+| 069/091 | Noivern ex | Pokémon (Dragon) | Double rare | Holo |
+| 070/091 | Cyclizar | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 071/091 | Lechonk | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 072/091 | Oinkologne | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 073/091 | Tandemaus | Pokémon (Colorless) | Common | Normal, Reverse holo |
+| 074/091 | Maushold | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
+| 075/091 | Squawkabilly ex | Pokémon (Colorless) | Double rare | Holo |
+| 076/091 | Artazon | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 077/091 | Atticus | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 078/091 | Clive | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 079/091 | Electric Generator | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 080/091 | Iono | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
+| 081/091 | Moonlit Hill | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
+| 082/091 | Nemona | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 083/091 | Nemona's Backpack | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 084/091 | Nest Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 085/091 | Paldean Student | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 086/091 | Paldean Student | Trainer (Supporter) | Common | Normal, Reverse holo |
+| 087/091 | Professor's Research | Trainer (Supporter) | Rare | Holo, Reverse holo |
+| 088/091 | Professor's Research | Trainer (Supporter) | Rare | Holo, Reverse holo |
+| 089/091 | Rare Candy | Trainer (Item) | Common | Normal, Reverse holo |
+| 090/091 | Technical Machine: Crisis Punch | Trainer (Tool) | Uncommon | Normal, Reverse holo |
+| 091/091 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
+| 092/091 | Oddish | Pokémon (Grass) | Shiny rare | Holo |
+| 093/091 | Gloom | Pokémon (Grass) | Shiny rare | Holo |
+| 094/091 | Vileplume | Pokémon (Grass) | Shiny rare | Holo |
+| 095/091 | Scyther | Pokémon (Grass) | Shiny rare | Holo |
+| 096/091 | Hoppip | Pokémon (Grass) | Shiny rare | Holo |
+| 097/091 | Skiploom | Pokémon (Grass) | Shiny rare | Holo |
+| 098/091 | Jumpluff | Pokémon (Grass) | Shiny rare | Holo |
+| 099/091 | Pineco | Pokémon (Grass) | Shiny rare | Holo |
+| 100/091 | Snover | Pokémon (Grass) | Shiny rare | Holo |
+| 101/091 | Abomasnow | Pokémon (Grass) | Shiny rare | Holo |
+| 102/091 | Smoliv | Pokémon (Grass) | Shiny rare | Holo |
+| 103/091 | Dolliv | Pokémon (Grass) | Shiny rare | Holo |
+| 104/091 | Arboliva | Pokémon (Grass) | Shiny rare | Holo |
+| 105/091 | Toedscool | Pokémon (Grass) | Shiny rare | Holo |
+| 106/091 | Capsakid | Pokémon (Grass) | Shiny rare | Holo |
+| 107/091 | Scovillain | Pokémon (Grass) | Shiny rare | Holo |
+| 108/091 | Rellor | Pokémon (Grass) | Shiny rare | Holo |
+| 109/091 | Charmander | Pokémon (Fire) | Shiny rare | Holo |
+| 110/091 | Charmeleon | Pokémon (Fire) | Shiny rare | Holo |
+| 111/091 | Paldean Tauros | Pokémon (Fire) | Shiny rare | Holo |
+| 112/091 | Entei | Pokémon (Fire) | Shiny rare | Holo |
+| 113/091 | Oricorio | Pokémon (Fire) | Shiny rare | Holo |
+| 114/091 | Charcadet | Pokémon (Fire) | Shiny rare | Holo |
+| 115/091 | Armarouge | Pokémon (Fire) | Shiny rare | Holo |
+| 116/091 | Slowpoke | Pokémon (Water) | Shiny rare | Holo |
+| 117/091 | Slowbro | Pokémon (Water) | Shiny rare | Holo |
+| 118/091 | Staryu | Pokémon (Water) | Shiny rare | Holo |
+| 119/091 | Starmie | Pokémon (Water) | Shiny rare | Holo |
+| 120/091 | Paldean Tauros | Pokémon (Water) | Shiny rare | Holo |
+| 121/091 | Wiglett | Pokémon (Water) | Shiny rare | Holo |
+| 122/091 | Wugtrio | Pokémon (Water) | Shiny rare | Holo |
+| 123/091 | Finizen | Pokémon (Water) | Shiny rare | Holo |
+| 124/091 | Palafin | Pokémon (Water) | Shiny rare | Holo |
+| 125/091 | Veluza | Pokémon (Water) | Shiny rare | Holo |
+| 126/091 | Dondozo | Pokémon (Water) | Shiny rare | Holo |
+| 127/091 | Tatsugiri | Pokémon (Water) | Shiny rare | Holo |
+| 128/091 | Frigibax | Pokémon (Water) | Shiny rare | Holo |
+| 129/091 | Arctibax | Pokémon (Water) | Shiny rare | Holo |
+| 130/091 | Baxcalibur | Pokémon (Water) | Shiny rare | Holo |
+| 131/091 | Pikachu | Pokémon (Lightning) | Shiny rare | Holo |
+| 132/091 | Raichu | Pokémon (Lightning) | Shiny rare | Holo |
+| 133/091 | Voltorb | Pokémon (Lightning) | Shiny rare | Holo |
+| 134/091 | Electrode | Pokémon (Lightning) | Shiny rare | Holo |
+| 135/091 | Shinx | Pokémon (Lightning) | Shiny rare | Holo |
+| 136/091 | Luxio | Pokémon (Lightning) | Shiny rare | Holo |
+| 137/091 | Luxray | Pokémon (Lightning) | Shiny rare | Holo |
+| 138/091 | Pachirisu | Pokémon (Lightning) | Shiny rare | Holo |
+| 139/091 | Thundurus | Pokémon (Lightning) | Shiny rare | Holo |
+| 140/091 | Toxel | Pokémon (Lightning) | Shiny rare | Holo |
+| 141/091 | Toxtricity | Pokémon (Lightning) | Shiny rare | Holo |
+| 142/091 | Pawmi | Pokémon (Lightning) | Shiny rare | Holo |
+| 143/091 | Pawmo | Pokémon (Lightning) | Shiny rare | Holo |
+| 144/091 | Pawmot | Pokémon (Lightning) | Shiny rare | Holo |
+| 145/091 | Wattrel | Pokémon (Lightning) | Shiny rare | Holo |
+| 146/091 | Kilowattrel | Pokémon (Lightning) | Shiny rare | Holo |
+| 147/091 | Wigglytuff | Pokémon (Psychic) | Shiny rare | Holo |
+| 148/091 | Abra | Pokémon (Psychic) | Shiny rare | Holo |
+| 149/091 | Kadabra | Pokémon (Psychic) | Shiny rare | Holo |
+| 150/091 | Cleffa | Pokémon (Psychic) | Shiny rare | Holo |
+| 151/091 | Natu | Pokémon (Psychic) | Shiny rare | Holo |
+| 152/091 | Xatu | Pokémon (Psychic) | Shiny rare | Holo |
+| 153/091 | Ralts | Pokémon (Psychic) | Shiny rare | Holo |
+| 154/091 | Kirlia | Pokémon (Psychic) | Shiny rare | Holo |
+| 155/091 | Drifloon | Pokémon (Psychic) | Shiny rare | Holo |
+| 156/091 | Drifblim | Pokémon (Psychic) | Shiny rare | Holo |
+| 157/091 | Mime Jr. | Pokémon (Psychic) | Shiny rare | Holo |
+| 158/091 | Spiritomb | Pokémon (Psychic) | Shiny rare | Holo |
+| 159/091 | Klefki | Pokémon (Psychic) | Shiny rare | Holo |
+| 160/091 | Mimikyu | Pokémon (Psychic) | Shiny rare | Holo |
+| 161/091 | Dachsbun | Pokémon (Psychic) | Shiny rare | Holo |
+| 162/091 | Ceruledge | Pokémon (Psychic) | Shiny rare | Holo |
+| 163/091 | Rabsca | Pokémon (Psychic) | Shiny rare | Holo |
+| 164/091 | Flittle | Pokémon (Psychic) | Shiny rare | Holo |
+| 165/091 | Tinkatink | Pokémon (Psychic) | Shiny rare | Holo |
+| 166/091 | Tinkatuff | Pokémon (Psychic) | Shiny rare | Holo |
+| 167/091 | Tinkaton | Pokémon (Psychic) | Shiny rare | Holo |
+| 168/091 | Houndstone | Pokémon (Psychic) | Shiny rare | Holo |
+| 169/091 | Mankey | Pokémon (Fighting) | Shiny rare | Holo |
+| 170/091 | Primeape | Pokémon (Fighting) | Shiny rare | Holo |
+| 171/091 | Annihilape | Pokémon (Fighting) | Shiny rare | Holo |
+| 172/091 | Paldean Tauros | Pokémon (Fighting) | Shiny rare | Holo |
+| 173/091 | Riolu | Pokémon (Fighting) | Shiny rare | Holo |
+| 174/091 | Lucario | Pokémon (Fighting) | Shiny rare | Holo |
+| 175/091 | Hawlucha | Pokémon (Fighting) | Shiny rare | Holo |
+| 176/091 | Nacli | Pokémon (Fighting) | Shiny rare | Holo |
+| 177/091 | Naclstack | Pokémon (Fighting) | Shiny rare | Holo |
+| 178/091 | Garganacl | Pokémon (Fighting) | Shiny rare | Holo |
+| 179/091 | Glimmet | Pokémon (Fighting) | Shiny rare | Holo |
+| 180/091 | Paldean Wooper | Pokémon (Darkness) | Shiny rare | Holo |
+| 181/091 | Murkrow | Pokémon (Darkness) | Shiny rare | Holo |
+| 182/091 | Sneasel | Pokémon (Darkness) | Shiny rare | Holo |
+| 183/091 | Weavile | Pokémon (Darkness) | Shiny rare | Holo |
+| 184/091 | Sableye | Pokémon (Darkness) | Shiny rare | Holo |
+| 185/091 | Pawniard | Pokémon (Darkness) | Shiny rare | Holo |
+| 186/091 | Bisharp | Pokémon (Darkness) | Shiny rare | Holo |
+| 187/091 | Kingambit | Pokémon (Darkness) | Shiny rare | Holo |
+| 188/091 | Mabosstiff | Pokémon (Darkness) | Shiny rare | Holo |
+| 189/091 | Shroodle | Pokémon (Darkness) | Shiny rare | Holo |
+| 190/091 | Grafaiai | Pokémon (Darkness) | Shiny rare | Holo |
+| 191/091 | Scizor | Pokémon (Metal) | Shiny rare | Holo |
+| 192/091 | Varoom | Pokémon (Metal) | Shiny rare | Holo |
+| 193/091 | Revavroom | Pokémon (Metal) | Shiny rare | Holo |
+| 194/091 | Noibat | Pokémon (Dragon) | Shiny rare | Holo |
+| 195/091 | Cyclizar | Pokémon (Dragon) | Shiny rare | Holo |
+| 196/091 | Pidgey | Pokémon (Colorless) | Shiny rare | Holo |
+| 197/091 | Pidgeotto | Pokémon (Colorless) | Shiny rare | Holo |
+| 198/091 | Jigglypuff | Pokémon (Colorless) | Shiny rare | Holo |
+| 199/091 | Doduo | Pokémon (Colorless) | Shiny rare | Holo |
+| 200/091 | Dodrio | Pokémon (Colorless) | Shiny rare | Holo |
+| 201/091 | Ditto | Pokémon (Colorless) | Shiny rare | Holo |
+| 202/091 | Snorlax | Pokémon (Colorless) | Shiny rare | Holo |
+| 203/091 | Wingull | Pokémon (Colorless) | Shiny rare | Holo |
+| 204/091 | Pelipper | Pokémon (Colorless) | Shiny rare | Holo |
+| 205/091 | Skwovet | Pokémon (Colorless) | Shiny rare | Holo |
+| 206/091 | Greedent | Pokémon (Colorless) | Shiny rare | Holo |
+| 207/091 | Lechonk | Pokémon (Colorless) | Shiny rare | Holo |
+| 208/091 | Oinkologne | Pokémon (Colorless) | Shiny rare | Holo |
+| 209/091 | Tandemaus | Pokémon (Colorless) | Shiny rare | Holo |
+| 210/091 | Maushold | Pokémon (Colorless) | Shiny rare | Holo |
+| 211/091 | Flamigo | Pokémon (Colorless) | Shiny rare | Holo |
+| 212/091 | Forretress ex | Pokémon (Grass) | Shiny Ultra Rare | Holo |
+| 213/091 | Toedscruel ex | Pokémon (Grass) | Shiny Ultra Rare | Holo |
+| 214/091 | Espathra ex | Pokémon (Grass) | Shiny Ultra Rare | Holo |
+| 215/091 | Alakazam ex | Pokémon (Psychic) | Shiny Ultra Rare | Holo |
+| 216/091 | Mew ex | Pokémon (Psychic) | Shiny Ultra Rare | Holo |
+| 217/091 | Gardevoir ex | Pokémon (Psychic) | Shiny Ultra Rare | Holo |
+| 218/091 | Glimmora ex | Pokémon (Fighting) | Shiny Ultra Rare | Holo |
+| 219/091 | Paldean Clodsire ex | Pokémon (Darkness) | Shiny Ultra Rare | Holo |
+| 220/091 | Noivern ex | Pokémon (Dragon) | Shiny Ultra Rare | Holo |
+| 221/091 | Pidgeot ex | Pokémon (Colorless) | Shiny Ultra Rare | Holo |
+| 222/091 | Wigglytuff ex | Pokémon (Colorless) | Shiny Ultra Rare | Holo |
+| 223/091 | Squawkabilly ex | Pokémon (Colorless) | Shiny Ultra Rare | Holo |
+| 224/091 | Wugtrio | Pokémon (Water) | Illustration rare | Holo |
+| 225/091 | Palafin | Pokémon (Water) | Illustration rare | Holo |
+| 226/091 | Pawmi | Pokémon (Lightning) | Illustration rare | Holo |
+| 227/091 | Clive | Trainer (Supporter) | Ultra Rare | Holo |
+| 228/091 | Judge | Trainer (Supporter) | Ultra Rare | Holo |
+| 229/091 | Nemona | Trainer (Supporter) | Ultra Rare | Holo |
+| 230/091 | Paldean Student | Trainer (Supporter) | Ultra Rare | Holo |
+| 231/091 | Paldean Student | Trainer (Supporter) | Ultra Rare | Holo |
+| 232/091 | Mew ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 233/091 | Gardevoir ex | Pokémon (Psychic) | Special illustration rare | Holo |
+| 234/091 | Charizard ex | Pokémon (Darkness) | Special illustration rare | Holo |
+| 235/091 | Arven | Trainer (Supporter) | Special illustration rare | Holo |
+| 236/091 | Clive | Trainer (Supporter) | Special illustration rare | Holo |
+| 237/091 | Iono | Trainer (Supporter) | Special illustration rare | Holo |
+| 238/091 | Nemona | Trainer (Supporter) | Special illustration rare | Holo |
+| 239/091 | Penny | Trainer (Supporter) | Special illustration rare | Holo |
+| 240/091 | Wo-Chien ex | Pokémon (Grass) | Hyper rare | Holo |
+| 241/091 | Chi-Yu ex | Pokémon (Fire) | Hyper rare | Holo |
+| 242/091 | Chien-Pao ex | Pokémon (Water) | Hyper rare | Holo |
+| 243/091 | Miraidon ex | Pokémon (Lightning) | Hyper rare | Holo |
+| 244/091 | Ting-Lu ex | Pokémon (Fighting) | Hyper rare | Holo |
+| 245/091 | Koraidon ex | Pokémon (Fighting) | Hyper rare | Holo |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
