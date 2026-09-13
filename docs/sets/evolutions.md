@@ -93,49 +93,51 @@ Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1842`: 34 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 224946 | XY - Evolutions 3 Pack Blister [Black Kyurem] | Blister | 3 | Description | — | 2016 Q4 (set) | No |
-| 224945 | XY - Evolutions 3 Pack Blister [Braixen] | Blister | 3 | Description | — | 2016 Q4 (set) | No |
-| 603422 | XY Evolutions Single Pack Blister [Greninja] | Blister | 1 | Description | — | 2016 Q4 (set) | Yes |
-| 603423 | XY Evolutions Single Pack Blister [Weezing] | Blister | 1 | Description | — | 2016 Q4 (set) | Yes |
-| 123446 | XY Evolutions Booster Box | Booster box | 36 | Kind default | — | 2016 Q4 (set) | Yes |
-| 129907 | Evolutions Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q4 (set) | Yes |
-| 272649 | Evolutions Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q4 (set) | Yes |
-| 276600 | Evolutions Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q4 (set) | No |
-| 272648 | XY - Evolutions Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q4 (set) | Yes |
-| 627740 | Evolutions Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2016 Q4 (set) | No |
-| 226363 | XY Evolutions Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2016 Q4 (set) | Yes |
-| 125740 | Alola Collection [Lunala] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 125739 | Alola Collection [Solgaleo] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 169636 | Autumn 2016 Collector Chest | Collection | 5 | Description | — | 2016 Q4 (set) | No |
-| 126570 | BREAK Evolution Box [Arcanine] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 125731 | Charizard EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 125734 | Dragonite EX Box | Collection | 4 | Description | — | 2016 Q4 (set) | Yes |
-| 125733 | Gengar EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 125732 | Kangaskhan EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 222989 | Kanto Power Collection [Dragonite EX/Pidgeot EX] | Collection | 10 | Description | — | 2016 Q4 (set) | Yes |
-| 222988 | Kanto Power Collection [Mewtwo EX/Slowbro EX] | Collection | 10 | Description | — | 2016 Q4 (set) | Yes |
-| 125563 | Mega Beedrill EX Premium Collection | Collection | 6 | Bulbapedia | — | 2016 Q4 (set) | No |
-| 125738 | Mega Garchomp EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q4 (set) | No |
-| 125737 | Mega Salamence EX Premium Collection | Collection | 8 | Bulbapedia | — | 2016 Q4 (set) | No |
-| 125735 | Mewtwo EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 127179 | Mythical Collection [Magearna] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 127180 | Mythical Collection [Volcanion] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 229351 | XY - Evolutions Pin Collection [Mega Blastoise] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
-| 229352 | XY - Evolutions Pin Collection [Mega Venusaur] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
-| 123448 | XY Evolutions Elite Trainer Box [Mega Blastoise] | Elite Trainer Box | 8 | Description | — | 2016 Q4 (set) | Yes |
-| 123447 | XY Evolutions Elite Trainer Box [Mega Charizard Y] | Elite Trainer Box | 8 | Description | — | 2016 Q4 (set) | Yes |
-| 686507 | Evolutions Mini Pack | Other | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 125741 | XY Evolutions Prerelease Kit | Other | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 224946 | XY - Evolutions 3 Pack Blister [Black Kyurem] | Blister | 3 | Description | — | Unknown | — | 2016 Q4 (set) | No |
+| 224945 | XY - Evolutions 3 Pack Blister [Braixen] | Blister | 3 | Description | — | Unknown | — | 2016 Q4 (set) | No |
+| 603422 | XY Evolutions Single Pack Blister [Greninja] | Blister | 1 | Description | 1 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
+| 603423 | XY Evolutions Single Pack Blister [Weezing] | Blister | 1 | Description | 1 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
+| 123446 | XY Evolutions Booster Box | Booster box | 36 | Kind default | 36 Evolutions | Product set | — | 2016 Q4 (set) | Yes |
+| 129907 | Evolutions Booster Pack | Booster pack | 1 | Kind default | 1 Evolutions | Product set | — | 2016 Q4 (set) | Yes |
+| 272649 | Evolutions Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Evolutions | Product set | — | 2016 Q4 (set) | Yes |
+| 276600 | Evolutions Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Evolutions | Product set | — | 2016 Q4 (set) | No |
+| 272648 | XY - Evolutions Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Evolutions | Product set | — | 2016 Q4 (set) | Yes |
+| 627740 | Evolutions Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2016 Q4 (set) | No |
+| 226363 | XY Evolutions Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2016 Q4 (set) | Yes |
+| 125740 | Alola Collection [Lunala] | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125739 | Alola Collection [Solgaleo] | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 169636 | Autumn 2016 Collector Chest | Collection | 5 | Description | — | Unknown | — | 2016 Q4 (set) | No |
+| 126570 | BREAK Evolution Box [Arcanine] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125731 | Charizard EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125734 | Dragonite EX Box | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 125733 | Gengar EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 125732 | Kangaskhan EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 222989 | Kanto Power Collection [Dragonite EX/Pidgeot EX] | Collection | 10 | Description | 10 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
+| 222988 | Kanto Power Collection [Mewtwo EX/Slowbro EX] | Collection | 10 | Description | 10 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
+| 125563 | Mega Beedrill EX Premium Collection | Collection | 6 | Bulbapedia | 6 XY | Exact | — | 2016 Q4 (set) | No |
+| 125738 | Mega Garchomp EX Premium Collection | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | No |
+| 125737 | Mega Salamence EX Premium Collection | Collection | 8 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | No |
+| 125735 | Mewtwo EX Box | Collection | 4 | Bulbapedia | 4 XY | Exact | — | 2016 Q4 (set) | Yes |
+| 127179 | Mythical Collection [Magearna] | Collection | 5 | Bulbapedia | 5 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 127180 | Mythical Collection [Volcanion] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 229351 | XY - Evolutions Pin Collection [Mega Blastoise] | Collection | 2 | Description | 2 Evolutions | Exact | — | 2016 Q4 (set) | No |
+| 229352 | XY - Evolutions Pin Collection [Mega Venusaur] | Collection | 2 | Description | 2 Evolutions | Exact | — | 2016 Q4 (set) | No |
+| 123448 | XY Evolutions Elite Trainer Box [Mega Blastoise] | Elite Trainer Box | 8 | Description | 8 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
+| 123447 | XY Evolutions Elite Trainer Box [Mega Charizard Y] | Elite Trainer Box | 8 | Description | 8 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
+| 686507 | Evolutions Mini Pack | Other | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125741 | XY Evolutions Prerelease Kit | Other | 4 | Bulbapedia | 4 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

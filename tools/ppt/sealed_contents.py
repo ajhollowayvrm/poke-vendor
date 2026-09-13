@@ -5,10 +5,11 @@ Usage:
   python3 tools/ppt/sealed_contents.py --json       also write tools/ppt/cache/sealed_contents.json
   python3 tools/ppt/sealed_contents.py --conflicts  also list each product with the confidence Conflict
 
-Sources, in order:
-1. tools/ppt/sealed_overrides.json: researched contents, with a source URL for each product (in git).
-2. The Bulbapedia TCG merchandise section that matches the product (cached raw wiki text).
-3. The TCGplayer description (TCGCSV CardText).
+Sources:
+1. The Bulbapedia TCG merchandise section that matches the product (cached raw wiki text).
+2. The TCGplayer description (TCGCSV CardText).
+3. tools/ppt/sealed_overrides.json: researched contents, with sources for each product (in git). Its fields replace the
+   parsed fields, and the source becomes "Research".
 
 Confidence for the pack mix:
 - Exact: the counts by set add up to the pack total.
@@ -314,15 +315,11 @@ def section_ok(row, slug, entry):
     return True
 
 
-def resolve_conflict(name, packs, units, mix, source, clauses, desc, single_set, count_src=""):
+def resolve_conflict(name, packs, mix, source, clauses, desc, single_set, count_src=""):
     # (mix, source, packs, note) for a mix with more packs than the product. The mix stays, a Conflict, when no rule
     # picks the part of the sources that describes this product.
     def pick(n):
-        for u in sorted({1, units}):
-            found = best_clause(name, n // u, clauses) if n % u == 0 else None
-            if found:
-                return collections.Counter({k: v * u for k, v in found.items()})
-        return None
+        return best_clause(name, n, clauses)
     if source.startswith("Bulbapedia"):
         found = pick(packs)
         if found:
@@ -351,12 +348,19 @@ def resolve_conflict(name, packs, units, mix, source, clauses, desc, single_set,
     return mix, source, packs, ""
 
 
+def confidence_of(packs, mix):
+    # Exact: the named sets add up to the pack total. Partial: some packs have no named set. Conflict: the mix holds more
+    # packs than the pack total. Unknown: no mix. With no pack total, the mix total is the pack total.
+    total = sum(mix.values())
+    known = total - sum(v for k, v in mix.items() if unnamed(k))
+    if packs is not None and total > packs:
+        return "Conflict"
+    if known == (total if packs is None else packs) and (total or packs == 0):
+        return "Exact"
+    return "Partial" if total else "Unknown"
+
+
 def contents_for(row, slug, era, text, index, overrides, own_set=frozenset()):
-    pid = str(row["id"])
-    if pid in overrides:
-        o = overrides[pid]
-        return {"packs": o.get("packs"), "mix": o.get("mix", {}), "promos": o.get("promos", []),
-                "other": o.get("other", ""), "source": o.get("source", "Research"), "confidence": o.get("confidence", "Exact")}
     packs = int(row["packs"]) if str(row["packs"]).isdigit() else None
     section = C.bp_best(row["name"], era, index, own_set, lambda e: section_ok(row, slug, e))
     mix, promos, source, clauses = collections.Counter(), [], "", []
@@ -375,38 +379,52 @@ def contents_for(row, slug, era, text, index, overrides, own_set=frozenset()):
     if not mix and desc:
         mix, source = desc, "TCGplayer description"
     total_mix = sum(mix.values())
-    mult = re.search(r"\[(?:bundle|set) of (\d+)\]", row["name"], re.I)
-    units = int(mult.group(1)) if mult else 1
-    if units > 1 and total_mix and packs and total_mix * units == packs:
-        mix = collections.Counter({k: v * units for k, v in mix.items()})
-        total_mix = sum(mix.values())
+    # The catalog multiplied a per-unit count for a multi-unit listing, such as "Crown Zenith Tin [Set of 3]". Unless the
+    # mix already counts every unit, find the mix for one unit, then multiply it.
+    units = C.unit_multiplier(row["kind"], row["name"]) if row["src"] in ("Description", "Bulbapedia") else 1
+    if units > 1 and packs and packs % units == 0 and total_mix != packs:
+        packs //= units
+    else:
+        units = 1
     # A blister with its own set in the name, such as "Perfect Order Premium Checklane Blister", holds that set's packs.
     single_set = row["kind"] in SINGLE_SET_KINDS or (row["kind"] == "Blister" and own_set and own_set <= C.bp_tokens(row["name"]))
     note = ""
     if packs and total_mix > packs:
-        mix, source, packs, note = resolve_conflict(row["name"], packs, units, mix, source, clauses, desc, single_set, row["src"])
+        mix, source, packs, note = resolve_conflict(row["name"], packs, mix, source, clauses, desc, single_set, row["src"])
         total_mix = sum(mix.values())
-    known = total_mix - sum(v for k, v in mix.items() if unnamed(k))
-    if packs and total_mix > packs:
-        confidence = "Conflict"
-    elif packs and known == packs:
-        confidence = "Exact"
-    elif packs and total_mix:
-        confidence = "Partial"
-    elif total_mix and not packs:
-        packs, confidence = total_mix, "Exact" if known == total_mix else "Partial"
-    elif packs and slug and single_set:
-        mix, confidence, source = collections.Counter({slug: packs}), "Product set", source or "Product kind"
-    elif packs == 0:
-        confidence = "Exact"
-    else:
-        confidence = "Unknown"
-    return {"packs": packs, "mix": dict(mix), "promos": promos, "other": "", "source": source or "—", "confidence": confidence,
-            "packs_note": note}
+    if total_mix and not packs:
+        packs = total_mix
+    product_set = bool(packs and not total_mix and slug and single_set)
+    if product_set:
+        mix, source = collections.Counter({slug: packs}), source or "Product kind"
+    if units > 1:
+        mix, packs = collections.Counter({k: v * units for k, v in mix.items()}), packs * units
+    confidence = "Product set" if product_set else confidence_of(packs, mix)
+    out = {"packs": packs, "mix": dict(mix), "promos": promos, "other": "", "note": "", "source": source or "—",
+           "confidence": confidence, "packs_note": note}
+    o = overrides.get(str(row["id"]))
+    if o:
+        out.update({k: o[k] for k in ("packs", "mix", "promos", "other", "note") if k in o})
+        out.update(source="Research", sources=o["sources"], confidence=confidence_of(out["packs"], out["mix"]), packs_note="")
+    return out
+
+
+def load_overrides():
+    # {product ID: researched fields}. A key that starts with "_" is a note for the reader. Stop on a mix key that is not a
+    # set slug, a series, or "unknown", on a mix with more packs than the pack count, and on an entry with no sources.
+    if not os.path.exists(OVERRIDES):
+        return {}
+    out = {k: v for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_")}
+    series = {f"{s} Series" for s in SERIES.values()}
+    for pid, o in out.items():
+        bad = [k for k in o.get("mix", {}) if k != "unknown" and k not in series and k not in SETS.values()]
+        if bad or not o.get("sources") or sum(o.get("mix", {}).values()) > (o.get("packs") or 0):
+            raise SystemExit(f"tools/ppt/sealed_overrides.json {pid}: bad mix keys {bad}, no sources, or more packs in the mix")
+    return out
 
 
 def all_contents():
-    overrides = json.load(open(OVERRIDES)) if os.path.exists(OVERRIDES) else {}
+    overrides = load_overrides()
     release_by_slug, priced = C.set_release_dates(), C.ppt_ids()
     idx = open(os.path.join(ROOT, "docs", "13-sets.md")).read()
     eras = {}

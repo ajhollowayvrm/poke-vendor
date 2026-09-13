@@ -110,40 +110,42 @@ with the set. No source confirms that they hold booster packs.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `24448`: 25 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 654154 | Phantasmal Flames 3 Pack Blister [Sneasel] | Blister | 3 | Description | — | 2025 Q4 (set) | Yes |
-| 654156 | Phantasmal Flames 3 Pack Blister [Weavile] | Blister | 3 | Description | — | 2025 Q4 | Yes |
-| 668931 | Phantasmal Flames Premium Checklane Blister [Arven's Greedent] | Blister | 1 | Description | — | 2025 Q4 (set) | Yes |
-| 654147 | Phantasmal Flames Premium Checklane Blister [Blaziken] | Blister | 1 | Description | — | 2025 Q4 | Yes |
-| 672588 | Phantasmal Flames Premium Checklane Blister [Ethan's Magcargo] | Blister | 1 | Description | — | 2025 Q4 (set) | Yes |
-| 654146 | Phantasmal Flames Premium Checklane Blister [Hydrapple] | Blister | 1 | Description | — | 2025 Q4 | Yes |
-| 654151 | Phantasmal Flames Single Pack Blister [Cottonee] | Blister | 1 | Description | — | 2025 Q4 | Yes |
-| 654150 | Phantasmal Flames Single Pack Blister [Whimsicott] | Blister | 1 | Description | — | 2025 Q4 | Yes |
-| 654137 | Phantasmal Flames Booster Box | Booster box | 36 | Description | — | 2025 Q4 | Yes |
-| 654160 | Phantasmal Flames Booster Bundle | Booster bundle | 6 | Description | — | 2025 Q4 | Yes |
-| 654144 | Phantasmal Flames Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q4 | Yes |
-| 654174 | Phantasmal Flames Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q4 | Yes |
-| 715708 | Phantasmal Flames Fun Pack | Booster pack | 1 | Kind default | — | 2025 Q4 (set) | Yes |
-| 654145 | Phantasmal Flames Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q4 | Yes |
-| 664903 | Phantasmal Flames Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q4 (set) | Yes |
-| 662725 | Phantasmal Flames Build & Battle Box | Build & Battle | 4 | Description | — | 2025 Q4 (set) | Yes |
-| 685215 | Phantasmal Flames 3-Pack Blister Case | Case or display | — | — | 24 blisters | 2025 Q4 (set) | No |
-| 655281 | Phantasmal Flames Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2025 Q4 | Yes |
-| 654162 | Phantasmal Flames Booster Bundle Case | Case or display | — | — | 25 booster bundles | 2025 Q4 | Yes |
-| 654164 | Phantasmal Flames Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2025 Q4 | Yes |
-| 654170 | Phantasmal Flames Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2025 Q4 | Yes |
-| 655282 | Phantasmal Flames Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2025 Q4 | Yes |
-| 688345 | Phantasmal Flames Sleeved Booster Case (48 ct) | Case or display | — | — | 48 units | 2025 Q4 (set) | No |
-| 654136 | Phantasmal Flames Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2025 Q4 | Yes |
-| 654135 | Phantasmal Flames Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2025 Q4 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 654154 | Phantasmal Flames 3 Pack Blister [Sneasel] | Blister | 3 | Description | 3 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
+| 654156 | Phantasmal Flames 3 Pack Blister [Weavile] | Blister | 3 | Description | 3 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
+| 668931 | Phantasmal Flames Premium Checklane Blister [Arven's Greedent] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
+| 654147 | Phantasmal Flames Premium Checklane Blister [Blaziken] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
+| 672588 | Phantasmal Flames Premium Checklane Blister [Ethan's Magcargo] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
+| 654146 | Phantasmal Flames Premium Checklane Blister [Hydrapple] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
+| 654151 | Phantasmal Flames Single Pack Blister [Cottonee] | Blister | 1 | Description | 1 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
+| 654150 | Phantasmal Flames Single Pack Blister [Whimsicott] | Blister | 1 | Description | 1 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
+| 654137 | Phantasmal Flames Booster Box | Booster box | 36 | Description | 36 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
+| 654160 | Phantasmal Flames Booster Bundle | Booster bundle | 6 | Description | 6 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
+| 654144 | Phantasmal Flames Booster Pack | Booster pack | 1 | Kind default | 1 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
+| 654174 | Phantasmal Flames Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
+| 715708 | Phantasmal Flames Fun Pack | Booster pack | 1 | Kind default | 1 Phantasmal Flames | Product set | — | 2025 Q4 (set) | Yes |
+| 654145 | Phantasmal Flames Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
+| 664903 | Phantasmal Flames Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Phantasmal Flames | Product set | — | 2025 Q4 (set) | Yes |
+| 662725 | Phantasmal Flames Build & Battle Box | Build & Battle | 4 | Description | 4 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
+| 685215 | Phantasmal Flames 3-Pack Blister Case | Case or display | — | — | — | — | 24 blisters | 2025 Q4 (set) | No |
+| 655281 | Phantasmal Flames Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2025 Q4 | Yes |
+| 654162 | Phantasmal Flames Booster Bundle Case | Case or display | — | — | — | — | 25 booster bundles | 2025 Q4 | Yes |
+| 654164 | Phantasmal Flames Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2025 Q4 | Yes |
+| 654170 | Phantasmal Flames Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2025 Q4 | Yes |
+| 655282 | Phantasmal Flames Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2025 Q4 | Yes |
+| 688345 | Phantasmal Flames Sleeved Booster Case (48 ct) | Case or display | — | — | — | — | 48 units | 2025 Q4 (set) | No |
+| 654136 | Phantasmal Flames Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
+| 654135 | Phantasmal Flames Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Phantasmal Flames | Partial | — | 2025 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

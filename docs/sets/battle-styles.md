@@ -88,45 +88,47 @@ Rare figure for this set.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2765`: 30 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 229283 | Battle Styles 3 Pack Blister [Eevee] | Blister | 3 | Description | — | 2021 Q1 | Yes |
-| 229282 | Battle Styles 3 Pack Blister [Jolteon] | Blister | 3 | Description | — | 2021 Q1 | Yes |
-| 230192 | Battle Styles Premium Checklane Blister [Corviknight] | Blister | 1 | Description | — | 2021 Q1 | No |
-| 236457 | Battle Styles Premium Checklane Blister [Golisopod] | Blister | 1 | Description | — | 2021 Q1 (set) | Yes |
-| 236458 | Battle Styles Premium Checklane Blister [Toxtricity] | Blister | 1 | Description | — | 2021 Q1 (set) | Yes |
-| 230191 | Battle Styles Premium Checklane Blister [Tyranitar] | Blister | 1 | Description | — | 2021 Q1 | No |
-| 229281 | Battle Styles Single Pack Blister [Arrokuda] | Blister | 1 | Description | — | 2021 Q1 (set) | Yes |
-| 229280 | Battle Styles Single Pack Blister [Charmander] | Blister | 1 | Description | — | 2021 Q1 | Yes |
-| 229277 | Battle Styles Booster Box | Booster box | 36 | Description | — | 2021 Q1 | Yes |
-| 229276 | Battle Styles Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q1 | Yes |
-| 265321 | Battle Styles Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q1 (set) | Yes |
-| 251879 | Battle Styles Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q1 (set) | Yes |
-| 487794 | Battle Styles Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q1 (set) | Yes |
-| 229278 | Battle Styles Build & Battle Box | Build & Battle | 4 | Description | — | 2021 Q1 (set) | Yes |
-| 233335 | Battle Styles Booster Box Case | Case or display | — | — | 6 booster boxes | 2021 Q1 | Yes |
-| 229279 | Battle Styles Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2021 Q1 (set) | Yes |
-| 235284 | Battle Styles Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2021 Q1 (set) | Yes |
-| 680964 | Battle Styles Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2021 Q1 (set) | Yes |
-| 233359 | Galarian Rapidash V Box | Collection | 4 | Description | — | 2021 Q2 | Yes |
-| 231296 | Rapid Strike Urshifu V Box | Collection | 4 | Description | — | 2021 Q1 | Yes |
-| 231297 | Single Strike Urshifu V Box | Collection | 4 | Description | — | 2021 Q1 | Yes |
-| 229285 | Battle Styles Elite Trainer Box [Rapid Strike Urshifu] (Blue) | Elite Trainer Box | 8 | Description | — | 2021 Q1 | Yes |
-| 244414 | Battle Styles Elite Trainer Box [Set of 2] | Elite Trainer Box | 8 | Description | — | 2021 Q1 (set) | Yes |
-| 229284 | Battle Styles Elite Trainer Box [Single Strike Urshifu] (Red) | Elite Trainer Box | 8 | Description | — | 2021 Q1 | Yes |
-| 231293 | Spring 2021 Collector's Chest Tin | Tin | 5 | Description | — | 2021 Q1 | Yes |
-| 236378 | V Strikers Tin [Empoleon V] | Tin | 5 | Description | — | 2021 Q1 (set) | Yes |
-| 238637 | V Strikers Tin [Empoleon V] (International Version) | Tin | 4 | Description | — | 2021 Q1 (set) | No |
-| 257189 | V Strikers Tin [Set of 2] | Tin | 8 | Bulbapedia | — | 2021 Q1 (set) | Yes |
-| 236377 | V Strikers Tin [Tyranitar V] | Tin | 5 | Description | — | 2021 Q1 (set) | Yes |
-| 238638 | V Strikers Tin [Tyranitar V] (International Version) | Tin | 4 | Description | — | 2021 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 229283 | Battle Styles 3 Pack Blister [Eevee] | Blister | 3 | Description | 3 Battle Styles | Exact | — | 2021 Q1 | Yes |
+| 229282 | Battle Styles 3 Pack Blister [Jolteon] | Blister | 3 | Description | 3 Battle Styles | Exact | — | 2021 Q1 | Yes |
+| 230192 | Battle Styles Premium Checklane Blister [Corviknight] | Blister | 1 | Description | 1 Battle Styles | Exact | — | 2021 Q1 | No |
+| 236457 | Battle Styles Premium Checklane Blister [Golisopod] | Blister | 1 | Description | 1 Battle Styles | Exact | — | 2021 Q1 (set) | Yes |
+| 236458 | Battle Styles Premium Checklane Blister [Toxtricity] | Blister | 1 | Description | 1 Battle Styles | Exact | — | 2021 Q1 (set) | Yes |
+| 230191 | Battle Styles Premium Checklane Blister [Tyranitar] | Blister | 1 | Description | 1 Battle Styles | Exact | — | 2021 Q1 | No |
+| 229281 | Battle Styles Single Pack Blister [Arrokuda] | Blister | 1 | Description | 1 Battle Styles | Exact | — | 2021 Q1 (set) | Yes |
+| 229280 | Battle Styles Single Pack Blister [Charmander] | Blister | 1 | Description | 1 Battle Styles | Exact | — | 2021 Q1 | Yes |
+| 229277 | Battle Styles Booster Box | Booster box | 36 | Description | 36 Battle Styles | Product set | — | 2021 Q1 | Yes |
+| 229276 | Battle Styles Booster Pack | Booster pack | 1 | Kind default | 1 Battle Styles | Product set | — | 2021 Q1 | Yes |
+| 265321 | Battle Styles Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Battle Styles | Product set | — | 2021 Q1 (set) | Yes |
+| 251879 | Battle Styles Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Battle Styles | Product set | — | 2021 Q1 (set) | Yes |
+| 487794 | Battle Styles Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Battle Styles | Product set | — | 2021 Q1 (set) | Yes |
+| 229278 | Battle Styles Build & Battle Box | Build & Battle | 4 | Description | 4 Battle Styles | Exact | — | 2021 Q1 (set) | Yes |
+| 233335 | Battle Styles Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2021 Q1 | Yes |
+| 229279 | Battle Styles Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2021 Q1 (set) | Yes |
+| 235284 | Battle Styles Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q1 (set) | Yes |
+| 680964 | Battle Styles Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2021 Q1 (set) | Yes |
+| 233359 | Galarian Rapidash V Box | Collection | 4 | Description | 2 Chilling Reign, 1 Rebel Clash, 1 Vivid Voltage | Exact | — | 2021 Q2 | Yes |
+| 231296 | Rapid Strike Urshifu V Box | Collection | 4 | Description | 2 Battle Styles, 1 Crimson Invasion, 1 Darkness Ablaze | Exact | — | 2021 Q1 | Yes |
+| 231297 | Single Strike Urshifu V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q1 | Yes |
+| 229285 | Battle Styles Elite Trainer Box [Rapid Strike Urshifu] (Blue) | Elite Trainer Box | 8 | Description | 8 Battle Styles | Exact | — | 2021 Q1 | Yes |
+| 244414 | Battle Styles Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Battle Styles | Exact | — | 2021 Q1 (set) | Yes |
+| 229284 | Battle Styles Elite Trainer Box [Single Strike Urshifu] (Red) | Elite Trainer Box | 8 | Description | 8 Battle Styles | Exact | — | 2021 Q1 | Yes |
+| 231293 | Spring 2021 Collector's Chest Tin | Tin | 5 | Description | — | Unknown | — | 2021 Q1 | Yes |
+| 236378 | V Strikers Tin [Empoleon V] | Tin | 5 | Research | 2 Battle Styles, 1 Darkness Ablaze, 1 Sword & Shield, 1 unknown set | Partial | — | 2021 Q1 (set) | Yes |
+| 238637 | V Strikers Tin [Empoleon V] (International Version) | Tin | 4 | Description | 2 Battle Styles, 1 Darkness Ablaze, 1 Sword & Shield | Exact | — | 2021 Q1 (set) | No |
+| 257189 | V Strikers Tin [Set of 2] | Tin | 8 | Bulbapedia | 4 Battle Styles, 2 Darkness Ablaze, 2 Sword & Shield | Exact | — | 2021 Q1 (set) | Yes |
+| 236377 | V Strikers Tin [Tyranitar V] | Tin | 5 | Research | 2 Battle Styles, 1 Darkness Ablaze, 1 Sword & Shield, 1 unknown set | Partial | — | 2021 Q1 (set) | Yes |
+| 238638 | V Strikers Tin [Tyranitar V] (International Version) | Tin | 4 | Description | 2 Battle Styles, 1 Darkness Ablaze, 1 Sword & Shield | Exact | — | 2021 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

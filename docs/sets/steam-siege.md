@@ -90,34 +90,36 @@ list no booster packs. Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1815`: 19 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 120704 | Steam Siege 3 Pack Blister [Azelf] | Blister | 3 | Description | — | 2016 Q3 (set) | No |
-| 120705 | Steam Siege 3 Pack Blister [Rayquaza] | Blister | 3 | Description | — | 2016 Q3 (set) | Yes |
-| 120707 | Steam Siege Collectible Pin 3 Pack Blister [Shiny Mega Gardevoir] | Blister | 3 | Description | — | 2016 Q3 (set) | No |
-| 120706 | Steam Siege Collectible Pin 3 Pack Blister [Volcanion] | Blister | 3 | Description | — | 2016 Q3 (set) | No |
-| 120703 | Steam Siege Single Pack Blister [Floette] | Blister | 1 | Description | — | 2016 Q3 (set) | Yes |
-| 120702 | Steam Siege Single Pack Blister [Lucario] | Blister | 1 | Description | — | 2016 Q3 (set) | Yes |
-| 120076 | Steam Siege Booster Box | Booster box | 36 | Kind default | — | 2016 Q3 (set) | Yes |
-| 130013 | Steam Siege Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q3 (set) | Yes |
-| 276599 | Steam Siege Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q3 (set) | Yes |
-| 268448 | XY Steam Siege Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q3 (set) | Yes |
-| 696115 | Steam Siege Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2016 Q3 (set) | No |
-| 656718 | Steam Siege Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2016 Q3 (set) | No |
-| 693146 | Hoopa EX Challenge Box | Collection | 2 | Description | — | 2016 Q3 (set) | Yes |
-| 177529 | Mega Gyarados Collection Box | Collection | 4 | Description | — | 2016 Q3 (set) | Yes |
-| 120697 | Steam Siege Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2016 Q3 (set) | Yes |
-| 121393 | Steam Siege Prerelease Kit | Other | 4 | Description | — | 2016 Q3 (set) | Yes |
-| 123440 | Battle Heart Tin [Magearna EX] | Tin | 4 | Bulbapedia | — | 2016 Q3 (set) | Yes |
-| 123441 | Battle Heart Tin [Pikachu EX] | Tin | 4 | Bulbapedia | — | 2016 Q3 (set) | Yes |
-| 123442 | Battle Heart Tin [Volcanion EX] | Tin | 4 | Bulbapedia | — | 2016 Q3 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 120704 | Steam Siege 3 Pack Blister [Azelf] | Blister | 3 | Description | 3 Steam Siege | Exact | — | 2016 Q3 (set) | No |
+| 120705 | Steam Siege 3 Pack Blister [Rayquaza] | Blister | 3 | Description | 3 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
+| 120707 | Steam Siege Collectible Pin 3 Pack Blister [Shiny Mega Gardevoir] | Blister | 3 | Description | 3 Steam Siege | Exact | — | 2016 Q3 (set) | No |
+| 120706 | Steam Siege Collectible Pin 3 Pack Blister [Volcanion] | Blister | 3 | Description | 3 Steam Siege | Exact | — | 2016 Q3 (set) | No |
+| 120703 | Steam Siege Single Pack Blister [Floette] | Blister | 1 | Description | 1 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
+| 120702 | Steam Siege Single Pack Blister [Lucario] | Blister | 1 | Description | 1 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
+| 120076 | Steam Siege Booster Box | Booster box | 36 | Kind default | 36 Steam Siege | Product set | — | 2016 Q3 (set) | Yes |
+| 130013 | Steam Siege Booster Pack | Booster pack | 1 | Kind default | 1 Steam Siege | Product set | — | 2016 Q3 (set) | Yes |
+| 276599 | Steam Siege Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Steam Siege | Product set | — | 2016 Q3 (set) | Yes |
+| 268448 | XY Steam Siege Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Steam Siege | Product set | — | 2016 Q3 (set) | Yes |
+| 696115 | Steam Siege Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2016 Q3 (set) | No |
+| 656718 | Steam Siege Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2016 Q3 (set) | No |
+| 693146 | Hoopa EX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2016 Q3 (set) | Yes |
+| 177529 | Mega Gyarados Collection Box | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 120697 | Steam Siege Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
+| 121393 | Steam Siege Prerelease Kit | Other | 4 | Description | 4 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
+| 123440 | Battle Heart Tin [Magearna EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 123441 | Battle Heart Tin [Pikachu EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 123442 | Battle Heart Tin [Volcanion EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

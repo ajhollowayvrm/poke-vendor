@@ -89,43 +89,45 @@ Pull odds. Source: a Reddit community sample of 5,000 packs, republished as
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2807`: 28 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 245856 | Chilling Reign 2 Pack Blister [Galarian Zapdos V, Articuno V, Moltres V] | Blister | 2 | Description | — | 2021 Q2 (set) | Yes |
-| 236268 | Chilling Reign 3 Pack Blister [Eevee] | Blister | 3 | Description | — | 2021 Q2 | Yes |
-| 236269 | Chilling Reign 3 Pack Blister [Snorlax] | Blister | 3 | Description | — | 2021 Q2 | Yes |
-| 236276 | Chilling Reign Premium Checklane Blister [Blaziken] | Blister | 1 | Description | — | 2021 Q2 | Yes |
-| 236278 | Chilling Reign Premium Checklane Blister [Decidueye] | Blister | 1 | Description | — | 2021 Q2 | Yes |
-| 236273 | Chilling Reign Single Pack Blister [Morpeko] | Blister | 1 | Description | — | 2021 Q2 | Yes |
-| 236272 | Chilling Reign Single Pack Blister [Phanpy] | Blister | 1 | Description | — | 2021 Q2 | Yes |
-| 236258 | Chilling Reign Booster Box | Booster box | 36 | Description | — | 2021 Q2 | Yes |
-| 236257 | Chilling Reign Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q2 (set) | Yes |
-| 492290 | Chilling Reign Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2021 Q2 (set) | Yes |
-| 702296 | Chilling Reign Fun Pack | Booster pack | 1 | Kind default | — | 2021 Q2 (set) | Yes |
-| 242013 | Chilling Reign Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q2 | Yes |
-| 256274 | Chilling Reign Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2021 Q2 (set) | Yes |
-| 256275 | Chilling Reign Sleeved Booster Pack Bundle [Set of 10] | Booster pack | 10 | Description | — | 2021 Q2 (set) | Yes |
-| 236265 | Chilling Reign Build & Battle Box | Build & Battle | 4 | Description | — | 2021 Q2 | Yes |
-| 236259 | Chilling Reign Booster Box Case | Case or display | — | — | 6 booster boxes | 2021 Q2 | Yes |
-| 236266 | Chilling Reign Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2021 Q2 (set) | Yes |
-| 236263 | Chilling Reign Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2021 Q2 | Yes |
-| 657837 | Chilling Reign Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | 10 elite trainer boxes | 2021 Q2 (set) | No |
-| 657836 | Chilling Reign Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2021 Q2 (set) | No |
-| 256972 | Ice Rider/ Shadow Rider Calyrex V Box Case | Case or display | — | — | Unknown | 2021 Q2 (set) | Yes |
-| 240975 | Ice Rider Calyrex V Box | Collection | 4 | Description | — | 2021 Q3 | Yes |
-| 240977 | Shadow Rider Calyrex V Box | Collection | 4 | Description | — | 2021 Q3 | Yes |
-| 236260 | Chilling Reign Elite Trainer Box [Ice Rider Calyrex] | Elite Trainer Box | 8 | Description | — | 2021 Q2 (set) | Yes |
-| 244410 | Chilling Reign Elite Trainer Box [Set of 2] | Elite Trainer Box | 8 | Description | — | 2021 Q2 (set) | Yes |
-| 236261 | Chilling Reign Elite Trainer Box [Shadow Rider Calyrex] | Elite Trainer Box | 8 | Description | — | 2021 Q2 (set) | Yes |
-| 247281 | Chilling Reign Pokemon Center Elite Trainer Box [Ice Rider Calyrex] (Exclusive) | Elite Trainer Box | 8 | Description | — | 2021 Q2 (set) | Yes |
-| 247282 | Chilling Reign Pokemon Center Elite Trainer Box [Shadow Rider Calyrex] (Exclusive) | Elite Trainer Box | 8 | Description | — | 2021 Q2 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 245856 | Chilling Reign 2 Pack Blister [Galarian Zapdos V, Articuno V, Moltres V] | Blister | 2 | Description | 2 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
+| 236268 | Chilling Reign 3 Pack Blister [Eevee] | Blister | 3 | Description | 3 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236269 | Chilling Reign 3 Pack Blister [Snorlax] | Blister | 3 | Description | 3 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236276 | Chilling Reign Premium Checklane Blister [Blaziken] | Blister | 1 | Description | 1 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236278 | Chilling Reign Premium Checklane Blister [Decidueye] | Blister | 1 | Description | 1 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236273 | Chilling Reign Single Pack Blister [Morpeko] | Blister | 1 | Description | 1 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236272 | Chilling Reign Single Pack Blister [Phanpy] | Blister | 1 | Description | 1 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236258 | Chilling Reign Booster Box | Booster box | 36 | Description | 36 Chilling Reign | Product set | — | 2021 Q2 | Yes |
+| 236257 | Chilling Reign Booster Pack | Booster pack | 1 | Kind default | 1 Chilling Reign | Product set | — | 2021 Q2 (set) | Yes |
+| 492290 | Chilling Reign Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Chilling Reign | Product set | — | 2021 Q2 (set) | Yes |
+| 702296 | Chilling Reign Fun Pack | Booster pack | 1 | Kind default | 1 Chilling Reign | Product set | — | 2021 Q2 (set) | Yes |
+| 242013 | Chilling Reign Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Chilling Reign | Product set | — | 2021 Q2 | Yes |
+| 256274 | Chilling Reign Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Chilling Reign | Product set | — | 2021 Q2 (set) | Yes |
+| 256275 | Chilling Reign Sleeved Booster Pack Bundle [Set of 10] | Booster pack | 10 | Description | 10 Chilling Reign | Product set | — | 2021 Q2 (set) | Yes |
+| 236265 | Chilling Reign Build & Battle Box | Build & Battle | 4 | Description | 4 Chilling Reign | Exact | — | 2021 Q2 | Yes |
+| 236259 | Chilling Reign Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2021 Q2 | Yes |
+| 236266 | Chilling Reign Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2021 Q2 (set) | Yes |
+| 236263 | Chilling Reign Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q2 | Yes |
+| 657837 | Chilling Reign Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q2 (set) | No |
+| 657836 | Chilling Reign Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2021 Q2 (set) | No |
+| 256972 | Ice Rider/ Shadow Rider Calyrex V Box Case | Case or display | — | — | — | — | Unknown | 2021 Q2 (set) | Yes |
+| 240975 | Ice Rider Calyrex V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q3 | Yes |
+| 240977 | Shadow Rider Calyrex V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q3 | Yes |
+| 236260 | Chilling Reign Elite Trainer Box [Ice Rider Calyrex] | Elite Trainer Box | 8 | Description | 8 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
+| 244410 | Chilling Reign Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
+| 236261 | Chilling Reign Elite Trainer Box [Shadow Rider Calyrex] | Elite Trainer Box | 8 | Description | 8 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
+| 247281 | Chilling Reign Pokemon Center Elite Trainer Box [Ice Rider Calyrex] (Exclusive) | Elite Trainer Box | 8 | Description | 8 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
+| 247282 | Chilling Reign Pokemon Center Elite Trainer Box [Shadow Rider Calyrex] (Exclusive) | Elite Trainer Box | 8 | Description | 8 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

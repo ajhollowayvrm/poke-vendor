@@ -110,48 +110,50 @@ Specific cards (TCGplayer, assumes equal weight inside each rarity):
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2848`: 33 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 242435 | Evolving Skies 3 Pack Blister [Eiscue] | Blister | 3 | Description | — | 2021 Q3 | Yes |
-| 242444 | Evolving Skies 3 Pack Blister [Umbreon] | Blister | 3 | Description | — | 2021 Q3 | Yes |
-| 242445 | Evolving Skies Premium Checklane Blister [Emboar] | Blister | 1 | Description | — | 2021 Q3 | Yes |
-| 247603 | Evolving Skies Premium Checklane Blister [Houndoom] | Blister | 1 | Description | — | 2021 Q3 (set) | Yes |
-| 242437 | Evolving Skies Premium Checklane Blister [Luxray] | Blister | 1 | Description | — | 2021 Q3 | Yes |
-| 242447 | Evolving Skies Single Pack Blister [Eevee] | Blister | 1 | Description | — | 2021 Q3 | Yes |
-| 242448 | Evolving Skies Single Pack Blister [Galarian Slowpoke] | Blister | 1 | Description | — | 2021 Q3 | Yes |
-| 247604 | Evolving Skies Single Pack Blister [Octillery] | Blister | 1 | Description | — | 2021 Q3 (set) | Yes |
-| 242436 | Evolving Skies Booster Box | Booster box | 36 | Description | — | 2021 Q3 | Yes |
-| 641794 | Evolving Skies Half Booster Box | Booster box | 18 | Description | — | 2021 Q3 (set) | Yes |
-| 244337 | Evolving Skies Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q3 | Yes |
-| 247497 | Evolving Skies Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q3 (set) | Yes |
-| 662620 | Evolving Skies Fun Pack | Booster pack | 1 | Kind default | — | 2021 Q3 (set) | No |
-| 242438 | Evolving Skies Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q3 | Yes |
-| 247498 | Evolving Skies Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q3 (set) | Yes |
-| 246274 | Evolving Skies Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2021 Q3 (set) | Yes |
-| 242449 | Evolving Skies Build & Battle Box | Build & Battle | 4 | Description | — | 2021 Q3 | Yes |
-| 243425 | Evolving Skies Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2021 Q3 (set) | Yes |
-| 248124 | Evolving Skies Booster Box Case | Case or display | — | — | 6 booster boxes | 2021 Q3 (set) | Yes |
-| 242450 | Evolving Skies Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2021 Q3 (set) | Yes |
-| 243722 | Evolving Skies Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2021 Q3 | Yes |
-| 628319 | Evolving Skies Pokemon Center Elite Trainer Box Case [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Case or display | — | — | Unknown number of elite trainer boxes | 2021 Q3 (set) | No |
-| 650863 | Evolving Skies 3 Pack Hanger Box | Collection | 3 | Description | — | 2021 Q3 (set) | Yes |
-| 245878 | Greninja V-UNION Special Collection | Collection | 4 | Description | — | 2021 Q3 (set) | Yes |
-| 245877 | Mewtwo V-UNION Special Collection | Collection | 4 | Description | — | 2021 Q3 (set) | Yes |
-| 245880 | V-UNION Special Collection [Set of 3] | Collection | 4 | Description | — | 2021 Q3 (set) | Yes |
-| 245879 | Zacian V-UNION Special Collection | Collection | 4 | Description | — | 2021 Q3 (set) | Yes |
-| 242434 | Evolving Skies Elite Trainer Box [Flareon/Jolteon/Umbreon/Leafeon] | Elite Trainer Box | 8 | Description | — | 2021 Q3 | Yes |
-| 242443 | Evolving Skies Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] | Elite Trainer Box | 8 | Description | — | 2021 Q3 | Yes |
-| 243721 | Evolving Skies Elite Trainer Box [Set of 2] | Elite Trainer Box | 8 | Description | — | 2021 Q3 | Yes |
-| 245352 | Evolving Skies Pokemon Center Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Elite Trainer Box | 10 | Description | — | 2021 Q3 (set) | Yes |
-| 245376 | Evolving Skies Pokemon Center Elite Trainer Box [Jolteon/Flareon/Umbreon/Leafeon] (Exclusive) | Elite Trainer Box | 10 | Description | — | 2021 Q3 | Yes |
-| 245855 | Evolving Skies Pokemon Center Elite Trainer Box [Set of 2] (Exclusive) | Elite Trainer Box | 10 | Description | — | 2021 Q3 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 242435 | Evolving Skies 3 Pack Blister [Eiscue] | Blister | 3 | Description | 3 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 242444 | Evolving Skies 3 Pack Blister [Umbreon] | Blister | 3 | Description | 3 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 242445 | Evolving Skies Premium Checklane Blister [Emboar] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 247603 | Evolving Skies Premium Checklane Blister [Houndoom] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q3 (set) | Yes |
+| 242437 | Evolving Skies Premium Checklane Blister [Luxray] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 242447 | Evolving Skies Single Pack Blister [Eevee] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 242448 | Evolving Skies Single Pack Blister [Galarian Slowpoke] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 247604 | Evolving Skies Single Pack Blister [Octillery] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q3 (set) | Yes |
+| 242436 | Evolving Skies Booster Box | Booster box | 36 | Description | 36 Evolving Skies | Product set | — | 2021 Q3 | Yes |
+| 641794 | Evolving Skies Half Booster Box | Booster box | 18 | Description | 18 Evolving Skies | Product set | — | 2021 Q3 (set) | Yes |
+| 244337 | Evolving Skies Booster Pack | Booster pack | 1 | Kind default | 1 Evolving Skies | Product set | — | 2021 Q3 | Yes |
+| 247497 | Evolving Skies Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Evolving Skies | Product set | — | 2021 Q3 (set) | Yes |
+| 662620 | Evolving Skies Fun Pack | Booster pack | 1 | Kind default | 1 Evolving Skies | Product set | — | 2021 Q3 (set) | No |
+| 242438 | Evolving Skies Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Evolving Skies | Product set | — | 2021 Q3 | Yes |
+| 247498 | Evolving Skies Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Evolving Skies | Product set | — | 2021 Q3 (set) | Yes |
+| 246274 | Evolving Skies Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | 8 Evolving Skies | Product set | — | 2021 Q3 (set) | Yes |
+| 242449 | Evolving Skies Build & Battle Box | Build & Battle | 4 | Description | 4 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 243425 | Evolving Skies Build & Battle Stadium | Build & Battle | 12 | Set file | 12 Evolving Skies | Product set | — | 2021 Q3 (set) | Yes |
+| 248124 | Evolving Skies Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2021 Q3 (set) | Yes |
+| 242450 | Evolving Skies Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2021 Q3 (set) | Yes |
+| 243722 | Evolving Skies Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q3 | Yes |
+| 628319 | Evolving Skies Pokemon Center Elite Trainer Box Case [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2021 Q3 (set) | No |
+| 650863 | Evolving Skies 3 Pack Hanger Box | Collection | 3 | Description | 3 Evolving Skies | Exact | — | 2021 Q3 (set) | Yes |
+| 245878 | Greninja V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245877 | Mewtwo V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245880 | V-UNION Special Collection [Set of 3] | Collection | 12 | Description | 12 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245879 | Zacian V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 242434 | Evolving Skies Elite Trainer Box [Flareon/Jolteon/Umbreon/Leafeon] | Elite Trainer Box | 8 | Description | 8 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 242443 | Evolving Skies Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] | Elite Trainer Box | 8 | Description | 8 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 243721 | Evolving Skies Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 245352 | Evolving Skies Pokemon Center Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Elite Trainer Box | 10 | Description | 8 Evolving Skies | Partial | — | 2021 Q3 (set) | Yes |
+| 245376 | Evolving Skies Pokemon Center Elite Trainer Box [Jolteon/Flareon/Umbreon/Leafeon] (Exclusive) | Elite Trainer Box | 10 | Description | 8 Evolving Skies | Partial | — | 2021 Q3 | Yes |
+| 245855 | Evolving Skies Pokemon Center Elite Trainer Box [Set of 2] (Exclusive) | Elite Trainer Box | 20 | Description | 16 Evolving Skies | Partial | — | 2021 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

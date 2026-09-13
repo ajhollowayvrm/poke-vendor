@@ -103,49 +103,51 @@ Pull odds. The only source is DigitalTQ: 371 packs.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `3064`: 34 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 274421 | Pokemon GO Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q3 | Yes |
-| 271513 | Pokemon GO Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2022 Q3 | Yes |
-| 271512 | Pokemon GO Mini Tin Display | Case or display | — | — | Unknown number of mini tins | 2022 Q3 (set) | Yes |
-| 692922 | Pokemon GO Pin Collection Case | Case or display | — | — | Unknown number of collections | 2022 Q3 (set) | No |
-| 271511 | Pokemon GO Poke Ball Tin Display | Case or display | — | — | Unknown number of tins | 2022 Q3 | Yes |
-| 630089 | Pokemon Go Pokemon Center Elite Trainer Box Plus Case (Exclusive) | Case or display | — | — | 4 elite trainer boxes | 2022 Q3 (set) | Yes |
-| 270716 | Pokemon GO Collection [Alolan Exeggutor V] | Collection | 4 | Description | — | 2022 Q3 | Yes |
-| 275825 | Pokemon GO Pin Collection [Bulbasaur] | Collection | 3 | Description | — | 2022 Q3 | Yes |
-| 275826 | Pokemon GO Pin Collection [Charmander] | Collection | 3 | Description | — | 2022 Q3 | Yes |
-| 275845 | Pokemon GO Pin Collection [Set of 3] | Collection | 9 | Bulbapedia | — | 2022 Q3 | Yes |
-| 275827 | Pokemon GO Pin Collection [Squirtle] | Collection | 3 | Description | — | 2022 Q3 | Yes |
-| 275842 | Pokemon GO Premier Deck Holder Collection [Dragonite VSTAR] | Collection | 9 | Description | — | 2022 Q3 | Yes |
-| 270717 | Pokemon GO Premium Collection [Radiant Eevee] | Collection | 8 | Description | — | 2022 Q3 | Yes |
-| 270713 | Pokemon GO Special Collection - Team Instinct | Collection | 6 | Description | — | 2022 Q3 | Yes |
-| 270714 | Pokemon GO Special Collection - Team Mystic | Collection | 6 | Description | — | 2022 Q3 | Yes |
-| 270715 | Pokemon GO Special Collection - Team Valor | Collection | 6 | Description | — | 2022 Q3 | Yes |
-| 271502 | Pokemon GO Special Collection [Set of 3] | Collection | 18 | Bulbapedia | — | 2022 Q3 (set) | Yes |
-| 270712 | Pokemon GO V Battle Deck Bundle [Mewtwo V/Melmetal V] | Deck | 2 | Description | — | 2022 Q3 (set) | Yes |
-| 270708 | Pokemon GO Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2022 Q3 | Yes |
-| 270709 | Pokemon GO Pokemon Center Elite Trainer Box Plus (Exclusive) | Elite Trainer Box | 12 | Description | — | 2022 Q3 | Yes |
-| 270729 | Pokemon GO Mini Tin [Blissey] | Tin | 2 | Description | — | 2022 Q3 | Yes |
-| 270731 | Pokemon GO Mini Tin [Eevee] | Tin | 2 | Description | — | 2022 Q3 | Yes |
-| 270728 | Pokemon GO Mini Tin [Magikarp] | Tin | 2 | Description | — | 2022 Q3 | Yes |
-| 270730 | Pokemon GO Mini Tin [Pikachu] | Tin | 2 | Description | — | 2022 Q3 | Yes |
-| 271500 | Pokemon GO Mini Tin [Set of 5] | Tin | 10 | Bulbapedia | — | 2022 Q3 | Yes |
-| 270732 | Pokemon GO Mini Tin [Snorlax] | Tin | 2 | Description | — | 2022 Q3 | Yes |
-| 270733 | Pokemon GO Poke Ball Tin - Great Ball | Tin | 3 | Description | — | 2022 Q3 | Yes |
-| 270734 | Pokemon GO Poke Ball Tin - Poke Ball | Tin | 3 | Description | — | 2022 Q3 | Yes |
-| 270735 | Pokemon GO Poke Ball Tin - Ultra Ball | Tin | 3 | Description | — | 2022 Q3 | Yes |
-| 271501 | Pokemon GO Poke Ball Tin [Set of 3] | Tin | 3 | Description | — | 2022 Q3 | Yes |
-| 270725 | Pokemon GO Tin [Blissey] | Tin | 4 | Description | — | 2022 Q3 (set) | Yes |
-| 270726 | Pokemon GO Tin [Pikachu] | Tin | 4 | Description | — | 2022 Q3 | Yes |
-| 271503 | Pokemon GO Tin [Set of 3] | Tin | 4 | Description | — | 2022 Q3 | Yes |
-| 270727 | Pokemon GO Tin [Snorlax] | Tin | 4 | Description | — | 2022 Q3 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 274421 | Pokemon GO Booster Pack | Booster pack | 1 | Kind default | 1 Pokémon GO | Product set | — | 2022 Q3 | Yes |
+| 271513 | Pokemon GO Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2022 Q3 | Yes |
+| 271512 | Pokemon GO Mini Tin Display | Case or display | — | — | — | — | Unknown number of mini tins | 2022 Q3 (set) | Yes |
+| 692922 | Pokemon GO Pin Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2022 Q3 (set) | No |
+| 271511 | Pokemon GO Poke Ball Tin Display | Case or display | — | — | — | — | Unknown number of tins | 2022 Q3 | Yes |
+| 630089 | Pokemon Go Pokemon Center Elite Trainer Box Plus Case (Exclusive) | Case or display | — | — | — | — | 4 elite trainer boxes | 2022 Q3 (set) | Yes |
+| 270716 | Pokemon GO Collection [Alolan Exeggutor V] | Collection | 4 | Description | 4 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 275825 | Pokemon GO Pin Collection [Bulbasaur] | Collection | 3 | Description | 3 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 275826 | Pokemon GO Pin Collection [Charmander] | Collection | 3 | Description | 3 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 275845 | Pokemon GO Pin Collection [Set of 3] | Collection | 9 | Bulbapedia | 9 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 275827 | Pokemon GO Pin Collection [Squirtle] | Collection | 3 | Description | 3 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 275842 | Pokemon GO Premier Deck Holder Collection [Dragonite VSTAR] | Collection | 9 | Description | 9 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270717 | Pokemon GO Premium Collection [Radiant Eevee] | Collection | 8 | Description | 8 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270713 | Pokemon GO Special Collection - Team Instinct | Collection | 6 | Description | 6 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270714 | Pokemon GO Special Collection - Team Mystic | Collection | 6 | Description | 6 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270715 | Pokemon GO Special Collection - Team Valor | Collection | 6 | Description | 6 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 271502 | Pokemon GO Special Collection [Set of 3] | Collection | 18 | Bulbapedia | 18 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
+| 270712 | Pokemon GO V Battle Deck Bundle [Mewtwo V/Melmetal V] | Deck | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
+| 270708 | Pokemon GO Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270709 | Pokemon GO Pokemon Center Elite Trainer Box Plus (Exclusive) | Elite Trainer Box | 12 | Description | 10 Pokémon GO | Partial | — | 2022 Q3 | Yes |
+| 270729 | Pokemon GO Mini Tin [Blissey] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270731 | Pokemon GO Mini Tin [Eevee] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270728 | Pokemon GO Mini Tin [Magikarp] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270730 | Pokemon GO Mini Tin [Pikachu] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 271500 | Pokemon GO Mini Tin [Set of 5] | Tin | 10 | Bulbapedia | 10 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270732 | Pokemon GO Mini Tin [Snorlax] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270733 | Pokemon GO Poke Ball Tin - Great Ball | Tin | 3 | Description | 3 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270734 | Pokemon GO Poke Ball Tin - Poke Ball | Tin | 3 | Description | 3 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270735 | Pokemon GO Poke Ball Tin - Ultra Ball | Tin | 3 | Description | 3 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 271501 | Pokemon GO Poke Ball Tin [Set of 3] | Tin | 9 | Description | 9 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270725 | Pokemon GO Tin [Blissey] | Tin | 4 | Description | 4 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
+| 270726 | Pokemon GO Tin [Pikachu] | Tin | 4 | Description | 4 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 271503 | Pokemon GO Tin [Set of 3] | Tin | 12 | Description | 12 Pokémon GO | Exact | — | 2022 Q3 | Yes |
+| 270727 | Pokemon GO Tin [Snorlax] | Tin | 4 | Description | 4 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

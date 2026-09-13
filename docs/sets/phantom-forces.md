@@ -88,32 +88,34 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1494`: 17 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 97785 | Phantom Forces 3 Pack Blister [Darkrai] | Blister | 3 | Description | — | 2014 Q4 (set) | Yes |
-| 97784 | Phantom Forces 3 Pack Blister [Shiftry] | Blister | 1 | Description | — | 2014 Q4 (set) | No |
-| 97795 | Phantom Forces Collector's Pin 3 Pack Blister [Mega Gengar] | Blister | 3 | Description | — | 2014 Q4 (set) | No |
-| 97796 | Phantom Forces Collector's Pin 3 Pack Blister [Mega Kangaskhan] | Blister | 3 | Description | — | 2014 Q4 (set) | No |
-| 97787 | Phantom Forces Single Pack Blister [Greninja] | Blister | 1 | Description | — | 2014 Q4 (set) | No |
-| 177867 | Phantom Forces Single Pack Blister [Talonflame] | Blister | 1 | Description | — | 2014 Q4 (set) | No |
-| 94623 | XY Phantom Forces Booster Box | Booster box | 36 | Kind default | — | 2014 Q4 (set) | No |
-| 550676 | Phantom Forces Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q4 (set) | No |
-| 276592 | Phantom Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q4 (set) | No |
-| 94622 | XY Phantom Forces Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q4 (set) | Yes |
-| 97788 | Collector Chest | Collection | 5 | Bulbapedia | — | 2014 Q4 (set) | No |
-| 97794 | Gallade EX Box | Collection | 4 | Bulbapedia | — | 2014 Q4 (set) | Yes |
-| 97789 | Hoenn Collection [Primal Groudon EX] | Collection | 3 | Bulbapedia | — | 2014 Q4 (set) | No |
-| 97790 | Hoenn Collection [Primal Kyogre EX] | Collection | 3 | Bulbapedia | — | 2014 Q4 (set) | No |
-| 97793 | Mega Diancie EX Premium Collection | Collection | 6 | Bulbapedia | — | 2014 Q4 (set) | No |
-| 97791 | Mega Metagross EX Premium Collection | Collection | 8 | Bulbapedia | — | 2014 Q4 (set) | No |
-| 97786 | Phantom Forces Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2014 Q4 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 97785 | Phantom Forces 3 Pack Blister [Darkrai] | Blister | 3 | Description | 3 Phantom Forces | Exact | — | 2014 Q4 (set) | Yes |
+| 97784 | Phantom Forces 3 Pack Blister [Shiftry] | Blister | 1 | Description | 1 Phantom Forces | Exact | — | 2014 Q4 (set) | No |
+| 97795 | Phantom Forces Collector's Pin 3 Pack Blister [Mega Gengar] | Blister | 3 | Description | 3 Phantom Forces | Exact | — | 2014 Q4 (set) | No |
+| 97796 | Phantom Forces Collector's Pin 3 Pack Blister [Mega Kangaskhan] | Blister | 3 | Description | 3 Phantom Forces | Exact | — | 2014 Q4 (set) | No |
+| 97787 | Phantom Forces Single Pack Blister [Greninja] | Blister | 1 | Description | 1 Phantom Forces | Exact | — | 2014 Q4 (set) | No |
+| 177867 | Phantom Forces Single Pack Blister [Talonflame] | Blister | 1 | Description | 1 Phantom Forces | Exact | — | 2014 Q4 (set) | No |
+| 94623 | XY Phantom Forces Booster Box | Booster box | 36 | Kind default | 36 Phantom Forces | Product set | — | 2014 Q4 (set) | No |
+| 550676 | Phantom Forces Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Phantom Forces | Product set | — | 2014 Q4 (set) | No |
+| 276592 | Phantom Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Phantom Forces | Product set | — | 2014 Q4 (set) | No |
+| 94622 | XY Phantom Forces Booster Pack | Booster pack | 1 | Kind default | 1 Phantom Forces | Product set | — | 2014 Q4 (set) | Yes |
+| 97788 | Collector Chest | Collection | 5 | Bulbapedia | — | Unknown | — | 2014 Q4 (set) | No |
+| 97794 | Gallade EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | Yes |
+| 97789 | Hoenn Collection [Primal Groudon EX] | Collection | 3 | Bulbapedia | 3 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | No |
+| 97790 | Hoenn Collection [Primal Kyogre EX] | Collection | 3 | Bulbapedia | 3 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | No |
+| 97793 | Mega Diancie EX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2014 Q4 (set) | No |
+| 97791 | Mega Metagross EX Premium Collection | Collection | 8 | Bulbapedia | 2 XY | Partial | — | 2014 Q4 (set) | No |
+| 97786 | Phantom Forces Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Phantom Forces | Exact | — | 2014 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

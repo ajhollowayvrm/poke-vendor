@@ -128,58 +128,60 @@ Ultra Rare 4.6%, Rare Holo VSTAR 4.18%, Rare Radiant 4.04%, Secret Rare Holo
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `3118`, `3172`: 43 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 277329 | Lost Origin 3 Pack Blister [Regigigas] | Blister | 3 | Description | — | 2022 Q3 | Yes |
-| 278792 | Lost Origin 3 Pack Blister [Set of 2] | Blister | 3 | Description | — | 2022 Q3 | Yes |
-| 277330 | Lost Origin 3 Pack Blister [Weavile] | Blister | 3 | Description | — | 2022 Q3 | Yes |
-| 277331 | Lost Origin Premium Checklane Blister [Infernape] | Blister | 1 | Description | — | 2022 Q3 | Yes |
-| 278803 | Lost Origin Premium Checklane Blister [Set of 2] | Blister | Unknown | Unknown | — | 2022 Q3 | No |
-| 277334 | Lost Origin Premium Checklane Blister [Torterra] | Blister | 1 | Description | — | 2022 Q3 | Yes |
-| 277327 | Lost Origin Single Pack Blister [Croagunk] | Blister | 1 | Description | — | 2022 Q3 | Yes |
-| 277328 | Lost Origin Single Pack Blister [Scorbunny] | Blister | 1 | Description | — | 2022 Q3 | Yes |
-| 278797 | Lost Origin Single Pack Blister [Set of 2] | Blister | 1 | Description | — | 2022 Q3 | Yes |
-| 277324 | Lost Origin Booster Box | Booster box | 36 | Description | — | 2022 Q3 | Yes |
-| 278819 | Lost Origin Booster Bundle | Booster bundle | 6 | Description | — | 2022 Q3 (set) | Yes |
-| 277325 | Lost Origin Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q3 | Yes |
-| 278794 | Lost Origin Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2022 Q3 | Yes |
-| 277326 | Lost Origin Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q3 | Yes |
-| 278801 | Lost Origin Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2022 Q3 | Yes |
-| 278804 | Lost Origin Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q3 | Yes |
-| 277345 | Lost Origin Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q3 | Yes |
-| 277346 | Lost Origin Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2022 Q3 (set) | Yes |
-| 693585 | Arceus VSTAR Ultra-Premium Collection Case | Case or display | — | — | Unknown number of collections | 2022 Q3 (set) | No |
-| 278793 | Lost Origin Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q3 | Yes |
-| 479361 | Lost Origin Booster Bundle Case | Case or display | — | — | Unknown number of booster bundles | 2022 Q3 (set) | No |
-| 278795 | Lost Origin Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2022 Q3 (set) | Yes |
-| 648474 | Lost Origin Build & Battle Stadium Case | Case or display | — | — | 2 build & battle boxes | 2022 Q3 (set) | Yes |
-| 278796 | Lost Origin Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2022 Q3 | Yes |
-| 652759 | Lost Origin Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | 4 elite trainer boxes | 2022 Q3 (set) | No |
-| 496024 | Lost Origin SWSH11 Build & Battle Box Case | Case or display | — | — | 10 build & battle boxes | 2022 Q3 (set) | No |
-| 496131 | Lost Origin Sleeved Booster Pack Case | Case or display | — | — | Unknown number of sleeved boosters | 2022 Q3 (set) | Yes |
-| 282407 | Pokemon Stacking Tins: Fighting-Fire-Darkness Display | Case or display | — | — | Unknown number of tins | 2022 Q4 | No |
-| 454377 | Sword & Shield Ultra-Premium Collection: Charizard Case | Case or display | — | — | Unknown number of collections | 2022 Q3 (set) | Yes |
-| 283325 | Arceus VSTAR Premium Collection | Collection | 10 | Description | — | 2022 Q3 | Yes |
-| 285674 | Arceus VSTAR Ultra-Premium Collection | Collection | 15 | Description | — | 2022 Q4 | Yes |
-| 282402 | Hisuian Zoroark VSTAR Premium Collection | Collection | 6 | Description | — | 2022 Q4 | Yes |
-| 637417 | Hisuian Zoroark VSTAR Premium Collection (International Version) | Collection | 5 | Description | — | 2022 Q3 (set) | Yes |
-| 282000 | Origin Forme Dialga VSTAR Premium Collection | Collection | 6 | Description | — | 2022 Q4 | Yes |
-| 282005 | Origin Forme Dialga/Palkia VSTAR Premium Collection [Set of 2] | Collection | 6 | Description | — | 2022 Q4 | Yes |
-| 282001 | Origin Forme Palkia VSTAR Premium Collection | Collection | 6 | Description | — | 2022 Q4 | Yes |
-| 282401 | Sword & Shield Ultra-Premium Collection: Charizard | Collection | 16 | Description | — | 2022 Q4 | Yes |
-| 277335 | Lost Origin Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2022 Q3 | Yes |
-| 277336 | Lost Origin Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2022 Q3 (set) | Yes |
-| 282405 | Pokemon Stacking Tin: Darkness | Tin | 3 | Description | — | 2022 Q4 | Yes |
-| 282403 | Pokemon Stacking Tin: Fighting | Tin | 3 | Description | — | 2022 Q4 | Yes |
-| 282404 | Pokemon Stacking Tin: Fire | Tin | 3 | Description | — | 2022 Q4 | Yes |
-| 282406 | Pokemon Stacking Tins: Fighting-Fire-Darkness [Set of 3] | Tin | 3 | Description | — | 2022 Q4 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 277329 | Lost Origin 3 Pack Blister [Regigigas] | Blister | 3 | Description | 3 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 278792 | Lost Origin 3 Pack Blister [Set of 2] | Blister | 6 | Description | 6 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277330 | Lost Origin 3 Pack Blister [Weavile] | Blister | 3 | Description | 3 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277331 | Lost Origin Premium Checklane Blister [Infernape] | Blister | 1 | Description | 1 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 278803 | Lost Origin Premium Checklane Blister [Set of 2] | Blister | Unknown | Unknown | 1 Lost Origin | Exact | — | 2022 Q3 | No |
+| 277334 | Lost Origin Premium Checklane Blister [Torterra] | Blister | 1 | Description | 1 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277327 | Lost Origin Single Pack Blister [Croagunk] | Blister | 1 | Description | 1 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277328 | Lost Origin Single Pack Blister [Scorbunny] | Blister | 1 | Description | 1 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 278797 | Lost Origin Single Pack Blister [Set of 2] | Blister | 2 | Description | 2 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277324 | Lost Origin Booster Box | Booster box | 36 | Description | 36 Lost Origin | Product set | — | 2022 Q3 | Yes |
+| 278819 | Lost Origin Booster Bundle | Booster bundle | 6 | Description | 6 Lost Origin | Exact | — | 2022 Q3 (set) | Yes |
+| 277325 | Lost Origin Booster Pack | Booster pack | 1 | Kind default | 1 Lost Origin | Product set | — | 2022 Q3 | Yes |
+| 278794 | Lost Origin Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Lost Origin | Product set | — | 2022 Q3 | Yes |
+| 277326 | Lost Origin Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Lost Origin | Product set | — | 2022 Q3 | Yes |
+| 278801 | Lost Origin Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Lost Origin | Product set | — | 2022 Q3 | Yes |
+| 278804 | Lost Origin Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | 8 Lost Origin | Product set | — | 2022 Q3 | Yes |
+| 277345 | Lost Origin Build & Battle Box | Build & Battle | 4 | Description | 4 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277346 | Lost Origin Build & Battle Stadium | Build & Battle | 12 | Set file | 12 Lost Origin | Product set | — | 2022 Q3 (set) | Yes |
+| 693585 | Arceus VSTAR Ultra-Premium Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2022 Q3 (set) | No |
+| 278793 | Lost Origin Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2022 Q3 | Yes |
+| 479361 | Lost Origin Booster Bundle Case | Case or display | — | — | — | — | Unknown number of booster bundles | 2022 Q3 (set) | No |
+| 278795 | Lost Origin Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2022 Q3 (set) | Yes |
+| 648474 | Lost Origin Build & Battle Stadium Case | Case or display | — | — | — | — | 2 build & battle boxes | 2022 Q3 (set) | Yes |
+| 278796 | Lost Origin Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2022 Q3 | Yes |
+| 652759 | Lost Origin Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | 4 elite trainer boxes | 2022 Q3 (set) | No |
+| 496024 | Lost Origin SWSH11 Build & Battle Box Case | Case or display | — | — | — | — | 10 build & battle boxes | 2022 Q3 (set) | No |
+| 496131 | Lost Origin Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2022 Q3 (set) | Yes |
+| 282407 | Pokemon Stacking Tins: Fighting-Fire-Darkness Display | Case or display | — | — | — | — | Unknown number of tins | 2022 Q4 | No |
+| 454377 | Sword & Shield Ultra-Premium Collection: Charizard Case | Case or display | — | — | — | — | Unknown number of collections | 2022 Q3 (set) | Yes |
+| 283325 | Arceus VSTAR Premium Collection | Collection | 10 | Description | — | Unknown | — | 2022 Q3 | Yes |
+| 285674 | Arceus VSTAR Ultra-Premium Collection | Collection | 15 | Description | 15 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 282402 | Hisuian Zoroark VSTAR Premium Collection | Collection | 6 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 637417 | Hisuian Zoroark VSTAR Premium Collection (International Version) | Collection | 5 | Description | — | Unknown | — | 2022 Q3 (set) | Yes |
+| 282000 | Origin Forme Dialga VSTAR Premium Collection | Collection | 6 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 282005 | Origin Forme Dialga/Palkia VSTAR Premium Collection [Set of 2] | Collection | 12 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 282001 | Origin Forme Palkia VSTAR Premium Collection | Collection | 6 | Description | 6 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 282401 | Sword & Shield Ultra-Premium Collection: Charizard | Collection | 16 | Description | 16 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 277335 | Lost Origin Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Lost Origin | Exact | — | 2022 Q3 | Yes |
+| 277336 | Lost Origin Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | 8 Lost Origin | Partial | — | 2022 Q3 (set) | Yes |
+| 282405 | Pokemon Stacking Tin: Darkness | Tin | 3 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 282403 | Pokemon Stacking Tin: Fighting | Tin | 3 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 282404 | Pokemon Stacking Tin: Fire | Tin | 3 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 282406 | Pokemon Stacking Tins: Fighting-Fire-Darkness [Set of 3] | Tin | 9 | Description | — | Unknown | — | 2022 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

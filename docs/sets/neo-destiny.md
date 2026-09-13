@@ -94,19 +94,21 @@ Celebi (PSA).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1444`: 4 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 563754 | Neo Destiny Booster Box [1st Edition] | Booster box | 36 | Description | — | 2002 Q1 (set) | No |
-| 563755 | Neo Destiny Booster Box [Unlimited Edition] | Booster box | 36 | Description | — | 2002 Q1 (set) | No |
-| 138148 | Neo Destiny Booster Pack [1st Edition] | Booster pack | 1 | Kind default | — | 2002 Q1 (set) | Yes |
-| 138147 | Neo Destiny Booster Pack [Unlimited Edition] | Booster pack | 1 | Kind default | — | 2002 Q1 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 563754 | Neo Destiny Booster Box [1st Edition] | Booster box | 36 | Description | 36 Neo Destiny | Product set | — | 2002 Q1 (set) | No |
+| 563755 | Neo Destiny Booster Box [Unlimited Edition] | Booster box | 36 | Description | 36 Neo Destiny | Product set | — | 2002 Q1 (set) | No |
+| 138148 | Neo Destiny Booster Pack [1st Edition] | Booster pack | 1 | Kind default | 1 Neo Destiny | Product set | — | 2002 Q1 (set) | Yes |
+| 138147 | Neo Destiny Booster Pack [Unlimited Edition] | Booster pack | 1 | Kind default | 1 Neo Destiny | Product set | — | 2002 Q1 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

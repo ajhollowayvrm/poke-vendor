@@ -143,39 +143,41 @@ Collation:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `23473`: 24 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 544172 | Twilight Masquerade 3 Pack Blister [Revavroom] | Blister | 3 | Description | — | 2024 Q2 (set) | Yes |
-| 544171 | Twilight Masquerade 3 Pack Blister [Snorlax] | Blister | 3 | Description | — | 2024 Q2 (set) | Yes |
-| 544182 | Twilight Masquerade Premium Checklane Blister [Horsea] | Blister | Unknown | Unknown | — | 2024 Q2 (set) | Yes |
-| 617190 | Twilight Masquerade Premium Checklane Blister [Lokix] | Blister | Unknown | Unknown | — | 2024 Q2 (set) | Yes |
-| 544180 | Twilight Masquerade Premium Checklane Blister [Porygon] | Blister | Unknown | Unknown | — | 2024 Q2 (set) | Yes |
-| 617189 | Twilight Masquerade Premium Checklane Blister [Steelix] | Blister | Unknown | Unknown | — | 2024 Q2 (set) | Yes |
-| 544177 | Twilight Masquerade Single Pack Blister [Pupitar] | Blister | 1 | Description | — | 2024 Q2 (set) | Yes |
-| 544179 | Twilight Masquerade Single Pack Blister [Toxel] | Blister | 1 | Description | — | 2024 Q2 (set) | Yes |
-| 649421 | Twilight Masqueade Half Booster Box | Booster box | 18 | Description | — | 2024 Q2 (set) | Yes |
-| 543846 | Twilight Masquerade Booster Box | Booster box | 36 | Description | — | 2024 Q2 (set) | Yes |
-| 543852 | Twilight Masquerade Booster Bundle | Booster bundle | 6 | Description | — | 2024 Q2 (set) | Yes |
-| 543843 | Twilight Masquerade Booster Pack | Booster pack | 1 | Kind default | — | 2024 Q2 (set) | Yes |
-| 549487 | Twilight Masquerade Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2024 Q2 (set) | Yes |
-| 607501 | Twilight Masquerade Fun Pack | Booster pack | 1 | Kind default | — | 2024 Q2 (set) | Yes |
-| 544170 | Twilight Masquerade Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2024 Q2 (set) | Yes |
-| 549494 | Twilight Masquerade Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2024 Q2 (set) | Yes |
-| 544386 | Twilight Masquerade Build & Battle Box | Build & Battle | 4 | Description | — | 2024 Q2 (set) | Yes |
-| 544384 | Twilight Masquerade Booster Box Case | Case or display | — | — | 6 booster boxes | 2024 Q2 (set) | Yes |
-| 549489 | Twilight Masquerade Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2024 Q2 (set) | Yes |
-| 544385 | Twilight Masquerade Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2024 Q2 | Yes |
-| 549491 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | Unknown | 2024 Q2 (set) | Yes |
-| 593672 | Twilight Masquerade Sleeved Booster Pack Case | Case or display | — | — | Unknown number of sleeved boosters | 2024 Q2 (set) | Yes |
-| 543845 | Twilight Masquerade Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2024 Q2 | Yes |
-| 543844 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2024 Q2 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 544172 | Twilight Masquerade 3 Pack Blister [Revavroom] | Blister | 3 | Description | 3 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 544171 | Twilight Masquerade 3 Pack Blister [Snorlax] | Blister | 3 | Description | 3 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 544182 | Twilight Masquerade Premium Checklane Blister [Horsea] | Blister | Unknown | Unknown | 1 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 617190 | Twilight Masquerade Premium Checklane Blister [Lokix] | Blister | Unknown | Unknown | 1 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 544180 | Twilight Masquerade Premium Checklane Blister [Porygon] | Blister | Unknown | Unknown | 1 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 617189 | Twilight Masquerade Premium Checklane Blister [Steelix] | Blister | Unknown | Unknown | 1 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 544177 | Twilight Masquerade Single Pack Blister [Pupitar] | Blister | 1 | Description | 1 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 544179 | Twilight Masquerade Single Pack Blister [Toxel] | Blister | 1 | Description | 1 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 649421 | Twilight Masqueade Half Booster Box | Booster box | 18 | Description | 18 Twilight Masquerade | Product set | — | 2024 Q2 (set) | Yes |
+| 543846 | Twilight Masquerade Booster Box | Booster box | 36 | Description | 36 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 543852 | Twilight Masquerade Booster Bundle | Booster bundle | 6 | Description | 6 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 543843 | Twilight Masquerade Booster Pack | Booster pack | 1 | Kind default | 1 Twilight Masquerade | Product set | — | 2024 Q2 (set) | Yes |
+| 549487 | Twilight Masquerade Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Twilight Masquerade | Product set | — | 2024 Q2 (set) | Yes |
+| 607501 | Twilight Masquerade Fun Pack | Booster pack | 1 | Kind default | 1 Twilight Masquerade | Product set | — | 2024 Q2 (set) | Yes |
+| 544170 | Twilight Masquerade Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Twilight Masquerade | Product set | — | 2024 Q2 (set) | Yes |
+| 549494 | Twilight Masquerade Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Twilight Masquerade | Product set | — | 2024 Q2 (set) | Yes |
+| 544386 | Twilight Masquerade Build & Battle Box | Build & Battle | 4 | Description | 4 Twilight Masquerade | Exact | — | 2024 Q2 (set) | Yes |
+| 544384 | Twilight Masquerade Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2024 Q2 (set) | Yes |
+| 549489 | Twilight Masquerade Build & Battle Box Display | Case or display | — | — | — | — | Unknown number of build & battle boxes | 2024 Q2 (set) | Yes |
+| 544385 | Twilight Masquerade Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2024 Q2 | Yes |
+| 549491 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | — | — | Unknown | 2024 Q2 (set) | Yes |
+| 593672 | Twilight Masquerade Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2024 Q2 (set) | Yes |
+| 543845 | Twilight Masquerade Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Twilight Masquerade | Exact | — | 2024 Q2 | Yes |
+| 543844 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Twilight Masquerade | Partial | — | 2024 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

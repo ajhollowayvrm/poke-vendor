@@ -86,29 +86,31 @@ is Unknown. Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2409`: 14 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 264258 | Detective Pikachu Two Pack Blister | Blister | 2 | Name | — | 2019 Q1 (set) | Yes |
-| 187239 | Detective Pikachu Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
-| 189810 | Detective Pikachu Special Promo Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
-| 185245 | Detective Pikachu Case File | Case or display | — | — | Unknown | 2019 Q2 | Yes |
-| 197563 | Detective Pikachu On the Case Figure Collection | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 190325 | Detective Pikachu Special Case File - 3 Pack Booster Blister | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 185242 | Detective Pikachu: Charizard GX Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 237678 | Detective Pikachu: Charizard GX Special Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 185243 | Detective Pikachu: Greninja GX Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 190324 | Detective Pikachu: Mewtwo GX Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 264420 | Detective Pikachu Cafe Figure Collection | Collection | 6 | Description | — | 2019 Q1 (set) | No |
-| 185244 | Detective Pikachu: Collector Chest | Collection | 9 | Description | — | 2019 Q2 | Yes |
-| 502477 | Detective Pikachu Tin [Charizard] | Tin | 6 | Description | — | 2019 Q1 (set) | Yes |
-| 502478 | Detective Pikachu Tin [Mewtwo] | Tin | 6 | Description | — | 2019 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 264258 | Detective Pikachu Two Pack Blister | Blister | 2 | Name | 1 Detective Pikachu | Partial | — | 2019 Q1 (set) | Yes |
+| 187239 | Detective Pikachu Booster Pack | Booster pack | 1 | Kind default | 1 Detective Pikachu | Product set | — | 2019 Q1 (set) | Yes |
+| 189810 | Detective Pikachu Special Promo Booster Pack | Booster pack | 1 | Kind default | 1 Detective Pikachu | Product set | — | 2019 Q1 (set) | Yes |
+| 185245 | Detective Pikachu Case File | Case or display | — | — | — | — | Unknown | 2019 Q2 | Yes |
+| 197563 | Detective Pikachu On the Case Figure Collection | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
+| 190325 | Detective Pikachu Special Case File - 3 Pack Booster Blister | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
+| 185242 | Detective Pikachu: Charizard GX Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
+| 237678 | Detective Pikachu: Charizard GX Special Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
+| 185243 | Detective Pikachu: Greninja GX Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
+| 190324 | Detective Pikachu: Mewtwo GX Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
+| 264420 | Detective Pikachu Cafe Figure Collection | Collection | 6 | Description | 4 Detective Pikachu, 2 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | No |
+| 185244 | Detective Pikachu: Collector Chest | Collection | 9 | Description | 7 Detective Pikachu, 2 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 | Yes |
+| 502477 | Detective Pikachu Tin [Charizard] | Tin | 6 | Description | 4 Detective Pikachu | Partial | — | 2019 Q1 (set) | Yes |
+| 502478 | Detective Pikachu Tin [Mewtwo] | Tin | 6 | Description | 4 Detective Pikachu | Partial | — | 2019 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

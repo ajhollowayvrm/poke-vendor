@@ -161,46 +161,48 @@ Collation:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `23381`: 31 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 536229 | Temporal Forces 3 Pack Blister [Cleffa] | Blister | 3 | Description | — | 2024 Q1 (set) | Yes |
-| 536227 | Temporal Forces 3 Pack Blister [Cyclizar] | Blister | 3 | Description | — | 2024 Q1 (set) | Yes |
-| 544679 | Temporal Forces Premium Checklane Blister [Baxcalibur] | Blister | 1 | Description | — | 2024 Q1 (set) | Yes |
-| 544687 | Temporal Forces Premium Checklane Blister [Togekiss] | Blister | 1 | Description | — | 2024 Q1 (set) | Yes |
-| 536594 | Temporal Forces Single Pack Blister [Bellibolt] | Blister | 1 | Description | — | 2024 Q1 | Yes |
-| 536284 | Temporal Forces Single Pack Blister [Carvanha] | Blister | 1 | Description | — | 2024 Q1 | Yes |
-| 617012 | Temporal Forces Single Pack Blister [Palafin] | Blister | 1 | Description | — | 2024 Q1 (set) | Yes |
-| 617011 | Temporal Forces Single Pack Blister [Scovillain] | Blister | 1 | Description | — | 2024 Q1 (set) | Yes |
-| 670916 | Temporal Forces Single Pack Blister [Set of 2] | Blister | 1 | Description | — | 2024 Q1 (set) | Yes |
-| 536225 | Temporal Forces Booster Box | Booster box | 36 | Description | — | 2024 Q1 | Yes |
-| 649416 | Temporal Forces Half Booster Box | Booster box | 18 | Description | — | 2024 Q1 (set) | Yes |
-| 541017 | Temporal Forces Booster Bundle | Booster bundle | 6 | Description | — | 2024 Q1 | Yes |
-| 532841 | Temporal Forces Booster Pack | Booster pack | 1 | Kind default | — | 2024 Q1 (set) | Yes |
-| 538786 | Temporal Forces Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2024 Q1 | Yes |
-| 607502 | Temporal Forces Fun Pack | Booster pack | 1 | Kind default | — | 2024 Q1 (set) | Yes |
-| 538787 | Temporal Forces Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2024 Q1 | Yes |
-| 538789 | Temporal Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2024 Q1 | Yes |
-| 538807 | Temporal Forces Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Name | — | 2024 Q1 | Yes |
-| 537411 | Temporal Forces Build & Battle Box | Build & Battle | 4 | Description | — | 2024 Q1 (set) | Yes |
-| 680963 | Temporal Forces 3 Pack Blister Display | Case or display | — | — | Unknown number of blisters | 2024 Q1 (set) | No |
-| 537417 | Temporal Forces Booster Box Case | Case or display | — | — | 6 booster boxes | 2024 Q1 | Yes |
-| 537409 | Temporal Forces Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2024 Q1 (set) | Yes |
-| 537418 | Temporal Forces Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2024 Q1 (set) | Yes |
-| 550822 | Temporal Forces Pokemon Center Elite Trainer Box Case (Exclusive) [Iron Leaves] | Case or display | — | — | 4 elite trainer boxes | 2024 Q1 (set) | Yes |
-| 550823 | Temporal Forces Pokemon Center Elite Trainer Box Case (Exclusive) [Walking Wake] | Case or display | — | — | 4 elite trainer boxes | 2024 Q1 (set) | Yes |
-| 604248 | Temporal Forces Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2024 Q1 (set) | Yes |
-| 532848 | Temporal Forces Elite Trainer Box [Iron Leaves ex] | Elite Trainer Box | 9 | Description | — | 2024 Q1 (set) | Yes |
-| 532849 | Temporal Forces Elite Trainer Box [Set of 2] | Elite Trainer Box | 9 | Description | — | 2024 Q1 | Yes |
-| 532845 | Temporal Forces Elite Trainer Box [Walking Wake] | Elite Trainer Box | 9 | Description | — | 2024 Q1 | Yes |
-| 532853 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Iron Leaves] | Elite Trainer Box | 11 | Description | — | 2024 Q1 (set) | Yes |
-| 538775 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Walking Wake] | Elite Trainer Box | 11 | Description | — | 2024 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 536229 | Temporal Forces 3 Pack Blister [Cleffa] | Blister | 3 | Description | 3 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 536227 | Temporal Forces 3 Pack Blister [Cyclizar] | Blister | 3 | Description | 3 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 544679 | Temporal Forces Premium Checklane Blister [Baxcalibur] | Blister | 1 | Description | 1 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 544687 | Temporal Forces Premium Checklane Blister [Togekiss] | Blister | 1 | Description | 1 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 536594 | Temporal Forces Single Pack Blister [Bellibolt] | Blister | 1 | Description | 1 Temporal Forces | Exact | — | 2024 Q1 | Yes |
+| 536284 | Temporal Forces Single Pack Blister [Carvanha] | Blister | 1 | Description | 1 Temporal Forces | Exact | — | 2024 Q1 | Yes |
+| 617012 | Temporal Forces Single Pack Blister [Palafin] | Blister | 1 | Description | 1 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 617011 | Temporal Forces Single Pack Blister [Scovillain] | Blister | 1 | Description | 1 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 670916 | Temporal Forces Single Pack Blister [Set of 2] | Blister | 2 | Description | 2 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 536225 | Temporal Forces Booster Box | Booster box | 36 | Description | 36 Temporal Forces | Exact | — | 2024 Q1 | Yes |
+| 649416 | Temporal Forces Half Booster Box | Booster box | 18 | Description | 18 Temporal Forces | Product set | — | 2024 Q1 (set) | Yes |
+| 541017 | Temporal Forces Booster Bundle | Booster bundle | 6 | Description | 6 Temporal Forces | Exact | — | 2024 Q1 | Yes |
+| 532841 | Temporal Forces Booster Pack | Booster pack | 1 | Kind default | 1 Temporal Forces | Product set | — | 2024 Q1 (set) | Yes |
+| 538786 | Temporal Forces Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Temporal Forces | Product set | — | 2024 Q1 | Yes |
+| 607502 | Temporal Forces Fun Pack | Booster pack | 1 | Kind default | 1 Temporal Forces | Product set | — | 2024 Q1 (set) | Yes |
+| 538787 | Temporal Forces Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Temporal Forces | Product set | — | 2024 Q1 | Yes |
+| 538789 | Temporal Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Temporal Forces | Product set | — | 2024 Q1 | Yes |
+| 538807 | Temporal Forces Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Name | 8 Temporal Forces | Product set | — | 2024 Q1 | Yes |
+| 537411 | Temporal Forces Build & Battle Box | Build & Battle | 4 | Description | 4 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 680963 | Temporal Forces 3 Pack Blister Display | Case or display | — | — | — | — | Unknown number of blisters | 2024 Q1 (set) | No |
+| 537417 | Temporal Forces Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2024 Q1 | Yes |
+| 537409 | Temporal Forces Build & Battle Box Display | Case or display | — | — | — | — | Unknown number of build & battle boxes | 2024 Q1 (set) | Yes |
+| 537418 | Temporal Forces Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2024 Q1 (set) | Yes |
+| 550822 | Temporal Forces Pokemon Center Elite Trainer Box Case (Exclusive) [Iron Leaves] | Case or display | — | — | — | — | 4 elite trainer boxes | 2024 Q1 (set) | Yes |
+| 550823 | Temporal Forces Pokemon Center Elite Trainer Box Case (Exclusive) [Walking Wake] | Case or display | — | — | — | — | 4 elite trainer boxes | 2024 Q1 (set) | Yes |
+| 604248 | Temporal Forces Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2024 Q1 (set) | Yes |
+| 532848 | Temporal Forces Elite Trainer Box [Iron Leaves ex] | Elite Trainer Box | 9 | Description | 9 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 532849 | Temporal Forces Elite Trainer Box [Set of 2] | Elite Trainer Box | 18 | Description | 18 Temporal Forces | Exact | — | 2024 Q1 | Yes |
+| 532845 | Temporal Forces Elite Trainer Box [Walking Wake] | Elite Trainer Box | 9 | Description | 9 Temporal Forces | Exact | — | 2024 Q1 | Yes |
+| 532853 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Iron Leaves] | Elite Trainer Box | 11 | Description | 9 Temporal Forces | Partial | — | 2024 Q1 (set) | Yes |
+| 538775 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Walking Wake] | Elite Trainer Box | 11 | Description | 9 Temporal Forces | Partial | — | 2024 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

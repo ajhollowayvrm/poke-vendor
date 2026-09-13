@@ -93,32 +93,34 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2209`: 17 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 164298 | Forbidden Light 3 Pack Blister [Garbodor] | Blister | 3 | Description | — | 2018 Q2 (set) | No |
-| 164299 | Forbidden Light 3 Pack Blister [Regigigas] | Blister | 3 | Description | — | 2018 Q2 (set) | No |
-| 164301 | Forbidden Light Single Pack Blister [Exeggcute] | Blister | 1 | Name | — | 2018 Q2 (set) | Yes |
-| 164302 | Forbidden Light Single Pack Blister [Rockruff] | Blister | 1 | Name | — | 2018 Q2 (set) | Yes |
-| 164296 | Forbidden Light Booster Box | Booster box | 36 | Kind default | — | 2018 Q2 | Yes |
-| 641117 | Forbidden Light 3-Card Booster Pack | Booster pack | 1 | Kind default | — | 2018 Q2 (set) | Yes |
-| 164297 | Forbidden Light Booster Pack | Booster pack | 1 | Kind default | — | 2018 Q2 | Yes |
-| 267041 | Forbidden Light Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2018 Q2 (set) | Yes |
-| 164300 | Forbidden Light Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2018 Q2 (set) | Yes |
-| 591049 | Forbidden Light Prerelease Kit Display | Case or display | — | — | Unknown | 2018 Q2 (set) | No |
-| 246414 | Dawn Wings Necrozma Box | Collection | 3 | Description | — | 2018 Q2 (set) | Yes |
-| 164314 | Dawn Wings Necrozma Premium Collection | Collection | 5 | Description | — | 2018 Q2 | Yes |
-| 246415 | Dusk Mane Necrozma Box | Collection | 3 | Description | — | 2018 Q2 (set) | Yes |
-| 164315 | Dusk Mane Necrozma Premium Collection | Collection | 5 | Description | — | 2018 Q2 (set) | Yes |
-| 169414 | Forces of Nature GX Premium Collection | Collection | 6 | Description | — | 2018 Q3 | Yes |
-| 164303 | Forbidden Light Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2018 Q2 | Yes |
-| 166413 | Forbidden Light Prerelease Kit | Other | 4 | Description | — | 2018 Q2 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 164298 | Forbidden Light 3 Pack Blister [Garbodor] | Blister | 3 | Description | 2 Forbidden Light, 1 Burning Shadows | Exact | — | 2018 Q2 (set) | No |
+| 164299 | Forbidden Light 3 Pack Blister [Regigigas] | Blister | 3 | Description | 2 Forbidden Light, 1 Burning Shadows | Exact | — | 2018 Q2 (set) | No |
+| 164301 | Forbidden Light Single Pack Blister [Exeggcute] | Blister | 1 | Name | 1 Forbidden Light | Exact | — | 2018 Q2 (set) | Yes |
+| 164302 | Forbidden Light Single Pack Blister [Rockruff] | Blister | 1 | Name | 1 Forbidden Light | Exact | — | 2018 Q2 (set) | Yes |
+| 164296 | Forbidden Light Booster Box | Booster box | 36 | Kind default | 36 Forbidden Light | Product set | — | 2018 Q2 | Yes |
+| 641117 | Forbidden Light 3-Card Booster Pack | Booster pack | 1 | Kind default | 1 Forbidden Light | Product set | — | 2018 Q2 (set) | Yes |
+| 164297 | Forbidden Light Booster Pack | Booster pack | 1 | Kind default | 1 Forbidden Light | Product set | — | 2018 Q2 | Yes |
+| 267041 | Forbidden Light Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Forbidden Light | Product set | — | 2018 Q2 (set) | Yes |
+| 164300 | Forbidden Light Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Forbidden Light | Product set | — | 2018 Q2 (set) | Yes |
+| 591049 | Forbidden Light Prerelease Kit Display | Case or display | — | — | — | — | Unknown | 2018 Q2 (set) | No |
+| 246414 | Dawn Wings Necrozma Box | Collection | 3 | Description | — | Unknown | — | 2018 Q2 (set) | Yes |
+| 164314 | Dawn Wings Necrozma Premium Collection | Collection | 5 | Description | — | Unknown | — | 2018 Q2 | Yes |
+| 246415 | Dusk Mane Necrozma Box | Collection | 3 | Description | — | Unknown | — | 2018 Q2 (set) | Yes |
+| 164315 | Dusk Mane Necrozma Premium Collection | Collection | 5 | Description | — | Unknown | — | 2018 Q2 (set) | Yes |
+| 169414 | Forces of Nature GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2018 Q3 | Yes |
+| 164303 | Forbidden Light Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Forbidden Light | Exact | — | 2018 Q2 | Yes |
+| 166413 | Forbidden Light Prerelease Kit | Other | 4 | Description | — | Unknown | — | 2018 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

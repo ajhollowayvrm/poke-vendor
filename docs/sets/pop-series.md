@@ -129,24 +129,26 @@ at Pokémon-related events".
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1422`, `1447`, `1442`, `1452`, `1439`, `1432`, `1414`, `1450`, `1446`: 9 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 141227 | POP Series 1 Pack | Other | 1 | Name | — | — | Yes |
-| 141228 | POP Series 2 Pack | Other | 2 | Name | — | — | Yes |
-| 190532 | POP Series 3 Pack | Other | 3 | Name | — | — | Yes |
-| 190533 | POP Series 4 Pack | Other | 4 | Name | — | — | Yes |
-| 190534 | POP Series 5 Pack | Other | 5 | Name | — | — | Yes |
-| 141229 | POP Series 6 Pack | Other | 6 | Name | — | — | Yes |
-| 190535 | POP Series 7 Pack | Other | 7 | Name | — | — | Yes |
-| 190536 | POP Series 8 Pack | Other | 8 | Name | — | — | Yes |
-| 190537 | POP Series 9 Pack | Other | 9 | Name | — | — | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 141227 | POP Series 1 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 141228 | POP Series 2 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 190532 | POP Series 3 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 190533 | POP Series 4 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 190534 | POP Series 5 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 141229 | POP Series 6 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 190535 | POP Series 7 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 190536 | POP Series 8 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
+| 190537 | POP Series 9 Pack | Booster pack | 1 | Kind default | 1 POP Series 1–9 | Product set | — | — | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

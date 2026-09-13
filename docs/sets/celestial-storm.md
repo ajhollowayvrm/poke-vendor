@@ -96,33 +96,35 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2278`: 18 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 170275 | Celestial Storm 3 Pack Booster Blister [Tapu Koko] | Blister | 3 | Description | — | 2018 Q3 (set) | Yes |
-| 170276 | Celestial Storm 3 Pack Booster Blister [Tapu Lele] | Blister | 3 | Description | — | 2018 Q3 (set) | No |
-| 177898 | Celestial Storm Single Pack Blister [Tapu Bulu] | Blister | 1 | Description | — | 2018 Q3 (set) | Yes |
-| 177899 | Celestial Storm Single Pack Blister [Tapu Fini] | Blister | 1 | Description | — | 2018 Q3 (set) | Yes |
-| 170273 | Celestial Storm Booster Box | Booster box | 36 | Kind default | — | 2018 Q3 | Yes |
-| 170274 | Celestial Storm Booster Pack | Booster pack | 1 | Kind default | — | 2018 Q3 | Yes |
-| 267042 | Celestial Storm Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2018 Q3 (set) | Yes |
-| 276582 | Celestial Storm Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2018 Q3 (set) | Yes |
-| 170280 | Celestial Storm Build & Battle Box | Build & Battle | 4 | Description | — | 2018 Q3 (set) | Yes |
-| 451149 | Celestial Storm Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2018 Q3 (set) | No |
-| 175559 | Lunala GX Box | Collection | 4 | Description | — | 2018 Q4 | Yes |
-| 175558 | Solgaleo GX Box | Collection | 4 | Description | — | 2018 Q4 | No |
-| 175561 | Solgaleo GX Box & Lunala GX Box | Collection | 4 | Bulbapedia | — | 2018 Q4 | No |
-| 170277 | Celestial Storm Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2018 Q3 | Yes |
-| 175555 | Evolution Celebration Tin [Glaceon GX] | Tin | 4 | Description | — | 2018 Q3 (set) | Yes |
-| 175556 | Evolution Celebration Tin [Leafeon GX] | Tin | 4 | Description | — | 2018 Q3 (set) | Yes |
-| 175562 | Evolution Celebration Tin [Set of 3] | Tin | 4 | Description | — | 2018 Q3 (set) | Yes |
-| 175557 | Evolution Celebration Tin [Sylveon GX] | Tin | 4 | Description | — | 2018 Q3 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 170275 | Celestial Storm 3 Pack Booster Blister [Tapu Koko] | Blister | 3 | Description | 3 Celestial Storm | Product set | — | 2018 Q3 (set) | Yes |
+| 170276 | Celestial Storm 3 Pack Booster Blister [Tapu Lele] | Blister | 3 | Description | 3 Celestial Storm | Product set | — | 2018 Q3 (set) | No |
+| 177898 | Celestial Storm Single Pack Blister [Tapu Bulu] | Blister | 1 | Description | 1 Celestial Storm | Exact | — | 2018 Q3 (set) | Yes |
+| 177899 | Celestial Storm Single Pack Blister [Tapu Fini] | Blister | 1 | Description | 1 Celestial Storm | Exact | — | 2018 Q3 (set) | Yes |
+| 170273 | Celestial Storm Booster Box | Booster box | 36 | Kind default | 36 Celestial Storm | Product set | — | 2018 Q3 | Yes |
+| 170274 | Celestial Storm Booster Pack | Booster pack | 1 | Kind default | 1 Celestial Storm | Product set | — | 2018 Q3 | Yes |
+| 267042 | Celestial Storm Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Celestial Storm | Product set | — | 2018 Q3 (set) | Yes |
+| 276582 | Celestial Storm Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Celestial Storm | Product set | — | 2018 Q3 (set) | Yes |
+| 170280 | Celestial Storm Build & Battle Box | Build & Battle | 4 | Description | 4 Celestial Storm | Exact | — | 2018 Q3 (set) | Yes |
+| 451149 | Celestial Storm Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2018 Q3 (set) | No |
+| 175559 | Lunala GX Box | Collection | 4 | Description | — | Unknown | — | 2018 Q4 | Yes |
+| 175558 | Solgaleo GX Box | Collection | 4 | Description | — | Unknown | — | 2018 Q4 | No |
+| 175561 | Solgaleo GX Box & Lunala GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2018 Q4 | No |
+| 170277 | Celestial Storm Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Celestial Storm | Exact | — | 2018 Q3 | Yes |
+| 175555 | Evolution Celebration Tin [Glaceon GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
+| 175556 | Evolution Celebration Tin [Leafeon GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
+| 175562 | Evolution Celebration Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
+| 175557 | Evolution Celebration Tin [Sylveon GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

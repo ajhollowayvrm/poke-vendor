@@ -100,37 +100,39 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2377`: 22 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 181700 | Team Up 3 Pack Blister [Deoxys] | Blister | 3 | Description | — | 2019 Q1 | No |
-| 181701 | Team Up 3 Pack Blister [Ultra Necrozma] | Blister | 3 | Description | — | 2019 Q1 | No |
-| 624521 | Team Up Premium Checklane Blister [Gyarados] | Blister | 1 | Description | — | 2019 Q1 (set) | Yes |
-| 624522 | Team Up Premium Checklane Blister [Raichu] | Blister | 1 | Description | — | 2019 Q1 (set) | Yes |
-| 181702 | Team Up Single Pack Blister [Mimikyu] | Blister | 1 | Description | — | 2019 Q1 (set) | Yes |
-| 181703 | Team Up Single Pack Blister [Pikachu] | Blister | 1 | Description | — | 2019 Q1 (set) | Yes |
-| 181698 | Team Up Booster Box | Booster box | 36 | Description | — | 2019 Q1 | Yes |
-| 690691 | Team Up - Mini Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
-| 181699 | Team Up Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
-| 267044 | Team Up Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q1 (set) | Yes |
-| 524330 | Team Up Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
-| 276584 | Team Up Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q1 (set) | Yes |
-| 595411 | TAG TEAM Tin Case | Case or display | — | — | 3 tins | 2019 Q1 (set) | Yes |
-| 547128 | Team Up Prerelease Kit Display | Case or display | — | — | Unknown | 2019 Q1 (set) | No |
-| 185246 | Melmetal GX Box | Collection | 4 | Description | — | 2019 Q1 (set) | Yes |
-| 181693 | Towering Splash GX Box | Collection | 4 | Bulbapedia | — | 2019 Q1 | Yes |
-| 181704 | Team Up Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2019 Q1 | Yes |
-| 183975 | Team Up Prerelease Kit | Other | 4 | Description | — | 2019 Q1 | Yes |
-| 185256 | TAG TEAM Tin [Celebi & Venusaur GX] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |
-| 185257 | TAG TEAM Tin [Eevee & Snorlax GX] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |
-| 185258 | TAG TEAM Tin [Pikachu & Zekrom GX] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |
-| 185259 | TAG TEAM Tin [Set of 3] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 181700 | Team Up 3 Pack Blister [Deoxys] | Blister | 3 | Description | 3 Team Up | Exact | — | 2019 Q1 | No |
+| 181701 | Team Up 3 Pack Blister [Ultra Necrozma] | Blister | 3 | Description | 3 Team Up | Exact | — | 2019 Q1 | No |
+| 624521 | Team Up Premium Checklane Blister [Gyarados] | Blister | 1 | Description | 1 Team Up | Exact | — | 2019 Q1 (set) | Yes |
+| 624522 | Team Up Premium Checklane Blister [Raichu] | Blister | 1 | Description | 1 Team Up | Exact | — | 2019 Q1 (set) | Yes |
+| 181702 | Team Up Single Pack Blister [Mimikyu] | Blister | 1 | Description | 1 Team Up | Exact | — | 2019 Q1 (set) | Yes |
+| 181703 | Team Up Single Pack Blister [Pikachu] | Blister | 1 | Description | 1 Team Up | Exact | — | 2019 Q1 (set) | Yes |
+| 181698 | Team Up Booster Box | Booster box | 36 | Description | 36 Team Up | Product set | — | 2019 Q1 | Yes |
+| 690691 | Team Up - Mini Booster Pack | Booster pack | 1 | Kind default | 1 Team Up | Product set | — | 2019 Q1 (set) | Yes |
+| 181699 | Team Up Booster Pack | Booster pack | 1 | Kind default | 1 Team Up | Product set | — | 2019 Q1 (set) | Yes |
+| 267044 | Team Up Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Team Up | Product set | — | 2019 Q1 (set) | Yes |
+| 524330 | Team Up Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Team Up | Product set | — | 2019 Q1 (set) | Yes |
+| 276584 | Team Up Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Team Up | Product set | — | 2019 Q1 (set) | Yes |
+| 595411 | TAG TEAM Tin Case | Case or display | — | — | — | — | 3 tins | 2019 Q1 (set) | Yes |
+| 547128 | Team Up Prerelease Kit Display | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | No |
+| 185246 | Melmetal GX Box | Collection | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
+| 181693 | Towering Splash GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2019 Q1 | Yes |
+| 181704 | Team Up Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Team Up | Exact | — | 2019 Q1 | Yes |
+| 183975 | Team Up Prerelease Kit | Other | 4 | Description | 4 Team Up | Exact | — | 2019 Q1 | Yes |
+| 185256 | TAG TEAM Tin [Celebi & Venusaur GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
+| 185257 | TAG TEAM Tin [Eevee & Snorlax GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
+| 185258 | TAG TEAM Tin [Pikachu & Zekrom GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
+| 185259 | TAG TEAM Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

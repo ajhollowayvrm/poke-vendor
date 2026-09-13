@@ -79,32 +79,34 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1534`: 17 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 100501 | Dragonite Collector's Pin 3 Pack Blister | Blister | 2 | Description | — | 2015 Q2 (set) | Yes |
-| 99150 | Mega Evolution Collector's Pin Blisters [Latios] | Blister | 3 | Bulbapedia | — | 2015 Q2 (set) | No |
-| 99149 | Mega Evolution Collector's Pin Blisters [Rayquaza] | Blister | 3 | Bulbapedia | — | 2015 Q2 (set) | No |
-| 98031 | Roaring Skies 3 Pack Blister [Pangoro] | Blister | 3 | Description | — | 2015 Q2 (set) | No |
-| 98032 | Roaring Skies 3 Pack Blister [Regirock] | Blister | 3 | Description | — | 2015 Q2 (set) | No |
-| 98026 | XY Roaring Skies Booster Box | Booster box | 36 | Kind default | — | 2015 Q2 (set) | Yes |
-| 129906 | Roaring Skies Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q2 (set) | Yes |
-| 697502 | Roaring Skies Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q2 (set) | Yes |
-| 276594 | Roaring Skies Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q2 (set) | Yes |
-| 99151 | Mega Absol EX Premium Collection | Collection | 6 | Bulbapedia | — | 2015 Q2 (set) | Yes |
-| 100502 | Mega Latios Collection | Collection | 4 | Bulbapedia | — | 2015 Q2 (set) | Yes |
-| 100500 | Mega Rayquaza Collection | Collection | 4 | Description | — | 2015 Q2 (set) | No |
-| 100499 | Rayquaza EX Box | Collection | 4 | Bulbapedia | — | 2015 Q2 (set) | No |
-| 98028 | XY Roaring Skies Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2015 Q2 (set) | Yes |
-| 100497 | Hoenn Power Tin [Blaziken] | Tin | 4 | Bulbapedia | — | 2015 Q2 (set) | No |
-| 100496 | Hoenn Power Tin [Sceptile] | Tin | 4 | Bulbapedia | — | 2015 Q2 (set) | Yes |
-| 100498 | Hoenn Power Tin [Swampert] | Tin | 4 | Bulbapedia | — | 2015 Q2 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 100501 | Dragonite Collector's Pin 3 Pack Blister | Blister | 3 | Description (raised) | 2 Roaring Skies, 1 Primal Clash | Exact | — | 2015 Q2 (set) | Yes |
+| 99150 | Mega Evolution Collector's Pin Blisters [Latios] | Blister | 3 | Bulbapedia | 2 Roaring Skies, 1 Primal Clash | Exact | — | 2015 Q2 (set) | No |
+| 99149 | Mega Evolution Collector's Pin Blisters [Rayquaza] | Blister | 3 | Bulbapedia | 2 Roaring Skies, 1 Primal Clash | Exact | — | 2015 Q2 (set) | No |
+| 98031 | Roaring Skies 3 Pack Blister [Pangoro] | Blister | 3 | Description | 3 Roaring Skies | Exact | — | 2015 Q2 (set) | No |
+| 98032 | Roaring Skies 3 Pack Blister [Regirock] | Blister | 3 | Description | 3 Roaring Skies | Exact | — | 2015 Q2 (set) | No |
+| 98026 | XY Roaring Skies Booster Box | Booster box | 36 | Kind default | 36 Roaring Skies | Product set | — | 2015 Q2 (set) | Yes |
+| 129906 | Roaring Skies Booster Pack | Booster pack | 1 | Kind default | 1 Roaring Skies | Product set | — | 2015 Q2 (set) | Yes |
+| 697502 | Roaring Skies Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Roaring Skies | Product set | — | 2015 Q2 (set) | Yes |
+| 276594 | Roaring Skies Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Roaring Skies | Product set | — | 2015 Q2 (set) | Yes |
+| 99151 | Mega Absol EX Premium Collection | Collection | 6 | Bulbapedia | 2 Phantom Forces, 2 Primal Clash, 2 Roaring Skies | Exact | — | 2015 Q2 (set) | Yes |
+| 100502 | Mega Latios Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q2 (set) | Yes |
+| 100500 | Mega Rayquaza Collection | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | No |
+| 100499 | Rayquaza EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q2 (set) | No |
+| 98028 | XY Roaring Skies Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Roaring Skies | Exact | — | 2015 Q2 (set) | Yes |
+| 100497 | Hoenn Power Tin [Blaziken] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | No |
+| 100496 | Hoenn Power Tin [Sceptile] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
+| 100498 | Hoenn Power Tin [Swampert] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

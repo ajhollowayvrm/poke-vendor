@@ -104,43 +104,45 @@ pack-opening videos, not official data).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2754`, `2781`: 28 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 232636 | Shining Fates Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q1 | Yes |
-| 265320 | Shining Fates Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q1 (set) | Yes |
-| 268484 | Shining Fates Collection Pikachu V Case | Case or display | — | — | 6 collections | 2021 Q1 (set) | Yes |
-| 266962 | Shining Fates Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2021 Q1 (set) | Yes |
-| 233315 | Shining Fates Mad Party Pin Collection Display | Case or display | — | — | 8 collections | 2021 Q1 (set) | Yes |
-| 230961 | Shining Fates Mini Tin Display | Case or display | — | — | 2 mini tins | 2021 Q1 (set) | Yes |
-| 268482 | Shining Fates V Tin Case | Case or display | — | — | 6 tins | 2021 Q1 (set) | Yes |
-| 228825 | Shining Fates Collection [Pikachu V] | Collection | 4 | Description | — | 2021 Q1 (set) | Yes |
-| 240191 | Shining Fates Collection [Shiny Boltund V] | Collection | 5 | Description | — | 2021 Q1 (set) | Yes |
-| 240190 | Shining Fates Collection [Shiny Cramorant V] | Collection | 5 | Description | — | 2021 Q1 (set) | Yes |
-| 240192 | Shining Fates Collection [Shiny Eldegoss V] | Collection | 5 | Description | — | 2021 Q1 (set) | Yes |
-| 228826 | Shining Fates Mad Party Pin Collection [Bunnelby] | Collection | 3 | Description | — | 2021 Q1 (set) | Yes |
-| 228827 | Shining Fates Mad Party Pin Collection [Dedenne] | Collection | 3 | Description | — | 2021 Q1 (set) | Yes |
-| 228828 | Shining Fates Mad Party Pin Collection [Galarian Mr. Rime] | Collection | 3 | Description | — | 2021 Q1 (set) | Yes |
-| 228829 | Shining Fates Mad Party Pin Collection [Polteageist] | Collection | 3 | Description | — | 2021 Q1 (set) | Yes |
-| 238606 | Shining Fates Mad Party Pin Collection [Set of 4] | Collection | 3 | Description | — | 2021 Q1 (set) | Yes |
-| 284772 | Shining Fates Premium Collection [Set of 2] | Collection | 7 | Description | — | 2021 Q1 (set) | Yes |
-| 230391 | Shining Fates Premium Collection [Shiny Crobat] | Collection | 7 | Description | — | 2021 Q1 (set) | Yes |
-| 230392 | Shining Fates Premium Collection [Shiny Dragapult] | Collection | 7 | Description | — | 2021 Q1 (set) | Yes |
-| 228821 | Shining Fates Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2021 Q1 | Yes |
-| 230958 | Shining Fates Mini Tin [Celebi] | Tin | 2 | Description | — | 2021 Q1 | Yes |
-| 230960 | Shining Fates Mini Tin [Kyogre] | Tin | 2 | Description | — | 2021 Q1 | Yes |
-| 230959 | Shining Fates Mini Tin [Manaphy] | Tin | 2 | Description | — | 2021 Q1 | Yes |
-| 230956 | Shining Fates Mini Tin [Reshiram] | Tin | 2 | Description | — | 2021 Q1 | Yes |
-| 230957 | Shining Fates Mini Tin [Zarude] | Tin | 2 | Description | — | 2021 Q1 | Yes |
-| 228823 | Shining Fates V Tin [Boltund V] | Tin | 6 | Description | — | 2021 Q1 (set) | Yes |
-| 228824 | Shining Fates V Tin [Cramorant V] | Tin | 6 | Description | — | 2021 Q1 (set) | Yes |
-| 228822 | Shining Fates V Tin [Eldegoss V] | Tin | 6 | Description | — | 2021 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 232636 | Shining Fates Booster Pack | Booster pack | 1 | Kind default | 1 Shining Fates | Product set | — | 2021 Q1 | Yes |
+| 265320 | Shining Fates Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Shining Fates | Product set | — | 2021 Q1 (set) | Yes |
+| 268484 | Shining Fates Collection Pikachu V Case | Case or display | — | — | — | — | 6 collections | 2021 Q1 (set) | Yes |
+| 266962 | Shining Fates Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q1 (set) | Yes |
+| 233315 | Shining Fates Mad Party Pin Collection Display | Case or display | — | — | — | — | 8 collections | 2021 Q1 (set) | Yes |
+| 230961 | Shining Fates Mini Tin Display | Case or display | — | — | — | — | 2 mini tins | 2021 Q1 (set) | Yes |
+| 268482 | Shining Fates V Tin Case | Case or display | — | — | — | — | 6 tins | 2021 Q1 (set) | Yes |
+| 228825 | Shining Fates Collection [Pikachu V] | Collection | 4 | Description | 4 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 240191 | Shining Fates Collection [Shiny Boltund V] | Collection | 5 | Description | 5 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 240190 | Shining Fates Collection [Shiny Cramorant V] | Collection | 5 | Description | 5 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 240192 | Shining Fates Collection [Shiny Eldegoss V] | Collection | 5 | Description | 5 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228826 | Shining Fates Mad Party Pin Collection [Bunnelby] | Collection | 3 | Description | 3 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228827 | Shining Fates Mad Party Pin Collection [Dedenne] | Collection | 3 | Description | 3 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228828 | Shining Fates Mad Party Pin Collection [Galarian Mr. Rime] | Collection | 3 | Description | 3 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228829 | Shining Fates Mad Party Pin Collection [Polteageist] | Collection | 3 | Description | 3 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 238606 | Shining Fates Mad Party Pin Collection [Set of 4] | Collection | 12 | Description | 12 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 284772 | Shining Fates Premium Collection [Set of 2] | Collection | 14 | Description | 8 Shining Fates | Partial | — | 2021 Q1 (set) | Yes |
+| 230391 | Shining Fates Premium Collection [Shiny Crobat] | Collection | 7 | Description | 7 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 230392 | Shining Fates Premium Collection [Shiny Dragapult] | Collection | 7 | Description | 7 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228821 | Shining Fates Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Shining Fates | Exact | — | 2021 Q1 | Yes |
+| 230958 | Shining Fates Mini Tin [Celebi] | Tin | 2 | Description | 2 Shining Fates | Exact | — | 2021 Q1 | Yes |
+| 230960 | Shining Fates Mini Tin [Kyogre] | Tin | 2 | Description | 2 Shining Fates | Exact | — | 2021 Q1 | Yes |
+| 230959 | Shining Fates Mini Tin [Manaphy] | Tin | 2 | Description | 2 Shining Fates | Exact | — | 2021 Q1 | Yes |
+| 230956 | Shining Fates Mini Tin [Reshiram] | Tin | 2 | Description | 2 Shining Fates | Exact | — | 2021 Q1 | Yes |
+| 230957 | Shining Fates Mini Tin [Zarude] | Tin | 2 | Description | 2 Shining Fates | Exact | — | 2021 Q1 | Yes |
+| 228823 | Shining Fates V Tin [Boltund V] | Tin | 6 | Description | 6 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228824 | Shining Fates V Tin [Cramorant V] | Tin | 6 | Description | 6 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
+| 228822 | Shining Fates V Tin [Eldegoss V] | Tin | 6 | Description | 6 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

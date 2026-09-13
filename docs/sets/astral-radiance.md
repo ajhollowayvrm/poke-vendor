@@ -128,46 +128,48 @@ Ultra Rare 5.37%, Rare Holo VSTAR 2.6%, Secret Rare Holo 1.3%, Rare Rainbow
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `3040`, `3068`: 31 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 265524 | Astral Radiance 3 Pack Blister [Eevee] | Blister | 3 | Description | — | 2022 Q2 | Yes |
-| 265546 | Astral Radiance 3 Pack Blister [Set of 2] | Blister | 3 | Description | — | 2022 Q2 (set) | Yes |
-| 265525 | Astral Radiance 3 Pack Blister [Sylveon] | Blister | 3 | Description | — | 2022 Q2 | Yes |
-| 489340 | Astral Radiance Premium Checklane Blister [Feraligatr] | Blister | 1 | Description | — | 2022 Q2 (set) | Yes |
-| 489342 | Astral Radiance Premium Checklane Blister [Melmetal] | Blister | 1 | Description | — | 2022 Q2 (set) | No |
-| 489341 | Astral Radiance Premium Checklane Blister [Steelix] | Blister | 1 | Description | — | 2022 Q2 (set) | Yes |
-| 489339 | Astral Radiance Premium Checklane Blister [Swampert] | Blister | 1 | Description | — | 2022 Q2 (set) | Yes |
-| 265523 | Astral Radiance Single Pack Blister [Oricorio] | Blister | 1 | Description | — | 2022 Q2 | Yes |
-| 265558 | Astral Radiance Single Pack Blister [Set of 2] | Blister | 1 | Description | — | 2022 Q2 | Yes |
-| 265522 | Astral Radiance Single Pack Blister [Toxel] | Blister | 1 | Description | — | 2022 Q2 (set) | Yes |
-| 265519 | Astral Radiance Booster Box | Booster box | 36 | Description | — | 2022 Q2 (set) | Yes |
-| 704916 | Astral Radiance Half Booster Box | Booster box | 18 | Description | — | 2022 Q2 (set) | No |
-| 265521 | Astral Radiance Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q2 | Yes |
-| 265542 | Astral Radiance Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2022 Q2 | Yes |
-| 509895 | Astral Radiance Fun Pack | Booster pack | 1 | Kind default | — | 2022 Q2 (set) | Yes |
-| 265526 | Astral Radiance Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q2 | Yes |
-| 265543 | Astral Radiance Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2022 Q2 | Yes |
-| 265544 | Astral Radiance Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q2 | No |
-| 265529 | Astral Radiance Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q2 | Yes |
-| 265515 | Astral Radiance Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2022 Q2 (set) | Yes |
-| 679043 | Astral Radiance 3 Pack Blister Case | Case or display | — | — | 24 blisters | 2022 Q2 (set) | Yes |
-| 265520 | Astral Radiance Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q2 | Yes |
-| 272137 | Astral Radiance Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2022 Q2 (set) | Yes |
-| 265545 | Astral Radiance Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2022 Q2 (set) | Yes |
-| 279424 | Astral Radiance Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | 4 elite trainer boxes | 2022 Q2 (set) | Yes |
-| 696160 | Astral Radiance Premium Checklane Blister Case | Case or display | — | — | 16 blisters | 2022 Q2 (set) | No |
-| 496130 | Astral Radiance Sleeved Booster Pack Case | Case or display | — | — | Unknown number of sleeved boosters | 2022 Q2 (set) | Yes |
-| 523959 | Astral Radiance 3 Pack Hanger Box | Collection | 3 | Description | — | 2022 Q2 (set) | Yes |
-| 279598 | Heavy Hitters Premium Collection | Collection | 14 | Description | — | 2022 Q2 (set) | Yes |
-| 265527 | Astral Radiance Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2022 Q2 | Yes |
-| 265528 | Astral Radiance Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2022 Q2 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 265524 | Astral Radiance 3 Pack Blister [Eevee] | Blister | 3 | Description | 3 Astral Radiance | Exact | — | 2022 Q2 | Yes |
+| 265546 | Astral Radiance 3 Pack Blister [Set of 2] | Blister | 6 | Description | 6 Astral Radiance | Exact | — | 2022 Q2 (set) | Yes |
+| 265525 | Astral Radiance 3 Pack Blister [Sylveon] | Blister | 3 | Description | 3 Astral Radiance | Exact | — | 2022 Q2 | Yes |
+| 489340 | Astral Radiance Premium Checklane Blister [Feraligatr] | Blister | 1 | Description | 1 Astral Radiance | Exact | — | 2022 Q2 (set) | Yes |
+| 489342 | Astral Radiance Premium Checklane Blister [Melmetal] | Blister | 1 | Description | 1 Astral Radiance | Exact | — | 2022 Q2 (set) | No |
+| 489341 | Astral Radiance Premium Checklane Blister [Steelix] | Blister | 1 | Description | 1 Astral Radiance | Exact | — | 2022 Q2 (set) | Yes |
+| 489339 | Astral Radiance Premium Checklane Blister [Swampert] | Blister | 1 | Description | 1 Astral Radiance | Exact | — | 2022 Q2 (set) | Yes |
+| 265523 | Astral Radiance Single Pack Blister [Oricorio] | Blister | 1 | Description | 1 Astral Radiance | Exact | — | 2022 Q2 | Yes |
+| 265558 | Astral Radiance Single Pack Blister [Set of 2] | Blister | 2 | Description | 2 Astral Radiance | Exact | — | 2022 Q2 | Yes |
+| 265522 | Astral Radiance Single Pack Blister [Toxel] | Blister | 1 | Description | 1 Astral Radiance | Exact | — | 2022 Q2 (set) | Yes |
+| 265519 | Astral Radiance Booster Box | Booster box | 36 | Description | 36 Astral Radiance | Product set | — | 2022 Q2 (set) | Yes |
+| 704916 | Astral Radiance Half Booster Box | Booster box | 18 | Description | 18 Astral Radiance | Product set | — | 2022 Q2 (set) | No |
+| 265521 | Astral Radiance Booster Pack | Booster pack | 1 | Kind default | 1 Astral Radiance | Product set | — | 2022 Q2 | Yes |
+| 265542 | Astral Radiance Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Astral Radiance | Product set | — | 2022 Q2 | Yes |
+| 509895 | Astral Radiance Fun Pack | Booster pack | 1 | Kind default | 1 Astral Radiance | Product set | — | 2022 Q2 (set) | Yes |
+| 265526 | Astral Radiance Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Astral Radiance | Product set | — | 2022 Q2 | Yes |
+| 265543 | Astral Radiance Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Astral Radiance | Product set | — | 2022 Q2 | Yes |
+| 265544 | Astral Radiance Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | 8 Astral Radiance | Product set | — | 2022 Q2 | No |
+| 265529 | Astral Radiance Build & Battle Box | Build & Battle | 4 | Description | 4 Astral Radiance | Exact | — | 2022 Q2 | Yes |
+| 265515 | Astral Radiance Build & Battle Stadium | Build & Battle | 12 | Set file | 12 Astral Radiance | Product set | — | 2022 Q2 (set) | Yes |
+| 679043 | Astral Radiance 3 Pack Blister Case | Case or display | — | — | — | — | 24 blisters | 2022 Q2 (set) | Yes |
+| 265520 | Astral Radiance Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2022 Q2 | Yes |
+| 272137 | Astral Radiance Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2022 Q2 (set) | Yes |
+| 265545 | Astral Radiance Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2022 Q2 (set) | Yes |
+| 279424 | Astral Radiance Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | 4 elite trainer boxes | 2022 Q2 (set) | Yes |
+| 696160 | Astral Radiance Premium Checklane Blister Case | Case or display | — | — | — | — | 16 blisters | 2022 Q2 (set) | No |
+| 496130 | Astral Radiance Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2022 Q2 (set) | Yes |
+| 523959 | Astral Radiance 3 Pack Hanger Box | Collection | 3 | Description | 3 Astral Radiance | Exact | — | 2022 Q2 (set) | Yes |
+| 279598 | Heavy Hitters Premium Collection | Collection | 14 | Description | 4 Astral Radiance, 4 Brilliant Stars, 4 Fusion Strike, 2 Evolving Skies | Exact | — | 2022 Q2 (set) | Yes |
+| 265527 | Astral Radiance Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Astral Radiance | Exact | — | 2022 Q2 | Yes |
+| 265528 | Astral Radiance Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | 8 Astral Radiance | Partial | — | 2022 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

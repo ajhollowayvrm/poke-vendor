@@ -90,39 +90,41 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1957`: 24 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 136599 | Burning Shadows 3 Pack Blister [Alolan Meowth] | Blister | 3 | Description | — | 2017 Q3 (set) | Yes |
-| 136600 | Burning Shadows 3 Pack Blister [Cosmog] | Blister | 3 | Description | — | 2017 Q3 (set) | Yes |
-| 136597 | Burning Shadows Single Pack Blister [Jangmo-o] | Blister | 1 | Name | — | 2017 Q3 (set) | Yes |
-| 136598 | Burning Shadows Single Pack Blister [Komala] | Blister | 1 | Name | — | 2017 Q3 (set) | Yes |
-| 133773 | Burning Shadows Booster Box | Booster box | 36 | Description | — | 2017 Q3 (set) | Yes |
-| 133774 | Burning Shadows Booster Pack | Booster pack | 1 | Kind default | — | 2017 Q3 (set) | Yes |
-| 267038 | Burning Shadows Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2017 Q3 (set) | Yes |
-| 550677 | Burning Shadows Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2017 Q3 (set) | Yes |
-| 276579 | Burning Shadows Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2017 Q3 (set) | Yes |
-| 475436 | Burning Shadows Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2017 Q3 (set) | No |
-| 218320 | Alolan Ninetales GX Challenge Box | Collection | 2 | Description | — | 2017 Q3 (set) | Yes |
-| 155504 | Alolan Raichu Figure Collection | Collection | 4 | Description | — | 2018 Q1 | Yes |
-| 148154 | Charizard GX Premium Collection | Collection | 6 | Description | — | 2017 Q3 (set) | No |
-| 153454 | Kommo-o GX Box | Collection | 4 | Description | — | 2017 Q3 (set) | Yes |
-| 218321 | Lycanroc GX Challenge Box | Collection | 2 | Description | — | 2017 Q3 (set) | Yes |
-| 133775 | Tapu Lele Pin Collection | Collection | 3 | Bulbapedia | — | 2017 Q3 (set) | Yes |
-| 148417 | Team Skull Pin Collection | Collection | 5 | Description | — | 2017 Q3 (set) | Yes |
-| 141243 | Tsareena GX Box | Collection | 4 | Bulbapedia | — | 2017 Q3 (set) | Yes |
-| 133776 | Burning Shadows Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2017 Q3 | Yes |
-| 139888 | Burning Shadows Prerelease Kit | Other | 4 | Description | — | 2017 Q3 (set) | Yes |
-| 148418 | Mysterious Powers Tin [Ho-Oh GX] | Tin | 4 | Description | — | 2017 Q3 (set) | Yes |
-| 148420 | Mysterious Powers Tin [Marshadow GX] | Tin | 4 | Description | — | 2017 Q3 (set) | Yes |
-| 148419 | Mysterious Powers Tin [Necrozma GX] | Tin | 4 | Description | — | 2017 Q3 (set) | Yes |
-| 148421 | Mysterious Powers Tin [Set of 3] | Tin | 4 | Description | — | 2017 Q3 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 136599 | Burning Shadows 3 Pack Blister [Alolan Meowth] | Blister | 3 | Description | 3 Burning Shadows | Exact | — | 2017 Q3 (set) | Yes |
+| 136600 | Burning Shadows 3 Pack Blister [Cosmog] | Blister | 3 | Description | 3 Burning Shadows | Exact | — | 2017 Q3 (set) | Yes |
+| 136597 | Burning Shadows Single Pack Blister [Jangmo-o] | Blister | 1 | Name | 1 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 136598 | Burning Shadows Single Pack Blister [Komala] | Blister | 1 | Name | 1 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 133773 | Burning Shadows Booster Box | Booster box | 36 | Description | 36 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 133774 | Burning Shadows Booster Pack | Booster pack | 1 | Kind default | 1 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 267038 | Burning Shadows Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 550677 | Burning Shadows Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 276579 | Burning Shadows Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
+| 475436 | Burning Shadows Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2017 Q3 (set) | No |
+| 218320 | Alolan Ninetales GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 155504 | Alolan Raichu Figure Collection | Collection | 4 | Description | — | Unknown | — | 2018 Q1 | Yes |
+| 148154 | Charizard GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q3 (set) | No |
+| 153454 | Kommo-o GX Box | Collection | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 218321 | Lycanroc GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 133775 | Tapu Lele Pin Collection | Collection | 3 | Bulbapedia | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 148417 | Team Skull Pin Collection | Collection | 5 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 141243 | Tsareena GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 133776 | Burning Shadows Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Burning Shadows | Exact | — | 2017 Q3 | Yes |
+| 139888 | Burning Shadows Prerelease Kit | Other | 4 | Description | 4 Burning Shadows | Exact | — | 2017 Q3 (set) | Yes |
+| 148418 | Mysterious Powers Tin [Ho-Oh GX] | Tin | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 148420 | Mysterious Powers Tin [Marshadow GX] | Tin | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 148419 | Mysterious Powers Tin [Necrozma GX] | Tin | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 148421 | Mysterious Powers Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2017 Q3 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

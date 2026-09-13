@@ -126,33 +126,35 @@ Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2480`, `2594`: 18 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 198634 | Hidden Fates Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q3 (set) | Yes |
-| 545766 | Hidden Fates Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q3 (set) | Yes |
-| 648466 | Hidden Fates Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2019 Q3 (set) | Yes |
-| 205159 | Hidden Fates Collection [Charizard GX] | Collection | 4 | Description | — | 2019 Q3 (set) | Yes |
-| 205160 | Hidden Fates Collection [Gyarados GX] | Collection | 4 | Description | — | 2019 Q3 (set) | Yes |
-| 205161 | Hidden Fates Collection [Raichu GX] | Collection | 4 | Description | — | 2019 Q3 (set) | Yes |
-| 193439 | Hidden Fates Pin Collection [Mew] | Collection | 3 | Description | — | 2019 Q3 | Yes |
-| 193440 | Hidden Fates Pin Collection [Mewtwo] | Collection | 3 | Description | — | 2019 Q3 | Yes |
-| 198525 | Hidden Fates Poke Ball Collection [Set of 2] | Collection | Unknown | Unknown | — | 2019 Q4 | Yes |
-| 198524 | Hidden Fates Poke Ball Collection [Shiny Metagross] | Collection | 10 | Description | — | 2019 Q4 | Yes |
-| 198523 | Hidden Fates Poke Ball Collection [Shiny Zoroark] | Collection | 10 | Description | — | 2019 Q4 | Yes |
-| 206302 | Hidden Fates Premium Powers Collection | Collection | 7 | Description | — | 2019 Q3 (set) | Yes |
-| 199466 | Hidden Fates Ultra-Premium Collection | Collection | 15 | Description | — | 2019 Q4 | Yes |
-| 194729 | Hidden Fates Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2019 Q3 | Yes |
-| 193437 | Hidden Fates Tin [Charizard GX] | Tin | 4 | Description | — | 2019 Q3 | Yes |
-| 193436 | Hidden Fates Tin [Gyarados GX] | Tin | 4 | Description | — | 2019 Q3 | Yes |
-| 193438 | Hidden Fates Tin [Raichu GX] | Tin | 4 | Description | — | 2019 Q3 | Yes |
-| 213476 | Hidden Fates Tin [Set of 3] | Tin | 4 | Description | — | 2019 Q3 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 198634 | Hidden Fates Booster Pack | Booster pack | 1 | Kind default | 1 Hidden Fates | Product set | — | 2019 Q3 (set) | Yes |
+| 545766 | Hidden Fates Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Hidden Fates | Product set | — | 2019 Q3 (set) | Yes |
+| 648466 | Hidden Fates Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2019 Q3 (set) | Yes |
+| 205159 | Hidden Fates Collection [Charizard GX] | Collection | 4 | Description | 4 Hidden Fates | Exact | — | 2019 Q3 (set) | Yes |
+| 205160 | Hidden Fates Collection [Gyarados GX] | Collection | 4 | Description | 4 Hidden Fates | Exact | — | 2019 Q3 (set) | Yes |
+| 205161 | Hidden Fates Collection [Raichu GX] | Collection | 4 | Description | 4 Hidden Fates | Exact | — | 2019 Q3 (set) | Yes |
+| 193439 | Hidden Fates Pin Collection [Mew] | Collection | 3 | Description | 3 Hidden Fates | Exact | — | 2019 Q3 | Yes |
+| 193440 | Hidden Fates Pin Collection [Mewtwo] | Collection | 3 | Description | 3 Hidden Fates | Exact | — | 2019 Q3 | Yes |
+| 198525 | Hidden Fates Poke Ball Collection [Set of 2] | Collection | Unknown | Unknown | — | Unknown | — | 2019 Q4 | Yes |
+| 198524 | Hidden Fates Poke Ball Collection [Shiny Metagross] | Collection | 10 | Description | 10 Hidden Fates | Exact | — | 2019 Q4 | Yes |
+| 198523 | Hidden Fates Poke Ball Collection [Shiny Zoroark] | Collection | 10 | Description | 10 Hidden Fates | Exact | — | 2019 Q4 | Yes |
+| 206302 | Hidden Fates Premium Powers Collection | Collection | 7 | Description | 7 Hidden Fates | Exact | — | 2019 Q3 (set) | Yes |
+| 199466 | Hidden Fates Ultra-Premium Collection | Collection | 15 | Description | 15 Hidden Fates | Exact | — | 2019 Q4 | Yes |
+| 194729 | Hidden Fates Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Hidden Fates | Exact | — | 2019 Q3 | Yes |
+| 193437 | Hidden Fates Tin [Charizard GX] | Tin | 4 | Description | 4 Hidden Fates | Exact | — | 2019 Q3 | Yes |
+| 193436 | Hidden Fates Tin [Gyarados GX] | Tin | 4 | Description | 4 Hidden Fates | Exact | — | 2019 Q3 | Yes |
+| 193438 | Hidden Fates Tin [Raichu GX] | Tin | 4 | Description | 4 Hidden Fates | Exact | — | 2019 Q3 | Yes |
+| 213476 | Hidden Fates Tin [Set of 3] | Tin | 12 | Description | 12 Hidden Fates | Exact | — | 2019 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

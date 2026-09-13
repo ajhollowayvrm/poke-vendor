@@ -95,32 +95,34 @@ pack-opening videos, not official data).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2685`: 17 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 218789 | Champion's Path Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q3 | Yes |
-| 265318 | Champion's Path Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q3 (set) | Yes |
-| 247385 | Champion's Path Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2020 Q3 (set) | Yes |
-| 218852 | Champion's Path Pin Collection Display: Ballonlea, Spikemuth, & Hammerlocke Gyms | Case or display | — | — | Unknown number of collections | 2020 Q4 | Yes |
-| 218792 | Champion's Path Pin Collection Display: Turffield, Hulbury, & Motostoke Gyms | Case or display | — | — | Unknown number of collections | 2020 Q3 | Yes |
-| 218806 | Champion's Path Collection [Dubwool V] | Collection | 4 | Description | — | 2020 Q3 | Yes |
-| 218804 | Champion's Path Collection [Hatterene V] | Collection | 4 | Description | — | 2020 Q4 | Yes |
-| 218799 | Champion's Path Pin Collection [Ballonlea Gym] | Collection | 3 | Description | — | 2020 Q4 | Yes |
-| 218798 | Champion's Path Pin Collection [Hammerlocke Gym] | Collection | 3 | Description | — | 2020 Q3 (set) | Yes |
-| 218794 | Champion's Path Pin Collection [Hulbury Gym] | Collection | 3 | Description | — | 2020 Q3 | Yes |
-| 218796 | Champion's Path Pin Collection [Motostoke Gym] | Collection | 3 | Description | — | 2020 Q3 | Yes |
-| 218800 | Champion's Path Pin Collection [Spikemuth Gym] | Collection | 3 | Description | — | 2020 Q4 | Yes |
-| 218797 | Champion's Path Pin Collection [Turffield Gym] | Collection | 3 | Description | — | 2020 Q3 | Yes |
-| 218807 | Champion's Path Premium Collection [Marnie] | Collection | 8 | Description | — | 2020 Q4 | Yes |
-| 218803 | Champion's Path Special Pin Collection [Circhester] | Collection | 5 | Description | — | 2020 Q4 | Yes |
-| 218802 | Champion's Path Special Pin Collection [Stow-on-Side] | Collection | 5 | Description | — | 2020 Q4 | Yes |
-| 218791 | Champion's Path Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2020 Q3 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 218789 | Champion's Path Booster Pack | Booster pack | 1 | Kind default | 1 Champion's Path | Product set | — | 2020 Q3 | Yes |
+| 265318 | Champion's Path Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Champion's Path | Product set | — | 2020 Q3 (set) | Yes |
+| 247385 | Champion's Path Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2020 Q3 (set) | Yes |
+| 218852 | Champion's Path Pin Collection Display: Ballonlea, Spikemuth, & Hammerlocke Gyms | Case or display | — | — | — | — | Unknown number of collections | 2020 Q4 | Yes |
+| 218792 | Champion's Path Pin Collection Display: Turffield, Hulbury, & Motostoke Gyms | Case or display | — | — | — | — | Unknown number of collections | 2020 Q3 | Yes |
+| 218806 | Champion's Path Collection [Dubwool V] | Collection | 4 | Description | 4 Champion's Path | Exact | — | 2020 Q3 | Yes |
+| 218804 | Champion's Path Collection [Hatterene V] | Collection | 4 | Description | 4 Champion's Path | Exact | — | 2020 Q4 | Yes |
+| 218799 | Champion's Path Pin Collection [Ballonlea Gym] | Collection | 3 | Description | 3 Champion's Path | Exact | — | 2020 Q4 | Yes |
+| 218798 | Champion's Path Pin Collection [Hammerlocke Gym] | Collection | 3 | Description | 3 Champion's Path | Exact | — | 2020 Q3 (set) | Yes |
+| 218794 | Champion's Path Pin Collection [Hulbury Gym] | Collection | 3 | Description | 3 Champion's Path | Exact | — | 2020 Q3 | Yes |
+| 218796 | Champion's Path Pin Collection [Motostoke Gym] | Collection | 3 | Description | 3 Champion's Path | Exact | — | 2020 Q3 | Yes |
+| 218800 | Champion's Path Pin Collection [Spikemuth Gym] | Collection | 3 | Description | 3 Champion's Path | Exact | — | 2020 Q4 | Yes |
+| 218797 | Champion's Path Pin Collection [Turffield Gym] | Collection | 3 | Description | 3 Champion's Path | Exact | — | 2020 Q3 | Yes |
+| 218807 | Champion's Path Premium Collection [Marnie] | Collection | 8 | Description | 8 Champion's Path | Exact | — | 2020 Q4 | Yes |
+| 218803 | Champion's Path Special Pin Collection [Circhester] | Collection | 5 | Description | 5 Champion's Path | Exact | — | 2020 Q4 | Yes |
+| 218802 | Champion's Path Special Pin Collection [Stow-on-Side] | Collection | 5 | Description | 5 Champion's Path | Exact | — | 2020 Q4 | Yes |
+| 218791 | Champion's Path Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Champion's Path | Exact | — | 2020 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

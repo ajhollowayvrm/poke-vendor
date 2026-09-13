@@ -103,44 +103,46 @@ study; the Derium data for this set comes from two large opening videos.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1863`: 29 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 126054 | Sun & Moon Base Set 3 Pack Blister [Litten] | Blister | 3 | Description | — | 2017 Q1 (set) | Yes |
-| 126052 | Sun & Moon Base Set 3 Pack Blister [Togedemaru] | Blister | 3 | Description | — | 2017 Q1 (set) | Yes |
-| 231690 | Sun & Moon Single Blister Pack [Pikipek] | Blister | 1 | Name | — | 2017 Q1 (set) | No |
-| 231689 | Sun & Moon Single Blister Pack [Rockruff] | Blister | 1 | Name | — | 2017 Q1 (set) | No |
-| 126048 | Sun & Moon Booster Box | Booster box | 36 | Kind default | — | 2017 Q1 (set) | Yes |
-| 129385 | Sun & Moon Booster Pack | Booster pack | 1 | Kind default | — | 2017 Q1 (set) | Yes |
-| 267036 | Sun & Moon Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2017 Q1 (set) | Yes |
-| 276574 | Sun & Moon Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2017 Q1 (set) | No |
-| 243052 | Sun & Moon Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2017 Q1 (set) | Yes |
-| 230425 | Decidueye GX Challenge Box | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
-| 209655 | Incineroar GX Challenge Box | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
-| 131867 | Kingdra EX Box | Collection | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 148381 | Legacy Evolution Pin Collection | Collection | 5 | Description | — | 2017 Q1 (set) | Yes |
-| 131865 | Lycanroc GX Box | Collection | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 129896 | Mega Camerupt EX Premium Collection | Collection | 6 | Bulbapedia | — | 2017 Q1 (set) | No |
-| 129897 | Mega Sharpedo EX Premium Collection | Collection | 6 | Bulbapedia | — | 2017 Q1 (set) | No |
-| 129895 | Mimikyu Pin Collection | Collection | 3 | Description | — | 2017 Q1 (set) | Yes |
-| 656924 | Primarina GX Challenge Box | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
-| 131870 | Scizor EX Box | Collection | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 244314 | Sun & Moon GX Challenge Box [Decidueye] | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
-| 244313 | Sun & Moon GX Challenge Box [Incineroar] | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
-| 656996 | Sun & Moon GX Challenge Box [Primarina] | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
-| 455776 | Zygarde Complete Forme Pin Collection | Collection | 3 | Description | — | 2017 Q1 (set) | Yes |
-| 126091 | Sun & Moon Elite Trainer Box [Lunala] | Elite Trainer Box | 8 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 126089 | Sun & Moon Elite Trainer Box [Solgaleo] | Elite Trainer Box | 8 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 206409 | Sun & Moon Prerelease Kit | Other | 4 | Description | — | 2017 Q1 (set) | No |
-| 129310 | Legends of Alola Tin [Lunala GX] | Tin | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 129309 | Legends of Alola Tin [Solgaleo GX] | Tin | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
-| 267958 | Spring 2017 Collector's Chest Tin | Tin | 5 | Description | — | 2017 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 126054 | Sun & Moon Base Set 3 Pack Blister [Litten] | Blister | 3 | Description | 3 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 126052 | Sun & Moon Base Set 3 Pack Blister [Togedemaru] | Blister | 3 | Description | 3 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 231690 | Sun & Moon Single Blister Pack [Pikipek] | Blister | 1 | Name | — | Unknown | — | 2017 Q1 (set) | No |
+| 231689 | Sun & Moon Single Blister Pack [Rockruff] | Blister | 1 | Name | — | Unknown | — | 2017 Q1 (set) | No |
+| 126048 | Sun & Moon Booster Box | Booster box | 36 | Kind default | 36 Sun & Moon | Product set | — | 2017 Q1 (set) | Yes |
+| 129385 | Sun & Moon Booster Pack | Booster pack | 1 | Kind default | 1 Sun & Moon | Product set | — | 2017 Q1 (set) | Yes |
+| 267036 | Sun & Moon Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Sun & Moon | Product set | — | 2017 Q1 (set) | Yes |
+| 276574 | Sun & Moon Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Sun & Moon | Product set | — | 2017 Q1 (set) | No |
+| 243052 | Sun & Moon Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2017 Q1 (set) | Yes |
+| 230425 | Decidueye GX Challenge Box | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 209655 | Incineroar GX Challenge Box | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 131867 | Kingdra EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 148381 | Legacy Evolution Pin Collection | Collection | 5 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 131865 | Lycanroc GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 129896 | Mega Camerupt EX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | No |
+| 129897 | Mega Sharpedo EX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | No |
+| 129895 | Mimikyu Pin Collection | Collection | 3 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 656924 | Primarina GX Challenge Box | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 131870 | Scizor EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 244314 | Sun & Moon GX Challenge Box [Decidueye] | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 244313 | Sun & Moon GX Challenge Box [Incineroar] | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 656996 | Sun & Moon GX Challenge Box [Primarina] | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 455776 | Zygarde Complete Forme Pin Collection | Collection | 3 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 126091 | Sun & Moon Elite Trainer Box [Lunala] | Elite Trainer Box | 8 | Bulbapedia | 8 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 126089 | Sun & Moon Elite Trainer Box [Solgaleo] | Elite Trainer Box | 8 | Bulbapedia | 8 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
+| 206409 | Sun & Moon Prerelease Kit | Other | 4 | Description | 4 Sun & Moon | Exact | — | 2017 Q1 (set) | No |
+| 129310 | Legends of Alola Tin [Lunala GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 129309 | Legends of Alola Tin [Solgaleo GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 267958 | Spring 2017 Collector's Chest Tin | Tin | 5 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

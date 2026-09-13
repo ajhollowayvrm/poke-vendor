@@ -87,38 +87,40 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1780`: 23 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 118338 | Fates Collide Single Pack Blister [Gastly] | Blister | 1 | Description | — | 2016 Q2 (set) | Yes |
-| 118337 | Fates Collide Single Pack Blister [Pansear] | Blister | 1 | Name | — | 2016 Q2 (set) | Yes |
-| 118339 | Fates Collide Three Pack Blister [Froakie] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
-| 118340 | Fates Collide Three Pack Blister [Vivillon] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
-| 118332 | Fates Collide Three Pack Pin Blisters [Mega Alakazam] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
-| 118333 | Fates Collide Three Pack Pin Blisters [Zygarde] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
-| 117478 | XY Fates Collide Booster Box | Booster box | 36 | Kind default | — | 2016 Q2 (set) | Yes |
-| 276598 | Fates Collide Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q2 (set) | Yes |
-| 504698 | XY - Fates Collide Sleeved Booster Pack [Delphox BREAK] | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
-| 504699 | XY - Fates Collide Sleeved Booster Pack [Lugia BREAK] | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
-| 504697 | XY - Fates Collide Sleeved Booster Pack [Mega Alakazam] | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
-| 504700 | XY - Fates Collide Sleeved Booster Pack [Zygarde] | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
-| 168114 | XY Fates Collide Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
-| 656708 | Fates Collide Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2016 Q2 (set) | No |
-| 118336 | Ash-Greninja EX Box | Collection | 4 | Bulbapedia | — | 2016 Q2 (set) | Yes |
-| 121392 | BREAK Evolution Box [Ho-oh and Lugia] | Collection | 5 | Bulbapedia | — | 2016 Q2 (set) | No |
-| 118335 | Mega Mawile EX Premium Collection | Collection | 6 | Bulbapedia | — | 2016 Q2 (set) | Yes |
-| 121391 | Zygarde Collection Box | Collection | 4 | Description | — | 2016 Q2 (set) | No |
-| 118331 | Fates Collide Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2016 Q2 (set) | Yes |
-| 118334 | Fates Collide Prerelease Kit | Other | 4 | Description | — | 2016 Q2 (set) | Yes |
-| 121394 | Shiny Kalos Tin [Xerneas EX] | Tin | 4 | Bulbapedia | — | 2016 Q2 (set) | No |
-| 121395 | Shiny Kalos Tin [Yveltal EX] | Tin | 4 | Bulbapedia | — | 2016 Q2 (set) | No |
-| 121396 | Shiny Kalos Tin [Zygarde EX] | Tin | 4 | Bulbapedia | — | 2016 Q2 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 118338 | Fates Collide Single Pack Blister [Gastly] | Blister | 1 | Description | 1 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
+| 118337 | Fates Collide Single Pack Blister [Pansear] | Blister | 1 | Name | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 118339 | Fates Collide Three Pack Blister [Froakie] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
+| 118340 | Fates Collide Three Pack Blister [Vivillon] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
+| 118332 | Fates Collide Three Pack Pin Blisters [Mega Alakazam] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
+| 118333 | Fates Collide Three Pack Pin Blisters [Zygarde] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
+| 117478 | XY Fates Collide Booster Box | Booster box | 36 | Kind default | 36 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 276598 | Fates Collide Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 504698 | XY - Fates Collide Sleeved Booster Pack [Delphox BREAK] | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 504699 | XY - Fates Collide Sleeved Booster Pack [Lugia BREAK] | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 504697 | XY - Fates Collide Sleeved Booster Pack [Mega Alakazam] | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 504700 | XY - Fates Collide Sleeved Booster Pack [Zygarde] | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 168114 | XY Fates Collide Booster Pack | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
+| 656708 | Fates Collide Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2016 Q2 (set) | No |
+| 118336 | Ash-Greninja EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
+| 121392 | BREAK Evolution Box [Ho-oh and Lugia] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q2 (set) | No |
+| 118335 | Mega Mawile EX Premium Collection | Collection | 6 | Bulbapedia | 6 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
+| 121391 | Zygarde Collection Box | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 118331 | Fates Collide Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
+| 118334 | Fates Collide Prerelease Kit | Other | 4 | Description | 4 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
+| 121394 | Shiny Kalos Tin [Xerneas EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 121395 | Shiny Kalos Tin [Yveltal EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 121396 | Shiny Kalos Tin [Zygarde EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

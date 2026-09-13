@@ -72,37 +72,39 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1481`: 22 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 97773 | Furious Fists 2 Pack Blister [Dusknoir] | Blister | 2 | Description | — | 2014 Q3 (set) | Yes |
-| 97772 | Furious Fists 2 Pack Blister [Unova Trio] | Blister | 2 | Description | — | 2014 Q3 (set) | No |
-| 97768 | Furious Fists 3 Pack Blister [Slurpuff] | Blister | 3 | Description | — | 2014 Q3 (set) | Yes |
-| 97769 | Furious Fists 3 Pack Blister [Trevenant] | Blister | 3 | Description | — | 2014 Q3 (set) | No |
-| 97770 | Furious Fists Single Pack Blister [Gogoat] | Blister | 1 | Description | — | 2014 Q3 (set) | No |
-| 97771 | Furious Fists Single Pack Blister [Zoroark] | Blister | 1 | Description | — | 2014 Q3 (set) | No |
-| 97782 | XY Variety Blister | Blister | 3 | Description | — | 2014 Q3 (set) | No |
-| 92168 | Furious Fists Booster Box | Booster box | 36 | Kind default | — | 2014 Q3 (set) | Yes |
-| 92169 | Furious Fists Booster Pack | Booster pack | 4 | Description | — | 2014 Q3 (set) | Yes |
-| 550673 | Furious Fists Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q3 (set) | Yes |
-| 276591 | Furious Fists Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q3 (set) | Yes |
-| 97774 | Ancient Power Box | Collection | 3 | Bulbapedia | — | 2014 Q3 (set) | No |
-| 97766 | Mega Charizard X Collection | Collection | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
-| 97767 | Mega Charizard Y Collection | Collection | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
-| 97775 | Mega Lucario Collection | Collection | 4 | Bulbapedia | — | 2014 Q3 (set) | No |
-| 97781 | XY Knock Out Collection [Dragons] | Collection | 2 | Bulbapedia | — | 2014 Q3 (set) | No |
-| 97780 | XY Knock Out Collection [Kanto] | Collection | 2 | Bulbapedia | — | 2014 Q3 (set) | No |
-| 95284 | Furious Fists Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2014 Q3 (set) | No |
-| 97783 | Gengar Spirit Link 2-pack | Other | 2 | Name | — | 2014 Q3 (set) | No |
-| 97778 | EX Power Trio Tin [Blastoise EX] | Tin | 2 | Bulbapedia | — | 2014 Q3 (set) | Yes |
-| 97777 | EX Power Trio Tin [Charizard EX] | Tin | 2 | Bulbapedia | — | 2014 Q3 (set) | Yes |
-| 97776 | EX Power Trio Tin [Venusaur EX] | Tin | 2 | Bulbapedia | — | 2014 Q3 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 97773 | Furious Fists 2 Pack Blister [Dusknoir] | Blister | 2 | Description | 2 Furious Fists | Exact | — | 2014 Q3 (set) | Yes |
+| 97772 | Furious Fists 2 Pack Blister [Unova Trio] | Blister | 2 | Description | 2 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97768 | Furious Fists 3 Pack Blister [Slurpuff] | Blister | 3 | Description | 3 Furious Fists | Exact | — | 2014 Q3 (set) | Yes |
+| 97769 | Furious Fists 3 Pack Blister [Trevenant] | Blister | 3 | Description | 3 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97770 | Furious Fists Single Pack Blister [Gogoat] | Blister | 1 | Description | 1 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97771 | Furious Fists Single Pack Blister [Zoroark] | Blister | 1 | Description | 1 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97782 | XY Variety Blister | Blister | 3 | Description | 3 unknown set | Partial | — | 2014 Q3 (set) | No |
+| 92168 | Furious Fists Booster Box | Booster box | 36 | Kind default | 36 Furious Fists | Product set | — | 2014 Q3 (set) | Yes |
+| 92169 | Furious Fists Booster Pack | Booster pack | 4 | Description | 4 Furious Fists | Product set | — | 2014 Q3 (set) | Yes |
+| 550673 | Furious Fists Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Furious Fists | Product set | — | 2014 Q3 (set) | Yes |
+| 276591 | Furious Fists Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Furious Fists | Product set | — | 2014 Q3 (set) | Yes |
+| 97774 | Ancient Power Box | Collection | 3 | Bulbapedia | 2 Furious Fists, 1 Flashfire | Exact | — | 2014 Q3 (set) | No |
+| 97766 | Mega Charizard X Collection | Collection | Unknown | Unknown | — | Unknown | — | 2014 Q3 (set) | Yes |
+| 97767 | Mega Charizard Y Collection | Collection | Unknown | Unknown | — | Unknown | — | 2014 Q3 (set) | Yes |
+| 97775 | Mega Lucario Collection | Collection | 4 | Bulbapedia | 4 XY | Exact | — | 2014 Q3 (set) | No |
+| 97781 | XY Knock Out Collection [Dragons] | Collection | 2 | Research | 1 Flashfire, 1 XY | Exact | — | 2014 Q3 (set) | No |
+| 97780 | XY Knock Out Collection [Kanto] | Collection | 2 | Research | 1 Flashfire, 1 XY | Exact | — | 2014 Q3 (set) | No |
+| 95284 | Furious Fists Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97783 | Gengar Spirit Link 2-pack | Other | 2 | Name | 1 Flashfire, 1 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97778 | EX Power Trio Tin [Blastoise EX] | Tin | 4 | Bulbapedia (raised) | 2 Furious Fists, 1 Flashfire, 1 Plasma Blast | Exact | — | 2014 Q3 (set) | Yes |
+| 97777 | EX Power Trio Tin [Charizard EX] | Tin | 4 | Bulbapedia (raised) | 2 Furious Fists, 1 Flashfire, 1 Plasma Blast | Exact | — | 2014 Q3 (set) | Yes |
+| 97776 | EX Power Trio Tin [Venusaur EX] | Tin | 4 | Bulbapedia (raised) | 2 Furious Fists, 1 Flashfire, 1 Plasma Blast | Exact | — | 2014 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

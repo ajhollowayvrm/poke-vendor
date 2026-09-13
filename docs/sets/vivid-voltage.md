@@ -95,39 +95,41 @@ DigitalTQ table.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2701`: 24 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 221744 | Vivid Voltage 3 Pack Blister [Sobble] | Blister | 3 | Description | — | 2020 Q4 | Yes |
-| 221745 | Vivid Voltage 3 Pack Blister [Vaporeon] | Blister | 3 | Description | — | 2020 Q4 | Yes |
-| 230087 | Vivid Voltage Premium Checklane Blister [Appletun] | Blister | 1 | Description | — | 2020 Q4 (set) | Yes |
-| 230088 | Vivid Voltage Premium Checklane Blister [Weezing] | Blister | 1 | Description | — | 2020 Q4 (set) | No |
-| 221746 | Vivid Voltage Single Pack Blister [Grookey] | Blister | 1 | Description | — | 2020 Q4 | Yes |
-| 221747 | Vivid Voltage Single Pack Blister [Scorbunny] | Blister | 1 | Description | — | 2020 Q4 | Yes |
-| 221313 | Vivid Voltage Booster Box | Booster box | 36 | Description | — | 2020 Q4 | Yes |
-| 221312 | Vivid Voltage Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q4 | Yes |
-| 265319 | Vivid Voltage Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q4 (set) | Yes |
-| 245143 | Vivid Voltage Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q4 (set) | Yes |
-| 487798 | Vivid Voltage Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q4 (set) | Yes |
-| 221748 | Vivid Voltage Build & Battle Box | Build & Battle | 4 | Description | — | 2020 Q4 (set) | Yes |
-| 683003 | Alakazam V Box Case | Case or display | — | — | Unknown | 2020 Q4 (set) | No |
-| 243051 | Vivid Voltage Booster Box Case | Case or display | — | — | 6 booster boxes | 2020 Q4 (set) | Yes |
-| 221749 | Vivid Voltage Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2020 Q4 (set) | Yes |
-| 278642 | Vivid Voltage Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2020 Q4 (set) | Yes |
-| 653200 | Vivid Voltage Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2020 Q4 (set) | Yes |
-| 228979 | Alakazam V Box | Collection | 4 | Description | — | 2021 Q1 | Yes |
-| 228978 | Galar Sidekicks Premium Collection | Collection | 11 | Description | — | 2020 Q4 (set) | Yes |
-| 226137 | Orbeetle V Box | Collection | 4 | Description | — | 2020 Q4 | Yes |
-| 222987 | Sword & Shield Elite Trainer Box Plus [Zacian] | Elite Trainer Box | 12 | Description | — | 2020 Q4 (set) | Yes |
-| 222986 | Sword & Shield Elite Trainer Box Plus [Zamazenta] | Elite Trainer Box | 12 | Description | — | 2020 Q4 (set) | Yes |
-| 221752 | Vivid Voltage Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2020 Q4 (set) | Yes |
-| 222985 | Fall 2020 Collector's Chest Tin | Tin | 5 | Description | — | 2020 Q4 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 221744 | Vivid Voltage 3 Pack Blister [Sobble] | Blister | 3 | Description | 3 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
+| 221745 | Vivid Voltage 3 Pack Blister [Vaporeon] | Blister | 3 | Description | 3 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
+| 230087 | Vivid Voltage Premium Checklane Blister [Appletun] | Blister | 1 | Description | 1 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
+| 230088 | Vivid Voltage Premium Checklane Blister [Weezing] | Blister | 1 | Description | 1 Vivid Voltage | Exact | — | 2020 Q4 (set) | No |
+| 221746 | Vivid Voltage Single Pack Blister [Grookey] | Blister | 1 | Description | 1 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
+| 221747 | Vivid Voltage Single Pack Blister [Scorbunny] | Blister | 1 | Description | 1 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
+| 221313 | Vivid Voltage Booster Box | Booster box | 36 | Description | 36 Vivid Voltage | Product set | — | 2020 Q4 | Yes |
+| 221312 | Vivid Voltage Booster Pack | Booster pack | 1 | Kind default | 1 Vivid Voltage | Product set | — | 2020 Q4 | Yes |
+| 265319 | Vivid Voltage Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Vivid Voltage | Product set | — | 2020 Q4 (set) | Yes |
+| 245143 | Vivid Voltage Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Vivid Voltage | Product set | — | 2020 Q4 (set) | Yes |
+| 487798 | Vivid Voltage Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Vivid Voltage | Product set | — | 2020 Q4 (set) | Yes |
+| 221748 | Vivid Voltage Build & Battle Box | Build & Battle | 4 | Description | 4 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
+| 683003 | Alakazam V Box Case | Case or display | — | — | — | — | Unknown | 2020 Q4 (set) | No |
+| 243051 | Vivid Voltage Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2020 Q4 (set) | Yes |
+| 221749 | Vivid Voltage Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2020 Q4 (set) | Yes |
+| 278642 | Vivid Voltage Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2020 Q4 (set) | Yes |
+| 653200 | Vivid Voltage Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2020 Q4 (set) | Yes |
+| 228979 | Alakazam V Box | Collection | 4 | Description | 2 Vivid Voltage, 1 Sun & Moon, 1 unknown set | Partial | — | 2021 Q1 | Yes |
+| 228978 | Galar Sidekicks Premium Collection | Collection | 11 | Description | 2 Steam Siege, 2 Vivid Voltage, 1 Burning Shadows, 1 Celestial Storm, 1 Crimson Invasion, 1 Darkness Ablaze, 1 Rebel Clash, 1 Sun & Moon, 1 Sword & Shield | Exact | — | 2020 Q4 (set) | Yes |
+| 226137 | Orbeetle V Box | Collection | 4 | Description | 2 Chilling Reign, 2 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
+| 222987 | Sword & Shield Elite Trainer Box Plus [Zacian] | Elite Trainer Box | 12 | Description | 3 Darkness Ablaze, 3 Rebel Clash, 3 Sword & Shield, 3 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
+| 222986 | Sword & Shield Elite Trainer Box Plus [Zamazenta] | Elite Trainer Box | 12 | Description | 3 Darkness Ablaze, 3 Rebel Clash, 3 Sword & Shield, 3 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
+| 221752 | Vivid Voltage Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
+| 222985 | Fall 2020 Collector's Chest Tin | Tin | 5 | Description | 2 Vivid Voltage, 1 Burning Shadows, 1 Sun & Moon, 1 Sword & Shield | Exact | — | 2020 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

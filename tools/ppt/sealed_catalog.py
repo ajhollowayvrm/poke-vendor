@@ -41,7 +41,7 @@ KINDS = [
     ("Booster box", r"\bbooster box\b"),
     ("Elite Trainer Box", r"\belite trainer box\b"),
     ("Deck", r"\b(theme deck|starter deck|battle deck|trainer kit|training kit|league battle|world championship|deck bundle)\b"),
-    ("Booster pack", r"\bmini booster pack\b|\bbooster pack$"),
+    ("Booster pack", r"\bmini booster pack\b|\bbooster pack$|\bseries \d+ pack$"),
     ("Booster bundle", r"\bbooster bundle\b"),
     ("Build & Battle", r"\bbuild (?:&|and) battle\b"),
     ("Blister", r"\bblisters?\b|\bcheck ?lane\b"),
@@ -179,9 +179,8 @@ def bp_packs(name, kind, era, sections, own_set=frozenset()):
     if not entry:
         return None, None
     title, _, n, names_pack = entry
-    mult = re.search(r"\[(?:bundle|set) of (\d+)\]", name, re.I)
     if n is not None:
-        return n * (int(mult.group(1)) if mult else 1), "Bulbapedia"
+        return n * unit_multiplier(kind, name), "Bulbapedia"
     if kind == "Deck" and not names_pack:
         return 0, "Bulbapedia (no booster pack in contents)"
     return None, None
@@ -189,6 +188,22 @@ def bp_packs(name, kind, era, sections, own_set=frozenset()):
 
 def num(s):
     return int(s) if s.isdigit() else WORDS.get(s.lower())
+
+
+# The number of whole products in a listing of one product: "[Set of 3]", "(Set of 2)", "[Bundle of 2]", "Mini Tins 5-Pack",
+# "8-Pack Mini Tins", "6-Pack Poke balls".
+UNITS_RE = re.compile(r"[\[(](?:set|bundle) of (\d+)[\])]|\btins? (\d+)-pack\b|\b(\d+)-pack (?:mini tins|pok[eé] ?balls)\b", re.I)
+
+
+def units_of(name):
+    m = UNITS_RE.search(name)
+    return int(next(g for g in m.groups() if g)) if m else 1
+
+
+def unit_multiplier(kind, name):
+    # A description or a Bulbapedia section gives the pack count for one unit. A booster pack listing, such as "Sleeved
+    # Booster Pack Bundle [Set of 8]", already counts every pack.
+    return 1 if kind == "Booster pack" else units_of(name)
 
 
 def clean(text):
@@ -218,12 +233,14 @@ def packs_of(kind, name, text, era=None, sections=None, hand_text=None, own_set=
         return (n, "Set file") if n is not None else (None, "Unknown")
     # Add one count per distinct bullet: "• 4 Celebrations four-card booster packs • 2 additional Pokémon TCG booster
     # packs" is 6. The text before the first bullet often repeats a count, so it counts only with no bullet count.
+    # A description of a multi-unit listing, such as "Crown Zenith Tin [Set of 3]", gives the count for one unit.
     bullets = list(dict.fromkeys(re.sub(r"\s+", " ", b).strip().lower() for b in text.split("•")[1:]))
     counts = [num(m.group(1)) for item in bullets for m in [PACKS_RE.search(item)] if m and num(m.group(1))]
     m = PACKS_RE.search(text)
     if counts or (m and num(m.group(1))):
-        return (sum(counts) if counts else num(m.group(1))), "Description"
-    m = re.search(r"\b(\d+)[ -]pack\b", name, re.I)
+        return (sum(counts) if counts else num(m.group(1))) * unit_multiplier(kind, name), "Description"
+    # "N-Pack" is a pack count, but not in "POP Series 6 Pack", "Mini Tins 5-Pack", or "Collector 3-Pack: ... ETB + Tins".
+    m = re.search(r"(?<!series )(?<!tins )(?<!tin )\b(\d+)[ -]pack\b(?!\s*:)(?! (?:mini tins|pok[eé] ?balls))", name, re.I)
     if m:
         return int(m.group(1)), "Name"
     m = re.search(r"\b(single|one|two|three|four|five|six)[ -](?:pack )?blister\b|\b(single|one|two|three|four|five|six)[ -]pack\b", name, re.I)
@@ -344,16 +361,51 @@ def build_rows(gid, rows, release_by_slug, priced, eras=None, sections=None):
 
 
 def table(rows):
-    lines = ["| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |", "|---|---|---|---|---|---|---|---|"]
-    lines += [f"| {r['id']} | {r['name']} | {r['kind']} | {r['packs']} | {r['src']} | {r['holds']} | {r['release']} | {r['ppt']} |" for r in rows]
+    lines = ["| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
+    lines += [f"| {r['id']} | {r['name']} | {r['kind']} | {r['packs']} | {r['src']} | {r.get('mix', '—')} | {r.get('mix_confidence', '—')} "
+              f"| {r['holds']} | {r['release']} | {r['ppt']} |" for r in rows]
     return "\n".join(lines)
+
+
+def mix_text(mix, names):
+    # "2 Battle Styles, 1 Darkness Ablaze, 1 unknown set", with the largest count first.
+    def label(k):
+        return "unknown set" if k == "unknown" else f"{k} (set unknown)" if k.endswith(" Series") else names.get(k, k)
+    return ", ".join(f"{n} {label(k)}" for k, n in sorted(mix.items(), key=lambda kv: (-kv[1], label(kv[0])))) or "—"
+
+
+def merge_contents(rows_lists):
+    # Add the pack mix from tools/ppt/sealed_contents.py to each row. A researched count (tools/ppt/sealed_overrides.json)
+    # or a raised count (packs_note) replaces the catalog count.
+    import sealed_contents
+    idx = open(os.path.join(ROOT, "docs", "13-sets.md")).read()
+    names = {}
+    for text, slug in re.findall(r"\[([^\]]+)\]\(sets/([a-z0-9-]+)\.md\)", idx):
+        names.setdefault(slug, text)
+    contents = {c["id"]: c for c in sealed_contents.all_contents()}
+    for rows in rows_lists:
+        for r in rows:
+            c = contents.get(r["id"])
+            if not c:
+                continue
+            if c["packs"] is not None and (c["source"] == "Research" or c["packs_note"]):
+                r["packs"] = str(c["packs"])
+                r["src"] = "Research" if c["source"] == "Research" else f"{r['src']} (raised)"
+            r["mix"], r["mix_confidence"] = mix_text(c["mix"], names), c["confidence"]
 
 
 INTRO = ("Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. "
          "Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.\n\n"
          "- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, "
          "the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). "
-         "Check a default before the game uses it.\n"
+         "Check a default before the game uses it. \"Research\" means a researched entry in `tools/ppt/sealed_overrides.json`, "
+         "with its sources. \"(raised)\" means that Bulbapedia and the TCGplayer description show a higher count than the first read. "
+         "For a listing of several units, such as \"[Set of 3]\" or \"Mini Tins 5-Pack\", Packs is the total for all units.\n"
+         "- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "
+         "\"unknown set\" means that no source names the set. \"<series> Series (set unknown)\" means that the source names only the series.\n"
+         "- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set "
+         "product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).\n"
          "- **Holds** is what a case or a display holds.\n"
          "- **Release** is the quarter from the TCGplayer release date. \"(set)\" means the quarter of the set's release date.\n"
          "- **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.\n")
@@ -405,6 +457,7 @@ if __name__ == "__main__":
     sample = per_slug.get("black-bolt", [])[:8]
     print(table(sample))
     if write:
+        merge_contents(list(per_slug.values()) + [rows for _, rows in multi])
         for slug, rows in per_slug.items():
             write_set(slug, rows, groups_of_slug[slug])
         lines = ["# Sealed products outside the set files", "",

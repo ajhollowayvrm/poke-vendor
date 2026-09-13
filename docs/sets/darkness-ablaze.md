@@ -88,40 +88,42 @@ pack-opening videos, not official data).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2675`: 25 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 216857 | Darkness Ablaze 3 Pack Blister [Eevee] | Blister | 3 | Description | — | 2020 Q3 | Yes |
-| 216858 | Darkness Ablaze 3 Pack Blister [Flareon] | Blister | 3 | Description | — | 2020 Q3 | Yes |
-| 216863 | Darkness Ablaze Premium Checklane Blister | Blister | 1 | Description | — | 2020 Q3 | Yes |
-| 220108 | Darkness Ablaze Premium Checklane Blister [Dragapult] | Blister | 1 | Description | — | 2020 Q3 | Yes |
-| 220109 | Darkness Ablaze Premium Checklane Blister [Grimmsnarl] | Blister | 1 | Description | — | 2020 Q3 | Yes |
-| 216859 | Darkness Ablaze Single Pack Blister [Hatenna] | Blister | 1 | Description | — | 2020 Q3 | Yes |
-| 216860 | Darkness Ablaze Single Pack Blister [Pikachu] | Blister | 1 | Description | — | 2020 Q3 | Yes |
-| 668526 | Sword & Shield Single Blister Pack [Cufant & Copperajah] | Blister | 1 | Name | — | 2020 Q3 (set) | Yes |
-| 668524 | Sword & Shield Single Blister Pack [Silicobra & Sandaconda] | Blister | 1 | Name | — | 2020 Q3 (set) | No |
-| 216853 | Darkness Ablaze Booster Box | Booster box | 36 | Kind default | — | 2020 Q3 | Yes |
-| 216852 | Darkness Ablaze Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q3 | Yes |
-| 265317 | Darkness Ablaze Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q3 (set) | Yes |
-| 653206 | Darkness Ablaze Fun Pack | Booster pack | 1 | Kind default | — | 2020 Q3 (set) | Yes |
-| 257320 | Darkness Ablaze Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q3 (set) | Yes |
-| 487797 | Darkness Ablaze Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q3 (set) | Yes |
-| 216861 | Darkness Ablaze Build & Battle Box | Build & Battle | 4 | Description | — | 2020 Q3 (set) | Yes |
-| 256971 | Darkness Ablaze Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2020 Q3 (set) | Yes |
-| 216862 | Darkness Ablaze Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2020 Q3 (set) | Yes |
-| 266951 | Darkness Ablaze Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2020 Q3 (set) | Yes |
-| 220277 | Eternatus VMAX Premium Collection | Collection | 6 | Description | — | 2020 Q3 | Yes |
-| 712959 | Eternatus VMAX Premium Collection [International] | Collection | 6 | Description | — | 2020 Q3 (set) | No |
-| 220272 | Galarian Sirfetch'd V Box | Collection | 4 | Description | — | 2020 Q3 | Yes |
-| 218839 | True Steel Premium Collection [Zacian] | Collection | 6 | Description | — | 2020 Q3 | Yes |
-| 218840 | True Steel Premium Collection [Zamazenta] | Collection | 6 | Description | — | 2020 Q3 | No |
-| 216856 | Darkness Ablaze Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2020 Q3 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 216857 | Darkness Ablaze 3 Pack Blister [Eevee] | Blister | 3 | Description | 2 Darkness Ablaze, 1 unknown set | Partial | — | 2020 Q3 | Yes |
+| 216858 | Darkness Ablaze 3 Pack Blister [Flareon] | Blister | 3 | Description | 2 Darkness Ablaze, 1 unknown set | Partial | — | 2020 Q3 | Yes |
+| 216863 | Darkness Ablaze Premium Checklane Blister | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 220108 | Darkness Ablaze Premium Checklane Blister [Dragapult] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 220109 | Darkness Ablaze Premium Checklane Blister [Grimmsnarl] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 216859 | Darkness Ablaze Single Pack Blister [Hatenna] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 216860 | Darkness Ablaze Single Pack Blister [Pikachu] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 668526 | Sword & Shield Single Blister Pack [Cufant & Copperajah] | Blister | 1 | Name | 1 Darkness Ablaze | Exact | — | 2020 Q3 (set) | Yes |
+| 668524 | Sword & Shield Single Blister Pack [Silicobra & Sandaconda] | Blister | 1 | Name | 1 Darkness Ablaze | Exact | — | 2020 Q3 (set) | No |
+| 216853 | Darkness Ablaze Booster Box | Booster box | 36 | Kind default | 36 Darkness Ablaze | Product set | — | 2020 Q3 | Yes |
+| 216852 | Darkness Ablaze Booster Pack | Booster pack | 1 | Kind default | 1 Darkness Ablaze | Product set | — | 2020 Q3 | Yes |
+| 265317 | Darkness Ablaze Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Darkness Ablaze | Product set | — | 2020 Q3 (set) | Yes |
+| 653206 | Darkness Ablaze Fun Pack | Booster pack | 1 | Kind default | 1 Darkness Ablaze | Product set | — | 2020 Q3 (set) | Yes |
+| 257320 | Darkness Ablaze Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Darkness Ablaze | Product set | — | 2020 Q3 (set) | Yes |
+| 487797 | Darkness Ablaze Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Darkness Ablaze | Product set | — | 2020 Q3 (set) | Yes |
+| 216861 | Darkness Ablaze Build & Battle Box | Build & Battle | 4 | Description | 4 Darkness Ablaze | Exact | — | 2020 Q3 (set) | Yes |
+| 256971 | Darkness Ablaze Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2020 Q3 (set) | Yes |
+| 216862 | Darkness Ablaze Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2020 Q3 (set) | Yes |
+| 266951 | Darkness Ablaze Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2020 Q3 (set) | Yes |
+| 220277 | Eternatus VMAX Premium Collection | Collection | 6 | Description | 2 Darkness Ablaze, 1 Burning Shadows, 1 Evolutions, 1 Rebel Clash, 1 Sword & Shield | Exact | — | 2020 Q3 | Yes |
+| 712959 | Eternatus VMAX Premium Collection [International] | Collection | 6 | Description | 2 Darkness Ablaze, 1 Burning Shadows, 1 Evolutions, 1 Rebel Clash, 1 Sword & Shield | Exact | — | 2020 Q3 (set) | No |
+| 220272 | Galarian Sirfetch'd V Box | Collection | 4 | Description | — | Unknown | — | 2020 Q3 | Yes |
+| 218839 | True Steel Premium Collection [Zacian] | Collection | 6 | Description | — | Unknown | — | 2020 Q3 | Yes |
+| 218840 | True Steel Premium Collection [Zamazenta] | Collection | 6 | Description | — | Unknown | — | 2020 Q3 | No |
+| 216856 | Darkness Ablaze Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

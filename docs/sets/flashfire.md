@@ -73,34 +73,36 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1464`: 19 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 97737 | Flashfire 3 Pack Blister [Haxorus] | Blister | 3 | Description | — | 2014 Q2 (set) | No |
-| 97744 | Flashfire Collector Pin 3 Pack Blister [Mega Charizard X] | Blister | 3 | Description | — | 2014 Q2 (set) | No |
-| 97745 | Flashfire Collector Pin 3 Pack Blister [Mega Charizard Y] | Blister | 3 | Description | — | 2014 Q2 (set) | No |
-| 97746 | Flashfire Collector Pin 3 Pack Blister [Mega Lucario] | Blister | 3 | Description | — | 2014 Q2 (set) | No |
-| 97740 | Flashfire Single Pack Blister [Honedge] | Blister | 1 | Description | — | 2014 Q2 (set) | No |
-| 97739 | Flashfire Single Pack Blister [Skiddo] | Blister | 1 | Description | — | 2014 Q2 (set) | No |
-| 97738 | Flashfire Three Pack Blister [Machamp] | Blister | 3 | Description | — | 2014 Q2 (set) | No |
-| 91594 | Flashfire Booster Box | Booster box | 36 | Kind default | — | 2014 Q2 (set) | No |
-| 91595 | Flashfire Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q2 (set) | Yes |
-| 524332 | Flashfire Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q2 (set) | Yes |
-| 276590 | Flashfire Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q2 (set) | Yes |
-| 91612 | Charizard Ex Box | Collection | 4 | Description | — | 2014 Q2 (set) | No |
-| 97742 | Krookodile EX Box | Collection | 4 | Description | — | 2014 Q2 (set) | No |
-| 97741 | Pyroar Box | Collection | 3 | Description | — | 2014 Q2 (set) | Yes |
-| 249164 | XY Flashfire Collector Chest | Collection | 5 | Description | — | 2014 Q2 (set) | No |
-| 91605 | Kalos Power Tin [Chesnaught EX] | Tin | 4 | Bulbapedia | — | 2014 Q2 (set) | No |
-| 91606 | Kalos Power Tin [Delphox Tin] | Tin | 4 | Bulbapedia | — | 2014 Q2 (set) | No |
-| 91607 | Kalos Power Tin [Greninja] | Tin | 4 | Bulbapedia | — | 2014 Q2 (set) | No |
-| 91611 | Kalos Power Tins [Bundle of 3] | Tin | 12 | Bulbapedia | — | 2014 Q2 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 97737 | Flashfire 3 Pack Blister [Haxorus] | Blister | 3 | Description | 3 Flashfire | Exact | — | 2014 Q2 (set) | No |
+| 97744 | Flashfire Collector Pin 3 Pack Blister [Mega Charizard X] | Blister | 3 | Description | 2 Flashfire, 1 XY | Exact | — | 2014 Q2 (set) | No |
+| 97745 | Flashfire Collector Pin 3 Pack Blister [Mega Charizard Y] | Blister | 3 | Description | 2 Flashfire, 1 XY | Exact | — | 2014 Q2 (set) | No |
+| 97746 | Flashfire Collector Pin 3 Pack Blister [Mega Lucario] | Blister | 3 | Description | 2 Flashfire, 1 XY | Exact | — | 2014 Q2 (set) | No |
+| 97740 | Flashfire Single Pack Blister [Honedge] | Blister | 1 | Description | 1 Flashfire | Product set | — | 2014 Q2 (set) | No |
+| 97739 | Flashfire Single Pack Blister [Skiddo] | Blister | 1 | Description | 1 Flashfire | Product set | — | 2014 Q2 (set) | No |
+| 97738 | Flashfire Three Pack Blister [Machamp] | Blister | 3 | Description | 3 Flashfire | Exact | — | 2014 Q2 (set) | No |
+| 91594 | Flashfire Booster Box | Booster box | 36 | Kind default | 36 Flashfire | Product set | — | 2014 Q2 (set) | No |
+| 91595 | Flashfire Booster Pack | Booster pack | 1 | Kind default | 1 Flashfire | Product set | — | 2014 Q2 (set) | Yes |
+| 524332 | Flashfire Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Flashfire | Product set | — | 2014 Q2 (set) | Yes |
+| 276590 | Flashfire Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Flashfire | Product set | — | 2014 Q2 (set) | Yes |
+| 91612 | Charizard Ex Box | Collection | 4 | Description | — | Unknown | — | 2014 Q2 (set) | No |
+| 97742 | Krookodile EX Box | Collection | 4 | Description | 2 Flashfire, 2 XY | Exact | — | 2014 Q2 (set) | No |
+| 97741 | Pyroar Box | Collection | 3 | Description | 3 XY | Exact | — | 2014 Q2 (set) | Yes |
+| 249164 | XY Flashfire Collector Chest | Collection | 5 | Description | — | Unknown | — | 2014 Q2 (set) | No |
+| 91605 | Kalos Power Tin [Chesnaught EX] | Tin | 4 | Bulbapedia | 1 Flashfire, 1 Plasma Blast, 1 Plasma Freeze, 1 XY | Exact | — | 2014 Q2 (set) | No |
+| 91606 | Kalos Power Tin [Delphox Tin] | Tin | 4 | Bulbapedia | 1 Flashfire, 1 Plasma Blast, 1 Plasma Freeze, 1 XY | Exact | — | 2014 Q2 (set) | No |
+| 91607 | Kalos Power Tin [Greninja] | Tin | 4 | Bulbapedia | 1 Flashfire, 1 Plasma Blast, 1 Plasma Freeze, 1 XY | Exact | — | 2014 Q2 (set) | No |
+| 91611 | Kalos Power Tins [Bundle of 3] | Tin | 12 | Bulbapedia | 3 Flashfire, 3 Plasma Blast, 3 Plasma Freeze, 3 XY | Exact | — | 2014 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -97,33 +97,35 @@ Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1728`, `1729`: 18 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 187238 | Generations Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q1 (set) | Yes |
-| 121363 | Mythical Pokemon Collection Box [Arceus] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 114525 | Mythical Pokemon Collection Box [Celebi] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 118342 | Mythical Pokemon Collection Box [Darkrai] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 126569 | Mythical Pokemon Collection Box [Genesect] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 116999 | Mythical Pokemon Collection Box [Jirachi] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 123740 | Mythical Pokemon Collection Box [Keldeo] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 118796 | Mythical Pokemon Collection Box [Manaphy] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 126568 | Mythical Pokemon Collection Box [Meloetta] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 113774 | Mythical Pokemon Collection Box [Mew] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 123433 | Mythical Pokemon Collection Box [Victini] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 118795 | Red & Blue Collection [Blastoise EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 115598 | Red & Blue Collection [Charizard EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 123432 | Red & Blue Collection [Pikachu EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 120700 | Red & Blue Collection [Venusaur EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
-| 147223 | Super-Premium Collection [Mew & Mewtwo] | Collection | 10 | Description | — | 2016 Q1 (set) | Yes |
-| 123741 | Generations Elite Trainer Box | Elite Trainer Box | 10 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 187238 | Generations Booster Pack | Booster pack | 1 | Kind default | 1 Generations | Product set | — | 2016 Q1 (set) | Yes |
+| 121363 | Mythical Pokemon Collection Box [Arceus] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
+| 114525 | Mythical Pokemon Collection Box [Celebi] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
+| 118342 | Mythical Pokemon Collection Box [Darkrai] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 126569 | Mythical Pokemon Collection Box [Genesect] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 116999 | Mythical Pokemon Collection Box [Jirachi] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 123740 | Mythical Pokemon Collection Box [Keldeo] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 118796 | Mythical Pokemon Collection Box [Manaphy] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 126568 | Mythical Pokemon Collection Box [Meloetta] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 113774 | Mythical Pokemon Collection Box [Mew] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
+| 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
+| 123433 | Mythical Pokemon Collection Box [Victini] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 118795 | Red & Blue Collection [Blastoise EX] | Collection | 4 | Bulbapedia | 4 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 115598 | Red & Blue Collection [Charizard EX] | Collection | 4 | Bulbapedia | 4 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 123432 | Red & Blue Collection [Pikachu EX] | Collection | 4 | Bulbapedia | 4 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 120700 | Red & Blue Collection [Venusaur EX] | Collection | 4 | Bulbapedia | 4 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 147223 | Super-Premium Collection [Mew & Mewtwo] | Collection | 10 | Description | 10 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 123741 | Generations Elite Trainer Box | Elite Trainer Box | 10 | Bulbapedia | 10 Generations | Product set | — | 2016 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

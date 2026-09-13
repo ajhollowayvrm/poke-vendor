@@ -134,39 +134,41 @@ Collation:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `23228`: 24 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 501259 | Obsidian Flames 3 Pack Blister [Eevee] | Blister | 3 | Description | — | 2023 Q3 | Yes |
-| 501260 | Obsidian Flames 3 Pack Blister [Houndstone] | Blister | 3 | Description | — | 2023 Q3 | Yes |
-| 501261 | Obsidian Flames 3 Pack Blister [Set of 2] | Blister | 3 | Description | — | 2023 Q3 | Yes |
-| 557084 | Obsidian Flames Single Blister Pack [Annihilape] | Blister | 1 | Name | — | 2023 Q3 (set) | Yes |
-| 557086 | Obsidian Flames Single Blister Pack [Houndstone] | Blister | 1 | Name | — | 2023 Q3 (set) | Yes |
-| 557085 | Obsidian Flames Single Blister Pack [Kingambit] | Blister | 1 | Name | — | 2023 Q3 (set) | Yes |
-| 557087 | Obsidian Flames Single Blister Pack [Revavroom] | Blister | 1 | Name | — | 2023 Q3 (set) | Yes |
-| 512047 | Obsidian Flames Single Pack Blister [Paldean Wooper] | Blister | 1 | Description | — | 2023 Q3 (set) | Yes |
-| 501262 | Obsidian Flames Single Pack Blister [Pawmi] | Blister | 1 | Description | — | 2023 Q3 (set) | Yes |
-| 501257 | Obsidian Flames Booster Box | Booster box | 36 | Description | — | 2023 Q3 (set) | Yes |
-| 501263 | Obsidian Flames Booster Bundle | Booster bundle | 6 | Description | — | 2023 Q3 | Yes |
-| 501256 | Obsidian Flames Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q3 | Yes |
-| 515079 | Obsidian Flames Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2023 Q3 (set) | Yes |
-| 534087 | Obsidian Flames Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q3 (set) | Yes |
-| 513422 | Obsidian Flames Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2023 Q3 (set) | Yes |
-| 501268 | Obsidian Flames Build & Battle Box | Build & Battle | 4 | Description | — | 2023 Q3 (set) | Yes |
-| 501267 | Obsidian Flames Build & Battle Stadium | Build & Battle | 11 | Set file | — | 2023 Q3 (set) | Yes |
-| 501258 | Obsidian Flames Booster Box Case | Case or display | — | — | 6 booster boxes | 2023 Q3 (set) | Yes |
-| 514193 | Obsidian Flames Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2023 Q3 (set) | Yes |
-| 501265 | Obsidian Flames Elite Trainer Box Case | Case or display | — | — | Unknown number of elite trainer boxes | 2023 Q3 (set) | Yes |
-| 618341 | Obsidian Flames Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | 4 elite trainer boxes | 2023 Q3 (set) | Yes |
-| 606743 | Obsidian Flames Sleeved Booster Pack Case | Case or display | — | — | Unknown number of sleeved boosters | 2023 Q3 (set) | Yes |
-| 501264 | Obsidian Flames Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2023 Q3 | Yes |
-| 501266 | Obsidian Flames Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 9 | Bulbapedia | — | 2023 Q3 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 501259 | Obsidian Flames 3 Pack Blister [Eevee] | Blister | 3 | Description | 3 Obsidian Flames | Exact | — | 2023 Q3 | Yes |
+| 501260 | Obsidian Flames 3 Pack Blister [Houndstone] | Blister | 3 | Description | 3 Obsidian Flames | Exact | — | 2023 Q3 | Yes |
+| 501261 | Obsidian Flames 3 Pack Blister [Set of 2] | Blister | 6 | Description | 6 Obsidian Flames | Exact | — | 2023 Q3 | Yes |
+| 557084 | Obsidian Flames Single Blister Pack [Annihilape] | Blister | 1 | Name | 1 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 557086 | Obsidian Flames Single Blister Pack [Houndstone] | Blister | 1 | Name | 1 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 557085 | Obsidian Flames Single Blister Pack [Kingambit] | Blister | 1 | Name | 1 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 557087 | Obsidian Flames Single Blister Pack [Revavroom] | Blister | 1 | Name | 1 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 512047 | Obsidian Flames Single Pack Blister [Paldean Wooper] | Blister | 1 | Description | 1 Obsidian Flames | Exact | — | 2023 Q3 (set) | Yes |
+| 501262 | Obsidian Flames Single Pack Blister [Pawmi] | Blister | 1 | Description | 1 Obsidian Flames | Exact | — | 2023 Q3 (set) | Yes |
+| 501257 | Obsidian Flames Booster Box | Booster box | 36 | Description | 36 Obsidian Flames | Exact | — | 2023 Q3 (set) | Yes |
+| 501263 | Obsidian Flames Booster Bundle | Booster bundle | 6 | Description | 6 Obsidian Flames | Exact | — | 2023 Q3 | Yes |
+| 501256 | Obsidian Flames Booster Pack | Booster pack | 1 | Kind default | 1 Obsidian Flames | Product set | — | 2023 Q3 | Yes |
+| 515079 | Obsidian Flames Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 534087 | Obsidian Flames Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 513422 | Obsidian Flames Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
+| 501268 | Obsidian Flames Build & Battle Box | Build & Battle | 4 | Description | 4 Obsidian Flames | Exact | — | 2023 Q3 (set) | Yes |
+| 501267 | Obsidian Flames Build & Battle Stadium | Build & Battle | 11 | Set file | 3 Obsidian Flames | Partial | — | 2023 Q3 (set) | Yes |
+| 501258 | Obsidian Flames Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2023 Q3 (set) | Yes |
+| 514193 | Obsidian Flames Build & Battle Box Display | Case or display | — | — | — | — | Unknown number of build & battle boxes | 2023 Q3 (set) | Yes |
+| 501265 | Obsidian Flames Elite Trainer Box Case | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2023 Q3 (set) | Yes |
+| 618341 | Obsidian Flames Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | 4 elite trainer boxes | 2023 Q3 (set) | Yes |
+| 606743 | Obsidian Flames Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2023 Q3 (set) | Yes |
+| 501264 | Obsidian Flames Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Obsidian Flames | Exact | — | 2023 Q3 | Yes |
+| 501266 | Obsidian Flames Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 9 | Bulbapedia | 9 Obsidian Flames | Exact | — | 2023 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

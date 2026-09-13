@@ -160,46 +160,48 @@ Collation:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `22873`: 31 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 478761 | Scarlet & Violet 3 Pack Blister [Arcanine] | Blister | 3 | Description | — | 2023 Q1 (set) | Yes |
-| 478762 | Scarlet & Violet 3 Pack Blister [Dondozo] | Blister | 3 | Description | — | 2023 Q1 (set) | Yes |
-| 478763 | Scarlet & Violet 3 Pack Blister [Set of 2] | Blister | 3 | Description | — | 2023 Q1 (set) | Yes |
-| 479328 | Scarlet & Violet Premium Checklane Blister [Gengar] | Blister | 1 | Description | — | 2023 Q1 (set) | Yes |
-| 497166 | Scarlet & Violet Premium Checklane Blister [Hisuian Arcanine] | Blister | 1 | Description | — | 2023 Q1 (set) | Yes |
-| 497167 | Scarlet & Violet Premium Checklane Blister [Hisuian Zoroark] | Blister | 1 | Description | — | 2023 Q1 (set) | Yes |
-| 479330 | Scarlet & Violet Premium Checklane Blister [Machamp] | Blister | 1 | Description | — | 2023 Q1 (set) | No |
-| 479331 | Scarlet & Violet Premium Checklane Blister [Set of 2] | Blister | 1 | Description | — | 2023 Q1 (set) | No |
-| 478766 | Scarlet & Violet Single Pack Blister [Espathra] | Blister | 1 | Description | — | 2023 Q1 | Yes |
-| 478767 | Scarlet & Violet Single Pack Blister [Set of 2] | Blister | 1 | Description | — | 2023 Q1 | Yes |
-| 478765 | Scarlet & Violet Single Pack Blister [Spidops] | Blister | 1 | Description | — | 2023 Q1 | Yes |
-| 476452 | Scarlet & Violet Booster Box | Booster box | 36 | Description | — | 2023 Q1 | Yes |
-| 649407 | Scarlet & Violet Half Booster Box | Booster box | 18 | Description | — | 2023 Q1 (set) | No |
-| 478258 | Scarlet & Violet Booster Bundle | Booster bundle | 6 | Description | — | 2023 Q1 | Yes |
-| 476451 | Scarlet & Violet Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q1 (set) | Yes |
-| 478759 | Scarlet & Violet Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2023 Q1 (set) | Yes |
-| 530121 | Scarlet & Violet Fun Pack | Booster pack | 1 | Kind default | — | 2023 Q1 (set) | Yes |
-| 478273 | Scarlet & Violet Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q1 | Yes |
-| 478274 | Scarlet & Violet Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2023 Q1 | Yes |
-| 478275 | Scarlet & Violet Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2023 Q1 | Yes |
-| 478253 | Scarlet & Violet Build & Battle Box | Build & Battle | 4 | Description | — | 2023 Q1 (set) | Yes |
-| 478257 | Scarlet & Violet Build & Battle Stadium | Build & Battle | 11 | Set file | — | 2023 Q1 (set) | Yes |
-| 476453 | Scarlet & Violet Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2023 Q1 (set) | Yes |
-| 478254 | Scarlet & Violet Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2023 Q1 (set) | Yes |
-| 488776 | Scarlet & Violet Elite Trainer Box Case | Case or display | — | — | Unknown number of elite trainer boxes | 2023 Q1 (set) | Yes |
-| 600076 | Scarlet & Violet Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2023 Q1 (set) | Yes |
-| 478335 | Scarlet & Violet Elite Trainer Box [Koraidon] | Elite Trainer Box | 9 | Description | — | 2023 Q1 (set) | Yes |
-| 478336 | Scarlet & Violet Elite Trainer Box [Miraidon] | Elite Trainer Box | 9 | Description | — | 2023 Q1 (set) | Yes |
-| 478758 | Scarlet & Violet Pokemon Center Elite Trainer Box (Exclusive) [Koraidon] | Elite Trainer Box | 11 | Description | — | 2023 Q1 (set) | Yes |
-| 478756 | Scarlet & Violet Pokemon Center Elite Trainer Box (Exclusive) [Miraidon] | Elite Trainer Box | 11 | Description | — | 2023 Q1 (set) | Yes |
-| 489369 | Scarlet & Violet Elite Trainer Boxes [Set of 2] | Other | 9 | Description | — | 2023 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 478761 | Scarlet & Violet 3 Pack Blister [Arcanine] | Blister | 3 | Description | 3 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 478762 | Scarlet & Violet 3 Pack Blister [Dondozo] | Blister | 3 | Description | 3 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 478763 | Scarlet & Violet 3 Pack Blister [Set of 2] | Blister | 6 | Description | 6 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 479328 | Scarlet & Violet Premium Checklane Blister [Gengar] | Blister | 1 | Description | 1 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 497166 | Scarlet & Violet Premium Checklane Blister [Hisuian Arcanine] | Blister | 1 | Description | 1 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 497167 | Scarlet & Violet Premium Checklane Blister [Hisuian Zoroark] | Blister | 1 | Description | 1 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 479330 | Scarlet & Violet Premium Checklane Blister [Machamp] | Blister | 1 | Description | 1 Scarlet & Violet | Exact | — | 2023 Q1 (set) | No |
+| 479331 | Scarlet & Violet Premium Checklane Blister [Set of 2] | Blister | 2 | Description | 2 Scarlet & Violet | Exact | — | 2023 Q1 (set) | No |
+| 478766 | Scarlet & Violet Single Pack Blister [Espathra] | Blister | 1 | Description | 1 Scarlet & Violet | Exact | — | 2023 Q1 | Yes |
+| 478767 | Scarlet & Violet Single Pack Blister [Set of 2] | Blister | 2 | Description | 2 Scarlet & Violet | Exact | — | 2023 Q1 | Yes |
+| 478765 | Scarlet & Violet Single Pack Blister [Spidops] | Blister | 1 | Description | 1 Scarlet & Violet | Exact | — | 2023 Q1 | Yes |
+| 476452 | Scarlet & Violet Booster Box | Booster box | 36 | Description | 36 Scarlet & Violet | Exact | — | 2023 Q1 | Yes |
+| 649407 | Scarlet & Violet Half Booster Box | Booster box | 18 | Description | 18 Scarlet & Violet | Product set | — | 2023 Q1 (set) | No |
+| 478258 | Scarlet & Violet Booster Bundle | Booster bundle | 6 | Description | 6 Scarlet & Violet | Exact | — | 2023 Q1 | Yes |
+| 476451 | Scarlet & Violet Booster Pack | Booster pack | 1 | Kind default | 1 Scarlet & Violet | Product set | — | 2023 Q1 (set) | Yes |
+| 478759 | Scarlet & Violet Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Scarlet & Violet | Product set | — | 2023 Q1 (set) | Yes |
+| 530121 | Scarlet & Violet Fun Pack | Booster pack | 1 | Kind default | 1 Scarlet & Violet | Product set | — | 2023 Q1 (set) | Yes |
+| 478273 | Scarlet & Violet Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Scarlet & Violet | Product set | — | 2023 Q1 | Yes |
+| 478274 | Scarlet & Violet Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Scarlet & Violet | Product set | — | 2023 Q1 | Yes |
+| 478275 | Scarlet & Violet Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | 8 Scarlet & Violet | Product set | — | 2023 Q1 | Yes |
+| 478253 | Scarlet & Violet Build & Battle Box | Build & Battle | 4 | Description | 4 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 478257 | Scarlet & Violet Build & Battle Stadium | Build & Battle | 11 | Set file | 11 Scarlet & Violet | Product set | — | 2023 Q1 (set) | Yes |
+| 476453 | Scarlet & Violet Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2023 Q1 (set) | Yes |
+| 478254 | Scarlet & Violet Build & Battle Box Display | Case or display | — | — | — | — | Unknown number of build & battle boxes | 2023 Q1 (set) | Yes |
+| 488776 | Scarlet & Violet Elite Trainer Box Case | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2023 Q1 (set) | Yes |
+| 600076 | Scarlet & Violet Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2023 Q1 (set) | Yes |
+| 478335 | Scarlet & Violet Elite Trainer Box [Koraidon] | Elite Trainer Box | 9 | Description | 9 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 478336 | Scarlet & Violet Elite Trainer Box [Miraidon] | Elite Trainer Box | 9 | Description | 9 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
+| 478758 | Scarlet & Violet Pokemon Center Elite Trainer Box (Exclusive) [Koraidon] | Elite Trainer Box | 11 | Description | 9 Scarlet & Violet | Partial | — | 2023 Q1 (set) | Yes |
+| 478756 | Scarlet & Violet Pokemon Center Elite Trainer Box (Exclusive) [Miraidon] | Elite Trainer Box | 11 | Description | 9 Scarlet & Violet | Partial | — | 2023 Q1 (set) | Yes |
+| 489369 | Scarlet & Violet Elite Trainer Boxes [Set of 2] | Other | 18 | Description | 18 Scarlet & Violet | Exact | — | 2023 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

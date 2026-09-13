@@ -111,51 +111,53 @@ come from various sets.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2867`, `2931`: 36 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 248577 | Celebrations Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q4 | Yes |
-| 455796 | Celebrations Collection Case | Case or display | — | — | Unknown number of collections | 2021 Q4 (set) | Yes |
-| 251880 | Celebrations Collection Case [Dragapult Prime] | Case or display | — | — | Unknown number of collections | 2021 Q4 (set) | Yes |
-| 282156 | Celebrations Collector Chest Case | Case or display | — | — | Unknown | 2021 Q4 (set) | Yes |
-| 256970 | Celebrations Deluxe Pin Collection Case [Zacian LV. X] | Case or display | — | — | 6 collections | 2021 Q4 (set) | Yes |
-| 251895 | Celebrations Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2021 Q4 (set) | Yes |
-| 242812 | Celebrations Mini Tin Display | Case or display | — | — | 1 mini tins | 2021 Q4 (set) | Yes |
-| 261802 | Celebrations Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | Unknown number of elite trainer boxes | 2021 Q4 (set) | Yes |
-| 518638 | Celebrations Ultra-Premium Collection Case | Case or display | — | — | 4 collections | 2021 Q4 (set) | Yes |
-| 242809 | Celebrations Collection [Dark Sylveon V] | Collection | 6 | Description | — | 2021 Q4 (set) | Yes |
-| 242807 | Celebrations Collection [Dragapult Prime] | Collection | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242808 | Celebrations Collection [Lance's Charizard V] | Collection | 6 | Description | — | 2021 Q4 (set) | Yes |
-| 244726 | Celebrations Collection [Pikachu V-UNION] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
-| 244727 | Celebrations Collector Chest | Collection | 8 | Description | — | 2021 Q4 | Yes |
-| 242810 | Celebrations Deluxe Pin Collection [Zacian LV. X] | Collection | 6 | Description | — | 2021 Q4 (set) | Yes |
-| 245139 | Celebrations Premium Figure Collection [Pikachu VMAX] | Collection | 8 | Description | — | 2021 Q4 | Yes |
-| 251217 | Celebrations Premium Playmat Collection [Pikachu V-UNION] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
-| 252416 | Celebrations Prime Collection | Collection | 5 | Description | — | 2021 Q4 (set) | Yes |
-| 247470 | Celebrations Special Collection - V Memories | Collection | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 245140 | Celebrations Ultra-Premium Collection | Collection | 17 | Description | — | 2021 Q4 | Yes |
-| 242811 | Celebrations Elite Trainer Box | Elite Trainer Box | 15 | Description | — | 2021 Q4 (set) | Yes |
-| 251199 | Celebrations Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 19 | Description | — | 2021 Q4 (set) | Yes |
-| 242819 | Celebrations Mini Tin [Alola] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242820 | Celebrations Mini Tin [Galar] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242815 | Celebrations Mini Tin [Hoenn] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242814 | Celebrations Mini Tin [Johto] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242818 | Celebrations Mini Tin [Kalos] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242813 | Celebrations Mini Tin [Kanto] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242816 | Celebrations Mini Tin [Sinnoh] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 242817 | Celebrations Mini Tin [Unova] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 251988 | Pokemon Celebrations International Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 251987 | Pokemon Celebrations International Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 252739 | Pokemon Celebrations International Tin [Set of 2] | Tin | 12 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 251989 | Pokemon Celebrations Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 251986 | Pokemon Celebrations Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 252740 | Pokemon Celebrations Tin [Set of 2] | Tin | 12 | Bulbapedia | — | 2021 Q4 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 248577 | Celebrations Booster Pack | Booster pack | 1 | Kind default | 1 Celebrations | Product set | — | 2021 Q4 | Yes |
+| 455796 | Celebrations Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2021 Q4 (set) | Yes |
+| 251880 | Celebrations Collection Case [Dragapult Prime] | Case or display | — | — | — | — | Unknown number of collections | 2021 Q4 (set) | Yes |
+| 282156 | Celebrations Collector Chest Case | Case or display | — | — | — | — | Unknown | 2021 Q4 (set) | Yes |
+| 256970 | Celebrations Deluxe Pin Collection Case [Zacian LV. X] | Case or display | — | — | — | — | 6 collections | 2021 Q4 (set) | Yes |
+| 251895 | Celebrations Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q4 (set) | Yes |
+| 242812 | Celebrations Mini Tin Display | Case or display | — | — | — | — | 1 mini tins | 2021 Q4 (set) | Yes |
+| 261802 | Celebrations Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2021 Q4 (set) | Yes |
+| 518638 | Celebrations Ultra-Premium Collection Case | Case or display | — | — | — | — | 4 collections | 2021 Q4 (set) | Yes |
+| 242809 | Celebrations Collection [Dark Sylveon V] | Collection | 6 | Description | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242807 | Celebrations Collection [Dragapult Prime] | Collection | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242808 | Celebrations Collection [Lance's Charizard V] | Collection | 6 | Description | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 244726 | Celebrations Collection [Pikachu V-UNION] | Collection | 4 | Description | 4 Celebrations | Exact | — | 2021 Q4 (set) | Yes |
+| 244727 | Celebrations Collector Chest | Collection | 8 | Description | 6 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
+| 242810 | Celebrations Deluxe Pin Collection [Zacian LV. X] | Collection | 6 | Description | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 245139 | Celebrations Premium Figure Collection [Pikachu VMAX] | Collection | 11 | Description (raised) | 8 Celebrations, 3 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
+| 251217 | Celebrations Premium Playmat Collection [Pikachu V-UNION] | Collection | 4 | Description | 4 Celebrations | Exact | — | 2021 Q4 (set) | Yes |
+| 252416 | Celebrations Prime Collection | Collection | 5 | Description | 3 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 247470 | Celebrations Special Collection - V Memories | Collection | 8 | Bulbapedia (raised) | 6 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 245140 | Celebrations Ultra-Premium Collection | Collection | 25 | Description (raised) | 17 Celebrations, 8 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
+| 242811 | Celebrations Elite Trainer Box | Elite Trainer Box | 15 | Description | 10 Celebrations, 5 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 251199 | Celebrations Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 19 | Description | 10 Celebrations, 6 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242819 | Celebrations Mini Tin [Alola] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242820 | Celebrations Mini Tin [Galar] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242815 | Celebrations Mini Tin [Hoenn] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242814 | Celebrations Mini Tin [Johto] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242818 | Celebrations Mini Tin [Kalos] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242813 | Celebrations Mini Tin [Kanto] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242816 | Celebrations Mini Tin [Sinnoh] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 242817 | Celebrations Mini Tin [Unova] | Tin | 3 | Description | 2 Celebrations, 1 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 251988 | Pokemon Celebrations International Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 251987 | Pokemon Celebrations International Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 252739 | Pokemon Celebrations International Tin [Set of 2] | Tin | 12 | Bulbapedia | 8 Celebrations, 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 251989 | Pokemon Celebrations Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 251986 | Pokemon Celebrations Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | 4 Celebrations, 2 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | Yes |
+| 252740 | Pokemon Celebrations Tin [Set of 2] | Tin | 12 | Bulbapedia | 8 Celebrations, 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

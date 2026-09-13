@@ -180,40 +180,42 @@ Boxes per case: **6** (era-wide retailer consensus, not official; see
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `24269`: 25 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 625683 | Destined Rivals 3 Pack Blister [Kangaskhan] | Blister | 3 | Description | — | 2025 Q2 | Yes |
-| 635328 | Destined Rivals 3 Pack Blister [Set of 2] | Blister | 3 | Description | — | 2025 Q2 (set) | Yes |
-| 625684 | Destined Rivals 3 Pack Blister [Zebstrika] | Blister | 3 | Description | — | 2025 Q2 | Yes |
-| 628395 | Destined Rivals Premium Checklane Blister [Gastrodon] | Blister | 1 | Description | — | 2025 Q2 | Yes |
-| 628396 | Destined Rivals Premium Checklane Blister [Rabsca] | Blister | 1 | Description | — | 2025 Q2 | Yes |
-| 625687 | Destined Rivals Premium Checklane Blister [Skeledirge] | Blister | 1 | Description | — | 2025 Q2 | Yes |
-| 625688 | Destined Rivals Premium Checklane Blister [Togekiss] | Blister | 1 | Description | — | 2025 Q2 | Yes |
-| 633105 | Destined Rivals Single Pack Blister [Eevee] | Blister | 1 | Description | — | 2025 Q2 | Yes |
-| 633106 | Destined Rivals Single Pack Blister [Zarude] | Blister | 1 | Description | — | 2025 Q2 | Yes |
-| 624679 | Destined Rivals Booster Box | Booster box | 36 | Description | — | 2025 Q2 | Yes |
-| 624681 | Destined Rivals Half Booster Box | Booster box | 18 | Description | — | 2025 Q2 | Yes |
-| 625670 | Destined Rivals Booster Bundle | Booster bundle | 6 | Description | — | 2025 Q2 | Yes |
-| 624683 | Destined Rivals Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q2 | Yes |
-| 649711 | Destined Rivals Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q2 (set) | Yes |
-| 650765 | Destined Rivals Fun Pack | Booster pack | 1 | Kind default | — | 2025 Q2 (set) | Yes |
-| 624684 | Destined Rivals Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q2 | Yes |
-| 635053 | Destined Rivals Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q2 (set) | Yes |
-| 625677 | Destined Rivals Build & Battle Box | Build & Battle | 4 | Description | — | 2025 Q2 | Yes |
-| 624678 | Destined Rivals Booster Box Case | Case or display | — | — | Unknown number of tins | 2025 Q2 | Yes |
-| 628428 | Destined Rivals Booster Bundle Case | Case or display | — | — | Unknown number of tins | 2025 Q2 | Yes |
-| 634383 | Destined Rivals Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2025 Q2 | Yes |
-| 628398 | Destined Rivals Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2025 Q2 | Yes |
-| 628413 | Destined Rivals Sleeved Booster Case | Case or display | — | — | Unknown number of tins | 2025 Q2 | Yes |
-| 624676 | Destined Rivals Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2025 Q2 (set) | Yes |
-| 624675 | Destined Rivals Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2025 Q2 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 625683 | Destined Rivals 3 Pack Blister [Kangaskhan] | Blister | 3 | Description | 3 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 635328 | Destined Rivals 3 Pack Blister [Set of 2] | Blister | 6 | Description | 6 Destined Rivals | Exact | — | 2025 Q2 (set) | Yes |
+| 625684 | Destined Rivals 3 Pack Blister [Zebstrika] | Blister | 3 | Description | 3 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 628395 | Destined Rivals Premium Checklane Blister [Gastrodon] | Blister | 1 | Description | 1 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 628396 | Destined Rivals Premium Checklane Blister [Rabsca] | Blister | 1 | Description | 1 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 625687 | Destined Rivals Premium Checklane Blister [Skeledirge] | Blister | 1 | Description | 1 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 625688 | Destined Rivals Premium Checklane Blister [Togekiss] | Blister | 1 | Description | 1 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 633105 | Destined Rivals Single Pack Blister [Eevee] | Blister | 1 | Description | 1 Destined Rivals | Product set | — | 2025 Q2 | Yes |
+| 633106 | Destined Rivals Single Pack Blister [Zarude] | Blister | 1 | Description | 1 Destined Rivals | Product set | — | 2025 Q2 | Yes |
+| 624679 | Destined Rivals Booster Box | Booster box | 36 | Description | 36 Destined Rivals | Product set | — | 2025 Q2 | Yes |
+| 624681 | Destined Rivals Half Booster Box | Booster box | 18 | Description | 18 Destined Rivals | Product set | — | 2025 Q2 | Yes |
+| 625670 | Destined Rivals Booster Bundle | Booster bundle | 6 | Description | 6 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 624683 | Destined Rivals Booster Pack | Booster pack | 1 | Kind default | 1 Destined Rivals | Product set | — | 2025 Q2 | Yes |
+| 649711 | Destined Rivals Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Destined Rivals | Product set | — | 2025 Q2 (set) | Yes |
+| 650765 | Destined Rivals Fun Pack | Booster pack | 1 | Kind default | 1 Destined Rivals | Product set | — | 2025 Q2 (set) | Yes |
+| 624684 | Destined Rivals Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Destined Rivals | Product set | — | 2025 Q2 | Yes |
+| 635053 | Destined Rivals Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Destined Rivals | Product set | — | 2025 Q2 (set) | Yes |
+| 625677 | Destined Rivals Build & Battle Box | Build & Battle | 4 | Description | 4 Destined Rivals | Exact | — | 2025 Q2 | Yes |
+| 624678 | Destined Rivals Booster Box Case | Case or display | — | — | — | — | Unknown number of tins | 2025 Q2 | Yes |
+| 628428 | Destined Rivals Booster Bundle Case | Case or display | — | — | — | — | Unknown number of tins | 2025 Q2 | Yes |
+| 634383 | Destined Rivals Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2025 Q2 | Yes |
+| 628398 | Destined Rivals Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2025 Q2 | Yes |
+| 628413 | Destined Rivals Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of tins | 2025 Q2 | Yes |
+| 624676 | Destined Rivals Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Destined Rivals | Exact | — | 2025 Q2 (set) | Yes |
+| 624675 | Destined Rivals Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Destined Rivals | Partial | — | 2025 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

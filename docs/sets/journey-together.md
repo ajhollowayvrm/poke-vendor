@@ -155,42 +155,44 @@ Boxes per case: **6** (era-wide retailer consensus, not official; see
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `24073`: 27 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 610948 | Journey Together 3 Pack Blister [Scrafty] | Blister | 3 | Description | — | 2025 Q1 (set) | Yes |
-| 631972 | Journey Together 3 Pack Blister [Set of 2] | Blister | 3 | Description | — | 2025 Q1 (set) | Yes |
-| 610940 | Journey Together 3 Pack Blister [Yanmega] | Blister | 3 | Description | — | 2025 Q1 (set) | Yes |
-| 610952 | Journey Together Premium Checklane Blister [Klinklang] | Blister | 1 | Description | — | 2025 Q1 (set) | Yes |
-| 610951 | Journey Together Premium Checklane Blister [Rhyperior] | Blister | 1 | Description | — | 2025 Q1 (set) | Yes |
-| 626562 | Journey Together Single Pack Blister [Archaludon] | Blister | 1 | Name | — | 2025 Q1 (set) | Yes |
-| 626630 | Journey Together Single Pack Blister [Melmetal] | Blister | 1 | Description | — | 2025 Q1 (set) | Yes |
-| 610949 | Journey Together Single Pack Blister [Scraggy] | Blister | 1 | Description | — | 2025 Q1 (set) | Yes |
-| 610950 | Journey Together Single Pack Blister [Yanma] | Blister | 1 | Description | — | 2025 Q1 (set) | Yes |
-| 610931 | Journey Together Booster Box | Booster box | 36 | Description | — | 2025 Q1 (set) | Yes |
-| 623628 | Journey Together Enhanced Booster Box | Booster box | 36 | Description | — | 2025 Q1 | Yes |
-| 649492 | Journey Together Half Booster Box | Booster box | 18 | Description | — | 2025 Q1 (set) | Yes |
-| 610953 | Journey Together Booster Bundle | Booster bundle | 6 | Description | — | 2025 Q1 (set) | Yes |
-| 610935 | Journey Together Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q1 (set) | Yes |
-| 626660 | Journey Together Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q1 (set) | Yes |
-| 647762 | Journey Together Fun Pack | Booster pack | 1 | Kind default | — | 2025 Q1 (set) | Yes |
-| 610934 | Journey Together Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q1 (set) | Yes |
-| 626659 | Journey Together Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q1 (set) | Yes |
-| 610954 | Journey Together Build & Battle Box | Build & Battle | 4 | Description | — | 2025 Q2 | Yes |
-| 614449 | Journey Together Booster Box Case | Case or display | — | — | 6 booster boxes | 2025 Q1 (set) | Yes |
-| 625584 | Journey Together Booster Bundle Case | Case or display | — | — | 25 booster bundles | 2025 Q1 (set) | Yes |
-| 629568 | Journey Together Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2025 Q1 (set) | Yes |
-| 614450 | Journey Together Elite Trainer Box Case | Case or display | — | — | Unknown number of elite trainer boxes | 2025 Q1 (set) | Yes |
-| 625583 | Journey Together Enhanced Booster Box Case | Case or display | — | — | 6 booster boxes | 2025 Q1 (set) | Yes |
-| 624925 | Journey Together Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2025 Q1 (set) | Yes |
-| 610930 | Journey Together Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2025 Q1 (set) | Yes |
-| 610929 | Journey Together Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2025 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 610948 | Journey Together 3 Pack Blister [Scrafty] | Blister | 3 | Description | 3 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 631972 | Journey Together 3 Pack Blister [Set of 2] | Blister | 6 | Description | 6 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610940 | Journey Together 3 Pack Blister [Yanmega] | Blister | 3 | Description | 3 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610952 | Journey Together Premium Checklane Blister [Klinklang] | Blister | 1 | Description | 1 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610951 | Journey Together Premium Checklane Blister [Rhyperior] | Blister | 1 | Description | 1 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 626562 | Journey Together Single Pack Blister [Archaludon] | Blister | 1 | Name | 1 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 626630 | Journey Together Single Pack Blister [Melmetal] | Blister | 1 | Description | 1 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610949 | Journey Together Single Pack Blister [Scraggy] | Blister | 1 | Description | 1 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610950 | Journey Together Single Pack Blister [Yanma] | Blister | 1 | Description | 1 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610931 | Journey Together Booster Box | Booster box | 36 | Description | 36 Scarlet & Violet | Exact | — | 2025 Q1 (set) | Yes |
+| 623628 | Journey Together Enhanced Booster Box | Booster box | 36 | Description | 36 Scarlet & Violet | Exact | — | 2025 Q1 | Yes |
+| 649492 | Journey Together Half Booster Box | Booster box | 18 | Description | 18 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 610953 | Journey Together Booster Bundle | Booster bundle | 6 | Description | 6 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610935 | Journey Together Booster Pack | Booster pack | 1 | Kind default | 1 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 626660 | Journey Together Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 647762 | Journey Together Fun Pack | Booster pack | 1 | Kind default | 1 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 610934 | Journey Together Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 626659 | Journey Together Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Journey Together | Product set | — | 2025 Q1 (set) | Yes |
+| 610954 | Journey Together Build & Battle Box | Build & Battle | 4 | Description | 4 Journey Together | Exact | — | 2025 Q2 | Yes |
+| 614449 | Journey Together Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2025 Q1 (set) | Yes |
+| 625584 | Journey Together Booster Bundle Case | Case or display | — | — | — | — | 25 booster bundles | 2025 Q1 (set) | Yes |
+| 629568 | Journey Together Build & Battle Box Display | Case or display | — | — | — | — | Unknown number of build & battle boxes | 2025 Q1 (set) | Yes |
+| 614450 | Journey Together Elite Trainer Box Case | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2025 Q1 (set) | Yes |
+| 625583 | Journey Together Enhanced Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2025 Q1 (set) | Yes |
+| 624925 | Journey Together Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2025 Q1 (set) | Yes |
+| 610930 | Journey Together Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
+| 610929 | Journey Together Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Journey Together | Partial | — | 2025 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

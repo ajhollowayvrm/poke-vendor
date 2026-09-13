@@ -124,43 +124,45 @@ DigitalTQ community sample, 1,004 packs:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2948`, `3020`: 28 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 256132 | Brilliant Stars 3 Pack Blister [Glaceon] | Blister | 3 | Description | — | 2022 Q1 | Yes |
-| 256130 | Brilliant Stars 3 Pack Blister [Leafeon] | Blister | 3 | Description | — | 2022 Q1 | Yes |
-| 256143 | Brilliant Stars Premium Checklane Blister [Hydreigon] | Blister | 1 | Description | — | 2022 Q1 | No |
-| 256142 | Brilliant Stars Premium Checklane Blister [Salamence] | Blister | 1 | Description | — | 2022 Q1 | No |
-| 684658 | Brilliant Stars Premium Checklane Blister [Zoroark] | Blister | Unknown | Unknown | — | 2022 Q1 (set) | Yes |
-| 256129 | Brilliant Stars Single Pack Blister [Eevee] | Blister | 1 | Description | — | 2022 Q1 | Yes |
-| 256128 | Brilliant Stars Single Pack Blister [Flapple] | Blister | 1 | Description | — | 2022 Q1 | Yes |
-| 256141 | Brilliant Stars Booster Box | Booster box | 36 | Description | — | 2022 Q1 | Yes |
-| 256124 | Brilliant Stars Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q1 | Yes |
-| 256134 | Brilliant Stars Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2022 Q1 | Yes |
-| 509881 | Brilliant Stars Fun Pack | Booster pack | 1 | Kind default | — | 2022 Q1 (set) | Yes |
-| 256125 | Brilliant Stars Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q1 | Yes |
-| 256135 | Brilliant Stars Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2022 Q1 | Yes |
-| 256136 | Brilliant Stars Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q1 | Yes |
-| 256137 | Brilliant Stars Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q1 | Yes |
-| 256139 | Brilliant Stars Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2022 Q1 (set) | Yes |
-| 651285 | Arceus V Figure Collection Case | Case or display | — | — | Unknown number of collections | 2022 Q1 (set) | Yes |
-| 256145 | Brilliant Stars Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q1 | Yes |
-| 256144 | Brilliant Stars Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2022 Q1 (set) | Yes |
-| 264269 | Brilliant Stars Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2022 Q1 (set) | Yes |
-| 639337 | Brilliant Stars Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | 4 elite trainer boxes | 2022 Q1 (set) | Yes |
-| 599964 | Brilliant Stars Sleeved Booster Pack Case | Case or display | — | — | Unknown number of sleeved boosters | 2022 Q1 (set) | Yes |
-| 265251 | Arceus V Figure Collection | Collection | 4 | Description | — | 2022 Q2 | Yes |
-| 257375 | Glaceon / Leafeon VSTAR Special Collection [Set of 2] | Collection | 5 | Description | — | 2022 Q1 | Yes |
-| 256146 | Glaceon VSTAR Special Collection | Collection | 5 | Description | — | 2022 Q1 | Yes |
-| 256147 | Leafeon VSTAR Special Collection | Collection | 5 | Description | — | 2022 Q1 | Yes |
-| 256138 | Brilliant Stars Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2022 Q1 | Yes |
-| 256140 | Brilliant Stars Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2022 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 256132 | Brilliant Stars 3 Pack Blister [Glaceon] | Blister | 3 | Description | 3 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
+| 256130 | Brilliant Stars 3 Pack Blister [Leafeon] | Blister | 3 | Description | 3 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
+| 256143 | Brilliant Stars Premium Checklane Blister [Hydreigon] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | No |
+| 256142 | Brilliant Stars Premium Checklane Blister [Salamence] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | No |
+| 684658 | Brilliant Stars Premium Checklane Blister [Zoroark] | Blister | Unknown | Unknown | — | Unknown | — | 2022 Q1 (set) | Yes |
+| 256129 | Brilliant Stars Single Pack Blister [Eevee] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
+| 256128 | Brilliant Stars Single Pack Blister [Flapple] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
+| 256141 | Brilliant Stars Booster Box | Booster box | 36 | Description | 36 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
+| 256124 | Brilliant Stars Booster Pack | Booster pack | 1 | Kind default | 1 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
+| 256134 | Brilliant Stars Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
+| 509881 | Brilliant Stars Fun Pack | Booster pack | 1 | Kind default | 1 Brilliant Stars | Product set | — | 2022 Q1 (set) | Yes |
+| 256125 | Brilliant Stars Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
+| 256135 | Brilliant Stars Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
+| 256136 | Brilliant Stars Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | 8 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
+| 256137 | Brilliant Stars Build & Battle Box | Build & Battle | 4 | Description | 4 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
+| 256139 | Brilliant Stars Build & Battle Stadium | Build & Battle | 12 | Set file | 12 Brilliant Stars | Product set | — | 2022 Q1 (set) | Yes |
+| 651285 | Arceus V Figure Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2022 Q1 (set) | Yes |
+| 256145 | Brilliant Stars Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2022 Q1 | Yes |
+| 256144 | Brilliant Stars Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2022 Q1 (set) | Yes |
+| 264269 | Brilliant Stars Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2022 Q1 (set) | Yes |
+| 639337 | Brilliant Stars Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | — | — | 4 elite trainer boxes | 2022 Q1 (set) | Yes |
+| 599964 | Brilliant Stars Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2022 Q1 (set) | Yes |
+| 265251 | Arceus V Figure Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2022 Q2 | Yes |
+| 257375 | Glaceon / Leafeon VSTAR Special Collection [Set of 2] | Collection | 10 | Description | 10 Sword & Shield Series (set unknown) | Partial | — | 2022 Q1 | Yes |
+| 256146 | Glaceon VSTAR Special Collection | Collection | 5 | Description | 5 Sword & Shield Series (set unknown) | Partial | — | 2022 Q1 | Yes |
+| 256147 | Leafeon VSTAR Special Collection | Collection | 5 | Description | 5 Sword & Shield Series (set unknown) | Partial | — | 2022 Q1 | Yes |
+| 256138 | Brilliant Stars Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
+| 256140 | Brilliant Stars Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | 8 Brilliant Stars | Partial | — | 2022 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

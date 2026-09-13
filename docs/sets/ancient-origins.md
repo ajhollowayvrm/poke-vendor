@@ -81,30 +81,32 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1576`: 15 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 100493 | Ancient Origins 3 Pack Blister [Malamar] | Blister | 3 | Description | — | 2015 Q3 (set) | Yes |
-| 100494 | Ancient Origins 3 Pack Blister [Salamence] | Blister | 3 | Description | — | 2015 Q3 (set) | No |
-| 104381 | Ancient Origins Collector Pin 3 Pack Blister [Mega Tyranitar Pin] | Blister | 3 | Description | — | 2015 Q3 (set) | No |
-| 104380 | Ancient Origins Collector Pin 3 Pack Blister [Shiny Mega Rayquaza Pin] | Blister | 3 | Description | — | 2015 Q3 (set) | No |
-| 106214 | Ancient Origins Single Pack Blister [Blissey] | Blister | 1 | Description | — | 2015 Q3 (set) | No |
-| 106215 | Ancient Origins Single Pack Blister [Fearow] | Blister | 1 | Description | — | 2015 Q3 (set) | No |
-| 100489 | XY Ancient Origins Booster Box | Booster box | 36 | Kind default | — | 2015 Q3 (set) | No |
-| 276595 | Ancient Origins Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q3 (set) | Yes |
-| 100490 | XY Ancient Origins Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q3 | Yes |
-| 103462 | Shiny Rayquaza EX Box | Collection | 4 | Bulbapedia | — | 2015 Q3 (set) | No |
-| 104379 | Tyrantrum EX Box | Collection | 4 | Bulbapedia | — | 2015 Q3 (set) | No |
-| 100495 | Ancient Origins Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2015 Q3 (set) | Yes |
-| 106213 | Powers Beyond Tin [Hoopa EX] | Tin | 4 | Bulbapedia | — | 2015 Q3 (set) | Yes |
-| 106211 | Powers Beyond Tin [Latios EX] | Tin | 4 | Bulbapedia | — | 2015 Q3 (set) | Yes |
-| 106212 | Powers Beyond Tin [Rayquaza EX] | Tin | 4 | Bulbapedia | — | 2015 Q3 (set) | No |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 100493 | Ancient Origins 3 Pack Blister [Malamar] | Blister | 3 | Description | 1 Ancient Origins, 1 Roaring Skies | Partial | — | 2015 Q3 (set) | Yes |
+| 100494 | Ancient Origins 3 Pack Blister [Salamence] | Blister | 3 | Description | 1 Ancient Origins, 1 Roaring Skies | Partial | — | 2015 Q3 (set) | No |
+| 104381 | Ancient Origins Collector Pin 3 Pack Blister [Mega Tyranitar Pin] | Blister | 3 | Description | 3 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
+| 104380 | Ancient Origins Collector Pin 3 Pack Blister [Shiny Mega Rayquaza Pin] | Blister | 3 | Description | 3 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
+| 106214 | Ancient Origins Single Pack Blister [Blissey] | Blister | 1 | Description | 1 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
+| 106215 | Ancient Origins Single Pack Blister [Fearow] | Blister | 1 | Description | 1 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
+| 100489 | XY Ancient Origins Booster Box | Booster box | 36 | Kind default | 36 Ancient Origins | Product set | — | 2015 Q3 (set) | No |
+| 276595 | Ancient Origins Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Ancient Origins | Product set | — | 2015 Q3 (set) | Yes |
+| 100490 | XY Ancient Origins Booster Pack | Booster pack | 1 | Kind default | 1 Ancient Origins | Product set | — | 2015 Q3 | Yes |
+| 103462 | Shiny Rayquaza EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q3 (set) | No |
+| 104379 | Tyrantrum EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q3 (set) | No |
+| 100495 | Ancient Origins Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Ancient Origins | Product set | — | 2015 Q3 (set) | Yes |
+| 106213 | Powers Beyond Tin [Hoopa EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | Yes |
+| 106211 | Powers Beyond Tin [Latios EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | Yes |
+| 106212 | Powers Beyond Tin [Rayquaza EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

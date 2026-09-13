@@ -100,31 +100,33 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `2534`: 16 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 199767 | Cosmic Eclipse 3 Pack Blister [Celebi] | Blister | 3 | Description | — | 2019 Q4 | Yes |
-| 199766 | Cosmic Eclipse 3 Pack Blister [Victini] | Blister | 3 | Description | — | 2019 Q4 | Yes |
-| 199768 | Cosmic Eclipse Single Pack Blister [Mismagius] | Blister | 1 | Name | — | 2019 Q4 | Yes |
-| 199769 | Cosmic Eclipse Single Pack Blister [Terrakion] | Blister | 1 | Name | — | 2019 Q4 | Yes |
-| 668512 | Sun & Moon Single Blister Pack [Growlithe & Arcanine] | Blister | 1 | Name | — | 2019 Q4 (set) | No |
-| 668510 | Sun & Moon Single Blister Pack [Meltan & Melmetal] | Blister | 1 | Name | — | 2019 Q4 (set) | No |
-| 199261 | Cosmic Eclipse Booster Box | Booster box | 36 | Description | — | 2019 Q4 | Yes |
-| 199263 | Cosmic Eclipse Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q4 (set) | Yes |
-| 267047 | Cosmic Eclipse Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q4 (set) | Yes |
-| 276587 | Cosmic Eclipse Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q4 (set) | Yes |
-| 546609 | SM - Cosmic Eclipse Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q4 (set) | Yes |
-| 199310 | Cosmic Eclipse Build & Battle Box | Build & Battle | 4 | Description | — | 2019 Q4 | Yes |
-| 199309 | Cosmic Eclipse Build & Battle Display | Case or display | — | — | 10 build & battle boxes | 2019 Q4 (set) | No |
-| 656706 | Cosmic Eclipse Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2019 Q4 (set) | No |
-| 199772 | Pikachu GX & Eevee GX Special Collection | Collection | 4 | Description | — | 2019 Q4 | Yes |
-| 199308 | Cosmic Eclipse Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2019 Q4 | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 199767 | Cosmic Eclipse 3 Pack Blister [Celebi] | Blister | 3 | Description | 3 Cosmic Eclipse | Exact | — | 2019 Q4 | Yes |
+| 199766 | Cosmic Eclipse 3 Pack Blister [Victini] | Blister | 3 | Description | 3 Cosmic Eclipse | Exact | — | 2019 Q4 | Yes |
+| 199768 | Cosmic Eclipse Single Pack Blister [Mismagius] | Blister | 1 | Name | 1 Cosmic Eclipse | Product set | — | 2019 Q4 | Yes |
+| 199769 | Cosmic Eclipse Single Pack Blister [Terrakion] | Blister | 1 | Name | 1 Cosmic Eclipse | Product set | — | 2019 Q4 | Yes |
+| 668512 | Sun & Moon Single Blister Pack [Growlithe & Arcanine] | Blister | 1 | Name | — | Unknown | — | 2019 Q4 (set) | No |
+| 668510 | Sun & Moon Single Blister Pack [Meltan & Melmetal] | Blister | 1 | Name | — | Unknown | — | 2019 Q4 (set) | No |
+| 199261 | Cosmic Eclipse Booster Box | Booster box | 36 | Description | 36 Cosmic Eclipse | Product set | — | 2019 Q4 | Yes |
+| 199263 | Cosmic Eclipse Booster Pack | Booster pack | 1 | Kind default | 1 Cosmic Eclipse | Product set | — | 2019 Q4 (set) | Yes |
+| 267047 | Cosmic Eclipse Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Cosmic Eclipse | Product set | — | 2019 Q4 (set) | Yes |
+| 276587 | Cosmic Eclipse Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Cosmic Eclipse | Product set | — | 2019 Q4 (set) | Yes |
+| 546609 | SM - Cosmic Eclipse Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Cosmic Eclipse | Product set | — | 2019 Q4 (set) | Yes |
+| 199310 | Cosmic Eclipse Build & Battle Box | Build & Battle | 4 | Description | 4 Cosmic Eclipse | Exact | — | 2019 Q4 | Yes |
+| 199309 | Cosmic Eclipse Build & Battle Display | Case or display | — | — | — | — | 10 build & battle boxes | 2019 Q4 (set) | No |
+| 656706 | Cosmic Eclipse Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2019 Q4 (set) | No |
+| 199772 | Pikachu GX & Eevee GX Special Collection | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
+| 199308 | Cosmic Eclipse Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Cosmic Eclipse | Exact | — | 2019 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

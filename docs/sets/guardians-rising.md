@@ -95,50 +95,52 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `1919`: 35 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 184340 | Guardians Rising 3 Pack Blister [Turtonator] | Blister | 3 | Description | — | 2017 Q2 (set) | Yes |
-| 184339 | Guardians Rising 3 Pack Blister [Vikavolt] | Blister | 3 | Description | — | 2017 Q2 (set) | Yes |
-| 242964 | Guardians Rising Single Pack Blister [Alolan Persian] | Blister | 1 | Description | — | 2017 Q2 (set) | Yes |
-| 242963 | Guardians Rising Single Pack Blister [Crobat] | Blister | 1 | Description | — | 2017 Q2 (set) | Yes |
-| 184341 | Guardians Rising Single Pack Blister [Lurantis] | Blister | 1 | Description | — | 2017 Q2 (set) | Yes |
-| 184342 | Guardians Rising Single Pack Blister [Tsareena] | Blister | 1 | Description | — | 2017 Q2 (set) | Yes |
-| 129888 | Guardians Rising Booster Box | Booster box | 36 | Description | — | 2017 Q2 (set) | Yes |
-| 129889 | Guardians Rising Booster Pack | Booster pack | 1 | Kind default | — | 2017 Q2 (set) | Yes |
-| 267037 | Guardians Rising Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2017 Q2 (set) | Yes |
-| 276577 | Guardians Rising Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2017 Q2 (set) | No |
-| 616825 | Guardians Rising Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2017 Q2 (set) | Yes |
-| 276578 | Guardians Rising Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2017 Q2 (set) | Yes |
-| 618840 | Guardians Rising Booster Box Case | Case or display | — | — | 6 booster boxes | 2017 Q2 (set) | No |
-| 132238 | Bewear GX Box | Collection | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
-| 133806 | Decidueye GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | No |
-| 137523 | Espeon GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
-| 133807 | Incineroar GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
-| 218328 | Lunala GX Challenge Box | Collection | 2 | Description | — | 2017 Q2 (set) | No |
-| 131693 | Mega Powers Collection | Collection | 8 | Description | — | 2017 Q2 (set) | Yes |
-| 133808 | Mega Tyranitar EX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
-| 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | 18 | Bulbapedia | — | 2017 Q2 (set) | No |
-| 133805 | Primarina GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
-| 137872 | Shiny Tapu Koko GX Box | Collection | 4 | Description | — | 2017 Q2 (set) | Yes |
-| 218327 | Solgaleo GX Challenge Box | Collection | 2 | Description | — | 2017 Q2 (set) | Yes |
-| 131734 | Tapu Koko Figure Collection | Collection | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
-| 132237 | Tapu Koko Pin Collection | Collection | 3 | Bulbapedia | — | 2017 Q2 (set) | Yes |
-| 137524 | Umbreon GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
-| 129890 | Guardians Rising Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2017 Q2 (set) | Yes |
-| 131273 | Guardians Rising Prerelease Kit | Other | 4 | Description | — | 2017 Q2 (set) | Yes |
-| 131726 | Island Guardians Tin [Tapu Bulu GX] | Tin | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
-| 131725 | Island Guardians Tin [Tapu Koko GX] | Tin | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
-| 177868 | Triple Effect Tin [Flareon] | Tin | 3 | Description | — | 2017 Q2 (set) | Yes |
-| 177869 | Triple Effect Tin [Jolteon] | Tin | 3 | Description | — | 2017 Q2 (set) | Yes |
-| 177871 | Triple Effect Tin [Set of 3] | Tin | 3 | Description | — | 2017 Q2 (set) | No |
-| 177870 | Triple Effect Tin [Vaporeon] | Tin | 3 | Description | — | 2017 Q2 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 184340 | Guardians Rising 3 Pack Blister [Turtonator] | Blister | 3 | Description | 3 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 184339 | Guardians Rising 3 Pack Blister [Vikavolt] | Blister | 3 | Description | 3 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 242964 | Guardians Rising Single Pack Blister [Alolan Persian] | Blister | 1 | Description | 1 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 242963 | Guardians Rising Single Pack Blister [Crobat] | Blister | 1 | Description | 1 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 184341 | Guardians Rising Single Pack Blister [Lurantis] | Blister | 1 | Description | 1 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 184342 | Guardians Rising Single Pack Blister [Tsareena] | Blister | 1 | Description | 1 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 129888 | Guardians Rising Booster Box | Booster box | 36 | Description | 36 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
+| 129889 | Guardians Rising Booster Pack | Booster pack | 1 | Kind default | 1 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
+| 267037 | Guardians Rising Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
+| 276577 | Guardians Rising Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Guardians Rising | Product set | — | 2017 Q2 (set) | No |
+| 616825 | Guardians Rising Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
+| 276578 | Guardians Rising Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
+| 618840 | Guardians Rising Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2017 Q2 (set) | No |
+| 132238 | Bewear GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 133806 | Decidueye GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | No |
+| 137523 | Espeon GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 133807 | Incineroar GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 218328 | Lunala GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q2 (set) | No |
+| 131693 | Mega Powers Collection | Collection | 8 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 133808 | Mega Tyranitar EX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | 18 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | No |
+| 133805 | Primarina GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 137872 | Shiny Tapu Koko GX Box | Collection | 4 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 218327 | Solgaleo GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 131734 | Tapu Koko Figure Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 132237 | Tapu Koko Pin Collection | Collection | 3 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 137524 | Umbreon GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 129890 | Guardians Rising Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 131273 | Guardians Rising Prerelease Kit | Other | 4 | Description | 4 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 131726 | Island Guardians Tin [Tapu Bulu GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 131725 | Island Guardians Tin [Tapu Koko GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 177868 | Triple Effect Tin [Flareon] | Tin | 3 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 177869 | Triple Effect Tin [Jolteon] | Tin | 3 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 177871 | Triple Effect Tin [Set of 3] | Tin | 9 | Description | — | Unknown | — | 2017 Q2 (set) | No |
+| 177870 | Triple Effect Tin [Vaporeon] | Tin | 3 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

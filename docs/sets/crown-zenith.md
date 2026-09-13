@@ -157,60 +157,62 @@ Ultra Rare 9.27%, Rare Holo VSTAR 5.2%, Rare Radiant 5.04%, Rare Holo VMAX
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it. "Research" means a researched entry in `tools/ppt/sealed_overrides.json`, with its sources. "(raised)" means that Bulbapedia and the TCGplayer description show a higher count than the first read. For a listing of several units, such as "[Set of 3]" or "Mini Tins 5-Pack", Packs is the total for all units.
+- **Pack mix** is the number of packs from each set, from `tools/ppt/sealed_contents.py`. Mixes are typical, not guaranteed. "unknown set" means that no source names the set. "<series> Series (set unknown)" means that the source names only the series.
+- **Mix confidence**: Exact (every pack has a named set), Partial (some packs have no named set), Product set (a single-set product with no mix stated), Conflict (the sources disagree), or Unknown (no mix).
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
 
 TCGplayer group `17688`, `17689`: 45 products.
 
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 527562 | Crown Zenith Booster Bundle | Booster bundle | 6 | Description | — | 2023 Q1 (set) | Yes |
-| 453466 | Crown Zenith Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q1 | Yes |
-| 609238 | Crown Zenith Booster Bundle Case | Case or display | — | — | 20 booster bundles | 2023 Q1 (set) | Yes |
-| 490542 | Crown Zenith Collection Case | Case or display | — | — | 2 collections | 2023 Q1 (set) | Yes |
-| 453471 | Crown Zenith Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2023 Q1 | Yes |
-| 453493 | Crown Zenith Mini Tin Display | Case or display | — | — | 2 mini tins | 2023 Q1 (set) | Yes |
-| 631791 | Crown Zenith Mini Tin Display Case | Case or display | — | — | 32 mini tins | 2023 Q1 (set) | Yes |
-| 711447 | Crown Zenith Pin Collection Case | Case or display | — | — | 12 collections | 2023 Q1 (set) | No |
-| 454247 | Crown Zenith Pokemon Center Elite Trainer Box Plus Case | Case or display | — | — | 4 elite trainer boxes | 2023 Q1 | Yes |
-| 664978 | Crown Zenith Premium Figure Collection Case | Case or display | — | — | Unknown number of collections | 2023 Q1 (set) | No |
-| 616290 | Crown Zenith Tin Case | Case or display | — | — | 2 tins | 2023 Q1 (set) | Yes |
-| 693210 | Morpeko V-UNION Premium Treasures Collection Case | Case or display | — | — | Unknown number of collections | 2023 Q1 (set) | No |
-| 485423 | Pikachu VMAX Special Collection Case | Case or display | — | — | 6 collections | 2023 Q1 (set) | Yes |
-| 453468 | Crown Zenith Collection [Regidrago V] | Collection | 4 | Description | — | 2023 Q1 | Yes |
-| 453467 | Crown Zenith Collection [Regieleki V] | Collection | 4 | Description | — | 2023 Q1 | Yes |
-| 453474 | Crown Zenith Collection [Set of 2] | Collection | 4 | Description | — | 2023 Q1 | Yes |
-| 475617 | Crown Zenith Pin Collection [Cinderace] | Collection | 3 | Description | — | 2023 Q2 | Yes |
-| 475618 | Crown Zenith Pin Collection [Inteleon] | Collection | 3 | Description | — | 2023 Q2 | Yes |
-| 475619 | Crown Zenith Pin Collection [Rillaboom] | Collection | 3 | Description | — | 2023 Q2 | Yes |
-| 475620 | Crown Zenith Pin Collection [Set of 3] | Collection | 3 | Description | — | 2023 Q2 | Yes |
-| 475648 | Crown Zenith Premium Figure Collection [Set of 2] | Collection | 11 | Description | — | 2023 Q2 | Yes |
-| 475647 | Crown Zenith Premium Figure Collection [Shiny Zacian] | Collection | 11 | Description | — | 2023 Q2 | Yes |
-| 475646 | Crown Zenith Premium Figure Collection [Shiny Zamazenta] | Collection | 11 | Description | — | 2023 Q2 | Yes |
-| 505916 | Crown Zenith Special Collection [Unown V & Lugia V] | Collection | 5 | Description | — | 2023 Q3 | Yes |
-| 475644 | Morpeko V-UNION Playmat Premium Collection | Collection | 5 | Description | — | 2023 Q2 | Yes |
-| 516939 | Morpeko V-UNION Premium Treasures Collection | Collection | 7 | Description | — | 2023 Q1 (set) | Yes |
-| 527796 | Pikachu VMAX Premium Collection | Collection | 7 | Description | — | 2023 Q1 (set) | Yes |
-| 454452 | Pikachu VMAX Special Collection | Collection | 5 | Description | — | 2023 Q1 | Yes |
-| 563307 | Sea & Sky Premium Collection | Collection | 14 | Description | — | 2023 Q1 (set) | Yes |
-| 453470 | Crown Zenith Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2023 Q1 (set) | Yes |
-| 454246 | Crown Zenith Pokemon Center Elite Trainer Box Plus | Elite Trainer Box | 12 | Description | — | 2023 Q1 | Yes |
-| 453491 | Crown Zenith Mini Tin [Bede & Hatenna] | Tin | 2 | Description | — | 2023 Q1 | Yes |
-| 453490 | Crown Zenith Mini Tin [Hop & Wooloo] | Tin | 2 | Description | — | 2023 Q1 | Yes |
-| 453489 | Crown Zenith Mini Tin [Leon & Charizard] | Tin | 2 | Description | — | 2023 Q1 | Yes |
-| 453488 | Crown Zenith Mini Tin [Marnie & Morpeko] | Tin | 2 | Description | — | 2023 Q1 | Yes |
-| 453494 | Crown Zenith Mini Tin [Set of 5] | Tin | 2 | Description | — | 2023 Q1 | Yes |
-| 453492 | Crown Zenith Mini Tin [Sonia & Yamper] | Tin | 2 | Description | — | 2023 Q1 | Yes |
-| 475628 | Crown Zenith Tin [Galarian Articuno] | Tin | 5 | Description | — | 2023 Q1 | Yes |
-| 475631 | Crown Zenith Tin [Galarian Articuno] (International Version) | Tin | 4 | Description | — | 2023 Q1 (set) | Yes |
-| 475629 | Crown Zenith Tin [Galarian Moltres] | Tin | 5 | Description | — | 2023 Q1 | Yes |
-| 475632 | Crown Zenith Tin [Galarian Moltres] (International Version) | Tin | 4 | Description | — | 2023 Q1 (set) | Yes |
-| 475630 | Crown Zenith Tin [Galarian Zapdos] | Tin | 5 | Description | — | 2023 Q1 | Yes |
-| 475633 | Crown Zenith Tin [Galarian Zapdos] (International Version) | Tin | 4 | Description | — | 2023 Q1 (set) | Yes |
-| 475634 | Crown Zenith Tin [Set of 3] | Tin | 5 | Description | — | 2023 Q1 | Yes |
-| 475635 | Crown Zenith Tin [Set of 3] (International Version) | Tin | 4 | Description | — | 2023 Q1 (set) | Yes |
+| TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
+|---|---|---|---|---|---|---|---|---|---|
+| 527562 | Crown Zenith Booster Bundle | Booster bundle | 6 | Description | 6 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 453466 | Crown Zenith Booster Pack | Booster pack | 1 | Kind default | 1 Crown Zenith | Product set | — | 2023 Q1 | Yes |
+| 609238 | Crown Zenith Booster Bundle Case | Case or display | — | — | — | — | 20 booster bundles | 2023 Q1 (set) | Yes |
+| 490542 | Crown Zenith Collection Case | Case or display | — | — | — | — | 2 collections | 2023 Q1 (set) | Yes |
+| 453471 | Crown Zenith Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2023 Q1 | Yes |
+| 453493 | Crown Zenith Mini Tin Display | Case or display | — | — | — | — | 2 mini tins | 2023 Q1 (set) | Yes |
+| 631791 | Crown Zenith Mini Tin Display Case | Case or display | — | — | — | — | 32 mini tins | 2023 Q1 (set) | Yes |
+| 711447 | Crown Zenith Pin Collection Case | Case or display | — | — | — | — | 12 collections | 2023 Q1 (set) | No |
+| 454247 | Crown Zenith Pokemon Center Elite Trainer Box Plus Case | Case or display | — | — | — | — | 4 elite trainer boxes | 2023 Q1 | Yes |
+| 664978 | Crown Zenith Premium Figure Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2023 Q1 (set) | No |
+| 616290 | Crown Zenith Tin Case | Case or display | — | — | — | — | 2 tins | 2023 Q1 (set) | Yes |
+| 693210 | Morpeko V-UNION Premium Treasures Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2023 Q1 (set) | No |
+| 485423 | Pikachu VMAX Special Collection Case | Case or display | — | — | — | — | 6 collections | 2023 Q1 (set) | Yes |
+| 453468 | Crown Zenith Collection [Regidrago V] | Collection | 4 | Description | 4 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453467 | Crown Zenith Collection [Regieleki V] | Collection | 4 | Description | 4 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453474 | Crown Zenith Collection [Set of 2] | Collection | 8 | Description | 8 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 475617 | Crown Zenith Pin Collection [Cinderace] | Collection | 3 | Description | 3 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 475618 | Crown Zenith Pin Collection [Inteleon] | Collection | 3 | Description | 3 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 475619 | Crown Zenith Pin Collection [Rillaboom] | Collection | 3 | Description | 3 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 475620 | Crown Zenith Pin Collection [Set of 3] | Collection | 9 | Description | 9 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 475648 | Crown Zenith Premium Figure Collection [Set of 2] | Collection | 22 | Description | 22 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 475647 | Crown Zenith Premium Figure Collection [Shiny Zacian] | Collection | 11 | Description | 11 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 475646 | Crown Zenith Premium Figure Collection [Shiny Zamazenta] | Collection | 11 | Description | 11 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 505916 | Crown Zenith Special Collection [Unown V & Lugia V] | Collection | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q3 | Yes |
+| 475644 | Morpeko V-UNION Playmat Premium Collection | Collection | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q2 | Yes |
+| 516939 | Morpeko V-UNION Premium Treasures Collection | Collection | 7 | Description | 7 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 527796 | Pikachu VMAX Premium Collection | Collection | 7 | Description | 7 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 454452 | Pikachu VMAX Special Collection | Collection | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 563307 | Sea & Sky Premium Collection | Collection | 14 | Description | 14 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 453470 | Crown Zenith Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 454246 | Crown Zenith Pokemon Center Elite Trainer Box Plus | Elite Trainer Box | 12 | Description | 10 Crown Zenith | Partial | — | 2023 Q1 | Yes |
+| 453491 | Crown Zenith Mini Tin [Bede & Hatenna] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453490 | Crown Zenith Mini Tin [Hop & Wooloo] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453489 | Crown Zenith Mini Tin [Leon & Charizard] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453488 | Crown Zenith Mini Tin [Marnie & Morpeko] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453494 | Crown Zenith Mini Tin [Set of 5] | Tin | 10 | Description | 10 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 453492 | Crown Zenith Mini Tin [Sonia & Yamper] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 475628 | Crown Zenith Tin [Galarian Articuno] | Tin | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 475631 | Crown Zenith Tin [Galarian Articuno] (International Version) | Tin | 4 | Description | 4 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 475629 | Crown Zenith Tin [Galarian Moltres] | Tin | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 475632 | Crown Zenith Tin [Galarian Moltres] (International Version) | Tin | 4 | Description | 4 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 475630 | Crown Zenith Tin [Galarian Zapdos] | Tin | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 475633 | Crown Zenith Tin [Galarian Zapdos] (International Version) | Tin | 4 | Description | 4 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
+| 475634 | Crown Zenith Tin [Set of 3] | Tin | 15 | Description | 15 Crown Zenith | Exact | — | 2023 Q1 | Yes |
+| 475635 | Crown Zenith Tin [Set of 3] (International Version) | Tin | 12 | Description | 12 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list
