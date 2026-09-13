@@ -235,6 +235,15 @@ already designed in
 as the "EV tension" — nothing new needed here, just noting where the
 product being discussed in this doc feeds into that decision.
 
+### The expected-value upgrade
+
+This permanent upgrade (see [09-upgrades.md](09-upgrades.md)) shows
+the expected value of opening each sealed item. The value shows on the
+sealed rows and on the sealed detail screen in Inventory (see
+[08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded-lo-fi-mockup-reviewed)).
+Without the upgrade, the player calculates the expected value from the
+pull rates. The cost of the upgrade is a balancing value.
+
 ## Pull rates
 
 Opening product needs a real probability model per set (rare slot

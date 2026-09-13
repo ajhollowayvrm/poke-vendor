@@ -33,7 +33,8 @@ state and be the fastest way to get anywhere in the app.
 1. **Cash** → Wallet / cash ledger
 2. **Followers** → Social media hub
 3. **Reputation** → Reputation & meets
-4. **Collection** → Inventory / collection
+4. **Collection** → Inventory / collection (the target shows
+   collection value, which counts only kept items)
 5. **Alert banner** (rare surprise event) → Opportunity detail
 6. **Local meet row** → Meet encounter
 7. **Garage sale row** → Garage sale encounter
@@ -237,7 +238,8 @@ here, and the rip-or-hold decision happens here.
 - **A sealed row shows the sealed market price and the amount paid.**
   It does not show the expected value of opening the product. An
   upgrade adds the expected value to each sealed row (see
-  [09-upgrades.md](09-upgrades.md)). Until then, the math is a player
+  [12-acquiring-product.md](12-acquiring-product.md#the-expected-value-upgrade)).
+  Until then, the math is a player
   skill (see
   [05-pricing-and-market.md](05-pricing-and-market.md#sealed-product--separate-pricing-logic)).
 - **Select mode works on every tab.** The actions for a selection
@@ -248,11 +250,13 @@ here, and the rip-or-hold decision happens here.
   | Sealed | Rip, Keep |
   | Raw | Sell, Grade, Keep |
   | Slabs | Sell, Keep |
-  | Bulk | Open topic |
+  | Bulk | Add to store run |
 
   "Rip" sends the selection to the rip queue (see
   [18-ripping.md](18-ripping.md#the-rip-queue)). "Grade" puts all the
-  selected cards in one grading submission.
+  selected cards in one grading submission. "Add to store run" puts
+  the selected bulk groups in the "Sell to the shop" row of the next
+  game shop stop. The sale itself happens at that stop.
 - **A tap on a row opens a full detail screen**, not a modal. The
   detail screen for a card shows the card image, the raw price, the
   graded prices, the four subgrades, the status, and the actions. The
@@ -267,27 +271,35 @@ here, and the rip-or-hold decision happens here.
   bought card's row shows its gain.
 - **The "Kept only" filter is a checkbox** at the top of the list on
   the Sealed, Raw, and Slabs tabs.
+- **Collection value counts only kept items** (see
+  [03-currencies.md](03-currencies.md#collection-value)). Stock for
+  sale is future cash, not collection. The hub's Collection target
+  shows collection value. The portfolio header shows all of
+  Inventory.
+- **Each tab sorts newest first.** A sort control changes the order
+  to highest value or to set order.
+- **The detail screen for a sealed item** shows the product image,
+  the contents (for example, 9 packs and 1 promo card), the sealed
+  market price, the amount paid, and where the item came from. With
+  the expected-value upgrade, it also shows the expected value. It has
+  Rip and Keep buttons.
+- **The detail screen for a bulk group** shows the rip that made the
+  group and the day of that rip. Then it shows the cards grouped by
+  rarity, with the counts and the total value.
+- **The player removes a listing from the item detail screen.** The
+  status box of a listed item shows the listing and a "Remove
+  listing" button. The item stays in its tab, and the Listed tag goes
+  away.
 
-**Open topics:**
-
-- The batch actions on the Bulk tab. The player sells bulk only to a
-  game shop, at a stop on a store run.
-- The detail screen for a sealed item and for a bulk group.
-- The sort order in each tab.
-- The expected-value upgrade: its cost, and which doc lists it.
-  [09-upgrades.md](09-upgrades.md) puts each upgrade in its system's
-  own doc.
-- The number that the hub's Collection target shows: the portfolio
-  market value, or only the kept items.
-- How the Keep flag connects to the goal of a collection that the
-  player is proud of (see [01-premise-and-loop.md](01-premise-and-loop.md)).
-- How the player removes a listing, and on which screen.
+**Open topics:** none.
 
 **Mockup:** the lo-fi mockup is the "PokeVendor Inventory Screen"
 Claude Design canvas. It shows the four tabs, select mode on Sealed
 and Raw, the expected-value upgrade, the card detail screen, and the
 detail screen for a card at a grader. The review on 2026-09-13
-approved it.
+approved it. The decisions on collection value, sort order, the sealed
+and bulk detail screens, bulk on a store run, and removing a listing
+came after the review. The mockup does not show them yet.
 
 ## What's next
 

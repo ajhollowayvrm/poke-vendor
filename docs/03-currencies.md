@@ -30,6 +30,12 @@ The raw worth of cards you personally hold, separate from cash. A player can
 sit on a vault of rare cards and never sell them, and that is still "making
 it."
 
+Collection value counts only the items that the player marks Keep in
+Inventory (see
+[08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded-lo-fi-mockup-reviewed)).
+Stock for sale is future cash, so it does not count. This rule keeps
+collection value separate from the trading business.
+
 ## Why separate, why this matters
 
 Each currency has its own visible number and its own way to grow, so very
