@@ -57,8 +57,8 @@ records only its set data and its exceptions to the template.
 
 ## Sets done so far
 
-133 set files in 11 eras. Every English set with booster packs has a
-file.
+142 set files: 133 in 11 eras, and 9 Play! Pokémon Prize Pack series. Every English
+set with booster packs has a file.
 
 - **Wizards of the Coast (1999–2002)** —
   [eras/wizards-of-the-coast.md](sets/eras/wizards-of-the-coast.md):
@@ -194,6 +194,8 @@ file.
   [Ascended Heroes](sets/ascended-heroes.md),
   [Perfect Order](sets/perfect-order.md),
   [Chaos Rising](sets/chaos-rising.md), [Pitch Black](sets/pitch-black.md).
+- **Play! Pokémon Prize Packs (2022–2026)** — no era file. Each pack holds 6
+  stamped reprints; no source gives slots or odds: [Series One](sets/prize-pack-series-one.md), [Series Two](sets/prize-pack-series-two.md), [Series Three](sets/prize-pack-series-three.md), [Series Four](sets/prize-pack-series-four.md), [Series Five](sets/prize-pack-series-five.md), [Series Six](sets/prize-pack-series-six.md), [Series Seven](sets/prize-pack-series-seven.md), [Series Eight](sets/prize-pack-series-eight.md), [Series Nine](sets/prize-pack-series-nine.md).
 
 ## Open topics
 
