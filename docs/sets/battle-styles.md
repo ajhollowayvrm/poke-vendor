@@ -276,6 +276,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh5`), 
 | 181/163 | Level Ball | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 182/163 | Rapid Strike Energy | Energy (Special) | Secret Rare | Holo (Gold) |
 | 183/163 | Single Strike Energy | Energy (Special) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

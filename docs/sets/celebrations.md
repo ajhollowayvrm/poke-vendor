@@ -177,6 +177,7 @@ TCGdex set `cel25cc`: 25 cards.
 | CC023 | Xerneas EX | Pokémon (Fairy) | Classic Collection | Holo |
 | CC024 | M Rayquaza EX | Pokémon (Colorless) | Classic Collection | Holo |
 | CC025 | Tapu Lele GX | Pokémon (Psychic) | Classic Collection | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

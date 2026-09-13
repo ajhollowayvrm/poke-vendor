@@ -403,6 +403,7 @@ TCGdex set `swsh12.5gg`: 70 cards.
 | GG68 | Origin Forme Dialga VSTAR | Pokémon (Metal) | Secret Rare | Holo |
 | GG69 | Giratina VSTAR | Pokémon (Dragon) | Secret Rare | Holo |
 | GG70 | Arceus VSTAR | Pokémon (Colorless) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

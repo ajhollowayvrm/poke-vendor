@@ -154,6 +154,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo3`), f
 | 64/64 | Old Rod | Trainer | Common | Normal, Normal (1st Edition) |
 | 65/64 | Shining Gyarados | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
 | 66/64 | Shining Magikarp | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

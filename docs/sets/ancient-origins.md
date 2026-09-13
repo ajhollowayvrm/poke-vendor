@@ -84,6 +84,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy7`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1576`, fetched 2026-09-12). This added 109 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 36 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -93,28 +94,28 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy7`), fe
 | 4/98 | Bellossom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 5/98 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 6/98 | Ariados | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 7/98 | Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 8/98 | M Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 7/98 | Sceptile EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 8/98 | M Sceptile EX | Pokémon (Grass) | Ultra Rare | Holo |
 | 9/98 | Combee | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 10/98 | Vespiquen | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 11/98 | Vespiquen | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 12/98 | Virizion | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 12/98 | Virizion | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 13/98 | Flareon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 14/98 | Entei | Pokémon (Fire) | Rare | Normal, Reverse holo |
-| 15/98 | Entei | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 15/98 | Entei | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 16/98 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 17/98 | Volcarona | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 17/98 | Volcarona | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 18/98 | Volcarona | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 19/98 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
 | 20/98 | Gyarados | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 21/98 | Gyarados | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 21/98 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 22/98 | Vaporeon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 23/98 | Relicanth | Pokémon (Water) | Common | Normal, Reverse holo |
 | 24/98 | Regice | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 25/98 | Kyurem EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 26/98 | Jolteon | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
-| 27/98 | Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 28/98 | M Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 25/98 | Kyurem EX | Pokémon (Water) | Ultra Rare | Holo |
+| 26/98 | Jolteon | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 27/98 | Ampharos EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 28/98 | M Ampharos EX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 29/98 | Rotom | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 30/98 | Unown | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 31/98 | Baltoy | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -122,14 +123,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy7`), fe
 | 33/98 | Claydol | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 34/98 | Golett | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 35/98 | Golurk | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 36/98 | Hoopa EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 37/98 | Machamp EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 36/98 | Hoopa EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 37/98 | Machamp EX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 38/98 | Wooper | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 39/98 | Quagsire | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 40/98 | Regirock | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 41/98 | Golurk | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 42/98 | Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 43/98 | M Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 42/98 | Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 43/98 | M Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Holo |
 | 44/98 | Sableye | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 45/98 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 46/98 | Malamar | Pokémon (Darkness) | Common | Normal, Reverse holo |
@@ -140,21 +141,21 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy7`), fe
 | 51/98 | Registeel | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 52/98 | Ralts | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 53/98 | Kirlia | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 54/98 | Gardevoir | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 54/98 | Gardevoir | Pokémon (Fairy) | Rare | Holo, Reverse holo |
 | 55/98 | Cottonee | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 56/98 | Whimsicott | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 57/98 | Giratina EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 57/98 | Giratina EX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 58/98 | Goomy | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 59/98 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 60/98 | Goodra | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 60/98 | Goodra | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 61/98 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 62/98 | Persian | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 63/98 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 64/98 | Porygon | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 65/98 | Porygon2 | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 66/98 | Porygon-Z | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 67/98 | Porygon-Z | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
-| 68/98 | Lugia EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 67/98 | Porygon-Z | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 68/98 | Lugia EX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 69/98 | Ace Trainer | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 70/98 | Ampharos Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 71/98 | Eco Arm | Trainer (Item) | Uncommon | Normal, Reverse holo |
@@ -171,23 +172,24 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy7`), fe
 | 81/98 | Tyranitar Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 82/98 | Dangerous Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 83/98 | Flash Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 84/98 | Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 85/98 | M Sceptile EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 86/98 | Kyurem EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 87/98 | Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 88/98 | M Ampharos EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 89/98 | Hoopa EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 90/98 | Machamp EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 91/98 | Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 92/98 | M Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 93/98 | Giratina EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 94/98 | Lugia EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 95/98 | Steven | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 96/98 | Primal Kyogre EX | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 97/98 | Primal Groudon EX | Pokémon (Fighting) | Secret Rare | Normal, Holo |
-| 98/98 | M Rayquaza EX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
-| 99/98 | Energy Retrieval | Trainer (Item) | Secret Rare | Normal, Holo |
-| 100/098 | Trainers' Mail | Trainer (Item) | Secret Rare | Normal, Holo |
+| 84/98 | Sceptile EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 85/98 | M Sceptile EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 86/98 | Kyurem EX | Pokémon (Water) | Ultra Rare | Holo |
+| 87/98 | Ampharos EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 88/98 | M Ampharos EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 89/98 | Hoopa EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 90/98 | Machamp EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 91/98 | Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 92/98 | M Tyranitar EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 93/98 | Giratina EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 94/98 | Lugia EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 95/98 | Steven | Trainer (Supporter) | Ultra Rare | Holo |
+| 96/98 | Primal Kyogre EX | Pokémon (Water) | Secret Rare | Holo |
+| 97/98 | Primal Groudon EX | Pokémon (Fighting) | Secret Rare | Holo |
+| 98/98 | M Rayquaza EX | Pokémon (Colorless) | Secret Rare | Holo |
+| 99/98 | Energy Retrieval | Trainer (Item) | Secret Rare | Holo |
+| 100/098 | Trainers' Mail | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

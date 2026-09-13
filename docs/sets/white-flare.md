@@ -319,6 +319,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10.5w`)
 | 171/086 | Hilda | Trainer (Supporter) | Special illustration rare | Holo |
 | 172/086 | Victini | Pokémon (Fire) | Black White Rare | Holo |
 | 173/086 | Reshiram ex | Pokémon (Fire) | Black White Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -116,6 +116,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `2022swsh`
 | 13/15 | Pangoro | Pokémon (Darkness) | None | Holo, Normal |
 | 14/15 | Drampa | Pokémon (Colorless) | None | Holo, Normal |
 | 15/15 | Smeargle | Pokémon (Colorless) | None | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

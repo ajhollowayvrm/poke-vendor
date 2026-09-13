@@ -112,6 +112,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 4 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -128,7 +129,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 | 011/094 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 012/094 | Charmeleon | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 013/094 | Mega Charizard X ex | Pokémon (Fire) | Double rare | Holo |
-| 014/094 | Moltres | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal |
+| 014/094 | Moltres | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 015/094 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 016/094 | Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 017/094 | Reshiram | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Set logo), Holo (Cosmos) |
@@ -159,7 +160,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 | 042/094 | Mimikyu | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 043/094 | Milcery | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 044/094 | Alcremie | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 045/094 | Zacian | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 045/094 | Zacian | Pokémon (Psychic) | Rare | Holo, Reverse holo, Holo (Cosmos) |
 | 046/094 | Bramblin | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 047/094 | Brambleghast | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 048/094 | Paldean Tauros | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
@@ -167,7 +168,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 | 050/094 | Gliscor | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 051/094 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 052/094 | Vibrava | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 053/094 | Flygon | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 053/094 | Flygon | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos) |
 | 054/094 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 055/094 | Haunter | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 056/094 | Mega Gengar ex | Pokémon (Darkness) | Double rare | Holo |
@@ -182,7 +183,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 | 065/094 | Krokorok | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 066/094 | Krookodile | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 067/094 | Toxel | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 068/094 | Toxtricity | Pokémon (Darkness) | Rare | Holo, Reverse holo, Normal |
+| 068/094 | Toxtricity | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 069/094 | Eternatus | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 070/094 | Empoleon ex | Pokémon (Metal) | Double rare | Holo |
 | 071/094 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
@@ -245,6 +246,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me02`), f
 | 128/094 | Mega Lopunny ex | Pokémon (Colorless) | Special illustration rare | Holo |
 | 129/094 | Dawn | Trainer (Supporter) | Special illustration rare | Holo |
 | 130/094 | Mega Charizard X ex | Pokémon (Fire) | Mega Hyper Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

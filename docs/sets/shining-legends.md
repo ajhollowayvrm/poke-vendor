@@ -107,6 +107,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), 
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2054`, fetched 2026-09-12). This added 90 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 30 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -116,14 +117,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), 
 | 4/73 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 5/73 | Breloom | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 6/73 | Carnivine | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 7/73 | Shaymin | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
-| 8/73 | Virizion | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
-| 9/73 | Shining Genesect | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 10/73 | Entei GX | Pokémon (Fire) | Rare | Normal, Holo |
+| 7/73 | Shaymin | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 8/73 | Virizion | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 9/73 | Shining Genesect | Pokémon (Grass) | Ultra Rare | Holo |
+| 10/73 | Entei GX | Pokémon (Fire) | Rare | Holo |
 | 11/73 | Torkoal | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 12/73 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 13/73 | Volcarona | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 14/73 | Reshiram | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 14/73 | Reshiram | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 15/73 | Litten | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 16/73 | Torracat | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 17/73 | Incineroar | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
@@ -133,28 +134,28 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), 
 | 21/73 | Qwilfish | Pokémon (Water) | Common | Normal, Reverse holo |
 | 22/73 | Buizel | Pokémon (Water) | Common | Normal, Reverse holo |
 | 23/73 | Floatzel | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 24/73 | Palkia | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
-| 25/73 | Manaphy | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
-| 26/73 | Keldeo | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
-| 27/73 | Shining Volcanion | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 24/73 | Palkia | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 25/73 | Manaphy | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 26/73 | Keldeo | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 27/73 | Shining Volcanion | Pokémon (Water) | Ultra Rare | Holo |
 | 28/73 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 29/73 | Raichu GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 29/73 | Raichu GX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 30/73 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 31/73 | Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 32/73 | Raikou | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 32/73 | Raikou | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 33/73 | Plusle | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 34/73 | Minun | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 35/73 | Zekrom | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 35/73 | Zekrom | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 36/73 | Ekans | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 37/73 | Arbok | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 38/73 | Jynx | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 39/73 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 40/73 | Shining Mew | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 41/73 | Latios | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
-| 42/73 | Shining Jirachi | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 39/73 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 40/73 | Shining Mew | Pokémon (Psychic) | Ultra Rare | Holo |
+| 41/73 | Latios | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 42/73 | Shining Jirachi | Pokémon (Psychic) | Ultra Rare | Holo |
 | 43/73 | Golett | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 44/73 | Golurk | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 45/73 | Marshadow | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 45/73 | Marshadow | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 46/73 | Stunfisk | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 47/73 | Spiritomb | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 48/73 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
@@ -162,11 +163,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), 
 | 50/73 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 51/73 | Scrafty | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 52/73 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 53/73 | Zoroark GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 54/73 | Yveltal | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
-| 55/73 | Hoopa | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
-| 56/73 | Shining Rayquaza | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 57/73 | Shining Arceus | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 53/73 | Zoroark GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 54/73 | Yveltal | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 55/73 | Hoopa | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 56/73 | Shining Rayquaza | Pokémon (Dragon) | Ultra Rare | Holo |
+| 57/73 | Shining Arceus | Pokémon (Colorless) | Ultra Rare | Holo |
 | 58/73 | Damage Mover | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 59/73 | Energy Retrieval | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 60/73 | Great Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
@@ -180,14 +181,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm3.5`), 
 | 68/73 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 69/73 | Double Colorless Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 70/73 | Warp Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 71/73 | Entei GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 72/73 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 73/73 | Pokémon Breeder | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 74/73 | Entei GX | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 75/73 | Raichu GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
-| 76/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 77/73 | Zoroark GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
-| 78/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
+| 71/73 | Entei GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 72/73 | Mewtwo GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 73/73 | Pokémon Breeder | Trainer (Supporter) | Ultra Rare | Holo |
+| 74/73 | Entei GX | Pokémon (Fire) | Secret Rare | Holo |
+| 75/73 | Raichu GX | Pokémon (Lightning) | Secret Rare | Holo |
+| 76/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 77/73 | Zoroark GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 78/73 | Mewtwo GX | Pokémon (Psychic) | Secret Rare | Holo |
 
 ## Slot map
 

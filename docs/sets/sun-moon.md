@@ -106,6 +106,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1863`, fetched 2026-09-12). This added 179 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 53 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -120,37 +121,37 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 | 9/149 | Rowlet | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 10/149 | Dartrix | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 11/149 | Decidueye | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 12/149 | Decidueye GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 12/149 | Decidueye GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 13/149 | Grubbin | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 14/149 | Fomantis | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 15/149 | Lurantis GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 15/149 | Lurantis GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 16/149 | Morelull | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 17/149 | Shiinotic | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 17/149 | Shiinotic | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 18/149 | Bounsweet | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 19/149 | Steenee | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 20/149 | Tsareena | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 20/149 | Tsareena | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 21/149 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 22/149 | Arcanine | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 22/149 | Arcanine | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 23/149 | Torkoal | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 24/149 | Litten | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 25/149 | Torracat | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 26/149 | Incineroar | Pokémon (Fire) | Rare | Normal, Reverse holo |
-| 27/149 | Incineroar GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 27/149 | Incineroar GX | Pokémon (Fire) | Ultra Rare | Holo |
 | 28/149 | Psyduck | Pokémon (Water) | Common | Normal, Reverse holo |
 | 29/149 | Golduck | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 30/149 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo |
 | 31/149 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 32/149 | Poliwrath | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 32/149 | Poliwrath | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 33/149 | Shellder | Pokémon (Water) | Common | Normal, Reverse holo |
 | 34/149 | Cloyster | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 35/149 | Lapras GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 35/149 | Lapras GX | Pokémon (Water) | Ultra Rare | Holo |
 | 36/149 | Corsola | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 37/149 | Wingull | Pokémon (Water) | Common | Normal, Reverse holo |
 | 38/149 | Pelipper | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 39/149 | Popplio | Pokémon (Water) | Common | Normal, Reverse holo |
 | 40/149 | Brionne | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 41/149 | Primarina | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 42/149 | Primarina GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 42/149 | Primarina GX | Pokémon (Water) | Ultra Rare | Holo |
 | 43/149 | Crabominable | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 44/149 | Wishiwashi | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 45/149 | Dewpider | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -160,26 +161,26 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 | 49/149 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 50/149 | Lanturn | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 51/149 | Charjabug | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 52/149 | Vikavolt | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 52/149 | Vikavolt | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 53/149 | Togedemaru | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 54/149 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 55/149 | Golbat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 56/149 | Crobat | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 56/149 | Crobat | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 57/149 | Alolan Grimer | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 58/149 | Alolan Muk | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 58/149 | Alolan Muk | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 59/149 | Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 60/149 | Hypno | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 61/149 | Espeon GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 61/149 | Espeon GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 62/149 | Mareanie | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 63/149 | Toxapex | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 63/149 | Toxapex | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 64/149 | Cosmog | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 65/149 | Cosmoem | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 66/149 | Lunala GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 66/149 | Lunala GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 67/149 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 68/149 | Hariyama | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 69/149 | Roggenrola | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 70/149 | Boldore | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 71/149 | Gigalith | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 71/149 | Gigalith | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 72/149 | Crabrawler | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 73/149 | Passimian | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 74/149 | Sandygast | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -188,27 +189,27 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 | 77/149 | Alolan Raticate | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 78/149 | Alolan Meowth | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 79/149 | Alolan Persian | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 80/149 | Umbreon GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 80/149 | Umbreon GX | Pokémon (Darkness) | Ultra Rare | Holo |
 | 81/149 | Carvanha | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 82/149 | Sharpedo | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 82/149 | Sharpedo | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 83/149 | Sandile | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 84/149 | Krokorok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 85/149 | Krookodile | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 85/149 | Krookodile | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 86/149 | Alolan Diglett | Pokémon (Metal) | Common | Normal, Reverse holo |
-| 87/149 | Alolan Dugtrio | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 87/149 | Alolan Dugtrio | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 88/149 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
-| 89/149 | Solgaleo GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 89/149 | Solgaleo GX | Pokémon (Metal) | Ultra Rare | Holo |
 | 90/149 | Snubbull | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 91/149 | Granbull | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 92/149 | Cutiefly | Pokémon (Fairy) | Common | Normal, Reverse holo |
-| 93/149 | Ribombee | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 93/149 | Ribombee | Pokémon (Fairy) | Rare | Holo, Reverse holo |
 | 94/149 | Dratini | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 95/149 | Dragonair | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 96/149 | Dragonite | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 96/149 | Dragonite | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 97/149 | Spearow | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 98/149 | Fearow | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 99/149 | Kangaskhan | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
-| 100/149 | Tauros GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 99/149 | Kangaskhan | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 100/149 | Tauros GX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 101/149 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 102/149 | Spinda | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 103/149 | Lillipup | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -218,10 +219,10 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 | 107/149 | Trumbeak | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 108/149 | Toucannon | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 109/149 | Yungoos | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 110/149 | Gumshoos GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 110/149 | Gumshoos GX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 111/149 | Stufful | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 112/149 | Bewear | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 113/149 | Oranguru | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 113/149 | Oranguru | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 114/149 | Big Malasada | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 115/149 | Crushing Hammer | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 116/149 | Energy Retrieval | Trainer (Item) | Uncommon | Normal, Reverse holo |
@@ -246,32 +247,32 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm1`), fe
 | 135/149 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 136/149 | Double Colorless Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 137/149 | Rainbow Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 138/149 | Lurantis GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 139/149 | Lapras GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 140/149 | Espeon GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 141/149 | Lunala GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 142/149 | Umbreon GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 143/149 | Solgaleo GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 144/149 | Tauros GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 145/149 | Gumshoos GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 146/149 | Ilima | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 147/149 | Lillie | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 148/149 | Professor Kukui | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 149/149 | Team Skull Grunt | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 150/149 | Lurantis GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 151/149 | Lapras GX | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 152/149 | Espeon GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 153/149 | Lunala GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 154/149 | Umbreon GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
-| 155/149 | Solgaleo GX | Pokémon (Metal) | Secret Rare | Normal, Holo |
-| 156/149 | Tauros GX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
-| 157/149 | Gumshoos GX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
-| 158/149 | Nest Ball | Trainer (Item) | Secret Rare | Normal, Holo |
-| 159/149 | Rotom Dex | Trainer (Item) | Secret Rare | Normal, Holo |
-| 160/149 | Switch | Trainer (Item) | Secret Rare | Normal, Holo |
-| 161/149 | Ultra Ball | Trainer (Item) | Secret Rare | Normal, Holo |
-| 162/149 | Psychic Energy | Energy (Normal) | Secret Rare | Normal, Holo |
-| 163/149 | Metal Energy | Energy (Normal) | Secret Rare | Normal, Holo |
+| 138/149 | Lurantis GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 139/149 | Lapras GX | Pokémon (Water) | Ultra Rare | Holo |
+| 140/149 | Espeon GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 141/149 | Lunala GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 142/149 | Umbreon GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 143/149 | Solgaleo GX | Pokémon (Metal) | Ultra Rare | Holo |
+| 144/149 | Tauros GX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 145/149 | Gumshoos GX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 146/149 | Ilima | Trainer (Supporter) | Ultra Rare | Holo |
+| 147/149 | Lillie | Trainer (Supporter) | Ultra Rare | Holo |
+| 148/149 | Professor Kukui | Trainer (Supporter) | Ultra Rare | Holo |
+| 149/149 | Team Skull Grunt | Trainer (Supporter) | Ultra Rare | Holo |
+| 150/149 | Lurantis GX | Pokémon (Grass) | Secret Rare | Holo |
+| 151/149 | Lapras GX | Pokémon (Water) | Secret Rare | Holo |
+| 152/149 | Espeon GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 153/149 | Lunala GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 154/149 | Umbreon GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 155/149 | Solgaleo GX | Pokémon (Metal) | Secret Rare | Holo |
+| 156/149 | Tauros GX | Pokémon (Colorless) | Secret Rare | Holo |
+| 157/149 | Gumshoos GX | Pokémon (Colorless) | Secret Rare | Holo |
+| 158/149 | Nest Ball | Trainer (Item) | Secret Rare | Holo |
+| 159/149 | Rotom Dex | Trainer (Item) | Secret Rare | Holo |
+| 160/149 | Switch | Trainer (Item) | Secret Rare | Holo |
+| 161/149 | Ultra Ball | Trainer (Item) | Secret Rare | Holo |
+| 162/149 | Psychic Energy | Energy (Normal) | Secret Rare | Holo |
+| 163/149 | Metal Energy | Energy (Normal) | Secret Rare | Holo |
 | 164/149 | Grass Energy | Energy (Normal) | Common | Normal |
 | 165/149 | Fire Energy | Energy (Normal) | Common | Normal |
 | 166/149 | Water Energy | Energy (Normal) | Common | Normal |

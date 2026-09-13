@@ -130,6 +130,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 5 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -145,7 +146,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 010/086 | Ho-Oh | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Gamestop), Holo (Eb games) |
 | 011/086 | Fennekin | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 012/086 | Braixen | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 013/086 | Delphox | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal, Holo (Set logo) |
+| 013/086 | Delphox | Pokémon (Fire) | Rare | Holo, Reverse holo, Holo (Set logo) |
 | 014/086 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 015/086 | Mega Pyroar ex | Pokémon (Fire) | Double rare | Holo |
 | 016/086 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -161,7 +162,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 026/086 | Golisopod | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 027/086 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 028/086 | Flaaffy | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 029/086 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal |
+| 029/086 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 030/086 | Emolga | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 031/086 | Deoxys | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 032/086 | Deoxys | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
@@ -183,7 +184,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 048/086 | Mega Gallade ex | Pokémon (Fighting) | Double rare | Holo |
 | 049/086 | Zubat | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 050/086 | Golbat | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 051/086 | Crobat | Pokémon (Darkness) | Rare | Holo, Reverse holo, Normal |
+| 051/086 | Crobat | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 052/086 | Qwilfish | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 053/086 | Stunky | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 054/086 | Skuntank | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
@@ -200,7 +201,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 065/086 | Mega Dragalge ex | Pokémon (Dragon) | Double rare | Holo |
 | 066/086 | Goomy | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 067/086 | Sliggoo | Pokémon (Dragon) | Common | Normal, Reverse holo |
-| 068/086 | Goodra | Pokémon (Dragon) | Rare | Holo, Reverse holo, Normal |
+| 068/086 | Goodra | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 069/086 | Tauros | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 070/086 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 071/086 | Watchog | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -217,7 +218,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 082/086 | Special Red Card | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 083/086 | Transformation Tome | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 084/086 | Bubbly Water Energy | Energy (Normal) | Rare | Holo, Reverse holo |
-| 085/086 | Magnetic Metal Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal |
+| 085/086 | Magnetic Metal Energy | Energy (Normal) | Rare | Holo, Reverse holo |
 | 086/086 | Nitro Fire Energy | Energy (Normal) | Rare | Holo, Reverse holo |
 | 087/086 | Chespin | Pokémon (Grass) | Illustration rare | Holo |
 | 088/086 | Froakie | Pokémon (Water) | Illustration rare | Holo |
@@ -255,6 +256,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me04`), f
 | 120/086 | AZ's Tranquility | Trainer (Supporter) | Special illustration rare | Holo |
 | 121/086 | Roxie's Performance | Trainer (Supporter) | Special illustration rare | Holo |
 | 122/086 | Mega Greninja ex | Pokémon (Water) | Mega Hyper Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

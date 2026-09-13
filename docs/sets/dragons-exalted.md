@@ -123,6 +123,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1394`, fetched 2026-09-12). This added 140 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 28 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -144,16 +145,16 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 | 16/124 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 17/124 | Foongus | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 18/124 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 19/124 | Ninetales | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 19/124 | Ninetales | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 20/124 | Magmar | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 21/124 | Magmortar | Pokémon (Fire) | Rare | Normal, Reverse holo |
-| 22/124 | Ho-Oh-EX | Pokémon (Fire) | Rare | Normal, Holo |
+| 22/124 | Ho-Oh-EX | Pokémon (Fire) | Rare | Holo |
 | 23/124 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
 | 24/124 | Gyarados | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 25/124 | Wailmer | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 26/124 | Wailord | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 26/124 | Wailord | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 27/124 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
-| 28/124 | Milotic | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 28/124 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 29/124 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
 | 30/124 | Sealeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 31/124 | Walrein | Pokémon (Water) | Rare | Normal, Reverse holo |
@@ -165,26 +166,26 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 | 37/124 | Alomomola | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 38/124 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 39/124 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 40/124 | Ampharos | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 40/124 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 41/124 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 42/124 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 43/124 | Manectric | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 44/124 | Manectric | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 45/124 | Emolga | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 46/124 | Mew-EX | Pokémon (Psychic) | Rare | Normal, Holo |
+| 46/124 | Mew-EX | Pokémon (Psychic) | Rare | Holo |
 | 47/124 | Dustox | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 48/124 | Shedinja | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 49/124 | Drifloon | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 50/124 | Drifloon | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 51/124 | Drifblim | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 52/124 | Sigilyph | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 52/124 | Sigilyph | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 53/124 | Trubbish | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 54/124 | Garbodor | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 54/124 | Garbodor | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 55/124 | Gothita | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 56/124 | Gothorita | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 57/124 | Gothitelle | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 58/124 | Golett | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 59/124 | Golurk | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 59/124 | Golurk | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 60/124 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 61/124 | Marowak | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 62/124 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -192,11 +193,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 | 64/124 | Claydol | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 65/124 | Roggenrola | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 66/124 | Boldore | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 67/124 | Gigalith | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 67/124 | Gigalith | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 68/124 | Throh | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 69/124 | Sawk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 70/124 | Stunfisk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 71/124 | Terrakion-EX | Pokémon (Fighting) | Rare | Normal, Holo |
+| 71/124 | Terrakion-EX | Pokémon (Fighting) | Rare | Holo |
 | 72/124 | Murkrow | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 73/124 | Honchkrow | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 74/124 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo |
@@ -205,30 +206,30 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 | 77/124 | Skuntank | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 78/124 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 79/124 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 80/124 | Aggron | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
-| 81/124 | Registeel-EX | Pokémon (Metal) | Rare | Normal, Holo |
+| 80/124 | Aggron | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 81/124 | Registeel-EX | Pokémon (Metal) | Rare | Holo |
 | 82/124 | Probopass | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 83/124 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 84/124 | Altaria | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 85/124 | Rayquaza-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 84/124 | Altaria | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 85/124 | Rayquaza-EX | Pokémon (Dragon) | Rare | Holo |
 | 86/124 | Gible | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 87/124 | Gible | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 88/124 | Gabite | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 89/124 | Gabite | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 90/124 | Garchomp | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 90/124 | Garchomp | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 91/124 | Garchomp | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 92/124 | Giratina-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 92/124 | Giratina-EX | Pokémon (Dragon) | Rare | Holo |
 | 93/124 | Deino | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 94/124 | Deino | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 95/124 | Zweilous | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 96/124 | Zweilous | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 97/124 | Hydreigon | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 97/124 | Hydreigon | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 98/124 | Hydreigon | Pokémon (Dragon) | Rare | Normal, Reverse holo |
 | 99/124 | Aipom | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 100/124 | Ambipom | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 101/124 | Slakoth | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 102/124 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 103/124 | Slaking | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 103/124 | Slaking | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 104/124 | Swablu | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 105/124 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 106/124 | Bidoof | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -244,16 +245,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 | 116/124 | Tool Scrapper | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 117/124 | Blend Energy Grass Fire Psychic Darkness | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 118/124 | Blend Energy Water Lightning Fighting Metal | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 119/124 | Ho-Oh-EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 120/124 | Mew-EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 121/124 | Terrakion-EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 122/124 | Registeel-EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 123/124 | Rayquaza-EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 124/124 | Giratina-EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 125/124 | Serperior | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 126/124 | Reuniclus | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 127/124 | Krookodile | Pokémon (Darkness) | Secret Rare | Normal, Holo |
+| 119/124 | Ho-Oh-EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 120/124 | Mew-EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 121/124 | Terrakion-EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 122/124 | Registeel-EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 123/124 | Rayquaza-EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 124/124 | Giratina-EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 125/124 | Serperior | Pokémon (Grass) | Secret Rare | Holo |
+| 126/124 | Reuniclus | Pokémon (Psychic) | Secret Rare | Holo |
+| 127/124 | Krookodile | Pokémon (Darkness) | Secret Rare | Holo |
 | 128/124 | Rayquaza | Pokémon (Dragon) | Secret Rare | Normal |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

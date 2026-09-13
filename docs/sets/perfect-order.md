@@ -123,6 +123,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me03`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 6 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -131,7 +132,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me03`), f
 | 003/088 | Shaymin | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 004/088 | Snivy | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 005/088 | Servine | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 006/088 | Serperior | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal |
+| 006/088 | Serperior | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 007/088 | Scatterbug | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 008/088 | Spewpa | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 009/088 | Vivillon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
@@ -166,11 +167,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me03`), f
 | 038/088 | Probopass | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 039/088 | Hippopotas | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 040/088 | Hippowdon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 041/088 | Landorus | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal |
+| 041/088 | Landorus | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 042/088 | Binacle | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 043/088 | Barbaracle | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 044/088 | Tyrunt | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 045/088 | Tyrantrum | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 045/088 | Tyrantrum | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos) |
 | 046/088 | Hawlucha | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 047/088 | Mega Zygarde ex | Pokémon (Fighting) | Double rare | Holo, Holo (Player rewards program) |
 | 048/088 | Gastly | Pokémon (Darkness) | Common | Normal, Reverse holo, Normal (Player rewards program) |
@@ -211,9 +212,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me03`), f
 | 083/088 | Potion | Trainer (Item) | Common | Normal, Reverse holo |
 | 084/088 | Rosa's Encouragement | Trainer (Supporter) | Uncommon | Normal, Reverse holo, Normal (Player rewards program) |
 | 085/088 | Tarragon | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
-| 086/088 | Growing Grass Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
-| 087/088 | Rocky Fighting Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
-| 088/088 | Telepathic Psychic Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
+| 086/088 | Growing Grass Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
+| 087/088 | Rocky Fighting Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
+| 088/088 | Telepathic Psychic Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
 | 089/088 | Spewpa | Pokémon (Grass) | Illustration rare | Holo |
 | 090/088 | Rowlet | Pokémon (Grass) | Illustration rare | Holo |
 | 091/088 | Talonflame | Pokémon (Fire) | Illustration rare | Holo |
@@ -250,6 +251,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me03`), f
 | 122/088 | Jacinthe | Trainer (Supporter) | Special illustration rare | Holo |
 | 123/088 | Rosa's Encouragement | Trainer (Supporter) | Special illustration rare | Holo |
 | 124/088 | Mega Zygarde ex | Pokémon (Fighting) | Mega Hyper Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

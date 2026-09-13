@@ -146,19 +146,20 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss3`), 
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1403`, fetched 2026-09-12). This added 2 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 5 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/90 | Bellossom | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Normal |
-| 2/90 | Espeon | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Normal |
+| 1/90 | Bellossom | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
+| 2/90 | Espeon | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 3/90 | Forretress | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
 | 4/90 | Gliscor | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
 | 5/90 | Houndoom | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo, Reverse holo (League) |
 | 6/90 | Magcargo | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
 | 7/90 | Scizor | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
 | 8/90 | Smeargle | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Holo (Igor costa) |
-| 9/90 | Togekiss | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal |
-| 10/90 | Umbreon | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo, Normal, Holo (Cracked ice) |
+| 9/90 | Togekiss | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
+| 10/90 | Umbreon | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
 | 11/90 | Dodrio | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 12/90 | Drifblim | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 13/90 | Forretress | Pokémon (Metal) | Rare | Normal, Reverse holo |
@@ -239,7 +240,8 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss3`), 
 | 88/90 | Kyogre & Groudon LEGEND | Pokémon (Water, Fighting) | LEGEND | Holo |
 | 89/90 | Rayquaza & Deoxys LEGEND | Pokémon (Colorless, Psychic) | LEGEND | Holo, Normal (David cohen) |
 | 90/90 | Rayquaza & Deoxys LEGEND | Pokémon (Colorless, Psychic) | LEGEND | Holo, Normal (David cohen) |
-| THREE | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal, Holo |
+| THREE | Alph Lithograph | Trainer (Item) | Ultra Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

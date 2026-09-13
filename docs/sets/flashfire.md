@@ -76,6 +76,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy2`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1464`, fetched 2026-09-12). This added 118 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 26 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -85,23 +86,23 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy2`), fe
 | 4/106 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 5/106 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 6/106 | Nuzleaf | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 7/106 | Shiftry | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 7/106 | Shiftry | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 8/106 | Roselia | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 9/106 | Roserade | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 10/106 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 11/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 12/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 13/106 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 11/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 12/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 13/106 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
 | 14/106 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 15/106 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 16/106 | Torkoal | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 17/106 | Fletchinder | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 18/106 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 19/106 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 20/106 | Pyroar | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 20/106 | Pyroar | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 21/106 | Qwilfish | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 22/106 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
-| 23/106 | Milotic | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 23/106 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 24/106 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
 | 25/106 | Sealeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 26/106 | Walrein | Pokémon (Water) | Rare | Normal, Reverse holo |
@@ -113,13 +114,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy2`), fe
 | 32/106 | Shinx | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 33/106 | Luxio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 34/106 | Luxray | Pokémon (Lightning) | Rare | Normal, Reverse holo |
-| 35/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 35/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 36/106 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 37/106 | Heliolisk | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 38/106 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 39/106 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 40/106 | Dusknoir | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
-| 41/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 40/106 | Dusknoir | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 41/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 42/106 | Espurr | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 43/106 | Meowstic | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 44/106 | Skrelp | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -144,20 +145,20 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy2`), fe
 | 63/106 | Flabébé | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 64/106 | Floette | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 65/106 | Floette | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 66/106 | Florges | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 66/106 | Florges | Pokémon (Fairy) | Rare | Holo, Reverse holo |
 | 67/106 | Spritzee | Pokémon (Fairy) | Common | Normal, Reverse holo |
-| 68/106 | Carbink | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
-| 69/106 | M Charizard EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 70/106 | Druddigon | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 68/106 | Carbink | Pokémon (Fairy) | Rare | Holo, Reverse holo |
+| 69/106 | M Charizard EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 70/106 | Druddigon | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 71/106 | Dragalge | Pokémon (Dragon) | Rare | Normal, Reverse holo |
 | 72/106 | Goomy | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 73/106 | Sliggoo | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 74/106 | Goodra | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 74/106 | Goodra | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 75/106 | Pidgey | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 76/106 | Pidgeotto | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 77/106 | Pidgeot | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 78/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 79/106 | M Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 78/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 79/106 | M Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 80/106 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 81/106 | Sentret | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 82/106 | Furret | Pokémon (Colorless) | Rare | Normal, Reverse holo |
@@ -179,16 +180,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy2`), fe
 | 97/106 | Startling Megaphone | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 98/106 | Trick Shovel | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 99/106 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 100/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 101/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 102/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 103/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 104/106 | Lysandre | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 105/106 | Pokémon Center Lady | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 106/106 | Pokémon Fan Club | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 107/106 | M Charizard EX | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 108/106 | M Charizard EX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 109/106 | M Kangaskhan EX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
+| 100/106 | Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 101/106 | Magnezone EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 102/106 | Toxicroak EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 103/106 | Kangaskhan EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 104/106 | Lysandre | Trainer (Supporter) | Ultra Rare | Holo |
+| 105/106 | Pokémon Center Lady | Trainer (Supporter) | Ultra Rare | Holo |
+| 106/106 | Pokémon Fan Club | Trainer (Supporter) | Ultra Rare | Holo |
+| 107/106 | M Charizard EX | Pokémon (Fire) | Secret Rare | Holo |
+| 108/106 | M Charizard EX | Pokémon (Dragon) | Secret Rare | Holo |
+| 109/106 | M Kangaskhan EX | Pokémon (Colorless) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

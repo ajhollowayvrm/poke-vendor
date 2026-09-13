@@ -423,6 +423,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv01`), f
 | 256/198 | Rare Candy | Trainer (Item) | Hyper rare | Holo |
 | 257/198 | Basic Lightning Energy | Energy (Normal) | Hyper rare | Holo |
 | 258/198 | Basic Fighting Energy | Energy (Normal) | Hyper rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

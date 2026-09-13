@@ -315,6 +315,7 @@ TCGdex set `swsh4.5sv`: 122 cards.
 | SV120 | Dubwool V | Pokémon (Colorless) | Shiny rare V | Holo |
 | SV121 | Eternatus V | Pokémon (Darkness) | Secret Rare | Holo |
 | SV122 | Eternatus VMAX | Pokémon (Darkness) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

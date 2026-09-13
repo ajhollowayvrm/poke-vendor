@@ -126,6 +126,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex16`), f
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1383`, fetched 2026-09-12). This added 91 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -136,8 +137,8 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex16`), f
 | 5/108 | Blaziken | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 6/108 | Charizard | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 7/108 | Cradily | Pokémon (Grass) | Rare | Holo, Holo (Set logo), Reverse holo |
-| 8/108 | Delcatty | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Normal, Reverse holo |
-| 9/108 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Normal, Reverse holo |
+| 8/108 | Delcatty | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Reverse holo |
+| 9/108 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 10/108 | Kabutops | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 11/108 | Machamp | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 12/108 | Raichu | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |

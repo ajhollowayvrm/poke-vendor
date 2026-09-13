@@ -92,6 +92,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl2`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 3 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -99,10 +100,10 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl2`), fe
 | 2/111 | Bastiodon GL | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
 | 3/111 | Darkrai G | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
 | 4/111 | Floatzel GL | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
-| 5/111 | Flygon | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal, Normal (David cohen) |
+| 5/111 | Flygon | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal (David cohen) |
 | 6/111 | Froslass GL | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | 7/111 | Jirachi | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
-| 8/111 | Lucario GL | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo, Normal, Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
+| 8/111 | Lucario GL | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo, Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
 | 9/111 | Luxray GL | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo, Holo (Tsubasa nakamura), Holo (Stephen silvestro), Holo (Yuta komatsuda), Holo (Mychael bryan) |
 | 10/111 | Mismagius GL | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 11/111 | Rampardos GL | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
@@ -203,7 +204,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl2`), fe
 | 106/111 | Gallade E4 LV.X | Pokémon (Psychic) | Rare Holo LV.X | Holo |
 | 107/111 | Hippowdon LV.X | Pokémon (Fighting) | Rare Holo LV.X | Holo |
 | 108/111 | Infernape E4 LV.X | Pokémon (Fire) | Rare Holo LV.X | Holo |
-| 109/111 | Luxray GL LV.X | Pokémon (Lightning) | Rare Holo LV.X | Holo, Normal, Normal (Tsubasa nakamura), Normal (David cohen), Normal (Stephen silvestro), Normal (Mychael bryan), Normal (Yuta komatsuda) |
+| 109/111 | Luxray GL LV.X | Pokémon (Lightning) | Rare Holo LV.X | Holo, Normal (Tsubasa nakamura), Normal (David cohen), Normal (Stephen silvestro), Normal (Mychael bryan), Normal (Yuta komatsuda) |
 | 110/111 | Mismagius GL LV.X | Pokémon (Psychic) | Rare Holo LV.X | Holo |
 | 111/111 | Snorlax LV.X | Pokémon (Colorless) | Rare Holo LV.X | Holo |
 | 112/111 | Pikachu | Pokémon (Lightning) | Rare | Holo |

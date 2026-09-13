@@ -114,6 +114,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `si1`), fe
 | 16/18 | Lickitung | Pokémon (Colorless) | Common | Normal |
 | 17/18 | Vileplume | Pokémon (Grass) | Common | Reverse holo |
 | 18/18 | Primeape | Pokémon (Fighting) | Common | Normal |
+
 ## Slot map
 
 Southern Islands has no booster packs. The folder holds a fixed set of

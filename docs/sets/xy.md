@@ -95,11 +95,12 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy1`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1387`, fetched 2026-09-12). This added 153 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 30 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/146 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 2/146 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 1/146 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 2/146 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
 | 3/146 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 4/146 | Kakuna | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 5/146 | Beedrill | Pokémon (Grass) | Rare | Normal, Reverse holo |
@@ -111,39 +112,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy1`), fe
 | 11/146 | Simisage | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 12/146 | Chespin | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 13/146 | Quilladin | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 14/146 | Chesnaught | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 14/146 | Chesnaught | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 15/146 | Scatterbug | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 16/146 | Spewpa | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 17/146 | Vivillon | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 17/146 | Vivillon | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 18/146 | Skiddo | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 19/146 | Gogoat | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 19/146 | Gogoat | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 20/146 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 21/146 | Magcargo | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 22/146 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 23/146 | Simisear | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 24/146 | Fennekin | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 25/146 | Braixen | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 26/146 | Delphox | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 26/146 | Delphox | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 27/146 | Fletchinder | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 28/146 | Talonflame | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 29/146 | Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 30/146 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 28/146 | Talonflame | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 29/146 | Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
+| 30/146 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
 | 31/146 | Shellder | Pokémon (Water) | Common | Normal, Reverse holo |
 | 32/146 | Cloyster | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 33/146 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
 | 34/146 | Starmie | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 35/146 | Lapras | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 35/146 | Lapras | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 36/146 | Corsola | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 37/146 | Panpour | Pokémon (Water) | Common | Normal, Reverse holo |
 | 38/146 | Simipour | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 39/146 | Froakie | Pokémon (Water) | Common | Normal, Reverse holo |
 | 40/146 | Frogadier | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 41/146 | Greninja | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 41/146 | Greninja | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 42/146 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 43/146 | Raichu | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 43/146 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 44/146 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 45/146 | Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 46/146 | Emolga EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 46/146 | Emolga EX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 47/146 | Ekans | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 48/146 | Arbok | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 49/146 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -152,14 +153,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy1`), fe
 | 52/146 | Whirlipede | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 53/146 | Scolipede | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 54/146 | Phantump | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 55/146 | Trevenant | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 55/146 | Trevenant | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 56/146 | Pumpkaboo | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 57/146 | Gourgeist | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 57/146 | Gourgeist | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 58/146 | Diglett | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 59/146 | Dugtrio | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 60/146 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 61/146 | Rhydon | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 62/146 | Rhyperior | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 62/146 | Rhyperior | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 63/146 | Lunatone | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 64/146 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 65/146 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -170,31 +171,31 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy1`), fe
 | 70/146 | Krokorok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 71/146 | Krookodile | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 72/146 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 73/146 | Zoroark | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 73/146 | Zoroark | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 74/146 | Inkay | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 75/146 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 76/146 | Malamar | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 77/146 | Malamar | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 78/146 | Yveltal | Pokémon (Darkness) | Rare | Normal, Reverse holo |
-| 79/146 | Yveltal EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 80/146 | Skarmory EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 79/146 | Yveltal EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 80/146 | Skarmory EX | Pokémon (Metal) | Ultra Rare | Holo |
 | 81/146 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 82/146 | Bisharp | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 83/146 | Honedge | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 84/146 | Doublade | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 85/146 | Aegislash | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 86/146 | Aegislash | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 86/146 | Aegislash | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 87/146 | Jigglypuff | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 88/146 | Jigglypuff | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 89/146 | Wigglytuff | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 90/146 | Wigglytuff | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 91/146 | Mr. Mime | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 92/146 | Spritzee | Pokémon (Fairy) | Common | Normal, Reverse holo |
-| 93/146 | Aromatisse | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 93/146 | Aromatisse | Pokémon (Fairy) | Rare | Holo, Reverse holo |
 | 94/146 | Swirlix | Pokémon (Fairy) | Common | Normal, Reverse holo |
-| 95/146 | Slurpuff | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 95/146 | Slurpuff | Pokémon (Fairy) | Rare | Holo, Reverse holo |
 | 96/146 | Xerneas | Pokémon (Fairy) | Rare | Normal, Reverse holo |
-| 97/146 | Xerneas EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 97/146 | Xerneas EX | Pokémon (Fairy) | Ultra Rare | Holo |
 | 98/146 | Doduo | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 99/146 | Dodrio | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 100/146 | Tauros | Pokémon (Colorless) | Rare | Normal, Reverse holo |
@@ -211,7 +212,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy1`), fe
 | 111/146 | Bunnelby | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 112/146 | Diggersby | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 113/146 | Fletchling | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 114/146 | Furfrou | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 114/146 | Furfrou | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 115/146 | Cassius | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 116/146 | Evosoda | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 117/146 | Fairy Garden | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
@@ -238,12 +239,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy1`), fe
 | 138/146 | Darkness Energy | Energy (Normal) | Common | Normal |
 | 139/146 | Metal Energy | Energy (Normal) | Common | Normal |
 | 140/146 | Fairy Energy | Energy (Normal) | Common | Normal |
-| 141/146 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 142/146 | Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 143/146 | Emolga EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 144/146 | Yveltal EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 145/146 | Skarmory EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 146/146 | Xerneas EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 141/146 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 142/146 | Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
+| 143/146 | Emolga EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 144/146 | Yveltal EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 145/146 | Skarmory EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 146/146 | Xerneas EX | Pokémon (Fairy) | Ultra Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

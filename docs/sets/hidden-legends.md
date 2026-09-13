@@ -127,6 +127,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex5`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -140,7 +141,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex5`), fe
 | 8/101 | Jirachi | Pokémon (Psychic, Metal) | Holo Rare | Holo, Reverse holo (Energy), Normal (Takashi yoneda) |
 | 9/101 | Machamp | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo (Energy), Normal (National championships), Normal (National championships, Staff), Normal (Staff, National championships) |
 | 10/101 | Medicham | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo (Energy) |
-| 11/101 | Metagross | Pokémon (Psychic, Metal) | Holo Rare | Holo, Reverse holo (Energy), Normal |
+| 11/101 | Metagross | Pokémon (Psychic, Metal) | Holo Rare | Holo, Reverse holo (Energy) |
 | 12/101 | Milotic | Pokémon (Water) | Holo Rare | Holo, Reverse holo (Energy), Normal (Jeremy maron) |
 | 13/101 | Pinsir | Pokémon (Grass) | Holo Rare | Holo, Reverse holo (Energy) |
 | 14/101 | Shiftry | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo (Energy) |

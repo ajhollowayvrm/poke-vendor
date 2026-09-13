@@ -124,6 +124,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex14`), f
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1395`, fetched 2026-09-12). This added 88 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -131,7 +132,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex14`), f
 | 2/100 | Blastoise δ | Pokémon (Fighting, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 3/100 | Camerupt | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 4/100 | Charizard δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
-| 5/100 | Dugtrio | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Normal, Reverse holo |
+| 5/100 | Dugtrio | Pokémon (Fighting) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 6/100 | Ludicolo δ | Pokémon (Fire) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 7/100 | Luvdisc | Pokémon (Water) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 8/100 | Manectric | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |

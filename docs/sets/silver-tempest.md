@@ -392,6 +392,7 @@ TCGdex set `swsh12tg`: 30 cards.
 | TG28 | Sordward & Shielbert | Trainer (Supporter) | Full Art Trainer | Holo |
 | TG29 | Rayquaza VMAX | Pokémon (Dragon) | Secret Rare | Holo (Gold) |
 | TG30 | Duraludon VMAX | Pokémon (Dragon) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

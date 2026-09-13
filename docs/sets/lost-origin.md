@@ -391,6 +391,7 @@ TCGdex set `swsh11tg`: 30 cards.
 | TG28 | Opal | Trainer (Supporter) | Ultra Rare | Holo |
 | TG29 | Pikachu VMAX | Pokémon (Lightning) | Secret Rare | Holo (Gold) |
 | TG30 | Mew VMAX | Pokémon (Psychic) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

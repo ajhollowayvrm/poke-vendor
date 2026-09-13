@@ -138,6 +138,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base3`), 
 | 60/62 | Gambler | Trainer | Common | Normal (Galaxy), Normal (Galaxy, 1st Edition), Normal (1999–2000 copyright) |
 | 61/62 | Recycle | Trainer | Common | Normal (Galaxy), Normal (Galaxy, 1st Edition), Normal (1999–2000 copyright) |
 | 62/62 | Mysterious Fossil | Trainer | Common | Normal (Galaxy), Normal (Galaxy, 1st Edition), Normal (1999–2000 copyright) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -109,20 +109,21 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss4`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 4 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/102 | Aggron | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
 | 2/102 | Altaria | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
-| 3/102 | Celebi | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Normal |
+| 3/102 | Celebi | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 4/102 | Drapion | Pokémon (Darkness) | Holo Rare | Holo, Reverse holo |
-| 5/102 | Mamoswine | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice), Normal |
-| 6/102 | Nidoking | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice), Normal |
+| 5/102 | Mamoswine | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
+| 6/102 | Nidoking | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
 | 7/102 | Porygon-Z | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
 | 8/102 | Rapidash | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
 | 9/102 | Solrock | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
 | 10/102 | Spiritomb | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
-| 11/102 | Venomoth | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Normal |
+| 11/102 | Venomoth | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
 | 12/102 | Victreebel | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
 | 13/102 | Ambipom | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 14/102 | Banette | Pokémon (Psychic) | Rare | Normal, Reverse holo |
@@ -215,6 +216,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss4`), 
 | 101/102 | Palkia & Dialga LEGEND | Pokémon (Water, Metal) | LEGEND | Holo, Holo (Jumbo) |
 | 102/102 | Palkia & Dialga LEGEND | Pokémon (Water, Metal) | LEGEND | Holo |
 | FOUR | Alph Lithograph | Trainer (Item) | Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -115,33 +115,34 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7.5`), 
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2295`, fetched 2026-09-12). This added 88 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 32 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/70 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 2/70 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 3/70 | Charizard | Pokémon (Fire) | Rare | Normal, Reverse holo, Holo |
+| 3/70 | Charizard | Pokémon (Fire) | Rare | Reverse holo, Holo |
 | 4/70 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 5/70 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 6/70 | Blaziken | Pokémon (Fire) | Rare | Normal, Reverse holo, Holo |
-| 7/70 | Victini ◇ | Pokémon (Fire) | Rare | Normal, Holo |
+| 6/70 | Blaziken | Pokémon (Fire) | Rare | Reverse holo, Holo |
+| 7/70 | Victini ◇ | Pokémon (Fire) | Rare | Holo |
 | 8/70 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 9/70 | Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 10/70 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 11/70 | Reshiram GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 11/70 | Reshiram GX | Pokémon (Fire) | Ultra Rare | Holo |
 | 12/70 | Litten | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 13/70 | Salandit | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 14/70 | Salazzle | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 15/70 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
 | 16/70 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
 | 17/70 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 18/70 | Kingdra GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 18/70 | Kingdra GX | Pokémon (Water) | Ultra Rare | Holo |
 | 19/70 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
-| 20/70 | Gyarados | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 20/70 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 21/70 | Lapras | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 22/70 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo |
 | 23/70 | Croconaw | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 24/70 | Feraligatr | Pokémon (Water) | Rare | Normal, Reverse holo, Holo |
+| 24/70 | Feraligatr | Pokémon (Water) | Rare | Reverse holo, Holo |
 | 25/70 | Wooper | Pokémon (Water) | Common | Normal, Reverse holo |
 | 26/70 | Quagsire | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 27/70 | Corsola | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -150,52 +151,52 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7.5`), 
 | 30/70 | Phione | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 31/70 | Wishiwashi | Pokémon (Water) | Common | Normal, Reverse holo |
 | 32/70 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 33/70 | Hydreigon | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 33/70 | Hydreigon | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 34/70 | Dratini | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 35/70 | Dratini | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 36/70 | Dragonair | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 37/70 | Dragonite GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 37/70 | Dragonite GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 38/70 | Vibrava | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 39/70 | Flygon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 40/70 | Altaria | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 41/70 | Altaria GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 40/70 | Altaria | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 41/70 | Altaria GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 42/70 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 43/70 | Shelgon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 44/70 | Salamence GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 44/70 | Salamence GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 45/70 | Druddigon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 46/70 | Zekrom | Pokémon (Dragon) | Rare | Normal, Reverse holo, Holo |
-| 47/70 | Kyurem | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 48/70 | White Kyurem GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 46/70 | Zekrom | Pokémon (Dragon) | Rare | Reverse holo, Holo |
+| 47/70 | Kyurem | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 48/70 | White Kyurem GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 49/70 | Zygarde | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 50/70 | Turtonator | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 51/70 | Drampa | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 52/70 | Jangmo-o | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 53/70 | Hakamo-o | Pokémon (Dragon) | Common | Normal, Reverse holo |
-| 54/70 | Kommo-o | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 54/70 | Kommo-o | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 55/70 | Kangaskhan | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 56/70 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 57/70 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 58/70 | Blaine’s Last Stand | Trainer (Supporter) | Rare | Normal, Reverse holo, Holo |
+| 58/70 | Blaine’s Last Stand | Trainer (Supporter) | Rare | Reverse holo, Holo |
 | 59/70 | Dragon Talon | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 60/70 | Fiery Flint | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 61/70 | Lance ◇ | Trainer (Supporter) | Rare | Normal, Holo |
+| 61/70 | Lance ◇ | Trainer (Supporter) | Rare | Holo |
 | 62/70 | Switch Raft | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 63/70 | Wela Volcano Park | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 64/70 | Zinnia | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
-| 65/70 | Reshiram GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 66/70 | Kingdra GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 67/70 | Dragonite GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 68/70 | Altaria GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 69/70 | Blaine’s Last Stand | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 70/70 | Zinnia | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 71/70 | Reshiram GX | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 72/70 | Altaria GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 73/70 | Salamence GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 74/70 | White Kyurem GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 75/70 | Dragon Talon | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 76/70 | Fiery Flint | Trainer (Item) | Secret Rare | Normal, Holo |
-| 77/70 | Switch Raft | Trainer (Item) | Secret Rare | Normal, Holo |
-| 78/70 | Ultra Necrozma GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
+| 65/70 | Reshiram GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 66/70 | Kingdra GX | Pokémon (Water) | Ultra Rare | Holo |
+| 67/70 | Dragonite GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 68/70 | Altaria GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 69/70 | Blaine’s Last Stand | Trainer (Supporter) | Ultra Rare | Holo |
+| 70/70 | Zinnia | Trainer (Supporter) | Ultra Rare | Holo |
+| 71/70 | Reshiram GX | Pokémon (Fire) | Secret Rare | Holo |
+| 72/70 | Altaria GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 73/70 | Salamence GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 74/70 | White Kyurem GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 75/70 | Dragon Talon | Trainer (Tool) | Secret Rare | Holo |
+| 76/70 | Fiery Flint | Trainer (Item) | Secret Rare | Holo |
+| 77/70 | Switch Raft | Trainer (Item) | Secret Rare | Holo |
+| 78/70 | Ultra Necrozma GX | Pokémon (Dragon) | Secret Rare | Holo |
 
 ## Slot map
 

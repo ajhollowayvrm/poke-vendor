@@ -75,14 +75,15 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1481`, fetched 2026-09-12). This added 123 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 26 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/111 | Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 2/111 | Weepinbell | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 3/111 | Victreebel | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
-| 4/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 5/111 | M Heracross EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 3/111 | Victreebel | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 4/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 5/111 | M Heracross EX | Pokémon (Grass) | Ultra Rare | Holo |
 | 6/111 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 7/111 | Leafeon | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 8/111 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo |
@@ -91,17 +92,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 | 11/111 | Magmortar | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 12/111 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 13/111 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 14/111 | Blaziken | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 14/111 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 15/111 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo |
 | 16/111 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 17/111 | Poliwrath | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 17/111 | Poliwrath | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 18/111 | Politoed | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 19/111 | Glaceon | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 20/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 20/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Holo |
 | 21/111 | Cubchoo | Pokémon (Water) | Common | Normal, Reverse holo |
 | 22/111 | Beartic | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 23/111 | Clauncher | Pokémon (Water) | Common | Normal, Reverse holo |
-| 24/111 | Clawitzer | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 24/111 | Clawitzer | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 25/111 | Amaura | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 26/111 | Aurorus | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 27/111 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
@@ -123,7 +124,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 | 43/111 | Golurk | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 44/111 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 45/111 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 46/111 | Machamp | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 46/111 | Machamp | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 47/111 | Hitmonlee | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 48/111 | Hitmonchan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 49/111 | Hitmontop | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
@@ -131,18 +132,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 | 51/111 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 52/111 | Hariyama | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 53/111 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 54/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 55/111 | M Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 55a | M Lucario EX | Pokémon (Fighting) | Rare | Normal, Holo |
+| 54/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 55/111 | M Lucario EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 55a | M Lucario EX | Pokémon (Fighting) | Rare | Holo |
 | 56/111 | Mienfoo | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 57/111 | Mienshao | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 58/111 | Landorus | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 58/111 | Landorus | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 59/111 | Pancham | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 60/111 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 61/111 | Tyrunt | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 62/111 | Tyrantrum | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 63/111 | Hawlucha | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 64/111 | Hawlucha EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 63/111 | Hawlucha | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 64/111 | Hawlucha EX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 65/111 | Drapion | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 66/111 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 67/111 | Scrafty | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
@@ -152,16 +153,16 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 | 71/111 | Clefable | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 72/111 | Sylveon | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 73/111 | Klefki | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 74/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 74/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 75/111 | Vibrava | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 76/111 | Flygon | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 77/111 | Noivern | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 77/111 | Noivern | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 78/111 | Lickitung | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 79/111 | Lickilicky | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 80/111 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 81/111 | Slakoth | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 82/111 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 83/111 | Slaking | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 83/111 | Slaking | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 84/111 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 85/111 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 86/111 | Tornadus | Pokémon (Colorless) | Rare | Normal, Reverse holo |
@@ -183,15 +184,16 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy3`), fe
 | 102/111 | Training Center | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 103/111 | Herbal Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 104/111 | Strong Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 105/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 106/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 107/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 108/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 109/111 | Battle Reporter | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 110/111 | Fossil Researcher | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 111/111 | Korrina | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 112/111 | M Heracross EX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 113/111 | M Lucario EX | Pokémon (Fighting) | Secret Rare | Normal, Holo |
+| 105/111 | Heracross EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 106/111 | Seismitoad EX | Pokémon (Water) | Ultra Rare | Holo |
+| 107/111 | Lucario EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 108/111 | Dragonite EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 109/111 | Battle Reporter | Trainer (Supporter) | Ultra Rare | Holo |
+| 110/111 | Fossil Researcher | Trainer (Supporter) | Ultra Rare | Holo |
+| 111/111 | Korrina | Trainer (Supporter) | Ultra Rare | Holo |
+| 112/111 | M Heracross EX | Pokémon (Grass) | Secret Rare | Holo |
+| 113/111 | M Lucario EX | Pokémon (Fighting) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

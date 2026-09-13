@@ -112,6 +112,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh7`), 
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -130,7 +131,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh7`), 
 | 13/203 | Trevenant V | Pokémon (Grass) | Holo Rare V | Holo |
 | 14/203 | Trevenant VMAX | Pokémon (Grass) | Holo Rare VMAX | Holo |
 | 15/203 | Gossifleur | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 16/203 | Eldegoss | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 16/203 | Eldegoss | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Normal (Player rewards program) |
 | 17/203 | Applin | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 18/203 | Flareon VMAX | Pokémon (Fire) | Holo Rare VMAX | Holo, Holo (Player rewards program) |
 | 19/203 | Entei | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
@@ -352,6 +353,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh7`), 
 | 235/203 | Lightning Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 236/203 | Darkness Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 237/203 | Metal Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

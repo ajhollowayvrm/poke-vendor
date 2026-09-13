@@ -102,6 +102,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp7`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1369`, fetched 2026-09-12). This added 3 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -114,7 +115,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp7`), fe
 | 7/100 | Mismagius | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
 | 8/100 | Raichu | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
 | 9/100 | Regigigas | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
-| 10/100 | Sceptile | Pokémon (Grass) | Rare Holo | Holo, Reverse holo, Normal |
+| 10/100 | Sceptile | Pokémon (Grass) | Rare Holo | Holo, Reverse holo |
 | 11/100 | Torterra | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo |
 | 12/100 | Abomasnow | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 13/100 | Bronzong | Pokémon (Psychic) | Rare | Normal, Reverse holo |

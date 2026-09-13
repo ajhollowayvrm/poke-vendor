@@ -93,6 +93,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2071`, fetched 2026-09-12). This added 137 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 45 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -106,14 +107,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fe
 | 8/111 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 9/111 | Accelgor | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 10/111 | Skiddo | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 11/111 | Gogoat | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
-| 12/111 | Alolan Marowak | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 11/111 | Gogoat | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 12/111 | Alolan Marowak | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 13/111 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 14/111 | Camerupt | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 15/111 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
 | 16/111 | Starmie | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 17/111 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
-| 18/111 | Gyarados GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 18/111 | Gyarados GX | Pokémon (Water) | Ultra Rare | Holo |
 | 19/111 | Swinub | Pokémon (Water) | Common | Normal, Reverse holo |
 | 20/111 | Piloswine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 21/111 | Mamoswine | Pokémon (Water) | Rare | Normal, Reverse holo |
@@ -122,18 +123,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fe
 | 24/111 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
 | 25/111 | Crawdaunt | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 26/111 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
-| 27/111 | Milotic | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
-| 28/111 | Regice | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 27/111 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 28/111 | Regice | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 29/111 | Shellos | Pokémon (Water) | Common | Normal, Reverse holo |
 | 30/111 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 31/111 | Alolan Raichu | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 31/111 | Alolan Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 32/111 | Alolan Geodude | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 33/111 | Alolan Graveler | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 34/111 | Alolan Golem GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 34/111 | Alolan Golem GX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 35/111 | Emolga | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 36/111 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 37/111 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 38/111 | Gengar | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 38/111 | Gengar | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 39/111 | Misdreavus | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 40/111 | Mismagius | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 41/111 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -142,35 +143,35 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fe
 | 44/111 | Pumpkaboo | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 45/111 | Gourgeist | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 46/111 | Salandit | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 47/111 | Salazzle | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 47/111 | Salazzle | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 48/111 | Oranguru | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 49/111 | Nihilego GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 49/111 | Nihilego GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 50/111 | Mankey | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 51/111 | Primeape | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 52/111 | Cubone | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 53/111 | Regirock | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 54/111 | Gastrodon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 55/111 | Stufful | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 56/111 | Bewear | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 57/111 | Buzzwole GX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 56/111 | Bewear | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 57/111 | Buzzwole GX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 58/111 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 59/111 | Houndoom | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 60/111 | Deino | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 61/111 | Zweilous | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 62/111 | Hydreigon | Pokémon (Darkness) | Rare | Normal, Reverse holo |
-| 63/111 | Guzzlord GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 63a | Guzzlord-GX | Pokémon (Darkness) | Rare | Normal, Holo |
+| 63/111 | Guzzlord GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 63a | Guzzlord-GX | Pokémon (Darkness) | Rare | Holo |
 | 64/111 | Mawile | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 65/111 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 66/111 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 67/111 | Aggron | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 67/111 | Aggron | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 68/111 | Registeel | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 69/111 | Escavalier | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 70/111 | Kartana GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 70/111 | Kartana GX | Pokémon (Metal) | Ultra Rare | Holo |
 | 71/111 | Jigglypuff | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 72/111 | Wigglytuff | Pokémon (Fairy) | Rare | Normal, Reverse holo |
-| 73/111 | Xerneas | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
-| 74/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 73/111 | Xerneas | Pokémon (Fairy) | Rare | Holo, Reverse holo |
+| 74/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 75/111 | Jangmo-o | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 76/111 | Hakamo-o | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 77/111 | Kommo-o | Pokémon (Dragon) | Rare | Normal, Reverse holo |
@@ -180,13 +181,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fe
 | 81/111 | Starly | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 82/111 | Staravia | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 83/111 | Staraptor | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 84/111 | Regigigas | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 84/111 | Regigigas | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 85/111 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 86/111 | Cinccino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 87/111 | Bunnelby | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 88/111 | Diggersby | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 89/111 | Type: Null | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
-| 90/111 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 89/111 | Type: Null | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 90/111 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 91/111 | Counter Catcher | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 92/111 | Dashing Pouch | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 93/111 | Devoured Field | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
@@ -197,30 +198,30 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm4`), fe
 | 98/111 | Psychic Memory | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 99/111 | Sea of Nothingness | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 100/111 | Counter Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 101/111 | Gyarados GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 102/111 | Alolan Golem GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 103/111 | Nihilego GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 104/111 | Buzzwole GX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 105/111 | Guzzlord GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 106/111 | Kartana GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 107/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 108/111 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 109/111 | Gladion | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 110/111 | Lusamine | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 111/111 | Olivia | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 112/111 | Gyarados GX | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 113/111 | Alolan Golem GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
-| 114/111 | Nihilego GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 115/111 | Buzzwole GX | Pokémon (Fighting) | Secret Rare | Normal, Holo |
-| 116/111 | Guzzlord GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
-| 117/111 | Kartana GX | Pokémon (Metal) | Secret Rare | Normal, Holo |
-| 118/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 119/111 | Silvally GX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
-| 120/111 | Counter Catcher | Trainer (Item) | Secret Rare | Normal, Holo |
-| 121/111 | Wishful Baton | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 122/111 | Counter Energy | Energy (Special) | Secret Rare | Normal, Holo |
-| 123/111 | Warp Energy | Energy (Special) | Secret Rare | Normal, Holo |
-| 124/111 | Water Energy | Energy (Normal) | Secret Rare | Normal, Holo |
+| 101/111 | Gyarados GX | Pokémon (Water) | Ultra Rare | Holo |
+| 102/111 | Alolan Golem GX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 103/111 | Nihilego GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 104/111 | Buzzwole GX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 105/111 | Guzzlord GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 106/111 | Kartana GX | Pokémon (Metal) | Ultra Rare | Holo |
+| 107/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 108/111 | Silvally GX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 109/111 | Gladion | Trainer (Supporter) | Ultra Rare | Holo |
+| 110/111 | Lusamine | Trainer (Supporter) | Ultra Rare | Holo |
+| 111/111 | Olivia | Trainer (Supporter) | Ultra Rare | Holo |
+| 112/111 | Gyarados GX | Pokémon (Water) | Secret Rare | Holo |
+| 113/111 | Alolan Golem GX | Pokémon (Lightning) | Secret Rare | Holo |
+| 114/111 | Nihilego GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 115/111 | Buzzwole GX | Pokémon (Fighting) | Secret Rare | Holo |
+| 116/111 | Guzzlord GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 117/111 | Kartana GX | Pokémon (Metal) | Secret Rare | Holo |
+| 118/111 | Alolan Exeggutor GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 119/111 | Silvally GX | Pokémon (Colorless) | Secret Rare | Holo |
+| 120/111 | Counter Catcher | Trainer (Item) | Secret Rare | Holo |
+| 121/111 | Wishful Baton | Trainer (Tool) | Secret Rare | Holo |
+| 122/111 | Counter Energy | Energy (Special) | Secret Rare | Holo |
+| 123/111 | Warp Energy | Energy (Special) | Secret Rare | Holo |
+| 124/111 | Water Energy | Energy (Normal) | Secret Rare | Holo |
 
 ## Slot map
 

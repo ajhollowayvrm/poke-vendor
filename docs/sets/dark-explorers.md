@@ -119,12 +119,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw5`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1386`, fetched 2026-09-12). This added 105 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 9 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/108 | Bulbasaur | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 2/108 | Ivysaur | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 3/108 | Venusaur | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 3/108 | Venusaur | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 4/108 | Scyther | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 5/108 | Carnivine | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 6/108 | Leafeon | Pokémon (Grass) | Rare | Normal, Reverse holo |
@@ -138,19 +139,19 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw5`), fe
 | 14/108 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 15/108 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 16/108 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 17/108 | Blaziken | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 17/108 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 18/108 | Torkoal | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 19/108 | Heatmor | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 20/108 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 21/108 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 22/108 | Volcarona | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 22/108 | Volcarona | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 23/108 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo |
 | 24/108 | Slowbro | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 25/108 | Vaporeon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 26/108 | Kyogre-EX | Pokémon (Water) | Rare | Holo |
 | 27/108 | Piplup | Pokémon (Water) | Common | Normal, Reverse holo |
 | 28/108 | Prinplup | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 29/108 | Empoleon | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 29/108 | Empoleon | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 30/108 | Glaceon | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 31/108 | Tympole | Pokémon (Water) | Common | Normal, Reverse holo |
 | 32/108 | Palpitoad | Pokémon (Water) | Uncommon | Normal, Reverse holo |
@@ -168,7 +169,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw5`), fe
 | 44/108 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 45/108 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 46/108 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 47/108 | Eelektross | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 47/108 | Eelektross | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 48/108 | Espeon | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 49/108 | Slowking | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 50/108 | Woobat | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -187,7 +188,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw5`), fe
 | 63/108 | Darkrai-EX | Pokémon (Darkness) | Rare | Holo |
 | 64/108 | Sandile | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 65/108 | Krokorok | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 66/108 | Krookodile | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 66/108 | Krookodile | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 67/108 | Scraggy | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 68/108 | Scrafty | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 69/108 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
@@ -198,19 +199,19 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw5`), fe
 | 74/108 | Escavalier | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 75/108 | Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 76/108 | Klang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 77/108 | Klinklang | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 77/108 | Klinklang | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 78/108 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 79/108 | Bisharp | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 80/108 | Chansey | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 81/108 | Chansey | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 82/108 | Blissey | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 82/108 | Blissey | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 83/108 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 84/108 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 85/108 | Chatot | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 86/108 | Lillipup | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 87/108 | Herdier | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 88/108 | Stoutland | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 89/108 | Haxorus | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 89/108 | Haxorus | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 90/108 | Tornadus-EX | Pokémon (Colorless) | Rare | Holo |
 | 91/108 | Cheren | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 92/108 | Dark Claw | Trainer (Tool) | Uncommon | Normal, Reverse holo |
@@ -233,6 +234,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw5`), fe
 | 109/108 | Gardevoir | Pokémon (Psychic) | Secret Rare | Holo |
 | 110/108 | Archeops | Pokémon (Fighting) | Secret Rare | Holo |
 | 111/108 | Pokémon Catcher | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

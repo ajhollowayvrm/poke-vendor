@@ -124,6 +124,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 3 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -136,7 +137,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 | 007/132 | Tangrowth | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 008/132 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 009/132 | Bayleef | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 010/132 | Meganium | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal |
+| 010/132 | Meganium | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 011/132 | Shuckle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 012/132 | Celebi | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 013/132 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
@@ -190,7 +191,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 | 061/132 | Shedinja | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 062/132 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 063/132 | Grumpig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 064/132 | Xerneas | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal, Normal (Set logo) |
+| 064/132 | Xerneas | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal (Set logo) |
 | 065/132 | Greavard | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 066/132 | Houndstone | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 067/132 | Gimmighoul | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -199,7 +200,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 | 070/132 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 071/132 | Tyrogue | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 072/132 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 073/132 | Hariyama | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 073/132 | Hariyama | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal (Player rewards program) |
 | 074/132 | Lunatone | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal (Player rewards program), Holo (Cosmos, Player rewards program) |
 | 075/132 | Solrock | Pokémon (Fighting) | Uncommon | Normal, Reverse holo, Holo (Cosmos, Player rewards program), Normal (Player rewards program) |
 | 076/132 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo, Holo (Cosmos) |
@@ -315,6 +316,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me01`), f
 | 186/132 | Wally's Compassion | Trainer (Supporter) | Special illustration rare | Holo |
 | 187/132 | Mega Gardevoir ex | Pokémon (Psychic) | Mega Hyper Rare | Holo |
 | 188/132 | Mega Lucario ex | Pokémon (Fighting) | Mega Hyper Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

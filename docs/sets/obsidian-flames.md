@@ -369,6 +369,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv03`), f
 | 228/197 | Charizard ex | Pokémon (Darkness) | Hyper rare | Holo |
 | 229/197 | Artazon | Trainer (Stadium) | Hyper rare | Holo |
 | 230/197 | Basic Fire Energy | Energy (Normal) | Hyper rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

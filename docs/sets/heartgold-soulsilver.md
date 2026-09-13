@@ -118,17 +118,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss1`), 
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1402`, fetched 2026-09-12). This added 1 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/123 | Arcanine | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Normal |
+| 1/123 | Arcanine | Pokémon (Fire) | Holo Rare | Holo, Reverse holo |
 | 2/123 | Azumarill | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | 3/123 | Clefable | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
 | 4/123 | Gyarados | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
 | 5/123 | Hitmontop | Pokémon (Fighting) | Holo Rare | Holo, Reverse holo |
 | 6/123 | Jumpluff | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Holo (Yuka furusawa) |
 | 7/123 | Ninetales | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
-| 8/123 | Noctowl | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo, Normal |
+| 8/123 | Noctowl | Pokémon (Colorless) | Holo Rare | Holo, Reverse holo |
 | 9/123 | Quagsire | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | 10/123 | Raichu | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
 | 11/123 | Shuckle | Pokémon (Grass) | Holo Rare | Holo, Reverse holo |
@@ -245,6 +246,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss1`), 
 | 122/123 | Metal Energy | Energy (Normal) | Common | Normal |
 | 123/123 | Gyarados | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | ONE | Alph Lithograph | Trainer (Item) | Ultra Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -135,18 +135,19 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex4`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/95 | Team Aqua's Cacturne | Pokémon (Grass, Darkness) | Holo Rare | Holo, Reverse holo |
 | 2/95 | Team Aqua's Crawdaunt | Pokémon (Water, Darkness) | Holo Rare | Holo, Reverse holo |
-| 3/95 | Team Aqua's Kyogre | Pokémon (Water, Darkness) | Holo Rare | Holo, Reverse holo, Normal |
+| 3/95 | Team Aqua's Kyogre | Pokémon (Water, Darkness) | Holo Rare | Holo, Reverse holo |
 | 4/95 | Team Aqua's Manectric | Pokémon (Lightning, Darkness) | Holo Rare | Holo, Reverse holo, Holo (Chris fulop) |
 | 5/95 | Team Aqua's Sharpedo | Pokémon (Water, Darkness) | Holo Rare | Holo, Reverse holo |
 | 6/95 | Team Aqua's Walrein | Pokémon (Water, Darkness) | Holo Rare | Holo, Reverse holo |
 | 7/95 | Team Magma's Aggron | Pokémon (Fighting, Darkness) | Holo Rare | Holo, Reverse holo |
 | 8/95 | Team Magma's Claydol | Pokémon (Psychic, Darkness) | Holo Rare | Holo, Reverse holo, Holo (Tsuguyoshi yamato) |
-| 9/95 | Team Magma's Groudon | Pokémon (Fighting, Darkness) | Holo Rare | Holo, Reverse holo, Holo (Tsuguyoshi yamato), Normal |
+| 9/95 | Team Magma's Groudon | Pokémon (Fighting, Darkness) | Holo Rare | Holo, Reverse holo, Holo (Tsuguyoshi yamato) |
 | 10/95 | Team Magma's Houndoom | Pokémon (Fire, Darkness) | Holo Rare | Holo, Reverse holo |
 | 11/95 | Team Magma's Rhydon | Pokémon (Fighting, Darkness) | Holo Rare | Holo, Reverse holo |
 | 12/95 | Team Magma's Torkoal | Pokémon (Fire, Darkness) | Holo Rare | Holo, Reverse holo |

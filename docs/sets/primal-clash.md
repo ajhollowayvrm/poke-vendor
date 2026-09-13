@@ -88,6 +88,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy5`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1509`, fetched 2026-09-12). This added 182 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 50 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -99,17 +100,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy5`), fe
 | 6/160 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 7/160 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 8/160 | Sceptile | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 9/160 | Sceptile | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 9/160 | Sceptile | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 10/160 | Lotad | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 11/160 | Lombre | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 12/160 | Ludicolo | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 12/160 | Ludicolo | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 13/160 | Surskit | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 14/160 | Masquerain | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 15/160 | Shroomish | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 16/160 | Breloom | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 17/160 | Volbeat | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 18/160 | Illumise | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 19/160 | Trevenant EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 19/160 | Trevenant EX | Pokémon (Grass) | Ultra Rare | Holo |
 | 20/160 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 21/160 | Ninetales | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 22/160 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
@@ -118,44 +119,44 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy5`), fe
 | 25/160 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 26/160 | Torchic | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 27/160 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 28/160 | Blaziken | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 29/160 | Camerupt EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 28/160 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 29/160 | Camerupt EX | Pokémon (Fire) | Ultra Rare | Holo |
 | 30/160 | Horsea | Pokémon (Water) | Common | Normal, Reverse holo |
 | 31/160 | Seadra | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 32/160 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
 | 33/160 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo |
 | 34/160 | Marshtomp | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 35/160 | Swampert | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 36/160 | Swampert | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 36/160 | Swampert | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 37/160 | Ludicolo | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 38/160 | Wailord EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 38/160 | Wailord EX | Pokémon (Water) | Ultra Rare | Holo |
 | 39/160 | Barboach | Pokémon (Water) | Common | Normal, Reverse holo |
 | 40/160 | Whiscash | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 41/160 | Whiscash | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 42/160 | Corphish | Pokémon (Water) | Common | Normal, Reverse holo |
 | 43/160 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
-| 44/160 | Milotic | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 44/160 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 45/160 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
 | 46/160 | Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
 | 47/160 | Sealeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 48/160 | Walrein | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 49/160 | Clamperl | Pokémon (Water) | Common | Normal, Reverse holo |
-| 50/160 | Huntail | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 50/160 | Huntail | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 51/160 | Gorebyss | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 52/160 | Gorebyss | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 53/160 | Kyogre | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 54/160 | Kyogre EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 55/160 | Primal Kyogre EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 56/160 | Manaphy | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 54/160 | Kyogre EX | Pokémon (Water) | Ultra Rare | Holo |
+| 55/160 | Primal Kyogre EX | Pokémon (Water) | Ultra Rare | Holo |
+| 56/160 | Manaphy | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 57/160 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 58/160 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 59/160 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 60/160 | Electrike | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 61/160 | Manectric | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 61/160 | Manectric | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 62/160 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 63/160 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 64/160 | Eelektrik | Pokémon (Lightning) | Rare | Normal, Reverse holo |
-| 65/160 | Eelektross | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 65/160 | Eelektross | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 66/160 | Nidoran♀ | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 67/160 | Nidorina | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 68/160 | Nidoqueen | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
@@ -167,40 +168,40 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy5`), fe
 | 74/160 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 75/160 | Rhydon | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 76/160 | Rhyperior | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 77/160 | Rhyperior | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 77/160 | Rhyperior | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 78/160 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 79/160 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 80/160 | Medicham | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 80/160 | Medicham | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 81/160 | Medicham | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 82/160 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 83/160 | Solrock | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 84/160 | Groudon | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 85/160 | Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 86/160 | Primal Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 85/160 | Groudon EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 86/160 | Primal Groudon EX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 87/160 | Hippopotas | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 88/160 | Hippowdon | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 88/160 | Hippowdon | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 89/160 | Drilbur | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 90/160 | Diggersby | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 91/160 | Sharpedo EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 92/160 | Crawdaunt | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
-| 93/160 | Aggron EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 94/160 | M Aggron EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 91/160 | Sharpedo EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 92/160 | Crawdaunt | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 93/160 | Aggron EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 94/160 | M Aggron EX | Pokémon (Metal) | Ultra Rare | Holo |
 | 95/160 | Probopass | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 96/160 | Excadrill | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 97/160 | Excadrill | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 97/160 | Excadrill | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 98/160 | Honedge | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 99/160 | Doublade | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 100/160 | Aegislash | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 100/160 | Aegislash | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 101/160 | Mr. Mime | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 102/160 | Marill | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 103/160 | Azumarill | Pokémon (Fairy) | Rare | Normal, Reverse holo |
-| 104/160 | Azumarill | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
-| 105/160 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 106/160 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 104/160 | Azumarill | Pokémon (Fairy) | Rare | Holo, Reverse holo |
+| 105/160 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 106/160 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Holo |
 | 107/160 | Kingdra | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 108/160 | Kingdra | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 108/160 | Kingdra | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 109/160 | Vibrava | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 110/160 | Flygon | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 110/160 | Flygon | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 111/160 | Zigzagoon | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 112/160 | Linoone | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 113/160 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -235,26 +236,27 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy5`), fe
 | 142/160 | Weakness Policy | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 143/160 | Shield Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 144/160 | Wonder Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 145/160 | Trevenant EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 146/160 | Camerupt EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 147/160 | Wailord EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 148/160 | Kyogre EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 149/160 | Primal Kyogre EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 150/160 | Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 151/160 | Primal Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 152/160 | Sharpedo EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 153/160 | Aggron EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 154/160 | M Aggron EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 155/160 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 156/160 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 157/160 | Archie's Ace in the Hole | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 158/160 | Maxie's Hidden Ball Trick | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 159/160 | Professor Birch's Observations | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 160/160 | Teammates | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 161/160 | Dive Ball | Trainer (Item) | Secret Rare | Normal, Holo |
-| 162/160 | Enhanced Hammer | Trainer (Item) | Secret Rare | Normal, Holo |
-| 163/160 | Switch | Trainer (Item) | Secret Rare | Normal, Holo |
-| 164/160 | Weakness Policy | Trainer (Tool) | Secret Rare | Normal, Holo |
+| 145/160 | Trevenant EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 146/160 | Camerupt EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 147/160 | Wailord EX | Pokémon (Water) | Ultra Rare | Holo |
+| 148/160 | Kyogre EX | Pokémon (Water) | Ultra Rare | Holo |
+| 149/160 | Primal Kyogre EX | Pokémon (Water) | Ultra Rare | Holo |
+| 150/160 | Groudon EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 151/160 | Primal Groudon EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 152/160 | Sharpedo EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 153/160 | Aggron EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 154/160 | M Aggron EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 155/160 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 156/160 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 157/160 | Archie's Ace in the Hole | Trainer (Supporter) | Ultra Rare | Holo |
+| 158/160 | Maxie's Hidden Ball Trick | Trainer (Supporter) | Ultra Rare | Holo |
+| 159/160 | Professor Birch's Observations | Trainer (Supporter) | Ultra Rare | Holo |
+| 160/160 | Teammates | Trainer (Supporter) | Ultra Rare | Holo |
+| 161/160 | Dive Ball | Trainer (Item) | Secret Rare | Holo |
+| 162/160 | Enhanced Hammer | Trainer (Item) | Secret Rare | Holo |
+| 163/160 | Switch | Trainer (Item) | Secret Rare | Holo |
+| 164/160 | Weakness Policy | Trainer (Tool) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

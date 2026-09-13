@@ -317,6 +317,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh1`), 
 | 214/202 | Metal Saucer | Trainer (Item) | Secret Rare | Holo |
 | 215/202 | Ordinary Rod | Trainer (Item) | Secret Rare | Holo |
 | 216/202 | Quick Ball | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

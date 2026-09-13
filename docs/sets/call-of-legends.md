@@ -238,6 +238,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `col1`), f
 | SL9 | Raikou | Pokémon (Lightning) | Holo Rare | Holo |
 | SL10 | Rayquaza | Pokémon (Colorless) | Holo Rare | Holo |
 | SL11 | Suicune | Pokémon (Water) | Holo Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

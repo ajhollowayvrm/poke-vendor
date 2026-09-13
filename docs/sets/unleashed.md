@@ -107,6 +107,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1399`, fetched 2026-09-12). This added 3 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -114,7 +115,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 | 2/95 | Magmortar | Pokémon (Fire) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
 | 3/95 | Manaphy | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | 4/95 | Metagross | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Holo (Cracked ice) |
-| 5/95 | Mismagius | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo, Normal |
+| 5/95 | Mismagius | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 6/95 | Octillery | Pokémon (Water) | Holo Rare | Holo, Reverse holo |
 | 7/95 | Politoed | Pokémon (Water) | Holo Rare | Holo, Reverse holo, Reverse holo (League), Reverse holo (Staff) |
 | 8/95 | Shaymin | Pokémon (Grass) | Holo Rare | Holo, Reverse holo, Holo (Zachary bokhari), Holo (Igor costa) |
@@ -205,7 +206,8 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 | 93/95 | Raikou & Suicune LEGEND | Pokémon (Lightning, Water) | LEGEND | Holo |
 | 94/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Holo (Ross cawthorn) |
 | 95/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Normal (Ross cawthorn) |
-| TWO | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal, Holo |
+| TWO | Alph Lithograph | Trainer (Item) | Ultra Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

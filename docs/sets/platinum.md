@@ -95,6 +95,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl1`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -105,7 +106,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl1`), fe
 | 5/127 | Dialga | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
 | 6/127 | Dialga | Pokémon (Metal) | Holo Rare | Holo, Reverse holo |
 | 7/127 | Dialga G | Pokémon (Metal) | Holo Rare | Holo, Reverse holo, Reverse holo (League), Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
-| 8/127 | Gardevoir | Pokémon (Psychic) | Holo Rare | Holo, Normal, Reverse holo |
+| 8/127 | Gardevoir | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 9/127 | Giratina | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 10/127 | Giratina | Pokémon (Psychic) | Holo Rare | Holo, Reverse holo |
 | 11/127 | Manectric | Pokémon (Lightning) | Holo Rare | Holo, Reverse holo |

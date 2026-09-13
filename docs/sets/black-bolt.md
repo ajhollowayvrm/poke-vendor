@@ -370,6 +370,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10.5b`)
 | 170/086 | N's Plan | Trainer (Supporter) | Special illustration rare | Holo |
 | 171/086 | Victini | Pokémon (Fire) | Black White Rare | Holo |
 | 172/086 | Zekrom ex | Pokémon (Lightning) | Black White Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

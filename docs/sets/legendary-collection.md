@@ -114,16 +114,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `lc`), fet
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 3 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/110 | Alakazam | Pokémon (Psychic) | Holo Rare | Reverse holo, Holo |
 | 2/110 | Articuno | Pokémon (Water) | Holo Rare | Reverse holo, Holo |
-| 3/110 | Charizard | Pokémon (Fire) | Holo Rare | Normal, Reverse holo, Holo, Reverse holo (Jumbo) |
-| 4/110 | Dark Blastoise | Pokémon (Water) | Holo Rare | Normal, Reverse holo, Holo, Reverse holo (Jumbo) |
+| 3/110 | Charizard | Pokémon (Fire) | Holo Rare | Reverse holo, Holo, Reverse holo (Jumbo) |
+| 4/110 | Dark Blastoise | Pokémon (Water) | Holo Rare | Reverse holo, Holo, Reverse holo (Jumbo) |
 | 5/110 | Dark Dragonite | Pokémon (Colorless) | Holo Rare | Reverse holo, Holo |
 | 6/110 | Dark Persian | Pokémon (Colorless) | Holo Rare | Reverse holo, Holo |
-| 7/110 | Dark Raichu | Pokémon (Lightning) | Holo Rare | Normal, Reverse holo, Holo, Reverse holo (Jumbo) |
+| 7/110 | Dark Raichu | Pokémon (Lightning) | Holo Rare | Reverse holo, Holo, Reverse holo (Jumbo) |
 | 8/110 | Dark Slowbro | Pokémon (Psychic) | Holo Rare | Reverse holo, Holo |
 | 9/110 | Dark Vaporeon | Pokémon (Water) | Holo Rare | Reverse holo, Holo |
 | 10/110 | Flareon | Pokémon (Fire) | Holo Rare | Reverse holo, Holo |

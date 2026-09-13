@@ -262,6 +262,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06.5`),
 | 097/064 | Powerglass | Trainer (Tool) | Hyper rare | Holo, Holo (Gold) |
 | 098/064 | Basic Darkness Energy | Energy (Normal) | Hyper rare | Holo, Holo (Gold) |
 | 099/064 | Basic Metal Energy | Energy (Normal) | Hyper rare | Holo, Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

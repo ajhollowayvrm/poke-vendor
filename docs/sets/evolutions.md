@@ -96,11 +96,12 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy12`), f
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1842`, fetched 2026-09-12). This added 121 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 38 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/108 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 2/108 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 1/108 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 2/108 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
 | 3/108 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 4/108 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 5/108 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
@@ -109,68 +110,68 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy12`), f
 | 8/108 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 9/108 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 10/108 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 11/108 | Charizard | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 12/108 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 13/108 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 11/108 | Charizard | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 12/108 | Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 13/108 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
 | 14/108 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 15/108 | Ninetales | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 16/108 | Ninetales BREAK | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 15/108 | Ninetales | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 16/108 | Ninetales BREAK | Pokémon (Fire) | Ultra Rare | Holo |
 | 17/108 | Growlithe | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 18/108 | Arcanine | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 19/108 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 20/108 | Magmar | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 21/108 | Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 22/108 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 21/108 | Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
+| 22/108 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
 | 23/108 | Poliwag | Pokémon (Water) | Common | Normal, Reverse holo |
 | 24/108 | Poliwhirl | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 25/108 | Poliwrath | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
-| 26/108 | Slowbro EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 27/108 | M Slowbro EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 25/108 | Poliwrath | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 26/108 | Slowbro EX | Pokémon (Water) | Ultra Rare | Holo |
+| 27/108 | M Slowbro EX | Pokémon (Water) | Ultra Rare | Holo |
 | 28/108 | Seel | Pokémon (Water) | Common | Normal, Reverse holo |
 | 29/108 | Dewgong | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 30/108 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
 | 31/108 | Starmie | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 32/108 | Starmie BREAK | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 32/108 | Starmie BREAK | Pokémon (Water) | Ultra Rare | Holo |
 | 33/108 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
-| 34/108 | Gyarados | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 34/108 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 35/108 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 36/108 | Raichu | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 36/108 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 37/108 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 38/108 | Magneton | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 38/108 | Magneton | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 39/108 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 40/108 | Electrode | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 41/108 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 42/108 | Zapdos | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 42/108 | Zapdos | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 43/108 | Nidoran♂ | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 44/108 | Nidorino | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 45/108 | Nidoking | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
-| 46/108 | Nidoking BREAK | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 45/108 | Nidoking | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 46/108 | Nidoking BREAK | Pokémon (Psychic) | Ultra Rare | Holo |
 | 47/108 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 48/108 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 49/108 | Drowzee | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 50/108 | Koffing | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 51/108 | Mewtwo | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 52/108 | Mewtwo EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 53/108 | Mew | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 52/108 | Mewtwo EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 53/108 | Mew | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 54/108 | Sandshrew | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 55/108 | Diglett | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 56/108 | Dugtrio | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 57/108 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 58/108 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 59/108 | Machamp | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 60/108 | Machamp BREAK | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 59/108 | Machamp | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 60/108 | Machamp BREAK | Pokémon (Fighting) | Ultra Rare | Holo |
 | 61/108 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 62/108 | Hitmonchan | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 63/108 | Clefairy | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
-| 64/108 | Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 65/108 | M Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 62/108 | Hitmonchan | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 63/108 | Clefairy | Pokémon (Fairy) | Rare | Holo, Reverse holo |
+| 64/108 | Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 65/108 | M Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 66/108 | Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 67/108 | Raticate | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 68/108 | Farfetch'd | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 69/108 | Doduo | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 70/108 | Chansey | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 70/108 | Chansey | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 71/108 | Porygon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 72/108 | Dragonite EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 72/108 | Dragonite EX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 73/108 | Blastoise Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 74/108 | Brock's Grit | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 75/108 | Charizard Spirit Link | Trainer (Tool) | Uncommon | Normal, Reverse holo |
@@ -198,20 +199,21 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy12`), f
 | 97/108 | Darkness Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 98/108 | Metal Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 99/108 | Fairy Energy | Energy (Normal) | Common | Normal, Reverse holo |
-| 100/108 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 101/108 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 102/108 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 103/108 | Mewtwo EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 104/108 | Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 105/108 | M Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 106/108 | Dragonite EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 107/108 | Brock's Grit | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 108/108 | Misty's Determination | Trainer (Supporter) | Ultra Rare | Normal, Holo |
+| 100/108 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 101/108 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 102/108 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
+| 103/108 | Mewtwo EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 104/108 | Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 105/108 | M Pidgeot EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 106/108 | Dragonite EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 107/108 | Brock's Grit | Trainer (Supporter) | Ultra Rare | Holo |
+| 108/108 | Misty's Determination | Trainer (Supporter) | Ultra Rare | Holo |
 | 109/108 | ナッシー[Exeggutor] | Pokémon (Grass) | Secret Rare | Normal |
 | 110/108 | Flying Pikachu | Pokémon (Lightning) | Secret Rare | Normal |
 | 111/108 | Surfing Pikachu | Pokémon (Lightning) | Secret Rare | Normal |
 | 112/108 | Imakuni?'s Doduo | Pokémon (Colorless) | Secret Rare | Normal |
 | 113/108 | Here Comes Team Rocket! | Trainer (Supporter) | Secret Rare | Normal |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

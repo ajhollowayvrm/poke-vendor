@@ -134,6 +134,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 5 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -164,14 +165,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 | 025/084 | Charjabug | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 026/084 | Vikavolt | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 027/084 | Mega Zeraora ex | Pokémon (Lightning) | Double rare | Holo |
-| 028/084 | Miraidon | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal |
+| 028/084 | Miraidon | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 029/084 | Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 030/084 | Slowbro | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 031/084 | Mega Slowbro ex | Pokémon (Psychic) | Double rare | Holo |
 | 032/084 | Jynx | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 033/084 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 034/084 | Banette | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 035/084 | Spiritomb | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal |
+| 035/084 | Spiritomb | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 036/084 | Litwick | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 037/084 | Lampent | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 038/084 | Mega Chandelure ex | Pokémon (Psychic) | Double rare | Holo |
@@ -198,7 +199,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 | 059/084 | Chi-Yu | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 060/084 | Skarmory | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 061/084 | Shieldon | Pokémon (Metal) | Common | Normal, Reverse holo |
-| 062/084 | Bastiodon | Pokémon (Metal) | Rare | Holo, Reverse holo, Normal |
+| 062/084 | Bastiodon | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 063/084 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 064/084 | Bronzong | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 065/084 | Mega Excadrill ex | Pokémon (Metal) | Double rare | Holo |
@@ -206,7 +207,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 | 067/084 | Trumbeak | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 068/084 | Toucannon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 069/084 | Type: Null | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 070/084 | Silvally | Pokémon (Colorless) | Rare | Holo, Reverse holo, Normal |
+| 070/084 | Silvally | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 071/084 | Bombirdier | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 072/084 | Antique Armor Fossil | Trainer (Item) | Common | Normal, Reverse holo |
 | 073/084 | Antique Skull Fossil | Trainer (Item) | Common | Normal, Reverse holo |
@@ -220,7 +221,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 | 081/084 | Rust Syndicate Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 082/084 | Tremendous Bomb | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 083/084 | Shadowy Darkness Energy | Energy (Normal) | Rare | Holo, Reverse holo |
-| 084/084 | Voltaic Lightning Energy | Energy (Normal) | Rare | Holo, Reverse holo, Normal |
+| 084/084 | Voltaic Lightning Energy | Energy (Normal) | Rare | Holo, Reverse holo |
 | 085/084 | Fomantis | Pokémon (Grass) | Illustration rare | Holo |
 | 086/084 | Armarouge | Pokémon (Fire) | Illustration rare | Holo |
 | 087/084 | Goldeen | Pokémon (Water) | Illustration rare | Holo |
@@ -257,6 +258,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `me05`), f
 | 118/084 | Gladion's Final Battle | Trainer (Supporter) | Special illustration rare | Holo |
 | 119/084 | Gwynn | Trainer (Supporter) | Special illustration rare | Holo |
 | 120/084 | Mega Darkrai ex | Pokémon (Darkness) | Mega Hyper Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

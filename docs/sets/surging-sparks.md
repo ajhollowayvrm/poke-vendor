@@ -194,6 +194,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 3 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -210,7 +211,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), f
 | 011/191 | Zarude | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 012/191 | Capsakid | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 013/191 | Rellor | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 014/191 | Rabsca | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 014/191 | Rabsca | Pokémon (Grass) | Rare | Holo, Reverse holo, Holo (Cosmos) |
 | 015/191 | Wo-Chien | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 016/191 | Vulpix | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 017/191 | Ninetales | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
@@ -234,7 +235,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), f
 | 035/191 | Ceruledge | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 036/191 | Ceruledge ex | Pokémon (Fire) | Double rare | Holo, Holo (Player rewards program) |
 | 037/191 | Scovillain ex | Pokémon (Fire) | Double rare | Holo |
-| 038/191 | Gouging Fire | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal |
+| 038/191 | Gouging Fire | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 039/191 | Paldean Tauros | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 040/191 | Mantine | Pokémon (Water) | Common | Normal, Reverse holo |
 | 041/191 | Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -261,7 +262,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), f
 | 062/191 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 063/191 | Zebstrika | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 064/191 | Stunfisk | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 065/191 | Tapu Koko | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 065/191 | Tapu Koko | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal (Player rewards program) |
 | 066/191 | Wattrel | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 067/191 | Kilowattrel | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 068/191 | Kilowattrel ex | Pokémon (Lightning) | Double rare | Holo |
@@ -449,6 +450,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv08`), f
 | 250/191 | Gravity Mountain | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 251/191 | Night Stretcher | Trainer (Item) | Hyper rare | Holo (Gold) |
 | 252/191 | Jet Energy | Energy (Special) | Hyper rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

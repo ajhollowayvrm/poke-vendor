@@ -87,10 +87,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp3`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/132 | Ampharos | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo, Normal |
+| 1/132 | Ampharos | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
 | 2/132 | Blastoise | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
 | 3/132 | Charizard | Pokémon (Fire) | Rare Holo | Holo, Reverse holo |
 | 4/132 | Entei | Pokémon (Fire) | Rare Holo | Holo, Reverse holo, Holo (Cracked ice) |
@@ -109,7 +110,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp3`), fe
 | 17/132 | Roserade | Pokémon (Grass) | Rare Holo | Holo, Reverse holo |
 | 18/132 | Salamence | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
 | 19/132 | Suicune | Pokémon (Water) | Rare Holo | Holo, Reverse holo, Holo (Cracked ice) |
-| 20/132 | Venusaur | Pokémon (Grass) | Rare Holo | Holo, Reverse holo, Normal |
+| 20/132 | Venusaur | Pokémon (Grass) | Rare Holo | Holo, Reverse holo |
 | 21/132 | Absol | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 22/132 | Arcanine | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 23/132 | Banette | Pokémon (Psychic) | Rare | Normal, Reverse holo |

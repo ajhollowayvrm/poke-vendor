@@ -294,6 +294,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh3`), 
 | 199/189 | Big Parasol | Trainer (Tool) | Secret Rare | Holo (Gold) |
 | 200/189 | Turbo Patch | Trainer (Item) | Secret Rare | Holo (Gold) |
 | 201/189 | Capture Energy | Energy (Special) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -157,6 +157,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv09`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -214,7 +215,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv09`), f
 | 052/159 | Iono's Tadbulb | Pokémon (Lightning) | Common | Normal, Reverse holo, Holo (Cosmos) |
 | 053/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Double rare | Holo, Holo (Player rewards program) |
 | 054/159 | Iono's Wattrel | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 055/159 | Iono's Kilowattrel | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 055/159 | Iono's Kilowattrel | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal (Player rewards program) |
 | 056/159 | Lillie's Clefairy ex | Pokémon (Psychic) | Double rare | Holo, Holo (Player rewards program) |
 | 057/159 | Alolan Marowak | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 058/159 | Mr. Mime | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -287,7 +288,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv09`), f
 | 125/159 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 126/159 | Cinccino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 127/159 | Noibat | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 128/159 | Noivern | Pokémon (Colorless) | Rare | Reverse holo, Holo, Normal |
+| 128/159 | Noivern | Pokémon (Colorless) | Rare | Reverse holo, Holo |
 | 129/159 | Komala | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 130/159 | Drampa | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 131/159 | Skwovet | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -350,6 +351,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv09`), f
 | 188/159 | Iono's Bellibolt ex | Pokémon (Lightning) | Hyper rare | Holo (Gold) |
 | 189/159 | N's Zoroark ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
 | 190/159 | Spiky Energy | Energy (Special) | Hyper rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

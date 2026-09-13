@@ -83,30 +83,31 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dc1`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1525`, fetched 2026-09-12). This added 40 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 8 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/34 | Team Magma's Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 2/34 | Team Magma's Camerupt | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 2/34 | Team Magma's Camerupt | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 3/34 | Team Aqua's Spheal | Pokémon (Water) | Common | Normal, Reverse holo |
 | 4/34 | Team Aqua's Sealeo | Pokémon (Water) | Common | Normal, Reverse holo |
-| 5/34 | Team Aqua's Walrein | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
-| 6/34 | Team Aqua's Kyogre EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 5/34 | Team Aqua's Walrein | Pokémon (Water) | Rare | Holo, Reverse holo |
+| 6/34 | Team Aqua's Kyogre EX | Pokémon (Water) | Ultra Rare | Holo |
 | 7/34 | Team Aqua's Grimer | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 8/34 | Team Aqua's Muk | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 8/34 | Team Aqua's Muk | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 9/34 | Team Aqua's Seviper | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 10/34 | Team Magma's Baltoy | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 11/34 | Team Magma's Claydol | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 11/34 | Team Magma's Claydol | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 12/34 | Team Magma's Aron | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 13/34 | Team Magma's Lairon | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 14/34 | Team Magma's Aggron | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 15/34 | Team Magma's Groudon EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 14/34 | Team Magma's Aggron | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 15/34 | Team Magma's Groudon EX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 16/34 | Team Aqua's Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 17/34 | Team Magma's Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 18/34 | Team Aqua's Mightyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 19/34 | Team Magma's Mightyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 20/34 | Team Aqua's Carvanha | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 21/34 | Team Aqua's Sharpedo | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 21/34 | Team Aqua's Sharpedo | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 22/34 | Team Magma's Zangoose | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 23/34 | Aqua Diffuser | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 24/34 | Magma Pointer | Trainer (Tool) | Uncommon | Normal, Reverse holo |
@@ -120,6 +121,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dc1`), fe
 | 32/34 | Team Magma's Secret Base | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 33/34 | Double Aqua Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 34/34 | Double Magma Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -90,6 +90,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy10`), f
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1780`, fetched 2026-09-12). This added 134 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 35 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -105,23 +106,23 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy10`), f
 | 10/124 | Fennekin | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 11/124 | Fennekin | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 12/124 | Braixen | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 13/124 | Delphox | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 14/124 | Delphox BREAK | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 13/124 | Delphox | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 14/124 | Delphox BREAK | Pokémon (Fire) | Ultra Rare | Holo |
 | 15/124 | Seel | Pokémon (Water) | Common | Normal, Reverse holo |
 | 16/124 | Dewgong | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 17/124 | Omanyte | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 18/124 | Omastar | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 19/124 | Omastar BREAK | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 20/124 | Glaceon EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 21/124 | White Kyurem | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 19/124 | Omastar BREAK | Pokémon (Water) | Ultra Rare | Holo |
+| 20/124 | Glaceon EX | Pokémon (Water) | Ultra Rare | Holo |
+| 21/124 | White Kyurem | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 22/124 | Binacle | Pokémon (Water) | Common | Normal, Reverse holo |
 | 23/124 | Barbaracle | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 24/124 | Rotom | Pokémon (Lightning) | Rare | Normal, Reverse holo |
-| 25/124 | Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 26/124 | M Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 25/124 | Alakazam EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 26/124 | M Alakazam EX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 27/124 | Koffing | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 28/124 | Weezing | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 29/124 | Mew | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 29/124 | Mew | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 30/124 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 31/124 | Grumpig | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 32/124 | Gothita | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -135,8 +136,8 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy10`), f
 | 40/124 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 41/124 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 42/124 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 43/124 | Regirock EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 43a | Regirock EX | Pokémon (Fighting) | Rare | Normal, Holo |
+| 43/124 | Regirock EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 43a | Regirock EX | Pokémon (Fighting) | Rare | Holo |
 | 44/124 | Wormadam | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 45/124 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 46/124 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -144,42 +145,42 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy10`), f
 | 48/124 | Hawlucha | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 49/124 | Carbink | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 50/124 | Carbink | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 51/124 | Carbink BREAK | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 51/124 | Carbink BREAK | Pokémon (Fighting) | Ultra Rare | Holo |
 | 52/124 | Zygarde | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 53/124 | Zygarde | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 54/124 | Zygarde EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 54a | Zygarde EX | Pokémon (Fighting) | Rare | Normal, Holo |
-| 55/124 | Umbreon EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 56/124 | Tyranitar | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 54/124 | Zygarde EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 54a | Zygarde EX | Pokémon (Fighting) | Rare | Holo |
+| 55/124 | Umbreon EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 56/124 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 57/124 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 58/124 | Mandibuzz | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 59/124 | Wormadam | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 60/124 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 61/124 | Bronzong | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 62/124 | Bronzong BREAK | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 63/124 | Lucario | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
-| 64/124 | Genesect EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 62/124 | Bronzong BREAK | Pokémon (Metal) | Ultra Rare | Holo |
+| 63/124 | Lucario | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 64/124 | Genesect EX | Pokémon (Metal) | Ultra Rare | Holo |
 | 65/124 | Jigglypuff | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 66/124 | Wigglytuff | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 67/124 | Mr. Mime | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 68/124 | Snubbull | Pokémon (Fairy) | Common | Normal, Reverse holo |
-| 69/124 | M Altaria EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 69/124 | M Altaria EX | Pokémon (Fairy) | Ultra Rare | Holo |
 | 70/124 | Cottonee | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 71/124 | Whimsicott | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 72/124 | Diancie EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 73/124 | Kingdra EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 72/124 | Diancie EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 73/124 | Kingdra EX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 74/124 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 75/124 | Kangaskhan | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 76/124 | Aerodactyl | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 77/124 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 78/124 | Lugia | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 79/124 | Lugia BREAK | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 79/124 | Lugia BREAK | Pokémon (Colorless) | Ultra Rare | Holo |
 | 80/124 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 81/124 | Loudred | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 82/124 | Exploud | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 83/124 | Altaria EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 84/124 | Audino EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 85/124 | M Audino EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 83/124 | Altaria EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 84/124 | Audino EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 85/124 | M Audino EX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 86/124 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 87/124 | Minccino | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 88/124 | Cinccino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
@@ -212,16 +213,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy10`), f
 | 113/124 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 114/124 | Double Colorless Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
 | 115/124 | Strong Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 116/124 | Glaceon EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 117/124 | Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 118/124 | M Alakazam EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 119/124 | Umbreon EX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 120/124 | Genesect EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 121/124 | M Altaria EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 122/124 | Kingdra EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 123/124 | Altaria EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 124/124 | Team Rocket's Handiwork | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 125/124 | Alakazam EX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
+| 116/124 | Glaceon EX | Pokémon (Water) | Ultra Rare | Holo |
+| 117/124 | Alakazam EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 118/124 | M Alakazam EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 119/124 | Umbreon EX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 120/124 | Genesect EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 121/124 | M Altaria EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 122/124 | Kingdra EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 123/124 | Altaria EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 124/124 | Team Rocket's Handiwork | Trainer (Supporter) | Ultra Rare | Holo |
+| 125/124 | Alakazam EX | Pokémon (Psychic) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -93,30 +93,32 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dv1`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1426`, fetched 2026-09-12). This added 21 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 21 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/20 | Dratini | Pokémon (Dragon) | Rare | Normal, Holo |
-| 2/20 | Dratini | Pokémon (Dragon) | Rare | Normal, Holo |
-| 3/20 | Dragonair | Pokémon (Dragon) | Rare | Normal, Holo |
-| 4/20 | Dragonair | Pokémon (Dragon) | Rare | Normal, Holo |
-| 5/20 | Dragonite | Pokémon (Dragon) | Rare | Normal, Holo |
-| 6/20 | Bagon | Pokémon (Dragon) | Rare | Normal, Holo |
-| 7/20 | Shelgon | Pokémon (Dragon) | Rare | Normal, Holo |
-| 8/20 | Salamence | Pokémon (Dragon) | Rare | Normal, Holo |
-| 9/20 | Latias | Pokémon (Dragon) | Rare | Normal, Holo |
-| 10/20 | Latios | Pokémon (Dragon) | Rare | Normal, Holo |
-| 11/20 | Rayquaza | Pokémon (Dragon) | Rare | Normal, Holo |
-| 12/20 | Axew | Pokémon (Dragon) | Rare | Normal, Holo |
-| 13/20 | Axew | Pokémon (Dragon) | Rare | Normal, Holo |
-| 14/20 | Fraxure | Pokémon (Dragon) | Rare | Normal, Holo |
-| 15/20 | Fraxure | Pokémon (Dragon) | Rare | Normal, Holo |
-| 16/20 | Haxorus | Pokémon (Dragon) | Rare | Normal, Holo |
-| 17/20 | Druddigon | Pokémon (Dragon) | Rare | Normal, Holo |
-| 18/20 | Exp. Share | Trainer (Tool) | Rare | Normal, Holo |
-| 19/20 | First Ticket | Trainer (Item) | Rare | Normal, Holo |
-| 20/20 | Super Rod | Trainer (Item) | Rare | Normal, Holo |
-| 21/20 | Kyurem | Pokémon (Dragon) | Common | Normal, Holo |
+| 1/20 | Dratini | Pokémon (Dragon) | Rare | Holo |
+| 2/20 | Dratini | Pokémon (Dragon) | Rare | Holo |
+| 3/20 | Dragonair | Pokémon (Dragon) | Rare | Holo |
+| 4/20 | Dragonair | Pokémon (Dragon) | Rare | Holo |
+| 5/20 | Dragonite | Pokémon (Dragon) | Rare | Holo |
+| 6/20 | Bagon | Pokémon (Dragon) | Rare | Holo |
+| 7/20 | Shelgon | Pokémon (Dragon) | Rare | Holo |
+| 8/20 | Salamence | Pokémon (Dragon) | Rare | Holo |
+| 9/20 | Latias | Pokémon (Dragon) | Rare | Holo |
+| 10/20 | Latios | Pokémon (Dragon) | Rare | Holo |
+| 11/20 | Rayquaza | Pokémon (Dragon) | Rare | Holo |
+| 12/20 | Axew | Pokémon (Dragon) | Rare | Holo |
+| 13/20 | Axew | Pokémon (Dragon) | Rare | Holo |
+| 14/20 | Fraxure | Pokémon (Dragon) | Rare | Holo |
+| 15/20 | Fraxure | Pokémon (Dragon) | Rare | Holo |
+| 16/20 | Haxorus | Pokémon (Dragon) | Rare | Holo |
+| 17/20 | Druddigon | Pokémon (Dragon) | Rare | Holo |
+| 18/20 | Exp. Share | Trainer (Tool) | Rare | Holo |
+| 19/20 | First Ticket | Trainer (Item) | Rare | Holo |
+| 20/20 | Super Rod | Trainer (Item) | Rare | Holo |
+| 21/20 | Kyurem | Pokémon (Dragon) | Common | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

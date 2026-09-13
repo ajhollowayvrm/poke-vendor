@@ -103,10 +103,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2377`, fetched 2026-09-12). This added 214 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 72 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/181 | Celebi & Venusaur GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 1/181 | Celebi & Venusaur GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 2/181 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 3/181 | Weedle | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 4/181 | Kakuna | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
@@ -115,7 +116,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 7/181 | Parasect | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 8/181 | Exeggcute | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 9/181 | Pinsir | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 10/181 | Shaymin ◇ | Pokémon (Grass) | Rare | Normal, Holo |
+| 10/181 | Shaymin ◇ | Pokémon (Grass) | Rare | Holo |
 | 11/181 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 12/181 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 13/181 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
@@ -124,7 +125,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 16/181 | Ninetales | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 17/181 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 18/181 | Rapidash | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 19/181 | Moltres | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 19/181 | Moltres | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 20/181 | Litten | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 21/181 | Torracat | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 22/181 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -135,20 +136,20 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 27/181 | Golduck | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 28/181 | Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
 | 29/181 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
-| 30/181 | Gyarados | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 30/181 | Gyarados | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 31/181 | Lapras | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 32/181 | Articuno | Pokémon (Water) | Rare | Normal, Reverse holo, Holo |
-| 33/181 | Pikachu & Zekrom GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 32/181 | Articuno | Pokémon (Water) | Rare | Reverse holo, Holo |
+| 33/181 | Pikachu & Zekrom GX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 34/181 | Alolan Geodude | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 35/181 | Alolan Geodude | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 36/181 | Alolan Graveler | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 37/181 | Alolan Golem | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 38/181 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 39/181 | Electrode | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
-| 40/181 | Zapdos | Pokémon (Lightning) | Rare | Normal, Reverse holo, Holo |
+| 39/181 | Electrode | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 40/181 | Zapdos | Pokémon (Lightning) | Rare | Reverse holo, Holo |
 | 41/181 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 42/181 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 43/181 | Ampharos GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 43/181 | Ampharos GX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 44/181 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 45/181 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 46/181 | Emolga | Pokémon (Lightning) | Common | Normal, Reverse holo |
@@ -156,9 +157,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 48/181 | Galvantula | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 49/181 | Helioptile | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 50/181 | Heliolisk | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 51/181 | Tapu Koko ◇ | Pokémon (Lightning) | Rare | Normal, Holo |
-| 52/181 | Zeraora | Pokémon (Lightning) | Rare | Normal, Reverse holo, Holo |
-| 53/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 51/181 | Tapu Koko ◇ | Pokémon (Lightning) | Rare | Holo |
+| 52/181 | Zeraora | Pokémon (Lightning) | Rare | Reverse holo, Holo |
+| 53/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 54/181 | Nidoran♀ | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 55/181 | Nidorina | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 56/181 | Nidoqueen | Pokémon (Psychic) | Rare | Normal, Reverse holo |
@@ -172,7 +173,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 64/181 | Alolan Marowak | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 65/181 | Starmie | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 66/181 | Mr. Mime | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 67/181 | Mr. Mime GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 67/181 | Mr. Mime GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 68/181 | Jynx | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 69/181 | Cosmog | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 70/181 | Cosmoem | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
@@ -181,51 +182,51 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 73/181 | Hitmonlee | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 74/181 | Hitmonchan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 75/181 | Omanyte | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 76/181 | Omastar | Pokémon (Fighting) | Rare | Normal, Reverse holo, Holo |
+| 76/181 | Omastar | Pokémon (Fighting) | Rare | Reverse holo, Holo |
 | 77/181 | Kabuto | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 78/181 | Kabutops | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 79/181 | Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 80/181 | Pupitar | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 81/181 | Pancham | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 82/181 | Lycanroc GX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 82/181 | Lycanroc GX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 83/181 | Alolan Grimer | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 84/181 | Alolan Muk | Pokémon (Darkness) | Rare | Normal, Reverse holo |
-| 85/181 | Tyranitar | Pokémon (Darkness) | Rare | Normal, Reverse holo, Holo |
+| 85/181 | Tyranitar | Pokémon (Darkness) | Rare | Reverse holo, Holo |
 | 86/181 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 87/181 | Mightyena | Pokémon (Darkness) | Rare | Normal, Reverse holo |
-| 88/181 | Absol | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 88/181 | Absol | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 89/181 | Spiritomb | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 90/181 | Zorua | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 91/181 | Zoroark | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 91/181 | Zoroark | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 92/181 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 93/181 | Mandibuzz | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 94/181 | Pangoro | Pokémon (Darkness) | Rare | Normal, Reverse holo |
-| 95/181 | Yveltal | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
-| 96/181 | Hoopa GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 97/181 | Incineroar GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 95/181 | Yveltal | Pokémon (Darkness) | Rare | Holo, Reverse holo |
+| 96/181 | Hoopa GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 97/181 | Incineroar GX | Pokémon (Darkness) | Ultra Rare | Holo |
 | 98/181 | Skarmory | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 99/181 | Jirachi | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 99/181 | Jirachi | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 100/181 | Bronzor | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 101/181 | Bronzong | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 102/181 | Ferroseed | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 103/181 | Ferrothorn | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 104/181 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 105/181 | Bisharp | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 106/181 | Cobalion GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 106/181 | Cobalion GX | Pokémon (Metal) | Ultra Rare | Holo |
 | 107/181 | Honedge | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 108/181 | Doublade | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 109/181 | Aegislash | Pokémon (Metal) | Rare | Normal, Reverse holo, Holo |
+| 109/181 | Aegislash | Pokémon (Metal) | Rare | Reverse holo, Holo |
 | 110/181 | Klefki | Pokémon (Metal) | Common | Normal, Reverse holo |
-| 111/181 | Alolan Ninetales | Pokémon (Fairy) | Rare | Normal, Reverse holo, Holo |
+| 111/181 | Alolan Ninetales | Pokémon (Fairy) | Rare | Reverse holo, Holo |
 | 112/181 | Mimikyu | Pokémon (Fairy) | Rare | Normal, Reverse holo |
-| 113/181 | Latias & Latios GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 113/181 | Latias & Latios GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 114/181 | Alolan Exeggutor | Pokémon (Dragon) | Rare | Normal, Reverse holo |
 | 115/181 | Alolan Exeggutor | Pokémon (Dragon) | Rare | Normal, Reverse holo |
 | 116/181 | Dratini | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 117/181 | Dratini | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 118/181 | Dragonair | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 119/181 | Dragonite | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 120/181 | Eevee & Snorlax GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 119/181 | Dragonite | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 120/181 | Eevee & Snorlax GX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 121/181 | Pidgey | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 122/181 | Pidgey | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 123/181 | Pidgeotto | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -236,16 +237,16 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 128/181 | Kangaskhan | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 129/181 | Tauros | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 130/181 | Aerodactyl | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 131/181 | Lugia | Pokémon (Colorless) | Rare | Normal, Reverse holo, Holo |
-| 132/181 | Zangoose | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
-| 133/181 | Bill’s Analysis | Trainer (Supporter) | Rare | Normal, Holo, Reverse holo |
-| 134/181 | Black Market ◇ | Trainer (Stadium) | Rare | Normal, Holo |
+| 131/181 | Lugia | Pokémon (Colorless) | Rare | Reverse holo, Holo |
+| 132/181 | Zangoose | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 133/181 | Bill’s Analysis | Trainer (Supporter) | Rare | Holo, Reverse holo |
+| 134/181 | Black Market ◇ | Trainer (Stadium) | Rare | Holo |
 | 135/181 | Brock’s Grit | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 136/181 | Buff Padding | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 137/181 | Dana | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 138/181 | Dangerous Drill | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 139/181 | Electrocharger | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 140/181 | Erika’s Hospitality | Trainer (Supporter) | Rare | Normal, Reverse holo, Holo |
+| 140/181 | Erika’s Hospitality | Trainer (Supporter) | Rare | Reverse holo, Holo |
 | 141/181 | Evelyn | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 142/181 | Fairy Charm UB | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 143/181 | Grass Memory | Trainer (Tool) | Uncommon | Normal, Reverse holo |
@@ -263,45 +264,45 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm9`), fe
 | 155/181 | Unidentified Fossil | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 156/181 | Viridian Forest | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 157/181 | Water Memory | Trainer (Tool) | Uncommon | Normal, Reverse holo |
-| 158/181 | Wondrous Labyrinth ◇ | Trainer (Stadium) | Rare | Normal, Holo |
-| 159/181 | Celebi & Venusaur GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 160/181 | Magikarp & Wailord GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 161/181 | Magikarp & Wailord GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 162/181 | Pikachu & Zekrom GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 163/181 | Ampharos GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 164/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 165/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 166/181 | Hoopa GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 167/181 | Incineroar GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 168/181 | Cobalion GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 169/181 | Latias & Latios GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 170/181 | Latias & Latios GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 171/181 | Eevee & Snorlax GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 172/181 | Brock’s Grit | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 173/181 | Dana | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 174/181 | Erika’s Hospitality | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 175/181 | Evelyn | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 176/181 | Ingo & Emmet | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 177/181 | Jasmine | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 178/181 | Morgan | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 179/181 | Nanu | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 180/181 | Nita | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 181/181 | Sabrina’s Suggestion | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 182/181 | Celebi & Venusaur GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 183/181 | Magikarp & Wailord GX | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 184/181 | Pikachu & Zekrom GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
-| 185/181 | Ampharos GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
-| 186/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 187/181 | Hoopa GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
-| 188/181 | Incineroar GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
-| 189/181 | Cobalion GX | Pokémon (Metal) | Secret Rare | Normal, Holo |
-| 190/181 | Latias & Latios GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 191/181 | Eevee & Snorlax GX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
-| 192/181 | Dangerous Drill | Trainer (Item) | Secret Rare | Normal, Holo |
-| 193/181 | Electrocharger | Trainer (Item) | Secret Rare | Normal, Holo |
-| 194/181 | Judge Whistle | Trainer (Item) | Secret Rare | Normal, Holo |
-| 195/181 | Metal Goggles | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 196/181 | Pokémon Communication | Trainer (Item) | Secret Rare | Normal, Holo |
+| 158/181 | Wondrous Labyrinth ◇ | Trainer (Stadium) | Rare | Holo |
+| 159/181 | Celebi & Venusaur GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 160/181 | Magikarp & Wailord GX | Pokémon (Water) | Ultra Rare | Holo |
+| 161/181 | Magikarp & Wailord GX | Pokémon (Water) | Ultra Rare | Holo |
+| 162/181 | Pikachu & Zekrom GX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 163/181 | Ampharos GX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 164/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 165/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 166/181 | Hoopa GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 167/181 | Incineroar GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 168/181 | Cobalion GX | Pokémon (Metal) | Ultra Rare | Holo |
+| 169/181 | Latias & Latios GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 170/181 | Latias & Latios GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 171/181 | Eevee & Snorlax GX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 172/181 | Brock’s Grit | Trainer (Supporter) | Ultra Rare | Holo |
+| 173/181 | Dana | Trainer (Supporter) | Ultra Rare | Holo |
+| 174/181 | Erika’s Hospitality | Trainer (Supporter) | Ultra Rare | Holo |
+| 175/181 | Evelyn | Trainer (Supporter) | Ultra Rare | Holo |
+| 176/181 | Ingo & Emmet | Trainer (Supporter) | Ultra Rare | Holo |
+| 177/181 | Jasmine | Trainer (Supporter) | Ultra Rare | Holo |
+| 178/181 | Morgan | Trainer (Supporter) | Ultra Rare | Holo |
+| 179/181 | Nanu | Trainer (Supporter) | Ultra Rare | Holo |
+| 180/181 | Nita | Trainer (Supporter) | Ultra Rare | Holo |
+| 181/181 | Sabrina’s Suggestion | Trainer (Supporter) | Ultra Rare | Holo |
+| 182/181 | Celebi & Venusaur GX | Pokémon (Grass) | Secret Rare | Holo |
+| 183/181 | Magikarp & Wailord GX | Pokémon (Water) | Secret Rare | Holo |
+| 184/181 | Pikachu & Zekrom GX | Pokémon (Lightning) | Secret Rare | Holo |
+| 185/181 | Ampharos GX | Pokémon (Lightning) | Secret Rare | Holo |
+| 186/181 | Gengar & Mimikyu GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 187/181 | Hoopa GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 188/181 | Incineroar GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 189/181 | Cobalion GX | Pokémon (Metal) | Secret Rare | Holo |
+| 190/181 | Latias & Latios GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 191/181 | Eevee & Snorlax GX | Pokémon (Colorless) | Secret Rare | Holo |
+| 192/181 | Dangerous Drill | Trainer (Item) | Secret Rare | Holo |
+| 193/181 | Electrocharger | Trainer (Item) | Secret Rare | Holo |
+| 194/181 | Judge Whistle | Trainer (Item) | Secret Rare | Holo |
+| 195/181 | Metal Goggles | Trainer (Tool) | Secret Rare | Holo |
+| 196/181 | Pokémon Communication | Trainer (Item) | Secret Rare | Holo |
 
 ## Slot map
 

@@ -153,6 +153,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo2`), f
 | 73/75 | Hyper Devolution Spray | Trainer | Uncommon | Normal, Normal (1st Edition) |
 | 74/75 | Ruin Wall | Trainer | Uncommon | Normal, Normal (1st Edition) |
 | 75/75 | Energy Ark | Trainer | Common | Normal, Normal (1st Edition) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

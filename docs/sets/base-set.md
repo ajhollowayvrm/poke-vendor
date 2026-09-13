@@ -262,6 +262,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base1`), 
 | 100/102 | Lightning Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
 | 101/102 | Psychic Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
 | 102/102 | Water Energy | Energy (Normal) | Common | Normal (Unlimited), Normal (Shadowless, 1st Edition), Normal (Shadowless), Normal (1999–2000 copyright) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

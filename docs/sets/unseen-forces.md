@@ -131,6 +131,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex10`, `e
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 4 prints.
 
 ### Unseen Forces
 
@@ -141,20 +142,20 @@ TCGdex set `ex10`: 117 cards.
 | 1/115 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo) |
 | 2/115 | Ariados | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
 | 3/115 | Bellossom | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
-| 4/115 | Feraligatr | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 4/115 | Feraligatr | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
 | 5/115 | Flareon | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo) |
 | 6/115 | Forretress | Pokémon (Metal) | Rare | Holo, Reverse holo (Set logo) |
 | 7/115 | Houndoom | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo) |
 | 8/115 | Jolteon | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo) |
-| 9/115 | Meganium | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 9/115 | Meganium | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
 | 10/115 | Octillery | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
 | 11/115 | Poliwrath | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
 | 12/115 | Porygon2 | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
-| 13/115 | Slowbro | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 13/115 | Slowbro | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
 | 14/115 | Slowking | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo) |
 | 15/115 | Sudowoodo | Pokémon (Fighting) | Rare | Holo, Reverse holo (Set logo) |
 | 16/115 | Sunflora | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
-| 17/115 | Typhlosion | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 17/115 | Typhlosion | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo) |
 | 18/115 | Ursaring | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo) |
 | 19/115 | Vaporeon | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
 | 20/115 | Chansey | Pokémon (Colorless) | Rare | Normal, Reverse holo (Set logo) |

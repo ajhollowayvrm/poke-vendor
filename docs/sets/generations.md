@@ -100,56 +100,57 @@ Every card in the set, with its variants. Source: the TCGdex API (set `g1`), fet
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1728`, `1729`, fetched 2026-09-12). This added 109 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 39 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/83 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 2/83 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 1/83 | Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 2/83 | M Venusaur EX | Pokémon (Grass) | Ultra Rare | Holo |
 | 3/83 | Caterpie | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 4/83 | Metapod | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 5/83 | Butterfree | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 5/83 | Butterfree | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 6/83 | Paras | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 7/83 | Parasect | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 8/83 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 9/83 | Pinsir | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 10/83 | Leafeon EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 11/83 | Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 12/83 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 13/83 | Ninetales EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 10/83 | Leafeon EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 11/83 | Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 12/83 | M Charizard EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 13/83 | Ninetales EX | Pokémon (Fire) | Ultra Rare | Holo |
 | 14/83 | Ponyta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 15/83 | Rapidash | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 16/83 | Magmar | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 17/83 | Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 18/83 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 17/83 | Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
+| 18/83 | M Blastoise EX | Pokémon (Water) | Ultra Rare | Holo |
 | 19/83 | Shellder | Pokémon (Water) | Common | Normal, Reverse holo |
 | 20/83 | Cloyster | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 21/83 | Krabby | Pokémon (Water) | Common | Normal, Reverse holo |
 | 22/83 | Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
 | 23/83 | Gyarados | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 24/83 | Vaporeon EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 25/83 | Articuno | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 24/83 | Vaporeon EX | Pokémon (Water) | Ultra Rare | Holo |
+| 25/83 | Articuno | Pokémon (Water) | Ultra Rare | Holo |
 | 26/83 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 27/83 | Raichu | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
-| 28/83 | Jolteon EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 28a | Jolteon-EX | Pokémon (Lightning) | Rare | Normal, Holo |
-| 29/83 | Zapdos | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 27/83 | Raichu | Pokémon (Lightning) | Rare | Holo, Reverse holo |
+| 28/83 | Jolteon EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 28a | Jolteon-EX | Pokémon (Lightning) | Rare | Holo |
+| 29/83 | Zapdos | Pokémon (Lightning) | Ultra Rare | Holo |
 | 30/83 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 31/83 | Golbat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 32/83 | Slowpoke | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 33/83 | Gastly | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 34/83 | Haunter | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 35/83 | Gengar | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 35/83 | Gengar | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 36/83 | Jynx | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 37/83 | Meowstic EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 37/83 | Meowstic EX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 38/83 | Diglett | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 39/83 | Dugtrio | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 40/83 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 41/83 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 42/83 | Machamp | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 42/83 | Machamp | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 43/83 | Geodude | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 44/83 | Graveler | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 45/83 | Golem | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 46/83 | Golem EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 45/83 | Golem | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 46/83 | Golem EX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 47/83 | Hitmonlee | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 48/83 | Hitmonchan | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 49/83 | Rhyhorn | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -192,34 +193,35 @@ Every card in the set, with its variants. Source: the TCGdex API (set `g1`), fet
 | RC2 | Shroomish | Pokémon (Grass) | Common | Normal |
 | RC3 | Charmander | Pokémon (Fire) | Common | Normal |
 | RC4 | Charmeleon | Pokémon (Fire) | Common | Normal |
-| RC5 | Charizard | Pokémon (Fire) | Uncommon | Normal, Holo |
-| RC6 | Flareon EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| RC5 | Charizard | Pokémon (Fire) | Uncommon | Holo |
+| RC6 | Flareon EX | Pokémon (Fire) | Ultra Rare | Holo |
 | RC7 | Snorunt | Pokémon (Water) | Common | Normal |
-| RC8 | Froslass | Pokémon (Water) | Uncommon | Normal, Holo |
+| RC8 | Froslass | Pokémon (Water) | Uncommon | Holo |
 | RC9 | Raichu | Pokémon (Lightning) | Common | Normal |
-| RC10 | Dedenne | Pokémon (Lightning) | Uncommon | Normal, Holo |
+| RC10 | Dedenne | Pokémon (Lightning) | Uncommon | Holo |
 | RC11 | Wobbuffet | Pokémon (Psychic) | Common | Normal |
 | RC12 | Gulpin | Pokémon (Psychic) | Common | Normal |
-| RC13 | Jirachi | Pokémon (Psychic) | Uncommon | Normal, Holo |
+| RC13 | Jirachi | Pokémon (Psychic) | Uncommon | Holo |
 | RC14 | Espurr | Pokémon (Psychic) | Common | Normal |
-| RC15 | Meowstic | Pokémon (Psychic) | Uncommon | Normal, Holo |
-| RC16 | Yveltal | Pokémon (Darkness) | Uncommon | Normal, Holo |
+| RC15 | Meowstic | Pokémon (Psychic) | Uncommon | Holo |
+| RC16 | Yveltal | Pokémon (Darkness) | Uncommon | Holo |
 | RC17 | Flabébé | Pokémon (Fairy) | Common | Normal |
-| RC18 | Floette | Pokémon (Fairy) | Uncommon | Normal, Holo |
-| RC19 | Swirlix | Pokémon (Fairy) | Uncommon | Normal, Holo |
-| RC20 | Slurpuff | Pokémon (Fairy) | Uncommon | Normal, Holo |
-| RC21 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| RC22 | Diancie | Pokémon (Fairy) | Uncommon | Normal, Holo |
+| RC18 | Floette | Pokémon (Fairy) | Uncommon | Holo |
+| RC19 | Swirlix | Pokémon (Fairy) | Uncommon | Holo |
+| RC20 | Slurpuff | Pokémon (Fairy) | Uncommon | Holo |
+| RC21 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| RC22 | Diancie | Pokémon (Fairy) | Uncommon | Holo |
 | RC23 | Swablu | Pokémon (Colorless) | Common | Normal |
-| RC24 | Altaria | Pokémon (Colorless) | Uncommon | Normal, Holo |
+| RC24 | Altaria | Pokémon (Colorless) | Uncommon | Holo |
 | RC25 | Fletchling | Pokémon (Colorless) | Common | Normal |
 | RC26 | Floral Crown | Trainer (Tool) | Common | Normal |
-| RC27 | Wally | Trainer (Supporter) | Uncommon | Normal, Holo |
-| RC28 | Flareon EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| RC29 | Pikachu | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| RC30 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| RC31 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| RC32 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| RC27 | Wally | Trainer (Supporter) | Uncommon | Holo |
+| RC28 | Flareon EX | Pokémon (Fire) | Ultra Rare | Holo |
+| RC29 | Pikachu | Pokémon (Lightning) | Ultra Rare | Holo |
+| RC30 | Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| RC31 | M Gardevoir EX | Pokémon (Fairy) | Ultra Rare | Holo |
+| RC32 | Sylveon EX | Pokémon (Fairy) | Ultra Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

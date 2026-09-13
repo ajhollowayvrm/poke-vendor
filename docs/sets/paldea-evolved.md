@@ -417,6 +417,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv02`), f
 | 277/193 | Superior Energy Retrieval | Trainer (Item) | Hyper rare | Holo |
 | 278/193 | Basic Grass Energy | Energy (Normal) | Hyper rare | Holo |
 | 279/193 | Basic Water Energy | Energy (Normal) | Hyper rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

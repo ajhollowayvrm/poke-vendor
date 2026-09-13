@@ -182,6 +182,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 5 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -204,7 +205,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 017/182 | Dipplin | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 018/182 | Hydrapple | Pokémon (Grass) | Rare | Reverse holo, Holo, Holo (Cosmos) |
 | 019/182 | Team Rocket's Tarountula | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 020/182 | Team Rocket's Spidops | Pokémon (Grass) | Rare | Reverse holo, Holo, Normal |
+| 020/182 | Team Rocket's Spidops | Pokémon (Grass) | Rare | Reverse holo, Holo |
 | 021/182 | Smoliv | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 022/182 | Dolliv | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 023/182 | Arboliva ex | Pokémon (Grass) | Double rare | Holo |
@@ -218,7 +219,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 031/182 | Team Rocket's Moltres ex | Pokémon (Fire) | Double rare | Holo, Holo (Set logo) |
 | 032/182 | Ethan's Cyndaquil | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 033/182 | Ethan's Quilava | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 034/182 | Ethan's Typhlosion | Pokémon (Fire) | Rare | Reverse holo, Holo, Holo (Set logo), Normal, Holo (Staff) |
+| 034/182 | Ethan's Typhlosion | Pokémon (Fire) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Staff) |
 | 035/182 | Ethan's Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 036/182 | Ethan's Magcargo | Pokémon (Fire) | Rare | Reverse holo, Holo |
 | 037/182 | Team Rocket's Houndour | Pokémon (Fire) | Common | Normal, Reverse holo |
@@ -233,9 +234,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 046/182 | Misty's Staryu | Pokémon (Water) | Common | Normal, Reverse holo |
 | 047/182 | Misty's Starmie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 048/182 | Misty's Magikarp | Pokémon (Water) | Common | Normal, Reverse holo |
-| 049/182 | Misty's Gyarados | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Set logo), Normal, Holo (Set logo, Staff) |
+| 049/182 | Misty's Gyarados | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Set logo, Staff) |
 | 050/182 | Misty's Lapras | Pokémon (Water) | Common | Normal, Reverse holo |
-| 051/182 | Team Rocket's Articuno | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Cosmos), Normal |
+| 051/182 | Team Rocket's Articuno | Pokémon (Water) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Cosmos) |
 | 052/182 | Cynthia's Feebas | Pokémon (Water) | Common | Normal, Reverse holo |
 | 053/182 | Cynthia's Milotic | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 054/182 | Clamperl | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -280,7 +281,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 093/182 | Ethan's Sudowoodo | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 094/182 | Team Rocket's Larvitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 095/182 | Team Rocket's Pupitar | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 096/182 | Team Rocket's Tyranitar | Pokémon (Fighting) | Rare | Reverse holo, Holo, Holo (Set logo), Normal, Holo (Set logo, Staff), Holo (Cosmos) |
+| 096/182 | Team Rocket's Tyranitar | Pokémon (Fighting) | Rare | Reverse holo, Holo, Holo (Set logo), Holo (Set logo, Staff), Holo (Cosmos) |
 | 097/182 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 098/182 | Probopass | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 099/182 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -429,6 +430,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv10`), f
 | 242/182 | Team Rocket's Crobat ex | Pokémon (Darkness) | Hyper rare | Holo (Gold) |
 | 243/182 | Jamming Tower | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 244/182 | Levincia | Trainer (Stadium) | Hyper rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

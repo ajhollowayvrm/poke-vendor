@@ -327,6 +327,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh6`), 
 | 231/198 | Water Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 232/198 | Psychic Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 233/198 | Fighting Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

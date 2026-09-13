@@ -98,6 +98,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2328`, fetched 2026-09-12). This added 257 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 83 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -108,21 +109,21 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 5/214 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 6/214 | Chikorita | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 7/214 | Bayleef | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 8/214 | Meganium | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 8/214 | Meganium | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 9/214 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 10/214 | Ariados | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 11/214 | Hoppip | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 12/214 | Hoppip | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 13/214 | Skiploom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 14/214 | Jumpluff | Pokémon (Grass) | Rare | Normal, Reverse holo, Holo |
+| 14/214 | Jumpluff | Pokémon (Grass) | Rare | Reverse holo, Holo |
 | 15/214 | Pineco | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 16/214 | Shuckle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 17/214 | Shuckle GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 17/214 | Shuckle GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 18/214 | Heracross | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 19/214 | Celebi ◇ | Pokémon (Grass) | Rare | Normal, Holo |
+| 19/214 | Celebi ◇ | Pokémon (Grass) | Rare | Holo |
 | 20/214 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 21/214 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 22/214 | Sceptile GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 22/214 | Sceptile GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 23/214 | Wurmple | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 24/214 | Wurmple | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 25/214 | Silcoon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
@@ -133,37 +134,37 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 30/214 | Ninjask | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 31/214 | Combee | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 32/214 | Vespiquen | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 33/214 | Shaymin | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
-| 34/214 | Virizion GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 33/214 | Shaymin | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 34/214 | Virizion GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 35/214 | Skiddo | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 36/214 | Gogoat | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 37/214 | Tapu Bulu | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 37/214 | Tapu Bulu | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 38/214 | Moltres | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 39/214 | Cyndaquil | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 40/214 | Cyndaquil | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 41/214 | Quilava | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 42/214 | Typhlosion | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 42/214 | Typhlosion | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 43/214 | Slugma | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 44/214 | Magcargo GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 44/214 | Magcargo GX | Pokémon (Fire) | Ultra Rare | Holo |
 | 45/214 | Houndour | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 46/214 | Houndoom | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 47/214 | Entei | Pokémon (Fire) | Rare | Normal, Reverse holo |
-| 48/214 | Heatran | Pokémon (Fire) | Rare | Normal, Reverse holo, Holo |
+| 48/214 | Heatran | Pokémon (Fire) | Rare | Reverse holo, Holo |
 | 49/214 | Victini | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 50/214 | Litleo | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 51/214 | Pyroar | Pokémon (Fire) | Rare | Normal, Reverse holo |
-| 52/214 | Blacephalon GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 52/214 | Blacephalon GX | Pokémon (Fire) | Ultra Rare | Holo |
 | 53/214 | Alolan Vulpix | Pokémon (Water) | Common | Normal, Reverse holo |
 | 54/214 | Slowpoke | Pokémon (Water) | Common | Normal, Reverse holo |
 | 55/214 | Slowking | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 56/214 | Lapras | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 57/214 | Delibird | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 58/214 | Mantine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 59/214 | Suicune | Pokémon (Water) | Rare | Normal, Reverse holo, Holo |
-| 60/214 | Suicune GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 59/214 | Suicune | Pokémon (Water) | Rare | Reverse holo, Holo |
+| 60/214 | Suicune GX | Pokémon (Water) | Ultra Rare | Holo |
 | 61/214 | Cubchoo | Pokémon (Water) | Common | Normal, Reverse holo |
 | 62/214 | Beartic | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 63/214 | White Kyurem | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 63/214 | White Kyurem | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 64/214 | Popplio | Pokémon (Water) | Common | Normal, Reverse holo |
 | 65/214 | Popplio | Pokémon (Water) | Common | Normal, Reverse holo |
 | 66/214 | Brionne | Pokémon (Water) | Uncommon | Normal, Reverse holo |
@@ -178,15 +179,15 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 75/214 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 76/214 | Mareep | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 77/214 | Flaaffy | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 78/214 | Ampharos | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 78/214 | Ampharos | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 79/214 | Raikou | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 80/214 | Pachirisu | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 81/214 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 82/214 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 83/214 | Stunfisk | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 84/214 | Dedenne | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 85/214 | Tapu Koko | Pokémon (Lightning) | Rare | Normal, Reverse holo, Holo |
-| 86/214 | Zeraora GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 85/214 | Tapu Koko | Pokémon (Lightning) | Rare | Reverse holo, Holo |
+| 86/214 | Zeraora GX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 87/214 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 88/214 | Xatu | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 89/214 | Espeon | Pokémon (Psychic) | Rare | Normal, Reverse holo |
@@ -197,18 +198,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 94/214 | Girafarig | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 95/214 | Shedinja | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 96/214 | Sableye | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 97/214 | Giratina | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo |
-| 98/214 | Sigilyph GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 97/214 | Giratina | Pokémon (Psychic) | Rare | Reverse holo, Holo |
+| 98/214 | Sigilyph GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 99/214 | Yamask | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 100/214 | Cofagrigus | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 101/214 | Litwick | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 102/214 | Lampent | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 103/214 | Chandelure | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 103/214 | Chandelure | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 104/214 | Meloetta | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 105/214 | Mareanie | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 106/214 | Nihilego | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo |
+| 106/214 | Nihilego | Pokémon (Psychic) | Rare | Reverse holo, Holo |
 | 107/214 | Poipole | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 108/214 | Naganadel | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo |
+| 108/214 | Naganadel | Pokémon (Psychic) | Rare | Reverse holo, Holo |
 | 109/214 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 110/214 | Sudowoodo | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 111/214 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -221,18 +222,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 118/214 | Alolan Meowth | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 119/214 | Alolan Persian | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 120/214 | Umbreon | Pokémon (Darkness) | Rare | Normal, Reverse holo |
-| 121/214 | Tyranitar GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 121/214 | Tyranitar GX | Pokémon (Darkness) | Ultra Rare | Holo |
 | 122/214 | Alolan Diglett | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 123/214 | Alolan Dugtrio | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 124/214 | Forretress | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 125/214 | Steelix | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 126/214 | Scizor | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
-| 127/214 | Dialga | Pokémon (Metal) | Rare | Normal, Reverse holo, Holo |
+| 126/214 | Scizor | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 127/214 | Dialga | Pokémon (Metal) | Rare | Reverse holo, Holo |
 | 128/214 | Durant | Pokémon (Metal) | Common | Normal, Reverse holo |
-| 129/214 | Cobalion | Pokémon (Metal) | Rare | Normal, Reverse holo, Holo |
-| 130/214 | Genesect GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 129/214 | Cobalion | Pokémon (Metal) | Rare | Reverse holo, Holo |
+| 130/214 | Genesect GX | Pokémon (Metal) | Ultra Rare | Holo |
 | 131/214 | Magearna | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 132/214 | Alolan Ninetales GX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
+| 132/214 | Alolan Ninetales GX | Pokémon (Fairy) | Ultra Rare | Holo |
 | 133/214 | Jigglypuff | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 134/214 | Wigglytuff | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 135/214 | Marill | Pokémon (Fairy) | Common | Normal, Reverse holo |
@@ -241,25 +242,25 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 138/214 | Granbull | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 139/214 | Ralts | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 140/214 | Kirlia | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 141/214 | Gardevoir | Pokémon (Fairy) | Rare | Normal, Reverse holo, Holo |
+| 141/214 | Gardevoir | Pokémon (Fairy) | Rare | Reverse holo, Holo |
 | 142/214 | Dedenne | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 143/214 | Carbink | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 144/214 | Xerneas ◇ | Pokémon (Fairy) | Rare | Normal, Holo |
+| 144/214 | Xerneas ◇ | Pokémon (Fairy) | Rare | Holo |
 | 145/214 | Cutiefly | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 146/214 | Ribombee | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 147/214 | Morelull | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 148/214 | Shiinotic | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
-| 149/214 | Mimikyu GX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 150/214 | Tapu Lele | Pokémon (Fairy) | Rare | Normal, Reverse holo, Holo |
-| 151/214 | Tapu Fini | Pokémon (Fairy) | Rare | Normal, Reverse holo, Holo |
+| 149/214 | Mimikyu GX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 150/214 | Tapu Lele | Pokémon (Fairy) | Rare | Reverse holo, Holo |
+| 151/214 | Tapu Fini | Pokémon (Fairy) | Rare | Reverse holo, Holo |
 | 152/214 | Chansey | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 153/214 | Blissey | Pokémon (Colorless) | Rare | Normal, Reverse holo, Holo |
-| 154/214 | Ditto ◇ | Pokémon (Colorless) | Rare | Normal, Holo |
+| 153/214 | Blissey | Pokémon (Colorless) | Rare | Reverse holo, Holo |
+| 154/214 | Ditto ◇ | Pokémon (Colorless) | Rare | Holo |
 | 155/214 | Eevee | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 156/214 | Stantler | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 157/214 | Smeargle | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 158/214 | Miltank | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 159/214 | Lugia GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 159/214 | Lugia GX | Pokémon (Colorless) | Ultra Rare | Holo |
 | 160/214 | Ho-Oh | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 161/214 | Kecleon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 162/214 | Kecleon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
@@ -278,11 +279,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 175/214 | Fairy Charm Psychic | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 176/214 | Fairy Charm Fighting | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 177/214 | Fairy Charm Dragon | Trainer (Tool) | Uncommon | Normal, Reverse holo |
-| 178/214 | Heat Factory ◇ | Trainer (Stadium) | Rare | Normal, Holo |
+| 178/214 | Heat Factory ◇ | Trainer (Stadium) | Rare | Holo |
 | 179/214 | Kahili | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
-| 180/214 | Life Forest ◇ | Trainer (Stadium) | Rare | Normal, Holo |
+| 180/214 | Life Forest ◇ | Trainer (Stadium) | Rare | Holo |
 | 181/214 | Lost Blender | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 182/214 | Lusamine ◇ | Trainer (Supporter) | Rare | Normal, Holo |
+| 182/214 | Lusamine ◇ | Trainer (Supporter) | Rare | Holo |
 | 183/214 | Mina | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 184/214 | Mixed Herbs | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 185/214 | Moomoo Milk | Trainer (Item) | Uncommon | Normal, Reverse holo |
@@ -291,52 +292,52 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm8`), fe
 | 188/214 | Professor Elm’s Lecture | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 189/214 | Sightseer | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 190/214 | Spell Tag | Trainer (Tool) | Uncommon | Normal, Reverse holo |
-| 191/214 | Thunder Mountain ◇ | Trainer (Stadium) | Rare | Normal, Holo |
+| 191/214 | Thunder Mountain ◇ | Trainer (Stadium) | Rare | Holo |
 | 192/214 | Wait and See Hammer | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 193/214 | Whitney | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 194/214 | Memory Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 195/214 | Shuckle GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 196/214 | Sceptile GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 197/214 | Virizion GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 198/214 | Magcargo GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 199/214 | Blacephalon GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 200/214 | Suicune GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 201/214 | Zeraora GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 202/214 | Sigilyph GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 203/214 | Tyranitar GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
-| 204/214 | Genesect GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 205/214 | Alolan Ninetales GX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 206/214 | Mimikyu GX | Pokémon (Fairy) | Ultra Rare | Normal, Holo |
-| 207/214 | Lugia GX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 208/214 | Faba | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 209/214 | Judge | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 210/214 | Kahili | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 211/214 | Mina | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 212/214 | Morty | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 213/214 | Professor Elm’s Lecture | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 214/214 | Whitney | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 215/214 | Shuckle GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 216/214 | Sceptile GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 217/214 | Virizion GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 218/214 | Magcargo GX | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 219/214 | Blacephalon GX | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 220/214 | Suicune GX | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 221/214 | Zeraora GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
-| 222/214 | Sigilyph GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 223/214 | Tyranitar GX | Pokémon (Darkness) | Secret Rare | Normal, Holo |
-| 224/214 | Genesect GX | Pokémon (Metal) | Secret Rare | Normal, Holo |
-| 225/214 | Alolan Ninetales GX | Pokémon (Fairy) | Secret Rare | Normal, Holo |
-| 226/214 | Mimikyu GX | Pokémon (Fairy) | Secret Rare | Normal, Holo |
-| 227/214 | Lugia GX | Pokémon (Colorless) | Secret Rare | Normal, Holo |
-| 228/214 | Adventure Bag | Trainer (Item) | Secret Rare | Normal, Holo |
-| 229/214 | Choice Helmet | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 230/214 | Counter Gain | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 231/214 | Custom Catcher | Trainer (Item) | Secret Rare | Normal, Holo |
-| 232/214 | Electropower | Trainer (Item) | Secret Rare | Normal, Holo |
-| 233/214 | Lost Blender | Trainer (Item) | Secret Rare | Normal, Holo |
-| 234/214 | Net Ball | Trainer (Item) | Secret Rare | Normal, Holo |
-| 235/214 | Spell Tag | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 236/214 | Wait and See Hammer | Trainer (Item) | Secret Rare | Normal, Holo |
+| 195/214 | Shuckle GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 196/214 | Sceptile GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 197/214 | Virizion GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 198/214 | Magcargo GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 199/214 | Blacephalon GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 200/214 | Suicune GX | Pokémon (Water) | Ultra Rare | Holo |
+| 201/214 | Zeraora GX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 202/214 | Sigilyph GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 203/214 | Tyranitar GX | Pokémon (Darkness) | Ultra Rare | Holo |
+| 204/214 | Genesect GX | Pokémon (Metal) | Ultra Rare | Holo |
+| 205/214 | Alolan Ninetales GX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 206/214 | Mimikyu GX | Pokémon (Fairy) | Ultra Rare | Holo |
+| 207/214 | Lugia GX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 208/214 | Faba | Trainer (Supporter) | Ultra Rare | Holo |
+| 209/214 | Judge | Trainer (Supporter) | Ultra Rare | Holo |
+| 210/214 | Kahili | Trainer (Supporter) | Ultra Rare | Holo |
+| 211/214 | Mina | Trainer (Supporter) | Ultra Rare | Holo |
+| 212/214 | Morty | Trainer (Supporter) | Ultra Rare | Holo |
+| 213/214 | Professor Elm’s Lecture | Trainer (Supporter) | Ultra Rare | Holo |
+| 214/214 | Whitney | Trainer (Supporter) | Ultra Rare | Holo |
+| 215/214 | Shuckle GX | Pokémon (Grass) | Secret Rare | Holo |
+| 216/214 | Sceptile GX | Pokémon (Grass) | Secret Rare | Holo |
+| 217/214 | Virizion GX | Pokémon (Grass) | Secret Rare | Holo |
+| 218/214 | Magcargo GX | Pokémon (Fire) | Secret Rare | Holo |
+| 219/214 | Blacephalon GX | Pokémon (Fire) | Secret Rare | Holo |
+| 220/214 | Suicune GX | Pokémon (Water) | Secret Rare | Holo |
+| 221/214 | Zeraora GX | Pokémon (Lightning) | Secret Rare | Holo |
+| 222/214 | Sigilyph GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 223/214 | Tyranitar GX | Pokémon (Darkness) | Secret Rare | Holo |
+| 224/214 | Genesect GX | Pokémon (Metal) | Secret Rare | Holo |
+| 225/214 | Alolan Ninetales GX | Pokémon (Fairy) | Secret Rare | Holo |
+| 226/214 | Mimikyu GX | Pokémon (Fairy) | Secret Rare | Holo |
+| 227/214 | Lugia GX | Pokémon (Colorless) | Secret Rare | Holo |
+| 228/214 | Adventure Bag | Trainer (Item) | Secret Rare | Holo |
+| 229/214 | Choice Helmet | Trainer (Tool) | Secret Rare | Holo |
+| 230/214 | Counter Gain | Trainer (Tool) | Secret Rare | Holo |
+| 231/214 | Custom Catcher | Trainer (Item) | Secret Rare | Holo |
+| 232/214 | Electropower | Trainer (Item) | Secret Rare | Holo |
+| 233/214 | Lost Blender | Trainer (Item) | Secret Rare | Holo |
+| 234/214 | Net Ball | Trainer (Item) | Secret Rare | Holo |
+| 235/214 | Spell Tag | Trainer (Tool) | Secret Rare | Holo |
+| 236/214 | Wait and See Hammer | Trainer (Item) | Secret Rare | Holo |
 
 ## Slot map
 

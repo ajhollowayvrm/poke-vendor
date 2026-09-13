@@ -77,6 +77,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp6`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 4 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -84,19 +85,19 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp6`), fe
 | 2/146 | Dragonite | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo, Holo (National championships), Holo (National championships, Staff) |
 | 3/146 | Froslass | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
 | 4/146 | Giratina | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo, Holo (Platinum) |
-| 5/146 | Gliscor | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo, Normal |
+| 5/146 | Gliscor | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo |
 | 6/146 | Heatran | Pokémon (Fire) | Rare Holo | Holo, Reverse holo |
 | 7/146 | Kingdra | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
 | 8/146 | Luxray | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
-| 9/146 | Mamoswine | Pokémon (Water) | Rare Holo | Holo, Reverse holo, Normal |
-| 10/146 | Metagross | Pokémon (Metal) | Rare Holo | Holo, Reverse holo, Normal |
+| 9/146 | Mamoswine | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
+| 10/146 | Metagross | Pokémon (Metal) | Rare Holo | Holo, Reverse holo |
 | 11/146 | Mewtwo | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
 | 12/146 | Politoed | Pokémon (Water) | Rare Holo | Holo, Reverse holo |
 | 13/146 | Probopass | Pokémon (Fighting) | Rare Holo | Holo, Reverse holo |
 | 14/146 | Rayquaza | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
 | 15/146 | Regigigas | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
 | 16/146 | Spiritomb | Pokémon (Psychic) | Rare Holo | Holo, Reverse holo |
-| 17/146 | Yanmega | Pokémon (Grass) | Rare Holo | Holo, Reverse holo, Normal |
+| 17/146 | Yanmega | Pokémon (Grass) | Rare Holo | Holo, Reverse holo |
 | 18/146 | Armaldo | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 19/146 | Azelf | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo (League), Normal (Tsubasa nakamura), Normal (Stephen silvestro), Normal (David cohen), Normal (Michael pramawat), Normal (Mychael bryan), Normal (Yuta komatsuda) |
 | 20/146 | Bellossom | Pokémon (Grass) | Rare | Normal, Reverse holo |

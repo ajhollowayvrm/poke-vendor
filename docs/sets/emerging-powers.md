@@ -111,6 +111,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1424`, fetched 2026-09-12). This added 107 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 12 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -130,7 +131,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 14/98 | Lilligant | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 15/98 | Deerling | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 16/98 | Sawsbuck | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 17/98 | Virizion | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 17/98 | Virizion | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 18/98 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 19/98 | Simisear | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 20/98 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
@@ -143,12 +144,12 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 27/98 | Swanna | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 28/98 | Cubchoo | Pokémon (Water) | Common | Normal, Reverse holo |
 | 29/98 | Cubchoo | Pokémon (Water) | Common | Normal, Reverse holo |
-| 30/98 | Beartic | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 30/98 | Beartic | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 31/98 | Beartic | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 32/98 | Emolga | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 33/98 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 34/98 | Galvantula | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 35/98 | Thundurus | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 35/98 | Thundurus | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 36/98 | Woobat | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 37/98 | Swoobat | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 38/98 | Venipede | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -160,7 +161,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 44/98 | Gothita | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 45/98 | Gothorita | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 46/98 | Gothorita | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 47/98 | Gothitelle | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 47/98 | Gothitelle | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 48/98 | Gothitelle | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 49/98 | Roggenrola | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 50/98 | Roggenrola | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -169,18 +170,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 53/98 | Gigalith | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 54/98 | Drilbur | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 55/98 | Drilbur | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 56/98 | Excadrill | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 56/98 | Excadrill | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 57/98 | Excadrill | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 58/98 | Throh | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 59/98 | Sawk | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 60/98 | Sandile | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 61/98 | Krokorok | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 62/98 | Krookodile | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 63/98 | Terrakion | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 63/98 | Terrakion | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 64/98 | Purrloin | Pokémon (Darkness) | Common | Normal |
 | 65/98 | Liepard | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 66/98 | Zorua | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 67/98 | Zoroark | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 67/98 | Zoroark | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 68/98 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 69/98 | Mandibuzz | Pokémon (Darkness) | Rare | Normal, Reverse holo |
 | 70/98 | Ferroseed | Pokémon (Metal) | Common | Normal, Reverse holo |
@@ -190,7 +191,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 74/98 | Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 75/98 | Klang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 76/98 | Klinklang | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 77/98 | Cobalion | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 77/98 | Cobalion | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 78/98 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 79/98 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 80/98 | Pidove | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -201,8 +202,8 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 85/98 | Cinccino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 86/98 | Rufflet | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 87/98 | Rufflet | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 88/98 | Braviary | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
-| 89/98 | Tornadus | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 88/98 | Braviary | Pokémon (Colorless) | Rare | Holo, Reverse holo |
+| 89/98 | Tornadus | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 90/98 | Bianca | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 91/98 | Cheren | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 92/98 | Crushing Hammer | Trainer (Item) | Uncommon | Normal, Reverse holo |
@@ -210,8 +211,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 94/98 | Max Potion | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 95/98 | Pokémon Catcher | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 96/98 | Recycle | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 97/98 | Thundurus | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 98/98 | Tornadus | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+| 97/98 | Thundurus | Pokémon (Lightning) | Ultra Rare | Holo |
+| 98/98 | Tornadus | Pokémon (Colorless) | Ultra Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -99,15 +99,16 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `2278`, fetched 2026-09-12). This added 201 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 64 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/168 | Bellsprout | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 2/168 | Weepinbell | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 3/168 | Victreebel | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 3/168 | Victreebel | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 4/168 | Scyther | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 5/168 | Spinarak | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 6/168 | Ariados | Pokémon (Grass) | Rare | Normal, Reverse holo, Holo |
+| 6/168 | Ariados | Pokémon (Grass) | Rare | Reverse holo, Holo |
 | 7/168 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 8/168 | Treecko | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 9/168 | Grovyle | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
@@ -115,7 +116,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 | 11/168 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 12/168 | Seedot | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 13/168 | Nuzleaf | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 14/168 | Shiftry GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
+| 14/168 | Shiftry GX | Pokémon (Grass) | Ultra Rare | Holo |
 | 15/168 | Surskit | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 16/168 | Masquerain | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 17/168 | Volbeat | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
@@ -129,17 +130,17 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 | 25/168 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 26/168 | Torchic | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 27/168 | Combusken | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 28/168 | Blaziken GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
+| 28/168 | Blaziken GX | Pokémon (Fire) | Ultra Rare | Holo |
 | 29/168 | Torkoal | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 30/168 | Oricorio | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 31/168 | Articuno GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
+| 31/168 | Articuno GX | Pokémon (Water) | Ultra Rare | Holo |
 | 32/168 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo |
 | 33/168 | Mudkip | Pokémon (Water) | Common | Normal, Reverse holo |
 | 34/168 | Marshtomp | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 35/168 | Swampert | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 36/168 | Lotad | Pokémon (Water) | Common | Normal, Reverse holo |
 | 37/168 | Lombre | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 38/168 | Ludicolo | Pokémon (Water) | Rare | Normal, Reverse holo, Holo |
+| 38/168 | Ludicolo | Pokémon (Water) | Rare | Reverse holo, Holo |
 | 39/168 | Wailmer | Pokémon (Water) | Common | Normal, Reverse holo |
 | 40/168 | Wailord | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 41/168 | Clamperl | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -147,9 +148,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 | 43/168 | Gorebyss | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 44/168 | Luvdisc | Pokémon (Water) | Common | Normal, Reverse holo |
 | 45/168 | Regice | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 46/168 | Kyogre | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 46/168 | Kyogre | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 47/168 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 48/168 | Electrode GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 48/168 | Electrode GX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 49/168 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 50/168 | Lanturn | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 51/168 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
@@ -157,21 +158,21 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 | 53/168 | Plusle | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 54/168 | Minun | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 55/168 | Oricorio | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 56/168 | Mr. Mime GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 56/168 | Mr. Mime GX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 57/168 | Gulpin | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 58/168 | Swalot | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 59/168 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 60/168 | Grumpig | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 61/168 | Lunatone | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo |
+| 61/168 | Lunatone | Pokémon (Psychic) | Rare | Reverse holo, Holo |
 | 62/168 | Solrock | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 63/168 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 64/168 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 65/168 | Banette | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 66/168 | Banette GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 67/168 | Deoxys | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo |
+| 66/168 | Banette GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 67/168 | Deoxys | Pokémon (Psychic) | Rare | Reverse holo, Holo |
 | 68/168 | Deoxys | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 69/168 | Deoxys | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 70/168 | Lunala | Pokémon (Psychic) | Rare | Normal, Reverse holo, Holo |
+| 70/168 | Lunala | Pokémon (Psychic) | Rare | Reverse holo, Holo |
 | 71/168 | Onix | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 72/168 | Phanpy | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 73/168 | Donphan | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
@@ -182,47 +183,47 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 | 78/168 | Baltoy | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 79/168 | Claydol | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 80/168 | Regirock | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 81/168 | Groudon | Pokémon (Fighting) | Rare | Normal, Reverse holo, Holo |
-| 82/168 | Palossand GX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
+| 81/168 | Groudon | Pokémon (Fighting) | Rare | Reverse holo, Holo |
+| 82/168 | Palossand GX | Pokémon (Fighting) | Ultra Rare | Holo |
 | 83/168 | Minior | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 84/168 | Alolan Rattata | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 85/168 | Alolan Raticate GX | Pokémon (Darkness) | Ultra Rare | Normal, Holo |
+| 85/168 | Alolan Raticate GX | Pokémon (Darkness) | Ultra Rare | Holo |
 | 86/168 | Sneasel | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 87/168 | Tyranitar | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 87/168 | Tyranitar | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 88/168 | Sableye | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 89/168 | Steelix | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
-| 90/168 | Scizor GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 89/168 | Steelix | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 90/168 | Scizor GX | Pokémon (Metal) | Ultra Rare | Holo |
 | 91/168 | Mawile | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 92/168 | Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 93/168 | Beldum | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 94/168 | Metang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 95/168 | Metagross | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 95/168 | Metagross | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 96/168 | Registeel | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 97/168 | Jirachi ◇ | Pokémon (Metal) | Rare | Normal, Holo |
-| 98/168 | Heatran | Pokémon (Metal) | Rare | Normal, Reverse holo, Holo |
-| 99/168 | Solgaleo | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
-| 100/168 | Celesteela | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 97/168 | Jirachi ◇ | Pokémon (Metal) | Rare | Holo |
+| 98/168 | Heatran | Pokémon (Metal) | Rare | Reverse holo, Holo |
+| 99/168 | Solgaleo | Pokémon (Metal) | Rare | Holo, Reverse holo |
+| 100/168 | Celesteela | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 101/168 | Kartana | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 102/168 | Stakataka GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
+| 102/168 | Stakataka GX | Pokémon (Metal) | Ultra Rare | Holo |
 | 103/168 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 104/168 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 105/168 | Shelgon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 106/168 | Salamence | Pokémon (Dragon) | Rare | Normal, Reverse holo, Holo |
-| 107/168 | Latias ◇ | Pokémon (Dragon) | Rare | Normal, Holo |
-| 108/168 | Latios ◇ | Pokémon (Dragon) | Rare | Normal, Holo |
-| 109/168 | Rayquaza GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
+| 106/168 | Salamence | Pokémon (Dragon) | Rare | Reverse holo, Holo |
+| 107/168 | Latias ◇ | Pokémon (Dragon) | Rare | Holo |
+| 108/168 | Latios ◇ | Pokémon (Dragon) | Rare | Holo |
+| 109/168 | Rayquaza GX | Pokémon (Dragon) | Ultra Rare | Holo |
 | 110/168 | Dunsparce | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 111/168 | Wingull | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 112/168 | Pelipper | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 113/168 | Slakoth | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 114/168 | Vigoroth | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 115/168 | Slaking | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 115/168 | Slaking | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 116/168 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 117/168 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 118/168 | Loudred | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 119/168 | Exploud | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 120/168 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 121/168 | Delcatty | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 121/168 | Delcatty | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 122/168 | Kecleon | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 123/168 | Acro Bike | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 124/168 | Apricorn Maker | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
@@ -246,45 +247,45 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sm7`), fe
 | 142/168 | Rare Candy | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 143/168 | Shrine of Punishment | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 144/168 | Sky Pillar | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
-| 145/168 | Steven’s Resolve | Trainer (Supporter) | Rare | Normal, Reverse holo, Holo |
+| 145/168 | Steven’s Resolve | Trainer (Supporter) | Rare | Reverse holo, Holo |
 | 146/168 | Super Scoop Up | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 147/168 | Switch | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 148/168 | Tate & Liza | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 149/168 | TV Reporter | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 150/168 | Underground Expedition | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 151/168 | Rainbow Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 152/168 | Shiftry GX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 153/168 | Blaziken GX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 154/168 | Articuno GX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 155/168 | Electrode GX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 156/168 | Mr. Mime GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 157/168 | Banette GX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 158/168 | Scizor GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 159/168 | Stakataka GX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 160/168 | Rayquaza GX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 161/168 | Apricorn Maker | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 162/168 | Bill’s Maintenance | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 163/168 | Copycat | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 164/168 | Lisia | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 165/168 | Steven’s Resolve | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 166/168 | Tate & Liza | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 167/168 | TV Reporter | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 168/168 | Underground Expedition | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 169/168 | Shiftry GX | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 170/168 | Blaziken GX | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 171/168 | Articuno GX | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 172/168 | Electrode GX | Pokémon (Lightning) | Secret Rare | Normal, Holo |
-| 173/168 | Mr. Mime GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 174/168 | Banette GX | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 175/168 | Scizor GX | Pokémon (Metal) | Secret Rare | Normal, Holo |
-| 176/168 | Stakataka GX | Pokémon (Metal) | Secret Rare | Normal, Holo |
-| 177/168 | Rayquaza GX | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 178/168 | Acro Bike | Trainer (Item) | Secret Rare | Normal, Holo |
-| 179/168 | Hustle Belt | Trainer (Tool) | Secret Rare | Normal, Holo |
-| 180/168 | Life Herb | Trainer (Item) | Secret Rare | Normal, Holo |
-| 181/168 | PokéNav | Trainer (Item) | Secret Rare | Normal, Holo |
-| 182/168 | Rainbow Brush | Trainer (Item) | Secret Rare | Normal, Holo |
-| 183/168 | Rainbow Energy | Energy (Special) | Secret Rare | Normal, Holo |
+| 152/168 | Shiftry GX | Pokémon (Grass) | Ultra Rare | Holo |
+| 153/168 | Blaziken GX | Pokémon (Fire) | Ultra Rare | Holo |
+| 154/168 | Articuno GX | Pokémon (Water) | Ultra Rare | Holo |
+| 155/168 | Electrode GX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 156/168 | Mr. Mime GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 157/168 | Banette GX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 158/168 | Scizor GX | Pokémon (Metal) | Ultra Rare | Holo |
+| 159/168 | Stakataka GX | Pokémon (Metal) | Ultra Rare | Holo |
+| 160/168 | Rayquaza GX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 161/168 | Apricorn Maker | Trainer (Supporter) | Ultra Rare | Holo |
+| 162/168 | Bill’s Maintenance | Trainer (Supporter) | Ultra Rare | Holo |
+| 163/168 | Copycat | Trainer (Supporter) | Ultra Rare | Holo |
+| 164/168 | Lisia | Trainer (Supporter) | Ultra Rare | Holo |
+| 165/168 | Steven’s Resolve | Trainer (Supporter) | Ultra Rare | Holo |
+| 166/168 | Tate & Liza | Trainer (Supporter) | Ultra Rare | Holo |
+| 167/168 | TV Reporter | Trainer (Supporter) | Ultra Rare | Holo |
+| 168/168 | Underground Expedition | Trainer (Supporter) | Ultra Rare | Holo |
+| 169/168 | Shiftry GX | Pokémon (Grass) | Secret Rare | Holo |
+| 170/168 | Blaziken GX | Pokémon (Fire) | Secret Rare | Holo |
+| 171/168 | Articuno GX | Pokémon (Water) | Secret Rare | Holo |
+| 172/168 | Electrode GX | Pokémon (Lightning) | Secret Rare | Holo |
+| 173/168 | Mr. Mime GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 174/168 | Banette GX | Pokémon (Psychic) | Secret Rare | Holo |
+| 175/168 | Scizor GX | Pokémon (Metal) | Secret Rare | Holo |
+| 176/168 | Stakataka GX | Pokémon (Metal) | Secret Rare | Holo |
+| 177/168 | Rayquaza GX | Pokémon (Dragon) | Secret Rare | Holo |
+| 178/168 | Acro Bike | Trainer (Item) | Secret Rare | Holo |
+| 179/168 | Hustle Belt | Trainer (Tool) | Secret Rare | Holo |
+| 180/168 | Life Herb | Trainer (Item) | Secret Rare | Holo |
+| 181/168 | PokéNav | Trainer (Item) | Secret Rare | Holo |
+| 182/168 | Rainbow Brush | Trainer (Item) | Secret Rare | Holo |
+| 183/168 | Rainbow Energy | Energy (Special) | Secret Rare | Holo |
 
 ## Slot map
 

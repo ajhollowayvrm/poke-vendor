@@ -145,6 +145,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 6 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -180,7 +181,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 | 030/167 | Torkoal | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 031/167 | Chimchar | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 032/167 | Monferno | Pokémon (Fire) | Common | Normal, Reverse holo |
-| 033/167 | Infernape | Pokémon (Fire) | Rare | Holo, Reverse holo, Normal |
+| 033/167 | Infernape | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 034/167 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 035/167 | Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 036/167 | Litwick | Pokémon (Fire) | Common | Normal, Reverse holo |
@@ -200,7 +201,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 | 050/167 | Milotic | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 051/167 | Snorunt | Pokémon (Water) | Common | Normal, Reverse holo |
 | 052/167 | Glalie | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 053/167 | Froslass | Pokémon (Water) | Rare | Holo, Reverse holo, Normal |
+| 053/167 | Froslass | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 054/167 | Glaceon | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 055/167 | Phione | Pokémon (Water) | Common | Normal, Reverse holo |
 | 056/167 | Froakie | Pokémon (Water) | Common | Normal, Reverse holo |
@@ -242,12 +243,12 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 | 092/167 | Palossand | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 093/167 | Enamorus | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 094/167 | Scream Tail ex | Pokémon (Psychic) | Double rare | Holo |
-| 095/167 | Munkidori | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal |
-| 096/167 | Fezandipiti | Pokémon (Psychic) | Rare | Holo, Reverse holo, Normal |
+| 095/167 | Munkidori | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 096/167 | Fezandipiti | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 097/167 | Sandshrew | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 098/167 | Sandslash | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 099/167 | Hisuian Growlithe | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 100/167 | Hisuian Arcanine | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos), Normal |
+| 100/167 | Hisuian Arcanine | Pokémon (Fighting) | Rare | Holo, Reverse holo, Holo (Cosmos) |
 | 101/167 | Nosepass | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 102/167 | Probopass | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 103/167 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -258,7 +259,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 | 108/167 | Glimmet | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 109/167 | Glimmora | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 110/167 | Ting-Lu | Pokémon (Fighting) | Rare | Holo, Reverse holo |
-| 111/167 | Okidogi | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal |
+| 111/167 | Okidogi | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 112/167 | Cornerstone Mask Ogerpon ex | Pokémon (Fighting) | Double rare | Holo |
 | 113/167 | Poochyena | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 114/167 | Mightyena | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
@@ -374,6 +375,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv06`), f
 | 224/167 | Enhanced Hammer | Trainer (Item) | Hyper rare | Holo (Gold) |
 | 225/167 | Rescue Board | Trainer (Tool) | Hyper rare | Holo (Gold) |
 | 226/167 | Luminous Energy | Energy (Special) | Hyper rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

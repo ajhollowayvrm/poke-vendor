@@ -82,6 +82,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy6`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1534`, fetched 2026-09-12). This added 122 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 35 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -89,7 +90,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy6`), fe
 | 2/108 | Exeggutor | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 3/108 | Wurmple | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 4/108 | Silcoon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 5/108 | Beautifly | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 5/108 | Beautifly | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 6/108 | Cascoon | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 7/108 | Dustox | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 8/108 | Dustox | Pokémon (Grass) | Rare | Normal, Reverse holo |
@@ -110,45 +111,45 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy6`), fe
 | 23/108 | Zapdos | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 24/108 | Electrike | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 25/108 | Manectric | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 26/108 | Thundurus EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
+| 26/108 | Thundurus EX | Pokémon (Lightning) | Ultra Rare | Holo |
 | 27/108 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 28/108 | Natu | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 29/108 | Xatu | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 30/108 | Shuppet | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 31/108 | Banette | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 32/108 | Banette | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 33/108 | Deoxys | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
-| 34/108 | Gallade EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 35/108 | M Gallade EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+| 33/108 | Deoxys | Pokémon (Psychic) | Rare | Holo, Reverse holo |
+| 34/108 | Gallade EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 35/108 | M Gallade EX | Pokémon (Psychic) | Ultra Rare | Holo |
 | 36/108 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 37/108 | Gliscor | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 38/108 | Binacle | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 39/108 | Hawlucha | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 40/108 | Absol | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 40/108 | Absol | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 41/108 | Inkay | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 42/108 | Jirachi | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 42/108 | Jirachi | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 43/108 | Togepi | Pokémon (Fairy) | Common | Normal, Reverse holo |
 | 44/108 | Togetic | Pokémon (Fairy) | Uncommon | Normal, Reverse holo |
 | 45/108 | Togekiss | Pokémon (Fairy) | Rare | Normal, Reverse holo |
-| 46/108 | Togekiss | Pokémon (Fairy) | Rare | Normal, Holo, Reverse holo |
+| 46/108 | Togekiss | Pokémon (Fairy) | Rare | Holo, Reverse holo |
 | 47/108 | Carbink | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 48/108 | Klefki | Pokémon (Fairy) | Rare | Normal, Reverse holo |
 | 49/108 | Dratini | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 50/108 | Dragonair | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 51/108 | Dragonite | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 52/108 | Dragonite | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 52/108 | Dragonite | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 53/108 | Altaria | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
 | 54/108 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 55/108 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 56/108 | Shelgon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 57/108 | Salamence | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 58/108 | Latios EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 59/108 | M Latios EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 60/108 | Rayquaza EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 61/108 | M Rayquaza EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 62/108 | Hydreigon EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 63/108 | Reshiram | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 64/108 | Zekrom | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 57/108 | Salamence | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 58/108 | Latios EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 59/108 | M Latios EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 60/108 | Rayquaza EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 61/108 | M Rayquaza EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 62/108 | Hydreigon EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 63/108 | Reshiram | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 64/108 | Zekrom | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 65/108 | Spearow | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 66/108 | Fearow | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 67/108 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -156,13 +157,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy6`), fe
 | 69/108 | Skarmory | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 70/108 | Taillow | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 71/108 | Swellow | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 72/108 | Swellow | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 72/108 | Swellow | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 73/108 | Swablu | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 74/108 | Altaria | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 75/108 | Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 76/108 | M Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 77/108 | Shaymin EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 77a | Shaymin EX | Pokémon (Colorless) | Rare | Normal, Holo |
+| 75/108 | Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 76/108 | M Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 77/108 | Shaymin EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 77a | Shaymin EX | Pokémon (Colorless) | Rare | Holo |
 | 78/108 | Pidove | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 79/108 | Tranquill | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 80/108 | Unfezant | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
@@ -184,19 +185,20 @@ Every card in the set, with its variants. Source: the TCGdex API (set `xy6`), fe
 | 95/108 | Wide Lens | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 96/108 | Winona | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 97/108 | Double Dragon Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 98/108 | Thundurus EX | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
-| 99/108 | Gallade EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 100/108 | M Gallade EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 101/108 | Latios EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 102/108 | M Latios EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 103/108 | Hydreigon EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 104/108 | Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 105/108 | M Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 106/108 | Shaymin EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 107/108 | Wally | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 108/108 | Winona | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 109/108 | Energy Switch | Trainer (Item) | Secret Rare | Normal, Holo |
-| 110/108 | VS Seeker | Trainer (Item) | Secret Rare | Normal, Holo |
+| 98/108 | Thundurus EX | Pokémon (Lightning) | Ultra Rare | Holo |
+| 99/108 | Gallade EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 100/108 | M Gallade EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 101/108 | Latios EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 102/108 | M Latios EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 103/108 | Hydreigon EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 104/108 | Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 105/108 | M Rayquaza EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 106/108 | Shaymin EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 107/108 | Wally | Trainer (Supporter) | Ultra Rare | Holo |
+| 108/108 | Winona | Trainer (Supporter) | Ultra Rare | Holo |
+| 109/108 | Energy Switch | Trainer (Item) | Secret Rare | Holo |
+| 110/108 | VS Seeker | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

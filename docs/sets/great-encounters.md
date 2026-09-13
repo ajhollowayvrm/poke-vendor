@@ -78,6 +78,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp4`), fe
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -86,7 +87,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp4`), fe
 | 3/106 | Darkrai | Pokémon (Darkness) | Rare Holo | Holo, Reverse holo |
 | 4/106 | Darkrai | Pokémon (Darkness) | Rare Holo | Holo, Reverse holo |
 | 5/106 | Pachirisu | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
-| 6/106 | Porygon-Z | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo, Normal |
+| 6/106 | Porygon-Z | Pokémon (Colorless) | Rare Holo | Holo, Reverse holo |
 | 7/106 | Rotom | Pokémon (Lightning) | Rare Holo | Holo, Reverse holo |
 | 8/106 | Sceptile | Pokémon (Grass) | Rare Holo | Holo, Reverse holo |
 | 9/106 | Swampert | Pokémon (Water) | Rare Holo | Holo, Reverse holo |

@@ -208,6 +208,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base4`), 
 | 128/130 | Lightning Energy | Energy (Normal) | Common | Normal |
 | 129/130 | Psychic Energy | Energy (Normal) | Common | Normal |
 | 130/130 | Water Energy | Energy (Normal) | Common | Normal |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

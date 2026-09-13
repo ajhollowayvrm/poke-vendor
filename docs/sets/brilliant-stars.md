@@ -356,6 +356,7 @@ TCGdex set `swsh9tg`: 30 cards.
 | TG28 | Single Strike Style Mustard | Trainer (Supporter) | Ultra Rare | Holo |
 | TG29 | Single Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo |
 | TG30 | Rapid Strike Urshifu VMAX | Pokémon (Fighting) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

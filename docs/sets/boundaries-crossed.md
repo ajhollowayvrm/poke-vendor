@@ -124,40 +124,41 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw7`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1408`, fetched 2026-09-12). This added 173 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 43 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/149 | Oddish | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 2/149 | Gloom | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 3/149 | Vileplume | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 3/149 | Vileplume | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 4/149 | Bellossom | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 5/149 | Tangela | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 6/149 | Tangrowth | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 6/149 | Tangrowth | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 7/149 | Scyther | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 8/149 | Heracross | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 9/149 | Celebi-EX | Pokémon (Grass) | Rare | Normal, Holo |
+| 9/149 | Celebi-EX | Pokémon (Grass) | Rare | Holo |
 | 10/149 | Shaymin | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 11/149 | Snivy | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 12/149 | Servine | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 13/149 | Serperior | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 13/149 | Serperior | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 14/149 | Cottonee | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 15/149 | Whimsicott | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 16/149 | Petilil | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 17/149 | Lilligant | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 18/149 | Charmander | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 19/149 | Charmeleon | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 20/149 | Charizard | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 20/149 | Charizard | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 21/149 | Numel | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 22/149 | Camerupt | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 23/149 | Victini | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 24/149 | Tepig | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 25/149 | Pignite | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 26/149 | Emboar | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 26/149 | Emboar | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 27/149 | Darumaka | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 28/149 | Darmanitan | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 29/149 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
 | 30/149 | Wartortle | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 31/149 | Blastoise | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 31/149 | Blastoise | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 32/149 | Psyduck | Pokémon (Water) | Common | Normal, Reverse holo |
 | 33/149 | Psyduck | Pokémon (Water) | Common | Normal, Reverse holo |
 | 34/149 | Golduck | Pokémon (Water) | Uncommon | Normal, Reverse holo |
@@ -167,74 +168,74 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw7`), fe
 | 38/149 | Delibird | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 39/149 | Oshawott | Pokémon (Water) | Common | Normal, Reverse holo |
 | 40/149 | Dewott | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 41/149 | Samurott | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 41/149 | Samurott | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 42/149 | Ducklett | Pokémon (Water) | Common | Normal, Reverse holo |
 | 43/149 | Swanna | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 44/149 | Frillish | Pokémon (Water) | Common | Normal, Reverse holo |
 | 45/149 | Jellicent | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 46/149 | Cryogonal | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 47/149 | Keldeo | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 47/149 | Keldeo | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 48/149 | Keldeo | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 49/149 | Keldeo-EX | Pokémon (Water) | Rare | Normal, Holo |
+| 49/149 | Keldeo-EX | Pokémon (Water) | Rare | Holo |
 | 50/149 | Pikachu | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 51/149 | Voltorb | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 52/149 | Electrode | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 53/149 | Electabuzz | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 54/149 | Electivire | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 54/149 | Electivire | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 55/149 | Chinchou | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 56/149 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
-| 57/149 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 57/149 | Zebstrika | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 58/149 | Wobbuffet | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 59/149 | Spoink | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 60/149 | Grumpig | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 61/149 | Duskull | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 62/149 | Dusclops | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 63/149 | Dusknoir | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 63/149 | Dusknoir | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 64/149 | Croagunk | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 65/149 | Croagunk | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 66/149 | Toxicroak | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 67/149 | Cresselia-EX | Pokémon (Psychic) | Rare | Normal, Holo |
+| 67/149 | Cresselia-EX | Pokémon (Psychic) | Rare | Holo |
 | 68/149 | Munna | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 69/149 | Musharna | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 70/149 | Woobat | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 71/149 | Swoobat | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 72/149 | Venipede | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 73/149 | Whirlipede | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 74/149 | Scolipede | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 74/149 | Scolipede | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 75/149 | Gothita | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 76/149 | Gothorita | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 77/149 | Meloetta | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 77/149 | Meloetta | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 78/149 | Sandshrew | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 79/149 | Sandslash | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 80/149 | Gligar | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 81/149 | Gliscor | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 81/149 | Gliscor | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 82/149 | Makuhita | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 83/149 | Trapinch | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 84/149 | Dwebble | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 85/149 | Crustle | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 85/149 | Crustle | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 86/149 | Mienfoo | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 87/149 | Mienfoo | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 88/149 | Mienshao | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 89/149 | Landorus-EX | Pokémon (Fighting) | Rare | Normal, Holo |
+| 89/149 | Landorus-EX | Pokémon (Fighting) | Rare | Holo |
 | 90/149 | Purrloin | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 91/149 | Liepard | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 91/149 | Liepard | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 92/149 | Vullaby | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 93/149 | Mandibuzz | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 94/149 | Scizor | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 94/149 | Scizor | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 95/149 | Skarmory | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 96/149 | Skarmory | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 97/149 | Klink | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 98/149 | Vibrava | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 99/149 | Flygon | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 99/149 | Flygon | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 100/149 | Black Kyurem | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 101/149 | Black Kyurem-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 101/149 | Black Kyurem-EX | Pokémon (Dragon) | Rare | Holo |
 | 102/149 | White Kyurem | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 103/149 | White Kyurem-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 103/149 | White Kyurem-EX | Pokémon (Dragon) | Rare | Holo |
 | 104/149 | Rattata | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 105/149 | Raticate | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 106/149 | Meowth | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 107/149 | Farfetch’d | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 108/149 | Ditto | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 108/149 | Ditto | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 109/149 | Snorlax | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 110/149 | Togepi | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 111/149 | Dunsparce | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -248,7 +249,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw7`), fe
 | 119/149 | Watchog | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 120/149 | Lillipup | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 121/149 | Herdier | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 122/149 | Stoutland | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 122/149 | Stoutland | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 123/149 | Pidove | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 124/149 | Tranquill | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 125/149 | Unfezant | Pokémon (Colorless) | Rare | Normal, Reverse holo |
@@ -263,23 +264,24 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw7`), fe
 | 134/149 | Skyla | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 135/149 | Switch | Trainer (Item) | Common | Normal, Reverse holo |
 | 136/149 | Town Map | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 137/149 | Computer Search | Trainer (Item) | Rare | Normal, Holo |
-| 138/149 | Crystal Edge | Trainer (Tool) | Rare | Normal, Holo |
-| 139/149 | Crystal Wall | Trainer (Tool) | Rare | Normal, Holo |
-| 140/149 | Gold Potion | Trainer (Item) | Rare | Normal, Holo |
-| 141/149 | Celebi-EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 142/149 | Keldeo-EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 143/149 | Cresselia-EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
-| 144/149 | Landorus-EX | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 145/149 | Black Kyurem-EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 146/149 | White Kyurem-EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 147/149 | Bianca | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 148/149 | Cheren | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 149/149 | Skyla | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 150/149 | Golurk | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 151/149 | Terrakion | Pokémon (Fighting) | Secret Rare | Normal, Holo |
-| 152/149 | Altaria | Pokémon (Dragon) | Secret Rare | Normal, Holo |
-| 153/149 | Rocky Helmet | Trainer (Tool) | Secret Rare | Normal, Holo |
+| 137/149 | Computer Search | Trainer (Item) | Rare | Holo |
+| 138/149 | Crystal Edge | Trainer (Tool) | Rare | Holo |
+| 139/149 | Crystal Wall | Trainer (Tool) | Rare | Holo |
+| 140/149 | Gold Potion | Trainer (Item) | Rare | Holo |
+| 141/149 | Celebi-EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 142/149 | Keldeo-EX | Pokémon (Water) | Ultra Rare | Holo |
+| 143/149 | Cresselia-EX | Pokémon (Psychic) | Ultra Rare | Holo |
+| 144/149 | Landorus-EX | Pokémon (Fighting) | Ultra Rare | Holo |
+| 145/149 | Black Kyurem-EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 146/149 | White Kyurem-EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 147/149 | Bianca | Trainer (Supporter) | Ultra Rare | Holo |
+| 148/149 | Cheren | Trainer (Supporter) | Ultra Rare | Holo |
+| 149/149 | Skyla | Trainer (Supporter) | Ultra Rare | Holo |
+| 150/149 | Golurk | Pokémon (Psychic) | Secret Rare | Holo |
+| 151/149 | Terrakion | Pokémon (Fighting) | Secret Rare | Holo |
+| 152/149 | Altaria | Pokémon (Dragon) | Secret Rare | Holo |
+| 153/149 | Rocky Helmet | Trainer (Tool) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -387,6 +387,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh8`), 
 | 282/264 | Training Court | Trainer (Stadium) | Secret Rare | Holo (Gold) |
 | 283/264 | Grass Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
 | 284/264 | Fire Energy | Energy (Normal) | Secret Rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

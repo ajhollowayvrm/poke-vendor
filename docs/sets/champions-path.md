@@ -180,6 +180,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `swsh3.5`)
 | 78/73 | Piers | Trainer (Supporter) | Secret Rare | Holo |
 | 79/73 | Charizard V | Pokémon (Fire) | Secret Rare | Holo |
 | 80/73 | Suspicious Food Tin | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

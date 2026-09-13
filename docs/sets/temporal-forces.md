@@ -163,6 +163,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 5 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -206,7 +207,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 038/162 | Gouging Fire ex | Pokémon (Fire) | Double rare | Holo |
 | 039/162 | Totodile | Pokémon (Water) | Common | Normal, Reverse holo |
 | 040/162 | Croconaw | Pokémon (Water) | Common | Normal, Reverse holo |
-| 041/162 | Feraligatr | Pokémon (Water) | Rare | Holo, Reverse holo, Normal, Normal (Player rewards program) |
+| 041/162 | Feraligatr | Pokémon (Water) | Rare | Holo, Reverse holo, Normal (Player rewards program) |
 | 042/162 | Carvanha | Pokémon (Water) | Common | Normal, Reverse holo |
 | 043/162 | Sharpedo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 044/162 | Keldeo | Pokémon (Water) | Uncommon | Normal, Reverse holo |
@@ -227,7 +228,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 059/162 | Boltund | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 060/162 | Wugtrio ex | Pokémon (Lightning) | Double rare | Holo |
 | 061/162 | Iron Hands | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 062/162 | Iron Thorns | Pokémon (Lightning) | Rare | Holo, Reverse holo, Normal, Holo (Cosmos) |
+| 062/162 | Iron Thorns | Pokémon (Lightning) | Rare | Holo, Reverse holo, Holo (Cosmos) |
 | 063/162 | Mr. Mime | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 064/162 | Marill | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 065/162 | Azumarill | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -249,7 +250,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 081/162 | Iron Crown ex | Pokémon (Psychic) | Double rare | Holo, Holo (Set logo, Jumbo), Holo (Jumbo) |
 | 082/162 | Meditite | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 083/162 | Medicham | Pokémon (Fighting) | Common | Normal, Reverse holo |
-| 084/162 | Relicanth | Pokémon (Fighting) | Rare | Holo, Reverse holo, Normal |
+| 084/162 | Relicanth | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 085/162 | Drilbur | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 086/162 | Excadrill | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 087/162 | Golett | Pokémon (Fighting) | Common | Normal, Reverse holo |
@@ -284,9 +285,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 116/162 | Meltan | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 117/162 | Melmetal | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 118/162 | Iron Treads | Pokémon (Metal) | Uncommon | Normal, Reverse holo, Normal (Set logo) |
-| 119/162 | Koraidon | Pokémon (Dragon) | Rare | Holo, Reverse holo, Reverse holo (Galaxy, Gamestop), Normal, Holo (Galaxy, Set logo), Normal (Eb games), Holo (Cosmos) |
+| 119/162 | Koraidon | Pokémon (Dragon) | Rare | Holo, Reverse holo, Reverse holo (Galaxy, Gamestop), Holo (Galaxy, Set logo), Normal (Eb games), Holo (Cosmos) |
 | 120/162 | Koraidon ex | Pokémon (Dragon) | Double rare | Holo |
-| 121/162 | Miraidon | Pokémon (Dragon) | Rare | Holo, Reverse holo, Holo (Galaxy), Normal, Holo (Cosmos) |
+| 121/162 | Miraidon | Pokémon (Dragon) | Rare | Holo, Reverse holo, Holo (Galaxy), Holo (Cosmos) |
 | 122/162 | Miraidon ex | Pokémon (Dragon) | Double rare | Holo |
 | 123/162 | Raging Bolt ex | Pokémon (Dragon) | Double rare | Holo, Holo (Set logo, Jumbo), Holo (Jumbo) |
 | 124/162 | Lickitung | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -384,6 +385,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv05`), f
 | 216/162 | Iron Crown ex | Pokémon (Psychic) | Hyper rare | Holo (Gold) |
 | 217/162 | Iron Boulder ex | Pokémon (Fighting) | Hyper rare | Holo (Gold) |
 | 218/162 | Raging Bolt ex | Pokémon (Dragon) | Hyper rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

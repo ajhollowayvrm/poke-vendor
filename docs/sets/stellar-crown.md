@@ -156,12 +156,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv07`), f
 - **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 001/142 | Venusaur ex | Pokémon (Grass) | Double rare | Holo, Holo (Set logo), Holo (Set logo, Jumbo) |
 | 002/142 | Ledyba | Pokémon (Grass) | Common | Normal, Reverse holo |
-| 003/142 | Ledian | Pokémon (Grass) | Rare | Holo, Reverse holo, Normal |
+| 003/142 | Ledian | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 004/142 | Celebi | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 005/142 | Lileep | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 006/142 | Cradily | Pokémon (Grass) | Rare | Reverse holo, Holo |
@@ -277,7 +278,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv07`), f
 | 116/142 | Glameow | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 117/142 | Purugly | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 118/142 | Fan Rotom | Pokémon (Colorless) | Common | Normal, Reverse holo |
-| 119/142 | Bouffalant | Pokémon (Colorless) | Rare | Holo, Reverse holo, Normal |
+| 119/142 | Bouffalant | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 120/142 | Tornadus | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 121/142 | Fletchling | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 122/142 | Fletchinder | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -334,6 +335,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `sv07`), f
 | 173/142 | Terapagos ex | Pokémon (Colorless) | Hyper rare | Holo |
 | 174/142 | Area Zero Underdepths | Trainer (Stadium) | Hyper rare | Holo (Gold) |
 | 175/142 | Bravery Charm | Trainer (Tool) | Hyper rare | Holo (Gold) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

@@ -186,6 +186,7 @@ def build(slug):
         "pattern, for example \"Reverse holo (Poké Ball pattern)\". \"1st Edition\" is a stamp.\n"
         "- A variant in this list can come from a product other than a booster pack.\n"
         + (f"- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group {', '.join(f'`{g}`' for g in TCGCSV_MAP.get(slug, []))}, fetched {FETCHED}). This added {added[0]} variants.\n" if added[0] else "")
+        + (f"- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed {removed['Normal']} prints.\n" if removed.get("Normal") else "")
         + "\n"
     )
     return intro + "\n\n".join(parts) + "\n", report, total_cards
@@ -197,7 +198,7 @@ def insert(slug, section):
     if "\n## Card list\n" in t:
         start = t.index("\n## Card list\n") + 1
         end = t.find("\n## ", start + 5)
-        t = t[:start] + section + t[end + 1:] if end != -1 else t[:start] + section
+        t = t[:start] + section + "\n" + t[end + 1:] if end != -1 else t[:start] + section
     else:
         anchor = "\n## Rarity list\n" if "\n## Rarity list\n" in t else "\n## Sources\n"
         i = t.index(anchor) + 1

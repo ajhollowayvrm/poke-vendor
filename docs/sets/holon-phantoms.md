@@ -132,6 +132,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex13`), f
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1379`, fetched 2026-09-12). This added 99 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 2 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -141,7 +142,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex13`), f
 | 4/110 | Deoxys δ | Pokémon (Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 5/110 | Deoxys δ | Pokémon (Colorless) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 6/110 | Deoxys δ | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |
-| 7/110 | Flygon δ | Pokémon (Grass, Metal) | Rare | Normal, Normal (Set logo), Normal (Jun hasebe), Holo, Reverse holo |
+| 7/110 | Flygon δ | Pokémon (Grass, Metal) | Rare | Normal (Set logo), Normal (Jun hasebe), Holo, Reverse holo |
 | 8/110 | Gyarados δ | Pokémon (Lightning, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 9/110 | Kabutops δ | Pokémon (Lightning) | Rare | Holo, Holo (Set logo), Reverse holo |
 | 10/110 | Kingdra δ | Pokémon (Fire, Metal) | Rare | Holo, Holo (Set logo), Reverse holo |
@@ -245,7 +246,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex13`), f
 | 108/110 | Lightning Energy | Energy (Normal) | Rare | Holo |
 | 109/110 | Psychic Energy | Energy (Normal) | Rare | Holo |
 | 110/110 | Fighting Energy | Energy (Normal) | Rare | Holo |
-| 111/110 | Mew | Pokémon (Psychic) | Rare | Holo, Normal |
+| 111/110 | Mew | Pokémon (Psychic) | Rare | Holo |
 
 ## Slot map
 

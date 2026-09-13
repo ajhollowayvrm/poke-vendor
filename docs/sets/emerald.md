@@ -114,10 +114,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex9`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1410`, fetched 2026-09-12). This added 18 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 3 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
-| 1/106 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 1/106 | Blaziken | Pokémon (Fire) | Rare | Holo, Reverse holo (Set logo) |
 | 2/106 | Deoxys | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 3/106 | Exploud | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Holo (National championships), Holo (National championships, Staff), Normal |
 | 4/106 | Gardevoir | Pokémon (Psychic) | Rare | Holo, Reverse holo (Set logo), Normal |
@@ -126,8 +127,8 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex9`), fe
 | 7/106 | Manectric | Pokémon (Lightning) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 8/106 | Milotic | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 9/106 | Rayquaza | Pokémon (Colorless) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 10/106 | Sceptile | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 11/106 | Swampert | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 10/106 | Sceptile | Pokémon (Grass) | Rare | Holo, Reverse holo (Set logo) |
+| 11/106 | Swampert | Pokémon (Water) | Rare | Holo, Reverse holo (Set logo) |
 | 12/106 | Chimecho | Pokémon (Psychic) | Rare | Normal, Reverse holo (Set logo) |
 | 13/106 | Glalie | Pokémon (Water) | Rare | Normal, Reverse holo (Set logo) |
 | 14/106 | Groudon | Pokémon (Fighting) | Rare | Normal, Reverse holo (Set logo) |

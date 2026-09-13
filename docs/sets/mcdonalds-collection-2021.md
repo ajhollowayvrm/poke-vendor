@@ -125,6 +125,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `2021swsh`
 | 23/25 | Popplio | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
 | 24/25 | Sobble | Pokémon (Water) | None | Normal (25th celebration), Holo (25th celebration) |
 | 25/25 | Pikachu | Pokémon (Lightning) | None | Normal (25th celebration), Holo (25th celebration) |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

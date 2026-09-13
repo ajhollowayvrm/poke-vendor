@@ -136,6 +136,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex7`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1428`, fetched 2026-09-12). This added 18 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 1 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -145,7 +146,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex7`), fe
 | 4/109 | Dark Electrode | Pokémon (Lightning, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 5/109 | Dark Houndoom | Pokémon (Darkness, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 6/109 | Dark Hypno | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
-| 7/109 | Dark Marowak | Pokémon (Fighting, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
+| 7/109 | Dark Marowak | Pokémon (Fighting, Darkness) | Rare | Holo, Reverse holo (Set logo) |
 | 8/109 | Dark Octillery | Pokémon (Water, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 9/109 | Dark Slowking | Pokémon (Psychic, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |
 | 10/109 | Dark Steelix | Pokémon (Metal, Darkness) | Rare | Holo, Reverse holo (Set logo), Normal |

@@ -124,6 +124,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1413`, fetched 2026-09-12). This added 148 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 29 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -140,18 +141,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 11/135 | Maractus | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 12/135 | Foongus | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 13/135 | Amoonguss | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 14/135 | Moltres-EX | Pokémon (Fire) | Rare | Normal, Holo |
+| 14/135 | Moltres-EX | Pokémon (Fire) | Rare | Holo |
 | 15/135 | Chimchar | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 16/135 | Monferno | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
-| 17/135 | Infernape | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 18/135 | Victini-EX | Pokémon (Fire) | Rare | Normal, Holo |
+| 17/135 | Infernape | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 18/135 | Victini-EX | Pokémon (Fire) | Rare | Holo |
 | 19/135 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 20/135 | Simisear | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 21/135 | Litwick | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 22/135 | Lampent | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 23/135 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 24/135 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
-| 25/135 | Articuno-EX | Pokémon (Water) | Rare | Normal, Holo |
+| 25/135 | Articuno-EX | Pokémon (Water) | Rare | Holo |
 | 26/135 | Swinub | Pokémon (Water) | Common | Normal, Reverse holo |
 | 27/135 | Piloswine | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 28/135 | Mamoswine | Pokémon (Water) | Rare | Normal, Reverse holo |
@@ -160,7 +161,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 31/135 | Ludicolo | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 32/135 | Carvanha | Pokémon (Water) | Common | Normal, Reverse holo |
 | 33/135 | Sharpedo | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 34/135 | Manaphy | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 34/135 | Manaphy | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 35/135 | Vanillite | Pokémon (Water) | Common | Normal, Reverse holo |
 | 36/135 | Vanillish | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 37/135 | Vanilluxe | Pokémon (Water) | Rare | Normal, Reverse holo |
@@ -172,27 +173,27 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 43/135 | Magnemite | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 44/135 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 45/135 | Magneton | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 46/135 | Magnezone | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 46/135 | Magnezone | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 47/135 | Magnezone | Pokémon (Lightning) | Rare | Normal, Reverse holo |
-| 48/135 | Zapdos-EX | Pokémon (Lightning) | Rare | Normal, Holo |
+| 48/135 | Zapdos-EX | Pokémon (Lightning) | Rare | Holo |
 | 49/135 | Rotom | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 50/135 | Joltik | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 51/135 | Galvantula | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 52/135 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 53/135 | Zubat | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 54/135 | Golbat | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 55/135 | Crobat | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 55/135 | Crobat | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 56/135 | Koffing | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 57/135 | Koffing | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 58/135 | Weezing | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 58/135 | Weezing | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 59/135 | Ralts | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 60/135 | Kirlia | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 61/135 | Gallade | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 61/135 | Gallade | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 62/135 | Giratina | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 63/135 | Trubbish | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 64/135 | Trubbish | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 65/135 | Trubbish | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 66/135 | Garbodor | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 66/135 | Garbodor | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 67/135 | Garbodor | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 68/135 | Elgyem | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 69/135 | Elgyem | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
@@ -204,7 +205,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 75/135 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 76/135 | Riolu | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 77/135 | Lucario | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 78/135 | Lucario | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 78/135 | Lucario | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 79/135 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 80/135 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 81/135 | Conkeldurr | Pokémon (Fighting) | Rare | Normal, Reverse holo |
@@ -216,13 +217,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 87/135 | Skarmory | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 88/135 | Klink | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 89/135 | Klang | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 90/135 | Klinklang | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 90/135 | Klinklang | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 91/135 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 92/135 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 93/135 | Cobalion-EX | Pokémon (Metal) | Rare | Normal, Holo |
+| 93/135 | Cobalion-EX | Pokémon (Metal) | Rare | Holo |
 | 94/135 | Druddigon | Pokémon (Dragon) | Rare | Normal, Reverse holo |
-| 95/135 | Black Kyurem-EX | Pokémon (Dragon) | Rare | Normal, Holo |
-| 96/135 | White Kyurem-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 95/135 | Black Kyurem-EX | Pokémon (Dragon) | Rare | Holo |
+| 96/135 | White Kyurem-EX | Pokémon (Dragon) | Rare | Holo |
 | 97/135 | Clefairy | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 98/135 | Clefable | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 99/135 | Doduo | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -230,11 +231,11 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 101/135 | Snorlax | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 102/135 | Togepi | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 103/135 | Togetic | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 104/135 | Togekiss | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 104/135 | Togekiss | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 105/135 | Whismur | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 106/135 | Loudred | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 107/135 | Exploud | Pokémon (Colorless) | Rare | Normal, Reverse holo |
-| 108/135 | Lugia-EX | Pokémon (Colorless) | Rare | Normal, Holo |
+| 108/135 | Lugia-EX | Pokémon (Colorless) | Rare | Holo |
 | 109/135 | Skitty | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 110/135 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 111/135 | Patrat | Pokémon (Colorless) | Common | Normal, Reverse holo |
@@ -254,17 +255,18 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw8`), fe
 | 125/135 | Team Plasma Grunt | Trainer (Supporter) | Uncommon | Normal, Reverse holo |
 | 126/135 | Virbank City Gym | Trainer (Stadium) | Uncommon | Normal, Reverse holo |
 | 127/135 | Plasma Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 128/135 | Dowsing Machine | Trainer (Item) | Rare | Normal, Holo |
-| 129/135 | Scramble Switch | Trainer (Item) | Rare | Normal, Holo |
-| 130/135 | Victory Piece | Trainer (Tool) | Rare | Normal, Holo |
-| 131/135 | Victini-EX | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 132/135 | Articuno-EX | Pokémon (Water) | Ultra Rare | Normal, Holo |
-| 133/135 | Cobalion-EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 134/135 | Lugia-EX | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
-| 135/135 | Colress | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 136/135 | Charizard | Pokémon (Fire) | Secret Rare | Normal, Holo |
-| 137/135 | Blastoise | Pokémon (Water) | Secret Rare | Normal, Holo |
-| 138/135 | Random Receiver | Trainer (Item) | Secret Rare | Normal, Holo |
+| 128/135 | Dowsing Machine | Trainer (Item) | Rare | Holo |
+| 129/135 | Scramble Switch | Trainer (Item) | Rare | Holo |
+| 130/135 | Victory Piece | Trainer (Tool) | Rare | Holo |
+| 131/135 | Victini-EX | Pokémon (Fire) | Ultra Rare | Holo |
+| 132/135 | Articuno-EX | Pokémon (Water) | Ultra Rare | Holo |
+| 133/135 | Cobalion-EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 134/135 | Lugia-EX | Pokémon (Colorless) | Ultra Rare | Holo |
+| 135/135 | Colress | Trainer (Supporter) | Ultra Rare | Holo |
+| 136/135 | Charizard | Pokémon (Fire) | Secret Rare | Holo |
+| 137/135 | Blastoise | Pokémon (Water) | Secret Rare | Holo |
+| 138/135 | Random Receiver | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

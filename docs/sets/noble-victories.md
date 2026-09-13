@@ -101,12 +101,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1385`, fetched 2026-09-12). This added 113 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 19 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | 1/101 | Sewaddle | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 2/101 | Swadloon | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
-| 3/101 | Leavanny | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
+| 3/101 | Leavanny | Pokémon (Grass) | Rare | Holo, Reverse holo |
 | 4/101 | Petilil | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 5/101 | Lilligant | Pokémon (Grass) | Rare | Normal, Reverse holo |
 | 6/101 | Dwebble | Pokémon (Grass) | Common | Normal, Reverse holo |
@@ -116,9 +117,9 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 | 10/101 | Amoonguss | Pokémon (Grass) | Uncommon | Normal, Reverse holo |
 | 11/101 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 12/101 | Accelgor | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 13/101 | Virizion | Pokémon (Grass) | Rare | Normal, Holo, Reverse holo |
-| 14/101 | Victini | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
-| 15/101 | Victini | Pokémon (Fire) | Rare | Normal, Holo, Reverse holo |
+| 13/101 | Virizion | Pokémon (Grass) | Rare | Holo, Reverse holo |
+| 14/101 | Victini | Pokémon (Fire) | Rare | Holo, Reverse holo |
+| 15/101 | Victini | Pokémon (Fire) | Rare | Holo, Reverse holo |
 | 16/101 | Pansear | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 17/101 | Simisear | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
 | 18/101 | Heatmor | Pokémon (Fire) | Uncommon | Normal, Reverse holo |
@@ -137,14 +138,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 | 31/101 | Jellicent | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 32/101 | Cryogonal | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 33/101 | Cryogonal | Pokémon (Water) | Rare | Normal, Reverse holo |
-| 34/101 | Kyurem | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 34/101 | Kyurem | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 35/101 | Blitzle | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 36/101 | Zebstrika | Pokémon (Lightning) | Rare | Normal, Reverse holo |
 | 37/101 | Emolga | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
 | 38/101 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 39/101 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 40/101 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 41/101 | Eelektross | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 41/101 | Eelektross | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 42/101 | Stunfisk | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 43/101 | Victini | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 44/101 | Yamask | Pokémon (Psychic) | Common | Normal, Reverse holo |
@@ -167,7 +168,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 | 61/101 | Gigalith | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 62/101 | Timburr | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 63/101 | Gurdurr | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 64/101 | Conkeldurr | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 64/101 | Conkeldurr | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 65/101 | Conkeldurr | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 66/101 | Archen | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 67/101 | Archeops | Pokémon (Fighting) | Rare | Normal, Reverse holo |
@@ -176,22 +177,22 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 | 70/101 | Mienshao | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 71/101 | Golett | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 72/101 | Golurk | Pokémon (Fighting) | Rare | Normal, Reverse holo |
-| 73/101 | Terrakion | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
-| 74/101 | Landorus | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 73/101 | Terrakion | Pokémon (Fighting) | Rare | Holo, Reverse holo |
+| 74/101 | Landorus | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 75/101 | Pawniard | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 76/101 | Bisharp | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
 | 77/101 | Deino | Pokémon (Darkness) | Common | Normal, Reverse holo |
 | 78/101 | Zweilous | Pokémon (Darkness) | Uncommon | Normal, Reverse holo |
-| 79/101 | Hydreigon | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 79/101 | Hydreigon | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 80/101 | Escavalier | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 81/101 | Pawniard | Pokémon (Metal) | Common | Normal, Reverse holo |
-| 82/101 | Bisharp | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 82/101 | Bisharp | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 83/101 | Durant | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
-| 84/101 | Cobalion | Pokémon (Metal) | Rare | Normal, Holo, Reverse holo |
+| 84/101 | Cobalion | Pokémon (Metal) | Rare | Holo, Reverse holo |
 | 85/101 | Audino | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 86/101 | Axew | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 87/101 | Fraxure | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 88/101 | Haxorus | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 88/101 | Haxorus | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 89/101 | Druddigon | Pokémon (Colorless) | Rare | Normal, Reverse holo |
 | 90/101 | Cover Fossil | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 91/101 | Eviolite | Trainer (Tool) | Uncommon | Normal, Reverse holo |
@@ -200,12 +201,13 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 | 94/101 | Rocky Helmet | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 95/101 | Super Rod | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 96/101 | Xtransceiver | Trainer (Item) | Uncommon | Normal, Reverse holo |
-| 97/101 | Virizion | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 98/101 | Victini | Pokémon (Fire) | Ultra Rare | Normal, Holo |
-| 99/101 | Terrakion | Pokémon (Fighting) | Ultra Rare | Normal, Holo |
-| 100/101 | Cobalion | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 101/101 | N | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 102/101 | Meowth | Pokémon (Colorless) | Secret Rare | Normal, Holo |
+| 97/101 | Virizion | Pokémon (Grass) | Ultra Rare | Holo |
+| 98/101 | Victini | Pokémon (Fire) | Ultra Rare | Holo |
+| 99/101 | Terrakion | Pokémon (Fighting) | Ultra Rare | Holo |
+| 100/101 | Cobalion | Pokémon (Metal) | Ultra Rare | Holo |
+| 101/101 | N | Trainer (Supporter) | Ultra Rare | Holo |
+| 102/101 | Meowth | Pokémon (Colorless) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one

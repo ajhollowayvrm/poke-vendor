@@ -134,6 +134,7 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw10`), f
 - **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil pattern, for example "Reverse holo (Poké Ball pattern)". "1st Edition" is a stamp.
 - A variant in this list can come from a product other than a booster pack.
 - Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group `1370`, fetched 2026-09-12). This added 112 variants.
+- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed 30 prints.
 
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
@@ -145,14 +146,14 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw10`), f
 | 6/101 | Karrablast | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 7/101 | Shelmet | Pokémon (Grass) | Common | Normal, Reverse holo |
 | 8/101 | Accelgor | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 9/101 | Virizion-EX | Pokémon (Grass) | Rare | Normal, Holo |
+| 9/101 | Virizion-EX | Pokémon (Grass) | Rare | Holo |
 | 10/101 | Genesect | Pokémon (Grass) | Rare | Normal, Reverse holo |
-| 11/101 | Genesect-EX | Pokémon (Grass) | Rare | Normal, Holo |
+| 11/101 | Genesect-EX | Pokémon (Grass) | Rare | Holo |
 | 12/101 | Larvesta | Pokémon (Fire) | Common | Normal, Reverse holo |
 | 13/101 | Volcarona | Pokémon (Fire) | Rare | Normal, Reverse holo |
 | 14/101 | Squirtle | Pokémon (Water) | Common | Normal, Reverse holo |
 | 15/101 | Wartortle | Pokémon (Water) | Uncommon | Normal, Reverse holo |
-| 16/101 | Blastoise | Pokémon (Water) | Rare | Normal, Holo, Reverse holo |
+| 16/101 | Blastoise | Pokémon (Water) | Rare | Holo, Reverse holo |
 | 17/101 | Lapras | Pokémon (Water) | Common | Normal, Reverse holo |
 | 18/101 | Remoraid | Pokémon (Water) | Common | Normal, Reverse holo |
 | 19/101 | Octillery | Pokémon (Water) | Uncommon | Normal, Reverse holo |
@@ -166,51 +167,51 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw10`), f
 | 27/101 | Tirtouga | Pokémon (Water) | Uncommon | Normal, Reverse holo |
 | 28/101 | Carracosta | Pokémon (Water) | Rare | Normal, Reverse holo |
 | 29/101 | Ducklett | Pokémon (Water) | Common | Normal, Reverse holo |
-| 30/101 | Kyurem-EX | Pokémon (Water) | Rare | Normal, Holo |
+| 30/101 | Kyurem-EX | Pokémon (Water) | Rare | Holo |
 | 31/101 | Tynamo | Pokémon (Lightning) | Common | Normal, Reverse holo |
 | 32/101 | Eelektrik | Pokémon (Lightning) | Uncommon | Normal, Reverse holo |
-| 33/101 | Eelektross | Pokémon (Lightning) | Rare | Normal, Holo, Reverse holo |
+| 33/101 | Eelektross | Pokémon (Lightning) | Rare | Holo, Reverse holo |
 | 34/101 | Drifloon | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 35/101 | Drifblim | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 36/101 | Uxie | Pokémon (Psychic) | Rare | Normal, Reverse holo |
-| 37/101 | Mesprit | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 37/101 | Mesprit | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 38/101 | Azelf | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 39/101 | Munna | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 40/101 | Musharna | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
-| 41/101 | Sigilyph | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 41/101 | Sigilyph | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 42/101 | Solosis | Pokémon (Psychic) | Common | Normal, Reverse holo |
 | 43/101 | Duosion | Pokémon (Psychic) | Uncommon | Normal, Reverse holo |
 | 44/101 | Reuniclus | Pokémon (Psychic) | Rare | Normal, Reverse holo |
 | 45/101 | Golett | Pokémon (Psychic) | Common | Normal, Reverse holo |
-| 46/101 | Golurk | Pokémon (Psychic) | Rare | Normal, Holo, Reverse holo |
+| 46/101 | Golurk | Pokémon (Psychic) | Rare | Holo, Reverse holo |
 | 47/101 | Machop | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 48/101 | Machoke | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
-| 49/101 | Machamp | Pokémon (Fighting) | Rare | Normal, Holo, Reverse holo |
+| 49/101 | Machamp | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 50/101 | Machamp | Pokémon (Fighting) | Rare | Normal, Reverse holo |
 | 51/101 | Throh | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 52/101 | Sawk | Pokémon (Fighting) | Common | Normal, Reverse holo |
 | 53/101 | Archen | Pokémon (Fighting) | Uncommon | Normal, Reverse holo |
 | 54/101 | Archeops | Pokémon (Fighting) | Rare | Holo, Reverse holo |
 | 55/101 | Houndour | Pokémon (Darkness) | Common | Normal, Reverse holo |
-| 56/101 | Houndoom | Pokémon (Darkness) | Rare | Normal, Holo, Reverse holo |
+| 56/101 | Houndoom | Pokémon (Darkness) | Rare | Holo, Reverse holo |
 | 57/101 | Aron | Pokémon (Metal) | Common | Normal, Reverse holo |
 | 58/101 | Lairon | Pokémon (Metal) | Uncommon | Normal, Reverse holo |
 | 59/101 | Aggron | Pokémon (Metal) | Rare | Normal, Reverse holo |
-| 60/101 | Jirachi-EX | Pokémon (Metal) | Rare | Normal, Holo |
+| 60/101 | Jirachi-EX | Pokémon (Metal) | Rare | Holo |
 | 61/101 | Escavalier | Pokémon (Metal) | Rare | Normal, Reverse holo |
 | 62/101 | Bagon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 63/101 | Shelgon | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 64/101 | Salamence | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
-| 65/101 | Dialga-EX | Pokémon (Dragon) | Rare | Normal, Holo |
-| 66/101 | Palkia-EX | Pokémon (Dragon) | Rare | Normal, Holo |
+| 64/101 | Salamence | Pokémon (Dragon) | Rare | Holo, Reverse holo |
+| 65/101 | Dialga-EX | Pokémon (Dragon) | Rare | Holo |
+| 66/101 | Palkia-EX | Pokémon (Dragon) | Rare | Holo |
 | 67/101 | Axew | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 68/101 | Fraxure | Pokémon (Dragon) | Uncommon | Normal, Reverse holo |
-| 69/101 | Haxorus | Pokémon (Dragon) | Rare | Normal, Holo, Reverse holo |
+| 69/101 | Haxorus | Pokémon (Dragon) | Rare | Holo, Reverse holo |
 | 70/101 | Druddigon | Pokémon (Dragon) | Common | Normal, Reverse holo |
 | 71/101 | Kangaskhan | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 72/101 | Porygon | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 73/101 | Porygon2 | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
-| 74/101 | Porygon-Z | Pokémon (Colorless) | Rare | Normal, Holo, Reverse holo |
+| 74/101 | Porygon-Z | Pokémon (Colorless) | Rare | Holo, Reverse holo |
 | 75/101 | Teddiursa | Pokémon (Colorless) | Common | Normal, Reverse holo |
 | 76/101 | Ursaring | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
 | 77/101 | Chatot | Pokémon (Colorless) | Uncommon | Normal, Reverse holo |
@@ -228,20 +229,21 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw10`), f
 | 89/101 | Silver Mirror | Trainer (Tool) | Uncommon | Normal, Reverse holo |
 | 90/101 | Ultra Ball | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 91/101 | Plasma Energy | Energy (Special) | Uncommon | Normal, Reverse holo |
-| 92/101 | G Booster | Trainer (Tool) | Rare | Normal, Holo |
-| 93/101 | G Scope | Trainer (Tool) | Rare | Normal, Holo |
-| 94/101 | Master Ball | Trainer (Item) | Rare | Normal, Holo |
-| 95/101 | Scoop Up Cyclone | Trainer (Item) | Rare | Normal, Holo |
-| 96/101 | Virizion-EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 97/101 | Genesect-EX | Pokémon (Grass) | Ultra Rare | Normal, Holo |
-| 98/101 | Jirachi-EX | Pokémon (Metal) | Ultra Rare | Normal, Holo |
-| 99/101 | Dialga-EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 100/101 | Palkia-EX | Pokémon (Dragon) | Ultra Rare | Normal, Holo |
-| 101/101 | Iris | Trainer (Supporter) | Ultra Rare | Normal, Holo |
-| 102/101 | Exeggcute | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 103/101 | Virizion | Pokémon (Grass) | Secret Rare | Normal, Holo |
-| 104/101 | Dusknoir | Pokémon (Psychic) | Secret Rare | Normal, Holo |
-| 105/101 | Rare Candy | Trainer (Item) | Secret Rare | Normal, Holo |
+| 92/101 | G Booster | Trainer (Tool) | Rare | Holo |
+| 93/101 | G Scope | Trainer (Tool) | Rare | Holo |
+| 94/101 | Master Ball | Trainer (Item) | Rare | Holo |
+| 95/101 | Scoop Up Cyclone | Trainer (Item) | Rare | Holo |
+| 96/101 | Virizion-EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 97/101 | Genesect-EX | Pokémon (Grass) | Ultra Rare | Holo |
+| 98/101 | Jirachi-EX | Pokémon (Metal) | Ultra Rare | Holo |
+| 99/101 | Dialga-EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 100/101 | Palkia-EX | Pokémon (Dragon) | Ultra Rare | Holo |
+| 101/101 | Iris | Trainer (Supporter) | Ultra Rare | Holo |
+| 102/101 | Exeggcute | Pokémon (Grass) | Secret Rare | Holo |
+| 103/101 | Virizion | Pokémon (Grass) | Secret Rare | Holo |
+| 104/101 | Dusknoir | Pokémon (Psychic) | Secret Rare | Holo |
+| 105/101 | Rare Candy | Trainer (Item) | Secret Rare | Holo |
+
 ## Slot map
 
 How the game builds one pack from the card list. Each row is one
