@@ -123,7 +123,7 @@ TCGplayer group `1919`: 35 products.
 | 133807 | Incineroar GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
 | 218328 | Lunala GX Challenge Box | Collection | 2 | Description | — | 2017 Q2 (set) | No |
 | 131693 | Mega Powers Collection | Collection | 8 | Description | — | 2017 Q2 (set) | Yes |
-| 133808 | Mega Tyranitar EX Premium Collection | Collection | 1 | Description | — | 2017 Q2 (set) | Yes |
+| 133808 | Mega Tyranitar EX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
 | 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | 18 | Bulbapedia | — | 2017 Q2 (set) | No |
 | 133805 | Primarina GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
 | 137872 | Shiny Tapu Koko GX Box | Collection | 4 | Description | — | 2017 Q2 (set) | Yes |

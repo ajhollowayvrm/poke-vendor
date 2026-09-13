@@ -29,7 +29,10 @@ MARK_END = "<!-- product-catalog:end -->"
 WORDS = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve".split())}
 WORDS.update({"eighteen": 18, "twenty": 20, "twenty-four": 24, "thirty-six": 36, "thirty six": 36, "forty": 40})
 NUM = r"(\d+|" + "|".join(sorted(map(re.escape, WORDS), key=len, reverse=True)) + r")"
-PACKS_RE = re.compile(NUM + r"\s+(?:\(\d+\)\s+)?(?:[\w&.:'’—–-]+\s+){0,8}?(?:booster|mini)\s+packs?\b", re.I)
+# The words between the count and "packs" must not hold a sentence end or a nearer count, so "45 cards. Each box
+# also contained eight XY booster packs" gives 8. Three-digit numbers stay allowed for the set name "151".
+GAP_WORD = r"(?!(?:\d{1,2}|" + "|".join(sorted(map(re.escape, WORDS), key=len, reverse=True)) + r")(?![\w-]))[\w&:'’—–-][\w&.:'’—–-]*(?<!\.)\s+"
+PACKS_RE = re.compile(r"(?<![\w—–-])(?!151\b)" + NUM + r"\s+(?:\(\d+\)\s+)?(?:" + GAP_WORD + r"){0,8}?(?:booster|mini)\s+packs?\b", re.I)
 HOLDS_RE = re.compile(NUM + r"\s+(?:[\w&.:'’—–-]+\s+){0,6}?(booster boxes|elite trainer boxes|booster bundles|build & battle boxes|"
                       r"collections|tins|blisters|trainer kits|theme decks|mini tins)\b", re.I)
 KINDS = [
@@ -108,22 +111,52 @@ def bp_sections():
     return out
 
 
-def bp_packs(name, kind, era, sections):
-    # (packs, source) from the best Bulbapedia section title match, or (None, None).
+GROUP_NAMES = {}
+
+
+def own_set_tokens(gid):
+    # Title tokens of the product's own set, from the TCGCSV group name, such as "XY - Primal Clash" or "SV02: Paldea Evolved".
+    if gid not in SLUG_OF:
+        return set()
+    if not GROUP_NAMES:
+        GROUP_NAMES.update({g["groupId"]: g["name"] for g in json.load(open(os.path.join(SEALED, "_groups.json")))})
+    return bp_tokens(re.sub(r"^[A-Za-z]+\d*[a-z]?\s*[:-]\s+", "", GROUP_NAMES.get(gid, "")))
+
+
+def bp_best(name, era, entries, own_set=frozenset()):
+    # The best Bulbapedia section entry for a product name, or None. entries: {page: [(title, title tokens, ...)]}.
+    # A name with no word from its own set also scores with the set's words, and a title with the set's words gets a
+    # small bonus, so "Elite Trainer Box [Kyogre]" in Primal Clash matches "Primal Clash Elite Trainer Box", not
+    # "XY Elite Trainer Box". A title with every word from the brackets also scores on those words, so
+    # "Enhanced 2-Pack Blister Pack [Latios, Zekrom & Palkia]" matches its own blister section.
     nt = bp_tokens(name)
+    bases = [nt, nt | own_set] if own_set and not nt & own_set else [nt]
+    bracket = set().union(*(bp_tokens(b) for b in re.findall(r"\[(.*?)\]", name)))
     best = (0.0, None)
     for page in BP_PAGES.get(era) or [p for v in BP_PAGES.values() for p in v]:
-        for title, tt, n, names_pack in sections.get(page, []):
+        for entry in entries.get(page, []):
+            tt = entry[1]
             if not tt or not (nt & tt):
                 continue
             if not any(k in " ".join(nt) and k in " ".join(tt) for k in BP_KEY):
                 continue
-            score = len(nt & tt) / len(nt | tt)
+            score = 0.0
+            for base in bases:
+                full = base | bracket if bracket and bracket <= tt else base
+                score = max(score, len(full & tt) / len(full | tt))
+            if len(bases) > 1 and own_set <= tt:
+                score += 0.01
             if score > best[0]:
-                best = (score, (title, n, names_pack))
-    if not best[1] or best[0] < 0.6:
+                best = (score, entry)
+    return best[1] if best[0] >= 0.6 else None
+
+
+def bp_packs(name, kind, era, sections, own_set=frozenset()):
+    # (packs, source) from the best Bulbapedia section title match, or (None, None).
+    entry = bp_best(name, era, sections, own_set)
+    if not entry:
         return None, None
-    title, n, names_pack = best[1]
+    title, _, n, names_pack = entry
     mult = re.search(r"\[(?:bundle|set) of (\d+)\]", name, re.I)
     if n is not None:
         return n * (int(mult.group(1)) if mult else 1), "Bulbapedia"
@@ -154,16 +187,20 @@ def stadium_packs(hand_text):
     return int(m.group(1)) * DEFAULT_PACKS["Build & Battle"] + int(m.group(2)) if m else None
 
 
-def packs_of(kind, name, text, era=None, sections=None, hand_text=None):
+def packs_of(kind, name, text, era=None, sections=None, hand_text=None, own_set=frozenset()):
     if kind == "Case or display":
         return None, ""
     if re.search(r"\bstadium\b", name, re.I):
         # A stadium holds Build & Battle Boxes. The description and Bulbapedia count only its loose packs.
         n = stadium_packs(hand_text)
         return (n, "Set file") if n is not None else (None, "Unknown")
+    # Add one count per distinct bullet: "• 4 Celebrations four-card booster packs • 2 additional Pokémon TCG booster
+    # packs" is 6. The text before the first bullet often repeats a count, so it counts only with no bullet count.
+    bullets = list(dict.fromkeys(re.sub(r"\s+", " ", b).strip().lower() for b in text.split("•")[1:]))
+    counts = [num(m.group(1)) for item in bullets for m in [PACKS_RE.search(item)] if m and num(m.group(1))]
     m = PACKS_RE.search(text)
-    if m and num(m.group(1)):
-        return num(m.group(1)), "Description"
+    if counts or (m and num(m.group(1))):
+        return (sum(counts) if counts else num(m.group(1))), "Description"
     m = re.search(r"\b(\d+)[ -]pack\b", name, re.I)
     if m:
         return int(m.group(1)), "Name"
@@ -177,7 +214,7 @@ def packs_of(kind, name, text, era=None, sections=None, hand_text=None):
     if re.search(r"\bsingle pack\b", name, re.I):
         return 1, "Name"
     if sections is not None:
-        n, src = bp_packs(name, kind, era, sections)
+        n, src = bp_packs(name, kind, era, sections, own_set)
         if src:
             return n, src
     if kind == "Build & Battle" and not re.search(r"\bbox\b", name, re.I):
@@ -268,10 +305,10 @@ def build_rows(gid, rows, release_by_slug, priced, eras=None, sections=None):
         doc = open(os.path.join(DOCS, f"{slug}.md")).read()
         m = re.search(r"^## Sealed products\n(.*?)(?=<!-- product-catalog:start|^## )", doc, re.S | re.M)
         hand_text = m.group(1) if m else ""
-    out = []
+    out, own_set = [], own_set_tokens(gid)
     for x, text in sorted(rows, key=lambda r: (kind_of(r[0]["name"]), r[0]["name"])):
         kind = kind_of(x["name"])
-        packs, src = packs_of(kind, x["name"], text, (eras or {}).get(slug), sections, hand_text)
+        packs, src = packs_of(kind, x["name"], text, (eras or {}).get(slug), sections, hand_text, own_set)
         if is_deck_product(x["name"]) and (kind == "Case or display" or not packs):
             REMOVED[kind] += 1
             continue

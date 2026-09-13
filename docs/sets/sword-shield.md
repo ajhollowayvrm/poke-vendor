@@ -135,12 +135,12 @@ TCGplayer group `2585`: 38 products.
 | 206417 | Galar Partners Tin [Inteleon V] | Tin | 5 | Description | — | 2020 Q1 | Yes |
 | 206422 | Galar Partners Tin [Rillaboom V] | Tin | 5 | Description | — | 2020 Q1 | Yes |
 | 206423 | Galar Partners Tin [Set of 3] | Tin | 5 | Description | — | 2020 Q1 | Yes |
-| 287503 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Cinderace V] (Retail Exclusive) | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
-| 287502 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Inteleon V] (Retail Exclusive) | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
-| 287500 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Rillaboom V] (Retail Exclusive) | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
-| 287504 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Cinderace V] (Retail Exclusive) | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
-| 287505 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Inteleon V] (Retail Exclusive) | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
-| 287507 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Rillaboom V] (Retail Exclusive) | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
+| 287503 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Cinderace V] (Retail Exclusive) | Tin | 9 | Description | — | 2020 Q1 (set) | Yes |
+| 287502 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Inteleon V] (Retail Exclusive) | Tin | 9 | Description | — | 2020 Q1 (set) | Yes |
+| 287500 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Rillaboom V] (Retail Exclusive) | Tin | 9 | Description | — | 2020 Q1 (set) | Yes |
+| 287504 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Cinderace V] (Retail Exclusive) | Tin | 9 | Description | — | 2020 Q1 (set) | Yes |
+| 287505 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Inteleon V] (Retail Exclusive) | Tin | 9 | Description | — | 2020 Q1 (set) | Yes |
+| 287507 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Rillaboom V] (Retail Exclusive) | Tin | 10 | Description | — | 2020 Q1 (set) | Yes |
 | 209531 | Spring 2020 Collector's Chest Tin | Tin | 5 | Description | — | 2020 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 

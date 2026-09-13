@@ -119,7 +119,7 @@ TCGplayer group `2534`: 16 products.
 | 199263 | Cosmic Eclipse Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q4 (set) | Yes |
 | 267047 | Cosmic Eclipse Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q4 (set) | Yes |
 | 276587 | Cosmic Eclipse Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q4 (set) | Yes |
-| 546609 | SM - Cosmic Eclipse Sleeved Booster Pack | Booster pack | 10 | Description | — | 2019 Q4 (set) | Yes |
+| 546609 | SM - Cosmic Eclipse Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q4 (set) | Yes |
 | 199310 | Cosmic Eclipse Build & Battle Box | Build & Battle | 4 | Description | — | 2019 Q4 | Yes |
 | 199309 | Cosmic Eclipse Build & Battle Display | Case or display | — | — | 10 build & battle boxes | 2019 Q4 (set) | No |
 | 656706 | Cosmic Eclipse Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2019 Q4 (set) | No |

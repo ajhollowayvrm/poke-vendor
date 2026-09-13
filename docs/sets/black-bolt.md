@@ -217,7 +217,7 @@ TCGplayer group `24325`: 27 products.
 | 630430 | Black Bolt Binder Collection | Collection | 5 | Bulbapedia | — | 2025 Q3 | Yes |
 | 630614 | Black Bolt Tech Sticker Collection | Collection | 3 | Description | — | 2025 Q3 | Yes |
 | 668632 | Unova Heavy Hitters Premium Collection | Collection | 12 | Description | — | 2025 Q3 (set) | Yes |
-| 630612 | Unova Poster Collection | Collection | 2 | Description | — | 2025 Q3 | Yes |
+| 630612 | Unova Poster Collection | Collection | 4 | Description | — | 2025 Q3 | Yes |
 | 630615 | Unova Victini Illustration Collection | Collection | 2 | Description | — | 2025 Q3 | Yes |
 | 630686 | Black Bolt Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2025 Q3 | Yes |
 | 630687 | Black Bolt Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2025 Q3 | Yes |

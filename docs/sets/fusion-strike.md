@@ -138,7 +138,7 @@ TCGplayer group `2906`: 32 products.
 | 253455 | Single Strike Urshifu VMAX Premium Collection | Collection | 8 | Description | — | 2021 Q4 | Yes |
 | 283851 | Urshifu VMAX Premium Collection [Set of 2] | Collection | 8 | Description | — | 2021 Q4 (set) | Yes |
 | 247671 | Fusion Strike Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2021 Q4 (set) | Yes |
-| 247673 | Fusion Strike Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 65 | Description | — | 2021 Q4 (set) | Yes |
+| 247673 | Fusion Strike Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2021 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

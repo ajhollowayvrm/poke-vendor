@@ -150,9 +150,9 @@ TCGplayer group `24688`: 23 products.
 | 692939 | Pitch Black Booster Box | Booster box | 36 | Description | — | 2026 Q3 | Yes |
 | 692942 | Pitch Black Booster Bundle | Booster bundle | 6 | Description | — | 2026 Q3 | Yes |
 | 692944 | Pitch Black Booster Pack | Booster pack | 1 | Kind default | — | 2026 Q3 | Yes |
-| 692945 | Pitch Black Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2026 Q3 | Yes |
+| 692945 | Pitch Black Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2026 Q3 | Yes |
 | 692957 | Pitch Black Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2026 Q3 | Yes |
-| 692958 | Pitch Black Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2026 Q3 | Yes |
+| 692958 | Pitch Black Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2026 Q3 | Yes |
 | 692946 | Pitch Black Build & Battle Box | Build & Battle | 4 | Description | — | 2026 Q3 | Yes |
 | 693589 | Pitch Black 3-Pack Blister Case | Case or display | — | — | Unknown number of blisters | 2026 Q3 | Yes |
 | 692941 | Pitch Black Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2026 Q3 | Yes |

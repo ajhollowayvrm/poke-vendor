@@ -118,9 +118,9 @@ TCGplayer group `1661`: 33 products.
 | 228155 | XY 3 Pack Blister [Xerneas] | Blister | 3 | Description | — | 2015 Q4 (set) | Yes |
 | 228154 | XY 3 Pack Blister [Yveltal] | Blister | 3 | Description | — | 2015 Q4 (set) | No |
 | 107101 | XY BREAKthrough Booster Box | Booster box | 36 | Kind default | — | 2015 Q4 (set) | Yes |
-| 531445 | BREAKthrough Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2015 Q4 (set) | Yes |
+| 531445 | BREAKthrough Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q4 (set) | Yes |
 | 550675 | BREAKthrough Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q4 (set) | No |
-| 276596 | BREAKthrough Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2015 Q4 (set) | Yes |
+| 276596 | BREAKthrough Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q4 (set) | Yes |
 | 107666 | XY BREAKthrough Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q4 (set) | Yes |
 | 117278 | Aurorus EX Box | Collection | 4 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 | 107117 | BREAKthrough Legendary Collection (Set of 2) | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
@@ -129,15 +129,15 @@ TCGplayer group `1661`: 33 products.
 | 117277 | Mega Aerodactyl EX Premium Collection | Collection | 6 | Bulbapedia | — | 2015 Q4 (set) | No |
 | 107108 | Mega Blaziken EX & Mega Swampert EX Premium Collection (Set of 2) | Collection | 8 | Bulbapedia | — | 2015 Q4 (set) | No |
 | 107104 | Mega Blaziken EX Premium Collection | Collection | 8 | Bulbapedia | — | 2015 Q4 (set) | No |
-| 107116 | Mega Mewtwo Collection (Set of 2) | Collection | 2 | Bulbapedia | — | 2015 Q4 (set) | No |
-| 107118 | Mega Mewtwo Collection [Mega Mewtwo X] | Collection | 2 | Bulbapedia | — | 2015 Q4 (set) | Yes |
-| 107119 | Mega Mewtwo Collection [Mega Mewtwo Y] | Collection | 2 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107116 | Mega Mewtwo Collection (Set of 2) | Collection | 4 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107118 | Mega Mewtwo Collection [Mega Mewtwo X] | Collection | 4 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107119 | Mega Mewtwo Collection [Mega Mewtwo Y] | Collection | 4 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 | 107105 | Mega Swampert EX Premium Collection | Collection | 8 | Bulbapedia | — | 2015 Q4 (set) | No |
 | 107114 | Pikachu EX Legendary Collection | Collection | 5 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 | 107109 | XY BREAKthrough Collector Chest | Collection | 5 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 | 229477 | XY BREAKthrough Pin Collection [Zoroark] | Collection | 3 | Description | — | 2015 Q4 (set) | No |
-| 107106 | Elite Trainer Box [Mewtwo X] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q4 (set) | Yes |
-| 107107 | Elite Trainer Box [Mewtwo Y] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107106 | Elite Trainer Box [Mewtwo X] | Elite Trainer Box | 8 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107107 | Elite Trainer Box [Mewtwo Y] | Elite Trainer Box | 8 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

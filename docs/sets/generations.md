@@ -107,17 +107,17 @@ TCGplayer group `1728`, `1729`: 18 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
 | 187238 | Generations Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q1 (set) | Yes |
-| 121363 | Mythical Pokemon Collection Box [Arceus] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 114525 | Mythical Pokemon Collection Box [Celebi] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 118342 | Mythical Pokemon Collection Box [Darkrai] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 126569 | Mythical Pokemon Collection Box [Genesect] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 116999 | Mythical Pokemon Collection Box [Jirachi] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 123740 | Mythical Pokemon Collection Box [Keldeo] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 118796 | Mythical Pokemon Collection Box [Manaphy] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 126568 | Mythical Pokemon Collection Box [Meloetta] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 113774 | Mythical Pokemon Collection Box [Mew] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 123433 | Mythical Pokemon Collection Box [Victini] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
+| 121363 | Mythical Pokemon Collection Box [Arceus] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 114525 | Mythical Pokemon Collection Box [Celebi] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 118342 | Mythical Pokemon Collection Box [Darkrai] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 126569 | Mythical Pokemon Collection Box [Genesect] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 116999 | Mythical Pokemon Collection Box [Jirachi] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 123740 | Mythical Pokemon Collection Box [Keldeo] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 118796 | Mythical Pokemon Collection Box [Manaphy] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 126568 | Mythical Pokemon Collection Box [Meloetta] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 113774 | Mythical Pokemon Collection Box [Mew] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 123433 | Mythical Pokemon Collection Box [Victini] | Collection | 2 | Bulbapedia | — | 2016 Q1 (set) | Yes |
 | 118795 | Red & Blue Collection [Blastoise EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
 | 115598 | Red & Blue Collection [Charizard EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
 | 123432 | Red & Blue Collection [Pikachu EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |

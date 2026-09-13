@@ -104,9 +104,9 @@ TCGplayer group `1701`: 16 products.
 | 117270 | BREAKpoint Single Pack Blister [Hydreigon] | Blister | 1 | Description | — | 2016 Q1 (set) | Yes |
 | 117271 | BREAKpoint Single Pack Blister [Pikachu] | Blister | 1 | Description | — | 2016 Q1 (set) | Yes |
 | 111278 | XY BREAKpoint Booster Box | Booster box | 36 | Kind default | — | 2016 Q1 (set) | No |
-| 531444 | BREAKpoint Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2016 Q1 (set) | Yes |
-| 276597 | BREAKpoint Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2016 Q1 (set) | Yes |
-| 542096 | XY - BREAKpoint Sleeved Booster Pack | Booster pack | 10 | Description | — | 2016 Q1 (set) | Yes |
+| 531444 | BREAKpoint Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q1 (set) | Yes |
+| 276597 | BREAKpoint Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q1 (set) | Yes |
+| 542096 | XY - BREAKpoint Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q1 (set) | Yes |
 | 111279 | XY BREAKpoint Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q1 | Yes |
 | 117279 | Shiny Mega Gyarados Collection | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | No |
 | 111280 | XY BREAKpoint Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2016 Q1 (set) | Yes |

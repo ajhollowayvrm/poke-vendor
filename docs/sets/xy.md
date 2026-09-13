@@ -115,7 +115,7 @@ TCGplayer group `1387`: 26 products.
 | 91601 | XY Booster Box | Booster box | 36 | Kind default | — | 2014 Q1 (set) | Yes |
 | 562107 | XY Base Set Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q1 (set) | Yes |
 | 91602 | XY Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q1 (set) | Yes |
-| 276589 | XY Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2014 Q1 (set) | No |
+| 276589 | XY Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q1 (set) | No |
 | 97729 | Garchomp EX Box | Collection | 4 | Description | — | 2014 Q1 (set) | Yes |
 | 97713 | Kalos Starter Figure Box [Chespin Box] | Collection | 3 | Description | — | 2014 Q1 (set) | Yes |
 | 97714 | Kalos Starter Figure Box [Fennekin Box] | Collection | 3 | Description | — | 2014 Q1 (set) | Yes |
@@ -123,8 +123,8 @@ TCGplayer group `1387`: 26 products.
 | 91598 | Sylveon Collection | Collection | 4 | Description | — | 2014 Q1 (set) | No |
 | 97724 | Xerneas Figure Collection | Collection | 4 | Description | — | 2014 Q1 (set) | No |
 | 97725 | Yveltal Figure Collection | Collection | 4 | Description | — | 2014 Q1 (set) | No |
-| 97747 | XY Elite Trainer Box [Xerneas] | Elite Trainer Box | 45 | Bulbapedia | — | 2014 Q1 (set) | No |
-| 97748 | XY Elite Trainer Box [Yveltal] | Elite Trainer Box | 45 | Bulbapedia | — | 2014 Q1 (set) | No |
+| 97747 | XY Elite Trainer Box [Xerneas] | Elite Trainer Box | 8 | Bulbapedia | — | 2014 Q1 (set) | No |
+| 97748 | XY Elite Trainer Box [Yveltal] | Elite Trainer Box | 8 | Bulbapedia | — | 2014 Q1 (set) | No |
 | 97726 | Legend of Kalos Tin [Xerneas EX] | Tin | 4 | Description | — | 2014 Q1 (set) | Yes |
 | 97727 | Legend of Kalos Tin [Yveltal EX] | Tin | 4 | Description | — | 2014 Q1 (set) | Yes |
 <!-- product-catalog:end -->

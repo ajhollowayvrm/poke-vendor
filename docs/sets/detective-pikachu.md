@@ -105,10 +105,10 @@ TCGplayer group `2409`: 14 products.
 | 237678 | Detective Pikachu: Charizard GX Special Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
 | 185243 | Detective Pikachu: Greninja GX Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
 | 190324 | Detective Pikachu: Mewtwo GX Case File | Case or display | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 264420 | Detective Pikachu Cafe Figure Collection | Collection | 4 | Description | — | 2019 Q1 (set) | No |
-| 185244 | Detective Pikachu: Collector Chest | Collection | 7 | Description | — | 2019 Q2 | Yes |
-| 502477 | Detective Pikachu Tin [Charizard] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |
-| 502478 | Detective Pikachu Tin [Mewtwo] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |
+| 264420 | Detective Pikachu Cafe Figure Collection | Collection | 6 | Description | — | 2019 Q1 (set) | No |
+| 185244 | Detective Pikachu: Collector Chest | Collection | 9 | Description | — | 2019 Q2 | Yes |
+| 502477 | Detective Pikachu Tin [Charizard] | Tin | 6 | Description | — | 2019 Q1 (set) | Yes |
+| 502478 | Detective Pikachu Tin [Mewtwo] | Tin | 6 | Description | — | 2019 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

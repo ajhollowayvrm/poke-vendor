@@ -109,7 +109,7 @@ TCGplayer group `1842`: 34 products.
 | 123446 | XY Evolutions Booster Box | Booster box | 36 | Kind default | — | 2016 Q4 (set) | Yes |
 | 129907 | Evolutions Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q4 (set) | Yes |
 | 272649 | Evolutions Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q4 (set) | Yes |
-| 276600 | Evolutions Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2016 Q4 (set) | No |
+| 276600 | Evolutions Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q4 (set) | No |
 | 272648 | XY - Evolutions Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q4 (set) | Yes |
 | 627740 | Evolutions Elite Trainer Box Case | Case or display | — | — | 10 elite trainer boxes | 2016 Q4 (set) | No |
 | 226363 | XY Evolutions Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2016 Q4 (set) | Yes |
@@ -127,8 +127,8 @@ TCGplayer group `1842`: 34 products.
 | 125738 | Mega Garchomp EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q4 (set) | No |
 | 125737 | Mega Salamence EX Premium Collection | Collection | 8 | Bulbapedia | — | 2016 Q4 (set) | No |
 | 125735 | Mewtwo EX Box | Collection | 3 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 127179 | Mythical Collection [Magearna] | Collection | 2 | Bulbapedia | — | 2016 Q4 (set) | Yes |
-| 127180 | Mythical Collection [Volcanion] | Collection | 2 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 127179 | Mythical Collection [Magearna] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 127180 | Mythical Collection [Volcanion] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
 | 229351 | XY - Evolutions Pin Collection [Mega Blastoise] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
 | 229352 | XY - Evolutions Pin Collection [Mega Venusaur] | Collection | 2 | Description | — | 2016 Q4 (set) | No |

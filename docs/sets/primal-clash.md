@@ -100,14 +100,14 @@ TCGplayer group `1509`: 16 products.
 | 97759 | Primal Clash Three Pack Blister [Furfrou] | Blister | 3 | Description | — | 2015 Q1 (set) | Yes |
 | 97750 | XY Primal Clash Booster Box | Booster box | 36 | Kind default | — | 2015 Q1 (set) | Yes |
 | 276593 | Primal Clash Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q1 (set) | No |
-| 546608 | XY - Primal Clash Sleeved Booster Pack | Booster pack | 10 | Description | — | 2015 Q1 (set) | Yes |
+| 546608 | XY - Primal Clash Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q1 (set) | Yes |
 | 97751 | XY Primal Clash Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q1 (set) | Yes |
 | 656978 | Primal Clash Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2015 Q1 (set) | No |
 | 97820 | Flygon EX Box | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 | 97755 | Primal Groudon Collection | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | No |
 | 97754 | Primal Kyogre Collection | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
-| 97762 | Elite Trainer Box [Groudon] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q1 (set) | No |
-| 97763 | Elite Trainer Box [Kyogre] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97762 | Elite Trainer Box [Groudon] | Elite Trainer Box | Unknown | Unknown | — | 2015 Q1 (set) | No |
+| 97763 | Elite Trainer Box [Kyogre] | Elite Trainer Box | Unknown | Unknown | — | 2015 Q1 (set) | No |
 | 97757 | Legend of Hoenn Tin [Groudon EX] | Tin | 4 | Bulbapedia | — | 2015 Q1 (set) | No |
 | 97756 | Legend of Hoenn Tin [Kyogre EX] | Tin | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 <!-- product-catalog:end -->

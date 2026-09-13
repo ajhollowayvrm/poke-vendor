@@ -167,7 +167,7 @@ TCGplayer group `3040`, `3068`: 31 products.
 | 523959 | Astral Radiance 3 Pack Hanger Box | Collection | 3 | Description | — | 2022 Q2 (set) | Yes |
 | 279598 | Heavy Hitters Premium Collection | Collection | 14 | Description | — | 2022 Q2 (set) | Yes |
 | 265527 | Astral Radiance Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2022 Q2 | Yes |
-| 265528 | Astral Radiance Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 65 | Description | — | 2022 Q2 (set) | Yes |
+| 265528 | Astral Radiance Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2022 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

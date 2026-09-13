@@ -139,10 +139,10 @@ TCGplayer group `24587`: 24 products.
 | 672394 | Perfect Order Booster Box | Booster box | 36 | Description | — | 2026 Q1 | Yes |
 | 672396 | Perfect Order Booster Bundle | Booster bundle | 6 | Description | — | 2026 Q1 | Yes |
 | 672398 | Perfect Order Booster Pack | Booster pack | 1 | Kind default | — | 2026 Q1 | Yes |
-| 672399 | Perfect Order Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2026 Q1 | Yes |
+| 672399 | Perfect Order Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2026 Q1 | Yes |
 | 715707 | Perfect Order Fun Pack | Booster pack | 1 | Kind default | — | 2026 Q1 (set) | No |
 | 672412 | Perfect Order Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2026 Q1 | Yes |
-| 672413 | Perfect Order Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2026 Q1 | Yes |
+| 672413 | Perfect Order Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2026 Q1 | Yes |
 | 672400 | Perfect Order Build & Battle Box | Build & Battle | 4 | Description | — | 2026 Q2 | Yes |
 | 706309 | Perfect Order 3 Pack Blister Case [Chikorita] | Case or display | — | — | 24 blisters | 2026 Q1 (set) | No |
 | 672395 | Perfect Order Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2026 Q1 | Yes |

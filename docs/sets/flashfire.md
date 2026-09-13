@@ -92,7 +92,7 @@ TCGplayer group `1464`: 19 products.
 | 91594 | Flashfire Booster Box | Booster box | 36 | Kind default | — | 2014 Q2 (set) | No |
 | 91595 | Flashfire Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q2 (set) | Yes |
 | 524332 | Flashfire Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q2 (set) | Yes |
-| 276590 | Flashfire Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2014 Q2 (set) | Yes |
+| 276590 | Flashfire Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q2 (set) | Yes |
 | 91612 | Charizard Ex Box | Collection | 4 | Description | — | 2014 Q2 (set) | No |
 | 97742 | Krookodile EX Box | Collection | 4 | Description | — | 2014 Q2 (set) | No |
 | 97741 | Pyroar Box | Collection | 3 | Description | — | 2014 Q2 (set) | Yes |

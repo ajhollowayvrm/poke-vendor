@@ -31,9 +31,9 @@ TCGplayer group `24584`: 9 products.
 | 673439 | First Partner Illustration Collection Case (Series 1) | Case or display | — | — | Unknown number of collections | 2026 Q1 | Yes |
 | 688716 | First Partner Illustration Collection Case (Series 2) | Case or display | — | — | Unknown number of collections | — | Yes |
 | 695402 | First Partner Illustration Collection Case (Series 3) | Case or display | — | — | Unknown number of collections | 2026 Q3 | Yes |
-| 673436 | First Partner Illustration Collection (Series 1) | Collection | 2 | Description | — | 2026 Q1 | Yes |
-| 688712 | First Partner Illustration Collection (Series 2) | Collection | 2 | Description | — | 2026 Q2 | Yes |
-| 695400 | First Partner Illustration Collection (Series 3) | Collection | 2 | Description | — | 2026 Q3 | Yes |
+| 673436 | First Partner Illustration Collection (Series 1) | Collection | 3 | Description | — | 2026 Q1 | Yes |
+| 688712 | First Partner Illustration Collection (Series 2) | Collection | 3 | Description | — | 2026 Q2 | Yes |
+| 695400 | First Partner Illustration Collection (Series 3) | Collection | 3 | Description | — | 2026 Q3 | Yes |
 
 ## First Partner Pack
 
@@ -82,7 +82,7 @@ TCGplayer group `2374`: 559 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
 | 248714 | 2 Pack Blister [Snorlax, Morpeko & Applin Cards] | Blister | 2 | Description | — | — | Yes |
-| 634329 | 2 Pack Blister [Tornadus, Thundurus & Landorus] | Blister | 2 | Description | — | — | Yes |
+| 634329 | 2 Pack Blister [Tornadus, Thundurus & Landorus] | Blister | 3 | Description | — | — | Yes |
 | 482320 | 2-Pack Blister Pack [Meganium, Typhlosion & Feraligatr] | Blister | 2 | Description | — | — | Yes |
 | 683264 | 2-Pack Blister Pack [Oddish, Gloom, & Vileplume] | Blister | 2 | Description | — | — | Yes |
 | 477178 | 2-Pack Blister Pack [Raikou, Entei, & Suicune] | Blister | 2 | Description | — | — | No |
@@ -128,19 +128,19 @@ TCGplayer group `2374`: 559 products.
 | 517119 | Mythical 2-Pack Blister [Celebi] | Blister | 2 | Description | — | — | Yes |
 | 517120 | Mythical 2-Pack Blister [Jirachi] | Blister | 2 | Description | — | — | Yes |
 | 497966 | Pokemon TCG: Back to School Eraser Blister 2023 [Set of 2] | Blister | 2 | Description | — | 2023 Q3 | Yes |
-| 549453 | Pokemon TCG: Back to School Eraser Blister 2024 [Bellibolt] | Blister | 1 | Description | — | 2024 Q3 | Yes |
-| 549452 | Pokemon TCG: Back to School Eraser Blister 2024 [Gengar] | Blister | 1 | Description | — | 2024 Q3 | Yes |
-| 549451 | Pokemon TCG: Back to School Eraser Blister 2024 [Set of 2] | Blister | 1 | Description | — | 2024 Q3 | Yes |
+| 549453 | Pokemon TCG: Back to School Eraser Blister 2024 [Bellibolt] | Blister | 2 | Description | — | 2024 Q3 | Yes |
+| 549452 | Pokemon TCG: Back to School Eraser Blister 2024 [Gengar] | Blister | 2 | Description | — | 2024 Q3 | Yes |
+| 549451 | Pokemon TCG: Back to School Eraser Blister 2024 [Set of 2] | Blister | 2 | Description | — | 2024 Q3 | Yes |
 | 273609 | Pokemon TCG: Back to School Eraser Blister [Eevee] | Blister | 2 | Description | — | 2022 Q3 | No |
 | 497853 | Pokemon TCG: Back to School Eraser Blister [Lechonk] | Blister | 2 | Description | — | 2023 Q3 | Yes |
 | 273608 | Pokemon TCG: Back to School Eraser Blister [Pikachu] | Blister | 2 | Description | — | 2022 Q3 | Yes |
 | 273610 | Pokemon TCG: Back to School Eraser Blister [Set of 2] | Blister | 2 | Description | — | 2022 Q3 | No |
 | 497856 | Pokemon TCG: Back to School Eraser Blister [Smoliv] | Blister | 2 | Description | — | 2023 Q3 | Yes |
-| 200568 | Premium Checklane Blister [Gallade] | Blister | 6 | Bulbapedia | — | — | No |
-| 200567 | Premium Checklane Blister [Gardevoir] | Blister | 6 | Bulbapedia | — | — | No |
+| 200568 | Premium Checklane Blister [Gallade] | Blister | 1 | Bulbapedia | — | — | No |
+| 200567 | Premium Checklane Blister [Gardevoir] | Blister | 1 | Bulbapedia | — | — | No |
 | 276609 | XY 3 Pack Blister [Giratina] | Blister | 3 | Description | — | — | No |
-| 636740 | Costco Pokemon Prismatic Evolutions 2-Pack Trainer Box and Booster Bundle | Booster bundle | 6 | Description | — | — | Yes |
-| 650397 | Costco Pokemon Surging Sparks 2-Pack Trainer Box and Booster Bundle | Booster bundle | 9 | Description | — | — | Yes |
+| 636740 | Costco Pokemon Prismatic Evolutions 2-Pack Trainer Box and Booster Bundle | Booster bundle | 9 | Description | — | — | Yes |
+| 650397 | Costco Pokemon Surging Sparks 2-Pack Trainer Box and Booster Bundle | Booster bundle | 15 | Description | — | — | Yes |
 | 232770 | General Mills 25th Anniversary Booster Pack | Booster pack | 1 | Kind default | — | — | Yes |
 | 190359 | General Mills Promo Booster Pack [Kanto] | Booster pack | 1 | Kind default | — | — | Yes |
 | 190360 | General Mills Promo Booster Pack [Sun & Moon] | Booster pack | 1 | Kind default | — | — | Yes |
@@ -216,7 +216,7 @@ TCGplayer group `2374`: 559 products.
 | 206306 | Black Kyurem Box | Collection | 4 | Description | — | — | No |
 | 662745 | Black Kyurem ex Box | Collection | 4 | Description | — | — | Yes |
 | 231295 | Blastoise VMAX Battle Box | Collection | 4 | Description | — | — | Yes |
-| 650229 | Blaziken ex & Volcanion ex Premium Collection | Collection | 6 | Description | — | 2025 Q3 | Yes |
+| 650229 | Blaziken ex & Volcanion ex Premium Collection | Collection | 10 | Description | — | 2025 Q3 | Yes |
 | 662758 | Blaziken ex Special Collection | Collection | 6 | Description | — | 2025 Q4 | No |
 | 575897 | Bloodmoon Ursaluna ex Box | Collection | 4 | Description | — | 2024 Q4 | Yes |
 | 262968 | Boltund V Box | Collection | 4 | Description | — | 2022 Q2 | Yes |
@@ -256,7 +256,7 @@ TCGplayer group `2374`: 559 products.
 | 594896 | Grand Adventure Collection | Collection | 4 | Description | — | — | Yes |
 | 656950 | Greninja EX & Kingdra EX Special Collection Box | Collection | 8 | Description | — | — | Yes |
 | 594491 | Greninja ex Ultra-Premium Collection | Collection | 16 | Description | — | — | Yes |
-| 526914 | Gyarados ex Premium Collection | Collection | 1 | Description | — | — | Yes |
+| 526914 | Gyarados ex Premium Collection | Collection | 6 | Description | — | — | Yes |
 | 529698 | Heavy Hitters Premium Collection (Fall 2023) | Collection | 14 | Description | — | — | Yes |
 | 616303 | Hop's Zacian ex Box | Collection | 4 | Description | — | 2025 Q1 | Yes |
 | 561521 | Houndstone ex Box | Collection | 4 | Description | — | 2024 Q4 | Yes |
@@ -292,7 +292,7 @@ TCGplayer group `2374`: 559 products.
 | 657884 | Latias ex Special Collection | Collection | 6 | Description | — | — | No |
 | 206316 | Legendary Dragons of Unova Collection | Collection | 4 | Description | — | — | No |
 | 594495 | Legendary Warriors Premium Collection | Collection | 14 | Description | — | — | Yes |
-| 228813 | Legends of Johto Pin Collection | Collection | 3 | Description | — | — | Yes |
+| 228813 | Legends of Johto Pin Collection | Collection | 9 | Description | — | — | Yes |
 | 202117 | Let's Play Pokemon TCG Box | Collection | Unknown | Unknown | — | 2019 Q4 | Yes |
 | 626605 | Lillie Premium Tournament Collection Box | Collection | 6 | Description | — | — | Yes |
 | 262637 | Lucario VSTAR Premium Collection | Collection | 6 | Description | — | — | Yes |
@@ -323,7 +323,7 @@ TCGplayer group `2374`: 559 products.
 | 576482 | Ogerpon ex Premium Collection | Collection | 6 | Description | — | 2024 Q4 | Yes |
 | 527801 | Oinkologne ex Box | Collection | 4 | Description | — | — | Yes |
 | 547129 | Palafin ex Box | Collection | 4 | Description | — | 2024 Q2 | Yes |
-| 532025 | Paldea Adventure Chest | Collection | 1 | Description | — | — | Yes |
+| 532025 | Paldea Adventure Chest | Collection | 6 | Description | — | — | Yes |
 | 451119 | Paldea Collection [Fuecoco/Koraidon ex] | Collection | 4 | Description | — | 2023 Q1 | Yes |
 | 477170 | Paldea Collection [Fuecoco/Miraidon ex] | Collection | 4 | Description | — | 2023 Q1 | Yes |
 | 477171 | Paldea Collection [Quaxly/Koraidon ex] | Collection | 4 | Description | — | 2023 Q1 | Yes |
@@ -384,12 +384,12 @@ TCGplayer group `2374`: 559 products.
 | 575186 | Greninja ex Battle Deck & 2 Booster Bundle | Deck | 2 | Description | — | 2024 Q3 | Yes |
 | 610741 | Costco Pokemon Evolving Skies Elite Trainer Box and Tin | Elite Trainer Box | 8 | Description | — | — | Yes |
 | 690199 | Fusion Strike Elite Trainer Box & 6 Bonus Cards (Sam's Club) | Elite Trainer Box | 8 | Description | — | — | No |
-| 644852 | Prismatic Evolutions Elite Trainer Box and Pokeball (Sam's Club) | Elite Trainer Box | 9 | Description | — | — | Yes |
+| 644852 | Prismatic Evolutions Elite Trainer Box and Pokeball (Sam's Club) | Elite Trainer Box | 12 | Description | — | — | Yes |
 | 266002 | 10th Movie Commemoration Set | Other | Unknown | Unknown | — | — | No |
 | 266001 | 11th Movie Commemoration Set | Other | Unknown | Unknown | — | — | No |
 | 268069 | Boltund V Showcase | Other | 3 | Description | — | 2022 Q2 | No |
 | 685924 | Costco 6-Pack Poke balls | Other | 3 | Description | — | — | Yes |
-| 650885 | Costco Pokemon Pokemon Holiday Calendar and Great Ball Bundle | Other | 6 | Description | — | — | Yes |
+| 650885 | Costco Pokemon Pokemon Holiday Calendar and Great Ball Bundle | Other | 9 | Description | — | — | Yes |
 | 282250 | Holiday Calendar | Other | 6 | Description | — | 2022 Q3 | Yes |
 | 505939 | Holiday Calendar 2023 | Other | 5 | Description | — | 2023 Q3 | Yes |
 | 559089 | Holiday Calendar 2024 | Other | 5 | Description | — | 2024 Q3 | Yes |
@@ -424,9 +424,9 @@ TCGplayer group `2374`: 559 products.
 | 711498 | Blastoise EX Tin (Retail Exclusive) | Tin | 4 | Description | — | — | No |
 | 702637 | Costco Exclusive 4-Tin Bundle: V Heroes Tin [Set of 3] + V Strikers [Empoleon] | Tin | 5 | Description | — | — | No |
 | 701600 | Costco Exclusive 4-Tin Bundle: V Powers Tin [Set of 3] + V Strikers [Tyranitar] | Tin | 5 | Description | — | — | No |
-| 551456 | Costco Galar Pals Mini Tins 5-Pack | Tin | 5 | Description | — | — | Yes |
+| 551456 | Costco Galar Pals Mini Tins 5-Pack | Tin | 2 | Description | — | — | Yes |
 | 636312 | Costco Pokemon Collector 3-Pack: Crown Zenith ETB + Paldea Legends Tins | Tin | 3 | Name | — | — | Yes |
-| 256408 | Costco Pokemon Collector 3-Pack: Eevee Treasure Chest + 2 Poke Ball Tins | Tin | 5 | Description | — | — | Yes |
+| 256408 | Costco Pokemon Collector 3-Pack: Eevee Treasure Chest + 2 Poke Ball Tins | Tin | 8 | Description | — | — | Yes |
 | 587750 | Costco Pokemon Collector 3-Pack: Scarlet & Violet 151 ETB + Paldea Legends Tins | Tin | 3 | Name | — | — | Yes |
 | 587747 | Costco Pokemon Scarlet & Violet 151 Mini Tin 5-pack (Magneton) | Tin | 2 | Description | — | — | Yes |
 | 587746 | Costco Pokemon Scarlet & Violet 151 Mini Tin 5-pack (Meowth) | Tin | 2 | Description | — | — | Yes |
@@ -456,11 +456,11 @@ TCGplayer group `2374`: 559 products.
 | 199789 | Elemental Power Tin [Jolteon GX] | Tin | 4 | Description | — | 2019 Q4 | Yes |
 | 199788 | Elemental Power Tin [Vaporeon GX] | Tin | 4 | Description | — | 2019 Q4 | Yes |
 | 200142 | Fall 2019 Collector's Chest Tin | Tin | 5 | Description | — | — | Yes |
-| 263031 | Fall 2020 Collector's Chest Tin + Great Ball 2-Pack (Retail Exclusive) | Tin | 5 | Description | — | — | No |
-| 263033 | Fall 2020 Collector's Chest Tin + Level Ball 2-Pack (Retail Exclusive) | Tin | 5 | Description | — | — | Yes |
-| 263030 | Fall 2020 Collector's Chest Tin + Poke Ball 2-Pack (Retail Exclusive) | Tin | 5 | Description | — | — | Yes |
-| 263029 | Fall 2020 Collector's Chest Tin + Premier Ball 2-Pack (Retail Exclusive) | Tin | 5 | Description | — | — | Yes |
-| 263034 | Fall 2020 Collector's Chest Tin + Ultra Ball 2-Pack (Retail Exclusive) | Tin | 5 | Description | — | — | Yes |
+| 263031 | Fall 2020 Collector's Chest Tin + Great Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | — | No |
+| 263033 | Fall 2020 Collector's Chest Tin + Level Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | — | Yes |
+| 263030 | Fall 2020 Collector's Chest Tin + Poke Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | — | Yes |
+| 263029 | Fall 2020 Collector's Chest Tin + Premier Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | — | Yes |
+| 263034 | Fall 2020 Collector's Chest Tin + Ultra Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | — | Yes |
 | 220290 | Galar Challengers Tin [Copperajah V] | Tin | 4 | Description | — | — | Yes |
 | 220289 | Galar Challengers Tin [Polteageist V] | Tin | 4 | Description | — | — | Yes |
 | 220292 | Galar Challengers Tin [Set of 3] | Tin | 4 | Description | — | — | No |
@@ -527,8 +527,8 @@ TCGplayer group `2374`: 559 products.
 | 497387 | Paldea Legends Tin [Koraidon ex] (International Version) | Tin | 5 | Description | — | 2023 Q2 | Yes |
 | 497389 | Paldea Legends Tin [Miraidon ex] | Tin | 4 | Description | — | — | Yes |
 | 497388 | Paldea Legends Tin [Miraidon ex] (International Version) | Tin | 5 | Description | — | 2023 Q2 | Yes |
-| 509570 | Paldea Legends Tins [Bundle of 2] | Tin | 4 | Bulbapedia | — | — | Yes |
-| 543171 | Paldea Legends Tins [Bundle of 2] (International Version) | Tin | 4 | Bulbapedia | — | — | Yes |
+| 509570 | Paldea Legends Tins [Bundle of 2] | Tin | 10 | Bulbapedia | — | — | Yes |
+| 543171 | Paldea Legends Tins [Bundle of 2] (International Version) | Tin | 10 | Bulbapedia | — | — | Yes |
 | 504330 | Paldea Partners Tin [Meowscarada ex] | Tin | 5 | Description | — | — | Yes |
 | 504332 | Paldea Partners Tin [Meowscarada ex] [International Edition] | Tin | 4 | Description | — | — | Yes |
 | 504438 | Paldea Partners Tin [Quaquaval ex] | Tin | 5 | Description | — | — | Yes |
@@ -546,12 +546,12 @@ TCGplayer group `2374`: 559 products.
 | 698545 | Paradox Destinies Tin [Iron Crown ex] (International Version) | Tin | 5 | Description | — | — | No |
 | 562357 | Paradox Destinies Tin [Raging Bolt ex] | Tin | 5 | Description | — | 2024 Q3 | Yes |
 | 562360 | Paradox Destinies Tin [Set of 4] | Tin | 5 | Description | — | 2024 Q3 | Yes |
-| 683004 | Poke Ball with Two Mini Tins (Sam's Club) | Tin | 2 | Description | — | — | No |
-| 245519 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Dusk Ball | Tin | 3 | Description | — | — | Yes |
-| 245518 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Great Ball | Tin | 3 | Description | — | — | Yes |
-| 245517 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Poke Ball | Tin | 3 | Description | — | — | No |
-| 245520 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Premier Ball | Tin | 3 | Description | — | — | No |
-| 245521 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Ultra Ball | Tin | 3 | Description | — | — | No |
+| 683004 | Poke Ball with Two Mini Tins (Sam's Club) | Tin | 5 | Description | — | — | No |
+| 245519 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Dusk Ball | Tin | 5 | Description | — | — | Yes |
+| 245518 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Great Ball | Tin | 5 | Description | — | — | Yes |
+| 245517 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Poke Ball | Tin | 5 | Description | — | — | No |
+| 245520 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Premier Ball | Tin | 5 | Description | — | — | No |
+| 245521 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Ultra Ball | Tin | 5 | Description | — | — | No |
 | 210170 | Pokemon - Poke Ball Tin - Dive Ball | Tin | 3 | Description | — | — | Yes |
 | 214268 | Pokemon - Poke Ball Tin - Dusk Ball | Tin | 3 | Description | — | — | Yes |
 | 198519 | Pokemon - Poke Ball Tin - Great Ball | Tin | 3 | Description | — | — | Yes |
@@ -589,7 +589,7 @@ TCGplayer group `2374`: 559 products.
 | 541205 | Pokemon Stacking Tins [Set of 3] (Psychic, Metal, and Dragon) | Tin | 3 | Description | — | — | Yes |
 | 260868 | Pokemon Stacking Tins [Set of 6] | Tin | 3 | Description | — | — | No |
 | 616297 | Pokemon Stacking Tins: Treasures of Ruin, Paradox Pokemon, Ogerpon [Set of 3] | Tin | 3 | Description | — | — | Yes |
-| 616737 | Retail Exclusive Pokemon Paldean Fates Mini Tins + Poke Ball Tin | Tin | 3 | Description | — | — | Yes |
+| 616737 | Retail Exclusive Pokemon Paldean Fates Mini Tins + Poke Ball Tin | Tin | 5 | Description | — | — | Yes |
 | 218438 | Salamence Dragons Tin | Tin | 3 | Description | — | — | Yes |
 | 262641 | Sinnoh Star Mini Tin [Chimchar] | Tin | 2 | Description | — | 2022 Q2 | Yes |
 | 262642 | Sinnoh Star Mini Tin [Munchlax] | Tin | 2 | Description | — | 2022 Q2 | Yes |

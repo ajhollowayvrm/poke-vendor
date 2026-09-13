@@ -106,8 +106,8 @@ TCGplayer group `1406`: 6 products.
 | 98591 | Platinum Booster Pack | Booster pack | 1 | Kind default | — | 2009 Q1 (set) | Yes |
 | 485826 | Fall 2009 Collector's Tin [Garchomp LV.X] | Tin | 3 | Description | — | 2009 Q1 (set) | No |
 | 485827 | Fall 2009 Collector's Tin [Rayquaza LV.X] | Tin | 3 | Description | — | 2009 Q1 (set) | No |
-| 485825 | Spring 2009 Collector's Tin [Dialga LV.X] | Tin | 1 | Description | — | 2009 Q1 (set) | No |
-| 485824 | Spring 2009 Collector's Tin [Shaymin LV.X] | Tin | 1 | Description | — | 2009 Q1 (set) | No |
+| 485825 | Spring 2009 Collector's Tin [Dialga LV.X] | Tin | 4 | Description | — | 2009 Q1 (set) | No |
+| 485824 | Spring 2009 Collector's Tin [Shaymin LV.X] | Tin | 4 | Description | — | 2009 Q1 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

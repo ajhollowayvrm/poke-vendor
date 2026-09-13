@@ -129,27 +129,27 @@ TCGplayer group `2867`, `2931`: 36 products.
 | 242812 | Celebrations Mini Tin Display | Case or display | — | — | 1 mini tins | 2021 Q4 (set) | Yes |
 | 261802 | Celebrations Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | Unknown number of elite trainer boxes | 2021 Q4 (set) | Yes |
 | 518638 | Celebrations Ultra-Premium Collection Case | Case or display | — | — | 4 collections | 2021 Q4 (set) | Yes |
-| 242809 | Celebrations Collection [Dark Sylveon V] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
-| 242807 | Celebrations Collection [Dragapult Prime] | Collection | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242808 | Celebrations Collection [Lance's Charizard V] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
+| 242809 | Celebrations Collection [Dark Sylveon V] | Collection | 6 | Description | — | 2021 Q4 (set) | Yes |
+| 242807 | Celebrations Collection [Dragapult Prime] | Collection | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242808 | Celebrations Collection [Lance's Charizard V] | Collection | 6 | Description | — | 2021 Q4 (set) | Yes |
 | 244726 | Celebrations Collection [Pikachu V-UNION] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
-| 244727 | Celebrations Collector Chest | Collection | 6 | Description | — | 2021 Q4 | Yes |
-| 242810 | Celebrations Deluxe Pin Collection [Zacian LV. X] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
+| 244727 | Celebrations Collector Chest | Collection | 8 | Description | — | 2021 Q4 | Yes |
+| 242810 | Celebrations Deluxe Pin Collection [Zacian LV. X] | Collection | 6 | Description | — | 2021 Q4 (set) | Yes |
 | 245139 | Celebrations Premium Figure Collection [Pikachu VMAX] | Collection | 8 | Description | — | 2021 Q4 | Yes |
 | 251217 | Celebrations Premium Playmat Collection [Pikachu V-UNION] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
-| 252416 | Celebrations Prime Collection | Collection | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 252416 | Celebrations Prime Collection | Collection | 5 | Description | — | 2021 Q4 (set) | Yes |
 | 247470 | Celebrations Special Collection - V Memories | Collection | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
-| 245140 | Celebrations Ultra-Premium Collection | Collection | 1 | Description | — | 2021 Q4 | Yes |
-| 242811 | Celebrations Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2021 Q4 (set) | Yes |
-| 251199 | Celebrations Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 13 | Description | — | 2021 Q4 (set) | Yes |
-| 242819 | Celebrations Mini Tin [Alola] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242820 | Celebrations Mini Tin [Galar] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242815 | Celebrations Mini Tin [Hoenn] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242814 | Celebrations Mini Tin [Johto] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242818 | Celebrations Mini Tin [Kalos] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242813 | Celebrations Mini Tin [Kanto] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242816 | Celebrations Mini Tin [Sinnoh] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 242817 | Celebrations Mini Tin [Unova] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
+| 245140 | Celebrations Ultra-Premium Collection | Collection | 17 | Description | — | 2021 Q4 | Yes |
+| 242811 | Celebrations Elite Trainer Box | Elite Trainer Box | 15 | Description | — | 2021 Q4 (set) | Yes |
+| 251199 | Celebrations Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 19 | Description | — | 2021 Q4 (set) | Yes |
+| 242819 | Celebrations Mini Tin [Alola] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242820 | Celebrations Mini Tin [Galar] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242815 | Celebrations Mini Tin [Hoenn] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242814 | Celebrations Mini Tin [Johto] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242818 | Celebrations Mini Tin [Kalos] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242813 | Celebrations Mini Tin [Kanto] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242816 | Celebrations Mini Tin [Sinnoh] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
+| 242817 | Celebrations Mini Tin [Unova] | Tin | 3 | Description | — | 2021 Q4 (set) | Yes |
 | 251988 | Pokemon Celebrations International Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
 | 251987 | Pokemon Celebrations International Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
 | 252739 | Pokemon Celebrations International Tin [Set of 2] | Tin | 12 | Bulbapedia | — | 2021 Q4 (set) | Yes |

@@ -128,7 +128,7 @@ TCGplayer group `1863`: 29 products.
 | 131865 | Lycanroc GX Box | Collection | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
 | 129896 | Mega Camerupt EX Premium Collection | Collection | 6 | Bulbapedia | — | 2017 Q1 (set) | No |
 | 129897 | Mega Sharpedo EX Premium Collection | Collection | 6 | Bulbapedia | — | 2017 Q1 (set) | No |
-| 129895 | Mimikyu Pin Collection | Collection | 29 | Description | — | 2017 Q1 (set) | Yes |
+| 129895 | Mimikyu Pin Collection | Collection | 3 | Description | — | 2017 Q1 (set) | Yes |
 | 656924 | Primarina GX Challenge Box | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |
 | 131870 | Scizor EX Box | Collection | 4 | Bulbapedia | — | 2017 Q1 (set) | Yes |
 | 244314 | Sun & Moon GX Challenge Box [Decidueye] | Collection | 2 | Description | — | 2017 Q1 (set) | Yes |

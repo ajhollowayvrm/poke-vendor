@@ -137,7 +137,7 @@ TCGplayer group `2948`, `3020`: 28 products.
 | 256130 | Brilliant Stars 3 Pack Blister [Leafeon] | Blister | 3 | Description | — | 2022 Q1 | Yes |
 | 256143 | Brilliant Stars Premium Checklane Blister [Hydreigon] | Blister | 1 | Description | — | 2022 Q1 | No |
 | 256142 | Brilliant Stars Premium Checklane Blister [Salamence] | Blister | 1 | Description | — | 2022 Q1 | No |
-| 684658 | Brilliant Stars Premium Checklane Blister [Zoroark] | Blister | 170 | Description | — | 2022 Q1 (set) | Yes |
+| 684658 | Brilliant Stars Premium Checklane Blister [Zoroark] | Blister | Unknown | Unknown | — | 2022 Q1 (set) | Yes |
 | 256129 | Brilliant Stars Single Pack Blister [Eevee] | Blister | 1 | Description | — | 2022 Q1 | Yes |
 | 256128 | Brilliant Stars Single Pack Blister [Flapple] | Blister | 1 | Description | — | 2022 Q1 | Yes |
 | 256141 | Brilliant Stars Booster Box | Booster box | 36 | Description | — | 2022 Q1 | Yes |
@@ -160,7 +160,7 @@ TCGplayer group `2948`, `3020`: 28 products.
 | 256146 | Glaceon VSTAR Special Collection | Collection | 5 | Description | — | 2022 Q1 | Yes |
 | 256147 | Leafeon VSTAR Special Collection | Collection | 5 | Description | — | 2022 Q1 | Yes |
 | 256138 | Brilliant Stars Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2022 Q1 | Yes |
-| 256140 | Brilliant Stars Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 65 | Description | — | 2022 Q1 (set) | Yes |
+| 256140 | Brilliant Stars Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2022 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

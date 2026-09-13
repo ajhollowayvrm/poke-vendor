@@ -89,8 +89,8 @@ TCGplayer group `1525`: 3 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
-| 97765 | Double Crisis: Team Aqua Blister | Blister | 99 | Bulbapedia | — | 2015 Q1 (set) | No |
-| 97764 | Double Crisis: Team Magma Blister | Blister | 99 | Bulbapedia | — | 2015 Q1 (set) | Yes |
+| 97765 | Double Crisis: Team Aqua Blister | Blister | 4 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97764 | Double Crisis: Team Magma Blister | Blister | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 | 229226 | Double Crisis Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 

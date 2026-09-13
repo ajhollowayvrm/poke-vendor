@@ -119,8 +119,8 @@ TCGplayer group `2675`: 25 products.
 | 220277 | Eternatus VMAX Premium Collection | Collection | 6 | Description | — | 2020 Q3 | Yes |
 | 712959 | Eternatus VMAX Premium Collection [International] | Collection | 6 | Description | — | 2020 Q3 (set) | No |
 | 220272 | Galarian Sirfetch'd V Box | Collection | 4 | Description | — | 2020 Q3 | Yes |
-| 218839 | True Steel Premium Collection [Zacian] | Collection | 1 | Description | — | 2020 Q3 | Yes |
-| 218840 | True Steel Premium Collection [Zamazenta] | Collection | 1 | Description | — | 2020 Q3 | No |
+| 218839 | True Steel Premium Collection [Zacian] | Collection | 6 | Description | — | 2020 Q3 | Yes |
+| 218840 | True Steel Premium Collection [Zamazenta] | Collection | 6 | Description | — | 2020 Q3 | No |
 | 216856 | Darkness Ablaze Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2020 Q3 | Yes |
 <!-- product-catalog:end -->
 

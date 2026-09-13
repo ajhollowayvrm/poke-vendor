@@ -175,7 +175,7 @@ TCGplayer group `3118`, `3172`: 43 products.
 | 282001 | Origin Forme Palkia VSTAR Premium Collection | Collection | 6 | Description | — | 2022 Q4 | Yes |
 | 282401 | Sword & Shield Ultra-Premium Collection: Charizard | Collection | 16 | Description | — | 2022 Q4 | Yes |
 | 277335 | Lost Origin Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2022 Q3 | Yes |
-| 277336 | Lost Origin Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 65 | Description | — | 2022 Q3 (set) | Yes |
+| 277336 | Lost Origin Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | — | 2022 Q3 (set) | Yes |
 | 282405 | Pokemon Stacking Tin: Darkness | Tin | 3 | Description | — | 2022 Q4 | Yes |
 | 282403 | Pokemon Stacking Tin: Fighting | Tin | 3 | Description | — | 2022 Q4 | Yes |
 | 282404 | Pokemon Stacking Tin: Fire | Tin | 3 | Description | — | 2022 Q4 | Yes |

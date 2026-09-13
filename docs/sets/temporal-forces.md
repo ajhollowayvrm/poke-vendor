@@ -187,7 +187,7 @@ TCGplayer group `23381`: 31 products.
 | 607502 | Temporal Forces Fun Pack | Booster pack | 1 | Kind default | — | 2024 Q1 (set) | Yes |
 | 538787 | Temporal Forces Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2024 Q1 | Yes |
 | 538789 | Temporal Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2024 Q1 | Yes |
-| 538807 | Temporal Forces Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2024 Q1 | Yes |
+| 538807 | Temporal Forces Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Name | — | 2024 Q1 | Yes |
 | 537411 | Temporal Forces Build & Battle Box | Build & Battle | 4 | Description | — | 2024 Q1 (set) | Yes |
 | 680963 | Temporal Forces 3 Pack Blister Display | Case or display | — | — | Unknown number of blisters | 2024 Q1 (set) | No |
 | 537417 | Temporal Forces Booster Box Case | Case or display | — | — | 6 booster boxes | 2024 Q1 | Yes |
