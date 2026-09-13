@@ -85,7 +85,7 @@ def sort_key(c):
 CACHE = os.path.join(HERE, "cache")
 TCGCSV_DIR = os.path.join(CACHE, "tcgcsv")
 TCGCSV_MAP = json.load(open(os.path.join(HERE, "tcgcsv-map.json")))
-PRINT_QUALIFIER = re.compile(r"(?i)pattern|\bball\b|pre-?release|staff|jumbo|oversize|cosmos|stamp|promo|league|championship|winner|peelable|holo common|non-holo|\bholo\b|texture|error|misprint|sealed|code card|build|deck")
+PRINT_QUALIFIER = re.compile(r"(?i)pattern|\bball\b|pre-?release|staff|jumbo|oversize|cosmos|stamp|promo|league|championship|winner|peelable|non-holo|\bholo\b(?! common)|texture|error|misprint|sealed|code card|build|deck")
 SKIPPED = {}
 SUBTYPE = {"Normal": "Normal", "Holofoil": "Holo", "Reverse Holofoil": "Reverse holo",
            "1st Edition Holofoil": "Holo (1st Edition)", "1st Edition Normal": "Normal (1st Edition)",
