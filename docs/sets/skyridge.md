@@ -307,6 +307,51 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ecard3`),
 | H30 | Umbreon | Pokémon (Darkness) | Holo Rare | Holo |
 | H31 | Vaporeon | Pokémon (Water) | Holo Rare | Holo |
 | H32 | Xatu | Pokémon (Psychic) | Holo Rare | Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Model B** (see [eras/e-card.md](eras/e-card.md#where-the-holo-goes-a-conflict)):
+every pack has a non-holo Rare in the rare slot, and a Rare Holo or a
+Crystal card is an extra card that takes the place of a common. The
+"Common/Holo" slot below is the one common draw that this extra card
+replaces; the other 4 commons are fixed.
+
+**The 6 Crystal cards (145–150) share the "Rare" TCGdex rarity with the
+non-secret Rares, in both the "Holo" and the "Reverse holo" variant.**
+Unlike Aquapolis, a Crystal card can also come from the reverse holo
+slot. The Cards column limits both outcomes to Nos. 145–150; the
+reverse holo outcome for regular Rares excludes that range.
+
+Confidence: this map splits the Crystal card between the Common/Holo
+slot and the reverse holo slot. The reverse holo slot uses the Elite
+Fourum sample figure (about 5% of packs). The Common/Holo slot uses the
+remainder of the 1 in 12 total (3.33%). Both figures are community
+estimates.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Common/Holo | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Common/Holo | 1 | Crystal (secret rare) | Crystal (secret rare) | Rare | Holo | Nos. 145–150 | 3.33% |
+| Common/Holo | 1 | Common | Common | Common | Normal | All | Rest |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 100% |
+| Reverse holo | 1 | Crystal (secret rare) | Crystal (secret rare) | Rare | Reverse holo | Nos. 145–150 | 5% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | Not nos. 145–150 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -364,3 +409,9 @@ reverse holo slot, but it still counts under the Crystal entry.
   checked. Searched 2026-09-12: no source found for case size.
 - **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.
 - **Rarity list order:** Crystal (secret rare) uses Flipside Gaming's 1 in 12 to 1 in 18. PSA gives 1 to 3 per box, about 1 in 12 to 1 in 36.
+- **Slot map:** the Crystal card odds split between two slots, and both
+  parts come from the sources. Flipside Gaming gives 1 in 12 to 1 in 18
+  Crystal cards per pack in total. The map uses 1 in 12 (8.33%), because
+  the Elite Fourum sample alone gives 5% of packs with a reverse holo
+  Crystal card. The reverse holo slot uses that 5%. The Common/Holo slot
+  uses the remainder, 8.33% − 5% = 3.33%.

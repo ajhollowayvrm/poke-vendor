@@ -226,6 +226,37 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp6`), fe
 | 144/146 | Mewtwo | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (David cohen) |
 | 145/146 | Rhyperior | Pokémon (Fighting) | Rare Holo LV.X | Holo |
 | 146/146 | Uxie | Pokémon (Psychic) | Rare Holo LV.X | Holo, Holo (Tsubasa nakamura), Holo (Yuta komatsuda) |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Confidence: this map follows the era template in
+[eras/diamond-pearl-platinum.md](eras/diamond-pearl-platinum.md). This
+set has no Energy card in the main numbering and no SH, RT, or AR
+subset. The Rare Holo LV.X rate rises to 1 in 18, the simulation
+default for this set (see the era file and this file's Open topics).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Rare Holo | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Holo LV.X | Rare Holo LV.X | Rare Holo LV.X | Holo | All | 1 in 18 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare Holo | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

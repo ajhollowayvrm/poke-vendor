@@ -227,6 +227,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `lc`), fet
 | 108/110 | Bill | Trainer | Common | Reverse holo, Normal |
 | 109/110 | Mysterious Fossil | Trainer | Common | Reverse holo, Normal |
 | 110/110 | Potion | Trainer | Common | Reverse holo, Normal |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**This set breaks the e-Card pack template.** The 11-card pack has 1
+rare slot, 1 reverse holo, and 9 cards in a row from one common/
+uncommon print sheet. The real sheet layout is Unknown, so this map
+uses the file's default of 6 commons and 3 uncommons.
+
+Confidence: the pack structure and hit odds above give the slot
+counts and the Rare Holo odds. The sheet-run cards use the file's
+default split, flagged as unsourced.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 6 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -271,3 +304,6 @@ the most common entry to the rarest entry.
   2026-09-12: no source found.
 - **Turmoil theme deck contents.** Not checked.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; the rare slot splits between Rare and Rare Holo.
+- **Slot map:** the 9-card sheet run uses this file's default split of
+  6 commons and 3 uncommons. The real sheet layout is Unknown, so a
+  pack's uncommon count is not always exactly 3.

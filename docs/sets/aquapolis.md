@@ -313,6 +313,49 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ecard2`),
 | H30 | Victreebel | Pokémon (Grass) | Holo Rare | Holo |
 | H31 | Vileplume | Pokémon (Grass) | Holo Rare | Holo |
 | H32 | Zapdos | Pokémon (Lightning) | Holo Rare | Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Model B** (see [eras/e-card.md](eras/e-card.md#where-the-holo-goes-a-conflict)):
+every pack has a non-holo Rare in the rare slot, and a Rare Holo or a
+Crystal card is an extra card that takes the place of a common. The
+"Common/Holo" slot below is the one common draw that this extra card
+replaces; the other 4 commons are fixed.
+
+**The 3 Crystal cards (148–150) share the "Rare" TCGdex rarity with the
+non-secret Rares.** They use the "Holo" variant; no non-secret Rare in
+this set carries a plain "Holo" print. Crystal cards have no reverse
+holo version, so the reverse holo slot excludes them by variant alone.
+
+Confidence: this map splits the combined "about 1 in 3" holo figure
+between the 32 Holo Rare (H) cards and the 3 Crystal cards, using the
+rarity list's own odds for each (1 in 3, 1 in 36). The Cards column for
+the Crystal outcome is exact; the odds split is this file's own
+estimate (see [eras/e-card.md](eras/e-card.md#hit-odds-shared-by-the-template)).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Common/Holo | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Common/Holo | 1 | Crystal (secret rare) | Crystal (secret rare) | Rare | Holo | Nos. 148–150 | 1 in 36 |
+| Common/Holo | 1 | Common | Common | Common | Normal | All | Rest |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -374,3 +417,6 @@ Crystal card is rarer still.
 - **Rarity list order:** Rare ranks with Common and Uncommon at every pack. Model B guarantees a non-holo Rare in every pack; Rare Holo is a separate, rarer card.
 - **Rarity list order:** Rare Holo uses about 1 in 3 from PSA. Loose Packs gives 26% (19 holos in 72 packs).
 - **Rarity list order:** Crystal (secret rare) uses 1 in 36 from Flipside Gaming. PSA gives 1 to 3 per box, and one forum poster got 0 in a box.
+- **Slot map:** the Common/Holo slot splits its "about 1 in 3" total
+  between Rare Holo (1 in 3) and Crystal (1 in 36), using the rarity
+  list's own per-entry odds rather than re-deriving a joint figure.

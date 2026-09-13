@@ -284,6 +284,41 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ecard1`),
 | 163/165 | Lightning Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 164/165 | Psychic Energy | Energy (Normal) | Common | Normal, Reverse holo |
 | 165/165 | Water Energy | Energy (Normal) | Common | Normal, Reverse holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**This map uses Model B, the era default** (see
+[eras/e-card.md](eras/e-card.md#where-the-holo-goes-a-conflict)): every
+pack has a non-holo Rare in the rare slot, and a Rare Holo is an extra
+card that takes the place of a common in about 1 pack in 3. The
+"Common/Holo" slot below is the one common draw that can be replaced
+this way; the other 4 commons are fixed.
+
+Confidence: this map follows the era's Model B default and the pack
+structure above (5 Common, 2 Uncommon, 1 Reverse Holofoil, 1 Rare).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | All | 100% |
+| Common/Holo | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Common/Holo | 1 | Common | Common | Common | Normal | All | Rest |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

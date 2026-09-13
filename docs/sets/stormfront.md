@@ -211,6 +211,47 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dp7`), fe
 | SH1 | Drifloon | Pokémon (Psychic) | Rare Holo LV.X | Holo, Reverse holo |
 | SH2 | Duskull | Pokémon (Psychic) | Rare Holo LV.X | Holo, Reverse holo |
 | SH3 | Voltorb | Pokémon (Lightning) | Rare Holo LV.X | Holo, Reverse holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**The Shiny (SH) cards share the "Rare Holo LV.X" TCGdex rarity with
+the LV.X cards.** The Cards column splits them: SH1–SH3 use the
+"Reverse holo" variant and sit in the reverse holo slot; Nos. 96–100
+use the "Holo" variant and sit in the rare slot.
+
+**The 3 secret cards (101–103) share the "Rare" TCGdex rarity with the
+non-secret Rares.** They use the "Holo" variant; every non-secret Rare
+uses "Normal".
+
+Confidence: this map follows the era template in
+[eras/diamond-pearl-platinum.md](eras/diamond-pearl-platinum.md), with
+the set's own exception that Shiny (SH) cards come in the reverse holo
+slot.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Shiny (SH) | Shiny (SH) | Rare Holo LV.X | Reverse holo | Nos. SH1–SH3 | 1 in 18 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Rare Holo | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Holo LV.X | Rare Holo LV.X | Rare Holo LV.X | Holo | Nos. 96–100 | 1 in 18 |
+| Rare slot | 1 | Rare Secret | Rare Secret | Rare | Holo | Nos. 101–103 | 1 in 36 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare Holo | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

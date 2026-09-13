@@ -211,6 +211,43 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl4`), fe
 | SH10 | Bagon | Pokémon (Colorless) | Rare | Reverse holo |
 | SH11 | Ponyta | Pokémon (Fire) | Rare | Reverse holo |
 | SH12 | Shinx | Pokémon (Lightning) | Rare | Reverse holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**The Arceus (AR) and Shiny (SH) cards share the "Rare" TCGdex rarity
+with the non-secret Rares.** AR1–AR9 use the variant "Holo", a value no
+other Rare in this set carries. SH10–SH12 use "Reverse holo". This set
+has no Rare Secret cards.
+
+Confidence: this map follows the era template in
+[eras/diamond-pearl-platinum.md](eras/diamond-pearl-platinum.md), with
+the set's own exceptions that Arceus (AR) and Shiny (SH) cards come in
+the reverse holo slot.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Arceus (AR) | Arceus (AR) | Rare | Holo | All | 1 in 4 |
+| Reverse holo | 1 | Shiny (SH) | Shiny (SH) | Rare | Reverse holo | Nos. SH10–SH12 | 1 in 36 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | Not nos. SH10–SH12 | Rest |
+| Rare slot | 1 | Rare Holo LV.X | Rare Holo LV.X | Rare Holo LV.X | Holo | All | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

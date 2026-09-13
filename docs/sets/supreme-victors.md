@@ -248,6 +248,43 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl3`), fe
 | SH7 | Milotic | Pokémon (Water) | Rare | Reverse holo |
 | SH8 | Relicanth | Pokémon (Fighting) | Rare | Reverse holo |
 | SH9 | Yanma | Pokémon (Grass) | Rare | Reverse holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**The 3 secret cards (148–150) and the Shiny (SH7–SH9) cards share the
+"Rare" TCGdex rarity with the non-secret Rares.** The secret cards use
+the "Holo" variant; SH7–SH9 use "Reverse holo".
+
+Confidence: this map follows the era template in
+[eras/diamond-pearl-platinum.md](eras/diamond-pearl-platinum.md), with
+the set's own exception that Shiny (SH) cards come in the reverse holo
+slot. The Rare Holo LV.X rate uses 1 in 9, the higher figure in the
+file's "1 in 9 to 1 in 12" range (see this file's Open topics).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Shiny (SH) | Shiny (SH) | Rare | Reverse holo | Nos. SH7–SH9 | 1 in 36 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | Not nos. SH7–SH9 | Rest |
+| Rare slot | 1 | Rare Holo LV.X | Rare Holo LV.X | Rare Holo LV.X | Holo | Nos. 141–147 | 1 in 9 |
+| Rare slot | 1 | Rare Secret | Rare Secret | Rare | Holo | Nos. 148–150 | 1 in 36 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -292,3 +329,6 @@ reverse holo slot, not the rare slot.
   found (era-wide search, see the era file).
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
+- **Slot map:** the Rare Holo LV.X odds use 1 in 9, the higher end of
+  the file's "1 in 9 to 1 in 12" range. The lower end (1 in 12) would
+  give fewer LV.X pulls per box.

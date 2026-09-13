@@ -215,6 +215,46 @@ Every card in the set, with its variants. Source: the TCGdex API (set `pl2`), fe
 | RT4 | Mow Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
 | RT5 | Wash Rotom | Pokémon (Lightning) | Rare | Reverse holo (Cracked ice) |
 | RT6 | Charon's Choice | Trainer (Supporter) | Rare | Reverse holo (Cracked ice) |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**The Rotom (RT) cards and the secret cards (112–114) share the "Rare"
+TCGdex rarity with the non-secret Rares.** RT1–RT6 use the variant
+"Reverse holo (Cracked ice)", a pattern only they carry. The secret
+cards use "Holo"; one non-secret Rare (32/111, Rhyperior E4) also
+carries a stray "Holo" print, so the secret outcome is limited to
+Nos. 112–114.
+
+Confidence: this map follows the era template in
+[eras/diamond-pearl-platinum.md](eras/diamond-pearl-platinum.md), with
+the set's own exception that Rotom (RT) cards come in the reverse holo
+slot. The Rare Holo rate uses 1 in 3, the era-wide figure (see this
+file's Open topics for the "1 in 4" conflict).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Rotom (RT) | Rotom (RT) | Rare | Reverse holo (Cracked ice) | All | 1 in 18 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Holo LV.X | Rare Holo LV.X | Rare Holo LV.X | Holo | All | 1 in 12 |
+| Rare slot | 1 | Rare Secret | Rare Secret | Rare | Holo | Nos. 112–114 | 1 in 36 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -264,3 +304,6 @@ reverse holo slot, not the rare slot.
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Rare Holo uses 1 in 3 or 1 in 4. PokeBeach Card Ratios gives 1 in 3 for any set; a 2012 poster gives 1 in 4 for this set.
+- **Slot map:** the Rare Holo LV.X odds use 1 in 12, the higher end of
+  the file's "1 in 12 to 1 in 18" range. The lower end (1 in 18) would
+  give fewer LV.X pulls per box.

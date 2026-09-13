@@ -348,6 +348,78 @@ TCGdex set `pop9`: 17 cards.
 | 15/17 | Pikachu | Pokémon (Lightning) | Common | Normal, Normal (Pokemon day) |
 | 16/17 | Piplup | Pokémon (Water) | Common | Normal |
 | 17/17 | Turtwig | Pokémon (Grass) | Common | Normal |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Every row uses the Normal variant.** The Special subsets note says
+that Holo, Reverse holo, and Cracked Ice versions of many POP cards
+come only from other products (blisters, value packs), not from POP
+packs. So the map gives no Holo print for a Rare card. No source
+confirms which POP packs give a Holo print.
+
+**Rare Holo ex and Rare Holo ☆ cards share the "Rare" TCGdex rarity
+with the regular Rares in their set.** The Cards column splits them by
+number: they are the last card or two of each 17-card list, matched by
+name (for example "Armaldo ex", "Celebi ex", "Umbreon ★").
+
+**The slot breakdown of a 2-card pack is Unknown for POP Series 1–5
+and 7.** This map treats both cards of a 2-card pack as one "Card" slot
+with Count 2: each of the 2 cards is drawn independently from Rare (or
+Rare Holo ex/☆), Uncommon, or Common, all with unknown odds. POP
+Series 6's production error gives a confirmed structure instead: 1
+rare slot, 1 common-or-uncommon filler slot. POP Series 8 and 9 add a
+separate Energy card that is not one of the 17 set cards.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Card (POP Series 1) | 2 | Rare Holo ex | Rare Holo ex | Rare | Normal | Part: POP Series 1; Nos. 16–17 | — |
+| Card (POP Series 1) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 1; Not nos. 16–17 | — |
+| Card (POP Series 1) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 1 | — |
+| Card (POP Series 1) | 2 | Common | Common | Common | Normal | Part: POP Series 1 | — |
+| Card (POP Series 2) | 2 | Rare Holo ex | Rare Holo ex | Rare | Normal | Part: POP Series 2; Nos. 17 | — |
+| Card (POP Series 2) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 2; Not nos. 17 | — |
+| Card (POP Series 2) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 2 | — |
+| Card (POP Series 2) | 2 | Common | Common | Common | Normal | Part: POP Series 2 | — |
+| Card (POP Series 3) | 2 | Rare Holo ex | Rare Holo ex | Rare | Normal | Part: POP Series 3; Nos. 17 | — |
+| Card (POP Series 3) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 3; Not nos. 17 | — |
+| Card (POP Series 3) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 3 | — |
+| Card (POP Series 3) | 2 | Common | Common | Common | Normal | Part: POP Series 3 | — |
+| Card (POP Series 4) | 2 | Rare Holo ex | Rare Holo ex | Rare | Normal | Part: POP Series 4; Nos. 17 | — |
+| Card (POP Series 4) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 4; Not nos. 17 | — |
+| Card (POP Series 4) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 4 | — |
+| Card (POP Series 4) | 2 | Common | Common | Common | Normal | Part: POP Series 4 | — |
+| Card (POP Series 5) | 2 | Rare Holo ☆ | Rare Holo ☆ | Rare | Normal | Part: POP Series 5; Nos. 16–17 | — |
+| Card (POP Series 5) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 5; Not nos. 16–17 | — |
+| Card (POP Series 5) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 5 | — |
+| Card (POP Series 5) | 2 | Common | Common | Common | Normal | Part: POP Series 5 | — |
+| Rare slot (POP Series 6) | 1 | Rare | Rare | Rare | Normal | Part: POP Series 6 | 100% |
+| Filler slot (POP Series 6) | 1 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 6 | — |
+| Filler slot (POP Series 6) | 1 | Common | Common | Common | Normal | Part: POP Series 6 | — |
+| Card (POP Series 7) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 7 | — |
+| Card (POP Series 7) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 7 | — |
+| Card (POP Series 7) | 2 | Common | Common | Common | Normal | Part: POP Series 7 | — |
+| Card (POP Series 8) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 8 | — |
+| Card (POP Series 8) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 8 | — |
+| Card (POP Series 8) | 2 | Common | Common | Common | Normal | Part: POP Series 8 | — |
+| Energy (POP Series 8) | 1 | Basic Energy | — | — | — | — | 100% |
+| Card (POP Series 9) | 2 | Rare | Rare | Rare | Normal | Part: POP Series 9 | — |
+| Card (POP Series 9) | 2 | Uncommon | Uncommon | Uncommon | Normal | Part: POP Series 9 | — |
+| Card (POP Series 9) | 2 | Common | Common | Common | Normal | Part: POP Series 9 | — |
+| Energy (POP Series 9) | 1 | Basic Energy | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -395,3 +467,11 @@ Rare rate.
 - EX Series products with POP Series 1–5 packs: not researched.
 - Whether a POP Series 6 pack without the error exists: Unknown.
 - **Rarity list odds:** no source gives the odds per pack for Common, Uncommon, Rare, Rare Holo ex and Rare Holo ☆. The era's rarity system decides the place of each one in the rarity list.
+- **Slot map:** for POP Series 1–5 and 7, the slot map treats a 2-card
+  pack as two independent draws over the same outcomes, because the
+  real slot breakdown is Unknown. Every such outcome has "—" odds
+  (31 outcomes in total across the file).
+- **Slot map:** every outcome uses the Normal variant, because the
+  Special subsets note says Holo, Reverse holo, and Cracked Ice prints
+  of many POP cards come from other products, not from packs. If a POP
+  pack gives a Holo print of a Rare card, this map leaves it out.
