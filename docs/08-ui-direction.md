@@ -158,9 +158,11 @@ player buys sealed product online here (see
   as the result of that attempt. The screen shows no upcoming drops,
   because drops come with no notice.
 - **eBay shows the seller rating.** A player can use it as a warning.
-- **Facebook Marketplace listings show the pickup day.** A pickup
-  costs time, and some pickups happen on a later day. Each listing
-  also shows the trip time.
+- **A Facebook Marketplace listing is for pickup or for shipping.** A
+  pickup listing shows the pickup day and the trip time. A pickup costs
+  time, some pickups happen on a later day, and the player pays at the
+  pickup. A shipped listing shows the shipping cost. The player pays at
+  purchase, and the item goes straight to Inventory.
 - **A later-day pickup goes on the calendar.** The item goes to
   Inventory after the pickup.
 - **The Pokemon Center sells only in drops.** When no drop is live,
@@ -185,12 +187,6 @@ player buys sealed product online here (see
 Design canvas. The review on 2026-09-13 removed preorders from the game
 shop screen and added the screens for no drop, a later-day pickup, and
 the game shop stop.
-
-**Open:**
-
-- When the player pays for a Facebook Marketplace item with a later
-  pickup: at the purchase, or at the pickup. The mockup shows payment
-  at the pickup.
 
 ## What's next
 

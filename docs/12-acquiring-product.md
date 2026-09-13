@@ -33,10 +33,13 @@ in real life:
   market. It also carries international product that the other stores
   do not sell.
 - **Facebook Marketplace**: local people sell lots and random items at
-  random prices. It is the least structured channel. A purchase here
-  is not a free action: the pickup costs time, the same as a garage
-  sale. Sometimes the seller sets the pickup for a later day, so the
-  item arrives only after that meeting.
+  random prices. It is the least structured channel. A listing is for
+  pickup or for shipping. A pickup is not a free action: the pickup
+  costs time, the same as a garage sale, and the player pays at the
+  pickup. Sometimes the seller sets the pickup for a later day, so the
+  item arrives only after that meeting. A shipped listing is a free
+  action: the player pays at purchase, and the item goes straight to
+  Inventory.
 
 eBay and Facebook Marketplace sell singles too, not only sealed product.
 
