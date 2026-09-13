@@ -116,7 +116,7 @@ bad week: a week that dipped from one-time buys can sit inside a month
 that is still trending up, and the toggle is what lets a player tell
 the difference instead of panicking at a single red number.
 
-### 2. Buy screen — decisions recorded, mockup not started
+### 2. Buy screen — decisions recorded, lo-fi mockup reviewed
 
 The "buy" icon in the hub's free-action row opens this screen. The
 player buys sealed product online here (see
@@ -159,16 +159,41 @@ player buys sealed product online here (see
   because drops come with no notice.
 - **eBay shows the seller rating.** A player can use it as a warning.
 - **Facebook Marketplace listings show the pickup day.** A pickup
-  costs time, and some pickups happen on a later day.
+  costs time, and some pickups happen on a later day. Each listing
+  also shows the trip time.
+- **A later-day pickup goes on the calendar.** The item goes to
+  Inventory after the pickup.
+- **The Pokemon Center sells only in drops.** When no drop is live,
+  the store screen has nothing to buy, and its store list row says
+  "No drop live".
+- **eBay and Facebook Marketplace sell singles too**, not only sealed
+  product.
+- **The local list shows both game shops.** Each shop row has its own
+  "Shop" link.
+- **The game shop screen** shows the standing level and points, the
+  store credit, holds with the days left to pick them up, the singles
+  display case, and league night. It shows no preorders and no
+  prereleases (see
+  [17-calendar-and-events.md](17-calendar-and-events.md#no-new-set-releases)).
+- **The game shop stop on a store run** shows the holds, the shelf, and
+  a "Sell to the shop" row. The player pays with cash or with that
+  shop's store credit.
+- **The store run summary** shows the standing that the run earned at
+  each game shop.
+
+**Mockup:** the lo-fi mockup is the "PokeVendor Buy Screen" Claude
+Design canvas. The review on 2026-09-13 removed preorders from the game
+shop screen and added the screens for no drop, a later-day pickup, and
+the game shop stop.
 
 **Open:**
 
-- The lo-fi mockup of the store list and the store screens needs
-  review.
+- When the player pays for a Facebook Marketplace item with a later
+  pickup: at the purchase, or at the pickup. The mockup shows payment
+  at the pickup.
 
 ## What's next
 
-The buy screen (above) is next. The proposed order after it:
+The buy screen (above) has a reviewed lo-fi mockup. The next screen is
 Inventory / collection, where bought product arrives and the
-rip-or-hold decision happens, then the pack-opening flow. The
-remaining destination screens follow.
+rip-or-hold decision happens. The remaining destination screens follow.

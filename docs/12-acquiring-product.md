@@ -16,9 +16,10 @@ option. It is five options, and each option has a different price,
 availability, and risk tradeoff. This mirrors how online buying works
 in real life:
 
-- **Pokemon Center**: MSRP pricing, but stock for a hyped release
-  comes only in timed drops (see "Pokemon Center drops" below). A
-  successful attempt gets the best possible price.
+- **Pokemon Center**: MSRP pricing, but the store sells only in timed
+  drops (see "Pokemon Center drops" below). When no drop is live, the
+  store has nothing to buy. A successful attempt gets the best
+  possible price.
 - **Amazon**: broad availability, but pricing is inconsistent — ranges
   from roughly MSRP to noticeably marked up, varying by set and moment.
   The reliable middle ground.
@@ -36,6 +37,8 @@ in real life:
   is not a free action: the pickup costs time, the same as a garage
   sale. Sometimes the seller sets the pickup for a later day, so the
   item arrives only after that meeting.
+
+eBay and Facebook Marketplace sell singles too, not only sealed product.
 
 eBay and Facebook Marketplace have the best deals of all the channels.
 They also have the highest chance of a fake or a resealed product (see
@@ -243,8 +246,6 @@ fixed collation.
   Center odds).
 - The exact Pokemon Center drop success chance (30% is the starting
   value).
-- Whether eBay and Facebook Marketplace also sell singles, or only
-  sealed product.
 - The time each local store adds to a store run, and the stock odds
   per store (balancing tasks).
 - How the local game shop's events connect to meets and reputation.- Actual pull-rate data per set, sourced as each set is added.
