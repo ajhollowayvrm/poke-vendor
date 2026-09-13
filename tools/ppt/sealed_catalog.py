@@ -37,6 +37,7 @@ KINDS = [
     ("Booster box", r"\bbooster box\b"),
     ("Elite Trainer Box", r"\belite trainer box\b"),
     ("Deck", r"\b(theme deck|starter deck|battle deck|trainer kit|training kit|league battle|world championship|deck bundle)\b"),
+    ("Booster pack", r"\bmini booster pack\b|\bbooster pack$"),
     ("Booster bundle", r"\bbooster bundle\b"),
     ("Build & Battle", r"\bbuild (?:&|and) battle\b"),
     ("Blister", r"\bblister\b|\bcheck ?lane\b"),

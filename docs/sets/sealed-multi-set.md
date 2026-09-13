@@ -863,7 +863,7 @@ TCGplayer group `23266`: 4 products.
 |---|---|---|---|---|---|---|---|
 | 564134 | Trick or Trade BOOster Bundle 2023 (120 ct) | Booster bundle | 120 | Description | — | — | Yes |
 | 505942 | Trick or Trade BOOster Bundle 2023 (50 ct) | Booster bundle | 50 | Description | — | — | Yes |
-| 505945 | Trick or Trade BOOster Bundle 2023 - Mini Booster Pack | Booster bundle | 6 | Kind default | — | 2023 Q3 | Yes |
+| 505945 | Trick or Trade BOOster Bundle 2023 - Mini Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q3 | Yes |
 | 505943 | Trick or Trade BOOster Bundle 2023 Case | Case or display | — | — | 12 booster bundles | 2023 Q3 | Yes |
 
 ## Trick or Trade BOOster Bundle 2024
@@ -875,7 +875,7 @@ TCGplayer group `23561`: 5 products.
 | 591211 | Trick or Trade BOOster Bundle 2024 (120 ct) | Booster bundle | 120 | Description | — | — | Yes |
 | 558713 | Trick or Trade BOOster Bundle 2024 (35 mini packs) | Booster bundle | 35 | Description | — | — | Yes |
 | 566954 | Trick or Trade BOOster Bundle 2024 (80 mini packs) | Booster bundle | 80 | Description | — | — | Yes |
-| 579930 | Trick or Trade BOOster Bundle 2024 - Mini Booster Pack | Booster bundle | 6 | Kind default | — | — | Yes |
+| 579930 | Trick or Trade BOOster Bundle 2024 - Mini Booster Pack | Booster pack | 1 | Kind default | — | — | Yes |
 | 558714 | Trick or Trade BOOster Bundle 2024 Case | Case or display | — | — | 12 booster bundles | — | Yes |
 
 ## WoTC Promo
