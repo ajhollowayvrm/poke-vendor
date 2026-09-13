@@ -34,3 +34,4 @@ ios/Packages/PVCatalog/Tests/PVCatalogTests/engine-indexes.json
 tools/ios/sweep-out
 # Cross-engine differ output — the script, both reports, the golden saves (`npm run differ`)
 tools/differ/out
+__pycache__/
