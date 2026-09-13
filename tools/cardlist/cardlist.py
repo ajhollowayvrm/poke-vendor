@@ -4,12 +4,13 @@ Usage: python3 tools/cardlist/cardlist.py [--write] [slug ...]
 First run tools/cardlist/download.py to fill tools/cardlist/cache/ (not in git).
 Without --write, prints a report and a sample. With --write, edits docs/sets/<slug>.md.
 """
-import json, os, re, sys
+import collections, json, os, re, sys
 
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 HERE = os.path.dirname(os.path.abspath(__file__))
 MAP = json.load(open(os.path.join(HERE, "tcgdex-map.json")))
 FETCHED = "2026-09-12"
+PREFER_TCGCSV = "--keep-tcgdex-plain" not in sys.argv
 
 TYPE = {"normal": "Normal", "reverse": "Reverse holo", "holo": "Holo"}
 FOIL = {"pokeball": "Poké Ball pattern", "masterball": "Master Ball pattern"}
@@ -85,6 +86,7 @@ CACHE = os.path.join(HERE, "cache")
 TCGCSV_DIR = os.path.join(CACHE, "tcgcsv")
 TCGCSV_MAP = json.load(open(os.path.join(HERE, "tcgcsv-map.json")))
 PRINT_QUALIFIER = re.compile(r"(?i)pattern|\bball\b|pre-?release|staff|jumbo|oversize|cosmos|stamp|promo|league|championship|winner|peelable|holo common|non-holo|\bholo\b|texture|error|misprint|sealed|code card|build|deck")
+SKIPPED = {}
 SUBTYPE = {"Normal": "Normal", "Holofoil": "Holo", "Reverse Holofoil": "Reverse holo",
            "1st Edition Holofoil": "Holo (1st Edition)", "1st Edition Normal": "Normal (1st Edition)",
            "Unlimited Holofoil": "Holo (Unlimited)", "Unlimited Normal": "Normal (Unlimited)"}
@@ -114,7 +116,12 @@ def tcgcsv_types(slug, part_index, part_count):
             continue
         for r in prices:
             prod = products.get(r["productId"])
-            if not prod or PRINT_QUALIFIER.search(" ".join(re.findall(r"\(([^()]*)\)", prod.get("name", "")))):
+            if not prod:
+                continue
+            if PRINT_QUALIFIER.search(" ".join(re.findall(r"\(([^()]*)\)", prod.get("name", "")))):
+                ext_q = {e["name"]: e["value"] for e in prod.get("extendedData", [])}
+                if "Number" in ext_q:
+                    SKIPPED.setdefault((slug, part_index), set()).add(key_of(ext_q["Number"].split("/")[0]))
                 continue
             ext = {e["name"]: e["value"] for e in prod.get("extendedData", [])}
             if "Number" not in ext:
@@ -132,6 +139,7 @@ def build(slug):
     ids = MAP[slug]
     total_cards = 0
     added = [0]
+    removed = collections.Counter()
     for sid in ids:
         s = json.load(open(os.path.join(CACHE, "tcgdex", "sets", f"{sid}.json")))
         official = (s.get("cardCount") or {}).get("official")
@@ -147,19 +155,27 @@ def build(slug):
         extra = tcgcsv_types(slug, ids.index(sid), len(ids))
         def cell_for(c):
             text = variants_cell(c)
-            have = {k for k in ("Normal", "Holo", "Reverse holo") if re.search(rf"(^|, ){re.escape(k)}( \(|,|$)", text)}
-            add = [v for v in extra.get(key_of(c["localId"]), []) if base_kind(v) not in have]
+            tcg = extra.get(key_of(c["localId"]), [])
+            items = [v.strip() for v in re.split(r",\s*(?![^()]*\))", text) if v.strip() and v.strip() != "—"]
+            k = key_of(c["localId"])
+            if tcg and PREFER_TCGCSV and k not in SKIPPED.get((slug, ids.index(sid)), set()):
+                tcg_kinds = {base_kind(v) for v in tcg}
+                if "Holo" in tcg_kinds and "Normal" not in tcg_kinds and "Normal" in items:
+                    items = [v for v in items if v != "Normal"]
+                    removed["Normal"] += 1
+            have = {base_kind(v) for v in items}
+            add = [v for v in tcg if base_kind(v) not in have]
             if add:
                 added[0] += len(add)
-                text = ", ".join([t for t in [text if text != "—" else ""] if t] + add)
-            return text
+                items += add
+            return ", ".join(items) if items else "—"
         rows = [f"| {cell(number_cell(c['localId'], official))} | {cell(c['name'])} | {cell(category_cell(c))} | {cell(c.get('rarity') or '—')} | {cell(cell_for(c))} |" for c in cards]
         table = ["| No. | Card | Category | Rarity | Variants |", "|---|---|---|---|---|"] + rows
         if len(ids) > 1:
             parts.append(f"### {s['name']}\n\nTCGdex set `{sid}`: {len(cards)} cards.\n\n" + "\n".join(table))
         else:
             parts.append("\n".join(table))
-        report.append(f"{sid}: {len(cards)} cards (TCGdex total {(s.get('cardCount') or {}).get('total')}), TCGCSV added so far {added[0]}")
+        report.append(f"{sid}: {len(cards)} cards (TCGdex total {(s.get('cardCount') or {}).get('total')}), TCGCSV added so far {added[0]}, removed so far {dict(removed)}")
     ids_text = ", ".join(f"`{i}`" for i in ids)
     intro = (
         "## Card list\n\n"
