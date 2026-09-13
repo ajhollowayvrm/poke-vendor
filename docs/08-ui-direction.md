@@ -4,7 +4,8 @@
 
 Two screens designed and approved: the home hub, and its Wallet / cash
 ledger destination (see below). The buy screen has a reviewed lo-fi
-mockup. Inventory has a reviewed lo-fi mockup. Mockups live
+mockup. Inventory has a reviewed lo-fi mockup. The social media hub has
+recorded decisions and no mockup. Mockups live
 outside this repo for now, in
 Claude Design canvases — this doc records the decisions so they survive
 independent of any single mockup file.
@@ -31,7 +32,10 @@ state and be the fastest way to get anywhere in the app.
 ### Confirmed tap targets and their destinations
 
 1. **Cash** → Wallet / cash ledger
-2. **Followers** → Social media hub
+2. **Followers** → Social media hub (the slot shows "Start posting"
+   until the player creates an account; the Go Live row and the post
+   icon stay hidden until then, see
+   [06-social-media.md](06-social-media.md#social-media-is-optional))
 3. **Reputation** → Reputation & meets
 4. **Collection** → Inventory / collection (the target shows
    collection value, which counts only kept items)
@@ -301,7 +305,54 @@ approved it. The decisions on collection value, sort order, the sealed
 and bulk detail screens, bulk on a store run, and removing a listing
 came after the review. The mockup does not show them yet.
 
+### 4. Social media hub — decisions recorded
+
+The hub's Followers target opens this screen. Social media is
+optional (see
+[06-social-media.md](06-social-media.md#social-media-is-optional)).
+
+**Decided:**
+
+- **Before the player has an account**, the screen shows only account
+  creation. The player types a handle. The account starts with 0
+  followers.
+- **One scroll with sections**, top to bottom:
+  1. The follower count, the follower tier, and the next unlock (see
+     [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#follower-tiers)).
+  2. A "New post" button.
+  3. An inbox with sponsor offers and follower tips.
+  4. Recent posts, with their results.
+
+  The screen is calmer than the home hub.
+- **A post shows its views and the followers it gained or lost.** The
+  reach formula stays hidden.
+- **The analytics upgrade** adds the likes and the reach factors
+  (content quality, timing, and luck) to each post. It also adds a
+  burnout meter and an authenticity meter to this screen (see
+  [06-social-media.md](06-social-media.md#the-analytics-upgrade)).
+  Without the upgrade, the player sees only falling reach.
+- **A quick post starts in three places:**
+  - "New post" on this screen. The player picks a type (pull reveal,
+    collection flex, hot take, show promo, or for sale), then an
+    item. A hot take needs no item.
+  - A "Post" action on the item detail screen in Inventory.
+  - "Post this pull" on the rip summary.
+- **A sponsor offer is an inbox card.** The card shows the brand, the
+  pay, the number of paid posts, and the days to make them. The player
+  accepts or declines. Accept adds the paid posts as tasks. A missed
+  deadline cancels the deal and costs authenticity.
+
+**Open topics:**
+
+- What a follower tip card shows, and how a tip connects to garage
+  sales and the calendar.
+- Where a for-sale post shows its sale result.
+- The live stream setup screen (the hub's Go Live row), and Whatnot.
+
+**Mockup:** none yet.
+
 ## What's next
 
 The buy screen and Inventory (above) have reviewed lo-fi mockups. The
-remaining destination screens follow.
+social media hub has recorded decisions. The next step is a lo-fi
+social media hub mockup. The remaining destination screens follow.

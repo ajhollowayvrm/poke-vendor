@@ -221,6 +221,8 @@ After the last pack, a summary shows:
   [15-selling.md](15-selling.md#the-local-game-shop)).
 - A **Post this pull** button. This is a free quick post (see
   [06-social-media.md](06-social-media.md#quick-posts-free-action)).
+  The button shows only if the player has a social media account (see
+  [06-social-media.md](06-social-media.md#social-media-is-optional)).
 - A **Go to Inventory** button.
 
 If the player stops early, the summary covers the packs that the rip

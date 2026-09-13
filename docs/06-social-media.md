@@ -5,6 +5,24 @@ platforms. It supports two content types, which map onto the existing
 free-action / time-cost split from
 [01-premise-and-loop.md](01-premise-and-loop.md).
 
+## Social media is optional
+
+The player never has to use social media. The player starts with no
+account.
+
+- Until the player creates an account, the hub's Followers slot shows
+  "Start posting". A tap on it opens the social media hub, where the
+  player creates the account.
+- Until then, the game hides all social media UI: the hub's Go Live
+  row, the hub's post icon, and the rip summary's "Post this pull"
+  button.
+- A player with no account has 0 followers, at follower tier 0.
+  Follower decay costs that player nothing.
+- The follower unlocks outside social media stay (see
+  [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#follower-tiers)).
+  A player with no account "makes it" through cash, reputation, or
+  collection value (see [03-currencies.md](03-currencies.md)).
+
 ## Content types
 
 ### Quick posts (free action)
@@ -39,7 +57,8 @@ reach = base_follower_reach × content_quality_multiplier × timing_multiplier �
 - **Algorithm luck**: a rare chance of a true breakout post that spikes far
   outside your normal range, mirroring a small creator suddenly blowing up
   off one lucky pull video.
-- **Authenticity/track record**: a hidden modifier. Followers burned before
+- **Authenticity/track record**: a hidden modifier. The analytics upgrade
+  shows it (see [The analytics upgrade](#the-analytics-upgrade)). Followers burned before
   (bad grading calls, hype that did not pay off) suppress future reach,
   independent of raw follower count.
 
@@ -52,15 +71,36 @@ reach = base_follower_reach × content_quality_multiplier × timing_multiplier �
   spill into the in-person trading world (see
   [03-currencies.md](03-currencies.md)).
 - **Scam accusations**: a slow shipment or a bad trade made public can tank
-  an account, mirroring real collector-community drama.
+  an account, mirroring real collector-community drama. A player with
+  no account still gets public scam accusations: the buyer posts on the
+  buyer's own account. The accusation costs reputation. It costs
+  followers only if the player has an account.
 
 ## Growth and monetization
 
 - **Sponsor deals**: unlock at follower thresholds. Paid posts for cash, but
-  overusing them dilutes authenticity.
+  overusing them dilutes authenticity. An offer arrives in the social
+  hub inbox. It shows the brand, the pay, the number of paid posts, and
+  the days to make them. The player accepts or declines. A missed
+  deadline cancels the deal and costs authenticity.
 - **Follower decay**: followers are not a number that only goes up.
   Inactivity, controversy, and algorithm shifts cause real decay — an
   audience needs upkeep, not just a one-time build.
+
+## The analytics upgrade
+
+Without this upgrade, a post shows its views and the followers it
+gained or lost. The reach formula, burnout, and authenticity stay
+hidden. The player sees only falling reach.
+
+This permanent upgrade (see [09-upgrades.md](09-upgrades.md)) shows:
+
+- The likes and the reach factors of each post: content quality,
+  timing, and luck.
+- A burnout meter on the social media hub.
+- An authenticity meter on the social media hub.
+
+The cost of the upgrade is a balancing value.
 
 See [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md)
 for what follower thresholds unlock outside the social system itself.

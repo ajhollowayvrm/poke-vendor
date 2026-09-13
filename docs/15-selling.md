@@ -87,6 +87,8 @@ stream time-cost action in
 ## Social media
 
 The player posts a card for sale to their followers, at a fixed price.
+This channel needs a social media account (see
+[06-social-media.md](06-social-media.md#social-media-is-optional)).
 
 - Posting is a free action, the same as a quick post (see
   [06-social-media.md](06-social-media.md#quick-posts-free-action)).
@@ -184,6 +186,9 @@ become a public scam accusation (see
 [14-counterfeit-risk.md](14-counterfeit-risk.md#consequences)). A
 platform refund does not prevent this. A bad sale includes a fake, a
 late shipment, and a card in worse condition than the listing said.
+A player with no social media account still gets the accusation. It
+costs reputation, and it costs followers only if the player has an
+account.
 
 The chance that a bad sale goes public is a set number that rises with
 the player's **notoriety**. A player whom few people know can make a
