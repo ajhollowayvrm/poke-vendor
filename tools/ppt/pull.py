@@ -87,7 +87,7 @@ def main():
         data = None
         for attempt in range(1, 6):
             code, headers, body = call(url, key)
-            rem = headers.get("x-ratelimit-daily-remaining")
+            rem = headers.get("x-ratelimit-total-remaining") or headers.get("x-ratelimit-daily-remaining")
             remaining = int(rem) if rem and rem.isdigit() else remaining
             if code == "429":
                 try:
