@@ -133,7 +133,7 @@ Collation:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -160,7 +160,7 @@ TCGplayer group `23120`: 27 products.
 | 496927 | Paldea Evolved Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q2 (set) | Yes |
 | 502480 | Paldea Evolved Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2023 Q2 (set) | Yes |
 | 496929 | Paldea Evolved Build & Battle Box | Build & Battle | 4 | Description | — | 2023 Q2 (set) | Yes |
-| 496935 | Paldea Evolved Build & Battle Stadium | Build & Battle | 3 | Description | — | 2023 Q2 (set) | Yes |
+| 496935 | Paldea Evolved Build & Battle Stadium | Build & Battle | 11 | Set file | — | 2023 Q2 (set) | Yes |
 | 496905 | Paldea Evolved Booster Box Case | Case or display | — | — | 6 booster boxes | 2023 Q2 (set) | Yes |
 | 656928 | Paldea Evolved Booster Bundle Case | Case or display | — | — | 25 booster bundles | 2023 Q2 (set) | No |
 | 496931 | Paldea Evolved Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2023 Q2 (set) | Yes |

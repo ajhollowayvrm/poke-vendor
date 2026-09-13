@@ -160,7 +160,7 @@ Collation:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -190,7 +190,7 @@ TCGplayer group `22873`: 31 products.
 | 478274 | Scarlet & Violet Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2023 Q1 | Yes |
 | 478275 | Scarlet & Violet Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2023 Q1 | Yes |
 | 478253 | Scarlet & Violet Build & Battle Box | Build & Battle | 4 | Description | — | 2023 Q1 (set) | Yes |
-| 478257 | Scarlet & Violet Build & Battle Stadium | Build & Battle | 3 | Description | — | 2023 Q1 (set) | Yes |
+| 478257 | Scarlet & Violet Build & Battle Stadium | Build & Battle | 11 | Set file | — | 2023 Q1 (set) | Yes |
 | 476453 | Scarlet & Violet Booster Box Case | Case or display | — | — | Unknown number of booster boxes | 2023 Q1 (set) | Yes |
 | 478254 | Scarlet & Violet Build & Battle Box Display | Case or display | — | — | Unknown number of build & battle boxes | 2023 Q1 (set) | Yes |
 | 488776 | Scarlet & Violet Elite Trainer Box Case | Case or display | — | — | Unknown number of elite trainer boxes | 2023 Q1 (set) | Yes |

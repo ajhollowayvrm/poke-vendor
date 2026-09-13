@@ -131,7 +131,7 @@ community sample.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -158,7 +158,7 @@ TCGplayer group `3170`, `17674`: 28 products.
 | 283400 | Silver Tempest Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2022 Q4 (set) | Yes |
 | 454484 | Silver Tempest Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q4 (set) | Yes |
 | 285776 | Silver Tempest Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q4 (set) | Yes |
-| 285042 | Silver Tempest Build & Battle Stadium | Build & Battle | 4 | Description | — | 2022 Q4 (set) | Yes |
+| 285042 | Silver Tempest Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2022 Q4 (set) | Yes |
 | 285280 | Fall 2022 Collector Chest Case | Case or display | — | — | Unknown | 2022 Q4 | No |
 | 283391 | Silver Tempest Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q4 (set) | Yes |
 | 562366 | Silver Tempest Booster Bundle Case | Case or display | — | — | 25 booster bundles | 2022 Q4 (set) | Yes |

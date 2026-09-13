@@ -124,7 +124,7 @@ DigitalTQ community sample, 1,004 packs:
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -148,7 +148,7 @@ TCGplayer group `2948`, `3020`: 28 products.
 | 256135 | Brilliant Stars Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2022 Q1 | Yes |
 | 256136 | Brilliant Stars Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q1 | Yes |
 | 256137 | Brilliant Stars Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q1 | Yes |
-| 256139 | Brilliant Stars Build & Battle Stadium | Build & Battle | 4 | Description | — | 2022 Q1 (set) | Yes |
+| 256139 | Brilliant Stars Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2022 Q1 (set) | Yes |
 | 651285 | Arceus V Figure Collection Case | Case or display | — | — | Unknown number of collections | 2022 Q1 (set) | Yes |
 | 256145 | Brilliant Stars Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q1 | Yes |
 | 256144 | Brilliant Stars Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2022 Q1 (set) | Yes |

@@ -128,7 +128,7 @@ Ultra Rare 5.37%, Rare Holo VSTAR 2.6%, Secret Rare Holo 1.3%, Rare Rainbow
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -156,7 +156,7 @@ TCGplayer group `3040`, `3068`: 31 products.
 | 265543 | Astral Radiance Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2022 Q2 | Yes |
 | 265544 | Astral Radiance Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q2 | No |
 | 265529 | Astral Radiance Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q2 | Yes |
-| 265515 | Astral Radiance Build & Battle Stadium | Build & Battle | Unknown | Unknown | — | 2022 Q2 (set) | Yes |
+| 265515 | Astral Radiance Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2022 Q2 (set) | Yes |
 | 679043 | Astral Radiance 3 Pack Blister Case | Case or display | — | — | 24 blisters | 2022 Q2 (set) | Yes |
 | 265520 | Astral Radiance Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q2 | Yes |
 | 272137 | Astral Radiance Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2022 Q2 (set) | Yes |

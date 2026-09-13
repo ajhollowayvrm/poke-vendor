@@ -136,9 +136,19 @@ def kind_of(name):
     return "Other"
 
 
-def packs_of(kind, name, text, era=None, sections=None):
+def stadium_packs(hand_text):
+    # "2 Build & Battle Boxes + 4 packs" or "2 Build & Battle Boxes plus 3 packs" in the set file's hand table.
+    m = re.search(r"^\|\s*Build & Battle Stadium\s*\|\s*(\d+)\s+Build & Battle Box(?:es)?\s*(?:\+|plus)\s*(\d+)\s+packs?", hand_text or "", re.I | re.M)
+    return int(m.group(1)) * DEFAULT_PACKS["Build & Battle"] + int(m.group(2)) if m else None
+
+
+def packs_of(kind, name, text, era=None, sections=None, hand_text=None):
     if kind == "Case or display":
         return None, ""
+    if re.search(r"\bstadium\b", name, re.I):
+        # A stadium holds Build & Battle Boxes. The description and Bulbapedia count only its loose packs.
+        n = stadium_packs(hand_text)
+        return (n, "Set file") if n is not None else (None, "Unknown")
     m = PACKS_RE.search(text)
     if m and num(m.group(1)):
         return num(m.group(1)), "Description"
@@ -154,8 +164,7 @@ def packs_of(kind, name, text, era=None, sections=None):
         return int(m.group(1)), "Name"
     if re.search(r"\bsingle pack\b", name, re.I):
         return 1, "Name"
-    if sections is not None and not re.search(r"\bstadium\b", name, re.I):
-        # A stadium holds other boxed products; the first pack phrase counts only its loose packs.
+    if sections is not None:
         n, src = bp_packs(name, kind, era, sections)
         if src:
             return n, src
@@ -239,10 +248,15 @@ def products_by_group():
 
 def build_rows(gid, rows, release_by_slug, priced, eras=None, sections=None):
     slug = SLUG_OF.get(gid)
+    hand_text = ""
+    if slug and os.path.exists(os.path.join(DOCS, f"{slug}.md")):
+        doc = open(os.path.join(DOCS, f"{slug}.md")).read()
+        m = re.search(r"^## Sealed products\n(.*?)(?=<!-- product-catalog:start|^## )", doc, re.S | re.M)
+        hand_text = m.group(1) if m else ""
     out = []
     for x, text in sorted(rows, key=lambda r: (kind_of(r[0]["name"]), r[0]["name"])):
         kind = kind_of(x["name"])
-        packs, src = packs_of(kind, x["name"], text, (eras or {}).get(slug), sections)
+        packs, src = packs_of(kind, x["name"], text, (eras or {}).get(slug), sections, hand_text)
         holds = holds_of(x["name"], text) if kind == "Case or display" else "—"
         rel = (x.get("presaleInfo") or {}).get("releasedOn")
         q = quarter(rel) or (quarter(release_by_slug.get(slug)) and f"{quarter(release_by_slug.get(slug))} (set)") or "—"
@@ -261,7 +275,7 @@ def table(rows):
 INTRO = ("Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. "
          "Code cards are left out.\n\n"
          "- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, "
-         "the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). "
+         "the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). "
          "Check a default before the game uses it.\n"
          "- **Holds** is what a case or a display holds.\n"
          "- **Release** is the quarter from the TCGplayer release date. \"(set)\" means the quarter of the set's release date.\n"

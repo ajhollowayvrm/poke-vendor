@@ -98,7 +98,7 @@ ThePriceDex; the sample size is not stated on that page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -122,7 +122,7 @@ TCGplayer group `2906`: 33 products.
 | 247657 | Fusion Strike Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q4 (set) | Yes |
 | 247658 | Fusion Strike Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2021 Q4 (set) | Yes |
 | 247659 | Fusion Strike Build & Battle Box | Build & Battle | 4 | Description | — | 2021 Q4 (set) | Yes |
-| 247666 | Fusion Strike Build & Battle Stadium | Build & Battle | 1 | Description | — | 2021 Q4 (set) | Yes |
+| 247666 | Fusion Strike Build & Battle Stadium | Build & Battle | 12 | Set file | — | 2021 Q4 (set) | Yes |
 | 638064 | Fusion Strike 3-Pack Blister Case | Case or display | — | — | Unknown number of blisters | 2021 Q4 (set) | No |
 | 247655 | Fusion Strike Booster Box Case | Case or display | — | — | 6 booster boxes | 2021 Q4 (set) | Yes |
 | 247660 | Fusion Strike Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2021 Q4 (set) | Yes |
