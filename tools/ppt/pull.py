@@ -1,6 +1,6 @@
 """Pull card prices, graded eBay prices, and images from the PokemonPriceTracker (PPT) API.
 
-Usage: python3 tools/ppt/pull.py [--no-ebay] [--min-credits N]
+Usage: python3 tools/ppt/pull.py [--no-ebay] [--min-credits N] [--sets GROUP,GROUP]
 
 - Reads PPT_API_KEY from the repo's .env file.
 - Pulls each set in tools/cardlist/tcgcsv-map.json (the PPT setId is the TCGCSV group ID),
@@ -65,6 +65,9 @@ def main():
     key = api_key()
     groups = json.load(open(os.path.join(ROOT, "tools", "cardlist", "tcgcsv-map.json")))
     set_ids = sorted({g for v in groups.values() for g in v}, reverse=True)
+    if "--sets" in sys.argv:
+        # Pull only the named TCGplayer groups, for example: --sets 22880
+        set_ids = [int(x) for x in sys.argv[sys.argv.index("--sets") + 1].split(",")]
     sizes = {}
     for gid in set_ids:
         p = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv", f"{gid}-products.json")
