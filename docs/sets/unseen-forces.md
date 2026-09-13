@@ -290,6 +290,47 @@ TCGdex set `exu`: 28 cards.
 | X | Unown | Pokémon (Psychic) | Rare | Holo |
 | Y | Unown | Pokémon (Psychic) | Rare | Holo |
 | Z | Unown | Pokémon (Psychic) | Rare | Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex lists one "Rare" rarity for the main table, holding the
+non-holo Rares (Normal variant), the Rare Holo (Holo variant), the 12
+Rare Holo ex cards, the 3 Rare Holo ☆, and the 2-card Secret Rare (all
+Holo variant). The Cards column picks each group out by number:
+101–112/115 for Rare Holo ex, 113–115/115 for Rare Holo ☆, and
+116–117/115 for the Secret Rare.
+
+**Slot map:** the Rarity list places the Unown subset in the reverse
+holo slot, next to Rare Holo ☆ (see the Rarity list intro below). No
+source confirms this placement or gives its pack odds; this file
+follows that placement so the 28 Unown cards come from booster packs
+at all.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 or 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 or 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Unown subset | Unown subset | Rare | Holo | Part: Unseen Forces Unown Collection | — |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo (Set logo) | All | Rest |
+| Rare slot | 1 | Secret Rare | Secret Rare | Rare | Holo | Nos. 116–117 | — |
+| Rare slot | 1 | Rare Holo ☆ | Rare Holo ☆ | Rare | Holo | Nos. 113–115 | 1 in 72 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 101–112 | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 101–117 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 101–117 | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

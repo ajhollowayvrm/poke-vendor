@@ -250,6 +250,40 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex7`), fe
 | 109/109 | Treecko ☆ | Pokémon (Grass) | Rare | Holo |
 | 110/109 | Charmeleon | Pokémon (Fire) | Rare | Holo |
 | 111/109 | Here Comes Team Rocket! | Trainer (Supporter) | Rare | Holo, Normal |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex lists one "Rare" rarity for this set, holding the non-holo
+Rares (Normal variant), the Rare Holo (Holo variant), the 11 Rare Holo
+ex cards, the 3 Rare Holo ☆, and the 2-card Secret Rare group (all
+Holo variant). The Cards column picks each group out by number, from
+the 96–106/109 (ex), 107–109/109 (☆), and 110–111/109 (Secret Rare)
+ranges Bulbapedia gives.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo (Set logo) | All | 100% |
+| Rare slot | 1 | Secret Rare | Secret Rare | Rare | Holo | Nos. 110–111 | 1 in 120 |
+| Rare slot | 1 | Rare Holo ☆ | Rare Holo ☆ | Rare | Holo | Nos. 107–109 | 1 in 72 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 96–106 | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 96–111 | 1 in 4.4 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 96–111 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

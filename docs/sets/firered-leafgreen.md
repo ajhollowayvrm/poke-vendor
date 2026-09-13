@@ -256,6 +256,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex6`), fe
 | 114/112 | Articuno ex | Pokémon (Water) | Rare | Holo |
 | 115/112 | Moltres ex | Pokémon (Fire) | Rare | Holo, Normal |
 | 116/112 | Zapdos ex | Pokémon (Lightning) | Rare | Holo, Normal |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex lists one "Rare" rarity for this set, holding the non-holo
+Rares (Normal variant), the Rare Holo (Holo variant), the 9 Rare Holo
+ex cards, and the 4-card Secret Rare group (both Holo variant). The
+Cards column picks the ex cards out by number, from the 104–112/112
+range Bulbapedia gives, and the Secret Rare cards from the 113–116/112
+range.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo (Energy) | All | 100% |
+| Rare slot | 1 | Secret Rare | Secret Rare | Rare | Holo | Nos. 113–116 | 1 in 36 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 104–112 | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 104–116 | 1 in 4.5 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 104–116 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

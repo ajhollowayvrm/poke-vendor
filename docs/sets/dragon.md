@@ -227,6 +227,45 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex3`), fe
 | 98/97 | Charmander | Pokémon (Fire) | Rare | Holo, Holo (City championships) |
 | 99/97 | Charmeleon | Pokémon (Fire) | Rare | Holo, Holo (State championships) |
 | 100/097 | Charizard | Pokémon (Fire) | Rare | Holo, Holo (National championships) |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex splits Rare Holo (non-ex) into its own rarity, "Holo Rare," so
+the Common/Uncommon/Rare/Rare Holo split in the pack structure above
+maps to Common, Uncommon, Rare, and Holo Rare here. The "Rare" rarity
+holds the non-holo Rares (Normal variant), the 9 Rare Holo ex cards,
+and the 3-card Secret Rare Charmander line (both Holo variant); the
+Cards column picks each group out by number, from the 89–97/97 (ex)
+and 98–100/97 (Secret Rare) ranges Bulbapedia gives.
+
+Confidence: the Common and Uncommon counts follow the era's unresolved
+4-or-5 / 2-or-3 split (see Pack structure above); this file does not
+pick a number for this set. This set's box-count data ranks Rare Holo
+ex above Rare Holo (see the Rarity list below).
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 or 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 or 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Secret Rare | Secret Rare | Rare | Holo | Nos. 98–100 | 1 in 36 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 89–97 | 1 in 6 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 7.2 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 89–100 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

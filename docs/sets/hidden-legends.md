@@ -232,6 +232,51 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex5`), fe
 | 100/101 | Vileplume ex | Pokémon (Grass) | Rare | Holo (Cracked ice) |
 | 101/101 | Wigglytuff ex | Pokémon (Colorless) | Rare | Holo |
 | 102/101 | Groudon | Pokémon (Fighting) | Rare | Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex splits Rare Holo (non-ex) into its own rarity, "Holo Rare," so
+the Common/Uncommon/Rare/Rare Holo split in the pack structure above
+maps to Common, Uncommon, Rare, and Holo Rare here. The "Rare" rarity
+holds the non-holo Rares (Normal variant), the 9 Rare Holo ex cards,
+and the 1-card Secret Rare Groudon (both Holo variant); the Cards
+column picks each group out by number, from the 93–101/101 (ex) and
+102/101 (Secret Rare) numbers Bulbapedia gives. Eight of the 9 Rare
+Holo ex cards use a "Holo (Cracked ice)" print; one, Wigglytuff ex, has
+only plain "Holo." The Variant column lists both, in that order.
+
+The reverse holo print for Common and Uncommon cards is plain
+"Reverse holo"; for Rare and Holo Rare cards it is "Reverse holo
+(Energy)." The Variant column lists both, in that order, so the same
+row covers all four rarities.
+
+**Slot map:** the Rare Holo ex Variant column lists "Holo (Cracked
+ice) or Holo" because the card list does not confirm a single print
+for all 9 cards; 8 use Cracked ice and 1 (Wigglytuff ex) does not.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo or Reverse holo (Energy) | All | 100% |
+| Rare slot | 1 | Secret Rare | Secret Rare | Rare | Holo | Nos. 102 | — |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo (Cracked ice) or Holo | Nos. 93–101 | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 4 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 93–102 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

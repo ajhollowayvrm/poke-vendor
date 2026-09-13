@@ -221,6 +221,41 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex15`), f
 | 99/101 | Tyranitar ex δ | Pokémon (Lightning) | Rare | Holo |
 | 100/101 | Charizard ☆ δ | Pokémon (Darkness) | Rare | Holo |
 | 101/101 | Mew ☆ δ | Pokémon (Water) | Rare | Holo, Holo (Dylan lefavour) |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex lists one "Rare" rarity for this set, holding the non-holo
+Rares (Normal variant, including δ Delta Species Rares), the Rare Holo
+(Holo variant), the 10 Rare Holo ex cards, and the 2 Rare Holo ☆ (both
+Holo variant). This set has no Secret Rare. The Cards column picks the
+ex cards out by number, 90–99/101, and the ☆ cards at 100–101/101.
+
+This set's box-count breakdown gives a figure for every rare-slot
+rarity, so the non-holo Rare row uses Rest for the remainder.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 or 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 or 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Holo ☆ | Rare Holo ☆ | Rare | Holo | Nos. 100–101 | 1 in 72 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 90–99 | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 90–101 | 1 in 4.2 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 90–101 | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -227,6 +227,44 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex14`), f
 | 98/100 | Swampert ex | Pokémon (Water) | Rare | Holo |
 | 99/100 | Alakazam ☆ | Pokémon (Psychic) | Rare | Holo |
 | 100/100 | Celebi ☆ | Pokémon (Grass) | Rare | Holo |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex lists one "Rare" rarity for this set, holding the non-holo
+Rares (Normal variant), the Rare Holo (Holo variant), the 10 Rare Holo
+ex cards, and the 2 Rare Holo ☆ (both Holo variant). This set has no
+Secret Rare; its 2 Rare Holo ☆ sit inside the printed 100-card count.
+The Cards column picks the ex cards out by number, 89–98/100, and the
+☆ cards at 99–100/100.
+
+**Slot map:** the Rare Holo ex and Rare Holo ☆ odds below come from an
+Elite Fourum post that itself calls this set's real insertion unusually
+uneven, across two conflicting samples (see Rarities and hit odds
+above). This file uses the post's stated per-pack conversions.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 or 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 or 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Holo ☆ | Rare Holo ☆ | Rare | Holo | Nos. 99–100 | 1 in 141 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 89–98 | 1 in 13 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 89–100 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 89–100 | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

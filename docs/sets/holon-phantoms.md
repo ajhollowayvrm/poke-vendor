@@ -246,6 +246,46 @@ Every card in the set, with its variants. Source: the TCGdex API (set `ex13`), f
 | 109/110 | Psychic Energy | Energy (Normal) | Rare | Holo |
 | 110/110 | Fighting Energy | Energy (Normal) | Rare | Holo |
 | 111/110 | Mew | Pokémon (Psychic) | Rare | Holo, Normal |
+
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex lists one "Rare" rarity for this set, holding the non-holo
+Rares (Normal variant), the Rare Holo (Holo variant), the 3 Rare Holo
+ex cards, the 3 Rare Holo ☆, 6 holofoil basic Energy cards, and the
+1-card Secret Rare Mew (all Holo variant, except Mew which also has a
+Normal print not sold in packs). The Cards column picks each group out
+by number: 99–101/110 for Rare Holo ex, 102–104/110 for Rare Holo ☆,
+105–110/110 for the holofoil Energy, and 111/110 for the Secret Rare.
+
+This set's reverse holo slot can also hold a holofoil Energy card
+(Special subsets above), "usually 2 of each kind" per 36-pack box —
+about 1 in 3 packs — so it has two outcomes.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 or 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 2 or 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Holofoil Energy | Reverse holo | Rare | Holo | Nos. 105–110 | 1 in 3 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Secret Rare | Secret Rare | Rare | Holo | Nos. 111 | — |
+| Rare slot | 1 | Rare Holo ☆ | Rare Holo ☆ | Rare | Holo | Nos. 102–104 | 1 in 108 |
+| Rare slot | 1 | Rare Holo ex | Rare Holo ex | Rare | Holo | Nos. 99–101 | 1 in 36 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 99–111 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 99–111 | — |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
