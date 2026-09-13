@@ -68,7 +68,8 @@ def bp_clean(s):
 
 
 def bp_tokens(name):
-    name = re.sub(r"\[.*?\]|\(.*?\)", " ", name.lower()).replace("-", " ").replace("é", "e")
+    # Leave out bracketed text, parenthesized text, and quoted deck names such as "Red Frenzy".
+    name = re.sub(r"\[.*?\]|\(.*?\)|\".*?\"|“.*?”", " ", name.lower()).replace("-", " ").replace("é", "e")
     return {re.sub(r"(es|s)$", "", w) if len(w) > 3 else w for w in re.findall(r"[a-z0-9]+", name)} - BP_STOP
 
 

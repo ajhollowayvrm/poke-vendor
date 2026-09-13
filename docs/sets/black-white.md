@@ -127,9 +127,9 @@ TCGplayer group `1400`: 11 products.
 | 98553 | Black and White Booster Pack | Booster pack | 1 | Kind default | — | 2011 Q2 (set) | Yes |
 | 98614 | Collector's Album Box | Collection | 2 | Bulbapedia | — | 2011 Q2 (set) | No |
 | 98613 | Victini Box | Collection | 5 | Description | — | 2011 Q2 (set) | No |
-| 98612 | Black & White Theme Deck - "Blue Assault" [Samurott] | Deck | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
-| 98610 | Black & White Theme Deck - "Green Tornado" [Serperior] | Deck | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
-| 98611 | Black & White Theme Deck - "Red Frenzy" [Emboar] | Deck | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
+| 98612 | Black & White Theme Deck - "Blue Assault" [Samurott] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q2 (set) | Yes |
+| 98610 | Black & White Theme Deck - "Green Tornado" [Serperior] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q2 (set) | Yes |
+| 98611 | Black & White Theme Deck - "Red Frenzy" [Emboar] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q2 (set) | Yes |
 | 647775 | Black and White Preview Pack | Other | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
 | 98615 | New Legends Tin [Reshiram] | Tin | 4 | Bulbapedia | — | 2011 Q2 (set) | No |
 | 98616 | New Legends Tin [Zekrom] | Tin | 4 | Bulbapedia | — | 2011 Q2 (set) | No |

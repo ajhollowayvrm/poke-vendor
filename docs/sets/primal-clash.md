@@ -106,8 +106,8 @@ TCGplayer group `1509`: 18 products.
 | 97820 | Flygon EX Box | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 | 97755 | Primal Groudon Collection | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | No |
 | 97754 | Primal Kyogre Collection | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
-| 97753 | Primal Clash Theme Deck - "Earth's Pulse" [Groudon] | Deck | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
-| 97752 | Primal Clash Theme Deck - "Ocean's Core" [Kyogre] | Deck | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
+| 97753 | Primal Clash Theme Deck - "Earth's Pulse" [Groudon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q1 (set) | Yes |
+| 97752 | Primal Clash Theme Deck - "Ocean's Core" [Kyogre] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q1 (set) | Yes |
 | 97762 | Elite Trainer Box [Groudon] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q1 (set) | No |
 | 97763 | Elite Trainer Box [Kyogre] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q1 (set) | No |
 | 97757 | Legend of Hoenn Tin [Groudon EX] | Tin | 4 | Bulbapedia | — | 2015 Q1 (set) | No |

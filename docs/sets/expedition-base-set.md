@@ -124,8 +124,8 @@ TCGplayer group `1375`: 3 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
 | 138151 | Expedition Booster Pack | Booster pack | 1 | Kind default | — | 2002 Q3 (set) | No |
-| 451096 | Expedition Theme Deck - "Echo" | Deck | Unknown | Unknown | — | 2002 Q3 (set) | No |
-| 234504 | Expedition Theme Deck - "Electric Garden" | Deck | Unknown | Unknown | — | 2002 Q3 (set) | Yes |
+| 451096 | Expedition Theme Deck - "Echo" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2002 Q3 (set) | No |
+| 234504 | Expedition Theme Deck - "Electric Garden" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2002 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

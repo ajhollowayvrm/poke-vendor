@@ -132,8 +132,8 @@ TCGplayer group `1842`: 36 products.
 | 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
 | 229351 | XY - Evolutions Pin Collection [Mega Blastoise] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
 | 229352 | XY - Evolutions Pin Collection [Mega Venusaur] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
-| 123450 | Evolutions Theme Deck - "Mewtwo Mayhem" [Mewtwo] | Deck | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 123449 | Evolutions Theme Deck - "Pikachu Power" [Pikachu] | Deck | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
+| 123450 | Evolutions Theme Deck - "Mewtwo Mayhem" [Mewtwo] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2016 Q4 (set) | Yes |
+| 123449 | Evolutions Theme Deck - "Pikachu Power" [Pikachu] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2016 Q4 (set) | Yes |
 | 123448 | XY Evolutions Elite Trainer Box [Mega Blastoise] | Elite Trainer Box | 8 | Description | — | 2016 Q4 (set) | Yes |
 | 123447 | XY Evolutions Elite Trainer Box [Mega Charizard Y] | Elite Trainer Box | 8 | Description | — | 2016 Q4 (set) | Yes |
 | 686507 | Evolutions Mini Pack | Other | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
