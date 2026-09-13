@@ -95,8 +95,8 @@ TCGplayer group `1481`: 22 products.
 | 550673 | Furious Fists Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Furious Fists | Product set | — | 2014 Q3 (set) | Yes |
 | 276591 | Furious Fists Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Furious Fists | Product set | — | 2014 Q3 (set) | Yes |
 | 97774 | Ancient Power Box | Collection | 3 | Bulbapedia | 2 Furious Fists, 1 Flashfire | Exact | — | 2014 Q3 (set) | No |
-| 97766 | Mega Charizard X Collection | Collection | Unknown | Unknown | — | Unknown | — | 2014 Q3 (set) | Yes |
-| 97767 | Mega Charizard Y Collection | Collection | Unknown | Unknown | — | Unknown | — | 2014 Q3 (set) | Yes |
+| 97766 | Mega Charizard X Collection | Collection | 4 | Research | — | Unknown | — | 2014 Q3 (set) | Yes |
+| 97767 | Mega Charizard Y Collection | Collection | 4 | Research | — | Unknown | — | 2014 Q3 (set) | Yes |
 | 97775 | Mega Lucario Collection | Collection | 4 | Bulbapedia | 4 XY | Exact | — | 2014 Q3 (set) | No |
 | 97781 | XY Knock Out Collection [Dragons] | Collection | 2 | Research | 1 Flashfire, 1 XY | Exact | — | 2014 Q3 (set) | No |
 | 97780 | XY Knock Out Collection [Kanto] | Collection | 2 | Research | 1 Flashfire, 1 XY | Exact | — | 2014 Q3 (set) | No |

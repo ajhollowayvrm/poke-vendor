@@ -115,8 +115,8 @@ TCGplayer group `1842`: 34 products.
 | 272648 | XY - Evolutions Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Evolutions | Product set | — | 2016 Q4 (set) | Yes |
 | 627740 | Evolutions Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2016 Q4 (set) | No |
 | 226363 | XY Evolutions Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2016 Q4 (set) | Yes |
-| 125740 | Alola Collection [Lunala] | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
-| 125739 | Alola Collection [Solgaleo] | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125740 | Alola Collection [Lunala] | Collection | 5 | Research | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 125739 | Alola Collection [Solgaleo] | Collection | 5 | Research | — | Unknown | — | 2016 Q4 (set) | Yes |
 | 169636 | Autumn 2016 Collector Chest | Collection | 5 | Description | — | Unknown | — | 2016 Q4 (set) | No |
 | 126570 | BREAK Evolution Box [Arcanine] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
 | 125731 | Charizard EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |

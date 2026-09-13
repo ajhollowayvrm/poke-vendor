@@ -554,28 +554,28 @@ TCGplayer group `2374`: 559 products.
 | 245517 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Poke Ball | Tin | 7 | Research | 7 unknown set | Partial | — | — | No |
 | 245520 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Premier Ball | Tin | 7 | Research | 7 unknown set | Partial | — | — | No |
 | 245521 | Pokemon - Poke Ball Tin + 2 Kanto Power Mini Tins - Ultra Ball | Tin | 7 | Research | 7 unknown set | Partial | — | — | No |
-| 210170 | Pokemon - Poke Ball Tin - Dive Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 214268 | Pokemon - Poke Ball Tin - Dusk Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 198519 | Pokemon - Poke Ball Tin - Great Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 587366 | Pokemon - Poke Ball Tin - Great Ball (Q4 2024) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
+| 210170 | Pokemon - Poke Ball Tin - Dive Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 214268 | Pokemon - Poke Ball Tin - Dusk Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 198519 | Pokemon - Poke Ball Tin - Great Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 587366 | Pokemon - Poke Ball Tin - Great Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 688966 | Pokemon - Poke Ball Tin - Great Ball (Q4 2025) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
 | 231292 | Pokemon - Poke Ball Tin - Level Ball | Tin | 3 | Description | 3 unknown set | Partial | — | 2021 Q1 | Yes |
 | 271585 | Pokemon - Poke Ball Tin - Love Ball | Tin | 3 | Description | 3 unknown set | Partial | — | 2022 Q2 | Yes |
 | 516987 | Pokemon - Poke Ball Tin - Lure Ball | Tin | 3 | Description | 3 unknown set | Partial | — | 2023 Q3 | Yes |
-| 198520 | Pokemon - Poke Ball Tin - Luxury Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 686298 | Pokemon - Poke Ball Tin - Moon Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 587369 | Pokemon - Poke Ball Tin - Moon Ball (Q4 2024) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 181267 | Pokemon - Poke Ball Tin - Poke Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 587365 | Pokemon - Poke Ball Tin - Poke Ball (Q4 2024) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
+| 198520 | Pokemon - Poke Ball Tin - Luxury Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 686298 | Pokemon - Poke Ball Tin - Moon Ball | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
+| 587369 | Pokemon - Poke Ball Tin - Moon Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
+| 181267 | Pokemon - Poke Ball Tin - Poke Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 587365 | Pokemon - Poke Ball Tin - Poke Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 688964 | Pokemon - Poke Ball Tin - Poke Ball (Q4 2025) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 198522 | Pokemon - Poke Ball Tin - Premier Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 587367 | Pokemon - Poke Ball Tin - Premier Ball (Q4 2024) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
+| 198522 | Pokemon - Poke Ball Tin - Premier Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 587367 | Pokemon - Poke Ball Tin - Premier Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 688967 | Pokemon - Poke Ball Tin - Premier Ball (Q4 2025) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 181268 | Pokemon - Poke Ball Tin - Quick Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
+| 181268 | Pokemon - Poke Ball Tin - Quick Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
 | 668648 | Pokemon - Poke Ball Tin - Repeat Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
 | 688968 | Pokemon - Poke Ball Tin - Repeat Ball (Q4 2025) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 210169 | Pokemon - Poke Ball Tin - Ultra Ball | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 587368 | Pokemon - Poke Ball Tin - Ultra Ball (Q4 2024) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
+| 210169 | Pokemon - Poke Ball Tin - Ultra Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
+| 587368 | Pokemon - Poke Ball Tin - Ultra Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 688965 | Pokemon - Poke Ball Tin - Ultra Ball (Q4 2025) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
 | 686503 | Pokemon Champions Tin [Gengar] | Tin | 3 | Description | — | Unknown | — | — | No |
 | 541175 | Pokemon Stacking Tin: Dragon | Tin | 3 | Description | 1 Burning Shadows, 1 Crimson Invasion, 1 Evolutions | Exact | — | — | Yes |

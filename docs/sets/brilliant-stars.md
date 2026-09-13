@@ -139,7 +139,7 @@ TCGplayer group `2948`, `3020`: 28 products.
 | 256130 | Brilliant Stars 3 Pack Blister [Leafeon] | Blister | 3 | Description | 3 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
 | 256143 | Brilliant Stars Premium Checklane Blister [Hydreigon] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | No |
 | 256142 | Brilliant Stars Premium Checklane Blister [Salamence] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | No |
-| 684658 | Brilliant Stars Premium Checklane Blister [Zoroark] | Blister | Unknown | Unknown | — | Unknown | — | 2022 Q1 (set) | Yes |
+| 684658 | Brilliant Stars Premium Checklane Blister [Zoroark] | Blister | 1 | Research | 1 Brilliant Stars | Exact | — | 2022 Q1 (set) | Yes |
 | 256129 | Brilliant Stars Single Pack Blister [Eevee] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
 | 256128 | Brilliant Stars Single Pack Blister [Flapple] | Blister | 1 | Description | 1 Brilliant Stars | Exact | — | 2022 Q1 | Yes |
 | 256141 | Brilliant Stars Booster Box | Booster box | 36 | Description | 36 Brilliant Stars | Product set | — | 2022 Q1 | Yes |
