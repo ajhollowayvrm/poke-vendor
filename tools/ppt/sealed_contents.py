@@ -71,7 +71,7 @@ DASH_PREFIX = r"(?:[\w&]+(?:\s+[\w&]+){0,3}\s*[—–]\s*|(?:xy|sm|swsh|sv|me)\s
 PACK_WORDS = r"(?:\s+\w+-card)?(?:\s+mini)?(?:\s+booster)?\s+packs?"
 # A count and a set, with the word "pack", so "an XY Promo" is not a pack.
 MIX_RE = re.compile(
-    COUNT + r"\s+(?:(?:booster\s+)?packs?\s+(?:from|of)\s+(?:the\s+)?" + PREFIX + r"(" + SET_RE + r")"
+    COUNT + r"\s+(?:(?:booster\s+)?packs?\s+(?:from|of)\s+(?:the\s+)?(?:special\s+)?" + PREFIX + r"(" + SET_RE + r")"
     r"|" + PREFIX + r"(" + SET_RE + r")(?:\s+(?:expansion|set))?" + PACK_WORDS + r")\b", re.I)
 SET_ONLY_RE = re.compile(DASH_PREFIX + r"(" + SET_RE + r")\b", re.I)
 SEP = r"(?:\s*,\s*(?:and\s+)?|\s+and\s+|\s*&\s*)"
@@ -83,8 +83,12 @@ ITEM_RE = re.compile(ITEM, re.I)
 LIST_RE = re.compile(ITEM + r"(?:" + SEP + ITEM + r")+", re.I)
 # "one booster pack from each of: A, B, and C", "four each from Sword & Shield, Rebel Clash, and Darkness Ablaze".
 SET_LIST = DASH_PREFIX + r"(?:" + SET_RE + r")\b(?:" + SEP + DASH_PREFIX + r"(?:" + SET_RE + r")\b)*"
-EACH_RE = re.compile(COUNT + r"\s+(?:booster\s+packs?\s+)?(?:(?:from|of)\s+)?each\s+(?:(?:from|of)\s+)?(?:the\s+)?"
+EACH_RE = re.compile(COUNT + r"\s+(?:(?:booster\s+)?packs?\s+)?(?:(?:from|of)\s+)?each\s+(?:(?:from|of)\s+)?(?:the\s+)?"
                      r"(?:[\w&'’ —–-]{0,60}?)(?::\s*)?(" + SET_LIST + r")", re.I)
+# "one pack each of Evolutions and Sword & Shield or one pack each of Burning Shadows and Sword & Shield": options.
+EACH_ONE = COUNT + r"\s+(?:(?:booster\s+)?packs?\s+)?each\s+of\s+(" + SET_LIST + r")"
+EACH_ONE_RE = re.compile(EACH_ONE, re.I)
+EACH_OR_RE = re.compile(EACH_ONE + r"(?:\s*,?\s+or\s+" + EACH_ONE + r")+", re.I)
 # "two Scarlet & Violet Series booster packs (one Scarlet & Violet and one Paldea Evolved)", "four booster packs—typically
 # two Temporal Forces and ...": the breakdown names the sets, so drop the outer count.
 # Also "two booster packs from the Mega Evolution Series (typically ...)" and "for a total of six (typically ...)".
@@ -98,6 +102,10 @@ SERIES = {p.lower(): p for v in C.BP_PAGES.values() for p in v}
 SERIES_RE = re.compile(COUNT + r"\s+(?:other\s+|additional\s+|more\s+)?(?:pokémon\s+tcg:?\s+)?((?:[\w&]+\s+){0,2}?[\w&]+)\s+series\s+(?:booster\s+)?packs?\b", re.I)
 # "Two Additional Pokemon TCG Booster Packs": packs from an unnamed set.
 OTHER_RE = re.compile(COUNT + r"\s+(?:additional|other|more|random|extra|bonus)\s+(?:pok[ée]mon\s+tcg\s+)?(?:booster\s+)?packs?\b", re.I)
+# "packaged with Chilling Reign and Fusion Strike booster packs": two or more sets with no count hold one pack of each set.
+NOCOUNT_RE = re.compile(r"(?<![\w&—–-])(" + DASH_PREFIX + r"(?:" + SET_RE + r")\b(?:" + SEP + DASH_PREFIX + r"(?:" + SET_RE + r")\b)+)"
+                        r"\s+(?:booster\s+)?packs\b", re.I)
+COUNT_BEFORE_RE = re.compile(r"(?<![/\w])(?:" + COUNT_ALTS + r")\s+(?:[\w&'’]+\s+)?$", re.I)
 # "two booster packs from a selection of older Platinum Series and Diamond & Pearl Series expansions": unnamed sets.
 SELECTION_RE = re.compile(COUNT + r"\s+(?:booster\s+)?packs?\s+from\s+(?:a\s+selection|an\s+assortment|a\s+variety|a\s+range)\s+of\s+"
                           r"(?:[\w&]+\s+){0,10}?expansions?\b", re.I)
@@ -149,7 +157,15 @@ def pack_mix(text, slug=None):
     mix = collections.Counter()
     text = BREAKDOWN_RE.sub(" ", text)
     # "two A and one each of B and C" becomes "two A and one B booster packs, one C booster packs", so the list keeps A.
+    # "one pack each of A and B or one pack each of C and B" becomes "either one A and one B packs or one C and one B packs".
+    text = EACH_OR_RE.sub(lambda m: "either " + " or ".join(
+        " and ".join(f"{p.group(1)} {s.group(0).strip()}" for s in SET_ONLY_RE.finditer(p.group(2))) + " packs"
+        for p in EACH_ONE_RE.finditer(m.group(0))), text)
     text = EACH_RE.sub(lambda m: ", ".join(f"{m.group(1)} {s.group(0).strip()} booster packs" for s in SET_ONLY_RE.finditer(m.group(2))), text)
+    # "Sun & Moon and Darkness Ablaze booster packs" becomes "one Sun & Moon and one Darkness Ablaze booster packs", unless a
+    # count comes before the list ("two Sun & Moon and ...").
+    text = NOCOUNT_RE.sub(lambda m: m.group(0) if COUNT_BEFORE_RE.search(text[:m.start()]) else
+                          " and ".join(f"one {s.group(0).strip()}" for s in SET_ONLY_RE.finditer(m.group(1))) + " booster packs", text)
     def alternatives(m):
         # Only alternatives about packs count. "print of either Phantom Forces or Primal Clash" names a card, and the
         # word "pack" in "Single Pack Blisters" is not a pack.
@@ -211,7 +227,9 @@ def bp_index():
     return out
 
 
-CLAUSE_RE = re.compile(r"(?<=[.;])\s+(?=[A-Z0-9\"'])|;\s*|,?\s+(?=(?:while|whereas)\b)")
+# A section splits into sentences, and a sentence into parts: "...; these tins ...", "... while ...", "..., but ...".
+SENTENCE_RE = re.compile(r"(?<=\.)\s+(?=[A-Z0-9\"'])")
+PART_RE = re.compile(r";\s*|,?\s+(?=(?:while|whereas)\b)|,\s+(?=but\b)")
 # A retailer, region, or version in a clause must also be in the product name, or the clause describes another product.
 QUALIFIER_RE = re.compile(r"\b(walmart|target|costco|sam['’]s club|gamestop|best buy|walgreens|meijer|pok[ée]mon center|amazon|"
                           r"international|european|europe|uk|australia|australian|\d{4} version|reissue|re-release)\b", re.I)
@@ -222,50 +240,76 @@ def fold(s):
 
 
 def clause_mixes(name, clean, slug):
-    # [(mix, clause)] for each clause of a section that holds packs and names no qualifier absent from the product name.
+    # [(mix, clause, context)] for each clause of a section that holds packs and names no qualifier absent from the product
+    # name. The context adds the parts of the same sentence before the clause that hold no packs, so "Another production
+    # wave ... the code "D21"; these tins typically included ..." keeps its wave words and its code.
     out = []
-    for clause in CLAUSE_RE.split(clean):
-        if any(fold(q).replace(" version", "") not in fold(name) for q in QUALIFIER_RE.findall(clause)):
-            continue
-        mix = pack_mix(clause, slug)
-        if mix:
-            out.append((mix, clause))
+    for sentence in SENTENCE_RE.split(clean):
+        lead = ""
+        for clause in PART_RE.split(sentence):
+            if any(fold(q).replace(" version", "") not in fold(name) for q in QUALIFIER_RE.findall(clause)):
+                continue
+            mix = pack_mix(clause, slug)
+            if mix:
+                out.append((mix, clause, f"{lead} {clause}".strip()))
+                lead = ""
+            else:
+                lead = f"{lead} {clause}"
     return out
 
 
 LATER_RE = re.compile(r"\b(later|updated|reissues?|re-releases?|subsequent|another)\b", re.I)
+# A clause about product photos ("Initial product shots featured ...") does not describe the contents.
+PICTURE_RE = re.compile(r"\b(product shots?|product images?|stock images?|pictured|renders?)\b", re.I)
+# A production code by the copyright, such as "E20": a letter for the month and two digits for the year.
+CODE_RE = re.compile(r"[\"“]([A-L])(\d{2})[\"”]")
 
 
 def best_clause(name, packs, clauses):
     # The one clause mix whose total is the pack count, or None. Named sets beat unnamed packs. Then the clause with
     # the most words from the product name (brackets included) wins.
     fits = {}
-    for mix, clause in clauses:
+    # fits: {mix: (clause, context)}. Words from the product name count in the clause. Print run words, product photos, and
+    # production codes count in the context.
+    for mix, clause, context in clauses:
         if sum(mix.values()) == packs:
-            fits.setdefault(tuple(sorted(mix.items())), clause)
+            fits.setdefault(tuple(sorted(mix.items())), (clause, context))
     if len(fits) > 1:
         fits = {k: c for k, c in fits.items() if any(not unnamed(s) for s, _ in k)} or fits
     if len(fits) > 1:
         words = C.bp_tokens(name) | set().union(*(C.bp_tokens(b) for b in re.findall(r"\[(.*?)\]", name)))
-        score = {k: len(words & C.bp_tokens(c)) for k, c in fits.items()}
+        score = {k: len(words & C.bp_tokens(c[0])) for k, c in fits.items()}
         fits = {k: c for k, c in fits.items() if score[k] == max(score.values())}
     if len(fits) > 1:
         # A first print run beats a later or updated one ("Later shipments ...", "pack selections were updated").
-        fits = {k: c for k, c in fits.items() if not LATER_RE.search(c)} or fits
+        fits = {k: c for k, c in fits.items() if not LATER_RE.search(c[1])} or fits
+    if len(fits) > 1:
+        fits = {k: c for k, c in fits.items() if not PICTURE_RE.search(c[1])} or fits
+    if len(fits) > 1:
+        # When two or more clauses carry a production code, the earliest code is the first print run.
+        codes = {k: min((int(y), m) for m, y in CODE_RE.findall(c[1])) for k, c in fits.items() if CODE_RE.search(c[1])}
+        if len(codes) > 1:
+            fits = {k: c for k, c in fits.items() if codes.get(k) == min(codes.values())}
     return collections.Counter(dict(next(iter(fits)))) if len(fits) == 1 else None
 
 
 YEAR_RE = re.compile(r"\b(199\d|20[0-3]\d)\b")
 
 
-def year_ok(release, raw):
+def year_ok(release, raw, name="", title=""):
     # False for a section with no year near the product's release year: it describes another product line, such as
     # "Kyurem Box" (2011) for "Kyurem V Box" (2022). A release marked "(set)" is the set's date, so it gets one more year.
-    m = re.match(r"(\d{4})", release or "")
+    # A year in the product name must be the year in the section title when the title has one: "Fall 2024 Collector
+    # Chest" is not the "Fall 2025 Collector Chest". Else the year in the name counts as the release year.
+    named = re.search(r"\b(20[0-3]\d)\b", name)
+    title_years = YEAR_RE.findall(title)
+    if named and title_years:
+        return named.group(1) in title_years
+    m = named or re.match(r"(\d{4})", release or "")
     years = [int(y) for y in YEAR_RE.findall(C.bp_clean(raw).split("Product images:")[0])]
     if not m or not years:
         return True
-    return min(abs(y - int(m.group(1))) for y in years) < (3 if "(set)" in release else 2)
+    return min(abs(y - int(m.group(1))) for y in years) < (3 if "(set)" in (release or "") and not named else 2)
 
 
 MECHANIC_RE = re.compile(r"(?<![A-Za-z])(ex|EX|GX|V|VMAX|VSTAR|BREAK)(?![A-Za-z])")
@@ -288,7 +332,7 @@ def section_ok(row, slug, entry):
     #   the raw section text (promo card templates and captions included) also names no bracket word: "2-Pack Blister
     #   [Raikou]". A section for several variants names the bracket word, so "Crown Zenith Collection—Regieleki V" stays
     #   allowed for "Crown Zenith Collection [Regidrago V]".
-    if not year_ok(row["release"], entry[2]):
+    if not year_ok(row["release"], entry[2], row["name"], entry[0]):
         return False
     name, text, title = fold(row["name"]), fold(C.bp_clean(entry[2])), fold(entry[0])
     hits = [s.group(1) for s in SET_ONLY_RE.finditer(entry[0]) if s.group(1).lower() not in SERIES]
@@ -327,15 +371,15 @@ def resolve_conflict(name, packs, mix, source, clauses, desc, single_set, count_
         desc_total = sum(desc.values())
         if desc_total == packs:
             return desc, "TCGplayer description", packs, ""
-        if desc_total > packs and any(sum(m.values()) == desc_total for m, _ in clauses):
+        if desc_total > packs and any(sum(m.values()) == desc_total for m, *_ in clauses):
             found = pick(desc_total)
             note = f"raised from {packs}: Bulbapedia and the TCGplayer description agree"
             return (found, f"{source} (one sentence)", desc_total, note) if found else (desc, "TCGplayer description", desc_total, note)
         # The catalog count came from this section but read only part of a sentence, such as "one booster pack each from
         # A, B, and C". When the section has only one clause mix and it holds more packs, use it. A later or updated
         # print run does not count as a second mix.
-        distinct = ({tuple(sorted(m.items())) for m, c in clauses if not LATER_RE.search(c)}
-                    or {tuple(sorted(m.items())) for m, _ in clauses})
+        distinct = ({tuple(sorted(m.items())) for m, _, c in clauses if not LATER_RE.search(c)}
+                    or {tuple(sorted(m.items())) for m, *_ in clauses})
         if count_src == "Bulbapedia" and len(distinct) == 1 and sum(v for _, v in next(iter(distinct))) > packs:
             found = collections.Counter(dict(next(iter(distinct))))
             return (found, f"{source} (one sentence)", sum(found.values()),
@@ -380,9 +424,10 @@ def contents_for(row, slug, era, text, index, overrides, own_set=frozenset()):
         mix, source = desc, "TCGplayer description"
     total_mix = sum(mix.values())
     # The catalog multiplied a per-unit count for a multi-unit listing, such as "Crown Zenith Tin [Set of 3]". Unless the
-    # mix already counts every unit, find the mix for one unit, then multiply it.
+    # mix already counts every unit, find the mix for one unit, then multiply it. A mix whose total is the pack total by
+    # chance, such as two clauses of 2 packs for a [Set of 2], also uses one unit when one clause fits one unit.
     units = C.unit_multiplier(row["kind"], row["name"]) if row["src"] in ("Description", "Bulbapedia") else 1
-    if units > 1 and packs and packs % units == 0 and total_mix != packs:
+    if units > 1 and packs and packs % units == 0 and (total_mix != packs or best_clause(row["name"], packs // units, clauses)):
         packs //= units
     else:
         units = 1

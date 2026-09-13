@@ -129,15 +129,15 @@ TCGplayer group `2374`: 559 products.
 | 266641 | Legendary Birds Pin 3 Pack Blister [Zapdos Pin] | Blister | 3 | Description | — | Unknown | — | — | No |
 | 517119 | Mythical 2-Pack Blister [Celebi] | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 517120 | Mythical 2-Pack Blister [Jirachi] | Blister | 2 | Description | — | Unknown | — | — | Yes |
-| 497966 | Pokemon TCG: Back to School Eraser Blister 2023 [Set of 2] | Blister | 4 | Description | — | Unknown | — | 2023 Q3 | Yes |
+| 497966 | Pokemon TCG: Back to School Eraser Blister 2023 [Set of 2] | Blister | 4 | Research | — | Unknown | — | 2023 Q3 | Yes |
 | 549453 | Pokemon TCG: Back to School Eraser Blister 2024 [Bellibolt] | Blister | 2 | Description | — | Unknown | — | 2024 Q3 | Yes |
 | 549452 | Pokemon TCG: Back to School Eraser Blister 2024 [Gengar] | Blister | 2 | Description | — | Unknown | — | 2024 Q3 | Yes |
 | 549451 | Pokemon TCG: Back to School Eraser Blister 2024 [Set of 2] | Blister | 4 | Description | — | Unknown | — | 2024 Q3 | Yes |
-| 273609 | Pokemon TCG: Back to School Eraser Blister [Eevee] | Blister | 2 | Description | — | Unknown | — | 2022 Q3 | No |
-| 497853 | Pokemon TCG: Back to School Eraser Blister [Lechonk] | Blister | 2 | Description | — | Unknown | — | 2023 Q3 | Yes |
-| 273608 | Pokemon TCG: Back to School Eraser Blister [Pikachu] | Blister | 2 | Description | — | Unknown | — | 2022 Q3 | Yes |
-| 273610 | Pokemon TCG: Back to School Eraser Blister [Set of 2] | Blister | 4 | Description | — | Unknown | — | 2022 Q3 | No |
-| 497856 | Pokemon TCG: Back to School Eraser Blister [Smoliv] | Blister | 2 | Description | — | Unknown | — | 2023 Q3 | Yes |
+| 273609 | Pokemon TCG: Back to School Eraser Blister [Eevee] | Blister | 2 | Description | 1 Astral Radiance, 1 Evolving Skies | Exact | — | 2022 Q3 | No |
+| 497853 | Pokemon TCG: Back to School Eraser Blister [Lechonk] | Blister | 2 | Research | — | Unknown | — | 2023 Q3 | Yes |
+| 273608 | Pokemon TCG: Back to School Eraser Blister [Pikachu] | Blister | 2 | Description | 1 Astral Radiance, 1 Evolving Skies | Exact | — | 2022 Q3 | Yes |
+| 273610 | Pokemon TCG: Back to School Eraser Blister [Set of 2] | Blister | 4 | Description | 2 Astral Radiance, 2 Evolving Skies | Exact | — | 2022 Q3 | No |
+| 497856 | Pokemon TCG: Back to School Eraser Blister [Smoliv] | Blister | 2 | Research | — | Unknown | — | 2023 Q3 | Yes |
 | 200568 | Premium Checklane Blister [Gallade] | Blister | 1 | Bulbapedia | 1 Roaring Skies | Exact | — | — | No |
 | 200567 | Premium Checklane Blister [Gardevoir] | Blister | 1 | Bulbapedia | 1 Steam Siege | Exact | — | — | No |
 | 276609 | XY 3 Pack Blister [Giratina] | Blister | 3 | Description | 3 XY Series (set unknown) | Partial | — | — | No |
@@ -408,7 +408,7 @@ TCGplayer group `2374`: 559 products.
 | 497380 | Pokemon TCG: Trainer's Toolkit (2023) | Other | 4 | Description | 2 Paldea Evolved, 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | 2023 Q2 | Yes |
 | 564274 | Pokemon TCG: Trainer's Toolkit (2024) | Other | 4 | Description | — | Unknown | — | 2024 Q4 | Yes |
 | 653203 | Pokemon TCG: Trainer's Toolkit (2025) | Other | 4 | Description | 2 Destined Rivals, 2 Mega Evolution | Exact | — | 2025 Q4 | Yes |
-| 624518 | Pokemon TCG: Twin Mini Portfolio & Booster Packs [Mega Mewtwo & Guzzlord] | Other | 2 | Description | 1 Crimson Invasion | Partial | — | — | No |
+| 624518 | Pokemon TCG: Twin Mini Portfolio & Booster Packs [Mega Mewtwo & Guzzlord] | Other | 2 | Research | 1 BREAKthrough, 1 Crimson Invasion | Exact | — | — | No |
 | 261779 | Spring 2022 Collector Bundle | Other | 7 | Description | — | Unknown | — | 2022 Q2 | Yes |
 | 659947 | Virizion V Showcase | Other | 3 | Description | — | Unknown | — | — | Yes |
 | 530756 | Yu Nagaba x Pokemon - Eevee's Special Promo Pack | Other | Unknown | Unknown | — | Unknown | — | — | Yes |
@@ -467,18 +467,18 @@ TCGplayer group `2374`: 559 products.
 | 220289 | Galar Challengers Tin [Polteageist V] | Tin | 4 | Description | — | Unknown | — | — | Yes |
 | 220292 | Galar Challengers Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | — | No |
 | 220291 | Galar Challengers Tin [Toxtricity V] | Tin | 4 | Description | — | Unknown | — | — | Yes |
-| 207986 | Galar Pal Mini Tin [Galarian Ponyta] | Tin | 2 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 207987 | Galar Pal Mini Tin [Grookey & Wooloo] | Tin | 2 | Description | — | Unknown | — | — | Yes |
-| 207988 | Galar Pal Mini Tin [Scorbunny & Pikachu] | Tin | 2 | Description | — | Unknown | — | — | Yes |
-| 207992 | Galar Pal Mini Tin [Set of 5] | Tin | 10 | Description | — | Unknown | — | — | Yes |
-| 207989 | Galar Pal Mini Tin [Sobble & Rookidee] | Tin | 2 | Description | — | Unknown | — | — | Yes |
-| 207990 | Galar Pal Mini Tin [Yamper & Morpeko] | Tin | 2 | Description | — | Unknown | — | — | Yes |
-| 218854 | Galar Power Mini Tin [Dragapult] | Tin | 2 | Description | — | Unknown | — | — | Yes |
-| 218857 | Galar Power Mini Tin [Galarian Obstagoon] | Tin | 2 | Description | — | Unknown | — | 2020 Q4 | Yes |
-| 218856 | Galar Power Mini Tin [Galarian Rapidash] | Tin | 2 | Description | — | Unknown | — | 2020 Q4 | Yes |
-| 218855 | Galar Power Mini Tin [Galarian Sirfetch'd] | Tin | 2 | Description | — | Unknown | — | 2020 Q4 | Yes |
-| 449727 | Galar Power Mini Tin [Set of 5] | Tin | 10 | Description | — | Unknown | — | — | Yes |
-| 218858 | Galar Power Mini Tin [Toxtricity] | Tin | 2 | Description | — | Unknown | — | 2020 Q4 | Yes |
+| 207986 | Galar Pal Mini Tin [Galarian Ponyta] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | 2020 Q2 | Yes |
+| 207987 | Galar Pal Mini Tin [Grookey & Wooloo] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
+| 207988 | Galar Pal Mini Tin [Scorbunny & Pikachu] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
+| 207992 | Galar Pal Mini Tin [Set of 5] | Tin | 10 | Description | 5 Sword & Shield, 5 unknown set | Partial | — | — | Yes |
+| 207989 | Galar Pal Mini Tin [Sobble & Rookidee] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
+| 207990 | Galar Pal Mini Tin [Yamper & Morpeko] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
+| 218854 | Galar Power Mini Tin [Dragapult] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | — | Yes |
+| 218857 | Galar Power Mini Tin [Galarian Obstagoon] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 218856 | Galar Power Mini Tin [Galarian Rapidash] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 218855 | Galar Power Mini Tin [Galarian Sirfetch'd] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 449727 | Galar Power Mini Tin [Set of 5] | Tin | 10 | Description | 5 Darkness Ablaze, 5 Sun & Moon | Exact | — | — | Yes |
+| 218858 | Galar Power Mini Tin [Toxtricity] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
 | 281982 | Hidden Potential Tin [Gallade V] | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | Yes |
 | 281989 | Hidden Potential Tin [Gallade V] (International Version) | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | No |
 | 281984 | Hidden Potential Tin [Giratina V] | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | Yes |
@@ -494,11 +494,11 @@ TCGplayer group `2374`: 559 products.
 | 550688 | Kanto Friends Mini Tin [Set of 5] | Tin | 10 | Description | 5 Burning Shadows, 5 Fates Collide | Exact | — | — | Yes |
 | 185265 | Kanto Friends Mini Tin [Squirtle] | Tin | 2 | Description | 1 Burning Shadows, 1 Fates Collide | Exact | — | — | Yes |
 | 253839 | Kanto Friends Mini Tins 5-Pack | Tin | 10 | Description | — | Unknown | — | — | Yes |
-| 198431 | Kanto Power Mini Tin [Charizard] | Tin | 2 | Description | 1 Evolutions, 1 unknown set | Partial | — | — | Yes |
-| 198434 | Kanto Power Mini Tin [Dragonite] | Tin | 2 | Description | 1 Evolutions, 1 unknown set | Partial | — | — | Yes |
-| 198437 | Kanto Power Mini Tin [Mew] | Tin | 2 | Description | 1 Evolutions, 1 unknown set | Partial | — | — | Yes |
-| 198438 | Kanto Power Mini Tin [Mewtwo] | Tin | 2 | Description | 1 Evolutions, 1 unknown set | Partial | — | — | Yes |
-| 198439 | Kanto Power Mini Tin [Vulpix] | Tin | 2 | Description | 1 Evolutions, 1 unknown set | Partial | — | — | Yes |
+| 198431 | Kanto Power Mini Tin [Charizard] | Tin | 2 | Description | 1 Ancient Origins, 1 Crimson Invasion | Exact | — | — | Yes |
+| 198434 | Kanto Power Mini Tin [Dragonite] | Tin | 2 | Description | 1 Ancient Origins, 1 Crimson Invasion | Exact | — | — | Yes |
+| 198437 | Kanto Power Mini Tin [Mew] | Tin | 2 | Description | 1 Ancient Origins, 1 Crimson Invasion | Exact | — | — | Yes |
+| 198438 | Kanto Power Mini Tin [Mewtwo] | Tin | 2 | Description | 1 Ancient Origins, 1 Crimson Invasion | Exact | — | — | Yes |
+| 198439 | Kanto Power Mini Tin [Vulpix] | Tin | 2 | Description | 1 Ancient Origins, 1 Crimson Invasion | Exact | — | — | Yes |
 | 245522 | Kanto Power Mini Tins 5-Pack | Tin | 10 | Description | — | Unknown | — | — | No |
 | 685577 | Lumiose City Mini Tin [Emboar & Inkay] | Tin | 2 | Description | 1 Chaos Rising, 1 Perfect Order | Exact | — | 2026 Q2 | Yes |
 | 685578 | Lumiose City Mini Tin [Feraligatr & Budew] | Tin | 2 | Description | 1 Chaos Rising, 1 Perfect Order | Exact | — | 2026 Q2 | Yes |
@@ -531,12 +531,12 @@ TCGplayer group `2374`: 559 products.
 | 497388 | Paldea Legends Tin [Miraidon ex] (International Version) | Tin | 5 | Description | 2 Paldea Evolved, 1 Brilliant Stars, 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | 2023 Q2 | Yes |
 | 509570 | Paldea Legends Tins [Bundle of 2] | Tin | 8 | Research | 4 Paldea Evolved, 2 Scarlet & Violet, 2 Silver Tempest | Exact | — | — | Yes |
 | 543171 | Paldea Legends Tins [Bundle of 2] (International Version) | Tin | 10 | Research | 4 Paldea Evolved, 2 Brilliant Stars, 2 Scarlet & Violet, 2 Silver Tempest | Exact | — | — | Yes |
-| 504330 | Paldea Partners Tin [Meowscarada ex] | Tin | 5 | Description | 3 Obsidian Flames, 1 Paldea Evolved, 1 Scarlet & Violet | Exact | — | — | Yes |
+| 504330 | Paldea Partners Tin [Meowscarada ex] | Tin | 5 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | — | Yes |
 | 504332 | Paldea Partners Tin [Meowscarada ex] [International Edition] | Tin | 4 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Scarlet & Violet | Exact | — | — | Yes |
-| 504438 | Paldea Partners Tin [Quaquaval ex] | Tin | 5 | Description | 3 Obsidian Flames, 1 Paldea Evolved, 1 Scarlet & Violet | Exact | — | — | Yes |
+| 504438 | Paldea Partners Tin [Quaquaval ex] | Tin | 5 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | — | Yes |
 | 504442 | Paldea Partners Tin [Quaquaval ex] [International] | Tin | 4 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Scarlet & Violet | Exact | — | — | Yes |
-| 517101 | Paldea Partners Tin [Set of 3] | Tin | 15 | Bulbapedia | 9 Obsidian Flames, 2 Scarlet & Violet, 1 Astral Radiance, 1 Lost Origin, 1 Paldea Evolved, 1 Silver Tempest | Exact | — | — | Yes |
-| 504431 | Paldea Partners Tin [Skeledirge ex] | Tin | 5 | Description | 3 Obsidian Flames, 1 Paldea Evolved, 1 Scarlet & Violet | Exact | — | — | Yes |
+| 517101 | Paldea Partners Tin [Set of 3] | Tin | 15 | Bulbapedia | 6 Obsidian Flames, 3 Astral Radiance, 3 Scarlet & Violet, 3 Silver Tempest | Exact | — | — | Yes |
+| 504431 | Paldea Partners Tin [Skeledirge ex] | Tin | 5 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | — | Yes |
 | 504435 | Paldea Partners Tin [Skeledirge ex] [International Edition] | Tin | 4 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Scarlet & Violet | Exact | — | — | No |
 | 544241 | Paradox Clash Tin [Iron Leaves ex] | Tin | 5 | Description | 2 Obsidian Flames, 2 Twilight Masquerade, 1 Temporal Forces | Exact | — | — | Yes |
 | 549432 | Paradox Clash Tin [Iron Leaves ex] (International) | Tin | 4 | Description | 2 Twilight Masquerade, 1 Obsidian Flames, 1 Temporal Forces | Exact | — | 2024 Q2 | No |
@@ -593,12 +593,12 @@ TCGplayer group `2374`: 559 products.
 | 616297 | Pokemon Stacking Tins: Treasures of Ruin, Paradox Pokemon, Ogerpon [Set of 3] | Tin | 9 | Description | — | Unknown | — | — | Yes |
 | 616737 | Retail Exclusive Pokemon Paldean Fates Mini Tins + Poke Ball Tin | Tin | 7 | Research | 4 Paldean Fates, 2 Scarlet & Violet, 1 Obsidian Flames | Exact | — | — | Yes |
 | 218438 | Salamence Dragons Tin | Tin | 3 | Description | 1 Burning Shadows, 1 Crimson Invasion, 1 Evolutions | Exact | — | — | Yes |
-| 262641 | Sinnoh Star Mini Tin [Chimchar] | Tin | 2 | Description | — | Unknown | — | 2022 Q2 | Yes |
-| 262642 | Sinnoh Star Mini Tin [Munchlax] | Tin | 2 | Description | — | Unknown | — | 2022 Q2 | Yes |
-| 262638 | Sinnoh Star Mini Tin [Piplup] | Tin | 2 | Description | — | Unknown | — | — | Yes |
-| 262639 | Sinnoh Star Mini Tin [Riolu] | Tin | 2 | Description | — | Unknown | — | 2022 Q2 | Yes |
-| 263258 | Sinnoh Star Mini Tin [Set of 5] | Tin | 10 | Description | — | Unknown | — | — | Yes |
-| 262640 | Sinnoh Star Mini Tin [Turtwig] | Tin | 2 | Description | — | Unknown | — | 2022 Q2 | Yes |
+| 262641 | Sinnoh Star Mini Tin [Chimchar] | Tin | 2 | Description | 1 Chilling Reign, 1 Fusion Strike | Exact | — | 2022 Q2 | Yes |
+| 262642 | Sinnoh Star Mini Tin [Munchlax] | Tin | 2 | Description | 1 Chilling Reign, 1 Fusion Strike | Exact | — | 2022 Q2 | Yes |
+| 262638 | Sinnoh Star Mini Tin [Piplup] | Tin | 2 | Description | 1 Chilling Reign, 1 Fusion Strike | Exact | — | — | Yes |
+| 262639 | Sinnoh Star Mini Tin [Riolu] | Tin | 2 | Description | 1 Chilling Reign, 1 Fusion Strike | Exact | — | 2022 Q2 | Yes |
+| 263258 | Sinnoh Star Mini Tin [Set of 5] | Tin | 10 | Description | 5 Chilling Reign, 5 Fusion Strike | Exact | — | — | Yes |
+| 262640 | Sinnoh Star Mini Tin [Turtwig] | Tin | 2 | Description | 1 Chilling Reign, 1 Fusion Strike | Exact | — | 2022 Q2 | Yes |
 | 532539 | Sinnoh Stars Mini Tins 5-Pack | Tin | 10 | Research | 10 unknown set | Partial | — | — | Yes |
 | 623647 | Slashing Legends Tin [Koraidon ex] | Tin | 5 | Description | 2 Journey Together, 1 Obsidian Flames, 1 Paradox Rift, 1 Surging Sparks | Exact | — | — | Yes |
 | 623648 | Slashing Legends Tin [Zacian ex] | Tin | 5 | Description | 2 Journey Together, 1 Obsidian Flames, 1 Paradox Rift, 1 Surging Sparks | Exact | — | — | Yes |

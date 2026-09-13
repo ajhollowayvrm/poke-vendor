@@ -109,8 +109,8 @@ TCGplayer group `1728`, `1729`: 18 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 187238 | Generations Booster Pack | Booster pack | 1 | Kind default | 1 Generations | Product set | — | 2016 Q1 (set) | Yes |
-| 121363 | Mythical Pokemon Collection Box [Arceus] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
-| 114525 | Mythical Pokemon Collection Box [Celebi] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
+| 121363 | Mythical Pokemon Collection Box [Arceus] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 114525 | Mythical Pokemon Collection Box [Celebi] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 118342 | Mythical Pokemon Collection Box [Darkrai] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 126569 | Mythical Pokemon Collection Box [Genesect] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 116999 | Mythical Pokemon Collection Box [Jirachi] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |

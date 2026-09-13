@@ -228,7 +228,7 @@ TCGplayer group `23821`: 43 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 609716 | Prismatic Evolutions 2-Pack Blister [Eevee] | Blister | 2 | Description | 2 Prismatic Evolutions | Product set | — | 2025 Q1 | Yes |
+| 609716 | Prismatic Evolutions 2-Pack Blister [Eevee] | Blister | 2 | Description | 2 Prismatic Evolutions | Exact | — | 2025 Q1 | Yes |
 | 600518 | Prismatic Evolutions Booster Bundle | Booster bundle | 6 | Description | 6 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 678555 | Prismatic Evolutions Booster Bundle + Surprise Box Bundle (Sam's Club) | Booster bundle | 6 | Description | 4 Prismatic Evolutions | Partial | — | 2025 Q1 (set) | Yes |
 | 593294 | Prismatic Evolutions Booster Pack | Booster pack | 1 | Kind default | 1 Prismatic Evolutions | Product set | — | 2025 Q1 | Yes |
