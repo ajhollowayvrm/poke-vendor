@@ -38,8 +38,8 @@ in real life:
   costs time, the same as a garage sale, and the player pays at the
   pickup. Sometimes the seller sets the pickup for a later day, so the
   item arrives only after that meeting. A shipped listing is a free
-  action: the player pays at purchase, and the item goes straight to
-  Inventory.
+  action: the player pays at purchase, and the item arrives after its
+  delivery time (see "Where bought product goes" below).
 
 eBay and Facebook Marketplace sell singles too, not only sealed product.
 
@@ -203,8 +203,25 @@ sealed product, and the player finds them on the buy screen (see
 
 ## Where bought product goes
 
-Every purchase goes straight to Inventory. This is true for every
-channel. The buy flow never offers an "open now" choice.
+Every purchase goes to Inventory. The buy flow never offers an "open
+now" choice.
+
+- **A store run purchase** goes to Inventory at once.
+- **A Facebook Marketplace pickup** goes to Inventory after the pickup.
+- **An online purchase ships.** The player pays at purchase. The item
+  shows in Inventory as "On the way", with the days left. It arrives
+  after its delivery time in game days (see
+  [16-time-and-day.md](16-time-and-day.md#game-days)).
+
+| Storefront | Delivery time |
+| --- | --- |
+| Pokemon Center | 5 days |
+| Amazon | 2 days |
+| Hyped Reseller | 3 days |
+| eBay | 4 days, or 10 days from another country |
+| Facebook Marketplace, shipped listing | 4 days |
+
+All delivery times are starting values for balancing.
 
 ## The rip-or-hold decision
 
@@ -249,6 +266,9 @@ fixed collation.
   Center odds).
 - The exact Pokemon Center drop success chance (30% is the starting
   value).
+- Whether a package that the player buys can get lost in transit, the
+  same as a package that the player sells (see
+  [15-selling.md](15-selling.md#shipping)).
 - The time each local store adds to a store run, and the stock odds
   per store (balancing tasks).
 - How the local game shop's events connect to meets and reputation.- Actual pull-rate data per set, sourced as each set is added.

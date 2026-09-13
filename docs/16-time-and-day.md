@@ -37,7 +37,9 @@ End Day moves the game forward by 1 day.
 Every wait that is measured in days moves forward by 1 day on End Day:
 
 - Grading turnaround (see [10-grading.md](10-grading.md#turnaround)).
-- Shipping delivery time (see [15-selling.md](15-selling.md#shipping)).
+- Shipping delivery time, for a sale (see
+  [15-selling.md](15-selling.md#shipping)) and for an online purchase
+  (see [12-acquiring-product.md](12-acquiring-product.md#where-bought-product-goes)).
 - Holds at the local game shop.
 - A Facebook Marketplace pickup or meetup set for a later day.
 

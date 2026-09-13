@@ -137,8 +137,13 @@ player buys sealed product online here (see
   no locked rows.
 - **No counterfeit-risk display.** No storefront shows risk (see
   [14-counterfeit-risk.md](14-counterfeit-risk.md#risk-is-hidden-at-purchase)).
-- **A purchase goes straight to Inventory.** The screen offers no
-  "open now" choice. The rip-or-hold decision happens in Inventory.
+- **An online purchase ships.** The player pays at purchase. The item
+  shows in Inventory as "On the way", with the days left, and arrives
+  after its delivery time (see
+  [12-acquiring-product.md](12-acquiring-product.md#where-bought-product-goes)).
+  Each store screen shows its delivery time. A store run purchase goes
+  to Inventory at once. The screen offers no "open now" choice. The
+  rip-or-hold decision happens in Inventory.
 - **Camping is not on this screen.** Camping is an event, not a
   storefront.
 - **Collector items** (for example, the Mega Charizard X UPC and the
@@ -161,8 +166,9 @@ player buys sealed product online here (see
 - **A Facebook Marketplace listing is for pickup or for shipping.** A
   pickup listing shows the pickup day and the trip time. A pickup costs
   time, some pickups happen on a later day, and the player pays at the
-  pickup. A shipped listing shows the shipping cost. The player pays at
-  purchase, and the item goes straight to Inventory.
+  pickup. A shipped listing shows the shipping cost and the delivery
+  time. The player pays at purchase, and the item arrives after the
+  delivery time.
 - **A later-day pickup goes on the calendar.** The item goes to
   Inventory after the pickup.
 - **The Pokemon Center sells only in drops.** When no drop is live,
