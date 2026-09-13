@@ -206,6 +206,41 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw3`), fe
 | 100/101 | Cobalion | Pokémon (Metal) | Ultra Rare | Normal, Holo |
 | 101/101 | N | Trainer (Supporter) | Ultra Rare | Normal, Holo |
 | 102/101 | Meowth | Pokémon (Colorless) | Secret Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex adds a Normal print to some cards that are only ever holo, per
+the era note on TCGplayer-sourced print types. This map uses Holo for
+every holo outcome and Normal for every non-holo outcome, so the wrong
+Normal prints stay out of the Rare Holo, Rare Ultra, and Rare Secret
+rows.
+
+Confidence: the slots follow the pack structure above. No source gives
+odds for the Rare Holo outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | All | 1 in 72 |
+| Rare slot | 1 | Rare Ultra (Full Art) | Rare Ultra (Full Art) | Ultra Rare | Holo | All | 1 in 18 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -242,6 +277,8 @@ the most common entry to the rarest entry.
 - **Holo rare odds.** Unknown. Searched 2026-09-12: no source found.
 - **Full Art and secret odds.** Flipside Gaming cites no source. No box
   report confirms the figures.
+- **Slot map: Rare Holo odds.** No source gives a Rare Holo rate per
+  pack for this set. The row uses `—`.
 - **Case size for this set.** Collector's Cache and Potomac Distribution
   confirm 36 packs per box. No source gives the case size for this set;
   the era figure is 6 boxes per case.

@@ -117,6 +117,35 @@ Every card in the set, with its variants. Source: the TCGdex API (set `dv1`), fe
 | 19/20 | First Ticket | Trainer (Item) | Rare | Normal, Holo |
 | 20/20 | Super Rod | Trainer (Item) | Rare | Normal, Holo |
 | 21/20 | Kyurem | Pokémon (Dragon) | Common | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Dragon Vault has no common/uncommon/rare split and no reverse holo
+slot: every card in a pack is holo. TCGdex marks the 20 main cards
+`Rare` and the secret Kyurem `Common`; this map keeps those exact
+labels. No source describes a slot structure inside the 5-card pack,
+so this map uses one slot for all 5 cards.
+
+Confidence: 5 cards per pack, all holo, is official. The single-slot
+model and the Kyurem odds are Unknown.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Card | 5 | Rare Secret (Kyurem) | Rare Secret (Kyurem) | Common | Holo | All | — |
+| Card | 5 | Rare Holo | Rare Holo | Rare | Holo | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -148,6 +177,8 @@ the stop rule.
   but gave no evidence. Searched 2026-09-12: no further source found.
 - **Secret rare odds.** Unknown. No English opening data found. Searched
   2026-09-12: no source found.
+- **Slot map: pack structure.** No source describes a slot structure
+  inside the 5-card pack. The map uses one slot for all 5 cards.
 - **Rarity of Exp. Share, First Ticket, and Kyurem.** The pokemontcg.io
   data has no rarity for these cards.
 - **Code card count.** The blurb says "plus a code card". Bulbapedia puts

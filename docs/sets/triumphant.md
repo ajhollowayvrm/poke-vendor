@@ -215,6 +215,44 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss4`), 
 | 101/102 | Palkia & Dialga LEGEND | Pokémon (Water, Metal) | LEGEND | Holo, Holo (Jumbo) |
 | 102/102 | Palkia & Dialga LEGEND | Pokémon (Water, Metal) | LEGEND | Holo |
 | FOUR | Alph Lithograph | Trainer (Item) | Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+Unlike the other HeartGold & SoulSilver sets, this set's Alph Lithograph
+(card FOUR) carries the TCGdex rarity `Rare`, not `Ultra Rare`, and it
+is the only `Rare` card with a Holo variant, so the Rare Secret row
+needs no Cards filter. The rare slot holds the non-holo Rare, Rare
+Holo, Rare Holo LEGEND, and Rare Secret outcomes; the reverse holo slot
+holds Rare Prime instead of a plain reverse holo. This set has no basic
+Energy card; Rescue Energy 90 is a special energy card, part of the
+Uncommon pool.
+
+Confidence: the slots follow the era template and the pack structure
+above.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Rare Prime | Rare Prime | Rare PRIME | Holo | All | 1 in 7 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Secret | Rare Secret | Rare | Holo | All | 1 in 108 |
+| Rare slot | 1 | Rare Holo LEGEND | Rare Holo LEGEND | LEGEND | Holo | All | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -206,6 +206,40 @@ Every card in the set, with its variants. Source: the TCGdex API (set `hgss2`), 
 | 94/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Holo (Ross cawthorn) |
 | 95/95 | Suicune & Entei LEGEND | Pokémon (Water, Fire) | LEGEND | Holo, Normal (Ross cawthorn) |
 | TWO | Alph Lithograph | Trainer (Item) | Ultra Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+The rare slot holds the non-holo Rare, Rare Holo, Rare Holo LEGEND, and
+Rare Secret outcomes; the reverse holo slot holds Rare Prime instead of
+a plain reverse holo. This set has no basic Energy card.
+
+Confidence: the slots follow the era template and the pack structure
+above. The Rare Holo LEGEND odds are a range, not a single figure, so
+the row uses `—`.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Rare Prime | Rare Prime | Rare PRIME | Holo | All | 1 in 7 |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Secret | Rare Secret | Ultra Rare | Holo | All | 1 in 108 |
+| Rare slot | 1 | Rare Holo LEGEND | Rare Holo LEGEND | LEGEND | Holo | All | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 1 in 3 |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -256,6 +290,8 @@ holo slot instead of a plain reverse holo.
 - No box-by-box report for this set was found. The HS and UD figures are not
   proof for this set.
 - Unknown: the pack counts of this set in the variable products.
+- **Slot map: Rare Holo LEGEND odds.** The source gives a range (1 in 9
+  to 1 in 12), not a single figure. The row uses `—`.
 - **Rarity list odds:** no source gives the odds per pack for Rare. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Rare Prime uses 1 in 7 from PokeBeach Card Ratios' final post. An earlier version of the same post gives 1 in 5.

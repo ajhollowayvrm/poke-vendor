@@ -323,6 +323,64 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw11`), f
 | RC23 | Emolga | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
 | RC24 | Mew-EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
 | RC25 | Meloetta-EX | Pokémon (Psychic) | Ultra Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+The Radiant Collection cards sit inside the main card list table,
+numbered RC1–RC25. `Nos. RC1–RC25` and `Not nos. RC1–RC25` split them
+from the main-set cards that share the same TCGdex rarity.
+
+The TCGdex rarity `Rare` holds the main-set plain Rares, the main-set
+Rare Holos, the regular print of each main-set Pokémon-EX, and RC11
+Meloetta-EX. Cards 24, 29, 44, 45, 52, 54, 77, 82, 88, 100, 101, and
+102 are the 12 main-set Pokémon-EX (confirmed by name against the
+Rarities table above). The Radiant Collection cards carry a Holo
+variant in the card list even where a real pack shows a special foil,
+not a plain holo; this map still uses Holo for them, matching the era
+note on TCGdex/TCGplayer print types.
+
+This set has no ACE SPEC and does not use the era's 5-common/3-uncommon
+template. The pack structure table gives 4 commons, 2 uncommons, and
+two extra slots for the Radiant Collection. Sources describe the
+reverse-holo-or-holo-rare slot and the rare slot as sharing one holo
+rare between them ("if the reverse-slot is occupied by a holo rare, it
+won't occupy the next slot"). This map treats the two slots as
+independent draws instead, because the game's per-slot model has no way
+to link two slots together. As a result, the Rare Holo rate across the
+pack is slightly higher than the sources describe.
+
+Confidence: the slots follow the pack structure and slot rules above.
+No source gives odds for the Rare Holo outcome in either slot, or for
+the Radiant Collection — Uncommon outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 4 | Common | Common | Common | Normal | Not nos. RC1–RC25 | 100% |
+| Uncommon | 2 | Uncommon | Uncommon | Uncommon | Normal | Not nos. RC1–RC25 | 100% |
+| Reverse holo/holo rare | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. RC1–RC25; Not nos. 24, 29, 44, 45, 52, 54, 77, 82, 88, 100, 101, 102 | — |
+| Reverse holo/holo rare | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | All | 1 in 72 |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Rare | Holo | Nos. 24, 29, 44, 45, 52, 54, 77, 82, 88, 100, 101, 102 | 1 in 6 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. RC1–RC25; Not nos. 24, 29, 44, 45, 52, 54, 77, 82, 88, 100, 101, 102 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. RC1–RC25; Not nos. 24, 29, 44, 45, 52, 54, 77, 82, 88, 100, 101, 102 | Rest |
+| Radiant Collection (uncommon+) | 1 | Radiant Collection — Rare (Meloetta-EX) | Radiant Collection — Rare (Meloetta-EX) | Rare | Holo | Nos. RC11 | 1 in 24 |
+| Radiant Collection (uncommon+) | 1 | Radiant Collection — Full Art | Radiant Collection — Full Art | Ultra Rare | Holo | All | 1 in 4 |
+| Radiant Collection (uncommon+) | 1 | Radiant Collection — Uncommon | Radiant Collection — Uncommon | Uncommon | Holo | Nos. RC1–RC25 | Rest |
+| Radiant Collection (common) | 1 | Radiant Collection — Common | Radiant Collection — Common | Common | Holo | Nos. RC1–RC25 | 100% |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -372,6 +430,15 @@ pack; each of its rarities is its own entry.
   confirm 36 packs per box and 6 boxes per case.
 - **RC Full Art collation.** Box reports show about 2 copies of each RC
   Full Art per box. No source says if this count is guaranteed.
+- **Slot map: Rare Holo odds.** No source gives a Rare Holo rate for
+  either the reverse-holo-or-holo-rare slot or the rare slot. Both rows
+  use `—`.
+- **Slot map: Radiant Collection — Uncommon odds.** No source gives a
+  rate. The row uses `Rest`.
+- **Slot map: two-slot holo rare rule.** Sources say the reverse-holo
+  slot and the rare slot share one holo rare between them. This map
+  treats the two slots as independent draws instead, since the game's
+  per-slot model cannot link them.
 - **Holo rare odds per pack.** The holo counts per box mix holo rares
   from the reverse holo slot and the rare slot. No source splits them.
 - **Gold secret rare odds.** Only 6 boxes and one prerelease count.

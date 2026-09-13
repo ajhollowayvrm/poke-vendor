@@ -234,6 +234,42 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw1`), fe
 | 113/114 | Reshiram | Pokémon (Fire) | Ultra Rare | Normal, Holo |
 | 114/114 | Zekrom | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
 | 115/114 | Pikachu | Pokémon (Lightning) | Secret Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex adds a Normal print to some cards that are only ever holo, per
+the era note on TCGplayer-sourced print types. This map uses Holo for
+every holo outcome and Normal for every non-holo outcome, so the wrong
+Normal prints stay out of the Rare Holo, Rare Ultra, and Rare Secret
+rows.
+
+Confidence: the slots follow the pack structure above. The code card
+row applies only to later print runs; the first print run has no code
+card and the pack ends at the last uncommon.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | All | 1 in 72 |
+| Rare slot | 1 | Rare Ultra (Full Art) | Rare Ultra (Full Art) | Ultra Rare | Holo | All | 1 in 36 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -280,3 +316,7 @@ the most common entry to the rarest entry.
   packs per box and 6 boxes per case. This matches the era figures.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare and Rare Holo. It fills a guaranteed slot every pack; no source gives the Rare or Rare Holo rate.
+- **Slot map: Rare Holo odds.** No source gives a Rare Holo rate per
+  pack for this set. The row uses `—`.
+- **Slot map: code card.** The code card row applies only to later
+  print runs. The first print run ends the pack at the last uncommon.

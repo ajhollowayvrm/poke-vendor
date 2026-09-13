@@ -280,6 +280,44 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw7`), fe
 | 151/149 | Terrakion | Pokémon (Fighting) | Secret Rare | Normal, Holo |
 | 152/149 | Altaria | Pokémon (Dragon) | Secret Rare | Normal, Holo |
 | 153/149 | Rocky Helmet | Trainer (Tool) | Secret Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+The TCGdex rarity `Rare` holds the plain Rares, the Rare Holos, the
+regular print of each Pokémon-EX, and the 4 ACE SPEC cards. Cards 9,
+49, 67, 89, 101, and 103 are the 6 Pokémon-EX; the 4 ACE SPECs are the
+only Trainer cards in this rarity (confirmed by name against the
+Rarities table above). The Reverse holo/ACE SPEC slot holds the ACE
+SPEC outcome; the Rare slot excludes it with a Category filter.
+
+Confidence: the slots follow the pack structure above. No source gives
+odds for the Rare Holo outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo/ACE SPEC | 1 | Rare ACE (ACE SPEC) | Rare ACE (ACE SPEC) | Rare | Holo | Category: Trainer | 1 in 36 |
+| Reverse holo/ACE SPEC | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | All | 1 in 72 |
+| Rare slot | 1 | Rare Ultra (Full Art) | Rare Ultra (Full Art) | Ultra Rare | Holo | All | 1 in 36 |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Rare | Holo | Nos. 9, 49, 67, 89, 101, 103 | 1 in 18 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 9, 49, 67, 89, 101, 103; Category: Pokémon | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Category: Pokémon | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -326,6 +364,8 @@ plain reverse holo.
   18 packs).
 - **ACE SPEC per box: fixed or random?** All six reports show exactly 2.
   No source says if boxes guarantee 2.
+- **Slot map: Rare Holo odds.** No source gives a Rare Holo rate per
+  pack for this set. The row uses `—`.
 - **Holo rare odds.** Unknown.
 - **Secret rare slot.** Sources put secret rares in the rare slot for
   Legendary Treasures only. No source confirms it for this set.

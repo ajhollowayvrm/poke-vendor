@@ -254,6 +254,47 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw6`), fe
 | 126/124 | Reuniclus | Pokémon (Psychic) | Secret Rare | Normal, Holo |
 | 127/124 | Krookodile | Pokémon (Darkness) | Secret Rare | Normal, Holo |
 | 128/124 | Rayquaza | Pokémon (Dragon) | Secret Rare | Normal |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+The TCGdex rarity `Rare` holds the plain Rares, the Rare Holos, and the
+regular print of each Pokémon-EX. Cards 22, 46, 71, 81, 85, and 92 are
+the 6 Pokémon-EX (confirmed by name against the Rarities table above).
+The Rare Holo EX row uses those numbers; the Rare Holo row excludes
+them.
+
+Card 128, the secret Rayquaza, has only a Normal print in the card
+list, unlike the other three Secret Rares, which also have Holo. The
+Rare Secret row uses `Holo or Normal` so this card still comes from the
+slot.
+
+Confidence: the slots follow the pack structure above. No source gives
+odds for the Rare Holo outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo or Normal | All | 1 in 72 |
+| Rare slot | 1 | Rare Ultra (Full Art) | Rare Ultra (Full Art) | Ultra Rare | Holo | All | 1 in 36 |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Rare | Holo | Nos. 22, 46, 71, 81, 85, 92 | 1 in 18 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 22, 46, 71, 81, 85, 92 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -294,6 +335,11 @@ the most common entry to the rarest entry.
 - **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Pack order evidence.** One forum post. No photo or video source.
   Searched 2026-09-12: no photo or video source found.
+- **Slot map: Rare Holo odds.** No source gives a Rare Holo rate per
+  pack for this set. The row uses `—`.
+- **Slot map: secret Rayquaza variant.** Card 128 has only a Normal
+  print in the card list. The Rare Secret row falls back to Normal for
+  this card with `Holo or Normal`.
 - **Holo rare odds.** Only one box gives a holo count. Searched
   2026-09-12: no other source found.
 - **Full Art rate conflict.** Flipside gives ~1 in 36 packs (1 per box).

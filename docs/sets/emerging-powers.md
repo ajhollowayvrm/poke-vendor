@@ -212,6 +212,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw2`), fe
 | 96/98 | Recycle | Trainer (Item) | Uncommon | Normal, Reverse holo |
 | 97/98 | Thundurus | Pokémon (Lightning) | Ultra Rare | Normal, Holo |
 | 98/98 | Tornadus | Pokémon (Colorless) | Ultra Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+TCGdex adds a Normal print to some cards that are only ever holo, per
+the era note on TCGplayer-sourced print types. This map uses Holo for
+every holo outcome and Normal for every non-holo outcome, so the wrong
+Normal prints stay out of the Rare Holo and Rare Ultra rows.
+
+Confidence: the slots follow the pack structure above. No source gives
+odds for any rare-slot outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | 100% |
+| Rare slot | 1 | Rare Ultra (Full Art) | Rare Ultra (Full Art) | Ultra Rare | Holo | All | — |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -246,6 +279,8 @@ the most common entry to the rarest entry. This set has no secret rare.
 - **All hit odds.** No source gives holo rare or Full Art odds for this
   set. Flipside Gaming covers Black & White and Noble Victories, but not
   Emerging Powers. Searched 2026-09-12: no source found.
+- **Slot map: rare-slot odds.** No source gives a Rare Holo or Rare
+  Ultra (Full Art) rate per pack for this set. Both rows use `—`.
 - **Case size for this set.** ToyWiz and Potomac Distribution confirm 36
   packs per box. No source gives the case size for this set; the era
   figure is 6 boxes per case.

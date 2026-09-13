@@ -238,6 +238,42 @@ Every card in the set, with its variants. Source: the TCGdex API (set `col1`), f
 | SL9 | Raikou | Pokémon (Lightning) | Holo Rare | Holo |
 | SL10 | Rayquaza | Pokémon (Colorless) | Holo Rare | Holo |
 | SL11 | Suicune | Pokémon (Water) | Holo Rare | Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+This set has no Prime and no LEGEND card, so the rare slot only holds
+non-holo Rare and Rare Holo. TCGdex marks the reverse-holo print of
+basic energy cards 88–95 as `Holo`, not `Reverse holo`; this map keeps
+that label. The Shiny Legendary cards (SL1–SL11) carry the TCGdex
+rarity `Holo Rare`, the same rarity as the set's other Rare Holo cards.
+The slot of a Shiny Legendary card is Unknown (era file and Open
+topics); this map assumes the rare slot.
+
+Confidence: the slots follow the era template and the pack structure
+above. No source gives odds for the plain Rare Holo outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | Not nos. 88–95 | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo | 1 | Reverse holo (basic Energy) | Reverse holo | Common | Holo | Nos. 88–95 | — |
+| Reverse holo | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare, Holo Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Shiny Legendary (SL) | Shiny Legendary (SL) | Holo Rare | Holo | Nos. SL1–SL11 | 1 in 18 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | Not nos. SL1–SL11 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -276,7 +312,8 @@ in the reverse holo slot or the rare slot.
 
 - The pack order is a community claim. Sources conflict. See the era file.
 - **Unknown: the slot of a Shiny Legendary card.** It can be the rare slot
-  (card 7) or the reverse holo slot (card 6).
+  (card 7) or the reverse holo slot (card 6). The slot map assumes the
+  rare slot.
   Searched 2026-09-12: no source found. PokéBeach box-report threads and
   Kanto Shark's set guide give per-box Shiny Legendary counts but do not
   name the slot.
@@ -294,6 +331,8 @@ in the reverse holo slot or the rare slot.
 - Unknown: the pack counts and release dates of the Three Pack Blisters and
   the Knock Out Collection.
 - Unknown: whether the Recon and Retort theme decks hold a booster pack.
+- **Slot map: reverse holo basic Energy odds.** Box reports show 0 to 5
+  per box, with no single rate. The row uses `—`.
 - **Rarity list odds:** no source gives the odds per pack for Rare and Rare Holo. The era's rarity system decides the place of each one in the rarity list.
 - **Rarity list order:** Reverse holo ranks above Rare. It fills a guaranteed slot every pack; no source gives the non-holo Rare rate.
 - **Rarity list order:** Shiny Legendary (SL) uses 1 in 18 from Flipside Gaming. Box reports average about 1 in 14 packs; Kanto Shark gives about 1 per box or fewer.

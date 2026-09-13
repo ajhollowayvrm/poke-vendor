@@ -265,6 +265,45 @@ Every card in the set, with its variants. Source: the TCGdex API (set `bw9`), fe
 | 120/116 | Garchomp | Pokémon (Dragon) | Secret Rare | Normal, Holo |
 | 121/116 | Max Potion | Trainer (Item) | Secret Rare | Normal, Holo |
 | 122/116 | Ultra Ball | Trainer (Item) | Secret Rare | Normal, Holo |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+The TCGdex rarity `Rare` holds the plain Rares, the Rare Holos, the
+regular print of each Pokémon-EX, and the 2 ACE SPEC cards. Cards 13,
+38, 53, 85, 86, and 98 are the 6 Pokémon-EX; cards 107 and 108 are the
+2 ACE SPECs, Life Dew and Rock Guard (confirmed by name against the
+Rarities table above). Ghetsis, card 101, is a plain Rare Trainer, not
+an ACE SPEC. The Reverse holo/ACE SPEC slot holds the ACE SPEC outcome;
+the Rare slot excludes those numbers.
+
+Confidence: the slots follow the pack structure above. No source gives
+odds for the Rare Holo outcome.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 5 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Reverse holo/ACE SPEC | 1 | Rare ACE (ACE SPEC) | Rare ACE (ACE SPEC) | Rare | Holo | Nos. 107–108 | 1 in 36 |
+| Reverse holo/ACE SPEC | 1 | Reverse holo | Reverse holo | Common, Uncommon, Rare | Reverse holo | All | Rest |
+| Rare slot | 1 | Rare Secret | Rare Secret | Secret Rare | Holo | All | 1 in 72 |
+| Rare slot | 1 | Rare Ultra (Full Art) | Rare Ultra (Full Art) | Ultra Rare | Holo | All | 1 in 36 |
+| Rare slot | 1 | Rare Holo EX | Rare Holo EX | Rare | Holo | Nos. 13, 38, 53, 85, 86, 98 | 1 in 18 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 13, 38, 53, 85, 86, 98, 107–108 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | Not nos. 107–108 | Rest |
+| Code card | 1 | Code card | — | — | — | — | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -307,6 +346,8 @@ reverse holo slot instead of a plain reverse holo.
 - **Pack direction.** Unknown. Searched 2026-09-12: no source found.
 - **Pack order evidence.** One forum post. No photo or video source.
   Searched 2026-09-12: no photo or video source found.
+- **Slot map: Rare Holo odds.** No source gives a Rare Holo rate per
+  pack for this set. The row uses `—`.
 - **Regular EX per box.** 15 of 17 reports show exactly 2. No source says
   if boxes guarantee 2 regular EX.
 - **Rate conflict.** Flipside gives 1 Full Art and 1 ACE SPEC per box.
