@@ -201,7 +201,7 @@ TCGplayer group `24269`: 25 products.
 | 624679 | Destined Rivals Booster Box | Booster box | 36 | Description | — | 2025 Q2 | Yes |
 | 624681 | Destined Rivals Half Booster Box | Booster box | 18 | Description | — | 2025 Q2 | Yes |
 | 625670 | Destined Rivals Booster Bundle | Booster bundle | 6 | Description | — | 2025 Q2 | Yes |
-| 624683 | Destined Rivals Booster Pack | Booster pack | 6 | Bulbapedia | — | 2025 Q2 | Yes |
+| 624683 | Destined Rivals Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q2 | Yes |
 | 649711 | Destined Rivals Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2025 Q2 (set) | Yes |
 | 650765 | Destined Rivals Fun Pack | Booster pack | 1 | Kind default | — | 2025 Q2 (set) | Yes |
 | 624684 | Destined Rivals Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2025 Q2 | Yes |

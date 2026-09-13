@@ -125,7 +125,7 @@ TCGplayer group `1402`: 2 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
 | 98531 | HeartGold SoulSilver Booster Box | Booster box | 36 | Kind default | — | 2010 Q1 (set) | No |
-| 98530 | HeartGold SoulSilver Booster Pack | Booster pack | 2 | Bulbapedia | — | 2010 Q1 (set) | Yes |
+| 98530 | HeartGold SoulSilver Booster Pack | Booster pack | 1 | Kind default | — | 2010 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

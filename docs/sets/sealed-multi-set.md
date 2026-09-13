@@ -683,7 +683,7 @@ TCGplayer group `23266`: 4 products.
 |---|---|---|---|---|---|---|---|
 | 564134 | Trick or Trade BOOster Bundle 2023 (120 ct) | Booster bundle | 120 | Description | — | — | Yes |
 | 505942 | Trick or Trade BOOster Bundle 2023 (50 ct) | Booster bundle | 50 | Description | — | — | Yes |
-| 505945 | Trick or Trade BOOster Bundle 2023 - Mini Booster Pack | Booster pack | 50 | Bulbapedia | — | 2023 Q3 | Yes |
+| 505945 | Trick or Trade BOOster Bundle 2023 - Mini Booster Pack | Booster pack | 1 | Kind default | — | 2023 Q3 | Yes |
 | 505943 | Trick or Trade BOOster Bundle 2023 Case | Case or display | — | — | 12 booster bundles | 2023 Q3 | Yes |
 
 ## Trick or Trade BOOster Bundle 2024

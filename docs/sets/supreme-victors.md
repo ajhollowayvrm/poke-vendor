@@ -100,7 +100,7 @@ TCGplayer group `1384`: 2 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
 | 98575 | Supreme Victors Booster Box | Booster box | 36 | Kind default | — | 2009 Q3 (set) | No |
-| 98574 | Supreme Victors Booster Pack | Booster pack | 4 | Bulbapedia | — | 2009 Q3 (set) | Yes |
+| 98574 | Supreme Victors Booster Pack | Booster pack | 1 | Kind default | — | 2009 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

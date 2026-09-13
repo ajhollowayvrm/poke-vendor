@@ -126,7 +126,7 @@ TCGplayer group `1842`: 34 products.
 | 125563 | Mega Beedrill EX Premium Collection | Collection | 6 | Bulbapedia | — | 2016 Q4 (set) | No |
 | 125738 | Mega Garchomp EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q4 (set) | No |
 | 125737 | Mega Salamence EX Premium Collection | Collection | 8 | Bulbapedia | — | 2016 Q4 (set) | No |
-| 125735 | Mewtwo EX Box | Collection | 3 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 125735 | Mewtwo EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 127179 | Mythical Collection [Magearna] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 127180 | Mythical Collection [Volcanion] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |

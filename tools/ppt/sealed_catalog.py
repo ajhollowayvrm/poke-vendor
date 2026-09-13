@@ -81,10 +81,11 @@ def bp_clean(s):
     return re.sub(r"\s+", " ", s)
 
 
-def bp_tokens(name):
+def bp_tokens(name, stop=True):
     # Leave out bracketed text, parenthesized text, and quoted deck names such as "Red Frenzy".
     name = re.sub(r"\[.*?\]|\(.*?\)|\".*?\"|“.*?”", " ", name.lower()).replace("-", " ").replace("é", "e")
-    return {re.sub(r"(es|s)$", "", w) if len(w) > 3 else w for w in re.findall(r"[a-z0-9]+", name)} - BP_STOP
+    words = {re.sub(r"(es|s)$", "", w) if len(w) > 3 else w for w in re.findall(r"[a-z0-9]+", name)}
+    return words - BP_STOP if stop else words
 
 
 def bp_sections():
@@ -123,7 +124,7 @@ def own_set_tokens(gid):
     return bp_tokens(re.sub(r"^[A-Za-z]+\d*[a-z]?\s*[:-]\s+", "", GROUP_NAMES.get(gid, "")))
 
 
-def bp_best(name, era, entries, own_set=frozenset()):
+def bp_best(name, era, entries, own_set=frozenset(), accept=None):
     # The best Bulbapedia section entry for a product name, or None. entries: {page: [(title, title tokens, ...)]}.
     # A name with no word from its own set also scores with the set's words, and a title with the set's words gets a
     # small bonus, so "Elite Trainer Box [Kyogre]" in Primal Clash matches "Primal Clash Elite Trainer Box", not
@@ -131,24 +132,45 @@ def bp_best(name, era, entries, own_set=frozenset()):
     # "Enhanced 2-Pack Blister Pack [Latios, Zekrom & Palkia]" matches its own blister section.
     nt = bp_tokens(name)
     bases = [nt, nt | own_set] if own_set and not nt & own_set else [nt]
-    bracket = set().union(*(bp_tokens(b) for b in re.findall(r"\[(.*?)\]", name)))
-    best = (0.0, None)
+    # Words in brackets, and a year or series number in parentheses, such as "(Fall 2023)" or "(Series 2)".
+    bracket = set().union(*(bp_tokens(b) for b in re.findall(r"\[(.*?)\]", name)),
+                          *({m.group(1) or m.group(2)} for m in re.finditer(
+                              r"\((?:(?:fall|spring|summer|winter)\s+)?((?:19|20)\d\d)\)|\(series\s+(\d+)\)", name, re.I)))
+    raw = bp_tokens(name, stop=False)
+    # A booster pack must not match a Booster Bundle or Mini Packs section, and a booster box must not match a
+    # Build & Battle section. Other kind differences are the same product under another name ("Booster Display Box").
+    kind, allowed = kind_of(name), {"Booster pack": {"Booster pack"}, "Booster box": {"Booster box", "Case or display"}}
+    best, best_key, tied = None, (0.0, 0.0), False
     for page in BP_PAGES.get(era) or [p for v in BP_PAGES.values() for p in v]:
         for entry in entries.get(page, []):
             tt = entry[1]
             if not tt or not (nt & tt):
                 continue
+            if kind in allowed and kind_of(entry[0]) not in allowed[kind]:
+                continue
             if not any(k in " ".join(nt) and k in " ".join(tt) for k in BP_KEY):
                 continue
-            score = 0.0
-            for base in bases:
-                full = base | bracket if bracket and bracket <= tt else base
-                score = max(score, len(full & tt) / len(full | tt))
+            score = max(len(base & tt) / len(base | tt) for base in bases)
+            if bracket and bracket <= tt:
+                # A title with every bracket word also scores on those words. When at least half of the rest of the
+                # name matches too, the title wins: "Knock Out Collection [Chien-Pao]" is "... Alakazam & Chien-Pao".
+                full = max(len((base | bracket) & tt) / len(base | bracket | tt) for base in bases)
+                score = full + 1.0 if score >= 0.5 else full
             if len(bases) > 1 and own_set <= tt:
                 score += 0.01
-            if score > best[0]:
-                best = (score, entry)
-    return best[1] if best[0] >= 0.6 else None
+            # With equal scores, more shared words (stop words included) win, so "Black Kyurem Box" beats "Kyurem Box".
+            title_raw = bp_tokens(entry[0], stop=False)
+            key = (score, len(raw & title_raw) / len(raw | title_raw))
+            # accept(entry) is an optional extra test, such as the release year. It runs only for a better key.
+            if key > best_key and (accept is None or accept(entry)):
+                best, best_key, tied = entry, key, False
+            elif best and key == best_key and entry[0] != best[0] and (accept is None or accept(entry)):
+                tied = True
+    # With no era, two different sections with the same best key are different product lines, such as the
+    # "Fall 2018 Collector Chest" and the "Fall 2022 Collector Chest" for a "Fall 2025 Collector Chest".
+    if tied and not era:
+        return None
+    return best if best_key[0] >= 0.6 else None
 
 
 def bp_packs(name, kind, era, sections, own_set=frozenset()):
