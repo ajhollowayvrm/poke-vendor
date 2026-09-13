@@ -335,30 +335,42 @@ optional (see
   - "New post" on this screen. The player picks a type (pull reveal,
     collection flex, hot take, show promo, or for sale), then an
     item. A hot take needs no item.
-  - A "Post" action on the item detail screen in Inventory.
-  - "Post this pull" on the rip summary.
+  - A "Post" action on the item detail screen in Inventory. The
+    player picks the type (collection flex or for sale), then sees a
+    confirm screen with a Post button.
+  - "Post this pull" on the rip summary. The type and the item are
+    known, so it opens the confirm screen at once.
+- **A show promo attaches to a card show.** The player picks a card
+  show from the calendar, not an Inventory item. What the promo does
+  at the show is part of the card show design (see
+  [17-calendar-and-events.md](17-calendar-and-events.md#scheduled-entries)).
 - **A sponsor offer is an inbox card.** The card shows the brand, the
   pay, the number of paid posts, and the days to make them. The player
   accepts or declines. Accept adds the paid posts as tasks. A missed
   deadline cancels the deal and costs authenticity.
+- **A follower tip is an inbox card that reveals a hidden garage
+  sale.** The card shows the place, the day, and a one-line hint, for
+  example "Old binders". "Add to calendar" puts the sale on the
+  calendar (see
+  [17-calendar-and-events.md](17-calendar-and-events.md#hidden-garage-sales-from-follower-tips)).
+- **A for-sale post shows its result in three places:**
+  - The post's row in recent posts shows "Sold $X" after the sale.
+  - The card in Inventory has a "Listed · Social" tag until it sells.
+  - The sale is an entry in the Wallet ledger.
 
 **Open topics:**
 
-- What a follower tip card shows, and how a tip connects to garage
-  sales and the calendar.
-- Where a for-sale post shows its sale result.
 - The live stream setup screen (the hub's Go Live row), and Whatnot.
-- Whether "Post" on the item detail screen and "Post this pull" on
-  the rip summary skip the type and item steps, because they already
-  know the item.
-- What a show promo attaches to. The mockup lets the player pick a
-  card show from the calendar, not an Inventory item.
+- How long a for-sale post stays listed, and what its row shows if
+  the card does not sell.
 
 **Mockup:** the lo-fi mockup is the "PokeVendor Social Media Screen"
 Claude Design canvas. It shows account creation, the hub, the hub with
 the analytics upgrade, and the two New post steps (pick a type, then
-pick an item). The review on 2026-09-13 approved it. The follower tip
-card in the mockup is a placeholder.
+pick an item). The review on 2026-09-13 approved it. The decisions on
+follower tips, for-sale results, the confirm screen, and show promos
+came after the review. The mockup does not show them yet. Its
+follower tip card is a placeholder.
 
 ## What's next
 

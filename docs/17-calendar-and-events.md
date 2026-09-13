@@ -65,6 +65,15 @@ event, because time off must be booked in advance (see
 [16-time-and-day.md](16-time-and-day.md#sick-days-and-time-off)). A
 player who sees an event too late can still use a sick day.
 
+### Hidden garage sales from follower tips
+
+Some garage sales never appear as posted entries. Only a follower tip
+reveals one (see
+[06-social-media.md](06-social-media.md#growth-and-monetization)).
+Tips start at follower tier 1. The tip card shows the place, the day,
+and a one-line hint. "Add to calendar" puts the sale on the calendar.
+A player with no social media account never sees these sales.
+
 ### Arrival time: early gets the best
 
 A garage sale or an estate sale runs for a window of hours. Other

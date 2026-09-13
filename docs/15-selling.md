@@ -95,6 +95,10 @@ This channel needs a social media account (see
 - The chance of a sale depends on followers and reach. With a small
   audience, nothing sells.
 - There are no platform fees, but the player pays for shipping.
+- Until the card sells, the card has a "Listed · Social" tag in
+  Inventory. After the sale, the post's row on the social media hub
+  shows "Sold $X", and the sale is an entry in the Wallet ledger (see
+  [08-ui-direction.md](08-ui-direction.md#4-social-media-hub--decisions-recorded-lo-fi-mockup-reviewed)).
 
 ## The local game shop
 

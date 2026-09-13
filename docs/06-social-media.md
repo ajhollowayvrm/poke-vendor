@@ -83,6 +83,11 @@ reach = base_follower_reach × content_quality_multiplier × timing_multiplier �
   hub inbox. It shows the brand, the pay, the number of paid posts, and
   the days to make them. The player accepts or declines. A missed
   deadline cancels the deal and costs authenticity.
+- **Follower tips**: start at follower tier 1. A tip arrives in the
+  social hub inbox and reveals a hidden garage sale: the place, the
+  day, and a one-line hint. The player adds the sale to the calendar
+  (see
+  [17-calendar-and-events.md](17-calendar-and-events.md#hidden-garage-sales-from-follower-tips)).
 - **Follower decay**: followers are not a number that only goes up.
   Inactivity, controversy, and algorithm shifts cause real decay — an
   audience needs upkeep, not just a one-time build.
