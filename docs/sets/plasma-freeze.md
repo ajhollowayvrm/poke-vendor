@@ -137,7 +137,7 @@ No Plasma Freeze Elite Trainer Box is in Bulbapedia's merchandise list.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -149,8 +149,8 @@ TCGplayer group `1382`: 5 products.
 | 98516 | Plasma Freeze Booster Box | Booster box | 36 | Kind default | — | 2013 Q2 (set) | Yes |
 | 98517 | Plasma Freeze Booster Pack | Booster pack | 1 | Kind default | — | 2013 Q2 (set) | Yes |
 | 276602 | Plasma Freeze Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2013 Q2 (set) | No |
-| 486243 | Plasma Freeze Theme Deck - "Frost Ray" [Glaceon] | Deck | Unknown | Unknown | — | 2013 Q2 (set) | No |
-| 486245 | Plasma Freeze Theme Deck - "Psy Crusher" [Leafeon] | Deck | Unknown | Unknown | — | 2013 Q2 (set) | No |
+| 486243 | Plasma Freeze Theme Deck - "Frost Ray" [Glaceon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2013 Q2 (set) | No |
+| 486245 | Plasma Freeze Theme Deck - "Psy Crusher" [Leafeon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2013 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

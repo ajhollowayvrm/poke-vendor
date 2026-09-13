@@ -104,7 +104,7 @@ No booster box or single mini pack was sold separately at retail.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -115,7 +115,7 @@ TCGplayer group `3179`: 3 products.
 |---|---|---|---|---|---|---|---|
 | 659627 | Trick or Trade BOOster Bundle (120 ct) | Booster bundle | 120 | Description | — | 2022 Q3 (set) | Yes |
 | 280302 | Trick or Trade BOOster Bundle (40 ct) | Booster bundle | 40 | Description | — | 2022 Q3 (set) | Yes |
-| 280301 | Trick or Trade BOOster Bundle - Mini Booster Pack | Booster pack | 1 | Kind default | — | 2022 Q3 (set) | Yes |
+| 280301 | Trick or Trade BOOster Bundle - Mini Booster Pack | Booster pack | 40 | Bulbapedia | — | 2022 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

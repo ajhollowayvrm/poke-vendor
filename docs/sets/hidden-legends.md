@@ -125,7 +125,7 @@ Collation: unknown. Model each pack as an independent draw.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -137,8 +137,8 @@ TCGplayer group `1416`: 5 products.
 | 98596 | Hidden Legends Booster Box | Booster box | 36 | Kind default | — | 2004 Q2 (set) | No |
 | 98595 | Hidden Legends Booster Pack | Booster pack | 1 | Kind default | — | 2004 Q2 (set) | Yes |
 | 530143 | Hidden Legends Theme Deck Display | Case or display | — | — | Unknown | 2004 Q2 (set) | No |
-| 215765 | Hidden Legends Theme Deck - "Forest Guardian" [Dark Celebi] | Deck | Unknown | Unknown | — | 2004 Q2 (set) | Yes |
-| 215766 | Hidden Legends Theme Deck - "Wish Maker" [Jirachi] | Deck | Unknown | Unknown | — | 2004 Q2 (set) | Yes |
+| 215765 | Hidden Legends Theme Deck - "Forest Guardian" [Dark Celebi] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2004 Q2 (set) | Yes |
+| 215766 | Hidden Legends Theme Deck - "Wish Maker" [Jirachi] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2004 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

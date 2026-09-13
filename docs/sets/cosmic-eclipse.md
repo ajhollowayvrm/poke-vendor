@@ -100,7 +100,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -113,8 +113,8 @@ TCGplayer group `2534`: 20 products.
 | 199766 | Cosmic Eclipse 3 Pack Blister [Victini] | Blister | 3 | Description | — | 2019 Q4 | Yes |
 | 199768 | Cosmic Eclipse Single Pack Blister [Mismagius] | Blister | 1 | Name | — | 2019 Q4 | Yes |
 | 199769 | Cosmic Eclipse Single Pack Blister [Terrakion] | Blister | 1 | Name | — | 2019 Q4 | Yes |
-| 668512 | Sun & Moon Single Blister Pack [Growlithe & Arcanine] | Blister | Unknown | Unknown | — | 2019 Q4 (set) | No |
-| 668510 | Sun & Moon Single Blister Pack [Meltan & Melmetal] | Blister | Unknown | Unknown | — | 2019 Q4 (set) | No |
+| 668512 | Sun & Moon Single Blister Pack [Growlithe & Arcanine] | Blister | 1 | Name | — | 2019 Q4 (set) | No |
+| 668510 | Sun & Moon Single Blister Pack [Meltan & Melmetal] | Blister | 1 | Name | — | 2019 Q4 (set) | No |
 | 199261 | Cosmic Eclipse Booster Box | Booster box | 36 | Description | — | 2019 Q4 | Yes |
 | 199263 | Cosmic Eclipse Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q4 (set) | Yes |
 | 267047 | Cosmic Eclipse Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2019 Q4 (set) | Yes |
@@ -125,9 +125,9 @@ TCGplayer group `2534`: 20 products.
 | 656706 | Cosmic Eclipse Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2019 Q4 (set) | No |
 | 199307 | Cosmic Eclipse Theme Deck Display | Case or display | — | — | 8 theme decks | 2019 Q4 | No |
 | 199772 | Pikachu GX & Eevee GX Special Collection | Collection | 4 | Description | — | 2019 Q4 | Yes |
-| 199306 | Cosmic Eclipse Theme Deck [Groudon] | Deck | Unknown | Unknown | — | 2019 Q4 | Yes |
-| 199305 | Cosmic Eclipse Theme Deck [Kyogre] | Deck | Unknown | Unknown | — | 2019 Q4 | Yes |
-| 199304 | Cosmic Eclipse Theme Deck [Set of 2] | Deck | Unknown | Unknown | — | 2019 Q4 | Yes |
+| 199306 | Cosmic Eclipse Theme Deck [Groudon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q4 | Yes |
+| 199305 | Cosmic Eclipse Theme Deck [Kyogre] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q4 | Yes |
+| 199304 | Cosmic Eclipse Theme Deck [Set of 2] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q4 | Yes |
 | 199308 | Cosmic Eclipse Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2019 Q4 | Yes |
 <!-- product-catalog:end -->
 

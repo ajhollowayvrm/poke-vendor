@@ -94,7 +94,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -117,9 +117,9 @@ TCGplayer group `2464`: 24 products.
 | 198528 | Pale Moon GX Box | Collection | 4 | Description | — | 2019 Q4 | Yes |
 | 198521 | Porygon-Z GX Box | Collection | 4 | Description | — | 2019 Q3 | Yes |
 | 232313 | Unified Minds 3 Pack Hanger Box | Collection | 3 | Description | — | 2019 Q3 (set) | Yes |
-| 191889 | Unified Minds Theme Deck - "Laser Focus" [Necrozma] | Deck | Unknown | Unknown | — | 2019 Q3 | Yes |
-| 191888 | Unified Minds Theme Deck - "Soaring Storm" [Dragonite] | Deck | Unknown | Unknown | — | 2019 Q3 | Yes |
-| 194708 | Unified Minds Theme Deck [Set of 2] | Deck | Unknown | Unknown | — | 2019 Q3 | No |
+| 191889 | Unified Minds Theme Deck - "Laser Focus" [Necrozma] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q3 | Yes |
+| 191888 | Unified Minds Theme Deck - "Soaring Storm" [Dragonite] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q3 | Yes |
+| 194708 | Unified Minds Theme Deck [Set of 2] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q3 | No |
 | 193052 | Unified Minds Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2019 Q3 | Yes |
 | 686509 | Unified Minds Mini Pack | Other | Unknown | Unknown | — | 2019 Q3 (set) | Yes |
 | 195612 | Unified Minds Prerelease Kit | Other | 4 | Description | — | 2019 Q3 | Yes |

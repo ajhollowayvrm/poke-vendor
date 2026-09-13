@@ -93,7 +93,7 @@ Bulbapedia booster pack page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -104,8 +104,8 @@ TCGplayer group `1406`: 8 products.
 |---|---|---|---|---|---|---|---|
 | 98592 | Platinum Booster Box | Booster box | 36 | Kind default | — | 2009 Q1 (set) | No |
 | 98591 | Platinum Booster Pack | Booster pack | 1 | Kind default | — | 2009 Q1 (set) | Yes |
-| 229173 | Platinum Theme Deck - "Flourish" | Deck | Unknown | Unknown | — | 2009 Q1 (set) | No |
-| 229175 | Platinum Theme Deck - "Rebellion" | Deck | Unknown | Unknown | — | 2009 Q1 (set) | Yes |
+| 229173 | Platinum Theme Deck - "Flourish" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2009 Q1 (set) | No |
+| 229175 | Platinum Theme Deck - "Rebellion" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2009 Q1 (set) | Yes |
 | 485826 | Fall 2009 Collector's Tin [Garchomp LV.X] | Tin | 3 | Description | — | 2009 Q1 (set) | No |
 | 485827 | Fall 2009 Collector's Tin [Rayquaza LV.X] | Tin | 3 | Description | — | 2009 Q1 (set) | No |
 | 485825 | Spring 2009 Collector's Tin [Dialga LV.X] | Tin | 1 | Description | — | 2009 Q1 (set) | No |

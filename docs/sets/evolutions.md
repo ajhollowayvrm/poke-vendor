@@ -93,7 +93,7 @@ Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -116,19 +116,19 @@ TCGplayer group `1842`: 36 products.
 | 125740 | Alola Collection [Lunala] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
 | 125739 | Alola Collection [Solgaleo] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
 | 169636 | Autumn 2016 Collector Chest | Collection | 5 | Description | — | 2016 Q4 (set) | No |
-| 126570 | BREAK Evolution Box [Arcanine] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 125731 | Charizard EX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
+| 126570 | BREAK Evolution Box [Arcanine] | Collection | 5 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 125731 | Charizard EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 125734 | Dragonite EX Box | Collection | 4 | Description | — | 2016 Q4 (set) | Yes |
-| 125733 | Gengar EX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 125732 | Kangaskhan EX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
+| 125733 | Gengar EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 125732 | Kangaskhan EX Box | Collection | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 222989 | Kanto Power Collection [Dragonite EX/Pidgeot EX] | Collection | 10 | Description | — | 2016 Q4 (set) | Yes |
 | 222988 | Kanto Power Collection [Mewtwo EX/Slowbro EX] | Collection | 10 | Description | — | 2016 Q4 (set) | Yes |
-| 125563 | Mega Beedrill EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q4 (set) | No |
+| 125563 | Mega Beedrill EX Premium Collection | Collection | 6 | Bulbapedia | — | 2016 Q4 (set) | No |
 | 125738 | Mega Garchomp EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q4 (set) | No |
-| 125737 | Mega Salamence EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q4 (set) | No |
-| 125735 | Mewtwo EX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 127179 | Mythical Collection [Magearna] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 127180 | Mythical Collection [Volcanion] | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
+| 125737 | Mega Salamence EX Premium Collection | Collection | 8 | Bulbapedia | — | 2016 Q4 (set) | No |
+| 125735 | Mewtwo EX Box | Collection | 3 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 127179 | Mythical Collection [Magearna] | Collection | 2 | Bulbapedia | — | 2016 Q4 (set) | Yes |
+| 127180 | Mythical Collection [Volcanion] | Collection | 2 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 | 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
 | 229351 | XY - Evolutions Pin Collection [Mega Blastoise] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
 | 229352 | XY - Evolutions Pin Collection [Mega Venusaur] | Collection | 2 | Description | — | 2016 Q4 (set) | No |
@@ -137,7 +137,7 @@ TCGplayer group `1842`: 36 products.
 | 123448 | XY Evolutions Elite Trainer Box [Mega Blastoise] | Elite Trainer Box | 8 | Description | — | 2016 Q4 (set) | Yes |
 | 123447 | XY Evolutions Elite Trainer Box [Mega Charizard Y] | Elite Trainer Box | 8 | Description | — | 2016 Q4 (set) | Yes |
 | 686507 | Evolutions Mini Pack | Other | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
-| 125741 | XY Evolutions Prerelease Kit | Other | Unknown | Unknown | — | 2016 Q4 (set) | Yes |
+| 125741 | XY Evolutions Prerelease Kit | Other | 4 | Bulbapedia | — | 2016 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

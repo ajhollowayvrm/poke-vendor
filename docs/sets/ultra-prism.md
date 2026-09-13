@@ -99,7 +99,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -122,10 +122,10 @@ TCGplayer group `2178`: 22 products.
 | 164232 | Legends of Johto GX Premium Collection Box | Collection | 6 | Description | — | 2018 Q1 (set) | Yes |
 | 161256 | Lucario GX Box | Collection | 4 | Description | — | 2018 Q1 | No |
 | 232314 | Ultra Prism 3 Pack Hanger Box | Collection | 3 | Description | — | 2018 Q1 (set) | Yes |
-| 155666 | Ultra Prism Theme Deck - "Imperial Command" [Empoleon] | Deck | Unknown | Unknown | — | 2018 Q1 (set) | Yes |
-| 155665 | Ultra Prism Theme Deck - "Mach Strike" [Garchomp] | Deck | Unknown | Unknown | — | 2018 Q1 (set) | Yes |
-| 155663 | Ultra Prism Elite Trainer Box [Dawn Wings Necrozma] | Elite Trainer Box | Unknown | Unknown | — | 2018 Q1 (set) | Yes |
-| 155664 | Ultra Prism Elite Trainer Box [Dusk Mane Necrozma] | Elite Trainer Box | Unknown | Unknown | — | 2018 Q1 (set) | Yes |
+| 155666 | Ultra Prism Theme Deck - "Imperial Command" [Empoleon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2018 Q1 (set) | Yes |
+| 155665 | Ultra Prism Theme Deck - "Mach Strike" [Garchomp] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2018 Q1 (set) | Yes |
+| 155663 | Ultra Prism Elite Trainer Box [Dawn Wings Necrozma] | Elite Trainer Box | 8 | Bulbapedia | — | 2018 Q1 (set) | Yes |
+| 155664 | Ultra Prism Elite Trainer Box [Dusk Mane Necrozma] | Elite Trainer Box | 8 | Bulbapedia | — | 2018 Q1 (set) | Yes |
 | 158254 | Ultra Prism Prerelease Kit | Other | 4 | Description | — | 2018 Q1 (set) | Yes |
 | 162046 | Necrozma Prism Tin [Dawn Wings Necrozma GX] | Tin | 4 | Description | — | 2018 Q1 | No |
 | 162045 | Necrozma Prism Tin [Dusk Mane Necrozma GX] | Tin | 4 | Description | — | 2018 Q1 | Yes |

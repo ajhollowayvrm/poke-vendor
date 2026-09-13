@@ -111,7 +111,7 @@ come from various sets.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -138,7 +138,7 @@ TCGplayer group `2867`, `2931`: 36 products.
 | 245139 | Celebrations Premium Figure Collection [Pikachu VMAX] | Collection | 8 | Description | — | 2021 Q4 | Yes |
 | 251217 | Celebrations Premium Playmat Collection [Pikachu V-UNION] | Collection | 4 | Description | — | 2021 Q4 (set) | Yes |
 | 252416 | Celebrations Prime Collection | Collection | 3 | Description | — | 2021 Q4 (set) | Yes |
-| 247470 | Celebrations Special Collection - V Memories | Collection | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
+| 247470 | Celebrations Special Collection - V Memories | Collection | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
 | 245140 | Celebrations Ultra-Premium Collection | Collection | 1 | Description | — | 2021 Q4 | Yes |
 | 242811 | Celebrations Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2021 Q4 (set) | Yes |
 | 251199 | Celebrations Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 13 | Description | — | 2021 Q4 (set) | Yes |
@@ -150,12 +150,12 @@ TCGplayer group `2867`, `2931`: 36 products.
 | 242813 | Celebrations Mini Tin [Kanto] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
 | 242816 | Celebrations Mini Tin [Sinnoh] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
 | 242817 | Celebrations Mini Tin [Unova] | Tin | 2 | Description | — | 2021 Q4 (set) | Yes |
-| 251988 | Pokemon Celebrations International Tin [Dark Sylveon V] | Tin | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
-| 251987 | Pokemon Celebrations International Tin [Lance's Charizard V] | Tin | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
-| 252739 | Pokemon Celebrations International Tin [Set of 2] | Tin | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
-| 251989 | Pokemon Celebrations Tin [Dark Sylveon V] | Tin | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
-| 251986 | Pokemon Celebrations Tin [Lance's Charizard V] | Tin | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
-| 252740 | Pokemon Celebrations Tin [Set of 2] | Tin | Unknown | Unknown | — | 2021 Q4 (set) | No |
+| 251988 | Pokemon Celebrations International Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
+| 251987 | Pokemon Celebrations International Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
+| 252739 | Pokemon Celebrations International Tin [Set of 2] | Tin | 12 | Bulbapedia | — | 2021 Q4 (set) | Yes |
+| 251989 | Pokemon Celebrations Tin [Dark Sylveon V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
+| 251986 | Pokemon Celebrations Tin [Lance's Charizard V] | Tin | 6 | Bulbapedia | — | 2021 Q4 (set) | Yes |
+| 252740 | Pokemon Celebrations Tin [Set of 2] | Tin | 12 | Bulbapedia | — | 2021 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

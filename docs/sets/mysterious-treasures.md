@@ -88,7 +88,7 @@ Azelf). Source: Bulbapedia booster pack page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -99,8 +99,8 @@ TCGplayer group `1368`: 4 products.
 |---|---|---|---|---|---|---|---|
 | 98560 | Mysterious Treasures Booster Box | Booster box | 36 | Kind default | — | 2007 Q3 (set) | No |
 | 98561 | Mysterious Treasures Booster Pack | Booster pack | 1 | Kind default | — | 2007 Q3 (set) | Yes |
-| 229177 | Mysterious Treasures Theme Deck - "Armor Fortress" | Deck | Unknown | Unknown | — | 2007 Q3 (set) | Yes |
-| 229176 | Mysterious Treasures Theme Deck - "Skull Charge" | Deck | Unknown | Unknown | — | 2007 Q3 (set) | Yes |
+| 229177 | Mysterious Treasures Theme Deck - "Armor Fortress" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2007 Q3 (set) | Yes |
+| 229176 | Mysterious Treasures Theme Deck - "Skull Charge" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2007 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -112,7 +112,7 @@ Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -127,9 +127,9 @@ TCGplayer group `2295`: 9 products.
 | 180522 | Dragon Majesty Special Collection: Salamence GX | Collection | 5 | Description | — | 2018 Q3 (set) | Yes |
 | 180526 | Dragon Majesty Special Collection: White Kyurem GX | Collection | 5 | Description | — | 2018 Q3 (set) | No |
 | 175560 | Dragon Majesty Super-Premium Collection | Collection | 10 | Description | — | 2018 Q3 (set) | Yes |
-| 179033 | Legends of Unova GX Premium Collection | Collection | Unknown | Unknown | — | 2018 Q3 (set) | Yes |
+| 179033 | Legends of Unova GX Premium Collection | Collection | 6 | Bulbapedia | — | 2018 Q3 (set) | Yes |
 | 179038 | Ultra Necrozma GX Figure Collection | Collection | 4 | Description | — | 2018 Q3 (set) | No |
-| 173393 | Dragon Majesty Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2018 Q3 | Yes |
+| 173393 | Dragon Majesty Elite Trainer Box | Elite Trainer Box | 10 | Bulbapedia | — | 2018 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

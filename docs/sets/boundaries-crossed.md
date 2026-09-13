@@ -121,7 +121,7 @@ Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -132,8 +132,8 @@ TCGplayer group `1408`: 4 products.
 |---|---|---|---|---|---|---|---|
 | 98555 | Boundaries Crossed Booster Box | Booster box | 36 | Kind default | — | 2012 Q4 (set) | No |
 | 98554 | Boundaries Crossed Booster Pack | Booster pack | 1 | Kind default | — | 2012 Q4 (set) | Yes |
-| 208574 | Boundaries Crossed Theme Deck - "Cold Fire" [White Kyurem] | Deck | Unknown | Unknown | — | 2012 Q4 (set) | Yes |
-| 208573 | Boundaries Crossed Theme Deck - "Ice Shock" [Black Kyurem] | Deck | Unknown | Unknown | — | 2012 Q4 (set) | No |
+| 208574 | Boundaries Crossed Theme Deck - "Cold Fire" [White Kyurem] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2012 Q4 (set) | Yes |
+| 208573 | Boundaries Crossed Theme Deck - "Ice Shock" [Black Kyurem] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2012 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

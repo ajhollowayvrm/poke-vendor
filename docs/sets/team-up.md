@@ -100,7 +100,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -124,9 +124,9 @@ TCGplayer group `2377`: 24 products.
 | 595411 | TAG TEAM Tin Case | Case or display | — | — | 3 tins | 2019 Q1 (set) | Yes |
 | 547128 | Team Up Prerelease Kit Display | Case or display | — | — | Unknown | 2019 Q1 (set) | No |
 | 185246 | Melmetal GX Box | Collection | 4 | Description | — | 2019 Q1 (set) | Yes |
-| 181693 | Towering Splash GX Box | Collection | Unknown | Unknown | — | 2019 Q1 | Yes |
-| 181705 | Team Up Theme Deck - "Relentless Flame" [Charizard] | Deck | Unknown | Unknown | — | 2019 Q1 | Yes |
-| 181706 | Team Up Theme Deck - "Torrential Cannon" [Blastoise] | Deck | Unknown | Unknown | — | 2019 Q1 (set) | Yes |
+| 181693 | Towering Splash GX Box | Collection | 4 | Bulbapedia | — | 2019 Q1 | Yes |
+| 181705 | Team Up Theme Deck - "Relentless Flame" [Charizard] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q1 | Yes |
+| 181706 | Team Up Theme Deck - "Torrential Cannon" [Blastoise] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2019 Q1 (set) | Yes |
 | 181704 | Team Up Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2019 Q1 | Yes |
 | 183975 | Team Up Prerelease Kit | Other | 4 | Description | — | 2019 Q1 | Yes |
 | 185256 | TAG TEAM Tin [Celebi & Venusaur GX] | Tin | 4 | Description | — | 2019 Q1 (set) | Yes |

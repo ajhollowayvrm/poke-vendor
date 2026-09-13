@@ -40,12 +40,84 @@ KINDS = [
     ("Booster pack", r"\bmini booster pack\b|\bbooster pack$"),
     ("Booster bundle", r"\bbooster bundle\b"),
     ("Build & Battle", r"\bbuild (?:&|and) battle\b"),
-    ("Blister", r"\bblister\b|\bcheck ?lane\b"),
+    ("Blister", r"\bblisters?\b|\bcheck ?lane\b"),
     ("Tin", r"\btins?\b"),
     ("Booster pack", r"\b(booster pack|sleeved booster|fun pack|mini booster)\b"),
     ("Collection", r"\b(collection|premium|box|chest|binder|album|figure|poster|pin)\b"),
 ]
 DEFAULT_PACKS = {"Booster box": 36, "Booster bundle": 6, "Build & Battle": 4, "Booster pack": 1}
+BULBAPEDIA = os.path.join(HERE, "cache", "bulbapedia")
+BP_PAGES = {"wizards-of-the-coast": ["Original", "Neo"], "e-card": ["Legendary Collection", "E-Card"], "ex": ["EX"],
+            "diamond-pearl-platinum": ["Diamond & Pearl", "Platinum"],
+            "heartgold-soulsilver": ["HeartGold & SoulSilver", "Call of Legends"], "black-white": ["Black & White"],
+            "xy": ["XY"], "sun-moon": ["Sun & Moon"], "sword-shield": ["Sword & Shield"],
+            "scarlet-violet": ["Scarlet & Violet"], "mega-evolution": ["Mega Evolution"]}
+BP_STOP = {"pokemon", "tcg", "the", "and", "of", "series", "xy", "sm", "sun", "moon", "sword", "shield", "scarlet",
+           "violet", "mega", "evolution", "black", "white", "ex", "gx", "v"}
+BP_KEY = ("tin", "box", "collection", "deck", "blister", "elite", "trainer", "kit", "pack", "bundle", "chest", "binder",
+          "album", "arena", "stadium")
+
+
+def bp_clean(s):
+    s = re.sub(r"\{\{TCGMerchGallery.*?\n\}\}", " ", s, flags=re.S)
+    s = re.sub(r"\{\{(?:TCG|p|TCGMerch)\|(?:[^{}|]*\|)*([^{}|]*)\}\}", r"\1", s)
+    s = re.sub(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]", r"\1", s)
+    s = re.sub(r"\{\{[^{}]*\}\}", " ", s)
+    s = re.sub(r"'{2,3}|<[^>]+>", "", s)
+    return re.sub(r"\s+", " ", s)
+
+
+def bp_tokens(name):
+    name = re.sub(r"\[.*?\]|\(.*?\)", " ", name.lower()).replace("-", " ").replace("é", "e")
+    return {re.sub(r"(es|s)$", "", w) if len(w) > 3 else w for w in re.findall(r"[a-z0-9]+", name)} - BP_STOP
+
+
+def bp_sections():
+    # {page name: [(section title, title tokens, pack count or None, the text names a booster pack)]}
+    import subprocess, urllib.parse
+    os.makedirs(BULBAPEDIA, exist_ok=True)
+    out = {}
+    for page in sorted({p for v in BP_PAGES.values() for p in v}):
+        title = f"{page} TCG Series merchandise"
+        path = os.path.join(BULBAPEDIA, title.replace(" ", "_").replace("&", "_") + ".wiki")
+        if not os.path.exists(path) or os.path.getsize(path) < 500:
+            subprocess.run(["curl", "-sL", "-m", "60", "-A", "PokeVendor-research/1.0", "-o", path,
+                            "https://bulbapedia.bulbagarden.net/w/index.php?title=" + urllib.parse.quote(title) + "&action=raw"])
+        parts = re.split(r"^==([^=].*?)==\s*$", open(path, errors="ignore").read(), flags=re.M)
+        secs = []
+        for i in range(1, len(parts) - 1, 2):
+            text = bp_clean(parts[i + 1]).split("Product images:")[0]
+            m = PACKS_RE.search(text)
+            n = num(m.group(1)) if m else None
+            if n is None and re.search(r"\b(?:a|one)\s+(?:[\w&'’.:-]+\s+){0,3}?booster pack\b", text, re.I):
+                n = 1
+            secs.append((parts[i].strip(), bp_tokens(parts[i]), n, bool(re.search(r"booster pack", text, re.I))))
+        out[page] = secs
+    return out
+
+
+def bp_packs(name, kind, era, sections):
+    # (packs, source) from the best Bulbapedia section title match, or (None, None).
+    nt = bp_tokens(name)
+    best = (0.0, None)
+    for page in BP_PAGES.get(era) or [p for v in BP_PAGES.values() for p in v]:
+        for title, tt, n, names_pack in sections.get(page, []):
+            if not tt or not (nt & tt):
+                continue
+            if not any(k in " ".join(nt) and k in " ".join(tt) for k in BP_KEY):
+                continue
+            score = len(nt & tt) / len(nt | tt)
+            if score > best[0]:
+                best = (score, (title, n, names_pack))
+    if not best[1] or best[0] < 0.6:
+        return None, None
+    title, n, names_pack = best[1]
+    mult = re.search(r"\[(?:bundle|set) of (\d+)\]", name, re.I)
+    if n is not None:
+        return n * (int(mult.group(1)) if mult else 1), "Bulbapedia"
+    if kind == "Deck" and not names_pack:
+        return 0, "Bulbapedia (no booster pack in contents)"
+    return None, None
 
 
 def num(s):
@@ -64,7 +136,7 @@ def kind_of(name):
     return "Other"
 
 
-def packs_of(kind, name, text):
+def packs_of(kind, name, text, era=None, sections=None):
     if kind == "Case or display":
         return None, ""
     m = PACKS_RE.search(text)
@@ -73,11 +145,20 @@ def packs_of(kind, name, text):
     m = re.search(r"\b(\d+)[ -]pack\b", name, re.I)
     if m:
         return int(m.group(1)), "Name"
+    m = re.search(r"\b(single|one|two|three|four|five|six)[ -](?:pack )?blister\b|\b(single|one|two|three|four|five|six)[ -]pack\b", name, re.I)
+    if m:
+        w = (m.group(1) or m.group(2)).lower()
+        return (1 if w == "single" else WORDS[w]), "Name"
     m = re.search(r"\bset of (\d+)\b", name, re.I)
     if m and re.search(r"\bbooster pack\b", name, re.I):
         return int(m.group(1)), "Name"
     if re.search(r"\bsingle pack\b", name, re.I):
         return 1, "Name"
+    if sections is not None and not re.search(r"\bstadium\b", name, re.I):
+        # A stadium holds other boxed products; the first pack phrase counts only its loose packs.
+        n, src = bp_packs(name, kind, era, sections)
+        if src:
+            return n, src
     if kind == "Build & Battle" and not re.search(r"\bbox\b", name, re.I):
         return None, "Unknown"
     if kind in DEFAULT_PACKS:
@@ -156,17 +237,17 @@ def products_by_group():
     return out
 
 
-def build_rows(gid, rows, release_by_slug, priced):
+def build_rows(gid, rows, release_by_slug, priced, eras=None, sections=None):
     slug = SLUG_OF.get(gid)
     out = []
     for x, text in sorted(rows, key=lambda r: (kind_of(r[0]["name"]), r[0]["name"])):
         kind = kind_of(x["name"])
-        packs, src = packs_of(kind, x["name"], text)
+        packs, src = packs_of(kind, x["name"], text, (eras or {}).get(slug), sections)
         holds = holds_of(x["name"], text) if kind == "Case or display" else "—"
         rel = (x.get("presaleInfo") or {}).get("releasedOn")
         q = quarter(rel) or (quarter(release_by_slug.get(slug)) and f"{quarter(release_by_slug.get(slug))} (set)") or "—"
         out.append({"id": x["productId"], "name": x["name"].replace("|", "/"), "kind": kind,
-                    "packs": str(packs) if packs else ("—" if kind == "Case or display" else "Unknown"),
+                    "packs": str(packs) if packs is not None else ("—" if kind == "Case or display" else "Unknown"),
                     "src": src or "—", "holds": holds, "release": q, "ppt": "Yes" if str(x["productId"]) in priced else "No"})
     return out
 
@@ -180,7 +261,7 @@ def table(rows):
 INTRO = ("Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. "
          "Code cards are left out.\n\n"
          "- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, "
-         "the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). "
+         "the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). "
          "Check a default before the game uses it.\n"
          "- **Holds** is what a case or a display holds.\n"
          "- **Release** is the quarter from the TCGplayer release date. \"(set)\" means the quarter of the set's release date.\n"
@@ -204,11 +285,17 @@ def write_set(slug, rows, groups_used):
 if __name__ == "__main__":
     write = "--write" in sys.argv
     release_by_slug, priced = set_release_dates(), ppt_ids()
+    idx = open(os.path.join(ROOT, "docs", "13-sets.md")).read()
+    eras = {}
+    for mm in re.finditer(r"^- \*\*(.+?)\*\* —\s*\n?\s*\[eras/([^\]]+)\.md\].*?(?=^- \*\*|\Z)", idx, re.S | re.M):
+        for s in re.findall(r"\(sets/([a-z0-9-]+)\.md\)", mm.group(0)):
+            eras.setdefault(s, mm.group(2))
+    sections = bp_sections()
     by_group = products_by_group()
     stats = collections.defaultdict(collections.Counter)
     per_slug = collections.defaultdict(list); groups_of_slug = collections.defaultdict(list); multi = []
     for gid, (g, rows) in by_group.items():
-        built = build_rows(gid, rows, release_by_slug, priced)
+        built = build_rows(gid, rows, release_by_slug, priced, eras, sections)
         for r in built:
             stats[r["kind"]]["total"] += 1
             stats[r["kind"]][r["src"]] += 1

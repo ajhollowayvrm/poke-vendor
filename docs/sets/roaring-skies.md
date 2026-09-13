@@ -79,7 +79,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -89,24 +89,24 @@ TCGplayer group `1534`: 19 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
 | 100501 | Dragonite Collector's Pin 3 Pack Blister | Blister | 2 | Description | — | 2015 Q2 (set) | Yes |
+| 99150 | Mega Evolution Collector's Pin Blisters [Latios] | Blister | 3 | Bulbapedia | — | 2015 Q2 (set) | No |
+| 99149 | Mega Evolution Collector's Pin Blisters [Rayquaza] | Blister | 3 | Bulbapedia | — | 2015 Q2 (set) | No |
 | 98031 | Roaring Skies 3 Pack Blister [Pangoro] | Blister | 3 | Description | — | 2015 Q2 (set) | No |
 | 98032 | Roaring Skies 3 Pack Blister [Regirock] | Blister | 3 | Description | — | 2015 Q2 (set) | No |
 | 98026 | XY Roaring Skies Booster Box | Booster box | 36 | Kind default | — | 2015 Q2 (set) | Yes |
 | 129906 | Roaring Skies Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q2 (set) | Yes |
 | 697502 | Roaring Skies Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q2 (set) | Yes |
 | 276594 | Roaring Skies Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q2 (set) | Yes |
-| 99151 | Mega Absol EX Premium Collection | Collection | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
-| 99150 | Mega Evolution Collector's Pin Blisters [Latios] | Collection | Unknown | Unknown | — | 2015 Q2 (set) | No |
-| 99149 | Mega Evolution Collector's Pin Blisters [Rayquaza] | Collection | Unknown | Unknown | — | 2015 Q2 (set) | No |
-| 100502 | Mega Latios Collection | Collection | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
+| 99151 | Mega Absol EX Premium Collection | Collection | 6 | Bulbapedia | — | 2015 Q2 (set) | Yes |
+| 100502 | Mega Latios Collection | Collection | 4 | Bulbapedia | — | 2015 Q2 (set) | Yes |
 | 100500 | Mega Rayquaza Collection | Collection | 4 | Description | — | 2015 Q2 (set) | No |
-| 100499 | Rayquaza EX Box | Collection | Unknown | Unknown | — | 2015 Q2 (set) | No |
-| 98029 | Roaring Skies Theme Deck - "Aurora Blast" [Articuno] | Deck | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
-| 98030 | Roaring Skies Theme Deck - "Storm Rider" [Zapdos] | Deck | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
-| 98028 | XY Roaring Skies Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
-| 100497 | Hoenn Power Tin [Blaziken] | Tin | Unknown | Unknown | — | 2015 Q2 (set) | No |
-| 100496 | Hoenn Power Tin [Sceptile] | Tin | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
-| 100498 | Hoenn Power Tin [Swampert] | Tin | Unknown | Unknown | — | 2015 Q2 (set) | Yes |
+| 100499 | Rayquaza EX Box | Collection | 4 | Bulbapedia | — | 2015 Q2 (set) | No |
+| 98029 | Roaring Skies Theme Deck - "Aurora Blast" [Articuno] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q2 (set) | Yes |
+| 98030 | Roaring Skies Theme Deck - "Storm Rider" [Zapdos] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q2 (set) | Yes |
+| 98028 | XY Roaring Skies Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2015 Q2 (set) | Yes |
+| 100497 | Hoenn Power Tin [Blaziken] | Tin | 4 | Bulbapedia | — | 2015 Q2 (set) | No |
+| 100496 | Hoenn Power Tin [Sceptile] | Tin | 4 | Bulbapedia | — | 2015 Q2 (set) | Yes |
+| 100498 | Hoenn Power Tin [Swampert] | Tin | 4 | Bulbapedia | — | 2015 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -95,7 +95,7 @@ non-holo rare. A white-bordered code card signals a holo rare or better
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -106,10 +106,10 @@ TCGplayer group `2585`: 43 products.
 |---|---|---|---|---|---|---|---|
 | 206030 | Sword & Shield 3 Pack Blister [Galarian Ponyta] | Blister | 3 | Description | — | 2020 Q1 (set) | Yes |
 | 206029 | Sword & Shield 3 Pack Blister [Morpeko] | Blister | 3 | Description | — | 2020 Q1 (set) | Yes |
-| 206032 | Sword & Shield Single Blister Pack [Gossifleur] | Blister | Unknown | Unknown | — | 2020 Q1 | Yes |
-| 665630 | Sword & Shield Single Blister Pack [Type:Null & Silvally] | Blister | Unknown | Unknown | — | 2020 Q1 (set) | No |
-| 668504 | Sword & Shield Single Blister Pack [Wimpod & Golisopod] | Blister | Unknown | Unknown | — | 2020 Q1 (set) | No |
-| 206031 | Sword & Shield Single Blister Pack [Wooloo] | Blister | Unknown | Unknown | — | 2020 Q1 | Yes |
+| 206032 | Sword & Shield Single Blister Pack [Gossifleur] | Blister | 1 | Name | — | 2020 Q1 | Yes |
+| 665630 | Sword & Shield Single Blister Pack [Type:Null & Silvally] | Blister | 1 | Name | — | 2020 Q1 (set) | No |
+| 668504 | Sword & Shield Single Blister Pack [Wimpod & Golisopod] | Blister | 1 | Name | — | 2020 Q1 (set) | No |
+| 206031 | Sword & Shield Single Blister Pack [Wooloo] | Blister | 1 | Name | — | 2020 Q1 | Yes |
 | 206027 | Sword & Shield Booster Box | Booster box | 36 | Description | — | 2020 Q1 | Yes |
 | 206028 | Sword & Shield Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q1 | Yes |
 | 487795 | Sword And Shield Base Set Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q1 (set) | Yes |
@@ -125,9 +125,9 @@ TCGplayer group `2585`: 43 products.
 | 210577 | Morpeko Pin Collection | Collection | 3 | Description | — | 2020 Q2 | Yes |
 | 210576 | Snorlax Pin Collection | Collection | 3 | Description | — | 2020 Q2 | Yes |
 | 206424 | Toxtricity V Box | Collection | 4 | Description | — | 2020 Q1 | Yes |
-| 206035 | Sword & Shield Theme Deck [Cinderace] | Deck | Unknown | Unknown | — | 2020 Q1 (set) | Yes |
-| 206036 | Sword & Shield Theme Deck [Inteleon] | Deck | Unknown | Unknown | — | 2020 Q1 (set) | Yes |
-| 206037 | Sword & Shield Theme Deck [Rillaboom] | Deck | Unknown | Unknown | — | 2020 Q1 (set) | Yes |
+| 206035 | Sword & Shield Theme Deck [Cinderace] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q1 (set) | Yes |
+| 206036 | Sword & Shield Theme Deck [Inteleon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q1 (set) | Yes |
+| 206037 | Sword & Shield Theme Deck [Rillaboom] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q1 (set) | Yes |
 | 244411 | Sword & Shield Elite Trainer Box [Set of 2] | Elite Trainer Box | 8 | Description | — | 2020 Q1 (set) | Yes |
 | 206038 | Sword & Shield Elite Trainer Box [Zacian] | Elite Trainer Box | 8 | Description | — | 2020 Q1 (set) | Yes |
 | 206039 | Sword & Shield Elite Trainer Box [Zamazenta] | Elite Trainer Box | 8 | Description | — | 2020 Q1 (set) | Yes |
@@ -135,7 +135,7 @@ TCGplayer group `2585`: 43 products.
 | 282886 | Galar Partners International Tin [Cinderace V] | Tin | 4 | Description | — | 2020 Q1 (set) | No |
 | 282885 | Galar Partners International Tin [Inteleon V] | Tin | 4 | Description | — | 2020 Q1 (set) | No |
 | 282887 | Galar Partners International Tin [Rillaboom V] | Tin | 4 | Description | — | 2020 Q1 (set) | Yes |
-| 283071 | Galar Partners International Tin [Set of 3] | Tin | Unknown | Unknown | — | 2020 Q1 (set) | No |
+| 283071 | Galar Partners International Tin [Set of 3] | Tin | 15 | Bulbapedia | — | 2020 Q1 (set) | No |
 | 206420 | Galar Partners Tin [Cinderace V] | Tin | 5 | Description | — | 2020 Q1 | Yes |
 | 206417 | Galar Partners Tin [Inteleon V] | Tin | 5 | Description | — | 2020 Q1 | Yes |
 | 206422 | Galar Partners Tin [Rillaboom V] | Tin | 5 | Description | — | 2020 Q1 | Yes |

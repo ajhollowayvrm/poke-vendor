@@ -85,7 +85,7 @@ code card. Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -103,15 +103,15 @@ TCGplayer group `1509`: 18 products.
 | 546608 | XY - Primal Clash Sleeved Booster Pack | Booster pack | 10 | Description | — | 2015 Q1 (set) | Yes |
 | 97751 | XY Primal Clash Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q1 (set) | Yes |
 | 656978 | Primal Clash Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2015 Q1 (set) | No |
-| 97820 | Flygon EX Box | Collection | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
-| 97755 | Primal Groudon Collection | Collection | Unknown | Unknown | — | 2015 Q1 (set) | No |
-| 97754 | Primal Kyogre Collection | Collection | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
+| 97820 | Flygon EX Box | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
+| 97755 | Primal Groudon Collection | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97754 | Primal Kyogre Collection | Collection | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 | 97753 | Primal Clash Theme Deck - "Earth's Pulse" [Groudon] | Deck | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
 | 97752 | Primal Clash Theme Deck - "Ocean's Core" [Kyogre] | Deck | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
-| 97762 | Elite Trainer Box [Groudon] | Elite Trainer Box | Unknown | Unknown | — | 2015 Q1 (set) | No |
-| 97763 | Elite Trainer Box [Kyogre] | Elite Trainer Box | Unknown | Unknown | — | 2015 Q1 (set) | No |
-| 97757 | Legend of Hoenn Tin [Groudon EX] | Tin | Unknown | Unknown | — | 2015 Q1 (set) | No |
-| 97756 | Legend of Hoenn Tin [Kyogre EX] | Tin | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
+| 97762 | Elite Trainer Box [Groudon] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97763 | Elite Trainer Box [Kyogre] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97757 | Legend of Hoenn Tin [Groudon EX] | Tin | 4 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97756 | Legend of Hoenn Tin [Kyogre EX] | Tin | 4 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -98,7 +98,7 @@ Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -109,13 +109,13 @@ TCGplayer group `1385`: 9 products.
 |---|---|---|---|---|---|---|---|
 | 98571 | Noble Victories Booster Box | Booster box | 36 | Kind default | — | 2011 Q4 (set) | No |
 | 98570 | Noble Victories Booster Pack | Booster pack | 1 | Kind default | — | 2011 Q4 (set) | Yes |
-| 98628 | Prime Challenge Box [Espeon] | Collection | Unknown | Unknown | — | 2011 Q4 (set) | No |
-| 98630 | Prime Challenge Box [Machamp] | Collection | Unknown | Unknown | — | 2011 Q4 (set) | No |
-| 98629 | Prime Challenge Box [Umbreon] | Collection | Unknown | Unknown | — | 2011 Q4 (set) | No |
-| 98631 | Prime Challenge Box [Yanmega] | Collection | Unknown | Unknown | — | 2011 Q4 (set) | No |
-| 98626 | Noble Victories Theme Deck - "Fast Daze" [Accelgor] | Deck | Unknown | Unknown | — | 2011 Q4 (set) | Yes |
-| 98627 | Noble Victories Theme Deck - "Furious Knights" [Escavalier] | Deck | Unknown | Unknown | — | 2011 Q4 (set) | No |
-| 98632 | V for Victini Tin | Tin | Unknown | Unknown | — | 2011 Q4 (set) | No |
+| 98628 | Prime Challenge Box [Espeon] | Collection | 2 | Bulbapedia | — | 2011 Q4 (set) | No |
+| 98630 | Prime Challenge Box [Machamp] | Collection | 2 | Bulbapedia | — | 2011 Q4 (set) | No |
+| 98629 | Prime Challenge Box [Umbreon] | Collection | 2 | Bulbapedia | — | 2011 Q4 (set) | No |
+| 98631 | Prime Challenge Box [Yanmega] | Collection | 2 | Bulbapedia | — | 2011 Q4 (set) | No |
+| 98626 | Noble Victories Theme Deck - "Fast Daze" [Accelgor] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q4 (set) | Yes |
+| 98627 | Noble Victories Theme Deck - "Furious Knights" [Escavalier] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q4 (set) | No |
+| 98632 | V for Victini Tin | Tin | 5 | Bulbapedia | — | 2011 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

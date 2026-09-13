@@ -88,7 +88,7 @@ pack-opening videos, not official data).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -104,8 +104,8 @@ TCGplayer group `2675`: 28 products.
 | 220109 | Darkness Ablaze Premium Checklane Blister [Grimmsnarl] | Blister | 1 | Description | — | 2020 Q3 | Yes |
 | 216859 | Darkness Ablaze Single Pack Blister [Hatenna] | Blister | 1 | Description | — | 2020 Q3 | Yes |
 | 216860 | Darkness Ablaze Single Pack Blister [Pikachu] | Blister | 1 | Description | — | 2020 Q3 | Yes |
-| 668526 | Sword & Shield Single Blister Pack [Cufant & Copperajah] | Blister | Unknown | Unknown | — | 2020 Q3 (set) | Yes |
-| 668524 | Sword & Shield Single Blister Pack [Silicobra & Sandaconda] | Blister | Unknown | Unknown | — | 2020 Q3 (set) | No |
+| 668526 | Sword & Shield Single Blister Pack [Cufant & Copperajah] | Blister | 1 | Name | — | 2020 Q3 (set) | Yes |
+| 668524 | Sword & Shield Single Blister Pack [Silicobra & Sandaconda] | Blister | 1 | Name | — | 2020 Q3 (set) | No |
 | 216853 | Darkness Ablaze Booster Box | Booster box | 36 | Kind default | — | 2020 Q3 | Yes |
 | 216852 | Darkness Ablaze Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q3 | Yes |
 | 265317 | Darkness Ablaze Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q3 (set) | Yes |
@@ -122,8 +122,8 @@ TCGplayer group `2675`: 28 products.
 | 220272 | Galarian Sirfetch'd V Box | Collection | 4 | Description | — | 2020 Q3 | Yes |
 | 218839 | True Steel Premium Collection [Zacian] | Collection | 1 | Description | — | 2020 Q3 | Yes |
 | 218840 | True Steel Premium Collection [Zamazenta] | Collection | 1 | Description | — | 2020 Q3 | No |
-| 216865 | Darkness Ablaze Theme Deck [Galarian Darmanitan] | Deck | Unknown | Unknown | — | 2020 Q3 | Yes |
-| 216866 | Darkness Ablaze Theme Deck [Galarian Sirfetch'd] | Deck | Unknown | Unknown | — | 2020 Q3 | Yes |
+| 216865 | Darkness Ablaze Theme Deck [Galarian Darmanitan] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q3 | Yes |
+| 216866 | Darkness Ablaze Theme Deck [Galarian Sirfetch'd] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q3 | Yes |
 | 216856 | Darkness Ablaze Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2020 Q3 | Yes |
 <!-- product-catalog:end -->
 

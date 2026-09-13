@@ -96,7 +96,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -117,9 +117,9 @@ TCGplayer group `2278`: 23 products.
 | 451149 | Celestial Storm Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2018 Q3 (set) | No |
 | 175559 | Lunala GX Box | Collection | 4 | Description | — | 2018 Q4 | Yes |
 | 175558 | Solgaleo GX Box | Collection | 4 | Description | — | 2018 Q4 | No |
-| 175561 | Solgaleo GX Box & Lunala GX Box | Collection | Unknown | Unknown | — | 2018 Q4 | No |
-| 170279 | Celestial Storm Theme Deck - "Hydro Fury" [Swampert] | Deck | Unknown | Unknown | — | 2018 Q3 (set) | Yes |
-| 170278 | Celestial Storm Theme Deck - "Leaf Charge" [Sceptile] | Deck | Unknown | Unknown | — | 2018 Q3 (set) | Yes |
+| 175561 | Solgaleo GX Box & Lunala GX Box | Collection | 4 | Bulbapedia | — | 2018 Q4 | No |
+| 170279 | Celestial Storm Theme Deck - "Hydro Fury" [Swampert] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2018 Q3 (set) | Yes |
+| 170278 | Celestial Storm Theme Deck - "Leaf Charge" [Sceptile] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2018 Q3 (set) | Yes |
 | 170277 | Celestial Storm Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2018 Q3 | Yes |
 | 175554 | Battle Arena Deck [Mega Blastoise & Mega Charizard X] | Other | Unknown | Unknown | — | 2018 Q3 | No |
 | 175553 | Battle Arena Deck [Mega Blastoise] | Other | Unknown | Unknown | — | 2018 Q3 | Yes |

@@ -79,7 +79,7 @@ Mr. Mime, Pinsir).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -92,8 +92,8 @@ TCGplayer group `635`: 6 products.
 | 107599 | Jungle Booster Box [Unlimited Edition] | Booster box | 36 | Kind default | — | 1999 Q2 (set) | No |
 | 138128 | Jungle Booster Pack [1st Edition] | Booster pack | 1 | Kind default | — | 1999 Q2 (set) | Yes |
 | 138129 | Jungle Booster Pack [Unlimited Edition] | Booster pack | 1 | Kind default | — | 1999 Q2 (set) | Yes |
-| 234498 | Jungle Theme Deck - "Power Reserve" | Deck | Unknown | Unknown | — | 1999 Q2 (set) | Yes |
-| 234499 | Jungle Theme Deck - "Water Blast" | Deck | Unknown | Unknown | — | 1999 Q2 (set) | Yes |
+| 234498 | Jungle Theme Deck - "Power Reserve" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 1999 Q2 (set) | Yes |
+| 234499 | Jungle Theme Deck - "Water Blast" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 1999 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

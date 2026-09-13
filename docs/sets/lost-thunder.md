@@ -95,7 +95,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -120,8 +120,8 @@ TCGplayer group `2328`: 20 products.
 | 181707 | Island Guardians GX Premium Pin Collection | Collection | 8 | Description | — | 2018 Q4 (set) | Yes |
 | 181709 | Jolteon GX Special Collection | Collection | 5 | Description | — | 2019 Q1 | Yes |
 | 181710 | Vaporeon GX Special Collection | Collection | 5 | Description | — | 2019 Q1 | Yes |
-| 177527 | Lost Thunder Theme Deck - "Blazing Volcano" [Entei] | Deck | Unknown | Unknown | — | 2018 Q4 (set) | Yes |
-| 177528 | Lost Thunder Theme Deck - "Storm Caller" [Raikou] | Deck | Unknown | Unknown | — | 2018 Q4 (set) | Yes |
+| 177527 | Lost Thunder Theme Deck - "Blazing Volcano" [Entei] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2018 Q4 (set) | Yes |
+| 177528 | Lost Thunder Theme Deck - "Storm Caller" [Raikou] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2018 Q4 (set) | Yes |
 | 175511 | Lost Thunder Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2018 Q4 | Yes |
 | 229391 | Lost Thunder Launch Kit | Other | 36 | Description | — | 2018 Q4 (set) | No |
 <!-- product-catalog:end -->

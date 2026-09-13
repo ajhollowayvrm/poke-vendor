@@ -131,7 +131,7 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -144,9 +144,9 @@ TCGplayer group `1370`: 7 products.
 | 98573 | Plasma Blast Booster Pack | Booster pack | 1 | Kind default | — | 2013 Q3 (set) | Yes |
 | 701595 | Plasma Blast Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2013 Q3 (set) | No |
 | 276604 | Plasma Blast Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2013 Q3 (set) | No |
-| 137096 | Team Plasma Tin [Deoxys EX] | Tin | Unknown | Unknown | — | 2013 Q3 (set) | Yes |
-| 137095 | Team Plasma Tin [Lugia EX] | Tin | Unknown | Unknown | — | 2013 Q3 (set) | No |
-| 137097 | Team Plasma Tin [Thundurus EX] | Tin | Unknown | Unknown | — | 2013 Q3 (set) | No |
+| 137096 | Team Plasma Tin [Deoxys EX] | Tin | 4 | Bulbapedia | — | 2013 Q3 (set) | Yes |
+| 137095 | Team Plasma Tin [Lugia EX] | Tin | 4 | Bulbapedia | — | 2013 Q3 (set) | No |
+| 137097 | Team Plasma Tin [Thundurus EX] | Tin | 4 | Bulbapedia | — | 2013 Q3 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

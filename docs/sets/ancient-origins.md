@@ -81,7 +81,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -99,15 +99,15 @@ TCGplayer group `1576`: 18 products.
 | 100489 | XY Ancient Origins Booster Box | Booster box | 36 | Kind default | — | 2015 Q3 (set) | No |
 | 276595 | Ancient Origins Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2015 Q3 (set) | Yes |
 | 100490 | XY Ancient Origins Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q3 | Yes |
-| 103462 | Shiny Rayquaza EX Box | Collection | Unknown | Unknown | — | 2015 Q3 (set) | No |
-| 104379 | Tyrantrum EX Box | Collection | Unknown | Unknown | — | 2015 Q3 (set) | No |
-| 100491 | Ancient Origins Theme Deck - "Iron Tide" [Metagross] | Deck | Unknown | Unknown | — | 2015 Q3 (set) | Yes |
-| 100492 | Ancient Origins Theme Deck - "Stone Heart" [Regirock] | Deck | Unknown | Unknown | — | 2015 Q3 (set) | Yes |
-| 100495 | Ancient Origins Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2015 Q3 (set) | Yes |
+| 103462 | Shiny Rayquaza EX Box | Collection | 4 | Bulbapedia | — | 2015 Q3 (set) | No |
+| 104379 | Tyrantrum EX Box | Collection | 4 | Bulbapedia | — | 2015 Q3 (set) | No |
+| 100491 | Ancient Origins Theme Deck - "Iron Tide" [Metagross] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q3 (set) | Yes |
+| 100492 | Ancient Origins Theme Deck - "Stone Heart" [Regirock] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q3 (set) | Yes |
+| 100495 | Ancient Origins Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2015 Q3 (set) | Yes |
 | 106995 | Battle Arena Decks: Mewtwo EX vs Darkrai EX | Other | Unknown | Unknown | — | 2015 Q3 (set) | Yes |
-| 106213 | Powers Beyond Tin [Hoopa EX] | Tin | Unknown | Unknown | — | 2015 Q3 (set) | Yes |
-| 106211 | Powers Beyond Tin [Latios EX] | Tin | Unknown | Unknown | — | 2015 Q3 (set) | Yes |
-| 106212 | Powers Beyond Tin [Rayquaza EX] | Tin | Unknown | Unknown | — | 2015 Q3 (set) | No |
+| 106213 | Powers Beyond Tin [Hoopa EX] | Tin | 4 | Bulbapedia | — | 2015 Q3 (set) | Yes |
+| 106211 | Powers Beyond Tin [Latios EX] | Tin | 4 | Bulbapedia | — | 2015 Q3 (set) | Yes |
+| 106212 | Powers Beyond Tin [Rayquaza EX] | Tin | 4 | Bulbapedia | — | 2015 Q3 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

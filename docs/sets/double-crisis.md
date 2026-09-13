@@ -80,7 +80,7 @@ of different blister versions is Unknown. Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -89,8 +89,8 @@ TCGplayer group `1525`: 3 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
-| 97765 | Double Crisis: Team Aqua Blister | Blister | Unknown | Unknown | — | 2015 Q1 (set) | No |
-| 97764 | Double Crisis: Team Magma Blister | Blister | Unknown | Unknown | — | 2015 Q1 (set) | Yes |
+| 97765 | Double Crisis: Team Aqua Blister | Blister | 99 | Bulbapedia | — | 2015 Q1 (set) | No |
+| 97764 | Double Crisis: Team Magma Blister | Blister | 99 | Bulbapedia | — | 2015 Q1 (set) | Yes |
 | 229226 | Double Crisis Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 

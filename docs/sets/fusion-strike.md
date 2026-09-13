@@ -98,7 +98,7 @@ ThePriceDex; the sample size is not stated on that page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -113,7 +113,7 @@ TCGplayer group `2906`: 33 products.
 | 247676 | Fusion Strike Premium Checklane Blister [Rillaboom] | Blister | 1 | Description | — | 2021 Q4 (set) | Yes |
 | 247670 | Fusion Strike Single Pack Blister [Blitzle] | Blister | 1 | Description | — | 2021 Q4 (set) | Yes |
 | 247669 | Fusion Strike Single Pack Blister [Tepig] | Blister | 1 | Description | — | 2021 Q4 (set) | Yes |
-| 263545 | Unova Two Pack Blister [Forces of Nature Trio] | Blister | Unknown | Unknown | — | 2021 Q4 (set) | Yes |
+| 263545 | Unova Two Pack Blister [Forces of Nature Trio] | Blister | 2 | Name | — | 2021 Q4 (set) | Yes |
 | 247654 | Fusion Strike Booster Box | Booster box | 36 | Description | — | 2021 Q4 (set) | Yes |
 | 247646 | Fusion Strike Booster Pack | Booster pack | 1 | Kind default | — | 2021 Q4 (set) | Yes |
 | 247651 | Fusion Strike Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2021 Q4 | Yes |
@@ -137,7 +137,7 @@ TCGplayer group `2906`: 33 products.
 | 253454 | Rapid Strike Urshifu VMAX Premium Collection | Collection | 8 | Description | — | 2021 Q4 | Yes |
 | 253455 | Single Strike Urshifu VMAX Premium Collection | Collection | 8 | Description | — | 2021 Q4 | Yes |
 | 283851 | Urshifu VMAX Premium Collection [Set of 2] | Collection | 8 | Description | — | 2021 Q4 (set) | Yes |
-| 283599 | League Battle Deck [Mew VMAX] | Deck | Unknown | Unknown | — | 2022 Q4 | Yes |
+| 283599 | League Battle Deck [Mew VMAX] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2022 Q4 | Yes |
 | 247671 | Fusion Strike Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2021 Q4 (set) | Yes |
 | 247673 | Fusion Strike Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 65 | Description | — | 2021 Q4 (set) | Yes |
 <!-- product-catalog:end -->

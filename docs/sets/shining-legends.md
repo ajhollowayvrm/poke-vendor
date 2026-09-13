@@ -104,7 +104,7 @@ Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -123,7 +123,7 @@ TCGplayer group `2054`: 14 products.
 | 154717 | Shining Legends Pin Collection: Zoroark | Collection | 3 | Description | — | 2017 Q4 (set) | Yes |
 | 209439 | Shining Legends Premium Powers Collection | Collection | 8 | Description | — | 2017 Q4 (set) | Yes |
 | 155062 | Shining Legends Special Collection: Raichu GX | Collection | 5 | Description | — | 2017 Q4 (set) | Yes |
-| 149378 | Shining Legends Special Collection: Zoroark GX | Collection | Unknown | Unknown | — | 2017 Q4 (set) | Yes |
+| 149378 | Shining Legends Special Collection: Zoroark GX | Collection | 5 | Bulbapedia | — | 2017 Q4 (set) | Yes |
 | 148412 | Shining Legends Super-Premium Collection [Ho-Oh GX] | Collection | 10 | Description | — | 2017 Q4 (set) | Yes |
 | 169543 | Shining Legends: Shiny Zygarde GX Box | Collection | 4 | Description | — | 2017 Q4 (set) | No |
 | 145847 | Shining Legends Elite Trainer Box | Elite Trainer Box | 10 | Description | — | 2017 Q4 | Yes |

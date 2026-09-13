@@ -96,7 +96,7 @@ uses the Burning Spark page. Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -110,8 +110,11 @@ TCGplayer group `1661`: 35 products.
 | 117275 | BREAKthrough Collector Pin 3 Pack Blister [Mega Blaziken] | Blister | 3 | Description | — | 2015 Q4 (set) | Yes |
 | 117276 | BREAKthrough Collector Pin 3 Pack Blister [Mega Swampert] | Blister | 3 | Description | — | 2015 Q4 (set) | Yes |
 | 107111 | BREAKthrough Mega Evolution 3 Pin Blister | Blister | 3 | Description | — | 2015 Q4 (set) | No |
+| 107110 | BREAKthrough Pin Blisters [Mega Mewtwo] (Set of 2) | Blister | 3 | Bulbapedia | — | 2015 Q4 (set) | No |
 | 108638 | BREAKthrough Single Pack Blister [Hawlucha] | Blister | 1 | Description | — | 2015 Q4 (set) | No |
 | 108637 | BREAKthrough Single Pack Blister [Jirachi] | Blister | 1 | Description | — | 2015 Q4 (set) | Yes |
+| 107112 | BREAKthrough Three Pack Pin Blisters [Mega Mewtwo X] | Blister | 3 | Name | — | 2015 Q4 (set) | No |
+| 107113 | BREAKthrough Three Pack Pin Blisters [Mega Mewtwo Y] | Blister | 3 | Name | — | 2015 Q4 (set) | No |
 | 228155 | XY 3 Pack Blister [Xerneas] | Blister | 3 | Description | — | 2015 Q4 (set) | Yes |
 | 228154 | XY 3 Pack Blister [Yveltal] | Blister | 3 | Description | — | 2015 Q4 (set) | No |
 | 107101 | XY BREAKthrough Booster Box | Booster box | 36 | Kind default | — | 2015 Q4 (set) | Yes |
@@ -119,27 +122,24 @@ TCGplayer group `1661`: 35 products.
 | 550675 | BREAKthrough Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q4 (set) | No |
 | 276596 | BREAKthrough Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2015 Q4 (set) | Yes |
 | 107666 | XY BREAKthrough Booster Pack | Booster pack | 1 | Kind default | — | 2015 Q4 (set) | Yes |
-| 117278 | Aurorus EX Box | Collection | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
+| 117278 | Aurorus EX Box | Collection | 4 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 | 107117 | BREAKthrough Legendary Collection (Set of 2) | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107110 | BREAKthrough Pin Blisters [Mega Mewtwo] (Set of 2) | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107112 | BREAKthrough Three Pack Pin Blisters [Mega Mewtwo X] | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107113 | BREAKthrough Three Pack Pin Blisters [Mega Mewtwo Y] | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 117274 | Break Evolution Box [Empoleon] | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107115 | Hoopa EX Legendary Collection | Collection | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 117277 | Mega Aerodactyl EX Premium Collection | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107108 | Mega Blaziken EX & Mega Swampert EX Premium Collection (Set of 2) | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107104 | Mega Blaziken EX Premium Collection | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107116 | Mega Mewtwo Collection (Set of 2) | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107118 | Mega Mewtwo Collection [Mega Mewtwo X] | Collection | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 107119 | Mega Mewtwo Collection [Mega Mewtwo Y] | Collection | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 107105 | Mega Swampert EX Premium Collection | Collection | Unknown | Unknown | — | 2015 Q4 (set) | No |
-| 107114 | Pikachu EX Legendary Collection | Collection | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 107109 | XY BREAKthrough Collector Chest | Collection | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
+| 117274 | Break Evolution Box [Empoleon] | Collection | 5 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107115 | Hoopa EX Legendary Collection | Collection | 5 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 117277 | Mega Aerodactyl EX Premium Collection | Collection | 6 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107108 | Mega Blaziken EX & Mega Swampert EX Premium Collection (Set of 2) | Collection | 8 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107104 | Mega Blaziken EX Premium Collection | Collection | 8 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107116 | Mega Mewtwo Collection (Set of 2) | Collection | 2 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107118 | Mega Mewtwo Collection [Mega Mewtwo X] | Collection | 2 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107119 | Mega Mewtwo Collection [Mega Mewtwo Y] | Collection | 2 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107105 | Mega Swampert EX Premium Collection | Collection | 8 | Bulbapedia | — | 2015 Q4 (set) | No |
+| 107114 | Pikachu EX Legendary Collection | Collection | 5 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107109 | XY BREAKthrough Collector Chest | Collection | 5 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 | 229477 | XY BREAKthrough Pin Collection [Zoroark] | Collection | 3 | Description | — | 2015 Q4 (set) | No |
-| 107102 | BREAKthrough Theme Deck - "Burning Spark" [Raichu] | Deck | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 107103 | BREAKthrough Theme Deck - "Night Striker" [Noivern] | Deck | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 107106 | Elite Trainer Box [Mewtwo X] | Elite Trainer Box | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
-| 107107 | Elite Trainer Box [Mewtwo Y] | Elite Trainer Box | Unknown | Unknown | — | 2015 Q4 (set) | Yes |
+| 107102 | BREAKthrough Theme Deck - "Burning Spark" [Raichu] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q4 (set) | Yes |
+| 107103 | BREAKthrough Theme Deck - "Night Striker" [Noivern] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2015 Q4 (set) | Yes |
+| 107106 | Elite Trainer Box [Mewtwo X] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q4 (set) | Yes |
+| 107107 | Elite Trainer Box [Mewtwo Y] | Elite Trainer Box | 45 | Bulbapedia | — | 2015 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

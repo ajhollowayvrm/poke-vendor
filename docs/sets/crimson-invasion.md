@@ -90,7 +90,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -115,8 +115,8 @@ TCGplayer group `2071`: 21 products.
 | 152601 | Silvally Figure Collection | Collection | 4 | Description | — | 2017 Q4 | Yes |
 | 149376 | Ultra Beasts GX Premium Collection [Buzzwole GX & Xurkitree GX] | Collection | 8 | Description | — | 2017 Q4 | Yes |
 | 149375 | Ultra Beasts GX Premium Collection [Pheromosa GX & Celesteela GX] | Collection | 8 | Description | — | 2017 Q4 | Yes |
-| 149379 | Crimson Invasion Theme Deck - "Clanging Thunder" [Kommo-o] | Deck | Unknown | Unknown | — | 2017 Q4 (set) | Yes |
-| 149380 | Crimson Invasion Theme Deck - "Destruction Fang" [Hydreigon] | Deck | Unknown | Unknown | — | 2017 Q4 (set) | Yes |
+| 149379 | Crimson Invasion Theme Deck - "Clanging Thunder" [Kommo-o] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2017 Q4 (set) | Yes |
+| 149380 | Crimson Invasion Theme Deck - "Destruction Fang" [Hydreigon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2017 Q4 (set) | Yes |
 | 149377 | Crimson Invasion Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2017 Q4 (set) | Yes |
 | 158064 | Battle Arena Decks: Landorus vs. Genesect | Other | Unknown | Unknown | — | 2017 Q4 (set) | No |
 | 153081 | Crimson Invasion Prerelease Kit | Other | 4 | Description | — | 2017 Q4 (set) | Yes |

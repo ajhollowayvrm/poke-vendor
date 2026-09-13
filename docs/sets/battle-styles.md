@@ -88,7 +88,7 @@ Rare figure for this set.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -124,7 +124,7 @@ TCGplayer group `2765`: 30 products.
 | 231293 | Spring 2021 Collector's Chest Tin | Tin | 5 | Description | — | 2021 Q1 | Yes |
 | 236378 | V Strikers Tin [Empoleon V] | Tin | 5 | Description | — | 2021 Q1 (set) | Yes |
 | 238637 | V Strikers Tin [Empoleon V] (International Version) | Tin | 4 | Description | — | 2021 Q1 (set) | No |
-| 257189 | V Strikers Tin [Set of 2] | Tin | Unknown | Unknown | — | 2021 Q1 (set) | Yes |
+| 257189 | V Strikers Tin [Set of 2] | Tin | 8 | Bulbapedia | — | 2021 Q1 (set) | Yes |
 | 236377 | V Strikers Tin [Tyranitar V] | Tin | 5 | Description | — | 2021 Q1 (set) | Yes |
 | 238638 | V Strikers Tin [Tyranitar V] (International Version) | Tin | 4 | Description | — | 2021 Q1 (set) | Yes |
 <!-- product-catalog:end -->

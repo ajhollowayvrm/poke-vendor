@@ -95,7 +95,7 @@ DigitalTQ table.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -125,8 +125,8 @@ TCGplayer group `2701`: 27 products.
 | 228979 | Alakazam V Box | Collection | 4 | Description | — | 2021 Q1 | Yes |
 | 228978 | Galar Sidekicks Premium Collection | Collection | 11 | Description | — | 2020 Q4 (set) | Yes |
 | 226137 | Orbeetle V Box | Collection | 4 | Description | — | 2020 Q4 | Yes |
-| 221750 | Vivid Voltage Theme Deck [Charizard] | Deck | Unknown | Unknown | — | 2020 Q4 | Yes |
-| 221751 | Vivid Voltage Theme Deck [Drednaw] | Deck | Unknown | Unknown | — | 2020 Q4 | Yes |
+| 221750 | Vivid Voltage Theme Deck [Charizard] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q4 | Yes |
+| 221751 | Vivid Voltage Theme Deck [Drednaw] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q4 | Yes |
 | 222987 | Sword & Shield Elite Trainer Box Plus [Zacian] | Elite Trainer Box | 12 | Description | — | 2020 Q4 (set) | Yes |
 | 222986 | Sword & Shield Elite Trainer Box Plus [Zamazenta] | Elite Trainer Box | 12 | Description | — | 2020 Q4 (set) | Yes |
 | 221752 | Vivid Voltage Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2020 Q4 (set) | Yes |

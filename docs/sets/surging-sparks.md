@@ -192,7 +192,7 @@ Boxes per case: **6** (era-wide retailer consensus, not official; see
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -201,6 +201,8 @@ TCGplayer group `23651`: 27 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
+| 565635 | Surging Sparks 3 Pack Blisters [Quagsire] | Blister | 3 | Description | — | 2024 Q4 (set) | Yes |
+| 565634 | Surging Sparks 3 Pack Blisters [Zapdos] | Blister | 3 | Description | — | 2024 Q4 (set) | Yes |
 | 565638 | Surging Sparks Premium Checklane Blister [Alakazam] | Blister | 1 | Description | — | 2024 Q4 (set) | Yes |
 | 565639 | Surging Sparks Premium Checklane Blister [Chandelure] | Blister | 1 | Description | — | 2024 Q4 (set) | Yes |
 | 606613 | Surging Sparks Single Pack Blister [Hisuian Arcanine] | Blister | 1 | Description | — | 2024 Q4 (set) | Yes |
@@ -226,8 +228,6 @@ TCGplayer group `23651`: 27 products.
 | 593687 | Surging Sparks Sleeved Booster Pack Case | Case or display | — | — | Unknown number of sleeved boosters | 2024 Q4 (set) | Yes |
 | 565630 | Surging Sparks Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2024 Q4 | Yes |
 | 565632 | Surging Sparks Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2024 Q4 | Yes |
-| 565635 | Surging Sparks 3 Pack Blisters [Quagsire] | Other | 3 | Description | — | 2024 Q4 (set) | Yes |
-| 565634 | Surging Sparks 3 Pack Blisters [Zapdos] | Other | 3 | Description | — | 2024 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

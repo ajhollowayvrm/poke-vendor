@@ -88,7 +88,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -107,15 +107,15 @@ TCGplayer group `1494`: 19 products.
 | 550676 | Phantom Forces Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q4 (set) | No |
 | 276592 | Phantom Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q4 (set) | No |
 | 94622 | XY Phantom Forces Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q4 (set) | Yes |
-| 97788 | Collector Chest | Collection | Unknown | Unknown | — | 2014 Q4 (set) | No |
-| 97794 | Gallade EX Box | Collection | Unknown | Unknown | — | 2014 Q4 (set) | Yes |
-| 97789 | Hoenn Collection [Primal Groudon EX] | Collection | Unknown | Unknown | — | 2014 Q4 (set) | No |
-| 97790 | Hoenn Collection [Primal Kyogre EX] | Collection | Unknown | Unknown | — | 2014 Q4 (set) | No |
-| 97793 | Mega Diancie EX Premium Collection | Collection | Unknown | Unknown | — | 2014 Q4 (set) | No |
-| 97791 | Mega Metagross EX Premium Collection | Collection | Unknown | Unknown | — | 2014 Q4 (set) | No |
-| 94625 | Phantom Forces Theme Deck - "Bolt Twister" [Galvantula] | Deck | Unknown | Unknown | — | 2014 Q4 (set) | Yes |
-| 94624 | Phantom Forces Theme Deck - "Burning Winds" [Talonflame] | Deck | Unknown | Unknown | — | 2014 Q4 (set) | Yes |
-| 97786 | Phantom Forces Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2014 Q4 (set) | No |
+| 97788 | Collector Chest | Collection | 5 | Bulbapedia | — | 2014 Q4 (set) | No |
+| 97794 | Gallade EX Box | Collection | 4 | Bulbapedia | — | 2014 Q4 (set) | Yes |
+| 97789 | Hoenn Collection [Primal Groudon EX] | Collection | 3 | Bulbapedia | — | 2014 Q4 (set) | No |
+| 97790 | Hoenn Collection [Primal Kyogre EX] | Collection | 3 | Bulbapedia | — | 2014 Q4 (set) | No |
+| 97793 | Mega Diancie EX Premium Collection | Collection | 6 | Bulbapedia | — | 2014 Q4 (set) | No |
+| 97791 | Mega Metagross EX Premium Collection | Collection | 8 | Bulbapedia | — | 2014 Q4 (set) | No |
+| 94625 | Phantom Forces Theme Deck - "Bolt Twister" [Galvantula] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2014 Q4 (set) | Yes |
+| 94624 | Phantom Forces Theme Deck - "Burning Winds" [Talonflame] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2014 Q4 (set) | Yes |
+| 97786 | Phantom Forces Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2014 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

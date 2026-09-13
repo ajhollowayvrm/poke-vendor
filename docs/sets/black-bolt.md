@@ -193,7 +193,7 @@ Collation: **unknown**. Model each pack as an independent draw.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -214,7 +214,7 @@ TCGplayer group `24325`: 27 products.
 | 630613 | Unova Poster Collection Case | Case or display | — | — | Unknown number of collections | 2025 Q3 | Yes |
 | 649220 | Unova Victini Illustration Collection Case | Case or display | — | — | Unknown number of tins | 2025 Q3 (set) | Yes |
 | 685926 | Black Bolt Binder & Unova Poster Collection (Sam's Club) | Collection | 9 | Description | — | 2025 Q3 (set) | Yes |
-| 630430 | Black Bolt Binder Collection | Collection | Unknown | Unknown | — | 2025 Q3 | Yes |
+| 630430 | Black Bolt Binder Collection | Collection | 5 | Bulbapedia | — | 2025 Q3 | Yes |
 | 630614 | Black Bolt Tech Sticker Collection | Collection | 3 | Description | — | 2025 Q3 | Yes |
 | 668632 | Unova Heavy Hitters Premium Collection | Collection | 12 | Description | — | 2025 Q3 (set) | Yes |
 | 630612 | Unova Poster Collection | Collection | 2 | Description | — | 2025 Q3 | Yes |

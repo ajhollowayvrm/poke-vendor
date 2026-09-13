@@ -86,7 +86,7 @@ is Unknown. Source: Bulbapedia merchandise page.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -95,7 +95,7 @@ TCGplayer group `2409`: 14 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
-| 264258 | Detective Pikachu Two Pack Blister | Blister | Unknown | Unknown | — | 2019 Q1 (set) | Yes |
+| 264258 | Detective Pikachu Two Pack Blister | Blister | 2 | Name | — | 2019 Q1 (set) | Yes |
 | 187239 | Detective Pikachu Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
 | 189810 | Detective Pikachu Special Promo Booster Pack | Booster pack | 1 | Kind default | — | 2019 Q1 (set) | Yes |
 | 185245 | Detective Pikachu Case File | Case or display | — | — | Unknown | 2019 Q2 | Yes |

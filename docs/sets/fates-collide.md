@@ -87,7 +87,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -98,8 +98,10 @@ TCGplayer group `1780`: 25 products.
 |---|---|---|---|---|---|---|---|
 | 118338 | Fates Collide Single Pack Blister [Gastly] | Blister | 1 | Description | — | 2016 Q2 (set) | Yes |
 | 118337 | Fates Collide Single Pack Blister [Pansear] | Blister | 1 | Name | — | 2016 Q2 (set) | Yes |
-| 118339 | Fates Collide Three Pack Blister [Froakie] | Blister | Unknown | Unknown | — | 2016 Q2 (set) | No |
-| 118340 | Fates Collide Three Pack Blister [Vivillon] | Blister | Unknown | Unknown | — | 2016 Q2 (set) | No |
+| 118339 | Fates Collide Three Pack Blister [Froakie] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
+| 118340 | Fates Collide Three Pack Blister [Vivillon] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
+| 118332 | Fates Collide Three Pack Pin Blisters [Mega Alakazam] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
+| 118333 | Fates Collide Three Pack Pin Blisters [Zygarde] | Blister | 3 | Name | — | 2016 Q2 (set) | No |
 | 117478 | XY Fates Collide Booster Box | Booster box | 36 | Kind default | — | 2016 Q2 (set) | Yes |
 | 276598 | Fates Collide Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2016 Q2 (set) | Yes |
 | 504698 | XY - Fates Collide Sleeved Booster Pack [Delphox BREAK] | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
@@ -108,19 +110,17 @@ TCGplayer group `1780`: 25 products.
 | 504700 | XY - Fates Collide Sleeved Booster Pack [Zygarde] | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
 | 168114 | XY Fates Collide Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q2 (set) | Yes |
 | 656708 | Fates Collide Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2016 Q2 (set) | No |
-| 118336 | Ash-Greninja EX Box | Collection | Unknown | Unknown | — | 2016 Q2 (set) | Yes |
-| 121392 | BREAK Evolution Box [Ho-oh and Lugia] | Collection | Unknown | Unknown | — | 2016 Q2 (set) | No |
-| 118332 | Fates Collide Three Pack Pin Blisters [Mega Alakazam] | Collection | Unknown | Unknown | — | 2016 Q2 (set) | No |
-| 118333 | Fates Collide Three Pack Pin Blisters [Zygarde] | Collection | Unknown | Unknown | — | 2016 Q2 (set) | No |
-| 118335 | Mega Mawile EX Premium Collection | Collection | Unknown | Unknown | — | 2016 Q2 (set) | Yes |
+| 118336 | Ash-Greninja EX Box | Collection | 4 | Bulbapedia | — | 2016 Q2 (set) | Yes |
+| 121392 | BREAK Evolution Box [Ho-oh and Lugia] | Collection | 5 | Bulbapedia | — | 2016 Q2 (set) | No |
+| 118335 | Mega Mawile EX Premium Collection | Collection | 6 | Bulbapedia | — | 2016 Q2 (set) | Yes |
 | 121391 | Zygarde Collection Box | Collection | 4 | Description | — | 2016 Q2 (set) | No |
-| 117480 | Fates Collide Theme Deck - "Battle Ruler" [Zygarde] | Deck | Unknown | Unknown | — | 2016 Q2 (set) | Yes |
-| 117479 | Fates Collide Theme Deck - "Sky Guardian" [Lugia] | Deck | Unknown | Unknown | — | 2016 Q2 (set) | Yes |
-| 118331 | Fates Collide Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2016 Q2 (set) | Yes |
+| 117480 | Fates Collide Theme Deck - "Battle Ruler" [Zygarde] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2016 Q2 (set) | Yes |
+| 117479 | Fates Collide Theme Deck - "Sky Guardian" [Lugia] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2016 Q2 (set) | Yes |
+| 118331 | Fates Collide Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2016 Q2 (set) | Yes |
 | 118334 | Fates Collide Prerelease Kit | Other | 4 | Description | — | 2016 Q2 (set) | Yes |
-| 121394 | Shiny Kalos Tin [Xerneas EX] | Tin | Unknown | Unknown | — | 2016 Q2 (set) | No |
-| 121395 | Shiny Kalos Tin [Yveltal EX] | Tin | Unknown | Unknown | — | 2016 Q2 (set) | No |
-| 121396 | Shiny Kalos Tin [Zygarde EX] | Tin | Unknown | Unknown | — | 2016 Q2 (set) | No |
+| 121394 | Shiny Kalos Tin [Xerneas EX] | Tin | 4 | Bulbapedia | — | 2016 Q2 (set) | No |
+| 121395 | Shiny Kalos Tin [Yveltal EX] | Tin | 4 | Bulbapedia | — | 2016 Q2 (set) | No |
+| 121396 | Shiny Kalos Tin [Zygarde EX] | Tin | 4 | Bulbapedia | — | 2016 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

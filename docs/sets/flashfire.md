@@ -73,7 +73,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -97,12 +97,12 @@ TCGplayer group `1464`: 21 products.
 | 97742 | Krookodile EX Box | Collection | 4 | Description | — | 2014 Q2 (set) | No |
 | 97741 | Pyroar Box | Collection | 3 | Description | — | 2014 Q2 (set) | Yes |
 | 249164 | XY Flashfire Collector Chest | Collection | 5 | Description | — | 2014 Q2 (set) | No |
-| 91596 | Flashfire Theme Deck - "Brilliant Thunder" [Heliolisk] | Deck | Unknown | Unknown | — | 2014 Q2 (set) | Yes |
-| 91597 | Flashfire Theme Deck - "Mystic Typhoon" [Meowstic] | Deck | Unknown | Unknown | — | 2014 Q2 (set) | Yes |
-| 91605 | Kalos Power Tin [Chesnaught EX] | Tin | Unknown | Unknown | — | 2014 Q2 (set) | No |
-| 91606 | Kalos Power Tin [Delphox Tin] | Tin | Unknown | Unknown | — | 2014 Q2 (set) | No |
-| 91607 | Kalos Power Tin [Greninja] | Tin | Unknown | Unknown | — | 2014 Q2 (set) | No |
-| 91611 | Kalos Power Tins [Bundle of 3] | Tin | Unknown | Unknown | — | 2014 Q2 (set) | No |
+| 91596 | Flashfire Theme Deck - "Brilliant Thunder" [Heliolisk] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2014 Q2 (set) | Yes |
+| 91597 | Flashfire Theme Deck - "Mystic Typhoon" [Meowstic] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2014 Q2 (set) | Yes |
+| 91605 | Kalos Power Tin [Chesnaught EX] | Tin | 4 | Bulbapedia | — | 2014 Q2 (set) | No |
+| 91606 | Kalos Power Tin [Delphox Tin] | Tin | 4 | Bulbapedia | — | 2014 Q2 (set) | No |
+| 91607 | Kalos Power Tin [Greninja] | Tin | 4 | Bulbapedia | — | 2014 Q2 (set) | No |
+| 91611 | Kalos Power Tins [Bundle of 3] | Tin | 12 | Bulbapedia | — | 2014 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

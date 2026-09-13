@@ -95,7 +95,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -117,29 +117,29 @@ TCGplayer group `1919`: 40 products.
 | 616825 | Guardians Rising Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2017 Q2 (set) | Yes |
 | 276578 | Guardians Rising Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2017 Q2 (set) | Yes |
 | 618840 | Guardians Rising Booster Box Case | Case or display | — | — | 6 booster boxes | 2017 Q2 (set) | No |
-| 132238 | Bewear GX Box | Collection | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
+| 132238 | Bewear GX Box | Collection | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
 | 133806 | Decidueye GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | No |
 | 137523 | Espeon GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
 | 133807 | Incineroar GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
 | 218328 | Lunala GX Challenge Box | Collection | 2 | Description | — | 2017 Q2 (set) | No |
 | 131693 | Mega Powers Collection | Collection | 8 | Description | — | 2017 Q2 (set) | Yes |
 | 133808 | Mega Tyranitar EX Premium Collection | Collection | 1 | Description | — | 2017 Q2 (set) | Yes |
-| 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | Unknown | Unknown | — | 2017 Q2 (set) | No |
+| 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | 18 | Bulbapedia | — | 2017 Q2 (set) | No |
 | 133805 | Primarina GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
 | 137872 | Shiny Tapu Koko GX Box | Collection | 4 | Description | — | 2017 Q2 (set) | Yes |
 | 218327 | Solgaleo GX Challenge Box | Collection | 2 | Description | — | 2017 Q2 (set) | Yes |
-| 131734 | Tapu Koko Figure Collection | Collection | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
-| 132237 | Tapu Koko Pin Collection | Collection | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
+| 131734 | Tapu Koko Figure Collection | Collection | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
+| 132237 | Tapu Koko Pin Collection | Collection | 3 | Bulbapedia | — | 2017 Q2 (set) | Yes |
 | 137524 | Umbreon GX Premium Collection | Collection | 6 | Description | — | 2017 Q2 (set) | Yes |
-| 129891 | Guardians Rising Theme Deck - "Hidden Moon" [Lunala] | Deck | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
-| 129892 | Guardians Rising Theme Deck - "Steel Sun" [Solgaleo] | Deck | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
+| 129891 | Guardians Rising Theme Deck - "Hidden Moon" [Lunala] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2017 Q2 (set) | Yes |
+| 129892 | Guardians Rising Theme Deck - "Steel Sun" [Solgaleo] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2017 Q2 (set) | Yes |
 | 129890 | Guardians Rising Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2017 Q2 (set) | Yes |
 | 133810 | Battle Arena Decks: Black Kyurem EX vs White Kyurem EX | Other | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
 | 131273 | Guardians Rising Prerelease Kit | Other | 4 | Description | — | 2017 Q2 (set) | Yes |
 | 133811 | Legendary Battle Decks [Ho-Oh] | Other | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
 | 133812 | Legendary Battle Decks [Lugia] | Other | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
-| 131726 | Island Guardians Tin [Tapu Bulu GX] | Tin | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
-| 131725 | Island Guardians Tin [Tapu Koko GX] | Tin | Unknown | Unknown | — | 2017 Q2 (set) | Yes |
+| 131726 | Island Guardians Tin [Tapu Bulu GX] | Tin | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
+| 131725 | Island Guardians Tin [Tapu Koko GX] | Tin | 4 | Bulbapedia | — | 2017 Q2 (set) | Yes |
 | 177868 | Triple Effect Tin [Flareon] | Tin | 3 | Description | — | 2017 Q2 (set) | Yes |
 | 177869 | Triple Effect Tin [Jolteon] | Tin | 3 | Description | — | 2017 Q2 (set) | Yes |
 | 177871 | Triple Effect Tin [Set of 3] | Tin | 3 | Description | — | 2017 Q2 (set) | No |

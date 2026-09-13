@@ -90,7 +90,7 @@ Source: Bulbapedia merchandise page; ThePriceDex for box size.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -114,12 +114,12 @@ TCGplayer group `1957`: 26 products.
 | 148154 | Charizard GX Premium Collection | Collection | 6 | Description | — | 2017 Q3 (set) | No |
 | 153454 | Kommo-o GX Box | Collection | 4 | Description | — | 2017 Q3 (set) | Yes |
 | 218321 | Lycanroc GX Challenge Box | Collection | 2 | Description | — | 2017 Q3 (set) | Yes |
-| 133775 | Tapu Lele Pin Collection | Collection | Unknown | Unknown | — | 2017 Q3 (set) | Yes |
+| 133775 | Tapu Lele Pin Collection | Collection | 3 | Bulbapedia | — | 2017 Q3 (set) | Yes |
 | 148417 | Team Skull Pin Collection | Collection | 5 | Description | — | 2017 Q3 (set) | Yes |
-| 141243 | Tsareena GX Box | Collection | Unknown | Unknown | — | 2017 Q3 (set) | Yes |
-| 133778 | Burning Shadows Theme Deck - "Luminous Frost" [Alolan Ninetales] | Deck | Unknown | Unknown | — | 2017 Q3 (set) | Yes |
-| 133777 | Burning Shadows Theme Deck - "Rock Steady" [Lycanroc] | Deck | Unknown | Unknown | — | 2017 Q3 (set) | Yes |
-| 133776 | Burning Shadows Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2017 Q3 | Yes |
+| 141243 | Tsareena GX Box | Collection | 4 | Bulbapedia | — | 2017 Q3 (set) | Yes |
+| 133778 | Burning Shadows Theme Deck - "Luminous Frost" [Alolan Ninetales] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2017 Q3 (set) | Yes |
+| 133777 | Burning Shadows Theme Deck - "Rock Steady" [Lycanroc] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2017 Q3 (set) | Yes |
+| 133776 | Burning Shadows Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2017 Q3 | Yes |
 | 139888 | Burning Shadows Prerelease Kit | Other | 4 | Description | — | 2017 Q3 (set) | Yes |
 | 148418 | Mysterious Powers Tin [Ho-Oh GX] | Tin | 4 | Description | — | 2017 Q3 (set) | Yes |
 | 148420 | Mysterious Powers Tin [Marshadow GX] | Tin | 4 | Description | — | 2017 Q3 (set) | Yes |

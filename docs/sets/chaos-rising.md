@@ -128,7 +128,7 @@ The Mega Lucario ex League Battle Deck is listed with the set
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -159,7 +159,7 @@ TCGplayer group `24655`: 23 products.
 | 684453 | Chaos Rising Pokemon Center Elite Trainer Box Case | Case or display | — | — | 4 elite trainer boxes | 2026 Q2 | Yes |
 | 690684 | Chaos Rising Sleeved Booster Case | Case or display | — | — | Unknown number of sleeved boosters | 2026 Q2 | Yes |
 | 684450 | Chaos Rising Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2026 Q2 | Yes |
-| 684452 | Chaos Rising Pokemon Center Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2026 Q2 | Yes |
+| 684452 | Chaos Rising Pokemon Center Elite Trainer Box | Elite Trainer Box | 9 | Bulbapedia | — | 2026 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

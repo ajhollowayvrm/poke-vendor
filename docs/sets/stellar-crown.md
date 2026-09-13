@@ -154,7 +154,7 @@ Boxes per case: **6** (era-wide retailer consensus, not official; see
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -163,6 +163,8 @@ TCGplayer group `23537`: 24 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
+| 557334 | Stellar Crown 3 Pack Blisters [Latias] | Blister | 3 | Description | — | 2024 Q3 (set) | Yes |
+| 557337 | Stellar Crown 3 Pack Blisters [Tinkaton] | Blister | 3 | Description | — | 2024 Q3 (set) | Yes |
 | 599943 | Stellar Crown Premium Checklane Blister [Iron Thorns] | Blister | 1 | Description | — | 2024 Q3 (set) | Yes |
 | 616948 | Stellar Crown Premium Checklane Blister [Koraidon] | Blister | 1 | Description | — | 2024 Q3 (set) | Yes |
 | 616947 | Stellar Crown Premium Checklane Blister [Miraidon] | Blister | 1 | Description | — | 2024 Q3 (set) | Yes |
@@ -185,8 +187,6 @@ TCGplayer group `23537`: 24 products.
 | 557363 | Stellar Crown Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | Unknown | 2024 Q3 (set) | Yes |
 | 557350 | Stellar Crown Elite Trainer Box | Elite Trainer Box | 9 | Description | — | 2024 Q3 (set) | Yes |
 | 557340 | Stellar Crown Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | — | 2024 Q3 (set) | Yes |
-| 557334 | Stellar Crown 3 Pack Blisters [Latias] | Other | 3 | Description | — | 2024 Q3 (set) | Yes |
-| 557337 | Stellar Crown 3 Pack Blisters [Tinkaton] | Other | 3 | Description | — | 2024 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

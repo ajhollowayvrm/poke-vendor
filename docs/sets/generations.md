@@ -97,7 +97,7 @@ Collation: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -118,12 +118,12 @@ TCGplayer group `1728`, `1729`: 18 products.
 | 113774 | Mythical Pokemon Collection Box [Mew] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
 | 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
 | 123433 | Mythical Pokemon Collection Box [Victini] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 118795 | Red & Blue Collection [Blastoise EX] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 115598 | Red & Blue Collection [Charizard EX] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 123432 | Red & Blue Collection [Pikachu EX] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 120700 | Red & Blue Collection [Venusaur EX] | Collection | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
+| 118795 | Red & Blue Collection [Blastoise EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 115598 | Red & Blue Collection [Charizard EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 123432 | Red & Blue Collection [Pikachu EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 120700 | Red & Blue Collection [Venusaur EX] | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
 | 147223 | Super-Premium Collection [Mew & Mewtwo] | Collection | 10 | Description | — | 2016 Q1 (set) | Yes |
-| 123741 | Generations Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
+| 123741 | Generations Elite Trainer Box | Elite Trainer Box | 10 | Bulbapedia | — | 2016 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

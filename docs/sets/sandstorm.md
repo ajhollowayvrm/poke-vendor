@@ -114,7 +114,7 @@ Collation: unknown. Model each pack as an independent draw.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -125,7 +125,7 @@ TCGplayer group `1392`: 3 products.
 |---|---|---|---|---|---|---|---|
 | 98564 | Sandstorm Booster Box | Booster box | 36 | Kind default | — | 2003 Q3 (set) | No |
 | 98565 | Sandstorm Booster Pack | Booster pack | 1 | Kind default | — | 2003 Q3 (set) | No |
-| 234511 | Sandstorm Theme Deck - "Caravan" | Deck | Unknown | Unknown | — | 2003 Q3 (set) | No |
+| 234511 | Sandstorm Theme Deck - "Caravan" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2003 Q3 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

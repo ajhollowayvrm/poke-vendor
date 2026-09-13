@@ -108,7 +108,7 @@ Note: the Three Pack Blister holds 2 booster packs and 1 Sampling Pack.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -119,18 +119,18 @@ TCGplayer group `1424`: 14 products.
 |---|---|---|---|---|---|---|---|
 | 98548 | Emerging Powers Booster Box | Booster box | 36 | Kind default | — | 2011 Q3 (set) | No |
 | 98549 | Emerging Powers Booster Pack | Booster pack | 1 | Kind default | — | 2011 Q3 (set) | Yes |
-| 98619 | Emerging Powers Collector's Album Box | Collection | Unknown | Unknown | — | 2011 Q3 (set) | No |
-| 98621 | Reshiram Box | Collection | Unknown | Unknown | — | 2011 Q3 (set) | No |
+| 98619 | Emerging Powers Collector's Album Box | Collection | 2 | Bulbapedia | — | 2011 Q3 (set) | No |
+| 98621 | Reshiram Box | Collection | 4 | Bulbapedia | — | 2011 Q3 (set) | No |
 | 177532 | Starter Figure Boxes: Outstanding Oshawott Box | Collection | 3 | Description | — | 2011 Q3 (set) | No |
 | 177530 | Starter Figure Boxes: Super Snivy Box | Collection | 3 | Description | — | 2011 Q3 (set) | No |
 | 177531 | Starter Figure Boxes: Terrific Tepig Box | Collection | 3 | Description | — | 2011 Q3 (set) | No |
-| 98622 | Zekrom Box | Collection | Unknown | Unknown | — | 2011 Q3 (set) | No |
-| 98620 | Zoroark-Illusions Collection | Collection | Unknown | Unknown | — | 2011 Q3 (set) | No |
-| 98618 | Emerging Powers Theme Deck - "Power Play" [Krookodile] | Deck | Unknown | Unknown | — | 2011 Q3 (set) | Yes |
-| 98617 | Emerging Powers Theme Deck - "Toxic Tricks" [Scolipede] | Deck | Unknown | Unknown | — | 2011 Q3 (set) | Yes |
-| 98624 | Evolved Battle Action Tin [Emboar] | Tin | Unknown | Unknown | — | 2011 Q3 (set) | No |
-| 98625 | Evolved Battle Action Tin [Samurott] | Tin | Unknown | Unknown | — | 2011 Q3 (set) | No |
-| 98623 | Evolved Battle Action Tin [Serperior] | Tin | Unknown | Unknown | — | 2011 Q3 (set) | No |
+| 98622 | Zekrom Box | Collection | 4 | Bulbapedia | — | 2011 Q3 (set) | No |
+| 98620 | Zoroark-Illusions Collection | Collection | 3 | Bulbapedia | — | 2011 Q3 (set) | No |
+| 98618 | Emerging Powers Theme Deck - "Power Play" [Krookodile] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q3 (set) | Yes |
+| 98617 | Emerging Powers Theme Deck - "Toxic Tricks" [Scolipede] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2011 Q3 (set) | Yes |
+| 98624 | Evolved Battle Action Tin [Emboar] | Tin | 5 | Bulbapedia | — | 2011 Q3 (set) | No |
+| 98625 | Evolved Battle Action Tin [Samurott] | Tin | 5 | Bulbapedia | — | 2011 Q3 (set) | No |
+| 98623 | Evolved Battle Action Tin [Serperior] | Tin | 5 | Bulbapedia | — | 2011 Q3 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

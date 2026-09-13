@@ -113,7 +113,7 @@ booster pack in Bulbapedia's contents list.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -125,14 +125,14 @@ TCGplayer group `1400`: 11 products.
 | 454432 | Black & White 3 Pack Booster Blister Special Edition [Wigglytuff] | Blister | 3 | Description | — | 2011 Q2 (set) | No |
 | 98552 | Black and White Booster Box | Booster box | 36 | Kind default | — | 2011 Q2 (set) | No |
 | 98553 | Black and White Booster Pack | Booster pack | 1 | Kind default | — | 2011 Q2 (set) | Yes |
-| 98614 | Collector's Album Box | Collection | Unknown | Unknown | — | 2011 Q2 (set) | No |
+| 98614 | Collector's Album Box | Collection | 2 | Bulbapedia | — | 2011 Q2 (set) | No |
 | 98613 | Victini Box | Collection | 5 | Description | — | 2011 Q2 (set) | No |
 | 98612 | Black & White Theme Deck - "Blue Assault" [Samurott] | Deck | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
 | 98610 | Black & White Theme Deck - "Green Tornado" [Serperior] | Deck | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
 | 98611 | Black & White Theme Deck - "Red Frenzy" [Emboar] | Deck | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
 | 647775 | Black and White Preview Pack | Other | Unknown | Unknown | — | 2011 Q2 (set) | Yes |
-| 98615 | New Legends Tin [Reshiram] | Tin | Unknown | Unknown | — | 2011 Q2 (set) | No |
-| 98616 | New Legends Tin [Zekrom] | Tin | Unknown | Unknown | — | 2011 Q2 (set) | No |
+| 98615 | New Legends Tin [Reshiram] | Tin | 4 | Bulbapedia | — | 2011 Q2 (set) | No |
+| 98616 | New Legends Tin [Zekrom] | Tin | 4 | Bulbapedia | — | 2011 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

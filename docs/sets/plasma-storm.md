@@ -121,7 +121,7 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -130,8 +130,8 @@ TCGplayer group `1413`: 5 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|
-| 99153 | Kanto Two Pack Blister [Legendary Birds] | Blister | Unknown | Unknown | — | 2013 Q1 (set) | No |
-| 99152 | Kanto Two Pack Blister [Starters] | Blister | Unknown | Unknown | — | 2013 Q1 (set) | No |
+| 99153 | Kanto Two Pack Blister [Legendary Birds] | Blister | 2 | Name | — | 2013 Q1 (set) | No |
+| 99152 | Kanto Two Pack Blister [Starters] | Blister | 2 | Name | — | 2013 Q1 (set) | No |
 | 98527 | Plasma Storm Booster Box | Booster box | 36 | Kind default | — | 2013 Q1 (set) | No |
 | 98526 | Plasma Storm Booster Pack | Booster pack | 1 | Kind default | — | 2013 Q1 (set) | Yes |
 | 276601 | Plasma Storm Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2013 Q1 (set) | No |

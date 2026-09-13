@@ -122,7 +122,7 @@ Source: Bulbapedia merchandise page, unless the row says otherwise.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -133,13 +133,13 @@ TCGplayer group `1412`: 9 products.
 |---|---|---|---|---|---|---|---|
 | 98539 | Next Destinies Booster Box | Booster box | 36 | Kind default | — | 2012 Q1 (set) | No |
 | 98538 | Next Destinies Booster Pack | Booster pack | 1 | Kind default | — | 2012 Q1 (set) | Yes |
-| 98639 | Forces of Nature Collection | Collection | Unknown | Unknown | — | 2012 Q1 (set) | No |
-| 98635 | Mewtwo Collection | Collection | Unknown | Unknown | — | 2012 Q1 (set) | No |
-| 98633 | Next Destinies Theme Deck - "Explosive Edge" [Reshiram] | Deck | Unknown | Unknown | — | 2012 Q1 (set) | No |
-| 98634 | Next Destinies Theme Deck - "Voltage Vortex" [Zekrom] | Deck | Unknown | Unknown | — | 2012 Q1 (set) | No |
-| 98637 | EX Tin [Kyurem] | Tin | Unknown | Unknown | — | 2012 Q1 (set) | Yes |
-| 98636 | EX Tin [Reshiram] | Tin | Unknown | Unknown | — | 2012 Q1 (set) | No |
-| 98638 | EX Tin [Zekrom] | Tin | Unknown | Unknown | — | 2012 Q1 (set) | No |
+| 98639 | Forces of Nature Collection | Collection | 3 | Bulbapedia | — | 2012 Q1 (set) | No |
+| 98635 | Mewtwo Collection | Collection | 3 | Bulbapedia | — | 2012 Q1 (set) | No |
+| 98633 | Next Destinies Theme Deck - "Explosive Edge" [Reshiram] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2012 Q1 (set) | No |
+| 98634 | Next Destinies Theme Deck - "Voltage Vortex" [Zekrom] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2012 Q1 (set) | No |
+| 98637 | EX Tin [Kyurem] | Tin | 4 | Bulbapedia | — | 2012 Q1 (set) | Yes |
+| 98636 | EX Tin [Reshiram] | Tin | 4 | Bulbapedia | — | 2012 Q1 (set) | No |
+| 98638 | EX Tin [Zekrom] | Tin | 4 | Bulbapedia | — | 2012 Q1 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

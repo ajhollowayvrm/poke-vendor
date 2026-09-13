@@ -73,7 +73,7 @@ Pack wrapper arts: Charizard and Mewtwo (PullMarket).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -84,10 +84,10 @@ TCGplayer group `605`: 7 products.
 |---|---|---|---|---|---|---|---|
 | 107610 | Base Set 2 Booster Box | Booster box | 36 | Kind default | — | 2000 Q1 (set) | No |
 | 138149 | Base Set 2 Booster Pack | Booster pack | 1 | Kind default | — | 2000 Q1 (set) | Yes |
-| 107611 | Base Set 2 Theme Deck - "Grass Chopper" | Deck | Unknown | Unknown | — | 2000 Q1 (set) | Yes |
-| 107612 | Base Set 2 Theme Deck - "Hot Water" | Deck | Unknown | Unknown | — | 2000 Q1 (set) | Yes |
-| 107613 | Base Set 2 Theme Deck - "Lightning Bug" | Deck | Unknown | Unknown | — | 2000 Q1 (set) | Yes |
-| 107614 | Base Set 2 Theme Deck - "Psych Out" | Deck | Unknown | Unknown | — | 2000 Q1 (set) | Yes |
+| 107611 | Base Set 2 Theme Deck - "Grass Chopper" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2000 Q1 (set) | Yes |
+| 107612 | Base Set 2 Theme Deck - "Hot Water" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2000 Q1 (set) | Yes |
+| 107613 | Base Set 2 Theme Deck - "Lightning Bug" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2000 Q1 (set) | Yes |
+| 107614 | Base Set 2 Theme Deck - "Psych Out" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2000 Q1 (set) | Yes |
 | 107609 | Base Set 2 - 2-Player CD-ROM Starter Set | Other | Unknown | Unknown | — | 2000 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 

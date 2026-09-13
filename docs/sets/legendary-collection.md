@@ -112,7 +112,7 @@ was found. Loose Packs shows the set only in a photo, with no data.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -123,8 +123,8 @@ TCGplayer group `1374`: 4 products.
 |---|---|---|---|---|---|---|---|
 | 691155 | Legendary Collection Booster Box | Booster box | 36 | Kind default | — | 2002 Q2 (set) | No |
 | 138150 | Legendary Collection Booster Pack | Booster pack | 1 | Kind default | — | 2002 Q2 (set) | Yes |
-| 450748 | Legendary Collection Theme Deck - "Lava" | Deck | Unknown | Unknown | — | 2002 Q2 (set) | No |
-| 451094 | Legendary Collection Theme Deck - "Turmoil" | Deck | Unknown | Unknown | — | 2002 Q2 (set) | No |
+| 450748 | Legendary Collection Theme Deck - "Lava" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2002 Q2 (set) | No |
+| 451094 | Legendary Collection Theme Deck - "Turmoil" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2002 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

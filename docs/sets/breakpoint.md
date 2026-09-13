@@ -88,7 +88,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -108,13 +108,13 @@ TCGplayer group `1701`: 18 products.
 | 276597 | BREAKpoint Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Description | — | 2016 Q1 (set) | Yes |
 | 542096 | XY - BREAKpoint Sleeved Booster Pack | Booster pack | 10 | Description | — | 2016 Q1 (set) | Yes |
 | 111279 | XY BREAKpoint Booster Pack | Booster pack | 1 | Kind default | — | 2016 Q1 | Yes |
-| 117279 | Shiny Mega Gyarados Collection | Collection | Unknown | Unknown | — | 2016 Q1 (set) | No |
-| 113531 | BREAKpoint Theme Deck - "Electric Eye" [Luxray] | Deck | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 113530 | BREAKpoint Theme Deck - "Wave Slasher" [Greninja] | Deck | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 111280 | XY BREAKpoint Elite Trainer Box | Elite Trainer Box | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
-| 117699 | Triple Power Tin [Machamp EX] | Tin | Unknown | Unknown | — | 2016 Q1 (set) | No |
-| 117698 | Triple Power Tin [Mewtwo EX] | Tin | Unknown | Unknown | — | 2016 Q1 (set) | No |
-| 117700 | Triple Power Tin [Shiny Gyarados EX] | Tin | Unknown | Unknown | — | 2016 Q1 (set) | Yes |
+| 117279 | Shiny Mega Gyarados Collection | Collection | 4 | Bulbapedia | — | 2016 Q1 (set) | No |
+| 113531 | BREAKpoint Theme Deck - "Electric Eye" [Luxray] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2016 Q1 (set) | Yes |
+| 113530 | BREAKpoint Theme Deck - "Wave Slasher" [Greninja] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2016 Q1 (set) | Yes |
+| 111280 | XY BREAKpoint Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | — | 2016 Q1 (set) | Yes |
+| 117699 | Triple Power Tin [Machamp EX] | Tin | 4 | Bulbapedia | — | 2016 Q1 (set) | No |
+| 117698 | Triple Power Tin [Mewtwo EX] | Tin | 4 | Bulbapedia | — | 2016 Q1 (set) | No |
+| 117700 | Triple Power Tin [Shiny Gyarados EX] | Tin | 4 | Bulbapedia | — | 2016 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

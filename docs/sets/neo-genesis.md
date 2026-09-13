@@ -86,7 +86,7 @@ Pack wrapper arts: Unknown.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -99,8 +99,8 @@ TCGplayer group `1396`: 6 products.
 | 193335 | Neo Genesis Booster Box [Unlimited Edition] | Booster box | 36 | Description | — | 2000 Q4 (set) | No |
 | 138141 | Neo Genesis Booster Pack [1st Edition] | Booster pack | 1 | Kind default | — | 2000 Q4 (set) | Yes |
 | 138142 | Neo Genesis Booster Pack [Unlimited Edition] | Booster pack | 1 | Kind default | — | 2000 Q4 (set) | Yes |
-| 234505 | Neo Genesis Theme Deck - "Cold Fusion" | Deck | Unknown | Unknown | — | 2000 Q4 (set) | No |
-| 451098 | Neo Genesis Theme Deck - "Hotfoot" | Deck | Unknown | Unknown | — | 2000 Q4 (set) | No |
+| 234505 | Neo Genesis Theme Deck - "Cold Fusion" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2000 Q4 (set) | No |
+| 451098 | Neo Genesis Theme Deck - "Hotfoot" | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2000 Q4 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

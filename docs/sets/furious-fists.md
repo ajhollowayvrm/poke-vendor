@@ -72,7 +72,7 @@ Collation: Unknown. No source states a fixed number of hits per box.
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -92,20 +92,20 @@ TCGplayer group `1481`: 25 products.
 | 92169 | Furious Fists Booster Pack | Booster pack | 4 | Description | — | 2014 Q3 (set) | Yes |
 | 550673 | Furious Fists Sleeved Booster Pack | Booster pack | 1 | Kind default | — | 2014 Q3 (set) | Yes |
 | 276591 | Furious Fists Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2014 Q3 (set) | Yes |
-| 97774 | Ancient Power Box | Collection | Unknown | Unknown | — | 2014 Q3 (set) | No |
+| 97774 | Ancient Power Box | Collection | 3 | Bulbapedia | — | 2014 Q3 (set) | No |
 | 97766 | Mega Charizard X Collection | Collection | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
 | 97767 | Mega Charizard Y Collection | Collection | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
-| 97775 | Mega Lucario Collection | Collection | Unknown | Unknown | — | 2014 Q3 (set) | No |
-| 97781 | XY Knock Out Collection [Dragons] | Collection | Unknown | Unknown | — | 2014 Q3 (set) | No |
-| 97780 | XY Knock Out Collection [Kanto] | Collection | Unknown | Unknown | — | 2014 Q3 (set) | No |
-| 92217 | Furious Fists Theme Deck - "Dark Hammer" [Pangoro] | Deck | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
-| 92218 | Furious Fists Theme Deck - "Enchanted Echo" [Sylveon] | Deck | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
+| 97775 | Mega Lucario Collection | Collection | 4 | Bulbapedia | — | 2014 Q3 (set) | No |
+| 97781 | XY Knock Out Collection [Dragons] | Collection | 2 | Bulbapedia | — | 2014 Q3 (set) | No |
+| 97780 | XY Knock Out Collection [Kanto] | Collection | 2 | Bulbapedia | — | 2014 Q3 (set) | No |
+| 92217 | Furious Fists Theme Deck - "Dark Hammer" [Pangoro] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2014 Q3 (set) | Yes |
+| 92218 | Furious Fists Theme Deck - "Enchanted Echo" [Sylveon] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2014 Q3 (set) | Yes |
 | 95284 | Furious Fists Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2014 Q3 (set) | No |
 | 97779 | Battle Arena Decks: Xerneas vs Yveltal | Other | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
 | 97783 | Gengar Spirit Link 2-pack | Other | 2 | Name | — | 2014 Q3 (set) | No |
-| 97778 | EX Power Trio Tin [Blastoise EX] | Tin | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
-| 97777 | EX Power Trio Tin [Charizard EX] | Tin | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
-| 97776 | EX Power Trio Tin [Venusaur EX] | Tin | Unknown | Unknown | — | 2014 Q3 (set) | Yes |
+| 97778 | EX Power Trio Tin [Blastoise EX] | Tin | 2 | Bulbapedia | — | 2014 Q3 (set) | Yes |
+| 97777 | EX Power Trio Tin [Charizard EX] | Tin | 2 | Bulbapedia | — | 2014 Q3 (set) | Yes |
+| 97776 | EX Power Trio Tin [Venusaur EX] | Tin | 2 | Bulbapedia | — | 2014 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

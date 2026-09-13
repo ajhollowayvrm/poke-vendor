@@ -87,7 +87,7 @@ pack-opening videos, not official data).
 
 Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. Code cards are left out.
 
-- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, or a default for the kind (booster box 36, booster bundle 6, Build & Battle 4). Check a default before the game uses it.
+- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, the product name, the Bulbapedia TCG merchandise page for the series, or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). Check a default before the game uses it.
 - **Holds** is what a case or a display holds.
 - **Release** is the quarter from the TCGplayer release date. "(set)" means the quarter of the set's release date.
 - **PPT price** is Yes when PokemonPriceTracker has a price. Prices are in `tools/ppt/cache/sealed/`, not in the docs.
@@ -102,8 +102,8 @@ TCGplayer group `2626`: 30 products.
 | 276575 | Rebel Clash Premium Checklane Blister [Gengar] | Blister | 1 | Description | — | 2020 Q2 (set) | Yes |
 | 210564 | Rebel Clash Single Pack Blister [Mantine] | Blister | 1 | Description | — | 2020 Q2 | Yes |
 | 210565 | Rebel Clash Single Pack Blister [Noctowl] | Blister | 1 | Description | — | 2020 Q2 | Yes |
-| 668520 | Sword & Shield Single Blister Pack [Galarian Meowth & Galarian Perrserker] | Blister | Unknown | Unknown | — | 2020 Q2 (set) | No |
-| 668516 | Sword & Shield Single Blister Pack [Yamper & Boltund] | Blister | Unknown | Unknown | — | 2020 Q2 (set) | No |
+| 668520 | Sword & Shield Single Blister Pack [Galarian Meowth & Galarian Perrserker] | Blister | 1 | Name | — | 2020 Q2 (set) | No |
+| 668516 | Sword & Shield Single Blister Pack [Yamper & Boltund] | Blister | 1 | Name | — | 2020 Q2 (set) | No |
 | 210561 | Rebel Clash Booster Box | Booster box | 36 | Description | — | 2020 Q2 (set) | Yes |
 | 210562 | Rebel Clash Booster Pack | Booster pack | 1 | Kind default | — | 2020 Q2 | Yes |
 | 265316 | Rebel Clash Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | — | 2020 Q2 (set) | Yes |
@@ -116,9 +116,9 @@ TCGplayer group `2626`: 30 products.
 | 214227 | Copperajah V Box | Collection | 4 | Description | — | 2020 Q2 | Yes |
 | 210563 | Polteageist V Box | Collection | 4 | Description | — | 2020 Q2 | Yes |
 | 210566 | Sword & Shield Figure Collection | Collection | 4 | Description | — | 2020 Q2 | Yes |
-| 210573 | Rebel Clash Theme Deck [Set of 2] | Deck | Unknown | Unknown | — | 2020 Q2 | No |
-| 210571 | Rebel Clash Theme Deck [Zacian] | Deck | Unknown | Unknown | — | 2020 Q2 (set) | Yes |
-| 210570 | Rebel Clash Theme Deck [Zamazenta] | Deck | Unknown | Unknown | — | 2020 Q2 (set) | Yes |
+| 210573 | Rebel Clash Theme Deck [Set of 2] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q2 | No |
+| 210571 | Rebel Clash Theme Deck [Zacian] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q2 (set) | Yes |
+| 210570 | Rebel Clash Theme Deck [Zamazenta] | Deck | 0 | Bulbapedia (no booster pack in contents) | — | 2020 Q2 (set) | Yes |
 | 210572 | Rebel Clash Elite Trainer Box | Elite Trainer Box | 8 | Description | — | 2020 Q2 | Yes |
 | 214232 | Legends of Galar Tin [Set of 2] | Tin | 5 | Description | — | 2020 Q2 (set) | Yes |
 | 279259 | Legends of Galar Tin [Set of 2] (International Version) | Tin | 4 | Description | — | 2020 Q2 (set) | No |
