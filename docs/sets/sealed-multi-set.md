@@ -855,16 +855,6 @@ TCGplayer group `23323`: 1 products.
 |---|---|---|---|---|---|---|---|
 | 518886 | Pokemon Trading Card Game Classic | Other | Unknown | Unknown | — | — | Yes |
 
-## Trick or Trade BOOster Bundle
-
-TCGplayer group `3179`: 3 products.
-
-| TCGplayer ID | Product | Kind | Packs | Packs from | Holds | Release | PPT price |
-|---|---|---|---|---|---|---|---|
-| 659627 | Trick or Trade BOOster Bundle (120 ct) | Booster bundle | 120 | Description | — | — | Yes |
-| 280302 | Trick or Trade BOOster Bundle (40 ct) | Booster bundle | 40 | Description | — | — | Yes |
-| 280301 | Trick or Trade BOOster Bundle - Mini Booster Pack | Booster bundle | 6 | Kind default | — | — | Yes |
-
 ## Trick or Trade BOOster Bundle 2023
 
 TCGplayer group `23266`: 4 products.

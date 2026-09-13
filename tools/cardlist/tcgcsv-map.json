@@ -1,11 +1,420 @@
-{"base-set":[604,1663],"jungle":[635],"fossil":[630],"base-set-2":[605],"team-rocket":[1373],"gym-heroes":[1441],"gym-challenge":[1440],"neo-genesis":[1396],"neo-discovery":[1434],"neo-revelation":[1389],"neo-destiny":[1444],"southern-islands":[648],"legendary-collection":[1374],"expedition-base-set":[1375],"aquapolis":[1397],"skyridge":[1372],
-"ruby-sapphire":[1393],"sandstorm":[1392],"dragon":[1376],"team-magma-vs-team-aqua":[1377],"hidden-legends":[1416],"firered-leafgreen":[1419],"team-rocket-returns":[1428],"deoxys":[1404],"emerald":[1410],"unseen-forces":[1398],"delta-species":[1429],"legend-maker":[1378],"holon-phantoms":[1379],"crystal-guardians":[1395],"dragon-frontiers":[1411],"power-keepers":[1383],
-"pop-series":[1422,1447,1442,1452,1439,1432,1414,1450,1446],
-"diamond-and-pearl":[1430],"mysterious-treasures":[1368],"secret-wonders":[1380],"great-encounters":[1405],"majestic-dawn":[1390],"legends-awakened":[1417],"stormfront":[1369],"platinum":[1406],"rising-rivals":[1367],"supreme-victors":[1384],"arceus":[1391],
-"heartgold-soulsilver":[1402],"unleashed":[1399],"undaunted":[1403],"triumphant":[1381],"call-of-legends":[1415],
-"black-white":[1400],"emerging-powers":[1424],"noble-victories":[1385],"next-destinies":[1412],"dark-explorers":[1386],"dragons-exalted":[1394],"dragon-vault":[1426],"boundaries-crossed":[1408],"plasma-storm":[1413],"plasma-freeze":[1382],"plasma-blast":[1370],"legendary-treasures":[1409,1465],
-"xy":[1387],"flashfire":[1464],"furious-fists":[1481],"phantom-forces":[1494],"primal-clash":[1509],"double-crisis":[1525],"roaring-skies":[1534],"ancient-origins":[1576],"breakthrough":[1661],"breakpoint":[1701],"generations":[1728,1729],"fates-collide":[1780],"steam-siege":[1815],"evolutions":[1842],
-"sun-moon":[1863],"guardians-rising":[1919],"burning-shadows":[1957],"shining-legends":[2054],"crimson-invasion":[2071],"ultra-prism":[2178],"forbidden-light":[2209],"celestial-storm":[2278],"dragon-majesty":[2295],"lost-thunder":[2328],"team-up":[2377],"detective-pikachu":[2409],"unbroken-bonds":[2420],"unified-minds":[2464],"hidden-fates":[2480,2594],"cosmic-eclipse":[2534],
-"sword-shield":[2585],"rebel-clash":[2626],"darkness-ablaze":[2675],"champions-path":[2685],"vivid-voltage":[2701],"mcdonalds-collection-2021":[2782],"shining-fates":[2754,2781],"battle-styles":[2765],"chilling-reign":[2807],"evolving-skies":[2848],"celebrations":[2867,2931],"fusion-strike":[2906],"brilliant-stars":[2948,3020],"astral-radiance":[3040,3068],"pokemon-go":[3064],"mcdonalds-collection-2022":[3150],"lost-origin":[3118,3172],"silver-tempest":[3170,17674],"crown-zenith":[17688,17689],
-"scarlet-violet":[22873],"paldea-evolved":[23120],"obsidian-flames":[23228],"151":[23237],"paradox-rift":[23286],"paldean-fates":[23353],"temporal-forces":[23381],"twilight-masquerade":[23473],"shrouded-fable":[23529],"stellar-crown":[23537],"surging-sparks":[23651],"prismatic-evolutions":[23821],"journey-together":[24073],"destined-rivals":[24269],"black-bolt":[24325],"white-flare":[24326],
-"mega-evolution":[24380],"phantasmal-flames":[24448],"ascended-heroes":[24541],"perfect-order":[24587],"chaos-rising":[24655],"pitch-black":[24688]}
+{
+"base-set": [
+604,
+1663
+],
+"jungle": [
+635
+],
+"fossil": [
+630
+],
+"base-set-2": [
+605
+],
+"team-rocket": [
+1373
+],
+"gym-heroes": [
+1441
+],
+"gym-challenge": [
+1440
+],
+"neo-genesis": [
+1396
+],
+"neo-discovery": [
+1434
+],
+"neo-revelation": [
+1389
+],
+"neo-destiny": [
+1444
+],
+"southern-islands": [
+648
+],
+"legendary-collection": [
+1374
+],
+"expedition-base-set": [
+1375
+],
+"aquapolis": [
+1397
+],
+"skyridge": [
+1372
+],
+"ruby-sapphire": [
+1393
+],
+"sandstorm": [
+1392
+],
+"dragon": [
+1376
+],
+"team-magma-vs-team-aqua": [
+1377
+],
+"hidden-legends": [
+1416
+],
+"firered-leafgreen": [
+1419
+],
+"team-rocket-returns": [
+1428
+],
+"deoxys": [
+1404
+],
+"emerald": [
+1410
+],
+"unseen-forces": [
+1398
+],
+"delta-species": [
+1429
+],
+"legend-maker": [
+1378
+],
+"holon-phantoms": [
+1379
+],
+"crystal-guardians": [
+1395
+],
+"dragon-frontiers": [
+1411
+],
+"power-keepers": [
+1383
+],
+"pop-series": [
+1422,
+1447,
+1442,
+1452,
+1439,
+1432,
+1414,
+1450,
+1446
+],
+"diamond-and-pearl": [
+1430
+],
+"mysterious-treasures": [
+1368
+],
+"secret-wonders": [
+1380
+],
+"great-encounters": [
+1405
+],
+"majestic-dawn": [
+1390
+],
+"legends-awakened": [
+1417
+],
+"stormfront": [
+1369
+],
+"platinum": [
+1406
+],
+"rising-rivals": [
+1367
+],
+"supreme-victors": [
+1384
+],
+"arceus": [
+1391
+],
+"heartgold-soulsilver": [
+1402
+],
+"unleashed": [
+1399
+],
+"undaunted": [
+1403
+],
+"triumphant": [
+1381
+],
+"call-of-legends": [
+1415
+],
+"black-white": [
+1400
+],
+"emerging-powers": [
+1424
+],
+"noble-victories": [
+1385
+],
+"next-destinies": [
+1412
+],
+"dark-explorers": [
+1386
+],
+"dragons-exalted": [
+1394
+],
+"dragon-vault": [
+1426
+],
+"boundaries-crossed": [
+1408
+],
+"plasma-storm": [
+1413
+],
+"plasma-freeze": [
+1382
+],
+"plasma-blast": [
+1370
+],
+"legendary-treasures": [
+1409,
+1465
+],
+"xy": [
+1387
+],
+"flashfire": [
+1464
+],
+"furious-fists": [
+1481
+],
+"phantom-forces": [
+1494
+],
+"primal-clash": [
+1509
+],
+"double-crisis": [
+1525
+],
+"roaring-skies": [
+1534
+],
+"ancient-origins": [
+1576
+],
+"breakthrough": [
+1661
+],
+"breakpoint": [
+1701
+],
+"generations": [
+1728,
+1729
+],
+"fates-collide": [
+1780
+],
+"steam-siege": [
+1815
+],
+"evolutions": [
+1842
+],
+"sun-moon": [
+1863
+],
+"guardians-rising": [
+1919
+],
+"burning-shadows": [
+1957
+],
+"shining-legends": [
+2054
+],
+"crimson-invasion": [
+2071
+],
+"ultra-prism": [
+2178
+],
+"forbidden-light": [
+2209
+],
+"celestial-storm": [
+2278
+],
+"dragon-majesty": [
+2295
+],
+"lost-thunder": [
+2328
+],
+"team-up": [
+2377
+],
+"detective-pikachu": [
+2409
+],
+"unbroken-bonds": [
+2420
+],
+"unified-minds": [
+2464
+],
+"hidden-fates": [
+2480,
+2594
+],
+"cosmic-eclipse": [
+2534
+],
+"sword-shield": [
+2585
+],
+"rebel-clash": [
+2626
+],
+"darkness-ablaze": [
+2675
+],
+"champions-path": [
+2685
+],
+"vivid-voltage": [
+2701
+],
+"mcdonalds-collection-2021": [
+2782
+],
+"shining-fates": [
+2754,
+2781
+],
+"battle-styles": [
+2765
+],
+"chilling-reign": [
+2807
+],
+"evolving-skies": [
+2848
+],
+"celebrations": [
+2867,
+2931
+],
+"fusion-strike": [
+2906
+],
+"brilliant-stars": [
+2948,
+3020
+],
+"astral-radiance": [
+3040,
+3068
+],
+"pokemon-go": [
+3064
+],
+"mcdonalds-collection-2022": [
+3150
+],
+"lost-origin": [
+3118,
+3172
+],
+"silver-tempest": [
+3170,
+17674
+],
+"crown-zenith": [
+17688,
+17689
+],
+"scarlet-violet": [
+22873
+],
+"paldea-evolved": [
+23120
+],
+"obsidian-flames": [
+23228
+],
+"151": [
+23237
+],
+"paradox-rift": [
+23286
+],
+"paldean-fates": [
+23353
+],
+"temporal-forces": [
+23381
+],
+"twilight-masquerade": [
+23473
+],
+"shrouded-fable": [
+23529
+],
+"stellar-crown": [
+23537
+],
+"surging-sparks": [
+23651
+],
+"prismatic-evolutions": [
+23821
+],
+"journey-together": [
+24073
+],
+"destined-rivals": [
+24269
+],
+"black-bolt": [
+24325
+],
+"white-flare": [
+24326
+],
+"mega-evolution": [
+24380
+],
+"phantasmal-flames": [
+24448
+],
+"ascended-heroes": [
+24541
+],
+"perfect-order": [
+24587
+],
+"chaos-rising": [
+24655
+],
+"pitch-black": [
+24688
+],
+"trick-or-trade-2022": [
+3179
+]
+}
