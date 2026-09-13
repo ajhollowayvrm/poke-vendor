@@ -57,12 +57,29 @@ def fetch(url, key):
     return None, None
 
 
+TCGCSV_CACHE = os.path.join(HERE, "..", "cardlist", "cache", "tcgcsv")
+
+
+def tcgcsv_sealed_count(gid):
+    """Products with no card number in the free TCGCSV catalog. PPT charges by the page size, so this sets it."""
+    os.makedirs(TCGCSV_CACHE, exist_ok=True)
+    path = os.path.join(TCGCSV_CACHE, f"{gid}-products.json")
+    if not os.path.exists(path) or os.path.getsize(path) < 50:
+        r = subprocess.run(["curl", "-s", "-m", "60", "-o", path, f"https://tcgcsv.com/tcgplayer/3/{gid}/products"])
+        time.sleep(0.3)
+    try:
+        results = json.load(open(path))["results"]
+    except (OSError, ValueError, KeyError):
+        return None
+    return sum(1 for x in results if not any(e["name"] == "Number" for e in x.get("extendedData", [])))
+
+
 def main():
     os.makedirs(SEALED, exist_ok=True)
     key = api_key()
     groups = sorted(tcgcsv_groups(), key=lambda g: g.get("publishedOn") or "", reverse=True)
     json.dump(groups, open(os.path.join(SEALED, "_groups.json"), "w"))
-    done = skipped = failed = products = 0
+    done = skipped = failed = products = empty = 0
     remaining = None
     for g in groups:
         gid = g["groupId"]
@@ -70,9 +87,17 @@ def main():
         if os.path.exists(path):
             skipped += 1
             continue
+        expected = tcgcsv_sealed_count(gid)
+        if expected == 0:
+            with open(path, "w") as f:
+                json.dump({"group": g, "data": [], "note": "TCGCSV lists no sealed products; PPT not called"}, f)
+            empty += 1
+            print(f"group {gid} ({g['name']}): 0 sealed products in TCGCSV, skipped", flush=True)
+            continue
+        page = min(PAGE, (expected or PAGE) + 5)
         items, offset = [], 0
         while True:
-            data, rem = fetch(f"{BASE}?setId={gid}&limit={PAGE}&offset={offset}", key)
+            data, rem = fetch(f"{BASE}?setId={gid}&limit={page}&offset={offset}", key)
             remaining = rem if rem is not None else remaining
             if data == "STOP":
                 print(f"STOP: the key is not accepted or no credits are left, at group {gid}.", flush=True)
