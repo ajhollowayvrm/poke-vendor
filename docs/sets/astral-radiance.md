@@ -156,7 +156,7 @@ TCGplayer group `3040`, `3068`: 31 products.
 | 265543 | Astral Radiance Sleeved Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | — | 2022 Q2 | Yes |
 | 265544 | Astral Radiance Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | — | 2022 Q2 | No |
 | 265529 | Astral Radiance Build & Battle Box | Build & Battle | 4 | Description | — | 2022 Q2 | Yes |
-| 265515 | Astral Radiance Build & Battle Stadium | Build & Battle | 4 | Kind default | — | 2022 Q2 (set) | Yes |
+| 265515 | Astral Radiance Build & Battle Stadium | Build & Battle | Unknown | Unknown | — | 2022 Q2 (set) | Yes |
 | 679043 | Astral Radiance 3 Pack Blister Case | Case or display | — | — | 24 blisters | 2022 Q2 (set) | Yes |
 | 265520 | Astral Radiance Booster Box Case | Case or display | — | — | 6 booster boxes | 2022 Q2 | Yes |
 | 272137 | Astral Radiance Build & Battle Box Display | Case or display | — | — | 10 build & battle boxes | 2022 Q2 (set) | Yes |

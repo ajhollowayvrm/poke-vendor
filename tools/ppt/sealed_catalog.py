@@ -78,6 +78,8 @@ def packs_of(kind, name, text):
         return int(m.group(1)), "Name"
     if re.search(r"\bsingle pack\b", name, re.I):
         return 1, "Name"
+    if kind == "Build & Battle" and not re.search(r"\bbox\b", name, re.I):
+        return None, "Unknown"
     if kind in DEFAULT_PACKS:
         return DEFAULT_PACKS[kind], "Kind default"
     return None, "Unknown"
