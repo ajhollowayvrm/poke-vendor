@@ -197,13 +197,15 @@ file.
 
 ## Open topics
 
-- Rarity name map: the card lists use TCGdex rarity names, and the
-  rarity lists use the set's own names. 15 TCGdex names have no exact
-  match in a rarity list, for example "Holo Rare" (37 sets), "Ultra
-  Rare" (33), "Secret Rare" (28), "Holo Rare V" and "Holo Rare VMAX"
-  (17), "Radiant Rare" (5), "LEGEND" (4), "Shiny rare" (2), and
-  "None" (3). Before the game builds packs from the card lists, map
-  each TCGdex name to a rarity list entry.
+- Slot maps: every set file has one, and each passes
+  `python3 tools/slotmap/validate.py`. Each row links the exact TCGdex
+  rarity and variant to a rarity list entry, so the rarity name map is
+  done. Still open:
+  - Outcomes with no odds (`—`). The game needs a fallback rule for
+    them.
+  - Splits by card number that no source confirms, and other
+    assumptions. Each set file lists them in Open topics, in bullets
+    that start with **Slot map:**.
 - Rarity lists (see [18-ripping.md](18-ripping.md#the-stop-rule)): every
   set file has one. Each set file records, in its own Open
   topics, the entries with no odds and each choice about the order.
