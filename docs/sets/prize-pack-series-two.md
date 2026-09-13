@@ -42,8 +42,8 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | SWSH Black Star Promos SWSH149 | Flareon V | Pokémon (Fire) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
 | SWSH Black Star Promos SWSH150 | Vaporeon V | Pokémon (Water) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
 | SWSH Black Star Promos SWSH151 | Jolteon V | Pokémon (Lightning) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
-| SWSH Black Star Promos SWSH195 | Leafeon | Pokémon (Grass) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
-| SWSH Black Star Promos SWSH197 | Glaceon | Pokémon (Water) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
+| SWSH Black Star Promos SWSH195 | Leafeon VSTAR | Pokémon (Grass) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
+| SWSH Black Star Promos SWSH197 | Glaceon VSTAR | Pokémon (Water) | No rarity (promo or Basic Energy) | Holo (Play! Pokémon stamp) |
 | Sword & Shield 159/202 | Crushing Hammer | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Sword & Shield 162/202 | Energy Switch | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp) |
 | Sword & Shield 164/202 | Great Ball | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp) |
@@ -53,9 +53,9 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Battle Styles 008/163 | Cherrim | Pokémon (Grass) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Battle Styles 037/163 | Octillery | Pokémon (Water) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Battle Styles 085/163 | Single Strike Urshifu V | Pokémon (Fighting) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Battle Styles 086/163 | Single Strike Urshifu | Pokémon (Fighting) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Battle Styles 086/163 | Single Strike Urshifu VMAX | Pokémon (Fighting) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Battle Styles 087/163 | Rapid Strike Urshifu V | Pokémon (Fighting) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Battle Styles 088/163 | Rapid Strike Urshifu | Pokémon (Fighting) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Battle Styles 088/163 | Rapid Strike Urshifu VMAX | Pokémon (Fighting) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Battle Styles 096/163 | Houndoom | Pokémon (Darkness) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Battle Styles 102/163 | Bronzong | Pokémon (Metal) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Battle Styles 121/163 | Bruno | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
@@ -73,12 +73,12 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Battle Styles 141/163 | Single Strike Energy | Energy | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Chilling Reign 043/198 | Inteleon | Pokémon (Water) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Chilling Reign 045/198 | Ice Rider Calyrex V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Chilling Reign 046/198 | Ice Rider Calyrex | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Chilling Reign 046/198 | Ice Rider Calyrex VMAX | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Chilling Reign 058/198 | Galarian Articuno V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Chilling Reign 064/198 | Cresselia | Pokémon (Psychic) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Chilling Reign 070/198 | Malamar | Pokémon (Psychic) | Rare | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Chilling Reign 074/198 | Shadow Rider Calyrex V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Chilling Reign 075/198 | Shadow Rider Calyrex | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Chilling Reign 075/198 | Shadow Rider Calyrex VMAX | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Chilling Reign 080/198 | Galarian Zapdos V | Pokémon (Fighting) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Chilling Reign 088/198 | Passimian | Pokémon (Fighting) | Rare | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Chilling Reign 097/198 | Galarian Moltres V | Pokémon (Darkness) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
@@ -91,31 +91,31 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Chilling Reign 149/198 | Peonia | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
 | Chilling Reign 150/198 | Peony | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
 | Evolving Skies 007/203 | Leafeon V | Pokémon (Grass) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 008/203 | Leafeon | Pokémon (Grass) | Rare VMAX | Holo (Play! Pokémon stamp) |
-| Evolving Skies 018/203 | Flareon | Pokémon (Fire) | Rare VMAX | Holo (Play! Pokémon stamp) |
-| Evolving Skies 030/203 | Vaporeon | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 008/203 | Leafeon VMAX | Pokémon (Grass) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 018/203 | Flareon VMAX | Pokémon (Fire) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 030/203 | Vaporeon VMAX | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 031/203 | Suicune V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Evolving Skies 034/203 | Ludicolo | Pokémon (Water) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Evolving Skies 040/203 | Glaceon V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 041/203 | Glaceon | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
-| Evolving Skies 051/203 | Jolteon | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 041/203 | Glaceon VMAX | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 051/203 | Jolteon VMAX | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 055/203 | Flaaffy | Pokémon (Lightning) | Uncommon | Holo (Play! Pokémon stamp) |
 | Evolving Skies 063/203 | Galarian Articuno | Pokémon (Psychic) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Evolving Skies 064/203 | Espeon V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 065/203 | Espeon | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 065/203 | Espeon VMAX | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 074/203 | Sylveon V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 075/203 | Sylveon | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 075/203 | Sylveon VMAX | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 082/203 | Galarian Zapdos | Pokémon (Fighting) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Evolving Skies 083/203 | Medicham V | Pokémon (Fighting) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Evolving Skies 093/203 | Galarian Moltres | Pokémon (Darkness) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Evolving Skies 094/203 | Umbreon V | Pokémon (Darkness) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 095/203 | Umbreon | Pokémon (Darkness) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 095/203 | Umbreon VMAX | Pokémon (Darkness) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 103/203 | Zoroark | Pokémon (Darkness) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Evolving Skies 106/203 | Altaria | Pokémon (Dragon) | Rare | Normal (Play! Pokémon stamp) |
 | Evolving Skies 110/203 | Rayquaza V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 111/203 | Rayquaza | Pokémon (Dragon) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 111/203 | Rayquaza VMAX | Pokémon (Dragon) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 122/203 | Duraludon V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Evolving Skies 123/203 | Duraludon | Pokémon (Dragon) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Evolving Skies 123/203 | Duraludon VMAX | Pokémon (Dragon) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Evolving Skies 142/203 | Boost Shake | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp) |
 | Evolving Skies 143/203 | Copycat | Trainer (Supporter) | Uncommon | Holo (Play! Pokémon stamp) |
 | Evolving Skies 144/203 | Crystal Cave | Trainer (Stadium) | Uncommon | Normal (Play! Pokémon stamp) |
@@ -125,14 +125,14 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Evolving Skies 161/203 | Stormy Mountains | Trainer (Stadium) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Fusion Strike 042/264 | Oricorio | Pokémon (Fire) | Rare | Normal (Play! Pokémon stamp) |
 | Fusion Strike 078/264 | Inteleon V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Fusion Strike 079/264 | Inteleon | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Fusion Strike 079/264 | Inteleon VMAX | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Fusion Strike 103/264 | Boltund V | Pokémon (Lightning) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Fusion Strike 104/264 | Boltund | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Fusion Strike 104/264 | Boltund VMAX | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Fusion Strike 113/264 | Mew V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Fusion Strike 114/264 | Mew | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Fusion Strike 114/264 | Mew VMAX | Pokémon (Psychic) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Fusion Strike 124/264 | Meloetta | Pokémon (Psychic) | Rare | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Fusion Strike 156/264 | Gengar V | Pokémon (Darkness) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Fusion Strike 157/264 | Gengar | Pokémon (Darkness) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Fusion Strike 157/264 | Gengar VMAX | Pokémon (Darkness) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Fusion Strike 185/264 | Genesect V | Pokémon (Metal) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Fusion Strike 193/264 | Latias | Pokémon (Dragon) | Rare | Normal (Play! Pokémon stamp) |
 | Fusion Strike 194/264 | Latios | Pokémon (Dragon) | Rare | Normal (Play! Pokémon stamp) |
@@ -147,9 +147,9 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Brilliant Stars 008/172 | Torterra | Pokémon (Grass) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Brilliant Stars 010/172 | Wormadam | Pokémon (Grass) | Rare | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 013/172 | Shaymin V | Pokémon (Grass) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Brilliant Stars 014/172 | Shaymin | Pokémon (Grass) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Brilliant Stars 014/172 | Shaymin VSTAR | Pokémon (Grass) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Brilliant Stars 017/172 | Charizard V | Pokémon (Fire) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Brilliant Stars 018/172 | Charizard | Pokémon (Fire) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Brilliant Stars 018/172 | Charizard VSTAR | Pokémon (Fire) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Brilliant Stars 021/172 | Moltres | Pokémon (Fire) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 022/172 | Entei V | Pokémon (Fire) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Brilliant Stars 040/172 | Lumineon V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
@@ -159,7 +159,7 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Brilliant Stars 052/172 | Pachirisu | Pokémon (Lightning) | Uncommon | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 062/172 | Dusknoir | Pokémon (Psychic) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 064/172 | Whimsicott V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Brilliant Stars 065/172 | Whimsicott | Pokémon (Psychic) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Brilliant Stars 065/172 | Whimsicott VSTAR | Pokémon (Psychic) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Brilliant Stars 077/172 | Wormadam | Pokémon (Fighting) | Rare | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 079/172 | Lucario | Pokémon (Fighting) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 088/172 | Honchkrow V | Pokémon (Darkness) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
@@ -169,7 +169,7 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Brilliant Stars 109/172 | Garchomp | Pokémon (Dragon) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 121/172 | Bibarel | Pokémon (Colorless) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Brilliant Stars 122/172 | Arceus V | Pokémon (Colorless) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Brilliant Stars 123/172 | Arceus | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Brilliant Stars 123/172 | Arceus VSTAR | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Brilliant Stars 126/172 | Tornadus | Pokémon (Colorless) | Rare | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 132/172 | Boss's Orders | Trainer (Supporter) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Brilliant Stars 134/172 | Cheren's Care | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |

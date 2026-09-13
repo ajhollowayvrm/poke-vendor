@@ -39,20 +39,20 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | No. | Card | Category | Rarity | Variants |
 |---|---|---|---|---|
 | Lost Origin 130/196 | Giratina V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 131/196 | Giratina | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Lost Origin 131/196 | Giratina VSTAR | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 135/196 | Hisuian Goodra V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 136/196 | Hisuian Goodra | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Lost Origin 136/196 | Hisuian Goodra VSTAR | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 153/196 | Arezu | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
 | Lost Origin 161/196 | Lost City | Trainer (Stadium) | Uncommon | Holo (Play! Pokémon stamp) |
 | Silver Tempest 038/195 | Wailord | Pokémon (Water) | Uncommon | Holo (Play! Pokémon stamp) |
 | Silver Tempest 057/195 | Regieleki V | Pokémon (Lightning) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 058/195 | Regieleki | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Silver Tempest 058/195 | Regieleki VMAX | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Silver Tempest 068/195 | Kirlia | Pokémon (Psychic) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Silver Tempest 131/195 | Dragonite | Pokémon (Dragon) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Silver Tempest 135/195 | Regidrago V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 136/195 | Regidrago | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Silver Tempest 136/195 | Regidrago VSTAR | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Silver Tempest 138/195 | Lugia V | Pokémon (Colorless) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 139/195 | Lugia | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Silver Tempest 139/195 | Lugia VSTAR | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Silver Tempest 147/195 | Archeops | Pokémon (Colorless) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Silver Tempest 153/195 | Capturing Aroma | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Silver Tempest 155/195 | Emergency Jelly | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp) |

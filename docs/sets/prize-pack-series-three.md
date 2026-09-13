@@ -48,7 +48,7 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Brilliant Stars 091/172 | Liepard | Pokémon (Darkness) | Rare | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 121/172 | Bibarel | Pokémon (Colorless) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Brilliant Stars 122/172 | Arceus V | Pokémon (Colorless) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Brilliant Stars 123/172 | Arceus | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Brilliant Stars 123/172 | Arceus VSTAR | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Brilliant Stars 126/172 | Tornadus | Pokémon (Colorless) | Rare | Normal (Play! Pokémon stamp) |
 | Brilliant Stars 132/172 | Boss's Orders | Trainer (Supporter) | Rare Holo | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Brilliant Stars 134/172 | Cheren's Care | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
@@ -62,7 +62,7 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Astral Radiance 030/189 | Starmie V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Astral Radiance 037/189 | Regice | Pokémon (Water) | Rare | Normal (Play! Pokémon stamp) |
 | Astral Radiance 039/189 | Origin Forme Palkia V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Astral Radiance 040/189 | Origin Forme Palkia | Pokémon (Water) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Astral Radiance 040/189 | Origin Forme Palkia VSTAR | Pokémon (Water) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Astral Radiance 043/189 | Hisuian Basculin | Pokémon (Water) | Common | Holo (Play! Pokémon stamp) |
 | Astral Radiance 046/189 | Radiant Greninja | Pokémon (Water) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Astral Radiance 051/189 | Regieleki | Pokémon (Lightning) | Rare | Normal (Play! Pokémon stamp) |
@@ -72,7 +72,7 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Astral Radiance 081/189 | Radiant Hawlucha | Pokémon (Fighting) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Astral Radiance 108/189 | Registeel | Pokémon (Metal) | Rare | Normal (Play! Pokémon stamp) |
 | Astral Radiance 113/189 | Origin Forme Dialga V | Pokémon (Metal) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Astral Radiance 114/189 | Origin Forme Dialga | Pokémon (Metal) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Astral Radiance 114/189 | Origin Forme Dialga VSTAR | Pokémon (Metal) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Astral Radiance 118/189 | Regidrago | Pokémon (Dragon) | Rare | Normal (Play! Pokémon stamp) |
 | Astral Radiance 130/189 | Regigigas | Pokémon (Colorless) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Astral Radiance 136/189 | Canceling Cologne | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
@@ -89,9 +89,9 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Astral Radiance 154/189 | Switch Cart | Trainer (Item) | Uncommon | Holo (Play! Pokémon stamp) |
 | Astral Radiance 155/189 | Temple of Sinnoh | Trainer (Stadium) | Uncommon | Normal (Play! Pokémon stamp) |
 | Pokémon GO 030/078 | Mewtwo V | Pokémon (Psychic) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Pokémon GO 031/078 | Mewtwo | Pokémon (Psychic) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Pokémon GO 031/078 | Mewtwo VSTAR | Pokémon (Psychic) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 048/196 | Kyurem V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 049/196 | Kyurem | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Lost Origin 049/196 | Kyurem VMAX | Pokémon (Water) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Lost Origin 050/196 | Cramorant | Pokémon (Water) | Rare | Holo (Play! Pokémon stamp) |
 | Lost Origin 062/196 | Clefairy | Pokémon (Psychic) | Common | Normal (Play! Pokémon stamp) |
 | Lost Origin 066/196 | Gengar | Pokémon (Psychic) | Rare Holo | Normal (Play! Pokémon stamp) |
@@ -101,16 +101,16 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Lost Origin 079/196 | Comfey | Pokémon (Psychic) | Rare | Normal (Play! Pokémon stamp) |
 | Lost Origin 084/196 | Hisuian Arcanine | Pokémon (Fighting) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Lost Origin 118/196 | Drapion V | Pokémon (Darkness) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 119/196 | Drapion | Pokémon (Darkness) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Lost Origin 119/196 | Drapion VSTAR | Pokémon (Darkness) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 123/196 | Radiant Hisuian Sneasler | Pokémon (Darkness) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Lost Origin 124/196 | Radiant Steelix | Pokémon (Metal) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Lost Origin 130/196 | Giratina V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 131/196 | Giratina | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Lost Origin 131/196 | Giratina VSTAR | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 135/196 | Hisuian Goodra V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 136/196 | Hisuian Goodra | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Lost Origin 136/196 | Hisuian Goodra VSTAR | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 143/196 | Snorlax | Pokémon (Colorless) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Lost Origin 146/196 | Hisuian Zoroark V | Pokémon (Colorless) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Lost Origin 147/196 | Hisuian Zoroark | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Lost Origin 147/196 | Hisuian Zoroark VSTAR | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Lost Origin 153/196 | Arezu | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
 | Lost Origin 155/196 | Colress's Experiment | Trainer (Supporter) | Uncommon | Normal (Play! Pokémon stamp) |
 | Lost Origin 156/196 | Damage Pump | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
@@ -121,19 +121,19 @@ Every card in the series, with its prints. Source: the Bulbapedia set list for P
 | Lost Origin 168/196 | Tool Box | Trainer (Item) | Uncommon | Normal (Play! Pokémon stamp) |
 | Silver Tempest 016/195 | Radiant Tsareena | Pokémon (Grass) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Silver Tempest 033/195 | Alolan Vulpix V | Pokémon (Water) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 034/195 | Alolan Vulpix | Pokémon (Water) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Silver Tempest 034/195 | Alolan Vulpix VSTAR | Pokémon (Water) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Silver Tempest 038/195 | Wailord | Pokémon (Water) | Uncommon | Holo (Play! Pokémon stamp) |
 | Silver Tempest 057/195 | Regieleki V | Pokémon (Lightning) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 058/195 | Regieleki | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
+| Silver Tempest 058/195 | Regieleki VMAX | Pokémon (Lightning) | Rare VMAX | Holo (Play! Pokémon stamp) |
 | Silver Tempest 059/195 | Radiant Alakazam | Pokémon (Psychic) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Silver Tempest 068/195 | Kirlia | Pokémon (Psychic) | Uncommon | Normal (Play! Pokémon stamp), Holo (Play! Pokémon stamp) |
 | Silver Tempest 090/195 | Hisuian Arcanine V | Pokémon (Fighting) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Silver Tempest 120/195 | Radiant Jirachi | Pokémon (Metal) | Rare Radiant | Holo (Play! Pokémon stamp) |
 | Silver Tempest 131/195 | Dragonite | Pokémon (Dragon) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Silver Tempest 135/195 | Regidrago V | Pokémon (Dragon) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 136/195 | Regidrago | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Silver Tempest 136/195 | Regidrago VSTAR | Pokémon (Dragon) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Silver Tempest 138/195 | Lugia V | Pokémon (Colorless) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
-| Silver Tempest 139/195 | Lugia | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
+| Silver Tempest 139/195 | Lugia VSTAR | Pokémon (Colorless) | Rare VSTAR | Holo (Play! Pokémon stamp) |
 | Silver Tempest 140/195 | Ho-Oh V | Pokémon (Colorless) | Ultra-Rare Rare | Holo (Play! Pokémon stamp) |
 | Silver Tempest 147/195 | Archeops | Pokémon (Colorless) | Rare Holo | Normal (Play! Pokémon stamp) |
 | Silver Tempest 154/195 | Earthen Seal Stone | Trainer (Item) | Rare Holo | Normal (Play! Pokémon stamp) |

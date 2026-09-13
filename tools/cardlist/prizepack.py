@@ -18,7 +18,7 @@ DOCS = os.path.join(ROOT, "docs", "sets")
 SERIES = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
 TYPES = {"Grass", "Fire", "Water", "Lightning", "Psychic", "Fighting", "Darkness", "Metal", "Fairy", "Dragon", "Colorless"}
 TRAINER = {"Item", "Supporter", "Stadium", "Pokémon Tool", "Tool", "Technical Machine", "Trainer"}
-SUFFIX = {"TCGV": " V", "TCGVMAX": " VMAX", "TCGVSTAR": " VSTAR", "TCGVUNION": " V-UNION", "ex": " ex", "EX": "-EX",
+SUFFIX = {"TCGV": " V", "TCGVMAX": " VMAX", "TCGVSTAR": " VSTAR", "VMAX": " VMAX", "VSTAR": " VSTAR", "V": " V", "TCGVUNION": " V-UNION", "ex": " ex", "EX": "-EX",
           "GX": "-GX", "Star": " ☆", "TCGRadiant": "", "Radiant": ""}
 STAMP = "Play! Pokémon stamp"
 FETCHED = "2026-09-12"
