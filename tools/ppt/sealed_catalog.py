@@ -33,6 +33,7 @@ PACKS_RE = re.compile(NUM + r"\s+(?:\(\d+\)\s+)?(?:[\w&.:'’—–-]+\s+){0,8}?
 HOLDS_RE = re.compile(NUM + r"\s+(?:[\w&.:'’—–-]+\s+){0,6}?(booster boxes|elite trainer boxes|booster bundles|build & battle boxes|"
                       r"collections|tins|blisters|trainer kits|theme decks|mini tins)\b", re.I)
 KINDS = [
+    ("Prize pack", r"\bprize pack series\b"),
     ("Case or display", r"\b(case|display)\b"),
     ("Booster box", r"\bbooster box\b"),
     ("Elite Trainer Box", r"\belite trainer box\b"),
@@ -45,7 +46,17 @@ KINDS = [
     ("Booster pack", r"\b(booster pack|sleeved booster|fun pack|mini booster)\b"),
     ("Collection", r"\b(collection|premium|box|chest|binder|album|figure|poster|pin)\b"),
 ]
-DEFAULT_PACKS = {"Booster box": 36, "Booster bundle": 6, "Build & Battle": 4, "Booster pack": 1}
+DEFAULT_PACKS = {"Booster box": 36, "Booster bundle": 6, "Build & Battle": 4, "Booster pack": 1, "Prize pack": 1}
+# A deck product has fixed cards. The catalog leaves it out when it holds no booster pack (no random pull).
+DECK_PRODUCT = re.compile(r"(?i)\b(theme decks?|starter decks?|battle decks?|battle arena|trainer kits?|training kits?|"
+                          r"league battle|world championship|starter set|battle academy|ex battle stadium|master trainer|"
+                          r"my first battle|trainer battle deck|deck)\b")
+
+
+def is_deck_product(name):
+    if re.search(r"(?i)\bbuild (?:&|and) battle\b|\bdeck box(?:es)?\b", name):
+        return False
+    return bool(DECK_PRODUCT.search(name))
 BULBAPEDIA = os.path.join(HERE, "cache", "bulbapedia")
 BP_PAGES = {"wizards-of-the-coast": ["Original", "Neo"], "e-card": ["Legendary Collection", "E-Card"], "ex": ["EX"],
             "diamond-pearl-platinum": ["Diamond & Pearl", "Platinum"],
@@ -247,6 +258,9 @@ def products_by_group():
     return out
 
 
+REMOVED = collections.Counter()
+
+
 def build_rows(gid, rows, release_by_slug, priced, eras=None, sections=None):
     slug = SLUG_OF.get(gid)
     hand_text = ""
@@ -258,6 +272,9 @@ def build_rows(gid, rows, release_by_slug, priced, eras=None, sections=None):
     for x, text in sorted(rows, key=lambda r: (kind_of(r[0]["name"]), r[0]["name"])):
         kind = kind_of(x["name"])
         packs, src = packs_of(kind, x["name"], text, (eras or {}).get(slug), sections, hand_text)
+        if is_deck_product(x["name"]) and (kind == "Case or display" or not packs):
+            REMOVED[kind] += 1
+            continue
         holds = holds_of(x["name"], text) if kind == "Case or display" else "—"
         rel = (x.get("presaleInfo") or {}).get("releasedOn")
         q = quarter(rel) or (quarter(release_by_slug.get(slug)) and f"{quarter(release_by_slug.get(slug))} (set)") or "—"
@@ -274,7 +291,7 @@ def table(rows):
 
 
 INTRO = ("Every physical sealed product that the TCGplayer catalog (TCGCSV) lists for this set, fetched 2026-09-12. "
-         "Code cards are left out.\n\n"
+         "Code cards, and deck products with no booster pack (fixed cards, no random pull), are left out.\n\n"
          "- **Packs** is the number of booster packs. **Packs from** names the source: the TCGplayer description, "
          "the product name, the Bulbapedia TCG merchandise page for the series, the set file's own table (Build & Battle Stadium: boxes × 4 plus the extra packs), or a default for the kind (booster box 36, booster bundle 6, Build & Battle Box 4). "
          "Check a default before the game uses it.\n"
@@ -325,6 +342,7 @@ if __name__ == "__main__":
     for kind, c in sorted(stats.items()):
         print(f"{kind}: {dict(c)}")
     print(f"sets with products: {len(per_slug)}; multi-set groups with products: {len(multi)}")
+    print(f"deck products left out, by kind: {dict(REMOVED)}")
     sample = per_slug.get("black-bolt", [])[:8]
     print(table(sample))
     if write:
