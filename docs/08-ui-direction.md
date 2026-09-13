@@ -3,7 +3,9 @@
 ## Status
 
 Two screens designed and approved: the home hub, and its Wallet / cash
-ledger destination (see below). Mockups live outside this repo for now, in
+ledger destination (see below). The buy screen has a reviewed lo-fi
+mockup. Inventory has recorded decisions and no mockup. Mockups live
+outside this repo for now, in
 Claude Design canvases — this doc records the decisions so they survive
 independent of any single mockup file.
 
@@ -194,8 +196,90 @@ Design canvas. The review on 2026-09-13 removed preorders from the game
 shop screen and added the screens for no drop, a later-day pickup, and
 the game shop stop.
 
+### 3. Inventory — decisions recorded
+
+The hub's Collection target opens this screen. Bought product arrives
+here, and the rip-or-hold decision happens here.
+
+**Decided:**
+
+- **Four tabs: Sealed, Raw, Slabs, and Bulk.** Each tab holds one item
+  type and uses one row layout.
+  - **Sealed** holds packs, boxes, ETBs, collections, and collector
+    items such as UPCs and SPCs. It also holds the loose packs that
+    come back from a product with a broken seal (see
+    [18-ripping.md](18-ripping.md#sealed-products-in-the-rip)).
+  - **Raw** holds ungraded cards: hits from a rip, promo cards from a
+    product, and bought singles.
+  - **Slabs** holds graded cards.
+  - **Bulk** holds the bulk groups. Each rip adds one bulk group (see
+    [18-ripping.md](18-ripping.md#the-summary)).
+- **A portfolio header** sits above the tabs. It shows the market
+  value, the amount paid, and the unrealized gain or loss for all of
+  Inventory. It has the same value / paid / net shape as the rip
+  summary.
+- **An away item stays in its tab with a status tag.** An away item is
+  an item that the player owns but does not hold. The tags are:
+  - "On the way", with the days left (see
+    [12-acquiring-product.md](12-acquiring-product.md#where-bought-product-goes)).
+  - "At PSA", "At BGS", or "At CGC", with the days left (see
+    [10-grading.md](10-grading.md#turnaround)).
+  - "Listed", with the channel, for example "Listed · TCGPlayer".
+  - "Consigned", with the shop name (see
+    [15-selling.md](15-selling.md#the-local-game-shop)).
+
+  The player cannot rip, sell, or grade an item with a status tag.
+- **A Keep flag marks the personal collection.** The player marks an
+  item as Keep. A kept item stays in its tab with a Keep tag. A "Kept"
+  filter shows only the kept items. Sell flows and the rip queue do not
+  offer a kept item. The portfolio header counts kept items, because
+  they are still assets.
+- **A sealed row shows the sealed market price and the amount paid.**
+  It does not show the expected value of opening the product. An
+  upgrade adds the expected value to each sealed row (see
+  [09-upgrades.md](09-upgrades.md)). Until then, the math is a player
+  skill (see
+  [05-pricing-and-market.md](05-pricing-and-market.md#sealed-product--separate-pricing-logic)).
+- **Select mode works on every tab.** The actions for a selection
+  depend on the tab:
+
+  | Tab | Actions |
+  | --- | --- |
+  | Sealed | Rip, Keep |
+  | Raw | Sell, Grade, Keep |
+  | Slabs | Sell, Keep |
+  | Bulk | Open topic |
+
+  "Rip" sends the selection to the rip queue (see
+  [18-ripping.md](18-ripping.md#the-rip-queue)). "Grade" puts all the
+  selected cards in one grading submission.
+- **A tap on a row opens a full detail screen**, not a modal. The
+  detail screen for a card shows the card image, the raw price, the
+  graded prices, the four subgrades, the status, and the actions. The
+  graded prices are PSA 10, PSA 9, CGC 10, and CGC 9, the same as on
+  the rip screen (see
+  [18-ripping.md](18-ripping.md#money-on-the-rip-screen)). The
+  subgrades show what the player knows (see
+  [10-grading.md](10-grading.md#eyeball-vs-paid-reveal-vs-permanent-upgrade-for-every-subgrade)).
+
+**Open topics:**
+
+- The batch actions on the Bulk tab. The player sells bulk only to a
+  game shop, at a stop on a store run.
+- The detail screen for a sealed item and for a bulk group.
+- The sort order in each tab.
+- The expected-value upgrade: its cost, and which doc lists it.
+  [09-upgrades.md](09-upgrades.md) puts each upgrade in its system's
+  own doc.
+- The number that the hub's Collection target shows: the portfolio
+  market value, or only the kept items.
+- How the Keep flag connects to the goal of a collection that the
+  player is proud of (see [01-premise-and-loop.md](01-premise-and-loop.md)).
+- How the player removes a listing, and on which screen.
+
+**Mockup:** none yet.
+
 ## What's next
 
-The buy screen (above) has a reviewed lo-fi mockup. The next screen is
-Inventory / collection, where bought product arrives and the
-rip-or-hold decision happens. The remaining destination screens follow.
+Inventory (above) has recorded decisions and no mockup. The next step
+is a lo-fi Inventory mockup. The remaining destination screens follow.

@@ -32,8 +32,9 @@ you:
   eyeballed at all — the card back's design is uniform across every
   card, so there is no visual cue to judge it by eye. Back centering
   shows as unknown until measured. (This was the first subgrade
-  designed; see the collection screen's card-detail modal for the
-  current UI treatment.)
+  designed; see the Inventory detail screen in
+  [08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded)
+  for the current UI treatment.)
 - **Corners**: obvious whitening is eyeballable. Fine fraying is not —
   it needs magnification (a loupe).
 - **Edges**: visible chips are eyeballable. Micro-whitening along an
