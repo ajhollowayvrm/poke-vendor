@@ -5,7 +5,7 @@
 Two screens designed and approved: the home hub, and its Wallet / cash
 ledger destination (see below). The buy screen has a reviewed lo-fi
 mockup. Inventory has a reviewed lo-fi mockup. The social media hub has
-recorded decisions and no mockup. Mockups live
+a reviewed lo-fi mockup. Mockups live
 outside this repo for now, in
 Claude Design canvases — this doc records the decisions so they survive
 independent of any single mockup file.
@@ -305,7 +305,7 @@ approved it. The decisions on collection value, sort order, the sealed
 and bulk detail screens, bulk on a store run, and removing a listing
 came after the review. The mockup does not show them yet.
 
-### 4. Social media hub — decisions recorded
+### 4. Social media hub — decisions recorded, lo-fi mockup reviewed
 
 The hub's Followers target opens this screen. Social media is
 optional (see
@@ -348,11 +348,19 @@ optional (see
   sales and the calendar.
 - Where a for-sale post shows its sale result.
 - The live stream setup screen (the hub's Go Live row), and Whatnot.
+- Whether "Post" on the item detail screen and "Post this pull" on
+  the rip summary skip the type and item steps, because they already
+  know the item.
+- What a show promo attaches to. The mockup lets the player pick a
+  card show from the calendar, not an Inventory item.
 
-**Mockup:** none yet.
+**Mockup:** the lo-fi mockup is the "PokeVendor Social Media Screen"
+Claude Design canvas. It shows account creation, the hub, the hub with
+the analytics upgrade, and the two New post steps (pick a type, then
+pick an item). The review on 2026-09-13 approved it. The follower tip
+card in the mockup is a placeholder.
 
 ## What's next
 
-The buy screen and Inventory (above) have reviewed lo-fi mockups. The
-social media hub has recorded decisions. The next step is a lo-fi
-social media hub mockup. The remaining destination screens follow.
+The buy screen, Inventory, and the social media hub (above) have
+reviewed lo-fi mockups. The remaining destination screens follow.
