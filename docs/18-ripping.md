@@ -93,6 +93,32 @@ choice. A $5 card is a hit, but a $20 stop rule does not stop on it.
 mode and with every stop rule (see
 [14-counterfeit-risk.md](14-counterfeit-risk.md)).
 
+## Missing odds
+
+The game builds each pack from the set's slot map (see
+[13-sets.md](13-sets.md#what-goes-in-a-set-file)). Some outcomes have no
+odds (`—`), because no source gives them. The game fills them with the
+era fallback:
+
+1. Keep every odds value that the set gives. The **remainder** is 100%
+   minus those values.
+2. The outcomes with no set value share the remainder. These are the
+   `—` rows and the slot's `Rest` row.
+3. If each of those outcomes has an **era median**, they share the
+   remainder in proportion to the medians. The era file lists the
+   medians in its **Fallback odds** table.
+4. If any of them has no era median, they share the remainder in
+   proportion to their matching card counts. Each card then has the
+   same chance. An outcome with no era median shows that the slot does
+   not follow the era pattern, for example a POP Series 2-card pack. So
+   the whole slot uses card counts, not a mix of medians and counts.
+
+The result for each slot always adds up to 100%. An odds value from the
+fallback is an estimate. The game does not show it as a sourced value.
+
+`python3 tools/slotmap/odds.py <set>` prints the final odds of a set,
+with the source of each value.
+
 ## Opening a pack
 
 The rip must feel like opening a real pack. In Normal and Fast:

@@ -201,8 +201,11 @@ file.
   `python3 tools/slotmap/validate.py`. Each row links the exact TCGdex
   rarity and variant to a rarity list entry, so the rarity name map is
   done. Still open:
-  - Outcomes with no odds (`—`). The game needs a fallback rule for
-    them.
+  - Outcomes with no odds (`—`): 123 outcomes in 44 sets. The era
+    fallback fills them (see
+    [18-ripping.md](18-ripping.md#missing-odds)): 60 by era medians
+    and 63 by card counts. Each era file has a **Fallback odds** table.
+    A value from the fallback is an estimate, not a sourced figure.
   - Splits by card number that no source confirms, and other
     assumptions. Each set file lists them in Open topics, in bullets
     that start with **Slot map:**.
