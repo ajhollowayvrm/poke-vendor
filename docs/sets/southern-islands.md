@@ -114,6 +114,16 @@ Every card in the set, with its variants. Source: the TCGdex API (set `si1`), fe
 | 16/18 | Lickitung | Pokémon (Colorless) | Common | Normal |
 | 17/18 | Vileplume | Pokémon (Grass) | Common | Reverse holo |
 | 18/18 | Primeape | Pokémon (Fighting) | Common | Normal |
+## Slot map
+
+Southern Islands has no booster packs. The folder holds a fixed set of
+18 cards, so every folder gives the buyer every row below.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Regular | 12 | Regular | Regular | Common | Normal | All | 100% |
+| Reverse holo | 6 | Reverse holo (galaxy foil) | Reverse holo (galaxy foil) | Common | Reverse holo | All | 100% |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

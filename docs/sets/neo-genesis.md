@@ -202,6 +202,41 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo1`), f
 | 109/111 | Lightning Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 110/111 | Psychic Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 111/111 | Water Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (no added text), 1st Edition (1st Edition). A
+product must name its print run.
+
+Confidence: the slots use 6 commons and 1 energy (ThePriceDex), not
+PSA's 7-common figure. Nos. 4–5, 10–11, and 17–18 are the two Holo
+prints each of Feraligatr, Meganium, and Typhlosion — the six final
+starter holos the Elite Fourum guide reports at 1 in 82.5 packs each
+(6 × 1/82.5 = 7.27%). They still count as Rare Holo for the stop rule.
+The other 13 Holo Rares share the remainder of the Rare Holo bucket.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 6 | Common | Common | Common | Normal | Not nos. 106–111 | 100% |
+| Energy | 1 | Basic Energy | Common | Common | Normal | Nos. 106–111 | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare Holo (final starters) | Rare Holo | Rare | Holo | Nos. 4–5, 10–11, 17–18 | 7.27% |
+| Rare slot | 1 | Rare Holo (other) | Rare Holo | Rare | Holo | Not nos. 4–5, 10–11, 17–18 | Rest |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 1 in 1.5 |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -231,6 +266,11 @@ so the stop rule does not split them into their own entry.
 
 ## Open topics
 
+- **Slot map:** uses 6 commons and 1 energy (ThePriceDex), not PSA's
+  7-common figure. Confirm before implementation.
+- **Slot map:** the "Rare Holo (other)" row uses Rest odds, derived
+  from 1 in 3 overall Holo minus the six starter holos' 7.27%.
+  Confirm this arithmetic against a direct source.
 - Pack order: see the era file. No Neo Genesis-specific source exists.
 - Energy count: 7 commons (PSA) vs. 6 commons and 1 energy
   (ThePriceDex). Searched 2026-09-12: no source found to resolve this.

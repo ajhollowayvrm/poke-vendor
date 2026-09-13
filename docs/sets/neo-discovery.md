@@ -153,6 +153,36 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo2`), f
 | 73/75 | Hyper Devolution Spray | Trainer | Uncommon | Normal, Normal (1st Edition) |
 | 74/75 | Ruin Wall | Trainer | Uncommon | Normal, Normal (1st Edition) |
 | 75/75 | Energy Ark | Trainer | Common | Normal, Normal (1st Edition) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (no added text), 1st Edition (1st Edition). A
+product must name its print run.
+
+Confidence: the pack holds 7 commons, 3 uncommons, and 1 rare, with no
+energy slot (see "Pack structure"). All cards in one row have equal
+weight (Elite Fourum: "no artificial rarity differences").
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 7 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | All | 33.3% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see

@@ -212,6 +212,39 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo4`), f
 | 111/105 | Shining Raichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
 | 112/105 | Shining Steelix | Pokémon (Metal) | Rare | Holo, Holo (1st Edition) |
 | 113/105 | Shining Tyranitar | Pokémon (Darkness) | Rare | Holo, Holo (1st Edition) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (no added text), 1st Edition (1st Edition). A
+product must name its print run.
+
+Confidence: the pack holds 7 commons, 3 uncommons, and 1 rare, with no
+energy slot (see "Pack structure"). The eight Shining Pokémon
+(106/105–113/105) sit inside the rare slot's holo pool. This table
+does not model the error print run, which puts an extra Shining
+Pokémon in a common slot instead of the rare slot; see Open topics.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 7 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Shining Pokémon (secret rare) | Shining Pokémon (secret rare) | Rare | Holo | Nos. 106–113 | 1 in 12 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 106–113 | Rest |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 1 in 1.5 |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -241,6 +274,12 @@ the most common entry to the rarest entry.
 
 ## Open topics
 
+- **Slot map:** the "Rare Holo" row uses Rest odds, derived from the
+  overall Holo rate minus the Shining Pokémon rate. Confirm this
+  arithmetic against a direct source.
+- **Slot map:** the error print run (an extra Shining Pokémon in a
+  common slot, about 29% of Unlimited boxes in a small sample) is not
+  in the table. Add it once the common-slot position is confirmed.
 - Pack order: see the era file. No Neo Destiny-specific source exists.
 - Shining slot in normal packs: Unknown.
 - Position of the common slot that holds an error Shining card:

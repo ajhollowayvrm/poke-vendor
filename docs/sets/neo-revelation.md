@@ -154,6 +154,38 @@ Every card in the set, with its variants. Source: the TCGdex API (set `neo3`), f
 | 64/64 | Old Rod | Trainer | Common | Normal, Normal (1st Edition) |
 | 65/64 | Shining Gyarados | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
 | 66/64 | Shining Magikarp | Pokémon (Water) | Rare | Holo, Holo (1st Edition) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (no added text), 1st Edition (1st Edition). A
+product must name its print run.
+
+Confidence: the pack holds 7 commons, 3 uncommons, and 1 rare, with no
+energy slot (see "Pack structure"). Shining Gyarados (65/64) and
+Shining Magikarp (66/64) sit inside the rare slot's holo pool, at the
+numbers the card list gives them.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 7 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Shining Pokémon (secret rare) | Shining Pokémon (secret rare) | Rare | Holo | Nos. 65–66 | 1 in 24 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 65–66 | Rest |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 1 in 1.5 |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -180,6 +212,9 @@ the most common entry to the rarest entry.
 
 ## Open topics
 
+- **Slot map:** the "Rare Holo" row uses Rest odds, derived from the
+  overall Holo rate minus the Shining Pokémon rate. Confirm this
+  arithmetic against a direct source.
 - Pack order: see the era file. No Neo Revelation-specific source
   exists.
 - Shining slot: the rare slot is likely but not confirmed.

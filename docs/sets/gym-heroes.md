@@ -212,6 +212,38 @@ Every card in the set, with its variants. Source: the TCGdex API (set `gym1`), f
 | 130/132 | Lightning Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 131/132 | Psychic Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
 | 132/132 | Water Energy | Energy (Normal) | Common | Normal, Normal (1st Edition) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (no added text), 1st Edition (1st Edition). A
+product must name its print run.
+
+Confidence: the slots use 6 commons and 1 energy (ThePriceDex, and the
+Elite Fourum guide confirms a known energy sheet for this set), not
+PSA's 7-common figure. TCGdex splits this set's rares into two rarity
+names: "Holo Rare" for the holo pool and "Rare" for the non-holo pool.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 6 | Common | Common | Common | Normal | Not nos. 127–132 | 100% |
+| Energy | 1 | Basic Energy | Common | Common | Normal | Nos. 127–132 | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Rare Holo | Rare Holo | Holo Rare | Holo | All | 33.3% |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | Rest |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -238,6 +270,8 @@ the most common entry to the rarest entry.
 
 ## Open topics
 
+- **Slot map:** uses 6 commons and 1 energy (ThePriceDex), not PSA's
+  7-common figure. Confirm before implementation.
 - Pack order: see the era file. No Gym Heroes-specific source exists.
 - Energy count: 7 commons (PSA) vs. 6 commons and 1 energy
   (ThePriceDex). Searched 2026-09-12: no source found to resolve this.

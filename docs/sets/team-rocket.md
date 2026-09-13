@@ -165,6 +165,37 @@ Every card in the set, with its variants. Source: the TCGdex API (set `base5`), 
 | 81/82 | Full Heal Energy | Energy (Special) | Uncommon | Normal, Normal (1st Edition) |
 | 82/82 | Potion Energy | Energy (Special) | Uncommon | Normal, Normal (1st Edition) |
 | 83/82 | Dark Raichu | Pokémon (Lightning) | Rare | Holo, Holo (1st Edition) |
+## Slot map
+
+How the game builds one pack from the card list. Each row is one
+outcome of one slot. The game picks one outcome for each card in the
+slot, then picks one card at random from the cards that match the row.
+
+- **Slot** and **Count** come from the pack structure above.
+- **Rarity list entry** links the outcome to the stop rule.
+- **TCGdex rarity** and **Variant** match the card list exactly.
+- **Cards** limits the matching cards: `All`, `Nos. a–b`, `Not nos. a–b`,
+  `Part: <card list table>`, or `Category: <category>`.
+- **Odds in slot** is the chance of the outcome for one card in the
+  slot. `Rest` is the remainder. `—` means no source gives the odds.
+- A variant that no row uses does not come from booster packs.
+
+**Print runs:** a pack holds one print run. The run adds its text to
+each variant: Unlimited (no added text), 1st Edition (1st Edition). A
+product must name its print run.
+
+Confidence: the pack holds 7 commons, 3 uncommons, and 1 rare, with no
+energy slot (see "Pack structure"). Dark Raichu (83/82) sits inside
+the rare slot's holo pool, at the number the card list gives it.
+
+| Slot | Count | Outcome | Rarity list entry | TCGdex rarity | Variant | Cards | Odds in slot |
+|---|---|---|---|---|---|---|---|
+| Common | 7 | Common | Common | Common | Normal | All | 100% |
+| Uncommon | 3 | Uncommon | Uncommon | Uncommon | Normal | All | 100% |
+| Rare slot | 1 | Secret Rare (Dark Raichu) | Secret Rare (Dark Raichu) | Rare | Holo | Nos. 83 | 1 in 51 |
+| Rare slot | 1 | Rare Holo | Rare Holo | Rare | Holo | Not nos. 83 | — |
+| Rare slot | 1 | Rare | Rare | Rare | Normal | All | 1 in 1.5 |
+
 ## Rarity list
 
 The stop rule menu on the rip screen shows this list (see
@@ -194,6 +225,8 @@ the most common entry to the rarest entry.
 
 ## Open topics
 
+- **Slot map:** no source gives Rare Holo odds separately from Dark
+  Raichu's 1 in 51 figure. Confirm the split before implementation.
 - Pack order: see the era file. No Team Rocket-specific source exists.
 - Holo rate conflict: about 33% (PSA, ThePriceDex) vs. 21.1% (Loose
   Packs, 180 packs). Loose Packs does not explain the low count.
