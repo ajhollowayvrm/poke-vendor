@@ -4,7 +4,7 @@
 
 Two screens designed and approved: the home hub, and its Wallet / cash
 ledger destination (see below). The buy screen has a reviewed lo-fi
-mockup. Inventory has recorded decisions and no mockup. Mockups live
+mockup. Inventory has a reviewed lo-fi mockup. Mockups live
 outside this repo for now, in
 Claude Design canvases — this doc records the decisions so they survive
 independent of any single mockup file.
@@ -196,7 +196,7 @@ Design canvas. The review on 2026-09-13 removed preorders from the game
 shop screen and added the screens for no drop, a later-day pickup, and
 the game shop stop.
 
-### 3. Inventory — decisions recorded
+### 3. Inventory — decisions recorded, lo-fi mockup reviewed
 
 The hub's Collection target opens this screen. Bought product arrives
 here, and the rip-or-hold decision happens here.
@@ -261,6 +261,12 @@ here, and the rip-or-hold decision happens here.
   [18-ripping.md](18-ripping.md#money-on-the-rip-screen)). The
   subgrades show what the player knows (see
   [10-grading.md](10-grading.md#eyeball-vs-paid-reveal-vs-permanent-upgrade-for-every-subgrade)).
+- **A pulled card has no amount paid of its own.** The portfolio
+  header counts the price of the opened product once, in the amount
+  paid. A pulled card's row shows "pulled" in place of a gain. A
+  bought card's row shows its gain.
+- **The "Kept only" filter is a checkbox** at the top of the list on
+  the Sealed, Raw, and Slabs tabs.
 
 **Open topics:**
 
@@ -277,9 +283,13 @@ here, and the rip-or-hold decision happens here.
   player is proud of (see [01-premise-and-loop.md](01-premise-and-loop.md)).
 - How the player removes a listing, and on which screen.
 
-**Mockup:** none yet.
+**Mockup:** the lo-fi mockup is the "PokeVendor Inventory Screen"
+Claude Design canvas. It shows the four tabs, select mode on Sealed
+and Raw, the expected-value upgrade, the card detail screen, and the
+detail screen for a card at a grader. The review on 2026-09-13
+approved it.
 
 ## What's next
 
-Inventory (above) has recorded decisions and no mockup. The next step
-is a lo-fi Inventory mockup. The remaining destination screens follow.
+The buy screen and Inventory (above) have reviewed lo-fi mockups. The
+remaining destination screens follow.

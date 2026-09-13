@@ -33,7 +33,7 @@ you:
   card, so there is no visual cue to judge it by eye. Back centering
   shows as unknown until measured. (This was the first subgrade
   designed; see the Inventory detail screen in
-  [08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded)
+  [08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded-lo-fi-mockup-reviewed)
   for the current UI treatment.)
 - **Corners**: obvious whitening is eyeballable. Fine fraying is not —
   it needs magnification (a loupe).
