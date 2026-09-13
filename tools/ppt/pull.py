@@ -131,8 +131,10 @@ def main():
         used = data.get("metadata", {}).get("apiCallsConsumed", {}).get("total")
         done += 1
         print(f"set {gid}: {len(cards)} cards, {used} credits, daily credits left {remaining}", flush=True)
-        wait_for_minute_window(headers)
-        time.sleep(1.5)
+        # A 429 costs no credits, so only wait here when no minute calls are left.
+        # Otherwise call the next set at once and let the 429 retry wait for the window.
+        wait_for_minute_window(headers, need=1)
+        time.sleep(0.5)
     print(f"DONE this run: {done} sets pulled, {skipped} already cached, {len(set_ids)} sets in total", flush=True)
 
 
