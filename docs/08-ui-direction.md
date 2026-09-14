@@ -358,11 +358,13 @@ optional (see
   - The card in Inventory has a "Listed · Social" tag until it sells.
   - The sale is an entry in the Wallet ledger.
 
+  The post stays listed for 4 weeks, the same as every listing (see
+  [15-selling.md](15-selling.md#listing-time)). If the card does not
+  sell, the row shows "No sale" and the tag goes away.
+
 **Open topics:**
 
 - The live stream setup screen (the hub's Go Live row), and Whatnot.
-- How long a for-sale post stays listed, and what its row shows if
-  the card does not sell.
 
 **Mockup:** the lo-fi mockup is the "PokeVendor Social Media Screen"
 Claude Design canvas. It shows account creation, the hub, the hub with

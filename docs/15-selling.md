@@ -29,6 +29,22 @@ Specific fee values are not in this doc. Platform fees change, so the
 game pulls current values when it needs them. Grading fees follow the
 same rule (see [10-grading.md](10-grading.md#data-source)).
 
+## Listing time
+
+A listing stays up for **4 weeks** (28 game days). The game has weeks
+but no months (see [16-time-and-day.md](16-time-and-day.md#rent)).
+This rule covers TCGPlayer, eBay auctions and Buy It Now, Facebook
+Marketplace, social media for-sale posts, and consignment at a game
+shop.
+
+- If the card sells, the sale happens on a random day inside the 4
+  weeks. The channel's own rules set the chance of a sale.
+- If the card does not sell, the listing ends after 4 weeks. The
+  Listed or Consigned tag goes away, and the player can sell the card
+  again. The Activity log gets an entry.
+- The player can remove a listing before it ends (see
+  [08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded-lo-fi-mockup-reviewed)).
+
 ## TCGPlayer
 
 The main channel for raw singles.
@@ -99,6 +115,8 @@ This channel needs a social media account (see
   Inventory. After the sale, the post's row on the social media hub
   shows "Sold $X", and the sale is an entry in the Wallet ledger (see
   [08-ui-direction.md](08-ui-direction.md#4-social-media-hub--decisions-recorded-lo-fi-mockup-reviewed)).
+  If the post ends after 4 weeks with no sale, the row shows "No sale"
+  (see [Listing time](#listing-time)).
 
 ## The local game shop
 
