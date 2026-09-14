@@ -5,7 +5,8 @@
 Two screens designed and approved: the home hub, and its Wallet / cash
 ledger destination (see below). The buy screen has a reviewed lo-fi
 mockup. Inventory has a reviewed lo-fi mockup. The social media hub has
-a reviewed lo-fi mockup. Mockups live
+a reviewed lo-fi mockup. The live stream has recorded decisions and no
+mockup. Mockups live
 outside this repo for now, in
 Claude Design canvases — this doc records the decisions so they survive
 independent of any single mockup file.
@@ -362,9 +363,7 @@ optional (see
   [15-selling.md](15-selling.md#listing-time)). If the card does not
   sell, the row shows "No sale" and the tag goes away.
 
-**Open topics:**
-
-- The live stream setup screen (the hub's Go Live row), and Whatnot.
+**Open topics:** none. The live stream screens are section 5.
 
 **Mockup:** the lo-fi mockup is the "PokeVendor Social Media Screen"
 Claude Design canvas. It shows account creation, the hub, the hub with
@@ -374,7 +373,32 @@ follower tips, for-sale results, the confirm screen, and show promos
 came after the review. The mockup does not show them yet. Its
 follower tip card is a placeholder.
 
+### 5. Live stream — decisions recorded
+
+The hub's Go Live row opens the setup screen. The row shows only if
+the player has a social media account (see
+[06-social-media.md](06-social-media.md#social-media-is-optional)).
+The stream rules are in
+[06-social-media.md](06-social-media.md#live-streams-time-cost-action).
+
+**Decided:**
+
+- **The setup screen** picks the length (2 or 3 hours), the products
+  and cards for the stream, and the start: now, or a later day on the
+  calendar.
+- **The stream screen is live, and it has no skip.** At any time, the
+  player rips a product, gives away an item, auctions a card, offers a
+  Buy Now sale, shows a card, or talks to chat.
+- **End** stops the stream early. The unused hours go back to the day.
+- **The summary** shows the peak viewer count, the tips, the Whatnot
+  results and fees, the pulls, and the followers gained or lost.
+
+**Open topics:** none.
+
+**Mockup:** none yet.
+
 ## What's next
 
 The buy screen, Inventory, and the social media hub (above) have
-reviewed lo-fi mockups. The remaining destination screens follow.
+reviewed lo-fi mockups. The live stream has recorded decisions and no
+mockup. The remaining destination screens follow.

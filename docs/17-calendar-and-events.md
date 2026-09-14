@@ -106,9 +106,15 @@ left.
 
 ## Scheduled entries
 
-These appear weeks ahead, because they need real planning.
+Card shows and rent appear weeks ahead, because they need real
+planning. A scheduled live stream appears when the player schedules it.
 
 - **Card shows**: multi-day blocks. Shows get their own design.
+- **A scheduled live stream**: the player puts a stream on a later
+  day, any number of days ahead. Followers see it, so it brings more
+  viewers. A missed scheduled stream costs followers and authenticity
+  (see
+  [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
 - **Rent due**: every 4 weeks, with a warning 3 days before (see
   [16-time-and-day.md](16-time-and-day.md#rent)).
 

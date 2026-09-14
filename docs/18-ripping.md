@@ -228,6 +228,12 @@ After the last pack, a summary shows:
 If the player stops early, the summary covers the packs that the rip
 opened.
 
+## Ripping on a live stream
+
+A rip on a live stream allows only the Normal and Fast speeds, because
+the viewers want to see the reveal (see
+[06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
+
 ## Open topics
 
 - The real pack order for each set, from set research (see
@@ -236,8 +242,3 @@ opened.
   [14-counterfeit-risk.md](14-counterfeit-risk.md)).
 - The condition of pulled cards (see [10-grading.md](10-grading.md)
   and [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md)).
-- Ripping on a live stream (see
-  [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
-  The current proposal: a live stream rip allows only Normal and Fast,
-  because the viewers want to see the reveal. Decide this with the live
-  stream design.

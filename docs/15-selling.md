@@ -33,9 +33,9 @@ same rule (see [10-grading.md](10-grading.md#data-source)).
 
 A listing stays up for **4 weeks** (28 game days). The game has weeks
 but no months (see [16-time-and-day.md](16-time-and-day.md#rent)).
-This rule covers TCGPlayer, eBay auctions and Buy It Now, Facebook
-Marketplace, social media for-sale posts, and consignment at a game
-shop.
+This rule covers TCGPlayer, eBay Buy It Now, Facebook Marketplace,
+social media for-sale posts, and consignment at a game shop. An eBay
+auction has its own end time (see [eBay](#ebay)).
 
 - If the card sells, the sale happens on a random day inside the 4
   weeks. The channel's own rules set the chance of a sale.
@@ -70,7 +70,10 @@ The strongest channel for graded slabs. It also sells sealed product
 and high-value singles, and it reaches international buyers.
 
 - **Auction**: the bids set the price. An auction can end high, or it
-  can end well below value. This is real variance.
+  can end well below value. This is real variance. The player picks a
+  length of 1, 3, 5, 7, or 10 days, as on real eBay. The auction ends
+  on its last day. The highest bid wins, or the auction ends with no
+  bid. It does not follow the 4-week [Listing time](#listing-time).
 - **Buy It Now**: a fixed price that the player sets. It is slower,
   but the price is known.
 - eBay takes the highest fees of all the online channels.
@@ -96,6 +99,11 @@ stream time-cost action in
 - Whatnot opens at **follower tier 1 (1,000 followers)** (see
   [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#follower-tiers)).
 - The player puts cards up for auction on the stream, and viewers bid.
+- The player can also offer a card at a Buy Now price. A viewer can
+  buy it at once.
+- Auctions and Buy Now sales use only the cards that the player picked
+  in the stream setup (see
+  [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
 - More followers bring more viewers, more bidders, and higher prices.
 - A small audience means low bids. An auction can end below value.
 - Whatnot takes platform fees.

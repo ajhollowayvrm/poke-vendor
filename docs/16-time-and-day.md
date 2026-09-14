@@ -64,7 +64,7 @@ These values are a starting point for balancing, not final numbers.
 | Far garage sale | 8 |
 | Camping a store drop | 6 |
 | Local meet | 3 |
-| Live stream (including Whatnot) | 2–3 |
+| Live stream (including Whatnot) | 2 or 3, which the player picks. End stops it early, and the unused hours go back to the day. |
 | Store run | About 40 min per store |
 | Facebook Marketplace pickup or meetup | 1 |
 | Day job | 8 |

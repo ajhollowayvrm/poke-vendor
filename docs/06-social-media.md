@@ -33,10 +33,48 @@ other action in a day.
 
 ### Live streams (time-cost action)
 
-Live pack openings or live trading sessions. Higher risk, higher reward:
+Live pack openings and live Whatnot sales. Higher risk, higher reward:
 real-time audience, tips as income, no editing safety net if it flops.
 Competes for the day's time budget the same way a garage sale or meet does —
 going live is a real scheduling trade-off, not a free add-on.
+
+A stream has no trading segment. Trading stays at local meets.
+
+**Setup.** Before a stream, the player picks:
+
+- The length: 2 or 3 hours (see
+  [16-time-and-day.md](16-time-and-day.md#starting-hour-values)).
+- The sealed products and the cards for the stream. During the
+  stream, the player can use only these items.
+- The start: now, or a later day on the calendar.
+
+**A scheduled stream** goes on the calendar, and followers see it
+ahead. It brings more viewers. A missed scheduled stream costs
+followers and authenticity.
+
+**During the stream**, the player acts at any time. The stream has no
+skip. The actions are:
+
+- **Rip a product.** A stream rip allows only the Normal and Fast
+  speeds (see
+  [18-ripping.md](18-ripping.md#ripping-on-a-live-stream)).
+- **Give away a card or a product.** A giveaway brings more viewers,
+  gains followers, and raises authenticity.
+- **Auction a card.** Viewers bid live.
+- **Offer a Buy Now sale.** The player sets a fixed price, and a
+  viewer can buy the card at once.
+- **Show a card.** It raises viewer interest.
+- **Talk to chat.** It keeps viewers from leaving.
+
+Auctions and Buy Now sales use Whatnot, which opens at follower tier 1
+(see [15-selling.md](15-selling.md#whatnot)).
+
+**The stream ends** when its hours run out, or when the player taps
+End. The unused hours go back to the day.
+
+**The summary** shows the peak viewer count, the tips, the auction and
+Buy Now results with the Whatnot fees, the pulls from the rips, and
+the followers gained or lost.
 
 This gives social media exactly one meaningful internal trade-off: post for
 free whenever, or commit real time to a stream for a bigger, riskier payoff.
