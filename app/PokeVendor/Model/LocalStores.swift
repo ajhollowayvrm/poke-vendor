@@ -72,8 +72,8 @@ extension Market {
         guard r.double(0...1) < store.stockChance else { return [] }
         let kinds = store.isGameShop ? ["Booster pack", "Booster bundle", "Elite Trainer Box"]
                                      : ["Booster pack", "Blister", "Tin", "Booster bundle", "Elite Trainer Box", "Collection"]
-        let options = (SetLibrary.set(slug).products ?? []).filter {
-            kinds.contains($0.kind) && $0.msrp != nil && !$0.name.contains("Dollar General") && $0.packs <= 11
+        let options = SetLibrary.catalog.filter {
+            kinds.contains($0.kind) && $0.msrp != nil && !$0.isClubExclusive && $0.packs <= 11
         }
         guard !options.isEmpty else { return [] }
         let count = r.int(1...(store.isGameShop ? 3 : 2))

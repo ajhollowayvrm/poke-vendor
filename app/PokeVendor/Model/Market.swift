@@ -71,7 +71,7 @@ enum Market {
 
     static func offers(for store: Storefront, day: Int) -> [StoreOffer] {
         let set = SetLibrary.set(slug)
-        let products = (set.products ?? []).filter { !$0.name.contains("Dollar General") }
+        let products = SetLibrary.catalog
         var r = rng(store, day: day)
         let delivery = Balance.deliveryDays[store] ?? 3
         var out: [StoreOffer] = []
@@ -91,7 +91,7 @@ enum Market {
                                       price: retail(p.market * r.double(2.0...2.6)), shipping: 0, deliveryDays: delivery))
             }
         case .pokemonCenter:
-            let dropKinds = products.filter { ["Booster bundle", "Elite Trainer Box", "Collection", "Tin"].contains($0.kind) }
+            let dropKinds = products.filter { ["Booster bundle", "Elite Trainer Box", "Collection", "Tin"].contains($0.kind) && !$0.isClubExclusive }
             if let p = dropKinds.isEmpty ? nil : dropKinds[r.int(0...(dropKinds.count - 1))], let msrp = p.msrp {
                 out.append(StoreOffer(id: id(0), store: store, item: .product(p, slug), price: msrp, shipping: 0,
                                       deliveryDays: delivery, note: "Drop · one attempt"))

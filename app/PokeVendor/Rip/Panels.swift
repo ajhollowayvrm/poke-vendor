@@ -209,6 +209,22 @@ struct SummaryView: View {
                     StatCell(label: "Rip net", value: signedMoney(ripNet), color: ripNet >= 0 ? Theme.green : Theme.orange)
                 }
             }
+            if !model.packExtras.isEmpty {
+                Text("ALSO IN THE BOX · \(model.packExtras.count)")
+                    .font(.system(size: 11, weight: .semibold))
+                    .kerning(0.8)
+                    .foregroundStyle(Theme.muted)
+                ForEach(model.packExtras, id: \.self) { promo in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(promo.name).font(.subheadline.weight(.medium))
+                            Text("\(promo.rarity) · \(promo.num)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                        Spacer()
+                        Text(money(promo.market ?? 0)).font(.subheadline.monospaced())
+                    }
+                }
+            }
             Text("HITS · \(hits.count)")
                 .font(.system(size: 11, weight: .semibold))
                 .kerning(0.8)

@@ -17,14 +17,46 @@ extension CardPrint {
     func gradedPrice(_ key: String) -> Double? { graded[key] ?? nil }
 }
 
+/// A sealed product from catalog.json (tools/export/catalog.py).
 struct Product: Codable, Hashable, Identifiable {
+    struct PackMix: Codable, Hashable {
+        let slug: String
+        let packs: Int
+    }
+
+    /// A card in the product that is not in a pack, for example a promo.
+    struct Promo: Codable, Hashable {
+        let name: String
+        let num: String
+        let setName: String
+        let rarity: String
+        let variant: String
+        let market: Double?
+        let graded: [String: Double?]
+        let image: String?
+
+        var print: CardPrint {
+            CardPrint(num: num, name: name, rarity: rarity, variant: variant, market: market, graded: graded, image: image)
+        }
+    }
+
     let id: String
     let name: String
     let kind: String
     let packs: Int
+    let mix: [PackMix]
+    let promos: [Promo]
+    /// True when the product holds one random promo from the list, for example a Surprise Box.
+    let pickOnePromo: Bool
     let market: Double
     let msrp: Double?
     let image: String?
+
+    /// The set of each pack, in order.
+    var packSlugs: [String] { mix.flatMap { Array(repeating: $0.slug, count: $0.packs) } }
+    var homeSlug: String { mix.first?.slug ?? "prismatic-evolutions" }
+    /// A warehouse-club product. Pokemon Center drops and local shelves do not carry it.
+    var isClubExclusive: Bool { name.contains("Costco") || name.contains("Sam's Club") }
 }
 
 struct SlotOutcome: Codable {
@@ -47,7 +79,6 @@ struct SetData: Codable {
     let packImage: String?
     let slots: [PackSlot]
     let prints: [CardPrint]
-    let products: [Product]?
 
     static func load(_ slug: String) -> SetData {
         guard let url = Bundle.main.url(forResource: slug, withExtension: "json"),

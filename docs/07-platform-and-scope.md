@@ -12,7 +12,9 @@ The app is in `app/`. XcodeGen makes the Xcode project from
 `app/project.yml`. The app opens on the home hub. It has days and a clock, End Day, the
 day job and the paycheck, rent (and game over when the player cannot
 pay it), the Wallet ledger, and the Activity log. The player buys
-Prismatic Evolutions product online from five storefronts, rips it in
+Prismatic Evolutions product, and collections that mix packs from
+Surging Sparks, Stellar Crown, Twilight Masquerade, and Paradox Rift,
+online from five storefronts, rips it in
 Inventory, lists cards on TCGplayer or eBay, and grades cards at PSA,
 CGC, or BGS. A store run visits big stores and two game shops, where the
 player buys at MSRP, sells singles on the buylist, and sells bulk for
@@ -22,7 +24,9 @@ posts, grow followers, take sponsor deals, and post cards for sale. The values t
 garage sales, shows, holds, consignment, and league night are not
 built yet.
 `python3 tools/export/rip_set.py <set>` writes the
-set data that the app reads.
+set data that the app reads, and `python3 tools/export/catalog.py`
+writes the sealed product catalog with each product's pack mix and
+promo cards.
 
 ## Pokemon IP note
 

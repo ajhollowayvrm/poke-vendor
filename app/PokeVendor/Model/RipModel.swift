@@ -21,7 +21,10 @@ struct Reveal: Equatable {
 
 @MainActor @Observable
 final class RipModel {
-    let cardSet: SetData
+    /// The set of the pack in hand. A mixed product changes set from pack to pack.
+    var cardSet: SetData { SetLibrary.set(currentPack?.setSlug ?? "prismatic-evolutions") }
+    /// The promo cards that came out when this pack broke its product's seal.
+    private(set) var packExtras: [CardPrint] = []
     /// The rip queue. The whole queue is one rip (docs/18-ripping.md, The rip queue).
     let queue: [QueuedPack]
     let ripID = UUID()
@@ -49,12 +52,11 @@ final class RipModel {
 
     init(items: [SealedItem], store: GameStore?) {
         queue = items.flatMap { item in
-            (0..<item.packs).map { _ in
-                QueuedPack(sourceID: item.id, setSlug: item.setSlug, paidPerPack: item.paidPerPack, productName: item.name)
+            (store?.packSlugs(of: item) ?? Array(repeating: item.setSlug, count: item.packs)).map { slug in
+                QueuedPack(sourceID: item.id, setSlug: slug, paidPerPack: item.paidPerPack, productName: item.name)
             }
         }
         self.store = store
-        cardSet = SetLibrary.set(items.first?.setSlug ?? "prismatic-evolutions")
         faceUp = UserDefaults.standard.bool(forKey: "rip.faceUp")
         loadPack()
     }
@@ -66,7 +68,9 @@ final class RipModel {
 
     var allCards: [RipCard] { pile + stack }
     var packCost: Double { currentPack?.paidPerPack ?? 0 }
-    var valueSoFar: Double { allCards.filter { seen.contains($0.id) }.reduce(0) { $0 + $1.market } }
+    var valueSoFar: Double {
+        allCards.filter { seen.contains($0.id) }.reduce(0) { $0 + $1.market } + packExtras.reduce(0) { $0 + ($1.market ?? 0) }
+    }
     var net: Double { valueSoFar - packCost }
 
     /// The card that the info panel describes.
@@ -110,6 +114,7 @@ final class RipModel {
         seen = []
         tuckingID = nil
         trickDone = false
+        packExtras = []
         showcaseID = nil
         lastReveal = nil
         phase = .sealed
@@ -130,8 +135,8 @@ final class RipModel {
         guard phase == .sealed else { return }
         phase = .opening
         if let pack = currentPack {
-            store?.commitPack(from: pack.sourceID, setSlug: pack.setSlug, paidPerPack: pack.paidPerPack,
-                              ripID: ripID, cards: stack)
+            packExtras = store?.commitPack(from: pack.sourceID, setSlug: pack.setSlug, paidPerPack: pack.paidPerPack,
+                                           ripID: ripID, cards: stack) ?? []
         }
     }
 

@@ -262,7 +262,15 @@ The cards that the player already saw go to a **pile**.
   - A product that the rip did not reach goes back to Inventory still
     sealed. It keeps its sealed premium.
 - Contents that are not packs, for example a promo card, go to
-  Inventory and show in the summary.
+  Inventory when the rip breaks the product's seal. They show in the
+  summary under "Also in the box". A product that holds one random
+  promo from a list, for example the Prismatic Evolutions Surprise Box,
+  gives one promo from that list.
+- A product can mix packs from several sets, for example the Ogerpon ex
+  Premium Collection. Each pack rips with its own set's slot map and
+  odds, and each set has its own wrapper colors. The unopened packs of
+  a broken product go back to Inventory as loose packs of their own
+  sets.
 
 ## Money on the rip screen
 

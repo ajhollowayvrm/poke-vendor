@@ -12,9 +12,23 @@ enum SetLibrary {
         return set
     }
 
-    static func product(_ id: String?, in slug: String) -> Product? {
+    static let catalog: [Product] = {
+        guard let url = Bundle.main.url(forResource: "catalog", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let products = try? JSONDecoder().decode([Product].self, from: data) else {
+            fatalError("catalog.json is missing or not valid")
+        }
+        return products
+    }()
+
+    static func product(_ id: String?, in slug: String = "") -> Product? {
         guard let id else { return nil }
-        return set(slug).products?.first { $0.id == id }
+        return catalog.first { $0.id == id }
+    }
+
+    /// The loose booster pack product of a set, when the catalog has one.
+    static func loosePack(_ slug: String) -> Product? {
+        catalog.first { $0.kind == "Booster pack" && $0.packs == 1 && $0.homeSlug == slug }
     }
 }
 

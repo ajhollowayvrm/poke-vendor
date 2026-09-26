@@ -216,7 +216,7 @@ final class GameStore {
         guard !cards.isEmpty else { return }
         for card in cards {
             data.openedPaid += card.paid ?? 0
-            if let rip = card.ripID, let i = data.bulk.firstIndex(where: { $0.ripID == rip }) {
+            if let rip = card.ripID, let i = data.bulk.firstIndex(where: { $0.ripID == rip && $0.setSlug == card.setSlug }) {
                 data.bulk[i].cards.append(card.print)
             } else if let i = data.bulk.firstIndex(where: { $0.moved && $0.day == data.day && $0.setSlug == card.setSlug }) {
                 data.bulk[i].cards.append(card.print)
@@ -245,9 +245,17 @@ final class GameStore {
     /// A free loose pack for testing. It counts the market price as paid, and it does not touch cash.
     func addTestPack(slug: String = "prismatic-evolutions") {
         let set = SetLibrary.set(slug)
-        let loose = set.products?.first { $0.kind == "Booster pack" && $0.packs == 1 }
         data.sealed.append(SealedItem(setSlug: slug, name: "\(set.name) Booster Pack", packs: 1, paid: set.packCost ?? 0,
-                                      acquired: .now, source: "Test pack", productID: loose?.id, acquiredDay: data.day))
+                                      acquired: .now, source: "Test pack", productID: SetLibrary.loosePack(slug)?.id,
+                                      acquiredDay: data.day))
+        save()
+    }
+
+    /// A free sealed product for testing, at its market price.
+    func addTestProduct(_ id: String) {
+        guard let p = SetLibrary.product(id) else { return }
+        data.sealed.append(SealedItem(setSlug: p.homeSlug, name: p.name, packs: p.packs, paid: p.market, acquired: .now,
+                                      source: "Test product", productID: p.id, acquiredDay: data.day))
         save()
     }
 
@@ -263,22 +271,40 @@ final class GameStore {
 
     // MARK: - Ripping
 
+    /// The set of each pack in a sealed item, in order.
+    func packSlugs(of item: SealedItem) -> [String] {
+        if item.brokenFrom == nil, let product = SetLibrary.product(item.productID), product.packs == item.packs {
+            return product.packSlugs
+        }
+        return Array(repeating: item.setSlug, count: item.packs)
+    }
+
     /// Called when the rip tears a pack. The seal is broken, so the cards belong to the player at once.
-    /// A product with more packs breaks into loose packs, and the rip takes one of them.
-    func commitPack(from sourceID: UUID, setSlug: String, paidPerPack: Double, ripID: UUID, cards: [RipCard]) {
+    /// When the tear breaks a product's seal, its other packs go back as loose packs, and its promo cards go
+    /// to Raw (docs/18-ripping.md, Sealed products in the rip). Returns those promo cards.
+    @discardableResult
+    func commitPack(from sourceID: UUID, setSlug: String, paidPerPack: Double, ripID: UUID, cards: [RipCard]) -> [CardPrint] {
+        var extras: [CardPrint] = []
         if let i = data.sealed.firstIndex(where: { $0.id == sourceID }) {
             let item = data.sealed.remove(at: i)
-            if item.packs > 1 {
-                let set = SetLibrary.set(item.setSlug)
-                let loose = set.products?.first { $0.kind == "Booster pack" && $0.packs == 1 }
-                for _ in 1..<item.packs {
-                    data.sealed.append(SealedItem(setSlug: item.setSlug, name: "\(set.name) Booster Pack", packs: 1,
-                                                  paid: item.paidPerPack, acquired: item.acquired,
-                                                  source: "From an opened \(item.name)", productID: loose?.id,
-                                                  brokenFrom: item.id, acquiredDay: data.day))
+            var rest = packSlugs(of: item)
+            if let first = rest.firstIndex(of: setSlug) { rest.remove(at: first) } else if !rest.isEmpty { rest.removeFirst() }
+            for slug in rest {
+                data.sealed.append(SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
+                                              paid: item.paidPerPack, acquired: item.acquired,
+                                              source: "From an opened \(item.name)", productID: SetLibrary.loosePack(slug)?.id,
+                                              brokenFrom: item.id, acquiredDay: data.day))
+            }
+            if item.brokenFrom == nil, let product = SetLibrary.product(item.productID) {
+                let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
+                for promo in promos {
+                    data.raw.append(OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil,
+                                              ripID: ripID, acquiredDay: data.day))
+                    extras.append(promo.print)
                 }
             }
-        } else if let i = data.sealed.firstIndex(where: { $0.brokenFrom == sourceID }) {
+        } else if let i = data.sealed.firstIndex(where: { $0.brokenFrom == sourceID && $0.setSlug == setSlug })
+                    ?? data.sealed.firstIndex(where: { $0.brokenFrom == sourceID }) {
             data.sealed.remove(at: i)
         }
         data.openedPaid += paidPerPack
@@ -292,12 +318,13 @@ final class GameStore {
                 bulk.append(print)
             }
         }
-        if let i = data.bulk.firstIndex(where: { $0.ripID == ripID }) {
+        if let i = data.bulk.firstIndex(where: { $0.ripID == ripID && $0.setSlug == setSlug }) {
             data.bulk[i].cards += bulk
         } else if !bulk.isEmpty {
             data.bulk.append(BulkGroup(ripID: ripID, setSlug: setSlug, date: .now, cards: bulk, day: data.day))
         }
         save()
+        return extras
     }
 
     // MARK: - Buying

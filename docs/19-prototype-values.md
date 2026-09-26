@@ -40,6 +40,12 @@ values. Check them against real prices:
 | Binder Collection | $29.99 |
 | Premium Figure Collection | $59.99 |
 | Super-Premium Collection | $119.99 |
+| Premium Collection | $39.99 |
+| Surprise Box | $24.99 |
+| Booster box | $161.64 |
+
+Warehouse-club products (Costco, Sam's Club) are not in Pokemon Center
+drops or on local shelves.
 
 ## Store run and game shops
 

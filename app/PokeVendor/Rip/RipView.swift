@@ -91,7 +91,7 @@ struct RipView: View {
                 }
 
                 if model.phase == .sealed || model.phase == .opening {
-                    PackView(setName: model.cardSet.name, tearProgress: tearProgress, torn: torn)
+                    PackView(setName: model.cardSet.name, slug: model.cardSet.slug, tearProgress: tearProgress, torn: torn)
                         .frame(width: layout.packW, height: layout.packH)
                         .position(x: layout.stackCenter.x,
                                   y: layout.stackCenter.y + (packGone ? geo.size.height : 0))

@@ -3,6 +3,7 @@ import SwiftUI
 /// The sealed booster pack. The top strip tears off along the tear line.
 struct PackView: View {
     let setName: String
+    var slug: String?
     /// How far the finger has moved across the top, from 0 to 1.
     var tearProgress: Double
     var torn: Bool
@@ -17,9 +18,9 @@ struct PackView: View {
             GeometryReader { geo in
                 let size = geo.size
                 ZStack {
-                    PackArt(setName: setName, sheen: sheen)
+                    PackArt(setName: setName, sheen: sheen, slug: slug)
                         .mask(TearSplit(top: false, fraction: Self.tearLine))
-                    PackArt(setName: setName, sheen: sheen)
+                    PackArt(setName: setName, sheen: sheen, slug: slug)
                         .mask(TearSplit(top: true, fraction: Self.tearLine))
                         .rotationEffect(.degrees(torn ? 32 : tearProgress * 7), anchor: .bottomLeading)
                         .offset(x: torn ? size.width * 0.7 : tearProgress * 6,
@@ -43,18 +44,35 @@ struct PackView: View {
 struct PackArt: View {
     let setName: String
     var sheen: Double
+    var slug: String?
+
+    /// Each set gets its own wrapper colors.
+    static func colors(_ slug: String?) -> [Color] {
+        switch slug {
+        case "surging-sparks":
+            [Color(red: 0.35, green: 0.18, blue: 0.05), Color(red: 0.95, green: 0.62, blue: 0.10),
+             Color(red: 1.0, green: 0.86, blue: 0.30), Color(red: 0.90, green: 0.40, blue: 0.10), Color(red: 0.25, green: 0.10, blue: 0.05)]
+        case "stellar-crown":
+            [Color(red: 0.05, green: 0.20, blue: 0.30), Color(red: 0.10, green: 0.60, blue: 0.62),
+             Color(red: 0.80, green: 0.90, blue: 0.95), Color(red: 0.55, green: 0.40, blue: 0.85), Color(red: 0.05, green: 0.12, blue: 0.25)]
+        case "twilight-masquerade":
+            [Color(red: 0.08, green: 0.22, blue: 0.12), Color(red: 0.25, green: 0.60, blue: 0.35),
+             Color(red: 0.60, green: 0.35, blue: 0.70), Color(red: 0.20, green: 0.45, blue: 0.40), Color(red: 0.10, green: 0.08, blue: 0.20)]
+        case "paradox-rift":
+            [Color(red: 0.12, green: 0.05, blue: 0.25), Color(red: 0.45, green: 0.20, blue: 0.70),
+             Color(red: 0.20, green: 0.55, blue: 0.85), Color(red: 0.70, green: 0.25, blue: 0.55), Color(red: 0.06, green: 0.05, blue: 0.18)]
+        default:
+            [Color(red: 0.20, green: 0.10, blue: 0.42), Color(red: 0.62, green: 0.20, blue: 0.62),
+             Color(red: 0.95, green: 0.55, blue: 0.75), Color(red: 0.18, green: 0.62, blue: 0.78), Color(red: 0.10, green: 0.14, blue: 0.40)]
+        }
+    }
 
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
             ZStack {
-                LinearGradient(colors: [Color(red: 0.20, green: 0.10, blue: 0.42),
-                                        Color(red: 0.62, green: 0.20, blue: 0.62),
-                                        Color(red: 0.95, green: 0.55, blue: 0.75),
-                                        Color(red: 0.18, green: 0.62, blue: 0.78),
-                                        Color(red: 0.10, green: 0.14, blue: 0.40)],
-                               startPoint: .topLeading, endPoint: .bottomTrailing)
+                LinearGradient(colors: Self.colors(slug), startPoint: .topLeading, endPoint: .bottomTrailing)
                 PrismFacets()
                     .blendMode(.softLight)
                 PrismStar()

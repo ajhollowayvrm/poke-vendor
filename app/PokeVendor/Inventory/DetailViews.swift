@@ -222,8 +222,25 @@ struct SealedDetailView: View {
                         Tags(keep: item.keep, status: item.status)
                     }
                     DetailBox(title: "Contents") {
-                        Text("\(item.packs) booster pack\(item.packs == 1 ? "" : "s") · 10 cards and 1 Basic Energy each")
-                            .font(.subheadline)
+                        let slugs = store.packSlugs(of: item)
+                        let counts = Dictionary(grouping: slugs, by: { $0 }).map { ($0.key, $0.value.count) }
+                            .sorted { $0.1 > $1.1 }
+                        ForEach(counts, id: \.0) { slug, n in
+                            Text("\(n) \(SetLibrary.set(slug).name) booster pack\(n == 1 ? "" : "s")").font(.subheadline)
+                        }
+                        if item.brokenFrom == nil, let product, !product.promos.isEmpty {
+                            Text(product.pickOnePromo ? "1 random promo card from:" : "Promo cards:")
+                                .font(.caption)
+                                .foregroundStyle(Theme.muted)
+                                .padding(.top, 4)
+                            ForEach(product.promos, id: \.self) { promo in
+                                HStack {
+                                    Text("\(promo.name) · \(promo.num)").font(.subheadline)
+                                    Spacer()
+                                    Text(money(promo.market ?? 0)).font(.subheadline.monospaced()).foregroundStyle(Theme.muted)
+                                }
+                            }
+                        }
                     }
                     DetailBox(title: "Prices") {
                         HStack(spacing: 0) {

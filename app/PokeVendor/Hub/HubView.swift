@@ -270,7 +270,17 @@ struct HubView: View {
             store.moveToBulk(Set(store.data.raw.prefix(2).map(\.id)))
             nav.path = [.inventory(.bulk)]
         }
-        if args.contains("-demo") {
+        if args.contains("-coll") {
+            store.startRun()
+            store.addTestProduct("576482")
+            if let item = store.data.sealed.first { nav.path = [.sealed(item.id)] }
+        }
+        if args.contains("-collrip") {
+            store.startRun()
+            store.addTestProduct("576482")
+            nav.startRip(store.data.sealed)
+        }
+        if args.contains("-demo") && !args.contains("-collrip") {
             if store.data.sealed.filter({ $0.status == nil }).isEmpty { store.addTestPack() }
             nav.startRip(Array(store.data.sealed.filter { $0.status == nil }.prefix(1)))
         }
