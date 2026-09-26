@@ -28,17 +28,54 @@ struct GoneView: View {
     }
 }
 
-struct CardDetailView: View {
-    @Environment(InventoryStore.self) private var store
+/// The status box: where the item is, and the listing with its Remove button.
+struct StatusBox: View {
+    @Environment(GameStore.self) private var store
     let id: UUID
+    let status: ItemStatus?
 
     var body: some View {
-        if let card = store.data.raw.first(where: { $0.id == id }) ?? store.data.slabs.first(where: { $0.id == id }) {
+        DetailBox(title: "Status") {
+            switch status {
+            case nil:
+                Text("In hand").font(.subheadline)
+            case .onTheWay(let days, let from):
+                Text("On the way from \(from.rawValue) · arrives in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
+            case .atGrader(let company, let tier, let days, _):
+                Text("At \(company.rawValue) (\(tier)) · back in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
+            case .listed(let listing):
+                VStack(alignment: .leading, spacing: 6) {
+                    if let end = listing.auctionEndDay {
+                        Text("Auction on eBay · ends day \(end + 1) · expected near \(money(listing.price))").font(.subheadline)
+                    } else {
+                        Text("Listed on \(listing.channel.rawValue) for \(money(listing.price))").font(.subheadline)
+                        Text("Day \(store.day - listing.dayListed + 1) of \(Balance.listingDays)\(listing.insured ? " · insured" : "")")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(Theme.muted)
+                    }
+                    if listing.auctionEndDay == nil {
+                        Button("Remove listing") { store.removeListing(id) }
+                            .buttonStyle(.bordered)
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct CardDetailView: View {
+    @Environment(GameStore.self) private var store
+    let id: UUID
+    @State private var sell: SellRequest?
+    @State private var grade: GradeRequest?
+
+    var body: some View {
+        if let card = store.card(id) {
             ScrollView {
                 VStack(spacing: 14) {
                     RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: card.print.name)
                         .aspectRatio(63.0 / 88.0, contentMode: .fit)
-                        .frame(width: 240)
+                        .frame(width: 220)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                     VStack(spacing: 4) {
@@ -46,35 +83,48 @@ struct CardDetailView: View {
                         Text("\(card.print.rarity) · \(card.print.variant) · \(card.print.num)")
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
-                        if card.keep { Tag(text: "KEEP") }
+                        if let g = card.grade {
+                            Text(g.label).font(.headline).foregroundStyle(Theme.cyan)
+                        }
+                        Tags(keep: card.keep, status: card.status)
                     }
                     DetailBox(title: "Prices") {
                         HStack(alignment: .firstTextBaseline) {
-                            Text("RAW").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                            Text(card.grade == nil ? "RAW" : "THIS SLAB")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(Theme.muted)
                             Spacer()
                             Text(money(card.market)).font(.title3.monospaced().weight(.semibold))
                         }
-                        let g = card.print.graded
-                        HStack(alignment: .top, spacing: 8) {
-                            GradeColumn(company: "CGC", rows: [("10", g.cgc10), ("9", g.cgc9)])
-                            GradeColumn(company: "PSA", rows: [("10", g.psa10), ("9", g.psa9)])
-                            GradeColumn(company: "BGS", rows: [("10", g.bgs10), ("9.5", g.bgs95)])
+                        if card.grade != nil {
+                            HStack {
+                                Text("RAW").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                                Spacer()
+                                Text(money(card.rawMarket)).font(.subheadline.monospaced())
+                            }
                         }
+                        GradedPricesGrid(print: card.print)
                     }
-                    DetailBox(title: "Status") {
-                        Text("In hand").font(.subheadline)
-                    }
+                    ConditionBox(card: card)
+                    StatusBox(id: card.id, status: card.status)
                     DetailBox(title: "Where it came from") {
                         if let paid = card.paid {
-                            Text("Bought for \(money(paid))").font(.subheadline)
+                            Text("Bought for \(money(paid)) on day \(card.acquiredDay + 1)").font(.subheadline)
                         } else {
-                            Text("Pulled from \(SetLibrary.set(card.setSlug).name) · \(card.acquired.formatted(date: .abbreviated, time: .shortened))")
+                            Text("Pulled from \(SetLibrary.set(card.setSlug).name) on day \(card.acquiredDay + 1)")
                                 .font(.subheadline)
                         }
                     }
+                    let free = card.status == nil
                     HStack(spacing: 10) {
-                        Button("Sell") {}.buttonStyle(.bordered).disabled(true)
-                        Button("Grade") {}.buttonStyle(.bordered).disabled(true)
+                        Button("Sell") { sell = SellRequest(ids: [card.id]) }
+                            .buttonStyle(.bordered)
+                            .disabled(!free || card.keep)
+                        if card.grade == nil {
+                            Button("Grade") { grade = GradeRequest(ids: [card.id]) }
+                                .buttonStyle(.bordered)
+                                .disabled(!free || card.keep)
+                        }
                         Button(card.keep ? "Unkeep" : "Keep") { store.setKeep([card.id], !card.keep) }
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(.black)
@@ -86,27 +136,67 @@ struct CardDetailView: View {
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle(card.print.name)
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $sell) { SellSheet(ids: $0.ids) }
+            .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
         } else {
             GoneView()
         }
     }
 }
 
+/// What the player can tell about the condition. A raw card shows eyeball estimates; a BGS slab shows its subgrades.
+struct ConditionBox: View {
+    let card: OwnedCard
+
+    var body: some View {
+        DetailBox(title: card.grade == nil ? "Condition (eyeball)" : "Grade") {
+            if let g = card.grade {
+                if g.company == .bgs {
+                    let c = card.condition
+                    row("Centering", String(format: "%.1f", c.centering))
+                    row("Corners", String(format: "%.1f", c.corners))
+                    row("Edges", String(format: "%.1f", c.edges))
+                    row("Surface", String(format: "%.1f", c.surface))
+                } else {
+                    Text("\(g.company.rawValue) prints only the overall grade.").font(.subheadline).foregroundStyle(Theme.muted)
+                }
+            } else {
+                let c = card.condition
+                row("Centering, front", "about \(String(format: "%.1f", max(1, c.centeringFront - 0.5)))–\(String(format: "%.1f", min(10, c.centeringFront + 0.5)))")
+                row("Centering, back", "Unknown")
+                row("Corners", c.corners <= 8.5 ? "Visible whitening" : "Look sharp · fine wear needs a loupe")
+                row("Edges", c.edges <= 8.5 ? "Visible chips" : "Look clean · micro-whitening needs a loupe")
+                row("Surface", c.surface <= 7.5 ? "A visible scratch" : "Unknown without a raking light")
+            }
+        }
+    }
+
+    private func row(_ label: String, _ value: String) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(label).font(.subheadline).foregroundStyle(Theme.muted)
+            Spacer()
+            Text(value).font(.subheadline.monospaced()).multilineTextAlignment(.trailing)
+        }
+    }
+}
+
 struct SealedDetailView: View {
-    @Environment(InventoryStore.self) private var store
+    @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
     let id: UUID
-    let onRip: (SealedItem) -> Void
+    @State private var sell: SellRequest?
 
     var body: some View {
         if let item = store.data.sealed.first(where: { $0.id == id }) {
+            let product = SetLibrary.product(item.productID, in: item.setSlug)
             ScrollView {
                 VStack(spacing: 14) {
-                    PackArt(setName: SetLibrary.set(item.setSlug).name, sheen: 0)
-                        .frame(width: 180, height: 300)
+                    ProductImage(url: product?.image, setName: SetLibrary.set(item.setSlug).name)
+                        .frame(width: 220, height: 220)
                         .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                     VStack(spacing: 4) {
                         Text(item.name).font(.title3.bold()).multilineTextAlignment(.center)
-                        if item.keep { Tag(text: "KEEP") }
+                        Tags(keep: item.keep, status: item.status)
                     }
                     DetailBox(title: "Contents") {
                         Text("\(item.packs) booster pack\(item.packs == 1 ? "" : "s") · 10 cards and 1 Basic Energy each")
@@ -118,21 +208,25 @@ struct SealedDetailView: View {
                             StatCell(label: "Paid", value: money(item.paid))
                         }
                     }
+                    StatusBox(id: item.id, status: item.status)
                     DetailBox(title: "Where it came from") {
-                        Text("\(item.source) · \(item.acquired.formatted(date: .abbreviated, time: .shortened))")
-                            .font(.subheadline)
+                        Text("\(item.source) · day \(item.acquiredDay + 1)").font(.subheadline)
                     }
+                    let free = item.status == nil && !item.keep
                     HStack(spacing: 10) {
                         Button(item.keep ? "Unkeep" : "Keep") { store.setKeep([item.id], !item.keep) }
                             .buttonStyle(.bordered)
-                        Button("Rip") { onRip(item) }
+                        Button("Sell") { sell = SellRequest(ids: [item.id]) }
+                            .buttonStyle(.bordered)
+                            .disabled(!free)
+                        Button("Rip") { nav.startRip([item]) }
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(.black)
-                            .disabled(item.keep)
+                            .disabled(!free)
                     }
                     .controlSize(.large)
                     if item.keep {
-                        Text("Unkeep this item to rip it.").font(.caption).foregroundStyle(Theme.muted)
+                        Text("Unkeep this item to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
                     }
                 }
                 .padding(16)
@@ -140,6 +234,7 @@ struct SealedDetailView: View {
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Sealed")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $sell) { SellSheet(ids: $0.ids) }
         } else {
             GoneView()
         }
@@ -147,7 +242,7 @@ struct SealedDetailView: View {
 }
 
 struct BulkDetailView: View {
-    @Environment(InventoryStore.self) private var store
+    @Environment(GameStore.self) private var store
     let id: UUID
 
     private struct RarityGroup: Identifiable {
@@ -165,7 +260,7 @@ struct BulkDetailView: View {
             ScrollView {
                 VStack(spacing: 14) {
                     DetailBox(title: "The rip") {
-                        Text("\(SetLibrary.set(group.setSlug).name) · \(group.date.formatted(date: .abbreviated, time: .shortened))")
+                        Text("\(SetLibrary.set(group.setSlug).name) · day \(group.day + 1)")
                             .font(.subheadline)
                         HStack(spacing: 0) {
                             StatCell(label: "Cards", value: "\(group.cards.count)")
@@ -186,6 +281,7 @@ struct BulkDetailView: View {
                         .buttonStyle(.bordered)
                         .controlSize(.large)
                         .disabled(true)
+                    Text("The store run is not built yet.").font(.caption).foregroundStyle(Theme.muted)
                 }
                 .padding(16)
             }

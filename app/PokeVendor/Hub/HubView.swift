@@ -1,0 +1,341 @@
+import SwiftUI
+
+/// The home hub: the summary of the whole game and the fastest way to anywhere (docs/08-ui-direction.md).
+struct HubView: View {
+    @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
+
+    var body: some View {
+        @Bindable var nav = nav
+        NavigationStack(path: $nav.path) {
+            ScrollView {
+                VStack(spacing: 12) {
+                    dayHeader
+                    alerts
+                    tiles
+                    todayCard
+                    freeActions
+                    recentActivity
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
+            .background(Theme.background.ignoresSafeArea())
+            .safeAreaInset(edge: .bottom) { endDayBar }
+            .navigationTitle("PokeVendor")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) { testMenu }
+            }
+            .appDestinations()
+        }
+        .tint(Theme.cyan)
+        .fullScreenCover(item: $nav.rip) { session in
+            RipView(items: session.items, store: store) { nav.rip = nil }
+        }
+        .sheet(item: Binding(get: { store.report }, set: { store.report = $0 })) { report in
+            DayReportView(report: report)
+                .presentationDetents([.medium, .large])
+        }
+        .fullScreenCover(isPresented: Binding(get: { store.data.gameOver != nil }, set: { _ in })) {
+            GameOverView()
+        }
+        .onAppear {
+            #if DEBUG
+            runDemo()
+            #endif
+        }
+    }
+
+    // MARK: - Pieces
+
+    private var dayHeader: some View {
+        HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(store.weekdayName) · Week \(store.week)").font(.title3.bold())
+                Text("Day \(store.day + 1)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(GameStore.clock(store.data.hour)).font(.title3.monospaced().weight(.semibold))
+                Text("\(formatHours(store.hoursLeft)) free today").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+            }
+        }
+        .padding(.top, 8)
+    }
+
+    @ViewBuilder private var alerts: some View {
+        if store.daysUntilRent <= Balance.rentWarningDays {
+            Banner(text: "Rent of \(money(Balance.rent)) is due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s"). You have \(money(store.cash)).",
+                   color: store.canAfford(Balance.rent) ? Theme.cyan : Theme.orange)
+        }
+        if store.isPokemonCenterDropLive && !store.data.pokemonCenterAttempted {
+            Button { nav.path.append(.store(.pokemonCenter)) } label: {
+                Banner(text: "A Pokemon Center drop is live today. You get one attempt.", color: Theme.green)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var tiles: some View {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+            Tile(label: "Cash", value: money(store.cash), detail: "Wallet") { nav.path.append(.wallet) }
+            Tile(label: "Collection", value: money(store.collectionValue),
+                 detail: "Inventory \(money(store.marketValue))") { nav.path.append(.inventory(.sealed)) }
+            Tile(label: "Followers", value: "Start posting", detail: "Not built yet", action: nil)
+            Tile(label: "Reputation", value: "Unknown", detail: "Not built yet", action: nil)
+        }
+    }
+
+    private var todayCard: some View {
+        DetailBox(title: "Today") {
+            if let job = store.job {
+                if store.isWorkDay {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(store.data.sickToday ? "Sick day · paid" : "Work 9 AM – 5 PM").font(.subheadline.weight(.medium))
+                            Text(job.title).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                        Spacer()
+                        if !store.data.sickToday {
+                            Button("Call in sick (\(store.data.sickDaysLeft))") { store.callInSick() }
+                                .buttonStyle(.bordered)
+                                .disabled(store.data.sickDaysLeft == 0 || store.data.hour >= Balance.workStart)
+                        }
+                    }
+                } else {
+                    Text("Day off · \(job.title)").font(.subheadline.weight(.medium))
+                }
+                Text("Payday is Friday: \(money(job.weeklyPay)).").font(.caption).foregroundStyle(Theme.muted)
+            }
+            Divider().overlay(Theme.line)
+            HStack {
+                Text("Rent \(money(Balance.rent))").font(.subheadline)
+                Spacer()
+                Text("due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s")")
+                    .font(.subheadline.monospaced())
+                    .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
+            }
+        }
+    }
+
+    private var freeActions: some View {
+        HStack(spacing: 8) {
+            ActionTile(title: "Packs", icon: "shippingbox") { nav.path.append(.inventory(.sealed)) }
+            ActionTile(title: "Grade", icon: "seal") { nav.path.append(.inventory(.raw)) }
+            ActionTile(title: "Buy", icon: "cart") { nav.path.append(.buy) }
+            ActionTile(title: "Sell", icon: "tag") { nav.path.append(.inventory(.raw)) }
+        }
+    }
+
+    private var recentActivity: some View {
+        Button { nav.path.append(.activity) } label: {
+            DetailBox(title: "Recent activity") {
+                ForEach(store.data.activity.suffix(4).reversed()) { entry in
+                    HStack(alignment: .top) {
+                        Text("D\(entry.day + 1)").font(.caption.monospaced()).foregroundStyle(Theme.muted).frame(width: 34, alignment: .leading)
+                        Text(entry.text).font(.caption).multilineTextAlignment(.leading)
+                        Spacer(minLength: 0)
+                    }
+                }
+                Text("See all").font(.caption.weight(.semibold)).foregroundStyle(Theme.cyan)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var endDayBar: some View {
+        Button {
+            store.endDay()
+        } label: {
+            Text("End Day \(store.day + 1)")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .foregroundStyle(.black)
+        .controlSize(.large)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Theme.background)
+    }
+
+    private var testMenu: some View {
+        Menu {
+            Button("Add $500 test cash") { store.addTestCash(500) }
+            Button("Add a test pack") { store.addTestPack() }
+            Button("Start a new run", role: .destructive) { store.startRun() }
+        } label: {
+            Label("Test", systemImage: "hammer")
+        }
+    }
+
+    #if DEBUG
+    /// Screenshot aid: `-demo` rips a pack at launch.
+    private func runDemo() {
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-route"), i + 1 < args.count {
+            switch args[i + 1] {
+            case "wallet": nav.path = [.wallet]
+            case "buy": nav.path = [.buy]
+            case "amazon": nav.path = [.buy, .store(.amazon)]
+            case "ebay": nav.path = [.buy, .store(.ebay)]
+            case "raw": nav.path = [.inventory(.raw)]
+            case "slabs": nav.path = [.inventory(.slabs)]
+            case "activity": nav.path = [.activity]
+            case "sealed": nav.path = [.inventory(.sealed)]
+            default: break
+            }
+        }
+        if args.contains("-sim") {
+            store.startRun()
+            store.addTestCash(2000)
+            for offer in Market.offers(for: .reseller, day: 0).prefix(2) { _ = store.buy(offer) }
+            let hits = SetLibrary.set(Market.slug).prints.filter { ($0.market ?? 0) > 20 }.shuffled().prefix(5)
+            for print in hits { store.addTestCard(print) }
+            let ids = store.data.raw.map(\.id)
+            store.list(Set(ids.prefix(2)), channel: .tcgplayer, price: { id in GameStore.tcgLowest(for: store.card(id)!.print) }, auctionDays: nil, insured: false)
+            store.list(Set(ids.dropFirst(2).prefix(1)), channel: .ebayAuction, price: { id in store.card(id)!.market }, auctionDays: 3, insured: true)
+            store.submit(Set(ids.suffix(2)), to: .cgc, tier: Balance.gradingTiers[.cgc]![2])
+            for _ in 0..<12 { store.endDay() }
+            store.report = nil
+        }
+        if args.contains("-demo") {
+            if store.data.sealed.filter({ $0.status == nil }).isEmpty { store.addTestPack() }
+            nav.startRip(Array(store.data.sealed.filter { $0.status == nil }.prefix(1)))
+        }
+    }
+    #endif
+}
+
+func formatHours(_ h: Double) -> String {
+    let m = Int((h * 60).rounded())
+    return m % 60 == 0 ? "\(m / 60)h" : "\(m / 60)h \(m % 60)m"
+}
+
+struct Banner: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.circle.fill")
+            Text(text).font(.subheadline).multilineTextAlignment(.leading)
+            Spacer(minLength: 0)
+        }
+        .foregroundStyle(color)
+        .padding(12)
+        .background(color.opacity(0.12))
+        .overlay(Rectangle().stroke(color.opacity(0.5)))
+    }
+}
+
+struct Tile: View {
+    let label: String
+    let value: String
+    let detail: String
+    let action: (() -> Void)?
+
+    var body: some View {
+        Button { action?() } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(label.uppercased())
+                    .font(.system(size: 10, weight: .semibold))
+                    .kerning(0.8)
+                    .foregroundStyle(Theme.muted)
+                Text(value)
+                    .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(action == nil ? Theme.muted : Theme.text)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                Text(detail).font(.caption2).foregroundStyle(Theme.muted).lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(Theme.surface)
+            .overlay(Rectangle().stroke(Theme.line))
+        }
+        .buttonStyle(.plain)
+        .disabled(action == nil)
+    }
+}
+
+struct ActionTile: View {
+    let title: String
+    let icon: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: icon).font(.title3)
+                Text(title).font(.caption.weight(.semibold))
+            }
+            .frame(maxWidth: .infinity, minHeight: 64)
+            .background(Theme.surface)
+            .overlay(Rectangle().stroke(Theme.line))
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Theme.cyan)
+    }
+}
+
+struct DayReportView: View {
+    @Environment(\.dismiss) private var dismiss
+    let report: DayReport
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Good morning. Day \(report.day + 1)").font(.title2.bold())
+            if report.lines.isEmpty {
+                Text("Nothing happened overnight.").foregroundStyle(Theme.muted)
+            }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(report.lines, id: \.self) { line in
+                        HStack(alignment: .top, spacing: 8) {
+                            Circle().fill(Theme.cyan).frame(width: 6, height: 6).padding(.top, 7)
+                            Text(line).font(.subheadline)
+                        }
+                    }
+                }
+            }
+            Button { dismiss() } label: {
+                Text("Start the day").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .foregroundStyle(.black)
+            .controlSize(.large)
+        }
+        .padding(20)
+        .background(Theme.surface.ignoresSafeArea())
+    }
+}
+
+struct GameOverView: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Spacer()
+            Text("Game over").font(.largeTitle.bold())
+            Text(store.data.gameOver ?? "").multilineTextAlignment(.center).foregroundStyle(Theme.muted)
+            DetailBox(title: "Your run") {
+                HStack(spacing: 0) {
+                    StatCell(label: "Days", value: "\(store.day + 1)")
+                    StatCell(label: "Inventory", value: money(store.marketValue))
+                    StatCell(label: "Collection", value: money(store.collectionValue))
+                }
+            }
+            Spacer()
+            Button { store.startRun() } label: {
+                Text("Start a new run").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .foregroundStyle(.black)
+            .controlSize(.large)
+        }
+        .padding(24)
+        .background(Theme.background.ignoresSafeArea())
+    }
+}

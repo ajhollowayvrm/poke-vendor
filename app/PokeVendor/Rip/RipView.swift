@@ -31,8 +31,8 @@ struct RipView: View {
     @State private var model: RipModel
     let onClose: () -> Void
 
-    init(packs: [SealedItem], store: InventoryStore, onClose: @escaping () -> Void) {
-        _model = State(initialValue: RipModel(packs: packs, store: store))
+    init(items: [SealedItem], store: GameStore, onClose: @escaping () -> Void) {
+        _model = State(initialValue: RipModel(items: items, store: store))
         self.onClose = onClose
     }
 

@@ -28,7 +28,7 @@ struct TopBar: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(model.cardSet.name).font(.headline)
-                    Text("Pack \(model.packIndex + 1) of \(model.packs.count) · Booster pack")
+                    Text("Pack \(model.packIndex + 1) of \(model.queue.count) · \(model.currentPack?.productName ?? "Booster pack")")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
@@ -86,11 +86,10 @@ struct CardInfo: View {
                             .foregroundStyle(card.isHit ? Theme.green : Theme.text)
                     }
                 }
-                let g = card.print?.graded
-                HStack(alignment: .top, spacing: 8) {
-                    GradeColumn(company: "CGC", rows: [("10", g?.cgc10), ("9", g?.cgc9)])
-                    GradeColumn(company: "PSA", rows: [("10", g?.psa10), ("9", g?.psa9)])
-                    GradeColumn(company: "BGS", rows: [("10", g?.bgs10), ("9.5", g?.bgs95)])
+                if let print = card.print {
+                    GradedPricesGrid(print: print)
+                } else {
+                    GradedPricesGrid(print: nil)
                 }
             } else {
                 Text("Tap the card to reveal it.\nHold the stack to peek at the cards.")
@@ -104,6 +103,19 @@ struct CardInfo: View {
         .overlay(Rectangle().stroke(Theme.line))
     }
 
+}
+
+/// CGC 10 and 9, PSA 10 and 9, and BGS 10 and 9.5.
+struct GradedPricesGrid: View {
+    let print: CardPrint?
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            GradeColumn(company: "CGC", rows: [("10", print?.gradedPrice("cgc10")), ("9", print?.gradedPrice("cgc9"))])
+            GradeColumn(company: "PSA", rows: [("10", print?.gradedPrice("psa10")), ("9", print?.gradedPrice("psa9"))])
+            GradeColumn(company: "BGS", rows: [("10", print?.gradedPrice("bgs10")), ("9.5", print?.gradedPrice("bgs9_5"))])
+        }
+    }
 }
 
 /// The graded prices of one grading company.
@@ -181,7 +193,7 @@ struct SummaryView: View {
                 StatCell(label: "Paid", value: money(model.packCost))
                 StatCell(label: "Net", value: signedMoney(model.net), color: model.net >= 0 ? Theme.green : Theme.orange)
             }
-            if model.packs.count > 1 {
+            if model.queue.count > 1 {
                 let ripNet = model.ripValue - model.ripPaid
                 HStack(spacing: 0) {
                     StatCell(label: "Rip value", value: money(model.ripValue))

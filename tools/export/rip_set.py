@@ -7,7 +7,8 @@ Writes app/PokeVendor/Resources/Sets/<set>.json with:
   (tools/slotmap/odds.py, with the era fallback);
 - every print that an outcome can produce, with its market price, its graded prices
   (CGC 10, CGC 9, PSA 10, PSA 9, BGS 10, BGS 9.5), and its TCGplayer image URL (tools/ppt/cache/);
-- the cost of one pack: the market price of the loose booster pack (tools/ppt/cache/sealed/).
+- the cost of one pack: the market price of the loose booster pack (tools/ppt/cache/sealed/);
+- the sealed products whose packs all come from this set, with the market price, an estimated MSRP, and the image.
 
 The rows with no card (Basic Energy, code card) are not exported. The app adds the Basic Energy.
 """
@@ -23,7 +24,8 @@ import join as J  # noqa: E402
 
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
-GRADES = ("cgc10", "cgc9", "psa10", "psa9", "bgs10", "bgs9_5")
+GRADES = ("cgc10", "cgc9_5", "cgc9", "cgc8_5", "cgc8", "psa10", "psa9", "psa8", "psa7", "psa6",
+          "bgs10", "bgs9_5", "bgs9", "bgs8_5", "bgs8")
 
 
 def ppt_matches(slug, cards):
@@ -89,6 +91,41 @@ def pack_cost(slug):
     return None, None
 
 
+# Estimated MSRP by kind, for Pokemon Center drops and local store shelves. Starting values for balancing.
+MSRP = {"Booster pack": 4.49, "Blister": 9.99, "Tin": 9.99, "Booster bundle": 26.94, "Elite Trainer Box": 54.99,
+        "Collection": 24.99}
+MSRP_BY_NAME = {"Super-Premium Collection": 119.99, "Premium Figure Collection": 59.99, "Binder Collection": 29.99,
+                "[Set of 3]": 44.97, "[Set of 4]": 17.96}
+
+
+def products(slug, t):
+    """The sealed products whose packs all come from this set, with a PPT price."""
+    m = re.search(r"^### Product catalog\n(.*?)(?=^#{2,3} |\Z)", t, re.S | re.M)
+    cat = m.group(1) if m else ""
+    prices = {}
+    for f in glob.glob(os.path.join(SEALED, "*.json")):
+        if os.path.basename(f)[:-5] not in {str(g) for g in J.TCGCSV_MAP.get(slug, [])}:
+            continue
+        data = json.load(open(f))
+        for p in (data.get("data", []) if isinstance(data, dict) else data):
+            prices[str(p.get("tcgPlayerId") or p.get("id"))] = p
+    out = []
+    for r in V.rows(cat, 10):
+        pid, name, kind, packs, _, mix, conf = r[0], r[1], r[2], r[3], r[4], r[5], r[6]
+        if pid == "TCGplayer ID" or kind == "Case or display" or conf not in ("Exact", "Product set") or not packs.isdigit():
+            continue
+        if not re.match(rf"^{packs} ", mix):
+            continue
+        p = prices.get(pid)
+        if not p or not p.get("unopenedPrice"):
+            continue
+        msrp = next((v for k, v in MSRP_BY_NAME.items() if k in name), MSRP.get(kind))
+        out.append({"id": pid, "name": re.sub(r"\s+", " ", name), "kind": kind, "packs": int(packs),
+                    "market": p["unopenedPrice"], "msrp": msrp,
+                    "image": p.get("imageCdnUrl800") or p.get("imageUrl")})
+    return out
+
+
 def export(slug):
     sets, eras = O.load(), O.era_map()
     s = sets[slug]
@@ -125,11 +162,13 @@ def export(slug):
         slots.append({"name": slot, "count": int(rows[0][0][1]), "outcomes": outcomes})
     cost, pack_image = pack_cost(slug)
     os.makedirs(OUT, exist_ok=True)
-    out = {"slug": slug, "name": name, "packCost": cost, "packImage": pack_image, "slots": slots, "prints": prints}
+    catalog = products(slug, t)
+    out = {"slug": slug, "name": name, "packCost": cost, "packImage": pack_image, "slots": slots, "prints": prints,
+           "products": catalog}
     path = os.path.join(OUT, f"{slug}.json")
     json.dump(out, open(path, "w"), ensure_ascii=False, indent=1)
     unpriced = sum(1 for p in prints if p["market"] is None)
-    print(f"{slug}: {len(slots)} slots, {len(prints)} prints ({unpriced} with no price), pack cost {cost} -> {os.path.relpath(path, ROOT)}")
+    print(f"{slug}: {len(slots)} slots, {len(prints)} prints ({unpriced} with no price), {len(catalog)} products, pack cost {cost} -> {os.path.relpath(path, ROOT)}")
 
 
 if __name__ == "__main__":

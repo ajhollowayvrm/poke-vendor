@@ -2,27 +2,28 @@ import Foundation
 
 // The set file that tools/export/rip_set.py writes.
 
-struct GradedPrices: Codable, Hashable {
-    let cgc10: Double?
-    let cgc9: Double?
-    let psa10: Double?
-    let psa9: Double?
-    let bgs10: Double?
-    let bgs95: Double?
-
-    enum CodingKeys: String, CodingKey {
-        case cgc10, cgc9, psa10, psa9, bgs10
-        case bgs95 = "bgs9_5"
-    }
-}
-
 struct CardPrint: Codable, Hashable {
     let num: String
     let name: String
     let rarity: String
     let variant: String
     let market: Double?
-    let graded: GradedPrices
+    /// Graded prices by key, for example "psa10" or "bgs9_5". A grade with no sales data is nil.
+    let graded: [String: Double?]
+    let image: String?
+}
+
+extension CardPrint {
+    func gradedPrice(_ key: String) -> Double? { graded[key] ?? nil }
+}
+
+struct Product: Codable, Hashable, Identifiable {
+    let id: String
+    let name: String
+    let kind: String
+    let packs: Int
+    let market: Double
+    let msrp: Double?
     let image: String?
 }
 
@@ -46,6 +47,7 @@ struct SetData: Codable {
     let packImage: String?
     let slots: [PackSlot]
     let prints: [CardPrint]
+    let products: [Product]?
 
     static func load(_ slug: String) -> SetData {
         guard let url = Bundle.main.url(forResource: slug, withExtension: "json"),

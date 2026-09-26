@@ -1,20 +1,11 @@
 import SwiftUI
 
-enum InventoryTab: String, CaseIterable {
+enum InventoryTab: String, CaseIterable, Hashable {
     case sealed = "Sealed", raw = "Raw", slabs = "Slabs", bulk = "Bulk"
 }
 
 enum SortOrder: String, CaseIterable {
     case newest = "Newest", value = "Highest value", setOrder = "Set order"
-}
-
-enum InventoryRoute: Hashable {
-    case card(UUID), sealed(UUID), bulk(UUID)
-}
-
-struct RipSession: Identifiable {
-    let id = UUID()
-    let packs: [SealedItem]
 }
 
 /// The order of a card inside its set, from its card number.
@@ -23,67 +14,51 @@ func setOrder(_ num: String) -> Int {
 }
 
 struct InventoryView: View {
-    @Environment(InventoryStore.self) private var store
-    @State private var tab: InventoryTab = .sealed
+    @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
+    @State private var tab: InventoryTab
     @State private var sort: SortOrder = .newest
     @State private var keptOnly = false
     @State private var selecting = false
     @State private var selection: Set<UUID> = []
-    @State private var rip: RipSession?
-    @State private var path = NavigationPath()
+    @State private var sellIDs: SellRequest?
+    @State private var gradeIDs: GradeRequest?
+
+    init(startTab: InventoryTab = .sealed) {
+        _tab = State(initialValue: startTab)
+    }
 
     var body: some View {
-        NavigationStack(path: $path) {
-            ScrollView {
-                VStack(spacing: 14) {
-                    PortfolioHeader()
-                    tabPicker
-                    controls
-                    rows
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
+        ScrollView {
+            VStack(spacing: 14) {
+                PortfolioHeader()
+                tabPicker
+                controls
+                rows
             }
-            .background(Theme.background.ignoresSafeArea())
-            .safeAreaInset(edge: .bottom) {
-                if selecting { actionBar }
-            }
-            .navigationTitle("Inventory")
-            .toolbarBackground(Theme.background, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) { testMenu }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(selecting ? "Done" : "Select") {
-                        selecting.toggle()
-                        selection = []
-                    }
-                    .tint(Theme.cyan)
-                }
-            }
-            .navigationDestination(for: InventoryRoute.self) { route in
-                switch route {
-                case .card(let id): CardDetailView(id: id)
-                case .sealed(let id): SealedDetailView(id: id) { item in startRip([item]) }
-                case .bulk(let id): BulkDetailView(id: id)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
+        }
+        .background(Theme.background.ignoresSafeArea())
+        .safeAreaInset(edge: .bottom) {
+            if selecting { actionBar }
+        }
+        .navigationTitle("Inventory")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(selecting ? "Done" : "Select") {
+                    selecting.toggle()
+                    selection = []
                 }
             }
         }
-        .tint(Theme.cyan)
         .onChange(of: tab) { _, _ in selection = [] }
-        .fullScreenCover(item: $rip) { session in
-            RipView(packs: session.packs, store: store) { rip = nil }
+        .sheet(item: $sellIDs) { request in
+            SellSheet(ids: request.ids)
         }
-        .onAppear {
-            #if DEBUG
-            let args = ProcessInfo.processInfo.arguments
-            if let i = args.firstIndex(of: "-tab"), i + 1 < args.count, let t = InventoryTab(rawValue: args[i + 1]) {
-                tab = t
-            }
-            if args.contains("-demo") {
-                if store.data.sealed.count < 3 { store.addTestPacks(3) }
-                startRip(Array(store.data.sealed.prefix(1)))
-            }
-            #endif
+        .sheet(item: $gradeIDs) { request in
+            GradeSheet(ids: request.ids)
         }
     }
 
@@ -127,8 +102,7 @@ struct InventoryView: View {
             case .sealed:
                 let items = sortedSealed
                 if items.isEmpty {
-                    EmptyTab(text: keptOnly ? "No kept sealed product." : "No sealed product. Add a test pack to rip.",
-                             action: keptOnly ? nil : ("Add a test pack", { store.addTestPacks(1) }))
+                    EmptyTab(text: keptOnly ? "No kept sealed product." : "No sealed product. Buy some online from the hub.")
                 }
                 ForEach(items) { item in
                     rowButton(item.id, route: .sealed(item.id)) {
@@ -138,8 +112,8 @@ struct InventoryView: View {
             case .raw, .slabs:
                 let cards = sortedCards(tab == .raw ? store.data.raw : store.data.slabs)
                 if cards.isEmpty {
-                    EmptyTab(text: tab == .slabs ? "Graded cards show here. Grading is not built yet."
-                                                 : "Hits from your rips show here.", action: nil)
+                    EmptyTab(text: tab == .slabs ? "Graded cards show here. Select raw cards and tap Grade."
+                                                 : "Hits from your rips and bought singles show here.")
                 }
                 ForEach(cards) { card in
                     rowButton(card.id, route: .card(card.id)) { CardRow(card: card) }
@@ -147,7 +121,7 @@ struct InventoryView: View {
             case .bulk:
                 let groups = sortedBulk
                 if groups.isEmpty {
-                    EmptyTab(text: "Each rip adds one bulk group.", action: nil)
+                    EmptyTab(text: "Each rip adds one bulk group.")
                 }
                 ForEach(groups) { group in
                     rowButton(group.id, route: .bulk(group.id)) { BulkRow(group: group) }
@@ -158,13 +132,12 @@ struct InventoryView: View {
         .overlay(Rectangle().stroke(Theme.line))
     }
 
-    private func rowButton<Content: View>(_ id: UUID, route: InventoryRoute,
-                                          @ViewBuilder content: () -> Content) -> some View {
+    private func rowButton<Content: View>(_ id: UUID, route: AppRoute, @ViewBuilder content: () -> Content) -> some View {
         Button {
             if selecting {
                 if selection.contains(id) { selection.remove(id) } else { selection.insert(id) }
             } else {
-                path.append(route)
+                nav.path.append(route)
             }
         } label: {
             HStack(spacing: 10) {
@@ -184,22 +157,29 @@ struct InventoryView: View {
 
     private var actionBar: some View {
         let chosen = selection
-        let anyKept = chosen.contains { store.isKept($0) }
+        let blocked = chosen.contains { store.isKept($0) || store.hasStatus($0) }
         let allKept = !chosen.isEmpty && chosen.allSatisfy { store.isKept($0) }
-        return HStack(spacing: 10) {
+        return HStack(spacing: 8) {
             switch tab {
             case .sealed:
-                Button("Rip \(chosen.count)") {
-                    startRip(store.data.sealed.filter { chosen.contains($0.id) })
+                Button("Rip") {
+                    nav.startRip(store.data.sealed.filter { chosen.contains($0.id) })
+                    finishSelecting()
                 }
                 .buttonStyle(.borderedProminent)
                 .foregroundStyle(.black)
-                .disabled(chosen.isEmpty || anyKept)
+                .disabled(chosen.isEmpty || blocked)
+                sellButton(chosen, disabled: blocked)
             case .raw:
-                Button("Sell") {}.buttonStyle(.bordered).disabled(true)
-                Button("Grade") {}.buttonStyle(.bordered).disabled(true)
+                sellButton(chosen, disabled: blocked)
+                Button("Grade") {
+                    gradeIDs = GradeRequest(ids: chosen)
+                    finishSelecting()
+                }
+                .buttonStyle(.bordered)
+                .disabled(chosen.isEmpty || blocked)
             case .slabs:
-                Button("Sell") {}.buttonStyle(.bordered).disabled(true)
+                sellButton(chosen, disabled: blocked)
             case .bulk:
                 Button("Add to store run") {}.buttonStyle(.bordered).disabled(true)
             }
@@ -211,7 +191,7 @@ struct InventoryView: View {
                 .disabled(chosen.isEmpty)
             }
             Spacer()
-            Text("\(chosen.count) selected")
+            Text("\(chosen.count)")
                 .font(.caption.monospaced())
                 .foregroundStyle(Theme.muted)
         }
@@ -222,14 +202,18 @@ struct InventoryView: View {
         .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
     }
 
-    private var testMenu: some View {
-        Menu {
-            Button("Add 1 Prismatic pack") { store.addTestPacks(1) }
-            Button("Add 5 Prismatic packs") { store.addTestPacks(5) }
-            Button("Reset Inventory", role: .destructive) { store.reset() }
-        } label: {
-            Label("Test", systemImage: "hammer")
+    private func sellButton(_ chosen: Set<UUID>, disabled: Bool) -> some View {
+        Button("Sell") {
+            sellIDs = SellRequest(ids: chosen)
+            finishSelecting()
         }
+        .buttonStyle(.bordered)
+        .disabled(chosen.isEmpty || disabled)
+    }
+
+    private func finishSelecting() {
+        selecting = false
+        selection = []
     }
 
     // MARK: - Data
@@ -248,7 +232,7 @@ struct InventoryView: View {
         switch sort {
         case .newest: return items.sorted { $0.acquired > $1.acquired }
         case .value: return items.sorted { store.market(of: $0) > store.market(of: $1) }
-        case .setOrder: return items.sorted { $0.setSlug < $1.setSlug }
+        case .setOrder: return items.sorted { $0.name < $1.name }
         }
     }
 
@@ -267,20 +251,22 @@ struct InventoryView: View {
         default: store.data.bulk.sorted { $0.date > $1.date }
         }
     }
+}
 
-    private func startRip(_ packs: [SealedItem]) {
-        guard !packs.isEmpty else { return }
-        selecting = false
-        selection = []
-        if !path.isEmpty { path.removeLast(path.count) }
-        rip = RipSession(packs: packs)
-    }
+struct SellRequest: Identifiable {
+    let id = UUID()
+    let ids: Set<UUID>
+}
+
+struct GradeRequest: Identifiable {
+    let id = UUID()
+    let ids: Set<UUID>
 }
 
 // MARK: - Rows and header
 
 struct PortfolioHeader: View {
-    @Environment(InventoryStore.self) private var store
+    @Environment(GameStore.self) private var store
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -308,14 +294,27 @@ struct PortfolioHeader: View {
 
 struct Tag: View {
     let text: String
+    var color: Color = Theme.cyan
 
     var body: some View {
         Text(text)
             .font(.system(size: 10, weight: .bold, design: .monospaced))
             .padding(.horizontal, 5)
             .padding(.vertical, 2)
-            .background(Theme.cyan.opacity(0.15))
-            .foregroundStyle(Theme.cyan)
+            .background(color.opacity(0.15))
+            .foregroundStyle(color)
+    }
+}
+
+struct Tags: View {
+    let keep: Bool
+    let status: ItemStatus?
+
+    var body: some View {
+        HStack(spacing: 4) {
+            if keep { Tag(text: "KEEP") }
+            if let status { Tag(text: status.tag, color: Theme.orange) }
+        }
     }
 }
 
@@ -325,22 +324,38 @@ struct SealedRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            PackArt(setName: SetLibrary.set(item.setSlug).name, sheen: 0)
-                .frame(width: 36, height: 60)
+            ProductImage(url: SetLibrary.product(item.productID, in: item.setSlug)?.image, setName: SetLibrary.set(item.setSlug).name)
+                .frame(width: 48, height: 60)
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.name).font(.subheadline.weight(.medium)).lineLimit(2)
-                HStack(spacing: 6) {
-                    Text("\(item.packs) pack\(item.packs == 1 ? "" : "s")")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(Theme.muted)
-                    if item.keep { Tag(text: "KEEP") }
-                }
+                Text("\(item.packs) pack\(item.packs == 1 ? "" : "s")")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.muted)
+                Tags(keep: item.keep, status: item.status)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
                 Text(money(market)).font(.subheadline.monospaced().weight(.semibold))
                 Text("paid \(money(item.paid))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
+        }
+    }
+}
+
+/// A product photo on a white tile, or the drawn pack when there is no photo.
+struct ProductImage: View {
+    let url: String?
+    let setName: String
+
+    var body: some View {
+        if let url, let u = URL(string: url) {
+            RemoteCardImage(url: u, name: "")
+                .aspectRatio(contentMode: .fit)
+                .padding(2)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 3))
+        } else {
+            PackArt(setName: setName, sheen: 0)
         }
     }
 }
@@ -355,11 +370,11 @@ struct CardRow: View {
                 .clipShape(RoundedRectangle(cornerRadius: 3))
             VStack(alignment: .leading, spacing: 3) {
                 Text(card.print.name).font(.subheadline.weight(.medium)).lineLimit(1)
-                Text("\(card.print.rarity) · \(card.print.variant)")
+                Text(card.grade?.label ?? "\(card.print.rarity) · \(card.print.variant)")
                     .font(.caption.monospaced())
-                    .foregroundStyle(Theme.muted)
+                    .foregroundStyle(card.grade == nil ? Theme.muted : Theme.cyan)
                     .lineLimit(1)
-                if card.keep { Tag(text: "KEEP") }
+                Tags(keep: card.keep, status: card.status)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
@@ -387,7 +402,7 @@ struct BulkRow: View {
                 .frame(width: 43, height: 60)
             VStack(alignment: .leading, spacing: 3) {
                 Text("Bulk · \(SetLibrary.set(group.setSlug).name)").font(.subheadline.weight(.medium))
-                Text("\(group.cards.count) cards · rip on \(group.date.formatted(date: .abbreviated, time: .shortened))")
+                Text("\(group.cards.count) cards · rip on day \(group.day + 1)")
                     .font(.caption.monospaced())
                     .foregroundStyle(Theme.muted)
                     .lineLimit(1)
@@ -400,21 +415,14 @@ struct BulkRow: View {
 
 struct EmptyTab: View {
     let text: String
-    let action: (String, () -> Void)?
 
     var body: some View {
-        VStack(spacing: 12) {
-            Text(text)
-                .font(.subheadline)
-                .foregroundStyle(Theme.muted)
-                .multilineTextAlignment(.center)
-            if let action {
-                Button(action.0, action: action.1)
-                    .buttonStyle(.borderedProminent)
-                    .foregroundStyle(.black)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 36)
+        Text(text)
+            .font(.subheadline)
+            .foregroundStyle(Theme.muted)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 36)
+            .padding(.horizontal, 16)
     }
 }

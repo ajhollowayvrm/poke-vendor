@@ -2,7 +2,8 @@ import SwiftUI
 
 @main
 struct PokeVendorApp: App {
-    @State private var store = InventoryStore()
+    @State private var store = GameStore()
+    @State private var nav = AppNav()
 
     init() {
         // Card images come from the TCGplayer CDN. Keep them on disk between launches.
@@ -11,8 +12,9 @@ struct PokeVendorApp: App {
 
     var body: some Scene {
         WindowGroup {
-            InventoryView()
+            HubView()
                 .environment(store)
+                .environment(nav)
                 .preferredColorScheme(.dark)
         }
     }

@@ -5,6 +5,14 @@ enum RipPhase {
     case sealed, opening, open, done
 }
 
+/// One pack in the rip queue. A product with several packs gives several entries.
+struct QueuedPack: Hashable {
+    let sourceID: UUID
+    let setSlug: String
+    let paidPerPack: Double
+    let productName: String
+}
+
 /// The moment a card is seen for the first time.
 struct Reveal: Equatable {
     let id = UUID()
@@ -15,10 +23,10 @@ struct Reveal: Equatable {
 final class RipModel {
     let cardSet: SetData
     /// The rip queue. The whole queue is one rip (docs/18-ripping.md, The rip queue).
-    let packs: [SealedItem]
+    let queue: [QueuedPack]
     let ripID = UUID()
     private(set) var packIndex = 0
-    private let store: InventoryStore?
+    private let store: GameStore?
     /// The value and the cost of the packs that are done.
     private var doneValue: Double = 0
     private var donePaid: Double = 0
@@ -35,16 +43,20 @@ final class RipModel {
     private(set) var lastReveal: Reveal?
     private var seen: Set<UUID> = []
 
-    init(packs: [SealedItem], store: InventoryStore?) {
-        self.packs = packs
+    init(items: [SealedItem], store: GameStore?) {
+        queue = items.flatMap { item in
+            (0..<item.packs).map { _ in
+                QueuedPack(sourceID: item.id, setSlug: item.setSlug, paidPerPack: item.paidPerPack, productName: item.name)
+            }
+        }
         self.store = store
-        cardSet = SetLibrary.set(packs.first?.setSlug ?? "prismatic-evolutions")
+        cardSet = SetLibrary.set(items.first?.setSlug ?? "prismatic-evolutions")
         faceUp = UserDefaults.standard.bool(forKey: "rip.faceUp")
         loadPack()
     }
 
-    var currentPack: SealedItem? { packs.indices.contains(packIndex) ? packs[packIndex] : nil }
-    var hasNextPack: Bool { packIndex + 1 < packs.count }
+    var currentPack: QueuedPack? { queue.indices.contains(packIndex) ? queue[packIndex] : nil }
+    var hasNextPack: Bool { packIndex + 1 < queue.count }
     var ripValue: Double { doneValue + valueSoFar }
     var ripPaid: Double { donePaid + (phase == .sealed ? 0 : packCost) }
 
@@ -106,7 +118,8 @@ final class RipModel {
         guard phase == .sealed else { return }
         phase = .opening
         if let pack = currentPack {
-            store?.commitPack(pack, ripID: ripID, cards: stack)
+            store?.commitPack(from: pack.sourceID, setSlug: pack.setSlug, paidPerPack: pack.paidPerPack,
+                              ripID: ripID, cards: stack)
         }
     }
 
