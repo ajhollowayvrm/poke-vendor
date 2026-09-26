@@ -38,6 +38,8 @@ struct RipView: View {
     @State private var showSummary = false
     @State private var pressing = false
     @State private var peekTask: Task<Void, Never>?
+    @State private var burst: HitBurst?
+    @State private var popID: UUID?
 
     var body: some View {
         GeometryReader { geo in
@@ -49,6 +51,13 @@ struct RipView: View {
                 if model.phase == .open || model.phase == .done {
                     pileOutline(layout)
                     pileSlot(layout)
+                }
+
+                if let front = glowCard {
+                    HitGlow(tier: front.hitTier, cardSize: CGSize(width: layout.cardW, height: layout.cardH))
+                        .id(front.id)
+                        .position(layout.stackCenter)
+                        .zIndex(30)
                 }
 
                 if model.phase != .sealed {
@@ -97,6 +106,27 @@ struct RipView: View {
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(350)
 
+                if let burst {
+                    let inPile = model.pile.contains { $0.id == burst.card.id }
+                    SparkleBurst(tier: burst.card.hitTier)
+                        .frame(width: 800, height: 900)
+                        .position(inPile ? layout.pileCenter : layout.stackCenter)
+                        .id(burst.id)
+                        .zIndex(360)
+                    if burst.card.hitTier >= .medium && !inPile {
+                        HitBanner(card: burst.card)
+                            .position(x: layout.stackCenter.x, y: layout.stackCenter.y + layout.cardH / 2 - 8)
+                            .id(burst.id)
+                            .transition(.opacity)
+                            .zIndex(370)
+                    }
+                    if burst.card.hitTier == .big {
+                        HitFlash()
+                            .id(burst.id)
+                            .zIndex(450)
+                    }
+                }
+
                 if peeking {
                     PeekView(cards: model.stack, size: geo.size)
                         .transition(.opacity)
@@ -126,6 +156,10 @@ struct RipView: View {
             runDemo()
             #endif
         }
+        .onChange(of: model.lastReveal) { _, reveal in
+            guard let card = reveal?.card, card.hitTier > .none else { return }
+            celebrate(card)
+        }
         .onChange(of: model.phase) { _, phase in
             guard phase == .done else { return }
             Task {
@@ -138,6 +172,13 @@ struct RipView: View {
     }
 
     // MARK: - Pieces
+
+    /// The top card, when it shows face up and is a hit.
+    private var glowCard: RipCard? {
+        guard model.phase == .open || model.phase == .done, model.tuckingID == nil,
+              let front = model.stack.first, model.isShownFaceUp(front), front.hitTier > .none else { return nil }
+        return front
+    }
 
     /// The dashed place for the pile. It sits under the pile cards.
     private func pileOutline(_ layout: TableLayout) -> some View {
@@ -240,8 +281,9 @@ struct RipView: View {
                              rotation: -9, z: 200, faceUp: model.faceUp)
         }
         let depth = CGFloat(min(i, 10))
-        return Placement(point: CGPoint(x: center.x + depth * 0.5, y: center.y - depth * 1.3), scale: 1,
-                         rotation: 0, z: 50 - Double(i), faceUp: model.faceUp)
+        return Placement(point: CGPoint(x: center.x + depth * 0.5, y: center.y - depth * 1.3),
+                         scale: card.id == popID ? 1.08 : 1,
+                         rotation: 0, z: 50 - Double(i), faceUp: model.isShownFaceUp(card))
     }
 
     // MARK: - Gestures
@@ -314,10 +356,32 @@ struct RipView: View {
 
     private func sendFront() {
         guard model.phase == .open, model.tuckingID == nil, let card = model.stack.first else { return }
-        let wasFaceUp = model.faceUp
+        // A face-down medium or big hit flips in place first, so the player sees it at full size.
+        if !model.faceUp, card.hitTier >= .medium, model.showcaseID != card.id {
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.7)) { model.showcaseFront() }
+            return
+        }
+        Haptics.tap()
         withAnimation(.spring(response: 0.45, dampingFraction: 0.84)) { model.sendFrontToPile() }
-        let revealed = wasFaceUp ? model.stack.first : card
-        if revealed?.isHit == true { Haptics.hit() } else { Haptics.tap() }
+    }
+
+    private func celebrate(_ card: RipCard) {
+        let next = HitBurst(card: card)
+        burst = next
+        Haptics.celebrate(card.hitTier)
+        if card.hitTier >= .medium, model.stack.first?.id == card.id {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.5)) { popID = card.id }
+            Task {
+                try? await Task.sleep(for: .milliseconds(260))
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { popID = nil }
+            }
+        }
+        Task {
+            try? await Task.sleep(for: .seconds(card.hitTier == .big ? 3.0 : 2.2))
+            if burst?.id == next.id {
+                withAnimation(.easeOut(duration: 0.4)) { burst = nil }
+            }
+        }
     }
 
     private func moveToBack() {
@@ -327,7 +391,6 @@ struct RipView: View {
         Task {
             try? await Task.sleep(for: .milliseconds(170))
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { model.finishTuck() }
-            if model.faceUp, model.stack.first?.isHit == true { Haptics.hit() }
         }
     }
 
@@ -359,6 +422,7 @@ struct RipView: View {
     private func newPack() {
         peekTask?.cancel()
         peeking = false
+        burst = nil
         withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
         torn = false
         cardsRise = false

@@ -146,12 +146,30 @@ Normal is a manual rip. The player holds the cards like a real pack:
 **Face down or face up.** A toggle on the rip screen sets how the
 stack shows. The game keeps the choice for the next rip.
 
-- Face down: the player sees the card backs. Move to back is blind. A
-  tap flips the front card as it goes to the pile.
+- Face down: the player sees the card backs. A face-down stack is the
+  pack turned over, so its order is reversed: the last card of the pack
+  (the Energy) is on top. Turning the stack over at any time reverses
+  the order again. Move to back is blind. A tap flips the top card as
+  it goes to the pile. A medium or big hit (see
+  [Hit effects](#hit-effects)) flips in place first, and the next tap
+  sends it to the pile.
 - Face up: the player sees the front card before moving it or piling
   it.
 
 The pile always shows its cards face up.
+
+### Hit effects
+
+A hit plays an effect when the player first sees it. The effect grows
+with the hit:
+
+| Level | Cards | Effect |
+| --- | --- | --- |
+| Small | Every other hit, for example a holo Rare | A soft glow and a light haptic |
+| Medium | Double Rare, Ultra Rare, ACE SPEC Rare, Poké Ball pattern, or $5 or more | A gold glow with turning light rays, sparkles, a banner with the rarity and the raw price, and a success haptic |
+| Big | Special Illustration Rare, Hyper Rare, Master Ball pattern, or $25 or more | A rainbow glow and rays, more sparkles, the banner, a white screen flash, and a strong haptic sequence |
+
+The glow stays while the hit is the top card.
 
 ### Fast and Sift
 

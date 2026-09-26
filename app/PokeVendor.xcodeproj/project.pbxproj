@@ -18,6 +18,7 @@
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
 		D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = B5511559E1A3A95108659987 /* prismatic-evolutions.json */; };
 		EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB2E7EA020C2D7260109C7E /* RipView.swift */; };
+		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		367966CB515F1D60E1380F07 /* Panels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panels.swift; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
 		4473746B05B5FA0E51C41885 /* SetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetData.swift; sourceTree = "<group>"; };
+		523EE1F5C13F88A7FDA88127 /* HitEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitEffects.swift; sourceTree = "<group>"; };
 		7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipCard.swift; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
 		9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				297BD4F44B83A77E160F288F /* CardViews.swift */,
+				523EE1F5C13F88A7FDA88127 /* HitEffects.swift */,
 				11814C73AA917A111DD8EC6A /* PackView.swift */,
 				367966CB515F1D60E1380F07 /* Panels.swift */,
 				7DB2E7EA020C2D7260109C7E /* RipView.swift */,
@@ -184,6 +187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
+				FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */,
 				554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */,
 				8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */,
 				5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */,

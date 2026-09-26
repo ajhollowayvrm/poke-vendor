@@ -86,4 +86,32 @@ struct RipCard: Identifiable, Hashable {
         guard let print else { return false }
         return !["Common", "Uncommon"].contains(print.rarity) || market >= 1
     }
+
+    /// How big the reveal effect is.
+    var hitTier: HitTier {
+        guard let print, isHit else { return .none }
+        if ["Special illustration rare", "Hyper rare"].contains(print.rarity)
+            || print.variant.contains("Master Ball") || market >= 25 {
+            return .big
+        }
+        if ["Double rare", "Ultra Rare", "ACE SPEC Rare"].contains(print.rarity)
+            || print.variant.contains("Poké Ball") || market >= 5 {
+            return .medium
+        }
+        return .small
+    }
+
+    /// The words on the hit banner.
+    var hitLabel: String {
+        guard let print else { return "" }
+        if print.variant.contains("Master Ball") { return "MASTER BALL" }
+        if print.variant.contains("Poké Ball") { return "POKÉ BALL" }
+        return print.rarity.uppercased()
+    }
+}
+
+enum HitTier: Int, Comparable {
+    case none, small, medium, big
+
+    static func < (a: HitTier, b: HitTier) -> Bool { a.rawValue < b.rawValue }
 }
