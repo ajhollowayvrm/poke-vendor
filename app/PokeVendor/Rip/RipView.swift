@@ -1,0 +1,370 @@
+import SwiftUI
+
+/// Where things sit on the screen. The pile is above the stack.
+struct TableLayout {
+    static let ratio: CGFloat = 88.0 / 63.0
+    let size: CGSize
+    let topInset: CGFloat = 100
+    let bottomInset: CGFloat = 176
+    let pileScale: CGFloat = 0.42
+
+    var cardW: CGFloat {
+        min(size.width * 0.62, (size.height - topInset - bottomInset - 28) / (Self.ratio * (1 + pileScale)))
+    }
+    var cardH: CGFloat { cardW * Self.ratio }
+    var pileSize: CGSize { CGSize(width: cardW * pileScale, height: cardH * pileScale) }
+    var pileCenter: CGPoint { CGPoint(x: size.width / 2, y: topInset + pileSize.height / 2) }
+    var stackCenter: CGPoint { CGPoint(x: size.width / 2, y: size.height - bottomInset - cardH / 2) }
+    var packW: CGFloat { cardW * 1.12 }
+    var packH: CGFloat { cardH * 1.28 }
+}
+
+private struct Placement {
+    var point: CGPoint
+    var scale: CGFloat
+    var rotation: Double
+    var z: Double
+    var faceUp: Bool
+}
+
+struct RipView: View {
+    @State private var model = RipModel(slug: "prismatic-evolutions")
+    @State private var tearProgress: Double = 0
+    @State private var torn = false
+    @State private var cardsRise = false
+    @State private var cardsOut = false
+    @State private var packGone = false
+    @State private var peeking = false
+    @State private var showSummary = false
+    @State private var pressing = false
+    @State private var peekTask: Task<Void, Never>?
+
+    var body: some View {
+        GeometryReader { geo in
+            let layout = TableLayout(size: geo.size)
+            ZStack {
+                TopBar(model: model, onNewPack: newPack)
+                    .frame(maxHeight: .infinity, alignment: .top)
+
+                if model.phase == .open || model.phase == .done {
+                    pileOutline(layout)
+                    pileSlot(layout)
+                }
+
+                if model.phase != .sealed {
+                    ForEach(model.allCards) { card in
+                        let p = placement(for: card, layout: layout)
+                        CardView(card: card, faceUp: p.faceUp)
+                            .frame(width: layout.cardW, height: layout.cardH)
+                            .shadow(color: .black.opacity(0.45), radius: 6, y: 4)
+                            .scaleEffect(p.scale)
+                            .rotationEffect(.degrees(p.rotation))
+                            .position(p.point)
+                            .zIndex(p.z)
+                            .allowsHitTesting(false)
+                    }
+                }
+
+                if model.phase == .sealed || model.phase == .opening {
+                    PackView(setName: model.cardSet.name, tearProgress: tearProgress, torn: torn)
+                        .frame(width: layout.packW, height: layout.packH)
+                        .position(x: layout.stackCenter.x,
+                                  y: layout.stackCenter.y + (packGone ? geo.size.height : 0))
+                        .zIndex(300)
+                        .transition(.scale(scale: 0.9).combined(with: .opacity))
+                }
+
+                if model.phase == .sealed {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .frame(width: layout.packW + 40, height: layout.packH * 0.32)
+                        .position(x: layout.stackCenter.x,
+                                  y: layout.stackCenter.y - layout.packH / 2 + layout.packH * 0.14)
+                        .gesture(tearGesture(layout))
+                        .zIndex(310)
+                }
+
+                if model.phase == .open {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .frame(width: layout.cardW, height: layout.cardH)
+                        .position(layout.stackCenter)
+                        .gesture(stackGesture)
+                        .zIndex(400)
+                }
+
+                bottomPanel
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .zIndex(350)
+
+                if peeking {
+                    PeekView(cards: model.stack, size: geo.size)
+                        .transition(.opacity)
+                        .zIndex(500)
+                }
+
+                if showSummary {
+                    ZStack {
+                        Color.black.opacity(0.55).ignoresSafeArea()
+                        SummaryView(model: model, onAgain: newPack) {
+                            withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
+                        }
+                    }
+                    .transition(.opacity)
+                    .zIndex(600)
+                }
+            }
+        }
+        .background(
+            LinearGradient(colors: [Theme.background, Color(red: 0.07, green: 0.10, blue: 0.14)],
+                           startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+        )
+        .onAppear {
+            Motion.shared.start()
+            #if DEBUG
+            runDemo()
+            #endif
+        }
+        .onChange(of: model.phase) { _, phase in
+            guard phase == .done else { return }
+            Task {
+                try? await Task.sleep(for: .milliseconds(700))
+                if model.phase == .done {
+                    withAnimation(.easeInOut(duration: 0.3)) { showSummary = true }
+                }
+            }
+        }
+    }
+
+    // MARK: - Pieces
+
+    /// The dashed place for the pile. It sits under the pile cards.
+    private func pileOutline(_ layout: TableLayout) -> some View {
+        RoundedRectangle(cornerRadius: 6)
+            .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+            .foregroundStyle(Theme.line)
+            .frame(width: layout.pileSize.width, height: layout.pileSize.height)
+            .overlay {
+                if model.pile.isEmpty {
+                    Text("Pile").font(.caption).foregroundStyle(Theme.muted)
+                }
+            }
+            .position(layout.pileCenter)
+            .zIndex(1)
+    }
+
+    private func pileSlot(_ layout: TableLayout) -> some View {
+        ZStack {
+            if let top = model.pile.last {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("\(model.pile.count) of \(model.allCards.count)")
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(Theme.muted)
+                    Text(top.name)
+                        .font(.caption.weight(.semibold))
+                        .lineLimit(2)
+                    Text(money(top.market))
+                        .font(.caption.monospaced())
+                        .foregroundStyle(top.isHit ? Theme.green : Theme.text)
+                    Text("Tap to put back")
+                        .font(.caption2)
+                        .foregroundStyle(Theme.muted)
+                }
+                .frame(width: 110, alignment: .leading)
+                .position(x: layout.pileCenter.x + layout.pileSize.width / 2 + 16 + 55, y: layout.pileCenter.y)
+            }
+
+            Color.clear
+                .contentShape(Rectangle())
+                .frame(width: layout.pileSize.width * 1.3, height: layout.pileSize.height * 1.2)
+                .position(layout.pileCenter)
+                .onTapGesture(perform: returnFromPile)
+        }
+        .zIndex(320)
+    }
+
+    private var bottomPanel: some View {
+        VStack(spacing: 10) {
+            if model.phase == .sealed {
+                Text("Tap or swipe across the top of the pack to open it.")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.muted)
+                    .frame(maxWidth: .infinity, minHeight: 82)
+            } else {
+                CardInfo(card: model.focusCard)
+            }
+            HStack(spacing: 10) {
+                Picker("Facing", selection: faceBinding) {
+                    Text("Face down").tag(false)
+                    Text("Face up").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 180)
+                Button(action: moveToBack) {
+                    Label("Move to back", systemImage: "arrow.uturn.down")
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.cyan)
+                .foregroundStyle(.black)
+                .controlSize(.large)
+                .disabled(model.phase != .open || model.stack.count < 2)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    private var faceBinding: Binding<Bool> {
+        Binding(get: { model.faceUp }, set: { value in
+            withAnimation(.easeInOut(duration: 0.35)) { model.setFaceUp(value) }
+        })
+    }
+
+    private func placement(for card: RipCard, layout: TableLayout) -> Placement {
+        if let j = model.pile.firstIndex(where: { $0.id == card.id }) {
+            return Placement(point: layout.pileCenter, scale: layout.pileScale, rotation: card.tilt,
+                             z: 100 + Double(j), faceUp: true)
+        }
+        let i = model.stack.firstIndex(where: { $0.id == card.id }) ?? 0
+        let center = layout.stackCenter
+        if model.phase == .opening && !cardsOut {
+            let y = cardsRise ? center.y - layout.packH * 0.42 : center.y + 20
+            return Placement(point: CGPoint(x: center.x, y: y), scale: 1, rotation: 0,
+                             z: 50 - Double(i), faceUp: model.faceUp)
+        }
+        if card.id == model.tuckingID {
+            return Placement(point: CGPoint(x: center.x - layout.cardW * 0.8, y: center.y + 16), scale: 0.96,
+                             rotation: -9, z: 200, faceUp: model.faceUp)
+        }
+        let depth = CGFloat(min(i, 10))
+        return Placement(point: CGPoint(x: center.x + depth * 0.5, y: center.y - depth * 1.3), scale: 1,
+                         rotation: 0, z: 50 - Double(i), faceUp: model.faceUp)
+    }
+
+    // MARK: - Gestures
+
+    private func tearGesture(_ layout: TableLayout) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                guard model.phase == .sealed else { return }
+                tearProgress = min(1, abs(value.translation.width) / (layout.packW * 0.8))
+            }
+            .onEnded { value in
+                let moved = abs(value.translation.width)
+                if moved < 8 || tearProgress > 0.45 || abs(value.predictedEndTranslation.width) > layout.packW * 0.8 {
+                    tear()
+                } else {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { tearProgress = 0 }
+                }
+            }
+    }
+
+    /// A tap sends the front card to the pile. A hold shows the peek until the finger lifts.
+    private var stackGesture: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                if !pressing {
+                    pressing = true
+                    peekTask = Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(350))
+                        guard !Task.isCancelled else { return }
+                        Haptics.tap(.medium)
+                        withAnimation(.easeOut(duration: 0.2)) { peeking = true }
+                    }
+                }
+                if !peeking && hypot(value.translation.width, value.translation.height) > 14 {
+                    peekTask?.cancel()
+                }
+            }
+            .onEnded { value in
+                peekTask?.cancel()
+                pressing = false
+                let distance = hypot(value.translation.width, value.translation.height)
+                if peeking {
+                    withAnimation(.easeIn(duration: 0.18)) { peeking = false }
+                } else if distance < 14 || value.translation.height < -50 {
+                    sendFront()
+                }
+            }
+    }
+
+    // MARK: - Actions
+
+    private func tear() {
+        guard model.phase == .sealed else { return }
+        Haptics.tap(.medium)
+        withAnimation(.easeOut(duration: 0.4)) { torn = true }
+        model.startOpening()
+        Task {
+            try? await Task.sleep(for: .milliseconds(300))
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { cardsRise = true }
+            try? await Task.sleep(for: .milliseconds(500))
+            withAnimation(.easeIn(duration: 0.45)) { packGone = true }
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.8)) {
+                cardsRise = false
+                cardsOut = true
+            }
+            try? await Task.sleep(for: .milliseconds(450))
+            model.finishOpening()
+        }
+    }
+
+    private func sendFront() {
+        guard model.phase == .open, model.tuckingID == nil, let card = model.stack.first else { return }
+        let wasFaceUp = model.faceUp
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.84)) { model.sendFrontToPile() }
+        let revealed = wasFaceUp ? model.stack.first : card
+        if revealed?.isHit == true { Haptics.hit() } else { Haptics.tap() }
+    }
+
+    private func moveToBack() {
+        guard model.phase == .open, model.stack.count > 1, model.tuckingID == nil else { return }
+        Haptics.tap()
+        withAnimation(.easeOut(duration: 0.16)) { model.startTuck() }
+        Task {
+            try? await Task.sleep(for: .milliseconds(170))
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { model.finishTuck() }
+            if model.faceUp, model.stack.first?.isHit == true { Haptics.hit() }
+        }
+    }
+
+    private func returnFromPile() {
+        guard !model.pile.isEmpty else { return }
+        Haptics.tap()
+        withAnimation(.easeInOut(duration: 0.2)) { showSummary = false }
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.84)) { model.returnFromPile() }
+    }
+
+    #if DEBUG
+    /// Screenshot aid: `-demo <cards to pile> [peek]` opens the pack and plays it by itself.
+    private func runDemo() {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-demo"), i + 1 < args.count, let taps = Int(args[i + 1]) else { return }
+        Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            tear()
+            try? await Task.sleep(for: .seconds(2.5))
+            for _ in 0..<taps {
+                sendFront()
+                try? await Task.sleep(for: .milliseconds(600))
+            }
+            if args.contains("peek") { withAnimation { peeking = true } }
+        }
+    }
+    #endif
+
+    private func newPack() {
+        peekTask?.cancel()
+        peeking = false
+        withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
+        torn = false
+        cardsRise = false
+        cardsOut = false
+        packGone = false
+        tearProgress = 0
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) { model.newPack() }
+    }
+}

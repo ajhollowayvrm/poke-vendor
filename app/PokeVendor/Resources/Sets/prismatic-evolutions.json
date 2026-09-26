@@ -1,0 +1,6929 @@
+{
+ "slug": "prismatic-evolutions",
+ "name": "Prismatic Evolutions",
+ "packCost": 14.37,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/593294_in_800x800.jpg",
+ "slots": [
+  {
+   "name": "Common",
+   "count": 4,
+   "outcomes": [
+    {
+     "name": "Common",
+     "entry": "Common",
+     "odds": 1.0,
+     "prints": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Uncommon",
+   "count": 3,
+   "outcomes": [
+    {
+     "name": "Uncommon",
+     "entry": "Uncommon",
+     "odds": 1.0,
+     "prints": [
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Reverse holo slot 1",
+   "count": 1,
+   "outcomes": [
+    {
+     "name": "Poké Ball pattern",
+     "entry": "Poké Ball pattern",
+     "odds": 0.333333,
+     "prints": [
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      161,
+      162,
+      163,
+      164,
+      165,
+      166,
+      167,
+      168,
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      175,
+      176,
+      177,
+      178
+     ]
+    },
+    {
+     "name": "ACE SPEC Rare",
+     "entry": "ACE SPEC Rare",
+     "odds": 0.047619,
+     "prints": [
+      179,
+      180,
+      181,
+      182,
+      183,
+      184
+     ]
+    },
+    {
+     "name": "Reverse holo",
+     "entry": "Reverse holo",
+     "odds": 0.619048,
+     "prints": [
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191,
+      192,
+      193,
+      194,
+      195,
+      196,
+      197,
+      198,
+      199,
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207,
+      208,
+      209,
+      210,
+      211,
+      212,
+      213,
+      214,
+      215,
+      216,
+      217,
+      218,
+      219,
+      220,
+      221,
+      222,
+      223,
+      224,
+      225,
+      226,
+      227,
+      228,
+      229,
+      230,
+      231,
+      232,
+      233,
+      234,
+      235,
+      236,
+      237,
+      238,
+      239,
+      240,
+      241,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Reverse holo slot 2",
+   "count": 1,
+   "outcomes": [
+    {
+     "name": "Master Ball pattern",
+     "entry": "Master Ball pattern",
+     "odds": 0.052632,
+     "prints": [
+      285,
+      286,
+      287,
+      288,
+      289,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329,
+      330,
+      331,
+      332,
+      333,
+      334,
+      335,
+      336,
+      337,
+      338,
+      339,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351
+     ]
+    },
+    {
+     "name": "Special Illustration Rare",
+     "entry": "Special Illustration Rare",
+     "odds": 0.022222,
+     "prints": [
+      352,
+      353,
+      354,
+      355,
+      356,
+      357,
+      358,
+      359,
+      360,
+      361,
+      362,
+      363,
+      364,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383
+     ]
+    },
+    {
+     "name": "Hyper Rare",
+     "entry": "Hyper Rare",
+     "odds": 0.005988,
+     "prints": [
+      384,
+      385,
+      386,
+      387,
+      388
+     ]
+    },
+    {
+     "name": "Reverse holo",
+     "entry": "Reverse holo",
+     "odds": 0.919158,
+     "prints": [
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191,
+      192,
+      193,
+      194,
+      195,
+      196,
+      197,
+      198,
+      199,
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207,
+      208,
+      209,
+      210,
+      211,
+      212,
+      213,
+      214,
+      215,
+      216,
+      217,
+      218,
+      219,
+      220,
+      221,
+      222,
+      223,
+      224,
+      225,
+      226,
+      227,
+      228,
+      229,
+      230,
+      231,
+      232,
+      233,
+      234,
+      235,
+      236,
+      237,
+      238,
+      239,
+      240,
+      241,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Rare slot",
+   "count": 1,
+   "outcomes": [
+    {
+     "name": "Double Rare",
+     "entry": "Double Rare",
+     "odds": 0.2,
+     "prints": [
+      389,
+      390,
+      391,
+      392,
+      393,
+      394,
+      395,
+      396,
+      397,
+      398,
+      399,
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408,
+      409,
+      410,
+      411,
+      412,
+      413
+     ]
+    },
+    {
+     "name": "Ultra Rare",
+     "entry": "Ultra Rare",
+     "odds": 0.076923,
+     "prints": [
+      414,
+      415,
+      416,
+      417,
+      418,
+      419,
+      420,
+      421,
+      422,
+      423,
+      424,
+      425
+     ]
+    },
+    {
+     "name": "Rare",
+     "entry": "Rare",
+     "odds": 0.723077,
+     "prints": [
+      426,
+      427,
+      428,
+      429,
+      430,
+      431,
+      432,
+      433,
+      434,
+      435,
+      436,
+      437,
+      438,
+      439,
+      440,
+      441,
+      442,
+      443,
+      444,
+      445,
+      446
+     ]
+    }
+   ]
+  }
+ ],
+ "prints": [
+  {
+   "num": "001/131",
+   "name": "Exeggcute",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610356_in_800x800.jpg"
+  },
+  {
+   "num": "003/131",
+   "name": "Pinsir",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610358_in_800x800.jpg"
+  },
+  {
+   "num": "004/131",
+   "name": "Budew",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610359_in_800x800.jpg"
+  },
+  {
+   "num": "007/131",
+   "name": "Cottonee",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610362_in_800x800.jpg"
+  },
+  {
+   "num": "009/131",
+   "name": "Applin",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.09,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610364_in_800x800.jpg"
+  },
+  {
+   "num": "015/131",
+   "name": "Litleo",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.09,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610370_in_800x800.jpg"
+  },
+  {
+   "num": "018/131",
+   "name": "Slowpoke",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610373_in_800x800.jpg"
+  },
+  {
+   "num": "020/131",
+   "name": "Goldeen",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610375_in_800x800.jpg"
+  },
+  {
+   "num": "035/131",
+   "name": "Duskull",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610390_in_800x800.jpg"
+  },
+  {
+   "num": "036/131",
+   "name": "Dusclops",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610391_in_800x800.jpg"
+  },
+  {
+   "num": "038/131",
+   "name": "Spritzee",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610393_in_800x800.jpg"
+  },
+  {
+   "num": "039/131",
+   "name": "Aromatisse",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610394_in_800x800.jpg"
+  },
+  {
+   "num": "047/131",
+   "name": "Larvitar",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.07,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610402_in_800x800.jpg"
+  },
+  {
+   "num": "048/131",
+   "name": "Pupitar",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.03,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610403_in_800x800.jpg"
+  },
+  {
+   "num": "050/131",
+   "name": "Riolu",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610405_in_800x800.jpg"
+  },
+  {
+   "num": "052/131",
+   "name": "Hippopotas",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.03,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610407_in_800x800.jpg"
+  },
+  {
+   "num": "053/131",
+   "name": "Hippowdon",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.02,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610408_in_800x800.jpg"
+  },
+  {
+   "num": "061/131",
+   "name": "Sneasel",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610416_in_800x800.jpg"
+  },
+  {
+   "num": "062/131",
+   "name": "Houndour",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.11,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610417_in_800x800.jpg"
+  },
+  {
+   "num": "063/131",
+   "name": "Houndoom",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.09,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610418_in_800x800.jpg"
+  },
+  {
+   "num": "066/131",
+   "name": "Bronzor",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.02,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610421_in_800x800.jpg"
+  },
+  {
+   "num": "069/131",
+   "name": "Duraludon",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610424_in_800x800.jpg"
+  },
+  {
+   "num": "071/131",
+   "name": "Dreepy",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610426_in_800x800.jpg"
+  },
+  {
+   "num": "072/131",
+   "name": "Drakloak",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610427_in_800x800.jpg"
+  },
+  {
+   "num": "074/131",
+   "name": "Eevee",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610429_in_800x800.jpg"
+  },
+  {
+   "num": "077/131",
+   "name": "Hoothoot",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610432_in_800x800.jpg"
+  },
+  {
+   "num": "079/131",
+   "name": "Dunsparce",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610434_in_800x800.jpg"
+  },
+  {
+   "num": "081/131",
+   "name": "Miltank",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610436_in_800x800.jpg"
+  },
+  {
+   "num": "083/131",
+   "name": "Buneary",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610438_in_800x800.jpg"
+  },
+  {
+   "num": "084/131",
+   "name": "Lopunny",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610439_in_800x800.jpg"
+  },
+  {
+   "num": "085/131",
+   "name": "Fan Rotom",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610440_in_800x800.jpg"
+  },
+  {
+   "num": "088/131",
+   "name": "Furfrou",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.02,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610443_in_800x800.jpg"
+  },
+  {
+   "num": "090/131",
+   "name": "Noibat",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.03,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610445_in_800x800.jpg"
+  },
+  {
+   "num": "093/131",
+   "name": "Amarys",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610448_in_800x800.jpg"
+  },
+  {
+   "num": "096/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610451_in_800x800.jpg"
+  },
+  {
+   "num": "097/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.06,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610452_in_800x800.jpg"
+  },
+  {
+   "num": "098/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610453_in_800x800.jpg"
+  },
+  {
+   "num": "099/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.06,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610454_in_800x800.jpg"
+  },
+  {
+   "num": "109/131",
+   "name": "Friends in Paldea",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610464_in_800x800.jpg"
+  },
+  {
+   "num": "111/131",
+   "name": "Haban Berry",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.07,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610466_in_800x800.jpg"
+  },
+  {
+   "num": "115/131",
+   "name": "Larry's Skill",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610470_in_800x800.jpg"
+  },
+  {
+   "num": "122/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.14,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610477_in_800x800.jpg"
+  },
+  {
+   "num": "123/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610478_in_800x800.jpg"
+  },
+  {
+   "num": "124/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610479_in_800x800.jpg"
+  },
+  {
+   "num": "125/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.06,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610480_in_800x800.jpg"
+  },
+  {
+   "num": "127/131",
+   "name": "Roto-Stick",
+   "rarity": "Common",
+   "variant": "Normal",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610482_in_800x800.jpg"
+  },
+  {
+   "num": "002/131",
+   "name": "Exeggutor",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610357_in_800x800.jpg"
+  },
+  {
+   "num": "010/131",
+   "name": "Dipplin",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610365_in_800x800.jpg"
+  },
+  {
+   "num": "016/131",
+   "name": "Pyroar",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610371_in_800x800.jpg"
+  },
+  {
+   "num": "019/131",
+   "name": "Slowking",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610374_in_800x800.jpg"
+  },
+  {
+   "num": "021/131",
+   "name": "Seaking",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610376_in_800x800.jpg"
+  },
+  {
+   "num": "024/131",
+   "name": "Suicune",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.12,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610379_in_800x800.jpg"
+  },
+  {
+   "num": "042/131",
+   "name": "Scream Tail",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610397_in_800x800.jpg"
+  },
+  {
+   "num": "055/131",
+   "name": "Great Tusk",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610410_in_800x800.jpg"
+  },
+  {
+   "num": "067/131",
+   "name": "Bronzong",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610422_in_800x800.jpg"
+  },
+  {
+   "num": "068/131",
+   "name": "Heatran",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610423_in_800x800.jpg"
+  },
+  {
+   "num": "086/131",
+   "name": "Regigigas",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610441_in_800x800.jpg"
+  },
+  {
+   "num": "087/131",
+   "name": "Shaymin",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.04,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610442_in_800x800.jpg"
+  },
+  {
+   "num": "089/131",
+   "name": "Hawlucha",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.06,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610444_in_800x800.jpg"
+  },
+  {
+   "num": "094/131",
+   "name": "Area Zero Underdepths",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610449_in_800x800.jpg"
+  },
+  {
+   "num": "095/131",
+   "name": "Binding Mochi",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610450_in_800x800.jpg"
+  },
+  {
+   "num": "100/131",
+   "name": "Briar",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.14,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610455_in_800x800.jpg"
+  },
+  {
+   "num": "101/131",
+   "name": "Buddy-Buddy Poffin",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610456_in_800x800.jpg"
+  },
+  {
+   "num": "102/131",
+   "name": "Bug Catching Set",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.25,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610457_in_800x800.jpg"
+  },
+  {
+   "num": "103/131",
+   "name": "Carmine",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610458_in_800x800.jpg"
+  },
+  {
+   "num": "104/131",
+   "name": "Ciphermaniac's Codebreaking",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610459_in_800x800.jpg"
+  },
+  {
+   "num": "105/131",
+   "name": "Crispin",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.25,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610460_in_800x800.jpg"
+  },
+  {
+   "num": "106/131",
+   "name": "Earthen Vessel",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610461_in_800x800.jpg"
+  },
+  {
+   "num": "107/131",
+   "name": "Explorer's Guidance",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610462_in_800x800.jpg"
+  },
+  {
+   "num": "108/131",
+   "name": "Festival Grounds",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610463_in_800x800.jpg"
+  },
+  {
+   "num": "110/131",
+   "name": "Glass Trumpet",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610465_in_800x800.jpg"
+  },
+  {
+   "num": "112/131",
+   "name": "Janine's Secret Art",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.14,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610467_in_800x800.jpg"
+  },
+  {
+   "num": "113/131",
+   "name": "Kieran",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610468_in_800x800.jpg"
+  },
+  {
+   "num": "114/131",
+   "name": "Lacey",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.07,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610469_in_800x800.jpg"
+  },
+  {
+   "num": "118/131",
+   "name": "Ogre's Mask",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.06,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610473_in_800x800.jpg"
+  },
+  {
+   "num": "120/131",
+   "name": "Professor Sada's Vitality",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610475_in_800x800.jpg"
+  },
+  {
+   "num": "121/131",
+   "name": "Professor Turo's Scenario",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.05,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610476_in_800x800.jpg"
+  },
+  {
+   "num": "126/131",
+   "name": "Rescue Board",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.07,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610481_in_800x800.jpg"
+  },
+  {
+   "num": "130/131",
+   "name": "Techno Radar",
+   "rarity": "Uncommon",
+   "variant": "Normal",
+   "market": 0.03,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610485_in_800x800.jpg"
+  },
+  {
+   "num": "001/131",
+   "name": "Exeggcute",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610536_in_800x800.jpg"
+  },
+  {
+   "num": "002/131",
+   "name": "Exeggutor",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.37,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610537_in_800x800.jpg"
+  },
+  {
+   "num": "003/131",
+   "name": "Pinsir",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.36,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610538_in_800x800.jpg"
+  },
+  {
+   "num": "004/131",
+   "name": "Budew",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.64,
+   "graded": {
+    "psa10": null,
+    "psa9": 9.75,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610539_in_800x800.jpg"
+  },
+  {
+   "num": "005/131",
+   "name": "Leafeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.99,
+   "graded": {
+    "psa10": 69.52,
+    "psa9": 18.99,
+    "cgc10": 20.62,
+    "cgc9": 12.99
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610540_in_800x800.jpg"
+  },
+  {
+   "num": "007/131",
+   "name": "Cottonee",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610541_in_800x800.jpg"
+  },
+  {
+   "num": "008/131",
+   "name": "Whimsicott",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610542_in_800x800.jpg"
+  },
+  {
+   "num": "009/131",
+   "name": "Applin",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.41,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610543_in_800x800.jpg"
+  },
+  {
+   "num": "010/131",
+   "name": "Dipplin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.37,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610544_in_800x800.jpg"
+  },
+  {
+   "num": "013/131",
+   "name": "Flareon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.56,
+   "graded": {
+    "psa10": 78.47,
+    "psa9": 9.49,
+    "cgc10": 26,
+    "cgc9": 2.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610545_in_800x800.jpg"
+  },
+  {
+   "num": "015/131",
+   "name": "Litleo",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610546_in_800x800.jpg"
+  },
+  {
+   "num": "016/131",
+   "name": "Pyroar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610547_in_800x800.jpg"
+  },
+  {
+   "num": "018/131",
+   "name": "Slowpoke",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.56,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610548_in_800x800.jpg"
+  },
+  {
+   "num": "019/131",
+   "name": "Slowking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.42,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610549_in_800x800.jpg"
+  },
+  {
+   "num": "020/131",
+   "name": "Goldeen",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.44,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610550_in_800x800.jpg"
+  },
+  {
+   "num": "021/131",
+   "name": "Seaking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.55,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610551_in_800x800.jpg"
+  },
+  {
+   "num": "022/131",
+   "name": "Vaporeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.36,
+   "graded": {
+    "psa10": null,
+    "psa9": 10.62,
+    "cgc10": 179.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610552_in_800x800.jpg"
+  },
+  {
+   "num": "024/131",
+   "name": "Suicune",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.49,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610553_in_800x800.jpg"
+  },
+  {
+   "num": "025/131",
+   "name": "Glaceon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.2,
+   "graded": {
+    "psa10": 52,
+    "psa9": 18.99,
+    "cgc10": null,
+    "cgc9": 8.49
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610554_in_800x800.jpg"
+  },
+  {
+   "num": "029/131",
+   "name": "Jolteon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.18,
+   "graded": {
+    "psa10": 60.1,
+    "psa9": 14.99,
+    "cgc10": null,
+    "cgc9": 14.99
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610555_in_800x800.jpg"
+  },
+  {
+   "num": "033/131",
+   "name": "Espeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.71,
+   "graded": {
+    "psa10": 56.62,
+    "psa9": 14.5,
+    "cgc10": 23.37,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610557_in_800x800.jpg"
+  },
+  {
+   "num": "035/131",
+   "name": "Duskull",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.74,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610558_in_800x800.jpg"
+  },
+  {
+   "num": "036/131",
+   "name": "Dusclops",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.45,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610559_in_800x800.jpg"
+  },
+  {
+   "num": "037/131",
+   "name": "Dusknoir",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.57,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610560_in_800x800.jpg"
+  },
+  {
+   "num": "038/131",
+   "name": "Spritzee",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610561_in_800x800.jpg"
+  },
+  {
+   "num": "039/131",
+   "name": "Aromatisse",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610562_in_800x800.jpg"
+  },
+  {
+   "num": "040/131",
+   "name": "Sylveon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 3.2,
+   "graded": {
+    "psa10": 64.75,
+    "psa9": 12.5,
+    "cgc10": null,
+    "cgc9": 5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610563_in_800x800.jpg"
+  },
+  {
+   "num": "042/131",
+   "name": "Scream Tail",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610564_in_800x800.jpg"
+  },
+  {
+   "num": "043/131",
+   "name": "Flutter Mane",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.39,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610565_in_800x800.jpg"
+  },
+  {
+   "num": "044/131",
+   "name": "Munkidori",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.68,
+   "graded": {
+    "psa10": 34,
+    "psa9": 3.25,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610566_in_800x800.jpg"
+  },
+  {
+   "num": "045/131",
+   "name": "Fezandipiti",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.46,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610567_in_800x800.jpg"
+  },
+  {
+   "num": "046/131",
+   "name": "Iron Boulder",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610568_in_800x800.jpg"
+  },
+  {
+   "num": "047/131",
+   "name": "Larvitar",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.33,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610569_in_800x800.jpg"
+  },
+  {
+   "num": "048/131",
+   "name": "Pupitar",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610570_in_800x800.jpg"
+  },
+  {
+   "num": "049/131",
+   "name": "Groudon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610571_in_800x800.jpg"
+  },
+  {
+   "num": "050/131",
+   "name": "Riolu",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.58,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610572_in_800x800.jpg"
+  },
+  {
+   "num": "052/131",
+   "name": "Hippopotas",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610573_in_800x800.jpg"
+  },
+  {
+   "num": "053/131",
+   "name": "Hippowdon",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.25,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610574_in_800x800.jpg"
+  },
+  {
+   "num": "054/131",
+   "name": "Bloodmoon Ursaluna",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.38,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610575_in_800x800.jpg"
+  },
+  {
+   "num": "055/131",
+   "name": "Great Tusk",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610576_in_800x800.jpg"
+  },
+  {
+   "num": "057/131",
+   "name": "Okidogi",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.27,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610577_in_800x800.jpg"
+  },
+  {
+   "num": "059/131",
+   "name": "Umbreon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 3.8,
+   "graded": {
+    "psa10": 76.59,
+    "psa9": 23.52,
+    "cgc10": 29.99,
+    "cgc9": 7.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610578_in_800x800.jpg"
+  },
+  {
+   "num": "061/131",
+   "name": "Sneasel",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610579_in_800x800.jpg"
+  },
+  {
+   "num": "062/131",
+   "name": "Houndour",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.36,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610580_in_800x800.jpg"
+  },
+  {
+   "num": "063/131",
+   "name": "Houndoom",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.36,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610581_in_800x800.jpg"
+  },
+  {
+   "num": "065/131",
+   "name": "Roaring Moon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.36,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610582_in_800x800.jpg"
+  },
+  {
+   "num": "066/131",
+   "name": "Bronzor",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610583_in_800x800.jpg"
+  },
+  {
+   "num": "067/131",
+   "name": "Bronzong",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610584_in_800x800.jpg"
+  },
+  {
+   "num": "068/131",
+   "name": "Heatran",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610585_in_800x800.jpg"
+  },
+  {
+   "num": "069/131",
+   "name": "Duraludon",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610586_in_800x800.jpg"
+  },
+  {
+   "num": "070/131",
+   "name": "Archaludon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.26,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610587_in_800x800.jpg"
+  },
+  {
+   "num": "071/131",
+   "name": "Dreepy",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.89,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": 8.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610588_in_800x800.jpg"
+  },
+  {
+   "num": "072/131",
+   "name": "Drakloak",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.78,
+   "graded": {
+    "psa10": 31.25,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610589_in_800x800.jpg"
+  },
+  {
+   "num": "074/131",
+   "name": "Eevee",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.49,
+   "graded": {
+    "psa10": 38.88,
+    "psa9": 11.75,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610590_in_800x800.jpg"
+  },
+  {
+   "num": "077/131",
+   "name": "Hoothoot",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.33,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610591_in_800x800.jpg"
+  },
+  {
+   "num": "078/131",
+   "name": "Noctowl",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.39,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610592_in_800x800.jpg"
+  },
+  {
+   "num": "079/131",
+   "name": "Dunsparce",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.48,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610593_in_800x800.jpg"
+  },
+  {
+   "num": "080/131",
+   "name": "Dudunsparce",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": 5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610594_in_800x800.jpg"
+  },
+  {
+   "num": "081/131",
+   "name": "Miltank",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610595_in_800x800.jpg"
+  },
+  {
+   "num": "083/131",
+   "name": "Buneary",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610596_in_800x800.jpg"
+  },
+  {
+   "num": "084/131",
+   "name": "Lopunny",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.33,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610597_in_800x800.jpg"
+  },
+  {
+   "num": "085/131",
+   "name": "Fan Rotom",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610598_in_800x800.jpg"
+  },
+  {
+   "num": "086/131",
+   "name": "Regigigas",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.37,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610599_in_800x800.jpg"
+  },
+  {
+   "num": "087/131",
+   "name": "Shaymin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610600_in_800x800.jpg"
+  },
+  {
+   "num": "088/131",
+   "name": "Furfrou",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.33,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610601_in_800x800.jpg"
+  },
+  {
+   "num": "089/131",
+   "name": "Hawlucha",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610602_in_800x800.jpg"
+  },
+  {
+   "num": "090/131",
+   "name": "Noibat",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.4,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610603_in_800x800.jpg"
+  },
+  {
+   "num": "093/131",
+   "name": "Amarys",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.27,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610604_in_800x800.jpg"
+  },
+  {
+   "num": "094/131",
+   "name": "Area Zero Underdepths",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.38,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610605_in_800x800.jpg"
+  },
+  {
+   "num": "095/131",
+   "name": "Binding Mochi",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610606_in_800x800.jpg"
+  },
+  {
+   "num": "096/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610607_in_800x800.jpg"
+  },
+  {
+   "num": "097/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.27,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610608_in_800x800.jpg"
+  },
+  {
+   "num": "098/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.24,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610609_in_800x800.jpg"
+  },
+  {
+   "num": "099/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610610_in_800x800.jpg"
+  },
+  {
+   "num": "100/131",
+   "name": "Briar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.27,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610611_in_800x800.jpg"
+  },
+  {
+   "num": "101/131",
+   "name": "Buddy-Buddy Poffin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.74,
+   "graded": {
+    "psa10": null,
+    "psa9": 20.49,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610612_in_800x800.jpg"
+  },
+  {
+   "num": "102/131",
+   "name": "Bug Catching Set",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 1.83,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610613_in_800x800.jpg"
+  },
+  {
+   "num": "103/131",
+   "name": "Carmine",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610614_in_800x800.jpg"
+  },
+  {
+   "num": "104/131",
+   "name": "Ciphermaniac's Codebreaking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.35,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610615_in_800x800.jpg"
+  },
+  {
+   "num": "105/131",
+   "name": "Crispin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.52,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610616_in_800x800.jpg"
+  },
+  {
+   "num": "106/131",
+   "name": "Earthen Vessel",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.38,
+   "graded": {
+    "psa10": 37.99,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610617_in_800x800.jpg"
+  },
+  {
+   "num": "107/131",
+   "name": "Explorer's Guidance",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610618_in_800x800.jpg"
+  },
+  {
+   "num": "108/131",
+   "name": "Festival Grounds",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.37,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610619_in_800x800.jpg"
+  },
+  {
+   "num": "109/131",
+   "name": "Friends in Paldea",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610620_in_800x800.jpg"
+  },
+  {
+   "num": "110/131",
+   "name": "Glass Trumpet",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.22,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610621_in_800x800.jpg"
+  },
+  {
+   "num": "111/131",
+   "name": "Haban Berry",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610622_in_800x800.jpg"
+  },
+  {
+   "num": "112/131",
+   "name": "Janine's Secret Art",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610623_in_800x800.jpg"
+  },
+  {
+   "num": "113/131",
+   "name": "Kieran",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.47,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610624_in_800x800.jpg"
+  },
+  {
+   "num": "114/131",
+   "name": "Lacey",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.33,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610625_in_800x800.jpg"
+  },
+  {
+   "num": "115/131",
+   "name": "Larry's Skill",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610626_in_800x800.jpg"
+  },
+  {
+   "num": "118/131",
+   "name": "Ogre's Mask",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610627_in_800x800.jpg"
+  },
+  {
+   "num": "120/131",
+   "name": "Professor Sada's Vitality",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610628_in_800x800.jpg"
+  },
+  {
+   "num": "121/131",
+   "name": "Professor Turo's Scenario",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610629_in_800x800.jpg"
+  },
+  {
+   "num": "122/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610630_in_800x800.jpg"
+  },
+  {
+   "num": "123/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610631_in_800x800.jpg"
+  },
+  {
+   "num": "124/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610632_in_800x800.jpg"
+  },
+  {
+   "num": "125/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.27,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610633_in_800x800.jpg"
+  },
+  {
+   "num": "126/131",
+   "name": "Rescue Board",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610634_in_800x800.jpg"
+  },
+  {
+   "num": "127/131",
+   "name": "Roto-Stick",
+   "rarity": "Common",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.39,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610635_in_800x800.jpg"
+  },
+  {
+   "num": "130/131",
+   "name": "Techno Radar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Poké Ball pattern)",
+   "market": 0.24,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610636_in_800x800.jpg"
+  },
+  {
+   "num": "116/131",
+   "name": "Max Rod",
+   "rarity": "ACE SPEC Rare",
+   "variant": "Holo",
+   "market": 0.68,
+   "graded": {
+    "psa10": 46,
+    "psa9": 15,
+    "cgc10": 49.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610471_in_800x800.jpg"
+  },
+  {
+   "num": "117/131",
+   "name": "Maximum Belt",
+   "rarity": "ACE SPEC Rare",
+   "variant": "Holo",
+   "market": 0.55,
+   "graded": {
+    "psa10": null,
+    "psa9": 13.7,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610472_in_800x800.jpg"
+  },
+  {
+   "num": "119/131",
+   "name": "Prime Catcher",
+   "rarity": "ACE SPEC Rare",
+   "variant": "Holo",
+   "market": 0.56,
+   "graded": {
+    "psa10": null,
+    "psa9": 12.75,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610474_in_800x800.jpg"
+  },
+  {
+   "num": "128/131",
+   "name": "Scoop Up Cyclone",
+   "rarity": "ACE SPEC Rare",
+   "variant": "Holo",
+   "market": 0.44,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610483_in_800x800.jpg"
+  },
+  {
+   "num": "129/131",
+   "name": "Sparkling Crystal",
+   "rarity": "ACE SPEC Rare",
+   "variant": "Holo",
+   "market": 0.43,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610484_in_800x800.jpg"
+  },
+  {
+   "num": "131/131",
+   "name": "Treasure Tracker",
+   "rarity": "ACE SPEC Rare",
+   "variant": "Holo",
+   "market": 0.37,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610486_in_800x800.jpg"
+  },
+  {
+   "num": "001/131",
+   "name": "Exeggcute",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610356_in_800x800.jpg"
+  },
+  {
+   "num": "002/131",
+   "name": "Exeggutor",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.25,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610357_in_800x800.jpg"
+  },
+  {
+   "num": "003/131",
+   "name": "Pinsir",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610358_in_800x800.jpg"
+  },
+  {
+   "num": "004/131",
+   "name": "Budew",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.26,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610359_in_800x800.jpg"
+  },
+  {
+   "num": "005/131",
+   "name": "Leafeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.43,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610360_in_800x800.jpg"
+  },
+  {
+   "num": "007/131",
+   "name": "Cottonee",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610362_in_800x800.jpg"
+  },
+  {
+   "num": "008/131",
+   "name": "Whimsicott",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.24,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610363_in_800x800.jpg"
+  },
+  {
+   "num": "009/131",
+   "name": "Applin",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610364_in_800x800.jpg"
+  },
+  {
+   "num": "010/131",
+   "name": "Dipplin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610365_in_800x800.jpg"
+  },
+  {
+   "num": "013/131",
+   "name": "Flareon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610368_in_800x800.jpg"
+  },
+  {
+   "num": "015/131",
+   "name": "Litleo",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.12,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610370_in_800x800.jpg"
+  },
+  {
+   "num": "016/131",
+   "name": "Pyroar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610371_in_800x800.jpg"
+  },
+  {
+   "num": "018/131",
+   "name": "Slowpoke",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610373_in_800x800.jpg"
+  },
+  {
+   "num": "019/131",
+   "name": "Slowking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610374_in_800x800.jpg"
+  },
+  {
+   "num": "020/131",
+   "name": "Goldeen",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610375_in_800x800.jpg"
+  },
+  {
+   "num": "021/131",
+   "name": "Seaking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.25,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610376_in_800x800.jpg"
+  },
+  {
+   "num": "022/131",
+   "name": "Vaporeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.34,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610377_in_800x800.jpg"
+  },
+  {
+   "num": "024/131",
+   "name": "Suicune",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610379_in_800x800.jpg"
+  },
+  {
+   "num": "025/131",
+   "name": "Glaceon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.35,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610380_in_800x800.jpg"
+  },
+  {
+   "num": "029/131",
+   "name": "Jolteon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.39,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610384_in_800x800.jpg"
+  },
+  {
+   "num": "033/131",
+   "name": "Espeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.55,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610388_in_800x800.jpg"
+  },
+  {
+   "num": "035/131",
+   "name": "Duskull",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.23,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610390_in_800x800.jpg"
+  },
+  {
+   "num": "036/131",
+   "name": "Dusclops",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.24,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610391_in_800x800.jpg"
+  },
+  {
+   "num": "037/131",
+   "name": "Dusknoir",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610392_in_800x800.jpg"
+  },
+  {
+   "num": "038/131",
+   "name": "Spritzee",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610393_in_800x800.jpg"
+  },
+  {
+   "num": "039/131",
+   "name": "Aromatisse",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610394_in_800x800.jpg"
+  },
+  {
+   "num": "040/131",
+   "name": "Sylveon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.42,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610395_in_800x800.jpg"
+  },
+  {
+   "num": "042/131",
+   "name": "Scream Tail",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610397_in_800x800.jpg"
+  },
+  {
+   "num": "043/131",
+   "name": "Flutter Mane",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610398_in_800x800.jpg"
+  },
+  {
+   "num": "044/131",
+   "name": "Munkidori",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.31,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610399_in_800x800.jpg"
+  },
+  {
+   "num": "045/131",
+   "name": "Fezandipiti",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610400_in_800x800.jpg"
+  },
+  {
+   "num": "046/131",
+   "name": "Iron Boulder",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610401_in_800x800.jpg"
+  },
+  {
+   "num": "047/131",
+   "name": "Larvitar",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610402_in_800x800.jpg"
+  },
+  {
+   "num": "048/131",
+   "name": "Pupitar",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610403_in_800x800.jpg"
+  },
+  {
+   "num": "049/131",
+   "name": "Groudon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610404_in_800x800.jpg"
+  },
+  {
+   "num": "050/131",
+   "name": "Riolu",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.24,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610405_in_800x800.jpg"
+  },
+  {
+   "num": "052/131",
+   "name": "Hippopotas",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.09,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610407_in_800x800.jpg"
+  },
+  {
+   "num": "053/131",
+   "name": "Hippowdon",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610408_in_800x800.jpg"
+  },
+  {
+   "num": "054/131",
+   "name": "Bloodmoon Ursaluna",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610409_in_800x800.jpg"
+  },
+  {
+   "num": "055/131",
+   "name": "Great Tusk",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610410_in_800x800.jpg"
+  },
+  {
+   "num": "057/131",
+   "name": "Okidogi",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610412_in_800x800.jpg"
+  },
+  {
+   "num": "059/131",
+   "name": "Umbreon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.6,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610414_in_800x800.jpg"
+  },
+  {
+   "num": "061/131",
+   "name": "Sneasel",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610416_in_800x800.jpg"
+  },
+  {
+   "num": "062/131",
+   "name": "Houndour",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610417_in_800x800.jpg"
+  },
+  {
+   "num": "063/131",
+   "name": "Houndoom",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610418_in_800x800.jpg"
+  },
+  {
+   "num": "065/131",
+   "name": "Roaring Moon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610420_in_800x800.jpg"
+  },
+  {
+   "num": "066/131",
+   "name": "Bronzor",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610421_in_800x800.jpg"
+  },
+  {
+   "num": "067/131",
+   "name": "Bronzong",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610422_in_800x800.jpg"
+  },
+  {
+   "num": "068/131",
+   "name": "Heatran",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610423_in_800x800.jpg"
+  },
+  {
+   "num": "069/131",
+   "name": "Duraludon",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610424_in_800x800.jpg"
+  },
+  {
+   "num": "070/131",
+   "name": "Archaludon",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.12,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610425_in_800x800.jpg"
+  },
+  {
+   "num": "071/131",
+   "name": "Dreepy",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610426_in_800x800.jpg"
+  },
+  {
+   "num": "072/131",
+   "name": "Drakloak",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.26,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610427_in_800x800.jpg"
+  },
+  {
+   "num": "074/131",
+   "name": "Eevee",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610429_in_800x800.jpg"
+  },
+  {
+   "num": "077/131",
+   "name": "Hoothoot",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610432_in_800x800.jpg"
+  },
+  {
+   "num": "078/131",
+   "name": "Noctowl",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.23,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610433_in_800x800.jpg"
+  },
+  {
+   "num": "079/131",
+   "name": "Dunsparce",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610434_in_800x800.jpg"
+  },
+  {
+   "num": "080/131",
+   "name": "Dudunsparce",
+   "rarity": "Rare",
+   "variant": "Reverse holo",
+   "market": 0.86,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610435_in_800x800.jpg"
+  },
+  {
+   "num": "081/131",
+   "name": "Miltank",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610436_in_800x800.jpg"
+  },
+  {
+   "num": "083/131",
+   "name": "Buneary",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610438_in_800x800.jpg"
+  },
+  {
+   "num": "084/131",
+   "name": "Lopunny",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610439_in_800x800.jpg"
+  },
+  {
+   "num": "085/131",
+   "name": "Fan Rotom",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610440_in_800x800.jpg"
+  },
+  {
+   "num": "086/131",
+   "name": "Regigigas",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610441_in_800x800.jpg"
+  },
+  {
+   "num": "087/131",
+   "name": "Shaymin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610442_in_800x800.jpg"
+  },
+  {
+   "num": "088/131",
+   "name": "Furfrou",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610443_in_800x800.jpg"
+  },
+  {
+   "num": "089/131",
+   "name": "Hawlucha",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.22,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610444_in_800x800.jpg"
+  },
+  {
+   "num": "090/131",
+   "name": "Noibat",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610445_in_800x800.jpg"
+  },
+  {
+   "num": "093/131",
+   "name": "Amarys",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.11,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610448_in_800x800.jpg"
+  },
+  {
+   "num": "094/131",
+   "name": "Area Zero Underdepths",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.23,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610449_in_800x800.jpg"
+  },
+  {
+   "num": "095/131",
+   "name": "Binding Mochi",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610450_in_800x800.jpg"
+  },
+  {
+   "num": "096/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610451_in_800x800.jpg"
+  },
+  {
+   "num": "097/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610452_in_800x800.jpg"
+  },
+  {
+   "num": "098/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610453_in_800x800.jpg"
+  },
+  {
+   "num": "099/131",
+   "name": "Black Belt's Training",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610454_in_800x800.jpg"
+  },
+  {
+   "num": "100/131",
+   "name": "Briar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610455_in_800x800.jpg"
+  },
+  {
+   "num": "101/131",
+   "name": "Buddy-Buddy Poffin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.33,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610456_in_800x800.jpg"
+  },
+  {
+   "num": "102/131",
+   "name": "Bug Catching Set",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610457_in_800x800.jpg"
+  },
+  {
+   "num": "103/131",
+   "name": "Carmine",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610458_in_800x800.jpg"
+  },
+  {
+   "num": "104/131",
+   "name": "Ciphermaniac's Codebreaking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610459_in_800x800.jpg"
+  },
+  {
+   "num": "105/131",
+   "name": "Crispin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.26,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610460_in_800x800.jpg"
+  },
+  {
+   "num": "106/131",
+   "name": "Earthen Vessel",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.25,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610461_in_800x800.jpg"
+  },
+  {
+   "num": "107/131",
+   "name": "Explorer's Guidance",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610462_in_800x800.jpg"
+  },
+  {
+   "num": "108/131",
+   "name": "Festival Grounds",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610463_in_800x800.jpg"
+  },
+  {
+   "num": "109/131",
+   "name": "Friends in Paldea",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610464_in_800x800.jpg"
+  },
+  {
+   "num": "110/131",
+   "name": "Glass Trumpet",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610465_in_800x800.jpg"
+  },
+  {
+   "num": "111/131",
+   "name": "Haban Berry",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610466_in_800x800.jpg"
+  },
+  {
+   "num": "112/131",
+   "name": "Janine's Secret Art",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.22,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610467_in_800x800.jpg"
+  },
+  {
+   "num": "113/131",
+   "name": "Kieran",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610468_in_800x800.jpg"
+  },
+  {
+   "num": "114/131",
+   "name": "Lacey",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610469_in_800x800.jpg"
+  },
+  {
+   "num": "115/131",
+   "name": "Larry's Skill",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610470_in_800x800.jpg"
+  },
+  {
+   "num": "118/131",
+   "name": "Ogre's Mask",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610473_in_800x800.jpg"
+  },
+  {
+   "num": "120/131",
+   "name": "Professor Sada's Vitality",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.22,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610475_in_800x800.jpg"
+  },
+  {
+   "num": "121/131",
+   "name": "Professor Turo's Scenario",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.19,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610476_in_800x800.jpg"
+  },
+  {
+   "num": "122/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.2,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610477_in_800x800.jpg"
+  },
+  {
+   "num": "123/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.17,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610478_in_800x800.jpg"
+  },
+  {
+   "num": "124/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.22,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610479_in_800x800.jpg"
+  },
+  {
+   "num": "125/131",
+   "name": "Professor's Research",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.14,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610480_in_800x800.jpg"
+  },
+  {
+   "num": "126/131",
+   "name": "Rescue Board",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.14,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610481_in_800x800.jpg"
+  },
+  {
+   "num": "127/131",
+   "name": "Roto-Stick",
+   "rarity": "Common",
+   "variant": "Reverse holo",
+   "market": 0.21,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610482_in_800x800.jpg"
+  },
+  {
+   "num": "130/131",
+   "name": "Techno Radar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo",
+   "market": 0.12,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610485_in_800x800.jpg"
+  },
+  {
+   "num": "001/131",
+   "name": "Exeggcute",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.21,
+   "graded": {
+    "psa10": 49.73,
+    "psa9": 9.5,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610637_in_800x800.jpg"
+  },
+  {
+   "num": "002/131",
+   "name": "Exeggutor",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 10.47,
+   "graded": {
+    "psa10": 211.75,
+    "psa9": 8.5,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610638_in_800x800.jpg"
+  },
+  {
+   "num": "003/131",
+   "name": "Pinsir",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.32,
+   "graded": {
+    "psa10": 164.99,
+    "psa9": 11.28,
+    "cgc10": 33.74,
+    "cgc9": 7.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610639_in_800x800.jpg"
+  },
+  {
+   "num": "004/131",
+   "name": "Budew",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 3.19,
+   "graded": {
+    "psa10": 85,
+    "psa9": 2,
+    "cgc10": 34.99,
+    "cgc9": 1.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610640_in_800x800.jpg"
+  },
+  {
+   "num": "005/131",
+   "name": "Leafeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 30.76,
+   "graded": {
+    "psa10": 219.97,
+    "psa9": 41.25,
+    "cgc10": 161.75,
+    "cgc9": 25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610641_in_800x800.jpg"
+  },
+  {
+   "num": "007/131",
+   "name": "Cottonee",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.1,
+   "graded": {
+    "psa10": 67.49,
+    "psa9": null,
+    "cgc10": 15,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610642_in_800x800.jpg"
+  },
+  {
+   "num": "008/131",
+   "name": "Whimsicott",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 11.26,
+   "graded": {
+    "psa10": 170,
+    "psa9": null,
+    "cgc10": 10.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610643_in_800x800.jpg"
+  },
+  {
+   "num": "009/131",
+   "name": "Applin",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.38,
+   "graded": {
+    "psa10": 105.25,
+    "psa9": 21.25,
+    "cgc10": null,
+    "cgc9": 10.2
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610644_in_800x800.jpg"
+  },
+  {
+   "num": "010/131",
+   "name": "Dipplin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.65,
+   "graded": {
+    "psa10": 119,
+    "psa9": 13.57,
+    "cgc10": 9.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610645_in_800x800.jpg"
+  },
+  {
+   "num": "013/131",
+   "name": "Flareon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 29.39,
+   "graded": {
+    "psa10": 172.5,
+    "psa9": 39.75,
+    "cgc10": 59.99,
+    "cgc9": 25.49
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610646_in_800x800.jpg"
+  },
+  {
+   "num": "015/131",
+   "name": "Litleo",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.33,
+   "graded": {
+    "psa10": 92.38,
+    "psa9": 9.68,
+    "cgc10": 19.33,
+    "cgc9": 10.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610647_in_800x800.jpg"
+  },
+  {
+   "num": "016/131",
+   "name": "Pyroar",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.1,
+   "graded": {
+    "psa10": 127.5,
+    "psa9": 6.44,
+    "cgc10": null,
+    "cgc9": 8.49
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610648_in_800x800.jpg"
+  },
+  {
+   "num": "018/131",
+   "name": "Slowpoke",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 7.43,
+   "graded": {
+    "psa10": 205.5,
+    "psa9": 18.5,
+    "cgc10": 44.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610649_in_800x800.jpg"
+  },
+  {
+   "num": "019/131",
+   "name": "Slowking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.13,
+   "graded": {
+    "psa10": 158.49,
+    "psa9": 13.8,
+    "cgc10": null,
+    "cgc9": 2.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610650_in_800x800.jpg"
+  },
+  {
+   "num": "020/131",
+   "name": "Goldeen",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 3.22,
+   "graded": {
+    "psa10": 224.99,
+    "psa9": 14.75,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610651_in_800x800.jpg"
+  },
+  {
+   "num": "021/131",
+   "name": "Seaking",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 4.84,
+   "graded": {
+    "psa10": 135.75,
+    "psa9": 12.12,
+    "cgc10": 22.1,
+    "cgc9": 1.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610652_in_800x800.jpg"
+  },
+  {
+   "num": "022/131",
+   "name": "Vaporeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 38.89,
+   "graded": {
+    "psa10": 459,
+    "psa9": 38,
+    "cgc10": 260,
+    "cgc9": 24.3
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610653_in_800x800.jpg"
+  },
+  {
+   "num": "024/131",
+   "name": "Suicune",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 12.91,
+   "graded": {
+    "psa10": 169.57,
+    "psa9": 20.25,
+    "cgc10": 129.77,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610654_in_800x800.jpg"
+  },
+  {
+   "num": "025/131",
+   "name": "Glaceon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 27.53,
+   "graded": {
+    "psa10": 207.5,
+    "psa9": 21.5,
+    "cgc10": 155,
+    "cgc9": 6.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610655_in_800x800.jpg"
+  },
+  {
+   "num": "029/131",
+   "name": "Jolteon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 31.18,
+   "graded": {
+    "psa10": 183.75,
+    "psa9": 35,
+    "cgc10": 25.5,
+    "cgc9": 22.48
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610656_in_800x800.jpg"
+  },
+  {
+   "num": "033/131",
+   "name": "Espeon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 29.37,
+   "graded": {
+    "psa10": 169,
+    "psa9": 33,
+    "cgc10": 75,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610658_in_800x800.jpg"
+  },
+  {
+   "num": "035/131",
+   "name": "Duskull",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.57,
+   "graded": {
+    "psa10": 113.75,
+    "psa9": 18.49,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610659_in_800x800.jpg"
+  },
+  {
+   "num": "036/131",
+   "name": "Dusclops",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.16,
+   "graded": {
+    "psa10": 187.99,
+    "psa9": null,
+    "cgc10": 69.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610660_in_800x800.jpg"
+  },
+  {
+   "num": "037/131",
+   "name": "Dusknoir",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 9.79,
+   "graded": {
+    "psa10": 250,
+    "psa9": 16.4,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610661_in_800x800.jpg"
+  },
+  {
+   "num": "038/131",
+   "name": "Spritzee",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.2,
+   "graded": {
+    "psa10": 83.62,
+    "psa9": 7.55,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610662_in_800x800.jpg"
+  },
+  {
+   "num": "039/131",
+   "name": "Aromatisse",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 7.01,
+   "graded": {
+    "psa10": null,
+    "psa9": 10.2,
+    "cgc10": 16.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610663_in_800x800.jpg"
+  },
+  {
+   "num": "040/131",
+   "name": "Sylveon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 33.58,
+   "graded": {
+    "psa10": 211.75,
+    "psa9": 44.94,
+    "cgc10": 97,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610664_in_800x800.jpg"
+  },
+  {
+   "num": "042/131",
+   "name": "Scream Tail",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 8.99,
+   "graded": {
+    "psa10": 105.2,
+    "psa9": 7.49,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610665_in_800x800.jpg"
+  },
+  {
+   "num": "043/131",
+   "name": "Flutter Mane",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 12.44,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": 11.9,
+    "cgc9": 6.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610666_in_800x800.jpg"
+  },
+  {
+   "num": "044/131",
+   "name": "Munkidori",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 11.95,
+   "graded": {
+    "psa10": 214,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610667_in_800x800.jpg"
+  },
+  {
+   "num": "045/131",
+   "name": "Fezandipiti",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 5.88,
+   "graded": {
+    "psa10": 229.5,
+    "psa9": 7.5,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610668_in_800x800.jpg"
+  },
+  {
+   "num": "046/131",
+   "name": "Iron Boulder",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 7.89,
+   "graded": {
+    "psa10": null,
+    "psa9": 22.18,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610669_in_800x800.jpg"
+  },
+  {
+   "num": "047/131",
+   "name": "Larvitar",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.36,
+   "graded": {
+    "psa10": 197,
+    "psa9": 18.5,
+    "cgc10": 49.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610670_in_800x800.jpg"
+  },
+  {
+   "num": "048/131",
+   "name": "Pupitar",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 9.19,
+   "graded": {
+    "psa10": 135,
+    "psa9": 14.4,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610671_in_800x800.jpg"
+  },
+  {
+   "num": "049/131",
+   "name": "Groudon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 10.33,
+   "graded": {
+    "psa10": 224.99,
+    "psa9": 20.84,
+    "cgc10": 69.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610672_in_800x800.jpg"
+  },
+  {
+   "num": "050/131",
+   "name": "Riolu",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 16.52,
+   "graded": {
+    "psa10": 112.37,
+    "psa9": 20,
+    "cgc10": 35,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610673_in_800x800.jpg"
+  },
+  {
+   "num": "052/131",
+   "name": "Hippopotas",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.15,
+   "graded": {
+    "psa10": 101.24,
+    "psa9": 15.5,
+    "cgc10": null,
+    "cgc9": 11.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610674_in_800x800.jpg"
+  },
+  {
+   "num": "053/131",
+   "name": "Hippowdon",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 5.96,
+   "graded": {
+    "psa10": 106.25,
+    "psa9": 13.4,
+    "cgc10": 59.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610675_in_800x800.jpg"
+  },
+  {
+   "num": "054/131",
+   "name": "Bloodmoon Ursaluna",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 8.4,
+   "graded": {
+    "psa10": 96.75,
+    "psa9": 12.75,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610676_in_800x800.jpg"
+  },
+  {
+   "num": "055/131",
+   "name": "Great Tusk",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 6.06,
+   "graded": {
+    "psa10": 133.5,
+    "psa9": 11.04,
+    "cgc10": 67.49,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610677_in_800x800.jpg"
+  },
+  {
+   "num": "057/131",
+   "name": "Okidogi",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 6.4,
+   "graded": {
+    "psa10": 280,
+    "psa9": 10.28,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610678_in_800x800.jpg"
+  },
+  {
+   "num": "059/131",
+   "name": "Umbreon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 78.42,
+   "graded": {
+    "psa10": 463.33,
+    "psa9": 76.5,
+    "cgc10": 185.75,
+    "cgc9": 68.75
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610679_in_800x800.jpg"
+  },
+  {
+   "num": "061/131",
+   "name": "Sneasel",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.32,
+   "graded": {
+    "psa10": 133.5,
+    "psa9": 11.02,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610680_in_800x800.jpg"
+  },
+  {
+   "num": "062/131",
+   "name": "Houndour",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.39,
+   "graded": {
+    "psa10": 112.75,
+    "psa9": 13.4,
+    "cgc10": null,
+    "cgc9": 6
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610681_in_800x800.jpg"
+  },
+  {
+   "num": "063/131",
+   "name": "Houndoom",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 11.15,
+   "graded": {
+    "psa10": 130.38,
+    "psa9": 12,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610682_in_800x800.jpg"
+  },
+  {
+   "num": "065/131",
+   "name": "Roaring Moon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 7.39,
+   "graded": {
+    "psa10": 95,
+    "psa9": 8.25,
+    "cgc10": 100,
+    "cgc9": 2.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610683_in_800x800.jpg"
+  },
+  {
+   "num": "066/131",
+   "name": "Bronzor",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.18,
+   "graded": {
+    "psa10": 133.5,
+    "psa9": 11.21,
+    "cgc10": 32.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610684_in_800x800.jpg"
+  },
+  {
+   "num": "067/131",
+   "name": "Bronzong",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 4.95,
+   "graded": {
+    "psa10": 64.81,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610685_in_800x800.jpg"
+  },
+  {
+   "num": "068/131",
+   "name": "Heatran",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.21,
+   "graded": {
+    "psa10": 149.99,
+    "psa9": 18.99,
+    "cgc10": 60,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610686_in_800x800.jpg"
+  },
+  {
+   "num": "069/131",
+   "name": "Duraludon",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.26,
+   "graded": {
+    "psa10": 115.5,
+    "psa9": 13.43,
+    "cgc10": 65,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610687_in_800x800.jpg"
+  },
+  {
+   "num": "070/131",
+   "name": "Archaludon",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 5.48,
+   "graded": {
+    "psa10": 222.5,
+    "psa9": null,
+    "cgc10": 33.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610688_in_800x800.jpg"
+  },
+  {
+   "num": "071/131",
+   "name": "Dreepy",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.6,
+   "graded": {
+    "psa10": 63,
+    "psa9": 7.23,
+    "cgc10": 16.29,
+    "cgc9": 6.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610689_in_800x800.jpg"
+  },
+  {
+   "num": "072/131",
+   "name": "Drakloak",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.76,
+   "graded": {
+    "psa10": 87,
+    "psa9": 0.99,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610690_in_800x800.jpg"
+  },
+  {
+   "num": "074/131",
+   "name": "Eevee",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 18.78,
+   "graded": {
+    "psa10": 168.75,
+    "psa9": 35.41,
+    "cgc10": 159.99,
+    "cgc9": 13
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610691_in_800x800.jpg"
+  },
+  {
+   "num": "077/131",
+   "name": "Hoothoot",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.45,
+   "graded": {
+    "psa10": 96.65,
+    "psa9": 19.5,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610692_in_800x800.jpg"
+  },
+  {
+   "num": "078/131",
+   "name": "Noctowl",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 8.12,
+   "graded": {
+    "psa10": 120.94,
+    "psa9": 4.25,
+    "cgc10": 65.77,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610693_in_800x800.jpg"
+  },
+  {
+   "num": "079/131",
+   "name": "Dunsparce",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.07,
+   "graded": {
+    "psa10": 133.75,
+    "psa9": null,
+    "cgc10": 19.15,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610694_in_800x800.jpg"
+  },
+  {
+   "num": "080/131",
+   "name": "Dudunsparce",
+   "rarity": "Rare",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 19.49,
+   "graded": {
+    "psa10": 113.88,
+    "psa9": 14.7,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610695_in_800x800.jpg"
+  },
+  {
+   "num": "081/131",
+   "name": "Miltank",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.6,
+   "graded": {
+    "psa10": 149.99,
+    "psa9": 19.97,
+    "cgc10": 24.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610696_in_800x800.jpg"
+  },
+  {
+   "num": "083/131",
+   "name": "Buneary",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.44,
+   "graded": {
+    "psa10": 121.75,
+    "psa9": 17.87,
+    "cgc10": 15.5,
+    "cgc9": 7.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610697_in_800x800.jpg"
+  },
+  {
+   "num": "084/131",
+   "name": "Lopunny",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 8.85,
+   "graded": {
+    "psa10": 79,
+    "psa9": 14.44,
+    "cgc10": 50.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610698_in_800x800.jpg"
+  },
+  {
+   "num": "085/131",
+   "name": "Fan Rotom",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 2.96,
+   "graded": {
+    "psa10": 114.99,
+    "psa9": 9.77,
+    "cgc10": 47.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610699_in_800x800.jpg"
+  },
+  {
+   "num": "086/131",
+   "name": "Regigigas",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.53,
+   "graded": {
+    "psa10": 212.49,
+    "psa9": 14.85,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610700_in_800x800.jpg"
+  },
+  {
+   "num": "087/131",
+   "name": "Shaymin",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 6.47,
+   "graded": {
+    "psa10": 200,
+    "psa9": 14.77,
+    "cgc10": 59,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610701_in_800x800.jpg"
+  },
+  {
+   "num": "088/131",
+   "name": "Furfrou",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 9.57,
+   "graded": {
+    "psa10": 67.99,
+    "psa9": 17.3,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610702_in_800x800.jpg"
+  },
+  {
+   "num": "089/131",
+   "name": "Hawlucha",
+   "rarity": "Uncommon",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.55,
+   "graded": {
+    "psa10": 123.5,
+    "psa9": 11,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610703_in_800x800.jpg"
+  },
+  {
+   "num": "090/131",
+   "name": "Noibat",
+   "rarity": "Common",
+   "variant": "Reverse holo (Master Ball pattern)",
+   "market": 1.3,
+   "graded": {
+    "psa10": 105.5,
+    "psa9": 10.88,
+    "cgc10": 25.5,
+    "cgc9": 0.99
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610704_in_800x800.jpg"
+  },
+  {
+   "num": "144/131",
+   "name": "Leafeon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 334.14,
+   "graded": {
+    "psa10": 709,
+    "psa9": 284.94,
+    "cgc10": 280.49,
+    "cgc9": 300
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610499_in_800x800.jpg"
+  },
+  {
+   "num": "145/131",
+   "name": "Teal Mask Ogerpon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 19.68,
+   "graded": {
+    "psa10": 125.19,
+    "psa9": 20.5,
+    "cgc10": 37.09,
+    "cgc9": 14.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610500_in_800x800.jpg"
+  },
+  {
+   "num": "146/131",
+   "name": "Flareon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 203.88,
+   "graded": {
+    "psa10": 591.23,
+    "psa9": 213.5,
+    "cgc10": 262.45,
+    "cgc9": 174
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610501_in_800x800.jpg"
+  },
+  {
+   "num": "147/131",
+   "name": "Ceruledge ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 101.11,
+   "graded": {
+    "psa10": 233.75,
+    "psa9": 104.5,
+    "cgc10": 139.37,
+    "cgc9": 65
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610502_in_800x800.jpg"
+  },
+  {
+   "num": "148/131",
+   "name": "Hearthflame Mask Ogerpon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 17.25,
+   "graded": {
+    "psa10": 91.75,
+    "psa9": 17.5,
+    "cgc10": 46.74,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610503_in_800x800.jpg"
+  },
+  {
+   "num": "149/131",
+   "name": "Vaporeon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 292.05,
+   "graded": {
+    "psa10": 987.5,
+    "psa9": 232.1,
+    "cgc10": 323.7,
+    "cgc9": 211.75
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610504_in_800x800.jpg"
+  },
+  {
+   "num": "150/131",
+   "name": "Glaceon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 285.84,
+   "graded": {
+    "psa10": 672.18,
+    "psa9": 257.44,
+    "cgc10": 240,
+    "cgc9": 213.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610505_in_800x800.jpg"
+  },
+  {
+   "num": "151/131",
+   "name": "Palafin ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 41.32,
+   "graded": {
+    "psa10": 183.5,
+    "psa9": 42.75,
+    "cgc10": 45.76,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610506_in_800x800.jpg"
+  },
+  {
+   "num": "152/131",
+   "name": "Wellspring Mask Ogerpon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 16.89,
+   "graded": {
+    "psa10": 90,
+    "psa9": 30.99,
+    "cgc10": 20.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610507_in_800x800.jpg"
+  },
+  {
+   "num": "153/131",
+   "name": "Jolteon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 194.21,
+   "graded": {
+    "psa10": 607.5,
+    "psa9": 172.48,
+    "cgc10": 189.97,
+    "cgc9": 151.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610508_in_800x800.jpg"
+  },
+  {
+   "num": "154/131",
+   "name": "Iron Hands ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 29.36,
+   "graded": {
+    "psa10": 131.22,
+    "psa9": 18.25,
+    "cgc10": 26.25,
+    "cgc9": 27.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610509_in_800x800.jpg"
+  },
+  {
+   "num": "155/131",
+   "name": "Espeon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 316.58,
+   "graded": {
+    "psa10": 1076.99,
+    "psa9": 268,
+    "cgc10": 344.97,
+    "cgc9": 285
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610510_in_800x800.jpg"
+  },
+  {
+   "num": "156/131",
+   "name": "Sylveon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 531.65,
+   "graded": {
+    "psa10": 722.5,
+    "psa9": 457.5,
+    "cgc10": 940,
+    "cgc9": 424.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610511_in_800x800.jpg"
+  },
+  {
+   "num": "157/131",
+   "name": "Iron Valiant ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 49.93,
+   "graded": {
+    "psa10": 191.49,
+    "psa9": 50.5,
+    "cgc10": 72.5,
+    "cgc9": 21.05
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610512_in_800x800.jpg"
+  },
+  {
+   "num": "158/131",
+   "name": "Iron Crown ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 34.63,
+   "graded": {
+    "psa10": 93,
+    "psa9": 25,
+    "cgc10": 56,
+    "cgc9": 23.38
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610513_in_800x800.jpg"
+  },
+  {
+   "num": "159/131",
+   "name": "Sandy Shocks ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 24.34,
+   "graded": {
+    "psa10": 122.5,
+    "psa9": 24.99,
+    "cgc10": 52.62,
+    "cgc9": 17.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610514_in_800x800.jpg"
+  },
+  {
+   "num": "160/131",
+   "name": "Cornerstone Mask Ogerpon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 13.48,
+   "graded": {
+    "psa10": 78,
+    "psa9": 22.25,
+    "cgc10": 55.5,
+    "cgc9": 18.75
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610515_in_800x800.jpg"
+  },
+  {
+   "num": "161/131",
+   "name": "Umbreon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 1423.3,
+   "graded": {
+    "psa10": 5183.84,
+    "psa9": 1462.02,
+    "cgc10": 2543.99,
+    "cgc9": 1200
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610516_in_800x800.jpg"
+  },
+  {
+   "num": "162/131",
+   "name": "Roaring Moon ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 165.45,
+   "graded": {
+    "psa10": 630,
+    "psa9": 161.88,
+    "cgc10": 255.88,
+    "cgc9": 204.9
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610517_in_800x800.jpg"
+  },
+  {
+   "num": "163/131",
+   "name": "Pecharunt ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 29.94,
+   "graded": {
+    "psa10": 120,
+    "psa9": 29.61,
+    "cgc10": 20,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610518_in_800x800.jpg"
+  },
+  {
+   "num": "164/131",
+   "name": "Gholdengo ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 49.69,
+   "graded": {
+    "psa10": 95.99,
+    "psa9": 31.9,
+    "cgc10": 117.92,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610519_in_800x800.jpg"
+  },
+  {
+   "num": "165/131",
+   "name": "Dragapult ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 105.32,
+   "graded": {
+    "psa10": 208.75,
+    "psa9": 95,
+    "cgc10": 196,
+    "cgc9": 71
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610520_in_800x800.jpg"
+  },
+  {
+   "num": "166/131",
+   "name": "Raging Bolt ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 66.61,
+   "graded": {
+    "psa10": 230,
+    "psa9": 46.88,
+    "cgc10": 262.5,
+    "cgc9": 60
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610521_in_800x800.jpg"
+  },
+  {
+   "num": "167/131",
+   "name": "Eevee ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 178.84,
+   "graded": {
+    "psa10": 537.5,
+    "psa9": 172.78,
+    "cgc10": 497.5,
+    "cgc9": 155
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610522_in_800x800.jpg"
+  },
+  {
+   "num": "168/131",
+   "name": "Bloodmoon Ursaluna ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 60.54,
+   "graded": {
+    "psa10": 218.88,
+    "psa9": 53.5,
+    "cgc10": 109.99,
+    "cgc9": 64.75
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610523_in_800x800.jpg"
+  },
+  {
+   "num": "169/131",
+   "name": "Terapagos ex",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 31.95,
+   "graded": {
+    "psa10": 123.75,
+    "psa9": 22.49,
+    "cgc10": 76.75,
+    "cgc9": 20.39
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610524_in_800x800.jpg"
+  },
+  {
+   "num": "170/131",
+   "name": "Amarys",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 12.52,
+   "graded": {
+    "psa10": 99.5,
+    "psa9": 19,
+    "cgc10": 18.37,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610525_in_800x800.jpg"
+  },
+  {
+   "num": "171/131",
+   "name": "Crispin",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 27.21,
+   "graded": {
+    "psa10": 63,
+    "psa9": 17.6,
+    "cgc10": 23.65,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610526_in_800x800.jpg"
+  },
+  {
+   "num": "172/131",
+   "name": "Drayton",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 13.88,
+   "graded": {
+    "psa10": 89.99,
+    "psa9": 9.88,
+    "cgc10": 17.02,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610527_in_800x800.jpg"
+  },
+  {
+   "num": "173/131",
+   "name": "Janine's Secret Art",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 25.21,
+   "graded": {
+    "psa10": 85,
+    "psa9": 28,
+    "cgc10": 106.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610528_in_800x800.jpg"
+  },
+  {
+   "num": "174/131",
+   "name": "Kieran",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 19.08,
+   "graded": {
+    "psa10": 72.24,
+    "psa9": 22.99,
+    "cgc10": 20.99,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610529_in_800x800.jpg"
+  },
+  {
+   "num": "175/131",
+   "name": "Lacey",
+   "rarity": "Special illustration rare",
+   "variant": "Holo",
+   "market": 24.59,
+   "graded": {
+    "psa10": 84.99,
+    "psa9": 32.2,
+    "cgc10": 29.25,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610530_in_800x800.jpg"
+  },
+  {
+   "num": "176/131",
+   "name": "Iron Leaves ex",
+   "rarity": "Hyper rare",
+   "variant": "Holo (Gold)",
+   "market": 6.38,
+   "graded": {
+    "psa10": 80.32,
+    "psa9": 23.49,
+    "cgc10": 15.3,
+    "cgc9": 12.96
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610531_in_800x800.jpg"
+  },
+  {
+   "num": "177/131",
+   "name": "Teal Mask Ogerpon ex",
+   "rarity": "Hyper rare",
+   "variant": "Holo (Gold)",
+   "market": 8.02,
+   "graded": {
+    "psa10": 82,
+    "psa9": 19.98,
+    "cgc10": 31,
+    "cgc9": 15.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610532_in_800x800.jpg"
+  },
+  {
+   "num": "178/131",
+   "name": "Walking Wake ex",
+   "rarity": "Hyper rare",
+   "variant": "Holo (Gold)",
+   "market": 5.97,
+   "graded": {
+    "psa10": 81.25,
+    "psa9": 15.81,
+    "cgc10": 45,
+    "cgc9": 7.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610533_in_800x800.jpg"
+  },
+  {
+   "num": "179/131",
+   "name": "Pikachu ex",
+   "rarity": "Hyper rare",
+   "variant": "Holo (Gold)",
+   "market": 61.76,
+   "graded": {
+    "psa10": 335.5,
+    "psa9": 89.5,
+    "cgc10": 150.65,
+    "cgc9": 70
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610534_in_800x800.jpg"
+  },
+  {
+   "num": "180/131",
+   "name": "Terapagos ex",
+   "rarity": "Hyper rare",
+   "variant": "Holo (Gold)",
+   "market": 11.84,
+   "graded": {
+    "psa10": 103.75,
+    "psa9": 23,
+    "cgc10": 21.5,
+    "cgc9": 16.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610535_in_800x800.jpg"
+  },
+  {
+   "num": "006/131",
+   "name": "Leafeon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 4.58,
+   "graded": {
+    "psa10": 69.97,
+    "psa9": 20,
+    "cgc10": 18.82,
+    "cgc9": 9.75
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610361_in_800x800.jpg"
+  },
+  {
+   "num": "011/131",
+   "name": "Hydrapple ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 1.13,
+   "graded": {
+    "psa10": 21.75,
+    "psa9": 15.3,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610366_in_800x800.jpg"
+  },
+  {
+   "num": "012/131",
+   "name": "Teal Mask Ogerpon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 2.44,
+   "graded": {
+    "psa10": 30,
+    "psa9": 14.75,
+    "cgc10": 42.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610367_in_800x800.jpg"
+  },
+  {
+   "num": "014/131",
+   "name": "Flareon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 4.53,
+   "graded": {
+    "psa10": 62.99,
+    "psa9": 21.55,
+    "cgc10": 23.35,
+    "cgc9": 9.79
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610369_in_800x800.jpg"
+  },
+  {
+   "num": "017/131",
+   "name": "Hearthflame Mask Ogerpon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.87,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610372_in_800x800.jpg"
+  },
+  {
+   "num": "023/131",
+   "name": "Vaporeon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 3.25,
+   "graded": {
+    "psa10": 84.97,
+    "psa9": 17.7,
+    "cgc10": 27.24,
+    "cgc9": 12.25
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610378_in_800x800.jpg"
+  },
+  {
+   "num": "026/131",
+   "name": "Glaceon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 2.59,
+   "graded": {
+    "psa10": 62.5,
+    "psa9": 18.35,
+    "cgc10": 19.1,
+    "cgc9": 9.64
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610381_in_800x800.jpg"
+  },
+  {
+   "num": "027/131",
+   "name": "Wellspring Mask Ogerpon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.87,
+   "graded": {
+    "psa10": 23.38,
+    "psa9": 28.5,
+    "cgc10": 29.74,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610382_in_800x800.jpg"
+  },
+  {
+   "num": "028/131",
+   "name": "Pikachu ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 2.64,
+   "graded": {
+    "psa10": 102.75,
+    "psa9": 22.65,
+    "cgc10": 25.5,
+    "cgc9": 23.12
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610383_in_800x800.jpg"
+  },
+  {
+   "num": "030/131",
+   "name": "Jolteon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 4.64,
+   "graded": {
+    "psa10": 70.75,
+    "psa9": 20.02,
+    "cgc10": 43.92,
+    "cgc9": 10.22
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610385_in_800x800.jpg"
+  },
+  {
+   "num": "031/131",
+   "name": "Iron Hands ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.83,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610386_in_800x800.jpg"
+  },
+  {
+   "num": "032/131",
+   "name": "Iron Thorns ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.86,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610387_in_800x800.jpg"
+  },
+  {
+   "num": "034/131",
+   "name": "Espeon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 4.18,
+   "graded": {
+    "psa10": 57.99,
+    "psa9": 16.75,
+    "cgc10": 21.5,
+    "cgc9": 7.96
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610389_in_800x800.jpg"
+  },
+  {
+   "num": "041/131",
+   "name": "Sylveon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 2.6,
+   "graded": {
+    "psa10": 68,
+    "psa9": 21,
+    "cgc10": 25.49,
+    "cgc9": 9.79
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610396_in_800x800.jpg"
+  },
+  {
+   "num": "051/131",
+   "name": "Lucario ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.84,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610406_in_800x800.jpg"
+  },
+  {
+   "num": "056/131",
+   "name": "Sandy Shocks ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.76,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610411_in_800x800.jpg"
+  },
+  {
+   "num": "058/131",
+   "name": "Cornerstone Mask Ogerpon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.91,
+   "graded": {
+    "psa10": 21.5,
+    "psa9": 13.38,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610413_in_800x800.jpg"
+  },
+  {
+   "num": "060/131",
+   "name": "Umbreon ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 8.23,
+   "graded": {
+    "psa10": 115,
+    "psa9": 21.99,
+    "cgc10": 46.84,
+    "cgc9": 15.45
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610415_in_800x800.jpg"
+  },
+  {
+   "num": "064/131",
+   "name": "Tyranitar ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.84,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610419_in_800x800.jpg"
+  },
+  {
+   "num": "073/131",
+   "name": "Dragapult ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 1.33,
+   "graded": {
+    "psa10": 34.31,
+    "psa9": 11,
+    "cgc10": 31.66,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610428_in_800x800.jpg"
+  },
+  {
+   "num": "075/131",
+   "name": "Eevee ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 6.2,
+   "graded": {
+    "psa10": 116.75,
+    "psa9": 23.12,
+    "cgc10": 32.3,
+    "cgc9": 9.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610430_in_800x800.jpg"
+  },
+  {
+   "num": "076/131",
+   "name": "Snorlax ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 1.51,
+   "graded": {
+    "psa10": 145,
+    "psa9": 15.75,
+    "cgc10": 57.62,
+    "cgc9": 11.5
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610431_in_800x800.jpg"
+  },
+  {
+   "num": "082/131",
+   "name": "Lugia ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 1.63,
+   "graded": {
+    "psa10": 170.5,
+    "psa9": 26.1,
+    "cgc10": 37.99,
+    "cgc9": 13.88
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610437_in_800x800.jpg"
+  },
+  {
+   "num": "091/131",
+   "name": "Noivern ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.78,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610446_in_800x800.jpg"
+  },
+  {
+   "num": "092/131",
+   "name": "Terapagos ex",
+   "rarity": "Double rare",
+   "variant": "Holo",
+   "market": 0.78,
+   "graded": {
+    "psa10": 39.97,
+    "psa9": 19.97,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610447_in_800x800.jpg"
+  },
+  {
+   "num": "132/131",
+   "name": "Amarys",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.66,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610487_in_800x800.jpg"
+  },
+  {
+   "num": "133/131",
+   "name": "Atticus",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.59,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610488_in_800x800.jpg"
+  },
+  {
+   "num": "134/131",
+   "name": "Atticus",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.58,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610489_in_800x800.jpg"
+  },
+  {
+   "num": "135/131",
+   "name": "Brassius",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.62,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610490_in_800x800.jpg"
+  },
+  {
+   "num": "136/131",
+   "name": "Eri",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 1.04,
+   "graded": {
+    "psa10": 55,
+    "psa9": 20,
+    "cgc10": 14.5,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610491_in_800x800.jpg"
+  },
+  {
+   "num": "137/131",
+   "name": "Friends in Paldea",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.85,
+   "graded": {
+    "psa10": 40.55,
+    "psa9": 13,
+    "cgc10": 15.16,
+    "cgc9": 1.99
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610492_in_800x800.jpg"
+  },
+  {
+   "num": "138/131",
+   "name": "Giacomo",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.59,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610493_in_800x800.jpg"
+  },
+  {
+   "num": "139/131",
+   "name": "Larry's Skill",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.62,
+   "graded": {
+    "psa10": 34,
+    "psa9": 9.25,
+    "cgc10": 23.64,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610494_in_800x800.jpg"
+  },
+  {
+   "num": "140/131",
+   "name": "Mela",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.75,
+   "graded": {
+    "psa10": 40,
+    "psa9": 9.04,
+    "cgc10": 19.12,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610495_in_800x800.jpg"
+  },
+  {
+   "num": "141/131",
+   "name": "Ortega",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.59,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610496_in_800x800.jpg"
+  },
+  {
+   "num": "142/131",
+   "name": "Raifort",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.77,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610497_in_800x800.jpg"
+  },
+  {
+   "num": "143/131",
+   "name": "Tyme",
+   "rarity": "Ultra Rare",
+   "variant": "Holo",
+   "market": 0.57,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610498_in_800x800.jpg"
+  },
+  {
+   "num": "005/131",
+   "name": "Leafeon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610360_in_800x800.jpg"
+  },
+  {
+   "num": "008/131",
+   "name": "Whimsicott",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.15,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610363_in_800x800.jpg"
+  },
+  {
+   "num": "013/131",
+   "name": "Flareon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.32,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610368_in_800x800.jpg"
+  },
+  {
+   "num": "022/131",
+   "name": "Vaporeon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.3,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610377_in_800x800.jpg"
+  },
+  {
+   "num": "025/131",
+   "name": "Glaceon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.29,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610380_in_800x800.jpg"
+  },
+  {
+   "num": "029/131",
+   "name": "Jolteon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.37,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610384_in_800x800.jpg"
+  },
+  {
+   "num": "033/131",
+   "name": "Espeon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.55,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610388_in_800x800.jpg"
+  },
+  {
+   "num": "037/131",
+   "name": "Dusknoir",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.28,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610392_in_800x800.jpg"
+  },
+  {
+   "num": "040/131",
+   "name": "Sylveon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.47,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610395_in_800x800.jpg"
+  },
+  {
+   "num": "043/131",
+   "name": "Flutter Mane",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.12,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610398_in_800x800.jpg"
+  },
+  {
+   "num": "044/131",
+   "name": "Munkidori",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.27,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610399_in_800x800.jpg"
+  },
+  {
+   "num": "045/131",
+   "name": "Fezandipiti",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.14,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610400_in_800x800.jpg"
+  },
+  {
+   "num": "046/131",
+   "name": "Iron Boulder",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610401_in_800x800.jpg"
+  },
+  {
+   "num": "049/131",
+   "name": "Groudon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.07,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610404_in_800x800.jpg"
+  },
+  {
+   "num": "054/131",
+   "name": "Bloodmoon Ursaluna",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.16,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610409_in_800x800.jpg"
+  },
+  {
+   "num": "057/131",
+   "name": "Okidogi",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.08,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610412_in_800x800.jpg"
+  },
+  {
+   "num": "059/131",
+   "name": "Umbreon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.59,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610414_in_800x800.jpg"
+  },
+  {
+   "num": "065/131",
+   "name": "Roaring Moon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.13,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610420_in_800x800.jpg"
+  },
+  {
+   "num": "070/131",
+   "name": "Archaludon",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.1,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610425_in_800x800.jpg"
+  },
+  {
+   "num": "078/131",
+   "name": "Noctowl",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.18,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610433_in_800x800.jpg"
+  },
+  {
+   "num": "080/131",
+   "name": "Dudunsparce",
+   "rarity": "Rare",
+   "variant": "Holo",
+   "market": 0.49,
+   "graded": {
+    "psa10": null,
+    "psa9": null,
+    "cgc10": null,
+    "cgc9": null
+   },
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/610435_in_800x800.jpg"
+  }
+ ]
+}

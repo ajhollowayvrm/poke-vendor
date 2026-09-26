@@ -121,15 +121,45 @@ with the source of each value.
 
 ## Opening a pack
 
-The rip must feel like opening a real pack. In Normal and Fast:
+The rip must feel like opening a real pack.
 
-1. The pack appears. In Normal, the player swipes across the top to
-   tear it. In Fast, the tear plays by itself.
+### The manual rip (Normal)
+
+Normal is a manual rip. The player holds the cards like a real pack:
+
+1. The sealed pack shows, with a moving reflection.
+2. The player taps the top of the pack, or swipes across the top, to
+   tear it open.
+3. The cards come out as a stack.
+4. **Move to back** moves the front card to the back of the stack.
+   This is how the player does the pack trick by hand.
+5. A tap on the front card slides it off the top onto the **pile**,
+   above the stack.
+6. A tap on the pile puts the top card of the pile back on the front
+   of the stack.
+7. A long press on the stack shows a **peek**: the top strip of every
+   card left in the stack (the name, the HP, and the holo shine). The
+   peek closes when the player lifts the finger.
+
+**Face down or face up.** A toggle on the rip screen sets how the
+stack shows. The game keeps the choice for the next rip.
+
+- Face down: the player sees the card backs. Move to back is blind. A
+  tap flips the front card as it goes to the pile.
+- Face up: the player sees the front card before moving it or piling
+  it.
+
+The pile always shows its cards face up.
+
+### Fast and Sift
+
+In Fast:
+
+1. The pack appears, and the tear plays by itself.
 2. A tear animation plays, and the cards slide out of the pack.
 3. The pack trick plays (see [The pack trick](#the-pack-trick)).
 4. The first card shows.
-5. In Normal, the player swipes or taps to show the next card. In Fast,
-   the cards move by themselves until a card matches the stop rule.
+5. The cards move by themselves until a card matches the stop rule.
 6. After the last card, the pack is done.
 
 In Sift, the rip shows no tear and no pack trick. The cards move past
@@ -141,8 +171,10 @@ The pack trick is the move that collectors do with a real pack. It
 moves cards from one end of the stack to the other, so the hits show
 last.
 
-- The pack trick is **always animated**. The player sees the cards
-  move. The game never skips the animation in Normal or Fast.
+- In Normal, the player does the pack trick by hand with Move to back
+  (see [The manual rip (Normal)](#the-manual-rip-normal)).
+- In Fast, the pack trick is **always animated**. The player sees the
+  cards move. The game never skips the animation.
 - The animation follows the pack order in the set file (see
   [Where the hit sits](#where-the-hit-sits)). Each set's trick moves
   the correct cards for that set.
@@ -168,10 +200,10 @@ starting point for balancing.
 The cards that the player already saw go to a **pile**.
 
 - The pile shows the cards as real cards, not as a text list.
-- The player swipes back and forward through the pile. Each card shows
-  its prices again.
-- Swiping forward stops at the newest card that the player saw. The
-  player cannot see a card before the rip reveals it.
+- The pile sits above the stack. Its top card shows its name and its
+  market price next to it.
+- A tap on the pile puts the top card back on the front of the stack.
+- The peek is the only way to see a card before the rip reveals it.
 - The pile holds all cards from the **current pack**, and every **hit
   from the whole rip**. The bulk from earlier packs leaves the pile.
 - In Sift, there is no current pack to look at. The pile holds every

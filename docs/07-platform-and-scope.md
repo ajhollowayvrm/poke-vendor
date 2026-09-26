@@ -8,6 +8,11 @@ Native iOS, built in Swift.
 
 Private build. This is not, at this stage, intended for public release.
 
+The app is in `app/`. XcodeGen makes the Xcode project from
+`app/project.yml`. The first playable part is the rip screen for
+Prismatic Evolutions. `python3 tools/export/rip_set.py <set>` writes the
+set data that the app reads.
+
 ## Pokemon IP note
 
 The game uses full, real Pokemon branding. The Pokemon Company does not
