@@ -5,8 +5,8 @@
 Two screens designed and approved: the home hub, and its Wallet / cash
 ledger destination (see below). The buy screen has a reviewed lo-fi
 mockup. Inventory has a reviewed lo-fi mockup. The social media hub has
-a reviewed lo-fi mockup. The live stream has recorded decisions and no
-mockup. Mockups live
+a reviewed lo-fi mockup. The live stream has a reviewed lo-fi mockup.
+Mockups live
 outside this repo for now, in
 Claude Design canvases — this doc records the decisions so they survive
 independent of any single mockup file.
@@ -373,7 +373,7 @@ follower tips, for-sale results, the confirm screen, and show promos
 came after the review. The mockup does not show them yet. Its
 follower tip card is a placeholder.
 
-### 5. Live stream — decisions recorded
+### 5. Live stream — decisions recorded, lo-fi mockup reviewed
 
 The hub's Go Live row opens the setup screen. The row shows only if
 the player has a social media account (see
@@ -391,14 +391,37 @@ The stream rules are in
   Buy Now sale, shows a card, or talks to chat.
 - **End** stops the stream early. The unused hours go back to the day.
 - **The summary** shows the peak viewer count, the tips, the Whatnot
-  results and fees, the pulls, and the followers gained or lost.
+  results and fees, the pulls, and the followers gained or lost. It
+  also shows the giveaways and the followers that each giveaway
+  gained.
+- **A scheduled stream has a day and a start time.** The day strip
+  shows the free hours around the day job, and it blocks a day with a
+  card show.
+- **The stream screen shows** the time left, End, the viewer count,
+  the tips, the followers gained, the card on camera, the chat, and
+  the six actions. When chat slows down, a warning tells the player to
+  talk to chat.
+- **A rip on the stream** opens a panel that picks the product and the
+  speed. Sift shows, but it is off, with the reason.
+- **An auction** shows the timer, the top bid and the bidder, the bid
+  count, the price against the market price, and the bids. The highest
+  bid at the end of the timer wins. The other actions stay available.
+- **A Buy Now sale** opens a panel that picks a stream card and sets
+  the price, next to the market price. The first viewer who taps Buy
+  gets the card.
 
-**Open topics:** none.
+**Open topics:**
 
-**Mockup:** none yet.
+- The auction setup: the start price and the timer length.
+
+**Mockup:** the lo-fi mockup is the "PokeVendor Live Stream Screen"
+Claude Design canvas
+(https://claude.ai/artifact/374TcvMfSzmdL3cfB2yyG7). It shows setup
+(now and scheduled), the stream screen, the rip panel, an auction, the
+Buy Now panel, and the summary. The review on 2026-09-26 approved it.
 
 ## What's next
 
 The buy screen, Inventory, and the social media hub (above) have
-reviewed lo-fi mockups. The live stream has recorded decisions and no
-mockup. The remaining destination screens follow.
+reviewed lo-fi mockups. The live stream has a reviewed lo-fi mockup.
+The remaining destination screens follow.
