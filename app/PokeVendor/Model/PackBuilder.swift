@@ -1,6 +1,8 @@
 import Foundation
 
-/// Builds one pack from the slot map, in pack order: the front card first.
+/// Builds one pack from the slot map, in reveal order: the front card first. The Basic Energy sits physically
+/// last, and the pack trick turns it to the front, so the three hit slots are the last three cards
+/// (docs/sets/eras/scarlet-violet.md, Conflicts in the template).
 struct PackBuilder {
     let cardSet: SetData
 
@@ -18,7 +20,7 @@ struct PackBuilder {
                 cards.append(RipCard(print: cardSet.prints[index], energy: nil))
             }
         }
-        cards.append(RipCard(print: nil, energy: EnergyType.allCases.randomElement()))
+        cards.insert(RipCard(print: nil, energy: EnergyType.allCases.randomElement()), at: 0)
         return cards
     }
 

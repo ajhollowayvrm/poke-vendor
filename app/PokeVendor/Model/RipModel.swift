@@ -91,14 +91,14 @@ final class RipModel {
     }
 
     private func loadPack() {
-        // The builder gives pack order, front card first. A face-down stack is the same cards turned over,
-        // so the last card of the pack (the Energy) is on top.
+        // The builder gives reveal order, front card first. A face-down stack is the same cards turned over,
+        // so the last card (the rare slot) is on top.
         var cards = PackBuilder(cardSet: cardSet).build()
         #if DEBUG
         // Screenshot aid: `-sir` puts a Special Illustration Rare in the rare slot.
         if ProcessInfo.processInfo.arguments.contains("-sir"),
            let sir = cardSet.prints.filter({ $0.rarity == "Special illustration rare" }).randomElement() {
-            cards[cards.count - 2] = RipCard(print: sir, energy: nil)
+            cards[cards.count - 1] = RipCard(print: sir, energy: nil)
         }
         #endif
         stack = faceUp ? cards : cards.reversed()

@@ -147,8 +147,8 @@ Normal is a manual rip. The player holds the cards like a real pack:
 stack shows. The game keeps the choice for the next rip.
 
 - Face down: the player sees the card backs. A face-down stack is the
-  pack turned over, so its order is reversed: the last card of the pack
-  (the Energy) is on top. Turning the stack over at any time reverses
+  pack turned over, so its order is reversed: the last card (the rare
+  slot) is on top. Turning the stack over at any time reverses
   the order again. Move to back is blind. A tap flips the top card as
   it goes to the pile. A medium or big hit (see
   [Hit effects](#hit-effects)) flips in place first, and the next tap
@@ -199,6 +199,11 @@ last.
   the correct cards for that set.
 
 ### Where the hit sits
+
+In the reveal order, the Basic Energy comes first and the hit slots
+come last. In Prismatic Evolutions, the last three cards are reverse
+holo slot 1, reverse holo slot 2, and the rare slot (see
+[sets/prismatic-evolutions.md](sets/prismatic-evolutions.md#pack-order)).
 
 The hit is one of the **last three cards** in the pack, the same as in
 a real pack.
