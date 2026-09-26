@@ -160,12 +160,11 @@ The pile always shows its cards face up.
 
 ### Hit effects
 
-A hit plays an effect when the player first sees it. The effect grows
-with the hit:
+A medium or big hit plays an effect when the player first sees it.
+Other hits, for example a holo Rare, play no effect.
 
 | Level | Cards | Effect |
 | --- | --- | --- |
-| Small | Every other hit, for example a holo Rare | A soft glow and a light haptic |
 | Medium | Double Rare, Ultra Rare, ACE SPEC Rare, Poké Ball pattern, or $5 or more | A gold glow with turning light rays, sparkles, a banner with the rarity and the raw price, and a success haptic |
 | Big | Special Illustration Rare, Hyper Rare, Master Ball pattern, or $25 or more | A rainbow glow and rays, more sparkles, the banner, a white screen flash, and a strong haptic sequence |
 

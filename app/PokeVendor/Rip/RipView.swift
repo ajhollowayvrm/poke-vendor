@@ -157,7 +157,7 @@ struct RipView: View {
             #endif
         }
         .onChange(of: model.lastReveal) { _, reveal in
-            guard let card = reveal?.card, card.hitTier > .none else { return }
+            guard let card = reveal?.card, card.hitTier >= .medium else { return }
             celebrate(card)
         }
         .onChange(of: model.phase) { _, phase in
@@ -173,10 +173,10 @@ struct RipView: View {
 
     // MARK: - Pieces
 
-    /// The top card, when it shows face up and is a hit.
+    /// The top card, when it shows face up and is a medium or big hit.
     private var glowCard: RipCard? {
         guard model.phase == .open || model.phase == .done, model.tuckingID == nil,
-              let front = model.stack.first, model.isShownFaceUp(front), front.hitTier > .none else { return nil }
+              let front = model.stack.first, model.isShownFaceUp(front), front.hitTier >= .medium else { return nil }
         return front
     }
 
