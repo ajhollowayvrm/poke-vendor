@@ -5,13 +5,19 @@ struct SellSheet: View {
     @Environment(GameStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let ids: Set<UUID>
+    /// True: each stack starts at its full count. False: each stack starts at 1 (a sale from a detail screen).
+    var startAll = true
     @State private var channel: Listing.Channel = .tcgplayer
+    /// How many items of each stack to list, by the stack's first item.
+    @State private var quantity: [UUID: Int] = [:]
     @State private var percent: Double = 100
     @State private var auctionDays = 7
     @State private var insured = false
 
+    /// One stack of identical items.
     private struct Line: Identifiable {
         let id: UUID
+        let ids: [UUID]
         let name: String
         let reference: Double
         let sealed: Bool
@@ -20,17 +26,31 @@ struct SellSheet: View {
 
     private var lines: [Line] {
         var out: [Line] = []
-        for c in store.data.raw where ids.contains(c.id) {
-            out.append(Line(id: c.id, name: c.print.name, reference: 0, sealed: false, isRaw: true))
+        for st in stacks(store.data.raw.filter { ids.contains($0.id) }, key: store.stackKey) {
+            out.append(Line(id: st.id, ids: st.items.map(\.id), name: st.items[0].print.name, reference: 0, sealed: false, isRaw: true))
         }
-        for c in store.data.slabs where ids.contains(c.id) {
-            out.append(Line(id: c.id, name: "\(c.print.name) \(c.grade?.label ?? "")", reference: c.market, sealed: false, isRaw: false))
+        for st in stacks(store.data.slabs.filter { ids.contains($0.id) }, key: store.stackKey) {
+            let c = st.items[0]
+            out.append(Line(id: st.id, ids: st.items.map(\.id), name: "\(c.print.name) \(c.grade?.label ?? "")", reference: c.market,
+                            sealed: false, isRaw: false))
         }
-        for s in store.data.sealed where ids.contains(s.id) {
-            out.append(Line(id: s.id, name: s.name, reference: store.market(of: s), sealed: true, isRaw: false))
+        for st in stacks(store.data.sealed.filter { ids.contains($0.id) }, key: store.stackKey) {
+            let s = st.items[0]
+            out.append(Line(id: st.id, ids: st.items.map(\.id), name: s.name, reference: store.market(of: s), sealed: true, isRaw: false))
         }
         return out
     }
+
+    private func count(_ line: Line) -> Int {
+        min(line.ids.count, max(1, quantity[line.id] ?? (startAll ? line.ids.count : 1)))
+    }
+
+    private func quantityBinding(_ line: Line) -> Binding<Int> {
+        Binding(get: { count(line) }, set: { quantity[line.id] = $0 })
+    }
+
+    /// The items to list: the chosen number from each stack.
+    private var chosenIDs: [UUID] { lines.flatMap { Array($0.ids.prefix(count($0))) } }
 
     /// TCGplayer prices against the lowest listing. eBay prices against the market price.
     private func reference(_ line: Line) -> Double {
@@ -86,10 +106,15 @@ struct SellSheet: View {
                         let costs = GameStore.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
                         VStack(alignment: .leading, spacing: 3) {
                             Text(line.name).font(.subheadline.weight(.medium))
+                            if line.ids.count > 1 {
+                                Stepper("Quantity \(count(line)) of \(line.ids.count)", value: quantityBinding(line), in: 1...line.ids.count)
+                                    .font(.subheadline)
+                            }
+                            let each = line.ids.count > 1 ? " each" : ""
                             HStack {
-                                Text(channel == .ebayAuction ? "Expected \(money(p))" : "Price \(money(p))")
+                                Text(channel == .ebayAuction ? "Expected \(money(p))\(each)" : "Price \(money(p))\(each)")
                                 Spacer()
-                                Text("You get about \(money(p - costs.fees - costs.shipping - costs.insurance))")
+                                Text("You get about \(money(p - costs.fees - costs.shipping - costs.insurance))\(each)")
                                     .foregroundStyle(Theme.green)
                             }
                             .font(.caption.monospaced())
@@ -105,13 +130,17 @@ struct SellSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("List \(lines.count)") {
-                        let snapshot = Dictionary(uniqueKeysWithValues: lines.map { ($0.id, channel == .ebayAuction ? reference($0) : price($0)) })
-                        store.list(ids, channel: channel, price: { snapshot[$0] ?? 0 },
+                    Button("List \(chosenIDs.count)") {
+                        var snapshot: [UUID: Double] = [:]
+                        for line in lines {
+                            let p = channel == .ebayAuction ? reference(line) : price(line)
+                            for id in line.ids { snapshot[id] = p }
+                        }
+                        store.list(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 },
                                    auctionDays: channel == .ebayAuction ? auctionDays : nil, insured: insured)
                         dismiss()
                     }
-                    .disabled(lines.isEmpty)
+                    .disabled(chosenIDs.isEmpty)
                 }
             }
             .onAppear { if !tcgAllowed { channel = .ebay } }

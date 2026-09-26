@@ -68,7 +68,7 @@ run. Holds, consignment, and league night are not built.
 | --- | --- |
 | TCGplayer fee | 10.75% + $0.30 |
 | eBay fee | 13.25% + $0.40 |
-| Shipping cost | $1.00 for a single under $20, $4.75 for a single from $20, $6.50 for sealed product |
+| Shipping cost | $1.00 for a single under $20, $4.75 for a single from $20, $1.50 for sealed product under $20 (a pack), $6.50 for other sealed product |
 | Shipping insurance | 2% of the price, $1 minimum |
 | Lost package | 1% of sales |
 | TCGplayer lowest listing | 90% to 99% of market, fixed for each card |

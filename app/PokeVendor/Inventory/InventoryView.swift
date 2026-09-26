@@ -55,7 +55,7 @@ struct InventoryView: View {
         }
         .onChange(of: tab) { _, _ in selection = [] }
         .sheet(item: $sellIDs) { request in
-            SellSheet(ids: request.ids)
+            SellSheet(ids: request.ids, startAll: request.startAll)
         }
         .sheet(item: $gradeIDs) { request in
             GradeSheet(ids: request.ids)
@@ -298,6 +298,7 @@ struct CountBadge: View {
 struct SellRequest: Identifiable {
     let id = UUID()
     let ids: Set<UUID>
+    var startAll = true
 }
 
 struct GradeRequest: Identifiable {

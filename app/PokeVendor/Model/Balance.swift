@@ -23,9 +23,11 @@ enum Balance {
     static let insuranceRate = 0.02
     static let auctionLengths = [1, 3, 5, 7, 10]
 
-    /// A plain envelope under $20, a tracked package from $20.
+    /// A plain envelope under $20, a tracked package from $20. Sealed product under $20 (a pack) goes in a
+    /// padded envelope, and bigger sealed product goes in a box.
     static func shippingCost(for price: Double, sealed: Bool = false) -> Double {
-        sealed ? 6.50 : (price < 20 ? 1.00 : 4.75)
+        if sealed { return price < 20 ? 1.50 : 6.50 }
+        return price < 20 ? 1.00 : 4.75
     }
 
     static func insuranceCost(for price: Double) -> Double {

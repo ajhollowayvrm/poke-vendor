@@ -279,6 +279,9 @@ struct HubView: View {
                 store.addTestCard(print)
             }
             nav.path = [.inventory(args.contains("raw") ? .raw : .sealed)]
+            if args.contains("-autosell"), let pack = store.data.sealed.first(where: { $0.packs == 1 }) {
+                nav.path.append(.sealed(pack.id))
+            }
         }
         if args.contains("-coll") {
             store.startRun()

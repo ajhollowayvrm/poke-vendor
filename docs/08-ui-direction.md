@@ -295,6 +295,8 @@ here, and the rip-or-hold decision happens here.
   the same grade for a slab), with the same Keep flag, status, and
   source (pulled or bought). The row shows the price of each item and
   the total value. In select mode, a tap selects the whole stack. The
+  Sell sheet has a quantity picker for each stack. From select mode,
+  it starts at the whole stack. From a detail screen, it starts at 1. The
   detail screen shows the count, and a sealed stack has a "Rip all"
   button.
 - **Each tab sorts newest first.** A sort control changes the order

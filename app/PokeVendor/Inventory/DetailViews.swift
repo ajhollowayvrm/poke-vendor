@@ -128,7 +128,10 @@ struct CardDetailView: View {
                     }
                     let free = card.status == nil
                     HStack(spacing: 10) {
-                        Button("Sell") { sell = SellRequest(ids: [card.id]) }
+                        Button("Sell") {
+                            let free = store.mates(of: card).filter { $0.status == nil && !$0.keep }.map(\.id)
+                            sell = SellRequest(ids: Set(free.isEmpty ? [card.id] : free), startAll: false)
+                        }
                             .buttonStyle(.bordered)
                             .disabled(!free || card.keep)
                         if card.grade == nil {
@@ -161,7 +164,7 @@ struct CardDetailView: View {
             .navigationTitle(card.print.name)
             .navigationBarTitleDisplayMode(.inline)
             .onAppear { if key == nil { key = store.stackKey(card) } }
-            .sheet(item: $sell) { SellSheet(ids: $0.ids) }
+            .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
             .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
             .sheet(item: $post) { NewPostSheet(request: $0) }
         } else {
@@ -277,7 +280,7 @@ struct SealedDetailView: View {
                     HStack(spacing: 10) {
                         Button(item.keep ? "Unkeep" : "Keep") { store.setKeep([item.id], !item.keep) }
                             .buttonStyle(.bordered)
-                        Button("Sell") { sell = SellRequest(ids: [item.id]) }
+                        Button("Sell") { sell = SellRequest(ids: Set(mates.map(\.id)), startAll: false) }
                             .buttonStyle(.bordered)
                             .disabled(!free)
                         Button("Rip") { nav.startRip([item]) }
@@ -301,8 +304,15 @@ struct SealedDetailView: View {
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Sealed")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear { if key == nil { key = store.stackKey(item) } }
-            .sheet(item: $sell) { SellSheet(ids: $0.ids) }
+            .onAppear {
+                if key == nil { key = store.stackKey(item) }
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("-autosell") {
+                    sell = SellRequest(ids: Set(mates.map(\.id)), startAll: false)
+                }
+                #endif
+            }
+            .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
         } else {
             GoneView()
         }
