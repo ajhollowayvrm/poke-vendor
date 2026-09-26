@@ -35,8 +35,10 @@ final class RipModel {
     var stack: [RipCard] = []
     /// The cards the player took off the stack. The last card is the top card.
     var pile: [RipCard] = []
-    /// The card that is on its way to the back of the stack.
+    /// The card that is moving around the stack in the pack trick.
     var tuckingID: UUID?
+    /// True when the pack trick takes the back card to the front (face up).
+    var tuckFromBack = false
     /// A face-down hit that the player flipped in place. The next tap sends it to the pile.
     var showcaseID: UUID?
     private(set) var faceUp: Bool
@@ -91,14 +93,14 @@ final class RipModel {
     }
 
     private func loadPack() {
-        // The builder gives reveal order, front card first. A face-down stack is the same cards turned over,
-        // so the last card (the rare slot) is on top.
+        // The builder gives the physical pack order, front card first. A face-down stack is the same cards
+        // turned over, so the back card (the Energy) is on top.
         var cards = PackBuilder(cardSet: cardSet).build()
         #if DEBUG
         // Screenshot aid: `-sir` puts a Special Illustration Rare in the rare slot.
         if ProcessInfo.processInfo.arguments.contains("-sir"),
            let sir = cardSet.prints.filter({ $0.rarity == "Special illustration rare" }).randomElement() {
-            cards[cards.count - 1] = RipCard(print: sir, energy: nil)
+            cards[cards.count - 2] = RipCard(print: sir, energy: nil)
         }
         #endif
         stack = faceUp ? cards : cards.reversed()
@@ -159,15 +161,19 @@ final class RipModel {
         phase = .open
     }
 
+    /// The pack trick moves one card around the stack. Face up, the back card comes to the front.
+    /// Face down, the top card goes to the bottom. Both are the same move on the physical pack.
     func startTuck() {
         guard phase == .open, stack.count > 1, tuckingID == nil else { return }
         showcaseID = nil
-        tuckingID = stack.first?.id
+        tuckFromBack = faceUp
+        tuckingID = faceUp ? stack.last?.id : stack.first?.id
     }
 
     func finishTuck() {
         guard let id = tuckingID, let index = stack.firstIndex(where: { $0.id == id }) else { return }
-        stack.append(stack.remove(at: index))
+        let card = stack.remove(at: index)
+        if tuckFromBack { stack.insert(card, at: 0) } else { stack.append(card) }
         tuckingID = nil
         markFrontSeen()
     }

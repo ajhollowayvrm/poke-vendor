@@ -112,9 +112,10 @@ Where the hit sits:
   9, and a Double Rare at 10.
 - If the rip screen skips the Energy and the code card, the three
   hit slots are the last three cards.
-- **The rip screen** puts the Basic Energy first, the order after the
-  pack trick. The three hit slots are the last three cards. The rip
-  screen shows no code card.
+- **The rip screen** uses the physical order, with the Basic Energy
+  last. One pack trick (the Energy from the back to the front) makes
+  the three hit slots the last three cards. The rip screen shows no
+  code card.
 
 Exceptions and conflicts:
 - **Energy and code card position:** the same conflict as the base

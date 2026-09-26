@@ -131,8 +131,11 @@ Normal is a manual rip. The player holds the cards like a real pack:
 2. The player taps the top of the pack, or swipes across the top, to
    tear it open.
 3. The cards come out as a stack.
-4. **Move to back** moves the front card to the back of the stack.
-   This is how the player does the pack trick by hand.
+4. **Pack trick** moves one card around the stack. Face up, it takes
+   the back card to the front. Face down, it takes the top card to the
+   bottom. Both are the same move on the physical pack. This is how the
+   player does the pack trick by hand. It matters most in a set where
+   the hit sits in the middle of the pack.
 5. A tap on the front card slides it off the top onto the **pile**,
    above the stack.
 6. A tap on the pile puts the top card of the pile back on the front
@@ -152,14 +155,16 @@ choice for the next rip.
 hit effects wait until a card turns past edge-on. The player never sees
 a card's name or price before its face shows.
 
+- The stack starts in the physical pack order. Face up, the front card
+  shows and the last card of the pack (the Energy) is at the back.
 - Face down: the player sees the card backs. A face-down stack is the
-  pack turned over, so its order is reversed: the last card (the rare
-  slot) is on top. Move to back is blind. A tap flips the top card as
+  pack turned over, so its order is reversed: the Energy is on top.
+  The pack trick is blind. A tap flips the top card as
   it goes to the pile. A medium or big hit (see
   [Hit effects](#hit-effects)) flips in place first, and the next tap
   sends it to the pile.
-- Face up: the player sees the front card before moving it or piling
-  it.
+- Face up: the player sees the front card before piling it. The pack
+  trick shows the back card as it comes to the front.
 
 The pile always shows its cards face up.
 
@@ -195,7 +200,7 @@ The pack trick is the move that collectors do with a real pack. It
 moves cards from one end of the stack to the other, so the hits show
 last.
 
-- In Normal, the player does the pack trick by hand with Move to back
+- In Normal, the player does the pack trick by hand with the Pack trick button
   (see [The manual rip (Normal)](#the-manual-rip-normal)).
 - In Fast, the pack trick is **always animated**. The player sees the
   cards move. The game never skips the animation.
@@ -205,8 +210,9 @@ last.
 
 ### Where the hit sits
 
-In the reveal order, the Basic Energy comes first and the hit slots
-come last. In Prismatic Evolutions, the last three cards are reverse
+The stack starts in the physical pack order, with the Basic Energy
+last. After the player moves the Energy to the front with the pack
+trick, the last three cards of a Prismatic Evolutions pack are reverse
 holo slot 1, reverse holo slot 2, and the rare slot (see
 [sets/prismatic-evolutions.md](sets/prismatic-evolutions.md#pack-order)).
 

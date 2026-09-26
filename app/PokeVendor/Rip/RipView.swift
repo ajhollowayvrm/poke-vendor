@@ -185,6 +185,10 @@ struct RipView: View {
             }
         }
         .onChange(of: model.phase) { _, phase in
+            Task {
+                try? await Task.sleep(for: .milliseconds(Self.revealDelay))
+                settleReveal()
+            }
             guard phase == .done else { return }
             Task {
                 try? await Task.sleep(for: .milliseconds(700))
@@ -293,9 +297,13 @@ struct RipView: View {
                 .controlSize(.large)
                 .disabled(flipping || model.tuckingID != nil)
                 Button(action: moveToBack) {
-                    Label("Move to back", systemImage: "arrow.uturn.down")
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                    VStack(spacing: 1) {
+                        Label("Pack trick", systemImage: "arrow.uturn.down")
+                            .font(.subheadline.weight(.semibold))
+                        Text(model.faceUp ? "back → front" : "top → bottom")
+                            .font(.caption2.monospaced())
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Theme.cyan)
@@ -342,8 +350,9 @@ struct RipView: View {
                              z: 50 - Double(i), faceUp: model.faceUp)
         }
         if card.id == model.tuckingID {
+            // From the back, the card slides out behind the stack. From the top, it slides out over it.
             return Placement(point: CGPoint(x: center.x - layout.cardW * 0.8, y: center.y + 16), scale: 0.96,
-                             rotation: -9, z: 200, faceUp: model.faceUp)
+                             rotation: -9, z: model.tuckFromBack ? -10 : 200, faceUp: model.faceUp)
         }
         let depth = CGFloat(min(i, 10))
         return Placement(point: CGPoint(x: center.x + depth * 0.5, y: center.y - depth * 1.3),
@@ -480,6 +489,10 @@ struct RipView: View {
                 try? await Task.sleep(for: .milliseconds(600))
             }
             if args.contains("flip") { flipStack() }
+            if args.contains("trick") {
+                try? await Task.sleep(for: .milliseconds(700))
+                moveToBack()
+            }
             if args.contains("peek") { withAnimation { peeking = true } }
             if args.contains("close") {
                 try? await Task.sleep(for: .seconds(1))
