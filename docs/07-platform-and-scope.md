@@ -9,8 +9,13 @@ Native iOS, built in Swift.
 Private build. This is not, at this stage, intended for public release.
 
 The app is in `app/`. XcodeGen makes the Xcode project from
-`app/project.yml`. The first playable part is the rip screen for
-Prismatic Evolutions. `python3 tools/export/rip_set.py <set>` writes the
+`app/project.yml`. The app opens on Inventory (see
+[08-ui-direction.md](08-ui-direction.md#3-inventory--decisions-recorded-lo-fi-mockup-reviewed)).
+The player rips sealed packs from Inventory, and the rip puts the hits
+in Raw and the other cards in one bulk group. A Test menu adds
+Prismatic Evolutions packs at the market price, until the buy screen
+exists. Sell, Grade, the store run, and the status tags are not built
+yet. `python3 tools/export/rip_set.py <set>` writes the
 set data that the app reads.
 
 ## Pokemon IP note

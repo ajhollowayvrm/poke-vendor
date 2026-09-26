@@ -12,33 +12,48 @@
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
 		5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367966CB515F1D60E1380F07 /* Panels.swift */; };
+		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
 		85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297BD4F44B83A77E160F288F /* CardViews.swift */; };
 		8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
 		D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = B5511559E1A3A95108659987 /* prismatic-evolutions.json */; };
+		E773086037F13A9C2D65807E /* DetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544120DEF70C6BCBC2EF918A /* DetailViews.swift */; };
 		EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB2E7EA020C2D7260109C7E /* RipView.swift */; };
+		F0032B8697D4063D2F6E8907 /* InventoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28FE1FAED611C80FC163221 /* InventoryView.swift */; };
 		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		11814C73AA917A111DD8EC6A /* PackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackView.swift; sourceTree = "<group>"; };
 		15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackBuilder.swift; sourceTree = "<group>"; };
+		1B3A5E9B134DA765470B7666 /* Inventory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inventory.swift; sourceTree = "<group>"; };
 		297BD4F44B83A77E160F288F /* CardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViews.swift; sourceTree = "<group>"; };
 		2E04FD006DB8B88A9342A378 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		367966CB515F1D60E1380F07 /* Panels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panels.swift; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
 		4473746B05B5FA0E51C41885 /* SetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetData.swift; sourceTree = "<group>"; };
 		523EE1F5C13F88A7FDA88127 /* HitEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitEffects.swift; sourceTree = "<group>"; };
+		544120DEF70C6BCBC2EF918A /* DetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViews.swift; sourceTree = "<group>"; };
 		7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipCard.swift; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
 		9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A28FE1FAED611C80FC163221 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
 		B5511559E1A3A95108659987 /* prismatic-evolutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "prismatic-evolutions.json"; sourceTree = "<group>"; };
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFEB00B5E3B98AFB182E5118 /* RipModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		20039E26AAF34D635C5565E0 /* Inventory */ = {
+			isa = PBXGroup;
+			children = (
+				544120DEF70C6BCBC2EF918A /* DetailViews.swift */,
+				A28FE1FAED611C80FC163221 /* InventoryView.swift */,
+			);
+			path = Inventory;
+			sourceTree = "<group>";
+		};
 		54BBAE50F56DF76DD790B949 /* Support */ = {
 			isa = PBXGroup;
 			children = (
@@ -66,6 +81,7 @@
 		96C1692A0ED7B2E72EE64380 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				1B3A5E9B134DA765470B7666 /* Inventory.swift */,
 				15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */,
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
@@ -95,6 +111,7 @@
 			children = (
 				9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */,
 				42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */,
+				20039E26AAF34D635C5565E0 /* Inventory */,
 				96C1692A0ED7B2E72EE64380 /* Model */,
 				A45715057FF8BD97B10D1027 /* Resources */,
 				F5C1AC9B977941A9F77C4039 /* Rip */,
@@ -187,7 +204,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
+				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
 				FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */,
+				63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */,
+				F0032B8697D4063D2F6E8907 /* InventoryView.swift in Sources */,
 				554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */,
 				8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */,
 				5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */,

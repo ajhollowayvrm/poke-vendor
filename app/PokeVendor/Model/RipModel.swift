@@ -14,6 +14,14 @@ struct Reveal: Equatable {
 @MainActor @Observable
 final class RipModel {
     let cardSet: SetData
+    /// The rip queue. The whole queue is one rip (docs/18-ripping.md, The rip queue).
+    let packs: [SealedItem]
+    let ripID = UUID()
+    private(set) var packIndex = 0
+    private let store: InventoryStore?
+    /// The value and the cost of the packs that are done.
+    private var doneValue: Double = 0
+    private var donePaid: Double = 0
     var phase: RipPhase = .sealed
     /// The cards in the hand. Index 0 is the top card: the front card face up, or the back card face down.
     var stack: [RipCard] = []
@@ -23,19 +31,25 @@ final class RipModel {
     var tuckingID: UUID?
     /// A face-down hit that the player flipped in place. The next tap sends it to the pile.
     var showcaseID: UUID?
-    var packNumber = 0
     private(set) var faceUp: Bool
     private(set) var lastReveal: Reveal?
     private var seen: Set<UUID> = []
 
-    init(slug: String) {
-        cardSet = SetData.load(slug)
+    init(packs: [SealedItem], store: InventoryStore?) {
+        self.packs = packs
+        self.store = store
+        cardSet = SetLibrary.set(packs.first?.setSlug ?? "prismatic-evolutions")
         faceUp = UserDefaults.standard.bool(forKey: "rip.faceUp")
-        newPack()
+        loadPack()
     }
 
+    var currentPack: SealedItem? { packs.indices.contains(packIndex) ? packs[packIndex] : nil }
+    var hasNextPack: Bool { packIndex + 1 < packs.count }
+    var ripValue: Double { doneValue + valueSoFar }
+    var ripPaid: Double { donePaid + (phase == .sealed ? 0 : packCost) }
+
     var allCards: [RipCard] { pile + stack }
-    var packCost: Double { cardSet.packCost ?? 0 }
+    var packCost: Double { currentPack?.paidPerPack ?? 0 }
     var valueSoFar: Double { allCards.filter { seen.contains($0.id) }.reduce(0) { $0 + $1.market } }
     var net: Double { valueSoFar - packCost }
 
@@ -49,7 +63,15 @@ final class RipModel {
         faceUp || card.id == showcaseID
     }
 
-    func newPack() {
+    func nextPack() {
+        guard hasNextPack else { return }
+        doneValue += valueSoFar
+        donePaid += packCost
+        packIndex += 1
+        loadPack()
+    }
+
+    private func loadPack() {
         // The builder gives pack order, front card first. A face-down stack is the same cards turned over,
         // so the last card of the pack (the Energy) is on top.
         var cards = PackBuilder(cardSet: cardSet).build()
@@ -67,7 +89,6 @@ final class RipModel {
         showcaseID = nil
         lastReveal = nil
         phase = .sealed
-        packNumber += 1
         ImageStore.shared.prefetch(stack.compactMap(\.imageURL))
     }
 
@@ -84,6 +105,9 @@ final class RipModel {
     func startOpening() {
         guard phase == .sealed else { return }
         phase = .opening
+        if let pack = currentPack {
+            store?.commitPack(pack, ripID: ripID, cards: stack)
+        }
     }
 
     func finishOpening() {

@@ -21,20 +21,20 @@ struct StatCell: View {
 
 struct TopBar: View {
     let model: RipModel
-    let onNewPack: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         VStack(spacing: 10) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(model.cardSet.name).font(.headline)
-                    Text("Pack \(model.packNumber) · Booster pack")
+                    Text("Pack \(model.packIndex + 1) of \(model.packs.count) · Booster pack")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
                 Spacer()
-                Button(action: onNewPack) {
-                    Label("New pack", systemImage: "arrow.clockwise")
+                Button(action: onClose) {
+                    Label("Done", systemImage: "xmark")
                         .font(.subheadline.weight(.semibold))
                 }
                 .buttonStyle(.bordered)
@@ -166,19 +166,28 @@ struct PeekView: View {
 
 struct SummaryView: View {
     let model: RipModel
-    let onAgain: () -> Void
+    let onNext: () -> Void
+    let onDone: () -> Void
     let onClose: () -> Void
 
     var body: some View {
         let cards = model.allCards
         let hits = cards.filter(\.isHit).sorted { $0.market > $1.market }
-        let bulk = cards.count - hits.count
+        let bulk = cards.filter { $0.print != nil && !$0.isHit }.count
         VStack(alignment: .leading, spacing: 14) {
             Text("Pack summary").font(.title2.bold())
             HStack(spacing: 0) {
                 StatCell(label: "Value", value: money(model.valueSoFar))
                 StatCell(label: "Paid", value: money(model.packCost))
                 StatCell(label: "Net", value: signedMoney(model.net), color: model.net >= 0 ? Theme.green : Theme.orange)
+            }
+            if model.packs.count > 1 {
+                let ripNet = model.ripValue - model.ripPaid
+                HStack(spacing: 0) {
+                    StatCell(label: "Rip value", value: money(model.ripValue))
+                    StatCell(label: "Rip paid", value: money(model.ripPaid))
+                    StatCell(label: "Rip net", value: signedMoney(ripNet), color: ripNet >= 0 ? Theme.green : Theme.orange)
+                }
             }
             Text("HITS · \(hits.count)")
                 .font(.system(size: 11, weight: .semibold))
@@ -198,7 +207,7 @@ struct SummaryView: View {
                     .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
                 }
             }
-            Text("Bulk · \(bulk) cards go to Inventory as one bulk group.")
+            Text("Hits go to Raw. Bulk · \(bulk) cards go to the rip's bulk group.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
             HStack(spacing: 10) {
@@ -206,8 +215,8 @@ struct SummaryView: View {
                     Text("See the cards").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
-                Button(action: onAgain) {
-                    Text("Rip another").frame(maxWidth: .infinity)
+                Button(action: model.hasNextPack ? onNext : onDone) {
+                    Text(model.hasNextPack ? "Next pack" : "Done").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Theme.cyan)

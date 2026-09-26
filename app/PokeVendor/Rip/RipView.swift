@@ -28,7 +28,14 @@ private struct Placement {
 }
 
 struct RipView: View {
-    @State private var model = RipModel(slug: "prismatic-evolutions")
+    @State private var model: RipModel
+    let onClose: () -> Void
+
+    init(packs: [SealedItem], store: InventoryStore, onClose: @escaping () -> Void) {
+        _model = State(initialValue: RipModel(packs: packs, store: store))
+        self.onClose = onClose
+    }
+
     @State private var tearProgress: Double = 0
     @State private var torn = false
     @State private var cardsRise = false
@@ -45,7 +52,7 @@ struct RipView: View {
         GeometryReader { geo in
             let layout = TableLayout(size: geo.size)
             ZStack {
-                TopBar(model: model, onNewPack: newPack)
+                TopBar(model: model, onClose: onClose)
                     .frame(maxHeight: .infinity, alignment: .top)
 
                 if model.phase == .open || model.phase == .done {
@@ -136,7 +143,7 @@ struct RipView: View {
                 if showSummary {
                     ZStack {
                         Color.black.opacity(0.55).ignoresSafeArea()
-                        SummaryView(model: model, onAgain: newPack) {
+                        SummaryView(model: model, onNext: nextPack, onDone: onClose) {
                             withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
                         }
                     }
@@ -415,11 +422,15 @@ struct RipView: View {
                 try? await Task.sleep(for: .milliseconds(600))
             }
             if args.contains("peek") { withAnimation { peeking = true } }
+            if args.contains("close") {
+                try? await Task.sleep(for: .seconds(1))
+                onClose()
+            }
         }
     }
     #endif
 
-    private func newPack() {
+    private func nextPack() {
         peekTask?.cancel()
         peeking = false
         burst = nil
@@ -429,6 +440,6 @@ struct RipView: View {
         cardsOut = false
         packGone = false
         tearProgress = 0
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) { model.newPack() }
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) { model.nextPack() }
     }
 }
