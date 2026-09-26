@@ -76,15 +76,21 @@ struct CardInfo: View {
                             .lineLimit(1)
                     }
                     Spacer()
-                    Text(money(card.market))
-                        .font(.system(size: 20, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(card.isHit ? Theme.green : Theme.text)
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("RAW")
+                            .font(.system(size: 10, weight: .semibold))
+                            .kerning(0.8)
+                            .foregroundStyle(Theme.muted)
+                        Text(money(card.market))
+                            .font(.system(size: 20, weight: .semibold, design: .monospaced))
+                            .foregroundStyle(card.isHit ? Theme.green : Theme.text)
+                    }
                 }
-                HStack(spacing: 0) {
-                    grade("PSA 10", card.print?.graded.psa10)
-                    grade("PSA 9", card.print?.graded.psa9)
-                    grade("CGC 10", card.print?.graded.cgc10)
-                    grade("CGC 9", card.print?.graded.cgc9)
+                let g = card.print?.graded
+                HStack(alignment: .top, spacing: 8) {
+                    GradeColumn(company: "CGC", rows: [("10", g?.cgc10), ("9", g?.cgc9)])
+                    GradeColumn(company: "PSA", rows: [("10", g?.psa10), ("9", g?.psa9)])
+                    GradeColumn(company: "BGS", rows: [("10", g?.bgs10), ("9.5", g?.bgs95)])
                 }
             } else {
                 Text("Tap the card to reveal it.\nHold the stack to peek at the cards.")
@@ -98,34 +104,59 @@ struct CardInfo: View {
         .overlay(Rectangle().stroke(Theme.line))
     }
 
-    private func grade(_ label: String, _ value: Double?) -> some View {
-        StatCell(label: label, value: value.map(money) ?? "—", color: value == nil ? Theme.muted : Theme.text)
+}
+
+/// The graded prices of one grading company.
+struct GradeColumn: View {
+    let company: String
+    let rows: [(String, Double?)]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(company)
+                .font(.system(size: 10, weight: .semibold))
+                .kerning(0.8)
+                .foregroundStyle(Theme.muted)
+            ForEach(rows, id: \.0) { grade, price in
+                HStack(spacing: 4) {
+                    Text(grade)
+                        .foregroundStyle(Theme.muted)
+                        .frame(width: 30, alignment: .leading)
+                    Text(price.map(money) ?? "—")
+                        .foregroundStyle(price == nil ? Theme.muted : Theme.text)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+                .font(.system(size: 13, design: .monospaced))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-/// The long-press peek: the top strip of every card left in the stack.
+/// The long-press peek: only the very top border of every card left in the stack.
+/// The border color and shine tell the player a hit is coming, but not which card.
 struct PeekView: View {
     let cards: [RipCard]
     let size: CGSize
 
     var body: some View {
-        let width = min(size.width * 0.78, 300)
+        let width = min(size.width * 0.86, 340)
         let fullHeight = width * TableLayout.ratio
-        let spacing: CGFloat = 5
-        let strip = min(fullHeight * 0.2, size.height * 0.8 / CGFloat(max(cards.count, 1)) - spacing)
+        let strip = fullHeight * 0.03
         ZStack {
             Color.black.opacity(0.8).ignoresSafeArea()
-            VStack(spacing: spacing) {
+            VStack(spacing: 10) {
                 Text("PEEK · \(cards.count) CARDS")
                     .font(.caption.monospaced().weight(.semibold))
                     .foregroundStyle(Theme.muted)
-                    .padding(.bottom, 4)
+                    .padding(.bottom, 6)
                 ForEach(cards) { card in
                     CardFace(card: card)
                         .frame(width: width, height: fullHeight)
                         .frame(width: width, height: strip, alignment: .top)
-                        .clipShape(UnevenRoundedRectangle(topLeadingRadius: 8, topTrailingRadius: 8))
-                        .shadow(color: .black.opacity(0.5), radius: 3, y: 2)
+                        .clipShape(UnevenRoundedRectangle(topLeadingRadius: width * 0.05, topTrailingRadius: width * 0.05))
+                        .shadow(color: .black.opacity(0.5), radius: 2, y: 2)
                 }
             }
         }

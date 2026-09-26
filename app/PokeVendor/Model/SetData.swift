@@ -3,10 +3,17 @@ import Foundation
 // The set file that tools/export/rip_set.py writes.
 
 struct GradedPrices: Codable, Hashable {
-    let psa10: Double?
-    let psa9: Double?
     let cgc10: Double?
     let cgc9: Double?
+    let psa10: Double?
+    let psa9: Double?
+    let bgs10: Double?
+    let bgs95: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case cgc10, cgc9, psa10, psa9, bgs10
+        case bgs95 = "bgs9_5"
+    }
 }
 
 struct CardPrint: Codable, Hashable {

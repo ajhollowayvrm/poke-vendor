@@ -5,7 +5,7 @@ struct TableLayout {
     static let ratio: CGFloat = 88.0 / 63.0
     let size: CGSize
     let topInset: CGFloat = 100
-    let bottomInset: CGFloat = 176
+    let bottomInset: CGFloat = 206
     let pileScale: CGFloat = 0.42
 
     var cardW: CGFloat {

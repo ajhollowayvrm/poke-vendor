@@ -6,7 +6,7 @@ Writes app/PokeVendor/Resources/Sets/<set>.json with:
 - the slots of one pack, in pack order (front card first), each with its outcomes and final odds
   (tools/slotmap/odds.py, with the era fallback);
 - every print that an outcome can produce, with its market price, its graded prices
-  (PSA 10, PSA 9, CGC 10, CGC 9), and its TCGplayer image URL (tools/ppt/cache/);
+  (CGC 10, CGC 9, PSA 10, PSA 9, BGS 10, BGS 9.5), and its TCGplayer image URL (tools/ppt/cache/);
 - the cost of one pack: the market price of the loose booster pack (tools/ppt/cache/sealed/).
 
 The rows with no card (Basic Energy, code card) are not exported. The app adds the Basic Energy.
@@ -23,6 +23,7 @@ import join as J  # noqa: E402
 
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
+GRADES = ("cgc10", "cgc9", "psa10", "psa9", "bgs10", "bgs9_5")
 
 
 def ppt_matches(slug, cards):
@@ -53,7 +54,7 @@ def ppt_matches(slug, cards):
 
 def graded(pc):
     res = {}
-    for g in J.GRADES:
+    for g in GRADES:
         s = ((pc.get("ebay") or {}).get("salesByGrade") or {}).get(g) or {}
         p = (s.get("smartMarketPrice") or {}).get("price") or s.get("medianPrice")
         res[g] = round(p, 2) if p else None
@@ -73,7 +74,7 @@ def price_print(matches, variant):
                 pk = "Reverse holo"
             if pk == kind and pfirst == first:
                 return v.get("marketPrice"), graded(pc), pc.get("imageCdnUrl800") or pc.get("imageUrl")
-    return None, {g: None for g in J.GRADES}, None
+    return None, {g: None for g in GRADES}, None
 
 
 def pack_cost(slug):

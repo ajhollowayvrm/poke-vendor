@@ -137,9 +137,11 @@ Normal is a manual rip. The player holds the cards like a real pack:
    above the stack.
 6. A tap on the pile puts the top card of the pile back on the front
    of the stack.
-7. A long press on the stack shows a **peek**: the top strip of every
-   card left in the stack (the name, the HP, and the holo shine). The
-   peek closes when the player lifts the finger.
+7. A long press on the stack shows a **peek**: only the very top
+   border of every card left in the stack. The peek shows no names.
+   A rainbow or holo border tells the player that a hit is coming, the
+   same as looking at the top edges of a real Prismatic Evolutions
+   pack. The peek closes when the player lifts the finger.
 
 **Face down or face up.** A toggle on the rip screen sets how the
 stack shows. The game keeps the choice for the next rip.
@@ -228,10 +230,11 @@ Money shows during the rip, not only at the end.
 
 - Each card shows its market price when it appears (see
   [05-pricing-and-market.md](05-pricing-and-market.md#data-source)).
-- Each card also shows four graded prices: **PSA 10, PSA 9, CGC 10,
-  and CGC 9**. This shows the grading upside at the moment of the pull
-  (see [10-grading.md](10-grading.md)). A grade with no sales data
-  shows "—".
+- Each card shows its **raw** price first, then its graded prices for
+  three companies: **CGC 10 and 9, PSA 10 and 9, and BGS 10 and 9.5**.
+  This shows the grading upside at the moment of the pull (see
+  [10-grading.md](10-grading.md)). A grade with no sales data shows
+  "—".
 - The running totals use the raw market price, not the graded prices.
   A card is raw until the player grades it.
 - The **pack total** compares the pack's value so far with the pack's
