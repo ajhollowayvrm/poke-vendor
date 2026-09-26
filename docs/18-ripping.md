@@ -134,8 +134,8 @@ Normal is a manual rip. The player holds the cards like a real pack:
 4. **Pack trick** moves one card around the stack. Face up, it takes
    the back card to the front. Face down, it takes the top card to the
    bottom. Both are the same move on the physical pack. This is how the
-   player does the pack trick by hand. It matters most in a set where
-   the hit sits in the middle of the pack.
+   player does the pack trick by hand. The button works once for each
+   pack, and then it turns off until the next pack.
 5. A tap on the front card slides it off the top onto the **pile**,
    above the stack.
 6. A tap on the pile puts the top card of the pile back on the front

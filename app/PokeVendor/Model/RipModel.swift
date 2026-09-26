@@ -39,6 +39,8 @@ final class RipModel {
     var tuckingID: UUID?
     /// True when the pack trick takes the back card to the front (face up).
     var tuckFromBack = false
+    /// The pack trick works once for each pack.
+    private(set) var trickDone = false
     /// A face-down hit that the player flipped in place. The next tap sends it to the pile.
     var showcaseID: UUID?
     private(set) var faceUp: Bool
@@ -107,6 +109,7 @@ final class RipModel {
         pile = []
         seen = []
         tuckingID = nil
+        trickDone = false
         showcaseID = nil
         lastReveal = nil
         phase = .sealed
@@ -164,7 +167,8 @@ final class RipModel {
     /// The pack trick moves one card around the stack. Face up, the back card comes to the front.
     /// Face down, the top card goes to the bottom. Both are the same move on the physical pack.
     func startTuck() {
-        guard phase == .open, stack.count > 1, tuckingID == nil else { return }
+        guard phase == .open, stack.count > 1, tuckingID == nil, !trickDone else { return }
+        trickDone = true
         showcaseID = nil
         tuckFromBack = faceUp
         tuckingID = faceUp ? stack.last?.id : stack.first?.id

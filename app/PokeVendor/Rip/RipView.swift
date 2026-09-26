@@ -300,16 +300,16 @@ struct RipView: View {
                     VStack(spacing: 1) {
                         Label("Pack trick", systemImage: "arrow.uturn.down")
                             .font(.subheadline.weight(.semibold))
-                        Text(model.faceUp ? "back → front" : "top → bottom")
+                        Text(model.trickDone ? "done" : model.faceUp ? "back → front" : "top → bottom")
                             .font(.caption2.monospaced())
                     }
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Theme.cyan)
-                .foregroundStyle(.black)
+                .foregroundStyle(model.trickDone ? Theme.muted : .black)
                 .controlSize(.large)
-                .disabled(model.phase != .open || model.stack.count < 2)
+                .disabled(model.phase != .open || model.stack.count < 2 || model.trickDone)
             }
         }
         .padding(.horizontal, 16)
@@ -459,7 +459,7 @@ struct RipView: View {
     }
 
     private func moveToBack() {
-        guard model.phase == .open, model.stack.count > 1, model.tuckingID == nil else { return }
+        guard model.phase == .open, model.stack.count > 1, model.tuckingID == nil, !model.trickDone else { return }
         Haptics.tap()
         withAnimation(.easeOut(duration: 0.16)) { model.startTuck() }
         Task {
