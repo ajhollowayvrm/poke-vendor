@@ -25,4 +25,6 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ajholloway.pokevendor
+        DEVELOPMENT_TEAM: 2BY68WLT6R
+        CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: "1"

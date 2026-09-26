@@ -142,6 +142,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					FB52DB02B82ACF5830A774CB = {
+						DevelopmentTeam = 2BY68WLT6R;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 373A0960F2CA420AAE95D78C /* Build configuration list for PBXProject "PokeVendor" */;
@@ -200,6 +204,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2BY68WLT6R;
 				INFOPLIST_FILE = PokeVendor/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -274,6 +280,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2BY68WLT6R;
 				INFOPLIST_FILE = PokeVendor/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
