@@ -69,9 +69,16 @@ struct CardDetailView: View {
     @State private var sell: SellRequest?
     @State private var grade: GradeRequest?
     @State private var post: NewPostRequest?
+    @State private var key: String?
+
+    /// The card, or the next card of its stack after this one leaves.
+    private var resolved: OwnedCard? {
+        store.card(id) ?? key.flatMap { k in (store.data.raw + store.data.slabs).first { store.stackKey($0) == k } }
+    }
 
     var body: some View {
-        if let card = store.card(id) {
+        if let card = resolved {
+            let count = store.mates(of: card).count
             ScrollView {
                 VStack(spacing: 14) {
                     RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: card.print.name)
@@ -86,6 +93,9 @@ struct CardDetailView: View {
                             .foregroundStyle(Theme.muted)
                         if let g = card.grade {
                             Text(g.label).font(.headline).foregroundStyle(Theme.cyan)
+                        }
+                        if count > 1 {
+                            Text("×\(count) in Inventory").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
                         }
                         Tags(keep: card.keep, status: card.status)
                     }
@@ -150,6 +160,7 @@ struct CardDetailView: View {
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle(card.print.name)
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { if key == nil { key = store.stackKey(card) } }
             .sheet(item: $sell) { SellSheet(ids: $0.ids) }
             .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
             .sheet(item: $post) { NewPostSheet(request: $0) }
@@ -208,9 +219,16 @@ struct SealedDetailView: View {
     @Environment(AppNav.self) private var nav
     let id: UUID
     @State private var sell: SellRequest?
+    @State private var key: String?
+
+    /// The item, or the next item of its stack after this one leaves.
+    private var resolved: SealedItem? {
+        store.data.sealed.first { $0.id == id } ?? key.flatMap { k in store.data.sealed.first { store.stackKey($0) == k } }
+    }
 
     var body: some View {
-        if let item = store.data.sealed.first(where: { $0.id == id }) {
+        if let item = resolved {
+            let mates = store.mates(of: item)
             let product = SetLibrary.product(item.productID, in: item.setSlug)
             ScrollView {
                 VStack(spacing: 14) {
@@ -219,6 +237,9 @@ struct SealedDetailView: View {
                         .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                     VStack(spacing: 4) {
                         Text(item.name).font(.title3.bold()).multilineTextAlignment(.center)
+                        if mates.count > 1 {
+                            Text("×\(mates.count) in Inventory").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+                        }
                         Tags(keep: item.keep, status: item.status)
                     }
                     DetailBox(title: "Contents") {
@@ -263,6 +284,12 @@ struct SealedDetailView: View {
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(.black)
                             .disabled(!free)
+                        if mates.count > 1 {
+                            Button("Rip all \(mates.count)") { nav.startRip(mates) }
+                                .buttonStyle(.borderedProminent)
+                                .foregroundStyle(.black)
+                                .disabled(!free)
+                        }
                     }
                     .controlSize(.large)
                     if item.keep {
@@ -274,6 +301,7 @@ struct SealedDetailView: View {
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Sealed")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { if key == nil { key = store.stackKey(item) } }
             .sheet(item: $sell) { SellSheet(ids: $0.ids) }
         } else {
             GoneView()

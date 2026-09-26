@@ -104,9 +104,10 @@ struct InventoryView: View {
                 if items.isEmpty {
                     EmptyTab(text: keptOnly ? "No kept sealed product." : "No sealed product. Buy some online from the hub.")
                 }
-                ForEach(items) { item in
-                    rowButton(item.id, route: .sealed(item.id)) {
-                        SealedRow(item: item, market: store.market(of: item))
+                ForEach(stacks(items, key: store.stackKey)) { stack in
+                    rowButton(stack.ids, route: .sealed(stack.id)) {
+                        SealedRow(item: stack.items[0], market: store.market(of: stack.items[0]), count: stack.items.count,
+                                  paid: stack.items.reduce(0) { $0 + $1.paid })
                     }
                 }
             case .raw, .slabs:
@@ -115,8 +116,8 @@ struct InventoryView: View {
                     EmptyTab(text: tab == .slabs ? "Graded cards show here. Select raw cards and tap Grade."
                                                  : "Hits from your rips and bought singles show here.")
                 }
-                ForEach(cards) { card in
-                    rowButton(card.id, route: .card(card.id)) { CardRow(card: card) }
+                ForEach(stacks(cards, key: store.stackKey)) { stack in
+                    rowButton(stack.ids, route: .card(stack.id)) { CardRow(card: stack.items[0], count: stack.items.count) }
                 }
             case .bulk:
                 let groups = sortedBulk
@@ -124,7 +125,7 @@ struct InventoryView: View {
                     EmptyTab(text: "Each rip adds one bulk group.")
                 }
                 ForEach(groups) { group in
-                    rowButton(group.id, route: .bulk(group.id)) { BulkRow(group: group) }
+                    rowButton([group.id], route: .bulk(group.id)) { BulkRow(group: group) }
                 }
             }
         }
@@ -132,19 +133,21 @@ struct InventoryView: View {
         .overlay(Rectangle().stroke(Theme.line))
     }
 
-    private func rowButton<Content: View>(_ id: UUID, route: AppRoute, @ViewBuilder content: () -> Content) -> some View {
-        Button {
+    /// A tap in select mode selects the whole stack.
+    private func rowButton<Content: View>(_ ids: Set<UUID>, route: AppRoute, @ViewBuilder content: () -> Content) -> some View {
+        let chosen = ids.isSubset(of: selection)
+        return Button {
             if selecting {
-                if selection.contains(id) { selection.remove(id) } else { selection.insert(id) }
+                if chosen { selection.subtract(ids) } else { selection.formUnion(ids) }
             } else {
                 nav.path.append(route)
             }
         } label: {
             HStack(spacing: 10) {
                 if selecting {
-                    Image(systemName: selection.contains(id) ? "checkmark.circle.fill" : "circle")
+                    Image(systemName: chosen ? "checkmark.circle.fill" : "circle")
                         .font(.title3)
-                        .foregroundStyle(selection.contains(id) ? Theme.cyan : Theme.muted)
+                        .foregroundStyle(chosen ? Theme.cyan : Theme.muted)
                 }
                 content()
             }
@@ -259,6 +262,39 @@ struct InventoryView: View {
     }
 }
 
+struct ItemStack<T: Identifiable>: Identifiable where T.ID == UUID {
+    let items: [T]
+    var id: UUID { items[0].id }
+    var ids: Set<UUID> { Set(items.map(\.id)) }
+}
+
+/// Groups identical items, in the order of their first appearance.
+func stacks<T: Identifiable>(_ items: [T], key: (T) -> String) -> [ItemStack<T>] where T.ID == UUID {
+    var order: [String] = []
+    var groups: [String: [T]] = [:]
+    for item in items {
+        let k = key(item)
+        if groups[k] == nil { order.append(k) }
+        groups[k, default: []].append(item)
+    }
+    return order.map { ItemStack(items: groups[$0]!) }
+}
+
+struct CountBadge: View {
+    let count: Int
+
+    var body: some View {
+        if count > 1 {
+            Text("×\(count)")
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Theme.cyan)
+                .foregroundStyle(.black)
+        }
+    }
+}
+
 struct SellRequest: Identifiable {
     let id = UUID()
     let ids: Set<UUID>
@@ -327,22 +363,27 @@ struct Tags: View {
 struct SealedRow: View {
     let item: SealedItem
     let market: Double
+    var count = 1
+    var paid: Double?
 
     var body: some View {
         HStack(spacing: 12) {
             ProductImage(url: SetLibrary.product(item.productID, in: item.setSlug)?.image, setName: SetLibrary.set(item.setSlug).name)
                 .frame(width: 48, height: 60)
             VStack(alignment: .leading, spacing: 3) {
-                Text(item.name).font(.subheadline.weight(.medium)).lineLimit(2)
-                Text("\(item.packs) pack\(item.packs == 1 ? "" : "s")")
+                HStack(alignment: .top, spacing: 6) {
+                    Text(item.name).font(.subheadline.weight(.medium)).lineLimit(2)
+                    CountBadge(count: count)
+                }
+                Text(count > 1 ? "\(money(market)) each" : "\(item.packs) pack\(item.packs == 1 ? "" : "s")")
                     .font(.caption.monospaced())
                     .foregroundStyle(Theme.muted)
                 Tags(keep: item.keep, status: item.status)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
-                Text(money(market)).font(.subheadline.monospaced().weight(.semibold))
-                Text("paid \(money(item.paid))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Text(money(market * Double(count))).font(.subheadline.monospaced().weight(.semibold))
+                Text("paid \(money(paid ?? item.paid))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
         }
     }
@@ -368,6 +409,7 @@ struct ProductImage: View {
 
 struct CardRow: View {
     let card: OwnedCard
+    var count = 1
 
     var body: some View {
         HStack(spacing: 12) {
@@ -375,7 +417,10 @@ struct CardRow: View {
                 .frame(width: 43, height: 60)
                 .clipShape(RoundedRectangle(cornerRadius: 3))
             VStack(alignment: .leading, spacing: 3) {
-                Text(card.print.name).font(.subheadline.weight(.medium)).lineLimit(1)
+                HStack(spacing: 6) {
+                    Text(card.print.name).font(.subheadline.weight(.medium)).lineLimit(1)
+                    CountBadge(count: count)
+                }
                 Text(card.grade?.label ?? "\(card.print.rarity) · \(card.print.variant)")
                     .font(.caption.monospaced())
                     .foregroundStyle(card.grade == nil ? Theme.muted : Theme.cyan)
@@ -384,8 +429,10 @@ struct CardRow: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
-                Text(money(card.market)).font(.subheadline.monospaced().weight(.semibold))
-                if let paid = card.paid {
+                Text(money(card.market * Double(count))).font(.subheadline.monospaced().weight(.semibold))
+                if count > 1 {
+                    Text("\(money(card.market)) each").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                } else if let paid = card.paid {
                     let gain = card.market - paid
                     Text(signedMoney(gain)).font(.caption.monospaced())
                         .foregroundStyle(gain >= 0 ? Theme.green : Theme.orange)

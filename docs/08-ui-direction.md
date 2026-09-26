@@ -289,6 +289,14 @@ here, and the rip-or-hold decision happens here.
   sale is future cash, not collection. The hub's Collection target
   shows collection value. The portfolio header shows all of
   Inventory.
+- **Identical items stack into one row** with a count, for example
+  "×3". Sealed items stack when they are the same product with the same
+  Keep flag and status. Cards stack when they are the same print (and
+  the same grade for a slab), with the same Keep flag, status, and
+  source (pulled or bought). The row shows the price of each item and
+  the total value. In select mode, a tap selects the whole stack. The
+  detail screen shows the count, and a sealed stack has a "Rip all"
+  button.
 - **Each tab sorts newest first.** A sort control changes the order
   to highest value or to set order.
 - **The detail screen for a sealed item** shows the product image,

@@ -270,6 +270,16 @@ struct HubView: View {
             store.moveToBulk(Set(store.data.raw.prefix(2).map(\.id)))
             nav.path = [.inventory(.bulk)]
         }
+        if args.contains("-stack") {
+            store.startRun()
+            for _ in 0..<3 { store.addTestPack() }
+            store.addTestProduct("576482")
+            if let print = SetLibrary.set(Market.slug).prints.first(where: { ($0.market ?? 0) > 5 }) {
+                store.addTestCard(print)
+                store.addTestCard(print)
+            }
+            nav.path = [.inventory(args.contains("raw") ? .raw : .sealed)]
+        }
         if args.contains("-coll") {
             store.startRun()
             store.addTestProduct("576482")

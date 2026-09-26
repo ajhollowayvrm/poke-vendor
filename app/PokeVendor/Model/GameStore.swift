@@ -231,6 +231,27 @@ final class GameStore {
         save()
     }
 
+    // MARK: - Stacks
+
+    /// Identical items stack into one Inventory row.
+    func stackKey(_ s: SealedItem) -> String {
+        "\(s.productID ?? s.name)|\(s.setSlug)|\(s.keep)|\(s.status?.tag ?? "")"
+    }
+
+    func stackKey(_ c: OwnedCard) -> String {
+        "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.keep)|\(c.status?.tag ?? "")|\(c.paid == nil)"
+    }
+
+    func mates(of s: SealedItem) -> [SealedItem] {
+        let key = stackKey(s)
+        return data.sealed.filter { stackKey($0) == key }
+    }
+
+    func mates(of c: OwnedCard) -> [OwnedCard] {
+        let key = stackKey(c)
+        return (data.raw + data.slabs).filter { stackKey($0) == key }
+    }
+
     // MARK: - Runs
 
     func startRun() {
