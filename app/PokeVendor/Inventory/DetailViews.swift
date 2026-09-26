@@ -277,11 +277,9 @@ struct BulkDetailView: View {
                             }
                         }
                     }
-                    Button("Add to store run") {}
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
-                        .disabled(true)
-                    Text("The store run is not built yet.").font(.caption).foregroundStyle(Theme.muted)
+                    Text("Sell bulk for store credit at a game shop stop on a store run.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
                 }
                 .padding(16)
             }

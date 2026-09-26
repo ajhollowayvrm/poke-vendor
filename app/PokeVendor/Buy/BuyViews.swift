@@ -4,7 +4,11 @@ import SwiftUI
 struct BuyView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
-    @State private var local = false
+    @State private var local: Bool
+
+    init(local: Bool = false) {
+        _local = State(initialValue: local)
+    }
 
     var body: some View {
         ScrollView {
@@ -15,9 +19,7 @@ struct BuyView: View {
                 }
                 .pickerStyle(.segmented)
                 if local {
-                    EmptyTab(text: "The store run to local stores and the game shop is not built yet.")
-                        .background(Theme.surface)
-                        .overlay(Rectangle().stroke(Theme.line))
+                    StoreRunPlanner()
                 } else {
                     VStack(spacing: 0) {
                         ForEach(Storefront.allCases, id: \.self) { s in
@@ -40,7 +42,8 @@ struct BuyView: View {
                     .background(Theme.surface)
                     .overlay(Rectangle().stroke(Theme.line))
                 }
-                Text("Buying online is a free action. You pay now, and the item arrives after its delivery time.")
+                Text(local ? "A store run costs time. Each store adds 40 minutes. You learn what a store has only when you get there."
+                           : "Buying online is a free action. You pay now, and the item arrives after its delivery time.")
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
             }

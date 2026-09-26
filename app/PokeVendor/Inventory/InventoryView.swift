@@ -181,7 +181,7 @@ struct InventoryView: View {
             case .slabs:
                 sellButton(chosen, disabled: blocked)
             case .bulk:
-                Button("Add to store run") {}.buttonStyle(.bordered).disabled(true)
+                Text("Sell bulk at a game shop stop.").font(.caption).foregroundStyle(Theme.muted)
             }
             if tab != .bulk {
                 Button(allKept ? "Unkeep" : "Keep") {

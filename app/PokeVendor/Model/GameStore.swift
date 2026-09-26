@@ -21,7 +21,10 @@ struct GameData: Codable {
 
     /// Store listings the player bought today. They leave the store until the next day.
     var boughtToday: [String] = []
+    /// How many of each shelf item the player bought today.
+    var shelfBought: [String: Int] = [:]
     var pokemonCenterAttempted = false
+    var shops: [String: ShopState] = [:]
 }
 
 /// What happened overnight, for the morning report.
@@ -282,6 +285,120 @@ final class GameStore {
         return false
     }
 
+    // MARK: - Store run and game shops
+
+    func shop(_ store: LocalStore) -> ShopState { data.shops[store.rawValue] ?? ShopState() }
+
+    func standing(_ store: LocalStore) -> StandingLevel { StandingLevel(points: shop(store).points) }
+
+    /// Starts a store run: the whole trip is one block of time.
+    func startStoreRun(_ stores: [LocalStore]) -> Bool {
+        let hours = stores.reduce(0) { $0 + $1.hours }
+        guard !stores.isEmpty, spendHours(hours) else { return false }
+        for s in stores where s.isGameShop {
+            var state = shop(s)
+            state.lastVisitDay = data.day
+            data.shops[s.rawValue] = state
+        }
+        log("Store run: \(stores.map(\.rawValue).joined(separator: ", ")) (\(formatHours(hours))).")
+        save()
+        return true
+    }
+
+    func shelfLeft(_ item: ShelfItem) -> Int { item.quantity - (data.shelfBought[item.id] ?? 0) }
+
+    @discardableResult
+    func buyShelf(_ item: ShelfItem, at store: LocalStore, credit: Bool) -> Bool {
+        guard shelfLeft(item) > 0, pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
+        data.shelfBought[item.id, default: 0] += 1
+        data.sealed.append(SealedItem(setSlug: Market.slug, name: item.product.name, packs: item.product.packs, paid: item.price,
+                                      acquired: .now, source: "Bought at \(store.rawValue)", productID: item.product.id,
+                                      acquiredDay: data.day))
+        log("Bought \(item.product.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
+            cash: credit ? nil : -item.price)
+        save()
+        return true
+    }
+
+    @discardableResult
+    func buyCaseSingle(_ single: CaseSingle, at store: LocalStore, credit: Bool) -> Bool {
+        guard !data.boughtToday.contains(single.id),
+              pay(single.price, at: store, credit: credit, label: "\(single.print.name) · \(store.rawValue) case", category: .singles) else { return false }
+        data.boughtToday.append(single.id)
+        data.raw.append(OwnedCard(print: single.print, setSlug: Market.slug, acquired: .now, paid: single.price, ripID: nil,
+                                  condition: .secondHand(), acquiredDay: data.day))
+        log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price)).",
+            cash: credit ? nil : -single.price)
+        save()
+        return true
+    }
+
+    /// Pays with cash (a ledger entry) or with the shop's store credit (not in the Wallet). Spending earns standing.
+    private func pay(_ amount: Double, at store: LocalStore, credit: Bool, label: String, category: LedgerEntry.Category) -> Bool {
+        var state = shop(store)
+        if credit {
+            guard store.isGameShop, state.credit >= amount - 0.001 else { return false }
+            state.credit -= amount
+        } else {
+            guard canAfford(amount) else { return false }
+            addLedger(-amount, category, label)
+        }
+        if store.isGameShop {
+            state.spendTowardPoint += amount
+            let points = Int(state.spendTowardPoint / 50)
+            state.spendTowardPoint -= Double(points) * 50
+            state.points = min(100, state.points + points)
+        }
+        data.shops[store.rawValue] = state
+        return true
+    }
+
+    func buylistPrice(_ card: OwnedCard, at store: LocalStore) -> Double {
+        (card.market * standing(store).buylistRate * 100).rounded() / 100
+    }
+
+    /// The buylist: instant cash, well below market (docs/15-selling.md, The local game shop).
+    func sellToShop(_ id: UUID, at store: LocalStore) {
+        guard let card = card(id), card.status == nil, !card.keep else { return }
+        let price = buylistPrice(card, at: store)
+        data.raw.removeAll { $0.id == id }
+        data.slabs.removeAll { $0.id == id }
+        addLedger(price, .sale, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(store.rawValue) buylist")
+        log("Sold \(card.print.name) to \(store.rawValue) for \(money(price)) cash.", cash: price)
+        save()
+    }
+
+    func bulkCredit(_ group: BulkGroup) -> Double {
+        (group.value * Balance.bulkCreditRate * 100).rounded() / 100
+    }
+
+    /// Bulk sells for store credit only.
+    func sellBulk(_ id: UUID, at store: LocalStore) {
+        guard let group = data.bulk.first(where: { $0.id == id }) else { return }
+        let credit = bulkCredit(group)
+        data.bulk.removeAll { $0.id == id }
+        var state = shop(store)
+        state.credit += credit
+        data.shops[store.rawValue] = state
+        log("Sold \(group.cards.count) bulk cards to \(store.rawValue) for \(money(credit)) in store credit.")
+        save()
+    }
+
+    /// No visit for 4 weeks costs 2 points for each week after that.
+    private func decayStanding() -> [String] {
+        var lines: [String] = []
+        for store in LocalStore.allCases where store.isGameShop {
+            var state = shop(store)
+            let away = data.day - state.lastVisitDay
+            if state.points > 0, away > 28, (away - 28) % 7 == 0 {
+                state.points = max(0, state.points - 2)
+                data.shops[store.rawValue] = state
+                lines.append("\(store.rawValue) has not seen you in \(away / 7) weeks. Standing −2.")
+            }
+        }
+        return lines
+    }
+
     // MARK: - Selling
 
     func list(_ ids: Set<UUID>, channel: Listing.Channel, price: (UUID) -> Double, auctionDays: Int?, insured: Bool) {
@@ -370,7 +487,9 @@ final class GameStore {
         data.hour = Balance.dayStart
         data.sickToday = false
         data.boughtToday = []
+        data.shelfBought = [:]
         data.pokemonCenterAttempted = false
+        lines += decayStanding()
         if data.day % 364 == 0 { data.sickDaysLeft = job?.sickDays ?? Balance.sickDaysPerYear }
 
         lines += advanceSealed()

@@ -14,9 +14,11 @@ day job and the paycheck, rent (and game over when the player cannot
 pay it), the Wallet ledger, and the Activity log. The player buys
 Prismatic Evolutions product online from five storefronts, rips it in
 Inventory, lists cards on TCGplayer or eBay, and grades cards at PSA,
-CGC, or BGS. The values that the design leaves to balancing are in
+CGC, or BGS. A store run visits big stores and two game shops, where the
+player buys at MSRP, sells singles on the buylist, and sells bulk for
+store credit. The values that the design leaves to balancing are in
 [19-prototype-values.md](19-prototype-values.md). Social media, meets,
-garage sales, shows, the store run, and the local game shop are not
+garage sales, shows, holds, consignment, and league night are not
 built yet.
 `python3 tools/export/rip_set.py <set>` writes the
 set data that the app reads.

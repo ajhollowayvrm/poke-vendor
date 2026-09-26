@@ -15,6 +15,7 @@ struct HubView: View {
                     tiles
                     todayCard
                     freeActions
+                    timeActions
                     recentActivity
                 }
                 .padding(.horizontal, 16)
@@ -32,6 +33,9 @@ struct HubView: View {
         .tint(Theme.cyan)
         .fullScreenCover(item: $nav.rip) { session in
             RipView(items: session.items, store: store) { nav.rip = nil }
+        }
+        .fullScreenCover(item: $nav.storeRun) { session in
+            StoreRunView(stops: session.stops) { nav.storeRun = nil }
         }
         .sheet(item: Binding(get: { store.report }, set: { store.report = $0 })) { report in
             DayReportView(report: report)
@@ -128,6 +132,27 @@ struct HubView: View {
         }
     }
 
+    private var timeActions: some View {
+        DetailBox(title: "Plans for today") {
+            Button { nav.path.append(.buyLocal) } label: {
+                HStack {
+                    Image(systemName: "car").foregroundStyle(Theme.cyan)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Store run").font(.subheadline.weight(.medium))
+                        Text("40 min per store · big stores and game shops").font(.caption).foregroundStyle(Theme.muted)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            Text("Meets, garage sales, card shows, and live streams are not built yet.")
+                .font(.caption2)
+                .foregroundStyle(Theme.muted)
+        }
+    }
+
     private var recentActivity: some View {
         Button { nav.path.append(.activity) } label: {
             DetailBox(title: "Recent activity") {
@@ -180,6 +205,8 @@ struct HubView: View {
             case "buy": nav.path = [.buy]
             case "amazon": nav.path = [.buy, .store(.amazon)]
             case "ebay": nav.path = [.buy, .store(.ebay)]
+            case "shop": nav.path = [.shop(.castle)]
+            case "local": nav.path = [.buyLocal]
             case "raw": nav.path = [.inventory(.raw)]
             case "slabs": nav.path = [.inventory(.slabs)]
             case "activity": nav.path = [.activity]
@@ -199,6 +226,15 @@ struct HubView: View {
             store.submit(Set(ids.suffix(2)), to: .cgc, tier: Balance.gradingTiers[.cgc]![2])
             for _ in 0..<12 { store.endDay() }
             store.report = nil
+        }
+        if args.contains("-run") {
+            store.startRun()
+            for print in SetLibrary.set(Market.slug).prints.filter({ ($0.market ?? 0) > 10 }).prefix(2) { store.addTestCard(print) }
+            // Find a day when the first game shop has stock.
+            while Market.shelf(.castle, day: store.day).isEmpty { store.endDay() }
+            store.report = nil
+            if store.worksToday { store.callInSick() }
+            if store.startStoreRun([.castle, .target]) { nav.storeRun = StoreRunSession(stops: [.castle, .target]) }
         }
         if args.contains("-demo") {
             if store.data.sealed.filter({ $0.status == nil }).isEmpty { store.addTestPack() }

@@ -41,6 +41,21 @@ values. Check them against real prices:
 | Premium Figure Collection | $59.99 |
 | Super-Premium Collection | $119.99 |
 
+## Store run and game shops
+
+| Value | Prototype value |
+| --- | --- |
+| Local stores | Target, Walmart, Best Buy, GameStop, Barnes & Noble, and two game shops: Cardboard Castle and Top Deck Games |
+| Time for each stop | 40 minutes (from [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)) |
+| Stock chance | 12% for a big store, 45% for a game shop, new each day |
+| Shelf | 1 to 2 products at a big store, 1 to 3 at a game shop, at the estimated MSRP. Loose packs come 2 to 8 at a time, other products 1 to 2 |
+| Bulk | The shop pays 50% of the bulk's market value, in store credit only |
+| Display case | 6 singles worth $5 or more, at 110% of market. The case changes each week |
+| Buylist and standing | From [12-acquiring-product.md](12-acquiring-product.md#standing-levels) |
+
+In this build, the display case on a shop's own screen needs no store
+run. Holds, consignment, and league night are not built.
+
 ## Selling
 
 | Value | Prototype value |
