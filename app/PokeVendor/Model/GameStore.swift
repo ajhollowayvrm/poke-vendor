@@ -25,6 +25,37 @@ struct GameData: Codable {
     var shelfBought: [String: Int] = [:]
     var pokemonCenterAttempted = false
     var shops: [String: ShopState] = [:]
+    var social = SocialState()
+}
+
+/// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
+extension GameData {
+    init(from decoder: Decoder) throws {
+        self.init()
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        func v<T: Decodable>(_ key: CodingKeys, _ fallback: T) -> T {
+            (try? c.decodeIfPresent(T.self, forKey: key)) ?? fallback
+        }
+        day = v(.day, day)
+        hour = v(.hour, hour)
+        cash = v(.cash, cash)
+        ledger = v(.ledger, ledger)
+        activity = v(.activity, activity)
+        jobIndex = v(.jobIndex, jobIndex)
+        sickDaysLeft = v(.sickDaysLeft, sickDaysLeft)
+        sickToday = v(.sickToday, sickToday)
+        gameOver = v(.gameOver, gameOver)
+        sealed = v(.sealed, sealed)
+        raw = v(.raw, raw)
+        slabs = v(.slabs, slabs)
+        bulk = v(.bulk, bulk)
+        openedPaid = v(.openedPaid, openedPaid)
+        boughtToday = v(.boughtToday, boughtToday)
+        shelfBought = v(.shelfBought, shelfBought)
+        pokemonCenterAttempted = v(.pokemonCenterAttempted, pokemonCenterAttempted)
+        shops = v(.shops, shops)
+        social = v(.social, social)
+    }
 }
 
 /// What happened overnight, for the morning report.
@@ -36,7 +67,7 @@ struct DayReport: Identifiable {
 
 @MainActor @Observable
 final class GameStore {
-    private(set) var data: GameData
+    var data: GameData
     var report: DayReport?
     private let url: URL
 
@@ -422,8 +453,11 @@ final class GameStore {
 
     /// The fees and shipping for a sale at a price.
     static func saleCosts(price: Double, channel: Listing.Channel, sealed: Bool, insured: Bool) -> (fees: Double, shipping: Double, insurance: Double) {
-        let fees = channel == .tcgplayer ? price * Balance.tcgFeeRate + Balance.tcgFeeFlat
-                                         : price * Balance.ebayFeeRate + Balance.ebayFeeFlat
+        let fees = switch channel {
+        case .tcgplayer: price * Balance.tcgFeeRate + Balance.tcgFeeFlat
+        case .ebay, .ebayAuction: price * Balance.ebayFeeRate + Balance.ebayFeeFlat
+        case .social: 0.0
+        }
         let shipping = Balance.shippingCost(for: price, sealed: sealed)
         return (fees, shipping, insured ? Balance.insuranceCost(for: price) : 0)
     }
@@ -494,6 +528,7 @@ final class GameStore {
 
         lines += advanceSealed()
         lines += advanceCards()
+        lines += advanceSocial()
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {
@@ -582,9 +617,11 @@ final class GameStore {
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false))
+                    if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
                     card.status = nil
+                    if listing.channel == .social { markPostSale(cardID: card.id, result: .noSale) }
                     lines.append("Your \(listing.channel.rawValue) listing for \(card.print.name) ended with no sale.")
                 }
             default:
@@ -597,9 +634,11 @@ final class GameStore {
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
                                               price: sale, sealed: false))
+                    if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
                     card.status = nil
+                    if listing.channel == .social { markPostSale(cardID: card.id, result: .noSale) }
                     lines.append("Your \(listing.channel.rawValue) listing for \(card.print.name) ended with no sale.")
                 }
             }
@@ -637,6 +676,8 @@ final class GameStore {
         case .tcgplayer:
             let chance = 0.30 * exp(-(listing.price / max(market * 0.95, 0.01) - 1) * 35)
             return Double.random(in: 0..<1) < chance ? listing.price : nil
+        case .social:
+            return Double.random(in: 0..<1) < socialSaleChance(price: listing.price, market: market) ? listing.price : nil
         }
     }
 

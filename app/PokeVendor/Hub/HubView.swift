@@ -86,7 +86,8 @@ struct HubView: View {
             Tile(label: "Cash", value: money(store.cash), detail: "Wallet") { nav.path.append(.wallet) }
             Tile(label: "Collection", value: money(store.collectionValue),
                  detail: "Inventory \(money(store.marketValue))") { nav.path.append(.inventory(.sealed)) }
-            Tile(label: "Followers", value: "Start posting", detail: "Not built yet", action: nil)
+            Tile(label: "Followers", value: store.hasAccount ? store.social.followers.formatted() : "Start posting",
+                 detail: store.hasAccount ? "Tier \(store.followerTier) · \(store.social.handle ?? "")" : "Social media") { nav.path.append(.social) }
             Tile(label: "Reputation", value: "Unknown", detail: "Not built yet", action: nil)
         }
     }
@@ -128,7 +129,11 @@ struct HubView: View {
             ActionTile(title: "Packs", icon: "shippingbox") { nav.path.append(.inventory(.sealed)) }
             ActionTile(title: "Grade", icon: "seal") { nav.path.append(.inventory(.raw)) }
             ActionTile(title: "Buy", icon: "cart") { nav.path.append(.buy) }
-            ActionTile(title: "Sell", icon: "tag") { nav.path.append(.inventory(.raw)) }
+            if store.hasAccount {
+                ActionTile(title: "Post", icon: "square.and.pencil") { nav.path.append(.social) }
+            } else {
+                ActionTile(title: "Sell", icon: "tag") { nav.path.append(.inventory(.raw)) }
+            }
         }
     }
 
@@ -235,6 +240,29 @@ struct HubView: View {
             store.report = nil
             if store.worksToday { store.callInSick() }
             if store.startStoreRun([.castle, .target]) { nav.storeRun = StoreRunSession(stops: [.castle, .target]) }
+        }
+        if args.contains("-social") {
+            store.startRun()
+            store.createAccount("ajrips")
+            store.data.social.followers = 1_150
+            store.buyAnalytics()
+            let prints = SetLibrary.set(Market.slug).prints.filter { ($0.market ?? 0) > 15 }.shuffled()
+            for print in prints.prefix(3) { store.addTestCard(print) }
+            for day in 0..<10 {
+                if let card = store.data.raw.first, day == 0 {
+                    store.post(.forSale, subject: card.print.name, value: card.market, saleCardID: card.id, salePrice: card.market)
+                }
+                if day % 2 == 0, let card = store.data.raw.last {
+                    store.post(.pullReveal, subject: card.print.name, value: card.market)
+                } else {
+                    store.post(.hotTake, subject: nil, value: 0)
+                }
+                if let offer = store.social.offers.first(where: { !$0.accepted }) { store.acceptOffer(offer.id) }
+                if store.activeDeal != nil { store.post(.sponsored, subject: nil, value: 0) }
+                store.endDay()
+            }
+            store.report = nil
+            nav.path = [.social]
         }
         if args.contains("-demo") {
             if store.data.sealed.filter({ $0.status == nil }).isEmpty { store.addTestPack() }

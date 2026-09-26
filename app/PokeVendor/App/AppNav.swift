@@ -7,6 +7,7 @@ enum AppRoute: Hashable {
     case activity
     case buy
     case buyLocal
+    case social
     case store(Storefront)
     case shop(LocalStore)
     case card(UUID)
@@ -47,6 +48,7 @@ extension View {
             case .activity: ActivityView()
             case .buy: BuyView()
             case .buyLocal: BuyView(local: true)
+            case .social: SocialHubView()
             case .store(let store): StoreView(store: store)
             case .shop(let shop): ShopView(shop: shop)
             case .card(let id): CardDetailView(id: id)

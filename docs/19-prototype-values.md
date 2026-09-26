@@ -93,3 +93,22 @@ four 10s is a Black Label.
 **A grade with no sales data** is worth a multiple of the raw price,
 with a floor. A 10 is 2.5 times raw, with a floor of $15 for PSA, $12
 for CGC, and $30 for BGS.
+
+## Social media
+
+| Value | Prototype value |
+| --- | --- |
+| Reach | (40 + 0.35 × followers) × content quality × timing × luck, reduced by burnout and raised by authenticity |
+| Content quality | From the value of the item in the post. A hot take is random, from 0.4 to 1.5 |
+| Timing | A market trend from 0.6 to 1.5, new each day |
+| Luck | Usually 0.6 to 1.6. A 2% chance of a breakout, 8 to 20 times the normal reach |
+| Followers from a post | About 2% of the views, times (quality − 0.7). A low-quality post loses followers |
+| Burnout | +0.12 for each post, +0.2 for a low-quality post, −0.1 each day |
+| Authenticity | Starts at 0.7. −0.04 for each paid post, +0.02 for a pull reveal worth $50 or more, −0.15 for a missed sponsor deadline |
+| Follower decay | 0.3% each day, 1% each day after 3 days with no post, and an extra 2% on 5% of days (an algorithm shift) |
+| Sponsor offers | From tier 1: a 12% chance each day. The pay is 1.5% of followers for each paid post, $25 minimum, for 1 to 3 posts in 5 to 10 days. An offer goes away after 5 days |
+| For-sale post | No fees, and the player pays shipping. The daily sale chance grows with followers up to 5,000 and falls as the price goes above market |
+| Analytics upgrade | $150 |
+
+Live streams, follower tips, and show promos are not built.
+

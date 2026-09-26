@@ -11,6 +11,7 @@
 		24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB00B5E3B98AFB182E5118 /* RipModel.swift */; };
 		3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */; };
 		470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */; };
+		484DB0AF7BC480439CDBAACC /* Social.swift in Sources */ = {isa = PBXBuildFile; fileRef = D894A52F7AE73A7EAF8DF6D3 /* Social.swift */; };
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
 		57856FEC663D96592E925B4F /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38152100E3F21C13B7C61E1B /* GameStore.swift */; };
@@ -31,6 +32,7 @@
 		E773086037F13A9C2D65807E /* DetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544120DEF70C6BCBC2EF918A /* DetailViews.swift */; };
 		EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB2E7EA020C2D7260109C7E /* RipView.swift */; };
 		F0032B8697D4063D2F6E8907 /* InventoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28FE1FAED611C80FC163221 /* InventoryView.swift */; };
+		F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820C299F6D8FD690239ED0CC /* SocialViews.swift */; };
 		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,10 +57,12 @@
 		781DF97D530EE9737F37D11A /* BuyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyViews.swift; sourceTree = "<group>"; };
 		7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipCard.swift; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
+		820C299F6D8FD690239ED0CC /* SocialViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialViews.swift; sourceTree = "<group>"; };
 		9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A28FE1FAED611C80FC163221 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
 		B5511559E1A3A95108659987 /* prismatic-evolutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "prismatic-evolutions.json"; sourceTree = "<group>"; };
 		D7653D159E767B267752F265 /* StoreRunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRunViews.swift; sourceTree = "<group>"; };
+		D894A52F7AE73A7EAF8DF6D3 /* Social.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Social.swift; sourceTree = "<group>"; };
 		DFA05E48B4793E422BDD8455 /* LocalStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStores.swift; sourceTree = "<group>"; };
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFEB00B5E3B98AFB182E5118 /* RipModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipModel.swift; sourceTree = "<group>"; };
@@ -99,6 +103,14 @@
 			path = Sets;
 			sourceTree = "<group>";
 		};
+		7F6F6FB8D7BA41D01B439268 /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				820C299F6D8FD690239ED0CC /* SocialViews.swift */,
+			);
+			path = Social;
+			sourceTree = "<group>";
+		};
 		96C1692A0ED7B2E72EE64380 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +123,7 @@
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
+				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -160,6 +173,7 @@
 				96C1692A0ED7B2E72EE64380 /* Model */,
 				A45715057FF8BD97B10D1027 /* Resources */,
 				F5C1AC9B977941A9F77C4039 /* Rip */,
+				7F6F6FB8D7BA41D01B439268 /* Social */,
 				54BBAE50F56DF76DD790B949 /* Support */,
 			);
 			path = PokeVendor;
@@ -278,6 +292,8 @@
 				EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */,
 				470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */,
 				4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */,
+				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,
+				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */,
 				7D71A92431332B26D0BA9ED7 /* WalletView.swift in Sources */,

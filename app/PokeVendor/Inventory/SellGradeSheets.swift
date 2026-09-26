@@ -123,6 +123,7 @@ struct SellSheet: View {
         case .tcgplayer: "Raw singles. The lowest listing sells first. Fees \(Int(Balance.tcgFeeRate * 1000) / 10)% + \(money(Balance.tcgFeeFlat))."
         case .ebay: "A fixed price. Slower, but the price is known. The highest fees."
         case .ebayAuction: "The bids set the price. It can end high or well below value."
+        case .social: "Post it for sale on the social media hub."
         }
     }
 }

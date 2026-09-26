@@ -181,6 +181,7 @@ struct SummaryView: View {
     let onNext: () -> Void
     let onDone: () -> Void
     let onClose: () -> Void
+    @State private var posted: SocialPost?
 
     var body: some View {
         let cards = model.allCards
@@ -222,6 +223,16 @@ struct SummaryView: View {
             Text("Hits go to Raw. Bulk · \(bulk) cards go to the rip's bulk group.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
+            if model.canPost, let best = hits.first {
+                if let posted {
+                    Text("Posted: \(posted.views.formatted()) views, \(posted.followerChange >= 0 ? "+" : "")\(posted.followerChange) followers")
+                        .font(.caption.monospaced())
+                        .foregroundStyle(Theme.cyan)
+                } else {
+                    Button("Post this pull: \(best.name)") { posted = model.postPull(best) }
+                        .buttonStyle(.bordered)
+                }
+            }
             HStack(spacing: 10) {
                 Button(action: onClose) {
                     Text("See the cards").frame(maxWidth: .infinity)

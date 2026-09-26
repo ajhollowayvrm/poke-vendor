@@ -71,6 +71,13 @@ final class RipModel {
         return faceUp ? (stack.first ?? pile.last) : pile.last
     }
 
+    /// "Post this pull" shows only when the player has a social media account.
+    var canPost: Bool { store?.hasAccount ?? false }
+
+    func postPull(_ card: RipCard) -> SocialPost? {
+        store?.post(.pullReveal, subject: card.name, value: card.market)
+    }
+
     func isShownFaceUp(_ card: RipCard) -> Bool {
         faceUp || card.id == showcaseID
     }

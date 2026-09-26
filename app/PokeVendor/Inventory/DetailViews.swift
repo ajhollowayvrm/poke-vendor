@@ -68,6 +68,7 @@ struct CardDetailView: View {
     let id: UUID
     @State private var sell: SellRequest?
     @State private var grade: GradeRequest?
+    @State private var post: NewPostRequest?
 
     var body: some View {
         if let card = store.card(id) {
@@ -130,6 +131,14 @@ struct CardDetailView: View {
                             .foregroundStyle(.black)
                     }
                     .controlSize(.large)
+                    if store.hasAccount {
+                        HStack(spacing: 10) {
+                            Button("Post: collection flex") { post = request(.collectionFlex, card) }
+                            Button("Post: for sale") { post = request(.forSale, card) }
+                                .disabled(!free || card.keep)
+                        }
+                        .buttonStyle(.bordered)
+                    }
                 }
                 .padding(16)
             }
@@ -138,9 +147,18 @@ struct CardDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $sell) { SellSheet(ids: $0.ids) }
             .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
+            .sheet(item: $post) { NewPostSheet(request: $0) }
         } else {
             GoneView()
         }
+    }
+}
+
+extension CardDetailView {
+    func request(_ type: PostType, _ card: OwnedCard) -> NewPostRequest {
+        NewPostRequest(type: type, subject: PostSubject(id: card.id, name: card.grade.map { "\(card.print.name) \($0.label)" } ?? card.print.name,
+                                                        value: card.market, isCard: true, pulled: card.paid == nil,
+                                                        free: card.status == nil && !card.keep, image: card.print.image))
     }
 }
 

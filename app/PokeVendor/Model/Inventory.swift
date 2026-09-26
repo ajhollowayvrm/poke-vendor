@@ -74,7 +74,7 @@ struct SlabGrade: Codable, Hashable {
 
 struct Listing: Codable, Hashable {
     enum Channel: String, Codable, CaseIterable {
-        case tcgplayer = "TCGplayer", ebay = "eBay", ebayAuction = "eBay auction"
+        case tcgplayer = "TCGplayer", ebay = "eBay", ebayAuction = "eBay auction", social = "Social"
     }
 
     let channel: Channel
@@ -169,9 +169,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
     enum Category: String, Codable, CaseIterable {
         case startingCapital = "Starting capital", paycheck = "Paycheck", sale = "Sale", refund = "Refund"
         case sealed = "Sealed product", singles = "Singles", grading = "Grading fees", rent = "Rent"
-        case test = "Test"
-
-        var isSpending: Bool { [.sealed, .singles, .grading, .rent, .refund].contains(self) }
+        case sponsorship = "Sponsorship", upgrade = "Upgrades", test = "Test"
     }
 
     var id = UUID()

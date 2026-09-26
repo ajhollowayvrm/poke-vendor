@@ -16,8 +16,9 @@ Prismatic Evolutions product online from five storefronts, rips it in
 Inventory, lists cards on TCGplayer or eBay, and grades cards at PSA,
 CGC, or BGS. A store run visits big stores and two game shops, where the
 player buys at MSRP, sells singles on the buylist, and sells bulk for
-store credit. The values that the design leaves to balancing are in
-[19-prototype-values.md](19-prototype-values.md). Social media, meets,
+store credit. The player can start a social media account, make quick
+posts, grow followers, take sponsor deals, and post cards for sale. The values that the design leaves to balancing are in
+[19-prototype-values.md](19-prototype-values.md). Live streams, meets,
 garage sales, shows, holds, consignment, and league night are not
 built yet.
 `python3 tools/export/rip_set.py <set>` writes the
