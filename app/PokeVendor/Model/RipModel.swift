@@ -157,6 +157,17 @@ final class RipModel {
         if stack.isEmpty { phase = .done }
     }
 
+    /// Skips the rest of the pack: every card left goes to the pile, seen, with no hit effects.
+    func skipRest() {
+        guard phase == .open, !stack.isEmpty else { return }
+        showcaseID = nil
+        tuckingID = nil
+        for card in stack { seen.insert(card.id) }
+        pile.append(contentsOf: stack)
+        stack = []
+        phase = .done
+    }
+
     func returnFromPile() {
         guard phase == .open || phase == .done, let card = pile.popLast() else { return }
         showcaseID = nil

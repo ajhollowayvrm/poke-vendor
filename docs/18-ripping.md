@@ -135,7 +135,9 @@ Normal is a manual rip. The player holds the cards like a real pack:
    the back card to the front. Face down, it takes the top card to the
    bottom. Both are the same move on the physical pack. This is how the
    player does the pack trick by hand. The button works once for each
-   pack, and then it turns off until the next pack.
+   pack, and then it turns off until the next pack. After the trick,
+   a face-down stack turns face up by itself, and Flip stays off for
+   the rest of the pack.
 5. A tap on the front card slides it off the top onto the **pile**,
    above the stack.
 6. A tap on the pile puts the top card of the pile back on the front
@@ -145,6 +147,11 @@ Normal is a manual rip. The player holds the cards like a real pack:
    A rainbow or holo border tells the player that a hit is coming, the
    same as looking at the top edges of a real Prismatic Evolutions
    pack. The peek closes when the player lifts the finger.
+
+**Skip pack.** A Skip pack button works at any time. It puts every
+card left in the pack on the pile, face up, and goes to the summary.
+Before the tear, it opens the pack first. Skipped cards play no hit
+effects, and the summary shows their hits.
 
 **Face down or face up.** A **Flip** button on the rip screen turns
 the whole stack over. The stack turns as one piece, and its order

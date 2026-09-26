@@ -21,6 +21,7 @@ struct StatCell: View {
 
 struct TopBar: View {
     let model: RipModel
+    let onSkip: () -> Void
     let onClose: () -> Void
 
     var body: some View {
@@ -33,6 +34,12 @@ struct TopBar: View {
                         .foregroundStyle(Theme.muted)
                 }
                 Spacer()
+                if model.phase == .sealed || model.phase == .open {
+                    Button("Skip pack", action: onSkip)
+                        .font(.subheadline.weight(.semibold))
+                        .buttonStyle(.bordered)
+                        .tint(Theme.cyan)
+                }
                 Button(action: onClose) {
                     Label("Done", systemImage: "xmark")
                         .font(.subheadline.weight(.semibold))

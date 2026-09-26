@@ -50,6 +50,7 @@ struct RipView: View {
     /// The turn of the whole stack during a flip, in degrees.
     @State private var stackTurn: Double = 0
     @State private var flipping = false
+    @State private var skipAfterOpen = false
     /// The info panel, the pile label, and the glow wait until a card has turned face up.
     @State private var infoCard: RipCard?
     @State private var pileTop: RipCard?
@@ -59,7 +60,7 @@ struct RipView: View {
         GeometryReader { geo in
             let layout = TableLayout(size: geo.size)
             ZStack {
-                TopBar(model: model, onClose: onClose)
+                TopBar(model: model, onSkip: skipPack, onClose: onClose)
                     .frame(maxHeight: .infinity, alignment: .top)
 
                 if model.phase == .open || model.phase == .done {
@@ -283,7 +284,7 @@ struct RipView: View {
                 CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
             }
             HStack(spacing: 10) {
-                Button(action: flipStack) {
+                Button { flipStack() } label: {
                     VStack(spacing: 1) {
                         Label("Flip", systemImage: "arrow.triangle.2.circlepath")
                             .font(.subheadline.weight(.semibold))
@@ -295,7 +296,7 @@ struct RipView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
-                .disabled(flipping || model.tuckingID != nil)
+                .disabled(flipping || model.tuckingID != nil || model.trickDone)
                 Button(action: moveToBack) {
                     VStack(spacing: 1) {
                         Label("Pack trick", systemImage: "arrow.uturn.down")
@@ -317,8 +318,9 @@ struct RipView: View {
     }
 
     /// Turns the whole stack over. The order reverses while the stack is edge-on, so no card jumps.
-    private func flipStack() {
-        guard !flipping, model.tuckingID == nil else { return }
+    /// After the pack trick, the stack stays face up for the rest of the pack.
+    private func flipStack(force: Bool = false) {
+        guard !flipping, model.tuckingID == nil, force || !model.trickDone else { return }
         guard model.phase == .open || model.phase == .done else {
             model.setFaceUp(!model.faceUp)
             return
@@ -425,6 +427,10 @@ struct RipView: View {
             }
             try? await Task.sleep(for: .milliseconds(450))
             model.finishOpening()
+            if skipAfterOpen {
+                skipAfterOpen = false
+                skipPack()
+            }
         }
     }
 
@@ -465,6 +471,26 @@ struct RipView: View {
         Task {
             try? await Task.sleep(for: .milliseconds(170))
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { model.finishTuck() }
+            if !model.faceUp {
+                try? await Task.sleep(for: .milliseconds(380))
+                flipStack(force: true)
+            }
+        }
+    }
+
+    /// Skips the rest of the pack at any time. Before the tear, it opens the pack first.
+    private func skipPack() {
+        switch model.phase {
+        case .sealed:
+            skipAfterOpen = true
+            tear()
+        case .open:
+            peekTask?.cancel()
+            peeking = false
+            Haptics.tap(.medium)
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.85)) { model.skipRest() }
+        default:
+            break
         }
     }
 
@@ -493,6 +519,10 @@ struct RipView: View {
                 try? await Task.sleep(for: .milliseconds(700))
                 moveToBack()
             }
+            if args.contains("skip") {
+                try? await Task.sleep(for: .milliseconds(1200))
+                skipPack()
+            }
             if args.contains("peek") { withAnimation { peeking = true } }
             if args.contains("close") {
                 try? await Task.sleep(for: .seconds(1))
@@ -508,6 +538,7 @@ struct RipView: View {
         burst = nil
         withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
         torn = false
+        skipAfterOpen = false
         cardsRise = false
         cardsOut = false
         packGone = false
